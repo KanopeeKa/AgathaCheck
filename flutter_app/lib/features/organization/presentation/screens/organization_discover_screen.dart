@@ -43,9 +43,7 @@ class OrganizationDiscoverScreen extends ConsumerWidget {
             OrgDiscoverBrowseAsBanner(from: from, orgId: orgId),
             const OrgDiscoverSearchField(),
             const SizedBox(height: 12),
-            OrgDiscoveryList(
-              emptyMessageForSearch: l.orgDiscoverySearchEmpty,
-            ),
+            OrgDiscoveryList(emptyMessageForSearch: l.orgDiscoverySearchEmpty),
           ],
         ),
       ),

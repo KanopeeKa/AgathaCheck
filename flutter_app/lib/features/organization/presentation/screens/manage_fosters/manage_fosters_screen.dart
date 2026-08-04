@@ -9,7 +9,8 @@ import '../../../domain/services/foster_visibility.dart';
 import '../../providers/manage_fosters_providers.dart';
 import '../../providers/organization_providers.dart';
 import '../../widgets/manage_fosters/foster_person_tile.dart';
-import '../../widgets/manage_fosters/foster_summary_card.dart' show showManageFostersAddManualDialog;
+import '../../widgets/manage_fosters/foster_summary_card.dart'
+    show showManageFostersAddManualDialog;
 import '../../widgets/org_shell_app_bar_title.dart';
 import '../../widgets/org_shell_scaffold.dart';
 
@@ -68,72 +69,72 @@ class ManageFostersScreen extends ConsumerWidget {
           ),
       ],
       child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: Text(
-                l.manageFostersDescription,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Text(
+              l.manageFostersDescription,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 8),
-            _ManageFostersTabBar(orgId: orgId, selected: tab),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: _ApprovalFilters(orgId: orgId, selected: approvalFilter),
-            ),
-            Expanded(
-              child: fosterParentsAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(child: Text('$e')),
-                data: (parents) {
-                  final filtered = filterFosterParentsForManageFosters(
-                    parents: parents,
-                    tab: tab,
-                    approvalFilter: approvalFilter,
-                  );
-                  if (tab == ManageFostersTab.recentlyFostered) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Text(
-                          l.manageFostersRecentlyFosteredPlaceholder,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+          ),
+          const SizedBox(height: 8),
+          _ManageFostersTabBar(orgId: orgId, selected: tab),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: _ApprovalFilters(orgId: orgId, selected: approvalFilter),
+          ),
+          Expanded(
+            child: fosterParentsAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('$e')),
+              data: (parents) {
+                final filtered = filterFosterParentsForManageFosters(
+                  parents: parents,
+                  tab: tab,
+                  approvalFilter: approvalFilter,
+                );
+                if (tab == ManageFostersTab.recentlyFostered) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        l.manageFostersRecentlyFosteredPlaceholder,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
-                    );
-                  }
-                  if (filtered.isEmpty) {
-                    return Center(
-                      child: Text(
-                        l.manageFostersEmptyTab,
-                        style: TextStyle(color: colorScheme.onSurfaceVariant),
-                      ),
-                    );
-                  }
-                  return ListView(
-                    key: const Key('manage_fosters_list'),
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      FosterPersonTileGrid(
-                        orgId: orgId,
-                        parents: filtered,
-                        canManage: canManage,
-                        viewerUserId: viewerUserId,
-                      ),
-                    ],
+                    ),
                   );
-                },
-              ),
+                }
+                if (filtered.isEmpty) {
+                  return Center(
+                    child: Text(
+                      l.manageFostersEmptyTab,
+                      style: TextStyle(color: colorScheme.onSurfaceVariant),
+                    ),
+                  );
+                }
+                return ListView(
+                  key: const Key('manage_fosters_list'),
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    FosterPersonTileGrid(
+                      orgId: orgId,
+                      parents: filtered,
+                      canManage: canManage,
+                      viewerUserId: viewerUserId,
+                    ),
+                  ],
+                );
+              },
             ),
-          ],
-    ),
+          ),
+        ],
+      ),
     );
   }
 }

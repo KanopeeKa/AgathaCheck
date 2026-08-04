@@ -29,92 +29,89 @@ class OrganizationDocumentTemplatesScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
 
     return OrgShellScaffold(
-  title: l.orgCustomisationsTemplatesTitle,
-  orgId: orgId,
-  navVariant: OrgNavTitleVariant.withOrgLogo,
-  leadingKey: const Key('org_document_templates_back'),
-  child: templatesAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.error_outline, size: 48, color: colorScheme.error),
-                const SizedBox(height: 16),
-                Text('$e'),
-                const SizedBox(height: 8),
-                ElevatedButton(
-                  onPressed: () =>
-                      ref.invalidate(documentTemplatesProvider(orgId)),
-                  child: Text(l.retry),
-                ),
-              ],
-            ),
+      title: l.orgCustomisationsTemplatesTitle,
+      orgId: orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      leadingKey: const Key('org_document_templates_back'),
+      child: templatesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.error_outline, size: 48, color: colorScheme.error),
+              const SizedBox(height: 16),
+              Text('$e'),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () =>
+                    ref.invalidate(documentTemplatesProvider(orgId)),
+                child: Text(l.retry),
+              ),
+            ],
           ),
-          data: (data) {
-            final sessionTemplates = _templatesFor(data, 'session_checklist');
-            final milestoneTemplates = _templatesFor(
-              data,
-              'adoption_milestones',
-            );
-            final isEmpty =
-                sessionTemplates.isEmpty && milestoneTemplates.isEmpty;
+        ),
+        data: (data) {
+          final sessionTemplates = _templatesFor(data, 'session_checklist');
+          final milestoneTemplates = _templatesFor(data, 'adoption_milestones');
+          final isEmpty =
+              sessionTemplates.isEmpty && milestoneTemplates.isEmpty;
 
-            if (isEmpty) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(
-                    l.orgDocumentTemplatesEmpty,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              );
-            }
-
-            return ListView(
-              key: const Key('org_document_templates_screen'),
-              padding: const EdgeInsets.all(16),
-              children: [
-                Text(
-                  l.orgDocumentTemplatesIntro,
-                  style: theme.textTheme.bodySmall?.copyWith(
+          if (isEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  l.orgDocumentTemplatesEmpty,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(height: 16),
-                if (sessionTemplates.isNotEmpty) ...[
-                  Text(
-                    l.orgLegalDocumentsTypeSession,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ...sessionTemplates.map(
-                    (template) => _TemplateTile(template: template),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                if (milestoneTemplates.isNotEmpty) ...[
-                  Text(
-                    l.orgLegalDocumentsTypeAdoption,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ...milestoneTemplates.map(
-                    (template) => _TemplateTile(template: template),
-                  ),
-                ],
-              ],
+              ),
             );
-          },
-    ),
+          }
+
+          return ListView(
+            key: const Key('org_document_templates_screen'),
+            padding: const EdgeInsets.all(16),
+            children: [
+              Text(
+                l.orgDocumentTemplatesIntro,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 16),
+              if (sessionTemplates.isNotEmpty) ...[
+                Text(
+                  l.orgLegalDocumentsTypeSession,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ...sessionTemplates.map(
+                  (template) => _TemplateTile(template: template),
+                ),
+                const SizedBox(height: 16),
+              ],
+              if (milestoneTemplates.isNotEmpty) ...[
+                Text(
+                  l.orgLegalDocumentsTypeAdoption,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ...milestoneTemplates.map(
+                  (template) => _TemplateTile(template: template),
+                ),
+              ],
+            ],
+          );
+        },
+      ),
     );
   }
 }

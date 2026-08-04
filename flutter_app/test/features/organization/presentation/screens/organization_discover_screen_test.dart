@@ -54,33 +54,39 @@ List<Override> _discoverScreenOverrides({
 }
 
 void main() {
-  testWidgets('browse-as banner shows user display name from dashboard context', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: _discoverScreenOverrides(withAuth: true),
-        child: MaterialApp(
-          theme: AppTheme.lightTheme,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: orgThemed(
-            child: const Scaffold(
-              body: OrganizationDiscoverScreen(
-                from: OrgDiscoverEntryContext.dashboard,
+  testWidgets(
+    'browse-as banner shows user display name from dashboard context',
+    (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: _discoverScreenOverrides(withAuth: true),
+          child: MaterialApp(
+            theme: AppTheme.lightTheme,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: orgThemed(
+              child: const Scaffold(
+                body: OrganizationDiscoverScreen(
+                  from: OrgDiscoverEntryContext.dashboard,
+                ),
               ),
             ),
           ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('You are browsing as Test User'), findsOneWidget);
-    expect(find.byKey(const Key('org_discover_browse_as_banner')), findsOneWidget);
-  });
+      expect(find.text('You are browsing as Test User'), findsOneWidget);
+      expect(
+        find.byKey(const Key('org_discover_browse_as_banner')),
+        findsOneWidget,
+      );
+    },
+  );
 
-  testWidgets('browse-as banner shows org name from org context', (tester) async {
+  testWidgets('browse-as banner shows org name from org context', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: _discoverScreenOverrides(orgs: [_dashboardOrg]),
@@ -104,51 +110,52 @@ void main() {
     expect(find.text('You are browsing as Home Shelter'), findsOneWidget);
   });
 
-  testWidgets('back from dashboard context goes to org dashboard when cannot pop', (
-    tester,
-  ) async {
-    final router = GoRouter(
-      initialLocation: '/o/orgs/discover?from=dashboard',
-      routes: [
-        GoRoute(
-          path: '/o/orgs',
-          builder: (context, state) =>
-              const Scaffold(body: Text('org-dashboard')),
-        ),
-        GoRoute(
-          path: '/o/orgs/discover',
-          builder: (context, state) => orgThemed(
-            child: Scaffold(
-              body: OrganizationDiscoverScreen(
-                from: parseOrgDiscoverEntryContext(
-                  state.uri.queryParameters['from'],
+  testWidgets(
+    'back from dashboard context goes to org dashboard when cannot pop',
+    (tester) async {
+      final router = GoRouter(
+        initialLocation: '/o/orgs/discover?from=dashboard',
+        routes: [
+          GoRoute(
+            path: '/o/orgs',
+            builder: (context, state) =>
+                const Scaffold(body: Text('org-dashboard')),
+          ),
+          GoRoute(
+            path: '/o/orgs/discover',
+            builder: (context, state) => orgThemed(
+              child: Scaffold(
+                body: OrganizationDiscoverScreen(
+                  from: parseOrgDiscoverEntryContext(
+                    state.uri.queryParameters['from'],
+                  ),
+                  orgId: state.uri.queryParameters['orgId'],
                 ),
-                orgId: state.uri.queryParameters['orgId'],
               ),
             ),
           ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: _discoverScreenOverrides(withAuth: true),
+          child: MaterialApp.router(
+            theme: AppTheme.lightTheme,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: router,
+          ),
         ),
-      ],
-    );
+      );
+      await tester.pumpAndSettle();
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: _discoverScreenOverrides(withAuth: true),
-        child: MaterialApp.router(
-          theme: AppTheme.lightTheme,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          routerConfig: router,
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('org_discover_back')));
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('org_discover_back')));
-    await tester.pumpAndSettle();
-
-    expect(find.text('org-dashboard'), findsOneWidget);
-  });
+      expect(find.text('org-dashboard'), findsOneWidget);
+    },
+  );
 
   testWidgets('back from org context goes to org profile when cannot pop', (
     tester,

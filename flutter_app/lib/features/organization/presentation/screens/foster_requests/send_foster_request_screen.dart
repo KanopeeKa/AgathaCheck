@@ -122,180 +122,173 @@ class _SendFosterRequestScreenState
     final fostersAsync = ref.watch(orgFosterParentsProvider(widget.orgId));
 
     return OrgShellScaffold(
-  title: l.fosterRequestSendNew,
-  orgId: widget.orgId,
-  navVariant: OrgNavTitleVariant.withOrgLogo,
-  leadingKey: const Key('send_foster_request_back'),
-  child: Form(
-          key: _formKey,
-          child: ListView(
-            key: const Key('send_foster_request_form'),
-            padding: const EdgeInsets.all(16),
-            children: [
-              Text(
-                l.fosterRequestSendDescription,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+      title: l.fosterRequestSendNew,
+      orgId: widget.orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      leadingKey: const Key('send_foster_request_back'),
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          key: const Key('send_foster_request_form'),
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              l.fosterRequestSendDescription,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                key: const Key('send_foster_request_message'),
-                controller: _messageController,
-                decoration: InputDecoration(
-                  labelText: l.fosterRequestMessageLabel,
-                  hintText: l.fosterRequestMessageHint,
-                ),
-                maxLines: 4,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return l.fosterRequestMessageRequired;
-                  }
-                  return null;
-                },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('send_foster_request_message'),
+              controller: _messageController,
+              decoration: InputDecoration(
+                labelText: l.fosterRequestMessageLabel,
+                hintText: l.fosterRequestMessageHint,
               ),
-              const SizedBox(height: 24),
-              Text(
-                l.fosterRequestSelectPets,
-                style: theme.textTheme.titleSmall,
-              ),
-              const SizedBox(height: 8),
-              petsAsync.when(
-                loading: () => const LinearProgressIndicator(),
-                error: (e, _) => Text('$e'),
-                data: (pets) {
-                  final available = pets.where((p) => !p.passedAway).toList();
-                  if (available.isEmpty) {
-                    return Text(
-                      l.fosterRequestNoPets,
-                      style: TextStyle(color: colorScheme.onSurfaceVariant),
-                    );
-                  }
-                  return Column(
-                    children: [
-                      for (final pet in available)
-                        CheckboxListTile(
-                          key: Key('send_foster_request_pet_${pet.id}'),
-                          value: _selectedPetIds.contains(pet.id),
-                          onChanged: _submitting
-                              ? null
-                              : (checked) {
-                                  setState(() {
-                                    if (checked == true) {
-                                      _selectedPetIds.add(pet.id);
-                                    } else {
-                                      _selectedPetIds.remove(pet.id);
-                                    }
-                                  });
-                                  _refreshCapacityFilter();
-                                },
-                          title: Text(pet.name),
-                          subtitle: pet.species.isNotEmpty
-                              ? Text(pet.species)
-                              : null,
-                          controlAffinity: ListTileControlAffinity.leading,
-                        ),
-                    ],
+              maxLines: 4,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return l.fosterRequestMessageRequired;
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 24),
+            Text(l.fosterRequestSelectPets, style: theme.textTheme.titleSmall),
+            const SizedBox(height: 8),
+            petsAsync.when(
+              loading: () => const LinearProgressIndicator(),
+              error: (e, _) => Text('$e'),
+              data: (pets) {
+                final available = pets.where((p) => !p.passedAway).toList();
+                if (available.isEmpty) {
+                  return Text(
+                    l.fosterRequestNoPets,
+                    style: TextStyle(color: colorScheme.onSurfaceVariant),
                   );
-                },
-              ),
-              const SizedBox(height: 24),
-              Text(
-                l.fosterRequestSelectFosters,
-                style: theme.textTheme.titleSmall,
-              ),
-              const SizedBox(height: 8),
-              fostersAsync.when(
-                loading: () => const LinearProgressIndicator(),
-                error: (e, _) => Text('$e'),
-                data: (parents) {
-                  if (_selectedPetIds.isNotEmpty && _capacityFilterLoading) {
-                    return const LinearProgressIndicator();
-                  }
-                  var eligible = eligibleFosterRequestTargets(parents);
-                  if (_selectedPetIds.isNotEmpty && _capacityFilterReady) {
-                    eligible = eligible
-                        .where((p) => _capacityEligibleIds.contains(p.id))
-                        .toList(growable: false);
-                  }
-                  if (eligible.isEmpty) {
-                    return Text(
-                      l.fosterRequestNoEligibleFosters,
-                      style: TextStyle(color: colorScheme.onSurfaceVariant),
-                    );
-                  }
-                  return Column(
-                    children: [
-                      for (final parent in eligible)
-                        CheckboxListTile(
-                          key: Key('send_foster_request_foster_${parent.id}'),
-                          value: _selectedFosterIds.contains(parent.id),
-                          onChanged: _submitting
-                              ? null
-                              : (checked) {
-                                  setState(() {
-                                    if (checked == true) {
-                                      _selectedFosterIds.add(parent.id);
-                                    } else {
-                                      _selectedFosterIds.remove(parent.id);
-                                    }
-                                  });
-                                },
-                          title: Text(parent.displayName),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (parent.email != null) Text(parent.email!),
-                              if (parent.availableCapacity.isNotEmpty)
-                                Text(
-                                  parent.availableCapacity
-                                      .map(
-                                        (c) => '${c.species}: ${c.available}',
-                                      )
-                                      .join(' · '),
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.primary,
-                                  ),
+                }
+                return Column(
+                  children: [
+                    for (final pet in available)
+                      CheckboxListTile(
+                        key: Key('send_foster_request_pet_${pet.id}'),
+                        value: _selectedPetIds.contains(pet.id),
+                        onChanged: _submitting
+                            ? null
+                            : (checked) {
+                                setState(() {
+                                  if (checked == true) {
+                                    _selectedPetIds.add(pet.id);
+                                  } else {
+                                    _selectedPetIds.remove(pet.id);
+                                  }
+                                });
+                                _refreshCapacityFilter();
+                              },
+                        title: Text(pet.name),
+                        subtitle: pet.species.isNotEmpty
+                            ? Text(pet.species)
+                            : null,
+                        controlAffinity: ListTileControlAffinity.leading,
+                      ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 24),
+            Text(
+              l.fosterRequestSelectFosters,
+              style: theme.textTheme.titleSmall,
+            ),
+            const SizedBox(height: 8),
+            fostersAsync.when(
+              loading: () => const LinearProgressIndicator(),
+              error: (e, _) => Text('$e'),
+              data: (parents) {
+                if (_selectedPetIds.isNotEmpty && _capacityFilterLoading) {
+                  return const LinearProgressIndicator();
+                }
+                var eligible = eligibleFosterRequestTargets(parents);
+                if (_selectedPetIds.isNotEmpty && _capacityFilterReady) {
+                  eligible = eligible
+                      .where((p) => _capacityEligibleIds.contains(p.id))
+                      .toList(growable: false);
+                }
+                if (eligible.isEmpty) {
+                  return Text(
+                    l.fosterRequestNoEligibleFosters,
+                    style: TextStyle(color: colorScheme.onSurfaceVariant),
+                  );
+                }
+                return Column(
+                  children: [
+                    for (final parent in eligible)
+                      CheckboxListTile(
+                        key: Key('send_foster_request_foster_${parent.id}'),
+                        value: _selectedFosterIds.contains(parent.id),
+                        onChanged: _submitting
+                            ? null
+                            : (checked) {
+                                setState(() {
+                                  if (checked == true) {
+                                    _selectedFosterIds.add(parent.id);
+                                  } else {
+                                    _selectedFosterIds.remove(parent.id);
+                                  }
+                                });
+                              },
+                        title: Text(parent.displayName),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (parent.email != null) Text(parent.email!),
+                            if (parent.availableCapacity.isNotEmpty)
+                              Text(
+                                parent.availableCapacity
+                                    .map((c) => '${c.species}: ${c.available}')
+                                    .join(' · '),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.primary,
                                 ),
-                            ],
-                          ),
-                          controlAffinity: ListTileControlAffinity.leading,
+                              ),
+                          ],
                         ),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      key: const Key('send_foster_request_save_draft'),
-                      onPressed: _submitting
-                          ? null
-                          : () => _submit(send: false),
-                      child: Text(l.fosterRequestSaveDraft),
-                    ),
+                        controlAffinity: ListTileControlAffinity.leading,
+                      ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    key: const Key('send_foster_request_save_draft'),
+                    onPressed: _submitting ? null : () => _submit(send: false),
+                    child: Text(l.fosterRequestSaveDraft),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: FilledButton(
-                      key: const Key('send_foster_request_send'),
-                      onPressed: _submitting ? null : () => _submit(send: true),
-                      child: _submitting
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text(l.fosterRequestSendNow),
-                    ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: FilledButton(
+                    key: const Key('send_foster_request_send'),
+                    onPressed: _submitting ? null : () => _submit(send: true),
+                    child: _submitting
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(l.fosterRequestSendNow),
                   ),
-                ],
-              ),
-            ],
-          ),
-    ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

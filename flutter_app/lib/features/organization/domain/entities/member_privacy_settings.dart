@@ -61,9 +61,8 @@ class MemberPrivacySettings {
       ),
       availableMembers: (json['available_members'] as List<dynamic>? ?? [])
           .map(
-            (row) => MemberPrivacyMemberOption.fromJson(
-              row as Map<String, dynamic>,
-            ),
+            (row) =>
+                MemberPrivacyMemberOption.fromJson(row as Map<String, dynamic>),
           )
           .toList(),
     );

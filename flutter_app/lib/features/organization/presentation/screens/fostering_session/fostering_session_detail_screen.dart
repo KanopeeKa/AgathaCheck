@@ -31,19 +31,19 @@ class FosteringSessionDetailScreen extends ConsumerWidget {
     final sessionAsync = ref.watch(fosteringSessionDetailProvider(key));
 
     return OrgShellScaffold(
-  title: l.fosteringSessionDetailTitle,
-  orgId: orgId,
-  navVariant: OrgNavTitleVariant.withOrgLogo,
-  leadingKey: const Key('fostering_session_detail_back'),
-  child: sessionAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('$e')),
-          data: (placement) => _FosteringSessionDetailBody(
-            orgId: orgId,
-            placementId: placementId,
-            placement: placement,
-          ),
-    ),
+      title: l.fosteringSessionDetailTitle,
+      orgId: orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      leadingKey: const Key('fostering_session_detail_back'),
+      child: sessionAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('$e')),
+        data: (placement) => _FosteringSessionDetailBody(
+          orgId: orgId,
+          placementId: placementId,
+          placement: placement,
+        ),
+      ),
     );
   }
 }

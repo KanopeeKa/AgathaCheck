@@ -24,10 +24,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: OrgPresentationHero(
-              org: org,
-              localizedTypeLabel: 'Charity',
-            ),
+            body: OrgPresentationHero(org: org, localizedTypeLabel: 'Charity'),
           ),
         ),
       ),
@@ -35,33 +32,36 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('hero places 96px logo overlapping cover with name to the right', (
-    tester,
-  ) async {
-    await pumpHero(tester);
+  testWidgets(
+    'hero places 96px logo overlapping cover with name to the right',
+    (tester) async {
+      await pumpHero(tester);
 
-    expect(find.byKey(const Key('org_presentation_hero')), findsOneWidget);
-    expect(find.byKey(const Key('org_hero_name')), findsOneWidget);
-    expect(find.text('Rescue Hearts'), findsOneWidget);
+      expect(find.byKey(const Key('org_presentation_hero')), findsOneWidget);
+      expect(find.byKey(const Key('org_hero_name')), findsOneWidget);
+      expect(find.text('Rescue Hearts'), findsOneWidget);
 
-    final logo = tester.widget<OrgLogoImage>(
-      find.byKey(const Key('org_hero_logo')),
-    );
-    expect(logo.height, OrgProfileHeroLayout.logoHeight);
+      final logo = tester.widget<OrgLogoImage>(
+        find.byKey(const Key('org_hero_logo')),
+      );
+      expect(logo.height, OrgProfileHeroLayout.logoHeight);
 
-    final cover = tester.widget<SizedBox>(
-      find.descendant(
-        of: find.byKey(const Key('org_presentation_hero')),
-        matching: find.byType(SizedBox),
-      ).first,
-    );
-    expect(cover.height, OrgProfileHeroLayout.coverHeight);
+      final cover = tester.widget<SizedBox>(
+        find
+            .descendant(
+              of: find.byKey(const Key('org_presentation_hero')),
+              matching: find.byType(SizedBox),
+            )
+            .first,
+      );
+      expect(cover.height, OrgProfileHeroLayout.coverHeight);
 
-    final nameBox = tester.getRect(find.byKey(const Key('org_hero_name')));
-    final logoBox = tester.getRect(find.byKey(const Key('org_hero_logo')));
-    expect(nameBox.left, greaterThan(logoBox.left));
-    expect(nameBox.top, greaterThanOrEqualTo(logoBox.top));
-  });
+      final nameBox = tester.getRect(find.byKey(const Key('org_hero_name')));
+      final logoBox = tester.getRect(find.byKey(const Key('org_hero_logo')));
+      expect(nameBox.left, greaterThan(logoBox.left));
+      expect(nameBox.top, greaterThanOrEqualTo(logoBox.top));
+    },
+  );
 
   testWidgets('hero shows type badge and raised description', (tester) async {
     await pumpHero(tester);

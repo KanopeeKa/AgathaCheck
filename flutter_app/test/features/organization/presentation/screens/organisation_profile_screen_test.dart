@@ -74,9 +74,9 @@ void main() {
           organizationRepositoryProvider.overrideWithValue(
             _PublicProfileRepo(),
           ),
-          orgEffectivePermissionsProvider('org-1').overrideWith(
-            (ref) async => permissions,
-          ),
+          orgEffectivePermissionsProvider(
+            'org-1',
+          ).overrideWith((ref) async => permissions),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

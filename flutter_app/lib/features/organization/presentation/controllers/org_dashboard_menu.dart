@@ -89,8 +89,7 @@ Future<void> showOrgDeleteDialog({
   required WidgetRef ref,
   required String orgId,
   required Organization org,
-}) =>
-    _showDeleteDialog(context, ref, orgId, org);
+}) => _showDeleteDialog(context, ref, orgId, org);
 
 Future<void> _showDeleteDialog(
   BuildContext context,

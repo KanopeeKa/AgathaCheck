@@ -5,11 +5,7 @@ import 'org_person_tile.dart';
 
 /// Wrapping grid of [OrgPersonTile] using pet-tile sizing helpers.
 class OrgPersonTileGrid extends StatelessWidget {
-  const OrgPersonTileGrid({
-    super.key,
-    required this.tiles,
-    this.gridKey,
-  });
+  const OrgPersonTileGrid({super.key, required this.tiles, this.gridKey});
 
   final List<Widget> tiles;
   final Key? gridKey;
@@ -43,11 +39,7 @@ Widget sizedOrgPersonTile(BuildContext context, {required OrgPersonTile tile}) {
     builder: (context, constraints) {
       final tileWidth = PetCard.tileWidthFor(constraints.maxWidth);
       final tileHeight = PetCard.tileHeightFor(constraints.maxWidth);
-      return SizedBox(
-        width: tileWidth,
-        height: tileHeight,
-        child: tile,
-      );
+      return SizedBox(width: tileWidth, height: tileHeight, child: tile);
     },
   );
 }

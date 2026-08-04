@@ -1,8 +1,5 @@
 /// Entry context for the Discover screen (D-v3-DISC-2).
-enum OrgDiscoverEntryContext {
-  dashboard,
-  org,
-}
+enum OrgDiscoverEntryContext { dashboard, org }
 
 OrgDiscoverEntryContext parseOrgDiscoverEntryContext(String? raw) {
   switch (raw?.trim().toLowerCase()) {

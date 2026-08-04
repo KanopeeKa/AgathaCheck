@@ -36,7 +36,9 @@ void main() {
       prefs = await SharedPreferences.getInstance();
     });
 
-    testWidgets('non-member toggle off by default and can enable', (tester) async {
+    testWidgets('non-member toggle off by default and can enable', (
+      tester,
+    ) async {
       final guardianOnly = ExperienceEligibilityRules.compute(
         pets: const [],
         orgMembershipCount: 0,
@@ -64,7 +66,9 @@ void main() {
       expect(toggle.value, isFalse);
       expect(toggle.onChanged, isNotNull);
 
-      await tester.tap(find.byKey(const Key('show_organisation_section_toggle')));
+      await tester.tap(
+        find.byKey(const Key('show_organisation_section_toggle')),
+      );
       await tester.pumpAndSettle();
 
       expect(prefs.getBool('show_organisation_section'), isTrue);

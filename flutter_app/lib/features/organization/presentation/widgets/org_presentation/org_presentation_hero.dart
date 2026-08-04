@@ -68,11 +68,7 @@ class OrgPresentationHero extends ConsumerWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _HeroLogo(
-                    org: org,
-                    coverUrl: coverUrl,
-                    logoUrl: logoUrl,
-                  ),
+                  _HeroLogo(org: org, coverUrl: coverUrl, logoUrl: logoUrl),
                   const SizedBox(width: OrgProfileHeroLayout.bandGap),
                   Expanded(
                     child: Padding(
@@ -90,10 +86,7 @@ class OrgPresentationHero extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          _TypeBadge(
-                            type: org.type,
-                            label: localizedTypeLabel,
-                          ),
+                          _TypeBadge(type: org.type, label: localizedTypeLabel),
                         ],
                       ),
                     ),

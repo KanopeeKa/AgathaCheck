@@ -81,7 +81,10 @@ class OrganizationMembersRemote {
     }
   }
 
-  Future<Map<String, dynamic>> getMemberPrivacy(String orgId, String token) async {
+  Future<Map<String, dynamic>> getMemberPrivacy(
+    String orgId,
+    String token,
+  ) async {
     final response = await _ctx.client.get(
       Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/members/me/privacy'),
       headers: _ctx.headers(token),

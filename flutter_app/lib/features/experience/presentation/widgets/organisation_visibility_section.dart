@@ -18,8 +18,9 @@ class OrganisationVisibilitySection extends ConsumerWidget {
     final theme = Theme.of(context);
     final hasMembership = ref.watch(hasOrgMembershipProvider);
     final showSection = ref.watch(showOrganisationSectionProvider);
-    final toggleEnabled =
-        OrganisationSectionVisibility.toggleEnabled(hasOrgMembership: hasMembership);
+    final toggleEnabled = OrganisationSectionVisibility.toggleEnabled(
+      hasOrgMembership: hasMembership,
+    );
     final store = ref.read(experiencePreferencesStoreProvider);
 
     final content = Column(

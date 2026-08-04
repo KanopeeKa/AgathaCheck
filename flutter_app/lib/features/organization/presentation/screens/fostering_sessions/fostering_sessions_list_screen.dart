@@ -60,87 +60,87 @@ class _FosteringSessionsListScreenState
     );
 
     return OrgShellScaffold(
-  key: const Key('fostering_sessions_list_screen'),
-  title: l.orgFosteringSessionsListTitle,
-  orgId: widget.orgId,
-  navVariant: OrgNavTitleVariant.withOrgLogo,
-  leadingKey: const Key('fostering_sessions_back'),
-  child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: Text(
-                l.fosteringSessionPreparationPlaceholder,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+      key: const Key('fostering_sessions_list_screen'),
+      title: l.orgFosteringSessionsListTitle,
+      orgId: widget.orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      leadingKey: const Key('fostering_sessions_back'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Text(
+              l.fosteringSessionPreparationPlaceholder,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    key: const Key('fostering_sessions_filter_pet_name'),
+                    controller: _petNameController,
+                    decoration: InputDecoration(
+                      labelText: l.orgPetsFilterName,
+                      hintText: l.orgPetsFilterNameHint,
+                    ),
+                    onSubmitted: (_) => _applyFilters(),
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      key: const Key('fostering_sessions_filter_pet_name'),
-                      controller: _petNameController,
-                      decoration: InputDecoration(
-                        labelText: l.orgPetsFilterName,
-                        hintText: l.orgPetsFilterNameHint,
-                      ),
-                      onSubmitted: (_) => _applyFilters(),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    key: const Key('fostering_sessions_filter_foster_name'),
+                    controller: _fosterNameController,
+                    decoration: InputDecoration(
+                      labelText: l.orgPetsFilterFosteredBy,
+                      hintText: l.orgPetsFilterFosteredByHint,
                     ),
+                    onSubmitted: (_) => _applyFilters(),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextField(
-                      key: const Key('fostering_sessions_filter_foster_name'),
-                      controller: _fosterNameController,
-                      decoration: InputDecoration(
-                        labelText: l.orgPetsFilterFosteredBy,
-                        hintText: l.orgPetsFilterFosteredByHint,
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  key: const Key('fostering_sessions_apply_filters'),
+                  tooltip: l.orgPetsFiltersLabel,
+                  onPressed: _applyFilters,
+                  icon: const Icon(Icons.search),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: sessionsAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('$e')),
+              data: (sessions) {
+                if (sessions.isEmpty) {
+                  return Center(child: Text(l.orgFosteringSessionsEmpty));
+                }
+                return ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                  itemCount: sessions.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  itemBuilder: (context, index) {
+                    final placement = sessions[index];
+                    return FosteringSessionListTile(
+                      placement: placement,
+                      onTap: () => context.push(
+                        '/o/orgs/${widget.orgId}/placements/${placement.id}/session',
                       ),
-                      onSubmitted: (_) => _applyFilters(),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    key: const Key('fostering_sessions_apply_filters'),
-                    tooltip: l.orgPetsFiltersLabel,
-                    onPressed: _applyFilters,
-                    icon: const Icon(Icons.search),
-                  ),
-                ],
-              ),
+                    );
+                  },
+                );
+              },
             ),
-            Expanded(
-              child: sessionsAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(child: Text('$e')),
-                data: (sessions) {
-                  if (sessions.isEmpty) {
-                    return Center(child: Text(l.orgFosteringSessionsEmpty));
-                  }
-                  return ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                    itemCount: sessions.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 8),
-                    itemBuilder: (context, index) {
-                      final placement = sessions[index];
-                      return FosteringSessionListTile(
-                        placement: placement,
-                        onTap: () => context.push(
-                          '/o/orgs/${widget.orgId}/placements/${placement.id}/session',
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
-    ),
+          ),
+        ],
+      ),
     );
   }
 }

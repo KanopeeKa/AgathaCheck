@@ -56,11 +56,13 @@ void main() {
         expect(request.url.path, '/api/organizations/$orgId/photo');
         expect(request.headers['Authorization'], 'Bearer $token');
         return http.Response(
-          json.encode(OrganizationModel(
-            id: orgId,
-            name: 'Test Org',
-            type: OrganizationType.professional,
-          ).toJson()),
+          json.encode(
+            OrganizationModel(
+              id: orgId,
+              name: 'Test Org',
+              type: OrganizationType.professional,
+            ).toJson(),
+          ),
           200,
           headers: {'content-type': 'application/json'},
         );

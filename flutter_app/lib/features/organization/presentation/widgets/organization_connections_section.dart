@@ -29,9 +29,7 @@ class OrganizationConnectionsSection extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l.disconnectOrganisation),
-        content: Text(
-          l.disconnectOrganisationConfirm(connection.peerOrgName),
-        ),
+        content: Text(l.disconnectOrganisationConfirm(connection.peerOrgName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -101,10 +99,7 @@ class OrganizationConnectionsSection extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 16),
-                Text(
-                  l.connectionRequests,
-                  style: theme.textTheme.titleSmall,
-                ),
+                Text(l.connectionRequests, style: theme.textTheme.titleSmall),
                 ...pending.map(
                   (r) => ListTile(
                     dense: true,
@@ -115,9 +110,7 @@ class OrganizationConnectionsSection extends ConsumerWidget {
                       tooltip: l.revokeConnectionRequest,
                       icon: const Icon(Icons.cancel_outlined),
                       onPressed: () => ref
-                          .read(
-                            orgConnectionRequestsProvider(orgId).notifier,
-                          )
+                          .read(orgConnectionRequestsProvider(orgId).notifier)
                           .revoke(r.id),
                     ),
                   ),

@@ -13,9 +13,8 @@ void main() {
       routes: [
         GoRoute(
           path: '/o/orgs',
-          builder: (context, state) => orgThemed(
-            child: const Scaffold(body: OrgDiscoverNavRow()),
-          ),
+          builder: (context, state) =>
+              orgThemed(child: const Scaffold(body: OrgDiscoverNavRow())),
         ),
         GoRoute(
           path: '/o/orgs/discover',

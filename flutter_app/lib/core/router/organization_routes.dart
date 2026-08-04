@@ -89,7 +89,9 @@ List<RouteBase> _orgManagementChildRoutes() {
       path: 'discover',
       name: 'organizationDiscover',
       builder: (context, state) {
-        final from = parseOrgDiscoverEntryContext(state.uri.queryParameters['from']);
+        final from = parseOrgDiscoverEntryContext(
+          state.uri.queryParameters['from'],
+        );
         final orgId = state.uri.queryParameters['orgId'];
         return OrganizationDiscoverScreen(from: from, orgId: orgId);
       },

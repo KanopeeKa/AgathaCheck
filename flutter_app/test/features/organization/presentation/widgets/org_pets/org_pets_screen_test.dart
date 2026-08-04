@@ -117,9 +117,7 @@ void main() {
     );
   });
 
-  testWidgets('top nav add pet when user can manage pets', (
-    tester,
-  ) async {
+  testWidgets('top nav add pet when user can manage pets', (tester) async {
     final router = GoRouter(
       initialLocation: '/',
       routes: [

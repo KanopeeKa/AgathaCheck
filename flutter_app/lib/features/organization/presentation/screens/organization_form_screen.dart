@@ -276,7 +276,9 @@ class _OrganizationFormScreenState
                               prefixIcon: const Icon(Icons.phone),
                             ),
                             keyboardType: TextInputType.phone,
-                            autofillHints: const [AutofillHints.telephoneNumber],
+                            autofillHints: const [
+                              AutofillHints.telephoneNumber,
+                            ],
                             textInputAction: TextInputAction.next,
                           ),
                           const SizedBox(height: 16),

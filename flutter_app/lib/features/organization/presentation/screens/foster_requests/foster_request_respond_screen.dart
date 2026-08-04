@@ -98,87 +98,87 @@ class _FosterRequestRespondScreenState
     final colorScheme = theme.colorScheme;
 
     return OrgShellScaffold(
-  title: l.fosterRequestRespondTitle,
-  orgId: widget.orgId,
-  navVariant: OrgNavTitleVariant.withOrgLogo,
-  leadingKey: const Key('foster_request_respond_back'),
-  child: Form(
-          key: _formKey,
-          child: ListView(
-            key: const Key('foster_request_respond_form'),
-            padding: const EdgeInsets.all(16),
-            children: [
-              Text(
-                l.fosterRequestRespondDescription,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+      title: l.fosterRequestRespondTitle,
+      orgId: widget.orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      leadingKey: const Key('foster_request_respond_back'),
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          key: const Key('foster_request_respond_form'),
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              l.fosterRequestRespondDescription,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
-              const SizedBox(height: 16),
-              SegmentedButton<FosterResponseType>(
-                key: const Key('foster_request_response_type'),
-                segments: [
-                  ButtonSegment(
-                    value: FosterResponseType.canHelp,
-                    label: Text(l.fosterRequestResponseCanHelp),
-                    icon: const Icon(Icons.check_circle_outline),
-                  ),
-                  ButtonSegment(
-                    value: FosterResponseType.cannotHelp,
-                    label: Text(l.fosterRequestResponseCannotHelp),
-                    icon: const Icon(Icons.cancel_outlined),
-                  ),
-                ],
-                selected: {_response},
-                onSelectionChanged: _submitting
-                    ? null
-                    : (selection) {
-                        setState(() => _response = selection.first);
-                      },
-              ),
-              const SizedBox(height: 16),
-              if (_response == FosterResponseType.canHelp) ...[
-                ListTile(
-                  key: const Key('foster_request_availability_picker'),
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(l.fosterRequestEarliestAvailabilityLabel),
-                  subtitle: Text(
-                    _earliestAvailability != null
-                        ? formatCalendarDateDisplay(_earliestAvailability!)
-                        : l.fosterRequestSelectDate,
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    tooltip: l.fosterRequestSelectDate,
-                    onPressed: _submitting ? null : _pickDate,
-                  ),
+            ),
+            const SizedBox(height: 16),
+            SegmentedButton<FosterResponseType>(
+              key: const Key('foster_request_response_type'),
+              segments: [
+                ButtonSegment(
+                  value: FosterResponseType.canHelp,
+                  label: Text(l.fosterRequestResponseCanHelp),
+                  icon: const Icon(Icons.check_circle_outline),
                 ),
-                const SizedBox(height: 8),
+                ButtonSegment(
+                  value: FosterResponseType.cannotHelp,
+                  label: Text(l.fosterRequestResponseCannotHelp),
+                  icon: const Icon(Icons.cancel_outlined),
+                ),
               ],
-              TextFormField(
-                key: const Key('foster_request_respond_message'),
-                controller: _messageController,
-                decoration: InputDecoration(
-                  labelText: l.fosterRequestRespondMessageLabel,
-                  hintText: l.fosterRequestRespondMessageHint,
+              selected: {_response},
+              onSelectionChanged: _submitting
+                  ? null
+                  : (selection) {
+                      setState(() => _response = selection.first);
+                    },
+            ),
+            const SizedBox(height: 16),
+            if (_response == FosterResponseType.canHelp) ...[
+              ListTile(
+                key: const Key('foster_request_availability_picker'),
+                contentPadding: EdgeInsets.zero,
+                title: Text(l.fosterRequestEarliestAvailabilityLabel),
+                subtitle: Text(
+                  _earliestAvailability != null
+                      ? formatCalendarDateDisplay(_earliestAvailability!)
+                      : l.fosterRequestSelectDate,
                 ),
-                maxLines: 3,
+                trailing: IconButton(
+                  icon: const Icon(Icons.calendar_today),
+                  tooltip: l.fosterRequestSelectDate,
+                  onPressed: _submitting ? null : _pickDate,
+                ),
               ),
-              const SizedBox(height: 24),
-              FilledButton(
-                key: const Key('foster_request_respond_submit'),
-                onPressed: _submitting ? null : _submit,
-                child: _submitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(l.fosterRequestRespondSubmit),
-              ),
+              const SizedBox(height: 8),
             ],
-          ),
-    ),
+            TextFormField(
+              key: const Key('foster_request_respond_message'),
+              controller: _messageController,
+              decoration: InputDecoration(
+                labelText: l.fosterRequestRespondMessageLabel,
+                hintText: l.fosterRequestRespondMessageHint,
+              ),
+              maxLines: 3,
+            ),
+            const SizedBox(height: 24),
+            FilledButton(
+              key: const Key('foster_request_respond_submit'),
+              onPressed: _submitting ? null : _submit,
+              child: _submitting
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(l.fosterRequestRespondSubmit),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

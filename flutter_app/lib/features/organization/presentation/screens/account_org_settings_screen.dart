@@ -30,7 +30,8 @@ class AccountOrgSettingsScreen extends ConsumerStatefulWidget {
       _AccountOrgSettingsScreenState();
 }
 
-class _AccountOrgSettingsScreenState extends ConsumerState<AccountOrgSettingsScreen> {
+class _AccountOrgSettingsScreenState
+    extends ConsumerState<AccountOrgSettingsScreen> {
   final _leaveSectionKey = GlobalKey();
   MemberPrivacySettings? _draft;
 
@@ -63,15 +64,15 @@ class _AccountOrgSettingsScreenState extends ConsumerState<AccountOrgSettingsScr
     if (!mounted) return;
     final error = ref.read(memberPrivacyProvider(widget.orgId)).error;
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.toString())),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.toString())));
       return;
     }
     setState(() => _draft = null);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l.accountOrgPrivacySaved)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l.accountOrgPrivacySaved)));
   }
 
   Future<void> _confirmLeave(String orgName) async {
@@ -98,14 +99,16 @@ class _AccountOrgSettingsScreenState extends ConsumerState<AccountOrgSettingsScr
     );
     if (confirmed != true || !mounted) return;
     try {
-      await ref.read(orgMembersProvider(widget.orgId).notifier).leaveOrganization();
+      await ref
+          .read(orgMembersProvider(widget.orgId).notifier)
+          .leaveOrganization();
       ref.invalidate(organizationListProvider);
       if (mounted) context.go('/account');
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     }
   }
@@ -163,7 +166,9 @@ class _AccountOrgSettingsScreenState extends ConsumerState<AccountOrgSettingsScr
                   ),
                   title: Text(
                     l.orgLeave,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                   subtitle: Text(l.accountOrgLeaveSubtitle),
                   onTap: () => _confirmLeave(org?.name ?? ''),

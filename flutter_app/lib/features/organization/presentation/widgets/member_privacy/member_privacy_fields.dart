@@ -84,10 +84,10 @@ class MemberPrivacyFields extends StatelessWidget {
   }
 
   bool _showNamedPickers(MemberPrivacySettings value) {
-    return value.cardVisibility == CardVisibility.named
-        || value.phoneVisibility == ContactVisibility.named
-        || value.emailVisibility == ContactVisibility.named
-        || value.addressVisibility == AddressVisibility.named;
+    return value.cardVisibility == CardVisibility.named ||
+        value.phoneVisibility == ContactVisibility.named ||
+        value.emailVisibility == ContactVisibility.named ||
+        value.addressVisibility == AddressVisibility.named;
   }
 
   List<Widget> _namedGrantSections(BuildContext context, AppLocalizations l) {
@@ -170,10 +170,8 @@ class MemberPrivacyFields extends StatelessWidget {
       ),
       items: items
           .map(
-            (item) => DropdownMenuItem(
-              value: item,
-              child: Text(itemLabel(item)),
-            ),
+            (item) =>
+                DropdownMenuItem(value: item, child: Text(itemLabel(item))),
           )
           .toList(),
       onChanged: onChanged,
@@ -193,14 +191,16 @@ class MemberPrivacyFields extends StatelessWidget {
       ContactVisibility.admins => l.accountOrgContactVisibilityAdmins,
       ContactVisibility.adminsAndFosterManagers =>
         l.accountOrgContactVisibilityAdminsAndFosterManagers,
-      ContactVisibility.adminsOrNamed => l.accountOrgContactVisibilityAdminsOrNamed,
+      ContactVisibility.adminsOrNamed =>
+        l.accountOrgContactVisibilityAdminsOrNamed,
       ContactVisibility.named => l.accountOrgContactVisibilityNamed,
     };
   }
 
   String _addressLabel(AppLocalizations l, AddressVisibility value) {
     return switch (value) {
-      AddressVisibility.adminsOrNamed => l.accountOrgAddressVisibilityAdminsOrNamed,
+      AddressVisibility.adminsOrNamed =>
+        l.accountOrgAddressVisibilityAdminsOrNamed,
       AddressVisibility.admins => l.accountOrgAddressVisibilityAdmins,
       AddressVisibility.named => l.accountOrgAddressVisibilityNamed,
       AddressVisibility.hidden => l.accountOrgAddressVisibilityHidden,
@@ -225,10 +225,7 @@ class _NamedGrantPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (members.isEmpty) {
-      return Text(
-        title,
-        style: Theme.of(context).textTheme.bodyMedium,
-      );
+      return Text(title, style: Theme.of(context).textTheme.bodyMedium);
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,7 +238,9 @@ class _NamedGrantPicker extends StatelessWidget {
           children: members.map((member) {
             final selected = selectedUserIds.contains(member.userId);
             return FilterChip(
-              label: Text(member.displayName.isEmpty ? member.userId : member.displayName),
+              label: Text(
+                member.displayName.isEmpty ? member.userId : member.displayName,
+              ),
               selected: selected,
               onSelected: (next) {
                 final ids = List<String>.from(selectedUserIds);

@@ -22,8 +22,7 @@ class _ConnectionsRepo extends RecordingOrganizationRepository {
   Future<List<OrgConnection>> getConnections(
     String orgId,
     String token,
-  ) async =>
-      _connections;
+  ) async => _connections;
 }
 
 Future<void> _pumpSection(

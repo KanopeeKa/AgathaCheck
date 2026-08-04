@@ -21,7 +21,9 @@ void main() {
     );
   }
 
-  testWidgets('org person tile shows role bar, name, and phone', (tester) async {
+  testWidgets('org person tile shows role bar, name, and phone', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       wrap(
         const SizedBox(
@@ -121,10 +123,7 @@ void main() {
       (box) => box.child is OrgPersonTile,
       orElse: () => throw StateError('grid tile not found'),
     );
-    expect(
-      gridTile.width,
-      closeTo((400 - 2 * PetCard.tileSpacing) / 3, 0.01),
-    );
+    expect(gridTile.width, closeTo((400 - 2 * PetCard.tileSpacing) / 3, 0.01));
     expect(gridTile.height, gridTile.width);
   });
 

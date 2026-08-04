@@ -64,8 +64,7 @@ void main() {
 
     expect(
       find.byWidgetPredicate(
-        (widget) =>
-            widget is SizedBox && widget.height == OrgCard.tileHeight,
+        (widget) => widget is SizedBox && widget.height == OrgCard.tileHeight,
       ),
       findsOneWidget,
     );

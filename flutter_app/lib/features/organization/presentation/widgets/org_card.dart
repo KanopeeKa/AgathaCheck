@@ -138,8 +138,7 @@ class OrgCard extends ConsumerWidget {
                                 child: Text(
                                   memberLabel,
                                   style: theme.textTheme.bodySmall?.copyWith(
-                                    color:
-                                        theme.colorScheme.onSurfaceVariant,
+                                    color: theme.colorScheme.onSurfaceVariant,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -248,9 +247,8 @@ class _HeroCover extends StatelessWidget {
     return Image.network(
       resolvedPhotoUrl,
       fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => const ColoredBox(
-        color: AppColorTokens.organizationLight,
-      ),
+      errorBuilder: (_, __, ___) =>
+          const ColoredBox(color: AppColorTokens.organizationLight),
     );
   }
 }

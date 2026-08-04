@@ -23,8 +23,7 @@ class _ConnectionsRepo extends RecordingOrganizationRepository {
   Future<List<OrgConnection>> getConnections(
     String orgId,
     String token,
-  ) async =>
-      _connections;
+  ) async => _connections;
 }
 
 class _MemberOrgsNotifier extends OrganizationListNotifier {
@@ -46,7 +45,8 @@ Future<void> _pumpNav(
   required Set<String> permissions,
   RecordingOrganizationRepository? repo,
 }) async {
-  final connectionsRepo = repo ??
+  final connectionsRepo =
+      repo ??
       _ConnectionsRepo(const [
         OrgConnection(id: 'c1', peerOrgId: 'p1', peerOrgName: 'Partner Paws'),
         OrgConnection(id: 'c2', peerOrgId: 'p2', peerOrgName: 'Other Org'),
@@ -169,19 +169,20 @@ void main() {
       expect(find.text('7 pets'), findsOneWidget);
     });
 
-    testWidgets('shows connections row with count when view_connections granted', (
-      tester,
-    ) async {
-      await _pumpNav(tester, permissions: {'view_connections'});
+    testWidgets(
+      'shows connections row with count when view_connections granted',
+      (tester) async {
+        await _pumpNav(tester, permissions: {'view_connections'});
 
-      expect(
-        find.byKey(const Key('org_profile_nav_connections')),
-        findsOneWidget,
-      );
-      expect(find.text('Connected organisations'), findsOneWidget);
-      expect(find.text('2 connections'), findsOneWidget);
-      expect(find.text('Manage members'), findsNothing);
-    });
+        expect(
+          find.byKey(const Key('org_profile_nav_connections')),
+          findsOneWidget,
+        );
+        expect(find.text('Connected organisations'), findsOneWidget);
+        expect(find.text('2 connections'), findsOneWidget);
+        expect(find.text('Manage members'), findsNothing);
+      },
+    );
 
     testWidgets('shows administration row only for manage_permissions', (
       tester,
@@ -235,7 +236,9 @@ void main() {
       expect(find.text('Manage fosters'), findsNothing);
     });
 
-    testWidgets('connections row navigates to connections route', (tester) async {
+    testWidgets('connections row navigates to connections route', (
+      tester,
+    ) async {
       await _pumpNav(tester, permissions: {'view_connections'});
 
       await tester.tap(find.byKey(const Key('org_profile_nav_connections')));

@@ -79,9 +79,7 @@ class OrganizationPetsScreen extends ConsumerWidget {
                     ? Center(
                         child: Text(
                           l.orgPetsEmptyTab,
-                          style: TextStyle(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+                          style: TextStyle(color: colorScheme.onSurfaceVariant),
                         ),
                       )
                     : ListView.builder(

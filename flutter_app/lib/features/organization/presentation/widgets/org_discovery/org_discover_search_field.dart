@@ -15,7 +15,8 @@ class OrgDiscoverSearchField extends ConsumerStatefulWidget {
       _OrgDiscoverSearchFieldState();
 }
 
-class _OrgDiscoverSearchFieldState extends ConsumerState<OrgDiscoverSearchField> {
+class _OrgDiscoverSearchFieldState
+    extends ConsumerState<OrgDiscoverSearchField> {
   static const _debounceMs = 300;
 
   late final TextEditingController _controller;

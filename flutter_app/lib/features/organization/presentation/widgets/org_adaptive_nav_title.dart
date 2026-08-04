@@ -83,7 +83,10 @@ class OrgAdaptiveNavTitle extends StatelessWidget {
     while (high - low > 0.5) {
       final mid = (low + high) / 2;
       final painter = TextPainter(
-        text: TextSpan(text: text, style: style.copyWith(fontSize: mid)),
+        text: TextSpan(
+          text: text,
+          style: style.copyWith(fontSize: mid),
+        ),
         maxLines: maxLines,
         textDirection: TextDirection.ltr,
       )..layout(maxWidth: maxWidth);
@@ -107,7 +110,10 @@ class OrgAdaptiveNavTitle extends StatelessWidget {
     required int maxLines,
   }) {
     final painter = TextPainter(
-      text: TextSpan(text: text, style: style.copyWith(fontSize: fontSize)),
+      text: TextSpan(
+        text: text,
+        style: style.copyWith(fontSize: fontSize),
+      ),
       maxLines: maxLines,
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: maxWidth);

@@ -130,7 +130,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('foster_actions_menu_fp-ext-opt')), findsOneWidget);
+    expect(
+      find.byKey(const Key('foster_actions_menu_fp-ext-opt')),
+      findsOneWidget,
+    );
 
     await tester.tap(find.byKey(const Key('foster_actions_menu_fp-ext-opt')));
     await tester.pumpAndSettle();

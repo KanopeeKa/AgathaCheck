@@ -134,15 +134,18 @@ void main() {
       expect(resolvePostLoginPath(eligibility: _dual()), '/g/home');
     });
 
-    test('dual-role user with last guardian section lands on guardian home', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _dual(),
-          lastAppSection: AppExperience.guardian,
-        ),
-        '/g/home',
-      );
-    });
+    test(
+      'dual-role user with last guardian section lands on guardian home',
+      () {
+        expect(
+          resolvePostLoginPath(
+            eligibility: _dual(),
+            lastAppSection: AppExperience.guardian,
+          ),
+          '/g/home',
+        );
+      },
+    );
 
     test('dual-role user with last organisation section lands on org home', () {
       expect(
@@ -154,16 +157,19 @@ void main() {
       );
     });
 
-    test('guardian-only with show-org pref and last org opens org dashboard', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _guardianOnly(),
-          lastAppSection: AppExperience.organization,
-          showOrganisationSectionPref: true,
-        ),
-        '/o/home',
-      );
-    });
+    test(
+      'guardian-only with show-org pref and last org opens org dashboard',
+      () {
+        expect(
+          resolvePostLoginPath(
+            eligibility: _guardianOnly(),
+            lastAppSection: AppExperience.organization,
+            showOrganisationSectionPref: true,
+          ),
+          '/o/home',
+        );
+      },
+    );
 
     test('guardian-only ignores last org when show-org pref is off', () {
       expect(

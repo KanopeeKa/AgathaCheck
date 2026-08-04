@@ -27,59 +27,59 @@ class ArchivedPetsScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
 
     final content = archivedAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.error_outline, size: 48, color: colorScheme.error),
-              const SizedBox(height: 16),
-              Text('$e'),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                key: const Key('org_archived_retry'),
-                onPressed: () {
-                  if (_isOrgArchive) {
-                    ref.invalidate(orgArchivedPetsProvider(orgId!));
-                  } else {
-                    ref.invalidate(userArchivedPetsProvider);
-                  }
-                },
-                child: Text(l.retry),
-              ),
-            ],
-          ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline, size: 48, color: colorScheme.error),
+            const SizedBox(height: 16),
+            Text('$e'),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              key: const Key('org_archived_retry'),
+              onPressed: () {
+                if (_isOrgArchive) {
+                  ref.invalidate(orgArchivedPetsProvider(orgId!));
+                } else {
+                  ref.invalidate(userArchivedPetsProvider);
+                }
+              },
+              child: Text(l.retry),
+            ),
+          ],
         ),
-        data: (archivedPets) {
-          if (archivedPets.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ExcludeSemantics(
-                    child: Icon(
-                      Icons.archive_outlined,
-                      size: 80,
-                      color: colorScheme.outline,
-                    ),
+      ),
+      data: (archivedPets) {
+        if (archivedPets.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ExcludeSemantics(
+                  child: Icon(
+                    Icons.archive_outlined,
+                    size: 80,
+                    color: colorScheme.outline,
                   ),
-                  const SizedBox(height: 16),
-                  Text(l.noArchivedPets, style: theme.textTheme.headlineSmall),
-                ],
-              ),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: archivedPets.length,
-            itemBuilder: (context, index) {
-              final archived = archivedPets[index];
-              return _ArchivedPetCard(archivedPet: archived, orgId: orgId);
-            },
+                ),
+                const SizedBox(height: 16),
+                Text(l.noArchivedPets, style: theme.textTheme.headlineSmall),
+              ],
+            ),
           );
-        },
-      );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: archivedPets.length,
+          itemBuilder: (context, index) {
+            final archived = archivedPets[index];
+            return _ArchivedPetCard(archivedPet: archived, orgId: orgId);
+          },
+        );
+      },
+    );
 
     if (_isOrgArchive) {
       return OrgShellScaffold(

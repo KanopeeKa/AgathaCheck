@@ -6,11 +6,11 @@ class OrganisationSectionVisibility {
   static bool showInDrawer({
     required bool showOrganisationSectionPref,
     required bool hasOrgMembership,
-  }) =>
-      showOrganisationSectionPref || hasOrgMembership;
+  }) => showOrganisationSectionPref || hasOrgMembership;
 
   /// Toggle is interactive only when the user has no org memberships.
-  static bool toggleEnabled({required bool hasOrgMembership}) => !hasOrgMembership;
+  static bool toggleEnabled({required bool hasOrgMembership}) =>
+      !hasOrgMembership;
 
   /// Effective toggle value (members are always shown).
   static bool effectiveShowOrganisationSection({

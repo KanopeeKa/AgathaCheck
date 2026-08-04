@@ -83,9 +83,7 @@ class OrgPersonTile extends ConsumerWidget {
             borderRadius: BorderRadius.circular(12),
             side: isSelf
                 ? BorderSide(color: colorScheme.primary, width: 2)
-                : BorderSide(
-                    color: colorScheme.outlineVariant.withAlpha(120),
-                  ),
+                : BorderSide(color: colorScheme.outlineVariant.withAlpha(120)),
           ),
           child: InkWell(
             onTap: isPending ? null : onTap,
@@ -104,11 +102,7 @@ class OrgPersonTile extends ConsumerWidget {
                         isPending: isPending,
                       ),
                       if (trailing != null)
-                        Positioned(
-                          top: 4,
-                          right: 4,
-                          child: trailing!,
-                        ),
+                        Positioned(top: 4, right: 4, child: trailing!),
                     ],
                   ),
                 ),
@@ -120,10 +114,7 @@ class OrgPersonTile extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         if (roleLabel.isNotEmpty)
-                          _RoleBar(
-                            label: roleLabel,
-                            style: barStyle,
-                          ),
+                          _RoleBar(label: roleLabel, style: barStyle),
                         if (isSelf) ...[
                           Text(
                             selfCardLabel ?? l.adminContactsYourCard,
@@ -194,10 +185,8 @@ class _PhotoArea extends StatelessWidget {
       return Image.network(
         resolvedPhotoUrl,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _SmileyFallback(
-          initials: initials,
-          isPending: isPending,
-        ),
+        errorBuilder: (_, __, ___) =>
+            _SmileyFallback(initials: initials, isPending: isPending),
       );
     }
     return ColoredBox(
@@ -227,7 +216,9 @@ class _SmileyFallback extends StatelessWidget {
     }
     return Center(
       child: Icon(
-        isPending ? Icons.hourglass_empty : Icons.sentiment_satisfied_alt_outlined,
+        isPending
+            ? Icons.hourglass_empty
+            : Icons.sentiment_satisfied_alt_outlined,
         size: 40,
         color: colorScheme.onSurfaceVariant,
       ),

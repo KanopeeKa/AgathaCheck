@@ -41,11 +41,7 @@ class OrgShellAppBarTitle extends ConsumerWidget {
       case OrgNavTitleVariant.dashboard:
         return Row(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            _agathaLogo(),
-            const SizedBox(width: 8),
-            titleWidget,
-          ],
+          children: [_agathaLogo(), const SizedBox(width: 8), titleWidget],
         );
       case OrgNavTitleVariant.withOrgLogo:
         final org = organization;

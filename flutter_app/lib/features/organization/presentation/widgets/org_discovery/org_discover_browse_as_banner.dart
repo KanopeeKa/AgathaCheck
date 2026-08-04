@@ -8,11 +8,7 @@ import '../../utils/org_discover_entry_context.dart';
 
 /// Centered browse-as banner for the Discover screen (D-v3-DISC-2).
 class OrgDiscoverBrowseAsBanner extends ConsumerWidget {
-  const OrgDiscoverBrowseAsBanner({
-    super.key,
-    required this.from,
-    this.orgId,
-  });
+  const OrgDiscoverBrowseAsBanner({super.key, required this.from, this.orgId});
 
   final OrgDiscoverEntryContext from;
   final String? orgId;

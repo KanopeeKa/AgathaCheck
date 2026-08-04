@@ -1,5 +1,5 @@
 /**
- * Backfill organization_users privacy columns from legacy foster prefs.
+ * Create privacy columns + grants table, then backfill from legacy foster prefs.
  * @param {import('pg').PoolClient} client
  */
 import { v4 as uuidv4 } from 'uuid';
@@ -16,6 +16,81 @@ import { normaliseRole } from '../../lib/orgRoles.js';
  * @param {import('pg').PoolClient} client
  */
 export async function migrateOrgMemberPrivacy(client) {
+  await client.query(`
+    ALTER TABLE organization_users
+      ADD COLUMN IF NOT EXISTS card_visibility TEXT NOT NULL DEFAULT 'all',
+      ADD COLUMN IF NOT EXISTS phone_visibility TEXT NOT NULL DEFAULT 'admins_or_named',
+      ADD COLUMN IF NOT EXISTS email_visibility TEXT NOT NULL DEFAULT 'admins_or_named',
+      ADD COLUMN IF NOT EXISTS address_visibility TEXT NOT NULL DEFAULT 'admins_or_named'
+  `);
+
+  await client.query(`
+    ALTER TABLE organization_users
+      DROP CONSTRAINT IF EXISTS organization_users_card_visibility_check
+  `);
+  await client.query(`
+    ALTER TABLE organization_users
+      ADD CONSTRAINT organization_users_card_visibility_check
+      CHECK (card_visibility IN ('all', 'admins', 'named'))
+  `);
+
+  await client.query(`
+    ALTER TABLE organization_users
+      DROP CONSTRAINT IF EXISTS organization_users_phone_visibility_check
+  `);
+  await client.query(`
+    ALTER TABLE organization_users
+      ADD CONSTRAINT organization_users_phone_visibility_check
+      CHECK (phone_visibility IN (
+        'admins', 'admins_and_foster_managers', 'admins_or_named', 'named'
+      ))
+  `);
+
+  await client.query(`
+    ALTER TABLE organization_users
+      DROP CONSTRAINT IF EXISTS organization_users_email_visibility_check
+  `);
+  await client.query(`
+    ALTER TABLE organization_users
+      ADD CONSTRAINT organization_users_email_visibility_check
+      CHECK (email_visibility IN (
+        'admins', 'admins_and_foster_managers', 'admins_or_named', 'named'
+      ))
+  `);
+
+  await client.query(`
+    ALTER TABLE organization_users
+      DROP CONSTRAINT IF EXISTS organization_users_address_visibility_check
+  `);
+  await client.query(`
+    ALTER TABLE organization_users
+      ADD CONSTRAINT organization_users_address_visibility_check
+      CHECK (address_visibility IN (
+        'admins_or_named', 'admins', 'named', 'hidden'
+      ))
+  `);
+
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS organization_visibility_grants (
+      id UUID PRIMARY KEY,
+      organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+      subject_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      grantee_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      field TEXT NOT NULL CHECK (field IN ('card', 'phone', 'email', 'address')),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (organization_id, subject_user_id, grantee_user_id, field)
+    )
+  `);
+
+  await client.query(`
+    CREATE INDEX IF NOT EXISTS idx_org_visibility_grants_subject
+      ON organization_visibility_grants (organization_id, subject_user_id)
+  `);
+  await client.query(`
+    CREATE INDEX IF NOT EXISTS idx_org_visibility_grants_grantee
+      ON organization_visibility_grants (organization_id, grantee_user_id)
+  `);
+
   const { rows: memberships } = await client.query(`
     SELECT ou.id,
            ou.organization_id,
@@ -92,19 +167,6 @@ export async function migrateOrgMemberPrivacy(client) {
   if (updated > 0) {
     console.log(`042_org_member_privacy: backfilled ${updated} membership privacy row(s)`);
   }
-
-  // Ensure grants table exists when SQL stub-only migrations run in tests.
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS organization_visibility_grants (
-      id UUID PRIMARY KEY,
-      organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-      subject_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      grantee_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      field TEXT NOT NULL CHECK (field IN ('card', 'phone', 'email', 'address')),
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      UNIQUE (organization_id, subject_user_id, grantee_user_id, field)
-    )
-  `);
 
   // Placeholder for future admin-phone column if added — no-op today.
   void uuidv4;

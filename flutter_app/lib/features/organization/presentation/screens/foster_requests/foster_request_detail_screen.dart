@@ -29,16 +29,16 @@ class FosterRequestDetailScreen extends ConsumerWidget {
     final isFoster = ref.watch(isOrgFosterProvider(orgId));
 
     return OrgShellScaffold(
-  title: l.fosterRequestDetailTitle,
-  orgId: orgId,
-  navVariant: OrgNavTitleVariant.withOrgLogo,
-  leadingKey: const Key('foster_request_detail_back'),
-  child: requestAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('$e')),
-          data: (request) =>
-              _FosterRequestDetailBody(orgId: orgId, request: request),
-    ),
+      title: l.fosterRequestDetailTitle,
+      orgId: orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      leadingKey: const Key('foster_request_detail_back'),
+      child: requestAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('$e')),
+        data: (request) =>
+            _FosterRequestDetailBody(orgId: orgId, request: request),
+      ),
     );
   }
 }

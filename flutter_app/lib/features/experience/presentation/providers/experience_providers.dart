@@ -65,7 +65,9 @@ final savedDefaultExperienceProvider = Provider<AppExperience?>((ref) {
 });
 
 final showOrganisationSectionPrefProvider = Provider<bool>((ref) {
-  return ref.watch(experiencePreferencesStoreProvider).readShowOrganisationSection();
+  return ref
+      .watch(experiencePreferencesStoreProvider)
+      .readShowOrganisationSection();
 });
 
 final hasOrgMembershipProvider = Provider<bool>((ref) {
@@ -88,13 +90,16 @@ final lastAppSectionProvider = Provider<AppExperience?>((ref) {
 
 /// When membership appears, persist show-org on (D-v3-VIS-1).
 final organisationMembershipVisibilitySyncProvider = Provider<void>((ref) {
-  ref.listen<AsyncValue<List<Organization>>>(organizationListProvider, (_, next) {
+  ref.listen<AsyncValue<List<Organization>>>(organizationListProvider, (
+    _,
+    next,
+  ) {
     next.whenData((orgs) {
       if (orgs.isNotEmpty) {
         unawaited(
-          ref.read(experiencePreferencesStoreProvider).writeShowOrganisationSection(
-            true,
-          ),
+          ref
+              .read(experiencePreferencesStoreProvider)
+              .writeShowOrganisationSection(true),
         );
         ref.invalidate(showOrganisationSectionPrefProvider);
       }

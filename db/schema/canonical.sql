@@ -380,11 +380,11 @@ CREATE TABLE public.organization_users (
     phone_visibility text DEFAULT 'admins_or_named'::text NOT NULL,
     email_visibility text DEFAULT 'admins_or_named'::text NOT NULL,
     address_visibility text DEFAULT 'admins_or_named'::text NOT NULL,
-    CONSTRAINT organization_users_role_check CHECK (((role)::text = ANY ((ARRAY['associate'::character varying, 'foster'::character varying, 'admin'::character varying, 'super_admin'::character varying, 'pending_associate'::character varying, 'pending_foster'::character varying, 'pending_admin'::character varying, 'pending_super_admin'::character varying])::text[]))),
+    CONSTRAINT organization_users_address_visibility_check CHECK ((address_visibility = ANY (ARRAY['admins_or_named'::text, 'admins'::text, 'named'::text, 'hidden'::text]))),
     CONSTRAINT organization_users_card_visibility_check CHECK ((card_visibility = ANY (ARRAY['all'::text, 'admins'::text, 'named'::text]))),
-    CONSTRAINT organization_users_phone_visibility_check CHECK ((phone_visibility = ANY (ARRAY['admins'::text, 'admins_and_foster_managers'::text, 'admins_or_named'::text, 'named'::text]))),
     CONSTRAINT organization_users_email_visibility_check CHECK ((email_visibility = ANY (ARRAY['admins'::text, 'admins_and_foster_managers'::text, 'admins_or_named'::text, 'named'::text]))),
-    CONSTRAINT organization_users_address_visibility_check CHECK ((address_visibility = ANY (ARRAY['admins_or_named'::text, 'admins'::text, 'named'::text, 'hidden'::text])))
+    CONSTRAINT organization_users_phone_visibility_check CHECK ((phone_visibility = ANY (ARRAY['admins'::text, 'admins_and_foster_managers'::text, 'admins_or_named'::text, 'named'::text]))),
+    CONSTRAINT organization_users_role_check CHECK (((role)::text = ANY ((ARRAY['associate'::character varying, 'foster'::character varying, 'admin'::character varying, 'super_admin'::character varying, 'pending_associate'::character varying, 'pending_foster'::character varying, 'pending_admin'::character varying, 'pending_super_admin'::character varying])::text[])))
 );
 CREATE TABLE public.organization_visibility_grants (
     id uuid NOT NULL,
@@ -646,7 +646,7 @@ ALTER TABLE ONLY public.organization_users
 ALTER TABLE ONLY public.organization_users
     ADD CONSTRAINT organization_users_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.organization_visibility_grants
-    ADD CONSTRAINT organization_visibility_grants_organization_id_subject_user_id_gr_key UNIQUE (organization_id, subject_user_id, grantee_user_id, field);
+    ADD CONSTRAINT organization_visibility_grant_organization_id_subject_user__key UNIQUE (organization_id, subject_user_id, grantee_user_id, field);
 ALTER TABLE ONLY public.organization_visibility_grants
     ADD CONSTRAINT organization_visibility_grants_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.organizations
@@ -721,10 +721,10 @@ CREATE INDEX idx_org_connections_low ON public.org_connections USING btree (org_
 CREATE INDEX idx_org_foster_parents_org_id ON public.org_foster_parents USING btree (organization_id);
 CREATE UNIQUE INDEX idx_org_permissions_active ON public.organization_permissions USING btree (organization_id, user_id, permission_key) WHERE (revoked_at IS NULL);
 CREATE INDEX idx_org_permissions_org_user ON public.organization_permissions USING btree (organization_id, user_id);
-CREATE INDEX idx_org_visibility_grants_grantee ON public.organization_visibility_grants USING btree (organization_id, grantee_user_id);
-CREATE INDEX idx_org_visibility_grants_subject ON public.organization_visibility_grants USING btree (organization_id, subject_user_id);
 CREATE INDEX idx_org_pet_home_hidden_org ON public.org_pet_home_hidden USING btree (organization_id, pet_id);
 CREATE INDEX idx_org_users_user_id ON public.organization_users USING btree (user_id);
+CREATE INDEX idx_org_visibility_grants_grantee ON public.organization_visibility_grants USING btree (organization_id, grantee_user_id);
+CREATE INDEX idx_org_visibility_grants_subject ON public.organization_visibility_grants USING btree (organization_id, subject_user_id);
 CREATE INDEX idx_organizations_name ON public.organizations USING btree (name);
 CREATE UNIQUE INDEX idx_pet_access_pet_user ON public.pet_access USING btree (pet_id, user_id);
 CREATE INDEX idx_pet_activity_events_occurred_at ON public.pet_activity_events USING btree (occurred_at);

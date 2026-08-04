@@ -12,7 +12,9 @@ class MemberPrivacyNotifier
     if (token == null) {
       throw StateError('Not authenticated');
     }
-    return ref.read(organizationRepositoryProvider).getMemberPrivacy(orgId, token);
+    return ref
+        .read(organizationRepositoryProvider)
+        .getMemberPrivacy(orgId, token);
   }
 
   Future<void> save(MemberPrivacySettings settings) async {
@@ -28,11 +30,12 @@ class MemberPrivacyNotifier
   }
 }
 
-final memberPrivacyProvider = AsyncNotifierProvider.family<
-  MemberPrivacyNotifier,
-  MemberPrivacySettings,
-  String
->(MemberPrivacyNotifier.new);
+final memberPrivacyProvider =
+    AsyncNotifierProvider.family<
+      MemberPrivacyNotifier,
+      MemberPrivacySettings,
+      String
+    >(MemberPrivacyNotifier.new);
 
 OrgMemberRole? orgRoleFromWire(String? role) {
   if (role == null || role.isEmpty) return null;

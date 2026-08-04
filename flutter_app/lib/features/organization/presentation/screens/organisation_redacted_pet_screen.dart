@@ -39,50 +39,50 @@ class OrganisationRedactedPetScreen extends ConsumerWidget {
       orgId: orgId,
       navVariant: OrgNavTitleVariant.withOrgLogo,
       child: petAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(
-                l.errorWithMessage(error.toString()),
-                style: TextStyle(color: colorScheme.error),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-          data: (pet) => SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: SizedBox(
-                    width: 160,
-                    height: 160,
-                    child: PetPhoto(pet: pet),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  pet.name,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                _DetailRow(
-                  label: l.species.replaceAll(' *', ''),
-                  value: pet.species,
-                ),
-                if (pet.breed.isNotEmpty)
-                  _DetailRow(label: l.breed, value: pet.breed),
-                if (pet.ageDisplay != null)
-                  _DetailRow(label: l.pdfAge, value: pet.ageDisplay!),
-              ],
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              l.errorWithMessage(error.toString()),
+              style: TextStyle(color: colorScheme.error),
+              textAlign: TextAlign.center,
             ),
           ),
         ),
+        data: (pet) => SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: SizedBox(
+                  width: 160,
+                  height: 160,
+                  child: PetPhoto(pet: pet),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                pet.name,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              _DetailRow(
+                label: l.species.replaceAll(' *', ''),
+                value: pet.species,
+              ),
+              if (pet.breed.isNotEmpty)
+                _DetailRow(label: l.breed, value: pet.breed),
+              if (pet.ageDisplay != null)
+                _DetailRow(label: l.pdfAge, value: pet.ageDisplay!),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

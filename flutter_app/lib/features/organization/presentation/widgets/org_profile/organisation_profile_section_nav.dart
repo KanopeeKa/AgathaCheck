@@ -15,23 +15,25 @@ class OrganisationProfileSectionNav extends ConsumerWidget {
   final String orgId;
 
   Organization? _memberOrg(WidgetRef ref) {
-    return ref.watch(organizationListProvider).maybeWhen(
-      data: (orgs) {
-        for (final org in orgs) {
-          if (org.id == orgId) return org;
-        }
-        return null;
-      },
-      orElse: () => null,
-    );
+    return ref
+        .watch(organizationListProvider)
+        .maybeWhen(
+          data: (orgs) {
+            for (final org in orgs) {
+              if (org.id == orgId) return org;
+            }
+            return null;
+          },
+          orElse: () => null,
+        );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final memberOrg = _memberOrg(ref);
-    final peopleCount = (memberOrg?.memberCount ?? 0) +
-        (memberOrg?.externalCount ?? 0);
+    final peopleCount =
+        (memberOrg?.memberCount ?? 0) + (memberOrg?.externalCount ?? 0);
     final petCount = memberOrg?.petCount ?? 0;
     final connectionsAsync = ref.watch(orgConnectionsProvider(orgId));
     final connectionsCount = connectionsAsync.maybeWhen(

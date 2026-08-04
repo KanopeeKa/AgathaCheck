@@ -128,16 +128,14 @@ mixin RecordingOrganizationRepositoryCoreMixin
   Future<MemberPrivacySettings> getMemberPrivacy(
     String orgId,
     String token,
-  ) async =>
-      const MemberPrivacySettings();
+  ) async => const MemberPrivacySettings();
 
   @override
   Future<MemberPrivacySettings> updateMemberPrivacy(
     String orgId,
     MemberPrivacySettings settings,
     String token,
-  ) async =>
-      settings;
+  ) async => settings;
 
   @override
   Future<List<Map<String, dynamic>>> getPendingInvites(String token) async =>
