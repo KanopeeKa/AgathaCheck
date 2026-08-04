@@ -19,9 +19,9 @@ import { OrganizationListPage } from './organization-list.page';
 export class OrganizationDetailPage {
   constructor(private readonly page: Page) {}
 
-  /** Visible on v2 profile (public blocks and/or gated member sections). */
+  /** Visible on v2 profile (public blocks and/or gated member nav rows). */
   private static readonly profileLoadedMarker =
-    /Contact|Legal information|Admin contacts|Foster parents|Fostering sessions|^Pets$|^Animaux$|Connections|Professional|Charity|Professionnel|Association|Organisation presentation|Organisation dashboard|Choose a section/i;
+    /Contact|Legal information|Admin contacts|Foster parents|Fostering sessions|^Pets$|^Animaux$|Connected organisations|Organisation Administration|Professional|Charity|Professionnel|Association|Organisation presentation|Organisation dashboard|Choose a section/i;
 
   private orgIdFromUrl(): string | null {
     const match = this.page.url().match(/\/o\/orgs\/([^/?#]+)/);
@@ -38,6 +38,21 @@ export class OrganizationDetailPage {
         this.page.getByText(OrganizationDetailPage.profileLoadedMarker).first(),
       ).toBeVisible();
     }).toPass({ timeout: 30_000 });
+  }
+
+  async expectProfileNavRow(name: RegExp | string): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    await refreshFlutterAccessibility(this.page);
+    const pattern = typeof name === 'string' ? new RegExp(escapeRegExp(name), 'i') : name;
+    await expect(
+      this.page.getByRole('button', { name: pattern }).filter({ visible: true }).first(),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectProfileNavRowHidden(name: RegExp | string): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    const pattern = typeof name === 'string' ? new RegExp(escapeRegExp(name), 'i') : name;
+    await expect(this.page.getByRole('button', { name: pattern })).toHaveCount(0);
   }
 
   /**

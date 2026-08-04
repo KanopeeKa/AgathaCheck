@@ -1,6 +1,6 @@
 /**
  * @bdd redacted_org_pet.feature
- * Scenario: Associate sees pet preview on organisation profile
+ * @legacy Scenario: Associate sees pet preview on organisation profile
  * Scenario: Associate tap opens redacted pet profile with summary fields only
  * Scenario: Redacted pet API exposes allowlisted fields only
  */
@@ -54,7 +54,7 @@ async function seedAssociatePetView(baseURL: string) {
 }
 
 test.describe('Redacted organisation pet profile', () => {
-  test('@P1 associate sees pet preview on organisation profile', async ({ page }) => {
+  test('@legacy @P1 associate sees pet preview on organisation profile', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const { bob, org } = await seedAssociatePetView(baseURL);
 

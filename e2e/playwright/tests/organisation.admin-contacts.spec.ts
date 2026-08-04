@@ -4,9 +4,9 @@
  * Scenario: Team admin can add an admin contact
  * Scenario: Super admin can edit another admin contact
  * Scenario: Members can message an admin when contact details allow
- * Scenario: Member sees admin contacts preview on organisation profile
- * Scenario: Member sees connected organisation tiles on profile
- * Scenario: Team admin sees manage connections entry on profile
+ * @legacy Scenario: Member sees admin contacts preview on organisation profile
+ * @legacy Scenario: Member sees connected organisation tiles on profile
+ * @legacy Scenario: Team admin sees manage connections entry on profile
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import {
@@ -146,7 +146,7 @@ test.describe('Admin contacts', () => {
     expect(graceSummary?.email || graceSummary?.phone).toBeTruthy();
   });
 
-  test('@P1 member can load admin contacts preview data for profile section', async () => {
+  test('@legacy @P1 member can load admin contacts preview data for profile section', async () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const { alice, org } = await seedRescueHearts(baseURL);
     const hank = await signupUser(baseURL, {
@@ -168,7 +168,7 @@ test.describe('Admin contacts', () => {
     expect(ivyCard?.role).toBe('admin');
   });
 
-  test('@P1 member sees connected organisation in connections API', async () => {
+  test('@legacy @P1 member sees connected organisation in connections API', async () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const { alice, org } = await seedRescueHearts(baseURL);
     const jill = await signupUser(baseURL, {
@@ -199,7 +199,7 @@ test.describe('Admin contacts', () => {
     expect(connections.some((c) => c.peer_org_name === 'Partner Paws')).toBe(true);
   });
 
-  test('@P1 team admin has manage_members for connections entry on profile', async () => {
+  test('@legacy @P1 team admin has manage_members for connections entry on profile', async () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const { alice, org } = await seedRescueHearts(baseURL);
     const ken = await signupUser(baseURL, {

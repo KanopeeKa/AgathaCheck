@@ -659,6 +659,12 @@
   "custodyTransferKindReturn": "Retour à l'organisation",
   "orgConnections": "Organisations connectées",
   "orgConnectionsEmpty": "Aucune organisation connectée pour le moment",
+  "orgConnectionCount": "{count, plural, =1{1 connexion} other{{count} connexions}}",
+  "@orgConnectionCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "createConnectionRequest": "Se connecter à une organisation",
   "targetOrgId": "ID de l'organisation cible",
   "connectionTokenCreated": "Lien de connexion créé. Partagez ce jeton avec l'administrateur de l'autre organisation :",
@@ -1550,7 +1556,7 @@
   "orgLegalDocumentsDownloaded": "{title} téléchargé",
   "@orgLegalDocumentsDownloaded": { "placeholders": { "title": { "type": "String" } } },
 
-  "orgCustomisationsTitle": "Personnalisation de l'organisation",
+  "orgCustomisationsTitle": "Administration de l'organisation",
   "orgCustomisationsIntro": "Configurez les modèles et déléguez les permissions pour cette organisation.",
   "orgCustomisationsTemplatesTitle": "Modèles de documents",
   "orgCustomisationsTemplatesSubtitle": "Listes de session et jalons d'adoption.",

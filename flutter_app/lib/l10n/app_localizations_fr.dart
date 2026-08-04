@@ -1971,6 +1971,17 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucune organisation connectée pour le moment';
 
   @override
+  String orgConnectionCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count connexions',
+      one: '1 connexion',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get createConnectionRequest => 'Se connecter à une organisation';
 
   @override
@@ -2126,7 +2137,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgUploadPicture => 'Téléverser une photo';
 
   @override
-  String get orgUploadCover => 'Upload cover';
+  String get orgUploadCover => 'Téléverser une couverture';
 
   @override
   String get orgUploadLogo => 'Téléverser un logo';

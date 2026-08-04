@@ -1951,6 +1951,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgConnectionsEmpty => 'No connected organisations yet';
 
   @override
+  String orgConnectionCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count connections',
+      one: '1 connection',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get createConnectionRequest => 'Connect to organisation';
 
   @override
@@ -4544,7 +4555,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get orgCustomisationsTitle => 'Organisation customisations';
+  String get orgCustomisationsTitle => 'Organisation Administration';
 
   @override
   String get orgCustomisationsIntro =>
