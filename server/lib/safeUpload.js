@@ -30,8 +30,9 @@ export function assertServerFileId(fileId) {
 }
 
 export function extensionForMime(mimeType, allowedExtensions) {
+  const normalized = normalizeMimeType(mimeType);
   let ext;
-  switch (mimeType) {
+  switch (normalized) {
     case 'image/jpeg':
       ext = '.jpg';
       break;
@@ -51,6 +52,76 @@ export function extensionForMime(mimeType, allowedExtensions) {
     throw new Error('Unsupported file type');
   }
   return ext;
+}
+
+/** Normalize common MIME aliases (e.g. image/jpg → image/jpeg). */
+export function normalizeMimeType(mimeType) {
+  if (mimeType == null || typeof mimeType !== 'string') return '';
+  const trimmed = mimeType.trim().toLowerCase();
+  if (trimmed === 'image/jpg') return 'image/jpeg';
+  return trimmed;
+}
+
+const OCTET_STREAM = 'application/octet-stream';
+
+/** Sniff image MIME from magic bytes when the client omits or mislabels the type. */
+export function sniffImageMimeFromBuffer(buffer) {
+  if (!Buffer.isBuffer(buffer) || buffer.length < 3) return null;
+  if (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
+    return 'image/jpeg';
+  }
+  if (
+    buffer.length >= 4 &&
+    buffer[0] === 0x89 &&
+    buffer[1] === 0x50 &&
+    buffer[2] === 0x4e &&
+    buffer[3] === 0x47
+  ) {
+    return 'image/png';
+  }
+  if (
+    buffer.length >= 12 &&
+    buffer[0] === 0x52 &&
+    buffer[1] === 0x49 &&
+    buffer[2] === 0x46 &&
+    buffer[3] === 0x46 &&
+    buffer[8] === 0x57 &&
+    buffer[9] === 0x45 &&
+    buffer[10] === 0x42 &&
+    buffer[11] === 0x50
+  ) {
+    return 'image/webp';
+  }
+  return null;
+}
+
+/**
+ * Resolve an effective image MIME from declared type and buffer sniffing.
+ * @returns {string|null}
+ */
+export function resolveEffectiveImageMime(mimeType, buffer) {
+  const normalized = normalizeMimeType(mimeType);
+  if (
+    normalized &&
+    normalized !== OCTET_STREAM &&
+    SUPPORTED_UPLOAD_MIMES.has(normalized)
+  ) {
+    return normalized;
+  }
+  return sniffImageMimeFromBuffer(buffer);
+}
+
+/**
+ * Validate org image MIME and return the effective type for persistence.
+ * @throws {Error} when the upload is not a supported image type
+ */
+export function validateOrgImageMime(mimeType, buffer, allowedExtensions) {
+  const effective = resolveEffectiveImageMime(mimeType, buffer);
+  if (!effective) {
+    throw new Error('Only JPG, PNG, and WebP images are allowed');
+  }
+  extensionForMime(effective, allowedExtensions);
+  return effective;
 }
 
 function assertUploadBuffer(buffer, maxBytes) {

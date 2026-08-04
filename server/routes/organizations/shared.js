@@ -14,7 +14,7 @@ import {
 
 /** Keys allowed in public_profile_metadata on unauthenticated-safe endpoints. */
 export const SAFE_PUBLIC_PROFILE_METADATA_KEYS = ['postcode'];
-import { extensionForMime, saveUploadedFile } from '../../lib/safeUpload.js';
+import { extensionForMime, normalizeMimeType, saveUploadedFile, validateOrgImageMime } from '../../lib/safeUpload.js';
 
 const MAX_ORG_IMAGE_BYTES = 2 * 1024 * 1024;
 const ORG_IMAGE_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp']);
@@ -24,7 +24,13 @@ const orgImageUpload = multer({
   limits: { fileSize: MAX_ORG_IMAGE_BYTES },
   fileFilter: (_req, file, cb) => {
     try {
-      extensionForMime(file.mimetype, ORG_IMAGE_EXTENSIONS);
+      const normalized = normalizeMimeType(file.mimetype);
+      if (!normalized || normalized === 'application/octet-stream') {
+        cb(null, true);
+        return;
+      }
+      extensionForMime(normalized, ORG_IMAGE_EXTENSIONS);
+      file.mimetype = normalized;
       cb(null, true);
     } catch {
       cb(new Error('Only JPG, PNG, and WebP images are allowed'));
@@ -47,9 +53,10 @@ export function orgUploadDir(subdir) {
 export function saveOrgImage(file, _orgId, subdir) {
   const dir = orgUploadDir(subdir);
   const fileId = uuidv4();
+  const mimeType = validateOrgImageMime(file.mimetype, file.buffer, ORG_IMAGE_EXTENSIONS);
   const { filename } = saveUploadedFile({
     buffer: file.buffer,
-    mimeType: file.mimetype,
+    mimeType,
     fileId,
     rootDir: dir,
     allowedExtensions: ORG_IMAGE_EXTENSIONS,
@@ -60,11 +67,24 @@ export function saveOrgImage(file, _orgId, subdir) {
 
 export function handleOrgImageUpload(req, res, next) {
   orgImageUpload.single('photo')(req, res, (err) => {
-    if (!err) return next();
-    if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
-      return res.status(400).json({ error: 'Image must be 2 MB or smaller' });
+    if (err) {
+      if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ error: 'Image must be 2 MB or smaller' });
+      }
+      return res.status(400).json({ error: err.message });
     }
-    return res.status(400).json({ error: err.message });
+    if (req.file) {
+      try {
+        req.file.mimetype = validateOrgImageMime(
+          req.file.mimetype,
+          req.file.buffer,
+          ORG_IMAGE_EXTENSIONS,
+        );
+      } catch (validationErr) {
+        return res.status(400).json({ error: validationErr.message });
+      }
+    }
+    next();
   });
 }
 
