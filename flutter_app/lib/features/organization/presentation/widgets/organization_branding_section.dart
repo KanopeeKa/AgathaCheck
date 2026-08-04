@@ -62,11 +62,21 @@ class OrganizationBrandingSection extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
+        final message = _uploadErrorMessage(e);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('$e')));
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     }
+  }
+
+  String _uploadErrorMessage(Object error) {
+    final raw = error.toString();
+    const prefix = 'Exception: ';
+    if (raw.startsWith(prefix)) {
+      return raw.substring(prefix.length);
+    }
+    return raw;
   }
 
   @override

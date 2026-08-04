@@ -321,10 +321,16 @@ describe('Organizations API', () => {
   
   describe('POST /:id/photo', () => {
       it('returns photo upload response for an admin', async () => {
+        const jpegBuffer = Buffer.from([
+          0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01,
+        ]);
         const res = await request(app)
           .post(`/api/organizations/${orgId}/photo`)
           .set('Authorization', `Bearer ${token}`)
-          .attach('photo', Buffer.from('fake-image'), 'org.jpg');
+          .attach('photo', jpegBuffer, {
+            filename: 'org.jpg',
+            contentType: 'image/jpeg',
+          });
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty('photo_url');
         expect(res.body).toHaveProperty('id', orgId);
