@@ -81,12 +81,25 @@ export const DEMO_IDS = {
   rescueFosterRequestResponse: 'a7300001-0001-4001-8001-000000000002',
 
   // Sharing
-  buddyShareLink: 'a8000001-0001-4001-8001-000000000001',
+  whiskersShareLink: 'a8000001-0001-4001-8001-000000000001',
   carolPetAccess: 'a8000001-0001-4001-8001-000000000002',
+  carolSharedPet: 'a8000001-0001-4001-8001-000000000003',
 
   // Notifications
   buddyOverdueNotification: 'a8100001-0001-4001-8001-000000000001',
   rescueAdminNotification: 'a8100001-0001-4001-8001-000000000002',
+  aliceHealthReminderPref: 'a8110001-0001-4001-8001-000000000001',
+  aliceFosterUpdatePref: 'a8110001-0001-4001-8001-000000000002',
+
+  // Foster request targets
+  rescueFosterRequestTarget: 'a7300001-0001-4001-8001-000000000003',
+
+  // Pet activity
+  clinicPetActivityEvent: 'a8800001-0001-4001-8001-000000000001',
+
+  // Legacy alias
+  /** @deprecated Use whiskersShareLink */
+  buddyShareLink: 'a8000001-0001-4001-8001-000000000001',
 
   // Org connections
   orgConnection: 'a8200001-0001-4001-8001-000000000001',

@@ -58,7 +58,7 @@ async function runScenario(pool, name) {
 
 function parseScenarios(argv) {
   const arg = argv.find((a) => a.startsWith('--scenario='));
-  if (!arg) return ['all'];
+  if (!arg) return ALL_SCENARIOS;
   const value = arg.slice('--scenario='.length);
   if (value === 'all') return ALL_SCENARIOS;
   return value.split(',').map((s) => s.trim()).filter(Boolean);

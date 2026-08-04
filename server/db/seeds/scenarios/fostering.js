@@ -144,7 +144,7 @@ export async function seedFostering(client) {
      VALUES ($1, $2, $3)
      ON CONFLICT (id) DO NOTHING`,
     [
-      'a7300001-0001-4001-8001-000000000003',
+      DEMO_IDS.rescueFosterRequestTarget,
       DEMO_IDS.rescueFosterRequest,
       DEMO_IDS.eveOrgFosterParent,
     ],

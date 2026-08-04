@@ -12,7 +12,7 @@ import { assertNonProduction } from '../../scripts/lib/guard-non-prod.js';
 const { Pool } = pg;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
 
 const TABLES_TO_TRUNCATE = [

@@ -160,7 +160,7 @@ export async function seedHealthCare(client) {
        metadata = EXCLUDED.metadata,
        occurred_at = EXCLUDED.occurred_at`,
     [
-      'a8800001-0001-4001-8001-000000000001',
+      DEMO_IDS.clinicPetActivityEvent,
       DEMO_IDS.clinicPet,
       DEMO_IDS.happyPawsOrg,
       DEMO_IDS.bob,

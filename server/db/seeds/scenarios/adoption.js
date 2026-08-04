@@ -1,5 +1,5 @@
 import { DEMO_IDS } from '../demo-constants.js';
-import { calendarDaysFromToday, timestampFromNow } from '../helpers.js';
+import { timestampFromNow } from '../helpers.js';
 
 export async function seedAdoption(client) {
   // Adoption journey for Rocky (foster-to-adopt in progress)

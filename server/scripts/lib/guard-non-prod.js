@@ -1,6 +1,6 @@
 /**
  * Refuse destructive or demo-only database operations in production.
- * Server-local copy — also exists at scripts/db/guard-non-prod.js for repo-root tooling.
+ * Server-local copy for FTP-deployed backend (repo-root copy: scripts/db/guard-non-prod.js).
  */
 export function resolveAppEnv() {
   return process.env.APP_ENV || process.env.NODE_ENV || 'development';

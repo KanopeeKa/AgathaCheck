@@ -1,5 +1,4 @@
 import { DEMO_IDS } from '../demo-constants.js';
-import { timestampFromNow } from '../helpers.js';
 
 export async function seedSharingNotifications(client) {
   // Share link for Whiskers (pending)
@@ -9,7 +8,7 @@ export async function seedSharingNotifications(client) {
      ON CONFLICT (id) DO UPDATE SET
        code = EXCLUDED.code,
        status = EXCLUDED.status`,
-    [DEMO_IDS.buddyShareLink, DEMO_IDS.whiskersPet, 'DEMO-WHISKERS', DEMO_IDS.alice],
+    [DEMO_IDS.whiskersShareLink, DEMO_IDS.whiskersPet, 'DEMO-WHISKERS', DEMO_IDS.alice],
   );
 
   // Carol has shared access to Buddy
@@ -29,7 +28,7 @@ export async function seedSharingNotifications(client) {
      ON CONFLICT (pet_id, user_id) DO UPDATE SET
        role = EXCLUDED.role,
        updated_at = NOW()`,
-    ['a8000001-0001-4001-8001-000000000003', DEMO_IDS.buddyPet, DEMO_IDS.carol, DEMO_IDS.alice],
+    [DEMO_IDS.carolSharedPet, DEMO_IDS.buddyPet, DEMO_IDS.carol, DEMO_IDS.alice],
   );
 
   // Overdue health notification for Buddy flea treatment
@@ -81,9 +80,9 @@ export async function seedSharingNotifications(client) {
        ($3, $2, 'foster_updates', 'in_app')
      ON CONFLICT (id) DO UPDATE SET value = EXCLUDED.value`,
     [
-      'a8110001-0001-4001-8001-000000000001',
+      DEMO_IDS.aliceHealthReminderPref,
       DEMO_IDS.alice,
-      'a8110001-0001-4001-8001-000000000002',
+      DEMO_IDS.aliceFosterUpdatePref,
     ],
   );
 
