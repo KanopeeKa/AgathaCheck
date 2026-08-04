@@ -29,7 +29,7 @@ Future<void> handleOrgDashboardMenuAction({
       context.push('/o/orgs/$orgId/members');
       break;
     case 'leave':
-      await _showLeaveDialog(context, ref, orgId);
+      context.push('/account/orgs/$orgId?highlight=leave');
       break;
     case 'delete':
       await _showDeleteDialog(context, ref, orgId, org);
@@ -91,52 +91,6 @@ Future<void> showOrgDeleteDialog({
   required Organization org,
 }) =>
     _showDeleteDialog(context, ref, orgId, org);
-
-Future<void> _showLeaveDialog(
-  BuildContext context,
-  WidgetRef ref,
-  String orgId,
-) async {
-  final l = AppLocalizations.of(context)!;
-  final xp = context.experienceColors;
-  await showDialog<void>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text(l.orgLeave),
-      content: Text(l.orgLeaveConfirm),
-      actions: [
-        TextButton(
-          key: const Key('org_leave_cancel'),
-          onPressed: () => Navigator.pop(ctx),
-          child: Text(l.cancel),
-        ),
-        FilledButton(
-          key: const Key('org_leave_confirm'),
-          style: FilledButton.styleFrom(backgroundColor: xp.warning),
-          onPressed: () async {
-            Navigator.pop(ctx);
-            try {
-              await ref
-                  .read(orgMembersProvider(orgId).notifier)
-                  .leaveOrganization();
-              ref.invalidate(organizationListProvider);
-              if (context.mounted) {
-                context.go('/o/orgs');
-              }
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text('$e')));
-              }
-            }
-          },
-          child: Text(l.orgLeave),
-        ),
-      ],
-    ),
-  );
-}
 
 Future<void> _showDeleteDialog(
   BuildContext context,

@@ -6,7 +6,16 @@ import {
   OPEN_PLACEMENT_STATUSES,
   placementToMap,
 } from './fosterPlacements.js';
-import { isOrgAdmin, normaliseRole } from './orgRoles.js';
+import { normaliseRole, isOrgAdmin } from './orgRoles.js';
+import {
+  loadGrantsBySubjectForOrg,
+  privacySettingsFromRow,
+  redactMemberSummaryForViewer,
+  buildViewerPrivacyContext,
+  canViewerSeeField,
+  redactMemberForViewer,
+} from './orgMemberPrivacy.js';
+import { loadActivePermissionKeys } from './orgPermissions.js';
 
 const FOSTER_ACTIVE_SQL = FOSTER_ACTIVE_STATUSES.map((s) => `'${s}'`).join(', ');
 const OPEN_SQL = OPEN_PLACEMENT_STATUSES.map((s) => `'${s}'`).join(', ');
@@ -77,37 +86,71 @@ export function personDetailToMap(row, extras = {}) {
   };
 }
 
-/** Admin directory viewers without org-admin role receive redacted people payloads. */
-export function viewerHasFullPeopleAccess(role) {
-  return isOrgAdmin(role);
+/** Legacy helper — directory now uses per-member privacy resolver. */
+export function viewerHasFullPeopleAccess(_role) {
+  return false;
 }
 
-export function redactPersonSummary(person, fullAccess) {
-  if (fullAccess) return person;
-  return {
+export function redactPersonSummary(person, _fullAccess, viewer = null, privacyRow = null, grantRows = []) {
+  if (!viewer || person.kind !== 'member' || !person.user_id) {
+    return person;
+  }
+  const redacted = redactMemberSummaryForViewer(
+    person,
+    viewer,
+    privacyRow || {},
+    grantRows,
+  );
+  return redacted || {
     ...person,
+    display_name: '',
+    email: null,
+    photo_url: null,
     active_foster_count: 0,
   };
 }
 
-export function redactPersonDetail(person, fullAccess) {
-  if (fullAccess) return person;
+export function redactPersonDetail(person, _fullAccess, viewer = null, privacyRow = null, grantRows = []) {
+  if (!viewer || person.kind !== 'member' || !person.user_id) {
+    return person;
+  }
+  const ctx = buildViewerPrivacyContext({
+    viewerUserId: viewer.userId,
+    viewerRole: viewer.role,
+    viewerPermissionKeys: viewer.permissionKeys || [],
+    subjectUserId: person.user_id,
+    subjectRole: person.role,
+    settings: privacySettingsFromRow(privacyRow || {}, person.role),
+    grants: grantRows,
+  });
+  const redacted = redactMemberForViewer(person, ctx);
+  if (!redacted) {
+    return {
+      ...redactPersonSummary(person, false, viewer, privacyRow, grantRows),
+      foster_phone: '',
+      foster_address: '',
+      admin_notes: '',
+      current_placements: [],
+      past_placements: [],
+    };
+  }
+  const showCard = canViewerSeeField({ ...ctx, field: 'card' });
+  const showAdminNotes = isOrgAdmin(ctx.viewerRole) && showCard;
   return {
-    ...redactPersonSummary(person, false),
-    foster_phone: '',
-    foster_address: '',
-    admin_notes: '',
-    current_placements: [],
-    past_placements: [],
+    ...redacted,
+    admin_notes: showAdminNotes ? (person.admin_notes || '') : '',
+    current_placements: showCard ? (person.current_placements || []) : [],
+    past_placements: showCard ? (person.past_placements || []) : [],
   };
 }
 
-export async function listOrgPeople(pool, orgId) {
+export async function listOrgPeople(pool, orgId, viewer = null) {
   const orgResult = await pool.query(
     'SELECT primary_contact_ref FROM organizations WHERE id = $1',
     [orgId],
   );
   const primaryContactRef = orgResult.rows[0]?.primary_contact_ref || null;
+  const grantsBySubject = viewer ? await loadGrantsBySubjectForOrg(pool, orgId) : new Map();
 
   const memberResult = await pool.query(
     `SELECT 'member' AS kind,
@@ -118,6 +161,13 @@ export async function listOrgPeople(pool, orgId) {
             u.photo_url,
             ou.role,
             (ou.role LIKE 'pending_%') AS is_pending,
+            COALESCE(ou.foster_phone, '') AS foster_phone,
+            COALESCE(ou.foster_address, '') AS foster_address,
+            COALESCE(ou.admin_notes, '') AS admin_notes,
+            ou.card_visibility,
+            ou.phone_visibility,
+            ou.email_visibility,
+            ou.address_visibility,
             ${memberActiveCountSql('u.id', 'ou.organization_id')} AS active_foster_count
      FROM organization_users ou
      JOIN users u ON u.id = ou.user_id
@@ -162,7 +212,17 @@ export async function listOrgPeople(pool, orgId) {
     return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
   });
 
-  return combined.map(personSummaryToMap);
+  return combined
+    .map((row) => personSummaryToMap(row))
+    .map((person) => {
+      if (!viewer || person.kind !== 'member') return person;
+      const sourceRow = combined.find(
+        (row) => row.kind === person.kind && row.record_id === person.record_id,
+      );
+      const grantRows = grantsBySubject.get(person.user_id) || [];
+      return redactPersonSummary(person, false, viewer, sourceRow, grantRows);
+    })
+    .filter((person) => person.display_name || person.kind === 'external');
 }
 
 export function computePlacementOutcome(placement, petPassedAway, fosteredElsewhere) {
@@ -260,7 +320,7 @@ async function loadPersonPlacements(pool, orgId, kind, recordId, userId, externa
   return { current_placements: current, past_placements: past };
 }
 
-export async function getOrgPersonDetail(pool, orgId, kind, recordId) {
+export async function getOrgPersonDetail(pool, orgId, kind, recordId, viewer = null) {
   const orgResult = await pool.query(
     'SELECT primary_contact_ref FROM organizations WHERE id = $1',
     [orgId],
@@ -281,6 +341,10 @@ export async function getOrgPersonDetail(pool, orgId, kind, recordId) {
               COALESCE(ou.foster_phone, '') AS foster_phone,
               COALESCE(ou.foster_address, '') AS foster_address,
               COALESCE(ou.admin_notes, '') AS admin_notes,
+              ou.card_visibility,
+              ou.phone_visibility,
+              ou.email_visibility,
+              ou.address_visibility,
               ${memberActiveCountSql('u.id', 'ou.organization_id')} AS active_foster_count
        FROM organization_users ou
        JOIN users u ON u.id = ou.user_id
@@ -298,7 +362,13 @@ export async function getOrgPersonDetail(pool, orgId, kind, recordId) {
       row.user_id,
       null,
     );
-    return personDetailToMap(row, placements);
+    return redactPersonDetail(
+      personDetailToMap(row, placements),
+      false,
+      viewer,
+      row,
+      viewer ? (await loadGrantsBySubjectForOrg(pool, orgId)).get(row.user_id) || [] : [],
+    );
   }
 
   const result = await pool.query(

@@ -7917,6 +7917,162 @@ abstract class AppLocalizations {
   /// **'Account actions'**
   String get accountActionsSection;
 
+  /// No description provided for @accountOrgSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation settings'**
+  String get accountOrgSettingsTitle;
+
+  /// No description provided for @accountOrgSettingsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not a member of any organisation yet.'**
+  String get accountOrgSettingsEmpty;
+
+  /// No description provided for @accountOrgPrivacySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy in this organisation'**
+  String get accountOrgPrivacySection;
+
+  /// No description provided for @accountOrgPrivacySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy settings saved'**
+  String get accountOrgPrivacySaved;
+
+  /// No description provided for @accountOrgLeaveSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave organisation'**
+  String get accountOrgLeaveSection;
+
+  /// No description provided for @accountOrgLeaveSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove your membership from this organisation.'**
+  String get accountOrgLeaveSubtitle;
+
+  /// No description provided for @accountOrgCardVisibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see your directory card'**
+  String get accountOrgCardVisibilityLabel;
+
+  /// No description provided for @accountOrgPhoneVisibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see your phone number'**
+  String get accountOrgPhoneVisibilityLabel;
+
+  /// No description provided for @accountOrgEmailVisibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see your email address'**
+  String get accountOrgEmailVisibilityLabel;
+
+  /// No description provided for @accountOrgAddressVisibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see your address'**
+  String get accountOrgAddressVisibilityLabel;
+
+  /// No description provided for @accountOrgCardVisibilityAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone in the organisation'**
+  String get accountOrgCardVisibilityAll;
+
+  /// No description provided for @accountOrgCardVisibilityAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins only'**
+  String get accountOrgCardVisibilityAdmins;
+
+  /// No description provided for @accountOrgCardVisibilityNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Named people only'**
+  String get accountOrgCardVisibilityNamed;
+
+  /// No description provided for @accountOrgContactVisibilityAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins only'**
+  String get accountOrgContactVisibilityAdmins;
+
+  /// No description provided for @accountOrgContactVisibilityAdminsAndFosterManagers.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins and foster managers'**
+  String get accountOrgContactVisibilityAdminsAndFosterManagers;
+
+  /// No description provided for @accountOrgContactVisibilityAdminsOrNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins or named people'**
+  String get accountOrgContactVisibilityAdminsOrNamed;
+
+  /// No description provided for @accountOrgContactVisibilityNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Named people only'**
+  String get accountOrgContactVisibilityNamed;
+
+  /// No description provided for @accountOrgAddressVisibilityAdminsOrNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins or named people'**
+  String get accountOrgAddressVisibilityAdminsOrNamed;
+
+  /// No description provided for @accountOrgAddressVisibilityAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins only'**
+  String get accountOrgAddressVisibilityAdmins;
+
+  /// No description provided for @accountOrgAddressVisibilityNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Named people only'**
+  String get accountOrgAddressVisibilityNamed;
+
+  /// No description provided for @accountOrgAddressVisibilityHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get accountOrgAddressVisibilityHidden;
+
+  /// No description provided for @accountOrgNamedGrantsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Named people'**
+  String get accountOrgNamedGrantsTitle;
+
+  /// No description provided for @accountOrgNamedCardLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Can see your card'**
+  String get accountOrgNamedCardLabel;
+
+  /// No description provided for @accountOrgNamedPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Can see your phone'**
+  String get accountOrgNamedPhoneLabel;
+
+  /// No description provided for @accountOrgNamedEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Can see your email'**
+  String get accountOrgNamedEmailLabel;
+
+  /// No description provided for @accountOrgNamedAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Can see your address'**
+  String get accountOrgNamedAddressLabel;
+
   /// No description provided for @adminContactsTitle.
   ///
   /// In en, this message translates to:

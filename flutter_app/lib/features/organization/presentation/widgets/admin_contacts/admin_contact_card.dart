@@ -12,7 +12,6 @@ import '../../../domain/entities/org_person.dart';
 import '../../../domain/entities/organization_member.dart';
 import '../../../domain/services/admin_contacts.dart';
 import '../../widgets/organization_role_labels.dart';
-import 'admin_contact_self_prefs_section.dart';
 
 class AdminContactCard extends ConsumerWidget {
   const AdminContactCard({
@@ -29,7 +28,6 @@ class AdminContactCard extends ConsumerWidget {
     this.onView,
     this.onEdit,
     this.onDelete,
-    this.showSelfPrefs = false,
   });
 
   final OrgPersonSummary person;
@@ -44,7 +42,6 @@ class AdminContactCard extends ConsumerWidget {
   final VoidCallback? onView;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
-  final bool showSelfPrefs;
 
   Future<void> _launchTel(String phone) async {
     final uri = Uri(scheme: 'tel', path: phone);
@@ -205,10 +202,6 @@ class AdminContactCard extends ConsumerWidget {
                           ),
                       ],
                     ),
-                  ],
-                  if (showSelfPrefs) ...[
-                    const SizedBox(height: 16),
-                    AdminContactSelfPrefsSection(orgId: orgId),
                   ],
                 ],
               ),

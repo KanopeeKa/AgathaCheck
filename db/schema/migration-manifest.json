@@ -47,7 +47,8 @@
     "038_consolidate_health_entry_types.sql",
     "039_health_issue_documents.sql",
     "040_backfill_weight_entries_from_pets.sql",
-    "041_pet_activity_events.sql"
+    "041_pet_activity_events.sql",
+    "042_org_member_privacy.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
@@ -56,6 +57,7 @@
     "034_pet_timeline_entries.sql",
     "036_organization_permissions.sql",
     "040_backfill_weight_entries_from_pets.sql",
-    "041_pet_activity_events.sql"
+    "041_pet_activity_events.sql",
+    "042_org_member_privacy.sql"
   ]
 }

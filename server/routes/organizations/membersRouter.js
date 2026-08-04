@@ -9,12 +9,10 @@ import {
 import {
   getOrgPersonDetail,
   listOrgPeople,
-  redactPersonDetail,
-  redactPersonSummary,
   updateOrgPersonContact,
-  viewerHasFullPeopleAccess,
 } from '../../lib/orgPeople.js';
 import { extractUserId, requireOrgAdmin, requirePermission } from './shared.js';
+import { loadActivePermissionKeys } from '../../lib/orgPermissions.js';
 
 export function registerMembersRoutes(router, pool) {
     router.get('/:orgId/members', async (req, res) => {
@@ -52,9 +50,10 @@ export function registerMembersRoutes(router, pool) {
       try {
         const role = await requirePermission(pool, res, orgId, userId, 'view_admin_contacts');
         if (!role) return;
-        const fullAccess = viewerHasFullPeopleAccess(role);
-        const people = await listOrgPeople(pool, orgId);
-        res.json(people.map((person) => redactPersonSummary(person, fullAccess)));
+        const permissionKeys = await loadActivePermissionKeys(pool, orgId, userId);
+        const viewer = { userId, role, permissionKeys };
+        const people = await listOrgPeople(pool, orgId, viewer);
+        res.json(people);
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }
@@ -70,10 +69,11 @@ export function registerMembersRoutes(router, pool) {
       try {
         const role = await requirePermission(pool, res, orgId, userId, 'view_admin_contacts');
         if (!role) return;
-        const detail = await getOrgPersonDetail(pool, orgId, kind, personId);
+        const permissionKeys = await loadActivePermissionKeys(pool, orgId, userId);
+        const viewer = { userId, role, permissionKeys };
+        const detail = await getOrgPersonDetail(pool, orgId, kind, personId, viewer);
         if (!detail) return res.status(404).json({ error: 'Person not found' });
-        const fullAccess = viewerHasFullPeopleAccess(role);
-        res.json(redactPersonDetail(detail, fullAccess));
+        res.json(detail);
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }

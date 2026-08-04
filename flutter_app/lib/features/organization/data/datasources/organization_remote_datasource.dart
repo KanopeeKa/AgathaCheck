@@ -133,6 +133,15 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
   Future<void> leaveOrganization(String orgId, String token) =>
       _members.leaveOrganization(orgId, token);
 
+  Future<Map<String, dynamic>> getMemberPrivacy(String orgId, String token) =>
+      _members.getMemberPrivacy(orgId, token);
+
+  Future<Map<String, dynamic>> updateMemberPrivacy(
+    String orgId,
+    Map<String, dynamic> body,
+    String token,
+  ) => _members.updateMemberPrivacy(orgId, body, token);
+
   Future<List<Map<String, dynamic>>> getOrganizationPets(
     String orgId,
     String token,

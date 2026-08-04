@@ -10,6 +10,7 @@ import '../entities/org_connection.dart';
 import '../entities/org_home_hidden_pet.dart';
 import '../entities/org_person.dart';
 import '../entities/organization.dart';
+import '../entities/member_privacy_settings.dart';
 import '../entities/organization_member.dart';
 
 abstract class OrganizationRepository {
@@ -52,6 +53,12 @@ abstract class OrganizationRepository {
   );
   Future<void> removeMember(String orgId, String userId, String token);
   Future<void> leaveOrganization(String orgId, String token);
+  Future<MemberPrivacySettings> getMemberPrivacy(String orgId, String token);
+  Future<MemberPrivacySettings> updateMemberPrivacy(
+    String orgId,
+    MemberPrivacySettings settings,
+    String token,
+  );
 
   // Invites the authenticated user has received.
   Future<List<Map<String, dynamic>>> getPendingInvites(String token);

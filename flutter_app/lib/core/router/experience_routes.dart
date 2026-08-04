@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/experience/domain/entities/app_experience.dart';
 import '../../l10n/app_localizations.dart';
 import '../../features/experience/presentation/screens/account_screen.dart';
+import '../../features/organization/presentation/screens/account_org_settings_screen.dart';
 import '../../features/experience/presentation/screens/experience_chooser_screen.dart';
 import '../../features/experience/presentation/screens/experience_home_screens.dart';
 import '../../features/experience/presentation/screens/experience_resolve_screen.dart';
@@ -45,6 +46,20 @@ List<RouteBase> buildExperienceRoutes() {
       path: '/account',
       name: 'account',
       builder: (context, state) => const AccountScreen(),
+      routes: [
+        GoRoute(
+          path: 'orgs/:orgId',
+          name: 'accountOrgSettings',
+          builder: (context, state) {
+            final highlightLeave =
+                state.uri.queryParameters['highlight'] == 'leave';
+            return AccountOrgSettingsScreen(
+              orgId: state.pathParameters['orgId']!,
+              highlightLeave: highlightLeave,
+            );
+          },
+        ),
+      ],
     ),
     ShellRoute(
       builder: (context, state, child) => child,

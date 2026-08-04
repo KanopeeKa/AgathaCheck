@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import '../../domain/entities/member_privacy_settings.dart';
 import '../../domain/entities/organization.dart';
 import '../../domain/entities/organization_member.dart';
 import '../../domain/repositories/organization_repository.dart';
@@ -134,5 +135,28 @@ abstract class OrganizationRepositoryImplBase
   @override
   Future<void> leaveOrganization(String orgId, String token) async {
     await dataSource.leaveOrganization(orgId, token);
+  }
+
+  @override
+  Future<MemberPrivacySettings> getMemberPrivacy(
+    String orgId,
+    String token,
+  ) async {
+    final json = await dataSource.getMemberPrivacy(orgId, token);
+    return MemberPrivacySettings.fromJson(json);
+  }
+
+  @override
+  Future<MemberPrivacySettings> updateMemberPrivacy(
+    String orgId,
+    MemberPrivacySettings settings,
+    String token,
+  ) async {
+    final json = await dataSource.updateMemberPrivacy(
+      orgId,
+      settings.toJson(),
+      token,
+    );
+    return MemberPrivacySettings.fromJson(json);
   }
 }

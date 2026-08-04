@@ -88,7 +88,6 @@ class AdminContactsList extends ConsumerWidget {
                 ? selfPrefs.phoneVisibility
                 : AdminPhoneVisibility.admins,
             isSelf: isSelf,
-            showSelfPrefs: isSelf,
             canEditOther: !isSelf && canEditOthers,
             canDeleteOther: !isSelf && canEditOthers,
             onView: person.isPending
