@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_experience.dart';
-import '../widgets/experience_settings_section.dart';
+import '../widgets/organisation_visibility_section.dart';
 import '../widgets/experience_shell_scaffold.dart';
 
 /// Settings screen within an experience shell.
@@ -24,7 +24,7 @@ class ExperienceSettingsScreen extends ConsumerWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const ExperienceSettingsSection(),
+          const OrganisationVisibilitySection(),
           const SizedBox(height: 16),
           Card(
             child: ListTile(

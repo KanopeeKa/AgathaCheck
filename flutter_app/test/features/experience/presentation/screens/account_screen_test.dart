@@ -101,7 +101,7 @@ void main() {
   });
 
   testWidgets(
-    'account hides default experience chooser for guardian-only users',
+    'account shows show-organisation toggle for guardian-only users',
     (tester) async {
       final guardianOnly = ExperienceEligibilityRules.compute(
         pets: const [],
@@ -112,12 +112,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.byKey(const Key('default_experience_guardian')),
-        findsNothing,
-      );
-      expect(
-        find.byKey(const Key('default_experience_organization')),
-        findsNothing,
+        find.byKey(const Key('show_organisation_section_toggle')),
+        findsOneWidget,
       );
       expect(find.text('Preferences'), findsOneWidget);
     },

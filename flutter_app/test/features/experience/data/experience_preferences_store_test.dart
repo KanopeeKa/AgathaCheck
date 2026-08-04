@@ -28,5 +28,29 @@ void main() {
       expect(store.readDefaultExperience(), isNull);
       expect(store.readRememberChoice(), isFalse);
     });
+
+    test('show organisation section defaults false', () {
+      final store = ExperiencePreferencesStore(prefs);
+      expect(store.readShowOrganisationSection(), isFalse);
+    });
+
+    test('persists show organisation section', () async {
+      final store = ExperiencePreferencesStore(prefs);
+      await store.writeShowOrganisationSection(true);
+      expect(store.readShowOrganisationSection(), isTrue);
+    });
+
+    test('last app section defaults null', () {
+      final store = ExperiencePreferencesStore(prefs);
+      expect(store.readLastAppSection(), isNull);
+    });
+
+    test('persists last app section wire values', () async {
+      final store = ExperiencePreferencesStore(prefs);
+      await store.writeLastAppSection(AppExperience.organization);
+      expect(store.readLastAppSection(), AppExperience.organization);
+      await store.writeLastAppSection(AppExperience.guardian);
+      expect(store.readLastAppSection(), AppExperience.guardian);
+    });
   });
 }

@@ -8,6 +8,7 @@ import '../../../notifications/presentation/providers/notification_providers.dar
 import '../../../notifications/presentation/widgets/notification_panel.dart';
 import '../../domain/entities/app_experience.dart';
 import '../config/drawer_menu_config.dart';
+import '../providers/experience_providers.dart';
 import '../utils/experience_theme.dart';
 import 'experience_section_drawer.dart';
 
@@ -51,6 +52,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(organisationMembershipVisibilitySyncProvider);
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final combinedUnread = ref.watch(combinedUnreadNotificationCountProvider);

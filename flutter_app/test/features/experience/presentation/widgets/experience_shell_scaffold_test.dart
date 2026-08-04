@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
@@ -12,6 +13,7 @@ import 'package:pet_profile_app/features/organization/domain/entities/organizati
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../helpers/fakes.dart';
 
@@ -22,12 +24,19 @@ class _EmptyOrgListNotifier extends OrganizationListNotifier {
 
 /// Builds a test app wrapping [ExperienceShellScaffold] with minimal overrides.
 Widget _buildApp({
+  required SharedPreferences prefs,
   required AppExperience experience,
   required String currentLocation,
   int combinedUnread = 0,
+  bool showOrganisationSection = false,
 }) {
+  if (showOrganisationSection) {
+    prefs.setBool('show_organisation_section', true);
+  }
+
   return ProviderScope(
     overrides: [
+      sharedPreferencesProvider.overrideWithValue(prefs),
       experienceEligibilityProvider.overrideWith(
         (ref) => AsyncValue.data(
           ExperienceEligibilityRules.compute(
@@ -63,6 +72,14 @@ Widget _buildApp({
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  late SharedPreferences prefs;
+
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    prefs = await SharedPreferences.getInstance();
+  });
+
   testWidgets('section root shows centered logo title when provided', (
     tester,
   ) async {
@@ -159,7 +176,11 @@ void main() {
 
   testWidgets('section root shows hamburger, not back arrow', (tester) async {
     await tester.pumpWidget(
-      _buildApp(experience: AppExperience.guardian, currentLocation: '/g/home'),
+      _buildApp(
+        prefs: prefs,
+        experience: AppExperience.guardian,
+        currentLocation: '/g/home',
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -170,6 +191,7 @@ void main() {
   testWidgets('non-root path shows back arrow, not hamburger', (tester) async {
     await tester.pumpWidget(
       _buildApp(
+        prefs: prefs,
         experience: AppExperience.guardian,
         currentLocation: '/g/events',
       ),
@@ -183,8 +205,10 @@ void main() {
   testWidgets('org section root /o/orgs shows hamburger', (tester) async {
     await tester.pumpWidget(
       _buildApp(
+        prefs: prefs,
         experience: AppExperience.organization,
         currentLocation: '/o/orgs',
+        showOrganisationSection: true,
       ),
     );
     await tester.pumpAndSettle();
@@ -195,7 +219,11 @@ void main() {
 
   testWidgets('bell is always visible on shell screens', (tester) async {
     await tester.pumpWidget(
-      _buildApp(experience: AppExperience.guardian, currentLocation: '/g/home'),
+      _buildApp(
+        prefs: prefs,
+        experience: AppExperience.guardian,
+        currentLocation: '/g/home',
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -208,6 +236,7 @@ void main() {
   testWidgets('bell badge shows combined unread count', (tester) async {
     await tester.pumpWidget(
       _buildApp(
+        prefs: prefs,
         experience: AppExperience.guardian,
         currentLocation: '/g/home',
         combinedUnread: 5,
@@ -224,18 +253,47 @@ void main() {
 
   testWidgets('no Home button present (navigation reversal)', (tester) async {
     await tester.pumpWidget(
-      _buildApp(experience: AppExperience.guardian, currentLocation: '/g/home'),
+      _buildApp(
+        prefs: prefs,
+        experience: AppExperience.guardian,
+        currentLocation: '/g/home',
+      ),
     );
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('experience_nav_home')), findsNothing);
   });
 
-  testWidgets('drawer shows Guardian, Organisation, Account items', (
+  testWidgets('drawer hides Organisation by default for guardian-only users', (
     tester,
   ) async {
     await tester.pumpWidget(
-      _buildApp(experience: AppExperience.guardian, currentLocation: '/g/home'),
+      _buildApp(
+        prefs: prefs,
+        experience: AppExperience.guardian,
+        currentLocation: '/g/home',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('experience_settings_menu')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('drawer_guardian')), findsOneWidget);
+    expect(find.byKey(const Key('drawer_organisation')), findsNothing);
+    expect(find.byKey(const Key('drawer_account')), findsOneWidget);
+  });
+
+  testWidgets('drawer shows Organisation when show-org pref is enabled', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _buildApp(
+        prefs: prefs,
+        experience: AppExperience.guardian,
+        currentLocation: '/g/home',
+        showOrganisationSection: true,
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -249,7 +307,12 @@ void main() {
 
   testWidgets('drawer does not contain deprecated items', (tester) async {
     await tester.pumpWidget(
-      _buildApp(experience: AppExperience.guardian, currentLocation: '/g/home'),
+      _buildApp(
+        prefs: prefs,
+        experience: AppExperience.guardian,
+        currentLocation: '/g/home',
+        showOrganisationSection: true,
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -271,8 +334,10 @@ void main() {
   testWidgets('org non-root path shows back button', (tester) async {
     await tester.pumpWidget(
       _buildApp(
+        prefs: prefs,
         experience: AppExperience.organization,
         currentLocation: '/o/events',
+        showOrganisationSection: true,
       ),
     );
     await tester.pumpAndSettle();

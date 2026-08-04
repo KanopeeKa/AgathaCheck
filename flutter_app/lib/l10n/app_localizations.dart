@@ -7461,6 +7461,24 @@ abstract class AppLocalizations {
   /// **'Used when you sign in. You can still switch anytime from the menu.'**
   String get experienceDefaultSettingSubtitle;
 
+  /// No description provided for @experienceShowOrganisationSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show organisation section'**
+  String get experienceShowOrganisationSectionTitle;
+
+  /// No description provided for @experienceShowOrganisationSectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds Organisation to the menu so you can create or manage shelters and rescues.'**
+  String get experienceShowOrganisationSectionSubtitle;
+
+  /// No description provided for @experienceShowOrganisationSectionMemberLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation stays visible because you belong to at least one organisation.'**
+  String get experienceShowOrganisationSectionMemberLocked;
+
   /// No description provided for @experienceGuardianInviteHint.
   ///
   /// In en, this message translates to:

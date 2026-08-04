@@ -4129,6 +4129,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Used when you sign in. You can still switch anytime from the menu.';
 
   @override
+  String get experienceShowOrganisationSectionTitle =>
+      'Show organisation section';
+
+  @override
+  String get experienceShowOrganisationSectionSubtitle =>
+      'Adds Organisation to the menu so you can create or manage shelters and rescues.';
+
+  @override
+  String get experienceShowOrganisationSectionMemberLocked =>
+      'Organisation stays visible because you belong to at least one organisation.';
+
+  @override
   String get experienceGuardianInviteHint =>
       'Add a pet or open a pet profile to share care with someone.';
 

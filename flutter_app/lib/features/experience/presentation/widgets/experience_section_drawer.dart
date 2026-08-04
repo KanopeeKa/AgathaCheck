@@ -43,7 +43,11 @@ class ExperienceSectionDrawer extends ConsumerWidget {
       location: location,
       activeExperience: activeExperience,
     );
-    final topEntries = DrawerMenuConfig.sectionSwitcherEntries(l: l);
+    final showOrganisationSection = ref.watch(showOrganisationSectionProvider);
+    final topEntries = DrawerMenuConfig.sectionSwitcherEntries(
+      l: l,
+      showOrganisationSection: showOrganisationSection,
+    );
     final accountItem = DrawerMenuConfig.accountItem(l);
 
     return Drawer(
