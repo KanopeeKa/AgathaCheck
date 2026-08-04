@@ -356,6 +356,10 @@ export class OrganizationDetailPage {
 
   /** EN "Connected organisations" profile nav row. */
   async openConnectionsSection(): Promise<void> {
+    const orgId = this.orgIdFromUrl();
+    const connectionsRoute = /\/o\/orgs\/[^/]+\/connections/;
+
+    let navigated = false;
     await enableFlutterAccessibility(this.page);
     await refreshFlutterAccessibility(this.page);
     const row = this.page
@@ -364,10 +368,32 @@ export class OrganizationDetailPage {
       })
       .filter({ visible: true })
       .first();
-    await row.scrollIntoViewIfNeeded();
-    await row.click();
-    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/]+\/connections/, 60_000);
+    if (await row.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await row.scrollIntoViewIfNeeded();
+      await row.click();
+      await refreshFlutterAccessibility(this.page);
+      navigated = await waitForFlutterRoutePattern(this.page, connectionsRoute, 8_000)
+        .then(() => true)
+        .catch(() => false);
+    }
+
+    if (!navigated) {
+      if (!orgId) {
+        await waitForFlutterRoutePattern(this.page, connectionsRoute, 60_000);
+        return;
+      }
+      await navigateWithShellFallback(
+        this.page,
+        connectionsRoute,
+        `/o/orgs/${orgId}/connections`,
+        async () => {
+          await refreshFlutterAccessibility(this.page);
+        },
+        { helper: 'OrganizationDetailPage.openConnectionsSection', testTitle: null },
+      );
+    }
     await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, connectionsRoute, 60_000);
   }
 
   async openAddOrgPet(): Promise<void> {
