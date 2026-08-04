@@ -209,7 +209,7 @@ async function seedOrgV3Demo(client) {
      ON CONFLICT (org_low_id, org_high_id) DO UPDATE SET
        status = 'active',
        revoked_at = NULL`,
-    ['a5000001-0001-4001-8001-000000000001', orgLowId, orgHighId],
+    [crypto.randomUUID(), orgLowId, orgHighId],
   );
 
   console.log('seed: org-v3-demo scenario ready (discoverable Happy Paws + Partner Paws)');

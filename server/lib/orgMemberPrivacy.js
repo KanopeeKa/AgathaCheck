@@ -135,7 +135,6 @@ export function canViewerSeeField({
   if (viewerUserId && subjectUserId && viewerUserId === subjectUserId) return true;
 
   const isAdminViewer = isOrgAdmin(viewerRole);
-  const isSuperAdminViewer = isSuperAdmin(viewerRole);
   const namedGrant = hasNamedGrant(grants, viewerUserId, field);
 
   switch (field) {
@@ -235,11 +234,10 @@ export function mapLegacyFosterVisibility({
   contact_visibility: contactVisibility,
   address_visibility: addressVisibility,
 }) {
-  let cardVisibility = CARD_VISIBILITY_ALL;
   const visible = String(visibleTo || 'both').trim();
+  let cardVisibility = CARD_VISIBILITY_ALL;
   if (visible === 'admins') cardVisibility = CARD_VISIBILITY_ADMINS;
   else if (visible === 'nobody') cardVisibility = CARD_VISIBILITY_NAMED;
-  else cardVisibility = CARD_VISIBILITY_ALL;
 
   let phoneVisibility = CONTACT_VISIBILITY_ADMINS_OR_NAMED;
   let emailVisibility = CONTACT_VISIBILITY_ADMINS_OR_NAMED;

@@ -11,7 +11,6 @@ import {
 } from '../support/api';
 import { OrganizationDiscoverPage } from '../pages/organization-discover.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
-import { PetListPage } from '../pages/pet-list.page';
 
 test.describe('Organisation dashboard IA', () => {
   test('@P1 dashboard shows Discover nav row instead of inline grid', async ({

@@ -79,7 +79,7 @@ class OrgDiscoveryTile extends ConsumerWidget {
                           else
                             OrgImageAvatar(
                               imageUrl: organization.photoUrl,
-                              type: OrganizationType.charity,
+                              type: organization.type,
                               radius: 14,
                               resolvedUrl: resolvedPhoto,
                             ),

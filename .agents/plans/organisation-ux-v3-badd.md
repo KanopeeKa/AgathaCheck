@@ -57,9 +57,9 @@ next_action: "continue phase 12 on branch cursor/organisation-ux-v3-integration-
 artifact_ref:
   branch: cursor/organisation-ux-v3-integration-badd
   plan_path: .agents/plans/organisation-ux-v3-badd.md
-  plan_commit: 0c18e3e6a1fccbebac2d34178e9d61ccd6f9db65
+  plan_commit: f0fc394a1d298850d4a47c07d4b98116fd527464
   snapshot_path: .agents/plans/organisation-ux-v3-badd.snapshot.json
-  snapshot_commit: 0c18e3e6a1fccbebac2d34178e9d61ccd6f9db65
+  snapshot_commit: f0fc394a1d298850d4a47c07d4b98116fd527464
 open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/583"]
 merge_commits: {"0":"d70ee21aae3c3754cc7887a9a21d1b4b21755e72","1":"135c3ee703f65ff46dac9ee692eda578f1d6788b","2":"3feee757e54493a6a44a908177c122e81dfb6de7","3":"f3bbe62f82de413b8ed297872c9951235effd9ab","4":"6ee3a07f6397dfbd82c1302323e79e5556b429c8","5":"868200ec03b0a26ee1642ba77197fd8dae36df25","6":"9ac075be183cbe663beaa9217b79a195b073d0ef","7":"541f6c6ecf197c7251fb49f787cdb540e045abad","8":"c7892e588136270c6822d898c0f10919ad987273","9":"69f95f0e59b36a3e786632ff7c5deaaa730dde92","10":"1660d2d2f76be22d38b151f1a2d871b1c18c7ae0","11":"b29e3addeafb57d65b99ebc3c1b405b78a71b646"}
 debt_issue_refs: [568,569,570]

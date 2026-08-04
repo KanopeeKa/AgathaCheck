@@ -15,7 +15,6 @@ import {
   canViewerSeeField,
   redactMemberForViewer,
 } from './orgMemberPrivacy.js';
-import { loadActivePermissionKeys } from './orgPermissions.js';
 
 const FOSTER_ACTIVE_SQL = FOSTER_ACTIVE_STATUSES.map((s) => `'${s}'`).join(', ');
 const OPEN_SQL = OPEN_PLACEMENT_STATUSES.map((s) => `'${s}'`).join(', ');
