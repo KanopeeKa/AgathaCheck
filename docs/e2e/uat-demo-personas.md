@@ -18,7 +18,8 @@ Password is intentionally weak and documented — acceptable only on isolated no
 |----------|----------|
 | `guardian` | Alice + personal pet **Buddy** (dog) |
 | `org-clinic` | Alice (super_admin), Bob (admin), **Happy Paws Clinic**, org pet **Clinic Cat** |
-| `all` | Both scenarios |
+| `org-v3-demo` | `org-clinic` plus discoverable Happy Paws, **Partner Paws** connection (no hero photos) |
+| `all` | All scenarios |
 
 ## One-command reset (non-prod)
 

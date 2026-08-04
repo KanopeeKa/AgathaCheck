@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/org_permissions_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/org_provider_deps.dart';
-import 'package:pet_profile_app/features/organization/presentation/widgets/org_profile/organisation_profile_member_sections.dart';
 import 'package:pet_profile_app/features/organization/presentation/widgets/org_profile/organisation_profile_pets.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_card.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -154,21 +153,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('full-pet-route'), findsOneWidget);
-    });
-  });
-
-  group('OrganisationProfileMemberSections pets integration', () {
-    testWidgets('shows manage pets link when manage_pets granted', (
-      tester,
-    ) async {
-      await _pumpWithRouter(
-        tester,
-        permissions: {'view_org_pets', 'manage_pets'},
-        child: const OrganisationProfileMemberSections(orgId: _orgId),
-      );
-
-      expect(find.byKey(const Key('org_profile_section_pets')), findsOneWidget);
-      expect(find.text('Manage pets'), findsOneWidget);
     });
   });
 }

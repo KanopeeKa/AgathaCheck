@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/organization_providers.dart';
-import '../providers/org_discovery_provider.dart';
 import '../utils/org_screen_theme.dart';
 import '../widgets/org_card.dart';
-import '../widgets/org_discovery/org_discovery_section.dart';
+import '../widgets/org_discover_nav_row.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 import '../widgets/organization_role_labels.dart';
 
 class OrganizationListScreen extends ConsumerWidget {
@@ -28,7 +28,6 @@ class OrganizationListScreen extends ConsumerWidget {
       onRefresh: () async {
         ref.invalidate(organizationListProvider);
         ref.invalidate(pendingOrgInvitesProvider);
-        ref.invalidate(orgDiscoveryListProvider);
       },
       child: ListView(
         padding: const EdgeInsets.all(16),
@@ -244,7 +243,7 @@ class OrganizationListScreen extends ConsumerWidget {
             },
           ),
           const SizedBox(height: 16),
-          const OrgDiscoverySection(),
+          const OrgDiscoverNavRow(),
           const SizedBox(height: 16),
           Text(
             l.orgMembershipByEmailInvite,
@@ -270,22 +269,12 @@ class OrganizationListScreen extends ConsumerWidget {
       return body;
     }
 
-    return orgThemed(
-      child: Builder(
-        builder: (context) => Scaffold(
-          backgroundColor: orgListScaffoldBackground(context),
-          appBar: AppBar(
-            title: AppLogoTitle(title: l.myOrganizations),
-            leading: IconButton(
-              key: const Key('org_back_button'),
-              icon: const Icon(Icons.arrow_back),
-              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-              onPressed: () => context.go('/'),
-            ),
-          ),
-          body: body,
-        ),
-      ),
+    return OrgShellScaffold(
+      title: l.organisationsDashboardTitle,
+      navVariant: OrgNavTitleVariant.dashboard,
+      leadingKey: const Key('org_back_button'),
+      onBack: () => context.go('/'),
+      child: body,
     );
   }
 }

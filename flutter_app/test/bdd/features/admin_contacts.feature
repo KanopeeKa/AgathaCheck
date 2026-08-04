@@ -31,14 +31,30 @@ Feature: Admin contacts
     When "Alice" edits the admin contact card for "Eve" on "Rescue Hearts"
     Then she should be able to update "Eve"'s contact details
 
-  @P1
-  Scenario: Members can message an admin when contact details allow
+  @P2
+  Scenario: Message affordance is hidden until in-app messaging ships
     Given a registered user "Frank"
     And "Frank" is a foster member of "Rescue Hearts"
     And a registered user "Grace"
     And "Grace" is a member of "Rescue Hearts" with role "admin"
     When "Frank" opens the admin contacts screen for "Rescue Hearts"
-    Then he should see a message affordance for "Grace"
+    Then he should not see a message affordance for "Grace"
+
+  @P1
+  Scenario: Admin contacts screen shows people as pet-style tiles
+    Given a registered user "Bob"
+    And "Bob" is a member of "Rescue Hearts" with role "admin"
+    When "Alice" opens the admin contacts screen for "Rescue Hearts"
+    Then she should see admin contact tiles for "Alice" and "Bob"
+    And each admin contact tile should show a role label
+
+  @P1
+  Scenario: Foster parents directory shows pet-style tiles
+    Given a registered user "Laura"
+    And "Laura" is a foster member of "Rescue Hearts"
+    When "Alice" opens the foster parents screen for "Rescue Hearts"
+    Then she should see a foster parent tile for "Laura"
+    And the foster parent tile should show a foster role label
 
   @P1
   Scenario: Member sees admin contacts preview on organisation profile

@@ -27,6 +27,7 @@ import { migrateAdoptionJourneys } from './migrations/028_adoption_journeys.js';
 import { migrateFamilyEventsTimeline } from './migrations/034_migrate_family_events_timeline.js';
 import { migrateOrganizationPermissions } from './migrations/036_organization_permissions.js';
 import { backfillWeightEntriesFromPets } from './migrations/040_backfill_weight_entries_from_pets.js';
+import { migrateOrgMemberPrivacy } from './migrations/042_org_member_privacy.js';
 import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 
 const { Pool } = pg;
@@ -107,6 +108,7 @@ const CODE_MIGRATIONS = {
   '034_pet_timeline_entries.sql': migrateFamilyEventsTimeline,
   '036_organization_permissions.sql': migrateOrganizationPermissions,
   '040_backfill_weight_entries_from_pets.sql': backfillWeightEntriesFromPets,
+  '042_org_member_privacy.sql': migrateOrgMemberPrivacy,
 };
 
 async function applyMigration(client, name, sql) {

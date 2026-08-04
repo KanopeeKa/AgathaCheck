@@ -16,7 +16,7 @@ import {
  * Organization list screen (`/o/orgs`, legacy `/organizations`).
  * Maps to: flutter_app/test/bdd/features/organisation_management.feature
  */
-/** OrgCard semantics include type + member/pet counts; discovery tiles are name-only and not tappable. */
+/** OrgCard semantics include type + member/pet counts. */
 function membershipOrgCardPattern(name: string): RegExp {
   const escaped = escapeRegExp(name);
   return new RegExp(
@@ -233,5 +233,43 @@ export class OrganizationListPage {
     await expect(
       this.page.getByText(new RegExp(`invited to join.*${escapeRegExp(orgName)}`, 'i')),
     ).toHaveCount(0);
+  }
+
+  discoverNavRow() {
+    return this.page
+      .locator('[flt-semantics-identifier="org_discover_nav_row"]')
+      .or(
+        this.page.getByRole('button', {
+          name: /Discover Organisations|Découvrir des organisations/i,
+        }),
+      )
+      .first();
+  }
+
+  async expectDiscoverNavRowVisible(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(this.discoverNavRow()).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectNoInlineDiscoverTiles(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(this.page.locator('[flt-semantics-identifier^="org_discovery_"]')).toHaveCount(0);
+  }
+
+  async openDiscoverScreen(): Promise<void> {
+    await this.expectDiscoverNavRowVisible();
+    const row = this.discoverNavRow();
+    await row.scrollIntoViewIfNeeded();
+    await row.click();
+    try {
+      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/discover/, 12_000);
+    } catch {
+      // Flutter web hash can lag behind the painted route; fall back to direct hash nav.
+      await this.page.evaluate(() => {
+        window.location.hash = '#/o/orgs/discover?from=dashboard';
+      });
+      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/discover/, 20_000);
+    }
+    await refreshFlutterAccessibility(this.page);
   }
 }

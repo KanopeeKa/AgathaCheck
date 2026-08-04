@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:pet_profile_app/features/organization/domain/entities/archived_pet.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
+import 'package:pet_profile_app/features/organization/domain/entities/member_privacy_settings.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization_member.dart';
 
 import 'recording_organization_repository_base.dart';
@@ -122,6 +123,19 @@ mixin RecordingOrganizationRepositoryCoreMixin
 
   @override
   Future<void> leaveOrganization(String orgId, String token) async {}
+
+  @override
+  Future<MemberPrivacySettings> getMemberPrivacy(
+    String orgId,
+    String token,
+  ) async => const MemberPrivacySettings();
+
+  @override
+  Future<MemberPrivacySettings> updateMemberPrivacy(
+    String orgId,
+    MemberPrivacySettings settings,
+    String token,
+  ) async => settings;
 
   @override
   Future<List<Map<String, dynamic>>> getPendingInvites(String token) async =>

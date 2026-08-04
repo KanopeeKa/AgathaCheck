@@ -8,7 +8,8 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../config/drawer_menu_config.dart';
 import '../providers/experience_providers.dart';
-import '../widgets/experience_settings_section.dart';
+import '../widgets/organisation_visibility_section.dart';
+import '../widgets/account_organisation_settings_section.dart';
 import '../widgets/experience_shell_scaffold.dart';
 
 /// Account dashboard at `/account` — global personal/app-level utilities.
@@ -27,67 +28,76 @@ class AccountScreen extends ConsumerWidget {
       experience: experience,
       currentLocation: '/account',
       screenTitle: l.accountTitle,
-      child: ListView(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-        children: [
-          DashboardSection(
-            title: l.accountProfileSection,
-            previewBuilder: (context) => _AccountRow(
-              key: const Key('account_my_details'),
-              icon: Icons.person_outline,
-              label: l.myDetails,
-              onTap: () => context.push('/my-details'),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            DashboardSection(
+              title: l.accountProfileSection,
+              previewBuilder: (context) => _AccountRow(
+                key: const Key('account_my_details'),
+                icon: Icons.person_outline,
+                label: l.myDetails,
+                onTap: () => context.push('/my-details'),
+              ),
             ),
-          ),
-          DashboardSection(
-            title: l.accountPreferencesSection,
-            previewBuilder: (context) =>
-                const ExperienceSettingsSection(embedded: true),
-          ),
-          DashboardSection(
-            title: l.accountSupportSection,
-            previewBuilder: (context) => Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _AccountRow(
-                  key: const Key('account_help'),
-                  icon: Icons.help_outline,
-                  label: l.helpTitle,
-                  onTap: () => context.push('/help'),
-                ),
-                _AccountRow(
-                  key: const Key('account_about'),
-                  icon: Icons.info_outline,
-                  label: l.aboutUs,
-                  onTap: () => context.push('/about'),
-                ),
-                _AccountRow(
-                  key: const Key('account_contact'),
-                  icon: Icons.email_outlined,
-                  label: l.contact,
-                  onTap: () => _launchContact(),
-                ),
-                _AccountRow(
-                  key: const Key('account_legal'),
-                  icon: Icons.gavel_outlined,
-                  label: l.legalInformation,
-                  onTap: () => context.push('/legal'),
-                ),
-              ],
+            DashboardSection(
+              title: l.accountPreferencesSection,
+              previewBuilder: (context) => Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: const [
+                  OrganisationVisibilitySection(embedded: true),
+                  SizedBox(height: 16),
+                  AccountOrganisationSettingsSection(embedded: true),
+                ],
+              ),
             ),
-          ),
-          DashboardSection(
-            title: l.accountActionsSection,
-            accentColor: Theme.of(context).colorScheme.error,
-            previewBuilder: (context) => _AccountRow(
-              key: const Key('account_sign_out'),
-              icon: Icons.logout,
-              label: l.logOut,
-              isDestructive: true,
-              onTap: () => ref.read(authProvider.notifier).logout(),
+            DashboardSection(
+              title: l.accountSupportSection,
+              previewBuilder: (context) => Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _AccountRow(
+                    key: const Key('account_help'),
+                    icon: Icons.help_outline,
+                    label: l.helpTitle,
+                    onTap: () => context.push('/help'),
+                  ),
+                  _AccountRow(
+                    key: const Key('account_about'),
+                    icon: Icons.info_outline,
+                    label: l.aboutUs,
+                    onTap: () => context.push('/about'),
+                  ),
+                  _AccountRow(
+                    key: const Key('account_contact'),
+                    icon: Icons.email_outlined,
+                    label: l.contact,
+                    onTap: () => _launchContact(),
+                  ),
+                  _AccountRow(
+                    key: const Key('account_legal'),
+                    icon: Icons.gavel_outlined,
+                    label: l.legalInformation,
+                    onTap: () => context.push('/legal'),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            DashboardSection(
+              title: l.accountActionsSection,
+              accentColor: Theme.of(context).colorScheme.error,
+              previewBuilder: (context) => _AccountRow(
+                key: const Key('account_sign_out'),
+                icon: Icons.logout,
+                label: l.logOut,
+                isDestructive: true,
+                onTap: () => ref.read(authProvider.notifier).logout(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

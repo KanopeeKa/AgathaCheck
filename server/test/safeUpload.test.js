@@ -6,9 +6,13 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   assertServerFileId,
   extensionForMime,
+  normalizeMimeType,
   resolveConfinedUploadPath,
+  resolveEffectiveImageMime,
   resolvePathUnderRoot,
   saveUploadedFile,
+  sniffImageMimeFromBuffer,
+  validateOrgImageMime,
 } from '../lib/safeUpload.js';
 
 describe('safeUpload', () => {
@@ -24,6 +28,23 @@ describe('safeUpload', () => {
 
   it('maps MIME to an allowed extension', () => {
     expect(extensionForMime('image/png', new Set(['.png']))).toBe('.png');
+  });
+
+  it('normalizes image/jpg alias', () => {
+    expect(normalizeMimeType('image/jpg')).toBe('image/jpeg');
+    expect(extensionForMime('image/jpg', new Set(['.jpg']))).toBe('.jpg');
+  });
+
+  it('sniffs JPEG magic bytes', () => {
+    const jpeg = Buffer.from([0xff, 0xd8, 0xff, 0xe0]);
+    expect(sniffImageMimeFromBuffer(jpeg)).toBe('image/jpeg');
+    expect(resolveEffectiveImageMime('application/octet-stream', jpeg)).toBe('image/jpeg');
+  });
+
+  it('validateOrgImageMime rejects unsupported buffers', () => {
+    expect(() =>
+      validateOrgImageMime('application/x-msdownload', Buffer.from('nope'), new Set(['.jpg'])),
+    ).toThrow(/Only JPG, PNG, and WebP images are allowed/);
   });
 
   it('rejects disallowed MIME types', () => {

@@ -95,7 +95,7 @@ void main() {
       );
     });
 
-    testWidgets('shows message affordance when admin email is present', (
+    testWidgets('hides message affordance until in-app messaging ships', (
       tester,
     ) async {
       await _pumpWidget(
@@ -104,11 +104,8 @@ void main() {
         child: const OrganisationProfileAdminContacts(orgId: 'org-1'),
       );
 
-      expect(
-        find.byKey(const Key('admin_contact_message_ou-a')),
-        findsOneWidget,
-      );
-      expect(find.text('Message'), findsOneWidget);
+      expect(find.byKey(const Key('admin_contact_message_ou-a')), findsNothing);
+      expect(find.text('Message'), findsNothing);
     });
   });
 

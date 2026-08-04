@@ -80,4 +80,34 @@ class OrganizationMembersRemote {
       _ctx.throwApiError(response, 'Failed to leave organization');
     }
   }
+
+  Future<Map<String, dynamic>> getMemberPrivacy(
+    String orgId,
+    String token,
+  ) async {
+    final response = await _ctx.client.get(
+      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/members/me/privacy'),
+      headers: _ctx.headers(token),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to load privacy settings');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> updateMemberPrivacy(
+    String orgId,
+    Map<String, dynamic> body,
+    String token,
+  ) async {
+    final response = await _ctx.client.put(
+      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/members/me/privacy'),
+      headers: _ctx.headers(token),
+      body: json.encode(body),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to update privacy settings');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
 }

@@ -376,7 +376,24 @@ CREATE TABLE public.organization_users (
     foster_phone character varying(50) DEFAULT ''::character varying,
     foster_address text DEFAULT ''::text,
     admin_notes text DEFAULT ''::text,
+    card_visibility text DEFAULT 'all'::text NOT NULL,
+    phone_visibility text DEFAULT 'admins_or_named'::text NOT NULL,
+    email_visibility text DEFAULT 'admins_or_named'::text NOT NULL,
+    address_visibility text DEFAULT 'admins_or_named'::text NOT NULL,
+    CONSTRAINT organization_users_address_visibility_check CHECK ((address_visibility = ANY (ARRAY['admins_or_named'::text, 'admins'::text, 'named'::text, 'hidden'::text]))),
+    CONSTRAINT organization_users_card_visibility_check CHECK ((card_visibility = ANY (ARRAY['all'::text, 'admins'::text, 'named'::text]))),
+    CONSTRAINT organization_users_email_visibility_check CHECK ((email_visibility = ANY (ARRAY['admins'::text, 'admins_and_foster_managers'::text, 'admins_or_named'::text, 'named'::text]))),
+    CONSTRAINT organization_users_phone_visibility_check CHECK ((phone_visibility = ANY (ARRAY['admins'::text, 'admins_and_foster_managers'::text, 'admins_or_named'::text, 'named'::text]))),
     CONSTRAINT organization_users_role_check CHECK (((role)::text = ANY ((ARRAY['associate'::character varying, 'foster'::character varying, 'admin'::character varying, 'super_admin'::character varying, 'pending_associate'::character varying, 'pending_foster'::character varying, 'pending_admin'::character varying, 'pending_super_admin'::character varying])::text[])))
+);
+CREATE TABLE public.organization_visibility_grants (
+    id uuid NOT NULL,
+    organization_id uuid NOT NULL,
+    subject_user_id uuid NOT NULL,
+    grantee_user_id uuid NOT NULL,
+    field text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT organization_visibility_grants_field_check CHECK ((field = ANY (ARRAY['card'::text, 'phone'::text, 'email'::text, 'address'::text])))
 );
 CREATE TABLE public.organizations (
     id uuid NOT NULL,
@@ -628,6 +645,10 @@ ALTER TABLE ONLY public.organization_users
     ADD CONSTRAINT organization_users_organization_id_user_id_key UNIQUE (organization_id, user_id);
 ALTER TABLE ONLY public.organization_users
     ADD CONSTRAINT organization_users_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.organization_visibility_grants
+    ADD CONSTRAINT organization_visibility_grant_organization_id_subject_user__key UNIQUE (organization_id, subject_user_id, grantee_user_id, field);
+ALTER TABLE ONLY public.organization_visibility_grants
+    ADD CONSTRAINT organization_visibility_grants_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.organizations
     ADD CONSTRAINT organizations_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.password_reset_tokens
@@ -702,6 +723,8 @@ CREATE UNIQUE INDEX idx_org_permissions_active ON public.organization_permission
 CREATE INDEX idx_org_permissions_org_user ON public.organization_permissions USING btree (organization_id, user_id);
 CREATE INDEX idx_org_pet_home_hidden_org ON public.org_pet_home_hidden USING btree (organization_id, pet_id);
 CREATE INDEX idx_org_users_user_id ON public.organization_users USING btree (user_id);
+CREATE INDEX idx_org_visibility_grants_grantee ON public.organization_visibility_grants USING btree (organization_id, grantee_user_id);
+CREATE INDEX idx_org_visibility_grants_subject ON public.organization_visibility_grants USING btree (organization_id, subject_user_id);
 CREATE INDEX idx_organizations_name ON public.organizations USING btree (name);
 CREATE UNIQUE INDEX idx_pet_access_pet_user ON public.pet_access USING btree (pet_id, user_id);
 CREATE INDEX idx_pet_activity_events_occurred_at ON public.pet_activity_events USING btree (occurred_at);
@@ -865,6 +888,12 @@ ALTER TABLE ONLY public.organization_users
     ADD CONSTRAINT organization_users_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.organization_users
     ADD CONSTRAINT organization_users_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.organization_visibility_grants
+    ADD CONSTRAINT organization_visibility_grants_grantee_user_id_fkey FOREIGN KEY (grantee_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.organization_visibility_grants
+    ADD CONSTRAINT organization_visibility_grants_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.organization_visibility_grants
+    ADD CONSTRAINT organization_visibility_grants_subject_user_id_fkey FOREIGN KEY (subject_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.password_reset_tokens
     ADD CONSTRAINT password_reset_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pet_access

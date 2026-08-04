@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/org_person.dart';
 import '../providers/organization_providers.dart';
-import '../utils/org_screen_theme.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 import '../widgets/foster_pet_mini_card.dart';
 import '../widgets/organization_role_labels.dart';
 import '../widgets/org_person_card.dart';
@@ -50,159 +50,156 @@ class _OrganizationPersonDetailScreenState
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
 
-    return orgThemed(
-      child: Scaffold(
-        appBar: AppBar(
-          title: AppLogoTitle(title: l.people),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.pop(),
-          ),
-          actions: [
-            if (isOrgAdmin)
-              PopupMenuButton<String>(
-                onSelected: (action) => _handleAdminAction(context, action),
-                itemBuilder: (context) {
-                  final person = detailAsync.valueOrNull;
-                  if (person == null || person.isExternal || person.isPending) {
-                    if (person?.isExternal == true) {
-                      return [
-                        PopupMenuItem(
-                          value: 'delete_external',
-                          child: Text(
-                            l.deleteFosterParent,
-                            style: TextStyle(color: colorScheme.error),
-                          ),
-                        ),
-                      ];
-                    }
-                    return const [];
-                  }
+    return OrgShellScaffold(
+      title: detailAsync.maybeWhen(
+        data: (person) => l.orgPersonProfileTitle(person.displayName),
+        orElse: () => l.people,
+      ),
+      orgId: widget.orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      trailingActions: [
+        if (isOrgAdmin)
+          PopupMenuButton<String>(
+            onSelected: (action) => _handleAdminAction(context, action),
+            itemBuilder: (context) {
+              final person = detailAsync.valueOrNull;
+              if (person == null || person.isExternal || person.isPending) {
+                if (person?.isExternal == true) {
                   return [
                     PopupMenuItem(
-                      value: 'change_role',
-                      child: Text(l.orgChangeRole),
-                    ),
-                    PopupMenuItem(
-                      value: 'remove',
+                      value: 'delete_external',
                       child: Text(
-                        l.orgRemoveMember,
+                        l.deleteFosterParent,
                         style: TextStyle(color: colorScheme.error),
                       ),
                     ),
                   ];
-                },
-              ),
-          ],
-        ),
-        body: detailAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('$e')),
-          data: (person) {
-            final roleLabel = person.isExternal
-                ? l.fosterParentNoAccount
-                : person.role != null
-                ? localizedOrgMemberRole(l, person.role!)
-                : '';
+                }
+                return const [];
+              }
+              return [
+                PopupMenuItem(
+                  value: 'change_role',
+                  child: Text(l.orgChangeRole),
+                ),
+                PopupMenuItem(
+                  value: 'remove',
+                  child: Text(
+                    l.orgRemoveMember,
+                    style: TextStyle(color: colorScheme.error),
+                  ),
+                ),
+              ];
+            },
+          ),
+      ],
+      child: detailAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('$e')),
+        data: (person) {
+          final roleLabel = person.isExternal
+              ? l.fosterParentNoAccount
+              : person.role != null
+              ? localizedOrgMemberRole(l, person.role!)
+              : '';
 
-            return ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                OrgPersonCard(
-                  person: person,
-                  orgId: widget.orgId,
-                  localizedRoleLabel: localizedOrgMemberRole,
-                ),
-                const SizedBox(height: 16),
-                Card(
-                  color: colorScheme.primaryContainer,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _InfoRow(label: l.email, value: person.email ?? '—'),
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              OrgPersonCard(
+                person: person,
+                orgId: widget.orgId,
+                localizedRoleLabel: localizedOrgMemberRole,
+              ),
+              const SizedBox(height: 16),
+              Card(
+                color: colorScheme.primaryContainer,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _InfoRow(label: l.email, value: person.email ?? '—'),
+                      const SizedBox(height: 8),
+                      _InfoRow(label: l.orgChangeRole, value: roleLabel),
+                      const SizedBox(height: 8),
+                      _InfoRow(
+                        label: l.phone,
+                        value: person.fosterPhone.isNotEmpty
+                            ? person.fosterPhone
+                            : '—',
+                      ),
+                      const SizedBox(height: 8),
+                      _InfoRow(
+                        label: l.fosterContactAddress,
+                        value: person.fosterAddress.isNotEmpty
+                            ? person.fosterAddress
+                            : '—',
+                      ),
+                      if (person.adminNotes.isNotEmpty) ...[
                         const SizedBox(height: 8),
-                        _InfoRow(label: l.orgChangeRole, value: roleLabel),
-                        const SizedBox(height: 8),
-                        _InfoRow(
-                          label: l.phone,
-                          value: person.fosterPhone.isNotEmpty
-                              ? person.fosterPhone
-                              : '—',
-                        ),
-                        const SizedBox(height: 8),
-                        _InfoRow(
-                          label: l.fosterContactAddress,
-                          value: person.fosterAddress.isNotEmpty
-                              ? person.fosterAddress
-                              : '—',
-                        ),
-                        if (person.adminNotes.isNotEmpty) ...[
-                          const SizedBox(height: 8),
-                          _InfoRow(label: l.notes, value: person.adminNotes),
-                        ],
-                        if (isOrgAdmin) ...[
-                          const SizedBox(height: 12),
-                          OutlinedButton.icon(
-                            onPressed: () => _editContact(context, person),
-                            icon: const Icon(Icons.edit, size: 18),
-                            label: Text(l.editFosterContact),
-                          ),
-                        ],
+                        _InfoRow(label: l.notes, value: person.adminNotes),
                       ],
-                    ),
+                      if (isOrgAdmin) ...[
+                        const SizedBox(height: 12),
+                        OutlinedButton.icon(
+                          onPressed: () => _editContact(context, person),
+                          icon: const Icon(Icons.edit, size: 18),
+                          label: Text(l.editFosterContact),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l.currentlyFostering,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              if (person.currentPlacements.isEmpty)
                 Text(
-                  l.currentlyFostering,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                  l.fosterPlacementNotInFoster,
+                  style: TextStyle(color: colorScheme.onSurfaceVariant),
+                )
+              else
+                ...person.currentPlacements.map(
+                  (placement) => FosterPetMiniCard(
+                    petName: placement.petName,
+                    statusLabel: localizedPlacementStatus(l, placement),
+                    startDate: placement.startDate,
                   ),
                 ),
-                const SizedBox(height: 8),
-                if (person.currentPlacements.isEmpty)
-                  Text(
-                    l.fosterPlacementNotInFoster,
-                    style: TextStyle(color: colorScheme.onSurfaceVariant),
-                  )
-                else
-                  ...person.currentPlacements.map(
-                    (placement) => FosterPetMiniCard(
-                      petName: placement.petName,
-                      statusLabel: localizedPlacementStatus(l, placement),
-                      startDate: placement.startDate,
-                    ),
-                  ),
-                const SizedBox(height: 16),
+              const SizedBox(height: 16),
+              Text(
+                l.previouslyFostered,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              if (person.pastPlacements.isEmpty)
                 Text(
-                  l.previouslyFostered,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                  l.noPreviousFosterPlacements,
+                  style: TextStyle(color: colorScheme.onSurfaceVariant),
+                )
+              else
+                ...person.pastPlacements.map(
+                  (item) => FosterPetMiniCard(
+                    petName: item.placement.petName,
+                    statusLabel: localizedPlacementStatus(l, item.placement),
+                    startDate: item.placement.startDate,
+                    outcomeLabel: item.outcome != null
+                        ? localizedPlacementOutcome(l, item.outcome!)
+                        : null,
                   ),
                 ),
-                const SizedBox(height: 8),
-                if (person.pastPlacements.isEmpty)
-                  Text(
-                    l.noPreviousFosterPlacements,
-                    style: TextStyle(color: colorScheme.onSurfaceVariant),
-                  )
-                else
-                  ...person.pastPlacements.map(
-                    (item) => FosterPetMiniCard(
-                      petName: item.placement.petName,
-                      statusLabel: localizedPlacementStatus(l, item.placement),
-                      startDate: item.placement.startDate,
-                      outcomeLabel: item.outcome != null
-                          ? localizedPlacementOutcome(l, item.outcome!)
-                          : null,
-                    ),
-                  ),
-              ],
-            );
-          },
-        ),
+            ],
+          );
+        },
       ),
     );
   }

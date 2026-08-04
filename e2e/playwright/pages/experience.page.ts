@@ -116,40 +116,65 @@ export class ExperiencePage {
 
   async gotoGuardianSettings(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    // /g/settings now redirects to /account
     await waitForFlutterRoute(this.page, '/account');
-    await this.expectDefaultExperienceSectionVisible();
+    await this.expectShowOrganisationSectionVisible();
   }
 
   async openGuardianSettingsFromDrawer(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await this.gotoAccountFromDrawer();
-    await this.expectDefaultExperienceSectionVisible();
+    await this.expectShowOrganisationSectionVisible();
   }
 
-  async expectDefaultExperienceSectionVisible(): Promise<void> {
+  async expectShowOrganisationSectionVisible(): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const marker = this.page
-        .getByRole('radio', { name: 'Individual Pet Guardian' })
-        .or(this.page.getByRole('radio', { name: 'Shelter / Organisation' }))
-        .or(this.page.getByText('Default experience', { exact: true }))
-        .first();
-      await expect(marker).toBeVisible();
+      const toggle = this.page
+        .locator('[flt-semantics-identifier="show_organisation_section_toggle"]')
+        .or(this.page.getByText('Show organisation section', { exact: true }));
+      await expect(toggle.first()).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
 
-  async setDefaultExperience(choice: 'guardian' | 'organization'): Promise<void> {
-    const label =
-      choice === 'guardian' ? 'Individual Pet Guardian' : 'Shelter / Organisation';
-    const radio = this.page.getByRole('radio', { name: label });
-    if (await radio.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await radio.click();
-    } else {
-      await this.page.getByText(label, { exact: true }).click();
-    }
+  async enableShowOrganisationSection(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const toggle = this.page
+      .locator('[flt-semantics-identifier="show_organisation_section_toggle"]')
+      .or(this.page.getByRole('switch', { name: /Show organisation section/i }));
+    await toggle.first().click();
     await refreshFlutterAccessibility(this.page);
     await this.page.waitForTimeout(400);
+  }
+
+  async expectShowOrganisationToggleLockedOn(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page.getByText(
+        'Organisation stays visible because you belong to at least one organisation.',
+      ),
+    ).toBeVisible({ timeout: 15_000 });
+    const toggle = this.page.getByRole('switch', { name: /Show organisation section/i });
+    await expect(toggle).toBeVisible();
+    await expect(toggle).toBeChecked();
+    await expect(toggle).toBeDisabled();
+  }
+
+  /** @deprecated Default-experience radios removed — use last-section routing instead. */
+  async expectDefaultExperienceSectionVisible(): Promise<void> {
+    await this.expectShowOrganisationSectionVisible();
+  }
+
+  /** @deprecated Default-experience radios removed — use drawer section switch + relogin. */
+  async setDefaultExperience(_choice: 'guardian' | 'organization'): Promise<void> {
+    // no-op — retained for legacy spec imports
+  }
+
+  async expectDrawerWithoutOrganisation(): Promise<void> {
+    await openExperienceDrawer(this.page);
+    await refreshFlutterAccessibility(this.page);
+    await expect(this.page.getByRole('button', { name: /^Guardian\b/i })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^Organisation\b/i })).not.toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^Account\b/i })).toBeVisible();
   }
 
   /** Assert the drawer contains exactly the three section-switcher items. */

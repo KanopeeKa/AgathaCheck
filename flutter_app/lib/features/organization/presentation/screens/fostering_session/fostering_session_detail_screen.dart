@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/foster_placement.dart';
 import '../../../domain/entities/foster_session_status.dart';
@@ -11,8 +10,9 @@ import '../../providers/fostering_session_providers.dart';
 import '../../providers/org_provider_pets.dart';
 import '../../providers/org_provider_deps.dart';
 import '../../utils/foster_placement_display.dart';
-import '../../utils/org_screen_theme.dart';
 import '../../widgets/fostering_session/fostering_session_preparation_checklist.dart';
+import '../../widgets/org_shell_app_bar_title.dart';
+import '../../widgets/org_shell_scaffold.dart';
 
 class FosteringSessionDetailScreen extends ConsumerWidget {
   const FosteringSessionDetailScreen({
@@ -30,25 +30,18 @@ class FosteringSessionDetailScreen extends ConsumerWidget {
     final key = (orgId: orgId, placementId: placementId);
     final sessionAsync = ref.watch(fosteringSessionDetailProvider(key));
 
-    return orgThemed(
-      child: Scaffold(
-        appBar: AppBar(
-          title: AppLogoTitle(title: l.fosteringSessionDetailTitle),
-          leading: IconButton(
-            key: const Key('fostering_session_detail_back'),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: () => context.pop(),
-          ),
-        ),
-        body: sessionAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('$e')),
-          data: (placement) => _FosteringSessionDetailBody(
-            orgId: orgId,
-            placementId: placementId,
-            placement: placement,
-          ),
+    return OrgShellScaffold(
+      title: l.fosteringSessionDetailTitle,
+      orgId: orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      leadingKey: const Key('fostering_session_detail_back'),
+      child: sessionAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('$e')),
+        data: (placement) => _FosteringSessionDetailBody(
+          orgId: orgId,
+          placementId: placementId,
+          placement: placement,
         ),
       ),
     );

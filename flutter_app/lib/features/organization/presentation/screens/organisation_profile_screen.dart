@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
 import '../controllers/org_dashboard_menu.dart';
 import '../providers/org_provider_profile.dart';
-import '../utils/org_screen_theme.dart';
 import '../widgets/org_permission_gate.dart';
 import '../widgets/org_presentation/org_presentation_contact_block.dart';
 import '../widgets/org_presentation/org_presentation_hero.dart';
 import '../widgets/org_presentation/org_presentation_legal_block.dart';
 import '../widgets/org_profile/organisation_profile_member_sections.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 import '../widgets/organization_emergency_contact_card.dart';
 
 class OrganisationProfileScreen extends ConsumerWidget {
@@ -37,89 +37,88 @@ class OrganisationProfileScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
 
     return profileAsync.when(
-      loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (e, _) => Scaffold(
-        appBar: AppBar(title: AppLogoTitle(title: l.orgPresentationTitle)),
-        body: Center(child: Text('$e')),
+      loading: () => OrgShellScaffold(
+        title: l.orgPresentationTitle,
+        navVariant: OrgNavTitleVariant.textOnly,
+        onBack: () => context.go('/o/orgs'),
+        child: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => OrgShellScaffold(
+        title: l.orgPresentationTitle,
+        navVariant: OrgNavTitleVariant.textOnly,
+        onBack: () => context.go('/o/orgs'),
+        child: Center(child: Text('$e')),
       ),
       data: (profile) {
         final org = profile.organization;
         final typeLabel = _localizedTypeLabel(l, org.type);
 
-        return orgThemed(
-          child: Scaffold(
-            key: const Key('org_profile_screen'),
-            appBar: AppBar(
-              title: AppLogoTitle(title: org.name),
-              leading: IconButton(
-                key: const Key('org_profile_back'),
-                icon: const Icon(Icons.arrow_back),
-                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                onPressed: () => context.go('/o/orgs'),
+        return OrgShellScaffold(
+          key: const Key('org_profile_screen'),
+          title: org.name,
+          navVariant: OrgNavTitleVariant.textOnly,
+          leadingKey: const Key('org_profile_back'),
+          onBack: () => context.go('/o/orgs'),
+          trailingActions: [
+            PopupMenuButton<String>(
+              key: const Key('org_profile_menu'),
+              tooltip: MaterialLocalizations.of(context).showMenuTooltip,
+              onSelected: (value) => handleOrgDashboardMenuAction(
+                context: context,
+                ref: ref,
+                orgId: orgId,
+                action: value,
+                org: org,
               ),
-              actions: [
-                PopupMenuButton<String>(
-                  key: const Key('org_profile_menu'),
-                  tooltip: MaterialLocalizations.of(context).showMenuTooltip,
-                  onSelected: (value) => handleOrgDashboardMenuAction(
-                    context: context,
-                    ref: ref,
-                    orgId: orgId,
-                    action: value,
-                    org: org,
-                  ),
-                  itemBuilder: (context) => buildOrgDashboardMenuItems(
-                    context: context,
-                    ref: ref,
-                    orgId: orgId,
-                  ),
-                ),
-                OrgPermissionGate(
-                  orgId: orgId,
-                  permissionKey: 'manage_permissions',
-                  child: IconButton(
-                    key: const Key('org_profile_settings'),
-                    icon: const Icon(Icons.settings_outlined),
-                    tooltip: l.orgProfileSettingsTooltip,
-                    onPressed: () => context.push('/o/orgs/$orgId/edit'),
-                  ),
-                ),
-              ],
+              itemBuilder: (context) => buildOrgDashboardMenuItems(
+                context: context,
+                ref: ref,
+                orgId: orgId,
+              ),
             ),
-            body: ListView(
-              padding: const EdgeInsets.only(bottom: 24),
-              children: [
-                OrgPresentationHero(org: org, localizedTypeLabel: typeLabel),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: OrgPresentationLegalBlock(org: org, l: l),
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: OrgPresentationContactBlock(
-                    org: org,
-                    title: l.orgPresentationContactTitle,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: OrganizationEmergencyContactCard(
-                    org: org,
-                    theme: theme,
-                    colorScheme: colorScheme,
-                    l: l,
-                  ),
-                ),
-                if (profile.isMember) ...[
-                  const SizedBox(height: 24),
-                  OrganisationProfileMemberSections(orgId: orgId),
-                ],
-              ],
+            OrgPermissionGate(
+              orgId: orgId,
+              permissionKey: 'manage_permissions',
+              child: IconButton(
+                key: const Key('org_profile_edit'),
+                icon: const Icon(Icons.edit_outlined),
+                tooltip: l.orgProfileEditTooltip,
+                onPressed: () => context.push('/o/orgs/$orgId/edit'),
+              ),
             ),
+          ],
+          child: ListView(
+            padding: const EdgeInsets.only(bottom: 24),
+            children: [
+              OrgPresentationHero(org: org, localizedTypeLabel: typeLabel),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: OrgPresentationLegalBlock(org: org, l: l),
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: OrgPresentationContactBlock(
+                  org: org,
+                  title: l.orgPresentationContactTitle,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: OrganizationEmergencyContactCard(
+                  org: org,
+                  theme: theme,
+                  colorScheme: colorScheme,
+                  l: l,
+                ),
+              ),
+              if (profile.isMember) ...[
+                const SizedBox(height: 24),
+                OrganisationProfileMemberSections(orgId: orgId),
+              ],
+            ],
           ),
         );
       },

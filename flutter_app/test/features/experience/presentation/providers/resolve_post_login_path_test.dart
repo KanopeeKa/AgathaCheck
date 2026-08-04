@@ -64,7 +64,7 @@ void main() {
         expect(
           resolvePostLoginPath(
             eligibility: _dual(),
-            savedDefault: AppExperience.guardian,
+            lastAppSection: AppExperience.guardian,
             pets: const [
               Pet(id: '1', name: 'Mine', species: 'Cat'),
               Pet(
@@ -130,37 +130,55 @@ void main() {
       expect(resolvePostLoginPath(eligibility: _orgOnly()), '/o/home');
     });
 
-    test('dual-role user without saved default goes to chooser', () {
-      expect(resolvePostLoginPath(eligibility: _dual()), '/app/choose');
+    test('dual-role user without last section falls back to guardian', () {
+      expect(resolvePostLoginPath(eligibility: _dual()), '/g/home');
     });
 
-    test('dual-role user with saved guardian default skips chooser', () {
+    test(
+      'dual-role user with last guardian section lands on guardian home',
+      () {
+        expect(
+          resolvePostLoginPath(
+            eligibility: _dual(),
+            lastAppSection: AppExperience.guardian,
+          ),
+          '/g/home',
+        );
+      },
+    );
+
+    test('dual-role user with last organisation section lands on org home', () {
       expect(
         resolvePostLoginPath(
           eligibility: _dual(),
-          savedDefault: AppExperience.guardian,
+          lastAppSection: AppExperience.organization,
+        ),
+        '/o/home',
+      );
+    });
+
+    test(
+      'guardian-only with show-org pref and last org opens org dashboard',
+      () {
+        expect(
+          resolvePostLoginPath(
+            eligibility: _guardianOnly(),
+            lastAppSection: AppExperience.organization,
+            showOrganisationSectionPref: true,
+          ),
+          '/o/home',
+        );
+      },
+    );
+
+    test('guardian-only ignores last org when show-org pref is off', () {
+      expect(
+        resolvePostLoginPath(
+          eligibility: _guardianOnly(),
+          lastAppSection: AppExperience.organization,
+          showOrganisationSectionPref: false,
         ),
         '/g/home',
-      );
-    });
-
-    test('dual-role user with saved organisation default skips chooser', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _dual(),
-          savedDefault: AppExperience.organization,
-        ),
-        '/o/home',
-      );
-    });
-
-    test('invalid saved default for org-only falls through to org home', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _orgOnly(),
-          savedDefault: AppExperience.guardian,
-        ),
-        '/o/home',
       );
     });
 

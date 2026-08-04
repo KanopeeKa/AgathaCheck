@@ -3,6 +3,10 @@ Feature: Organisation profile
   I want to view an organisation's public profile
   So that I can learn about a shelter before contacting them
 
+  Background:
+    Given a registered user "Alice"
+    And "Alice" is a super user of organisation "Rescue Hearts"
+
   @P1
   Scenario: Anonymous visitor can view a discoverable organisation profile
     Given "Rescue Hearts" is discoverable with a public description
@@ -29,3 +33,35 @@ Feature: Organisation profile
     When an anonymous visitor requests the public profile API for "Rescue Hearts"
     Then the response should include only public-tier organisation fields
     And internal membership fields should not be included
+
+  @P1
+  Scenario: Profile hero shows name beside overlapping logo
+    Given "Rescue Hearts" is discoverable with a public description
+    When an anonymous visitor opens the organisation profile for "Rescue Hearts"
+    Then the profile hero should show the name beside a large overlapping logo
+
+  @P1
+  Scenario: Profile overflow menu excludes delete organisation
+    When "Alice" opens the organisation profile for "Rescue Hearts"
+    Then the profile overflow menu should offer invite and members
+    And the profile overflow menu should not offer delete organisation
+
+  @P1
+  Scenario: Member sees permission-gated profile nav rows without previews
+    Given a registered user "Bob"
+    And "Bob" is a member of "Rescue Hearts" with role "associate"
+    When "Bob" opens the organisation profile for "Rescue Hearts"
+    Then he should see a profile nav row for "Pets"
+    And he should not see inline pet previews on the profile
+
+  @P1
+  Scenario: Super Admin sees Organisation Administration nav row on profile
+    When "Alice" opens the organisation profile for "Rescue Hearts"
+    Then she should see a profile nav row for "Organisation Administration"
+    And she should not see inline section previews on the profile
+
+  @P1
+  Scenario: Foster Admin does not see Organisation Administration nav row
+    Given "Alice" is a Foster Admin member of "Rescue Hearts"
+    When "Alice" opens the organisation profile for "Rescue Hearts"
+    Then she should not see a profile nav row for "Organisation Administration"

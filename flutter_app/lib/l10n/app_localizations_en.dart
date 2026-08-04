@@ -1620,6 +1620,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myOrganizations => 'My Organizations';
 
   @override
+  String get organisationsDashboardTitle => 'Organisations dashboard';
+
+  @override
   String get discoverOrganizations => 'Discover Organisations';
 
   @override
@@ -1628,6 +1631,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get orgDiscoveryLoadError =>
       'Could not load discoverable organisations';
+
+  @override
+  String get orgDiscoverySearchPlaceholder => 'Search by name';
+
+  @override
+  String get orgDiscoverySearchEmpty => 'No organisations match your search';
+
+  @override
+  String orgDiscoverBrowsingAs(String name) {
+    return 'You are browsing as $name';
+  }
+
+  @override
+  String get orgDiscoverBrowsingAsFallback => 'your account';
 
   @override
   String orgDiscoveryLocation(String town, String administrativeArea) {
@@ -1686,6 +1703,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orgProfileSettingsTooltip => 'Edit organisation settings';
+
+  @override
+  String get orgProfileEditTooltip => 'Edit organisation';
 
   @override
   String get orgWebsite => 'Website';
@@ -1931,6 +1951,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgConnectionsEmpty => 'No connected organisations yet';
 
   @override
+  String orgConnectionCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count connections',
+      one: '1 connection',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get createConnectionRequest => 'Connect to organisation';
 
   @override
@@ -2082,6 +2113,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orgUploadPicture => 'Upload picture';
+
+  @override
+  String get orgUploadCover => 'Upload cover';
 
   @override
   String get orgUploadLogo => 'Upload logo';
@@ -4129,6 +4163,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Used when you sign in. You can still switch anytime from the menu.';
 
   @override
+  String get experienceShowOrganisationSectionTitle =>
+      'Show organisation section';
+
+  @override
+  String get experienceShowOrganisationSectionSubtitle =>
+      'Adds Organisation to the menu so you can create or manage shelters and rescues.';
+
+  @override
+  String get experienceShowOrganisationSectionMemberLocked =>
+      'Organisation stays visible because you belong to at least one organisation.';
+
+  @override
   String get experienceGuardianInviteHint =>
       'Add a pet or open a pet profile to share care with someone.';
 
@@ -4346,11 +4392,99 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountActionsSection => 'Account actions';
 
   @override
+  String get accountOrgSettingsTitle => 'Organisation settings';
+
+  @override
+  String get accountOrgSettingsEmpty =>
+      'You are not a member of any organisation yet.';
+
+  @override
+  String get accountOrgPrivacySection => 'Privacy in this organisation';
+
+  @override
+  String get accountOrgPrivacySaved => 'Privacy settings saved';
+
+  @override
+  String get accountOrgLeaveSection => 'Leave organisation';
+
+  @override
+  String get accountOrgLeaveSubtitle =>
+      'Remove your membership from this organisation.';
+
+  @override
+  String get accountOrgCardVisibilityLabel => 'Who can see your directory card';
+
+  @override
+  String get accountOrgPhoneVisibilityLabel => 'Who can see your phone number';
+
+  @override
+  String get accountOrgEmailVisibilityLabel => 'Who can see your email address';
+
+  @override
+  String get accountOrgAddressVisibilityLabel => 'Who can see your address';
+
+  @override
+  String get accountOrgCardVisibilityAll => 'Everyone in the organisation';
+
+  @override
+  String get accountOrgCardVisibilityAdmins => 'Admins only';
+
+  @override
+  String get accountOrgCardVisibilityNamed => 'Named people only';
+
+  @override
+  String get accountOrgContactVisibilityAdmins => 'Admins only';
+
+  @override
+  String get accountOrgContactVisibilityAdminsAndFosterManagers =>
+      'Admins and foster managers';
+
+  @override
+  String get accountOrgContactVisibilityAdminsOrNamed =>
+      'Admins or named people';
+
+  @override
+  String get accountOrgContactVisibilityNamed => 'Named people only';
+
+  @override
+  String get accountOrgAddressVisibilityAdminsOrNamed =>
+      'Admins or named people';
+
+  @override
+  String get accountOrgAddressVisibilityAdmins => 'Admins only';
+
+  @override
+  String get accountOrgAddressVisibilityNamed => 'Named people only';
+
+  @override
+  String get accountOrgAddressVisibilityHidden => 'Hidden';
+
+  @override
+  String get accountOrgNamedGrantsTitle => 'Named people';
+
+  @override
+  String get accountOrgNamedCardLabel => 'Can see your card';
+
+  @override
+  String get accountOrgNamedPhoneLabel => 'Can see your phone';
+
+  @override
+  String get accountOrgNamedEmailLabel => 'Can see your email';
+
+  @override
+  String get accountOrgNamedAddressLabel => 'Can see your address';
+
+  @override
   String get adminContactsTitle => 'Admin contacts';
 
   @override
+  String orgPersonProfileTitle(String name) {
+    return '$name - Profile';
+  }
+
+  @override
   String get adminContactsDescription =>
-      'Internal directory of organisation admins. Call or message using the contact details they share.';
+      'Internal directory of organisation admins. Tap a tile to open their profile.';
 
   @override
   String get adminContactsEmpty => 'No admin contacts yet.';
@@ -4509,7 +4643,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get orgCustomisationsTitle => 'Organisation customisations';
+  String get orgCustomisationsTitle => 'Organisation Administration';
 
   @override
   String get orgCustomisationsIntro =>

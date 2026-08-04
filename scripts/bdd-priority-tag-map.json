@@ -130,7 +130,9 @@
     "Viewing organisation details": "P1",
     "Viewing organisation members from the dashboard": "P1",
     "Updating organisation information": "P1",
-    "Leaving an organisation": "P1"
+    "Leaving an organisation": "P1",
+    "Dashboard shows Discover nav row instead of inline grid": "P1",
+    "Discover nav row opens discover screen": "P1"
   },
   "organisation_pet_management.feature": {
     "Super user creates a pet under the organisation": "P1",
@@ -237,7 +239,10 @@
     "Drawer shows exactly three destinations regardless of current mode": "P1",
     "Bell shows a single combined unread badge across both notification kinds": "P1",
     "Hamburger is shown only on section root screens": "P1",
-    "Guardian chooser hides organisation option for guardian-only users": "P2"
+    "Guardian chooser hides organisation option for guardian-only users": "P2",
+    "Dual-role user lands on guardian home when no last section saved": "P1",
+    "Drawer hides Organisation for guardian-only users by default": "P1",
+    "Drawer shows Organisation when user is an org member": "P0"
   },
   "guardian_onboarding.feature": {
     "New guardian user sees onboarding wizard after first login": "P1",
@@ -259,7 +264,11 @@
     "An organisation can opt out of discovery": "P1",
     "Discover API returns display_locality from postcode when set": "P1",
     "Discover API includes photo_url for hero imagery": "P1",
-    "Discover API falls back display_locality to town then administrative area": "P1"
+    "Discover API falls back display_locality to town then administrative area": "P1",
+    "Discover API filters organisations by name when q is provided": "P1",
+    "Discover API search preserves pagination metadata": "P1",
+    "Connections screen Discover CTA opens discover with org browse-as context": "P1",
+    "Connections screen back returns to organisation profile": "P1"
   },
   "pet_timeline.feature": {
     "Timeline shows a fostering session card": "P1",
@@ -283,7 +292,10 @@
     "Members can message an admin when contact details allow": "P1",
     "Member sees admin contacts preview on organisation profile": "P1",
     "Member sees connected organisation tiles on profile": "P1",
-    "Team admin sees manage connections entry on profile": "P1"
+    "Team admin sees manage connections entry on profile": "P1",
+    "Message affordance is hidden until in-app messaging ships": "P2",
+    "Admin contacts screen shows people as pet-style tiles": "P1",
+    "Foster parents directory shows pet-style tiles": "P1"
   },
   "fostering_sessions.feature": {
     "Admin can open the fostering sessions list from the profile": "P1",
@@ -293,13 +305,21 @@
   "organisation_edit.feature": {
     "Super admin can update structured address and postcode": "P1",
     "Super admin can upload hero and logo images": "P1",
-    "Profile settings cog opens edit form for manage_permissions users": "P1"
+    "Profile settings cog opens edit form for manage_permissions users": "P1",
+    "Super admin can upload cover and logo images": "P1",
+    "Profile edit icon opens edit form for manage_permissions users": "P1",
+    "Super admin can delete organisation from edit screen only": "P1"
   },
   "organisation_profile.feature": {
     "Anonymous visitor can view a discoverable organisation profile": "P1",
     "Opted-out organisation profile is hidden from anonymous visitors": "P1",
     "Active member can view opted-out organisation public profile": "P1",
-    "Public profile API exposes only public-tier fields": "P1"
+    "Public profile API exposes only public-tier fields": "P1",
+    "Profile hero shows name beside overlapping logo": "P1",
+    "Profile overflow menu excludes delete organisation": "P1",
+    "Member sees permission-gated profile nav rows without previews": "P1",
+    "Super Admin sees Organisation Administration nav row on profile": "P1",
+    "Foster Admin does not see Organisation Administration nav row": "P1"
   },
   "organisation_permissions.feature": {
     "Super Admin applies the Pet Admin bundle preset": "P1",
@@ -307,11 +327,22 @@
   },
   "organisation_customisations.feature": {
     "Only Super Admin sees the customisations entry point": "P1",
-    "Audit log viewer shows a permission grant": "P1"
+    "Audit log viewer shows a permission grant": "P1",
+    "Only Super Admin sees the Administration entry on profile": "P1"
   },
   "redacted_org_pet.feature": {
     "Associate sees pet preview on organisation profile": "P1",
     "Associate tap opens redacted pet profile with summary fields only": "P1",
     "Redacted pet API exposes allowlisted fields only": "P1"
+  },
+  "account_area.feature": {
+    "Guardian-only user can enable show organisation section": "P1",
+    "Org member cannot disable show organisation section": "P1",
+    "Login restores last active organisation section": "P1",
+    "Login restores last active guardian section": "P1"
+  },
+  "organisation_member_privacy.feature": {
+    "Member updates privacy settings from Account": "P1",
+    "Profile Leave navigates to Account org settings": "P1"
   }
 }

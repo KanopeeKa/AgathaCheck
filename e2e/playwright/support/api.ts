@@ -371,6 +371,7 @@ export async function updateOrganization(
 export interface DiscoverableOrganization {
   id: string;
   name: string;
+  type: string;
   logo_url: string;
   photo_url: string;
   display_locality: string;
@@ -388,11 +389,12 @@ export interface DiscoverOrganizationsResponse {
 
 export async function discoverOrganizations(
   baseURL: string,
-  options: { page?: number; pageSize?: number } = {},
+  options: { page?: number; pageSize?: number; query?: string } = {},
 ): Promise<DiscoverOrganizationsResponse> {
   const params = new URLSearchParams();
   if (options.page != null) params.set('page', String(options.page));
   if (options.pageSize != null) params.set('page_size', String(options.pageSize));
+  if (options.query?.trim()) params.set('q', options.query.trim());
   const qs = params.toString();
   const path = qs ? `/organizations/discover?${qs}` : '/organizations/discover';
   const res = await apiFetch(apiUrl(path, baseURL));
@@ -460,6 +462,101 @@ export async function setOrganizationDiscoveryProfile(
     logo_url: profile.logo_url ?? '',
     photo_url: profile.photo_url ?? '',
   });
+}
+
+export interface MemberPrivacyGrants {
+  card?: string[];
+  phone?: string[];
+  email?: string[];
+  address?: string[];
+}
+
+export interface MemberPrivacySettings {
+  card_visibility: string;
+  phone_visibility: string;
+  email_visibility: string;
+  address_visibility: string;
+  grants: MemberPrivacyGrants;
+}
+
+/** Read per-org member privacy (Account → Organisation settings). */
+export async function getMemberPrivacySettings(
+  baseURL: string,
+  token: string,
+  orgId: string,
+): Promise<MemberPrivacySettings> {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/members/me/privacy`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getMemberPrivacySettings failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+/** Update per-org member privacy and optional named grants (v3 Account settings). */
+export async function updateMemberPrivacySettings(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  settings: Partial<{
+    card_visibility: string;
+    phone_visibility: string;
+    email_visibility: string;
+    address_visibility: string;
+    grants: MemberPrivacyGrants;
+  }>,
+): Promise<MemberPrivacySettings> {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/members/me/privacy`, baseURL), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(settings),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`updateMemberPrivacySettings failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+/**
+ * Discoverable org for v3 Discover/search journeys.
+ * Defaults to no hero photo so tile grids exercise the solid-teal fallback.
+ */
+export async function seedDiscoverableOrganization(
+  baseURL: string,
+  overrides: Partial<{
+    name: string;
+    type: string;
+    town: string;
+    administrativeArea: string;
+    description: string;
+    photoUrl: string;
+    logoUrl: string;
+  }> = {},
+): Promise<{ owner: TestUser; org: TestOrganization }> {
+  const owner = await signupUser(baseURL, {
+    firstName: 'Discover',
+    lastName: 'Owner',
+    email: `discover-${Date.now()}@example.com`,
+  });
+  const org = await createOrganization(baseURL, owner.accessToken, {
+    name: overrides.name ?? `Discover Org ${Date.now()}`,
+    type: overrides.type ?? 'charity',
+  });
+  await setOrganizationDiscoverability(baseURL, owner.accessToken, org, true);
+  await setOrganizationDiscoveryProfile(baseURL, owner.accessToken, org, {
+    town: overrides.town ?? 'Springfield',
+    administrative_area: overrides.administrativeArea ?? 'Demo County',
+    description: overrides.description ?? 'E2E discoverable organisation',
+    photo_url: overrides.photoUrl ?? '',
+    logo_url: overrides.logoUrl ?? '',
+  });
+  return { owner, org };
 }
 
 export async function inviteToOrganization(

@@ -26,6 +26,7 @@ Feature: Experience navigation
     And the user taps the "Sign In" button
     Then the user should be navigated to the organisation home screen
 
+  @legacy
   @P1
   Scenario: Dual-role user sees experience chooser after login
     Given a registered user with email "dual@example.com" and password "secret123"
@@ -37,6 +38,7 @@ Feature: Experience navigation
     And the user taps the "Sign In" button
     Then the user should see the experience chooser screen
 
+  @legacy
   @P1
   Scenario: Dual-role chooser pre-selects guardian
     Given a registered user with email "dual@example.com" and password "secret123"
@@ -47,6 +49,7 @@ Feature: Experience navigation
     When the user taps continue
     Then the user should be navigated to the guardian home screen
 
+  @legacy
   @P1
   Scenario: Dual-role user remembers guardian choice
     Given a registered user with email "dual@example.com" and password "secret123"
@@ -58,6 +61,7 @@ Feature: Experience navigation
     And the user taps continue
     Then the user should be navigated to the guardian home screen
 
+  @legacy
   @P1
   Scenario: Remembered guardian choice skips chooser on next login
     Given a registered user with email "dual@example.com" and password "secret123"
@@ -70,6 +74,7 @@ Feature: Experience navigation
     And the user taps the "Sign In" button
     Then the user should be navigated to the guardian home screen
 
+  @legacy
   @P1
   Scenario: Dual-role user sets default experience to organisation in settings
     Given a registered user with email "dual@example.com" and password "secret123"
@@ -97,7 +102,28 @@ Feature: Experience navigation
   # ── Section-switcher drawer (navigation reversal, phase-1-navigation.md) ──
 
   @P1
-  Scenario: Drawer shows exactly three destinations regardless of current mode
+  Scenario: Dual-role user lands on guardian home when no last section saved
+    Given a registered user with email "dual@example.com" and password "secret123"
+    And the user belongs to an organisation
+    And the user has personal guardian pets
+    And the user is on the login screen
+    When the user enters email "dual@example.com"
+    And the user enters password "secret123"
+    And the user taps the "Sign In" button
+    Then the user should be navigated to the guardian home screen
+
+  @P1
+  Scenario: Drawer hides Organisation for guardian-only users by default
+    Given a registered user with email "guardian@example.com" and password "secret123"
+    And the user has no organisation memberships
+    And the user is on the guardian home screen
+    When the user opens the hamburger drawer
+    Then the drawer should contain "Guardian" as a section item
+    And the drawer should not contain "Organisation" as a section item
+    And the drawer should contain "Account" as the bottom-pinned item
+
+  @P0
+  Scenario: Drawer shows Organisation when user is an org member
     Given a registered user with email "dual@example.com" and password "secret123"
     And the user belongs to an organisation
     And the user has personal guardian pets
@@ -128,6 +154,8 @@ Feature: Experience navigation
     When the user navigates to a sub-screen
     Then the back arrow should be visible instead of the hamburger
 
+  @P2
+  @legacy
   @P2
   Scenario: Guardian chooser hides organisation option for guardian-only users
     Given a registered user with email "guardian@example.com" and password "secret123"

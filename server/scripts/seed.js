@@ -33,6 +33,7 @@ export const DEMO_IDS = {
   bobOrgUser: 'a3000001-0001-4001-8001-000000000002',
   buddyPet: 'a4000001-0001-4001-8001-000000000001',
   clinicPet: 'a4000001-0001-4001-8001-000000000002',
+  partnerPawsOrg: 'a2000001-0001-4001-8001-000000000002',
 };
 
 const DEMO_USERS = {
@@ -155,9 +156,69 @@ async function seedOrgClinic(client) {
   console.log('seed: org-clinic scenario ready (Happy Paws Clinic)');
 }
 
+/** Org UX v3 demo: discoverable clinic + connected partner (no hero photos). */
+async function seedOrgV3Demo(client) {
+  await seedOrgClinic(client);
+
+  await client.query(
+    `UPDATE organizations
+     SET is_discoverable = true,
+         town = 'Springfield',
+         administrative_area = 'Demo County',
+         description = 'UAT demo veterinary clinic (discoverable)',
+         photo_url = '',
+         logo_url = '',
+         updated_at = NOW()
+     WHERE id = $1`,
+    [DEMO_IDS.happyPawsOrg],
+  );
+
+  await client.query(
+    `INSERT INTO organizations (id, name, type, bio, is_discoverable, town, administrative_area, description)
+     VALUES ($1, $2, $3, $4, true, $5, $6, $7)
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name,
+       type = EXCLUDED.type,
+       bio = EXCLUDED.bio,
+       is_discoverable = EXCLUDED.is_discoverable,
+       town = EXCLUDED.town,
+       administrative_area = EXCLUDED.administrative_area,
+       description = EXCLUDED.description,
+       photo_url = '',
+       logo_url = '',
+       updated_at = NOW()`,
+    [
+      DEMO_IDS.partnerPawsOrg,
+      'Partner Paws',
+      'charity',
+      'UAT demo connected rescue',
+      'Riverside',
+      'Demo County',
+      'Partner organisation for connections/discover demos',
+    ],
+  );
+
+  const [orgLowId, orgHighId] =
+    DEMO_IDS.happyPawsOrg < DEMO_IDS.partnerPawsOrg
+      ? [DEMO_IDS.happyPawsOrg, DEMO_IDS.partnerPawsOrg]
+      : [DEMO_IDS.partnerPawsOrg, DEMO_IDS.happyPawsOrg];
+
+  await client.query(
+    `INSERT INTO org_connections (id, org_low_id, org_high_id, status)
+     VALUES ($1, $2, $3, 'active')
+     ON CONFLICT (org_low_id, org_high_id) DO UPDATE SET
+       status = 'active',
+       revoked_at = NULL`,
+    [crypto.randomUUID(), orgLowId, orgHighId],
+  );
+
+  console.log('seed: org-v3-demo scenario ready (discoverable Happy Paws + Partner Paws)');
+}
+
 const SCENARIOS = {
   guardian: seedGuardian,
   'org-clinic': seedOrgClinic,
+  'org-v3-demo': seedOrgV3Demo,
 };
 
 async function runScenario(pool, name) {

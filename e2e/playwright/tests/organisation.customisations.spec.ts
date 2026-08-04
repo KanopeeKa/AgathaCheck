@@ -1,9 +1,9 @@
 /**
  * @bdd organisation_customisations.feature
- * Scenario: Only Super Admin sees the customisations entry point
+ * Scenario: Only Super Admin sees the Administration entry on profile
  * Scenario: Audit log viewer shows a permission grant
  */
-import { test, expect } from '../fixtures/auth.fixture';
+import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
   addMemberToOrg,
   applyOrgPermissionBundle,
@@ -12,11 +12,13 @@ import {
   getOrgPermissionsMe,
   signupUser,
 } from '../support/api';
+import { OrganizationDetailPage } from '../pages/organization-detail.page';
+import { waitForFlutterRoute } from '../support/flutter';
 
 const ORG_NAME = 'Rescue Hearts';
 
-test.describe('Organisation customisations', () => {
-  test('@P1 only super admin has manage_permissions for customisations entry', async () => {
+test.describe('Organisation Administration', () => {
+  test('@P1 only super admin sees Administration nav row on profile', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const zara = await signupUser(baseURL, {
       firstName: 'Zara',
@@ -36,7 +38,17 @@ test.describe('Organisation customisations', () => {
 
     const fosterAdminPerms = await getOrgPermissionsMe(baseURL, alice.accessToken, org.id);
     expect(fosterAdminPerms.effective_permissions).not.toContain('manage_permissions');
-    expect(fosterAdminPerms.effective_permissions).not.toContain('manage_document_templates');
+
+    await loginAs(page, alice, { experience: 'organization' });
+    await waitForFlutterRoute(page, `/o/orgs/${org.id}`);
+    const detail = new OrganizationDetailPage(page);
+    await detail.expectLoaded(ORG_NAME);
+    await detail.expectProfileNavRowHidden(/Organisation Administration/i);
+
+    await loginAs(page, zara, { experience: 'organization' });
+    await waitForFlutterRoute(page, `/o/orgs/${org.id}`);
+    await detail.expectLoaded(ORG_NAME);
+    await detail.expectProfileNavRow(/Organisation Administration/i);
 
     const superPerms = await getOrgPermissionsMe(baseURL, zara.accessToken, org.id);
     expect(superPerms.effective_permissions).toContain('manage_permissions');

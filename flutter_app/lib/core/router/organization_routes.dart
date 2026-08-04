@@ -3,11 +3,15 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/experience/domain/entities/app_experience.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
+import '../../features/organization/presentation/widgets/org_shell_app_bar_title.dart';
+import '../../l10n/app_localizations.dart';
 import '../../features/organization/presentation/screens/admin_contacts_screen.dart';
 import '../../features/organization/presentation/screens/accept_connection_screen.dart';
 import '../../features/organization/presentation/screens/archived_pet_detail_screen.dart';
 import '../../features/organization/presentation/screens/archived_pets_screen.dart';
 import '../../features/organization/presentation/screens/organization_connections_screen.dart';
+import '../../features/organization/presentation/screens/organization_discover_screen.dart';
+import '../../features/organization/presentation/utils/org_discover_entry_context.dart';
 import '../../features/organization/presentation/screens/organization_customisations_screen.dart';
 import '../../features/organization/presentation/screens/organisation_profile_screen.dart';
 import '../../features/organization/presentation/screens/organisation_redacted_pet_screen.dart';
@@ -38,11 +42,24 @@ List<RouteBase> buildOrgManagementRoutes() {
     GoRoute(
       path: '/o/orgs',
       name: 'orgOrganizations',
-      builder: (context, state) => ExperienceShellScaffold(
-        experience: AppExperience.organization,
-        currentLocation: state.uri.path,
-        child: const OrganizationListScreen(embeddedInShell: true),
-      ),
+      builder: (context, state) {
+        final l = AppLocalizations.of(context)!;
+        return ExperienceShellScaffold(
+          experience: AppExperience.organization,
+          currentLocation: state.uri.path,
+          screenTitle: l.organisationsDashboardTitle,
+          orgNavVariant: OrgNavTitleVariant.dashboard,
+          contextualActions: [
+            IconButton(
+              key: const Key('org_nav_create'),
+              icon: const Icon(Icons.add),
+              tooltip: l.createOrganization,
+              onPressed: () => context.push('/o/orgs/new'),
+            ),
+          ],
+          child: const OrganizationListScreen(embeddedInShell: true),
+        );
+      },
       routes: _orgManagementChildRoutes(),
     ),
   ];
@@ -66,6 +83,17 @@ List<RouteBase> _orgManagementChildRoutes() {
       builder: (context, state) {
         final token = state.pathParameters['token']!;
         return AcceptConnectionScreen(token: token);
+      },
+    ),
+    GoRoute(
+      path: 'discover',
+      name: 'organizationDiscover',
+      builder: (context, state) {
+        final from = parseOrgDiscoverEntryContext(
+          state.uri.queryParameters['from'],
+        );
+        final orgId = state.uri.queryParameters['orgId'];
+        return OrganizationDiscoverScreen(from: from, orgId: orgId);
       },
     ),
     GoRoute(

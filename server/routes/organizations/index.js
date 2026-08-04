@@ -3,6 +3,7 @@ import { createApiLimiter } from '../../config/rateLimit.js';
 import { registerInvitesRoutes } from './invitesRouter.js';
 import { registerCoreRoutes } from './coreRouter.js';
 import { registerMembersRoutes } from './membersRouter.js';
+import { registerMemberPrivacyRoutes } from './memberPrivacyRouter.js';
 import { registerPetsRoutes } from './petsRouter.js';
 import { registerFosterParentsRoutes } from './fosterParentsRouter.js';
 import { registerFosterRequestsRoutes } from './fosterRequestsRouter.js';
@@ -23,6 +24,7 @@ export default function organizationsRoutes(pool) {
   registerInvitesRoutes(router, pool);
   registerCoreRoutes(router, pool);
   registerMembersRoutes(router, pool);
+  registerMemberPrivacyRoutes(router, pool);
   registerPetsRoutes(router, pool);
   registerFosterParentsRoutes(router, pool);
   registerFosterRequestsRoutes(router, pool);

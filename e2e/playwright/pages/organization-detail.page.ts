@@ -19,9 +19,9 @@ import { OrganizationListPage } from './organization-list.page';
 export class OrganizationDetailPage {
   constructor(private readonly page: Page) {}
 
-  /** Visible on v2 profile (public blocks and/or gated member sections). */
+  /** Visible on v2 profile (public blocks and/or gated member nav rows). */
   private static readonly profileLoadedMarker =
-    /Contact|Legal information|Admin contacts|Foster parents|Fostering sessions|^Pets$|^Animaux$|Connections|Professional|Charity|Professionnel|Association|Organisation presentation|Organisation dashboard|Choose a section/i;
+    /Contact|Legal information|Admin contacts|Foster parents|Fostering sessions|^Pets$|^Animaux$|Connected organisations|Organisation Administration|Professional|Charity|Professionnel|Association|Organisation presentation|Organisation dashboard|Choose a section/i;
 
   private orgIdFromUrl(): string | null {
     const match = this.page.url().match(/\/o\/orgs\/([^/?#]+)/);
@@ -38,6 +38,21 @@ export class OrganizationDetailPage {
         this.page.getByText(OrganizationDetailPage.profileLoadedMarker).first(),
       ).toBeVisible();
     }).toPass({ timeout: 30_000 });
+  }
+
+  async expectProfileNavRow(name: RegExp | string): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    await refreshFlutterAccessibility(this.page);
+    const pattern = typeof name === 'string' ? new RegExp(escapeRegExp(name), 'i') : name;
+    await expect(
+      this.page.getByRole('button', { name: pattern }).filter({ visible: true }).first(),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectProfileNavRowHidden(name: RegExp | string): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    const pattern = typeof name === 'string' ? new RegExp(escapeRegExp(name), 'i') : name;
+    await expect(this.page.getByRole('button', { name: pattern })).toHaveCount(0);
   }
 
   /**
@@ -204,11 +219,11 @@ export class OrganizationDetailPage {
 
   async openEdit(): Promise<void> {
     await enableFlutterAccessibility(this.page);
-    const settings = this.page.getByRole('button', {
-      name: /Edit organisation settings|Modifier les paramètres de l'organisation/i,
+    const edit = this.page.getByRole('button', {
+      name: /Edit organisation|Modifier l'organisation/i,
     });
-    if (await settings.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await settings.click();
+    if (await edit.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await edit.click();
     } else {
       await this.page
         .getByText(/Edit organisation|Edit Organization|Modifier l'organisation/i)
@@ -324,9 +339,25 @@ export class OrganizationDetailPage {
     await waitForFlutterRoutePattern(this.page, petsRoute, 60_000);
   }
 
+  /** EN "Connected organisations" profile nav row. */
+  async openConnectionsSection(): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    await refreshFlutterAccessibility(this.page);
+    const row = this.page
+      .getByRole('button', {
+        name: /Connected organisations|Organisations connectées/i,
+      })
+      .filter({ visible: true })
+      .first();
+    await row.scrollIntoViewIfNeeded();
+    await row.click();
+    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/]+\/connections/, 60_000);
+    await refreshFlutterAccessibility(this.page);
+  }
+
   async openAddOrgPet(): Promise<void> {
     await this.openPetsSection();
-    // App bar FAB and empty-state CTA both expose "Add Pet" — prefer exact app-bar label.
+    // App bar add — guardian manage-pets parity (no FAB).
     const addButton = this.page
       .getByRole('button', { name: 'Add Pet', exact: true })
       .filter({ visible: true })

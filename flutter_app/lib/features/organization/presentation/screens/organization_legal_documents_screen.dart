@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/org_legal_documents_provider.dart';
-import '../utils/org_screen_theme.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 
 /// Full-screen Legal & Documents view (deep-link route).
 class OrganizationLegalDocumentsScreen extends ConsumerWidget {
@@ -17,20 +16,13 @@ class OrganizationLegalDocumentsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
 
-    return orgThemed(
-      child: Scaffold(
-        key: const Key('org_legal_documents_screen'),
-        appBar: AppBar(
-          title: AppLogoTitle(title: l.orgLegalDocumentsTitle),
-          leading: IconButton(
-            key: const Key('org_legal_documents_screen_back'),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: () => context.pop(),
-          ),
-        ),
-        body: LegalDocumentsPanel(orgId: orgId),
-      ),
+    return OrgShellScaffold(
+      key: const Key('org_legal_documents_screen'),
+      title: l.orgLegalDocumentsTitle,
+      orgId: orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      leadingKey: const Key('org_legal_documents_screen_back'),
+      child: LegalDocumentsPanel(orgId: orgId),
     );
   }
 }

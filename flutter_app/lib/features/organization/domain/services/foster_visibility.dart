@@ -39,6 +39,25 @@ List<FosterParent> sortFosterParentsForViewer({
   return [self, ...others];
 }
 
+bool canViewerSeeFosterParentPhone({
+  required FosterParent parent,
+  required String? viewerUserId,
+  required OrgMemberRole? viewerRole,
+}) {
+  final phone = parent.phone?.trim() ?? '';
+  if (phone.isEmpty) return false;
+  if (parent.userId != null && parent.userId == viewerUserId) return true;
+  if (viewerRole?.isOrgAdmin ?? false) return true;
+  switch (parent.contactVisibility) {
+    case FosterContactVisibility.neither:
+    case FosterContactVisibility.email:
+      return false;
+    case FosterContactVisibility.phone:
+    case FosterContactVisibility.both:
+      return viewerRole?.isFoster == true;
+  }
+}
+
 bool canManageFosters(OrgMemberRole? role, String orgId) {
   if (role == null) return false;
   return hasPermission(role, orgId, 'manage_fosters');

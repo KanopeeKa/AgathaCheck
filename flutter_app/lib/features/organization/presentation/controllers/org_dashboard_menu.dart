@@ -29,7 +29,7 @@ Future<void> handleOrgDashboardMenuAction({
       context.push('/o/orgs/$orgId/members');
       break;
     case 'leave':
-      await _showLeaveDialog(context, ref, orgId);
+      context.push('/account/orgs/$orgId?highlight=leave');
       break;
     case 'delete':
       await _showDeleteDialog(context, ref, orgId, org);
@@ -44,12 +44,9 @@ List<PopupMenuEntry<String>> buildOrgDashboardMenuItems({
 }) {
   final l = AppLocalizations.of(context)!;
   final xp = context.experienceColors;
-  final colorScheme = Theme.of(context).colorScheme;
   final role = ref.watch(orgViewerRoleProvider(orgId));
   final canManageMembers =
       role != null && hasPermission(role, orgId, 'manage_members');
-  final canManagePermissions =
-      role != null && hasPermission(role, orgId, 'manage_permissions');
 
   return [
     if (canManageMembers) ...[
@@ -82,67 +79,17 @@ List<PopupMenuEntry<String>> buildOrgDashboardMenuItems({
         contentPadding: EdgeInsets.zero,
       ),
     ),
-    if (canManagePermissions)
-      PopupMenuItem(
-        value: 'delete',
-        child: ListTile(
-          leading: Icon(Icons.delete, color: colorScheme.error),
-          title: Text(
-            l.deleteOrganization,
-            style: TextStyle(color: colorScheme.error),
-          ),
-          dense: true,
-          contentPadding: EdgeInsets.zero,
-        ),
-      ),
+    // Delete organisation: Edit screen only (D-v3-IA-4). Leave → Account in Phase 8.
   ];
 }
 
-Future<void> _showLeaveDialog(
-  BuildContext context,
-  WidgetRef ref,
-  String orgId,
-) async {
-  final l = AppLocalizations.of(context)!;
-  final xp = context.experienceColors;
-  await showDialog<void>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text(l.orgLeave),
-      content: Text(l.orgLeaveConfirm),
-      actions: [
-        TextButton(
-          key: const Key('org_leave_cancel'),
-          onPressed: () => Navigator.pop(ctx),
-          child: Text(l.cancel),
-        ),
-        FilledButton(
-          key: const Key('org_leave_confirm'),
-          style: FilledButton.styleFrom(backgroundColor: xp.warning),
-          onPressed: () async {
-            Navigator.pop(ctx);
-            try {
-              await ref
-                  .read(orgMembersProvider(orgId).notifier)
-                  .leaveOrganization();
-              ref.invalidate(organizationListProvider);
-              if (context.mounted) {
-                context.go('/o/orgs');
-              }
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text('$e')));
-              }
-            }
-          },
-          child: Text(l.orgLeave),
-        ),
-      ],
-    ),
-  );
-}
+/// Delete confirmation — invoked from the edit screen only (D-v3-IA-4).
+Future<void> showOrgDeleteDialog({
+  required BuildContext context,
+  required WidgetRef ref,
+  required String orgId,
+  required Organization org,
+}) => _showDeleteDialog(context, ref, orgId, org);
 
 Future<void> _showDeleteDialog(
   BuildContext context,

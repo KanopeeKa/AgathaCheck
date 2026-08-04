@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../auth/presentation/providers/auth_providers.dart';
 import '../../../domain/entities/foster_parent.dart';
 import '../../../domain/services/foster_visibility.dart';
-import '../../providers/admin_contact_providers.dart';
 import '../../providers/manage_fosters_providers.dart';
 import '../../providers/organization_providers.dart';
-import '../../utils/org_screen_theme.dart';
-import '../../widgets/manage_fosters/foster_summary_card.dart';
-import '../../widgets/organization_role_labels.dart';
+import '../../widgets/manage_fosters/foster_person_tile.dart';
+import '../../widgets/manage_fosters/foster_summary_card.dart'
+    show showManageFostersAddManualDialog;
+import '../../widgets/org_shell_app_bar_title.dart';
+import '../../widgets/org_shell_scaffold.dart';
 
 final manageFostersTabProvider = StateProvider.family<ManageFostersTab, String>(
   (ref, orgId) => ManageFostersTab.all,
@@ -37,119 +38,102 @@ class ManageFostersScreen extends ConsumerWidget {
       manageFostersApprovalFilterProvider(orgId),
     );
     final viewerRole = ref.watch(orgViewerRoleProvider(orgId));
+    final viewerUserId = ref.watch(authProvider.select((s) => s.user?.id));
     final canManage = canManageFosters(viewerRole, orgId);
     final fosterParentsAsync = ref.watch(orgFosterParentsProvider(orgId));
 
-    return orgThemed(
-      child: Scaffold(
-        appBar: AppBar(
-          title: AppLogoTitle(title: l.manageFostersTitle),
-          leading: IconButton(
-            key: const Key('manage_fosters_back'),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: () => context.pop(),
-          ),
-          actions: [
-            IconButton(
-              key: const Key('manage_fosters_foster_requests'),
-              icon: const Icon(Icons.mail_outline),
-              tooltip: l.fosterRequestsTitle,
-              onPressed: canManage
-                  ? () => context.push('/o/orgs/$orgId/foster-requests')
-                  : null,
-            ),
-            if (canManage)
-              IconButton(
-                key: const Key('manage_fosters_add_manual'),
-                icon: const Icon(Icons.person_add_alt_1),
-                tooltip: l.addExternalFoster,
-                onPressed: () => showManageFostersAddManualDialog(
-                  context: context,
-                  ref: ref,
-                  orgId: orgId,
-                ),
-              ),
-          ],
+    return OrgShellScaffold(
+      title: l.manageFostersTitle,
+      orgId: orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      leadingKey: const Key('manage_fosters_back'),
+      contextualActions: [
+        IconButton(
+          key: const Key('manage_fosters_foster_requests'),
+          icon: const Icon(Icons.mail_outline),
+          tooltip: l.fosterRequestsTitle,
+          onPressed: canManage
+              ? () => context.push('/o/orgs/$orgId/foster-requests')
+              : null,
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: Text(
-                l.manageFostersDescription,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+        if (canManage)
+          IconButton(
+            key: const Key('manage_fosters_add_manual'),
+            icon: const Icon(Icons.person_add_alt_1),
+            tooltip: l.addExternalFoster,
+            onPressed: () => showManageFostersAddManualDialog(
+              context: context,
+              ref: ref,
+              orgId: orgId,
+            ),
+          ),
+      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Text(
+              l.manageFostersDescription,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 8),
-            _ManageFostersTabBar(orgId: orgId, selected: tab),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: _ApprovalFilters(orgId: orgId, selected: approvalFilter),
-            ),
-            Expanded(
-              child: fosterParentsAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(child: Text('$e')),
-                data: (parents) {
-                  final filtered = filterFosterParentsForManageFosters(
-                    parents: parents,
-                    tab: tab,
-                    approvalFilter: approvalFilter,
-                  );
-                  if (tab == ManageFostersTab.recentlyFostered) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Text(
-                          l.manageFostersRecentlyFosteredPlaceholder,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+          ),
+          const SizedBox(height: 8),
+          _ManageFostersTabBar(orgId: orgId, selected: tab),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: _ApprovalFilters(orgId: orgId, selected: approvalFilter),
+          ),
+          Expanded(
+            child: fosterParentsAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('$e')),
+              data: (parents) {
+                final filtered = filterFosterParentsForManageFosters(
+                  parents: parents,
+                  tab: tab,
+                  approvalFilter: approvalFilter,
+                );
+                if (tab == ManageFostersTab.recentlyFostered) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        l.manageFostersRecentlyFosteredPlaceholder,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
-                    );
-                  }
-                  if (filtered.isEmpty) {
-                    return Center(
-                      child: Text(
-                        l.manageFostersEmptyTab,
-                        style: TextStyle(color: colorScheme.onSurfaceVariant),
-                      ),
-                    );
-                  }
-                  return ListView.builder(
-                    key: const Key('manage_fosters_list'),
-                    padding: const EdgeInsets.all(16),
-                    itemCount: filtered.length,
-                    itemBuilder: (context, index) {
-                      final parent = filtered[index];
-                      return FosterSummaryCard(
-                        parent: parent,
-                        orgId: orgId,
-                        canManage: canManage,
-                        localizedRoleLabel: localizedOrgMemberRole,
-                        onTap: parent.isExternal
-                            ? () => context.push(
-                                '/o/orgs/$orgId/people/external/${parent.id}',
-                              )
-                            : parent.userId != null
-                            ? () => context.push(
-                                '/o/orgs/$orgId/people/member/${parent.userId}',
-                              )
-                            : null,
-                      );
-                    },
+                    ),
                   );
-                },
-              ),
+                }
+                if (filtered.isEmpty) {
+                  return Center(
+                    child: Text(
+                      l.manageFostersEmptyTab,
+                      style: TextStyle(color: colorScheme.onSurfaceVariant),
+                    ),
+                  );
+                }
+                return ListView(
+                  key: const Key('manage_fosters_list'),
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    FosterPersonTileGrid(
+                      orgId: orgId,
+                      parents: filtered,
+                      canManage: canManage,
+                      viewerUserId: viewerUserId,
+                    ),
+                  ],
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

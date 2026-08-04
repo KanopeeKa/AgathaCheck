@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 import '../../models/organization_model.dart';
 import 'organization_remote_context.dart';
@@ -158,7 +159,12 @@ class OrganizationCoreRemote {
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $token'
       ..files.add(
-        http.MultipartFile.fromBytes('photo', bytes, filename: filename),
+        http.MultipartFile.fromBytes(
+          'photo',
+          bytes,
+          filename: filename,
+          contentType: contentTypeForOrgImageFilename(filename),
+        ),
       );
     final streamedResponse = await _ctx.client.send(request);
     final response = await http.Response.fromStream(streamedResponse);
@@ -169,4 +175,15 @@ class OrganizationCoreRemote {
       json.decode(response.body) as Map<String, dynamic>,
     );
   }
+}
+
+/// Maps org image filename extensions to multipart MIME types for web uploads.
+MediaType contentTypeForOrgImageFilename(String filename) {
+  final lower = filename.toLowerCase();
+  if (lower.endsWith('.png')) return MediaType('image', 'png');
+  if (lower.endsWith('.webp')) return MediaType('image', 'webp');
+  if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) {
+    return MediaType('image', 'jpeg');
+  }
+  return MediaType('image', 'jpeg');
 }

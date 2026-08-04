@@ -23,6 +23,7 @@ export const SHARDS = [
   ['playwright/tests/health.tracking.spec.ts'],
   [
     'playwright/tests/organisation.management.spec.ts',
+    'playwright/tests/organisation.dashboard.spec.ts',
     'playwright/tests/gdpr.data-rights.spec.ts',
     'playwright/tests/auth.login.spec.ts',
     'playwright/tests/organisation.discovery.spec.ts',
@@ -57,6 +58,9 @@ export const SHARDS = [
     'playwright/tests/organisation.sessions.spec.ts',
     'playwright/tests/organisation.redacted-pet.spec.ts',
     'playwright/tests/organisation.admin-contacts.spec.ts',
+    'playwright/tests/organisation.connections.spec.ts',
+    'playwright/tests/organisation.member.privacy.spec.ts',
+    'playwright/tests/account.area.spec.ts',
     'playwright/tests/fostering.platform.spec.ts',
     'playwright/tests/foster.onboarding.spec.ts',
     'playwright/tests/guardian.dashboard.spec.ts',

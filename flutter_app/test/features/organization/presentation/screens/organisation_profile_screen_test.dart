@@ -11,9 +11,17 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 import '../../../../helpers/fakes.dart';
 import '../../helpers/organization_provider_test_helpers.dart';
 
-class _EmptyOrgsNotifier extends OrganizationListNotifier {
+class _MemberOrgsNotifier extends OrganizationListNotifier {
   @override
-  Future<List<Organization>> build() async => const [];
+  Future<List<Organization>> build() async => const [
+    Organization(
+      id: 'org-1',
+      name: 'Rescue Hearts',
+      type: OrganizationType.charity,
+      description: 'A caring rescue shelter',
+      role: 'super_admin',
+    ),
+  ];
 }
 
 class _PublicProfileRepo extends RecordingOrganizationRepository {
@@ -32,7 +40,10 @@ class _PublicProfileRepo extends RecordingOrganizationRepository {
 }
 
 void main() {
-  Future<void> pumpProfileScreen(WidgetTester tester) async {
+  Future<void> pumpProfileScreen(
+    WidgetTester tester, {
+    Set<String> permissions = const {'manage_permissions', 'manage_members'},
+  }) async {
     final router = GoRouter(
       initialLocation: '/o/orgs/org-1',
       routes: [
@@ -47,6 +58,11 @@ void main() {
             return OrganisationProfileScreen(orgId: id);
           },
         ),
+        GoRoute(
+          path: '/o/orgs/:id/edit',
+          builder: (context, state) =>
+              const Scaffold(body: Text('edit screen')),
+        ),
       ],
     );
 
@@ -54,10 +70,13 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationListProvider.overrideWith(_EmptyOrgsNotifier.new),
+          organizationListProvider.overrideWith(_MemberOrgsNotifier.new),
           organizationRepositoryProvider.overrideWithValue(
             _PublicProfileRepo(),
           ),
+          orgEffectivePermissionsProvider(
+            'org-1',
+          ).overrideWith((ref) async => permissions),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -73,7 +92,42 @@ void main() {
     await pumpProfileScreen(tester);
 
     expect(find.byKey(const Key('org_profile_screen')), findsOneWidget);
+    expect(find.byKey(const Key('org_hero_name')), findsOneWidget);
     expect(find.text('Rescue Hearts'), findsWidgets);
     expect(find.text('A caring rescue shelter'), findsOneWidget);
+  });
+
+  testWidgets('manage_permissions user sees edit icon not settings cog', (
+    tester,
+  ) async {
+    await pumpProfileScreen(tester);
+
+    expect(find.byKey(const Key('org_profile_edit')), findsOneWidget);
+    expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.settings_outlined), findsNothing);
+    expect(find.byKey(const Key('org_profile_settings')), findsNothing);
+  });
+
+  testWidgets('profile menu shows invite and members but not delete', (
+    tester,
+  ) async {
+    await pumpProfileScreen(tester);
+
+    await tester.tap(find.byKey(const Key('org_profile_menu')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Invite Member'), findsOneWidget);
+    expect(find.text('Members'), findsOneWidget);
+    expect(find.text('Leave Organization'), findsOneWidget);
+    expect(find.text('Delete Organization'), findsNothing);
+  });
+
+  testWidgets('edit icon navigates to edit route', (tester) async {
+    await pumpProfileScreen(tester);
+
+    await tester.tap(find.byKey(const Key('org_profile_edit')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('edit screen'), findsOneWidget);
   });
 }

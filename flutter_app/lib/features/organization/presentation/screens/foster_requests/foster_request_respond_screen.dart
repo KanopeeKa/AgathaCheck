@@ -4,11 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../core/utils/calendar_date_picker.dart';
-import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/foster_request.dart';
 import '../../providers/foster_requests_providers.dart';
-import '../../utils/org_screen_theme.dart';
+import '../../widgets/org_shell_app_bar_title.dart';
+import '../../widgets/org_shell_scaffold.dart';
 
 class FosterRequestRespondScreen extends ConsumerStatefulWidget {
   const FosterRequestRespondScreen({
@@ -97,93 +97,86 @@ class _FosterRequestRespondScreenState
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return orgThemed(
-      child: Scaffold(
-        appBar: AppBar(
-          title: AppLogoTitle(title: l.fosterRequestRespondTitle),
-          leading: IconButton(
-            key: const Key('foster_request_respond_back'),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: _submitting ? null : () => context.pop(),
-          ),
-        ),
-        body: Form(
-          key: _formKey,
-          child: ListView(
-            key: const Key('foster_request_respond_form'),
-            padding: const EdgeInsets.all(16),
-            children: [
-              Text(
-                l.fosterRequestRespondDescription,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+    return OrgShellScaffold(
+      title: l.fosterRequestRespondTitle,
+      orgId: widget.orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      leadingKey: const Key('foster_request_respond_back'),
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          key: const Key('foster_request_respond_form'),
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              l.fosterRequestRespondDescription,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
-              const SizedBox(height: 16),
-              SegmentedButton<FosterResponseType>(
-                key: const Key('foster_request_response_type'),
-                segments: [
-                  ButtonSegment(
-                    value: FosterResponseType.canHelp,
-                    label: Text(l.fosterRequestResponseCanHelp),
-                    icon: const Icon(Icons.check_circle_outline),
-                  ),
-                  ButtonSegment(
-                    value: FosterResponseType.cannotHelp,
-                    label: Text(l.fosterRequestResponseCannotHelp),
-                    icon: const Icon(Icons.cancel_outlined),
-                  ),
-                ],
-                selected: {_response},
-                onSelectionChanged: _submitting
-                    ? null
-                    : (selection) {
-                        setState(() => _response = selection.first);
-                      },
-              ),
-              const SizedBox(height: 16),
-              if (_response == FosterResponseType.canHelp) ...[
-                ListTile(
-                  key: const Key('foster_request_availability_picker'),
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(l.fosterRequestEarliestAvailabilityLabel),
-                  subtitle: Text(
-                    _earliestAvailability != null
-                        ? formatCalendarDateDisplay(_earliestAvailability!)
-                        : l.fosterRequestSelectDate,
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    tooltip: l.fosterRequestSelectDate,
-                    onPressed: _submitting ? null : _pickDate,
-                  ),
+            ),
+            const SizedBox(height: 16),
+            SegmentedButton<FosterResponseType>(
+              key: const Key('foster_request_response_type'),
+              segments: [
+                ButtonSegment(
+                  value: FosterResponseType.canHelp,
+                  label: Text(l.fosterRequestResponseCanHelp),
+                  icon: const Icon(Icons.check_circle_outline),
                 ),
-                const SizedBox(height: 8),
+                ButtonSegment(
+                  value: FosterResponseType.cannotHelp,
+                  label: Text(l.fosterRequestResponseCannotHelp),
+                  icon: const Icon(Icons.cancel_outlined),
+                ),
               ],
-              TextFormField(
-                key: const Key('foster_request_respond_message'),
-                controller: _messageController,
-                decoration: InputDecoration(
-                  labelText: l.fosterRequestRespondMessageLabel,
-                  hintText: l.fosterRequestRespondMessageHint,
+              selected: {_response},
+              onSelectionChanged: _submitting
+                  ? null
+                  : (selection) {
+                      setState(() => _response = selection.first);
+                    },
+            ),
+            const SizedBox(height: 16),
+            if (_response == FosterResponseType.canHelp) ...[
+              ListTile(
+                key: const Key('foster_request_availability_picker'),
+                contentPadding: EdgeInsets.zero,
+                title: Text(l.fosterRequestEarliestAvailabilityLabel),
+                subtitle: Text(
+                  _earliestAvailability != null
+                      ? formatCalendarDateDisplay(_earliestAvailability!)
+                      : l.fosterRequestSelectDate,
                 ),
-                maxLines: 3,
+                trailing: IconButton(
+                  icon: const Icon(Icons.calendar_today),
+                  tooltip: l.fosterRequestSelectDate,
+                  onPressed: _submitting ? null : _pickDate,
+                ),
               ),
-              const SizedBox(height: 24),
-              FilledButton(
-                key: const Key('foster_request_respond_submit'),
-                onPressed: _submitting ? null : _submit,
-                child: _submitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(l.fosterRequestRespondSubmit),
-              ),
+              const SizedBox(height: 8),
             ],
-          ),
+            TextFormField(
+              key: const Key('foster_request_respond_message'),
+              controller: _messageController,
+              decoration: InputDecoration(
+                labelText: l.fosterRequestRespondMessageLabel,
+                hintText: l.fosterRequestRespondMessageHint,
+              ),
+              maxLines: 3,
+            ),
+            const SizedBox(height: 24),
+            FilledButton(
+              key: const Key('foster_request_respond_submit'),
+              onPressed: _submitting ? null : _submit,
+              child: _submitting
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(l.fosterRequestRespondSubmit),
+            ),
+          ],
         ),
       ),
     );

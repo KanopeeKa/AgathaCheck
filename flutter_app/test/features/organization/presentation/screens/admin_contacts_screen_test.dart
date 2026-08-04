@@ -109,6 +109,7 @@ void main() {
       await pumpScreen(tester);
 
       expect(find.text('Admin contacts'), findsOneWidget);
+      expect(find.byKey(const Key('admin_contacts_tile_grid')), findsOneWidget);
       expect(find.text('Your card'), findsOneWidget);
       expect(find.text('Test User'), findsOneWidget);
 
@@ -144,16 +145,18 @@ void main() {
     expect(find.byKey(const Key('admin_contacts_add_button')), findsNothing);
   });
 
-  testWidgets('self-card shows visibility preference controls', (tester) async {
+  testWidgets('self-card no longer shows local visibility editors', (
+    tester,
+  ) async {
     await pumpScreen(tester);
 
     expect(
       find.byKey(const Key('admin_contact_phone_visibility')),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.byKey(const Key('admin_contact_message_channel')),
-      findsOneWidget,
+      findsNothing,
     );
   });
 }

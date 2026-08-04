@@ -3025,6 +3025,12 @@ abstract class AppLocalizations {
   /// **'My Organizations'**
   String get myOrganizations;
 
+  /// No description provided for @organisationsDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisations dashboard'**
+  String get organisationsDashboardTitle;
+
   /// No description provided for @discoverOrganizations.
   ///
   /// In en, this message translates to:
@@ -3042,6 +3048,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load discoverable organisations'**
   String get orgDiscoveryLoadError;
+
+  /// No description provided for @orgDiscoverySearchPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get orgDiscoverySearchPlaceholder;
+
+  /// No description provided for @orgDiscoverySearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No organisations match your search'**
+  String get orgDiscoverySearchEmpty;
+
+  /// No description provided for @orgDiscoverBrowsingAs.
+  ///
+  /// In en, this message translates to:
+  /// **'You are browsing as {name}'**
+  String orgDiscoverBrowsingAs(String name);
+
+  /// No description provided for @orgDiscoverBrowsingAsFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'your account'**
+  String get orgDiscoverBrowsingAsFallback;
 
   /// No description provided for @orgDiscoveryLocation.
   ///
@@ -3150,6 +3180,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit organisation settings'**
   String get orgProfileSettingsTooltip;
+
+  /// No description provided for @orgProfileEditTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit organisation'**
+  String get orgProfileEditTooltip;
 
   /// No description provided for @orgWebsite.
   ///
@@ -3619,6 +3655,12 @@ abstract class AppLocalizations {
   /// **'No connected organisations yet'**
   String get orgConnectionsEmpty;
 
+  /// No description provided for @orgConnectionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 connection} other{{count} connections}}'**
+  String orgConnectionCount(int count);
+
   /// No description provided for @createConnectionRequest.
   ///
   /// In en, this message translates to:
@@ -3882,6 +3924,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upload picture'**
   String get orgUploadPicture;
+
+  /// No description provided for @orgUploadCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload cover'**
+  String get orgUploadCover;
 
   /// No description provided for @orgUploadLogo.
   ///
@@ -7461,6 +7509,24 @@ abstract class AppLocalizations {
   /// **'Used when you sign in. You can still switch anytime from the menu.'**
   String get experienceDefaultSettingSubtitle;
 
+  /// No description provided for @experienceShowOrganisationSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show organisation section'**
+  String get experienceShowOrganisationSectionTitle;
+
+  /// No description provided for @experienceShowOrganisationSectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds Organisation to the menu so you can create or manage shelters and rescues.'**
+  String get experienceShowOrganisationSectionSubtitle;
+
+  /// No description provided for @experienceShowOrganisationSectionMemberLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation stays visible because you belong to at least one organisation.'**
+  String get experienceShowOrganisationSectionMemberLocked;
+
   /// No description provided for @experienceGuardianInviteHint.
   ///
   /// In en, this message translates to:
@@ -7851,16 +7917,178 @@ abstract class AppLocalizations {
   /// **'Account actions'**
   String get accountActionsSection;
 
+  /// No description provided for @accountOrgSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation settings'**
+  String get accountOrgSettingsTitle;
+
+  /// No description provided for @accountOrgSettingsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not a member of any organisation yet.'**
+  String get accountOrgSettingsEmpty;
+
+  /// No description provided for @accountOrgPrivacySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy in this organisation'**
+  String get accountOrgPrivacySection;
+
+  /// No description provided for @accountOrgPrivacySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy settings saved'**
+  String get accountOrgPrivacySaved;
+
+  /// No description provided for @accountOrgLeaveSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave organisation'**
+  String get accountOrgLeaveSection;
+
+  /// No description provided for @accountOrgLeaveSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove your membership from this organisation.'**
+  String get accountOrgLeaveSubtitle;
+
+  /// No description provided for @accountOrgCardVisibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see your directory card'**
+  String get accountOrgCardVisibilityLabel;
+
+  /// No description provided for @accountOrgPhoneVisibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see your phone number'**
+  String get accountOrgPhoneVisibilityLabel;
+
+  /// No description provided for @accountOrgEmailVisibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see your email address'**
+  String get accountOrgEmailVisibilityLabel;
+
+  /// No description provided for @accountOrgAddressVisibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see your address'**
+  String get accountOrgAddressVisibilityLabel;
+
+  /// No description provided for @accountOrgCardVisibilityAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone in the organisation'**
+  String get accountOrgCardVisibilityAll;
+
+  /// No description provided for @accountOrgCardVisibilityAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins only'**
+  String get accountOrgCardVisibilityAdmins;
+
+  /// No description provided for @accountOrgCardVisibilityNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Named people only'**
+  String get accountOrgCardVisibilityNamed;
+
+  /// No description provided for @accountOrgContactVisibilityAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins only'**
+  String get accountOrgContactVisibilityAdmins;
+
+  /// No description provided for @accountOrgContactVisibilityAdminsAndFosterManagers.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins and foster managers'**
+  String get accountOrgContactVisibilityAdminsAndFosterManagers;
+
+  /// No description provided for @accountOrgContactVisibilityAdminsOrNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins or named people'**
+  String get accountOrgContactVisibilityAdminsOrNamed;
+
+  /// No description provided for @accountOrgContactVisibilityNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Named people only'**
+  String get accountOrgContactVisibilityNamed;
+
+  /// No description provided for @accountOrgAddressVisibilityAdminsOrNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins or named people'**
+  String get accountOrgAddressVisibilityAdminsOrNamed;
+
+  /// No description provided for @accountOrgAddressVisibilityAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins only'**
+  String get accountOrgAddressVisibilityAdmins;
+
+  /// No description provided for @accountOrgAddressVisibilityNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Named people only'**
+  String get accountOrgAddressVisibilityNamed;
+
+  /// No description provided for @accountOrgAddressVisibilityHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get accountOrgAddressVisibilityHidden;
+
+  /// No description provided for @accountOrgNamedGrantsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Named people'**
+  String get accountOrgNamedGrantsTitle;
+
+  /// No description provided for @accountOrgNamedCardLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Can see your card'**
+  String get accountOrgNamedCardLabel;
+
+  /// No description provided for @accountOrgNamedPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Can see your phone'**
+  String get accountOrgNamedPhoneLabel;
+
+  /// No description provided for @accountOrgNamedEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Can see your email'**
+  String get accountOrgNamedEmailLabel;
+
+  /// No description provided for @accountOrgNamedAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Can see your address'**
+  String get accountOrgNamedAddressLabel;
+
   /// No description provided for @adminContactsTitle.
   ///
   /// In en, this message translates to:
   /// **'Admin contacts'**
   String get adminContactsTitle;
 
+  /// No description provided for @orgPersonProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} - Profile'**
+  String orgPersonProfileTitle(String name);
+
   /// No description provided for @adminContactsDescription.
   ///
   /// In en, this message translates to:
-  /// **'Internal directory of organisation admins. Call or message using the contact details they share.'**
+  /// **'Internal directory of organisation admins. Tap a tile to open their profile.'**
   String get adminContactsDescription;
 
   /// No description provided for @adminContactsEmpty.
@@ -8136,7 +8364,7 @@ abstract class AppLocalizations {
   /// No description provided for @orgCustomisationsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Organisation customisations'**
+  /// **'Organisation Administration'**
   String get orgCustomisationsTitle;
 
   /// No description provided for @orgCustomisationsIntro.

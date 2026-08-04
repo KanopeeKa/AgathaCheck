@@ -4,10 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/archived_pet.dart';
 import '../providers/organization_providers.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 
 class ArchivedPetsScreen extends ConsumerWidget {
   const ArchivedPetsScreen({super.key, this.orgId});
@@ -25,70 +26,80 @@ class ArchivedPetsScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
 
+    final content = archivedAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline, size: 48, color: colorScheme.error),
+            const SizedBox(height: 16),
+            Text('$e'),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              key: const Key('org_archived_retry'),
+              onPressed: () {
+                if (_isOrgArchive) {
+                  ref.invalidate(orgArchivedPetsProvider(orgId!));
+                } else {
+                  ref.invalidate(userArchivedPetsProvider);
+                }
+              },
+              child: Text(l.retry),
+            ),
+          ],
+        ),
+      ),
+      data: (archivedPets) {
+        if (archivedPets.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ExcludeSemantics(
+                  child: Icon(
+                    Icons.archive_outlined,
+                    size: 80,
+                    color: colorScheme.outline,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(l.noArchivedPets, style: theme.textTheme.headlineSmall),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: archivedPets.length,
+          itemBuilder: (context, index) {
+            final archived = archivedPets[index];
+            return _ArchivedPetCard(archivedPet: archived, orgId: orgId);
+          },
+        );
+      },
+    );
+
+    if (_isOrgArchive) {
+      return OrgShellScaffold(
+        title: l.archivedPets,
+        orgId: orgId,
+        navVariant: OrgNavTitleVariant.withOrgLogo,
+        leadingKey: const Key('org_archived_back'),
+        child: content,
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: AppLogoTitle(title: l.archivedPets),
+        title: Text(l.archivedPets),
         leading: IconButton(
-          key: const Key('org_archived_back'),
           icon: const Icon(Icons.arrow_back),
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           onPressed: () => context.pop(),
         ),
       ),
-      body: archivedAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.error_outline, size: 48, color: colorScheme.error),
-              const SizedBox(height: 16),
-              Text('$e'),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                key: const Key('org_archived_retry'),
-                onPressed: () {
-                  if (_isOrgArchive) {
-                    ref.invalidate(orgArchivedPetsProvider(orgId!));
-                  } else {
-                    ref.invalidate(userArchivedPetsProvider);
-                  }
-                },
-                child: Text(l.retry),
-              ),
-            ],
-          ),
-        ),
-        data: (archivedPets) {
-          if (archivedPets.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ExcludeSemantics(
-                    child: Icon(
-                      Icons.archive_outlined,
-                      size: 80,
-                      color: colorScheme.outline,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(l.noArchivedPets, style: theme.textTheme.headlineSmall),
-                ],
-              ),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: archivedPets.length,
-            itemBuilder: (context, index) {
-              final archived = archivedPets[index];
-              return _ArchivedPetCard(archivedPet: archived, orgId: orgId);
-            },
-          );
-        },
-      ),
+      body: content,
     );
   }
 }

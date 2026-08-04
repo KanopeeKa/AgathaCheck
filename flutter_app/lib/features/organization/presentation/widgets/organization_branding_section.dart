@@ -8,7 +8,9 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
 import '../providers/organization_providers.dart';
 import 'org_image_avatar.dart';
+import 'org_presentation/org_profile_hero_layout.dart';
 
+/// Unboxed hero-aligned branding editor (D-v3-EDIT-1).
 class OrganizationBrandingSection extends ConsumerWidget {
   const OrganizationBrandingSection({
     super.key,
@@ -16,18 +18,35 @@ class OrganizationBrandingSection extends ConsumerWidget {
     required this.theme,
     required this.colorScheme,
     required this.l,
+    required this.nameController,
+    required this.selectedType,
+    required this.onTypeChanged,
+    required this.nameValidator,
   });
 
   final Organization org;
   final ThemeData theme;
   final ColorScheme colorScheme;
   final AppLocalizations l;
+  final TextEditingController nameController;
+  final OrganizationType selectedType;
+  final ValueChanged<OrganizationType> onTypeChanged;
+  final String? Function(String?)? nameValidator;
 
   String _resolveUrl(WidgetRef ref, String path) {
     return resolveStaticAssetUrl(
       path,
       apiBaseUrl: ref.read(apiBaseUrlProvider),
     );
+  }
+
+  String _localizedTypeLabel(OrganizationType type) {
+    switch (type) {
+      case OrganizationType.professional:
+        return l.orgTypeProfessional;
+      case OrganizationType.charity:
+        return l.orgTypeCharity;
+    }
   }
 
   Future<void> _pickAndUpload(
@@ -62,11 +81,21 @@ class OrganizationBrandingSection extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
+        final message = _uploadErrorMessage(e);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('$e')));
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     }
+  }
+
+  String _uploadErrorMessage(Object error) {
+    final raw = error.toString();
+    const prefix = 'Exception: ';
+    if (raw.startsWith(prefix)) {
+      return raw.substring(prefix.length);
+    }
+    return raw;
   }
 
   @override
@@ -74,76 +103,174 @@ class OrganizationBrandingSection extends ConsumerWidget {
     final resolvedPhoto = _resolveUrl(ref, org.photoUrl);
     final resolvedLogo = _resolveUrl(ref, org.logoUrl);
 
-    return Card(
-      color: colorScheme.primaryContainer,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l.orgLogo,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+    return Column(
+      key: const Key('org_edit_hero'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: OrgProfileHeroLayout.horizontalPadding,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              height: OrgProfileHeroLayout.coverHeight,
+              child: org.photoUrl.isNotEmpty
+                  ? Image.network(
+                      resolvedPhoto,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => _CoverPlaceholder(org: org),
+                    )
+                  : _CoverPlaceholder(org: org),
             ),
-            const SizedBox(height: 4),
-            Text(
-              l.orgImageLogoGuidance,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            OrgProfileHeroLayout.horizontalPadding,
+            8,
+            OrgProfileHeroLayout.horizontalPadding,
+            0,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              OutlinedButton.icon(
+                key: const Key('org_upload_cover_button'),
+                onPressed: () => _pickAndUpload(context, ref, isLogo: false),
+                icon: const Icon(Icons.upload, size: 18),
+                label: Text(l.orgUploadCover),
               ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                OrgLogoImage(
-                  logoUrl: org.logoUrl,
-                  resolvedUrl: resolvedLogo,
-                  height: 48,
+              const SizedBox(height: 4),
+              Text(
+                l.orgImageHeroGuidance,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
                 ),
-                const SizedBox(width: 12),
-                OutlinedButton.icon(
-                  key: const Key('org_upload_logo_button'),
-                  onPressed: () => _pickAndUpload(context, ref, isLogo: true),
-                  icon: const Icon(Icons.upload, size: 18),
-                  label: Text(l.orgUploadLogo),
+              ),
+            ],
+          ),
+        ),
+        Transform.translate(
+          offset: const Offset(0, -OrgProfileHeroLayout.logoOverlap),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: OrgProfileHeroLayout.horizontalPadding,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    org.logoUrl.isNotEmpty
+                        ? OrgLogoImage(
+                            logoUrl: org.logoUrl,
+                            resolvedUrl: resolvedLogo,
+                            height: OrgProfileHeroLayout.logoHeight,
+                          )
+                        : OrgImageAvatar(
+                            imageUrl: org.photoUrl,
+                            type: org.type,
+                            radius: OrgProfileHeroLayout.logoHeight / 2,
+                            resolvedUrl: resolvedPhoto,
+                          ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      key: const Key('org_upload_logo_button'),
+                      onPressed: () =>
+                          _pickAndUpload(context, ref, isLogo: true),
+                      icon: const Icon(Icons.upload, size: 18),
+                      label: Text(l.orgUploadLogo),
+                    ),
+                    const SizedBox(height: 4),
+                    SizedBox(
+                      width: OrgProfileHeroLayout.logoHeight + 48,
+                      child: Text(
+                        l.orgImageLogoGuidance,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: OrgProfileHeroLayout.bandGap),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: OrgProfileHeroLayout.logoOverlap,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextFormField(
+                          key: const Key('org_name_field'),
+                          controller: nameController,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          autofillHints: const [AutofillHints.organizationName],
+                          validator: nameValidator,
+                          textInputAction: TextInputAction.next,
+                        ),
+                        const SizedBox(height: 8),
+                        DropdownButtonFormField<OrganizationType>(
+                          key: const Key('org_type_dropdown'),
+                          value: selectedType,
+                          decoration: InputDecoration(
+                            labelText: l.organizationType,
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                          ),
+                          items: OrganizationType.values.map((type) {
+                            return DropdownMenuItem(
+                              value: type,
+                              child: Text(_localizedTypeLabel(type)),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value != null) onTypeChanged(value);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              l.orgPicture,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              l.orgImageHeroGuidance,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                OrgImageAvatar(
-                  imageUrl: org.photoUrl,
-                  type: org.type,
-                  radius: 32,
-                  resolvedUrl: resolvedPhoto,
-                ),
-                const SizedBox(width: 12),
-                OutlinedButton.icon(
-                  key: const Key('org_upload_picture_button'),
-                  onPressed: () => _pickAndUpload(context, ref, isLogo: false),
-                  icon: const Icon(Icons.camera_alt, size: 18),
-                  label: Text(l.orgUploadPicture),
-                ),
-              ],
-            ),
-          ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CoverPlaceholder extends StatelessWidget {
+  const _CoverPlaceholder({required this.org});
+
+  final Organization org;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return ColoredBox(
+      color: colorScheme.surfaceContainerHighest,
+      child: Center(
+        child: Icon(
+          org.type == OrganizationType.professional
+              ? Icons.business
+              : Icons.volunteer_activism,
+          size: 48,
+          color: colorScheme.onSurfaceVariant,
         ),
       ),
     );

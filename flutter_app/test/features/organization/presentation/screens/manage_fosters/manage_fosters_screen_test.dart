@@ -51,7 +51,8 @@ void main() {
 
     expect(find.byKey(const Key('manage_fosters_tabs')), findsOneWidget);
     expect(find.text('Manage fosters'), findsOneWidget);
-    expect(find.byKey(const Key('foster_summary_card_fp-1')), findsOneWidget);
+    expect(find.byKey(const Key('manage_fosters_tile_grid')), findsOneWidget);
+    expect(find.byKey(const Key('foster_person_tile_fp-1')), findsOneWidget);
     expect(find.text('Eve Foster'), findsOneWidget);
   });
 
@@ -129,8 +130,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Shelter foster relationship'), findsOneWidget);
-    expect(find.text('Outreach opt-out'), findsNothing);
+    expect(
+      find.byKey(const Key('foster_actions_menu_fp-ext-opt')),
+      findsOneWidget,
+    );
 
     await tester.tap(find.byKey(const Key('foster_actions_menu_fp-ext-opt')));
     await tester.pumpAndSettle();
@@ -138,7 +141,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repo.optOutCalls, 1);
-    expect(find.text('Outreach opt-out'), findsOneWidget);
+    expect(repo.lastOptOut, isTrue);
   });
 }
 
