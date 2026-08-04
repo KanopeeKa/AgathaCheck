@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/org_connection.dart';
 import '../providers/organization_providers.dart';
 
-class OrganizationConnectionsSection extends ConsumerStatefulWidget {
+class OrganizationConnectionsSection extends ConsumerWidget {
   const OrganizationConnectionsSection({
     super.key,
     required this.orgId,
@@ -20,223 +20,126 @@ class OrganizationConnectionsSection extends ConsumerStatefulWidget {
   final ColorScheme colorScheme;
   final AppLocalizations l;
 
-  @override
-  ConsumerState<OrganizationConnectionsSection> createState() =>
-      _OrganizationConnectionsSectionState();
-}
-
-class _OrganizationConnectionsSectionState
-    extends ConsumerState<OrganizationConnectionsSection> {
-  bool _expanded = false;
-
-  Future<void> _createRequest() async {
-    final controller = TextEditingController();
-    final targetOrgId = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(widget.l.createConnectionRequest),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(labelText: widget.l.targetOrgId),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(widget.l.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: Text(widget.l.confirm),
-          ),
-        ],
-      ),
-    );
-    if (targetOrgId == null || targetOrgId.isEmpty) return;
-
-    try {
-      final token = await ref
-          .read(orgConnectionsProvider(widget.orgId).notifier)
-          .createRequest(targetOrgId);
-      if (!mounted) return;
-      await showDialog<void>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(widget.l.connectionTokenCreated),
-          content: SelectableText(token),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: token));
-                Navigator.pop(ctx);
-              },
-              child: Text(widget.l.copy),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text(widget.l.ok),
-            ),
-          ],
-        ),
-      );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('$e')));
-      }
-    }
-  }
-
-  Future<void> _disconnect(OrgConnection connection) async {
+  Future<void> _disconnect(
+    BuildContext context,
+    WidgetRef ref,
+    OrgConnection connection,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(widget.l.disconnectOrganisation),
+        title: Text(l.disconnectOrganisation),
         content: Text(
-          widget.l.disconnectOrganisationConfirm(connection.peerOrgName),
+          l.disconnectOrganisationConfirm(connection.peerOrgName),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(widget.l.cancel),
+            child: Text(l.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(widget.l.disconnectOrganisation),
+            child: Text(l.disconnectOrganisation),
           ),
         ],
       ),
     );
     if (confirmed != true) return;
     await ref
-        .read(orgConnectionsProvider(widget.orgId).notifier)
+        .read(orgConnectionsProvider(orgId).notifier)
         .disconnect(connection.peerOrgId);
   }
 
   @override
-  Widget build(BuildContext context) {
-    final connectionsAsync = ref.watch(orgConnectionsProvider(widget.orgId));
-    final requestsAsync = ref.watch(
-      orgConnectionRequestsProvider(widget.orgId),
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final connectionsAsync = ref.watch(orgConnectionsProvider(orgId));
+    final requestsAsync = ref.watch(orgConnectionRequestsProvider(orgId));
 
-    return Card(
-      color: widget.colorScheme.primaryContainer,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            InkWell(
-              key: const Key('org_connections_header'),
-              borderRadius: BorderRadius.circular(8),
-              onTap: () => setState(() => _expanded = !_expanded),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.hub_outlined,
-                    size: 20,
-                    color: widget.colorScheme.primary,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      widget.l.orgConnections,
-                      style: widget.theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        connectionsAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Text('$e'),
+          data: (connections) {
+            if (connections.isEmpty) {
+              return Text(
+                l.orgConnectionsEmpty,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              );
+            }
+            return Column(
+              children: connections
+                  .map(
+                    (c) => ListTile(
+                      key: Key('org_connection_${c.peerOrgId}'),
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(c.peerOrgName),
+                      subtitle: c.peerOrgEmail?.isNotEmpty == true
+                          ? Text(c.peerOrgEmail!)
+                          : null,
+                      trailing: IconButton(
+                        tooltip: l.disconnectOrganisation,
+                        icon: const Icon(Icons.link_off),
+                        onPressed: () => _disconnect(context, ref, c),
                       ),
                     ),
-                  ),
-                  AnimatedRotation(
-                    turns: _expanded ? 0.5 : 0.0,
-                    duration: const Duration(milliseconds: 200),
-                    child: Icon(
-                      Icons.expand_more,
-                      color: widget.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (_expanded) ...[
-              const SizedBox(height: 12),
-              connectionsAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Text('$e'),
-                data: (connections) {
-                  if (connections.isEmpty) {
-                    return Text(
-                      widget.l.orgConnectionsEmpty,
-                      style: widget.theme.textTheme.bodyMedium,
-                    );
-                  }
-                  return Column(
-                    children: connections
-                        .map(
-                          (c) => ListTile(
-                            key: Key('org_connection_${c.peerOrgId}'),
-                            title: Text(c.peerOrgName),
-                            subtitle: c.peerOrgEmail?.isNotEmpty == true
-                                ? Text(c.peerOrgEmail!)
-                                : null,
-                            trailing: IconButton(
-                              tooltip: widget.l.disconnectOrganisation,
-                              icon: const Icon(Icons.link_off),
-                              onPressed: () => _disconnect(c),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  );
-                },
-              ),
-              const SizedBox(height: 8),
-              requestsAsync.when(
-                loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
-                data: (requests) {
-                  final pending = requests.where((r) => r.isPending).toList();
-                  if (pending.isEmpty) return const SizedBox.shrink();
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.l.connectionRequests,
-                        style: widget.theme.textTheme.titleSmall,
-                      ),
-                      ...pending.map(
-                        (r) => ListTile(
-                          dense: true,
-                          title: Text(r.targetOrgId),
-                          subtitle: Text(r.expiresAt.toLocal().toString()),
-                          trailing: IconButton(
-                            tooltip: widget.l.revokeConnectionRequest,
-                            icon: const Icon(Icons.cancel_outlined),
-                            onPressed: () => ref
-                                .read(
-                                  orgConnectionRequestsProvider(
-                                    widget.orgId,
-                                  ).notifier,
-                                )
-                                .revoke(r.id),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 8),
-              OutlinedButton.icon(
-                key: const Key('org_create_connection'),
-                onPressed: _createRequest,
-                icon: const Icon(Icons.add_link),
-                label: Text(widget.l.createConnectionRequest),
-              ),
-            ],
-          ],
+                  )
+                  .toList(),
+            );
+          },
         ),
-      ),
+        requestsAsync.when(
+          loading: () => const SizedBox.shrink(),
+          error: (_, __) => const SizedBox.shrink(),
+          data: (requests) {
+            final pending = requests.where((r) => r.isPending).toList();
+            if (pending.isEmpty) return const SizedBox.shrink();
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                Text(
+                  l.connectionRequests,
+                  style: theme.textTheme.titleSmall,
+                ),
+                ...pending.map(
+                  (r) => ListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(r.targetOrgId),
+                    subtitle: Text(r.expiresAt.toLocal().toString()),
+                    trailing: IconButton(
+                      tooltip: l.revokeConnectionRequest,
+                      icon: const Icon(Icons.cancel_outlined),
+                      onPressed: () => ref
+                          .read(
+                            orgConnectionRequestsProvider(orgId).notifier,
+                          )
+                          .revoke(r.id),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+        const SizedBox(height: 24),
+        Semantics(
+          identifier: 'org_connections_discover_cta',
+          button: true,
+          label: l.discoverOrganizations,
+          child: OutlinedButton.icon(
+            key: const Key('org_connections_discover'),
+            onPressed: () =>
+                context.push('/o/orgs/discover?from=org&orgId=$orgId'),
+            icon: const Icon(Icons.explore_outlined),
+            label: Text(l.discoverOrganizations),
+          ),
+        ),
+      ],
     );
   }
 }

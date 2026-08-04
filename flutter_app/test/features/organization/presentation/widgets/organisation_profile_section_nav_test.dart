@@ -235,6 +235,15 @@ void main() {
       expect(find.text('Manage fosters'), findsNothing);
     });
 
+    testWidgets('connections row navigates to connections route', (tester) async {
+      await _pumpNav(tester, permissions: {'view_connections'});
+
+      await tester.tap(find.byKey(const Key('org_profile_nav_connections')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('connections screen'), findsOneWidget);
+    });
+
     testWidgets('pets row navigates to pets route', (tester) async {
       await _pumpNav(tester, permissions: {'view_org_pets'});
 

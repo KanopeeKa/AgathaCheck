@@ -117,7 +117,7 @@ void main() {
     );
   });
 
-  testWidgets('top nav and FAB add pet when user can manage pets', (
+  testWidgets('top nav add pet when user can manage pets', (
     tester,
   ) async {
     final router = GoRouter(
@@ -156,7 +156,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('org_add_pet_nav')), findsOneWidget);
-    expect(find.byKey(const Key('org_add_pet_fab')), findsOneWidget);
+    expect(find.byKey(const Key('org_add_pet_fab')), findsNothing);
 
     await tester.tap(find.byKey(const Key('org_add_pet_nav')));
     await tester.pumpAndSettle();

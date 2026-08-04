@@ -339,9 +339,25 @@ export class OrganizationDetailPage {
     await waitForFlutterRoutePattern(this.page, petsRoute, 60_000);
   }
 
+  /** EN "Connected organisations" profile nav row. */
+  async openConnectionsSection(): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    await refreshFlutterAccessibility(this.page);
+    const row = this.page
+      .getByRole('button', {
+        name: /Connected organisations|Organisations connectées/i,
+      })
+      .filter({ visible: true })
+      .first();
+    await row.scrollIntoViewIfNeeded();
+    await row.click();
+    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/]+\/connections/, 60_000);
+    await refreshFlutterAccessibility(this.page);
+  }
+
   async openAddOrgPet(): Promise<void> {
     await this.openPetsSection();
-    // App bar FAB and empty-state CTA both expose "Add Pet" — prefer exact app-bar label.
+    // App bar add — guardian manage-pets parity (no FAB).
     const addButton = this.page
       .getByRole('button', { name: 'Add Pet', exact: true })
       .filter({ visible: true })
