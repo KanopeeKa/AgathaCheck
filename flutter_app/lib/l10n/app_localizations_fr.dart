@@ -4461,6 +4461,97 @@ class AppLocalizationsFr extends AppLocalizations {
   String get accountActionsSection => 'Actions du compte';
 
   @override
+  String get accountOrgSettingsTitle => 'Paramètres de l\'organisation';
+
+  @override
+  String get accountOrgSettingsEmpty =>
+      'Vous n\'êtes membre d\'aucune organisation pour le moment.';
+
+  @override
+  String get accountOrgPrivacySection =>
+      'Confidentialité dans cette organisation';
+
+  @override
+  String get accountOrgPrivacySaved =>
+      'Paramètres de confidentialité enregistrés';
+
+  @override
+  String get accountOrgLeaveSection => 'Quitter l\'organisation';
+
+  @override
+  String get accountOrgLeaveSubtitle =>
+      'Retirer votre adhésion à cette organisation.';
+
+  @override
+  String get accountOrgCardVisibilityLabel =>
+      'Qui peut voir votre fiche annuaire';
+
+  @override
+  String get accountOrgPhoneVisibilityLabel =>
+      'Qui peut voir votre numéro de téléphone';
+
+  @override
+  String get accountOrgEmailVisibilityLabel =>
+      'Qui peut voir votre adresse e-mail';
+
+  @override
+  String get accountOrgAddressVisibilityLabel => 'Qui peut voir votre adresse';
+
+  @override
+  String get accountOrgCardVisibilityAll =>
+      'Tous les membres de l\'organisation';
+
+  @override
+  String get accountOrgCardVisibilityAdmins => 'Administrateurs uniquement';
+
+  @override
+  String get accountOrgCardVisibilityNamed => 'Personnes désignées uniquement';
+
+  @override
+  String get accountOrgContactVisibilityAdmins => 'Administrateurs uniquement';
+
+  @override
+  String get accountOrgContactVisibilityAdminsAndFosterManagers =>
+      'Administrateurs et responsables famille d\'accueil';
+
+  @override
+  String get accountOrgContactVisibilityAdminsOrNamed =>
+      'Administrateurs ou personnes désignées';
+
+  @override
+  String get accountOrgContactVisibilityNamed =>
+      'Personnes désignées uniquement';
+
+  @override
+  String get accountOrgAddressVisibilityAdminsOrNamed =>
+      'Administrateurs ou personnes désignées';
+
+  @override
+  String get accountOrgAddressVisibilityAdmins => 'Administrateurs uniquement';
+
+  @override
+  String get accountOrgAddressVisibilityNamed =>
+      'Personnes désignées uniquement';
+
+  @override
+  String get accountOrgAddressVisibilityHidden => 'Masquée';
+
+  @override
+  String get accountOrgNamedGrantsTitle => 'Personnes désignées';
+
+  @override
+  String get accountOrgNamedCardLabel => 'Peut voir votre fiche';
+
+  @override
+  String get accountOrgNamedPhoneLabel => 'Peut voir votre téléphone';
+
+  @override
+  String get accountOrgNamedEmailLabel => 'Peut voir votre e-mail';
+
+  @override
+  String get accountOrgNamedAddressLabel => 'Peut voir votre adresse';
+
+  @override
   String get adminContactsTitle => 'Contacts admin';
 
   @override
@@ -4626,7 +4717,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get orgCustomisationsTitle => 'Personnalisation de l\'organisation';
+  String get orgCustomisationsTitle => 'Administration de l\'organisation';
 
   @override
   String get orgCustomisationsIntro =>

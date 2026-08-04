@@ -171,7 +171,8 @@ default-grant table as G0 §7. Checked via the same helper as every other permis
 
 New `audit_events` `event_type` values (existing table, existing retention tiers —
 `docs/observability.md`): `permission_granted`, `permission_revoked`, `role_changed`,
-`bundle_preset_applied`, `admin_contact_visibility_changed`, `foster_visibility_changed`.
+`bundle_preset_applied`, `admin_contact_visibility_changed`, `foster_visibility_changed`,
+`member_visibility_changed`.
 `resource_type = 'organization_permission'` or `'organization_user'`; `metadata` carries
 `{ permission_key, source }` only — never PII.
 

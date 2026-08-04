@@ -54,8 +54,8 @@ describe('Organizations API', () => {
         expect(res.statusCode).toBe(200);
         expect(res.body[0]).toMatchObject({
           display_name: 'Grace Admin',
-          email: 'grace@example.com',
-          active_foster_count: 0,
+          email: null,
+          active_foster_count: 2,
         });
       });
 
@@ -108,7 +108,7 @@ describe('Organizations API', () => {
         expect(res.statusCode).toBe(200);
         expect(res.body).toMatchObject({
           display_name: 'Other Admin',
-          email: 'admin@example.com',
+          email: null,
           foster_phone: '',
           foster_address: '',
           admin_notes: '',

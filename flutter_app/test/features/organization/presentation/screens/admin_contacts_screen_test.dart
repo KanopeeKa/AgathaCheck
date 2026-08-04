@@ -144,17 +144,11 @@ void main() {
     expect(find.byKey(const Key('admin_contacts_add_button')), findsNothing);
   });
 
-  testWidgets('self-card shows visibility preference controls', (tester) async {
+  testWidgets('self-card no longer shows local visibility editors', (tester) async {
     await pumpScreen(tester);
 
-    expect(
-      find.byKey(const Key('admin_contact_phone_visibility')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const Key('admin_contact_message_channel')),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('admin_contact_phone_visibility')), findsNothing);
+    expect(find.byKey(const Key('admin_contact_message_channel')), findsNothing);
   });
 }
 

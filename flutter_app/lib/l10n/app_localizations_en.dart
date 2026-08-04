@@ -4392,6 +4392,89 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountActionsSection => 'Account actions';
 
   @override
+  String get accountOrgSettingsTitle => 'Organisation settings';
+
+  @override
+  String get accountOrgSettingsEmpty =>
+      'You are not a member of any organisation yet.';
+
+  @override
+  String get accountOrgPrivacySection => 'Privacy in this organisation';
+
+  @override
+  String get accountOrgPrivacySaved => 'Privacy settings saved';
+
+  @override
+  String get accountOrgLeaveSection => 'Leave organisation';
+
+  @override
+  String get accountOrgLeaveSubtitle =>
+      'Remove your membership from this organisation.';
+
+  @override
+  String get accountOrgCardVisibilityLabel => 'Who can see your directory card';
+
+  @override
+  String get accountOrgPhoneVisibilityLabel => 'Who can see your phone number';
+
+  @override
+  String get accountOrgEmailVisibilityLabel => 'Who can see your email address';
+
+  @override
+  String get accountOrgAddressVisibilityLabel => 'Who can see your address';
+
+  @override
+  String get accountOrgCardVisibilityAll => 'Everyone in the organisation';
+
+  @override
+  String get accountOrgCardVisibilityAdmins => 'Admins only';
+
+  @override
+  String get accountOrgCardVisibilityNamed => 'Named people only';
+
+  @override
+  String get accountOrgContactVisibilityAdmins => 'Admins only';
+
+  @override
+  String get accountOrgContactVisibilityAdminsAndFosterManagers =>
+      'Admins and foster managers';
+
+  @override
+  String get accountOrgContactVisibilityAdminsOrNamed =>
+      'Admins or named people';
+
+  @override
+  String get accountOrgContactVisibilityNamed => 'Named people only';
+
+  @override
+  String get accountOrgAddressVisibilityAdminsOrNamed =>
+      'Admins or named people';
+
+  @override
+  String get accountOrgAddressVisibilityAdmins => 'Admins only';
+
+  @override
+  String get accountOrgAddressVisibilityNamed => 'Named people only';
+
+  @override
+  String get accountOrgAddressVisibilityHidden => 'Hidden';
+
+  @override
+  String get accountOrgNamedGrantsTitle => 'Named people';
+
+  @override
+  String get accountOrgNamedCardLabel => 'Can see your card';
+
+  @override
+  String get accountOrgNamedPhoneLabel => 'Can see your phone';
+
+  @override
+  String get accountOrgNamedEmailLabel => 'Can see your email';
+
+  @override
+  String get accountOrgNamedAddressLabel => 'Can see your address';
+
+  @override
   String get adminContactsTitle => 'Admin contacts';
 
   @override
