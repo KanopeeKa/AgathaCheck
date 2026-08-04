@@ -14,11 +14,11 @@ Evolve the Organisation area after v2’s profile composer: opt-in org visibilit
 
 **Non-goals (deferred — debt issues at plan start):**
 
-| ID | Deferred topic |
-|----|----------------|
-| **DEF-NOTIF** | Full org-admin actionable notification system (deep links, resolved-after-act, per-section queues) |
-| **DEF-MSG** | Org messaging inbox (admins follow messages to/from the org); in-app DM transport |
-| **DEF-NOTIF-COUNTS** | Badge counts on profile nav rows for pending work |
+| ID | Deferred topic | Issue |
+|----|----------------|-------|
+| **DEF-NOTIF** | Full org-admin actionable notification system (deep links, resolved-after-act, per-section queues) | #568 |
+| **DEF-MSG** | Org messaging inbox (admins follow messages to/from the org); in-app DM transport | #569 |
+| **DEF-NOTIF-COUNTS** | Badge counts on profile nav rows for pending work | #570 |
 
 This plan may show **message** affordances and **count placeholders** only where UI requires them; transport and org-notification product remain deferred.
 
