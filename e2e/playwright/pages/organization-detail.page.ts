@@ -6,6 +6,7 @@ import {
   escapeRegExp,
   expectAppBarTitle,
   fillTextbox,
+  flutterGotoUrl,
   navigateWithShellFallback,
   refreshFlutterAccessibility,
   selectDropdownOption,
@@ -214,7 +215,21 @@ export class OrganizationDetailPage {
     await this.openMenu();
     await this.page.getByRole('menuitem', { name: 'Leave Organization' }).click();
     await this.page.getByRole('button', { name: 'Leave Organization' }).last().click();
+    // Leave removes membership in-app, but the hash URL Playwright reads often
+    // stays on the org profile (same class of drift as acceptInviteForOrg).
+    // Prefer shell back when visible; always re-enter My Orgs via goto for asserts.
+    await refreshFlutterAccessibility(this.page);
+    const back = this.page
+      .locator('[flt-semantics-identifier="experience_back_button"]')
+      .or(this.page.getByRole('button', { name: /go back|retour|^back$/i }))
+      .first();
+    if (await back.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await back.click();
+    }
+    await this.page.goto(flutterGotoUrl('/o/orgs'));
+    await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
     await new OrganizationListPage(this.page).expectLoaded();
+    await refreshFlutterAccessibility(this.page);
   }
 
   async openEdit(): Promise<void> {
