@@ -204,11 +204,11 @@ export class OrganizationDetailPage {
 
   async openEdit(): Promise<void> {
     await enableFlutterAccessibility(this.page);
-    const settings = this.page.getByRole('button', {
-      name: /Edit organisation settings|Modifier les paramètres de l'organisation/i,
+    const edit = this.page.getByRole('button', {
+      name: /Edit organisation|Modifier l'organisation/i,
     });
-    if (await settings.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await settings.click();
+    if (await edit.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await edit.click();
     } else {
       await this.page
         .getByText(/Edit organisation|Edit Organization|Modifier l'organisation/i)

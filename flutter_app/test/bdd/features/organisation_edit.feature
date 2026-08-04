@@ -15,13 +15,18 @@ Feature: Organisation edit
     Then the organisation should persist postcode in public profile metadata
 
   @P1
-  Scenario: Super admin can upload hero and logo images
+  Scenario: Super admin can upload cover and logo images
     When "Alice" opens the edit form for "Rescue Hearts"
-    Then she should see hero and logo upload controls with file guidance
+    Then she should see cover and logo upload controls with file guidance
 
   @P1
-  Scenario: Profile settings cog opens edit form for manage_permissions users
+  Scenario: Profile edit icon opens edit form for manage_permissions users
     Given a registered user "Bob"
     And "Bob" is a member of "Rescue Hearts" with role "admin"
     When "Bob" opens the organisation profile for "Rescue Hearts"
-    Then he should see a settings control that opens the edit form
+    Then he should see an edit control that opens the edit form
+
+  @P1
+  Scenario: Super admin can delete organisation from edit screen only
+    When "Alice" opens the edit form for "Rescue Hearts"
+    Then she should see a delete organisation control on the edit screen

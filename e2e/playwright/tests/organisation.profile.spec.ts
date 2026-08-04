@@ -4,8 +4,10 @@
  * Scenario: Opted-out organisation profile is hidden from anonymous visitors
  * Scenario: Active member can view opted-out organisation public profile
  * Scenario: Public profile API exposes only public-tier fields
+ * Scenario: Profile hero shows name beside overlapping logo
+ * Scenario: Profile overflow menu excludes delete organisation
  */
-import { test, expect } from '../fixtures/auth.fixture';
+import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
   createOrganization,
   getOrgPublicProfile,
@@ -18,7 +20,8 @@ import {
 import { clearLiveApiAccess, prepareLiveApiAccess } from '../support/waf';
 import { clearBrowserSessionState } from '../support/session';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
-import { waitForFlutterRoute } from '../support/flutter';
+import { enableFlutterAccessibility, waitForFlutterRoute } from '../support/flutter';
+import { OrganizationListPage } from '../pages/organization-list.page';
 
 const PUBLIC_ALLOWLIST = [
   'id',
@@ -150,5 +153,63 @@ test.describe('Organisation profile', () => {
     expect(profile).not.toHaveProperty('address');
     expect(profile).not.toHaveProperty('role');
     expect(profile).not.toHaveProperty('member_count');
+  });
+
+  test('@P1 profile hero shows name beside overlapping logo', async ({ page }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    await prepareLiveApiAccess(page, baseURL);
+    try {
+      const owner = await signupUser(baseURL, {
+        firstName: 'Rescue',
+        lastName: 'Admin',
+      });
+      const org = await createOrganization(baseURL, owner.accessToken, {
+        name: ORG_NAME,
+        type: 'charity',
+      });
+      await setOrganizationDiscoveryProfile(baseURL, owner.accessToken, org, {
+        town: 'Springfield',
+        administrative_area: 'IL',
+        description: DESCRIPTION,
+      });
+
+      await clearBrowserSessionState(page);
+      await prepareLiveApiAccess(page, baseURL);
+      await waitForFlutterRoute(page, `/o/orgs/${org.id}`);
+
+      const detail = new OrganizationDetailPage(page);
+      await detail.expectLoaded(ORG_NAME);
+      await enableFlutterAccessibility(page);
+      await expect(page.getByText(ORG_NAME).first()).toBeVisible();
+      await expect(page.getByText(DESCRIPTION).first()).toBeVisible();
+    } finally {
+      clearLiveApiAccess();
+    }
+  });
+
+  test('@P1 profile overflow menu excludes delete organisation', async ({ page }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const alice = await signupUser(baseURL, {
+      firstName: 'Alice',
+      lastName: 'Super',
+      email: `alice-${Date.now()}@example.com`,
+    });
+    const org = await createOrganization(baseURL, alice.accessToken, {
+      name: ORG_NAME,
+      type: 'charity',
+    });
+
+    await loginAs(page, alice, { experience: 'organization' });
+    const orgList = new OrganizationListPage(page);
+    await orgList.openOrganizations();
+    await orgList.openOrg(ORG_NAME, org.id);
+
+    const detail = new OrganizationDetailPage(page);
+    await detail.expectLoaded(ORG_NAME);
+    await detail.openMenu();
+    await expect(page.getByRole('menuitem', { name: /Invite Member/i })).toBeVisible();
+    await expect(page.getByRole('menuitem', { name: /Members/i })).toBeVisible();
+    await expect(page.getByRole('menuitem', { name: /Delete Organization/i })).toHaveCount(0);
+    await page.keyboard.press('Escape');
   });
 });

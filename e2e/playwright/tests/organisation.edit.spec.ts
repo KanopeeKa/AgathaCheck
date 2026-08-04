@@ -1,8 +1,9 @@
 /**
  * @bdd organisation_edit.feature
  * Scenario: Super admin can update structured address and postcode
- * Scenario: Super admin can upload hero and logo images
- * Scenario: Profile settings cog opens edit form for manage_permissions users
+ * Scenario: Super admin can upload cover and logo images
+ * Scenario: Profile edit icon opens edit form for manage_permissions users
+ * Scenario: Super admin can delete organisation from edit screen only
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
@@ -44,7 +45,7 @@ test.describe('Organisation edit', () => {
     expect(profile.public_profile_metadata).toEqual({ postcode: '62701' });
   });
 
-  test('@P1 super admin sees hero and logo upload controls with guidance', async ({ page }) => {
+  test('@P1 super admin sees cover and logo upload controls with guidance', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const alice = await signupUser(baseURL, {
       firstName: 'Alice',
@@ -67,13 +68,13 @@ test.describe('Organisation edit', () => {
     await enableFlutterAccessibility(page);
 
     await expect(page.getByRole('button', { name: 'Upload logo' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Upload picture' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Upload cover' })).toBeVisible();
     // Flutter 3.44 web merges branding guidance into one semantics group (not plain text).
     await expect(semanticsByName(page, /Square logo, at least 256×256 px/i)).toBeVisible();
     await expect(semanticsByName(page, /Landscape image.*1200×450 px/i)).toBeVisible();
   });
 
-  test('@P1 manage_permissions user sees settings control that opens edit form', async ({
+  test('@P1 manage_permissions user sees edit control that opens edit form', async ({
     page,
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
@@ -99,7 +100,37 @@ test.describe('Organisation edit', () => {
     await detail.expectLoaded(ORG_NAME);
     await enableFlutterAccessibility(page);
 
-    await page.getByRole('button', { name: 'Edit organisation settings' }).click();
+    await page.getByRole('button', { name: 'Edit organisation' }).click();
     await expect(page.getByRole('button', { name: 'Edit Organization' })).toBeVisible();
+  });
+
+  test('@P1 super admin sees delete organisation control on edit screen only', async ({
+    page,
+  }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const alice = await signupUser(baseURL, {
+      firstName: 'Alice',
+      lastName: 'Super',
+      email: `alice-${Date.now()}@example.com`,
+    });
+    const org = await createOrganization(baseURL, alice.accessToken, {
+      name: ORG_NAME,
+      type: 'charity',
+    });
+
+    await loginAs(page, alice, { experience: 'organization' });
+    const orgList = new OrganizationListPage(page);
+    await orgList.openOrganizations();
+    await orgList.openOrg(ORG_NAME, org.id);
+
+    const detail = new OrganizationDetailPage(page);
+    await detail.expectLoaded(ORG_NAME);
+    await detail.openMenu();
+    await expect(page.getByRole('menuitem', { name: /Delete Organization/i })).toHaveCount(0);
+    await page.keyboard.press('Escape');
+
+    await detail.openEdit();
+    await enableFlutterAccessibility(page);
+    await expect(page.getByRole('button', { name: /Delete Organization/i })).toBeVisible();
   });
 });
