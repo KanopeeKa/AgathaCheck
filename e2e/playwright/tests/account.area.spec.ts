@@ -11,6 +11,7 @@ import {
   dismissConsentBannerIfPresent,
   openExperienceDrawer,
   refreshFlutterAccessibility,
+  skipGuardianOnboardingIfPresent,
   waitForPostLoginRoute,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
@@ -28,6 +29,7 @@ async function loginFromLanding(
   await landing.login(email, password);
   await dismissConsentBannerIfPresent(page);
   await waitForPostLoginRoute(page);
+  await skipGuardianOnboardingIfPresent(page);
   await refreshFlutterAccessibility(page);
 }
 
