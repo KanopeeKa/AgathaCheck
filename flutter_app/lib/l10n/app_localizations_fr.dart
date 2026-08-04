@@ -4555,8 +4555,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get adminContactsTitle => 'Contacts admin';
 
   @override
+  String orgPersonProfileTitle(String name) {
+    return '$name - Profil';
+  }
+
+  @override
   String get adminContactsDescription =>
-      'Annuaire interne des administrateurs de l\'organisation. Appelez ou écrivez selon les coordonnées partagées.';
+      'Annuaire interne des administrateurs de l\'organisation. Touchez une fiche pour ouvrir le profil.';
 
   @override
   String get adminContactsEmpty => 'Aucun contact admin pour le moment.';

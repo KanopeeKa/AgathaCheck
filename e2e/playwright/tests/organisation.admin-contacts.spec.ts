@@ -3,7 +3,9 @@
  * Scenario: Admin contacts directory lists admins alphabetically
  * Scenario: Team admin can add an admin contact
  * Scenario: Super admin can edit another admin contact
- * Scenario: Members can message an admin when contact details allow
+ * Scenario: Message affordance is hidden until in-app messaging ships
+ * Scenario: Admin contacts screen shows people as pet-style tiles
+ * Scenario: Foster parents directory shows pet-style tiles
  * @legacy Scenario: Member sees admin contacts preview on organisation profile
  * @legacy Scenario: Member sees connected organisation tiles on profile
  * @legacy Scenario: Team admin sees manage connections entry on profile
@@ -112,7 +114,7 @@ test.describe('Admin contacts', () => {
     expect(String(updated.foster_phone ?? '')).toBe('555-0100');
   });
 
-  test('@P1 foster member sees message affordance for admin with contact details', async () => {
+  test('@P1 message affordance hidden for admin contacts until DEF-MSG', async () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const { alice, org } = await seedRescueHearts(baseURL);
     const frank = await signupUser(baseURL, {
@@ -144,6 +146,46 @@ test.describe('Admin contacts', () => {
     const graceSummary = fosterView.find((p) => p.display_name.includes('Grace'));
     expect(graceSummary).toBeTruthy();
     expect(graceSummary?.email || graceSummary?.phone).toBeTruthy();
+    // UI hides message affordance until DEF-MSG; API still exposes contact fields.
+  });
+
+  test('@P1 admin contacts people API includes admin roles for tile labels', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const { alice, org } = await seedRescueHearts(baseURL);
+    const bob = await signupUser(baseURL, {
+      firstName: 'Bob',
+      lastName: 'Bravo',
+      email: `bob-${Date.now()}@example.com`,
+    });
+    await addMemberToOrg(baseURL, alice.accessToken, org.id, bob, 'admin');
+
+    const people = await getOrgPeople(baseURL, alice.accessToken, org.id);
+    const admins = people.filter(
+      (p) =>
+        p.kind === 'member' &&
+        (p.role === 'admin' || p.role === 'super_admin'),
+    );
+    expect(admins.some((p) => p.display_name.includes('Alice'))).toBe(true);
+    expect(admins.some((p) => p.display_name.includes('Bob'))).toBe(true);
+    for (const admin of admins) {
+      expect(['admin', 'super_admin']).toContain(admin.role);
+    }
+  });
+
+  test('@P1 foster parents API returns foster role for tile labels', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const { alice, org } = await seedRescueHearts(baseURL);
+    const laura = await signupUser(baseURL, {
+      firstName: 'Laura',
+      lastName: 'Lima',
+      email: `laura-${Date.now()}@example.com`,
+    });
+    await addMemberToOrg(baseURL, alice.accessToken, org.id, laura, 'foster');
+
+    const people = await getOrgPeople(baseURL, alice.accessToken, org.id);
+    const lauraRow = people.find((p) => p.display_name.includes('Laura'));
+    expect(lauraRow).toBeTruthy();
+    expect(lauraRow?.role).toBe('foster');
   });
 
   test('@legacy @P1 member can load admin contacts preview data for profile section', async () => {

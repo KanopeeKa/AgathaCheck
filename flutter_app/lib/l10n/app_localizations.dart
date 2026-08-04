@@ -8079,10 +8079,16 @@ abstract class AppLocalizations {
   /// **'Admin contacts'**
   String get adminContactsTitle;
 
+  /// No description provided for @orgPersonProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} - Profile'**
+  String orgPersonProfileTitle(String name);
+
   /// No description provided for @adminContactsDescription.
   ///
   /// In en, this message translates to:
-  /// **'Internal directory of organisation admins. Call or message using the contact details they share.'**
+  /// **'Internal directory of organisation admins. Tap a tile to open their profile.'**
   String get adminContactsDescription;
 
   /// No description provided for @adminContactsEmpty.

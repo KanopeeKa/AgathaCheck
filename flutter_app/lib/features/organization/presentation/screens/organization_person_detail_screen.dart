@@ -51,7 +51,10 @@ class _OrganizationPersonDetailScreenState
     final l = AppLocalizations.of(context)!;
 
     return OrgShellScaffold(
-      title: l.people,
+      title: detailAsync.maybeWhen(
+        data: (person) => l.orgPersonProfileTitle(person.displayName),
+        orElse: () => l.people,
+      ),
       orgId: widget.orgId,
       navVariant: OrgNavTitleVariant.withOrgLogo,
       trailingActions: [

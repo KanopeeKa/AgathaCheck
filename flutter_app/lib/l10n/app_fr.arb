@@ -1526,7 +1526,9 @@
   "accountOrgNamedAddressLabel": "Peut voir votre adresse",
 
   "adminContactsTitle": "Contacts admin",
-  "adminContactsDescription": "Annuaire interne des administrateurs de l'organisation. Appelez ou écrivez selon les coordonnées partagées.",
+  "orgPersonProfileTitle": "{name} - Profil",
+  "@orgPersonProfileTitle": { "placeholders": { "name": { "type": "String" } } },
+  "adminContactsDescription": "Annuaire interne des administrateurs de l'organisation. Touchez une fiche pour ouvrir le profil.",
   "adminContactsEmpty": "Aucun contact admin pour le moment.",
   "adminContactsYourCard": "Votre fiche",
   "adminContactsAddAdmin": "Ajouter un admin",
