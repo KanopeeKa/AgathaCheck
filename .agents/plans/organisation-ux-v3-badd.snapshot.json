@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "plan_id": "organisation-ux-v3-badd",
-  "approved_at": "2026-08-04T00:00:00Z",
-  "approved_by": "pending-human-approve-autonomous",
-  "approved_until": "2026-08-06T00:00:00Z",
-  "content_hash": "sha256:d5057f60757532c4a71bdb06fdca3ead5b0fb07f136d500f33c7e13d6ed2af66",
-  "autonomy": "halted",
+  "approved_at": "2026-08-04T17:02:58Z",
+  "approved_by": "user chat 2026-08-04 standing grant: babysit+ 566 then full /execute-plan organisation-ux-v3-badd",
+  "approved_until": "2026-08-06T17:02:58Z",
+  "content_hash": "sha256:602ec171fa9ae8f436248c83db4797778d51542b7fabbb3978155227dadbbfbb",
+  "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/organisation-ux-v3-integration-badd",
-  "control_issue": 1,
+  "control_issue": 567,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {

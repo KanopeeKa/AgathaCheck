@@ -427,7 +427,7 @@ Use this template when spawning agents on an integration branch:
 **Goal:** Show-org visibility, last-section login, org chrome, dashboard/discover IA, profile nav-rows, Account per-org privacy, people tiles, upload P0, pre-UAT green.  
 **Integration branch:** `cursor/organisation-ux-v3-integration-badd` → single PR to `main`.  
 **Plan:** `docs/experience-program/organisation-ux-v3-delivery-plan.md` · `.agents/plans/organisation-ux-v3-badd.md`  
-**Control issue:** _(pending init-control-issue)_
+**Control issue:** #567
 
 | Agent / phase | Branch | Owns | Avoid |
 |---------------|--------|------|-------|

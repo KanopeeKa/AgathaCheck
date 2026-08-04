@@ -7,7 +7,7 @@
 | **base_branch** | `cursor/organisation-ux-v3-integration-badd` |
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
-| **control_issue** | _(set by `init-control-issue`)_ |
+| **control_issue** | #567 |
 
 ## Goal
 
@@ -19,9 +19,9 @@ Deliver Organisation UX v3 per [`docs/experience-program/organisation-ux-v3-deli
 
 | Field | Value |
 |-------|-------|
-| **approved_at** | _(at grant)_ |
-| **approved_until** | `approved_at + 48h` |
-| **autonomy** | `halted` until `approve-autonomous organisation-ux-v3-badd` |
+| **approved_at** | `2026-08-04T17:02:58Z` |
+| **approved_until** | `2026-08-06T17:02:58Z` |
+| **autonomy** | `active` (standing grant 2026-08-04) |
 | **sanity** | `proceed-high-risk` — prefer mid-run re-approve or split `v3a` (0–6) / `v3b` (7–12) if window tight |
 
 **Grant keyword:** `approve-autonomous organisation-ux-v3-badd`
@@ -49,11 +49,11 @@ Full `allowed_paths` / branches: `.agents/plans/organisation-ux-v3-badd.snapshot
 ## Runtime state
 
 ```yaml
-autonomy: halted
+autonomy: active
 current_phase: null
 last_completed_phase: null
-halt_reason: "awaiting approve-autonomous organisation-ux-v3-badd"
-next_action: "init-control-issue → human approve → /execute-plan organisation-ux-v3-badd"
+halt_reason: null
+next_action: "merge PR #566 → create integration → phase 0"
 artifact_ref:
   branch: null
   plan_path: .agents/plans/organisation-ux-v3-badd.md
