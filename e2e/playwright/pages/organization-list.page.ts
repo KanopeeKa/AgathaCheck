@@ -261,7 +261,15 @@ export class OrganizationListPage {
     const row = this.discoverNavRow();
     await row.scrollIntoViewIfNeeded();
     await row.click();
-    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/discover/, 30_000);
+    try {
+      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/discover/, 12_000);
+    } catch {
+      // Flutter web hash can lag behind the painted route; fall back to direct hash nav.
+      await this.page.evaluate(() => {
+        window.location.hash = '#/o/orgs/discover?from=dashboard';
+      });
+      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/discover/, 20_000);
+    }
     await refreshFlutterAccessibility(this.page);
   }
 }

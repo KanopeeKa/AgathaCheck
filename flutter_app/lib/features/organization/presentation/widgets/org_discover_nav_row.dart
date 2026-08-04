@@ -34,7 +34,7 @@ class OrgDiscoverNavRow extends StatelessWidget {
             Icons.chevron_right,
             color: theme.colorScheme.onSurfaceVariant,
           ),
-          onTap: () => context.push('/o/orgs/discover?from=dashboard'),
+          onTap: () => context.go('/o/orgs/discover?from=dashboard'),
         ),
       ),
     );
