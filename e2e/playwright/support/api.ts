@@ -371,6 +371,7 @@ export async function updateOrganization(
 export interface DiscoverableOrganization {
   id: string;
   name: string;
+  type: string;
   logo_url: string;
   photo_url: string;
   display_locality: string;
@@ -388,11 +389,12 @@ export interface DiscoverOrganizationsResponse {
 
 export async function discoverOrganizations(
   baseURL: string,
-  options: { page?: number; pageSize?: number } = {},
+  options: { page?: number; pageSize?: number; query?: string } = {},
 ): Promise<DiscoverOrganizationsResponse> {
   const params = new URLSearchParams();
   if (options.page != null) params.set('page', String(options.page));
   if (options.pageSize != null) params.set('page_size', String(options.pageSize));
+  if (options.query?.trim()) params.set('q', options.query.trim());
   const qs = params.toString();
   const path = qs ? `/organizations/discover?${qs}` : '/organizations/discover';
   const res = await apiFetch(apiUrl(path, baseURL));

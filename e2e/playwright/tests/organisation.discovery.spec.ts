@@ -5,6 +5,8 @@
  * Scenario: Discover API returns display_locality from postcode when set
  * Scenario: Discover API includes photo_url for hero imagery
  * Scenario: Discover API falls back display_locality to town then administrative area
+ * Scenario: Discover API filters organisations by name when q is provided
+ * Scenario: Discover API search preserves pagination metadata
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import {
@@ -115,5 +117,55 @@ test.describe('Organisation discovery', () => {
 
     const match = await findDiscoverableOrganization(baseURL, org.id);
     expect(match?.display_locality).toBe('Springfield');
+  });
+
+  test('@P1 discover API filters organisations by name when q is provided', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const owner = await signupUser(baseURL, { firstName: 'Rescue', lastName: 'Admin' });
+    const hearts = await createOrganization(baseURL, owner.accessToken, {
+      name: 'Rescue Hearts',
+      type: 'charity',
+    });
+    const tails = await createOrganization(baseURL, owner.accessToken, {
+      name: 'Happy Tails Rescue',
+      type: 'charity',
+    });
+    await setOrganizationDiscoveryProfile(baseURL, owner.accessToken, hearts, {
+      town: 'Springfield',
+      administrative_area: 'IL',
+      description: 'A caring rescue shelter',
+    });
+    await setOrganizationDiscoveryProfile(baseURL, owner.accessToken, tails, {
+      town: 'Shelbyville',
+      administrative_area: 'IL',
+      description: 'Another rescue',
+    });
+
+    const discovery = await discoverOrganizations(baseURL, { query: 'Hearts' });
+    const names = discovery.items.map((item) => item.name);
+    expect(names).toContain('Rescue Hearts');
+    expect(names).not.toContain('Happy Tails Rescue');
+  });
+
+  test('@P1 discover API search preserves pagination metadata', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const owner = await signupUser(baseURL, { firstName: 'Rescue', lastName: 'Admin' });
+    const org = await createOrganization(baseURL, owner.accessToken, {
+      name: 'Rescue Hearts',
+      type: 'charity',
+    });
+    await setOrganizationDiscoveryProfile(baseURL, owner.accessToken, org, {
+      town: 'Springfield',
+      administrative_area: 'IL',
+      description: 'A caring rescue shelter',
+    });
+
+    const discovery = await discoverOrganizations(baseURL, {
+      query: 'Hearts',
+      page: 2,
+      pageSize: 5,
+    });
+    expect(discovery.page).toBe(2);
+    expect(discovery.page_size).toBe(5);
   });
 });

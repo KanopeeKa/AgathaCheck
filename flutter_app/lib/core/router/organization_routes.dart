@@ -11,6 +11,7 @@ import '../../features/organization/presentation/screens/archived_pet_detail_scr
 import '../../features/organization/presentation/screens/archived_pets_screen.dart';
 import '../../features/organization/presentation/screens/organization_connections_screen.dart';
 import '../../features/organization/presentation/screens/organization_discover_screen.dart';
+import '../../features/organization/presentation/utils/org_discover_entry_context.dart';
 import '../../features/organization/presentation/screens/organization_customisations_screen.dart';
 import '../../features/organization/presentation/screens/organisation_profile_screen.dart';
 import '../../features/organization/presentation/screens/organisation_redacted_pet_screen.dart';
@@ -87,7 +88,11 @@ List<RouteBase> _orgManagementChildRoutes() {
     GoRoute(
       path: 'discover',
       name: 'organizationDiscover',
-      builder: (context, state) => const OrganizationDiscoverScreen(),
+      builder: (context, state) {
+        final from = parseOrgDiscoverEntryContext(state.uri.queryParameters['from']);
+        final orgId = state.uri.queryParameters['orgId'];
+        return OrganizationDiscoverScreen(from: from, orgId: orgId);
+      },
     ),
     GoRoute(
       path: ':id',

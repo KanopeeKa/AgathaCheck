@@ -1,9 +1,11 @@
 import '../../domain/entities/discoverable_organization.dart';
+import '../../domain/entities/organization.dart';
 
 class DiscoverableOrganizationModel extends DiscoverableOrganization {
   const DiscoverableOrganizationModel({
     required super.id,
     required super.name,
+    super.type,
     super.logoUrl,
     super.photoUrl,
     super.displayLocality,
@@ -16,6 +18,7 @@ class DiscoverableOrganizationModel extends DiscoverableOrganization {
     return DiscoverableOrganizationModel(
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
+      type: _parseType(json['type']?.toString() ?? 'professional'),
       logoUrl: json['logo_url']?.toString() ?? '',
       photoUrl: json['photo_url']?.toString() ?? '',
       displayLocality: json['display_locality']?.toString() ?? '',
@@ -58,4 +61,13 @@ class DiscoverOrganizationsPageModel extends DiscoverOrganizationsPage {
 int _parseInt(Object? value, {required int fallback}) {
   if (value is int) return value;
   return int.tryParse(value?.toString() ?? '') ?? fallback;
+}
+
+OrganizationType _parseType(String value) {
+  switch (value.trim().toLowerCase()) {
+    case 'charity':
+      return OrganizationType.charity;
+    default:
+      return OrganizationType.professional;
+  }
 }

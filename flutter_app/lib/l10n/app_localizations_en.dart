@@ -1633,6 +1633,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not load discoverable organisations';
 
   @override
+  String get orgDiscoverySearchPlaceholder => 'Search by name';
+
+  @override
+  String get orgDiscoverySearchEmpty => 'No organisations match your search';
+
+  @override
+  String orgDiscoverBrowsingAs(String name) {
+    return 'You are browsing as $name';
+  }
+
+  @override
+  String get orgDiscoverBrowsingAsFallback => 'your account';
+
+  @override
   String orgDiscoveryLocation(String town, String administrativeArea) {
     return '$town, $administrativeArea';
   }

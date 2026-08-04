@@ -18,6 +18,7 @@ export function discoverRowToMap(row) {
   return {
     id: row.id,
     name: row.name,
+    type: row.type || 'professional',
     logo_url: row.logo_url || '',
     photo_url: row.photo_url || '',
     display_locality: computeDisplayLocality(row),
@@ -27,24 +28,48 @@ export function discoverRowToMap(row) {
   };
 }
 
+function parseSearchQuery(query) {
+  const raw = typeof query.q === 'string' ? query.q.trim() : '';
+  return raw;
+}
+
+function buildDiscoverWhereClause(searchQuery) {
+  if (!searchQuery) {
+    return {
+      whereSql: 'WHERE is_discoverable = true',
+      params: [],
+    };
+  }
+  return {
+    whereSql: 'WHERE is_discoverable = true AND name ILIKE $1',
+    params: [`%${searchQuery}%`],
+  };
+}
+
 export function registerDiscoverRoutes(router, pool) {
   router.get('/discover', async (req, res) => {
     const { page, pageSize, offset } = parsePagination(req.query);
+    const searchQuery = parseSearchQuery(req.query);
+    const { whereSql, params: whereParams } = buildDiscoverWhereClause(searchQuery);
+    const limitOffsetParams = [pageSize, offset];
+    const itemsParams = [...whereParams, ...limitOffsetParams];
+    const limitOffsetStart = whereParams.length + 1;
     try {
       const [itemsResult, countResult] = await Promise.all([
         pool.query(
-          `SELECT id, name, logo_url, photo_url, town, administrative_area,
+          `SELECT id, name, type, logo_url, photo_url, town, administrative_area,
                   description, public_profile_metadata
            FROM organizations
-           WHERE is_discoverable = true
+           ${whereSql}
            ORDER BY name ASC
-           LIMIT $1 OFFSET $2`,
-          [pageSize, offset],
+           LIMIT $${limitOffsetStart} OFFSET $${limitOffsetStart + 1}`,
+          itemsParams,
         ),
         pool.query(
           `SELECT COUNT(*)::int AS total_count
            FROM organizations
-           WHERE is_discoverable = true`,
+           ${whereSql}`,
+          whereParams,
         ),
       ]);
       res.json({

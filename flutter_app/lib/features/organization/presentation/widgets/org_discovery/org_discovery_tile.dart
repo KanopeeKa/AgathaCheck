@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/providers/api_base_url_provider.dart';
 import '../../../../../core/utils/resolve_static_asset_url.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/discoverable_organization.dart';
 import '../../../domain/entities/organization.dart';
 import '../../utils/org_screen_theme.dart';
@@ -18,8 +19,10 @@ class OrgDiscoveryTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     final apiBaseUrl = ref.read(apiBaseUrlProvider);
     final locality = organization.displayLocality.trim();
+    final typeLabel = _localizedTypeLabel(l, organization.type);
     final resolvedPhoto = resolveStaticAssetUrl(
       organization.photoUrl,
       apiBaseUrl: apiBaseUrl,
@@ -31,6 +34,7 @@ class OrgDiscoveryTile extends ConsumerWidget {
 
     final semanticsParts = <String>[organization.name];
     if (locality.isNotEmpty) semanticsParts.add(locality);
+    semanticsParts.add(typeLabel);
 
     return MergeSemantics(
       child: Semantics(
@@ -61,7 +65,7 @@ class OrgDiscoveryTile extends ConsumerWidget {
                   Expanded(
                     flex: 1,
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+                      padding: const EdgeInsets.fromLTRB(12, 2, 12, 6),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
@@ -70,37 +74,48 @@ class OrgDiscoveryTile extends ConsumerWidget {
                             OrgLogoImage(
                               logoUrl: organization.logoUrl,
                               resolvedUrl: resolvedLogo,
-                              height: 24,
+                              height: 20,
                             )
                           else
                             OrgImageAvatar(
                               imageUrl: organization.photoUrl,
                               type: OrganizationType.charity,
-                              radius: 16,
+                              radius: 14,
                               resolvedUrl: resolvedPhoto,
                             ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 2),
                           Text(
                             organization.name,
                             style: theme.textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.bold,
+                              height: 1.1,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.center,
                           ),
                           if (locality.isNotEmpty) ...[
-                            const SizedBox(height: 2),
                             Text(
                               locality,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
+                                height: 1.1,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
                             ),
                           ],
+                          Text(
+                            typeLabel,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              height: 1.1,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                          ),
                         ],
                       ),
                     ),
@@ -112,6 +127,15 @@ class OrgDiscoveryTile extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  String _localizedTypeLabel(AppLocalizations l, OrganizationType type) {
+    switch (type) {
+      case OrganizationType.professional:
+        return l.orgTypeProfessional;
+      case OrganizationType.charity:
+        return l.orgTypeCharity;
+    }
   }
 }
 

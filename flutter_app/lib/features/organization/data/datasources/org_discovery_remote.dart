@@ -13,10 +13,19 @@ class OrgDiscoveryRemote {
   Future<DiscoverOrganizationsPageModel> fetchDiscoverableOrganizations({
     int page = 1,
     int pageSize = 20,
+    String? query,
   }) async {
+    final queryParams = <String, String>{
+      'page': '$page',
+      'page_size': '$pageSize',
+    };
+    final trimmedQuery = query?.trim() ?? '';
+    if (trimmedQuery.isNotEmpty) {
+      queryParams['q'] = trimmedQuery;
+    }
     final uri = Uri.parse(
       '$baseUrl/api/organizations/discover',
-    ).replace(queryParameters: {'page': '$page', 'page_size': '$pageSize'});
+    ).replace(queryParameters: queryParams);
     final response = await client.get(uri);
     if (response.statusCode >= 400) {
       throw OrgDiscoveryException(
