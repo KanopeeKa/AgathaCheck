@@ -109,6 +109,7 @@ void main() {
       await pumpScreen(tester);
 
       expect(find.text('Admin contacts'), findsOneWidget);
+      expect(find.byKey(const Key('admin_contacts_tile_grid')), findsOneWidget);
       expect(find.text('Your card'), findsOneWidget);
       expect(find.text('Test User'), findsOneWidget);
 

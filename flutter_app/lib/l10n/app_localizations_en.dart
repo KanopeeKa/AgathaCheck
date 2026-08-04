@@ -4478,8 +4478,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminContactsTitle => 'Admin contacts';
 
   @override
+  String orgPersonProfileTitle(String name) {
+    return '$name - Profile';
+  }
+
+  @override
   String get adminContactsDescription =>
-      'Internal directory of organisation admins. Call or message using the contact details they share.';
+      'Internal directory of organisation admins. Tap a tile to open their profile.';
 
   @override
   String get adminContactsEmpty => 'No admin contacts yet.';

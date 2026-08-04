@@ -68,10 +68,8 @@ class AdminContactCard extends ConsumerWidget {
       phoneVisibility: phoneVisibility,
       phone: contactPhone,
     );
-    final showMessage = canViewerMessageAdminContact(
-      contact: person,
-      viewerUserId: viewerUserId,
-    );
+    // D-v3-MSG-1: hide message affordance until DEF-MSG (#569).
+    const showMessage = false;
     final photoUrl = resolveStaticAssetUrl(
       person.photoUrl ?? '',
       apiBaseUrl: ref.read(apiBaseUrlProvider),

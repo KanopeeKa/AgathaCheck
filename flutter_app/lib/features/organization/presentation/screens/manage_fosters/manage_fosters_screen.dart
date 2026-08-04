@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../auth/presentation/providers/auth_providers.dart';
 import '../../../domain/entities/foster_parent.dart';
 import '../../../domain/services/foster_visibility.dart';
-import '../../providers/admin_contact_providers.dart';
 import '../../providers/manage_fosters_providers.dart';
 import '../../providers/organization_providers.dart';
-import '../../widgets/manage_fosters/foster_summary_card.dart';
-import '../../widgets/organization_role_labels.dart';
+import '../../widgets/manage_fosters/foster_person_tile.dart';
+import '../../widgets/manage_fosters/foster_summary_card.dart' show showManageFostersAddManualDialog;
 import '../../widgets/org_shell_app_bar_title.dart';
 import '../../widgets/org_shell_scaffold.dart';
 
@@ -37,6 +37,7 @@ class ManageFostersScreen extends ConsumerWidget {
       manageFostersApprovalFilterProvider(orgId),
     );
     final viewerRole = ref.watch(orgViewerRoleProvider(orgId));
+    final viewerUserId = ref.watch(authProvider.select((s) => s.user?.id));
     final canManage = canManageFosters(viewerRole, orgId);
     final fosterParentsAsync = ref.watch(orgFosterParentsProvider(orgId));
 
@@ -116,28 +117,17 @@ class ManageFostersScreen extends ConsumerWidget {
                       ),
                     );
                   }
-                  return ListView.builder(
+                  return ListView(
                     key: const Key('manage_fosters_list'),
                     padding: const EdgeInsets.all(16),
-                    itemCount: filtered.length,
-                    itemBuilder: (context, index) {
-                      final parent = filtered[index];
-                      return FosterSummaryCard(
-                        parent: parent,
+                    children: [
+                      FosterPersonTileGrid(
                         orgId: orgId,
+                        parents: filtered,
                         canManage: canManage,
-                        localizedRoleLabel: localizedOrgMemberRole,
-                        onTap: parent.isExternal
-                            ? () => context.push(
-                                '/o/orgs/$orgId/people/external/${parent.id}',
-                              )
-                            : parent.userId != null
-                            ? () => context.push(
-                                '/o/orgs/$orgId/people/member/${parent.userId}',
-                              )
-                            : null,
-                      );
-                    },
+                        viewerUserId: viewerUserId,
+                      ),
+                    ],
                   );
                 },
               ),
