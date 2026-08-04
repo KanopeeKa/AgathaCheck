@@ -2260,8 +2260,24 @@ export async function updateOrgPersonContact(
   orgId: string,
   kind: 'member' | 'external',
   personId: string,
-  contact: { phone?: string; notes?: string },
+  contact: {
+    phone?: string;
+    foster_phone?: string;
+    notes?: string;
+    admin_notes?: string;
+    foster_address?: string;
+    display_name?: string;
+    email?: string;
+  },
 ): Promise<Record<string, unknown>> {
+  const body = {
+    ...contact,
+    foster_phone: contact.foster_phone ?? contact.phone,
+    admin_notes: contact.admin_notes ?? contact.notes,
+  };
+  delete (body as { phone?: string }).phone;
+  delete (body as { notes?: string }).notes;
+
   const res = await apiFetch(
     apiUrl(`/organizations/${orgId}/people/${kind}/${personId}/contact`, baseURL),
     {
@@ -2270,7 +2286,7 @@ export async function updateOrgPersonContact(
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(contact),
+      body: JSON.stringify(body),
     },
   );
   if (!res.ok) {
