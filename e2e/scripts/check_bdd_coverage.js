@@ -21,7 +21,7 @@ const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const FEATURES_DIR = path.join(REPO_ROOT, 'flutter_app', 'test', 'bdd', 'features');
 const SPECS_DIR = path.join(REPO_ROOT, 'e2e', 'playwright', 'tests');
 
-const GATE = 150; // 65 % of 231 total scenarios (Organisation v2 ratchet)
+const GATE = 180; // 68 % of 266 total scenarios (Organisation v3 ratchet)
 
 // ---------------------------------------------------------------------------
 // Helpers

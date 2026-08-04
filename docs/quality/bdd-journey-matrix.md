@@ -196,6 +196,25 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 
 **Subtotal:** 35 scenarios — **35/35**
 
+---
+
+### J7c — Organisation UX v3 (2026-08)
+
+| Feature | Scenarios | Mapped | Playwright | Notes |
+|---------|----------:|-------:|------------|-------|
+| `account_area.feature` | 4 | 2 | `account.area.spec.ts` | show-org toggle; last-section login pending |
+| `organisation_management.feature` | 14 | 12+ | `organisation.management.spec.ts`, `organisation.dashboard.spec.ts` | dashboard tiles + Discover row |
+| `organisation_discovery.feature` | 9 | 8+ | `organisation.discovery.spec.ts`, `organisation.connections.spec.ts` | search `?q=`, browse-as |
+| `organisation_profile.feature` | 9 | 7+ | `organisation.profile.spec.ts` | nav rows, Administration |
+| `organisation_edit.feature` | 4 | 3+ | `organisation.edit.spec.ts` | upload cover/logo |
+| `organisation_customisations.feature` | 2 | 2 | `organisation.customisations.spec.ts` | Administration entry |
+| `organisation_member_privacy.feature` | 2 | 2 | `organisation.member.privacy.spec.ts` | Account per-org privacy |
+| `admin_contacts.feature` | 9 | 7+ | `organisation.admin-contacts.spec.ts` | people tiles |
+
+**Subtotal:** 53 scenarios — **~43 mapped** (v3 slices 0–10); gate ratchet **180/266** after phase 11 hardening.
+
+**E2E fixtures:** `seedDiscoverableOrganization`, `getMemberPrivacySettings`, `updateMemberPrivacySettings` in `e2e/playwright/support/api.ts`; UAT seed `org-v3-demo` in `server/scripts/seed.js`.
+
 **Note:** **Pre-UAT executed** = listed in `e2e/scripts/shard-files.mjs` (12-shard manifest, Aug 2026).
 
 ---

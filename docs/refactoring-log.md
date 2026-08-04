@@ -442,7 +442,7 @@ Use this template when spawning agents on an integration branch:
 | 8 privacy | `cursor/org-ux-v3-8-account-privacy-badd` | migrations + privacy APIs + Account org settings | tile chrome |
 | 9 people tiles | `cursor/org-ux-v3-9-people-tiles-badd` | Admin/Foster tile grids + person profile | connections screen |
 | 10 deep screens | `cursor/org-ux-v3-10-deep-screens-badd` | connections cleanup + pets entry polish | Account privacy |
-| 11 harden | `cursor/org-ux-v3-11-hardening-badd` | l10n, seeds, BDD gate, scorecard | — |
+| 11 harden | `cursor/org-ux-v3-11-hardening-badd` | l10n, seeds, BDD gate **180/266**, scorecard | — |
 | 12 integrate | `cursor/organisation-ux-v3-integration-badd` | integration→main + pre-UAT fix loop | — |
 
 **Optional spawn (after ownership confirmed disjoint):** Phase 5 discover-api vs discover-ui; Phase 9 after shared `OrgPersonTile` foundation micro-PR.
