@@ -8,7 +8,6 @@ import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
 import { seedDualRoleUser } from '../support/api';
 import {
-  dismissConsentBannerIfPresent,
   openExperienceDrawer,
   refreshFlutterAccessibility,
   skipGuardianOnboardingIfPresent,
@@ -27,10 +26,10 @@ async function loginFromLanding(
   const landing = new LandingPage(page);
   await landing.goto();
   await landing.login(email, password);
-  await dismissConsentBannerIfPresent(page);
+  // waitForPostLoginRoute + skipGuardianOnboardingIfPresent already dismiss consent
+  // and refresh semantics — avoid stacking redundant ~800ms refreshes (Copilot #584).
   await waitForPostLoginRoute(page);
   await skipGuardianOnboardingIfPresent(page);
-  await refreshFlutterAccessibility(page);
 }
 
 test.describe('Account area organisation visibility', () => {
