@@ -23,6 +23,7 @@ export const SHARDS = [
   ['playwright/tests/health.tracking.spec.ts'],
   [
     'playwright/tests/organisation.management.spec.ts',
+    'playwright/tests/organisation.dashboard.spec.ts',
     'playwright/tests/gdpr.data-rights.spec.ts',
     'playwright/tests/auth.login.spec.ts',
     'playwright/tests/organisation.discovery.spec.ts',

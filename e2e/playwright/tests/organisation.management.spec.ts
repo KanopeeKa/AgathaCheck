@@ -12,6 +12,8 @@
  * Scenario: Viewing organisation members from the dashboard
  * Scenario: Updating organisation information
  * Scenario: Leaving an organisation
+ * Scenario: Dashboard shows Discover nav row instead of inline grid
+ * Scenario: Discover nav row opens discover screen
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
