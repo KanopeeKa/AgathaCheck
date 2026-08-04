@@ -4,7 +4,7 @@
   "approved_at": "2026-08-04T17:02:58Z",
   "approved_by": "user chat 2026-08-04 standing grant: babysit+ 566 then full /execute-plan organisation-ux-v3-badd",
   "approved_until": "2026-08-06T17:02:58Z",
-  "content_hash": "sha256:346aedfe13e1f4cbfc130d1895fbcbb7b601824d38ad047c33c757f2b34e0996",
+  "content_hash": "sha256:692a49a839505a6e0cb9c2b6f000e47da5af15b738363a3d7a13fbfa2ad6bea6",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/organisation-ux-v3-integration-badd",
@@ -38,14 +38,17 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [
         568,
         569,
         570
-      ]
+      ],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/571",
+      "pr_head_sha": "d70ee21aae3c3754cc7887a9a21d1b4b21755e72",
+      "merge_commit": "d70ee21aae3c3754cc7887a9a21d1b4b21755e72"
     },
     {
       "id": "1",
@@ -78,13 +81,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/572",
+      "pr_head_sha": "135c3ee703f65ff46dac9ee692eda578f1d6788b",
+      "merge_commit": "135c3ee703f65ff46dac9ee692eda578f1d6788b"
     },
     {
       "id": "2",

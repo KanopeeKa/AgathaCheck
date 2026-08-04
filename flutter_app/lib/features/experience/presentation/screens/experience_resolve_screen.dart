@@ -18,7 +18,8 @@ class ExperienceResolveScreen extends ConsumerWidget {
   ) {
     final pets = ref.read(petListProvider).valueOrNull ?? [];
     final orgs = ref.read(organizationListProvider).valueOrNull ?? [];
-    final saved = ref.read(savedDefaultExperienceProvider);
+    final lastSection = ref.read(lastAppSectionProvider);
+    final showOrgPref = ref.read(showOrganisationSectionPrefProvider);
     final active = ref.read(activeExperienceProvider);
     final guardianOnboardingCompleted = ref.read(
       guardianOnboardingCompletedProvider,
@@ -26,8 +27,9 @@ class ExperienceResolveScreen extends ConsumerWidget {
     final orgOnboardingCompleted = ref.read(orgOnboardingCompletedProvider);
     final path = resolvePostLoginPath(
       eligibility: eligibility,
-      savedDefault: saved,
+      lastAppSection: lastSection,
       activeExperience: active,
+      showOrganisationSectionPref: showOrgPref,
       pets: pets,
       orgs: orgs,
       guardianOnboardingCompleted: guardianOnboardingCompleted,
@@ -38,6 +40,7 @@ class ExperienceResolveScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(organisationMembershipVisibilitySyncProvider);
     ref.listen<AsyncValue<ExperienceEligibility>>(
       experienceEligibilityProvider,
       (_, next) {

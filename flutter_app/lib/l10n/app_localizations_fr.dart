@@ -4193,6 +4193,18 @@ class AppLocalizationsFr extends AppLocalizations {
       'Utilisée à la connexion. Vous pouvez toujours changer via le menu.';
 
   @override
+  String get experienceShowOrganisationSectionTitle =>
+      'Afficher la section Organisation';
+
+  @override
+  String get experienceShowOrganisationSectionSubtitle =>
+      'Ajoute Organisation au menu pour créer ou gérer des refuges et associations.';
+
+  @override
+  String get experienceShowOrganisationSectionMemberLocked =>
+      'Organisation reste visible car vous appartenez à au moins une organisation.';
+
+  @override
   String get experienceGuardianInviteHint =>
       'Ajoutez un animal ou ouvrez sa fiche pour partager les soins.';
 
@@ -4509,17 +4521,17 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgProfileFosteringSessionsTitle => 'Sessions d\'accueil';
 
   @override
-  String get orgFosteringSessionsListTitle => 'Fostering sessions';
+  String get orgFosteringSessionsListTitle => 'Sessions d\'accueil';
 
   @override
-  String get orgFosteringSessionsManage => 'Manage sessions';
+  String get orgFosteringSessionsManage => 'Gérer les sessions';
 
   @override
   String get orgFosteringSessionsEmpty =>
-      'No fostering sessions match this view';
+      'Aucune session d\'accueil ne correspond à cette vue';
 
   @override
-  String get fosteringSessionDerivedNearlyFinished => 'Nearly finished';
+  String get fosteringSessionDerivedNearlyFinished => 'Bientôt terminée';
 
   @override
   String get orgDashboardEditSubtitle =>

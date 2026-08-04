@@ -2,16 +2,10 @@
  * @bdd experience_navigation.feature
  * Scenario: Guardian-only user lands on guardian home after login
  * Scenario: Organisation-only user lands on organisation home after login
- * Scenario: Dual-role user sees experience chooser after login
- * Scenario: Dual-role chooser pre-selects guardian
- * Scenario: Dual-role user remembers guardian choice
- * Scenario: Remembered guardian choice skips chooser on next login
- * Scenario: Dual-role user sets default experience to organisation in settings
+ * Scenario: Dual-role user lands on guardian home when no last section saved
+ * Scenario: Drawer hides Organisation for guardian-only users by default
+ * Scenario: Drawer shows Organisation when user is an org member
  * Scenario: User switches to organisation view from guardian drawer
- * Scenario: Guardian chooser hides organisation option for guardian-only users
- * Scenario: Drawer shows exactly three destinations regardless of current mode
- * Scenario: Bell shows a single combined unread badge across both notification kinds
- * Scenario: Hamburger is shown only on section root screens
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
@@ -68,71 +62,54 @@ test.describe('Experience navigation', () => {
     await expect(page.getByText(/How will you use Agatha Track/i)).not.toBeVisible();
   });
 
-  test('dual-role user sees experience chooser after login', async ({ page }) => {
-    await prepareLiveApiAccess(page, baseURL());
-    const { user } = await seedDualRoleUser(baseURL());
-    await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
-    const experience = new ExperiencePage(page);
-    await experience.expectChooserVisible();
-  });
-
-  test('dual-role chooser pre-selects guardian', async ({ page }) => {
-    await prepareLiveApiAccess(page, baseURL());
-    const { user } = await seedDualRoleUser(baseURL());
-    await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
-    const experience = new ExperiencePage(page);
-    await experience.expectChooserVisible();
-    await experience.continuePreselectedGuardian(false);
-    await experience.expectGuardianShell();
-  });
-
-  test('dual-role user remembers guardian choice', async ({ page }) => {
-    await prepareLiveApiAccess(page, baseURL());
-    const { user } = await seedDualRoleUser(baseURL());
-    await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
-    const experience = new ExperiencePage(page);
-    await experience.chooseGuardian(true);
-    await experience.expectGuardianShell();
-  });
-
-  test('remembered guardian choice skips chooser on next login', async ({
+  test('dual-role user lands on guardian home when no last section saved', async ({
     page,
   }) => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
-    await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
-    const experience = new ExperiencePage(page);
-    await experience.chooseGuardian(true);
-
-    await logOutFromApp(page);
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    const experience = new ExperiencePage(page);
     await experience.expectGuardianShell();
+    await expect(page.getByText(/How will you use Agatha Track/i)).not.toBeVisible();
   });
 
-  test('dual-role user sets default experience to organisation in settings', async ({
+  test('drawer hides Organisation for guardian-only users by default', async ({
+    page,
+    testUser,
+  }) => {
+    await loginFromLanding(page, testUser.email, testUser.password);
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    const experience = new ExperiencePage(page);
+    await experience.expectDrawerWithoutOrganisation();
+  });
+
+  test('drawer shows Organisation when user is an org member', async ({
     page,
   }) => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
     await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
     const experience = new ExperiencePage(page);
-    await experience.chooseGuardian(false);
-    await experience.expectGuardianShell();
-    await experience.gotoGuardianSettings();
-    await experience.setDefaultExperience('organization');
-    await refreshFlutterAccessibility(page);
-    await logOutFromApp(page);
+    await experience.expectUnifiedDrawerItems();
+  });
 
+  test('login restores last organisation section after drawer switch', async ({
+    page,
+  }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const { user } = await seedDualRoleUser(baseURL());
+    await loginFromLanding(page, user.email, user.password);
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    const experience = new ExperiencePage(page);
+    await experience.openDrawerOrgView();
+    await waitForFlutterRoutePattern(page, /\/(?:o\/orgs|organizations)(?:\?|$)/, 30_000);
+
+    await logOutFromApp(page);
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/o\/home/, 60_000);
     await experience.expectOrgShell();
-    await expect(page.getByText(/How will you use Agatha Track/i)).not.toBeVisible();
   });
 
   test('user switches to organisation view from guardian drawer', async ({
@@ -141,44 +118,11 @@ test.describe('Experience navigation', () => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
     await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
     const experience = new ExperiencePage(page);
-    await experience.chooseGuardian(false);
     await experience.openDrawerOrgView();
-    // After navigation reversal, expect bell (not Home button)
     await expect(
       page.getByRole('button', { name: /open notifications/i }),
     ).toBeVisible({ timeout: 15_000 });
-  });
-
-  test('drawer shows exactly three destinations regardless of current mode', async ({
-    page,
-  }) => {
-    await prepareLiveApiAccess(page, baseURL());
-    const { user } = await seedDualRoleUser(baseURL());
-    await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
-    const experience = new ExperiencePage(page);
-    await experience.chooseGuardian(false);
-    await experience.expectUnifiedDrawerItems();
-  });
-
-  test('guardian chooser hides organisation option for guardian-only users', async ({
-    page,
-  }) => {
-    await prepareLiveApiAccess(page, baseURL());
-    const user = await signupUser(baseURL());
-    await createPet(baseURL(), user.accessToken, 'Solo Pet');
-    await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
-
-    const experience = new ExperiencePage(page);
-    await experience.gotoChooser();
-    await expect(
-      page.getByText('Shelter / Organisation'),
-    ).not.toBeVisible();
-    await expect(
-      page.getByText('Individual Pet Guardian'),
-    ).toBeVisible();
   });
 });

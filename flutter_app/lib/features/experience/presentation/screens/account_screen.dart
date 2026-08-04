@@ -8,7 +8,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../config/drawer_menu_config.dart';
 import '../providers/experience_providers.dart';
-import '../widgets/experience_settings_section.dart';
+import '../widgets/organisation_visibility_section.dart';
 import '../widgets/experience_shell_scaffold.dart';
 
 /// Account dashboard at `/account` — global personal/app-level utilities.
@@ -42,7 +42,7 @@ class AccountScreen extends ConsumerWidget {
           DashboardSection(
             title: l.accountPreferencesSection,
             previewBuilder: (context) =>
-                const ExperienceSettingsSection(embedded: true),
+                const OrganisationVisibilitySection(embedded: true),
           ),
           DashboardSection(
             title: l.accountSupportSection,

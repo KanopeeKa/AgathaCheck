@@ -21,7 +21,6 @@ import '../widgets/change_password_form.dart';
 import '../widgets/account_actions_section.dart';
 import '../widgets/my_details/profile_editor_sheet.dart';
 import '../widgets/my_details/profile_settings_section.dart';
-import '../../../experience/presentation/widgets/experience_settings_section.dart';
 
 class MyDetailsScreen extends ConsumerStatefulWidget {
   const MyDetailsScreen({super.key});
@@ -160,7 +159,6 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                   onEdit: _openEditorSheet,
                   resolvePhotoUrl: _resolvePhotoUrl,
                 ),
-                const ExperienceSettingsSection(),
                 const SizedBox(height: 16),
                 ProfileSettingsSection(
                   theme: theme,
