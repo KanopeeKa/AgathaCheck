@@ -4,7 +4,7 @@
   "approved_at": "2026-08-04T17:02:58Z",
   "approved_by": "user chat 2026-08-04 standing grant: babysit+ 566 then full /execute-plan organisation-ux-v3-badd",
   "approved_until": "2026-08-06T17:02:58Z",
-  "content_hash": "sha256:24ba97d4516cbaa4921422392f5ec8fd127a840c57ec5e82b337cdcf42f4f8c6",
+  "content_hash": "sha256:51e499d447f256af622cdc3df2c5b311a0299d1fda080095b2e17e3e325038ad",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/organisation-ux-v3-integration-badd",
@@ -510,9 +510,8 @@
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/583",
+      "pr_head_sha": "0c18e3e6a1fccbebac2d34178e9d61ccd6f9db65",
       "merge_mode": "auto"
     }
   ]
