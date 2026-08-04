@@ -420,3 +420,30 @@ Use this template when spawning agents on an integration branch:
 | Slice 1+ | per snapshot | see `organisation-v2-delivery-plan.md` | — |
 | 8a–9 hardening | `cursor/org-v2-8-9-hardening-abc9` | BDD completion (admin contacts, permissions, customisations); gate **150/231**; docs + FR l10n | — |
 
+---
+
+## Sprint — Organisation UX v3 (`organisation-ux-v3-badd`, 2026-08-04)
+
+**Goal:** Show-org visibility, last-section login, org chrome, dashboard/discover IA, profile nav-rows, Account per-org privacy, people tiles, upload P0, pre-UAT green.  
+**Integration branch:** `cursor/organisation-ux-v3-integration-badd` → single PR to `main`.  
+**Plan:** `docs/experience-program/organisation-ux-v3-delivery-plan.md` · `.agents/plans/organisation-ux-v3-badd.md`  
+**Control issue:** _(pending init-control-issue)_
+
+| Agent / phase | Branch | Owns | Avoid |
+|---------------|--------|------|-------|
+| 0 docs | `cursor/org-ux-v3-0-docs-badd` | `docs/experience-program/**`, architecture pointers, debt issues | product code |
+| 1 upload | `cursor/org-ux-v3-1-upload-badd` | org image upload routes + Flutter branding upload + edit BDD | profile IA |
+| 2 visibility | `cursor/org-ux-v3-2-visibility-badd` | experience prefs, drawer, login last-section, Account toggle | org profile widgets |
+| 3 chrome | `cursor/org-ux-v3-3-chrome-badd` | org shell app bar / teal scaffold | discover API |
+| 4 dashboard | `cursor/org-ux-v3-4-dashboard-badd` | list screen My Orgs tiles + Discover row | discover search API |
+| 5 discover | `cursor/org-ux-v3-5-discover-badd` | discoverRouter `?q=` + Discover screen + browse-as | profile composer |
+| 6 profile header | `cursor/org-ux-v3-6-profile-header-badd` | profile/edit header, menus, upload CTAs | privacy migration |
+| 7 profile nav | `cursor/org-ux-v3-7-profile-nav-badd` | member nav rows + Administration entry | people tile grid |
+| 8 privacy | `cursor/org-ux-v3-8-account-privacy-badd` | migrations + privacy APIs + Account org settings | tile chrome |
+| 9 people tiles | `cursor/org-ux-v3-9-people-tiles-badd` | Admin/Foster tile grids + person profile | connections screen |
+| 10 deep screens | `cursor/org-ux-v3-10-deep-screens-badd` | connections cleanup + pets entry polish | Account privacy |
+| 11 harden | `cursor/org-ux-v3-11-hardening-badd` | l10n, seeds, BDD gate, scorecard | — |
+| 12 integrate | `cursor/organisation-ux-v3-integration-badd` | integration→main + pre-UAT fix loop | — |
+
+**Optional spawn (after ownership confirmed disjoint):** Phase 5 discover-api vs discover-ui; Phase 9 after shared `OrgPersonTile` foundation micro-PR.
+
