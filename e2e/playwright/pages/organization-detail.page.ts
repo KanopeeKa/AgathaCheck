@@ -231,8 +231,12 @@ export class OrganizationDetailPage {
     }
     await leaveTile.waitFor({ state: 'visible', timeout: 30_000 });
     await leaveTile.click();
+    await refreshFlutterAccessibility(this.page);
 
-    await this.page.locator('[flt-semantics-identifier="account_org_leave_confirm"]').click();
+    const leaveConfirm = this.page
+      .locator('[flt-semantics-identifier="account_org_leave_confirm"]')
+      .or(this.page.getByRole('button', { name: 'Leave Organization' }).last());
+    await leaveConfirm.click();
 
     await waitForFlutterRoutePattern(this.page, /\/account(?:\?|$|\/)/, 30_000);
 
