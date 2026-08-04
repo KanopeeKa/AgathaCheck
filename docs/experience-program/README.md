@@ -19,6 +19,8 @@ documents; everything else here is the delivery plan built on top of them.
 | [`phase-3-organisation-presentation.md`](phase-3-organisation-presentation.md) | Org dashboard, modular org detail, admin contacts, discoverability, legal fields, pet tabs |
 | [`phase-4-foster-pet-operations.md`](phase-4-foster-pet-operations.md) | Foster self-management, agreement withdrawal, permission threading |
 | [`phase-5-organisation-customisations.md`](phase-5-organisation-customisations.md) | Templates relocation, roles/permissions admin UI, audit log viewer |
+| [`organisation-v2-delivery-plan.md`](organisation-v2-delivery-plan.md) | Organisation v2 — profile composer, view permissions, activity log |
+| [`organisation-ux-v3-delivery-plan.md`](organisation-ux-v3-delivery-plan.md) | **Active.** Organisation UX v3 — show-org, chrome, discover, nav rows, Account privacy, upload P0 |
 
 **Related prior work this program reconciles with:**
 

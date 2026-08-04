@@ -1,0 +1,515 @@
+{
+  "schema_version": 1,
+  "plan_id": "organisation-ux-v3-badd",
+  "approved_at": "2026-08-04T17:02:58Z",
+  "approved_by": "user chat 2026-08-04 standing grant: babysit+ 566 then full /execute-plan organisation-ux-v3-badd",
+  "approved_until": "2026-08-06T17:02:58Z",
+  "content_hash": "sha256:602ec171fa9ae8f436248c83db4797778d51542b7fabbb3978155227dadbbfbb",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/organisation-ux-v3-integration-badd",
+  "control_issue": 567,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "0",
+      "title": "Decisions docs debt issues",
+      "branch": "cursor/org-ux-v3-0-docs-badd",
+      "allowed_paths": [
+        "docs/experience-program/**",
+        "docs/architecture/**",
+        "docs/refactoring-log.md",
+        "docs/refactoring-debt.md",
+        "docs/quality/**",
+        ".agents/plans/organisation-ux-v3-badd.md",
+        ".agents/plans/organisation-ux-v3-badd.snapshot.json",
+        "docs/experience-program/organisation-ux-v3-delivery-plan.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "1",
+      "title": "Org image upload P0",
+      "branch": "cursor/org-ux-v3-1-upload-badd",
+      "allowed_paths": [
+        "server/routes/organizations/**",
+        "server/lib/safeUpload.js",
+        "server/test/organizations/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/bdd/features/organisation_edit.feature",
+        "e2e/playwright/tests/organisation.edit.spec.ts",
+        "e2e/playwright/pages/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/organisation-ux-v3-badd.md",
+        ".agents/plans/organisation-ux-v3-badd.snapshot.json",
+        "docs/experience-program/organisation-ux-v3-delivery-plan.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "2",
+      "title": "Show-org toggle last section",
+      "branch": "cursor/org-ux-v3-2-visibility-badd",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/features/auth/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/features/auth/**",
+        "flutter_app/test/bdd/features/account_area.feature",
+        "flutter_app/test/bdd/features/experience_navigation.feature",
+        "e2e/playwright/tests/**",
+        "e2e/playwright/pages/**",
+        "e2e/playwright/support/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/organisation-ux-v3-badd.md",
+        ".agents/plans/organisation-ux-v3-badd.snapshot.json",
+        "docs/experience-program/organisation-ux-v3-delivery-plan.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "3",
+      "title": "Org-area chrome",
+      "branch": "cursor/org-ux-v3-3-chrome-badd",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/core/theme/**",
+        "flutter_app/lib/core/widgets/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/organisation-ux-v3-badd.md",
+        ".agents/plans/organisation-ux-v3-badd.snapshot.json",
+        "docs/experience-program/organisation-ux-v3-delivery-plan.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "4",
+      "title": "Dashboard tiles Discover row",
+      "branch": "cursor/org-ux-v3-4-dashboard-badd",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/bdd/features/organisation_management.feature",
+        "flutter_app/test/bdd/features/organisation_discovery.feature",
+        "e2e/playwright/tests/organisation*.spec.ts",
+        "e2e/playwright/pages/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/lib/core/router/**",
+        ".agents/plans/organisation-ux-v3-badd.md",
+        ".agents/plans/organisation-ux-v3-badd.snapshot.json",
+        "docs/experience-program/organisation-ux-v3-delivery-plan.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "5",
+      "title": "Discover search browse-as",
+      "branch": "cursor/org-ux-v3-5-discover-badd",
+      "allowed_paths": [
+        "server/routes/organizations/discoverRouter.js",
+        "server/routes/organizations/index.js",
+        "server/test/organizations/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/bdd/features/organisation_discovery.feature",
+        "e2e/playwright/tests/organisation.discovery.spec.ts",
+        "e2e/playwright/pages/**",
+        "e2e/playwright/support/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/lib/core/router/**",
+        ".agents/plans/organisation-ux-v3-badd.md",
+        ".agents/plans/organisation-ux-v3-badd.snapshot.json",
+        "docs/experience-program/organisation-ux-v3-delivery-plan.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/organisation-ux-v3-integration-badd",
+        "ownership_ref": "docs/refactoring-log.md#organisation-ux-v3"
+      },
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "6",
+      "title": "Profile header edit menus",
+      "branch": "cursor/org-ux-v3-6-profile-header-badd",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/bdd/features/organisation_profile.feature",
+        "flutter_app/test/bdd/features/organisation_edit.feature",
+        "e2e/playwright/tests/organisation.profile.spec.ts",
+        "e2e/playwright/tests/organisation.edit.spec.ts",
+        "e2e/playwright/pages/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/organisation-ux-v3-badd.md",
+        ".agents/plans/organisation-ux-v3-badd.snapshot.json",
+        "docs/experience-program/organisation-ux-v3-delivery-plan.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "7",
+      "title": "Profile nav rows Administration",
+      "branch": "cursor/org-ux-v3-7-profile-nav-badd",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/bdd/features/organisation_profile.feature",
+        "flutter_app/test/bdd/features/organisation_customisations.feature",
+        "e2e/playwright/tests/**",
+        "e2e/playwright/pages/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/organisation-ux-v3-badd.md",
+        ".agents/plans/organisation-ux-v3-badd.snapshot.json",
+        "docs/experience-program/organisation-ux-v3-delivery-plan.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "8",
+      "title": "Account per-org privacy Leave",
+      "branch": "cursor/org-ux-v3-8-account-privacy-badd",
+      "allowed_paths": [
+        "db/migrations/**",
+        "db/schema/**",
+        "server/routes/organizations/**",
+        "server/lib/**",
+        "server/test/organizations/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/features/auth/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/bdd/features/**",
+        "e2e/playwright/**",
+        "flutter_app/lib/l10n/**",
+        "docs/architecture/**",
+        "docs/experience-program/**",
+        ".agents/plans/organisation-ux-v3-badd.md",
+        ".agents/plans/organisation-ux-v3-badd.snapshot.json",
+        "docs/experience-program/organisation-ux-v3-delivery-plan.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "9",
+      "title": "People directory tiles",
+      "branch": "cursor/org-ux-v3-9-people-tiles-badd",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/bdd/features/admin_contacts.feature",
+        "flutter_app/test/bdd/features/**",
+        "e2e/playwright/tests/**",
+        "e2e/playwright/pages/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/organisation-ux-v3-badd.md",
+        ".agents/plans/organisation-ux-v3-badd.snapshot.json",
+        "docs/experience-program/organisation-ux-v3-delivery-plan.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/organisation-ux-v3-integration-badd",
+        "ownership_ref": "docs/refactoring-log.md#organisation-ux-v3"
+      },
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "10",
+      "title": "Connected orgs pets entry",
+      "branch": "cursor/org-ux-v3-10-deep-screens-badd",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/bdd/features/**",
+        "e2e/playwright/tests/**",
+        "e2e/playwright/pages/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/lib/core/router/**",
+        ".agents/plans/organisation-ux-v3-badd.md",
+        ".agents/plans/organisation-ux-v3-badd.snapshot.json",
+        "docs/experience-program/organisation-ux-v3-delivery-plan.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "11",
+      "title": "Hardening l10n BDD seeds",
+      "branch": "cursor/org-ux-v3-11-hardening-badd",
+      "allowed_paths": [
+        "flutter_app/lib/**",
+        "flutter_app/test/**",
+        "server/test/**",
+        "e2e/**",
+        "docs/**",
+        "scripts/**",
+        "db/**",
+        ".agents/plans/organisation-ux-v3-badd.md",
+        ".agents/plans/organisation-ux-v3-badd.snapshot.json",
+        "docs/experience-program/organisation-ux-v3-delivery-plan.md",
+        "flutter_app/lib/l10n/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "12",
+      "title": "Integration main pre-UAT loop",
+      "branch": "cursor/organisation-ux-v3-integration-badd",
+      "allowed_paths": [
+        "**/*",
+        ".agents/plans/organisation-ux-v3-badd.md",
+        ".agents/plans/organisation-ux-v3-badd.snapshot.json",
+        "docs/experience-program/organisation-ux-v3-delivery-plan.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "merge_mode": "auto"
+    }
+  ]
+}

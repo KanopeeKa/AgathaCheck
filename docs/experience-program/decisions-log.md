@@ -109,6 +109,31 @@ Source: agent/human chat, 2026-07-25 — analysis + Q&A rounds. See
 | **D-v2-BDD-1** | `@legacy` scenarios remain in BDD gate denominator. | locked | v2 Slice 8 |
 | **D-v2-ROLL-1** | Deep routes (pets list, sessions, admin directory) **remain**; profile changes entry points only. | locked | v2 |
 
+### Organisation UX v3 (2026-08-04)
+
+Source of truth: [`organisation-ux-v3-delivery-plan.md`](organisation-ux-v3-delivery-plan.md). Execute-plan: `organisation-ux-v3-badd`.
+
+| ID | Decision | Status | Phase |
+|----|----------|--------|-------|
+| **D-v3-VIS-1** | Organisation drawer item **hidden by default**; shown if toggle on **or** user is org member (toggle forced on + disabled with explanation). | locked | v3 Phase 2 |
+| **D-v3-VIS-2** | Default-experience **radios removed** (Account + My Details). Login restores **last active section**. | locked | v3 Phase 2 |
+| **D-v3-IA-1** | Org profile member sections are **nav rows only** (optional counts) — **no previews**. Supersedes **D-v2-IA-4** as primary profile IA for pets/people/connections. | locked | v3 Phase 7 |
+| **D-v3-IA-2** | Discover is a **dedicated screen**; dashboard has a Discover nav row only. | locked | v3 Phases 4–5 |
+| **D-v3-IA-3** | “Organisation Administration” (renamed customisations) is a **profile nav row only** (same privileges). Supersedes **D25** entry-point rule. | locked | v3 Phase 7 |
+| **D-v3-IA-4** | Delete organisation on **Edit** only; profile Leave **redirects** to Account per-org settings. | locked | v3 Phases 6, 8 |
+| **D-v3-NAV-1** | Org scaffold: light teal. Dashboard: Agatha logo + title + bell + `+`. In-org: org logo thumbnail + title + bell (no Agatha except dashboard; no org logo on profile nav). | locked | v3 Phase 3 |
+| **D-v3-NAV-2** | Nav titles: `titleMedium` → wrap 2 lines → ≥12sp → ellipsis. | locked | v3 Phase 3 |
+| **D-v3-DISC-1** | Discover search via server `?q=` (name), debounced; pagination preserved. | locked | v3 Phase 5 |
+| **D-v3-DISC-2** | Discover remembers entry context + “browsing as {user\|org}” banner. | locked | v3 Phase 5 |
+| **D-v3-TILE-1** | My Orgs / Discover / people tiles follow pet-tile sizing; no-hero My Orgs = solid teal. | locked | v3 Phases 4, 5, 9 |
+| **D-v3-TILE-2** | Role separator colours + **role label** (a11y): Super Admin black / Admin teal / Foster light teal / Associate white / pending grey / external foster = foster. | locked | v3 Phase 9 |
+| **D-v3-MSG-1** | People tiles: in-app message only (no mailto); phone if allowed. Full messaging **deferred** (DEF-MSG). | locked | v3 Phase 9 |
+| **D-v3-PRIV-1** | Per-org privacy + Leave under **Account → org settings** (one screen per org). Supersedes **D26** entry point. | locked | v3 Phase 8 |
+| **D-v3-PRIV-2** | Visibility defaults/floors per role matrix in v3 delivery plan (incl. named-person grants). Super Admin always sees member name. | locked | v3 Phase 8 |
+| **D-v3-EDIT-1** | Edit unboxed; Upload cover / Upload logo; ~96px hero logo; name band right of logo. | locked | v3 Phase 6 |
+| **D-v3-UPLOAD-1** | Cover/logo upload success for valid ≤2MB JPG/PNG/WebP; clear UI errors from server. | locked | v3 Phase 1 |
+| **D-v3-NOTIF-1** | No org-notification profile section this plan; unified bell unchanged. Full org-admin notification product **deferred** (DEF-NOTIF). | locked | v3 |
+
 ---
 
 ## How to use this log
