@@ -206,14 +206,27 @@ export class OrganizationListPage {
       .catch(() => undefined);
     await this.page.getByRole('button', { name: /^Accept$/i }).first().click();
     await this.page.getByText(/Invitation accepted/i).first().waitFor({ timeout: 30_000 });
+    // Accept pushes organisation profile; return to My Orgs for membership tile asserts.
+    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
     await refreshFlutterAccessibility(this.page);
-    // Accept navigates to org detail; return to the list for card assertions.
-    const back = this.page.getByRole('button', { name: /^Back$/i });
-    if (await back.count()) {
-      await back.first().click();
-      await this.expectLoaded();
-      await refreshFlutterAccessibility(this.page);
+    const back = this.page
+      .locator('[flt-semantics-identifier="experience_back_button"]')
+      .or(this.page.getByRole('button', { name: /go back|retour|^back$/i }))
+      .first();
+    if (await back.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await back.click();
+      try {
+        await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 12_000);
+      } catch {
+        await this.page.goto(flutterGotoUrl('/o/orgs'));
+        await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
+      }
+    } else {
+      await this.page.goto(flutterGotoUrl('/o/orgs'));
+      await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
     }
+    await this.expectLoaded();
+    await refreshFlutterAccessibility(this.page);
   }
 
   async declineInviteForOrg(orgName: string): Promise<void> {
