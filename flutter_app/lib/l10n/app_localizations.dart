@@ -3655,6 +3655,12 @@ abstract class AppLocalizations {
   /// **'No connected organisations yet'**
   String get orgConnectionsEmpty;
 
+  /// No description provided for @orgConnectionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 connection} other{{count} connections}}'**
+  String orgConnectionCount(int count);
+
   /// No description provided for @createConnectionRequest.
   ///
   /// In en, this message translates to:
@@ -8196,7 +8202,7 @@ abstract class AppLocalizations {
   /// No description provided for @orgCustomisationsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Organisation customisations'**
+  /// **'Organisation Administration'**
   String get orgCustomisationsTitle;
 
   /// No description provided for @orgCustomisationsIntro.

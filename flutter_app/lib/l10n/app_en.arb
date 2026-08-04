@@ -707,6 +707,12 @@
   "custodyTransferKindReturn": "Return to organisation",
   "orgConnections": "Connected organisations",
   "orgConnectionsEmpty": "No connected organisations yet",
+  "orgConnectionCount": "{count, plural, =1{1 connection} other{{count} connections}}",
+  "@orgConnectionCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "createConnectionRequest": "Connect to organisation",
   "targetOrgId": "Target organisation ID",
   "connectionTokenCreated": "Connection link created. Share this token with the other organisation's admin:",
@@ -1610,7 +1616,7 @@
   "orgLegalDocumentsDownloaded": "Downloaded {title}",
   "@orgLegalDocumentsDownloaded": { "placeholders": { "title": { "type": "String" } } },
 
-  "orgCustomisationsTitle": "Organisation customisations",
+  "orgCustomisationsTitle": "Organisation Administration",
   "orgCustomisationsIntro": "Configure templates and delegate permissions for this organisation.",
   "orgCustomisationsTemplatesTitle": "Document templates",
   "orgCustomisationsTemplatesSubtitle": "Session checklists and adoption milestone templates.",
