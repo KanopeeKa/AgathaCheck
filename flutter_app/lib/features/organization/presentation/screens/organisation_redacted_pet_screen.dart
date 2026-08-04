@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/widgets/pet_detail/pet_photo.dart';
 import '../providers/org_provider_pet_summary.dart';
-import '../utils/org_screen_theme.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 
 /// Minimal read-only org pet profile for view-only members (Option B).
 class OrganisationRedactedPetScreen extends ConsumerWidget {
@@ -28,22 +28,17 @@ class OrganisationRedactedPetScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
 
-    return orgThemed(
-      child: Scaffold(
-        key: const Key('org_redacted_pet_screen'),
-        appBar: AppBar(
-          title: AppLogoTitle(
-            title: petAsync.maybeWhen(
-              data: (pet) => pet.name,
-              orElse: () => l.orgPets,
-            ),
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.pop(),
-          ),
-        ),
-        body: petAsync.when(
+    final title = petAsync.maybeWhen(
+      data: (pet) => pet.name,
+      orElse: () => l.orgPets,
+    );
+
+    return OrgShellScaffold(
+      key: const Key('org_redacted_pet_screen'),
+      title: title,
+      orgId: orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      child: petAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, _) => Center(
             child: Padding(
@@ -88,7 +83,6 @@ class OrganisationRedactedPetScreen extends ConsumerWidget {
             ),
           ),
         ),
-      ),
     );
   }
 }

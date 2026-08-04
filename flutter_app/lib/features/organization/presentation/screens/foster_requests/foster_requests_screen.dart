@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/foster_request.dart';
 import '../../providers/foster_requests_providers.dart';
-import '../../utils/org_screen_theme.dart';
+import '../../widgets/org_shell_app_bar_title.dart';
+import '../../widgets/org_shell_scaffold.dart';
 
 class FosterRequestsScreen extends ConsumerWidget {
   const FosterRequestsScreen({super.key, required this.orgId});
@@ -20,74 +20,67 @@ class FosterRequestsScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final requestsAsync = ref.watch(orgFosterRequestsProvider(orgId));
 
-    return orgThemed(
-      child: Scaffold(
-        appBar: AppBar(
-          title: AppLogoTitle(title: l.fosterRequestsTitle),
-          leading: IconButton(
-            key: const Key('foster_requests_back'),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: () => context.pop(),
-          ),
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          key: const Key('foster_requests_send_fab'),
-          onPressed: () => context.push('/o/orgs/$orgId/foster-requests/new'),
-          icon: const Icon(Icons.send),
-          label: Text(l.fosterRequestSendNew),
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: Text(
-                l.fosterRequestsDescription,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+    return OrgShellScaffold(
+      title: l.fosterRequestsTitle,
+      orgId: orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      leadingKey: const Key('foster_requests_back'),
+      floatingActionButton: FloatingActionButton.extended(
+        key: const Key('foster_requests_send_fab'),
+        onPressed: () => context.push('/o/orgs/$orgId/foster-requests/new'),
+        icon: const Icon(Icons.send),
+        label: Text(l.fosterRequestSendNew),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Text(
+              l.fosterRequestsDescription,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: requestsAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(child: Text('$e')),
-                data: (requests) {
-                  if (requests.isEmpty) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Text(
-                          l.fosterRequestsEmpty,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: requestsAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('$e')),
+              data: (requests) {
+                if (requests.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        l.fosterRequestsEmpty,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
-                    );
-                  }
-                  return ListView.builder(
-                    key: const Key('foster_requests_list'),
-                    padding: const EdgeInsets.all(16),
-                    itemCount: requests.length,
-                    itemBuilder: (context, index) {
-                      final request = requests[index];
-                      return _FosterRequestListTile(
-                        request: request,
-                        onTap: () => context.push(
-                          '/o/orgs/$orgId/foster-requests/${request.id}',
-                        ),
-                      );
-                    },
+                    ),
                   );
-                },
-              ),
+                }
+                return ListView.builder(
+                  key: const Key('foster_requests_list'),
+                  padding: const EdgeInsets.all(16),
+                  itemCount: requests.length,
+                  itemBuilder: (context, index) {
+                    final request = requests[index];
+                    return _FosterRequestListTile(
+                      request: request,
+                      onTap: () => context.push(
+                        '/o/orgs/$orgId/foster-requests/${request.id}',
+                      ),
+                    );
+                  },
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

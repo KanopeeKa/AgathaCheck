@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/organization_providers.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 
 class TransferPetScreen extends ConsumerStatefulWidget {
   const TransferPetScreen({
@@ -88,17 +89,12 @@ class _TransferPetScreenState extends ConsumerState<TransferPetScreen> {
 
     final types = _transferTypes(l);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: AppLogoTitle(title: l.transferPet),
-        leading: IconButton(
-          key: const Key('org_transfer_back'),
-          icon: const Icon(Icons.arrow_back),
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: SingleChildScrollView(
+    return OrgShellScaffold(
+      title: l.transferPet,
+      orgId: widget.orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      leadingKey: const Key('org_transfer_back'),
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Center(
           child: ConstrainedBox(

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../providers/organization_providers.dart';
-import '../../utils/org_screen_theme.dart';
+import '../../widgets/org_shell_app_bar_title.dart';
+import '../../widgets/org_shell_scaffold.dart';
 
 class SendFosterRequestScreen extends ConsumerStatefulWidget {
   const SendFosterRequestScreen({super.key, required this.orgId});
@@ -121,18 +121,12 @@ class _SendFosterRequestScreenState
     final petsAsync = ref.watch(orgPetsProvider(widget.orgId));
     final fostersAsync = ref.watch(orgFosterParentsProvider(widget.orgId));
 
-    return orgThemed(
-      child: Scaffold(
-        appBar: AppBar(
-          title: AppLogoTitle(title: l.fosterRequestSendNew),
-          leading: IconButton(
-            key: const Key('send_foster_request_back'),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: _submitting ? null : () => context.pop(),
-          ),
-        ),
-        body: Form(
+    return OrgShellScaffold(
+  title: l.fosterRequestSendNew,
+  orgId: widget.orgId,
+  navVariant: OrgNavTitleVariant.withOrgLogo,
+  leadingKey: const Key('send_foster_request_back'),
+  child: Form(
           key: _formKey,
           child: ListView(
             key: const Key('send_foster_request_form'),
@@ -301,8 +295,7 @@ class _SendFosterRequestScreenState
               ),
             ],
           ),
-        ),
-      ),
+    ),
     );
   }
 }

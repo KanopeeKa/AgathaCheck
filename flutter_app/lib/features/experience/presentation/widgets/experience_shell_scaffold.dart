@@ -3,14 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
+import '../../../../core/widgets/shell_notification_bell.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../../notifications/presentation/widgets/notification_panel.dart';
+import '../../../organization/domain/entities/organization.dart';
+import '../../../organization/presentation/widgets/org_shell_app_bar_title.dart';
 import '../../domain/entities/app_experience.dart';
 import '../config/drawer_menu_config.dart';
 import '../providers/experience_providers.dart';
 import '../utils/experience_theme.dart';
 import 'experience_section_drawer.dart';
+import '../../../organization/presentation/utils/org_screen_theme.dart';
 
 /// Shell scaffold shared by guardian and organisation experience screens.
 ///
@@ -28,6 +31,8 @@ class ExperienceShellScaffold extends ConsumerWidget {
     this.screenTitle,
     this.contextualActions = const [],
     this.backPath,
+    this.orgNavVariant,
+    this.organization,
   });
 
   final AppExperience experience;
@@ -43,6 +48,13 @@ class ExperienceShellScaffold extends ConsumerWidget {
   /// When [Navigator.canPop] is false, navigate here instead of the section root.
   final String? backPath;
 
+  /// Organisation nav title variant (D-v3-NAV-1). When set with [screenTitle],
+  /// replaces [AppLogoTitle] for organisation experience screens.
+  final OrgNavTitleVariant? orgNavVariant;
+
+  /// Optional org for thumbnail titles in the org shell.
+  final Organization? organization;
+
   bool _isRoot() => DrawerMenuConfig.sectionRootPaths.contains(currentLocation);
 
   String _sectionRoot() => switch (experience) {
@@ -55,13 +67,15 @@ class ExperienceShellScaffold extends ConsumerWidget {
     ref.watch(organisationMembershipVisibilitySyncProvider);
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final combinedUnread = ref.watch(combinedUnreadNotificationCountProvider);
     final shellTheme = themeForAppExperience(theme, experience);
     final isRoot = _isRoot();
+    final isOrg = experience == AppExperience.organization;
+    final useOrgTitle = isOrg && screenTitle != null && orgNavVariant != null;
 
     return Theme(
       data: shellTheme,
       child: Scaffold(
+        backgroundColor: isOrg ? orgListScaffoldBackground(context) : null,
         appBar: AppBar(
           automaticallyImplyLeading: false,
           leading: isRoot
@@ -82,6 +96,12 @@ class ExperienceShellScaffold extends ConsumerWidget {
           centerTitle: true,
           title: screenTitle == null
               ? const SizedBox.shrink()
+              : useOrgTitle
+              ? OrgShellAppBarTitle(
+                  title: screenTitle!,
+                  variant: orgNavVariant!,
+                  organization: organization,
+                )
               : AppLogoTitle(title: screenTitle!, experience: experience),
           actions: [
             if (contextualActions.isNotEmpty) ...contextualActions,
@@ -95,36 +115,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
                   ),
                 ),
               ),
-            Builder(
-              builder: (ctx) {
-                final bellTooltip = combinedUnread > 0
-                    ? l.drawerItemUnreadSemantics(
-                        l.notificationsBellTooltip,
-                        combinedUnread,
-                      )
-                    : l.notificationsBellTooltip;
-                // Omit Badge when count is zero — hidden Badge labels leave stale
-                // aria-owns targets on Flutter web (axe aria-valid-attr-value).
-                final bellIcon = combinedUnread > 0
-                    ? Badge(
-                        isLabelVisible: true,
-                        label: Text('$combinedUnread'),
-                        child: const Icon(Icons.notifications_outlined),
-                      )
-                    : const Icon(Icons.notifications_outlined);
-                return Semantics(
-                  button: true,
-                  label: bellTooltip,
-                  child: ExcludeSemantics(
-                    child: IconButton(
-                      key: const Key('experience_notification_bell'),
-                      icon: bellIcon,
-                      onPressed: () => Scaffold.of(ctx).openEndDrawer(),
-                    ),
-                  ),
-                );
-              },
-            ),
+            Builder(builder: (ctx) => const ShellNotificationBell()),
           ],
         ),
         drawer: const ExperienceSectionDrawer(),

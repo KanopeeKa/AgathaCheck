@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../providers/org_provider_deps.dart';
-import '../../utils/org_screen_theme.dart';
+import '../../widgets/org_shell_app_bar_title.dart';
+import '../../widgets/org_shell_scaffold.dart';
 
 class ProspectsScreen extends ConsumerWidget {
   const ProspectsScreen({super.key, required this.orgId});
@@ -16,10 +16,11 @@ class ProspectsScreen extends ConsumerWidget {
     final token = ref.watch(orgTokenProvider);
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
-    return orgThemed(
-      child: Scaffold(
-        appBar: AppBar(title: AppLogoTitle(title: l.prospectsTitle)),
-        body: FutureBuilder<List<Map<String, dynamic>>>(
+    return OrgShellScaffold(
+  title: l.prospectsTitle,
+  orgId: orgId,
+  navVariant: OrgNavTitleVariant.withOrgLogo,
+  child: FutureBuilder<List<Map<String, dynamic>>>(
           future: token == null
               ? Future.value(const [])
               : ref
@@ -54,8 +55,7 @@ class ProspectsScreen extends ConsumerWidget {
               },
             );
           },
-        ),
-      ),
+    ),
     );
   }
 }

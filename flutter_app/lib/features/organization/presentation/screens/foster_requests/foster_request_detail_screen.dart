@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/utils/calendar_date.dart';
-import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/foster_request.dart';
 import '../../providers/foster_requests_providers.dart';
 import '../../providers/org_provider_pets.dart';
-import '../../utils/org_screen_theme.dart';
 import 'foster_requests_screen.dart';
+import '../../widgets/org_shell_app_bar_title.dart';
+import '../../widgets/org_shell_scaffold.dart';
 
 class FosterRequestDetailScreen extends ConsumerWidget {
   const FosterRequestDetailScreen({
@@ -28,35 +28,17 @@ class FosterRequestDetailScreen extends ConsumerWidget {
     final requestAsync = ref.watch(orgFosterRequestDetailProvider(key));
     final isFoster = ref.watch(isOrgFosterProvider(orgId));
 
-    return orgThemed(
-      child: Scaffold(
-        appBar: AppBar(
-          title: AppLogoTitle(title: l.fosterRequestDetailTitle),
-          leading: IconButton(
-            key: const Key('foster_request_detail_back'),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: () => context.pop(),
-          ),
-          actions: [
-            if (isFoster)
-              IconButton(
-                key: const Key('foster_request_respond_action'),
-                icon: const Icon(Icons.reply),
-                tooltip: l.fosterRequestRespondTitle,
-                onPressed: () => context.push(
-                  '/o/orgs/$orgId/foster-requests/$requestId/respond',
-                ),
-              ),
-          ],
-        ),
-        body: requestAsync.when(
+    return OrgShellScaffold(
+  title: l.fosterRequestDetailTitle,
+  orgId: orgId,
+  navVariant: OrgNavTitleVariant.withOrgLogo,
+  leadingKey: const Key('foster_request_detail_back'),
+  child: requestAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('$e')),
           data: (request) =>
               _FosterRequestDetailBody(orgId: orgId, request: request),
-        ),
-      ),
+    ),
     );
   }
 }

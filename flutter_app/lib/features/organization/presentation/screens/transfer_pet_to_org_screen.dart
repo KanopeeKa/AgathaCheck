@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/org_connection.dart';
 import '../providers/organization_providers.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 
 class TransferPetToOrgScreen extends ConsumerStatefulWidget {
   const TransferPetToOrgScreen({
@@ -76,15 +77,11 @@ class _TransferPetToOrgScreenState
         ) ??
         '';
 
-    return Scaffold(
-      appBar: AppBar(
-        title: AppLogoTitle(title: l.transferToOrganisation),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: connectionsAsync.when(
+    return OrgShellScaffold(
+      title: l.transferToOrganisation,
+      orgId: widget.orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      child: connectionsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('$e')),
         data: (connections) {

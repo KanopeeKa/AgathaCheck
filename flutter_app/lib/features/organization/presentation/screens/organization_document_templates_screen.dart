@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/org_permissions_providers.dart';
-import '../utils/org_screen_theme.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 
 class OrganizationDocumentTemplatesScreen extends ConsumerWidget {
   const OrganizationDocumentTemplatesScreen({super.key, required this.orgId});
@@ -28,18 +28,12 @@ class OrganizationDocumentTemplatesScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return orgThemed(
-      child: Scaffold(
-        appBar: AppBar(
-          title: AppLogoTitle(title: l.orgCustomisationsTemplatesTitle),
-          leading: IconButton(
-            key: const Key('org_document_templates_back'),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: () => context.pop(),
-          ),
-        ),
-        body: templatesAsync.when(
+    return OrgShellScaffold(
+  title: l.orgCustomisationsTemplatesTitle,
+  orgId: orgId,
+  navVariant: OrgNavTitleVariant.withOrgLogo,
+  leadingKey: const Key('org_document_templates_back'),
+  child: templatesAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(
             child: Column(
@@ -120,8 +114,7 @@ class OrganizationDocumentTemplatesScreen extends ConsumerWidget {
               ],
             );
           },
-        ),
-      ),
+    ),
     );
   }
 }

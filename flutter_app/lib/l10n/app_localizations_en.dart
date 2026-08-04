@@ -1620,6 +1620,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myOrganizations => 'My Organizations';
 
   @override
+  String get organisationsDashboardTitle => 'Organisations dashboard';
+
+  @override
   String get discoverOrganizations => 'Discover Organisations';
 
   @override

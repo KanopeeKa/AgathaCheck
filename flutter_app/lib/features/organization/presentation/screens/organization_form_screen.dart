@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
 import '../providers/organization_providers.dart';
-import '../utils/org_screen_theme.dart';
 import '../widgets/org_permission_gate.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 import '../widgets/organization_branding_section.dart';
 
 class OrganizationFormScreen extends ConsumerStatefulWidget {
@@ -175,21 +175,15 @@ class _OrganizationFormScreenState
           )
         : null;
 
-    return orgThemed(
-      child: Scaffold(
-        key: const Key('org_form_screen'),
-        appBar: AppBar(
-          title: AppLogoTitle(
-            title: _isEditing ? l.editOrganization : l.createOrganization,
-          ),
-          leading: IconButton(
-            key: const Key('org_form_back'),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: () => context.pop(),
-          ),
-        ),
-        body: SingleChildScrollView(
+    return OrgShellScaffold(
+      key: const Key('org_form_screen'),
+      title: _isEditing ? l.editOrganization : l.createOrganization,
+      orgId: widget.orgId,
+      navVariant: widget.orgId != null
+          ? OrgNavTitleVariant.withOrgLogo
+          : OrgNavTitleVariant.textOnly,
+      leadingKey: const Key('org_form_back'),
+      child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Center(
             child: ConstrainedBox(
@@ -378,7 +372,6 @@ class _OrganizationFormScreenState
             ),
           ),
         ),
-      ),
     );
   }
 }
