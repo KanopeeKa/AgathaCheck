@@ -9,12 +9,9 @@ import {
   acceptFosterPlacement,
   createFosterPlacement,
   createOrgPet,
-  createOrganization,
   getOrgPlacements,
-  signupUser,
+  seedRescueHearts,
 } from '../support/api';
-
-const ORG_NAME = 'Rescue Hearts';
 
 function isoDay(offsetDays: number): string {
   const date = new Date();
@@ -26,20 +23,7 @@ async function seedRescueHeartsWithSession(
   baseURL: string,
   options: { endDate?: string } = {},
 ) {
-  const alice = await signupUser(baseURL, {
-    firstName: 'Alice',
-    lastName: 'Super',
-    email: `alice-${Date.now()}@example.com`,
-  });
-  const jane = await signupUser(baseURL, {
-    firstName: 'Jane',
-    lastName: 'Foster',
-    email: `jane-${Date.now()}@example.com`,
-  });
-  const org = await createOrganization(baseURL, alice.accessToken, {
-    name: ORG_NAME,
-    type: 'charity',
-  });
+  const { alice, eve, org } = await seedRescueHearts(baseURL);
   const pet = await createOrgPet(baseURL, alice.accessToken, org.id, {
     name: 'Buddy',
     species: 'dog',
@@ -49,14 +33,14 @@ async function seedRescueHeartsWithSession(
     alice.accessToken,
     org.id,
     pet.id,
-    jane.userId,
+    eve.userId,
     {
       startDate: isoDay(-20),
       endDate: options.endDate ?? isoDay(30),
     },
   );
-  await acceptFosterPlacement(baseURL, jane.accessToken, placement.id);
-  return { alice, jane, org, pet, placement };
+  await acceptFosterPlacement(baseURL, eve.accessToken, placement.id);
+  return { alice, jane: eve, org, pet, placement };
 }
 
 test.describe('Fostering sessions list', () => {
@@ -68,7 +52,7 @@ test.describe('Fostering sessions list', () => {
     expect(sessions.length).toBeGreaterThanOrEqual(1);
     const row = sessions.find((item) => item.pet_name === 'Buddy');
     expect(row).toBeTruthy();
-    expect(row?.foster_name).toContain('Jane');
+    expect(row?.foster_name).toContain('Eve');
   });
 
   test('@P1 sessions list highlights nearly finished placements', async () => {

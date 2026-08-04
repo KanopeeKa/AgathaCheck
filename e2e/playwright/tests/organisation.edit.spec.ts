@@ -12,7 +12,7 @@ import {
   signupUser,
   updateOrganization,
 } from '../support/api';
-import { enableFlutterAccessibility } from '../support/flutter';
+import { enableFlutterAccessibility, semanticsByName } from '../support/flutter';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
 
@@ -68,12 +68,9 @@ test.describe('Organisation edit', () => {
 
     await expect(page.getByRole('button', { name: 'Upload logo' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Upload picture' })).toBeVisible();
-    await expect(
-      page.getByText('Square logo, at least 256×256 px. Shown as a circle. JPG, PNG, or WebP up to 2 MB.'),
-    ).toBeVisible();
-    await expect(
-      page.getByText('Landscape image (~8:3), at least 1200×450 px. JPG, PNG, or WebP up to 2 MB.'),
-    ).toBeVisible();
+    // Flutter 3.44 web merges branding guidance into one semantics group (not plain text).
+    await expect(semanticsByName(page, /Square logo, at least 256×256 px/i)).toBeVisible();
+    await expect(semanticsByName(page, /Landscape image.*1200×450 px/i)).toBeVisible();
   });
 
   test('@P1 manage_permissions user sees settings control that opens edit form', async ({

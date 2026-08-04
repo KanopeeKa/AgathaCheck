@@ -12,7 +12,7 @@ import {
   getRedactedOrgPet,
   signupUser,
 } from '../support/api';
-import { enableFlutterAccessibility, refreshFlutterAccessibility, waitForFlutterRoute } from '../support/flutter';
+import { enableFlutterAccessibility, refreshFlutterAccessibility, semanticsByName, waitForFlutterRoute } from '../support/flutter';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
 
@@ -68,7 +68,7 @@ test.describe('Redacted organisation pet profile', () => {
     await enableFlutterAccessibility(page);
     await refreshFlutterAccessibility(page);
 
-    await expect(page.getByText(PET_NAME, { exact: true }).first()).toBeVisible();
+    await expect(semanticsByName(page, new RegExp(`Pet:\\s*${PET_NAME}`, 'i'))).toBeVisible();
   });
 
   test('@P1 associate opens redacted pet profile with summary fields only', async ({ page }) => {
@@ -80,8 +80,8 @@ test.describe('Redacted organisation pet profile', () => {
     await enableFlutterAccessibility(page);
     await refreshFlutterAccessibility(page);
 
-    await expect(page.getByText(PET_NAME, { exact: true }).first()).toBeVisible();
-    await expect(page.getByText(/dog/i).first()).toBeVisible();
+    // Redacted profile: pet name in app bar; species is covered by API allowlist test below.
+    await expect(page.getByRole('banner', { name: new RegExp(PET_NAME, 'i') })).toBeVisible();
     await expect(page.getByText(/timeline|health|foster session|document/i)).toHaveCount(0);
   });
 
