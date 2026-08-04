@@ -1,7 +1,8 @@
 # UAT demo personas
 
-Stable identities for **manual UAT and shared demo environments only**.  
-Never load via production deploy paths. Use `scripts/db/uat-reset.sh` on non-prod databases.
+Stable identities for **manual UAT and shared demo environments only**.
+
+**Full dataset documentation:** [uat-demo-data.md](./uat-demo-data.md)
 
 ## Credentials
 
@@ -9,6 +10,10 @@ Never load via production deploy paths. Use `scripts/db/uat-reset.sh` on non-pro
 |------|-------|----------|------|
 | Alice | `alice@demo.agathatrack.test` | `UatDemoPass1!` | Guardian + org super admin |
 | Bob | `bob@demo.agathatrack.test` | `UatDemoPass1!` | Org admin (Happy Paws Clinic) |
+| Carol | `carol@demo.agathatrack.test` | `UatDemoPass1!` | Guardian (shared access to Buddy) |
+| Eve | `eve@demo.agathatrack.test` | `UatDemoPass1!` | Foster parent (Rescue Hearts) |
+| Dave | `dave@demo.agathatrack.test` | `UatDemoPass1!` | Dual-role user |
+| Grace | `grace@demo.agathatrack.test` | `UatDemoPass1!` | Adoption prospect |
 
 Password is intentionally weak and documented — acceptable only on isolated non-prod databases.
 
@@ -16,19 +21,26 @@ Password is intentionally weak and documented — acceptable only on isolated no
 
 | Scenario | Contents |
 |----------|----------|
-| `guardian` | Alice + personal pet **Buddy** (dog) |
-| `org-clinic` | Alice (super_admin), Bob (admin), **Happy Paws Clinic**, org pet **Clinic Cat** |
-| `org-v3-demo` | `org-clinic` plus discoverable Happy Paws, **Partner Paws** connection (no hero photos) |
-| `all` | All scenarios |
+| `guardian` | Alice, Carol, Buddy, Whiskers |
+| `org-clinic` | Happy Paws Clinic (discoverable, org UX v3 fields) |
+| `org-v3-demo` | `org-clinic` + Rescue Hearts shell + org connection |
+| `rescue-hearts` | Full charity dataset (fostering, adoption, pets) |
+| `all` | Full rich demo dataset (all scenarios) |
 
-## One-command reset (non-prod)
+## Reset commands (non-prod)
 
 ```bash
+# Local: full database wipe + schema + seed
 APP_ENV=development scripts/db/uat-reset.sh
+
+# UAT server or local: truncate data + re-seed (keeps schema)
+APP_ENV=uat scripts/db/uat-refresh-demo.sh
 ```
+
+Remote UAT: GitHub Actions → **UAT reset demo data** (type `RESET` to confirm).
 
 Refuses `APP_ENV=production`.
 
 ## Fixed UUIDs
 
-See `DEMO_IDS` in `server/scripts/seed.js` for stable primary keys used in idempotent upserts.
+See `DEMO_IDS` in `server/db/seeds/demo-constants.js`.

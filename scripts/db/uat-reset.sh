@@ -32,4 +32,4 @@ echo "==> Seed UAT demo personas"
 cd "${ROOT}/server"
 node scripts/seed.js --scenario=all
 
-echo "uat-reset: done — see docs/e2e/uat-demo-personas.md"
+echo "uat-reset: done — see docs/e2e/uat-demo-data.md"

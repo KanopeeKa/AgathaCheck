@@ -34,6 +34,13 @@ describe('seed demo constants', () => {
     expect(DEMO_IDS.alice).toMatch(
       /^a1000001-0001-4001-8001-000000000001$/
     );
+    expect(DEMO_IDS.carol).toMatch(
+      /^a1000001-0001-4001-8001-000000000003$/
+    );
+    expect(DEMO_IDS.rescueHeartsOrg).toMatch(
+      /^a2000001-0001-4001-8001-000000000002$/
+    );
+    expect(DEMO_IDS.partnerPawsOrg).toBe(DEMO_IDS.rescueHeartsOrg);
     expect(DEMO_PASSWORD).toBe('UatDemoPass1!');
   });
 });
