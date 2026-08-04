@@ -206,25 +206,19 @@ export class OrganizationListPage {
       .catch(() => undefined);
     await this.page.getByRole('button', { name: /^Accept$/i }).first().click();
     await this.page.getByText(/Invitation accepted/i).first().waitFor({ timeout: 30_000 });
-    // Accept pushes organisation profile; return to My Orgs for membership tile asserts.
-    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
+    // Accept pushes the org profile in-app, but the hash URL Playwright reads often
+    // stays `/o/orgs` (same class of drift as OrganizationListPage.openOrg fallback).
+    // Prefer shell back when visible; always re-enter My Orgs via goto for asserts.
     await refreshFlutterAccessibility(this.page);
     const back = this.page
       .locator('[flt-semantics-identifier="experience_back_button"]')
       .or(this.page.getByRole('button', { name: /go back|retour|^back$/i }))
       .first();
-    if (await back.isVisible({ timeout: 5_000 }).catch(() => false)) {
+    if (await back.isVisible({ timeout: 8_000 }).catch(() => false)) {
       await back.click();
-      try {
-        await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 12_000);
-      } catch {
-        await this.page.goto(flutterGotoUrl('/o/orgs'));
-        await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
-      }
-    } else {
-      await this.page.goto(flutterGotoUrl('/o/orgs'));
-      await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
     }
+    await this.page.goto(flutterGotoUrl('/o/orgs'));
+    await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
     await this.expectLoaded();
     await refreshFlutterAccessibility(this.page);
   }
