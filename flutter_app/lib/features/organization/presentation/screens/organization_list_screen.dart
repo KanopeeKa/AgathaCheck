@@ -4,10 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../providers/organization_providers.dart';
-import '../providers/org_discovery_provider.dart';
 import '../utils/org_screen_theme.dart';
 import '../widgets/org_card.dart';
-import '../widgets/org_discovery/org_discovery_section.dart';
+import '../widgets/org_discover_nav_row.dart';
 import '../widgets/org_shell_app_bar_title.dart';
 import '../widgets/org_shell_scaffold.dart';
 import '../widgets/organization_role_labels.dart';
@@ -29,7 +28,6 @@ class OrganizationListScreen extends ConsumerWidget {
       onRefresh: () async {
         ref.invalidate(organizationListProvider);
         ref.invalidate(pendingOrgInvitesProvider);
-        ref.invalidate(orgDiscoveryListProvider);
       },
       child: ListView(
         padding: const EdgeInsets.all(16),
@@ -245,7 +243,7 @@ class OrganizationListScreen extends ConsumerWidget {
             },
           ),
           const SizedBox(height: 16),
-          const OrgDiscoverySection(),
+          const OrgDiscoverNavRow(),
           const SizedBox(height: 16),
           Text(
             l.orgMembershipByEmailInvite,

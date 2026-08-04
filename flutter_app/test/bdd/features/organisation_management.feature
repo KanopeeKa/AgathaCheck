@@ -96,3 +96,21 @@ Feature: Organisation Management
     Given "Bob" is a member of organisation "Happy Paws Clinic"
     When "Bob" leaves "Happy Paws Clinic"
     Then "Bob" should no longer be a member of "Happy Paws Clinic"
+
+  # ── Dashboard IA (v3 Phase 4) ─────────────────────────────────
+
+  @P1
+  Scenario: Dashboard shows Discover nav row instead of inline grid
+    Given "Alice" is a super user of organisation "Happy Paws Clinic"
+    When "Alice" opens the organisations dashboard
+    Then she should see a Discover Organisations navigation row
+    And she should not see inline discover organisation tiles on the dashboard
+
+  @P1
+  Scenario: Discover nav row opens discover screen
+    Given "Rescue Hearts" is discoverable
+    And a registered user "Alice"
+    When "Alice" opens the organisations dashboard
+    And she taps the Discover Organisations navigation row
+    Then she should see the discover organisations screen
+    And "Rescue Hearts" should appear in the discover list

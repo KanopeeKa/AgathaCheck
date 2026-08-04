@@ -73,5 +73,7 @@ void main() {
     expect(find.byKey(const Key('org_create_button')), findsOneWidget);
     expect(find.byType(OutlinedButton), findsNothing);
     expect(find.text('Rescue Hearts'), findsOneWidget);
+    expect(find.byKey(const Key('org_discover_nav_row')), findsOneWidget);
+    expect(find.byKey(const Key('org_discovery_results')), findsNothing);
   });
 }
