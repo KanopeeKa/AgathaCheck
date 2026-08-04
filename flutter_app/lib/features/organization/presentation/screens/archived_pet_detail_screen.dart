@@ -3,10 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/archived_pet.dart';
 import '../providers/organization_providers.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 
 class ArchivedPetDetailScreen extends ConsumerWidget {
   const ArchivedPetDetailScreen({
@@ -24,16 +25,12 @@ class ArchivedPetDetailScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final dateFormat = DateFormat.yMMMd();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: AppLogoTitle(title: l.archivedPets),
-        leading: IconButton(
-          key: const Key('archived_detail_back'),
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: archivedAsync.when(
+    return OrgShellScaffold(
+      title: l.archivedPets,
+      orgId: orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      leadingKey: const Key('archived_detail_back'),
+      child: archivedAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('$e')),
         data: (archivedPets) {

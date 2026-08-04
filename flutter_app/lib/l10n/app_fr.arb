@@ -542,6 +542,7 @@
   "notificationsDesc": "Alertes et rappels récents",
 
   "myOrganizations": "Mes organisations",
+  "organisationsDashboardTitle": "Tableau de bord des organisations",
   "discoverOrganizations": "Découvrir des organisations",
   "orgDiscoveryEmpty": "Aucune organisation à découvrir pour le moment",
   "orgDiscoveryLoadError": "Impossible de charger les organisations découvrables",

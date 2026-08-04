@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/organization_providers.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 
 class AcceptConnectionScreen extends ConsumerStatefulWidget {
   const AcceptConnectionScreen({super.key, required this.token});
@@ -45,9 +46,10 @@ class _AcceptConnectionScreenState
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: AppLogoTitle(title: l.acceptConnection)),
-      body: Padding(
+    return OrgShellScaffold(
+      title: l.acceptConnection,
+      navVariant: OrgNavTitleVariant.textOnly,
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

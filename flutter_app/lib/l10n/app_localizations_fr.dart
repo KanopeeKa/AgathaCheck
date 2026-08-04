@@ -1634,6 +1634,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myOrganizations => 'Mes organisations';
 
   @override
+  String get organisationsDashboardTitle => 'Tableau de bord des organisations';
+
+  @override
   String get discoverOrganizations => 'Découvrir des organisations';
 
   @override

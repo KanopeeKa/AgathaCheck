@@ -589,6 +589,7 @@
   "notificationsDesc": "Recent alerts and reminders",
 
   "myOrganizations": "My Organizations",
+  "organisationsDashboardTitle": "Organisations dashboard",
   "discoverOrganizations": "Discover Organisations",
   "orgDiscoveryEmpty": "No organisations to discover yet",
   "orgDiscoveryLoadError": "Could not load discoverable organisations",

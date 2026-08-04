@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/services/org_permissions.dart';
 import '../providers/organization_providers.dart';
-import '../utils/org_screen_theme.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 
 class OrganizationRolesPermissionsScreen extends ConsumerStatefulWidget {
   const OrganizationRolesPermissionsScreen({super.key, required this.orgId});
@@ -91,18 +91,12 @@ class _OrganizationRolesPermissionsScreenState
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return orgThemed(
-      child: Scaffold(
-        appBar: AppBar(
-          title: AppLogoTitle(title: l.orgCustomisationsRolesTitle),
-          leading: IconButton(
-            key: const Key('org_roles_permissions_back'),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: () => context.pop(),
-          ),
-        ),
-        body: membersAsync.when(
+    return OrgShellScaffold(
+  title: l.orgCustomisationsRolesTitle,
+  orgId: orgId,
+  navVariant: OrgNavTitleVariant.withOrgLogo,
+  leadingKey: const Key('org_roles_permissions_back'),
+  child: membersAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('$e')),
           data: (members) {
@@ -299,8 +293,7 @@ class _OrganizationRolesPermissionsScreenState
               ],
             );
           },
-        ),
-      ),
+    ),
     );
   }
 }

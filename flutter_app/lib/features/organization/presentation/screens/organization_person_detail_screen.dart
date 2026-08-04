@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/org_person.dart';
 import '../providers/organization_providers.dart';
-import '../utils/org_screen_theme.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 import '../widgets/foster_pet_mini_card.dart';
 import '../widgets/organization_role_labels.dart';
 import '../widgets/org_person_card.dart';
@@ -50,52 +50,47 @@ class _OrganizationPersonDetailScreenState
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
 
-    return orgThemed(
-      child: Scaffold(
-        appBar: AppBar(
-          title: AppLogoTitle(title: l.people),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.pop(),
-          ),
-          actions: [
-            if (isOrgAdmin)
-              PopupMenuButton<String>(
-                onSelected: (action) => _handleAdminAction(context, action),
-                itemBuilder: (context) {
-                  final person = detailAsync.valueOrNull;
-                  if (person == null || person.isExternal || person.isPending) {
-                    if (person?.isExternal == true) {
-                      return [
-                        PopupMenuItem(
-                          value: 'delete_external',
-                          child: Text(
-                            l.deleteFosterParent,
-                            style: TextStyle(color: colorScheme.error),
-                          ),
-                        ),
-                      ];
-                    }
-                    return const [];
-                  }
+    return OrgShellScaffold(
+      title: l.people,
+      orgId: widget.orgId,
+      navVariant: OrgNavTitleVariant.withOrgLogo,
+      trailingActions: [
+        if (isOrgAdmin)
+          PopupMenuButton<String>(
+            onSelected: (action) => _handleAdminAction(context, action),
+            itemBuilder: (context) {
+              final person = detailAsync.valueOrNull;
+              if (person == null || person.isExternal || person.isPending) {
+                if (person?.isExternal == true) {
                   return [
                     PopupMenuItem(
-                      value: 'change_role',
-                      child: Text(l.orgChangeRole),
-                    ),
-                    PopupMenuItem(
-                      value: 'remove',
+                      value: 'delete_external',
                       child: Text(
-                        l.orgRemoveMember,
+                        l.deleteFosterParent,
                         style: TextStyle(color: colorScheme.error),
                       ),
                     ),
                   ];
-                },
-              ),
-          ],
-        ),
-        body: detailAsync.when(
+                }
+                return const [];
+              }
+              return [
+                PopupMenuItem(
+                  value: 'change_role',
+                  child: Text(l.orgChangeRole),
+                ),
+                PopupMenuItem(
+                  value: 'remove',
+                  child: Text(
+                    l.orgRemoveMember,
+                    style: TextStyle(color: colorScheme.error),
+                  ),
+                ),
+              ];
+            },
+          ),
+      ],
+      child: detailAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('$e')),
           data: (person) {
@@ -202,8 +197,7 @@ class _OrganizationPersonDetailScreenState
               ],
             );
           },
-        ),
-      ),
+    ),
     );
   }
 

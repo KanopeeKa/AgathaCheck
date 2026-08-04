@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../providers/fostering_sessions_providers.dart';
-import '../../utils/org_screen_theme.dart';
 import '../../widgets/fostering_sessions/fostering_session_list_tile.dart';
+import '../../widgets/org_shell_app_bar_title.dart';
+import '../../widgets/org_shell_scaffold.dart';
 
 class FosteringSessionsListScreen extends ConsumerStatefulWidget {
   const FosteringSessionsListScreen({super.key, required this.orgId});
@@ -59,19 +59,13 @@ class _FosteringSessionsListScreenState
       fosteringSessionsListProvider(widget.orgId),
     );
 
-    return orgThemed(
-      child: Scaffold(
-        key: const Key('fostering_sessions_list_screen'),
-        appBar: AppBar(
-          title: AppLogoTitle(title: l.orgFosteringSessionsListTitle),
-          leading: IconButton(
-            key: const Key('fostering_sessions_back'),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: () => context.pop(),
-          ),
-        ),
-        body: Column(
+    return OrgShellScaffold(
+  key: const Key('fostering_sessions_list_screen'),
+  title: l.orgFosteringSessionsListTitle,
+  orgId: widget.orgId,
+  navVariant: OrgNavTitleVariant.withOrgLogo,
+  leadingKey: const Key('fostering_sessions_back'),
+  child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
@@ -146,8 +140,7 @@ class _FosteringSessionsListScreenState
               ),
             ),
           ],
-        ),
-      ),
+    ),
     );
   }
 }

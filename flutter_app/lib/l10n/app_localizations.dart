@@ -3025,6 +3025,12 @@ abstract class AppLocalizations {
   /// **'My Organizations'**
   String get myOrganizations;
 
+  /// No description provided for @organisationsDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisations dashboard'**
+  String get organisationsDashboardTitle;
+
   /// No description provided for @discoverOrganizations.
   ///
   /// In en, this message translates to:

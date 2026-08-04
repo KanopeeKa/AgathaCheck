@@ -4,11 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../core/utils/calendar_date_picker.dart';
-import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/foster_request.dart';
 import '../../providers/foster_requests_providers.dart';
-import '../../utils/org_screen_theme.dart';
+import '../../widgets/org_shell_app_bar_title.dart';
+import '../../widgets/org_shell_scaffold.dart';
 
 class FosterRequestRespondScreen extends ConsumerStatefulWidget {
   const FosterRequestRespondScreen({
@@ -97,18 +97,12 @@ class _FosterRequestRespondScreenState
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return orgThemed(
-      child: Scaffold(
-        appBar: AppBar(
-          title: AppLogoTitle(title: l.fosterRequestRespondTitle),
-          leading: IconButton(
-            key: const Key('foster_request_respond_back'),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: _submitting ? null : () => context.pop(),
-          ),
-        ),
-        body: Form(
+    return OrgShellScaffold(
+  title: l.fosterRequestRespondTitle,
+  orgId: widget.orgId,
+  navVariant: OrgNavTitleVariant.withOrgLogo,
+  leadingKey: const Key('foster_request_respond_back'),
+  child: Form(
           key: _formKey,
           child: ListView(
             key: const Key('foster_request_respond_form'),
@@ -184,8 +178,7 @@ class _FosterRequestRespondScreenState
               ),
             ],
           ),
-        ),
-      ),
+    ),
     );
   }
 }

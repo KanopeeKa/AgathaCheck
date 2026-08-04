@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../providers/org_provider_deps.dart';
 import '../../providers/org_provider_pets.dart';
-import '../../utils/org_screen_theme.dart';
+import '../../widgets/org_shell_app_bar_title.dart';
+import '../../widgets/org_shell_scaffold.dart';
 
 class AdoptionVisitsScreen extends ConsumerStatefulWidget {
   const AdoptionVisitsScreen({super.key, required this.orgId});
@@ -84,10 +84,11 @@ class _AdoptionVisitsScreenState extends ConsumerState<AdoptionVisitsScreen> {
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
     final isAdmin = ref.watch(isOrgAdminProvider(widget.orgId));
-    return orgThemed(
-      child: Scaffold(
-        appBar: AppBar(title: AppLogoTitle(title: l.adoptionVisitsTitle)),
-        body: FutureBuilder<List<Map<String, dynamic>>>(
+    return OrgShellScaffold(
+  title: l.adoptionVisitsTitle,
+  orgId: widget.orgId,
+  navVariant: OrgNavTitleVariant.withOrgLogo,
+  child: FutureBuilder<List<Map<String, dynamic>>>(
           future: token == null ? Future.value(const []) : _visitsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
@@ -158,8 +159,7 @@ class _AdoptionVisitsScreenState extends ConsumerState<AdoptionVisitsScreen> {
               },
             );
           },
-        ),
-      ),
+    ),
     );
   }
 }

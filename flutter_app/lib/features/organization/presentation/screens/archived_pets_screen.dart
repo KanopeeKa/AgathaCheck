@@ -4,10 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/archived_pet.dart';
 import '../providers/organization_providers.dart';
+import '../widgets/org_shell_app_bar_title.dart';
+import '../widgets/org_shell_scaffold.dart';
 
 class ArchivedPetsScreen extends ConsumerWidget {
   const ArchivedPetsScreen({super.key, this.orgId});
@@ -25,17 +26,7 @@ class ArchivedPetsScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: AppLogoTitle(title: l.archivedPets),
-        leading: IconButton(
-          key: const Key('org_archived_back'),
-          icon: const Icon(Icons.arrow_back),
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: archivedAsync.when(
+    final content = archivedAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
           child: Column(
@@ -88,7 +79,27 @@ class ArchivedPetsScreen extends ConsumerWidget {
             },
           );
         },
+      );
+
+    if (_isOrgArchive) {
+      return OrgShellScaffold(
+        title: l.archivedPets,
+        orgId: orgId,
+        navVariant: OrgNavTitleVariant.withOrgLogo,
+        leadingKey: const Key('org_archived_back'),
+        child: content,
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l.archivedPets),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
       ),
+      body: content,
     );
   }
 }
