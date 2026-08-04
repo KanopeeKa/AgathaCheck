@@ -145,8 +145,9 @@ test.describe('Admin contacts', () => {
     const fosterView = await getOrgPeople(baseURL, frank.accessToken, org.id);
     const graceSummary = fosterView.find((p) => p.display_name.includes('Grace'));
     expect(graceSummary).toBeTruthy();
-    expect(graceSummary?.email || graceSummary?.phone).toBeTruthy();
-    // UI hides message affordance until DEF-MSG; API still exposes contact fields.
+    // Admin defaults: email is admins_or_named — foster viewers get null redaction.
+    // Messaging affordance stays deferred (DEF-MSG #569); summary has no phone field.
+    expect(graceSummary?.email).toBeNull();
   });
 
   test('@P1 admin contacts people API includes admin roles for tile labels', async () => {
