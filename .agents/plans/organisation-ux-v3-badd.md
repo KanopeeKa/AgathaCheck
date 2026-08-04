@@ -50,19 +50,19 @@ Full `allowed_paths` / branches: `.agents/plans/organisation-ux-v3-badd.snapshot
 
 ```yaml
 autonomy: active
-current_phase: 0
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 0 on branch cursor/org-ux-v3-0-docs-badd"
+next_action: "start phase 2: checkout cursor/org-ux-v3-2-visibility-badd"
 artifact_ref:
-  branch: cursor/organisation-ux-v3-integration-badd
+  branch: cursor/org-ux-v3-2-visibility-badd
   plan_path: .agents/plans/organisation-ux-v3-badd.md
-  plan_commit: 12362f0c5403f274f949b3f11bc9282d48632397
+  plan_commit: dec66de12fde5d17da492645be8982cb28821885
   snapshot_path: .agents/plans/organisation-ux-v3-badd.snapshot.json
-  snapshot_commit: 12362f0c5403f274f949b3f11bc9282d48632397
+  snapshot_commit: dec66de12fde5d17da492645be8982cb28821885
 open_prs: []
-merge_commits: {}
-debt_issue_refs: [568, 569, 570]
+merge_commits: {"0":"d70ee21aae3c3754cc7887a9a21d1b4b21755e72","1":"135c3ee703f65ff46dac9ee692eda578f1d6788b"}
+debt_issue_refs: [568,569,570]
 ```
 
 ## Bootstrap
