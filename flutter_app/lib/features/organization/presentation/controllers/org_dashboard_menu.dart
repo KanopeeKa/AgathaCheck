@@ -44,12 +44,9 @@ List<PopupMenuEntry<String>> buildOrgDashboardMenuItems({
 }) {
   final l = AppLocalizations.of(context)!;
   final xp = context.experienceColors;
-  final colorScheme = Theme.of(context).colorScheme;
   final role = ref.watch(orgViewerRoleProvider(orgId));
   final canManageMembers =
       role != null && hasPermission(role, orgId, 'manage_members');
-  final canManagePermissions =
-      role != null && hasPermission(role, orgId, 'manage_permissions');
 
   return [
     if (canManageMembers) ...[
@@ -82,21 +79,18 @@ List<PopupMenuEntry<String>> buildOrgDashboardMenuItems({
         contentPadding: EdgeInsets.zero,
       ),
     ),
-    if (canManagePermissions)
-      PopupMenuItem(
-        value: 'delete',
-        child: ListTile(
-          leading: Icon(Icons.delete, color: colorScheme.error),
-          title: Text(
-            l.deleteOrganization,
-            style: TextStyle(color: colorScheme.error),
-          ),
-          dense: true,
-          contentPadding: EdgeInsets.zero,
-        ),
-      ),
+    // Delete organisation: Edit screen only (D-v3-IA-4). Leave → Account in Phase 8.
   ];
 }
+
+/// Delete confirmation — invoked from the edit screen only (D-v3-IA-4).
+Future<void> showOrgDeleteDialog({
+  required BuildContext context,
+  required WidgetRef ref,
+  required String orgId,
+  required Organization org,
+}) =>
+    _showDeleteDialog(context, ref, orgId, org);
 
 Future<void> _showLeaveDialog(
   BuildContext context,

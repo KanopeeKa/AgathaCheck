@@ -1722,6 +1722,9 @@ class AppLocalizationsFr extends AppLocalizations {
       'Modifier les paramètres de l\'organisation';
 
   @override
+  String get orgProfileEditTooltip => 'Modifier l\'organisation';
+
+  @override
   String get orgWebsite => 'Site web';
 
   @override
@@ -2121,6 +2124,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get orgUploadPicture => 'Téléverser une photo';
+
+  @override
+  String get orgUploadCover => 'Upload cover';
 
   @override
   String get orgUploadLogo => 'Téléverser un logo';

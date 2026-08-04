@@ -3181,6 +3181,12 @@ abstract class AppLocalizations {
   /// **'Edit organisation settings'**
   String get orgProfileSettingsTooltip;
 
+  /// No description provided for @orgProfileEditTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit organisation'**
+  String get orgProfileEditTooltip;
+
   /// No description provided for @orgWebsite.
   ///
   /// In en, this message translates to:
@@ -3912,6 +3918,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upload picture'**
   String get orgUploadPicture;
+
+  /// No description provided for @orgUploadCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload cover'**
+  String get orgUploadCover;
 
   /// No description provided for @orgUploadLogo.
   ///

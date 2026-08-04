@@ -6,6 +6,7 @@ import '../../../../../core/utils/resolve_static_asset_url.dart';
 import '../../../../../core/theme/app_theme.dart';
 import '../../../domain/entities/organization.dart';
 import '../org_image_avatar.dart';
+import 'org_profile_hero_layout.dart';
 
 class OrgPresentationHero extends ConsumerWidget {
   const OrgPresentationHero({
@@ -36,86 +37,149 @@ class OrgPresentationHero extends ConsumerWidget {
     return Semantics(
       label: semanticsLabel,
       child: Column(
+        key: const Key('org_presentation_hero'),
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: SizedBox(
-              height: 180,
-              child: org.photoUrl.isNotEmpty
-                  ? Image.network(
-                      coverUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _CoverPlaceholder(org: org),
-                    )
-                  : _CoverPlaceholder(org: org),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: OrgProfileHeroLayout.horizontalPadding,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: SizedBox(
+                height: OrgProfileHeroLayout.coverHeight,
+                child: org.photoUrl.isNotEmpty
+                    ? Image.network(
+                        coverUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) =>
+                            _CoverPlaceholder(org: org),
+                      )
+                    : _CoverPlaceholder(org: org),
+              ),
             ),
           ),
           Transform.translate(
-            offset: const Offset(16, -32),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: org.logoUrl.isNotEmpty
-                  ? OrgLogoImage(
-                      logoUrl: org.logoUrl,
-                      resolvedUrl: logoUrl,
-                      height: 64,
-                    )
-                  : OrgImageAvatar(
-                      imageUrl: org.photoUrl,
-                      type: org.type,
-                      radius: 32,
-                      resolvedUrl: coverUrl,
-                    ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  org.name,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+            offset: const Offset(0, -OrgProfileHeroLayout.logoOverlap),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: OrgProfileHeroLayout.horizontalPadding,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _HeroLogo(
+                    org: org,
+                    coverUrl: coverUrl,
+                    logoUrl: logoUrl,
                   ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: org.type == OrganizationType.professional
-                        ? AppTheme.orgBadgeBg
-                        : AppTheme.orgCharityBadgeBg,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    localizedTypeLabel,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: org.type == OrganizationType.professional
-                          ? AppTheme.orgBadgeFg
-                          : AppTheme.orgCharityBadgeFg,
-                    ),
-                  ),
-                ),
-                if (org.description.isNotEmpty || org.bio.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    org.description.isNotEmpty ? org.description : org.bio,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                  const SizedBox(width: OrgProfileHeroLayout.bandGap),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: OrgProfileHeroLayout.logoOverlap,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            org.name,
+                            key: const Key('org_hero_name'),
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          _TypeBadge(
+                            type: org.type,
+                            label: localizedTypeLabel,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
-              ],
+              ),
             ),
           ),
+          if (org.description.isNotEmpty || org.bio.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                OrgProfileHeroLayout.horizontalPadding,
+                0,
+                OrgProfileHeroLayout.horizontalPadding,
+                8,
+              ),
+              child: Text(
+                org.description.isNotEmpty ? org.description : org.bio,
+                key: const Key('org_hero_description'),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
         ],
+      ),
+    );
+  }
+}
+
+class _HeroLogo extends StatelessWidget {
+  const _HeroLogo({
+    required this.org,
+    required this.coverUrl,
+    required this.logoUrl,
+  });
+
+  final Organization org;
+  final String coverUrl;
+  final String logoUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return org.logoUrl.isNotEmpty
+        ? OrgLogoImage(
+            key: const Key('org_hero_logo'),
+            logoUrl: org.logoUrl,
+            resolvedUrl: logoUrl,
+            height: OrgProfileHeroLayout.logoHeight,
+          )
+        : OrgImageAvatar(
+            key: const Key('org_hero_logo'),
+            imageUrl: org.photoUrl,
+            type: org.type,
+            radius: OrgProfileHeroLayout.logoHeight / 2,
+            resolvedUrl: coverUrl,
+          );
+  }
+}
+
+class _TypeBadge extends StatelessWidget {
+  const _TypeBadge({required this.type, required this.label});
+
+  final OrganizationType type;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: const Key('org_hero_type'),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: type == OrganizationType.professional
+            ? AppTheme.orgBadgeBg
+            : AppTheme.orgCharityBadgeBg,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: type == OrganizationType.professional
+              ? AppTheme.orgBadgeFg
+              : AppTheme.orgCharityBadgeFg,
+        ),
       ),
     );
   }

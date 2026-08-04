@@ -80,9 +80,9 @@ class OrganisationProfileScreen extends ConsumerWidget {
               orgId: orgId,
               permissionKey: 'manage_permissions',
               child: IconButton(
-                key: const Key('org_profile_settings'),
-                icon: const Icon(Icons.settings_outlined),
-                tooltip: l.orgProfileSettingsTooltip,
+                key: const Key('org_profile_edit'),
+                icon: const Icon(Icons.edit_outlined),
+                tooltip: l.orgProfileEditTooltip,
                 onPressed: () => context.push('/o/orgs/$orgId/edit'),
               ),
             ),
