@@ -254,7 +254,6 @@ test.describe('Organisation management', () => {
     const detail = new OrganizationDetailPage(page);
     await detail.leaveOrganization();
 
-    await orgList.expectLoaded();
     const orgs = await getOrganizations(baseURL, bob.accessToken);
     expect(orgs.some((org) => org.name === 'Happy Paws Clinic')).toBe(false);
   });

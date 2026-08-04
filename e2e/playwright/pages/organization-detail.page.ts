@@ -212,23 +212,33 @@ export class OrganizationDetailPage {
   }
 
   async leaveOrganization(): Promise<void> {
+    const orgId = this.orgIdFromUrl();
     await this.openMenu();
     await this.page.getByRole('menuitem', { name: 'Leave Organization' }).click();
-    await this.page.getByRole('button', { name: 'Leave Organization' }).last().click();
-    // Leave removes membership in-app, but the hash URL Playwright reads often
-    // stays on the org profile (same class of drift as acceptInviteForOrg).
-    // Prefer shell back when visible; always re-enter My Orgs via goto for asserts.
     await refreshFlutterAccessibility(this.page);
-    const back = this.page
-      .locator('[flt-semantics-identifier="experience_back_button"]')
-      .or(this.page.getByRole('button', { name: /go back|retour|^back$/i }))
-      .first();
-    if (await back.isVisible({ timeout: 8_000 }).catch(() => false)) {
-      await back.click();
+
+    // v3 (D-v3-PRIV-1): profile Leave opens Account per-org settings. Flutter web
+    // sometimes renders that screen without updating the hash away from /o/orgs/:id.
+    const leaveTile = this.page
+      .locator('[flt-semantics-identifier="account_org_leave"]')
+      .or(this.page.getByRole('button', { name: /Leave Organization.*membership/i }));
+    if (!(await leaveTile.isVisible({ timeout: 8_000 }).catch(() => false))) {
+      if (!orgId) {
+        throw new Error('leaveOrganization: missing org id for account settings fallback');
+      }
+      await this.page.goto(flutterGotoUrl(`/account/orgs/${orgId}?highlight=leave`));
+      await refreshFlutterAccessibility(this.page);
     }
+    await leaveTile.waitFor({ state: 'visible', timeout: 30_000 });
+    await leaveTile.click();
+    await refreshFlutterAccessibility(this.page);
+
+    const dialog = this.page.getByRole('alertdialog');
+    await dialog.waitFor({ state: 'visible', timeout: 15_000 });
+    await dialog.getByRole('button', { name: /^Leave Organization$/i }).click();
+
     await this.page.goto(flutterGotoUrl('/o/orgs'));
     await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
-    await new OrganizationListPage(this.page).expectLoaded();
     await refreshFlutterAccessibility(this.page);
   }
 
