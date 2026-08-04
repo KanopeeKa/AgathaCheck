@@ -4,7 +4,7 @@
   "approved_at": "2026-08-04T17:02:58Z",
   "approved_by": "user chat 2026-08-04 standing grant: babysit+ 566 then full /execute-plan organisation-ux-v3-badd",
   "approved_until": "2026-08-06T17:02:58Z",
-  "content_hash": "sha256:602ec171fa9ae8f436248c83db4797778d51542b7fabbb3978155227dadbbfbb",
+  "content_hash": "sha256:346aedfe13e1f4cbfc130d1895fbcbb7b601824d38ad047c33c757f2b34e0996",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/organisation-ux-v3-integration-badd",
@@ -38,13 +38,14 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "debt_issue_refs": [
+        568,
+        569,
+        570
+      ]
     },
     {
       "id": "1",

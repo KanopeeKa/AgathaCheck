@@ -50,19 +50,19 @@ Full `allowed_paths` / branches: `.agents/plans/organisation-ux-v3-badd.snapshot
 
 ```yaml
 autonomy: active
-current_phase: null
+current_phase: 0
 last_completed_phase: null
 halt_reason: null
-next_action: "merge PR #566 → create integration → phase 0"
+next_action: "continue phase 0 on branch cursor/org-ux-v3-0-docs-badd"
 artifact_ref:
-  branch: null
+  branch: cursor/organisation-ux-v3-integration-badd
   plan_path: .agents/plans/organisation-ux-v3-badd.md
-  plan_commit: null
+  plan_commit: 12362f0c5403f274f949b3f11bc9282d48632397
   snapshot_path: .agents/plans/organisation-ux-v3-badd.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 12362f0c5403f274f949b3f11bc9282d48632397
 open_prs: []
 merge_commits: {}
-debt_issue_refs: []
+debt_issue_refs: [568, 569, 570]
 ```
 
 ## Bootstrap
