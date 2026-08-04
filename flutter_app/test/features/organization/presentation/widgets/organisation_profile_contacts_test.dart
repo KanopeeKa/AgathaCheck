@@ -104,10 +104,7 @@ void main() {
         child: const OrganisationProfileAdminContacts(orgId: 'org-1'),
       );
 
-      expect(
-        find.byKey(const Key('admin_contact_message_ou-a')),
-        findsNothing,
-      );
+      expect(find.byKey(const Key('admin_contact_message_ou-a')), findsNothing);
       expect(find.text('Message'), findsNothing);
     });
   });
