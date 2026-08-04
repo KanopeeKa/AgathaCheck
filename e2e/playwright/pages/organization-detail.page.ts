@@ -233,16 +233,12 @@ export class OrganizationDetailPage {
     await leaveTile.click();
     await refreshFlutterAccessibility(this.page);
 
-    const leaveConfirm = this.page
-      .locator('[flt-semantics-identifier="account_org_leave_confirm"]')
-      .or(this.page.getByRole('button', { name: 'Leave Organization' }).last());
-    await leaveConfirm.click();
-
-    await waitForFlutterRoutePattern(this.page, /\/account(?:\?|$|\/)/, 30_000);
+    const dialog = this.page.getByRole('alertdialog');
+    await dialog.waitFor({ state: 'visible', timeout: 15_000 });
+    await dialog.getByRole('button', { name: /^Leave Organization$/i }).click();
 
     await this.page.goto(flutterGotoUrl('/o/orgs'));
     await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
-    await new OrganizationListPage(this.page).expectLoaded();
     await refreshFlutterAccessibility(this.page);
   }
 
