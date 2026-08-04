@@ -43,15 +43,6 @@ class OrganizationPetsScreen extends ConsumerWidget {
             onPressed: () => context.push('/add?orgId=$orgId'),
           ),
       ],
-      floatingActionButton: canManagePets
-          ? FloatingActionButton.extended(
-              key: const Key('org_add_pet_fab'),
-              onPressed: () => context.push('/add?orgId=$orgId'),
-              tooltip: l.orgAddPet,
-              icon: const Icon(Icons.add),
-              label: Text(l.orgAddPet),
-            )
-          : null,
       child: screenDataAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(

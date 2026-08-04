@@ -23,6 +23,7 @@ class OrganizationConnectionsScreen extends ConsumerWidget {
       orgId: orgId,
       navVariant: OrgNavTitleVariant.withOrgLogo,
       leadingKey: const Key('org_connections_back'),
+      backPath: '/o/orgs/$orgId',
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
