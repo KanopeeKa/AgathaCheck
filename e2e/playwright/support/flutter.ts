@@ -1,8 +1,9 @@
 import type { Locator, Page } from '@playwright/test';
-import { isLiveHostingTarget } from './hosting';
+import { isLiveHostingTarget, isLiveUatTarget } from './hosting';
 import { passHostingWaf } from './waf';
 
 function postLoginTimeout(fallback = 60_000): number {
+  // Longer timeouts on any live host (UAT or prod).
   return isLiveHostingTarget() ? 120_000 : fallback;
 }
 
@@ -91,9 +92,9 @@ export async function waitForFlutter(page: Page): Promise<void> {
 export async function waitForFlutterRoute(page: Page, path: string): Promise<void> {
   if (path === '/landing' || path === '/') {
     // Live UAT gate (warmup-uat + storageState when E2E_TLS_INSECURE=1) skips redundant WAF here.
-    // Other live-hosting runs without the gate still need passHostingWaf before landing nav.
-    const liveUatGate = isLiveHostingTarget() && process.env.E2E_TLS_INSECURE === '1';
-    if (!liveUatGate && isLiveHostingTarget()) {
+    // Other live UAT runs without the gate still need passHostingWaf before landing nav.
+    const liveUatGate = isLiveUatTarget() && process.env.E2E_TLS_INSECURE === '1';
+    if (!liveUatGate && isLiveUatTarget()) {
       await passHostingWaf(page);
     }
   }
