@@ -101,7 +101,7 @@ test.describe('Organisation edit', () => {
     await enableFlutterAccessibility(page);
 
     await page.getByRole('button', { name: 'Edit organisation' }).click();
-    await expect(page.getByRole('button', { name: 'Edit Organization' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Edit Organisation' })).toBeVisible();
   });
 
   test('@P1 super admin sees delete organisation control on edit screen only', async ({
@@ -126,11 +126,11 @@ test.describe('Organisation edit', () => {
     const detail = new OrganizationDetailPage(page);
     await detail.expectLoaded(ORG_NAME);
     await detail.openMenu();
-    await expect(page.getByRole('menuitem', { name: /Delete Organization/i })).toHaveCount(0);
+    await expect(page.getByRole('menuitem', { name: /Delete Organisation/i })).toHaveCount(0);
     await page.keyboard.press('Escape');
 
     await detail.openEdit();
     await enableFlutterAccessibility(page);
-    await expect(page.getByRole('button', { name: /Delete Organization/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Delete Organisation/i })).toBeVisible();
   });
 });

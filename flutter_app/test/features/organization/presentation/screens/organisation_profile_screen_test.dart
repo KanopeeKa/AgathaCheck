@@ -118,8 +118,8 @@ void main() {
 
     expect(find.text('Invite Member'), findsOneWidget);
     expect(find.text('Members'), findsOneWidget);
-    expect(find.text('Leave Organization'), findsOneWidget);
-    expect(find.text('Delete Organization'), findsNothing);
+    expect(find.text('Leave Organisation'), findsOneWidget);
+    expect(find.text('Delete Organisation'), findsNothing);
   });
 
   testWidgets('edit icon navigates to edit route', (tester) async {

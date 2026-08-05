@@ -106,13 +106,13 @@ export class OrganizationListPage {
       await expect(async () => {
         await refreshFlutterAccessibility(this.page);
         await expect(
-          this.page.getByText(/My Organizations|Mes organisations/i).first(),
+          this.page.getByText(/My Organisations|Mes organisations/i).first(),
         ).toBeVisible({ timeout: 3_000 });
       }).toPass({ timeout: 30_000 });
       return;
     }
     await refreshFlutterAccessibility(this.page);
-    await expectAppBarTitle(this.page, 'My Organizations');
+    await expectAppBarTitle(this.page, 'My Organisations');
   }
 
   async openCreateForm(): Promise<void> {
@@ -131,7 +131,7 @@ export class OrganizationListPage {
       await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/new/, 30_000);
     }
     await this.page
-      .getByRole('button', { name: /Create Organization|Créer une organisation/i })
+      .getByRole('button', { name: /Create Organisation|Créer une organisation/i })
       .waitFor({ timeout: 30_000 });
   }
 
