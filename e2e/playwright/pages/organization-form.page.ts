@@ -24,7 +24,7 @@ export class OrganizationFormPage {
   }
 
   async fillName(name: string): Promise<void> {
-    await fillTextbox(this.page, 'Organization Name *', name);
+    await fillTextbox(this.page, 'Organisation Name *', name);
   }
 
   async selectType(type: 'Professional' | 'Charity'): Promise<void> {
@@ -36,7 +36,7 @@ export class OrganizationFormPage {
   }
 
   async save(): Promise<void> {
-    await this.page.getByRole('button', { name: /Create Organization|Edit Organization/ }).click();
+    await this.page.getByRole('button', { name: /Create Organisation|Edit Organisation/ }).click();
   }
 
   async createOrganization(
@@ -48,7 +48,7 @@ export class OrganizationFormPage {
     await this.fillName(name);
     await this.save();
     await this.page
-      .getByText('Organization created')
+      .getByText('Organisation created')
       .first()
       .or(this.page.getByRole('button', { name: 'Edit Organisation' }))
       .first()
@@ -64,18 +64,18 @@ export class OrganizationFormPage {
 
   async attemptSaveWithoutName(): Promise<void> {
     await this.expectLoaded();
-    await this.page.getByRole('textbox', { name: 'Organization Name *' }).fill('');
+    await this.page.getByRole('textbox', { name: 'Organisation Name *' }).fill('');
     await this.save();
   }
 
   async expectNameRequiredError(): Promise<void> {
-    await expect(this.page.getByText('Organization name is required').first()).toBeVisible();
+    await expect(this.page.getByText('Organisation name is required').first()).toBeVisible();
   }
 
   async updateBio(bio: string): Promise<void> {
     await this.expectLoaded();
     await this.fillBio(bio);
     await this.save();
-    await this.page.getByText('Organization updated').first().waitFor({ timeout: 30_000 });
+    await this.page.getByText('Organisation updated').first().waitFor({ timeout: 30_000 });
   }
 }

@@ -215,7 +215,7 @@ export class PetListPage {
       return;
     }
 
-    const orgNav = this.page.getByRole('button', { name: 'Organizations' });
+    const orgNav = this.page.getByRole('button', { name: /Organisations|Organizations/i });
     if (await orgNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await orgNav.click();
     } else if (await isExperienceShellVisible(this.page)) {

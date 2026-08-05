@@ -214,14 +214,14 @@ export class OrganizationDetailPage {
   async leaveOrganization(): Promise<void> {
     const orgId = this.orgIdFromUrl();
     await this.openMenu();
-    await this.page.getByRole('menuitem', { name: 'Leave Organization' }).click();
+    await this.page.getByRole('menuitem', { name: /Leave Organisation/i }).click();
     await refreshFlutterAccessibility(this.page);
 
     // v3 (D-v3-PRIV-1): profile Leave opens Account per-org settings. Flutter web
     // sometimes renders that screen without updating the hash away from /o/orgs/:id.
     const leaveTile = this.page
       .locator('[flt-semantics-identifier="account_org_leave"]')
-      .or(this.page.getByRole('button', { name: /Leave Organization.*membership/i }));
+      .or(this.page.getByRole('button', { name: /Leave Organisation.*membership/i }));
     if (!(await leaveTile.isVisible({ timeout: 8_000 }).catch(() => false))) {
       if (!orgId) {
         throw new Error('leaveOrganization: missing org id for account settings fallback');
@@ -235,7 +235,7 @@ export class OrganizationDetailPage {
 
     const dialog = this.page.getByRole('alertdialog');
     await dialog.waitFor({ state: 'visible', timeout: 15_000 });
-    await dialog.getByRole('button', { name: /^Leave Organization$/i }).click();
+    await dialog.getByRole('button', { name: /^Leave Organisation$/i }).click();
 
     await this.page.goto(flutterGotoUrl('/o/orgs'));
     await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
