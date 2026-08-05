@@ -1,0 +1,123 @@
+name: UAT reset demo data
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Type RESET to confirm wiping all UAT data and reloading demo dataset
+        required: true
+        type: string
+
+concurrency:
+  group: uat-demo-reset
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  reset:
+    name: Reset UAT demo data
+    if: github.event.inputs.confirm == 'RESET'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: UAT
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Require SSH configuration
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+          SSH_KEY: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
+        run: |
+          missing=()
+          [ -z "$CPANEL_SERVER" ] && missing+=('UAT_SSH_HOST')
+          [ -z "$CPANEL_USER" ] && missing+=('UAT_SSH_USER')
+          [ -z "$CPANEL_TOKEN" ] && missing+=('UAT_CPANEL_API_TOKEN')
+          [ -z "$SSH_KEY" ] && missing+=('UAT_SSH_PRIVATE_KEY')
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::Missing UAT SSH secrets: ${missing[*]}"
+            exit 1
+          fi
+          if [ "${{ vars.UAT_SSH_ENABLED }}" != "true" ]; then
+            echo "::error::UAT_SSH_ENABLED must be true for remote demo reset"
+            exit 1
+          fi
+
+      - name: Get runner public IP
+        id: runner_ip
+        run: |
+          ip="$(curl -sf --retry 3 https://api.ipify.org)"
+          echo "ipv4=${ip}" >> "$GITHUB_OUTPUT"
+
+      - name: o2switch SSH whitelist — clear CI slots
+        continue-on-error: true
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+        run: bash scripts/o2switch-ssh-whitelist.sh remove_all
+
+      - name: o2switch SSH whitelist — allow GitHub runner
+        id: whitelist_add
+        continue-on-error: true
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+          RUNNER_IP: ${{ steps.runner_ip.outputs.ipv4 }}
+        run: bash scripts/o2switch-ssh-whitelist.sh add
+
+      - name: Wait for firewall
+        if: steps.whitelist_add.outcome == 'success'
+        run: sleep 30
+
+      - name: Reset UAT demo data via SSH
+        if: steps.whitelist_add.outcome == 'success'
+        uses: appleboy/ssh-action@2ead5e36573f08b82fbfce1504f1a4b05a647c6f # v1.2.2
+        with:
+          host: ${{ secrets.UAT_SSH_HOST }}
+          username: ${{ secrets.UAT_SSH_USER }}
+          key: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.UAT_SSH_PASSPHRASE }}
+          port: ${{ secrets.UAT_SSH_PORT || 22 }}
+          timeout: 120s
+          command_timeout: 5m
+          script_path: scripts/ci/uat-ssh-demo-reset.sh
+
+      - name: o2switch SSH whitelist — cleanup
+        if: always()
+        continue-on-error: true
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+          RUNNER_IP: ${{ steps.runner_ip.outputs.ipv4 }}
+        run: bash scripts/o2switch-ssh-whitelist.sh remove
+
+      - name: Write summary
+        if: always()
+        run: |
+          {
+            echo "## UAT demo data reset"
+            echo
+            if [ "${{ github.event.inputs.confirm }}" != "RESET" ]; then
+              echo "Skipped — confirmation input was not RESET."
+            elif [ "${{ steps.whitelist_add.outcome }}" != "success" ]; then
+              echo "Failed — could not whitelist runner IP for SSH."
+            else
+              echo "Demo data reset completed. See [uat-demo-data.md](docs/e2e/uat-demo-data.md) for credentials."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  rejected:
+    name: Confirmation rejected
+    if: github.event.inputs.confirm != 'RESET'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Abort without changes
+        run: |
+          echo "::error::Confirmation input must be exactly RESET — no changes made."
+          exit 1
