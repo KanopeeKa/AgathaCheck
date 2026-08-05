@@ -64,6 +64,33 @@ function readChangedPaths() {
       .filter(Boolean);
   }
 
+  const explicitBase =
+    process.env.GITHUB_EVENT_PULL_REQUEST_BASE_SHA?.trim() ||
+    process.env.CI_SCOPE_BASE_SHA?.trim() ||
+    '';
+
+  if (explicitBase) {
+    const diff = spawnSync('git', ['diff', '--name-only', explicitBase, 'HEAD'], {
+      cwd: repoRoot,
+      encoding: 'utf8',
+    });
+    if (diff.status === 0) {
+      return [
+        ...new Set(
+          (diff.stdout ?? '')
+            .split('\n')
+            .map((p) => p.trim())
+            .filter(Boolean),
+        ),
+      ];
+    }
+  }
+
+  spawnSync('git', ['fetch', 'origin', 'main', '--depth=1', '--quiet'], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+
   const mergeBase = spawnSync('git', ['merge-base', 'HEAD', 'origin/main'], {
     cwd: repoRoot,
     encoding: 'utf8',

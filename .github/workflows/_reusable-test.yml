@@ -50,6 +50,8 @@ jobs:
         run: node --test e2e/scripts/check-org-e2e-locators.test.mjs
 
       - name: Org E2E locator drift (org Flutter without Playwright touch)
+        env:
+          GITHUB_EVENT_PULL_REQUEST_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: node e2e/scripts/check-org-e2e-locators.mjs
 
       - name: BDD priority tags (@P0/@P1/@P2 on every scenario)

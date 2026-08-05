@@ -40,7 +40,6 @@ needs_flutter=false
 needs_codegen=false
 needs_schema=false
 needs_org_e2e_locator_check=false
-needs_org_e2e_playwright=false
 
 ci_scope_classify_paths "$CHANGED"
 
@@ -71,12 +70,11 @@ while IFS= read -r f; do
     flutter_app/pubspec.*|flutter_app/build.yaml|**/*.mocks.dart)
       needs_codegen=true
       ;;
-    flutter_app/lib/features/organization/*|flutter_app/test/features/organization/*|flutter_app/lib/core/router/organization_routes.dart)
+    flutter_app/lib/features/organization/*|flutter_app/test/features/organization/*|flutter_app/lib/core/router/organization_routes.dart|flutter_app/lib/l10n/app_en.arb|flutter_app/lib/l10n/app_fr.arb)
       needs_org_e2e_locator_check=true
       needs_governance=true
       ;;
     e2e/playwright/tests/organisation*.spec.ts|e2e/playwright/tests/foster.onboarding.spec.ts|e2e/playwright/pages/organization*.page.ts|e2e/playwright/pages/manage-fosters.page.ts)
-      needs_org_e2e_playwright=true
       needs_governance=true
       ;;
     e2e/*)
