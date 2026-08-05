@@ -87,6 +87,8 @@ jobs:
     if: needs.resolve-trigger.outputs.proceed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    # Required so vars.PROD_* resolve from the PROD environment (not only repo vars).
+    environment: PROD
     outputs:
       prod_deploy_enabled: ${{ steps.gate.outputs.prod_deploy_enabled }}
       skip_deploy: ${{ steps.gate.outputs.skip_deploy }}
@@ -564,10 +566,12 @@ jobs:
 
   smoke:
     name: Production post-deploy smoke
-    needs: [resolve-trigger, deploy]
+    needs: [resolve-trigger, deploy, gate-prod-deploy]
     if: needs.deploy.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Same PROD environment as gate/deploy so vars.PROD_PUBLIC_MODE resolves.
+    environment: PROD
     steps:
       - uses: actions/checkout@v5
 
@@ -577,7 +581,8 @@ jobs:
       - name: Wait for production to become healthy
         env:
           PROD_BASE_URL: ${{ env.PROD_BASE_URL }}
-          PROD_PUBLIC_MODE: ${{ vars.PROD_PUBLIC_MODE }}
+          # Prefer gate output (authoritative); vars as belt-and-suspenders with environment: PROD.
+          PROD_PUBLIC_MODE: ${{ needs.gate-prod-deploy.outputs.public_mode || vars.PROD_PUBLIC_MODE }}
         run: bash scripts/prod-post-deploy-smoke.sh
 
       - name: Write smoke job summary
@@ -590,9 +595,9 @@ jobs:
             "workflow=deploy-prod" \
             "job=smoke" \
             "sha=${{ needs.resolve-trigger.outputs.commit_sha }}" \
-            "prod_public_mode=${{ vars.PROD_PUBLIC_MODE || '<unset>' }}" \
+            "prod_public_mode=${{ needs.gate-prod-deploy.outputs.public_mode || vars.PROD_PUBLIC_MODE || '<unset>' }}" \
             "PROD_DEPLOY_ENABLED=${{ vars.PROD_DEPLOY_ENABLED || '<unset>' }}" \
-            "PROD_PUBLIC_MODE=${{ vars.PROD_PUBLIC_MODE || '<unset>' }}" \
+            "PROD_PUBLIC_MODE=${{ needs.gate-prod-deploy.outputs.public_mode || vars.PROD_PUBLIC_MODE || '<unset>' }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 

@@ -24,7 +24,10 @@ Related pointers only: [promotion-contract.md](../promotion-contract.md) · [uat
 
 ### Prod deploy × public mode
 
-Repo/env: `PROD_DEPLOY_ENABLED`, `PROD_PUBLIC_MODE` (`coming_soon` | `app`).
+Repo/env: `PROD_DEPLOY_ENABLED`, `PROD_PUBLIC_MODE` (`coming_soon` | `app`) — set as
+**GitHub Environment variables on `PROD`** (Settings → Environments → PROD → Variables).
+Both the deploy gate and deploy jobs use `environment: PROD`, so these must be
+environment-scoped (repository-level vars alone are not enough for the intended setup).
 Fail closed if deploy is enabled and `PROD_PUBLIC_MODE` is unset.
 
 | `PROD_DEPLOY_ENABLED` | `PROD_PUBLIC_MODE` | Deploy web root | Prod smoke expects |
