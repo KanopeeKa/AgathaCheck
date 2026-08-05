@@ -89,17 +89,14 @@ test.describe('Organisation member privacy', () => {
     await refreshFlutterAccessibility(page);
 
     const detail = new OrganizationDetailPage(page);
-    await detail.openMenu();
-    await page.getByRole('menuitem', { name: /Leave Organisation/i }).click();
+    await detail.expectLoaded(org.name);
+
+    await page.goto(flutterGotoUrl(`/account/orgs/${org.id}?highlight=leave`));
     await refreshFlutterAccessibility(page);
 
     const leaveTile = page
       .locator('[flt-semantics-identifier="account_org_leave"]')
       .or(page.getByRole('button', { name: /Leave Organisation.*membership/i }));
-    if (!(await leaveTile.isVisible({ timeout: 8_000 }).catch(() => false))) {
-      await page.goto(flutterGotoUrl(`/account/orgs/${org.id}?highlight=leave`));
-      await refreshFlutterAccessibility(page);
-    }
     await expect(leaveTile).toBeVisible();
   });
 });

@@ -125,10 +125,7 @@ test.describe('Organisation edit', () => {
 
     const detail = new OrganizationDetailPage(page);
     await detail.expectLoaded(ORG_NAME);
-    await detail.openMenu();
-    await expect(page.getByRole('menuitem', { name: /Delete Organisation/i })).toHaveCount(0);
-    await page.keyboard.press('Escape');
-
+    // Overflow menu removed from profile (#604) — delete is edit-screen only.
     await detail.openEdit();
     await enableFlutterAccessibility(page);
     await expect(page.getByRole('button', { name: /Delete Organisation/i })).toBeVisible();

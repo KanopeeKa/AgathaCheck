@@ -56,55 +56,47 @@ export class OrganizationDetailPage {
     await expect(this.page.getByRole('button', { name: pattern })).toHaveCount(0);
   }
 
-  /**
-   * Members live at `/o/orgs/:id/members` (popup menu only on the dashboard hub).
-   * Flutter web often misses PopupMenuItem taps — hash-route fallback mirrors
-   * `openPetsSection` (UAT shard 3/11).
-   */
-  async openMembers(): Promise<void> {
+  /** Admin contacts directory — members list after profile overflow menu removal (#604). */
+  private static readonly adminContactsSectionName = /^Admin contacts$/i;
+
+  async openAdminContacts(): Promise<void> {
     const orgId = this.orgIdFromUrl();
-    const membersRoute = /\/o\/orgs\/[^/]+\/members(?:\/|$|\?)/;
+    const adminContactsRoute = /\/o\/orgs\/[^/]+\/admin-contacts(?:\/|$|\?)/;
 
     let navigated = false;
-    try {
-      await enableFlutterAccessibility(this.page);
-      await this.openMenu();
-      const menuItem = this.page.getByRole('menuitem', { name: /Members|Membres/i });
-      if (await menuItem.isVisible({ timeout: 5_000 }).catch(() => false)) {
-        await menuItem.click();
-        await refreshFlutterAccessibility(this.page);
-        navigated = await waitForFlutterRoutePattern(this.page, membersRoute, 8_000)
-          .then(() => true)
-          .catch(() => false);
-      } else {
-        await this.page.keyboard.press('Escape');
-      }
-    } catch {
-      await this.page.keyboard.press('Escape').catch(() => {});
+    if (await this.tryActivateSectionCard(OrganizationDetailPage.adminContactsSectionName)) {
+      navigated = await waitForFlutterRoutePattern(this.page, adminContactsRoute, 8_000)
+        .then(() => true)
+        .catch(() => false);
     }
 
     if (!navigated) {
       if (!orgId) {
-        await waitForFlutterRoutePattern(this.page, membersRoute, 60_000);
+        await waitForFlutterRoutePattern(this.page, adminContactsRoute, 60_000);
       } else {
         await navigateWithShellFallback(
           this.page,
-          membersRoute,
-          `/o/orgs/${orgId}/members`,
+          adminContactsRoute,
+          `/o/orgs/${orgId}/admin-contacts`,
           async () => {
             await refreshFlutterAccessibility(this.page);
           },
-          { helper: 'OrganizationDetailPage.openMembers', testTitle: null },
+          { helper: 'OrganizationDetailPage.openAdminContacts', testTitle: null },
         );
       }
     }
 
     await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, membersRoute, 60_000);
+    await waitForFlutterRoutePattern(this.page, adminContactsRoute, 60_000);
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expectAppBarTitle(this.page, /Members|Membres/i);
+      await expectAppBarTitle(this.page, /Admin contacts/i);
     }).toPass({ timeout: 30_000 });
+  }
+
+  /** @deprecated Members route redirects to profile — use {@link openAdminContacts}. */
+  async openMembers(): Promise<void> {
+    await this.openAdminContacts();
   }
 
   async expectMemberVisible(name: string): Promise<void> {
@@ -190,15 +182,12 @@ export class OrganizationDetailPage {
     await expect(pet).toBeVisible();
   }
 
-  async openMenu(): Promise<void> {
-    await enableFlutterAccessibility(this.page);
-    await this.page.getByRole('button', { name: 'Show menu' }).click();
-    await refreshFlutterAccessibility(this.page);
-  }
-
   async inviteMember(email: string, roleLabel: string): Promise<void> {
-    await this.openMenu();
-    await this.page.getByRole('menuitem', { name: 'Invite Member' }).click();
+    await this.openAdminContacts();
+    const addAdmin = this.page
+      .locator('[flt-semantics-identifier="admin_contacts_add"]')
+      .or(this.page.getByRole('button', { name: /Add admin/i }));
+    await addAdmin.first().click();
     await fillTextbox(this.page, 'Email', email);
     await selectDropdownOption(this.page, 'Select Role', roleLabel);
     await this.page.getByRole('button', { name: 'Send Invite' }).click();
@@ -206,29 +195,26 @@ export class OrganizationDetailPage {
   }
 
   async expectInviteMenuHidden(): Promise<void> {
-    await this.openMenu();
-    await expect(this.page.getByRole('menuitem', { name: 'Invite Member' })).toHaveCount(0);
-    await this.page.keyboard.press('Escape');
+    await this.openAdminContacts();
+    await expect(
+      this.page
+        .locator('[flt-semantics-identifier="admin_contacts_add"]')
+        .or(this.page.getByRole('button', { name: /Add admin/i })),
+    ).toHaveCount(0);
   }
 
   async leaveOrganization(): Promise<void> {
     const orgId = this.orgIdFromUrl();
-    await this.openMenu();
-    await this.page.getByRole('menuitem', { name: /Leave Organisation/i }).click();
+    if (!orgId) {
+      throw new Error('leaveOrganization: missing org id for account settings');
+    }
+    // v3 (D-v3-PRIV-1): profile overflow menu removed (#604) — leave via Account.
+    await this.page.goto(flutterGotoUrl(`/account/orgs/${orgId}?highlight=leave`));
     await refreshFlutterAccessibility(this.page);
 
-    // v3 (D-v3-PRIV-1): profile Leave opens Account per-org settings. Flutter web
-    // sometimes renders that screen without updating the hash away from /o/orgs/:id.
     const leaveTile = this.page
       .locator('[flt-semantics-identifier="account_org_leave"]')
       .or(this.page.getByRole('button', { name: /Leave Organisation.*membership/i }));
-    if (!(await leaveTile.isVisible({ timeout: 8_000 }).catch(() => false))) {
-      if (!orgId) {
-        throw new Error('leaveOrganization: missing org id for account settings fallback');
-      }
-      await this.page.goto(flutterGotoUrl(`/account/orgs/${orgId}?highlight=leave`));
-      await refreshFlutterAccessibility(this.page);
-    }
     await leaveTile.waitFor({ state: 'visible', timeout: 30_000 });
     await leaveTile.click();
     await refreshFlutterAccessibility(this.page);
