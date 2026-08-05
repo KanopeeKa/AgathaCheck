@@ -1,15 +1,23 @@
 #!/usr/bin/env bash
 # Post-deploy HTTP smoke for UAT — classifies failure modes and emits actionable CI errors.
+# Optional Apache HTTP Basic Auth (Directory Privacy): set UAT_BASIC_AUTH_ENABLED=true
+# with UAT_BASIC_AUTH_USER / UAT_BASIC_AUTH_PASSWORD. Default off = identical to pre-auth behavior.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=scripts/ci/uat-waf.lib.sh
 source "${ROOT}/scripts/ci/uat-waf.lib.sh"
+# shellcheck source=scripts/ci/public-access-smoke-lib.sh
+source "${ROOT}/scripts/ci/public-access-smoke-lib.sh"
 
 UAT_BASE_URL="${UAT_BASE_URL:-https://uat.agathatrack.com}"
 MAX_ATTEMPTS="${MAX_ATTEMPTS:-18}"
 SLEEP_SECS="${SLEEP_SECS:-10}"
 CURL_TLS_FLAGS="${CURL_TLS_FLAGS:--k}"
+UAT_BASIC_AUTH_ENABLED="${UAT_BASIC_AUTH_ENABLED:-false}"
+
+# Populated when Basic Auth is enabled; empty array when flag is off.
+CURL_AUTH=()
 
 # Exposes the classify_body() kind as a job output so assert-uat-gates.sh can
 # tell a WAF/Passenger-registration issue (host/config, no code signal) apart
@@ -38,9 +46,30 @@ classify_body() {
     echo "backend_root"
   elif grep -qiE 'Passenger|application error|Internal Server Error' <<<"$body"; then
     echo "passenger_crash"
+  elif grep -qiE '401 Unauthorized|Unauthorized|Authentication required|WWW-Authenticate' <<<"$body"; then
+    echo "basic_auth"
   else
     echo "unknown"
   fi
+}
+
+# Prefer HTTP-code classification (401 → basic_auth) so auth challenges are not
+# mislabeled as waf/unknown when the body is empty or generic.
+classify_response() {
+  local code="$1"
+  local body="$2"
+  local code_kind
+  code_kind="$(pas_classify_http_code "$code")"
+  if [[ -n "$code_kind" ]]; then
+    echo "$code_kind"
+    return 0
+  fi
+  # 403 without body markers can also be Directory Privacy / auth gate.
+  if [[ "$code" == "403" ]]; then
+    echo "basic_auth"
+    return 0
+  fi
+  classify_body "$body"
 }
 
 probe_url() {
@@ -48,10 +77,10 @@ probe_url() {
   local tmp
   tmp="$(mktemp)"
   local code
-  code="$(curl -sS ${CURL_TLS_FLAGS} -o "$tmp" -w "%{http_code}" "$url" || echo "000")"
+  code="$(curl -sS ${CURL_TLS_FLAGS} "${CURL_AUTH[@]}" -o "$tmp" -w "%{http_code}" "$url" || echo "000")"
   local body kind
   body="$(cat "$tmp")"
-  kind="$(classify_body "$body")"
+  kind="$(classify_response "$code" "$body")"
   rm -f "$tmp"
   # Expose body on 5xx so CI log shows the Passenger error page snippet.
   if [[ "$code" =~ ^5 ]] && [ "$kind" != "ok" ]; then
@@ -90,6 +119,14 @@ EOF
     waf)
     echo 'Hosting WAF challenge page (o2switch Tiger Protect) — retry with landing priming; SSH firewall whitelist is separate (port 22 only).'
       ;;
+    basic_auth)
+      cat <<'EOF'
+HTTP Basic Auth (cPanel Directory Privacy) — anonymous requests get 401/403; this is not Tiger Protect WAF.
+When UAT_BASIC_AUTH_ENABLED=true: anonymous probe must see 401 (or 403); credentialed curls use UAT_BASIC_AUTH_USER/PASSWORD.
+If anonymous gets 200, Directory Privacy is not active (lock missing) — re-enable privacy or restore .htaccess after FTP.
+See docs/ops/public-access.md.
+EOF
+      ;;
     passenger_crash)
       cat <<'EOF'
 Passenger returned a 500 crash page — the Node.js app is failing to start.
@@ -120,8 +157,43 @@ emit_error() {
 }
 
 curl_landing() {
-  curl -sfk ${CURL_TLS_FLAGS} "${UAT_BASE_URL}/landing" -o /dev/null 2>/dev/null || true
+  curl -sfk ${CURL_TLS_FLAGS} "${CURL_AUTH[@]}" "${UAT_BASE_URL}/landing" -o /dev/null 2>/dev/null || true
 }
+
+# --- Optional Basic Auth gate (Directory Privacy) ---
+if [[ "${UAT_BASIC_AUTH_ENABLED}" == "true" ]]; then
+  if [[ -z "${UAT_BASIC_AUTH_USER:-}" || -z "${UAT_BASIC_AUTH_PASSWORD:-}" ]]; then
+    echo "::error title=uat_basic_auth_secrets_missing::UAT_BASIC_AUTH_ENABLED=true but UAT_BASIC_AUTH_USER and/or UAT_BASIC_AUTH_PASSWORD are empty. Fail closed — set both secrets (or disable the flag)."
+    emit_failure_kind "basic_auth"
+    exit 1
+  fi
+  CURL_AUTH=(-u "${UAT_BASIC_AUTH_USER}:${UAT_BASIC_AUTH_PASSWORD}")
+
+  echo "UAT Basic Auth enabled — anonymous probe of ${UAT_BASE_URL}/backend/health (expect 401 or 403)..."
+  anon_tmp="$(mktemp)"
+  anon_code="$(curl -sS ${CURL_TLS_FLAGS} -o "$anon_tmp" -w "%{http_code}" "${UAT_BASE_URL}/backend/health" || echo "000")"
+  anon_body="$(cat "$anon_tmp")"
+  rm -f "$anon_tmp"
+  anon_kind="$(classify_response "$anon_code" "$anon_body")"
+
+  if [[ "$anon_code" == "200" ]]; then
+    echo "::error title=uat_basic_auth_lock_missing::Anonymous GET /backend/health returned HTTP 200 — Directory Privacy lock is not present while UAT_BASIC_AUTH_ENABLED=true."
+    error_hint "basic_auth" | while IFS= read -r line; do
+      [ -n "$line" ] && echo "::notice::${line}"
+    done
+    emit_failure_kind "basic_auth"
+    exit 1
+  fi
+
+  if [[ "$anon_code" != "401" && "$anon_code" != "403" ]]; then
+    echo "Anonymous health probe returned unexpected HTTP ${anon_code} (${anon_kind}) — expected 401 or 403."
+    emit_error "${anon_kind}" "$anon_code"
+    emit_failure_kind "$anon_kind"
+    exit 1
+  fi
+
+  echo "Anonymous Basic Auth proof OK (HTTP ${anon_code}, ${anon_kind})"
+fi
 
 echo "Probing ${UAT_BASE_URL}/backend/ (directory listing check)..."
 IFS='|' read -r root_code root_kind <<<"$(probe_url "${UAT_BASE_URL}/backend/")"
@@ -148,7 +220,7 @@ for i in $(seq 1 "$MAX_ATTEMPTS"); do
   if [ "$last_kind" = "ok" ]; then
     uat_waf_clear_streak
     echo "Backend healthy after attempt ${i} (HTTP ${last_code})"
-    curl -sfk "${UAT_BASE_URL}/landing" -o /dev/null
+    curl -sfk ${CURL_TLS_FLAGS} "${CURL_AUTH[@]}" "${UAT_BASE_URL}/landing" -o /dev/null
     echo "Landing page reachable"
 
     IFS='|' read -r root_code root_kind <<<"$(probe_url "${UAT_BASE_URL}/backend/")"
@@ -174,7 +246,7 @@ for i in $(seq 1 "$MAX_ATTEMPTS"); do
 
   if [ "$i" -eq 1 ] || [ $((i % 6)) -eq 0 ]; then
     echo "Attempt ${i}/${MAX_ATTEMPTS}: HTTP ${last_code} — ${last_kind}"
-    if [ "$last_kind" = "directory_listing" ] || [ "$last_kind" = "flutter_spa" ] || [ "$last_kind" = "passenger_crash" ] || [ "$last_kind" = "apache_404" ]; then
+    if [ "$last_kind" = "directory_listing" ] || [ "$last_kind" = "flutter_spa" ] || [ "$last_kind" = "passenger_crash" ] || [ "$last_kind" = "apache_404" ] || [ "$last_kind" = "basic_auth" ]; then
       error_hint "$last_kind" | while IFS= read -r line; do
         [ -n "$line" ] && echo "::notice::${line}"
       done

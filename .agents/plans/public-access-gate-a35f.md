@@ -224,9 +224,9 @@ flutter_app/lib/**
 
 **Exit criteria:**
 
-- [ ] Flag off → identical smoke behavior to today (pre-UAT / localhost green)
-- [ ] Fixture tests cover 401 anonymous + authed success
-- [ ] Live E2E workflow documents required secrets
+- [x] Flag off → identical smoke behavior to today (pre-UAT / localhost green)
+- [x] Fixture tests cover 401 anonymous + authed success
+- [x] Live E2E workflow documents required secrets
 
 ---
 
@@ -237,13 +237,13 @@ autonomy: active
 current_phase: 4
 last_completed_phase: 3
 halt_reason: null
-next_action: "start phase 4: checkout cursor/public-access-uat-auth-a35f"
+next_action: "continue phase 4 on branch cursor/public-access-uat-auth-a35f"
 artifact_ref:
-  branch: cursor/public-access-gate-integration-a35f
+  branch: cursor/public-access-uat-auth-a35f
   plan_path: .agents/plans/public-access-gate-a35f.md
-  plan_commit: 636674211d2efb5da27833cd222be2bd7e5f2032
+  plan_commit: 1384803b939785a6f3ec5273fdb31649ac9c7937
   snapshot_path: .agents/plans/public-access-gate-a35f.snapshot.json
-  snapshot_commit: 636674211d2efb5da27833cd222be2bd7e5f2032
+  snapshot_commit: 1384803b939785a6f3ec5273fdb31649ac9c7937
 open_prs: []
 merge_commits: {"1":"08ef7e662e421aacac52e375acde3c188ddee565","2":"6449ed01bc08d07067a631abbeb371c4cff191d9","3":"636674211d2efb5da27833cd222be2bd7e5f2032"}
 debt_issue_refs: []

@@ -100,10 +100,13 @@ Do not map 401 to WAF. Tiger Protect challenges are separate (HTML markers / bro
 Enable only on **`uat.agathatrack.com`**, never as a substitute for the prod teaser.
 
 1. cPanel → **Directory Privacy** (Password Protect Directories) on the UAT docroot (and backend path if separate and should be covered).
-2. Create the Basic Auth user; store username/password in GitHub Actions secrets used by UAT smoke / live E2E.
-3. Set `UAT_BASIC_AUTH_ENABLED=true` in the UAT workflow env / vars.
-4. Confirm anonymous curl → **401**; credentialed smoke → health + landing OK.
-5. Confirm Playwright live UAT receives `httpCredentials` when the flag is on; fail closed if flag on and secrets missing.
+2. Create the Basic Auth user; store in GitHub Actions secrets:
+   - `UAT_BASIC_AUTH_USER`
+   - `UAT_BASIC_AUTH_PASSWORD`
+3. Set repo/org variable **`UAT_BASIC_AUTH_ENABLED=true`** (wired into `deploy-uat.yml` smoke and `uat-live-e2e.yml`). Leave unset/`false` until Directory Privacy is live — smoke and Playwright stay identical to today.
+4. Confirm anonymous `curl -sk https://uat.agathatrack.com/backend/health` → **401** (or 403); credentialed smoke (`curl -u`) → health + landing OK.
+5. Confirm Playwright live UAT gets `httpCredentials` when user/password are set; **fail closed** if the flag is on and secrets are missing (`playwright.config.ts` / `run-live-uat-gate.sh`).
+6. Fixture check (local): `node --test scripts/ci/uat-post-deploy-smoke.test.js`
 
 **FTP note:** some FTP deploy clients **exclude `.htaccess`**. After enabling Directory Privacy, verify the protection file is present on the server; redeploy or re-save privacy settings if 401 disappears after a web sync.
 

@@ -67,6 +67,8 @@ flowchart TD
 | `GET /landing` (priming) | Playwright / `passHostingWaf` |
 | `GET /backend/` root | |
 
+**Basic Auth (optional):** when `UAT_BASIC_AUTH_ENABLED=true`, smoke proves anonymous `/backend/health` → **401** (or 403), then uses `curl -u` with `UAT_BASIC_AUTH_USER`/`PASSWORD` for all subsequent probes. Flag default **off** — localhost and pre-UAT E2E are unchanged. Canonical ops: [public-access.md](../ops/public-access.md).
+
 ---
 
 ## Tier 3: Live UAT E2E (`uat-live-e2e.yml`)
