@@ -20,6 +20,7 @@ all_success_env() {
   export FLUTTER_INTEGRATION=success
   export FLUTTER_BUILD_WEB=success
   export CI_E2E_CANARY=success
+  export CI_E2E_ORG=success
 }
 
 run_gate() {
@@ -71,7 +72,8 @@ export FLUTTER_COVERAGE=skipped
 export FLUTTER_INTEGRATION=skipped
 export FLUTTER_BUILD_WEB=skipped
 export CI_E2E_CANARY=skipped
-export CI_SCOPE_JSON='{"scope":"SERVER_ONLY","skip_jobs":["flutter-analyze","flutter-test-pet-core","flutter-test-pet-screens","flutter-test-pet-widgets","flutter-test-health","flutter-test-org","flutter-test-rest-a","flutter-test-rest-b","flutter-coverage","flutter-integration","flutter-build-web","ci-e2e-canary"]}'
+export CI_E2E_ORG=skipped
+export CI_SCOPE_JSON='{"scope":"SERVER_ONLY","skip_jobs":["flutter-analyze","flutter-test-pet-core","flutter-test-pet-screens","flutter-test-pet-widgets","flutter-test-health","flutter-test-org","flutter-test-rest-a","flutter-test-rest-b","flutter-coverage","flutter-integration","flutter-build-web","ci-e2e-canary","ci-e2e-org"]}'
 assert_exit 0 "scoped skips accepted when listed in skip_jobs"
 
 # Skipped job not in skip_jobs → fail
@@ -85,11 +87,17 @@ all_success_env
 export CI_E2E_CANARY=failure
 assert_exit 1 "canary failure fails when build succeeded"
 
+# ci-e2e-org must pass when flutter-build-web succeeded
+all_success_env
+export CI_E2E_ORG=failure
+assert_exit 1 "org journey failure fails when build succeeded"
+
 # ci-e2e-canary may skip when flutter-build-web did not succeed
 all_success_env
 export FLUTTER_BUILD_WEB=skipped
 export CI_E2E_CANARY=skipped
-export CI_SCOPE_JSON='{"scope":"SERVER_ONLY","skip_jobs":["flutter-analyze","flutter-test-pet-core","flutter-test-pet-screens","flutter-test-pet-widgets","flutter-test-health","flutter-test-org","flutter-test-rest-a","flutter-test-rest-b","flutter-coverage","flutter-integration","flutter-build-web","ci-e2e-canary"]}'
+export CI_E2E_ORG=skipped
+export CI_SCOPE_JSON='{"scope":"SERVER_ONLY","skip_jobs":["flutter-analyze","flutter-test-pet-core","flutter-test-pet-screens","flutter-test-pet-widgets","flutter-test-health","flutter-test-org","flutter-test-rest-a","flutter-test-rest-b","flutter-coverage","flutter-integration","flutter-build-web","ci-e2e-canary","ci-e2e-org"]}'
 assert_exit 0 "canary skip ok when build skipped (scoped)"
 
 echo "assert-ci-gate tests passed"

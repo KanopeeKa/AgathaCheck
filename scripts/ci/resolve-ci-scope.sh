@@ -52,17 +52,15 @@ json="$(ci_scope_emit_json)"
 scope_name="$(python3 -c 'import json,sys; print(json.load(sys.stdin)["scope"])' <<<"$json")"
 run_analyze="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_analyze"] else "false")' <<<"$json")"
 run_stack="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_stack"] else "false")' <<<"$json")"
+run_backend="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_backend"] else "false")' <<<"$json")"
+run_e2e_audit="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_e2e_audit"] else "false")' <<<"$json")"
+run_integration="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_integration"] else "false")' <<<"$json")"
+run_flutter_coverage="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_coverage"] else "false")' <<<"$json")"
+run_org_e2e="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin).get("run_org_e2e") else "false")' <<<"$json")"
+run_shards="$(python3 -c 'import json,sys; print(json.dumps(json.load(sys.stdin)["run_shards"]))' <<<"$json")"
 echo "$json"
 
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
-  scope_name="$(python3 -c 'import json,sys; print(json.load(sys.stdin)["scope"])' <<<"$json")"
-  run_analyze="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_analyze"] else "false")' <<<"$json")"
-  run_stack="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_stack"] else "false")' <<<"$json")"
-  run_backend="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_backend"] else "false")' <<<"$json")"
-  run_e2e_audit="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_e2e_audit"] else "false")' <<<"$json")"
-  run_integration="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_integration"] else "false")' <<<"$json")"
-  run_flutter_coverage="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_coverage"] else "false")' <<<"$json")"
-  run_shards="$(python3 -c 'import json,sys; print(json.dumps(json.load(sys.stdin)["run_shards"]))' <<<"$json")"
   {
     echo "scope_json<<EOF"
     echo "$json"
@@ -74,6 +72,7 @@ if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
     echo "run_e2e_audit=$run_e2e_audit"
     echo "run_flutter_integration=$run_integration"
     echo "run_flutter_coverage=$run_flutter_coverage"
+    echo "run_org_e2e=$run_org_e2e"
     echo "run_shards=$run_shards"
   } >>"$GITHUB_OUTPUT"
 fi
@@ -91,6 +90,7 @@ if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
     echo "- **Backend Jest:** $run_backend"
     echo "- **E2E npm audit:** $run_e2e_audit"
     echo "- **Flutter integration:** $run_integration"
+    echo "- **Org journey E2E:** $run_org_e2e"
     if [[ "$CI_SCOPE_ESCAPE_FULL" == true ]]; then
       echo "- **Escape:** ci-full (label or commit token)"
     fi

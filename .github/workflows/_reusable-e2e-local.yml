@@ -25,7 +25,7 @@ on:
         type: string
         default: ''
       test_suite:
-        description: Playwright suite — shard (file-balanced CI shard) or smoke-ci (PR @smoke-ci canary)
+        description: Playwright suite — shard (file-balanced CI shard), smoke-ci (PR @smoke-ci canary), or org-journey (org IA Playwright bundle)
         type: string
         default: shard
 
@@ -35,7 +35,7 @@ env:
 jobs:
   e2e:
     name: >-
-      ${{ inputs.test_suite == 'smoke-ci' && 'Playwright @smoke-ci canary (localhost)' || format('Playwright E2E (localhost{0})', inputs.shard_total > 1 && format(' shard {0}/{1}', inputs.shard_index, inputs.shard_total) || '') }}
+      ${{ inputs.test_suite == 'smoke-ci' && 'Playwright @smoke-ci canary (localhost)' || inputs.test_suite == 'org-journey' && 'Playwright org journey (localhost)' || format('Playwright E2E (localhost{0})', inputs.shard_total > 1 && format(' shard {0}/{1}', inputs.shard_index, inputs.shard_total) || '') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -135,6 +135,8 @@ jobs:
         run: |
           if [ "${{ inputs.test_suite }}" = "smoke-ci" ]; then
             npm run test:smoke-ci
+          elif [ "${{ inputs.test_suite }}" = "org-journey" ]; then
+            npm run test:org-journey
           else
             npm run test:ci-shard -- ${{ inputs.shard_index }}
           fi
@@ -144,7 +146,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: >-
-            ${{ inputs.test_suite == 'smoke-ci' && 'playwright-report-localhost-smoke-ci' || format('playwright-report-localhost-shard-{0}-of-{1}', inputs.shard_index, inputs.shard_total) }}
+            ${{ inputs.test_suite == 'smoke-ci' && 'playwright-report-localhost-smoke-ci' || inputs.test_suite == 'org-journey' && 'playwright-report-localhost-org-journey' || format('playwright-report-localhost-shard-{0}-of-{1}', inputs.shard_index, inputs.shard_total) }}
           path: e2e/playwright-report/
 
       - name: Write E2E job summary
