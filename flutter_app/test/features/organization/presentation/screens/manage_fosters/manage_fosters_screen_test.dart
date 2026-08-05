@@ -49,7 +49,9 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationListProvider.overrideWith(_ManageFostersOrgListNotifier.new),
+          organizationListProvider.overrideWith(
+            _ManageFostersOrgListNotifier.new,
+          ),
           organizationRepositoryProvider.overrideWithValue(
             _FosterParentsRepo(parents),
           ),
@@ -71,34 +73,37 @@ void main() {
     expect(find.byKey(const Key('manage_fosters_menu')), findsOneWidget);
   });
 
-  testWidgets('manage fosters overflow menu lists email invite and manual actions', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationListProvider.overrideWith(_ManageFostersOrgListNotifier.new),
-          organizationRepositoryProvider.overrideWithValue(
-            _FosterParentsRepo(const []),
+  testWidgets(
+    'manage fosters overflow menu lists email invite and manual actions',
+    (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
+            organizationListProvider.overrideWith(
+              _ManageFostersOrgListNotifier.new,
+            ),
+            organizationRepositoryProvider.overrideWithValue(
+              _FosterParentsRepo(const []),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const ManageFostersScreen(orgId: 'org-1'),
           ),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const ManageFostersScreen(orgId: 'org-1'),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('manage_fosters_menu')));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('manage_fosters_menu')));
+      await tester.pumpAndSettle();
 
-    expect(find.text('Foster requests'), findsOneWidget);
-    expect(find.text('Invite Member'), findsOneWidget);
-    expect(find.text('Add foster manually'), findsOneWidget);
-  });
+      expect(find.text('Foster requests'), findsOneWidget);
+      expect(find.text('Invite Member'), findsOneWidget);
+      expect(find.text('Add foster manually'), findsOneWidget);
+    },
+  );
 
   testWidgets('external foster menu offers merge into registered account', (
     tester,
@@ -118,7 +123,9 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationListProvider.overrideWith(_ManageFostersOrgListNotifier.new),
+          organizationListProvider.overrideWith(
+            _ManageFostersOrgListNotifier.new,
+          ),
           organizationRepositoryProvider.overrideWithValue(repo),
         ],
         child: MaterialApp(
@@ -164,7 +171,9 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationListProvider.overrideWith(_ManageFostersOrgListNotifier.new),
+          organizationListProvider.overrideWith(
+            _ManageFostersOrgListNotifier.new,
+          ),
           organizationRepositoryProvider.overrideWithValue(repo),
         ],
         child: MaterialApp(

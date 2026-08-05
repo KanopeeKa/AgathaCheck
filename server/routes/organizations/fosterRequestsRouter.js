@@ -107,6 +107,8 @@ async function sendRequest(client, {
   const orgName = orgResult.rows[0]?.name || 'Your organisation';
 
   for (const row of fosterUsers.rows) {
+    // health_entry_id stores foster_request id for admin notification deep links
+    // (Flutter maps fosterRequestReceived → respond route via healthEntryId).
     await createNotification(client, {
       userId: row.user_id,
       organizationId: orgId,

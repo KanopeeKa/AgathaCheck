@@ -16,25 +16,26 @@ class PendingActionsScreen extends ConsumerWidget {
   /// Optional section focus from query param (`foster`, `adoption`, `custody`, `share`).
   final String? focus;
 
+  static const _validFocus = {'share', 'foster', 'adoption', 'custody'};
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
+    final effectiveFocus = _validFocus.contains(focus) ? focus : null;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l.notificationActionNeeded),
-      ),
+      appBar: AppBar(title: Text(l.notificationActionNeeded)),
       body: ListView(
         key: const Key('pending_actions_screen'),
         padding: const EdgeInsets.all(16),
         children: [
-          if (_showsSection('share', focus))
+          if (_showsSection('share', effectiveFocus))
             const PendingSharesSection(),
-          if (_showsSection('foster', focus))
+          if (_showsSection('foster', effectiveFocus))
             const PendingFosterPlacementsSection(),
-          if (_showsSection('adoption', focus))
+          if (_showsSection('adoption', effectiveFocus))
             const PendingAdoptionPlacementsSection(),
-          if (_showsSection('custody', focus))
+          if (_showsSection('custody', effectiveFocus))
             const PendingCustodyTransfersSection(),
         ],
       ),
