@@ -96,7 +96,7 @@ npm run report       # open HTML report after a run
 
 ## CI
 
-Shard count for full localhost E2E is **twelve** — update `matrix.shard`, `shard_total: 12`, and `e2e/scripts/shard-files.mjs` together in `pre-uat-e2e.yml` and `e2e.yml`.
+Shard count for full localhost E2E is **thirteen** — update `matrix.shard`, `shard_total: 13`, and `e2e/scripts/shard-files.mjs` together in `pre-uat-e2e.yml` and `e2e.yml`.
 
 ```bash
 cd e2e && npm run shard:plan    # list file groups per shard
