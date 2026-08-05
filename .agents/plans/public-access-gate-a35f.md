@@ -237,13 +237,13 @@ autonomy: active
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
-next_action: "start phase 2: checkout cursor/public-access-api-mode-a35f"
+next_action: "continue phase 2 on branch cursor/public-access-api-mode-a35f"
 artifact_ref:
-  branch: cursor/public-access-gate-integration-a35f
+  branch: cursor/public-access-api-mode-a35f
   plan_path: .agents/plans/public-access-gate-a35f.md
-  plan_commit: 08ef7e662e421aacac52e375acde3c188ddee565
+  plan_commit: 7d2ef096359d5ef86f8e5171af8791782b3b0b42
   snapshot_path: .agents/plans/public-access-gate-a35f.snapshot.json
-  snapshot_commit: 08ef7e662e421aacac52e375acde3c188ddee565
+  snapshot_commit: 7d2ef096359d5ef86f8e5171af8791782b3b0b42
 open_prs: []
 merge_commits: {"1":"08ef7e662e421aacac52e375acde3c188ddee565"}
 debt_issue_refs: []

@@ -4,7 +4,7 @@
   "approved_at": "2026-08-05T19:49:00Z",
   "approved_by": "user-chat-2026-08-05-execute-plan-standing-grant",
   "approved_until": "2026-08-07T19:49:00Z",
-  "content_hash": "sha256:fa5f482644262985172aaf1c671930643699a9c6f62609d18b1a2d5e95e8ed81",
+  "content_hash": "sha256:6c5b85f87195bda695191c7013ff582f3183d462f0a52e5d91b05650c06e6bfa",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/public-access-gate-integration-a35f",
@@ -82,12 +82,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
