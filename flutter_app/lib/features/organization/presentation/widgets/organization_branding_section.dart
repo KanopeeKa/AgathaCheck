@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/utils/resolve_static_asset_url.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
@@ -115,13 +116,35 @@ class OrganizationBrandingSection extends ConsumerWidget {
             borderRadius: BorderRadius.circular(12),
             child: SizedBox(
               height: OrgProfileHeroLayout.coverHeight,
-              child: org.photoUrl.isNotEmpty
-                  ? Image.network(
-                      resolvedPhoto,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _CoverPlaceholder(org: org),
-                    )
-                  : _CoverPlaceholder(org: org),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  org.photoUrl.isNotEmpty
+                      ? Image.network(
+                          resolvedPhoto,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) =>
+                              _CoverPlaceholder(org: org),
+                        )
+                      : _CoverPlaceholder(org: org),
+                  Positioned(
+                    right: 12,
+                    bottom: 12,
+                    child: Semantics(
+                      button: true,
+                      label: l.orgUploadCover,
+                      child: FloatingActionButton.small(
+                        key: const Key('org_upload_cover_button'),
+                        heroTag: 'org_upload_cover_${org.id}',
+                        tooltip: l.orgUploadCover,
+                        onPressed: () =>
+                            _pickAndUpload(context, ref, isLogo: false),
+                        child: const Icon(Icons.camera_alt),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -132,23 +155,11 @@ class OrganizationBrandingSection extends ConsumerWidget {
             OrgProfileHeroLayout.horizontalPadding,
             0,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              OutlinedButton.icon(
-                key: const Key('org_upload_cover_button'),
-                onPressed: () => _pickAndUpload(context, ref, isLogo: false),
-                icon: const Icon(Icons.upload, size: 18),
-                label: Text(l.orgUploadCover),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                l.orgImageHeroGuidance,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
+          child: Text(
+            l.orgImageHeroGuidance,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
         ),
         Transform.translate(
@@ -163,27 +174,40 @@ class OrganizationBrandingSection extends ConsumerWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    org.logoUrl.isNotEmpty
-                        ? OrgLogoImage(
-                            logoUrl: org.logoUrl,
-                            resolvedUrl: resolvedLogo,
-                            height: OrgProfileHeroLayout.logoHeight,
-                          )
-                        : OrgImageAvatar(
-                            imageUrl: org.photoUrl,
-                            type: org.type,
-                            radius: OrgProfileHeroLayout.logoHeight / 2,
-                            resolvedUrl: resolvedPhoto,
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        org.logoUrl.isNotEmpty
+                            ? OrgLogoImage(
+                                logoUrl: org.logoUrl,
+                                resolvedUrl: resolvedLogo,
+                                height: OrgProfileHeroLayout.logoHeight,
+                              )
+                            : OrgImageAvatar(
+                                imageUrl: org.photoUrl,
+                                type: org.type,
+                                radius: OrgProfileHeroLayout.logoHeight / 2,
+                                resolvedUrl: resolvedPhoto,
+                              ),
+                        Positioned(
+                          right: -4,
+                          bottom: -4,
+                          child: Semantics(
+                            button: true,
+                            label: l.orgUploadLogo,
+                            child: FloatingActionButton.small(
+                              key: const Key('org_upload_logo_button'),
+                              heroTag: 'org_upload_logo_${org.id}',
+                              tooltip: l.orgUploadLogo,
+                              onPressed: () =>
+                                  _pickAndUpload(context, ref, isLogo: true),
+                              child: const Icon(Icons.camera_alt),
+                            ),
                           ),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      key: const Key('org_upload_logo_button'),
-                      onPressed: () =>
-                          _pickAndUpload(context, ref, isLogo: true),
-                      icon: const Icon(Icons.upload, size: 18),
-                      label: Text(l.orgUploadLogo),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 8),
                     SizedBox(
                       width: OrgProfileHeroLayout.logoHeight + 48,
                       child: Text(
@@ -261,16 +285,15 @@ class _CoverPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return ColoredBox(
-      color: colorScheme.surfaceContainerHighest,
+      color: AppColorTokens.organizationPrimary,
       child: Center(
         child: Icon(
           org.type == OrganizationType.professional
               ? Icons.business
               : Icons.volunteer_activism,
           size: 48,
-          color: colorScheme.onSurfaceVariant,
+          color: Colors.white.withValues(alpha: 0.85),
         ),
       ),
     );

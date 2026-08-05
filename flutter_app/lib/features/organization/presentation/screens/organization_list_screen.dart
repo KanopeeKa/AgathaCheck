@@ -243,8 +243,19 @@ class OrganizationListScreen extends ConsumerWidget {
             },
           ),
           const SizedBox(height: 16),
-          const OrgDiscoverNavRow(),
-          const SizedBox(height: 16),
+          Divider(
+            height: 24,
+            thickness: 1,
+            color: colorScheme.primary.withValues(alpha: 0.35),
+          ),
+          Text(
+            l.discoverOrganizations,
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: colorScheme.primary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
           Text(
             l.orgMembershipByEmailInvite,
             style: theme.textTheme.bodySmall?.copyWith(
@@ -252,15 +263,7 @@ class OrganizationListScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              key: const Key('org_create_button'),
-              icon: const Icon(Icons.add, size: 18),
-              label: Text(l.create),
-              onPressed: () => context.push('/o/orgs/new'),
-            ),
-          ),
+          const OrgDiscoverNavRow(),
         ],
       ),
     );
