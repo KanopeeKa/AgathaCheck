@@ -11,6 +11,7 @@ import '../../features/health_tracking/presentation/screens/health_entry_form_sc
 import '../../features/health_tracking/presentation/screens/pet_event_view_screen.dart';
 import '../../features/notifications/presentation/screens/notification_settings_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
+import '../../features/notifications/presentation/screens/pending_actions_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_health_issues_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_manage_events_screen.dart';
@@ -303,6 +304,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final entryId = state.pathParameters['id']!;
           return HealthEntryFormScreen(entryId: entryId);
+        },
+      ),
+      GoRoute(
+        path: '/pending-actions',
+        name: 'pendingActions',
+        builder: (context, state) {
+          final focus = state.uri.queryParameters['focus'];
+          return PendingActionsScreen(focus: focus);
         },
       ),
       GoRoute(

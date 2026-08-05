@@ -12,6 +12,7 @@ class NotificationModel extends AppNotification {
     required super.title,
     required super.message,
     required super.type,
+    super.wireType,
     super.kind,
     super.priority,
     super.resolvedAt,
@@ -30,6 +31,7 @@ class NotificationModel extends AppNotification {
       title: json['title']?.toString() ?? '',
       message: json['message']?.toString() ?? '',
       type: _parseType(json['type']?.toString() ?? 'general'),
+      wireType: json['type']?.toString() ?? 'general',
       kind: json['kind'] != null
           ? NotificationKind.fromWire(json['kind']?.toString())
           : defaultKindForNotificationType(

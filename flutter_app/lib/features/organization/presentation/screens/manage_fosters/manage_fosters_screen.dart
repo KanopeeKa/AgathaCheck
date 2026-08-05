@@ -11,6 +11,7 @@ import '../../providers/organization_providers.dart';
 import '../../widgets/manage_fosters/foster_person_tile.dart';
 import '../../widgets/manage_fosters/foster_summary_card.dart'
     show showManageFostersAddManualDialog;
+import '../../widgets/organization_invite_by_email_dialog.dart';
 import '../../widgets/org_shell_app_bar_title.dart';
 import '../../widgets/org_shell_scaffold.dart';
 
@@ -48,24 +49,61 @@ class ManageFostersScreen extends ConsumerWidget {
       navVariant: OrgNavTitleVariant.withOrgLogo,
       leadingKey: const Key('manage_fosters_back'),
       contextualActions: [
-        IconButton(
-          key: const Key('manage_fosters_foster_requests'),
-          icon: const Icon(Icons.mail_outline),
-          tooltip: l.fosterRequestsTitle,
-          onPressed: canManage
-              ? () => context.push('/o/orgs/$orgId/foster-requests')
-              : null,
-        ),
         if (canManage)
-          IconButton(
-            key: const Key('manage_fosters_add_manual'),
-            icon: const Icon(Icons.person_add_alt_1),
-            tooltip: l.addExternalFoster,
-            onPressed: () => showManageFostersAddManualDialog(
-              context: context,
-              ref: ref,
-              orgId: orgId,
-            ),
+          PopupMenuButton<String>(
+            key: const Key('manage_fosters_menu'),
+            tooltip: MaterialLocalizations.of(context).showMenuTooltip,
+            onSelected: (action) {
+              switch (action) {
+                case 'email_all':
+                  context.push('/o/orgs/$orgId/foster-requests/new');
+                  break;
+                case 'invite_foster':
+                  showOrganizationInviteByEmailDialog(
+                    context: context,
+                    ref: ref,
+                    orgId: orgId,
+                    defaultRoleWire: 'foster',
+                  );
+                  break;
+                case 'manual_foster':
+                  showManageFostersAddManualDialog(
+                    context: context,
+                    ref: ref,
+                    orgId: orgId,
+                  );
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'email_all',
+                child: ListTile(
+                  leading: const Icon(Icons.mail_outline),
+                  title: Text(l.fosterRequestsTitle),
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              PopupMenuItem(
+                value: 'invite_foster',
+                child: ListTile(
+                  leading: const Icon(Icons.person_add),
+                  title: Text(l.orgInviteMember),
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              PopupMenuItem(
+                value: 'manual_foster',
+                child: ListTile(
+                  leading: const Icon(Icons.contact_page_outlined),
+                  title: Text(l.addExternalFoster),
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ],
           ),
       ],
       child: Column(

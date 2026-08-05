@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { logAuditEventSafe } from '../../lib/audit.js';
+import { createNotification } from '../../lib/notificationHelper.js';
 import {
   assertPetsInOrg,
   loadEligibleFosterTargetsWithCapacity,
@@ -89,6 +90,34 @@ async function sendRequest(client, {
     metadata: { target_count: targetIds.length },
     req,
   });
+
+  const fosterUsers = await client.query(
+    `SELECT DISTINCT fp.user_id
+     FROM foster_request_targets frt
+     JOIN org_foster_parents fp ON fp.id = frt.org_foster_parent_id
+     WHERE frt.foster_request_id = $1
+       AND fp.user_id IS NOT NULL`,
+    [requestId],
+  );
+
+  const orgResult = await client.query(
+    'SELECT name FROM organizations WHERE id = $1',
+    [orgId],
+  );
+  const orgName = orgResult.rows[0]?.name || 'Your organisation';
+
+  for (const row of fosterUsers.rows) {
+    // health_entry_id stores foster_request id for admin notification deep links
+    // (Flutter maps fosterRequestReceived → respond route via healthEntryId).
+    await createNotification(client, {
+      userId: row.user_id,
+      organizationId: orgId,
+      healthEntryId: requestId,
+      title: 'Foster request',
+      message: `${orgName} sent a foster availability request.`,
+      type: 'fosterRequestReceived',
+    });
+  }
 
   return { row: updateResult.rows[0] };
 }

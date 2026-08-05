@@ -133,7 +133,7 @@ void main() {
     await pumpScreen(tester, role: 'super_admin');
 
     expect(find.byKey(const Key('admin_contacts_add')), findsOneWidget);
-    expect(find.byKey(const Key('admin_contacts_add_button')), findsOneWidget);
+    expect(find.byKey(const Key('admin_contacts_add_button')), findsNothing);
   });
 
   testWidgets('foster member does not see add admin affordance', (

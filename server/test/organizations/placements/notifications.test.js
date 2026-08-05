@@ -23,9 +23,10 @@ describe('Placement create notifications', () => {
           userId: params[1],
           petId: params[2],
           petName: params[3],
-          title: params[4],
-          message: params[5],
-          type: params[6],
+          organizationId: params[5],
+          title: params[6],
+          message: params[7],
+          type: params[8],
         });
       }
       return originalQuery(sql, params);
@@ -43,6 +44,7 @@ describe('Placement create notifications', () => {
       userId: fosterId,
       petId,
       petName: 'Buddy',
+      organizationId: orgId,
       type: NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
     });
     expect(notifications[0].message).toContain('Buddy');
@@ -58,9 +60,10 @@ describe('Placement create notifications', () => {
           userId: params[1],
           petId: params[2],
           petName: params[3],
-          title: params[4],
-          message: params[5],
-          type: params[6],
+          organizationId: params[5],
+          title: params[6],
+          message: params[7],
+          type: params[8],
         });
       }
       return originalQuery(sql, params);
@@ -81,6 +84,7 @@ describe('Placement create notifications', () => {
       userId: fosterId,
       petId,
       petName: 'Buddy',
+      organizationId: orgId,
       type: NOTIFICATION_TYPE_PENDING_ADOPTION_PLACEMENT_RECEIVED,
     });
     expect(notifications[0].message).toContain('Pre-adoption conditions apply');

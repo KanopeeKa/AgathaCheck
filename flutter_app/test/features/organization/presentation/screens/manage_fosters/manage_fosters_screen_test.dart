@@ -3,12 +3,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/foster_parent.dart';
+import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/screens/manage_fosters/manage_fosters_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../../helpers/fakes.dart';
 import '../../../helpers/organization_provider_test_helpers.dart';
+
+class _ManageFostersOrgListNotifier extends OrganizationListNotifier {
+  @override
+  Future<List<Organization>> build() async => [
+    const Organization(
+      id: 'org-1',
+      name: 'Rescue Hearts',
+      type: OrganizationType.charity,
+      role: 'super_admin',
+    ),
+  ];
+}
 
 void main() {
   testWidgets('Manage Fosters screen shows tabs and foster cards', (
@@ -36,6 +49,9 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          organizationListProvider.overrideWith(
+            _ManageFostersOrgListNotifier.new,
+          ),
           organizationRepositoryProvider.overrideWithValue(
             _FosterParentsRepo(parents),
           ),
@@ -54,7 +70,40 @@ void main() {
     expect(find.byKey(const Key('manage_fosters_tile_grid')), findsOneWidget);
     expect(find.byKey(const Key('foster_person_tile_fp-1')), findsOneWidget);
     expect(find.text('Eve Foster'), findsOneWidget);
+    expect(find.byKey(const Key('manage_fosters_menu')), findsOneWidget);
   });
+
+  testWidgets(
+    'manage fosters overflow menu lists email invite and manual actions',
+    (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
+            organizationListProvider.overrideWith(
+              _ManageFostersOrgListNotifier.new,
+            ),
+            organizationRepositoryProvider.overrideWithValue(
+              _FosterParentsRepo(const []),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const ManageFostersScreen(orgId: 'org-1'),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('manage_fosters_menu')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Foster requests'), findsOneWidget);
+      expect(find.text('Invite Member'), findsOneWidget);
+      expect(find.text('Add foster manually'), findsOneWidget);
+    },
+  );
 
   testWidgets('external foster menu offers merge into registered account', (
     tester,
@@ -74,6 +123,9 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          organizationListProvider.overrideWith(
+            _ManageFostersOrgListNotifier.new,
+          ),
           organizationRepositoryProvider.overrideWithValue(repo),
         ],
         child: MaterialApp(
@@ -119,6 +171,9 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          organizationListProvider.overrideWith(
+            _ManageFostersOrgListNotifier.new,
+          ),
           organizationRepositoryProvider.overrideWithValue(repo),
         ],
         child: MaterialApp(

@@ -30,7 +30,6 @@ import '../../features/organization/presentation/screens/foster_requests/send_fo
 import '../../features/organization/presentation/screens/fostering_session/fostering_session_detail_screen.dart';
 import '../../features/organization/presentation/screens/fostering_sessions/fostering_sessions_list_screen.dart';
 import '../../features/organization/presentation/screens/manage_fosters/manage_fosters_screen.dart';
-import '../../features/organization/presentation/screens/organization_members_screen.dart';
 import '../../features/organization/presentation/screens/organization_person_detail_screen.dart';
 import '../../features/organization/presentation/screens/organization_pets_screen.dart';
 import '../../features/organization/presentation/screens/transfer_pet_screen.dart';
@@ -173,10 +172,7 @@ List<RouteBase> _orgManagementChildRoutes() {
         GoRoute(
           path: 'members',
           name: 'organizationMembers',
-          builder: (context, state) {
-            final id = state.pathParameters['id']!;
-            return OrganizationMembersScreen(orgId: id);
-          },
+          redirect: (context, state) => '/o/orgs/${state.pathParameters['id']}',
         ),
         GoRoute(
           path: 'fosters',
