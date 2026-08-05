@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { LandingPage } from '../pages/landing.page';
 import { PetListPage } from '../pages/pet-list.page';
 import type { TestUser } from './api';
-import { isLiveHostingTarget } from './hosting';
+import { isLiveUatTarget } from './hosting';
 import { refreshFlutterAccessibility } from './flutter';
 import { normalizeStoredToken } from './normalize-stored-token';
 
@@ -70,7 +70,7 @@ export async function createTestUser(
 ): Promise<TestUser> {
   const { signupUser, getCurrentUser } = await import('./api');
 
-  if (!isLiveHostingTarget(baseURL)) {
+  if (!isLiveUatTarget(baseURL)) {
     return signupUser(baseURL, overrides);
   }
 

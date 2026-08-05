@@ -1,5 +1,5 @@
 import type { APIRequestContext, APIResponse, Page } from '@playwright/test';
-import { isLiveHostingTarget } from './hosting';
+import { isLiveUatTarget } from './hosting';
 import { e2eBypassHeadersForUrl } from './e2e-bypass';
 
 export interface ApiFetchResponse {
@@ -86,7 +86,7 @@ export async function apiFetch(
   };
   const requestInit = { ...init, headers };
 
-  if (playwrightPage && isLiveHostingTarget()) {
+  if (playwrightPage && isLiveUatTarget()) {
     return browserApiFetch(url, requestInit);
   }
 

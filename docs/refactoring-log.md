@@ -6,6 +6,21 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
+## public-access-gate-a35f — Prod teaser + UAT Basic Auth (2026-08-05)
+
+**Goal:** Pre-launch public posture — prod static coming-soon + API `PUBLIC_ACCESS_MODE=coming_soon`; UAT flag-gated HTTP Basic Auth CI; canonical ops doc; live-host helper split (`liveUat` vs `liveProd`).  
+**Plan:** `.agents/plans/public-access-gate-a35f.md` · **Integration:** `cursor/public-access-gate-integration-a35f` · **Control issue:** #611  
+**Canonical ops:** `docs/ops/public-access.md`
+
+| Phase | Outcome | Branch | Status |
+|-------|---------|--------|--------|
+| 1 | Teaser site + docs + hosting helpers + smoke lib | `cursor/public-access-teaser-docs-a35f` | **In progress** |
+| 2 | API `PUBLIC_ACCESS_MODE` middleware | `cursor/public-access-api-mode-a35f` | Pending |
+| 3 | Prod deploy teaser path + smoke | `cursor/public-access-prod-deploy-a35f` | Pending |
+| 4 | UAT Basic Auth CI plumbing | `cursor/public-access-uat-auth-a35f` | Pending |
+
+---
+
 ## org-ux-polish-badd — Org dashboard UX polish (2026-08-05)
 
 **Goal:** Fix UAT org image display (`/backend/uploads` routing), horizontal My Organisations rows, pet-style camera upload on branding, wrap grids for org pets and discover, British English locale.  
