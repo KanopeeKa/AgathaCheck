@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
-import '../controllers/org_dashboard_menu.dart';
 import '../providers/org_provider_profile.dart';
 import '../widgets/org_permission_gate.dart';
 import '../widgets/org_presentation/org_presentation_contact_block.dart';
@@ -60,22 +59,6 @@ class OrganisationProfileScreen extends ConsumerWidget {
           leadingKey: const Key('org_profile_back'),
           onBack: () => context.go('/o/orgs'),
           trailingActions: [
-            PopupMenuButton<String>(
-              key: const Key('org_profile_menu'),
-              tooltip: MaterialLocalizations.of(context).showMenuTooltip,
-              onSelected: (value) => handleOrgDashboardMenuAction(
-                context: context,
-                ref: ref,
-                orgId: orgId,
-                action: value,
-                org: org,
-              ),
-              itemBuilder: (context) => buildOrgDashboardMenuItems(
-                context: context,
-                ref: ref,
-                orgId: orgId,
-              ),
-            ),
             OrgPermissionGate(
               orgId: orgId,
               permissionKey: 'manage_permissions',

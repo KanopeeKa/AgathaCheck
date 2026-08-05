@@ -7,7 +7,6 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/resolve_static_asset_url.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
-import '../utils/org_member_count_label.dart';
 import '../utils/org_screen_theme.dart';
 import 'org_image_avatar.dart';
 
@@ -45,11 +44,7 @@ class OrgCard extends ConsumerWidget {
       }
     }
 
-    final memberLabel = orgMemberCountLabel(
-      l,
-      organization.memberCount,
-      organization.externalCount,
-    );
+    final memberLabel = l.petCount(organization.petCount);
 
     return MergeSemantics(
       child: Semantics(
@@ -58,7 +53,7 @@ class OrgCard extends ConsumerWidget {
         onTap: onTap,
         label:
             '${organization.name}, ${typeLabel(organization.type)}, '
-            '$memberLabel, ${l.petCount(organization.petCount)}',
+            '$memberLabel',
         child: Card(
           key: Key('org_card_${organization.id}'),
           color: orgListCardColor(),
@@ -130,30 +125,13 @@ class OrgCard extends ConsumerWidget {
                           Row(
                             children: [
                               Icon(
-                                Icons.people_outline,
-                                size: 14,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  memberLabel,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Icon(
                                 Icons.pets,
                                 size: 14,
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                l.petCount(organization.petCount),
+                                memberLabel,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),

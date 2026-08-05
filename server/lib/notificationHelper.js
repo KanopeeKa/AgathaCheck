@@ -14,6 +14,8 @@ export async function createNotification(pool, {
   userId,
   petId = null,
   petName = null,
+  healthEntryId = null,
+  organizationId = null,
   title = '',
   message,
   type = 'general',
@@ -25,21 +27,24 @@ export async function createNotification(pool, {
   const resolvedPriority = normalisePriority(priority);
   await pool.query(
     `INSERT INTO notifications (
-       id, user_id, pet_id, pet_name, title, message, type, kind, priority, resolved_at
+       id, user_id, pet_id, pet_name, health_entry_id, organization_id,
+       title, message, type, kind, priority, resolved_at
      )
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
     [
       uuidv4(),
       userId,
       petId,
       petName,
+      healthEntryId,
+      organizationId,
       title,
       message,
       type,
       resolvedKind,
       resolvedPriority,
       resolvedAt,
-    ]
+    ],
   );
 }
 

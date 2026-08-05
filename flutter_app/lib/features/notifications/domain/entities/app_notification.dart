@@ -34,6 +34,7 @@ class AppNotification {
     required this.title,
     required this.message,
     required this.type,
+    this.wireType = 'general',
     this.kind = NotificationKind.care,
     this.priority = NotificationPriority.normal,
     this.resolvedAt,
@@ -50,6 +51,7 @@ class AppNotification {
   final String title;
   final String message;
   final NotificationType type;
+  final String wireType;
   final NotificationKind kind;
   final NotificationPriority priority;
   final DateTime? resolvedAt;
@@ -66,6 +68,7 @@ class AppNotification {
     String? title,
     String? message,
     NotificationType? type,
+    String? wireType,
     NotificationKind? kind,
     NotificationPriority? priority,
     DateTime? resolvedAt,
@@ -82,6 +85,7 @@ class AppNotification {
       title: title ?? this.title,
       message: message ?? this.message,
       type: type ?? this.type,
+      wireType: wireType ?? this.wireType,
       kind: kind ?? this.kind,
       priority: priority ?? this.priority,
       resolvedAt: resolvedAt ?? this.resolvedAt,

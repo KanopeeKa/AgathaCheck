@@ -212,7 +212,7 @@ class FosterPersonTileGrid extends ConsumerWidget {
                     )
                   : parent.userId != null
                   ? () => context.push(
-                      '/o/orgs/$orgId/people/member/${parent.userId}',
+                      '/o/orgs/$orgId/people/member/${parent.id}',
                     )
                   : null,
             ),

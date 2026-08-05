@@ -97,29 +97,16 @@ void main() {
     expect(find.text('A caring rescue shelter'), findsOneWidget);
   });
 
-  testWidgets('manage_permissions user sees edit icon not settings cog', (
+  testWidgets('manage_permissions user sees edit icon not overflow menu', (
     tester,
   ) async {
     await pumpProfileScreen(tester);
 
     expect(find.byKey(const Key('org_profile_edit')), findsOneWidget);
     expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
+    expect(find.byKey(const Key('org_profile_menu')), findsNothing);
     expect(find.byIcon(Icons.settings_outlined), findsNothing);
     expect(find.byKey(const Key('org_profile_settings')), findsNothing);
-  });
-
-  testWidgets('profile menu shows invite and members but not delete', (
-    tester,
-  ) async {
-    await pumpProfileScreen(tester);
-
-    await tester.tap(find.byKey(const Key('org_profile_menu')));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Invite Member'), findsOneWidget);
-    expect(find.text('Members'), findsOneWidget);
-    expect(find.text('Leave Organisation'), findsOneWidget);
-    expect(find.text('Delete Organisation'), findsNothing);
   });
 
   testWidgets('edit icon navigates to edit route', (tester) async {

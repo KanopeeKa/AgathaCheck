@@ -119,6 +119,7 @@ export function registerPlacementCreateRoutes(router, pool) {
         userId: fosterUserId,
         petId,
         petName: pet.name,
+        organizationId: orgId,
         title: 'Foster placement request',
         message: `${adminName} invited you to foster ${pet.name}.`,
         type: NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
@@ -214,6 +215,7 @@ export function registerPlacementCreateRoutes(router, pool) {
         userId: fosterUserId,
         petId,
         petName: pet.name,
+        organizationId: orgId,
         title: 'Adoption ready to confirm',
         message: adoptionConditions
           ? `${adminName} invited you to adopt ${pet.name}. Pre-adoption conditions apply.`

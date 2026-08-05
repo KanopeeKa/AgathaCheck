@@ -32,8 +32,6 @@ class OrganisationProfileSectionNav extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final memberOrg = _memberOrg(ref);
-    final peopleCount =
-        (memberOrg?.memberCount ?? 0) + (memberOrg?.externalCount ?? 0);
     final petCount = memberOrg?.petCount ?? 0;
     final connectionsAsync = ref.watch(orgConnectionsProvider(orgId));
     final connectionsCount = connectionsAsync.maybeWhen(
@@ -53,7 +51,6 @@ class OrganisationProfileSectionNav extends ConsumerWidget {
               child: _OrganisationProfileNavRow(
                 rowKey: const Key('org_profile_nav_admin_contacts'),
                 title: l.adminContactsTitle,
-                countLabel: peopleCount > 0 ? l.memberCount(peopleCount) : null,
                 onTap: () => context.push('/o/orgs/$orgId/admin-contacts'),
               ),
             ),
@@ -63,7 +60,6 @@ class OrganisationProfileSectionNav extends ConsumerWidget {
               child: _OrganisationProfileNavRow(
                 rowKey: const Key('org_profile_nav_foster_parents'),
                 title: l.fosterParents,
-                countLabel: peopleCount > 0 ? l.memberCount(peopleCount) : null,
                 onTap: () => context.push('/o/orgs/$orgId/fosters'),
               ),
             ),

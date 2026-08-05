@@ -34,33 +34,17 @@ class AdminContactsList extends ConsumerWidget {
     );
 
     if (sorted.isEmpty) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Text(
-                l.adminContactsEmpty,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          child: Text(
+            l.adminContactsEmpty,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
+            textAlign: TextAlign.center,
           ),
-          if (canManage)
-            OutlinedButton.icon(
-              key: const Key('admin_contacts_add_button'),
-              onPressed: () => showAdminContactInviteDialog(
-                context: context,
-                ref: ref,
-                orgId: orgId,
-              ),
-              icon: const Icon(Icons.person_add, size: 18),
-              label: Text(l.adminContactsAddAdmin),
-            ),
-        ],
+        ),
       );
     }
 
@@ -101,19 +85,6 @@ class AdminContactsList extends ConsumerWidget {
             );
           }).toList(),
         ),
-        if (canManage) ...[
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            key: const Key('admin_contacts_add_button'),
-            onPressed: () => showAdminContactInviteDialog(
-              context: context,
-              ref: ref,
-              orgId: orgId,
-            ),
-            icon: const Icon(Icons.person_add, size: 18),
-            label: Text(l.adminContactsAddAdmin),
-          ),
-        ],
       ],
     );
   }

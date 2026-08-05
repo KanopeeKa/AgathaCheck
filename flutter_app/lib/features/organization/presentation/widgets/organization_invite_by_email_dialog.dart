@@ -10,12 +10,17 @@ Future<void> showOrganizationInviteByEmailDialog({
   required BuildContext context,
   required WidgetRef ref,
   required String orgId,
+  String? defaultRoleWire,
 }) async {
   final l = AppLocalizations.of(context)!;
   final isSuperAdmin = ref.read(isOrgSuperUserProvider(orgId));
   final roleOptions = invitableRoleWires(isSuperAdmin: isSuperAdmin);
   final emailController = TextEditingController();
-  String selectedRole = roleOptions.first;
+  final initialRole =
+      defaultRoleWire != null && roleOptions.contains(defaultRoleWire)
+      ? defaultRoleWire
+      : roleOptions.first;
+  String selectedRole = initialRole;
   final formKey = GlobalKey<FormState>();
 
   await showDialog<void>(
