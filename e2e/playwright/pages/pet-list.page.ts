@@ -156,7 +156,14 @@ export class PetListPage {
     if (!route.startsWith('/g/pets')) {
       await this.page.goto(flutterGotoUrl('/g/pets'));
       await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, /^\/g\/pets(?:\?|$)/, 30_000);
+      try {
+        await waitForFlutterRoutePattern(this.page, /^\/g\/pets(?:\?|$)/, 12_000);
+      } catch {
+        await this.page.evaluate(() => {
+          window.location.hash = '#/g/pets';
+        });
+        await waitForFlutterRoutePattern(this.page, /^\/g\/pets(?:\?|$)/, 20_000);
+      }
     }
   }
 
