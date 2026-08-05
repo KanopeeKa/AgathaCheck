@@ -16,7 +16,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appTagline =>
-      'Agatha Track keeps your pet\'s health organized — whether you\'re a pet parent, a shelter, or a professional organisation.';
+      'Agatha Track keeps your pet\'s health organised — whether you\'re a pet parent, a shelter, or a professional organisation.';
 
   @override
   String get appDescription =>
@@ -342,7 +342,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'No report history is available for this pet.';
 
   @override
-  String get filterByOrganization => 'Filter by organization';
+  String get filterByOrganization => 'Filter by organisation';
 
   @override
   String get notifications => 'Notifications';
@@ -1617,7 +1617,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationsDesc => 'Recent alerts and reminders';
 
   @override
-  String get myOrganizations => 'My Organizations';
+  String get myOrganizations => 'My Organisations';
 
   @override
   String get organisationsDashboardTitle => 'Organisations dashboard';
@@ -1652,19 +1652,19 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get organizations => 'Organizations';
+  String get organizations => 'Organisations';
 
   @override
-  String get createOrganization => 'Create Organization';
+  String get createOrganization => 'Create Organisation';
 
   @override
-  String get editOrganization => 'Edit Organization';
+  String get editOrganization => 'Edit Organisation';
 
   @override
-  String get deleteOrganization => 'Delete Organization';
+  String get deleteOrganization => 'Delete Organisation';
 
   @override
-  String get organizationName => 'Organization Name';
+  String get organizationName => 'Organisation Name';
 
   @override
   String get organizationType => 'Type';
@@ -1769,17 +1769,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgArchived => 'Archived Pets';
 
   @override
-  String get orgNoOrganizations => 'No organizations yet';
+  String get orgNoOrganizations => 'No organisations yet';
 
   @override
-  String get orgCreateFirst => 'Create your first organization to get started';
+  String get orgCreateFirst => 'Create your first organisation to get started';
 
   @override
-  String get createOrJoinOrganization => 'Create an organization';
+  String get createOrJoinOrganization => 'Create an organisation';
 
   @override
   String get orgMembershipByEmailInvite =>
-      'To join an organization, ask an admin to invite you by email.';
+      'To join an organisation, ask an admin to invite you by email.';
 
   @override
   String get orgInviteEmailRequired => 'Email is required';
@@ -1788,7 +1788,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgInviteEmailInvalid => 'Enter a valid email address';
 
   @override
-  String get joinOrganization => 'Join Organization';
+  String get joinOrganization => 'Join Organisation';
 
   @override
   String get enterInviteCode => 'Enter the invite code you received';
@@ -1797,7 +1797,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inviteCode => 'Invite code';
 
   @override
-  String get joinSuccess => 'Successfully joined the organization';
+  String get joinSuccess => 'Successfully joined the organisation';
 
   @override
   String get join => 'Join';
@@ -1833,14 +1833,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgInviteExpiry => 'This invite link expires in 7 days';
 
   @override
-  String get orgJoinSuccess => 'Successfully joined organization';
+  String get orgJoinSuccess => 'Successfully joined organisation';
 
   @override
-  String get orgLeave => 'Leave Organization';
+  String get orgLeave => 'Leave Organisation';
 
   @override
   String get orgLeaveConfirm =>
-      'Are you sure you want to leave this organization?';
+      'Are you sure you want to leave this organisation?';
 
   @override
   String get orgRemoveMember => 'Remove Member';
@@ -1860,14 +1860,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orgDeleteConfirm =>
-      'Are you sure you want to delete this organization? This action cannot be undone.';
+      'Are you sure you want to delete this organisation? This action cannot be undone.';
 
   @override
   String get orgDeleteRequireNoPets =>
       'Transfer or remove all pets before deleting';
 
   @override
-  String get orgNoPets => 'No pets in this organization';
+  String get orgNoPets => 'No pets in this organisation';
 
   @override
   String get orgNoMembers => 'No members';
@@ -1885,7 +1885,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transferToUser => 'Transfer to User';
 
   @override
-  String get transferToOrganization => 'Transfer to Organization';
+  String get transferToOrganization => 'Transfer to Organisation';
 
   @override
   String get transferType => 'Transfer Type';
@@ -2071,16 +2071,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noArchivedPets => 'No archived pets';
 
   @override
-  String get orgNameRequired => 'Organization name is required';
+  String get orgNameRequired => 'Organisation name is required';
 
   @override
-  String get orgCreated => 'Organization created';
+  String get orgCreated => 'Organisation created';
 
   @override
-  String get orgUpdated => 'Organization updated';
+  String get orgUpdated => 'Organisation updated';
 
   @override
-  String get orgDeleted => 'Organization deleted';
+  String get orgDeleted => 'Organisation deleted';
 
   @override
   String memberCount(int count) {

@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "plan_id": "org-ux-polish-badd",
+  "approved_at": "2026-08-05T10:46:00Z",
+  "approved_by": "user chat 2026-08-05: /execute-plan org-ux-polish all phases, green pre-UAT E2E",
+  "approved_until": "2026-08-07T10:46:00Z",
+  "content_hash": "sha256:7215fd82049cb867161f8cfc5e2627528b1fd2889a9b241520ec64641a7cf05c",
+  "autonomy": "completed",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/org-ux-polish-integration-badd",
+  "control_issue": 598,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Upload URL fix + refresh",
+      "branch": "cursor/org-ux-a0-upload-fix-badd",
+      "allowed_paths": [
+        "flutter_app/lib/core/utils/resolve_static_asset_url.dart",
+        "flutter_app/test/core/utils/resolve_static_asset_url_test.dart",
+        "flutter_app/lib/features/organization/presentation/providers/org_provider_list.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/org_image_avatar.dart",
+        "flutter_app/test/features/organization/**",
+        "docs/e2e/**",
+        ".agents/plans/org-ux-polish-badd.md",
+        ".agents/plans/org-ux-polish-badd.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/599",
+      "pr_head_sha": "ee238ca9877d99b49186581839ed71a1f67eaee4"
+    },
+    {
+      "id": "2",
+      "title": "List IA + camera branding",
+      "branch": "cursor/org-ux-b-list-branding-badd",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/widgets/org_card.dart",
+        "flutter_app/lib/features/organization/presentation/screens/organization_list_screen.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/organization_branding_section.dart",
+        "flutter_app/lib/core/theme/**",
+        "flutter_app/test/features/organization/**",
+        "e2e/playwright/tests/organisation.edit.spec.ts",
+        "e2e/playwright/pages/**",
+        "flutter_app/test/bdd/features/organisation_edit.feature",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/org-ux-polish-badd.md",
+        ".agents/plans/org-ux-polish-badd.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/600",
+      "pr_head_sha": "cf131a9a"
+    },
+    {
+      "id": "3",
+      "title": "Org pets wrap grid",
+      "branch": "cursor/org-ux-d-pets-grid-badd",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/screens/organization_pets_screen.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/org_pets/**",
+        "flutter_app/test/features/organization/**",
+        "e2e/playwright/tests/**",
+        "e2e/playwright/pages/**",
+        ".agents/plans/org-ux-polish-badd.md",
+        ".agents/plans/org-ux-polish-badd.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/600",
+      "pr_head_sha": "cf131a9a"
+    },
+    {
+      "id": "4",
+      "title": "Discover grid tiles",
+      "branch": "cursor/org-ux-e-discover-tiles-badd",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/widgets/org_discovery/**",
+        "flutter_app/test/features/organization/**",
+        "e2e/playwright/tests/**",
+        "e2e/playwright/pages/**",
+        ".agents/plans/org-ux-polish-badd.md",
+        ".agents/plans/org-ux-polish-badd.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/600",
+      "pr_head_sha": "cf131a9a"
+    },
+    {
+      "id": "5",
+      "title": "British English + integration to main",
+      "branch": "cursor/org-ux-f-en-gb-badd",
+      "allowed_paths": [
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**",
+        "e2e/**",
+        "docs/**",
+        ".agents/plans/org-ux-polish-badd.md",
+        ".agents/plans/org-ux-polish-badd.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/600",
+      "pr_head_sha": "cf131a9a"
+    }
+  ]
+}

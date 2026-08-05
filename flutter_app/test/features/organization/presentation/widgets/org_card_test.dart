@@ -47,7 +47,7 @@ void main() {
     expect((card.shape as RoundedRectangleBorder).side, BorderSide.none);
   });
 
-  testWidgets('org card uses pet-style tile height', (tester) async {
+  testWidgets('org card uses compact horizontal row height', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
@@ -70,7 +70,7 @@ void main() {
     );
   });
 
-  testWidgets('org card without hero photo uses solid organization teal', (
+  testWidgets('org card without cover photo uses dark teal placeholder', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -92,7 +92,7 @@ void main() {
     final tealHero = find.byWidgetPredicate(
       (widget) =>
           widget is ColoredBox &&
-          widget.color == AppColorTokens.organizationLight,
+          widget.color == AppColorTokens.organizationPrimary,
     );
     expect(tealHero, findsOneWidget);
     expect(find.text('Quiet Shelter'), findsOneWidget);

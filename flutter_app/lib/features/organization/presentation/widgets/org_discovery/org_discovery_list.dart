@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../pet_profile/presentation/widgets/pet_card.dart';
 import '../../providers/org_discovery_provider.dart';
 import 'org_discovery_skeleton_list.dart';
 import 'org_discovery_tile.dart';
@@ -59,15 +60,23 @@ class OrgDiscoveryList extends ConsumerWidget {
           );
         }
 
-        return Column(
+        return LayoutBuilder(
           key: const Key('org_discovery_results'),
-          children: [
-            for (final org in organizations)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: OrgDiscoveryTile(organization: org),
-              ),
-          ],
+          builder: (context, constraints) {
+            final tileWidth = PetCard.tileWidthFor(constraints.maxWidth);
+            return Wrap(
+              spacing: PetCard.tileSpacing,
+              runSpacing: PetCard.tileSpacing,
+              children: [
+                for (final org in organizations)
+                  SizedBox(
+                    width: tileWidth,
+                    height: tileWidth,
+                    child: OrgDiscoveryTile(organization: org),
+                  ),
+              ],
+            );
+          },
         );
       },
     );

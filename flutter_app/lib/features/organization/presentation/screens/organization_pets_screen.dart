@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../pet_profile/presentation/widgets/pet_card.dart';
 import '../../domain/services/foster_visibility.dart';
 import '../providers/admin_contact_providers.dart';
 import '../providers/organization_providers.dart';
@@ -82,21 +83,31 @@ class OrganizationPetsScreen extends ConsumerWidget {
                           style: TextStyle(color: colorScheme.onSurfaceVariant),
                         ),
                       )
-                    : ListView.builder(
-                        key: const Key('org_pets_list'),
-                        padding: const EdgeInsets.all(16),
-                        itemCount: filtered.length,
-                        itemBuilder: (context, index) {
-                          final entry = filtered[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: OrgPetListItem(
-                              entry: entry,
-                              orgId: orgId,
-                              isOrgAdmin: canManagePets,
-                              showAttentionReason:
-                                  tab == OrgPetsTab.needAttention,
-                            ),
+                    : LayoutBuilder(
+                        builder: (context, constraints) {
+                          final tileWidth = PetCard.tileWidthFor(
+                            constraints.maxWidth,
+                          );
+                          return ListView(
+                            key: const Key('org_pets_list'),
+                            padding: const EdgeInsets.all(16),
+                            children: [
+                              Wrap(
+                                spacing: PetCard.tileSpacing,
+                                runSpacing: PetCard.tileSpacing,
+                                children: [
+                                  for (final entry in filtered)
+                                    OrgPetListItem(
+                                      entry: entry,
+                                      orgId: orgId,
+                                      isOrgAdmin: canManagePets,
+                                      showAttentionReason:
+                                          tab == OrgPetsTab.needAttention,
+                                      tileWidth: tileWidth,
+                                    ),
+                                ],
+                              ),
+                            ],
                           );
                         },
                       ),

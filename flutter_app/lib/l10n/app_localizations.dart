@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTagline.
   ///
   /// In en, this message translates to:
-  /// **'Agatha Track keeps your pet\'s health organized — whether you\'re a pet parent, a shelter, or a professional organisation.'**
+  /// **'Agatha Track keeps your pet\'s health organised — whether you\'re a pet parent, a shelter, or a professional organisation.'**
   String get appTagline;
 
   /// No description provided for @appDescription.
@@ -713,7 +713,7 @@ abstract class AppLocalizations {
   /// No description provided for @filterByOrganization.
   ///
   /// In en, this message translates to:
-  /// **'Filter by organization'**
+  /// **'Filter by organisation'**
   String get filterByOrganization;
 
   /// No description provided for @notifications.
@@ -3022,7 +3022,7 @@ abstract class AppLocalizations {
   /// No description provided for @myOrganizations.
   ///
   /// In en, this message translates to:
-  /// **'My Organizations'**
+  /// **'My Organisations'**
   String get myOrganizations;
 
   /// No description provided for @organisationsDashboardTitle.
@@ -3082,31 +3082,31 @@ abstract class AppLocalizations {
   /// No description provided for @organizations.
   ///
   /// In en, this message translates to:
-  /// **'Organizations'**
+  /// **'Organisations'**
   String get organizations;
 
   /// No description provided for @createOrganization.
   ///
   /// In en, this message translates to:
-  /// **'Create Organization'**
+  /// **'Create Organisation'**
   String get createOrganization;
 
   /// No description provided for @editOrganization.
   ///
   /// In en, this message translates to:
-  /// **'Edit Organization'**
+  /// **'Edit Organisation'**
   String get editOrganization;
 
   /// No description provided for @deleteOrganization.
   ///
   /// In en, this message translates to:
-  /// **'Delete Organization'**
+  /// **'Delete Organisation'**
   String get deleteOrganization;
 
   /// No description provided for @organizationName.
   ///
   /// In en, this message translates to:
-  /// **'Organization Name'**
+  /// **'Organisation Name'**
   String get organizationName;
 
   /// No description provided for @organizationType.
@@ -3310,25 +3310,25 @@ abstract class AppLocalizations {
   /// No description provided for @orgNoOrganizations.
   ///
   /// In en, this message translates to:
-  /// **'No organizations yet'**
+  /// **'No organisations yet'**
   String get orgNoOrganizations;
 
   /// No description provided for @orgCreateFirst.
   ///
   /// In en, this message translates to:
-  /// **'Create your first organization to get started'**
+  /// **'Create your first organisation to get started'**
   String get orgCreateFirst;
 
   /// No description provided for @createOrJoinOrganization.
   ///
   /// In en, this message translates to:
-  /// **'Create an organization'**
+  /// **'Create an organisation'**
   String get createOrJoinOrganization;
 
   /// No description provided for @orgMembershipByEmailInvite.
   ///
   /// In en, this message translates to:
-  /// **'To join an organization, ask an admin to invite you by email.'**
+  /// **'To join an organisation, ask an admin to invite you by email.'**
   String get orgMembershipByEmailInvite;
 
   /// No description provided for @orgInviteEmailRequired.
@@ -3346,7 +3346,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinOrganization.
   ///
   /// In en, this message translates to:
-  /// **'Join Organization'**
+  /// **'Join Organisation'**
   String get joinOrganization;
 
   /// No description provided for @enterInviteCode.
@@ -3364,7 +3364,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Successfully joined the organization'**
+  /// **'Successfully joined the organisation'**
   String get joinSuccess;
 
   /// No description provided for @join.
@@ -3436,19 +3436,19 @@ abstract class AppLocalizations {
   /// No description provided for @orgJoinSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Successfully joined organization'**
+  /// **'Successfully joined organisation'**
   String get orgJoinSuccess;
 
   /// No description provided for @orgLeave.
   ///
   /// In en, this message translates to:
-  /// **'Leave Organization'**
+  /// **'Leave Organisation'**
   String get orgLeave;
 
   /// No description provided for @orgLeaveConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to leave this organization?'**
+  /// **'Are you sure you want to leave this organisation?'**
   String get orgLeaveConfirm;
 
   /// No description provided for @orgRemoveMember.
@@ -3484,7 +3484,7 @@ abstract class AppLocalizations {
   /// No description provided for @orgDeleteConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to delete this organization? This action cannot be undone.'**
+  /// **'Are you sure you want to delete this organisation? This action cannot be undone.'**
   String get orgDeleteConfirm;
 
   /// No description provided for @orgDeleteRequireNoPets.
@@ -3496,7 +3496,7 @@ abstract class AppLocalizations {
   /// No description provided for @orgNoPets.
   ///
   /// In en, this message translates to:
-  /// **'No pets in this organization'**
+  /// **'No pets in this organisation'**
   String get orgNoPets;
 
   /// No description provided for @orgNoMembers.
@@ -3532,7 +3532,7 @@ abstract class AppLocalizations {
   /// No description provided for @transferToOrganization.
   ///
   /// In en, this message translates to:
-  /// **'Transfer to Organization'**
+  /// **'Transfer to Organisation'**
   String get transferToOrganization;
 
   /// No description provided for @transferType.
@@ -3856,25 +3856,25 @@ abstract class AppLocalizations {
   /// No description provided for @orgNameRequired.
   ///
   /// In en, this message translates to:
-  /// **'Organization name is required'**
+  /// **'Organisation name is required'**
   String get orgNameRequired;
 
   /// No description provided for @orgCreated.
   ///
   /// In en, this message translates to:
-  /// **'Organization created'**
+  /// **'Organisation created'**
   String get orgCreated;
 
   /// No description provided for @orgUpdated.
   ///
   /// In en, this message translates to:
-  /// **'Organization updated'**
+  /// **'Organisation updated'**
   String get orgUpdated;
 
   /// No description provided for @orgDeleted.
   ///
   /// In en, this message translates to:
-  /// **'Organization deleted'**
+  /// **'Organisation deleted'**
   String get orgDeleted;
 
   /// No description provided for @memberCount.

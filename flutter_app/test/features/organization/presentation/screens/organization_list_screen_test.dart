@@ -30,50 +30,46 @@ class _EmptyPendingInvitesNotifier extends PendingOrgInvitesNotifier {
 }
 
 void main() {
-  testWidgets('org list uses organization light background and create CTA', (
-    tester,
-  ) async {
-    final router = GoRouter(
-      initialLocation: '/o/orgs',
-      routes: [
-        GoRoute(
-          path: '/o/orgs',
-          builder: (context, state) => const OrganizationListScreen(),
-        ),
-      ],
-    );
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationListProvider.overrideWith(_OrgListNotifier.new),
-          pendingOrgInvitesProvider.overrideWith(
-            _EmptyPendingInvitesNotifier.new,
+  testWidgets(
+    'org list uses organization light background without footer create',
+    (tester) async {
+      final router = GoRouter(
+        initialLocation: '/o/orgs',
+        routes: [
+          GoRoute(
+            path: '/o/orgs',
+            builder: (context, state) => const OrganizationListScreen(),
           ),
         ],
-        child: MaterialApp.router(
-          theme: AppTheme.lightTheme,
-          routerConfig: router,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
+            organizationListProvider.overrideWith(_OrgListNotifier.new),
+            pendingOrgInvitesProvider.overrideWith(
+              _EmptyPendingInvitesNotifier.new,
+            ),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.lightTheme,
+            routerConfig: router,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    final scaffold = tester.widget<Scaffold>(
-      find.ancestor(
-        of: find.byKey(const Key('org_create_button')),
-        matching: find.byType(Scaffold),
-      ),
-    );
-    expect(scaffold.backgroundColor, AppColorTokens.organizationLight);
+      final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
+      expect(scaffold.backgroundColor, AppColorTokens.organizationLight);
 
-    expect(find.byKey(const Key('org_create_button')), findsOneWidget);
-    expect(find.byType(OutlinedButton), findsNothing);
-    expect(find.text('Rescue Hearts'), findsOneWidget);
-    expect(find.byKey(const Key('org_discover_nav_row')), findsOneWidget);
-    expect(find.byKey(const Key('org_discovery_results')), findsNothing);
-  });
+      expect(find.byKey(const Key('org_create_button')), findsNothing);
+      expect(find.text('Rescue Hearts'), findsOneWidget);
+      expect(find.byKey(const Key('org_discover_nav_row')), findsOneWidget);
+      expect(find.text('Discover Organisations'), findsWidgets);
+      expect(find.byKey(const Key('org_discovery_results')), findsNothing);
+    },
+  );
 }

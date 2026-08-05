@@ -27,7 +27,7 @@ class OrgImageAvatar extends StatelessWidget {
     final iconColor = isPro ? AppTheme.orgIconFg : AppTheme.orgCharityFg;
 
     Widget child;
-    final image = _buildImage();
+    final image = _buildImage(iconColor);
     if (image != null) {
       child = ClipOval(child: image);
     } else {
@@ -54,7 +54,8 @@ class OrgImageAvatar extends StatelessWidget {
     );
   }
 
-  Widget? _buildImage() {
+  Widget? _buildImage(Color iconColor) {
+    final isPro = type == OrganizationType.professional;
     if (imageUrl.isEmpty) return null;
 
     if (!imageUrl.startsWith('/') &&
@@ -80,7 +81,11 @@ class OrgImageAvatar extends StatelessWidget {
       width: radius * 2,
       height: radius * 2,
       fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+      errorBuilder: (_, __, ___) => Icon(
+        isPro ? Icons.business : Icons.volunteer_activism,
+        color: iconColor,
+        size: radius,
+      ),
     );
   }
 }
@@ -129,7 +134,16 @@ class OrgLogoImage extends StatelessWidget {
       url,
       height: height,
       fit: BoxFit.contain,
-      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+      errorBuilder: (_, __, ___) => SizedBox(
+        height: height,
+        child: Center(
+          child: Icon(
+            Icons.image_not_supported_outlined,
+            size: height * 0.4,
+            color: Colors.grey,
+          ),
+        ),
+      ),
     );
   }
 }

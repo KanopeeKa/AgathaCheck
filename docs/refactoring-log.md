@@ -6,6 +6,19 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
+## org-ux-polish-badd — Org dashboard UX polish (2026-08-05)
+
+**Goal:** Fix UAT org image display (`/backend/uploads` routing), horizontal My Organisations rows, pet-style camera upload on branding, wrap grids for org pets and discover, British English locale.  
+**Plan:** `.agents/plans/org-ux-polish-badd.md` · **Integration:** `cursor/org-ux-polish-integration-badd` · **Control issue:** #598
+
+| Phase | Outcome | PR | Status |
+|-------|---------|-----|--------|
+| 1 | Upload URL fix + provider refresh | #599 | **Merged** |
+| 2–5 | Cards, camera UX, grids, EN-GB | #600 | **Merged** |
+| Integration → `main` | Pre-UAT E2E gate | TBD | **Pending** |
+
+---
+
 ## ci-test-depth-abc9 — CI test depth & gate remediation (started 2026-08-03)
 
 **Goal:** Close gap between BDD mapping metrics and real test execution; domain-scoped PR Flutter shards; Pre-UAT manifest hygiene; stale CI/CD doc truth.  

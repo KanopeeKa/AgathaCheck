@@ -24,13 +24,20 @@ void main() {
       );
     });
 
-    test('upload paths use site root on web (not /backend prefix)', () {
+    test('upload paths use /backend/uploads on web single-origin', () {
       expect(
         resolveStaticAssetUrl(
           '/uploads/photos/user.jpg',
           apiBaseUrl: '/backend',
         ),
-        '/uploads/photos/user.jpg',
+        '/backend/uploads/photos/user.jpg',
+      );
+      expect(
+        resolveStaticAssetUrl(
+          '/uploads/org_photos/abc.jpg',
+          apiBaseUrl: '/backend',
+        ),
+        '/backend/uploads/org_photos/abc.jpg',
       );
     });
 
@@ -41,6 +48,13 @@ void main() {
           apiBaseUrl: 'http://localhost:5000',
         ),
         'http://localhost:5000/uploads/photos/user.jpg',
+      );
+    });
+
+    test('upload paths fall back to site root when api base is empty', () {
+      expect(
+        resolveStaticAssetUrl('/uploads/photos/user.jpg', apiBaseUrl: ''),
+        '/uploads/photos/user.jpg',
       );
     });
 
