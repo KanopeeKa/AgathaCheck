@@ -24,20 +24,24 @@ void main() {
       );
     });
 
-    test('upload paths use /backend/uploads on web single-origin', () {
+    test('upload paths use /backend/api/uploads on web single-origin', () {
       expect(
         resolveStaticAssetUrl(
           '/uploads/photos/user.jpg',
           apiBaseUrl: '/backend',
         ),
-        '/backend/uploads/photos/user.jpg',
+        '/backend/api/uploads/photos/user.jpg',
       );
       expect(
         resolveStaticAssetUrl(
           '/uploads/org_photos/abc.jpg',
           apiBaseUrl: '/backend',
         ),
-        '/backend/uploads/org_photos/abc.jpg',
+        '/backend/api/uploads/org_photos/abc.jpg',
+      );
+      expect(
+        resolveStaticAssetUrl('/uploads/fluffy.jpg', apiBaseUrl: '/backend'),
+        '/backend/api/uploads/fluffy.jpg',
       );
     });
 
