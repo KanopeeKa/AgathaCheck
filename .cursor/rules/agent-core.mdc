@@ -16,7 +16,7 @@ alwaysApply: true
 
 - **Pre-PR critical self-review** before every PR open/update — `.cursor/rules/pr-hygiene.mdc`
 - **Bugbot-first** automatic review; Copilot optional — `docs/agent-efficiency/pr-review-cost-efficiency.md`
-- **Babysit model:** `composer-2.5` only for `/babysit` and `/babysit-plus`
+- **Babysit model:** `composer-2.5` only for `/babysit`, `/babysit-plus`, and `/babysit-uat`
 
 ## Pre-push (single source of truth)
 
