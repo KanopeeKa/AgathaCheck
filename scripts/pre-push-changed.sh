@@ -39,6 +39,7 @@ needs_server=false
 needs_flutter=false
 needs_codegen=false
 needs_schema=false
+needs_org_e2e_locator_check=false
 
 ci_scope_classify_paths "$CHANGED"
 
@@ -68,6 +69,13 @@ while IFS= read -r f; do
       ;;
     flutter_app/pubspec.*|flutter_app/build.yaml|**/*.mocks.dart)
       needs_codegen=true
+      ;;
+    flutter_app/lib/features/organization/*|flutter_app/test/features/organization/*|flutter_app/lib/core/router/organization_routes.dart|flutter_app/lib/l10n/app_en.arb|flutter_app/lib/l10n/app_fr.arb)
+      needs_org_e2e_locator_check=true
+      needs_governance=true
+      ;;
+    e2e/playwright/tests/organisation*.spec.ts|e2e/playwright/tests/foster.onboarding.spec.ts|e2e/playwright/pages/organization*.page.ts|e2e/playwright/pages/manage-fosters.page.ts)
+      needs_governance=true
       ;;
     e2e/*)
       needs_governance=true
@@ -107,6 +115,10 @@ run_governance() {
   node e2e/scripts/check_test_quality.js --report-only
   node e2e/scripts/validate-shard-manifest.mjs --report-only
   node e2e/scripts/check-smoke-tags.mjs
+  node --test e2e/scripts/check-org-e2e-locators.test.mjs
+  if $needs_org_e2e_locator_check; then
+    node e2e/scripts/check-org-e2e-locators.mjs
+  fi
   bash scripts/ci/check-uat-ssh-action-pin.sh
   bash scripts/ci/shellcheck-uat-deploy-scripts.sh
   bash scripts/ci/assert-prod-deploy-db-commands.sh

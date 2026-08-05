@@ -9,6 +9,7 @@
     "test:ci-shard": "node scripts/run-ci-shard.mjs",
     "shard:plan": "node scripts/shard-files.mjs --summary",
     "test:smoke-ci": "playwright test --project=ci-canary",
+    "test:org-journey": "node scripts/run-org-e2e.mjs",
     "test:smoke-uat": "playwright test --project=uat-smoke --max-failures=1",
     "test:smoke": "npm run test:smoke-uat",
     "test:warmup-uat": "playwright test --project=warmup-uat --max-failures=1",
