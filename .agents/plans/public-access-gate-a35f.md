@@ -124,9 +124,9 @@ public/**
 
 **Exit criteria:**
 
-- [ ] Default mode does not break existing Jest / local E2E
-- [ ] `coming_soon` blocks signup; health still 200
-- [ ] No raw exception text in 403/5xx bodies
+- [x] Default mode does not break existing Jest / local E2E
+- [x] `coming_soon` blocks signup; health still 200
+- [x] No raw exception text in 403/5xx bodies
 
 ---
 
