@@ -84,4 +84,9 @@ ci_scope_classify_paths $'server/routes/pets/index.js'
 json="$(ci_scope_emit_json)"
 assert_json_field "$json" run_org_e2e False "server-only skips org journey e2e"
 
+# Generic e2e scripts do not trigger org journey Playwright
+ci_scope_classify_paths $'e2e/scripts/check-smoke-tags.mjs'
+json="$(ci_scope_emit_json)"
+assert_json_field "$json" run_org_e2e False "generic e2e scripts skip org journey e2e"
+
 echo "ci-scope tests passed"

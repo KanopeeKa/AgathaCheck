@@ -29,6 +29,7 @@ CI_SCOPE_SHARD_ORG=false
 CI_SCOPE_SHARD_REST_A=false
 CI_SCOPE_SHARD_REST_B=false
 CI_SCOPE_HAS_ORG_E2E_TOUCH=false
+CI_SCOPE_HAS_ORG_JOURNEY_TRIGGER=false
 
 ci_scope_reset() {
   CI_SCOPE_FORCE_FULL=false
@@ -54,6 +55,7 @@ ci_scope_reset() {
   CI_SCOPE_SHARD_REST_A=false
   CI_SCOPE_SHARD_REST_B=false
   CI_SCOPE_HAS_ORG_E2E_TOUCH=false
+  CI_SCOPE_HAS_ORG_JOURNEY_TRIGGER=false
 }
 
 ci_scope_enable_shard() {
@@ -132,6 +134,7 @@ ci_scope_classify_flutter_shard() {
       ci_scope_enable_shard health
       ;;
     flutter_app/lib/features/organization/*|flutter_app/test/features/organization/*)
+      CI_SCOPE_HAS_ORG_JOURNEY_TRIGGER=true
       ci_scope_enable_shard org
       ;;
     flutter_app/lib/core/router/organization_routes.dart)
@@ -202,6 +205,7 @@ ci_scope_classify_path() {
       ;;
     flutter_app/lib/core/router/organization_routes.dart)
       CI_SCOPE_HAS_FLUTTER=true
+      CI_SCOPE_HAS_ORG_JOURNEY_TRIGGER=true
       ci_scope_enable_shard org
       ;;
     flutter_app/lib/core/*|flutter_app/lib/l10n/*|flutter_app/pubspec.*)
@@ -225,6 +229,7 @@ ci_scope_classify_path() {
       CI_SCOPE_FORCE_FULL=true
       CI_SCOPE_HAS_E2E=true
       CI_SCOPE_HAS_ORG_E2E_TOUCH=true
+      CI_SCOPE_HAS_ORG_JOURNEY_TRIGGER=true
       ;;
     e2e/*)
       CI_SCOPE_FORCE_FULL=true
@@ -331,7 +336,7 @@ ci_scope_run_integration() {
 # Organisation journey Playwright — when org Flutter or org E2E paths change on a PR.
 ci_scope_run_org_e2e() {
   ci_scope_run_flutter_stack || return 1
-  [[ "$CI_SCOPE_SHARD_ORG" == true || "$CI_SCOPE_HAS_ORG_E2E_TOUCH" == true ]] && return 0
+  [[ "$CI_SCOPE_HAS_ORG_JOURNEY_TRIGGER" == true || "$CI_SCOPE_HAS_ORG_E2E_TOUCH" == true ]] && return 0
   return 1
 }
 
