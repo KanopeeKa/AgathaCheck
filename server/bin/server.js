@@ -16,6 +16,7 @@ import vetsRoutes from '../routes/vets.js';
 import sharingRoutes from '../routes/sharing.js';
 import fosterPlacementsRoutes from '../routes/fosterPlacements.js';
 import custodyTransfersRoutes from '../routes/custodyTransfers.js';
+import uploadsRoutes from '../routes/uploads.js';
 import { corsOptions } from '../config/security.js';
 import { requestContextMiddleware } from '../middleware/requestContext.js';
 
@@ -57,6 +58,9 @@ export function createApp(customPool, comparePassword) {
   app.use(bodyParser.json());
   app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
   app.use('/backend/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
+
+  app.use('/api/uploads', uploadsRoutes());
+  app.use('/backend/api/uploads', uploadsRoutes());
 
   app.use('/api/auth', authRoutes(pool, comparePassword));
   app.use('/api/pets', petsRoutes(pool));
