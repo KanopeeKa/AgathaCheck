@@ -324,7 +324,7 @@ export async function completeOrgOnboarding(
   await refreshFlutterAccessibility(page);
   const orgNameField = page.getByRole('textbox', { name: /organization name/i });
   if (await orgNameField.isVisible({ timeout: 2_000 }).catch(() => false)) {
-    await fillLabelledField(page, 'Organization Name', 'Rescue Hearts');
+    await fillLabelledField(page, 'Organisation Name', 'Rescue Hearts');
     await page.getByRole('button', { name: 'Continue' }).click();
     await refreshFlutterAccessibility(page);
   }

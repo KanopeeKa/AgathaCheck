@@ -213,7 +213,7 @@ test.describe('Organisation profile', () => {
     await detail.openMenu();
     await expect(page.getByRole('menuitem', { name: /Invite Member/i })).toBeVisible();
     await expect(page.getByRole('menuitem', { name: /Members/i })).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: /Delete Organization/i })).toHaveCount(0);
+    await expect(page.getByRole('menuitem', { name: /Delete Organisation/i })).toHaveCount(0);
     await page.keyboard.press('Escape');
   });
 
