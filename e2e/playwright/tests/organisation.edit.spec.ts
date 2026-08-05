@@ -67,8 +67,8 @@ test.describe('Organisation edit', () => {
     await detail.openEdit();
     await enableFlutterAccessibility(page);
 
-    await expect(page.getByRole('button', { name: 'Upload logo' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Upload cover' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Upload logo' }).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Upload cover' }).first()).toBeVisible();
     // v3 edit form exposes guidance as plain text nodes inside the branding group.
     await expect(page.getByText(/Square logo, at least 256×256 px/i)).toBeVisible();
     await expect(page.getByText(/Landscape image.*1200×450 px/i)).toBeVisible();
