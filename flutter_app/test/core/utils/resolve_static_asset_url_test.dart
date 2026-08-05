@@ -53,10 +53,7 @@ void main() {
 
     test('upload paths fall back to site root when api base is empty', () {
       expect(
-        resolveStaticAssetUrl(
-          '/uploads/photos/user.jpg',
-          apiBaseUrl: '',
-        ),
+        resolveStaticAssetUrl('/uploads/photos/user.jpg', apiBaseUrl: ''),
         '/uploads/photos/user.jpg',
       );
     });

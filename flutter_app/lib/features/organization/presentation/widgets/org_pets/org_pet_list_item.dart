@@ -95,8 +95,9 @@ class OrgPetListItem extends StatelessWidget {
                   ),
                   TextButton.icon(
                     key: Key('org_transfer_org_${pet.id}'),
-                    onPressed: () =>
-                        context.push('/o/orgs/$orgId/transfer/${pet.id}/to-org'),
+                    onPressed: () => context.push(
+                      '/o/orgs/$orgId/transfer/${pet.id}/to-org',
+                    ),
                     icon: const Icon(Icons.hub_outlined, size: 16),
                     label: Text(l.transferToOrganisation),
                     style: TextButton.styleFrom(

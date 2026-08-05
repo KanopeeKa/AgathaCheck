@@ -71,7 +71,10 @@ class OrgCard extends ConsumerWidget {
             child: SizedBox(
               height: tileHeight,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 child: Row(
                   children: [
                     _MembershipMedia(
