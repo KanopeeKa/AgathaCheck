@@ -102,12 +102,22 @@ for (let i = 0; i < SHARDS.length; i++) {
   }
 }
 
+function usageError(msg) {
+  console.error(`babysit_uat_shard_risk: ${msg}`);
+  console.error('usage: node scripts/babysit_uat_shard_risk.mjs [--paths-file <file> | --pr <n>]');
+  process.exit(2);
+}
+
 function readChangedPaths() {
   const pathsFileIdx = process.argv.indexOf('--paths-file');
   if (pathsFileIdx !== -1) {
     const file = process.argv[pathsFileIdx + 1];
+    if (!file || file.startsWith('-')) {
+      usageError('--paths-file requires a file path');
+    }
+    const abs = path.isAbsolute(file) ? file : path.join(repoRoot, file);
     return fs
-      .readFileSync(path.join(repoRoot, file), 'utf8')
+      .readFileSync(abs, 'utf8')
       .split('\n')
       .map((line) => line.trim())
       .filter(Boolean);
@@ -116,6 +126,9 @@ function readChangedPaths() {
   const prIdx = process.argv.indexOf('--pr');
   if (prIdx !== -1) {
     const pr = process.argv[prIdx + 1];
+    if (!pr || pr.startsWith('-')) {
+      usageError('--pr requires a PR number or URL');
+    }
     const files = spawnSync(
       'gh',
       ['pr', 'view', pr, '--json', 'files', '-q', '.files[].path'],

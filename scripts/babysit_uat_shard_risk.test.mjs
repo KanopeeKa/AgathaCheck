@@ -40,4 +40,13 @@ function run(paths) {
   assert.equal(shard.risk, 'high');
 }
 
+{
+  const result = spawnSync('node', [script, '--pr'], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /--pr requires/);
+}
+
 console.log('babysit_uat_shard_risk tests passed');

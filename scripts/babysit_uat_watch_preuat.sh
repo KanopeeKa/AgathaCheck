@@ -32,16 +32,29 @@ find_run() {
   gh run list \
     --workflow=pre-uat-e2e.yml \
     --branch=main \
-    --limit=30 \
+    --limit=100 \
     --json databaseId,headSha,status,conclusion,createdAt,url \
     2>/dev/null | python3 -c "
 import json, sys
-target = sys.argv[1].lower()
+target = sys.argv[1].lower().strip()
+if len(target) < 7:
+    sys.exit(0)
 runs = json.load(sys.stdin)
-for r in runs:
-    if (r.get('headSha') or '').lower().startswith(target[:7]) or (r.get('headSha') or '').lower() == target:
-        print(json.dumps(r))
-        break
+# Prefer exact match; fall back to unique prefix match (min 12 hex chars when available).
+exact = [r for r in runs if (r.get('headSha') or '').lower() == target]
+if exact:
+    print(json.dumps(exact[0]))
+    sys.exit(0)
+prefix_len = min(len(target), 12)
+prefix = target[:prefix_len]
+matches = [r for r in runs if (r.get('headSha') or '').lower().startswith(prefix)]
+if len(matches) == 1:
+    print(json.dumps(matches[0]))
+elif len(matches) > 1 and len(target) >= 12:
+  # Narrow with longer prefix
+    narrow = [r for r in matches if (r.get('headSha') or '').lower().startswith(target[:12])]
+    if len(narrow) == 1:
+        print(json.dumps(narrow[0]))
 " "$MERGE_SHA"
 }
 
