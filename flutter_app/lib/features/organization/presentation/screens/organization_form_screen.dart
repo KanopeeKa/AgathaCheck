@@ -232,16 +232,13 @@ class _OrganizationFormScreenState
                 l: l,
                 nameController: _nameController,
                 selectedType: _selectedType,
-                onTypeChanged: (value) =>
-                    setState(() => _selectedType = value),
+                onTypeChanged: (value) => setState(() => _selectedType = value),
                 nameValidator: _nameValidator,
               ),
               const SizedBox(height: 16),
             ],
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: _isEditing ? 16 : 0,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: _isEditing ? 16 : 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -253,9 +250,7 @@ class _OrganizationFormScreenState
                         labelText: '${l.organizationName} *',
                         prefixIcon: const Icon(Icons.business),
                       ),
-                      autofillHints: const [
-                        AutofillHints.organizationName,
-                      ],
+                      autofillHints: const [AutofillHints.organizationName],
                       validator: _nameValidator,
                       textInputAction: TextInputAction.next,
                     ),
@@ -301,9 +296,7 @@ class _OrganizationFormScreenState
                       prefixIcon: const Icon(Icons.phone),
                     ),
                     keyboardType: TextInputType.phone,
-                    autofillHints: const [
-                      AutofillHints.telephoneNumber,
-                    ],
+                    autofillHints: const [AutofillHints.telephoneNumber],
                     textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 16),
@@ -314,9 +307,7 @@ class _OrganizationFormScreenState
                       labelText: l.orgAddress,
                       prefixIcon: const Icon(Icons.location_on),
                     ),
-                    autofillHints: const [
-                      AutofillHints.fullStreetAddress,
-                    ],
+                    autofillHints: const [AutofillHints.fullStreetAddress],
                     textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 16),
@@ -345,9 +336,7 @@ class _OrganizationFormScreenState
                     controller: _postcodeController,
                     decoration: InputDecoration(
                       labelText: l.orgPostcode,
-                      prefixIcon: const Icon(
-                        Icons.markunread_mailbox_outlined,
-                      ),
+                      prefixIcon: const Icon(Icons.markunread_mailbox_outlined),
                     ),
                     textInputAction: TextInputAction.next,
                   ),

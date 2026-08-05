@@ -131,27 +131,33 @@ class OrganizationBrandingSection extends ConsumerWidget {
                     left:
                         OrgProfileHeroLayout.logoHeight +
                         OrgProfileHeroLayout.bandGap,
-                    right: 52,
+                    right: OrgProfileHeroLayout.coverGuidanceRightInset,
                     bottom: 10,
-                    child: Text(
-                      l.orgImageHeroGuidance,
-                      key: const Key('org_cover_guidance'),
-                      maxLines: 3,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.95),
-                        height: 1.25,
-                        shadows: const [
-                          Shadow(
-                            color: Color(0x99000000),
-                            blurRadius: 6,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.45),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        child: Text(
+                          l.orgImageHeroGuidance,
+                          key: const Key('org_cover_guidance'),
+                          maxLines: 3,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: Colors.white.withValues(alpha: 0.95),
+                            height: 1.25,
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
                   Positioned(
-                    right: 12,
-                    bottom: 12,
+                    right: OrgProfileHeroLayout.coverUploadFabInset,
+                    bottom: OrgProfileHeroLayout.coverUploadFabInset,
                     child: Semantics(
                       button: true,
                       label: l.orgUploadCover,
