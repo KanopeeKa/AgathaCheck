@@ -40,10 +40,7 @@ void main() {
         '/backend/api/uploads/org_photos/abc.jpg',
       );
       expect(
-        resolveStaticAssetUrl(
-          '/uploads/fluffy.jpg',
-          apiBaseUrl: '/backend',
-        ),
+        resolveStaticAssetUrl('/uploads/fluffy.jpg', apiBaseUrl: '/backend'),
         '/backend/api/uploads/fluffy.jpg',
       );
     });
