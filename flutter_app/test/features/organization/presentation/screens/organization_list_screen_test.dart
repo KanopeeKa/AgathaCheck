@@ -30,7 +30,7 @@ class _EmptyPendingInvitesNotifier extends PendingOrgInvitesNotifier {
 }
 
 void main() {
-  testWidgets('org list uses organization light background and create CTA', (
+  testWidgets('org list uses organization light background without footer create', (
     tester,
   ) async {
     final router = GoRouter(
@@ -62,18 +62,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final scaffold = tester.widget<Scaffold>(
-      find.ancestor(
-        of: find.byKey(const Key('org_create_button')),
-        matching: find.byType(Scaffold),
-      ),
-    );
+    final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
     expect(scaffold.backgroundColor, AppColorTokens.organizationLight);
 
-    expect(find.byKey(const Key('org_create_button')), findsOneWidget);
-    expect(find.byType(OutlinedButton), findsNothing);
+    expect(find.byKey(const Key('org_create_button')), findsNothing);
     expect(find.text('Rescue Hearts'), findsOneWidget);
     expect(find.byKey(const Key('org_discover_nav_row')), findsOneWidget);
+    expect(find.text('Discover Organisations'), findsWidgets);
     expect(find.byKey(const Key('org_discovery_results')), findsNothing);
   });
 }

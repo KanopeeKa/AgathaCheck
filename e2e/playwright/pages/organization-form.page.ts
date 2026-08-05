@@ -19,7 +19,7 @@ export class OrganizationFormPage {
     await enableFlutterAccessibility(this.page);
     await dismissConsentBannerIfPresent(this.page);
     await this.page
-      .getByRole('button', { name: /Create Organization|Edit Organization/ })
+      .getByRole('button', { name: /Create Organisation|Edit Organisation/ })
       .waitFor({ timeout: 30_000 });
   }
 
@@ -50,7 +50,7 @@ export class OrganizationFormPage {
     await this.page
       .getByText('Organization created')
       .first()
-      .or(this.page.getByRole('button', { name: 'Edit Organization' }))
+      .or(this.page.getByRole('button', { name: 'Edit Organisation' }))
       .first()
       .waitFor({ timeout: 30_000 });
     try {

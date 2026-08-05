@@ -57,7 +57,7 @@ void main() {
     await tester.tap(find.text('Add foster parent'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Organization name is required'), findsOneWidget);
+    expect(find.text('Organisation name is required'), findsOneWidget);
     expect(
       find.text('Email is required so we can send a privacy notice'),
       findsOneWidget,

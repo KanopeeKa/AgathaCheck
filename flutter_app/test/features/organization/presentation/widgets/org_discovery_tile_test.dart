@@ -48,7 +48,13 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: orgThemed(
-            child: Scaffold(body: OrgDiscoveryTile(organization: _sampleOrg)),
+            child: Scaffold(
+              body: SizedBox(
+                width: 220,
+                height: 220,
+                child: OrgDiscoveryTile(organization: _sampleOrg),
+              ),
+            ),
           ),
         ),
       ),

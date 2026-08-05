@@ -59,7 +59,7 @@ export class PetFormPage {
     await homeShellLocator(this.page)
       .or(this.page.getByRole('button', { name: /Pet:/i }))
       .or(this.page.getByRole('group', { name: /Pet:/i }))
-      .or(this.page.getByRole('button', { name: 'Edit Organization' }))
+      .or(this.page.getByRole('button', { name: 'Edit Organisation' }))
       .first()
       .waitFor({ timeout: 30_000 });
   }

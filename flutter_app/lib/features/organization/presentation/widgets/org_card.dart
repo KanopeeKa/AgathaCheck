@@ -11,14 +11,16 @@ import '../utils/org_member_count_label.dart';
 import '../utils/org_screen_theme.dart';
 import 'org_image_avatar.dart';
 
-/// My Organisations membership tile — pet-style hero + meta (D-v3-TILE-1).
+/// My Organisations membership row — compact horizontal tile (cover + meta + chevron).
 class OrgCard extends ConsumerWidget {
   const OrgCard({super.key, required this.organization, this.onTap});
 
   final Organization organization;
   final VoidCallback? onTap;
 
-  static const double tileHeight = 240;
+  /// Compact list row height (text band, not tall hero tile).
+  static const double tileHeight = 88;
+  static const double mediaSize = 72;
 
   String _resolveUrl(WidgetRef ref, String path) {
     return resolveStaticAssetUrl(
@@ -68,24 +70,20 @@ class OrgCard extends ConsumerWidget {
             onTap: onTap,
             child: SizedBox(
               height: tileHeight,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: _MembershipHero(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
+                  children: [
+                    _MembershipMedia(
                       organization: organization,
                       resolvedPhotoUrl: resolvedPhoto,
                       resolvedLogoUrl: resolvedLogo,
                     ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+                    const SizedBox(width: 12),
+                    Expanded(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             organization.name,
@@ -162,8 +160,12 @@ class OrgCard extends ConsumerWidget {
                         ],
                       ),
                     ),
-                  ),
-                ],
+                    Icon(
+                      Icons.chevron_right,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -173,8 +175,8 @@ class OrgCard extends ConsumerWidget {
   }
 }
 
-class _MembershipHero extends StatelessWidget {
-  const _MembershipHero({
+class _MembershipMedia extends StatelessWidget {
+  const _MembershipMedia({
     required this.organization,
     required this.resolvedPhotoUrl,
     required this.resolvedLogoUrl,
@@ -188,47 +190,54 @@ class _MembershipHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasLogo = organization.logoUrl.isNotEmpty;
 
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        _HeroCover(
-          photoUrl: organization.photoUrl,
-          resolvedPhotoUrl: resolvedPhotoUrl,
-          type: organization.type,
-        ),
-        if (hasLogo)
-          Positioned(
-            left: 12,
-            bottom: 8,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColorTokens.surface,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.12),
-                    blurRadius: 4,
-                    offset: const Offset(0, 1),
+    return SizedBox(
+      width: OrgCard.mediaSize,
+      height: OrgCard.mediaSize,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            _CoverThumb(
+              photoUrl: organization.photoUrl,
+              resolvedPhotoUrl: resolvedPhotoUrl,
+              type: organization.type,
+            ),
+            if (hasLogo)
+              Positioned(
+                left: 4,
+                bottom: 4,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: AppColorTokens.surface,
+                    borderRadius: BorderRadius.circular(4),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.12),
+                        blurRadius: 2,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: OrgLogoImage(
-                  logoUrl: organization.logoUrl,
-                  resolvedUrl: resolvedLogoUrl,
-                  height: 28,
+                  child: Padding(
+                    padding: const EdgeInsets.all(2),
+                    child: OrgLogoImage(
+                      logoUrl: organization.logoUrl,
+                      resolvedUrl: resolvedLogoUrl,
+                      height: 20,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-      ],
+          ],
+        ),
+      ),
     );
   }
 }
 
-class _HeroCover extends StatelessWidget {
-  const _HeroCover({
+class _CoverThumb extends StatelessWidget {
+  const _CoverThumb({
     required this.photoUrl,
     required this.resolvedPhotoUrl,
     required this.type,
@@ -241,14 +250,33 @@ class _HeroCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (photoUrl.isEmpty) {
-      return const ColoredBox(color: AppColorTokens.organizationLight);
+      return ColoredBox(
+        color: AppColorTokens.organizationPrimary,
+        child: Center(
+          child: Icon(
+            type == OrganizationType.professional
+                ? Icons.business
+                : Icons.volunteer_activism,
+            size: 28,
+            color: Colors.white.withValues(alpha: 0.85),
+          ),
+        ),
+      );
     }
 
     return Image.network(
       resolvedPhotoUrl,
       fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) =>
-          const ColoredBox(color: AppColorTokens.organizationLight),
+      errorBuilder: (_, __, ___) => ColoredBox(
+        color: AppColorTokens.organizationPrimary,
+        child: Center(
+          child: Icon(
+            Icons.image_not_supported_outlined,
+            size: 24,
+            color: Colors.white.withValues(alpha: 0.85),
+          ),
+        ),
+      ),
     );
   }
 }

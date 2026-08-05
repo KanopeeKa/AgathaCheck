@@ -3,14 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/providers/api_base_url_provider.dart';
+import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../core/utils/resolve_static_asset_url.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../pet_profile/presentation/widgets/pet_card.dart';
 import '../../../domain/entities/discoverable_organization.dart';
 import '../../../domain/entities/organization.dart';
 import '../../utils/org_screen_theme.dart';
 import '../org_image_avatar.dart';
 
-/// Discover tile — top ~2/3 hero cover, bottom ~1/3 centred logo, name, locality.
+/// Discover tile — pet-grid sizing, logo over cover, name + two meta lines.
 class OrgDiscoveryTile extends ConsumerWidget {
   const OrgDiscoveryTile({super.key, required this.organization});
 
@@ -50,78 +52,93 @@ class OrgDiscoveryTile extends ConsumerWidget {
           margin: EdgeInsets.zero,
           child: InkWell(
             onTap: () => context.push('/o/orgs/${organization.id}'),
-            child: SizedBox(
-              height: 240,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: _HeroCover(
-                      photoUrl: organization.photoUrl,
-                      resolvedPhotoUrl: resolvedPhoto,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(12, 2, 12, 6),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (organization.logoUrl.isNotEmpty)
-                            OrgLogoImage(
-                              logoUrl: organization.logoUrl,
-                              resolvedUrl: resolvedLogo,
-                              height: 20,
-                            )
-                          else
-                            OrgImageAvatar(
-                              imageUrl: organization.photoUrl,
-                              type: organization.type,
-                              radius: 14,
-                              resolvedUrl: resolvedPhoto,
-                            ),
-                          const SizedBox(height: 2),
-                          Text(
-                            organization.name,
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              height: 1.1,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                          ),
-                          if (locality.isNotEmpty) ...[
-                            Text(
-                              locality,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                                height: 1.1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      _HeroCover(
+                        photoUrl: organization.photoUrl,
+                        resolvedPhotoUrl: resolvedPhoto,
+                        type: organization.type,
+                      ),
+                      Center(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: AppColorTokens.surface,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.12),
+                                blurRadius: 4,
+                                offset: const Offset(0, 1),
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: organization.logoUrl.isNotEmpty
+                                ? OrgLogoImage(
+                                    logoUrl: organization.logoUrl,
+                                    resolvedUrl: resolvedLogo,
+                                    height: 32,
+                                  )
+                                : OrgImageAvatar(
+                                    imageUrl: organization.photoUrl,
+                                    type: organization.type,
+                                    radius: 20,
+                                    resolvedUrl: resolvedPhoto,
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 4, 8, 6),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          organization.name,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            height: 1.1,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (locality.isNotEmpty)
                           Text(
-                            typeLabel,
+                            locality,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                               height: 1.1,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
                           ),
-                        ],
-                      ),
+                        Text(
+                          typeLabel,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            height: 1.1,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -140,22 +157,28 @@ class OrgDiscoveryTile extends ConsumerWidget {
 }
 
 class _HeroCover extends StatelessWidget {
-  const _HeroCover({required this.photoUrl, required this.resolvedPhotoUrl});
+  const _HeroCover({
+    required this.photoUrl,
+    required this.resolvedPhotoUrl,
+    required this.type,
+  });
 
   final String photoUrl;
   final String resolvedPhotoUrl;
+  final OrganizationType type;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     if (photoUrl.isEmpty) {
       return ColoredBox(
-        color: colorScheme.surfaceContainerHighest,
+        color: AppColorTokens.organizationPrimary,
         child: Center(
           child: Icon(
-            Icons.volunteer_activism,
-            size: 40,
-            color: colorScheme.onSurfaceVariant,
+            type == OrganizationType.professional
+                ? Icons.business
+                : Icons.volunteer_activism,
+            size: 36,
+            color: Colors.white.withValues(alpha: 0.85),
           ),
         ),
       );
@@ -164,12 +187,12 @@ class _HeroCover extends StatelessWidget {
       resolvedPhotoUrl,
       fit: BoxFit.cover,
       errorBuilder: (_, __, ___) => ColoredBox(
-        color: colorScheme.surfaceContainerHighest,
+        color: AppColorTokens.organizationPrimary,
         child: Center(
           child: Icon(
             Icons.image_not_supported_outlined,
-            size: 32,
-            color: colorScheme.onSurfaceVariant,
+            size: 28,
+            color: Colors.white.withValues(alpha: 0.85),
           ),
         ),
       ),
