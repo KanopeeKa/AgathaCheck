@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "plan_id": "public-access-gate-a35f",
+  "approved_at": "2026-08-05T19:49:00Z",
+  "approved_by": "user-chat-2026-08-05-execute-plan-standing-grant",
+  "approved_until": "2026-08-07T19:49:00Z",
+  "content_hash": "sha256:3c205d2e66d55b8c8370ddd005b95b5f6924a5108f6f07a40c27cf6d0bd2ad59",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/public-access-gate-integration-a35f",
+  "control_issue": 611,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Teaser site, canonical docs, hosting helpers",
+      "branch": "cursor/public-access-teaser-docs-a35f",
+      "allowed_paths": [
+        "public/coming-soon/**",
+        "docs/ops/public-access.md",
+        "docs/refactoring-log.md",
+        ".agents/memory/public-access-gate.md",
+        ".agents/plans/public-access-gate-a35f.*",
+        "e2e/playwright/support/hosting.ts",
+        "e2e/playwright/support/hosting.test.ts",
+        "e2e/playwright/support/waf.ts",
+        "e2e/playwright/support/ui-auth.ts",
+        "e2e/playwright/support/stealth.ts",
+        "e2e/playwright/support/global-setup.ts",
+        "e2e/playwright/support/flutter.ts",
+        "e2e/playwright/support/e2e-bypass.ts",
+        "e2e/playwright/support/api-fetch.ts",
+        "e2e/playwright/fixtures/auth.fixture.ts",
+        "scripts/ci/public-access-smoke-lib.sh",
+        "scripts/ci/public-access-smoke-lib.test.js"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/613",
+      "pr_head_sha": "5dfbef994392930dbe0c6bd56fa5d18038779e32",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "API PUBLIC_ACCESS_MODE closed mode",
+      "branch": "cursor/public-access-api-mode-a35f",
+      "allowed_paths": [
+        "server/config/publicAccess.js",
+        "server/middleware/publicAccessGate.js",
+        "server/bin/server.js",
+        "server/test/publicAccess.test.js",
+        ".agents/plans/public-access-gate-a35f.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**",
+        "public/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Prod deploy teaser path and smoke",
+      "branch": "cursor/public-access-prod-deploy-a35f",
+      "allowed_paths": [
+        ".github/workflows/deploy-prod.yml",
+        "scripts/prod-post-deploy-smoke.sh",
+        "scripts/ci/prod-post-deploy-smoke.test.js",
+        "docs/promotion-contract.md",
+        ".agents/plans/public-access-gate-a35f.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "UAT Basic Auth CI plumbing",
+      "branch": "cursor/public-access-uat-auth-a35f",
+      "allowed_paths": [
+        "scripts/uat-post-deploy-smoke.sh",
+        "scripts/ci/uat-post-deploy-smoke.test.js",
+        "scripts/ci/run-live-uat-gate.sh",
+        ".github/workflows/deploy-uat.yml",
+        ".github/workflows/uat-live-e2e.yml",
+        "e2e/playwright.config.ts",
+        "docs/e2e/uat-deploy-tiers.md",
+        "docs/e2e/uat-waf-queue-lessons.md",
+        ".agents/plans/public-access-gate-a35f.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/lib/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

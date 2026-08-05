@@ -4,7 +4,7 @@ import path from 'node:path';
 import type { Page } from '@playwright/test';
 import { clearApiFetchTransports, setPlaywrightPage } from './api-fetch';
 import { e2eBypassHeadersForUrl } from './e2e-bypass';
-import { isLiveHostingTarget } from './hosting';
+import { isLiveUatTarget } from './hosting';
 import { bodyShowsWafChallenge, WAF_MARKERS } from './waf-markers';
 
 /** Persisted across Playwright tests in `test:live-uat-gate` (warmup → smoke). */
@@ -153,7 +153,7 @@ async function sessionReadyOnPage(page: Page, baseURL: string): Promise<boolean>
 
 /** Save Tiger Protect cookies for the next Playwright project (uat-smoke). */
 export async function persistWafStorageState(page: Page): Promise<void> {
-  if (!isLiveHostingTarget()) {
+  if (!isLiveUatTarget()) {
     return;
   }
   fs.mkdirSync(path.dirname(UAT_WAF_STORAGE_PATH), { recursive: true });
@@ -166,7 +166,7 @@ export async function persistWafStorageState(page: Page): Promise<void> {
  * then verify both health and auth signup probes succeed in-browser.
  */
 export async function passHostingWaf(page: Page, baseURL?: string): Promise<void> {
-  if (!isLiveHostingTarget(baseURL)) {
+  if (!isLiveUatTarget(baseURL)) {
     return;
   }
 
@@ -223,7 +223,7 @@ export function resetHostingWafSession(): void {
 
 /** Warm WAF cookies and route api.ts through in-browser fetch for live UAT runs. */
 export async function prepareLiveApiAccess(page: Page, baseURL?: string): Promise<void> {
-  if (!isLiveHostingTarget(baseURL)) {
+  if (!isLiveUatTarget(baseURL)) {
     return;
   }
 
