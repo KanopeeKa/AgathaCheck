@@ -32,8 +32,11 @@ Fail closed if deploy is enabled and `PROD_PUBLIC_MODE` is unset.
 | `false` / unset | any | No prod deploy | N/A |
 | `true` | `coming_soon` | `public/coming-soon/` (no Flutter artifact required) | Teaser marker on `/`; **fail** if Flutter `main.dart.js` still 200 |
 | `true` | `app` | Flutter web (promote path) | Existing landing / app smoke |
+| `true` | unset / other | **Deploy job fails closed** | N/A |
 
 Backend may still deploy in both modes. Pair web teaser with API closed mode (below).
+
+**Implementation (phase 3):** `deploy-prod.yml` gates on `PROD_PUBLIC_MODE`; teaser FTP skips UAT web artifact download/rebuild. Smoke: `scripts/prod-post-deploy-smoke.sh` (sources `scripts/ci/public-access-smoke-lib.sh`).
 
 ### API `PUBLIC_ACCESS_MODE`
 

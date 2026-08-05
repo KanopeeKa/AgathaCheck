@@ -127,6 +127,8 @@ No manual version input at deploy time.
 | unset / `false` | **Skipped** | `vX.Y.Z-rc.N` | **Success** — job `Production deploy skipped (intentional)` |
 | `true` | Full `deploy-prod.yml` path | Stable `vX.Y.Z` | Success after smoke |
 
+When `PROD_DEPLOY_ENABLED=true`, repository/environment variable **`PROD_PUBLIC_MODE`** must be exactly `coming_soon` or `app` (fail closed if unset/invalid). Frontend path and post-deploy smoke expectations are documented in [ops/public-access.md](./ops/public-access.md) (canonical truth table for teaser vs Flutter promote).
+
 Step summary must state explicitly:
 
 > Prod deployment skipped intentionally (`PROD_DEPLOY_ENABLED` is not `true`).
