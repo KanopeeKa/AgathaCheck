@@ -29,14 +29,13 @@ class PendingActionsScreen extends ConsumerWidget {
         key: const Key('pending_actions_screen'),
         padding: const EdgeInsets.all(16),
         children: [
-          if (_showsSection('share', effectiveFocus))
-            const PendingSharesSection(),
+          if (_showsSection('share', effectiveFocus)) PendingSharesSection(),
           if (_showsSection('foster', effectiveFocus))
-            const PendingFosterPlacementsSection(),
+            PendingFosterPlacementsSection(),
           if (_showsSection('adoption', effectiveFocus))
-            const PendingAdoptionPlacementsSection(),
+            PendingAdoptionPlacementsSection(),
           if (_showsSection('custody', effectiveFocus))
-            const PendingCustodyTransfersSection(),
+            PendingCustodyTransfersSection(),
         ],
       ),
     );
