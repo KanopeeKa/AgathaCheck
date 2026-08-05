@@ -234,18 +234,18 @@ flutter_app/lib/**
 
 ```yaml
 autonomy: active
-current_phase: 4
-last_completed_phase: 3
+current_phase: null
+last_completed_phase: 4
 halt_reason: null
-next_action: "continue phase 4 on branch cursor/public-access-uat-auth-a35f"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/public-access-uat-auth-a35f
+  branch: cursor/public-access-gate-integration-a35f
   plan_path: .agents/plans/public-access-gate-a35f.md
-  plan_commit: 1384803b939785a6f3ec5273fdb31649ac9c7937
+  plan_commit: 469be52b82828a88c0ae6fa34793be0c1ca1d5a9
   snapshot_path: .agents/plans/public-access-gate-a35f.snapshot.json
-  snapshot_commit: 1384803b939785a6f3ec5273fdb31649ac9c7937
+  snapshot_commit: 469be52b82828a88c0ae6fa34793be0c1ca1d5a9
 open_prs: []
-merge_commits: {"1":"08ef7e662e421aacac52e375acde3c188ddee565","2":"6449ed01bc08d07067a631abbeb371c4cff191d9","3":"636674211d2efb5da27833cd222be2bd7e5f2032"}
+merge_commits: {"1":"08ef7e662e421aacac52e375acde3c188ddee565","2":"6449ed01bc08d07067a631abbeb371c4cff191d9","3":"636674211d2efb5da27833cd222be2bd7e5f2032","4":"469be52b82828a88c0ae6fa34793be0c1ca1d5a9"}
 debt_issue_refs: []
 ```
 
