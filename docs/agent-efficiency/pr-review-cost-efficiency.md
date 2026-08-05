@@ -61,21 +61,21 @@ Run `/review-bugbot` (or ask the agent to) on the branch diff **before** push. W
 ```
 Implementation (composer-2.5)
   → pre-PR critical self-review (mandatory)
-  → optional /review-bugbot pre-push
   → open PR / mark ready
 
-Bugbot (Default effort, once per PR)
-  → primary automatic reviewer (~$1–1.50/run, separate from Cloud Agent pool)
+Copilot PR review (when enabled)
+  → primary automatic reviewer
 
 Babysit+ slim (composer-2.5 only)
-  → node scripts/babysit_pr_reviews.js wait --pr <url>  (Bugbot; do not block on Copilot timeout)
-  → node scripts/babysit_pr_reviews.js collect --pr <url>  (triage all threads: Bugbot + Copilot + human)
+  → node scripts/babysit_pr_reviews.js collect --pr <url>  (triage Copilot + human threads)
   → triage must-fix / nit / ignore
   → fix + ./scripts/pre-push-changed.sh
   → CI loop → ./scripts/pre-push.sh before merge
 ```
 
-**Copilot:** Request when credits are available; treat as **supplementary for the wait step** but **mandatory for triage when threads exist**. When Copilot is unavailable or times out, proceed if **Bugbot** has reviewed (or is unavailable) and triage is complete. When Bugbot is unavailable but Copilot posted threads, triage all Copilot threads before merge.
+**Copilot:** Request when credits are available; **mandatory for triage when threads exist**. When Copilot is unavailable or posts no threads, proceed after pre-PR self-review + CI green.
+
+**Cursor Bugbot:** Disabled for this repo — do not wait on `babysit_pr_reviews.js wait`.
 
 **CI + CodeQL:** Unchanged — still required on merge to `main`.
 
@@ -116,14 +116,14 @@ Cursor cannot enforce model choice from the repo alone; rules + dashboard defaul
 
 ## Copilot unavailable
 
-When GitHub Copilot PR review credits are exhausted:
+When GitHub Copilot PR review credits are exhausted or Copilot never posts:
 
-1. Do **not** request `copilot-pull-request-reviewer`.
-2. Rely on **Bugbot** (+ mandatory pre-PR self-review).
-3. Babysit poll: wait for **Bugbot** up to 15 minutes (`node scripts/babysit_pr_reviews.js wait --pr <url>`); **do not halt** solely because Copilot never responded.
-4. Comment on the PR if Copilot was skipped: `Copilot unavailable; Bugbot + babysit+ triage used.`
+1. Do **not** request `copilot-pull-request-reviewer` unless credits are available.
+2. Rely on mandatory **pre-PR self-review** + **CI** + `./scripts/pre-push.sh` before merge.
+3. Run `node scripts/babysit_pr_reviews.js collect --pr <url>` — if threads exist, triage all before merge.
+4. Comment on the PR if helpful: `Copilot unavailable; babysit+ triage used CI + pre-push only.`
 
-When **Bugbot** is unavailable (usage limit) but **Copilot** has posted review threads, use `node scripts/babysit_pr_reviews.js collect --pr <url>` and triage **all** Copilot threads before merge — do not treat Bugbot unavailability as “no automated review.”
+Do **not** wait on Cursor Bugbot — it is disabled for this repo.
 
 ---
 
