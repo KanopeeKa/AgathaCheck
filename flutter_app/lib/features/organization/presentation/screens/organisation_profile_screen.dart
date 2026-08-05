@@ -12,7 +12,6 @@ import '../widgets/org_presentation/org_presentation_legal_block.dart';
 import '../widgets/org_profile/organisation_profile_member_sections.dart';
 import '../widgets/org_shell_app_bar_title.dart';
 import '../widgets/org_shell_scaffold.dart';
-import '../widgets/organization_emergency_contact_card.dart';
 
 class OrganisationProfileScreen extends ConsumerWidget {
   const OrganisationProfileScreen({super.key, required this.orgId});
@@ -31,8 +30,6 @@ class OrganisationProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(organisationProfileProvider(orgId));
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
 
     return profileAsync.when(
@@ -85,16 +82,6 @@ class OrganisationProfileScreen extends ConsumerWidget {
                 child: OrgPresentationContactBlock(
                   org: org,
                   title: l.orgPresentationContactTitle,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: OrganizationEmergencyContactCard(
-                  org: org,
-                  theme: theme,
-                  colorScheme: colorScheme,
-                  l: l,
                 ),
               ),
               if (profile.isMember) ...[

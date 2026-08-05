@@ -23,9 +23,6 @@ describe('Organizations API', () => {
         const pool = buildMockPool({
           memberRole: 'foster',
           query: async (sql) => {
-            if (sql.includes('primary_contact_ref FROM organizations')) {
-              return { rows: [{ primary_contact_ref: null }] };
-            }
             if (sql.includes('FROM organization_users ou') && sql.includes('JOIN users u')) {
               return {
                 rows: [{
@@ -71,9 +68,6 @@ describe('Organizations API', () => {
         const pool = buildMockPool({
           memberRole: 'foster',
           query: async (sql) => {
-            if (sql.includes('primary_contact_ref FROM organizations')) {
-              return { rows: [{ primary_contact_ref: null }] };
-            }
             if (sql.includes('FROM organization_users ou') && sql.includes('ou.id = $2')) {
               return {
                 rows: [{

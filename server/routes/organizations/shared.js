@@ -88,44 +88,6 @@ export function handleOrgImageUpload(req, res, next) {
   });
 }
 
-export async function loadPrimaryContact(pool, orgId, primaryContactRef) {
-  if (!primaryContactRef) return null;
-  const idx = primaryContactRef.indexOf(':');
-  if (idx <= 0) return null;
-  const kind = primaryContactRef.slice(0, idx);
-  const recordId = primaryContactRef.slice(idx + 1);
-  if (kind !== 'member') return null;
-
-  const result = await pool.query(
-    `SELECT ou.id AS record_id,
-            u.id AS user_id,
-            TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS display_name,
-            u.email,
-            u.photo_url,
-            ou.role,
-            COALESCE(ou.foster_phone, '') AS phone
-     FROM organization_users ou
-     JOIN users u ON u.id = ou.user_id
-     WHERE ou.organization_id = $1 AND ou.id = $2`,
-    [orgId, recordId],
-  );
-  if (!result.rows.length) return null;
-  const row = result.rows[0];
-  const role = normaliseRole(row.role);
-  if (!isOrgAdmin(role) || role.startsWith('pending_')) return null;
-  return {
-    id: `member:${row.record_id}`,
-    kind: 'member',
-    record_id: row.record_id,
-    user_id: row.user_id,
-    display_name: (row.display_name || '').trim() || row.email || '',
-    email: row.email || null,
-    phone: row.phone || '',
-    photo_url: row.photo_url || null,
-    role,
-  };
-}
-
 export async function fetchOrgForUser(pool, userId, orgId) {
   const result = await pool.query(
     `SELECT o.*, ou.role,
@@ -137,8 +99,7 @@ export async function fetchOrgForUser(pool, userId, orgId) {
   );
   if (!result.rows.length) return null;
   const row = result.rows[0];
-  const primaryContact = await loadPrimaryContact(pool, orgId, row.primary_contact_ref);
-  return orgRowToMap({ ...row, role: normaliseRole(row.role), primary_contact: primaryContact });
+  return orgRowToMap({ ...row, role: normaliseRole(row.role) });
 }
 
 export function extractUserId(req) {
@@ -176,17 +137,6 @@ export function computeDisplayLocality(org) {
   return String(org.administrative_area ?? '').trim();
 }
 
-export function publicPrimaryContactToMap(contact) {
-  if (!contact) return null;
-  return {
-    id: contact.id,
-    display_name: contact.display_name,
-    email: contact.email,
-    phone: contact.phone,
-    photo_url: contact.photo_url,
-  };
-}
-
 export function publicOrgRowToMap(row) {
   return {
     id: row.id,
@@ -205,16 +155,13 @@ export function publicOrgRowToMap(row) {
     email: row.email || null,
     phone: row.phone || null,
     website: row.website || null,
-    primary_contact: publicPrimaryContactToMap(row.primary_contact),
   };
 }
 
 export async function fetchPublicOrg(pool, orgId) {
   const result = await pool.query('SELECT * FROM organizations WHERE id = $1', [orgId]);
   if (!result.rows.length) return null;
-  const row = result.rows[0];
-  const primaryContact = await loadPrimaryContact(pool, orgId, row.primary_contact_ref);
-  return publicOrgRowToMap({ ...row, primary_contact: primaryContact });
+  return publicOrgRowToMap(result.rows[0]);
 }
 
 export function orgRowToMap(row) {
@@ -240,8 +187,6 @@ export function orgRowToMap(row) {
       row.public_profile_metadata && typeof row.public_profile_metadata === 'object'
         ? row.public_profile_metadata
         : {},
-    primary_contact_ref: row.primary_contact_ref || null,
-    primary_contact: row.primary_contact || null,
     role: row.role || null,
     member_count: parseInt(row.member_count, 10) || 0,
     external_count: parseInt(row.external_count, 10) || 0,

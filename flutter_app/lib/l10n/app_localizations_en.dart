@@ -2098,20 +2098,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String orgEmergencyContactTitle(String orgName) {
-    return 'Emergency contact details for $orgName';
-  }
-
-  @override
-  String get orgPrimaryContact => 'Primary contact';
-
-  @override
-  String get orgSetPrimaryContact => 'Set as primary contact';
-
-  @override
-  String get orgPrimaryContactBadge => 'Primary contact';
-
-  @override
   String get orgUploadPicture => 'Upload picture';
 
   @override

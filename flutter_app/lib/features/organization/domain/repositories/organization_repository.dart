@@ -32,11 +32,6 @@ abstract class OrganizationRepository {
     String filename,
     String token,
   );
-  Future<Organization> setPrimaryContact(
-    String orgId,
-    String recordId,
-    String token,
-  );
 
   Future<List<OrganizationMember>> getMembers(String orgId, String token);
   Future<Map<String, dynamic>> inviteByEmail(

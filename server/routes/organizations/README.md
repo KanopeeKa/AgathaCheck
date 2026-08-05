@@ -8,7 +8,7 @@ Modular Express routers for `/api/organizations` and `/backend/api/organizations
 |--------|----------------|
 | `shared.js` | Auth extraction, role guards, org row mapping, image upload helpers |
 | `invitesRouter.js` | Pending invites, accept/decline, join-by-code (501) |
-| `coreRouter.js` | Org CRUD, photo/logo upload, primary contact |
+| `coreRouter.js` | Org CRUD, photo/logo upload |
 | `membersRouter.js` | Members list, people directory, invites, role changes |
 | `petsRouter.js` | Org pets, create, transfer, archived list |
 | `fosterParentsRouter.js` | Foster parent directory (member + external) |

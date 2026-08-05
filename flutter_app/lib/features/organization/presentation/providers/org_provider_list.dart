@@ -76,15 +76,6 @@ class OrganizationListNotifier extends AsyncNotifier<List<Organization>> {
     return org;
   }
 
-  Future<Organization> setPrimaryContact(String orgId, String recordId) async {
-    final token = ref.read(orgTokenProvider)!;
-    final repo = ref.read(organizationRepositoryProvider);
-    final org = await repo.setPrimaryContact(orgId, recordId, token);
-    ref.invalidateSelf();
-    ref.invalidate(orgPeopleProvider(orgId));
-    return org;
-  }
-
   Future<void> refresh() async {
     ref.invalidateSelf();
   }

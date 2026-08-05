@@ -7,7 +7,7 @@ Modular HTTP clients for organization APIs. Mirrors `server/routes/organizations
 | Module | Responsibility |
 |--------|----------------|
 | `organization_remote_context.dart` | Shared `http.Client`, base URL, auth headers |
-| `organization_core_remote.dart` | Org CRUD, photo/logo upload, primary contact |
+| `organization_core_remote.dart` | Org CRUD, photo/logo upload |
 | `organization_invites_remote.dart` | Pending invites, accept/decline |
 | `organization_members_remote.dart` | Members list, invite-by-email, role changes |
 | `organization_pets_remote.dart` | Org pets, transfers, archived pets, family events |

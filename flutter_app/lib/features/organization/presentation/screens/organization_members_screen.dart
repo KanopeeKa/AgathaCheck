@@ -81,31 +81,6 @@ class OrganizationMembersScreen extends ConsumerWidget {
                     person: person,
                     orgId: orgId,
                     localizedRoleLabel: localizedOrgMemberRole,
-                    canSetPrimaryContact: isOrgAdmin,
-                    onSetPrimaryContact:
-                        isOrgAdmin &&
-                            !person.isExternal &&
-                            !person.isPending &&
-                            (person.role?.isOrgAdmin ?? false)
-                        ? () async {
-                            try {
-                              await ref
-                                  .read(organizationListProvider.notifier)
-                                  .setPrimaryContact(orgId, person.recordId);
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(l.orgPrimaryContact)),
-                                );
-                              }
-                            } catch (e) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(SnackBar(content: Text('$e')));
-                              }
-                            }
-                          }
-                        : null,
                     onTap: person.isPending
                         ? null
                         : () => context.push(person.detailPath(orgId)),

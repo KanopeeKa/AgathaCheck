@@ -408,7 +408,6 @@ CREATE TABLE public.organizations (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     logo_url text DEFAULT ''::text,
-    primary_contact_ref text,
     town character varying(120),
     administrative_area character varying(120),
     description text,

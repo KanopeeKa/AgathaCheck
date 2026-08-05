@@ -1,5 +1,3 @@
-import 'org_primary_contact.dart';
-
 class Organization {
   const Organization({
     required this.id,
@@ -25,7 +23,6 @@ class Organization {
     this.memberCount = 0,
     this.externalCount = 0,
     this.petCount = 0,
-    this.primaryContact,
     this.createdAt,
     this.updatedAt,
   });
@@ -53,7 +50,6 @@ class Organization {
   final int memberCount;
   final int externalCount;
   final int petCount;
-  final OrgPrimaryContact? primaryContact;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -87,7 +83,6 @@ class Organization {
     int? memberCount,
     int? externalCount,
     int? petCount,
-    OrgPrimaryContact? primaryContact,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -116,7 +111,6 @@ class Organization {
       memberCount: memberCount ?? this.memberCount,
       externalCount: externalCount ?? this.externalCount,
       petCount: petCount ?? this.petCount,
-      primaryContact: primaryContact ?? this.primaryContact,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

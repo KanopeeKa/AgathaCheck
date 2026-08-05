@@ -79,8 +79,6 @@ checks (`super_admin`, `admin`, `foster`). See `docs/org-fostering-strategy.md`.
 | POST | `/:orgId/members/:targetUserId/permissions` | `manage_permissions` — grant individual override |
 | DELETE | `/:orgId/members/:targetUserId/permissions/:permissionKey` | `manage_permissions` — revoke override |
 | POST | `/:id/logo` | `super_admin` or `admin` — organisation logo upload |
-| PUT | `/:orgId/primary-contact` | `super_admin` or `admin` — set primary contact ref |
-| DELETE | `/:orgId/primary-contact` | `super_admin` or `admin` — clear primary contact |
 
 ### Foster placements (`/api/foster-placements`)
 | Method | Path | Authorization |

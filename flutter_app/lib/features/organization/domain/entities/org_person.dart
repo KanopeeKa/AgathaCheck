@@ -13,7 +13,6 @@ class OrgPersonSummary {
     this.role,
     this.photoUrl,
     this.isPending = false,
-    this.isPrimaryContact = false,
     this.activeFosterCount = 0,
     this.categoryRank = 3,
   });
@@ -27,7 +26,6 @@ class OrgPersonSummary {
   final OrgMemberRole? role;
   final String? photoUrl;
   final bool isPending;
-  final bool isPrimaryContact;
   final int activeFosterCount;
   final int categoryRank;
 
@@ -59,7 +57,6 @@ class OrgPersonSummary {
           : null,
       photoUrl: json['photo_url']?.toString(),
       isPending: json['is_pending'] == true,
-      isPrimaryContact: json['is_primary_contact'] == true,
       activeFosterCount: json['active_foster_count'] is int
           ? json['active_foster_count'] as int
           : int.tryParse(json['active_foster_count']?.toString() ?? '') ?? 0,
@@ -89,7 +86,6 @@ class OrgPersonDetail extends OrgPersonSummary {
     super.role,
     super.photoUrl,
     super.isPending,
-    super.isPrimaryContact,
     super.activeFosterCount,
     super.categoryRank,
     this.fosterPhone = '',
@@ -132,7 +128,6 @@ class OrgPersonDetail extends OrgPersonSummary {
       role: summary.role,
       photoUrl: summary.photoUrl,
       isPending: summary.isPending,
-      isPrimaryContact: summary.isPrimaryContact,
       activeFosterCount: summary.activeFosterCount,
       categoryRank: summary.categoryRank,
       fosterPhone: json['foster_phone']?.toString() ?? '',

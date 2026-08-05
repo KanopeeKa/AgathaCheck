@@ -22,7 +22,6 @@ export function makeOrgRow(overrides = {}) {
     bio: 'A test organization',
     photo_url: '/photos/org.jpg',
     logo_url: '/photos/org-logo.jpg',
-    primary_contact_ref: null,
     role: 'super_admin',
     member_count: '2',
     external_count: '1',

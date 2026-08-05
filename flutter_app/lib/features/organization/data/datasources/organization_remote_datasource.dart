@@ -93,12 +93,6 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     String token,
   ) => _core.uploadLogo(id, bytes, filename, token);
 
-  Future<OrganizationModel> setPrimaryContact(
-    String orgId,
-    String recordId,
-    String token,
-  ) => _core.setPrimaryContact(orgId, recordId, token);
-
   Future<List<OrganizationMemberModel>> getMembers(
     String orgId,
     String token,

@@ -316,7 +316,7 @@
     "Active member can view opted-out organisation public profile": "P1",
     "Public profile API exposes only public-tier fields": "P1",
     "Profile hero shows name beside overlapping logo": "P1",
-    "Profile overflow menu excludes delete organisation": "P1",
+    "Super admin sees edit action without overflow menu on profile": "P1",
     "Member sees permission-gated profile nav rows without previews": "P1",
     "Super Admin sees Organisation Administration nav row on profile": "P1",
     "Foster Admin does not see Organisation Administration nav row": "P1"
