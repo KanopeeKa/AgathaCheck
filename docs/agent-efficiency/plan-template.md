@@ -15,7 +15,7 @@ Copy to `.agents/plans/<plan_id>.md` and fill in. Pair with `<plan_id>.snapshot.
 | **author** | |
 | **created** | YYYY-MM-DD |
 | **base_branch** | `main` |
-| **default_merge_mode** | `manual` \| `labeled` \| `auto` (default for `/execute-plan`: **`auto`**) |
+| **default_merge_mode** | `auto` (only valid value — agents always merge when gates pass) |
 | **artifact_branch_policy** | `phase-branch` (default) |
 
 **Multi-phase (2+):** prefer `base_branch: cursor/<plan_id>-integration-<suffix>` — phase PRs merge to integration; one final PR integration → `main`. See execute-plan skill §Multi-phase integration branch.
@@ -52,7 +52,7 @@ Repeat for each phase. IDs must match snapshot JSON.
 |-------|-------|
 | **id** | `1` |
 | **branch** | `cursor/<descriptive-name>-aec1` |
-| **merge_mode** | (optional override) |
+| **merge_mode** | Deprecated — always `auto`; omit on new plans |
 | **spawn_allowed** | `false` |
 | **exit_checklist** | `default` \| see [phase-exit-checklists.md](./phase-exit-checklists.md) |
 
@@ -160,5 +160,5 @@ See [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Halt and resume.
 
 - [ ] Snapshot JSON validates: `node scripts/validate_execute_plan_snapshot.js .agents/plans/<plan_id>.snapshot.json`
 - [ ] Control issue created with labels `execute-plan`, `plan:<id>`, `autonomous-approved`
-- [ ] Each phase merge_mode declared (or `default_merge_mode` set)
+- [ ] `default_merge_mode: auto` on snapshot (required)
 - [ ] Plan fits medium feature scope (< 48h expected)

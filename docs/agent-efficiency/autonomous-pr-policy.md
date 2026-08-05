@@ -21,10 +21,11 @@ Single source of truth for `/babysit`, `/babysit-plus`, and `/execute-plan`. Ski
 | Entry | Role |
 |-------|------|
 | `/babysit` | Lightweight: sync, conflicts, comments, CI, push |
-| `/babysit-plus` | Autonomous PR operator: triage, fixes, debt issues, CI budget, merge |
-| `/execute-plan` | Multi-phase orchestrator; delegates merge-readiness to `/babysit-plus` |
+| `/babysit-plus` | Autonomous PR operator: triage, fixes, debt issues, CI budget, **always merge** |
+| `/babysit-uat` | Babysit+ + pre-UAT E2E gate on final merge to `main` |
+| `/execute-plan` | Multi-phase orchestrator; babysit+ on phases; babysit-uat on final main merge |
 
-During `/execute-plan`, always use **babysit-plus**, never plain babysit alone.
+During `/execute-plan`, use **babysit-plus** for intermediate phase PRs and **babysit-uat** for the final PR to `main` — never plain babysit alone.
 
 ### Execute-plan overrides (active gate only)
 
@@ -157,30 +158,13 @@ Then halt. Never weaken CI gates to pass.
 
 ---
 
-## Merge modes
+## Merge (always auto)
 
-| Mode | Behavior |
-|------|----------|
-| `manual` | Agent pushes; human merges |
-| `labeled` | Agent merges only if PR has `agent-merge-ok` |
-| `auto` | Agent merges when all gates pass |
+Babysit+ and execute-plan **always squash-merge** when merge gates pass. There is no `manual` or `labeled` mode.
 
-### Resolving `merge_mode`
+### Halting before merge
 
-Halting gates (always, before mode selection): `do-not-merge` label, control issue `autonomous-revoked`, or PR is `draft`.
-
-Then branch on context:
-
-| Context | Resolution order (first wins) |
-|---------|----------------------------|
-| **Execute-plan** (active phase snapshot) | `phase.merge_mode` → `default_merge_mode` from frozen snapshot |
-| **Standalone babysit-plus** (no snapshot) | explicit caller `merge_mode` input → **`auto`** |
-
-Caller `merge_mode` on a standalone run overrides the `auto` default. During execute-plan, snapshot fields win; do not substitute caller input unless the run documents an explicit override.
-
-`agent-merge-ok` is required only for `labeled`; ignored for `manual`; not sufficient alone for `auto`.
-
-**Snapshot wins over labels** (e.g. `manual` + `agent-merge-ok` → do not merge).
+Do **not** merge when: `do-not-merge` label, control issue `autonomous-revoked`, or PR is `draft` (when merge intended).
 
 ### Merge gates (before agent merge)
 
@@ -197,7 +181,7 @@ Caller `merge_mode` on a standalone run overrides the `auto` default. During exe
 ### Execution
 
 ```bash
-gh pr merge <url> --auto --squash
+gh pr merge <url> --squash
 gh pr view <url> --json state,mergedAt,mergeCommit
 ```
 
@@ -205,18 +189,22 @@ Verify merge commit is ancestor of `origin/<base_branch>` before next phase.
 
 ---
 
-## Post-merge UAT prod-ready (CI-owned)
+## Post-merge pre-UAT
 
-**CI owns promotion** after merge to `main`: `pre-uat-e2e.yml` → `promote-uat.yml` →
-`deploy-uat.yml` → `prod-ready`. Babysit+ **ends at merge** — do not spawn UAT
-subagents or poll deploy from the main session (babysit-plus §8).
+| Skill | When |
+|-------|------|
+| **`/babysit-plus`** | Intermediate execute-plan merges (integration branch); ends at merge |
+| **`/babysit-uat`** | **Final** PR to `main` — babysit+ merge + pre-UAT E2E gate on merge SHA |
 
-After merge (or when babysitting an already-merged fix):
+**CI owns promotion** after pre-UAT green: `pre-uat-e2e.yml` → `promote-uat.yml` →
+`deploy-uat.yml` → `prod-ready`. Neither babysit+ nor babysit-uat polls deploy.
 
-1. Record merge SHA; **declare babysit+ done** — GitHub Actions runs Pre-UAT E2E async.
-2. **Main session must not poll** `pre-uat-e2e.yml`, `deploy-uat.yml`, or prod-ready.
-3. **Success path:** Actions comments / checks on the merge commit and PR.
-4. **Failure path:** next merge agent opens remedial PR for red Pre-UAT on `main`; human manual promote when needed.
+After merge to `main`:
+
+1. Record merge SHA.
+2. **Babysit+** — done (intermediate phases).
+3. **Babysit-uat** — watch `pre-uat-e2e.yml` for **that merge SHA**; remedial loop per `.cursor/skills/babysit-uat/SKILL.md`.
+4. **Do not poll** `deploy-uat.yml` or prod-ready from the main session.
 5. Applies only on **final merge to `main`**, not intermediate integration-branch merges.
 
 See `docs/e2e/uat-deploy-tiers.md` · `docs/ci-cd-gates.md` §3 · `docs/e2e/uat-promote-manual.md`.

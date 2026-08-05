@@ -29,7 +29,7 @@ When session preflight **gate** exits `0`, autonomy is **active**. You have upfr
 
 **User chat (status only):** brief progress + what's next. Non-blocking follow-up questions may be **bundled at the end of a turn** — never as a flow break. See §Scope follow-ups.
 
-**`manual` merge_mode at phase gate:** halt with checkpoint on the control issue (`halt` or milestone comment + `next_action`). Human merges the PR, then comments `resume-plan <plan_id>`. Do not ask in chat.
+**Human checkpoint (no manual merge):** use `halt` on the control issue + `resume-plan <plan_id>` after human action — agents always merge when gates pass.
 
 **Conflicting rules:** execute-plan snapshot wins over generic "stop and ask" guidance. Only halt when the **goal is unclear**, or §Escalation applies. Minor policy wording conflicts with clear intent → proceed. See autonomous-pr-policy §Execute-plan overrides.
 
@@ -44,13 +44,9 @@ When session preflight **gate** exits `0`, autonomy is **active**. You have upfr
 - [github-labels.md](../../docs/agent-efficiency/github-labels.md) — control issue + debt labels
 - [plan-template.md](../../docs/agent-efficiency/plan-template.md) — authoring template
 
-**PR hygiene:** Always delegate to **/babysit-plus**, never plain `/babysit` alone. Orchestrator babysit steps use **`composer-2.5` only**. Workers must complete **pre-PR critical self-review** before opening/updating a PR (`docs/agent-efficiency/pr-review-cost-efficiency.md`).
+**PR hygiene:** Delegate to **/babysit-plus** for intermediate phase PRs and **/babysit-uat** for the **final PR to `main`**. Never plain `/babysit` alone. Orchestrator babysit steps use **`composer-2.5` only**. Workers must complete **pre-PR critical self-review** before opening/updating a PR (`docs/agent-efficiency/pr-review-cost-efficiency.md`).
 
-**Default merge mode:** When triggering `/execute-plan`, use **babysit-plus with `auto` merge** unless the frozen snapshot sets `default_merge_mode` or a per-phase `merge_mode` override. Effective mode per phase:
-
-```
-effective_merge_mode = phase.merge_mode ?? snapshot.default_merge_mode ?? auto
-```
+**Merge:** Always squash-merge when gates pass (no `manual` / `labeled` modes).
 
 ---
 
@@ -81,7 +77,7 @@ Do **not** invoke `/execute-plan example-plan` — `_example` is documentation-o
 Run when drafting a plan, **before** `approve-autonomous`:
 
 1. Copy [plan-template.md](../../docs/agent-efficiency/plan-template.md) → `.agents/plans/<plan_id>.md`
-2. Author snapshot JSON; set **`default_merge_mode: auto`** unless human chose `manual` or `labeled`
+2. Author snapshot JSON; set **`default_merge_mode: auto`** (only valid value)
 3. Validate: `node scripts/validate_execute_plan_snapshot.js .agents/plans/<plan_id>.snapshot.json`
 4. Bootstrap control issue:
    ```bash
@@ -171,7 +167,7 @@ At each phase **§3 Implement scope**, the orchestrator **should** delegate impl
 
 | Role | Owns |
 |------|------|
-| **Orchestrator** | Gate, `set-phase`, PR registration, babysit+ §0–7, merge, next phase |
+| **Orchestrator** | Gate, `set-phase`, PR registration, babysit skill selection, merge, next phase |
 | **Phase worker** (Task sub-agent) | Implement one phase scope; commit on phase branch; return summary |
 
 Spawn a **fresh worker at each phase boundary** (after prior phase `merged`). This limits context drift and mirrors "one agent per phase."
@@ -182,9 +178,14 @@ Spawn a **fresh worker at each phase boundary** (after prior phase `merged`). Th
 
 Invoke **/spawn-sprint-agents** per `spawn_config` before parallel work. Publish ownership map first. Phase PR still goes through orchestrator babysit+.
 
-### Post-merge UAT (CI-owned)
+### Post-merge pre-UAT
 
-After merge to `main`, **GitHub Actions** runs Pre-UAT E2E and promotion — **do not** spawn UAT subagents or poll deploy from the main session. See babysit-plus §8 and [uat-deploy-tiers.md](../../../docs/e2e/uat-deploy-tiers.md).
+| PR target | Skill after CI-ready |
+|-----------|----------------------|
+| Integration / non-`main` base | **/babysit-plus** only — ends at merge |
+| **`main`** (final plan PR) | **/babysit-uat** — pre-UAT E2E gate on merge SHA |
+
+Do **not** poll `deploy-uat` or prod-ready. See [uat-deploy-tiers.md](../../../docs/e2e/uat-deploy-tiers.md) and `/babysit-uat` skill.
 
 ---
 
@@ -266,9 +267,17 @@ Commit plan artifacts on the phase branch (`artifact_branch_policy: phase-branch
   ```
 - Push plan artifact commits to phase branch before babysit-plus
 
-### 5. Babysit+ through merge
+### 5. Babysit through merge
 
-**Main agent** invokes **/babysit-plus** §0–7 for the phase PR (sync → triage → fixes → debt issues → CI → exit checklist → **merge** per effective mode).
+**Final PR to `main`?** Use **/babysit-uat** (babysit+ merge + pre-UAT gate).  
+**Intermediate phase PR** (integration or non-main base)? Use **/babysit-plus** only.
+
+| Check | Skill |
+|-------|-------|
+| `baseRefName == main` **and** (last pending phase **or** integration→main batch PR) | `/babysit-uat` |
+| Otherwise | `/babysit-plus` |
+
+**Main agent** runs the selected skill through merge.
 
 | Parameter | Value |
 |-----------|-------|
@@ -276,9 +285,6 @@ Commit plan artifacts on the phase branch (`artifact_branch_policy: phase-branch
 | `plan_id` | current plan |
 | Phase snapshot | current phase object |
 | `approved_until` | from snapshot |
-| **Effective `merge_mode`** | `phase.merge_mode ?? snapshot.default_merge_mode ?? auto` |
-
-**After merge is verified** (PR `MERGED`, merge commit on base), complete the phase — CI runs Pre-UAT E2E async. **Do not** spawn subagents or poll deploy.
 
 **Phase gate = merge-done** — do not advance until:
 
@@ -286,13 +292,16 @@ Commit plan artifacts on the phase branch (`artifact_branch_policy: phase-branch
 - `merge_commit` recorded
 - `git merge-base --is-ancestor <merge_commit> origin/<base_branch>`
 
+For **babysit-uat** on final main merge, phase gate also requires **pre-UAT E2E green** for that `merge_commit` before `complete-plan`.
+
 ```bash
 gh pr view <url> --json state,mergedAt,mergeCommit,baseRefName
 git fetch origin <base_branch>
 git merge-base --is-ancestor <mergeCommit.oid> origin/<base_branch>
+./scripts/babysit_uat_watch_preuat.sh <mergeCommit.oid> --timeout-min 90
 ```
 
-**UAT prod-ready is not a phase gate.** CI owns deploy observation; on failure the next merge agent or human manual promote heals `main`. **Main orchestrator must not poll deploy-uat.**
+**UAT prod-ready is not a phase gate.** Do not poll deploy-uat.
 
 ### 6. Complete phase
 
@@ -305,9 +314,9 @@ Update snapshot `merge_commit` via runtime (`set-phase` + `saveSnapshot`). Sync 
 
 ### 7. Next phase
 
-If more `pending` phases → loop to §1 **immediately** — no main-session UAT polling.
+If more `pending` phases → loop to §1 **immediately** — no pre-UAT polling on intermediate merges.
 
-If all `merged` → **complete plan** (snapshot + close control issue):
+If all phases `merged` into integration → open **one** PR integration → `main` → **/babysit-uat** → then **complete plan**.
 
 ```bash
 node scripts/execute_plan_runtime.js complete-plan <plan_id> --write
@@ -360,7 +369,8 @@ See autonomous-pr-policy §Escalation. Includes security/crypto, breaking API, p
 
 | Skill | When |
 |-------|------|
-| `/babysit-plus` | **Every phase PR** — triage, debt, CI, merge (default mode `auto`) |
+| `/babysit-plus` | Intermediate phase PRs — triage, debt, CI, merge |
+| `/babysit-uat` | **Final** PR to `main` — babysit+ + pre-UAT E2E |
 | `/pre-push-verify` | Before every push; full suite before merge |
 | `/spawn-sprint-agents` | Phase with `spawn_allowed: true` (parallel within one phase) |
 | Task `generalPurpose` | Per-phase implementation worker (orchestrator retains babysit+ / merge) |

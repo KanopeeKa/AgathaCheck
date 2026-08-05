@@ -37,7 +37,7 @@ An autonomous multi-phase run is driven by:
 | `approved_until` | ISO-8601 UTC | yes | **Mandatory.** Default `approved_at + 48h` |
 | `content_hash` | string | yes | `sha256:` of canonical JSON (excluding this field) |
 | `autonomy` | enum | yes | `active` \| `completed` \| `halted` \| `revoked` |
-| `default_merge_mode` | enum | yes | `manual` \| `labeled` \| `auto` |
+| `default_merge_mode` | enum | yes | `auto` only |
 | `base_branch` | string | yes | Usually `main` or integration parent |
 | `control_issue` | integer | yes | GitHub issue number |
 | `artifact_branch_policy` | enum | yes | `phase-branch` (default) \| `main` |
@@ -77,7 +77,7 @@ artifact_ref:
 | `allowed_exceptions` | enum[] | yes | Closed list — see below |
 | `spawn_allowed` | boolean | yes | If true, may invoke `/spawn-sprint-agents` |
 | `spawn_config` | object \| null | if spawn | Integration branch, ownership map ref |
-| `merge_mode` | enum | no | Overrides `default_merge_mode` |
+| `merge_mode` | enum | no | Deprecated — must be `auto` if present |
 | `merge_method` | enum | no | `squash` \| `merge` \| `rebase` — default `squash` |
 | `exit_checklist` | string | yes | Profile name from phase-exit-checklists.md |
 | `status` | enum | yes | See status model |
@@ -190,11 +190,9 @@ See [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Merge modes. Summary:
 1. `do-not-merge` label → never merge
 2. `autonomous-revoked` on control issue → never merge
 3. PR is `draft` → never merge
-4. Phase `merge_mode` from frozen snapshot
-5. Else `default_merge_mode`
-6. `agent-merge-ok` label required only when effective mode is `labeled`
+Agents **always squash-merge** when merge gates pass. Use `halt` + `resume-plan` for human checkpoints — not withheld merge.
 
-Snapshot wins over PR labels when they disagree (e.g. `manual` + `agent-merge-ok` → do not merge).
+Final PR to `main` uses **/babysit-uat** (pre-UAT E2E gate). Intermediate phase PRs use **/babysit-plus** only.
 
 ---
 

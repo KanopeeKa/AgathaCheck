@@ -1,6 +1,6 @@
 ---
 name: babysit-plus
-description: Autonomous PR operator — mandatory pre-PR critical self-review, triage review comments (must-fix / nits / ignore), apply fixes, track debt issues, CI retry loop, optional merge per frozen plan. Use during /execute-plan phases or when full autonomous PR hygiene is needed. Policy lives in docs/agent-efficiency/autonomous-pr-policy.md.
+description: Autonomous PR operator — mandatory pre-PR critical self-review, triage review comments (must-fix / nits / ignore), apply fixes, track debt issues, CI retry loop, and squash merge when gates pass. Use during /execute-plan intermediate phases or when full autonomous PR hygiene is needed without pre-UAT. Policy lives in docs/agent-efficiency/autonomous-pr-policy.md.
 ---
 
 # Babysit+
@@ -10,9 +10,10 @@ Autonomous PR operator. Extends lightweight `/babysit` with mandatory triage, de
 **Canonical policy (do not restate here):** `docs/agent-efficiency/autonomous-pr-policy.md`  
 **Phase exit profiles:** `docs/agent-efficiency/phase-exit-checklists.md`  
 **Labels / dedupe:** `docs/agent-efficiency/github-labels.md`  
-**Lightweight sibling:** `.cursor/commands/babysit.md` — use plain babysit when debt tracking and merge automation are not required.
+**Lightweight sibling:** `.cursor/commands/babysit.md` — use plain babysit when debt tracking and merge automation are not required.  
+**Pre-UAT sibling:** `.cursor/skills/babysit-uat/SKILL.md` — final merge to `main` when pre-UAT E2E must pass.
 
-During `/execute-plan`, always use **/babysit-plus**, never plain babysit alone.
+During `/execute-plan`, use **/babysit-plus** for intermediate phase PRs and **/babysit-uat** for the **final** PR to `main` — never plain `/babysit` alone.
 
 ---
 
@@ -21,9 +22,8 @@ During `/execute-plan`, always use **/babysit-plus**, never plain babysit alone.
 | Input | Required | Notes |
 |-------|----------|-------|
 | PR URL or branch | yes | `gh pr view` / `ManagePullRequest` |
-| `merge_mode` | no | See §0 step 5 — explicit override; otherwise **`auto`** (standalone) or snapshot (execute-plan) |
 | `plan_id` | when in execute-plan | For debt-issue dedupe keys |
-| Phase snapshot | when in execute-plan | `merge_mode`, `exit_checklist`, `allowed_paths` |
+| Phase snapshot | when in execute-plan | `exit_checklist`, `allowed_paths` |
 | `approved_until` | when in execute-plan | Halt if past expiry |
 
 ---
@@ -62,9 +62,6 @@ Use **`composer-2.5` only** for steps §0–7 (sync, poll, triage, fixes, CI, me
 2. If execute-plan: confirm control issue has `autonomous-approved`, not `autonomous-revoked`, and `approved_until` is in the future (`node scripts/execute_plan_runtime.js gate <plan_id> --labels ...`).
 3. `gh pr view <url> --json state,isDraft,labels,headRefOid,baseRefName`
 4. Stop if: `do-not-merge`, draft (when merge intended), revoked, or expired.
-5. **Resolve effective `merge_mode`** (see autonomous-pr-policy §Merge modes):
-   - **Execute-plan** (active phase snapshot): `phase.merge_mode` → else `default_merge_mode` from snapshot. Caller `merge_mode` input is ignored unless the run explicitly documents an override.
-   - **Standalone** (no snapshot): caller `merge_mode` input if provided → else **`auto`**.
 
 ### 0b. Ready for review + collect automatic reviews (mandatory)
 
@@ -155,37 +152,27 @@ When execute-plan phase declares `exit_checklist`, run every applicable item in 
 
 Always before merge attempt: `./scripts/pre-push.sh` green locally.
 
-### 7. Merge (optional — per `merge_mode`)
+### 7. Merge (always)
 
-Precedence and gates: autonomous-pr-policy §Merge modes + §Merge gates.
-
-**Default:** standalone babysit-plus (no execute-plan snapshot) uses **`auto`** — merge when all gates pass unless the caller overrides `merge_mode`.
-
-| `merge_mode` | Agent may merge when all gates pass? |
-|--------------|--------------------------------------|
-| `manual` | No — push only; human merges |
-| `labeled` | Yes if `agent-merge-ok` label present |
-| `auto` | Yes (default for ad-hoc babysit-plus) |
+When all merge gates pass (autonomous-pr-policy §Merge gates), **always squash-merge** — babysit+ never stops at “merge-ready” without merging.
 
 ```bash
-gh pr merge <url> --squash   # add --auto when using GitHub merge queue
+gh pr merge <url> --squash
 gh pr view <url> --json state,mergedAt,mergeCommit
 ```
 
-Verify merge commit is ancestor of `origin/<base_branch>` before execute-plan advances to next phase.
+Verify merge commit is ancestor of `origin/<base_branch>` before execute-plan advances to the next phase.
 
-### 8. Post-merge UAT (CI-owned — do not spawn or poll)
+**Babysit+ ends here.** Do not poll pre-UAT, promote, or deploy. For final merge to `main` when pre-UAT must pass, delegate to **/babysit-uat** instead.
 
-When the PR merges to **`main`**, **GitHub Actions** owns promotion: `pre-uat-e2e.yml`
-(push) → `promote-uat.yml` (`workflow_run`) → `deploy-uat.yml` → `prod-ready`.
+### 8. Post-merge (out of scope for babysit+)
 
-**Babysit+ ends at merge** (§7). Do **not** spawn UAT subagents, poll `deploy-uat.yml`,
-or dispatch promote from the main session.
+When the PR merges to **`main`**, **GitHub Actions** runs `pre-uat-e2e.yml` async. Babysit+ does **not** watch it.
 
 | Layer | Owns |
 |-------|------|
 | **GitHub Actions** | Pre-UAT E2E, promote tag, deploy, prod-ready |
-| **Next merge agent** | Remedial PR when Pre-UAT E2E on `main` is red |
+| **`/babysit-uat`** | Final merge to `main` + pre-UAT gate + remedial loop |
 | **Human** | [uat-promote-manual.md](../../../docs/e2e/uat-promote-manual.md); ops localhost replay via `scripts/agent-uat-babysit.sh` |
 
 **UAT prod-ready is not a phase gate** for execute-plan. E2E/deploy failure does **not** halt the orchestrator.
@@ -204,4 +191,5 @@ See autonomous-pr-policy §Escalation. Includes security/crypto, breaking API, p
 |-------|------|
 | `/pre-push-verify` | Before every push; full suite before merge |
 | `/spawn-sprint-agents` | Parallel agents inside a phase (when snapshot allows) |
-| `/execute-plan` | Multi-phase orchestrator — delegates PR hygiene here (default merge mode `auto`) |
+| `/babysit-uat` | Final merge to `main` — babysit+ plus pre-UAT E2E gate |
+| `/execute-plan` | Multi-phase orchestrator — babysit+ on phases; babysit-uat on final main merge |

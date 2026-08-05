@@ -10,7 +10,7 @@
 | **plan_id** | `example-plan` |
 | **title** | Extract FosterCard widgets (example) |
 | **base_branch** | `main` |
-| **default_merge_mode** | `manual` |
+| **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
 
 ## Goal
@@ -36,7 +36,7 @@ Demonstrate a two-phase Flutter screen split with schema-compliant snapshot and 
 | **id** | `1` |
 | **branch** | `cursor/example-foster-widgets-aec1` |
 | **exit_checklist** | `flutter-screen-split` |
-| **merge_mode** | `manual` |
+| **merge_mode** | `auto` |
 
 **allowed_paths:** `flutter_app/lib/features/foster/presentation/**`, `flutter_app/test/features/foster/**`
 
@@ -49,7 +49,7 @@ Demonstrate a two-phase Flutter screen split with schema-compliant snapshot and 
 | **id** | `2` |
 | **branch** | `cursor/example-foster-docs-aec1` |
 | **exit_checklist** | `default` |
-| **merge_mode** | `manual` |
+| **merge_mode** | `auto` |
 
 ## Runtime state
 

@@ -52,7 +52,7 @@ test('renderControlIssueTitle uses plan id', () => {
 test('renderControlIssueBody includes phases table', () => {
   const snapshot = loadSnapshotFromPath(exampleSnapshot);
   const body = renderControlIssueBody(snapshot);
-  assert.match(body, /\| 1 \| Extract FosterCard widgets \| manual \| pending \|/);
+  assert.match(body, /\| 1 \| Extract FosterCard widgets \| auto \| pending \|/);
   assert.match(body, /example-plan/);
 });
 

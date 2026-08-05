@@ -119,6 +119,7 @@ run_governance() {
   if $needs_org_e2e_locator_check; then
     node e2e/scripts/check-org-e2e-locators.mjs
   fi
+  node --test scripts/babysit_uat_shard_risk.test.mjs
   bash scripts/ci/check-uat-ssh-action-pin.sh
   bash scripts/ci/shellcheck-uat-deploy-scripts.sh
   bash scripts/ci/assert-prod-deploy-db-commands.sh

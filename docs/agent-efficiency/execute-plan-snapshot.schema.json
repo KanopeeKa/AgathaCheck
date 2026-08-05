@@ -31,7 +31,7 @@
     },
     "default_merge_mode": {
       "type": "string",
-      "enum": ["manual", "labeled", "auto"]
+      "enum": ["auto"]
     },
     "base_branch": { "type": "string", "minLength": 1 },
     "control_issue": { "type": "integer", "minimum": 1 },
@@ -133,7 +133,7 @@
         },
         "merge_mode": {
           "type": "string",
-          "enum": ["manual", "labeled", "auto"]
+          "enum": ["auto"]
         },
         "merge_method": {
           "type": "string",
