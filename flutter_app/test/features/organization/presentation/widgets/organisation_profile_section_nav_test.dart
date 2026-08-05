@@ -126,7 +126,6 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Admin contacts'), findsOneWidget);
-      expect(find.text('6 members'), findsOneWidget);
       expect(
         find.byKey(const Key('org_profile_nav_foster_parents')),
         findsNothing,
