@@ -131,24 +131,6 @@ class OrganizationCoreRemote {
     );
   }
 
-  Future<OrganizationModel> setPrimaryContact(
-    String orgId,
-    String recordId,
-    String token,
-  ) async {
-    final response = await _ctx.client.put(
-      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/primary-contact'),
-      headers: _ctx.headers(token),
-      body: json.encode({'kind': 'member', 'record_id': recordId}),
-    );
-    if (response.statusCode >= 400) {
-      _ctx.throwApiError(response, 'Failed to set primary contact');
-    }
-    return OrganizationModel.fromJson(
-      json.decode(response.body) as Map<String, dynamic>,
-    );
-  }
-
   Future<OrganizationModel> _uploadOrgImage(
     String url,
     Uint8List bytes,

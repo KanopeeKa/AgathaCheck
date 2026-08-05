@@ -141,10 +141,6 @@ class AdminContactCard extends ConsumerWidget {
                                 ),
                               ),
                             ],
-                            if (person.isPrimaryContact) ...[
-                              const SizedBox(height: 6),
-                              _PrimaryBadge(label: l.orgPrimaryContactBadge),
-                            ],
                           ],
                         ),
                       ),
@@ -205,32 +201,6 @@ class AdminContactCard extends ConsumerWidget {
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _PrimaryBadge extends StatelessWidget {
-  const _PrimaryBadge({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: AppColorTokens.organizationLight,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: colorScheme.primary,
         ),
       ),
     );

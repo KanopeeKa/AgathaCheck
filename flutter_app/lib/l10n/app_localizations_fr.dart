@@ -2120,20 +2120,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String orgEmergencyContactTitle(String orgName) {
-    return 'Coordonnées d\'urgence pour $orgName';
-  }
-
-  @override
-  String get orgPrimaryContact => 'Contact principal';
-
-  @override
-  String get orgSetPrimaryContact => 'Définir comme contact principal';
-
-  @override
-  String get orgPrimaryContactBadge => 'Contact principal';
-
-  @override
   String get orgUploadPicture => 'Téléverser une photo';
 
   @override

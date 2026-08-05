@@ -713,13 +713,6 @@
   "@orgMemberCountRegisteredOnly": {
     "placeholders": { "registered": { "type": "int" } }
   },
-  "orgEmergencyContactTitle": "Coordonnées d'urgence pour {orgName}",
-  "@orgEmergencyContactTitle": {
-    "placeholders": { "orgName": { "type": "String" } }
-  },
-  "orgPrimaryContact": "Contact principal",
-  "orgSetPrimaryContact": "Définir comme contact principal",
-  "orgPrimaryContactBadge": "Contact principal",
   "orgUploadPicture": "Téléverser une photo",
   "orgUploadCover": "Téléverser une couverture",
   "orgUploadLogo": "Téléverser un logo",

@@ -767,13 +767,6 @@
   "@orgMemberCountRegisteredOnly": {
     "placeholders": { "registered": { "type": "int" } }
   },
-  "orgEmergencyContactTitle": "Emergency contact details for {orgName}",
-  "@orgEmergencyContactTitle": {
-    "placeholders": { "orgName": { "type": "String" } }
-  },
-  "orgPrimaryContact": "Primary contact",
-  "orgSetPrimaryContact": "Set as primary contact",
-  "orgPrimaryContactBadge": "Primary contact",
   "orgUploadPicture": "Upload picture",
   "orgUploadCover": "Upload cover",
   "orgUploadLogo": "Upload logo",

@@ -94,17 +94,6 @@ mixin RecordingOrganizationRepositoryCoreMixin
   );
 
   @override
-  Future<Organization> setPrimaryContact(
-    String orgId,
-    String recordId,
-    String token,
-  ) async => const Organization(
-    id: 'x',
-    name: 'x',
-    type: OrganizationType.professional,
-  );
-
-  @override
   Future<List<OrganizationMember>> getMembers(
     String orgId,
     String token,

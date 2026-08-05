@@ -41,10 +41,10 @@ Feature: Organisation profile
     Then the profile hero should show the name beside a large overlapping logo
 
   @P1
-  Scenario: Profile overflow menu excludes delete organisation
+  Scenario: Super admin sees edit action without overflow menu on profile
     When "Alice" opens the organisation profile for "Rescue Hearts"
-    Then the profile overflow menu should offer invite and members
-    And the profile overflow menu should not offer delete organisation
+    Then she should see an edit organisation action on the profile
+    And the profile should not show an overflow menu
 
   @P1
   Scenario: Member sees permission-gated profile nav rows without previews

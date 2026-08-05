@@ -3895,30 +3895,6 @@ abstract class AppLocalizations {
   /// **'{registered} registered members'**
   String orgMemberCountRegisteredOnly(int registered);
 
-  /// No description provided for @orgEmergencyContactTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Emergency contact details for {orgName}'**
-  String orgEmergencyContactTitle(String orgName);
-
-  /// No description provided for @orgPrimaryContact.
-  ///
-  /// In en, this message translates to:
-  /// **'Primary contact'**
-  String get orgPrimaryContact;
-
-  /// No description provided for @orgSetPrimaryContact.
-  ///
-  /// In en, this message translates to:
-  /// **'Set as primary contact'**
-  String get orgSetPrimaryContact;
-
-  /// No description provided for @orgPrimaryContactBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'Primary contact'**
-  String get orgPrimaryContactBadge;
-
   /// No description provided for @orgUploadPicture.
   ///
   /// In en, this message translates to:

@@ -46,7 +46,6 @@ describe('Organization image uploads', () => {
                 bio: 'A test organization',
                 photo_url: savedPhotoUrl || '/photos/org.jpg',
                 logo_url: savedLogoUrl || '/photos/org-logo.jpg',
-                primary_contact_ref: null,
                 role: 'super_admin',
                 member_count: '2',
                 external_count: '1',

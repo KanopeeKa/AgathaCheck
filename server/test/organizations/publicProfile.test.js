@@ -25,7 +25,6 @@ const PUBLIC_ALLOWLIST = [
   'email',
   'phone',
   'website',
-  'primary_contact',
 ];
 
 function makePublicOrgRow(overrides = {}) {
@@ -38,7 +37,6 @@ function makePublicOrgRow(overrides = {}) {
     legal_identifier_3: 'SIRET-789',
     public_profile_metadata: { postcode: '62701', internal_secret: 'leak' },
     is_discoverable: true,
-    primary_contact_ref: 'member:ou-1',
     ...overrides,
   });
 }
@@ -49,19 +47,6 @@ describe('GET /organizations/:id/public', () => {
       query: async (sql) => {
         if (sql.includes('SELECT * FROM organizations WHERE id = $1')) {
           return { rows: [makePublicOrgRow()] };
-        }
-        if (sql.includes('FROM organization_users ou') && sql.includes('JOIN users u')) {
-          return {
-            rows: [{
-              record_id: 'ou-1',
-              user_id: 'admin-user',
-              display_name: 'Anna Admin',
-              email: 'anna@example.com',
-              photo_url: '/photos/anna.jpg',
-              role: 'admin',
-              phone: '555-0001',
-            }],
-          };
         }
         return { rows: [] };
       },
@@ -78,15 +63,7 @@ describe('GET /organizations/:id/public', () => {
     expect(res.body.bio).toBe('A test organization');
     expect(res.body).not.toHaveProperty('role');
     expect(res.body).not.toHaveProperty('member_count');
-    expect(res.body.primary_contact).toEqual({
-      id: 'member:ou-1',
-      display_name: 'Anna Admin',
-      email: 'anna@example.com',
-      phone: '555-0001',
-      photo_url: '/photos/anna.jpg',
-    });
-    expect(res.body.primary_contact).not.toHaveProperty('user_id');
-    expect(res.body.primary_contact).not.toHaveProperty('role');
+    expect(res.body).not.toHaveProperty('primary_contact');
   });
 
   it('returns public tier only when Bearer token is present', async () => {
@@ -94,9 +71,6 @@ describe('GET /organizations/:id/public', () => {
       query: async (sql) => {
         if (sql.includes('SELECT * FROM organizations WHERE id = $1')) {
           return { rows: [makePublicOrgRow()] };
-        }
-        if (sql.includes('FROM organization_users ou') && sql.includes('JOIN users u')) {
-          return { rows: [] };
         }
         return { rows: [] };
       },
@@ -133,9 +107,6 @@ describe('GET /organizations/:id/public', () => {
         }
         if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
           return { rows: [{ role: 'admin' }] };
-        }
-        if (sql.includes('FROM organization_users ou') && sql.includes('JOIN users u')) {
-          return { rows: [] };
         }
         return { rows: [] };
       },

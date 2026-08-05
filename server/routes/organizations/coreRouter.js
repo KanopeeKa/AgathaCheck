@@ -5,7 +5,6 @@ import {
   fetchOrgForUser,
   getMemberRole,
   handleOrgImageUpload,
-  loadPrimaryContact,
   orgRowToMap,
   publicOrgRowToMap,
   requireOrgAdmin,
@@ -33,14 +32,9 @@ export function registerCoreRoutes(router, pool) {
            ORDER BY o.name`,
           [userId]
         );
-        const orgs = await Promise.all(result.rows.map(async (row) => {
-          const primaryContact = await loadPrimaryContact(pool, row.id, row.primary_contact_ref);
-          return orgRowToMap({
-            ...row,
-            role: normaliseRole(row.role),
-            primary_contact: primaryContact,
-          });
-        }));
+        const orgs = result.rows.map((row) =>
+          orgRowToMap({ ...row, role: normaliseRole(row.role) }),
+        );
         res.json(orgs);
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
@@ -63,8 +57,7 @@ export function registerCoreRoutes(router, pool) {
             return res.status(404).json({ error: 'Organization not found' });
           }
         }
-        const primaryContact = await loadPrimaryContact(pool, id, row.primary_contact_ref);
-        res.json(publicOrgRowToMap({ ...row, primary_contact: primaryContact }));
+        res.json(publicOrgRowToMap(row));
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }
@@ -103,7 +96,7 @@ export function registerCoreRoutes(router, pool) {
            FROM organizations o WHERE o.id = $1`,
           [orgId]
         );
-        res.status(201).json(orgRowToMap({ ...result.rows[0], primary_contact: null }));
+        res.status(201).json(orgRowToMap(result.rows[0]));
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }
@@ -228,62 +221,4 @@ export function registerCoreRoutes(router, pool) {
       }
     });
 
-    router.put('/:orgId/primary-contact', async (req, res) => {
-      const userId = extractUserId(req);
-      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-      const { orgId } = req.params;
-      const { kind, record_id: recordId, recordId: recordIdCamel } = req.body || {};
-      const personKind = kind || 'member';
-      const personRecordId = recordId || recordIdCamel;
-      if (!personRecordId) {
-        return res.status(400).json({ error: 'record_id is required' });
-      }
-      if (personKind !== 'member') {
-        return res.status(400).json({ error: 'Primary contact must be a registered member' });
-      }
-      try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
-        const memberResult = await pool.query(
-          `SELECT ou.id, ou.role
-           FROM organization_users ou
-           WHERE ou.organization_id = $1 AND ou.id = $2`,
-          [orgId, personRecordId],
-        );
-        if (!memberResult.rows.length) {
-          return res.status(404).json({ error: 'Person not found' });
-        }
-        const role = normaliseRole(memberResult.rows[0].role);
-        if (!isOrgAdmin(role) || role.startsWith('pending_')) {
-          return res.status(400).json({ error: 'Primary contact must be an admin or super admin' });
-        }
-        const contactRef = `member:${personRecordId}`;
-        await pool.query(
-          'UPDATE organizations SET primary_contact_ref = $1, updated_at = NOW() WHERE id = $2',
-          [contactRef, orgId],
-        );
-        const org = await fetchOrgForUser(pool, userId, orgId);
-        if (!org) return res.status(404).json({ error: 'Organization not found' });
-        res.json(org);
-      } catch (err) {
-        res.status(500).json({ error: publicError(err) });
-      }
-    });
-
-    router.delete('/:orgId/primary-contact', async (req, res) => {
-      const userId = extractUserId(req);
-      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-      const { orgId } = req.params;
-      try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
-        await pool.query(
-          'UPDATE organizations SET primary_contact_ref = NULL, updated_at = NOW() WHERE id = $1',
-          [orgId],
-        );
-        const org = await fetchOrgForUser(pool, userId, orgId);
-        if (!org) return res.status(404).json({ error: 'Organization not found' });
-        res.json(org);
-      } catch (err) {
-        res.status(500).json({ error: publicError(err) });
-      }
-    });
 }

@@ -73,15 +73,6 @@ abstract class OrganizationRepositoryImplBase
   }
 
   @override
-  Future<Organization> setPrimaryContact(
-    String orgId,
-    String recordId,
-    String token,
-  ) async {
-    return await dataSource.setPrimaryContact(orgId, recordId, token);
-  }
-
-  @override
   Future<List<OrganizationMember>> getMembers(
     String orgId,
     String token,

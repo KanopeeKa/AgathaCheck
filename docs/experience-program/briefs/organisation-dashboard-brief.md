@@ -213,7 +213,7 @@ The organisation internal dashboard should show a preview set of admin contacts 
 - Name
 - Optional role/specialty summary
 
-The emergency contact person should be clearly marked. The section ends with **See all**.
+The section ends with **See all**.
 
 ### Admin contacts screen
 

@@ -5,7 +5,7 @@
  * Scenario: Active member can view opted-out organisation public profile
  * Scenario: Public profile API exposes only public-tier fields
  * Scenario: Profile hero shows name beside overlapping logo
- * Scenario: Profile overflow menu excludes delete organisation
+ * Scenario: Super admin sees edit action without overflow menu on profile
  * Scenario: Member sees permission-gated profile nav rows without previews
  * Scenario: Super Admin sees Organisation Administration nav row on profile
  * Scenario: Foster Admin does not see Organisation Administration nav row
@@ -44,7 +44,6 @@ const PUBLIC_ALLOWLIST = [
   'email',
   'phone',
   'website',
-  'primary_contact',
 ];
 
 const ORG_NAME = 'Rescue Hearts';
@@ -191,7 +190,7 @@ test.describe('Organisation profile', () => {
     }
   });
 
-  test('@P1 profile overflow menu excludes delete organisation', async ({ page }) => {
+  test('@P1 super admin sees edit action without overflow menu on profile', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const alice = await signupUser(baseURL, {
       firstName: 'Alice',
@@ -210,11 +209,8 @@ test.describe('Organisation profile', () => {
 
     const detail = new OrganizationDetailPage(page);
     await detail.expectLoaded(ORG_NAME);
-    await detail.openMenu();
-    await expect(page.getByRole('menuitem', { name: /Invite Member/i })).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: /Members/i })).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: /Delete Organisation/i })).toHaveCount(0);
-    await page.keyboard.press('Escape');
+    await expect(page.getByRole('button', { name: 'Show menu' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /Edit organisation/i })).toBeVisible();
   });
 
   test('@P1 associate sees pets nav row without inline previews on profile', async ({ page }) => {

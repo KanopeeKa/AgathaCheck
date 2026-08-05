@@ -29,7 +29,6 @@ export {
   orgUploadDir,
   saveOrgImage,
   handleOrgImageUpload,
-  loadPrimaryContact,
   fetchOrgForUser,
   extractUserId,
   orgRowToMap,
@@ -47,7 +46,6 @@ const shared = sharedHeader + sharedBody.replace(/^function /gm, 'function ')
   .replace(/^function orgUploadDir/gm, 'export function orgUploadDir')
   .replace(/^function saveOrgImage/gm, 'export function saveOrgImage')
   .replace(/^function handleOrgImageUpload/gm, 'export function handleOrgImageUpload')
-  .replace(/^async function loadPrimaryContact/gm, 'export async function loadPrimaryContact')
   .replace(/^async function fetchOrgForUser/gm, 'export async function fetchOrgForUser')
   .replace(/^function extractUserId/gm, 'export function extractUserId')
   .replace(/^function orgRowToMap/gm, 'export function orgRowToMap')
