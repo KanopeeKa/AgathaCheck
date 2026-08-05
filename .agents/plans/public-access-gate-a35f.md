@@ -241,10 +241,10 @@ next_action: "continue phase 2 on branch cursor/public-access-api-mode-a35f"
 artifact_ref:
   branch: cursor/public-access-api-mode-a35f
   plan_path: .agents/plans/public-access-gate-a35f.md
-  plan_commit: 7d2ef096359d5ef86f8e5171af8791782b3b0b42
+  plan_commit: 7f3e0cb7f322b5ad509e72efe4d0c0e4691dd07d
   snapshot_path: .agents/plans/public-access-gate-a35f.snapshot.json
-  snapshot_commit: 7d2ef096359d5ef86f8e5171af8791782b3b0b42
-open_prs: []
+  snapshot_commit: 7f3e0cb7f322b5ad509e72efe4d0c0e4691dd07d
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/614"]
 merge_commits: {"1":"08ef7e662e421aacac52e375acde3c188ddee565"}
 debt_issue_refs: []
 ```
