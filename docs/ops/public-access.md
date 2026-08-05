@@ -46,6 +46,8 @@ Env: `PUBLIC_ACCESS_MODE=coming_soon|open` (default **`open`** for local, Jest, 
 
 Boot once (no secrets): `public_access_mode=…`.
 
+**Implementation:** `server/config/publicAccess.js` + `server/middleware/publicAccessGate.js` (wired early in `server/bin/server.js`).
+
 **Contract:** health stays green so deploy/smoke can prove the Node process is up while signup/login/forgot/reset are closed.
 
 ### UAT `UAT_BASIC_AUTH_ENABLED`

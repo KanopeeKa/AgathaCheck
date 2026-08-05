@@ -18,7 +18,9 @@ import fosterPlacementsRoutes from '../routes/fosterPlacements.js';
 import custodyTransfersRoutes from '../routes/custodyTransfers.js';
 import uploadsRoutes from '../routes/uploads.js';
 import { corsOptions } from '../config/security.js';
+import { logPublicAccessModeOnce } from '../config/publicAccess.js';
 import { requestContextMiddleware } from '../middleware/requestContext.js';
+import { publicAccessGate } from '../middleware/publicAccessGate.js';
 
 function getServerDir() {
   try {
@@ -52,8 +54,11 @@ export function createApp(customPool, comparePassword) {
   // Expose the pool so the startup wrapper can close it on graceful shutdown.
   app.locals.pool = pool;
 
+  logPublicAccessModeOnce();
+
   app.set('trust proxy', 1);
   app.use(requestContextMiddleware);
+  app.use(publicAccessGate);
   app.use(cors(corsOptions()));
   app.use(bodyParser.json());
   app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
