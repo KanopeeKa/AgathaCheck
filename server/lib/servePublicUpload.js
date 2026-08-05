@@ -14,7 +14,7 @@ const PUBLIC_UPLOAD_SUBDIRS = new Set([
   'health_photos',
 ]);
 
-const SAFE_FILENAME = /^[0-9a-zA-Z._-]+\.(jpg|jpeg|png|webp|pdf)$/i;
+const SAFE_FILENAME = /^[0-9a-zA-Z][0-9a-zA-Z._-]*\.(jpg|jpeg|png|webp|pdf)$/i;
 
 const EXT_TO_MIME = Object.freeze({
   '.jpg': 'image/jpeg',
@@ -24,8 +24,28 @@ const EXT_TO_MIME = Object.freeze({
   '.pdf': 'application/pdf',
 });
 
-function uploadsRoot() {
+function defaultUploadsRoot() {
   return path.resolve(process.cwd(), 'uploads');
+}
+
+/** Match persistence paths in route shared modules (env overrides). */
+function resolveUploadDir(subdir) {
+  if (subdir === 'org_photos' || subdir === 'org_logos') {
+    if (process.env.ORG_UPLOAD_DIR) {
+      return path.resolve(process.env.ORG_UPLOAD_DIR);
+    }
+    return path.resolve(defaultUploadsRoot(), subdir);
+  }
+  if (subdir === 'health_documents' || subdir === 'health_photos') {
+    if (process.env.HEALTH_UPLOAD_DIR) {
+      return path.resolve(process.env.HEALTH_UPLOAD_DIR);
+    }
+    return path.resolve(defaultUploadsRoot(), subdir);
+  }
+  if (subdir === 'photos') {
+    return path.resolve(defaultUploadsRoot(), 'photos');
+  }
+  return defaultUploadsRoot();
 }
 
 function mimeForFilename(filename) {
@@ -61,12 +81,11 @@ export function resolvePublicUploadFile(relativePath) {
     throw new Error('Not found');
   }
 
-  if (!SAFE_FILENAME.test(filename)) {
+  if (!SAFE_FILENAME.test(filename) || filename.startsWith('.')) {
     throw new Error('Not found');
   }
 
-  const root = uploadsRoot();
-  const dir = subdir ? path.join(root, subdir) : root;
+  const dir = subdir ? resolveUploadDir(subdir) : defaultUploadsRoot();
   if (!fs.existsSync(dir)) {
     throw new Error('Not found');
   }

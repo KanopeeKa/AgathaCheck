@@ -43,6 +43,34 @@ describe('public upload serving', () => {
     expect(() => resolvePublicUploadFile('secrets/file.jpg')).toThrow(/Not found/);
   });
 
+  it('rejects dotfile names', () => {
+    expect(() => resolvePublicUploadFile('.env.pdf')).toThrow(/Not found/);
+    expect(() => resolvePublicUploadFile('org_photos/.hidden.jpg')).toThrow(/Not found/);
+  });
+
+  it('resolves org uploads from ORG_UPLOAD_DIR when set', () => {
+    const customDir = fs.mkdtempSync(path.join(os.tmpdir(), 'org-upload-'));
+    process.env.ORG_UPLOAD_DIR = customDir;
+    const fileId = uuidv4();
+    const filename = `${fileId}.jpg`;
+    fs.writeFileSync(path.join(customDir, filename), Buffer.from('jpeg'));
+
+    const resolved = resolvePublicUploadFile(`org_photos/${filename}`);
+    expect(resolved.filePath).toBe(fs.realpathSync(path.join(customDir, filename)));
+    delete process.env.ORG_UPLOAD_DIR;
+  });
+
+  it('serves legacy root-level uploads via GET /api/uploads/:filename', async () => {
+    const filename = 'fluffy.jpg';
+    fs.writeFileSync(path.join(tmpDir, 'uploads', filename), Buffer.from('jpeg'));
+
+    const app = createApp();
+    const res = await request(app).get(`/api/uploads/${filename}`);
+
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/image\/jpeg/);
+  });
+
   it('serves files via GET /api/uploads', async () => {
     const fileId = uuidv4();
     const filename = `${fileId}.png`;
