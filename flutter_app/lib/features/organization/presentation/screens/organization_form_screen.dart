@@ -190,216 +190,237 @@ class _OrganizationFormScreenState
           left: _isEditing ? 0 : 16,
           right: _isEditing ? 0 : 16,
         ),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 600),
-            child: AutofillGroup(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (editingOrg != null) ...[
-                      OrganizationBrandingSection(
-                        org: editingOrg,
-                        theme: theme,
-                        colorScheme: colorScheme,
-                        l: l,
-                        nameController: _nameController,
-                        selectedType: _selectedType,
-                        onTypeChanged: (value) =>
-                            setState(() => _selectedType = value),
-                        nameValidator: _nameValidator,
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: _isEditing ? 16 : 0,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          if (!_isEditing) ...[
-                            TextFormField(
-                              key: const Key('org_name_field'),
-                              controller: _nameController,
-                              decoration: InputDecoration(
-                                labelText: '${l.organizationName} *',
-                                prefixIcon: const Icon(Icons.business),
-                              ),
-                              autofillHints: const [
-                                AutofillHints.organizationName,
-                              ],
-                              validator: _nameValidator,
-                              textInputAction: TextInputAction.next,
-                            ),
-                            const SizedBox(height: 16),
-                            DropdownButtonFormField<OrganizationType>(
-                              key: const Key('org_type_dropdown'),
-                              value: _selectedType,
-                              decoration: InputDecoration(
-                                labelText: l.organizationType,
-                                prefixIcon: const Icon(Icons.category),
-                              ),
-                              items: OrganizationType.values.map((type) {
-                                return DropdownMenuItem(
-                                  value: type,
-                                  child: Text(_localizedTypeLabel(l, type)),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                if (value != null) {
-                                  setState(() => _selectedType = value);
-                                }
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                          ],
-                          TextFormField(
-                            key: const Key('org_email_field'),
-                            controller: _emailController,
-                            decoration: InputDecoration(
-                              labelText: l.orgEmail,
-                              prefixIcon: const Icon(Icons.email),
-                            ),
-                            keyboardType: TextInputType.emailAddress,
-                            autofillHints: const [AutofillHints.email],
-                            textInputAction: TextInputAction.next,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            key: const Key('org_phone_field'),
-                            controller: _phoneController,
-                            decoration: InputDecoration(
-                              labelText: l.orgPhone,
-                              prefixIcon: const Icon(Icons.phone),
-                            ),
-                            keyboardType: TextInputType.phone,
-                            autofillHints: const [
-                              AutofillHints.telephoneNumber,
-                            ],
-                            textInputAction: TextInputAction.next,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            key: const Key('org_address_field'),
-                            controller: _addressController,
-                            decoration: InputDecoration(
-                              labelText: l.orgAddress,
-                              prefixIcon: const Icon(Icons.location_on),
-                            ),
-                            autofillHints: const [
-                              AutofillHints.fullStreetAddress,
-                            ],
-                            textInputAction: TextInputAction.next,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            key: const Key('org_town_field'),
-                            controller: _townController,
-                            decoration: InputDecoration(
-                              labelText: l.orgTown,
-                              prefixIcon: const Icon(Icons.location_city),
-                            ),
-                            textInputAction: TextInputAction.next,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            key: const Key('org_administrative_area_field'),
-                            controller: _administrativeAreaController,
-                            decoration: InputDecoration(
-                              labelText: l.orgAdministrativeArea,
-                              prefixIcon: const Icon(Icons.map_outlined),
-                            ),
-                            textInputAction: TextInputAction.next,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            key: const Key('org_postcode_field'),
-                            controller: _postcodeController,
-                            decoration: InputDecoration(
-                              labelText: l.orgPostcode,
-                              prefixIcon: const Icon(
-                                Icons.markunread_mailbox_outlined,
-                              ),
-                            ),
-                            textInputAction: TextInputAction.next,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            key: const Key('org_website_field'),
-                            controller: _websiteController,
-                            decoration: InputDecoration(
-                              labelText: l.orgWebsite,
-                              prefixIcon: const Icon(Icons.language),
-                            ),
-                            keyboardType: TextInputType.url,
-                            autofillHints: const [AutofillHints.url],
-                            textInputAction: TextInputAction.next,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            key: const Key('org_bio_field'),
-                            controller: _bioController,
-                            decoration: InputDecoration(
-                              labelText: l.orgBio,
-                              prefixIcon: const Icon(Icons.description),
-                              alignLabelWithHint: true,
-                            ),
-                            maxLines: 4,
-                            textInputAction: TextInputAction.done,
-                          ),
-                          const SizedBox(height: 24),
-                          FilledButton(
-                            key: const Key('org_save_button'),
-                            onPressed: _saving ? null : _save,
-                            child: _saving
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : Text(
-                                    _isEditing
-                                        ? l.editOrganization
-                                        : l.createOrganization,
-                                  ),
-                          ),
-                          if (_isEditing && editingOrg != null)
-                            OrgPermissionGate(
-                              orgId: widget.orgId!,
-                              permissionKey: 'manage_permissions',
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 16),
-                                child: OutlinedButton.icon(
-                                  key: const Key('org_delete_button'),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: colorScheme.error,
-                                    side: BorderSide(color: colorScheme.error),
-                                  ),
-                                  icon: const Icon(Icons.delete_outline),
-                                  label: Text(l.deleteOrganization),
-                                  onPressed: () => showOrgDeleteDialog(
-                                    context: context,
-                                    ref: ref,
-                                    orgId: widget.orgId!,
-                                    org: editingOrg,
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
+        child: _isEditing
+            ? _buildFormBody(
+                l: l,
+                theme: theme,
+                colorScheme: colorScheme,
+                editingOrg: editingOrg,
+              )
+            : Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 600),
+                  child: _buildFormBody(
+                    l: l,
+                    theme: theme,
+                    colorScheme: colorScheme,
+                    editingOrg: editingOrg,
+                  ),
                 ),
               ),
+      ),
+    );
+  }
+
+  Widget _buildFormBody({
+    required AppLocalizations l,
+    required ThemeData theme,
+    required ColorScheme colorScheme,
+    required Organization? editingOrg,
+  }) {
+    return AutofillGroup(
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (editingOrg != null) ...[
+              OrganizationBrandingSection(
+                org: editingOrg,
+                theme: theme,
+                colorScheme: colorScheme,
+                l: l,
+                nameController: _nameController,
+                selectedType: _selectedType,
+                onTypeChanged: (value) =>
+                    setState(() => _selectedType = value),
+                nameValidator: _nameValidator,
+              ),
+              const SizedBox(height: 16),
+            ],
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: _isEditing ? 16 : 0,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (!_isEditing) ...[
+                    TextFormField(
+                      key: const Key('org_name_field'),
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: '${l.organizationName} *',
+                        prefixIcon: const Icon(Icons.business),
+                      ),
+                      autofillHints: const [
+                        AutofillHints.organizationName,
+                      ],
+                      validator: _nameValidator,
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<OrganizationType>(
+                      key: const Key('org_type_dropdown'),
+                      value: _selectedType,
+                      decoration: InputDecoration(
+                        labelText: l.organizationType,
+                        prefixIcon: const Icon(Icons.category),
+                      ),
+                      items: OrganizationType.values.map((type) {
+                        return DropdownMenuItem(
+                          value: type,
+                          child: Text(_localizedTypeLabel(l, type)),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() => _selectedType = value);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  TextFormField(
+                    key: const Key('org_email_field'),
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: l.orgEmail,
+                      prefixIcon: const Icon(Icons.email),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    autofillHints: const [AutofillHints.email],
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    key: const Key('org_phone_field'),
+                    controller: _phoneController,
+                    decoration: InputDecoration(
+                      labelText: l.orgPhone,
+                      prefixIcon: const Icon(Icons.phone),
+                    ),
+                    keyboardType: TextInputType.phone,
+                    autofillHints: const [
+                      AutofillHints.telephoneNumber,
+                    ],
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    key: const Key('org_address_field'),
+                    controller: _addressController,
+                    decoration: InputDecoration(
+                      labelText: l.orgAddress,
+                      prefixIcon: const Icon(Icons.location_on),
+                    ),
+                    autofillHints: const [
+                      AutofillHints.fullStreetAddress,
+                    ],
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    key: const Key('org_town_field'),
+                    controller: _townController,
+                    decoration: InputDecoration(
+                      labelText: l.orgTown,
+                      prefixIcon: const Icon(Icons.location_city),
+                    ),
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    key: const Key('org_administrative_area_field'),
+                    controller: _administrativeAreaController,
+                    decoration: InputDecoration(
+                      labelText: l.orgAdministrativeArea,
+                      prefixIcon: const Icon(Icons.map_outlined),
+                    ),
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    key: const Key('org_postcode_field'),
+                    controller: _postcodeController,
+                    decoration: InputDecoration(
+                      labelText: l.orgPostcode,
+                      prefixIcon: const Icon(
+                        Icons.markunread_mailbox_outlined,
+                      ),
+                    ),
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    key: const Key('org_website_field'),
+                    controller: _websiteController,
+                    decoration: InputDecoration(
+                      labelText: l.orgWebsite,
+                      prefixIcon: const Icon(Icons.language),
+                    ),
+                    keyboardType: TextInputType.url,
+                    autofillHints: const [AutofillHints.url],
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    key: const Key('org_bio_field'),
+                    controller: _bioController,
+                    decoration: InputDecoration(
+                      labelText: l.orgBio,
+                      prefixIcon: const Icon(Icons.description),
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 4,
+                    textInputAction: TextInputAction.done,
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton(
+                    key: const Key('org_save_button'),
+                    onPressed: _saving ? null : _save,
+                    child: _saving
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            _isEditing
+                                ? l.editOrganization
+                                : l.createOrganization,
+                          ),
+                  ),
+                  if (_isEditing && editingOrg != null)
+                    OrgPermissionGate(
+                      orgId: widget.orgId!,
+                      permissionKey: 'manage_permissions',
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: OutlinedButton.icon(
+                          key: const Key('org_delete_button'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: colorScheme.error,
+                            side: BorderSide(color: colorScheme.error),
+                          ),
+                          icon: const Icon(Icons.delete_outline),
+                          label: Text(l.deleteOrganization),
+                          onPressed: () => showOrgDeleteDialog(
+                            context: context,
+                            ref: ref,
+                            orgId: widget.orgId!,
+                            org: editingOrg,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

@@ -95,6 +95,7 @@ void main() {
     );
     expect(find.byKey(const Key('org_upload_logo_button')), findsOneWidget);
     expect(find.byKey(const Key('org_upload_cover_button')), findsOneWidget);
+    expect(find.byKey(const Key('org_cover_guidance')), findsOneWidget);
     expect(find.textContaining('1200×450'), findsOneWidget);
     expect(find.textContaining('256×256'), findsOneWidget);
   });

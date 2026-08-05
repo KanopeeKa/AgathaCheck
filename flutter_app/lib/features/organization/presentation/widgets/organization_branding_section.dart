@@ -128,6 +128,28 @@ class OrganizationBrandingSection extends ConsumerWidget {
                         )
                       : _CoverPlaceholder(org: org),
                   Positioned(
+                    left:
+                        OrgProfileHeroLayout.logoHeight +
+                        OrgProfileHeroLayout.bandGap,
+                    right: 52,
+                    bottom: 10,
+                    child: Text(
+                      l.orgImageHeroGuidance,
+                      key: const Key('org_cover_guidance'),
+                      maxLines: 3,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: Colors.white.withValues(alpha: 0.95),
+                        height: 1.25,
+                        shadows: const [
+                          Shadow(
+                            color: Color(0x99000000),
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
                     right: 12,
                     bottom: 12,
                     child: Semantics(
@@ -145,20 +167,6 @@ class OrganizationBrandingSection extends ConsumerWidget {
                   ),
                 ],
               ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            OrgProfileHeroLayout.horizontalPadding,
-            8,
-            OrgProfileHeroLayout.horizontalPadding,
-            0,
-          ),
-          child: Text(
-            l.orgImageHeroGuidance,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ),
