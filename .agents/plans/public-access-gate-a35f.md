@@ -237,14 +237,14 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "phase 1 implementation complete on cursor/public-access-teaser-docs-a35f — await orchestrator merge gate"
+next_action: "continue phase 1 on branch cursor/public-access-teaser-docs-a35f"
 artifact_ref:
   branch: cursor/public-access-teaser-docs-a35f
   plan_path: .agents/plans/public-access-gate-a35f.md
-  plan_commit: 0595d5cb654e74e19598334fb9f989b503972b51
+  plan_commit: 5dfbef994392930dbe0c6bd56fa5d18038779e32
   snapshot_path: .agents/plans/public-access-gate-a35f.snapshot.json
-  snapshot_commit: 0595d5cb654e74e19598334fb9f989b503972b51
-open_prs: []
+  snapshot_commit: 5dfbef994392930dbe0c6bd56fa5d18038779e32
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/613"]
 merge_commits: {}
 debt_issue_refs: []
 ```

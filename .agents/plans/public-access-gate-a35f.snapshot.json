@@ -4,7 +4,7 @@
   "approved_at": "2026-08-05T19:49:00Z",
   "approved_by": "user-chat-2026-08-05-execute-plan-standing-grant",
   "approved_until": "2026-08-07T19:49:00Z",
-  "content_hash": "sha256:6658241dc063d723940d4f3254f1d31ceb3d315dad72d073fbd96a09215e8d61",
+  "content_hash": "sha256:3c205d2e66d55b8c8370ddd005b95b5f6924a5108f6f07a40c27cf6d0bd2ad59",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/public-access-gate-integration-a35f",
@@ -52,9 +52,8 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/613",
+      "pr_head_sha": "5dfbef994392930dbe0c6bd56fa5d18038779e32",
       "debt_issue_refs": []
     },
     {
