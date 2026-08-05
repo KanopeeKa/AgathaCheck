@@ -124,9 +124,9 @@ public/**
 
 **Exit criteria:**
 
-- [ ] Default mode does not break existing Jest / local E2E
-- [ ] `coming_soon` blocks signup; health still 200
-- [ ] No raw exception text in 403/5xx bodies
+- [x] Default mode does not break existing Jest / local E2E
+- [x] `coming_soon` blocks signup; health still 200
+- [x] No raw exception text in 403/5xx bodies
 
 ---
 
@@ -237,14 +237,14 @@ autonomy: active
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
-next_action: "start phase 2: checkout cursor/public-access-api-mode-a35f"
+next_action: "continue phase 2 on branch cursor/public-access-api-mode-a35f"
 artifact_ref:
-  branch: cursor/public-access-gate-integration-a35f
+  branch: cursor/public-access-api-mode-a35f
   plan_path: .agents/plans/public-access-gate-a35f.md
-  plan_commit: 08ef7e662e421aacac52e375acde3c188ddee565
+  plan_commit: 7f3e0cb7f322b5ad509e72efe4d0c0e4691dd07d
   snapshot_path: .agents/plans/public-access-gate-a35f.snapshot.json
-  snapshot_commit: 08ef7e662e421aacac52e375acde3c188ddee565
-open_prs: []
+  snapshot_commit: 7f3e0cb7f322b5ad509e72efe4d0c0e4691dd07d
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/614"]
 merge_commits: {"1":"08ef7e662e421aacac52e375acde3c188ddee565"}
 debt_issue_refs: []
 ```
