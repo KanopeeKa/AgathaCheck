@@ -59,6 +59,7 @@ class OrganizationListNotifier extends AsyncNotifier<List<Organization>> {
     final repo = ref.read(organizationRepositoryProvider);
     final org = await repo.uploadPhoto(orgId, bytes, filename, token);
     ref.invalidateSelf();
+    ref.invalidate(organisationProfileProvider(orgId));
     return org;
   }
 
@@ -71,6 +72,7 @@ class OrganizationListNotifier extends AsyncNotifier<List<Organization>> {
     final repo = ref.read(organizationRepositoryProvider);
     final org = await repo.uploadLogo(orgId, bytes, filename, token);
     ref.invalidateSelf();
+    ref.invalidate(organisationProfileProvider(orgId));
     return org;
   }
 
