@@ -12,7 +12,7 @@ import {
   getRedactedOrgPet,
   signupUser,
 } from '../support/api';
-import { enableFlutterAccessibility, refreshFlutterAccessibility, semanticsByName, waitForFlutterRoute } from '../support/flutter';
+import { enableFlutterAccessibility, refreshFlutterAccessibility, waitForFlutterRoute } from '../support/flutter';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
 
@@ -68,7 +68,10 @@ test.describe('Redacted organisation pet profile', () => {
     await enableFlutterAccessibility(page);
     await refreshFlutterAccessibility(page);
 
-    await expect(semanticsByName(page, new RegExp(`Pet:\\s*${PET_NAME}`, 'i'))).toBeVisible();
+    // v3: associates see pet count on profile section nav (full pets list is permission-gated).
+    await expect(
+      page.getByRole('button', { name: /Pets.*\b1\b.*pet/i }).first(),
+    ).toBeVisible();
   });
 
   test('@P1 associate opens redacted pet profile with summary fields only', async ({ page }) => {
@@ -80,8 +83,8 @@ test.describe('Redacted organisation pet profile', () => {
     await enableFlutterAccessibility(page);
     await refreshFlutterAccessibility(page);
 
-    // Redacted profile: pet name in app bar; species is covered by API allowlist test below.
-    await expect(page.getByRole('banner', { name: new RegExp(PET_NAME, 'i') })).toBeVisible();
+    // Redacted profile: pet name in shell title; species is covered by API allowlist test below.
+    await expect(page.getByRole('heading', { name: PET_NAME })).toBeVisible();
     await expect(page.getByText(/timeline|health|foster session|document/i)).toHaveCount(0);
   });
 
