@@ -108,7 +108,7 @@ void main() {
         child: const OrganisationProfilePets(orgId: _orgId),
       );
 
-      expect(find.text('No pets in this organization'), findsOneWidget);
+      expect(find.text('No pets in this organisation'), findsOneWidget);
     });
 
     testWidgets('associate tap opens redacted route', (tester) async {

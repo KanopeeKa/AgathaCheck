@@ -4,8 +4,8 @@
   "approved_at": "2026-08-05T10:46:00Z",
   "approved_by": "user chat 2026-08-05: /execute-plan org-ux-polish all phases, green pre-UAT E2E",
   "approved_until": "2026-08-07T10:46:00Z",
-  "content_hash": "sha256:5963f8783321607e0646f2248bb45ed7d8c85545ed14b236a904e5986496704e",
-  "autonomy": "active",
+  "content_hash": "sha256:7215fd82049cb867161f8cfc5e2627528b1fd2889a9b241520ec64641a7cf05c",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/org-ux-polish-integration-badd",
   "control_issue": 598,
@@ -36,9 +36,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/599",
+      "pr_head_sha": "ee238ca9877d99b49186581839ed71a1f67eaee4"
     },
     {
       "id": "2",
@@ -68,12 +70,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/600",
+      "pr_head_sha": "cf131a9a"
     },
     {
       "id": "3",
@@ -99,12 +100,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/600",
+      "pr_head_sha": "cf131a9a"
     },
     {
       "id": "4",
@@ -129,12 +129,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/600",
+      "pr_head_sha": "cf131a9a"
     },
     {
       "id": "5",
@@ -159,12 +158,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/600",
+      "pr_head_sha": "cf131a9a"
     }
   ]
 }
