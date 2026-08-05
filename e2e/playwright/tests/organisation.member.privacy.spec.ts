@@ -66,7 +66,7 @@ test.describe('Organisation member privacy', () => {
       .or(page.getByRole('button', { name: /^Save$/i }))
       .first()
       .click();
-    await expect(page.getByText(/privacy settings saved/i)).toBeVisible({
+    await expect(page.getByText(/privacy settings saved/i).first()).toBeVisible({
       timeout: 15_000,
     });
   });
