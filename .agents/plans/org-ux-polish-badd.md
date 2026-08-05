@@ -70,7 +70,17 @@ Fix org cover/logo display on UAT (static asset URL routing), refresh providers 
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
+next_action: "continue phase 1 on branch cursor/org-ux-a0-upload-fix-badd"
+artifact_ref:
+  branch: cursor/org-ux-a0-upload-fix-badd
+  plan_path: .agents/plans/org-ux-polish-badd.md
+  plan_commit: bf16e4c23274fd760c537d1b56167458abfd856d
+  snapshot_path: .agents/plans/org-ux-polish-badd.snapshot.json
+  snapshot_commit: bf16e4c23274fd760c537d1b56167458abfd856d
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
 ```
