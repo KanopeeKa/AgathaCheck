@@ -90,20 +90,47 @@ jobs:
     outputs:
       prod_deploy_enabled: ${{ steps.gate.outputs.prod_deploy_enabled }}
       skip_deploy: ${{ steps.gate.outputs.skip_deploy }}
+      public_mode: ${{ steps.gate.outputs.public_mode }}
     steps:
-      - name: Evaluate PROD_DEPLOY_ENABLED
+      - name: Evaluate PROD_DEPLOY_ENABLED and PROD_PUBLIC_MODE
         id: gate
         run: |
+          set -euo pipefail
           enabled=false
           skip_deploy=true
+          mode="${{ vars.PROD_PUBLIC_MODE }}"
           if [ "${{ vars.PROD_DEPLOY_ENABLED }}" = "true" ]; then
             enabled=true
             skip_deploy=false
+            case "$mode" in
+              coming_soon|app) ;;
+              *)
+                echo "::error::PROD_PUBLIC_MODE must be exactly 'coming_soon' or 'app' when PROD_DEPLOY_ENABLED=true (got: '${mode:-<unset>}')"
+                echo "::error::Fail closed — set repository/environment variable PROD_PUBLIC_MODE before enabling prod deploy."
+                exit 1
+                ;;
+            esac
           fi
           {
             echo "prod_deploy_enabled=${enabled}"
             echo "skip_deploy=${skip_deploy}"
+            echo "public_mode=${mode}"
           } >> "$GITHUB_OUTPUT"
+
+      - name: Write gate summary
+        if: always()
+        run: |
+          {
+            echo "## Production deploy gate"
+            echo
+            echo "| Flag | Value |"
+            echo "|------|-------|"
+            echo "| PROD_DEPLOY_ENABLED | \`${{ vars.PROD_DEPLOY_ENABLED || '<unset>' }}\` |"
+            echo "| PROD_PUBLIC_MODE | \`${{ vars.PROD_PUBLIC_MODE || '<unset>' }}\` |"
+            echo "| prod_deploy_enabled | \`${{ steps.gate.outputs.prod_deploy_enabled || 'n/a' }}\` |"
+            echo "| skip_deploy | \`${{ steps.gate.outputs.skip_deploy || 'n/a' }}\` |"
+            echo "| public_mode | \`${{ steps.gate.outputs.public_mode || '<unset>' }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   deploy:
     name: Build and deploy to Production
@@ -129,8 +156,24 @@ jobs:
           echo "sha=${sha}" >> "$GITHUB_OUTPUT"
           echo "target_ref=${{ needs.resolve-trigger.outputs.target_ref }}" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve PROD_PUBLIC_MODE
+        id: public_mode
+        run: |
+          set -euo pipefail
+          mode="${{ needs.gate-prod-deploy.outputs.public_mode }}"
+          case "$mode" in
+            coming_soon|app) ;;
+            *)
+              echo "::error::PROD_PUBLIC_MODE must be exactly 'coming_soon' or 'app' (got: '${mode:-<unset>}')"
+              exit 1
+              ;;
+          esac
+          echo "public_mode=${mode}" >> "$GITHUB_OUTPUT"
+          echo "prod_public_mode=${mode}"
+
       - name: Download promoted UAT web artifact
         id: promote
+        if: steps.public_mode.outputs.public_mode == 'app'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -145,6 +188,7 @@ jobs:
 
       - name: Set up Flutter
         if: >-
+          steps.public_mode.outputs.public_mode == 'app' &&
           steps.promote.outcome == 'failure' &&
           github.event_name == 'workflow_dispatch' &&
           inputs.rebuild_if_missing == true
@@ -154,6 +198,7 @@ jobs:
 
       - name: Cache Flutter dependencies
         if: >-
+          steps.public_mode.outputs.public_mode == 'app' &&
           steps.promote.outcome == 'failure' &&
           github.event_name == 'workflow_dispatch' &&
           inputs.rebuild_if_missing == true
@@ -168,6 +213,7 @@ jobs:
 
       - name: Rebuild web (non-promoted fallback)
         if: >-
+          steps.public_mode.outputs.public_mode == 'app' &&
           steps.promote.outcome == 'failure' &&
           github.event_name == 'workflow_dispatch' &&
           inputs.rebuild_if_missing == true
@@ -184,10 +230,12 @@ jobs:
           bash scripts/ci/append-summary.sh "PROD frontend source" \
             "promotion_path=non-promoted-rebuild" \
             "deploy_sha=${{ steps.deploy_sha.outputs.sha }}" \
+            "prod_public_mode=${{ steps.public_mode.outputs.public_mode }}" \
             "run_id=${{ github.run_id }}"
 
       - name: Fail closed when promotion unavailable
         if: >-
+          steps.public_mode.outputs.public_mode == 'app' &&
           steps.promote.outcome == 'failure' && (
             github.event_name != 'workflow_dispatch' ||
             inputs.rebuild_if_missing != true
@@ -198,16 +246,30 @@ jobs:
           exit 1
 
       - name: Record promoted frontend source
-        if: steps.promote.outcome == 'success'
+        if: >-
+          steps.public_mode.outputs.public_mode == 'app' &&
+          steps.promote.outcome == 'success'
         run: |
           bash scripts/ci/append-summary.sh "PROD frontend source" \
             "promotion_path=promoted" \
             "deploy_sha=${{ steps.deploy_sha.outputs.sha }}" \
             "artifact_name=${{ steps.promote.outputs.artifact_name }}" \
             "uat_run_id=${{ steps.promote.outputs.uat_run_id }}" \
+            "prod_public_mode=${{ steps.public_mode.outputs.public_mode }}" \
             "run_id=${{ github.run_id }}"
 
-      - name: Deploy frontend to agathatrack.com
+      - name: Record coming-soon teaser frontend source
+        if: steps.public_mode.outputs.public_mode == 'coming_soon'
+        run: |
+          bash scripts/ci/append-summary.sh "PROD frontend source" \
+            "promotion_path=coming-soon-teaser" \
+            "local_dir=public/coming-soon/" \
+            "deploy_sha=${{ steps.deploy_sha.outputs.sha }}" \
+            "prod_public_mode=coming_soon" \
+            "run_id=${{ github.run_id }}"
+
+      - name: Deploy Flutter frontend to agathatrack.com
+        if: steps.public_mode.outputs.public_mode == 'app'
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.PROD_FTP_SERVER }}
@@ -215,6 +277,20 @@ jobs:
           password: ${{ secrets.PROD_FTP_PASSWORD }}
           server-dir: ./
           local-dir: ./flutter_app/build/web/
+          exclude: |
+            **/backend/**
+            **/.htaccess
+            **/.last_build_id
+
+      - name: Deploy coming-soon teaser to agathatrack.com
+        if: steps.public_mode.outputs.public_mode == 'coming_soon'
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.PROD_FTP_SERVER }}
+          username: ${{ secrets.PROD_FTP_USERNAME }}
+          password: ${{ secrets.PROD_FTP_PASSWORD }}
+          server-dir: ./
+          local-dir: ./public/coming-soon/
           exclude: |
             **/backend/**
             **/.htaccess
@@ -379,12 +455,21 @@ jobs:
           end=$(date +%s)
           start="${JOB_START_EPOCH:-$end}"
           dur=$((end - start))
+          promo_path='rebuild-or-failed'
+          if [ "${{ steps.public_mode.outputs.public_mode }}" = "coming_soon" ]; then
+            promo_path='coming-soon-teaser'
+          elif [ "${{ steps.promote.outcome }}" = "success" ]; then
+            promo_path='promoted'
+          fi
           bash scripts/ci/append-summary.sh "Production deploy job" \
             "workflow=deploy-prod" \
             "job=deploy" \
             "ref=${{ steps.deploy_sha.outputs.target_ref }}" \
             "sha=${{ steps.deploy_sha.outputs.sha }}" \
-            "promotion_path=${{ steps.promote.outcome == 'success' && 'promoted' || 'rebuild-or-failed' }}" \
+            "prod_public_mode=${{ steps.public_mode.outputs.public_mode || vars.PROD_PUBLIC_MODE || '<unset>' }}" \
+            "PROD_DEPLOY_ENABLED=${{ vars.PROD_DEPLOY_ENABLED || '<unset>' }}" \
+            "PROD_PUBLIC_MODE=${{ vars.PROD_PUBLIC_MODE || '<unset>' }}" \
+            "promotion_path=${promo_path}" \
             "artifact_name=${{ steps.promote.outputs.artifact_name || format('web-build-{0}', steps.deploy_sha.outputs.sha) }}" \
             "uat_run_id=${{ steps.promote.outputs.uat_run_id || needs.resolve-trigger.outputs.uat_run_id || '' }}" \
             "run_id=${{ github.run_id }}" \
@@ -409,6 +494,8 @@ jobs:
             echo
             echo "| Field | Value |"
             echo "|-------|-------|"
+            echo "| PROD_DEPLOY_ENABLED | \`${{ vars.PROD_DEPLOY_ENABLED || '<unset>' }}\` |"
+            echo "| PROD_PUBLIC_MODE | \`${{ vars.PROD_PUBLIC_MODE || '<unset>' }}\` |"
             echo "| commit_sha | \`${{ needs.resolve-trigger.outputs.commit_sha }}\` |"
             echo "| uat_run_id | \`${{ needs.resolve-trigger.outputs.uat_run_id || 'n/a' }}\` |"
             echo "| trigger | \`${{ needs.resolve-trigger.outputs.trigger_source }}\` |"
@@ -488,18 +575,10 @@ jobs:
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Wait for production to become healthy
-        run: |
-          set -e
-          for attempt in $(seq 1 12); do
-            if curl -sf "${PROD_BASE_URL}/backend/health" | grep -q '"status":"OK"'; then
-              echo "Backend healthy after attempt ${attempt}"
-              break
-            fi
-            echo "Waiting for Passenger restart (${attempt}/12)..."
-            sleep 10
-          done
-          curl -sf "${PROD_BASE_URL}/backend/health"
-          curl -sf "${PROD_BASE_URL}/landing" -o /dev/null
+        env:
+          PROD_BASE_URL: ${{ env.PROD_BASE_URL }}
+          PROD_PUBLIC_MODE: ${{ vars.PROD_PUBLIC_MODE }}
+        run: bash scripts/prod-post-deploy-smoke.sh
 
       - name: Write smoke job summary
         if: always()
@@ -511,6 +590,9 @@ jobs:
             "workflow=deploy-prod" \
             "job=smoke" \
             "sha=${{ needs.resolve-trigger.outputs.commit_sha }}" \
+            "prod_public_mode=${{ vars.PROD_PUBLIC_MODE || '<unset>' }}" \
+            "PROD_DEPLOY_ENABLED=${{ vars.PROD_DEPLOY_ENABLED || '<unset>' }}" \
+            "PROD_PUBLIC_MODE=${{ vars.PROD_PUBLIC_MODE || '<unset>' }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 
