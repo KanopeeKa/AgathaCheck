@@ -37,7 +37,7 @@ const STATUS_REASON = new Set([
   'uat_paused',
 ]);
 
-const MERGE_MODES = new Set(['manual', 'labeled', 'auto']);
+const MERGE_MODES = new Set(['auto']);
 const AUTONOMY = new Set(['active', 'completed', 'halted', 'revoked']);
 const ARTIFACT_POLICY = new Set(['phase-branch', 'main']);
 

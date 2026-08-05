@@ -47,7 +47,6 @@ Remove revoke label; comment `resume-plan <plan_id>`.
 
 | Label | Purpose |
 |-------|---------|
-| `agent-merge-ok` | Required for `labeled` merge mode |
 | `do-not-merge` | Babysit+ and execute-plan skip merge |
 | `snag` | Optional — trivial follow-up micro-PR (see [atomic-pr-policy.md](./atomic-pr-policy.md)) |
 
