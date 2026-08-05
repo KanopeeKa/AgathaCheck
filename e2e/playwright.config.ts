@@ -8,6 +8,23 @@ const tlsInsecure = process.env.E2E_TLS_INSECURE === '1';
 const isLiveUat = tlsInsecure;
 const uatWafStoragePath = path.join(__dirname, 'playwright', '.uat-waf-storage.json');
 
+const basicAuthEnabled = process.env.UAT_BASIC_AUTH_ENABLED === 'true';
+const basicAuthUser = process.env.UAT_BASIC_AUTH_USER ?? '';
+const basicAuthPassword = process.env.UAT_BASIC_AUTH_PASSWORD ?? '';
+
+if (isLiveUat && basicAuthEnabled && (!basicAuthUser || !basicAuthPassword)) {
+  throw new Error(
+    'UAT_BASIC_AUTH_ENABLED=true on live UAT but UAT_BASIC_AUTH_USER and/or UAT_BASIC_AUTH_PASSWORD are empty. ' +
+      'Fail closed — set both secrets or disable the flag. See docs/ops/public-access.md.',
+  );
+}
+
+/** HTTP Basic Auth for cPanel Directory Privacy — live UAT only; never on localhost. */
+const httpCredentials =
+  isLiveUat && basicAuthUser && basicAuthPassword
+    ? { username: basicAuthUser, password: basicAuthPassword }
+    : undefined;
+
 const sharedUse = {
   baseURL,
   ignoreHTTPSErrors: tlsInsecure,
@@ -20,6 +37,7 @@ const sharedUse = {
   screenshot: 'only-on-failure' as const,
   video: 'retain-on-failure' as const,
   ...devices['Desktop Chrome'],
+  ...(httpCredentials ? { httpCredentials } : {}),
 };
 
 export default defineConfig({

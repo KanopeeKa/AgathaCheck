@@ -11,3 +11,5 @@ Canonical ops: [`docs/ops/public-access.md`](../../docs/ops/public-access.md). P
 3. **`isLiveUatTarget` vs `isLiveProdTarget`** — UAT-only behavior (WAF warmup, E2E bypass token, `prepareLiveApiAccess`, live stealth, Basic Auth credentials) must gate on **`isLiveUatTarget`**. Use **`isLiveProdTarget`** for prod-only checks. Keep **`isLiveHostingTarget`** only for “any live `*.agathatrack.com`” concerns (e.g. longer timeouts).
 
 4. **Smoke mode contracts** — Teaser mode: body must include `data-site-mode="coming-soon"`; Flutter `main.dart.js` must **not** be served. API `coming_soon`: health **200**, auth **403** `public_access_closed`. UAT Basic Auth on: anonymous **401** proof before credentialed checks.
+
+5. **UAT Basic Auth CI** — `UAT_BASIC_AUTH_ENABLED` (vars) + `UAT_BASIC_AUTH_USER`/`PASSWORD` (secrets). Flag default **off**. When on: `uat-post-deploy-smoke.sh` anonymous 401 proof then `curl -u`; Playwright live UAT uses `httpCredentials`; missing secrets → fail closed. Localhost / pre-UAT unchanged.

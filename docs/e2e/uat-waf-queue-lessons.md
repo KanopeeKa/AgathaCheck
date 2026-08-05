@@ -27,6 +27,10 @@ deploy-uat smoke failed on "Warm up UAT auth before live smoke"
 
 ## WAF / smoke lessons
 
+### 0. HTTP 401 ≠ WAF (Basic Auth is before Tiger Protect)
+
+cPanel **Directory Privacy** (HTTP Basic Auth) returns **401** (sometimes 403) *before* the request reaches Tiger Protect or the app. Smoke `failure_kind=basic_auth` — do **not** classify anonymous 401 as WAF. WAF challenges are HTML pages (often 503) with `o2s-browser-check` / “Security check” markers. When `UAT_BASIC_AUTH_ENABLED=true`, CI sends credentials after an anonymous 401 proof; see [public-access.md](../ops/public-access.md).
+
 ### 1. Curl and Node `fetch` cannot solve o2switch JS challenges
 
 Tiger Protect (`o2s-browser-check`) requires a **real browser with JS**. No User-Agent trick, retry loop, or header change fixes curl/Node on auth endpoints.
