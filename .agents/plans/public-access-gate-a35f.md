@@ -241,9 +241,9 @@ next_action: "continue phase 3 on branch cursor/public-access-prod-deploy-a35f"
 artifact_ref:
   branch: cursor/public-access-prod-deploy-a35f
   plan_path: .agents/plans/public-access-gate-a35f.md
-  plan_commit: c9d0485d4a94661437077f6e7421b96e10262fdb
+  plan_commit: a8dbcd63fa37ae9cd176d5553db97ca158ae0b41
   snapshot_path: .agents/plans/public-access-gate-a35f.snapshot.json
-  snapshot_commit: c9d0485d4a94661437077f6e7421b96e10262fdb
+  snapshot_commit: a8dbcd63fa37ae9cd176d5553db97ca158ae0b41
 open_prs: []
 merge_commits: {"1":"08ef7e662e421aacac52e375acde3c188ddee565","2":"6449ed01bc08d07067a631abbeb371c4cff191d9"}
 debt_issue_refs: []

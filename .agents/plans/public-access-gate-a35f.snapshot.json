@@ -4,7 +4,7 @@
   "approved_at": "2026-08-05T19:49:00Z",
   "approved_by": "user-chat-2026-08-05-execute-plan-standing-grant",
   "approved_until": "2026-08-07T19:49:00Z",
-  "content_hash": "sha256:6ff8d869c29872adae1c0537f3458e864dda08bd7aa861b964d88f9e977c95aa",
+  "content_hash": "sha256:0214f9341177efece513bf8afcb60974596f337837aa229be41f8f71b295a1bb",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/public-access-gate-integration-a35f",
