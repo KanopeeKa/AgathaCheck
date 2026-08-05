@@ -4,7 +4,7 @@
   "approved_at": "2026-08-05T19:49:00Z",
   "approved_by": "user-chat-2026-08-05-execute-plan-standing-grant",
   "approved_until": "2026-08-07T19:49:00Z",
-  "content_hash": "sha256:b7b42a1a52bf5383c2b90376e3f2989da393a2919833855d96ab350f3401ac23",
+  "content_hash": "sha256:6ff8d869c29872adae1c0537f3458e864dda08bd7aa861b964d88f9e977c95aa",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/public-access-gate-integration-a35f",
@@ -98,6 +98,7 @@
         ".github/workflows/deploy-prod.yml",
         "scripts/prod-post-deploy-smoke.sh",
         "scripts/ci/prod-post-deploy-smoke.test.js",
+        "docs/ops/public-access.md",
         "docs/promotion-contract.md",
         ".agents/plans/public-access-gate-a35f.*"
       ],
@@ -115,12 +116,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {

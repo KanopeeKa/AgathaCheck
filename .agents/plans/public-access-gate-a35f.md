@@ -171,9 +171,9 @@ flutter_app/**
 
 **Exit criteria:**
 
-- [ ] Truth table documented and smoke script fixture-tested
-- [ ] No weakening of merge gates
-- [ ] Teaser path does not require UAT web artifact
+- [x] Truth table documented and smoke script fixture-tested
+- [x] No weakening of merge gates
+- [x] Teaser path does not require UAT web artifact
 
 ---
 
@@ -237,13 +237,13 @@ autonomy: active
 current_phase: 3
 last_completed_phase: 2
 halt_reason: null
-next_action: "start phase 3: checkout cursor/public-access-prod-deploy-a35f"
+next_action: "continue phase 3 on branch cursor/public-access-prod-deploy-a35f"
 artifact_ref:
-  branch: cursor/public-access-gate-integration-a35f
+  branch: cursor/public-access-prod-deploy-a35f
   plan_path: .agents/plans/public-access-gate-a35f.md
-  plan_commit: 6449ed01bc08d07067a631abbeb371c4cff191d9
+  plan_commit: c9d0485d4a94661437077f6e7421b96e10262fdb
   snapshot_path: .agents/plans/public-access-gate-a35f.snapshot.json
-  snapshot_commit: 6449ed01bc08d07067a631abbeb371c4cff191d9
+  snapshot_commit: c9d0485d4a94661437077f6e7421b96e10262fdb
 open_prs: []
 merge_commits: {"1":"08ef7e662e421aacac52e375acde3c188ddee565","2":"6449ed01bc08d07067a631abbeb371c4cff191d9"}
 debt_issue_refs: []
