@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # Run live UAT smoke gate (warmup-uat + uat-smoke in one Playwright process).
 # On Tiger Protect WAF rate-limit, wait and retry once — IP whitelisting is not available.
+#
+# Basic Auth (cPanel Directory Privacy): when UAT_BASIC_AUTH_ENABLED=true, both
+# UAT_BASIC_AUTH_USER and UAT_BASIC_AUTH_PASSWORD must be set (Playwright
+# httpCredentials + smoke). Fail closed early if the flag is on and secrets are empty.
+# See docs/ops/public-access.md.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -8,6 +13,13 @@ cd "$ROOT/e2e"
 
 COOLDOWN_SEC="${UAT_WAF_GATE_COOLDOWN_SEC:-180}"
 MAX_WAF_RETRIES="${UAT_WAF_GATE_RETRIES:-1}"
+
+if [[ "${UAT_BASIC_AUTH_ENABLED:-}" == "true" ]]; then
+  if [[ -z "${UAT_BASIC_AUTH_USER:-}" || -z "${UAT_BASIC_AUTH_PASSWORD:-}" ]]; then
+    echo "::error title=uat_basic_auth_secrets_missing::UAT_BASIC_AUTH_ENABLED=true but UAT_BASIC_AUTH_USER and/or UAT_BASIC_AUTH_PASSWORD are empty. Fail closed before live gate."
+    exit 1
+  fi
+fi
 
 run_gate() {
   rm -f playwright/.uat-waf-storage.json

@@ -595,6 +595,11 @@ jobs:
         env:
           UAT_BASE_URL: ${{ env.UAT_BASE_URL }}
           WAF_FAIL_FAST_STREAK: '3'
+          # Optional Directory Privacy — default off (vars unset / not true).
+          # When UAT_BASIC_AUTH_ENABLED=true, USER/PASSWORD secrets are required.
+          UAT_BASIC_AUTH_ENABLED: ${{ vars.UAT_BASIC_AUTH_ENABLED }}
+          UAT_BASIC_AUTH_USER: ${{ secrets.UAT_BASIC_AUTH_USER }}
+          UAT_BASIC_AUTH_PASSWORD: ${{ secrets.UAT_BASIC_AUTH_PASSWORD }}
         run: bash scripts/uat-post-deploy-smoke.sh
 
       # Light HTTP smoke only — full E2E runs in pre-uat-e2e.yml; live browser E2E is nightly (uat-live-e2e.yml).

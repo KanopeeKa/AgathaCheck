@@ -3,7 +3,7 @@ import { createHealthEntry, createPet, type TestUser } from '../support/api';
 import { applyLiveHostingStealth } from '../support/stealth';
 import { createTestUser } from '../support/ui-auth';
 import { clearLiveApiAccess, prepareLiveApiAccess } from '../support/waf';
-import { isLiveHostingTarget } from '../support/hosting';
+import { isLiveUatTarget } from '../support/hosting';
 import { LandingPage } from '../pages/landing.page';
 import { PetListPage } from '../pages/pet-list.page';
 import {
@@ -63,7 +63,7 @@ export async function loginAs(
   const petList = new PetListPage(page);
   const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
   await clearBrowserSessionState(page);
-  if (isLiveHostingTarget(baseURL)) {
+  if (isLiveUatTarget(baseURL)) {
     await prepareLiveApiAccess(page, baseURL);
   }
   await landing.goto();

@@ -1,7 +1,7 @@
 // requires Node ≥ 18 (fetch + AbortSignal.timeout)
 
 import { appendFileSync } from 'node:fs';
-import { isLiveHostingTarget } from './hosting';
+import { isLiveUatTarget } from './hosting';
 
 const WAF_MARKERS = ['o2s-browser-check', 'Security check', 'Test de sécurité'];
 const HEALTH_OK_MARKER = '"status":"OK"';
@@ -115,7 +115,7 @@ function writeWafDeferralSummary(attempts: number, elapsedMs: number): void {
 /** Fail fast on real UAT outages; defer o2switch WAF to browser warmup (#332). */
 export default async function globalSetup(): Promise<void> {
   const baseUrlCandidate = process.env.E2E_BASE_URL ?? process.env.UAT_BASE_URL ?? '';
-  if (!isLiveHostingTarget(baseUrlCandidate)) {
+  if (!isLiveUatTarget(baseUrlCandidate)) {
     return;
   }
   if (process.env.E2E_SKIP_NODE_UAT_PREFLIGHT === '1') {

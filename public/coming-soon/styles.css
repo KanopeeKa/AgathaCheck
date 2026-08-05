@@ -1,0 +1,138 @@
+:root {
+  --plum: #755b68;
+  --plum-soft: #e7dce2;
+  --plum-light: #f4eef2;
+  --teal: #218b6c;
+  --teal-soft: #d8efe6;
+  --teal-light: #eaf7f2;
+  --heading: #2d3338;
+  --body: #394249;
+  --muted: #68737a;
+  --font: "Manrope", "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: var(--font);
+  color: var(--body);
+  background:
+    radial-gradient(ellipse 80% 55% at 12% 18%, var(--teal-soft) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 88% 12%, var(--plum-soft) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 45% at 70% 88%, var(--teal-light) 0%, transparent 55%),
+    linear-gradient(165deg, #f3f8f6 0%, #f7f4f2 42%, #f5f0f3 100%);
+  background-attachment: fixed;
+}
+
+.stage {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2.5rem 1.5rem 3rem;
+  animation: fade-rise 0.9s ease-out both;
+}
+
+.brand-logo {
+  display: block;
+  width: min(42vw, 220px);
+  height: auto;
+  margin: 0 0 1.25rem;
+  animation: soft-float 5.5s ease-in-out infinite;
+}
+
+.brand-name {
+  margin: 0 0 1rem;
+  font-size: clamp(2.25rem, 6vw, 3.35rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--plum);
+  animation: fade-rise 0.9s ease-out 0.12s both;
+}
+
+.headline {
+  margin: 0 0 0.85rem;
+  max-width: 28rem;
+  font-size: clamp(1.15rem, 2.8vw, 1.4rem);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--heading);
+  animation: fade-rise 0.9s ease-out 0.22s both;
+}
+
+.support {
+  margin: 0;
+  max-width: 32rem;
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--body);
+  animation: fade-rise 0.9s ease-out 0.32s both;
+}
+
+.support-fr {
+  margin: 1.35rem 0 0;
+  max-width: 32rem;
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--muted);
+  animation: fade-rise 0.9s ease-out 0.42s both;
+}
+
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes soft-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .brand-name,
+  .headline,
+  .support,
+  .support-fr,
+  .brand-logo {
+    animation: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .stage {
+    padding: 2rem 1.15rem 2.5rem;
+  }
+
+  .brand-logo {
+    width: min(52vw, 168px);
+    margin-bottom: 1rem;
+  }
+}
