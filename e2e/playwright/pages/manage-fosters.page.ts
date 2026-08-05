@@ -66,9 +66,18 @@ export class ManageFostersPage {
     ).toBeVisible();
   }
 
-  async addManualFoster(name: string, email: string): Promise<void> {
+  async openOverflowMenu(): Promise<void> {
     await enableFlutterAccessibility(this.page);
-    await this.page.getByRole('button', { name: 'Add foster manually' }).click();
+    const menu = this.page
+      .locator('[flt-semantics-identifier="manage_fosters_menu"]')
+      .or(this.page.getByRole('button', { name: 'Show menu' }));
+    await menu.first().click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async addManualFoster(name: string, email: string): Promise<void> {
+    await this.openOverflowMenu();
+    await this.page.getByRole('menuitem', { name: 'Add foster manually' }).click();
     await fillTextbox(this.page, 'Display name', name);
     await fillTextbox(this.page, 'Email', email);
     const terms = this.page.getByRole('checkbox', {
