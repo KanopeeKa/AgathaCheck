@@ -6,7 +6,12 @@ void main() {
     test('maps current API roles', () {
       expect(OrgMemberRole.fromWire('super_admin'), OrgMemberRole.superAdmin);
       expect(OrgMemberRole.fromWire('admin'), OrgMemberRole.admin);
-      expect(OrgMemberRole.fromWire('foster'), OrgMemberRole.foster);
+      expect(OrgMemberRole.fromWire('associate'), OrgMemberRole.associate);
+    });
+
+    test('maps legacy foster wire to associate', () {
+      expect(OrgMemberRole.fromWire('foster'), OrgMemberRole.associate);
+      expect(OrgMemberRole.fromWire('pending_foster'), OrgMemberRole.pendingAssociate);
     });
 
     test('maps legacy roles', () {
@@ -17,7 +22,8 @@ void main() {
     test('round-trips wire values', () {
       expect(OrgMemberRole.superAdmin.toWire(), 'super_admin');
       expect(OrgMemberRole.admin.toWire(), 'admin');
-      expect(OrgMemberRole.foster.toWire(), 'foster');
+      expect(OrgMemberRole.associate.toWire(), 'associate');
+      expect(OrgMemberRole.foster.toWire(), 'associate');
     });
   });
 }

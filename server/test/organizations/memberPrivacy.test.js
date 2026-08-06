@@ -51,9 +51,9 @@ function ctx(overrides = {}) {
 
 describe('orgMemberPrivacy resolver', () => {
   describe('defaults and floors', () => {
-    it('applies foster phone/email defaults', () => {
+    it('uses standard contact defaults for all wire roles', () => {
       expect(defaultPrivacyForRole('foster').phone_visibility).toBe(
-        CONTACT_VISIBILITY_ADMINS_AND_FOSTER_MANAGERS,
+        CONTACT_VISIBILITY_ADMINS_OR_NAMED,
       );
       expect(defaultPrivacyForRole('associate').phone_visibility).toBe(
         CONTACT_VISIBILITY_ADMINS_OR_NAMED,

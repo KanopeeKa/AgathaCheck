@@ -78,6 +78,9 @@ class OrgPeopleList extends ConsumerWidget {
               role: person.role,
               isPending: person.isPending,
               isExternal: person.isExternal,
+              fosterApprovalState: person.fosterApprovalState,
+              fosterNeedsAttention: person.fosterNeedsAttention,
+              activeFosterCount: person.activeFosterCount,
               isSelf: isSelf,
               onTap: person.isPending
                   ? null
