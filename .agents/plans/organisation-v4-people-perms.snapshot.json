@@ -4,7 +4,7 @@
   "approved_at": "2026-08-06T17:20:00Z",
   "approved_by": "user chat 2026-08-06: /execute-plan implement full org v4 people/permissions/foster spec — no permission between phases",
   "approved_until": "2026-08-08T17:20:00Z",
-  "content_hash": "sha256:dbbb3b35ce65aa82227c5581f5ffa4347024ac9c714ec99c7c454c8be41e5ebc",
+  "content_hash": "sha256:f14d56d63b901c1214db10221ba898b8a1c19530cac561347120cfd34e6139fc",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/organisation-v4-people-perms-integration-63a7",
@@ -36,12 +36,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {

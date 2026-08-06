@@ -26,7 +26,16 @@ autonomy: active
 current_phase: A
 last_completed_phase: null
 halt_reason: null
-next_action: Implement Phase A — Create/Edit org template parity
+next_action: "continue phase A on branch cursor/org-v4-a-create-edit-form-63a7"
+artifact_ref:
+  branch: cursor/org-v4-a-create-edit-form-63a7
+  plan_path: .agents/plans/organisation-v4-people-perms.md
+  plan_commit: 49f6d3e68d1f4c0824f1568ffe8627d4766a5bd8
+  snapshot_path: .agents/plans/organisation-v4-people-perms.snapshot.json
+  snapshot_commit: 49f6d3e68d1f4c0824f1568ffe8627d4766a5bd8
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
 ```
 
 ## Phases
