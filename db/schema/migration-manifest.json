@@ -49,7 +49,8 @@
     "040_backfill_weight_entries_from_pets.sql",
     "041_pet_activity_events.sql",
     "042_org_member_privacy.sql",
-    "043_remove_org_primary_contact.sql"
+    "043_remove_org_primary_contact.sql",
+    "046_email_templates.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

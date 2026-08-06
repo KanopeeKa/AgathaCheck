@@ -159,6 +159,10 @@ class OrganizationPermissionsRemote {
     required String subject,
     required String bodyHtml,
     required String bodyText,
+<<<<<<< HEAD
+=======
+    String locale = 'en',
+>>>>>>> origin/cursor/org-v4-g-foster-invite-63a7
     required String token,
   }) async {
     final response = await _ctx.client.put(
@@ -170,6 +174,10 @@ class OrganizationPermissionsRemote {
         'subject': subject,
         'body_html': bodyHtml,
         'body_text': bodyText,
+<<<<<<< HEAD
+=======
+        'locale': locale,
+>>>>>>> origin/cursor/org-v4-g-foster-invite-63a7
       }),
     );
     if (response.statusCode >= 400) {

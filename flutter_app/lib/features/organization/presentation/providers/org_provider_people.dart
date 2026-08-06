@@ -96,6 +96,23 @@ class OrgPeopleNotifier
     await repo.deleteExternalFosterParent(arg, recordId, token);
     ref.invalidateSelf();
   }
+
+  Future<Map<String, dynamic>> onboardAsFoster({
+    String? email,
+    List<String>? userIds,
+  }) async {
+    final token = ref.read(orgTokenProvider)!;
+    final repo = ref.read(organizationRepositoryProvider);
+    final result = await repo.fosterInvite(
+      arg,
+      email: email,
+      userIds: userIds,
+      token: token,
+    );
+    ref.invalidateSelf();
+    ref.invalidate(orgFosterParentsProvider(arg));
+    return result;
+  }
 }
 
 final orgPeopleProvider =

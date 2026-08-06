@@ -77,6 +77,23 @@ class OrganizationFosterParentsRemote {
     return data;
   }
 
+  Future<Map<String, dynamic>> fosterInvite(
+    String orgId,
+    Map<String, dynamic> body,
+    String token,
+  ) async {
+    final response = await _ctx.client.post(
+      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/foster-invite'),
+      headers: _ctx.headers(token),
+      body: json.encode(body),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to send foster invite');
+    }
+    return data;
+  }
+
   Future<Map<String, dynamic>> createExternalFosterParent(
     String orgId, {
     required String displayName,

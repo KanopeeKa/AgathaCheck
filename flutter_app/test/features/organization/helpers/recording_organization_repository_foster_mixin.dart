@@ -52,6 +52,17 @@ mixin RecordingOrganizationRepositoryFosterMixin
   );
 
   @override
+  Future<Map<String, dynamic>> fosterInvite(
+    String orgId, {
+    String? email,
+    List<String>? userIds,
+    required String token,
+  }) async => {
+    'channel': email != null ? 'email' : 'in_app',
+    'approval_state': 'under_review',
+  };
+
+  @override
   Future<FosterParent> createExternalFosterParent(
     String orgId, {
     required String displayName,

@@ -2,8 +2,6 @@ import 'dart:typed_data';
 
 import '../entities/archived_pet.dart';
 import '../entities/custody_transfer.dart';
-import '../entities/foster_onboarding_step.dart';
-import '../entities/foster_onboarding_step.dart';
 import '../entities/foster_parent.dart';
 import '../entities/foster_self_prefs.dart';
 import '../entities/foster_placement.dart';
@@ -138,24 +136,10 @@ abstract class OrganizationRepository {
     String? email,
     required String token,
   });
-  Future<FosterOnboardingStatus> confirmFosterOnboardingStep(
-    String orgId,
-    OrgPersonKind kind,
-    String recordId,
-    String stepKey, {
-    required String token,
-  });
   Future<Map<String, dynamic>> fosterInvite(
     String orgId, {
     String? email,
     List<String>? userIds,
-    required String token,
-  });
-  Future<FosterOnboardingStatus> confirmFosterOnboardingStep(
-    String orgId,
-    OrgPersonKind kind,
-    String recordId,
-    String stepKey, {
     required String token,
   });
   Future<FosterParent> createExternalFosterParent(
@@ -476,11 +460,6 @@ abstract class OrganizationRepository {
     String permissionKey,
     String token,
   );
-  Future<Map<String, dynamic>> batchMemberPermissions(
-    String orgId,
-    List<Map<String, dynamic>> changes,
-    String token,
-  );
   Future<List<Map<String, dynamic>>> getOrgAuditEvents(
     String orgId,
     String token,
@@ -492,6 +471,7 @@ abstract class OrganizationRepository {
     required String subject,
     required String bodyHtml,
     required String bodyText,
+    String locale = 'en',
     required String token,
   });
   Future<Map<String, dynamic>> getRolePermissionDefaults(String orgId, String token);

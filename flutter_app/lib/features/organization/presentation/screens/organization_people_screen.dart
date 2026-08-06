@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/services/admin_contacts.dart';
+import '../../domain/services/foster_visibility.dart';
 import '../../domain/services/org_people.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../providers/org_provider_people.dart';
 import '../providers/organization_providers.dart';
 import '../utils/org_people_route_params.dart';
 import '../widgets/admin_contacts/admin_contact_invite_dialog.dart';
@@ -63,9 +65,28 @@ class _OrganizationPeopleScreenState
     _exitSelectionMode();
   }
 
+  Future<void> _onboardSelectedAsFoster() async {
+    if (_selectedUserIds.isEmpty) return;
+    final l = AppLocalizations.of(context)!;
+    try {
+      await ref
+          .read(orgPeopleProvider(widget.orgId).notifier)
+          .onboardAsFoster(userIds: _selectedUserIds.toList());
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.orgFosterInviteSentInApp)),
+      );
+      _exitSelectionMode();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+    }
+  }
+
   List<Widget> _buildContextualActions({
     required AppLocalizations l,
     required bool canManageAdmins,
+    required bool canOnboardFoster,
   }) {
     final actions = <Widget>[];
 
@@ -82,6 +103,8 @@ class _OrganizationPeopleScreenState
           OrgPeopleBulkActionsMenu(
             selectedCount: _selectedUserIds.length,
             onChangeRole: _navigateToChangeRole,
+            onOnboardFoster: _onboardSelectedAsFoster,
+            canOnboardFoster: canOnboardFoster,
           ),
         );
       }
@@ -120,6 +143,7 @@ class _OrganizationPeopleScreenState
     final viewerUserId = ref.watch(authProvider.select((s) => s.user?.id));
     final canManageAdmins =
         _adminsOnly && canManageAdminContacts(viewerRole, widget.orgId);
+    final canOnboardFoster = canManageFosters(viewerRole, widget.orgId);
     final colorScheme = Theme.of(context).colorScheme;
     final l = AppLocalizations.of(context)!;
     final baseTitle = _adminsOnly ? l.adminContactsTitle : l.people;
@@ -135,6 +159,7 @@ class _OrganizationPeopleScreenState
       contextualActions: _buildContextualActions(
         l: l,
         canManageAdmins: canManageAdmins,
+        canOnboardFoster: canOnboardFoster,
       ),
       child: peopleAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
