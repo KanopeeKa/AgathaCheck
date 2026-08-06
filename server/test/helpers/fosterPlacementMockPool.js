@@ -262,6 +262,9 @@ export function buildFosterPlacementMockPool() {
     if (sql.includes('INSERT INTO audit_events')) {
       return { rows: [{ id: 'audit-1' }] };
     }
+    if (sql.includes('FROM org_foster_parents') && sql.includes('user_id = $2')) {
+      return { rows: [{ id: 'rel-1' }] };
+    }
     if (sql.includes('SELECT id FROM org_foster_parents')) {
       return { rows: [] };
     }

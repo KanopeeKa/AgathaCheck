@@ -132,7 +132,7 @@ describe('Organizations API', () => {
         const res = await request(a)
           .post(`/api/organizations/${orgId}/invite`)
           .set('Authorization', `Bearer ${token}`)
-          .send({ email: 'x@y.com', role: 'foster' });
+          .send({ email: 'x@y.com', role: 'associate' });
         expect(res.statusCode).toBe(200);
       });
   

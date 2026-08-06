@@ -62,7 +62,7 @@ export class OrganizationDetailPage {
   async openAdminContacts(): Promise<void> {
     const orgId = this.orgIdFromUrl();
     const adminContactsRoute =
-      /\/o\/orgs\/[^/]+\/people(?:\/|$|\?)[^#]*(?:\?|&)filter=admins/;
+      /\/o\/orgs\/[^/]+\/people(?:\/)?\?filter=admins/;
 
     let navigated = false;
     if (await this.tryActivateSectionCard(OrganizationDetailPage.adminContactsSectionName)) {

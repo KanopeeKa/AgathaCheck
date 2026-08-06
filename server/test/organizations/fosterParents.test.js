@@ -31,7 +31,7 @@ describe('Organizations API', () => {
         expect(member).toMatchObject({
           user_id: 'foster-user-1',
           display_name: 'Jane Foster',
-          role: 'foster',
+          role: 'associate',
           active_pet_count: 2,
           approval_state: 'approved',
           creation_source: 'member',
