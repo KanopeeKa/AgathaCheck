@@ -7,7 +7,7 @@ import 'package:pet_profile_app/features/organization/domain/entities/org_person
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization_member.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
-import 'package:pet_profile_app/features/organization/presentation/screens/admin_contacts_screen.dart';
+import 'package:pet_profile_app/features/organization/presentation/screens/organization_people_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
@@ -72,14 +72,20 @@ void main() {
   Future<void> pumpScreen(
     WidgetTester tester, {
     String role = 'super_admin',
+    String? filter,
   }) async {
+    final location = filter == null
+        ? '/o/orgs/org-1/people'
+        : '/o/orgs/org-1/people?filter=$filter';
     final router = GoRouter(
-      initialLocation: '/o/orgs/org-1/admin-contacts',
+      initialLocation: location,
       routes: [
         GoRoute(
-          path: '/o/orgs/:id/admin-contacts',
-          builder: (context, state) =>
-              AdminContactsScreen(orgId: state.pathParameters['id']!),
+          path: '/o/orgs/:id/people',
+          builder: (context, state) => OrganizationPeopleScreen(
+            orgId: state.pathParameters['id']!,
+            filter: state.uri.queryParameters['filter'],
+          ),
         ),
       ],
     );
@@ -90,7 +96,7 @@ void main() {
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
           organizationListProvider.overrideWith(() => _OrgListNotifier(role)),
           organizationRepositoryProvider.overrideWithValue(
-            _AdminContactsPeopleRepo(people),
+            _OrgPeopleRepo(people),
           ),
         ],
         child: MaterialApp.router(
@@ -103,21 +109,28 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets(
-    'admin contacts screen pins self-card first then sorts by last name',
-    (tester) async {
+  group('OrganizationPeopleScreen — all people', () {
+    testWidgets('lists everyone with self pinned first then alphabetical', (
+      tester,
+    ) async {
       await pumpScreen(tester);
 
-      expect(find.text('Admin contacts'), findsOneWidget);
-      expect(find.byKey(const Key('admin_contacts_tile_grid')), findsOneWidget);
+      expect(find.text('People'), findsOneWidget);
+      expect(find.byKey(const Key('org_people_tile_grid')), findsOneWidget);
       expect(find.text('Your card'), findsOneWidget);
       expect(find.text('Test User'), findsOneWidget);
+      expect(find.text('Frank Foster'), findsOneWidget);
 
       final names = tester
           .widgetList<Text>(find.byType(Text))
           .map((w) => w.data)
           .whereType<String>()
-          .where((t) => t.contains('Admin') || t == 'Test User')
+          .where(
+            (t) =>
+                t.contains('Admin') ||
+                t == 'Test User' ||
+                t == 'Frank Foster',
+          )
           .toList();
 
       expect(names.first, 'Test User');
@@ -125,44 +138,43 @@ void main() {
         names.indexOf('Anna Admin'),
         lessThan(names.indexOf('Zara Admin')),
       );
-      expect(find.text('Frank Foster'), findsNothing);
-    },
-  );
-
-  testWidgets('super admin sees add admin affordance', (tester) async {
-    await pumpScreen(tester, role: 'super_admin');
-
-    expect(find.byKey(const Key('admin_contacts_add')), findsOneWidget);
-    expect(find.byKey(const Key('admin_contacts_add_button')), findsNothing);
+    });
   });
 
-  testWidgets('foster member does not see add admin affordance', (
-    tester,
-  ) async {
-    await pumpScreen(tester, role: 'foster');
+  group('OrganizationPeopleScreen — admins filter', () {
+    testWidgets(
+      'filter=admins shows only admins with self-card first then alphabetical',
+      (tester) async {
+        await pumpScreen(tester, filter: 'admins');
 
-    expect(find.byKey(const Key('admin_contacts_add')), findsNothing);
-    expect(find.byKey(const Key('admin_contacts_add_button')), findsNothing);
-  });
-
-  testWidgets('self-card no longer shows local visibility editors', (
-    tester,
-  ) async {
-    await pumpScreen(tester);
-
-    expect(
-      find.byKey(const Key('admin_contact_phone_visibility')),
-      findsNothing,
+        expect(find.text('Admin contacts'), findsOneWidget);
+        expect(
+          find.byKey(const Key('admin_contacts_tile_grid')),
+          findsOneWidget,
+        );
+        expect(find.text('Your card'), findsOneWidget);
+        expect(find.text('Frank Foster'), findsNothing);
+      },
     );
-    expect(
-      find.byKey(const Key('admin_contact_message_channel')),
-      findsNothing,
-    );
+
+    testWidgets('super admin sees add admin affordance', (tester) async {
+      await pumpScreen(tester, filter: 'admins', role: 'super_admin');
+
+      expect(find.byKey(const Key('admin_contacts_add')), findsOneWidget);
+    });
+
+    testWidgets('foster member does not see add admin affordance', (
+      tester,
+    ) async {
+      await pumpScreen(tester, filter: 'admins', role: 'foster');
+
+      expect(find.byKey(const Key('admin_contacts_add')), findsNothing);
+    });
   });
 }
 
-class _AdminContactsPeopleRepo extends RecordingOrganizationRepository {
-  _AdminContactsPeopleRepo(this._people);
+class _OrgPeopleRepo extends RecordingOrganizationRepository {
+  _OrgPeopleRepo(this._people);
 
   final List<OrgPersonSummary> _people;
 

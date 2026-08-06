@@ -51,7 +51,8 @@ class OrganisationProfileSectionNav extends ConsumerWidget {
               child: _OrganisationProfileNavRow(
                 rowKey: const Key('org_profile_nav_admin_contacts'),
                 title: l.adminContactsTitle,
-                onTap: () => context.push('/o/orgs/$orgId/admin-contacts'),
+                onTap: () =>
+                    context.push('/o/orgs/$orgId/people?filter=admins'),
               ),
             ),
             OrgPermissionGate(
@@ -71,6 +72,11 @@ class OrganisationProfileSectionNav extends ConsumerWidget {
                 title: l.orgProfileFosteringSessionsTitle,
                 onTap: () => context.push('/o/orgs/$orgId/sessions'),
               ),
+            ),
+            _OrganisationProfileNavRow(
+              rowKey: const Key('org_profile_nav_people'),
+              title: l.people,
+              onTap: () => context.push('/o/orgs/$orgId/people'),
             ),
             OrgPermissionGate(
               orgId: orgId,

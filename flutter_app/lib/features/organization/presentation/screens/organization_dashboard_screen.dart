@@ -114,7 +114,8 @@ class _OrganizationDashboardScreenState
                   title: l.adminContactsTitle,
                   subtitle: l.adminContactsDescription,
                   semanticsLabel: l.adminContactsTitle,
-                  onTap: () => context.push('/o/orgs/$orgId/admin-contacts'),
+                  onTap: () =>
+                      context.push('/o/orgs/$orgId/people?filter=admins'),
                 ),
                 if (_can(viewerRole, 'manage_fosters')) ...[
                   const SizedBox(height: 12),

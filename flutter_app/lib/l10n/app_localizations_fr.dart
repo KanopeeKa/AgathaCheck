@@ -2215,6 +2215,16 @@ class AppLocalizationsFr extends AppLocalizations {
       'Toutes les personnes de votre organisation. Le disque vert indique le nombre d\'animaux actuellement en famille d\'accueil.';
 
   @override
+  String get orgPeopleEmpty => 'Aucune personne pour le moment.';
+
+  @override
+  String get orgPeopleSearchPlaceholder => 'Rechercher par nom';
+
+  @override
+  String get orgPeopleSearchEmpty =>
+      'Aucune personne ne correspond à votre recherche';
+
+  @override
   String get addExternalFoster => 'Ajouter une famille d\'accueil manuellement';
 
   @override
