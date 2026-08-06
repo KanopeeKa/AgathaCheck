@@ -36,7 +36,9 @@ export class OrganizationFormPage {
   }
 
   async save(): Promise<void> {
-    await this.page.getByRole('button', { name: /Create Organisation|Edit Organisation/ }).click();
+    await this.page
+      .getByRole('button', { name: /^(Create|Save)$/ })
+      .click();
   }
 
   async createOrganization(
@@ -50,7 +52,7 @@ export class OrganizationFormPage {
     await this.page
       .getByText('Organisation created')
       .first()
-      .or(this.page.getByRole('button', { name: 'Edit Organisation' }))
+      .or(this.page.getByRole('button', { name: 'Save' }))
       .first()
       .waitFor({ timeout: 30_000 });
     try {

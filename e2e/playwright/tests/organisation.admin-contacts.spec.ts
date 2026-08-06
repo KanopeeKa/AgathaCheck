@@ -128,7 +128,10 @@ test.describe('Admin contacts', () => {
       lastName: 'Golf',
       email: `grace-${Date.now()}@example.com`,
     });
-    await addMemberToOrg(baseURL, alice.accessToken, org.id, frank, 'foster');
+    await addMemberToOrg(baseURL, alice.accessToken, org.id, frank, 'associate');
+    await fosterInviteToOrganization(baseURL, alice.accessToken, org.id, {
+      userIds: [frank.userId],
+    });
     await addMemberToOrg(baseURL, alice.accessToken, org.id, grace, 'admin');
 
     const gracePeople = await getOrgPeople(baseURL, alice.accessToken, org.id);
