@@ -137,18 +137,17 @@ abstract class OrganizationRepository {
     String? email,
     required String token,
   });
-<<<<<<< HEAD
   Future<Map<String, dynamic>> fosterInvite(
     String orgId, {
     String? email,
     List<String>? userIds,
-=======
+    required String token,
+  });
   Future<FosterOnboardingStatus> confirmFosterOnboardingStep(
     String orgId,
     OrgPersonKind kind,
     String recordId,
     String stepKey, {
->>>>>>> origin/cursor/org-v4-h-foster-timeline-63a7
     required String token,
   });
   Future<FosterParent> createExternalFosterParent(

@@ -50,6 +50,8 @@
     "041_pet_activity_events.sql",
     "042_org_member_privacy.sql",
     "043_remove_org_primary_contact.sql",
+    "044_org_retire_foster_wire_role.sql",
+    "045_organization_role_permission_defaults.sql",
     "046_email_templates.sql"
   ],
   "code_migrations": [

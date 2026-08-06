@@ -831,9 +831,7 @@
   "orgFosterInviteByEmailDescription": "Send an invitation to foster via AgathaTrack. New users receive an email; existing users get an in-app notification.",
   "orgFosterInviteSentEmail": "Foster invitation email sent",
   "orgFosterInviteSentInApp": "Foster invitation sent in the app",
-<<<<<<< HEAD
   "orgFosterOnboardBulkSuccess": "Selected people invited to foster onboarding",
-=======
   "orgEmailTemplatesSectionTitle": "Email templates",
   "orgEmailTemplateEditorTitle": "Edit email template: {key}",
   "@orgEmailTemplateEditorTitle": { "placeholders": { "key": { "type": "String" } } },
@@ -841,7 +839,6 @@
   "orgEmailTemplateSaved": "Email template saved",
   "orgEmailTemplateSubject": "Subject",
   "orgEmailTemplateBody": "Body text",
->>>>>>> origin/cursor/org-v4-h-foster-timeline-63a7
   "addExternalFoster": "Add foster manually",
   "fosterContactAddress": "Foster contact address",
   "editFosterContact": "Edit foster contact",

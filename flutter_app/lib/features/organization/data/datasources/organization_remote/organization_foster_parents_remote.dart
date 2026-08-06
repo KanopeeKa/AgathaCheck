@@ -77,7 +77,6 @@ class OrganizationFosterParentsRemote {
     return data;
   }
 
-<<<<<<< HEAD
   Future<Map<String, dynamic>> fosterInvite(
     String orgId,
     Map<String, dynamic> body,
@@ -92,7 +91,9 @@ class OrganizationFosterParentsRemote {
     if (response.statusCode >= 400) {
       throw Exception(data['error'] ?? 'Failed to send foster invite');
     }
-=======
+    return data;
+  }
+
   Future<Map<String, dynamic>> confirmFosterOnboardingStep(
     String orgId, String kind, String recordId, String stepKey, String token,
   ) async {
@@ -101,8 +102,9 @@ class OrganizationFosterParentsRemote {
       headers: _ctx.headers(token),
     );
     final data = json.decode(response.body) as Map<String, dynamic>;
-    if (response.statusCode >= 400) throw Exception(data['error'] ?? 'Failed to confirm foster onboarding step');
->>>>>>> origin/cursor/org-v4-h-foster-timeline-63a7
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to confirm foster onboarding step');
+    }
     return data;
   }
 

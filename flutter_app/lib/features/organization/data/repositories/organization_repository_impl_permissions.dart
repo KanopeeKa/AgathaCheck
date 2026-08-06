@@ -68,10 +68,7 @@ mixin OrganizationRepositoryPermissionsMixin on OrganizationRepositoryImplBase {
     required String subject,
     required String bodyHtml,
     required String bodyText,
-<<<<<<< HEAD
-=======
     String locale = 'en',
->>>>>>> origin/cursor/org-v4-g-foster-invite-63a7
     required String token,
   }) => dataSource.updateEmailTemplate(
     orgId,
@@ -79,10 +76,7 @@ mixin OrganizationRepositoryPermissionsMixin on OrganizationRepositoryImplBase {
     subject: subject,
     bodyHtml: bodyHtml,
     bodyText: bodyText,
-<<<<<<< HEAD
-=======
     locale: locale,
->>>>>>> origin/cursor/org-v4-g-foster-invite-63a7
     token: token,
   );
 
