@@ -1,4 +1,4 @@
-import { migrateRetireFosterWireRole } from '../scripts/migrations/044_org_retire_foster_wire_role.js';
+import { migrateRetireFosterWireRole } from '../../scripts/migrations/044_org_retire_foster_wire_role.js';
 
 describe('044_org_retire_foster_wire_role migration', () => {
   it('renames foster wire roles and tightens role check constraint', async () => {
