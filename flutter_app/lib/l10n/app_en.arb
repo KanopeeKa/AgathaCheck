@@ -611,6 +611,7 @@
   },
   "organizations": "Organisations",
   "createOrganization": "Create Organisation",
+  "orgFormCreate": "Create",
   "editOrganization": "Edit Organisation",
   "deleteOrganization": "Delete Organisation",
   "organizationName": "Organisation Name",

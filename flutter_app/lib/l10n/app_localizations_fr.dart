@@ -1674,6 +1674,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get createOrganization => 'Créer une organisation';
 
   @override
+  String get orgFormCreate => 'Créer';
+
+  @override
   String get editOrganization => 'Modifier l\'organisation';
 
   @override

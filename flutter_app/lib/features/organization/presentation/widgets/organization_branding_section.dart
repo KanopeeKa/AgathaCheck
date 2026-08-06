@@ -23,6 +23,7 @@ class OrganizationBrandingSection extends ConsumerWidget {
     required this.selectedType,
     required this.onTypeChanged,
     required this.nameValidator,
+    this.uploadsEnabled = true,
   });
 
   final Organization org;
@@ -33,6 +34,7 @@ class OrganizationBrandingSection extends ConsumerWidget {
   final OrganizationType selectedType;
   final ValueChanged<OrganizationType> onTypeChanged;
   final String? Function(String?)? nameValidator;
+  final bool uploadsEnabled;
 
   String _resolveUrl(WidgetRef ref, String path) {
     return resolveStaticAssetUrl(
@@ -165,8 +167,10 @@ class OrganizationBrandingSection extends ConsumerWidget {
                         key: const Key('org_upload_cover_button'),
                         heroTag: 'org_upload_cover_${org.id}',
                         tooltip: l.orgUploadCover,
-                        onPressed: () =>
-                            _pickAndUpload(context, ref, isLogo: false),
+                        onPressed: uploadsEnabled
+                            ? () =>
+                                  _pickAndUpload(context, ref, isLogo: false)
+                            : null,
                         child: const Icon(Icons.camera_alt),
                       ),
                     ),
@@ -213,8 +217,10 @@ class OrganizationBrandingSection extends ConsumerWidget {
                               key: const Key('org_upload_logo_button'),
                               heroTag: 'org_upload_logo_${org.id}',
                               tooltip: l.orgUploadLogo,
-                              onPressed: () =>
-                                  _pickAndUpload(context, ref, isLogo: true),
+                              onPressed: uploadsEnabled
+                                  ? () =>
+                                        _pickAndUpload(context, ref, isLogo: true)
+                                  : null,
                               child: const Icon(Icons.camera_alt),
                             ),
                           ),

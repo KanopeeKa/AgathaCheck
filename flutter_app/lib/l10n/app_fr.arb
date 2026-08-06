@@ -564,6 +564,7 @@
   },
   "organizations": "Organisations",
   "createOrganization": "Créer une organisation",
+  "orgFormCreate": "Créer",
   "editOrganization": "Modifier l'organisation",
   "deleteOrganization": "Supprimer l'organisation",
   "organizationName": "Nom de l'organisation",

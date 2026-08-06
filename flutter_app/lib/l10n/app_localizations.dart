@@ -3091,6 +3091,12 @@ abstract class AppLocalizations {
   /// **'Create Organisation'**
   String get createOrganization;
 
+  /// No description provided for @orgFormCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get orgFormCreate;
+
   /// No description provided for @editOrganization.
   ///
   /// In en, this message translates to:
