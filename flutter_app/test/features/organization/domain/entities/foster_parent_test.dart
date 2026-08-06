@@ -35,7 +35,7 @@ void main() {
         'email': 'jane@example.com',
         'phone': '555-1234',
         'notes': 'Great foster',
-        'role': 'foster',
+        'role': 'associate',
         'photo_url': '/photos/jane.jpg',
         'active_pet_count': 2,
         'active_pets': [
@@ -50,7 +50,7 @@ void main() {
       expect(parent.email, 'jane@example.com');
       expect(parent.phone, '555-1234');
       expect(parent.notes, 'Great foster');
-      expect(parent.role, OrgMemberRole.foster);
+      expect(parent.role, OrgMemberRole.associate);
       expect(parent.photoUrl, '/photos/jane.jpg');
       expect(parent.activePetCount, 2);
       expect(parent.activePets, hasLength(1));

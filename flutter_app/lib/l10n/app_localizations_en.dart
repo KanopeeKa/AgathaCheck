@@ -2291,6 +2291,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'Selected people invited to foster onboarding';
 
   @override
+  String get orgEmailTemplatesSectionTitle => 'Email templates';
+
+  @override
+  String orgEmailTemplateEditorTitle(String key) {
+    return 'Edit email template';
+  }
+
+  @override
+  String get orgEmailTemplateEditorHint =>
+      'Use placeholders such as org.name, inviter.name, and signup_url.';
+
+  @override
+  String get orgEmailTemplateSaved => 'Email template saved';
+
+  @override
+  String get orgEmailTemplateSubject => 'Subject line';
+
+  @override
+  String get orgEmailTemplateBody => 'Email body';
+
+  @override
   String get addExternalFoster => 'Add foster manually';
 
   @override
@@ -2298,42 +2319,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editFosterContact => 'Edit foster contact';
-
-  @override
-  String get fosterOnboardingStatusTitle => 'Foster onboarding status';
-
-  @override
-  String get fosterOnboardingNotRecordedYet => 'Not recorded yet';
-
-  @override
-  String get fosterOnboardingConfirmStep => 'Confirm';
-
-  @override
-  String get fosterOnboardingStepConnected => 'Connected to organisation';
-
-  @override
-  String get fosterOnboardingStepProfile => 'Profile on AgathaTrack';
-
-  @override
-  String get fosterOnboardingStepInvitationAccepted => 'Invitation accepted';
-
-  @override
-  String get fosterOnboardingStepUnderReview => 'Under review';
-
-  @override
-  String get fosterOnboardingStepOnboardingForm => 'Onboarding form completed';
-
-  @override
-  String get fosterOnboardingStepHomeVisit => 'Home visit recorded';
-
-  @override
-  String get fosterOnboardingStepCompetencies => 'Competencies confirmed';
-
-  @override
-  String get fosterOnboardingStepAgreement => 'Agreement signed';
-
-  @override
-  String get fosterOnboardingStepApproved => 'Approved foster';
 
   @override
   String get fosterContactSaved => 'Foster contact details saved';
@@ -4798,22 +4783,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgEmailTemplatesSection => 'Email templates';
 
   @override
-  String get orgEmailTemplateEditorTitle => 'Edit email template';
-
-  @override
-  String get orgEmailTemplateEditorHint =>
-      'Use placeholders such as org.name, inviter.name, and signup_url.';
-
-  @override
-  String get orgEmailTemplateBody => 'Email body';
-
-  @override
-  String get orgEmailTemplateSubject => 'Subject line';
-
-  @override
-  String get orgEmailTemplateSaved => 'Email template saved';
-
-  @override
   String get orgDocumentTemplatesEmpty =>
       'No document templates are configured yet.';
 
@@ -4855,6 +4824,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String orgRolesPermissionsBundleApplied(String name) {
     return '$name bundle applied';
   }
+
+  @override
+  String get orgRolesPermissionsSelectedPeople => 'Selected people';
+
+  @override
+  String get orgRolesPermissionsAddMember => 'Search to add members';
+
+  @override
+  String orgRolesPermissionsApplyRolePreset(String role) {
+    return 'Apply $role';
+  }
+
+  @override
+  String orgRolesPermissionsPresetConfirmTitle(String role) {
+    return 'Apply $role permissions?';
+  }
+
+  @override
+  String orgRolesPermissionsPresetConfirmBody(String role) {
+    return 'This will stage permission changes for all selected people. Extra individual grants outside the $role tier will be removed. Changes are not saved until you tap Save.';
+  }
+
+  @override
+  String get orgRolesPermissionsDetailedTitle => 'Detailed permissions';
+
+  @override
+  String get orgRolesPermissionsPendingChange => 'Pending change';
+
+  @override
+  String get orgRolesPermissionsSave => 'Save changes';
+
+  @override
+  String get orgRolesPermissionsSaved => 'Permission changes saved';
+
+  @override
+  String get orgRolesPermissionsUnsavedTitle => 'Discard unsaved changes?';
+
+  @override
+  String get orgRolesPermissionsUnsavedBody =>
+      'You have unsaved permission changes. Leave without saving?';
+
+  @override
+  String get orgRolesPermissionsDiscard => 'Discard';
+
+  @override
+  String get orgRolesPermissionsStay => 'Keep editing';
+
+  @override
+  String get orgRolesPermissionsSelectPeople =>
+      'Select at least one person to edit permissions.';
 
   @override
   String get orgPermissionManageFosters => 'Manage fosters';

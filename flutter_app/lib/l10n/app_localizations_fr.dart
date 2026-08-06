@@ -1855,8 +1855,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgFosterBadgeExternal => 'Famille d\'accueil · Externe';
 
   @override
-  String get fosterOnboardingStatusTitle =>
-      'Statut d\'intégration de la famille d\'accueil';
+  String get fosterOnboardingStatusTitle => 'État d\'intégration de l\'accueil';
 
   @override
   String get fosterOnboardingNotRecordedYet => 'Pas encore enregistré';
@@ -1890,7 +1889,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get fosterOnboardingStepAgreement => 'Accord signé';
 
   @override
-  String get fosterOnboardingStepApproved => 'Famille d\'accueil approuvée';
+  String get fosterOnboardingStepApproved => 'Accueil approuvé';
 
   @override
   String get orgSelectNewRole => 'Choisir le nouveau rôle';
@@ -2317,6 +2316,27 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les personnes sélectionnées ont été invitées à l\'intégration famille d\'accueil';
 
   @override
+  String get orgEmailTemplatesSectionTitle => 'Email templates';
+
+  @override
+  String orgEmailTemplateEditorTitle(String key) {
+    return 'Modifier le modèle d\'e-mail';
+  }
+
+  @override
+  String get orgEmailTemplateEditorHint =>
+      'Utilisez des variables telles que org.name, inviter.name et signup_url.';
+
+  @override
+  String get orgEmailTemplateSaved => 'Modèle d\'e-mail enregistré';
+
+  @override
+  String get orgEmailTemplateSubject => 'Ligne d\'objet';
+
+  @override
+  String get orgEmailTemplateBody => 'Corps de l\'e-mail';
+
+  @override
   String get addExternalFoster => 'Ajouter une famille d\'accueil manuellement';
 
   @override
@@ -2324,43 +2344,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get editFosterContact => 'Modifier le contact d\'accueil';
-
-  @override
-  String get fosterOnboardingStatusTitle => 'État d\'intégration de l\'accueil';
-
-  @override
-  String get fosterOnboardingNotRecordedYet => 'Pas encore enregistré';
-
-  @override
-  String get fosterOnboardingConfirmStep => 'Confirmer';
-
-  @override
-  String get fosterOnboardingStepConnected => 'Rattaché à l\'organisation';
-
-  @override
-  String get fosterOnboardingStepProfile => 'Profil sur AgathaTrack';
-
-  @override
-  String get fosterOnboardingStepInvitationAccepted => 'Invitation acceptée';
-
-  @override
-  String get fosterOnboardingStepUnderReview => 'En cours d\'examen';
-
-  @override
-  String get fosterOnboardingStepOnboardingForm =>
-      'Formulaire d\'intégration complété';
-
-  @override
-  String get fosterOnboardingStepHomeVisit => 'Visite à domicile enregistrée';
-
-  @override
-  String get fosterOnboardingStepCompetencies => 'Compétences confirmées';
-
-  @override
-  String get fosterOnboardingStepAgreement => 'Accord signé';
-
-  @override
-  String get fosterOnboardingStepApproved => 'Accueil approuvé';
 
   @override
   String get fosterContactSaved => 'Coordonnées d\'accueil enregistrées';
@@ -4883,22 +4866,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgEmailTemplatesSection => 'Modèles d\'e-mails';
 
   @override
-  String get orgEmailTemplateEditorTitle => 'Modifier le modèle d\'e-mail';
-
-  @override
-  String get orgEmailTemplateEditorHint =>
-      'Utilisez des variables telles que org.name, inviter.name et signup_url.';
-
-  @override
-  String get orgEmailTemplateBody => 'Corps de l\'e-mail';
-
-  @override
-  String get orgEmailTemplateSubject => 'Ligne d\'objet';
-
-  @override
-  String get orgEmailTemplateSaved => 'Modèle d\'e-mail enregistré';
-
-  @override
   String get orgDocumentTemplatesEmpty =>
       'Aucun modèle de document n\'est configuré pour le moment.';
 
@@ -4941,6 +4908,59 @@ class AppLocalizationsFr extends AppLocalizations {
   String orgRolesPermissionsBundleApplied(String name) {
     return 'Préréglage $name appliqué';
   }
+
+  @override
+  String get orgRolesPermissionsSelectedPeople => 'Personnes sélectionnées';
+
+  @override
+  String get orgRolesPermissionsAddMember =>
+      'Rechercher pour ajouter des membres';
+
+  @override
+  String orgRolesPermissionsApplyRolePreset(String role) {
+    return 'Appliquer $role';
+  }
+
+  @override
+  String orgRolesPermissionsPresetConfirmTitle(String role) {
+    return 'Appliquer les permissions $role ?';
+  }
+
+  @override
+  String orgRolesPermissionsPresetConfirmBody(String role) {
+    return 'Cela préparera des modifications de permissions pour toutes les personnes sélectionnées. Les dérogations individuelles hors du niveau $role seront supprimées. Les modifications ne seront enregistrées qu\'après avoir appuyé sur Enregistrer.';
+  }
+
+  @override
+  String get orgRolesPermissionsDetailedTitle => 'Permissions détaillées';
+
+  @override
+  String get orgRolesPermissionsPendingChange => 'Modification en attente';
+
+  @override
+  String get orgRolesPermissionsSave => 'Enregistrer';
+
+  @override
+  String get orgRolesPermissionsSaved =>
+      'Modifications de permissions enregistrées';
+
+  @override
+  String get orgRolesPermissionsUnsavedTitle =>
+      'Abandonner les modifications ?';
+
+  @override
+  String get orgRolesPermissionsUnsavedBody =>
+      'Vous avez des modifications non enregistrées. Quitter sans enregistrer ?';
+
+  @override
+  String get orgRolesPermissionsDiscard => 'Abandonner';
+
+  @override
+  String get orgRolesPermissionsStay => 'Continuer';
+
+  @override
+  String get orgRolesPermissionsSelectPeople =>
+      'Sélectionnez au moins une personne pour modifier les permissions.';
 
   @override
   String get orgPermissionManageFosters => 'Gérer les familles d\'accueil';
