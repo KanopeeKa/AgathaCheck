@@ -1,0 +1,304 @@
+{
+  "schema_version": 1,
+  "plan_id": "organisation-v4-people-perms",
+  "approved_at": "2026-08-06T17:20:00Z",
+  "approved_by": "user chat 2026-08-06: /execute-plan implement full org v4 people/permissions/foster spec — no permission between phases",
+  "approved_until": "2026-08-08T17:20:00Z",
+  "content_hash": "sha256:dbbb3b35ce65aa82227c5581f5ffa4347024ac9c714ec99c7c454c8be41e5ebc",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/organisation-v4-people-perms-integration-63a7",
+  "control_issue": 621,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "A",
+      "title": "Create/Edit org template parity",
+      "branch": "cursor/org-v4-a-create-edit-form-63a7",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/screens/organization_form_screen.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/organization_branding_section.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/organization/presentation/screens/**",
+        "e2e/playwright/tests/organisation*.spec.ts",
+        "flutter_app/test/bdd/features/organisation*.feature",
+        ".agents/plans/organisation-v4-people-perms.md",
+        ".agents/plans/organisation-v4-people-perms.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "B",
+      "title": "People screen and admin contacts retirement",
+      "branch": "cursor/org-v4-b-people-screen-63a7",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/screens/organization_people_screen.dart",
+        "flutter_app/lib/features/organization/presentation/screens/admin_contacts_screen.dart",
+        "flutter_app/lib/core/router/organization_routes.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/org_profile/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/features/organization/**",
+        "e2e/playwright/tests/organisation*.spec.ts",
+        "e2e/playwright/pages/**",
+        "flutter_app/test/bdd/features/admin_contacts.feature",
+        "flutter_app/test/bdd/features/organisation_profile.feature",
+        ".agents/plans/organisation-v4-people-perms.md",
+        ".agents/plans/organisation-v4-people-perms.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "C",
+      "title": "Wire role retirement and foster badge",
+      "branch": "cursor/org-v4-c-role-badge-63a7",
+      "allowed_paths": [
+        "server/lib/orgRoles.js",
+        "server/scripts/migrations/**",
+        "server/routes/organizations/**",
+        "server/test/organizations/**",
+        "flutter_app/lib/features/organization/domain/**",
+        "flutter_app/lib/features/organization/presentation/widgets/org_person_tile.dart",
+        "flutter_app/lib/features/organization/presentation/utils/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**",
+        "e2e/**",
+        "flutter_app/test/bdd/**",
+        ".agents/plans/organisation-v4-people-perms.md",
+        ".agents/plans/organisation-v4-people-perms.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "D",
+      "title": "People multi-select and bulk actions",
+      "branch": "cursor/org-v4-d-people-bulk-63a7",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/screens/organization_people_screen.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/test/features/organization/**",
+        "e2e/playwright/tests/organisation*.spec.ts",
+        ".agents/plans/organisation-v4-people-perms.md",
+        ".agents/plans/organisation-v4-people-perms.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "E",
+      "title": "Staged roles and permissions editor",
+      "branch": "cursor/org-v4-e-permissions-staged-63a7",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/screens/organization_roles_permissions_screen.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/**",
+        "flutter_app/lib/features/organization/presentation/providers/**",
+        "flutter_app/lib/features/organization/domain/**",
+        "server/routes/organizations/permissionsRouter.js",
+        "server/lib/orgPermissions.js",
+        "server/test/organizations/permissionsRouter.test.js",
+        "flutter_app/test/**",
+        "e2e/**",
+        "flutter_app/test/bdd/features/organisation_permissions.feature",
+        ".agents/plans/organisation-v4-people-perms.md",
+        ".agents/plans/organisation-v4-people-perms.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "F",
+      "title": "Org default permission sets",
+      "branch": "cursor/org-v4-f-org-bundle-defaults-63a7",
+      "allowed_paths": [
+        "server/scripts/migrations/**",
+        "server/routes/organizations/permissionsRouter.js",
+        "server/lib/orgPermissions.js",
+        "server/test/organizations/**",
+        "flutter_app/lib/features/organization/presentation/screens/organization_customisations_screen.dart",
+        "flutter_app/lib/features/organization/presentation/screens/organization_role_defaults_screen.dart",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/**",
+        "API.md",
+        ".agents/plans/organisation-v4-people-perms.md",
+        ".agents/plans/organisation-v4-people-perms.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "G",
+      "title": "Foster invite flows and email templates",
+      "branch": "cursor/org-v4-g-foster-invite-63a7",
+      "allowed_paths": [
+        "server/routes/organizations/**",
+        "server/lib/**",
+        "server/scripts/migrations/**",
+        "server/test/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**",
+        "e2e/**",
+        "flutter_app/test/bdd/features/foster_onboarding.feature",
+        ".agents/plans/organisation-v4-people-perms.md",
+        ".agents/plans/organisation-v4-people-perms.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "H",
+      "title": "Foster onboarding timeline",
+      "branch": "cursor/org-v4-h-foster-timeline-63a7",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/screens/organization_person_detail_screen.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/foster_onboarding_timeline.dart",
+        "server/routes/organizations/**",
+        "server/test/organizations/**",
+        "flutter_app/test/**",
+        "e2e/**",
+        ".agents/plans/organisation-v4-people-perms.md",
+        ".agents/plans/organisation-v4-people-perms.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
