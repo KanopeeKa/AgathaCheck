@@ -171,7 +171,7 @@ test.describe('Organisation management', () => {
     });
     await inviteToOrganization(baseURL, alice.accessToken, org.id, {
       email: bob.email,
-      role: 'foster',
+      role: 'associate',
     });
     const invites = await getPendingInvites(baseURL, bob.accessToken);
     await acceptInvite(baseURL, bob.accessToken, invites[0].id);

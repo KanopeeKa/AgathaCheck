@@ -15,6 +15,7 @@ import {
   addMemberToOrg,
   connectOrganizations,
   createOrganization,
+  fosterInviteToOrganization,
   getOrgConnections,
   getOrgPeople,
   getOrgPermissionsMe,
@@ -173,7 +174,7 @@ test.describe('Admin contacts', () => {
     }
   });
 
-  test('@P1 foster parents API returns foster role for tile labels', async () => {
+  test('@P1 foster parents API returns associate wire role for member fosters', async () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const { alice, org } = await seedRescueHearts(baseURL);
     const laura = await signupUser(baseURL, {
@@ -181,12 +182,15 @@ test.describe('Admin contacts', () => {
       lastName: 'Lima',
       email: `laura-${Date.now()}@example.com`,
     });
-    await addMemberToOrg(baseURL, alice.accessToken, org.id, laura, 'foster');
+    await addMemberToOrg(baseURL, alice.accessToken, org.id, laura, 'associate');
+    await fosterInviteToOrganization(baseURL, alice.accessToken, org.id, {
+      userIds: [laura.userId],
+    });
 
     const people = await getOrgPeople(baseURL, alice.accessToken, org.id);
     const lauraRow = people.find((p) => p.display_name.includes('Laura'));
     expect(lauraRow).toBeTruthy();
-    expect(lauraRow?.role).toBe('foster');
+    expect(lauraRow?.role).toBe('associate');
   });
 
   test('@legacy @P1 member can load admin contacts preview data for profile section', async () => {
