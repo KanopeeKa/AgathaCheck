@@ -228,6 +228,57 @@ export async function revokePermission(
   return rowCount > 0;
 }
 
+/**
+ * Applies a batch of permission grants/revokes in a single transaction.
+ * Each change is audited individually (D16).
+ *
+ * @param {import('pg').Pool | import('pg').PoolClient} executor
+ */
+export async function applyPermissionBatch(
+  executor,
+  { organizationId, changes, grantedBy, req = null }
+) {
+  let applied = 0;
+  for (const change of changes) {
+    const userId = change?.user_id;
+    const permissionKey = change?.permission_key;
+    const granted = change?.granted;
+    if (!userId || !permissionKey || typeof granted !== 'boolean') {
+      throw new Error('Invalid permission batch change');
+    }
+    if (!G0_PERMISSION_DEFAULTS[permissionKey]) {
+      throw new Error(`Invalid permission key: ${permissionKey}`);
+    }
+
+    const role = await loadMembershipRole(executor, organizationId, userId);
+    if (!role || role.startsWith('pending_')) {
+      throw new Error(`Member not found: ${userId}`);
+    }
+
+    if (granted) {
+      const id = await grantPermission(executor, {
+        organizationId,
+        userId,
+        permissionKey,
+        grantedBy,
+        source: 'individual',
+        req,
+      });
+      if (id) applied += 1;
+    } else {
+      const revoked = await revokePermission(executor, {
+        organizationId,
+        userId,
+        permissionKey,
+        revokedBy: grantedBy,
+        req,
+      });
+      if (revoked) applied += 1;
+    }
+  }
+  return applied;
+}
+
 export async function applyBundlePreset(
   pool,
   { organizationId, userId, presetName, grantedBy, req = null }

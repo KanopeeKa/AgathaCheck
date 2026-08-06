@@ -410,6 +410,12 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     String token,
   ) => _permissions.revokePermission(orgId, targetUserId, permissionKey, token);
 
+  Future<Map<String, dynamic>> batchPermissions(
+    String orgId,
+    List<Map<String, dynamic>> changes,
+    String token,
+  ) => _permissions.batchPermissions(orgId, changes, token);
+
   Future<List<Map<String, dynamic>>> getAuditEvents(
     String orgId,
     String token,

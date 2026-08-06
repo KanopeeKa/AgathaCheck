@@ -43,6 +43,13 @@ mixin OrganizationRepositoryPermissionsMixin on OrganizationRepositoryImplBase {
   ) => dataSource.revokePermission(orgId, targetUserId, permissionKey, token);
 
   @override
+  Future<Map<String, dynamic>> batchMemberPermissions(
+    String orgId,
+    List<Map<String, dynamic>> changes,
+    String token,
+  ) => dataSource.batchPermissions(orgId, changes, token);
+
+  @override
   Future<List<Map<String, dynamic>>> getOrgAuditEvents(
     String orgId,
     String token,

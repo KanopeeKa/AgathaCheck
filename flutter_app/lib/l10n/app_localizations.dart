@@ -8472,7 +8472,7 @@ abstract class AppLocalizations {
   /// No description provided for @orgRolesPermissionsIntro.
   ///
   /// In en, this message translates to:
-  /// **'Select a member, apply a bundle preset, then fine-tune individual permissions.'**
+  /// **'Select people, apply a role preset, then fine-tune permissions. Changes are saved when you tap Save.'**
   String get orgRolesPermissionsIntro;
 
   /// No description provided for @orgRolesPermissionsMemberLabel.
@@ -8582,6 +8582,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Team Admin'**
   String get orgPermissionBundleTeamAdmin;
+
+  /// No description provided for @orgRolesPermissionsSelectedPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected people'**
+  String get orgRolesPermissionsSelectedPeople;
+
+  /// No description provided for @orgRolesPermissionsAddMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Search to add members'**
+  String get orgRolesPermissionsAddMember;
+
+  /// No description provided for @orgRolesPermissionsApplyRolePreset.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply {role}'**
+  String orgRolesPermissionsApplyRolePreset(String role);
+
+  /// No description provided for @orgRolesPermissionsPresetConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply {role} permissions?'**
+  String orgRolesPermissionsPresetConfirmTitle(String role);
+
+  /// No description provided for @orgRolesPermissionsPresetConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will stage permission changes for all selected people. Extra individual grants outside the {role} tier will be removed. Changes are not saved until you tap Save.'**
+  String orgRolesPermissionsPresetConfirmBody(String role);
+
+  /// No description provided for @orgRolesPermissionsDetailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed permissions'**
+  String get orgRolesPermissionsDetailedTitle;
+
+  /// No description provided for @orgRolesPermissionsPendingChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending change'**
+  String get orgRolesPermissionsPendingChange;
+
+  /// No description provided for @orgRolesPermissionsSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get orgRolesPermissionsSave;
+
+  /// No description provided for @orgRolesPermissionsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission changes saved'**
+  String get orgRolesPermissionsSaved;
+
+  /// No description provided for @orgRolesPermissionsUnsavedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard unsaved changes?'**
+  String get orgRolesPermissionsUnsavedTitle;
+
+  /// No description provided for @orgRolesPermissionsUnsavedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved permission changes. Leave without saving?'**
+  String get orgRolesPermissionsUnsavedBody;
+
+  /// No description provided for @orgRolesPermissionsDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get orgRolesPermissionsDiscard;
+
+  /// No description provided for @orgRolesPermissionsStay.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get orgRolesPermissionsStay;
+
+  /// No description provided for @orgRolesPermissionsSelectPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one person to edit permissions.'**
+  String get orgRolesPermissionsSelectPeople;
 }
 
 class _AppLocalizationsDelegate
