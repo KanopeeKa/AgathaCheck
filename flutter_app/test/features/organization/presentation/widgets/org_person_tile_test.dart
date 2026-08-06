@@ -111,8 +111,6 @@ void main() {
                 displayName: 'Bob',
                 initials: 'B',
                 role: OrgMemberRole.associate,
-                fosterApprovalState: 'approved',
-                activeFosterCount: 1,
               ),
             ],
           ),

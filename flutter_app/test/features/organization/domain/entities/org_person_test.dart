@@ -46,6 +46,8 @@ void main() {
 
       expect(person.fosterApprovalState, 'under_review');
       expect(person.fosterNeedsAttention, isFalse);
+    });
+
     test('parses external foster summary', () {
       final person = OrgPersonSummary.fromJson({
         'id': 'external:fp-1',
