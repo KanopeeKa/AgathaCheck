@@ -1824,6 +1824,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgAssociate => 'Associate';
 
   @override
+  String get orgFosterBadgeUnderReview => 'Foster · Under review';
+
+  @override
+  String get orgFosterBadgeApproved => 'Foster';
+
+  @override
+  String get orgFosterBadgeNeedsAttention => 'Foster · Needs attention';
+
+  @override
+  String get orgFosterBadgeExternal => 'Foster · External';
+
+  @override
   String get orgSelectNewRole => 'Select new role';
 
   @override

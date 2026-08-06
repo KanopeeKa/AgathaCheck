@@ -7,9 +7,10 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/widgets/profile_photo_avatar.dart';
 import '../../domain/entities/organization_member.dart';
 import '../utils/org_person_role_bar.dart';
+import 'org_foster_badge.dart';
 import 'organization_role_labels.dart';
 
-/// Pet-grid person tile: photo top 2/3; role bar + label, name, optional phone.
+/// Pet-grid person tile: photo top 2/3; role bar + label, name, foster badge, optional phone.
 class OrgPersonTile extends ConsumerWidget {
   const OrgPersonTile({
     super.key,
@@ -23,6 +24,9 @@ class OrgPersonTile extends ConsumerWidget {
     this.isSelf = false,
     this.selfCardLabel,
     this.phone,
+    this.fosterApprovalState,
+    this.fosterNeedsAttention = false,
+    this.activeFosterCount = 0,
     this.semanticsLabel,
     this.onTap,
     this.trailing,
@@ -38,6 +42,9 @@ class OrgPersonTile extends ConsumerWidget {
   final bool isSelf;
   final String? selfCardLabel;
   final String? phone;
+  final String? fosterApprovalState;
+  final bool fosterNeedsAttention;
+  final int activeFosterCount;
   final String? semanticsLabel;
   final VoidCallback? onTap;
   final Widget? trailing;
@@ -47,16 +54,23 @@ class OrgPersonTile extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
-    final roleLabel = isExternal
-        ? l.orgFoster
-        : role != null
+    final showRoleBar = shouldShowOrgPersonRoleBar(
+      role: role,
+      isPending: isPending,
+    );
+    final roleLabel = showRoleBar && role != null
         ? localizedOrgMemberRole(l, role!)
-        : '';
+        : (isPending ? l.invited : '');
     final barStyle = orgPersonRoleBarStyle(
       context,
       role: role,
-      isExternal: isExternal,
       isPending: isPending,
+    );
+    final fosterBadge = fosterBadgeStateForPerson(
+      isExternal: isExternal,
+      fosterApprovalState: fosterApprovalState,
+      fosterNeedsAttention: fosterNeedsAttention,
+      activeFosterCount: activeFosterCount,
     );
     final resolvedPhoto = resolveStaticAssetUrl(
       photoUrl ?? '',
@@ -67,7 +81,14 @@ class OrgPersonTile extends ConsumerWidget {
         semanticsLabel ??
         (isSelf
             ? l.adminContactsSelfCardSemantics(displayName)
-            : l.adminContactsCardSemantics(displayName, roleLabel));
+            : l.adminContactsCardSemantics(
+                displayName,
+                roleLabel.isNotEmpty
+                    ? roleLabel
+                    : (fosterBadge != null
+                          ? localizedOrgFosterBadgeLabel(l, fosterBadge)
+                          : ''),
+              ));
 
     return MergeSemantics(
       child: Semantics(
@@ -142,6 +163,8 @@ class OrgPersonTile extends ConsumerWidget {
                             ),
                           ),
                         ),
+                        if (fosterBadge != null)
+                          OrgFosterBadge(state: fosterBadge),
                         if (showPhone)
                           Text(
                             phone!.trim(),

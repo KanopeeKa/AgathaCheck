@@ -24,7 +24,7 @@ void main() {
       expect(person.recordId, 'ou-1');
       expect(person.userId, 'user-1');
       expect(person.displayName, 'Jane Foster');
-      expect(person.role, OrgMemberRole.foster);
+      expect(person.role, OrgMemberRole.associate);
       expect(person.isPending, isFalse);
       expect(person.activeFosterCount, 2);
       expect(person.categoryRank, 3);
@@ -33,6 +33,19 @@ void main() {
       expect(person.detailPath('org-1'), '/o/orgs/org-1/people/member/ou-1');
     });
 
+    test('parses foster approval fields', () {
+      final person = OrgPersonSummary.fromJson({
+        'id': 'member:ou-2',
+        'kind': 'member',
+        'record_id': 'ou-2',
+        'display_name': 'Review Foster',
+        'role': 'associate',
+        'foster_approval_state': 'under_review',
+        'foster_needs_attention': false,
+      });
+
+      expect(person.fosterApprovalState, 'under_review');
+      expect(person.fosterNeedsAttention, isFalse);
     test('parses external foster summary', () {
       final person = OrgPersonSummary.fromJson({
         'id': 'external:fp-1',

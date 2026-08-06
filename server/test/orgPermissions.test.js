@@ -52,7 +52,7 @@ describe('orgPermissions', () => {
           expect(hasPermission(role, null, key)).toBe(true);
         }
         expect(hasPermission(ORG_ROLE_FOSTER, null, key)).toBe(
-          roles.includes(ORG_ROLE_FOSTER)
+          roles.includes(ORG_ROLE_ASSOCIATE)
         );
         expect(hasPermission(ORG_ROLE_ASSOCIATE, null, key)).toBe(
           roles.includes(ORG_ROLE_ASSOCIATE)
@@ -80,7 +80,7 @@ describe('orgPermissions', () => {
     });
   });
 
-  describe('four wire roles', () => {
+  describe('three wire roles', () => {
     it('super_admin retains full G0 admin capability', () => {
       for (const key of LEGACY_G0_KEYS) {
         expect(hasPermission(ORG_ROLE_SUPER_ADMIN, null, key)).toBe(true);
@@ -94,7 +94,7 @@ describe('orgPermissions', () => {
       }
     });
 
-    it('foster and associate have no default admin grants', () => {
+    it('foster wire normalises to associate for admin grant checks', () => {
       expect(hasPermission(ORG_ROLE_FOSTER, null, 'manage_fosters')).toBe(false);
       expect(hasPermission(ORG_ROLE_ASSOCIATE, null, 'manage_fosters')).toBe(false);
       expect(hasPermission(ORG_ROLE_FOSTER, null, 'manage_pets')).toBe(false);
@@ -107,25 +107,21 @@ describe('orgPermissions', () => {
       view_org_internal: [
         ORG_ROLE_SUPER_ADMIN,
         ORG_ROLE_ADMIN,
-        ORG_ROLE_FOSTER,
         ORG_ROLE_ASSOCIATE,
       ],
       view_admin_contacts: [
         ORG_ROLE_SUPER_ADMIN,
         ORG_ROLE_ADMIN,
-        ORG_ROLE_FOSTER,
         ORG_ROLE_ASSOCIATE,
       ],
       view_org_pets: [
         ORG_ROLE_SUPER_ADMIN,
         ORG_ROLE_ADMIN,
-        ORG_ROLE_FOSTER,
         ORG_ROLE_ASSOCIATE,
       ],
       view_connections: [
         ORG_ROLE_SUPER_ADMIN,
         ORG_ROLE_ADMIN,
-        ORG_ROLE_FOSTER,
         ORG_ROLE_ASSOCIATE,
       ],
       view_fostering_sessions: [ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN],
@@ -141,7 +137,6 @@ describe('orgPermissions', () => {
       for (const role of [
         ORG_ROLE_SUPER_ADMIN,
         ORG_ROLE_ADMIN,
-        ORG_ROLE_FOSTER,
         ORG_ROLE_ASSOCIATE,
       ]) {
         it(`${role} ${grantedRoles.includes(role) ? 'has' : 'lacks'} ${key}`, () => {
