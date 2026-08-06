@@ -168,8 +168,7 @@ class OrganizationBrandingSection extends ConsumerWidget {
                         heroTag: 'org_upload_cover_${org.id}',
                         tooltip: l.orgUploadCover,
                         onPressed: uploadsEnabled
-                            ? () =>
-                                  _pickAndUpload(context, ref, isLogo: false)
+                            ? () => _pickAndUpload(context, ref, isLogo: false)
                             : null,
                         child: const Icon(Icons.camera_alt),
                       ),
@@ -218,8 +217,11 @@ class OrganizationBrandingSection extends ConsumerWidget {
                               heroTag: 'org_upload_logo_${org.id}',
                               tooltip: l.orgUploadLogo,
                               onPressed: uploadsEnabled
-                                  ? () =>
-                                        _pickAndUpload(context, ref, isLogo: true)
+                                  ? () => _pickAndUpload(
+                                      context,
+                                      ref,
+                                      isLogo: true,
+                                    )
                                   : null,
                               child: const Icon(Icons.camera_alt),
                             ),

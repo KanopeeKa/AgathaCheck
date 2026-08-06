@@ -19,10 +19,7 @@ class _RoleDefaultsRepo extends RecordingOrganizationRepository {
     List<String> grantedKeys,
     String token,
   ) async {
-    saveCalls.add({
-      'tier': tier,
-      'grantedKeys': grantedKeys,
-    });
+    saveCalls.add({'tier': tier, 'grantedKeys': grantedKeys});
     return {
       'tier': tier,
       'effective_defaults': grantedKeys,
@@ -59,7 +56,10 @@ void main() {
     await pumpScreen(tester, _RoleDefaultsRepo());
 
     expect(find.byKey(const Key('org_role_defaults_screen')), findsOneWidget);
-    expect(find.byKey(const Key('org_role_defaults_tier_selector')), findsOneWidget);
+    expect(
+      find.byKey(const Key('org_role_defaults_tier_selector')),
+      findsOneWidget,
+    );
     expect(find.text('Foster Admin'), findsOneWidget);
     expect(find.text('Pet Admin'), findsOneWidget);
     await tester.scrollUntilVisible(
@@ -83,7 +83,9 @@ void main() {
       findsOneWidget,
     );
     expect(find.byKey(const Key('org_role_defaults_save')), findsNothing);
-    final switchFinder = find.byKey(const Key('org_role_default_manage_fosters'));
+    final switchFinder = find.byKey(
+      const Key('org_role_default_manage_fosters'),
+    );
     if (switchFinder.evaluate().isNotEmpty) {
       final switchWidget = tester.widget<SwitchListTile>(switchFinder.first);
       expect(switchWidget.onChanged, isNull);

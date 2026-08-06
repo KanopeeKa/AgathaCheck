@@ -138,9 +138,7 @@ void main() {
           .whereType<String>()
           .where(
             (t) =>
-                t.contains('Admin') ||
-                t == 'Test User' ||
-                t == 'Frank Foster',
+                t.contains('Admin') || t == 'Test User' || t == 'Frank Foster',
           )
           .toList();
 
@@ -184,19 +182,26 @@ void main() {
   });
 
   group('OrganizationPeopleScreen — selection mode', () {
-    testWidgets('entering selection mode shows checkboxes on selectable tiles', (
-      tester,
-    ) async {
-      await pumpScreen(tester);
+    testWidgets(
+      'entering selection mode shows checkboxes on selectable tiles',
+      (tester) async {
+        await pumpScreen(tester);
 
-      expect(find.byKey(const Key('org_people_select_toggle')), findsOneWidget);
-      await tester.tap(find.byKey(const Key('org_people_select_toggle')));
-      await tester.pumpAndSettle();
+        expect(
+          find.byKey(const Key('org_people_select_toggle')),
+          findsOneWidget,
+        );
+        await tester.tap(find.byKey(const Key('org_people_select_toggle')));
+        await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('org_person_select_ou-a')), findsOneWidget);
-      expect(find.byKey(const Key('org_person_select_ou-z')), findsOneWidget);
-      expect(find.byKey(const Key('org_people_cancel_select')), findsOneWidget);
-    });
+        expect(find.byKey(const Key('org_person_select_ou-a')), findsOneWidget);
+        expect(find.byKey(const Key('org_person_select_ou-z')), findsOneWidget);
+        expect(
+          find.byKey(const Key('org_people_cancel_select')),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets('selecting people shows bulk actions and navigates to roles', (
       tester,
@@ -219,7 +224,10 @@ void main() {
       await tester.tap(find.byKey(const Key('org_people_bulk_change_role')));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('org_roles_permissions_screen')), findsOneWidget);
+      expect(
+        find.byKey(const Key('org_roles_permissions_screen')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('cancel exits selection mode and clears selection', (

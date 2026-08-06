@@ -6,7 +6,9 @@ import 'package:pet_profile_app/features/organization/presentation/widgets/org_r
 
 void main() {
   group('TriStatePermissionToggle', () {
-    testWidgets('renders tristate switch and pending indicator', (tester) async {
+    testWidgets('renders tristate switch and pending indicator', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

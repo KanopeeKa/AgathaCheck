@@ -10,26 +10,24 @@ void main() {
     });
 
     test('parses comma-separated ids', () {
-      expect(
-        parseOrgPeopleIdsQuery('user-a,user-b,user-c'),
-        ['user-a', 'user-b', 'user-c'],
-      );
+      expect(parseOrgPeopleIdsQuery('user-a,user-b,user-c'), [
+        'user-a',
+        'user-b',
+        'user-c',
+      ]);
     });
 
     test('trims whitespace and skips blanks', () {
-      expect(
-        parseOrgPeopleIdsQuery(' user-a , , user-b '),
-        ['user-a', 'user-b'],
-      );
+      expect(parseOrgPeopleIdsQuery(' user-a , , user-b '), [
+        'user-a',
+        'user-b',
+      ]);
     });
   });
 
   group('encodeOrgPeopleIdsQuery', () {
     test('joins ids with commas', () {
-      expect(
-        encodeOrgPeopleIdsQuery(['user-a', 'user-b']),
-        'user-a,user-b',
-      );
+      expect(encodeOrgPeopleIdsQuery(['user-a', 'user-b']), 'user-a,user-b');
     });
   });
 }

@@ -6,7 +6,10 @@ import 'package:pet_profile_app/features/organization/presentation/widgets/org_r
 
 void main() {
   group('StagedPermissionsController', () {
-    MemberPermissionBaseline baselineFor(OrgMemberRole role, Set<String> effective) {
+    MemberPermissionBaseline baselineFor(
+      OrgMemberRole role,
+      Set<String> effective,
+    ) {
       return MemberPermissionBaseline(
         role: role,
         effective: effective,
@@ -38,19 +41,12 @@ void main() {
         },
       );
 
-      final next = controller.applyRolePreset(
-        OrgMemberRole.associate,
-        ['user-a'],
-      );
+      final next = controller.applyRolePreset(OrgMemberRole.associate, [
+        'user-a',
+      ]);
 
-      expect(
-        next.effectiveForUser('user-a', 'manage_pets'),
-        isFalse,
-      );
-      expect(
-        next.effectiveForUser('user-a', 'view_org_pets'),
-        isTrue,
-      );
+      expect(next.effectiveForUser('user-a', 'manage_pets'), isFalse);
+      expect(next.effectiveForUser('user-a', 'view_org_pets'), isTrue);
     });
 
     test('buildSaveChanges emits grant for staged on', () {

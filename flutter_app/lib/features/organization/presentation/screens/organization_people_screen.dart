@@ -17,11 +17,7 @@ import '../widgets/org_shell_app_bar_title.dart';
 import '../widgets/org_shell_scaffold.dart';
 
 class OrganizationPeopleScreen extends ConsumerStatefulWidget {
-  const OrganizationPeopleScreen({
-    super.key,
-    required this.orgId,
-    this.filter,
-  });
+  const OrganizationPeopleScreen({super.key, required this.orgId, this.filter});
 
   final String orgId;
   final String? filter;
@@ -73,9 +69,9 @@ class _OrganizationPeopleScreenState
           .read(orgPeopleProvider(widget.orgId).notifier)
           .onboardAsFoster(userIds: _selectedUserIds.toList());
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.orgFosterInviteSentInApp)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.orgFosterInviteSentInApp)));
       _exitSelectionMode();
     } catch (e) {
       if (!mounted) return;
@@ -172,8 +168,11 @@ class _OrganizationPeopleScreenState
               Text('$e'),
               const SizedBox(height: 8),
               ElevatedButton(
-                key: Key(_adminsOnly ? 'admin_contacts_retry' : 'org_people_retry'),
-                onPressed: () => ref.invalidate(orgPeopleProvider(widget.orgId)),
+                key: Key(
+                  _adminsOnly ? 'admin_contacts_retry' : 'org_people_retry',
+                ),
+                onPressed: () =>
+                    ref.invalidate(orgPeopleProvider(widget.orgId)),
                 child: Text(l.retry),
               ),
             ],
@@ -184,7 +183,10 @@ class _OrganizationPeopleScreenState
             people,
             filter: widget.filter,
           );
-          final nameFiltered = filterOrgPeopleByName(routeFiltered, _searchQuery);
+          final nameFiltered = filterOrgPeopleByName(
+            routeFiltered,
+            _searchQuery,
+          );
 
           return ListView(
             padding: const EdgeInsets.all(16),

@@ -39,7 +39,8 @@ class OrganizationDocumentTemplatesScreen extends ConsumerWidget {
           final sessionTemplates = _templatesFor(data, 'session_checklist');
           final milestoneTemplates = _templatesFor(data, 'adoption_milestones');
           final emailTemplates = _templatesFor(data, 'email_templates');
-          final isEmpty = sessionTemplates.isEmpty &&
+          final isEmpty =
+              sessionTemplates.isEmpty &&
               milestoneTemplates.isEmpty &&
               emailTemplates.isEmpty;
 
@@ -51,14 +52,16 @@ class OrganizationDocumentTemplatesScreen extends ConsumerWidget {
             key: const Key('org_document_templates_screen'),
             padding: const EdgeInsets.all(16),
             children: [
-              Text(l.orgDocumentTemplatesIntro,
+              Text(
+                l.orgDocumentTemplatesIntro,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 16),
               if (emailTemplates.isNotEmpty) ...[
-                Text(l.orgEmailTemplatesSection,
+                Text(
+                  l.orgEmailTemplatesSection,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -70,7 +73,8 @@ class OrganizationDocumentTemplatesScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
               ],
               if (sessionTemplates.isNotEmpty) ...[
-                Text(l.orgLegalDocumentsTypeSession,
+                Text(
+                  l.orgLegalDocumentsTypeSession,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -80,7 +84,8 @@ class OrganizationDocumentTemplatesScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
               ],
               if (milestoneTemplates.isNotEmpty) ...[
-                Text(l.orgLegalDocumentsTypeAdoption,
+                Text(
+                  l.orgLegalDocumentsTypeAdoption,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -140,7 +145,10 @@ class _EmailTemplateTile extends ConsumerWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(l.orgEmailTemplateEditorHint, style: Theme.of(ctx).textTheme.bodySmall),
+            Text(
+              l.orgEmailTemplateEditorHint,
+              style: Theme.of(ctx).textTheme.bodySmall,
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: subjectController,
@@ -154,8 +162,14 @@ class _EmailTemplateTile extends ConsumerWidget {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.save)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l.save),
+          ),
         ],
       ),
     );
@@ -165,21 +179,25 @@ class _EmailTemplateTile extends ConsumerWidget {
       return;
     }
     try {
-      await ref.read(documentTemplatesProvider(orgId).notifier).updateEmailTemplate(
-        templateKey,
-        subject: subjectController.text.trim(),
-        bodyHtml: '<p>${bodyController.text.trim()}</p>',
-        bodyText: bodyController.text.trim(),
-        locale: locale,
-      );
+      await ref
+          .read(documentTemplatesProvider(orgId).notifier)
+          .updateEmailTemplate(
+            templateKey,
+            subject: subjectController.text.trim(),
+            bodyHtml: '<p>${bodyController.text.trim()}</p>',
+            bodyText: bodyController.text.trim(),
+            locale: locale,
+          );
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.orgEmailTemplateSaved)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.orgEmailTemplateSaved)));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     }
     subjectController.dispose();
@@ -196,8 +214,6 @@ class _TemplateTile extends StatelessWidget {
     final label = (template['label'] as String?)?.trim().isNotEmpty == true
         ? template['label'] as String
         : (template['template_key'] as String? ?? '');
-    return Card(
-      child: ListTile(title: Text(label)),
-    );
+    return Card(child: ListTile(title: Text(label)));
   }
 }

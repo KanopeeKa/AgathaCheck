@@ -77,10 +77,7 @@ const Map<String, List<String>> permissionBundleKeyGroups = {
     'start_adoption_journey',
     'confirm_return_to_shelter',
   ],
-  permissionBundlePetAdmin: [
-    'manage_pets',
-    'transfer_pet_ownership',
-  ],
+  permissionBundlePetAdmin: ['manage_pets', 'transfer_pet_ownership'],
   permissionBundleTeamAdmin: [
     'manage_admin_contacts',
     'manage_members',

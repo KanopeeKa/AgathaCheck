@@ -156,14 +156,18 @@ class _OrganizationRolesPermissionsScreenState
       ref.invalidate(orgAuditEventsProvider(orgId));
       ref.invalidate(orgEffectivePermissionsProvider(orgId));
       for (final userId in _selectedUserIds) {
-        ref.invalidate(memberPermissionsProvider((orgId: orgId, userId: userId)));
+        ref.invalidate(
+          memberPermissionsProvider((orgId: orgId, userId: userId)),
+        );
       }
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l.orgRolesPermissionsSaved)));
       await _loadBaselines(
-        ref.read(orgMembersProvider(orgId)).valueOrNull
+        ref
+                .read(orgMembersProvider(orgId))
+                .valueOrNull
                 ?.where((m) => !m.role.isPending)
                 .toList() ??
             [],
@@ -307,10 +311,7 @@ class _OrganizationRolesPermissionsScreenState
       permissionKey,
       _selectedUserIds,
     );
-    final canToggle = controller.canToggleKey(
-      permissionKey,
-      _selectedUserIds,
-    );
+    final canToggle = controller.canToggleKey(permissionKey, _selectedUserIds);
 
     return ListTile(
       key: Key('org_permission_toggle_$permissionKey'),
@@ -358,9 +359,7 @@ class _OrganizationRolesPermissionsScreenState
             ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
-        ...entry.value.map(
-          (key) => _buildPermissionToggle(l, key, controller),
-        ),
+        ...entry.value.map((key) => _buildPermissionToggle(l, key, controller)),
       ],
     ];
 

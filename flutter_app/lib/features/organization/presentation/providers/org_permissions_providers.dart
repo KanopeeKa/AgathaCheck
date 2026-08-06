@@ -129,15 +129,17 @@ extension DocumentTemplatesNotifierX on DocumentTemplatesNotifier {
     String locale = 'en',
   }) async {
     final token = ref.read(orgTokenProvider)!;
-    await ref.read(organizationRepositoryProvider).updateEmailTemplate(
-      arg,
-      templateKey,
-      subject: subject,
-      bodyHtml: bodyHtml,
-      bodyText: bodyText,
-      locale: locale,
-      token: token,
-    );
+    await ref
+        .read(organizationRepositoryProvider)
+        .updateEmailTemplate(
+          arg,
+          templateKey,
+          subject: subject,
+          bodyHtml: bodyHtml,
+          bodyText: bodyText,
+          locale: locale,
+          token: token,
+        );
     ref.invalidateSelf();
   }
 }

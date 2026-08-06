@@ -142,20 +142,40 @@ class OrgPersonDetailNotifier
 
   Future<void> confirmFosterOnboardingStep(String stepKey) async {
     final token = ref.read(orgTokenProvider)!;
-    final timeline = await ref.read(organizationRepositoryProvider).confirmFosterOnboardingStep(
-      arg.orgId, arg.kind, arg.recordId, stepKey, token: token);
+    final timeline = await ref
+        .read(organizationRepositoryProvider)
+        .confirmFosterOnboardingStep(
+          arg.orgId,
+          arg.kind,
+          arg.recordId,
+          stepKey,
+          token: token,
+        );
     final current = state.valueOrNull;
     if (current != null) {
-      state = AsyncData(OrgPersonDetail(
-        id: current.id, kind: current.kind, recordId: current.recordId, userId: current.userId,
-        displayName: current.displayName, email: current.email, role: current.role,
-        photoUrl: current.photoUrl, isPending: current.isPending,
-        activeFosterCount: current.activeFosterCount, categoryRank: current.categoryRank,
-        fosterApprovalState: current.fosterApprovalState, fosterNeedsAttention: current.fosterNeedsAttention,
-        fosterPhone: current.fosterPhone, fosterAddress: current.fosterAddress, adminNotes: current.adminNotes,
-        currentPlacements: current.currentPlacements, pastPlacements: current.pastPlacements,
-        fosterOnboarding: timeline,
-      ));
+      state = AsyncData(
+        OrgPersonDetail(
+          id: current.id,
+          kind: current.kind,
+          recordId: current.recordId,
+          userId: current.userId,
+          displayName: current.displayName,
+          email: current.email,
+          role: current.role,
+          photoUrl: current.photoUrl,
+          isPending: current.isPending,
+          activeFosterCount: current.activeFosterCount,
+          categoryRank: current.categoryRank,
+          fosterApprovalState: current.fosterApprovalState,
+          fosterNeedsAttention: current.fosterNeedsAttention,
+          fosterPhone: current.fosterPhone,
+          fosterAddress: current.fosterAddress,
+          adminNotes: current.adminNotes,
+          currentPlacements: current.currentPlacements,
+          pastPlacements: current.pastPlacements,
+          fosterOnboarding: timeline,
+        ),
+      );
     } else {
       ref.invalidateSelf();
     }

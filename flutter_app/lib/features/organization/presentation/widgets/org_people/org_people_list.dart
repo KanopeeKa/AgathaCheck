@@ -67,7 +67,9 @@ class OrgPeopleList extends ConsumerWidget {
         ),
         const SizedBox(height: 12),
         OrgPersonTileGrid(
-          gridKey: Key(adminsOnly ? 'admin_contacts_tile_grid' : 'org_people_tile_grid'),
+          gridKey: Key(
+            adminsOnly ? 'admin_contacts_tile_grid' : 'org_people_tile_grid',
+          ),
           tiles: sorted.map((person) {
             final isSelf = adminsOnly
                 ? viewerHasAdminSelfCard(person, viewerUserId)
@@ -101,10 +103,7 @@ class OrgPeopleList extends ConsumerWidget {
               onTap: selectionMode || person.isPending
                   ? null
                   : () => context.push(person.detailPath(orgId)),
-              trailing: !selectionMode &&
-                      adminsOnly &&
-                      !isSelf &&
-                      canEditOthers
+              trailing: !selectionMode && adminsOnly && !isSelf && canEditOthers
                   ? _OrgPeopleAdminMenu(
                       person: person,
                       orgId: orgId,

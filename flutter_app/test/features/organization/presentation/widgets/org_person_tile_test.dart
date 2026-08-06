@@ -152,7 +152,9 @@ void main() {
     expect(decoration.color, Colors.black);
   });
 
-  testWidgets('shows foster badge for approved foster associate', (tester) async {
+  testWidgets('shows foster badge for approved foster associate', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       wrap(
         const SizedBox(

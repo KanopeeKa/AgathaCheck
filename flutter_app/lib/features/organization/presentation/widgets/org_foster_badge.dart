@@ -58,11 +58,7 @@ String localizedOrgFosterBadgeLabel(
 
 /// Foster status pill below the person name (D-v4-FOSTER-1).
 class OrgFosterBadge extends StatelessWidget {
-  const OrgFosterBadge({
-    super.key,
-    required this.state,
-    this.semanticsLabel,
-  });
+  const OrgFosterBadge({super.key, required this.state, this.semanticsLabel});
 
   final OrgFosterBadgeState state;
   final String? semanticsLabel;

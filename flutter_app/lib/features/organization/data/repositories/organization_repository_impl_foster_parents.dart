@@ -39,8 +39,19 @@ mixin OrganizationRepositoryFosterParentsMixin
 
   @override
   Future<FosterOnboardingStatus> confirmFosterOnboardingStep(
-    String orgId, OrgPersonKind kind, String recordId, String stepKey, {required String token}) async {
-    final row = await dataSource.confirmFosterOnboardingStep(orgId, kind.wire, recordId, stepKey, token);
+    String orgId,
+    OrgPersonKind kind,
+    String recordId,
+    String stepKey, {
+    required String token,
+  }) async {
+    final row = await dataSource.confirmFosterOnboardingStep(
+      orgId,
+      kind.wire,
+      recordId,
+      stepKey,
+      token,
+    );
     return FosterOnboardingStatus.fromJson(row);
   }
 

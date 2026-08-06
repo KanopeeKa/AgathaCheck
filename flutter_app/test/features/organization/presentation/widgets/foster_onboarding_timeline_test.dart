@@ -14,54 +14,106 @@ void main() {
   final timeline = FosterOnboardingStatus(
     resourceId: 'fp-1',
     steps: const [
-      FosterOnboardingStep(key: 'connected', label: 'Connected', state: FosterOnboardingStepState.complete),
-      FosterOnboardingStep(key: 'profile', label: 'Profile', state: FosterOnboardingStepState.complete),
-      FosterOnboardingStep(key: 'onboarding_form', label: 'Form', state: FosterOnboardingStepState.current, deferred: true),
+      FosterOnboardingStep(
+        key: 'connected',
+        label: 'Connected',
+        state: FosterOnboardingStepState.complete,
+      ),
+      FosterOnboardingStep(
+        key: 'profile',
+        label: 'Profile',
+        state: FosterOnboardingStepState.complete,
+      ),
+      FosterOnboardingStep(
+        key: 'onboarding_form',
+        label: 'Form',
+        state: FosterOnboardingStepState.current,
+        deferred: true,
+      ),
     ],
   );
 
   testWidgets('renders title, deferred copy, and disc states', (tester) async {
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        organizationRepositoryProvider.overrideWithValue(RecordingOrganizationRepository()),
-        organizationListProvider.overrideWith(() => _AdminOrgListNotifier()),
-      ],
-      child: MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(body: FosterOnboardingTimeline(orgId: 'org-1', kind: 'external', recordId: 'fp-1', timeline: timeline)),
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          organizationRepositoryProvider.overrideWithValue(
+            RecordingOrganizationRepository(),
+          ),
+          organizationListProvider.overrideWith(() => _AdminOrgListNotifier()),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: FosterOnboardingTimeline(
+              orgId: 'org-1',
+              kind: 'external',
+              recordId: 'fp-1',
+              timeline: timeline,
+            ),
+          ),
+        ),
       ),
-    ));
+    );
     await tester.pumpAndSettle();
     expect(find.text('Foster onboarding status'), findsOneWidget);
     expect(find.text('Not recorded yet'), findsOneWidget);
-    expect(find.byKey(const Key('foster_onboarding_disc_complete')), findsNWidgets(2));
-    expect(find.byKey(const Key('foster_onboarding_disc_current')), findsOneWidget);
+    expect(
+      find.byKey(const Key('foster_onboarding_disc_complete')),
+      findsNWidgets(2),
+    );
+    expect(
+      find.byKey(const Key('foster_onboarding_disc_current')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('shows confirm on incomplete steps for admins', (tester) async {
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        organizationRepositoryProvider.overrideWithValue(RecordingOrganizationRepository()),
-        organizationListProvider.overrideWith(() => _AdminOrgListNotifier()),
-      ],
-      child: MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(body: FosterOnboardingTimeline(orgId: 'org-1', kind: 'external', recordId: 'fp-1', timeline: timeline)),
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          organizationRepositoryProvider.overrideWithValue(
+            RecordingOrganizationRepository(),
+          ),
+          organizationListProvider.overrideWith(() => _AdminOrgListNotifier()),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: FosterOnboardingTimeline(
+              orgId: 'org-1',
+              kind: 'external',
+              recordId: 'fp-1',
+              timeline: timeline,
+            ),
+          ),
+        ),
       ),
-    ));
+    );
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('foster_onboarding_confirm_onboarding_form')), findsOneWidget);
-    expect(find.byKey(const Key('foster_onboarding_confirm_connected')), findsNothing);
+    expect(
+      find.byKey(const Key('foster_onboarding_confirm_onboarding_form')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('foster_onboarding_confirm_connected')),
+      findsNothing,
+    );
   });
 }
 
 class _AdminOrgListNotifier extends OrganizationListNotifier {
   @override
   Future<List<Organization>> build() async => const [
-    Organization(id: 'org-1', name: 'Shelter', type: OrganizationType.charity, role: 'super_admin'),
+    Organization(
+      id: 'org-1',
+      name: 'Shelter',
+      type: OrganizationType.charity,
+      role: 'super_admin',
+    ),
   ];
 }

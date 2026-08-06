@@ -155,7 +155,8 @@ class _OrganizationPersonDetailScreenState
                           label: Text(l.editFosterContact),
                         ),
                       ],
-                      if (canManageFostersFlag && personCanOnboardAsFoster(person)) ...[
+                      if (canManageFostersFlag &&
+                          personCanOnboardAsFoster(person)) ...[
                         const SizedBox(height: 12),
                         FilledButton.icon(
                           key: const Key('org_person_onboard_foster'),
@@ -168,7 +169,8 @@ class _OrganizationPersonDetailScreenState
                   ),
                 ),
               ),
-              if (person.hasFosterRelationship && person.fosterOnboarding != null) ...[
+              if (person.hasFosterRelationship &&
+                  person.fosterOnboarding != null) ...[
                 const SizedBox(height: 16),
                 FosterOnboardingTimeline(
                   orgId: widget.orgId,
@@ -241,9 +243,9 @@ class _OrganizationPersonDetailScreenState
           .onboardAsFoster(userIds: [person.userId!]);
       ref.invalidate(orgPersonDetailProvider(_key));
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.orgFosterInviteSentInApp)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.orgFosterInviteSentInApp)));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
@@ -255,10 +257,15 @@ class _OrganizationPersonDetailScreenState
     OrgPersonDetail person,
   ) async {
     final l = AppLocalizations.of(context)!;
-    final edits = await promptFosterContactEdit(context: context, person: person);
+    final edits = await promptFosterContactEdit(
+      context: context,
+      person: person,
+    );
     if (edits == null || !mounted) return;
 
-    await ref.read(orgPersonDetailProvider(_key).notifier).updateContact(
+    await ref
+        .read(orgPersonDetailProvider(_key).notifier)
+        .updateContact(
           fosterPhone: edits.fosterPhone,
           fosterAddress: edits.fosterAddress,
           adminNotes: edits.adminNotes,
@@ -267,9 +274,9 @@ class _OrganizationPersonDetailScreenState
         );
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.fosterContactSaved)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.fosterContactSaved)));
     }
   }
 

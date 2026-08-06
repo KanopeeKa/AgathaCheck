@@ -10,10 +10,7 @@ List<String> parseOrgPeopleIdsQuery(String? peopleParam) {
       .toList(growable: false);
 }
 
-String encodeOrgPeopleIdsQuery(Iterable<String> userIds) =>
-    userIds.join(',');
+String encodeOrgPeopleIdsQuery(Iterable<String> userIds) => userIds.join(',');
 
 bool personIsSelectableForBulk(OrgPersonSummary person) =>
-    !person.isPending &&
-    person.userId != null &&
-    person.userId!.isNotEmpty;
+    !person.isPending && person.userId != null && person.userId!.isNotEmpty;

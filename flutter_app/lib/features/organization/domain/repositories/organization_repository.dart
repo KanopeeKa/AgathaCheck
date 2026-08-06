@@ -487,7 +487,10 @@ abstract class OrganizationRepository {
     String locale = 'en',
     required String token,
   });
-  Future<Map<String, dynamic>> getRolePermissionDefaults(String orgId, String token);
+  Future<Map<String, dynamic>> getRolePermissionDefaults(
+    String orgId,
+    String token,
+  );
   Future<Map<String, dynamic>> saveRolePermissionDefaults(
     String orgId,
     String tier,

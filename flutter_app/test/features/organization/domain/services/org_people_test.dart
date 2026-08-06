@@ -59,10 +59,10 @@ void main() {
     );
 
     test('filter=admins keeps only admin wire roles', () {
-      final filtered = filterOrgPeopleByRoute(
-        [admin, foster],
-        filter: 'admins',
-      );
+      final filtered = filterOrgPeopleByRoute([
+        admin,
+        foster,
+      ], filter: 'admins');
 
       expect(filtered, [admin]);
     });

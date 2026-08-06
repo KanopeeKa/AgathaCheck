@@ -23,10 +23,7 @@ const Map<String, List<String>> _permissionBundleGroups = {
     'manage_fostering_sessions',
     'transfer_pet_ownership',
   ],
-  permissionBundleTeamAdmin: [
-    'manage_admin_contacts',
-    'manage_members',
-  ],
+  permissionBundleTeamAdmin: ['manage_admin_contacts', 'manage_members'],
 };
 
 class OrganizationRoleDefaultsScreen extends ConsumerStatefulWidget {
@@ -50,7 +47,9 @@ class _OrganizationRoleDefaultsScreenState
 
   bool get _isDirty {
     if (_loadedTier != _selectedTier) return false;
-    final defaultsAsync = ref.read(rolePermissionDefaultsProvider(widget.orgId));
+    final defaultsAsync = ref.read(
+      rolePermissionDefaultsProvider(widget.orgId),
+    );
     final data = defaultsAsync.valueOrNull;
     if (data == null) return false;
     final tierData = _tierData(data, _selectedTier);
@@ -68,7 +67,8 @@ class _OrganizationRoleDefaultsScreenState
   }
 
   List<String> _allPermissionKeys(Map<String, dynamic> data) {
-    return (data['permission_keys'] as List? ?? g0PermissionDefaults.keys.toList())
+    return (data['permission_keys'] as List? ??
+            g0PermissionDefaults.keys.toList())
         .cast<String>();
   }
 
@@ -199,7 +199,9 @@ class _OrganizationRoleDefaultsScreenState
   }
 
   List<String> _ungroupedKeys(List<String> allKeys) {
-    final grouped = _permissionBundleGroups.values.expand((keys) => keys).toSet();
+    final grouped = _permissionBundleGroups.values
+        .expand((keys) => keys)
+        .toSet();
     return allKeys.where((key) => !grouped.contains(key)).toList()..sort();
   }
 
@@ -230,7 +232,9 @@ class _OrganizationRoleDefaultsScreenState
   @override
   Widget build(BuildContext context) {
     ref.watch(viewerPermissionOverridesProvider(widget.orgId));
-    final defaultsAsync = ref.watch(rolePermissionDefaultsProvider(widget.orgId));
+    final defaultsAsync = ref.watch(
+      rolePermissionDefaultsProvider(widget.orgId),
+    );
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -330,9 +334,9 @@ class _OrganizationRoleDefaultsScreenState
                   ),
                 ),
                 const SizedBox(height: 4),
-                ..._ungroupedKeys(allKeys).map(
-                  (key) => _permissionSwitch(l, key, readOnly: readOnly),
-                ),
+                ..._ungroupedKeys(
+                  allKeys,
+                ).map((key) => _permissionSwitch(l, key, readOnly: readOnly)),
               ],
             );
           },

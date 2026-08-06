@@ -113,8 +113,11 @@ class OrgPersonDetail extends OrgPersonSummary {
   final FosterOnboardingStatus? fosterOnboarding;
 
   bool get hasFosterRelationship =>
-      isExternal || fosterApprovalState != null || fosterNeedsAttention ||
-      activeFosterCount > 0 || fosterOnboarding != null;
+      isExternal ||
+      fosterApprovalState != null ||
+      fosterNeedsAttention ||
+      activeFosterCount > 0 ||
+      fosterOnboarding != null;
 
   factory OrgPersonDetail.fromJson(Map<String, dynamic> json) {
     final summary = OrgPersonSummary.fromJson(json);
@@ -134,7 +137,9 @@ class OrgPersonDetail extends OrgPersonSummary {
         .toList();
     final fosterOnboardingJson = json['foster_onboarding'];
     final fosterOnboarding = fosterOnboardingJson is Map
-        ? FosterOnboardingStatus.fromJson(Map<String, dynamic>.from(fosterOnboardingJson))
+        ? FosterOnboardingStatus.fromJson(
+            Map<String, dynamic>.from(fosterOnboardingJson),
+          )
         : null;
 
     return OrgPersonDetail(

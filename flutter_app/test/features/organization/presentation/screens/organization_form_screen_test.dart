@@ -114,8 +114,7 @@ void main() {
         ),
         GoRoute(
           path: '/o/orgs',
-          builder: (context, state) =>
-              const Scaffold(body: Text('orgs list')),
+          builder: (context, state) => const Scaffold(body: Text('orgs list')),
         ),
       ],
     );

@@ -11,7 +11,10 @@ void main() {
 
     test('maps legacy foster wire to associate', () {
       expect(OrgMemberRole.fromWire('foster'), OrgMemberRole.associate);
-      expect(OrgMemberRole.fromWire('pending_foster'), OrgMemberRole.pendingAssociate);
+      expect(
+        OrgMemberRole.fromWire('pending_foster'),
+        OrgMemberRole.pendingAssociate,
+      );
     });
 
     test('maps legacy roles', () {

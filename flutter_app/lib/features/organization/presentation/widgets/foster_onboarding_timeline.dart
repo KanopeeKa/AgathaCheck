@@ -11,18 +11,19 @@ import '../providers/org_provider_deps.dart';
 import '../providers/org_provider_list.dart';
 import '../providers/org_provider_people.dart';
 
-String localizedFosterOnboardingStepLabel(AppLocalizations l, String key) => switch (key) {
-  'connected' => l.fosterOnboardingStepConnected,
-  'profile' => l.fosterOnboardingStepProfile,
-  'invitation_accepted' => l.fosterOnboardingStepInvitationAccepted,
-  'under_review' => l.fosterOnboardingStepUnderReview,
-  'onboarding_form' => l.fosterOnboardingStepOnboardingForm,
-  'home_visit' => l.fosterOnboardingStepHomeVisit,
-  'competencies' => l.fosterOnboardingStepCompetencies,
-  'agreement' => l.fosterOnboardingStepAgreement,
-  'approved' => l.fosterOnboardingStepApproved,
-  _ => key,
-};
+String localizedFosterOnboardingStepLabel(AppLocalizations l, String key) =>
+    switch (key) {
+      'connected' => l.fosterOnboardingStepConnected,
+      'profile' => l.fosterOnboardingStepProfile,
+      'invitation_accepted' => l.fosterOnboardingStepInvitationAccepted,
+      'under_review' => l.fosterOnboardingStepUnderReview,
+      'onboarding_form' => l.fosterOnboardingStepOnboardingForm,
+      'home_visit' => l.fosterOnboardingStepHomeVisit,
+      'competencies' => l.fosterOnboardingStepCompetencies,
+      'agreement' => l.fosterOnboardingStepAgreement,
+      'approved' => l.fosterOnboardingStepApproved,
+      _ => key,
+    };
 
 class FosterOnboardingTimeline extends ConsumerStatefulWidget {
   const FosterOnboardingTimeline({
@@ -39,10 +40,12 @@ class FosterOnboardingTimeline extends ConsumerStatefulWidget {
   final FosterOnboardingStatus timeline;
 
   @override
-  ConsumerState<FosterOnboardingTimeline> createState() => _FosterOnboardingTimelineState();
+  ConsumerState<FosterOnboardingTimeline> createState() =>
+      _FosterOnboardingTimelineState();
 }
 
-class _FosterOnboardingTimelineState extends ConsumerState<FosterOnboardingTimeline> {
+class _FosterOnboardingTimelineState
+    extends ConsumerState<FosterOnboardingTimeline> {
   var _busyStepKey = '';
 
   OrgPersonDetailKey get _detailKey => (
@@ -52,18 +55,30 @@ class _FosterOnboardingTimelineState extends ConsumerState<FosterOnboardingTimel
   );
 
   bool _canConfirmSteps() {
-    final org = ref.watch(organizationListProvider).valueOrNull
-        ?.where((item) => item.id == widget.orgId).firstOrNull;
+    final org = ref
+        .watch(organizationListProvider)
+        .valueOrNull
+        ?.where((item) => item.id == widget.orgId)
+        .firstOrNull;
     if (org?.role == null) return false;
-    return hasPermission(OrgMemberRole.fromWire(org!.role!), widget.orgId, 'review_foster_onboarding');
+    return hasPermission(
+      OrgMemberRole.fromWire(org!.role!),
+      widget.orgId,
+      'review_foster_onboarding',
+    );
   }
 
   Future<void> _confirmStep(String stepKey) async {
     setState(() => _busyStepKey = stepKey);
     try {
-      await ref.read(orgPersonDetailProvider(_detailKey).notifier).confirmFosterOnboardingStep(stepKey);
+      await ref
+          .read(orgPersonDetailProvider(_detailKey).notifier)
+          .confirmFosterOnboardingStep(stepKey);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      if (mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
     } finally {
       if (mounted) setState(() => _busyStepKey = '');
     }
@@ -79,7 +94,12 @@ class _FosterOnboardingTimelineState extends ConsumerState<FosterOnboardingTimel
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l.fosterOnboardingStatusTitle, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+        Text(
+          l.fosterOnboardingStatusTitle,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 12),
         ...List.generate(widget.timeline.steps.length, (index) {
           final step = widget.timeline.steps[index];
@@ -106,11 +126,18 @@ class _FosterOnboardingTimelineState extends ConsumerState<FosterOnboardingTimel
 
 class _FosterOnboardingTimelineRow extends StatelessWidget {
   const _FosterOnboardingTimelineRow({
-    required this.step, required this.label, required this.showConnectorBelow,
-    required this.canConfirm, required this.busy, required this.onConfirm,
-    required this.organizationPrimary, required this.dangerColor,
-    required this.notRecordedLabel, required this.confirmLabel,
-    required this.colorScheme, required this.theme,
+    required this.step,
+    required this.label,
+    required this.showConnectorBelow,
+    required this.canConfirm,
+    required this.busy,
+    required this.onConfirm,
+    required this.organizationPrimary,
+    required this.dangerColor,
+    required this.notRecordedLabel,
+    required this.confirmLabel,
+    required this.colorScheme,
+    required this.theme,
   });
 
   final FosterOnboardingStep step;
@@ -146,23 +173,43 @@ class _FosterOnboardingTimelineRow extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.only(bottom: showConnectorBelow ? 12 : 0),
               child: Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(label, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+                      Text(
+                        label,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       if (step.deferred && !step.isComplete) ...[
                         const SizedBox(height: 4),
-                        Text(notRecordedLabel, style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant)),
+                        Text(
+                          notRecordedLabel,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ],
                       if (canConfirm) ...[
                         const SizedBox(height: 8),
                         TextButton(
                           key: Key('foster_onboarding_confirm_${step.key}'),
                           onPressed: busy ? null : onConfirm,
-                          child: busy ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : Text(confirmLabel),
+                          child: busy
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Text(confirmLabel),
                         ),
                       ],
                     ],
@@ -179,9 +226,12 @@ class _FosterOnboardingTimelineRow extends StatelessWidget {
 
 class _FosterOnboardingDisc extends StatelessWidget {
   const _FosterOnboardingDisc({
-    required this.state, required this.showConnectorBelow,
-    required this.organizationPrimary, required this.dangerColor,
-    required this.outlineColor, required this.label,
+    required this.state,
+    required this.showConnectorBelow,
+    required this.organizationPrimary,
+    required this.dangerColor,
+    required this.outlineColor,
+    required this.label,
   });
 
   final FosterOnboardingStepState state;
@@ -194,28 +244,52 @@ class _FosterOnboardingDisc extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final connectorColor = state == FosterOnboardingStepState.complete
-        ? organizationPrimary : outlineColor.withValues(alpha: 0.45);
+        ? organizationPrimary
+        : outlineColor.withValues(alpha: 0.45);
     final decoration = switch (state) {
-      FosterOnboardingStepState.complete => BoxDecoration(color: organizationPrimary, shape: BoxShape.circle),
-      FosterOnboardingStepState.current => BoxDecoration(color: organizationPrimary, shape: BoxShape.circle),
-      FosterOnboardingStepState.issue => BoxDecoration(color: Colors.white, shape: BoxShape.circle, border: Border.all(color: dangerColor, width: 2)),
-      FosterOnboardingStepState.notStarted => BoxDecoration(shape: BoxShape.circle, border: Border.all(color: outlineColor)),
+      FosterOnboardingStepState.complete => BoxDecoration(
+        color: organizationPrimary,
+        shape: BoxShape.circle,
+      ),
+      FosterOnboardingStepState.current => BoxDecoration(
+        color: organizationPrimary,
+        shape: BoxShape.circle,
+      ),
+      FosterOnboardingStepState.issue => BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: dangerColor, width: 2),
+      ),
+      FosterOnboardingStepState.notStarted => BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: outlineColor),
+      ),
     };
     final child = state == FosterOnboardingStepState.complete
-        ? const Icon(Icons.check, size: 14, color: Colors.white) : null;
+        ? const Icon(Icons.check, size: 14, color: Colors.white)
+        : null;
 
     return SizedBox(
       width: 32,
-      child: Column(children: [
-        Semantics(
-          label: label,
-          child: Container(
-            key: Key('foster_onboarding_disc_${state.wire}'),
-            width: 24, height: 24, decoration: decoration, alignment: Alignment.center, child: child,
+      child: Column(
+        children: [
+          Semantics(
+            label: label,
+            child: Container(
+              key: Key('foster_onboarding_disc_${state.wire}'),
+              width: 24,
+              height: 24,
+              decoration: decoration,
+              alignment: Alignment.center,
+              child: child,
+            ),
           ),
-        ),
-        if (showConnectorBelow) Expanded(child: Center(child: Container(width: 2, color: connectorColor))),
-      ]),
+          if (showConnectorBelow)
+            Expanded(
+              child: Center(child: Container(width: 2, color: connectorColor)),
+            ),
+        ],
+      ),
     );
   }
 }

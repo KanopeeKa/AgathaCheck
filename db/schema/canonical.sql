@@ -106,6 +106,17 @@ CREATE TABLE public.document_templates (
     is_public boolean DEFAULT false NOT NULL,
     CONSTRAINT document_templates_type_check CHECK (((template_type)::text = ANY ((ARRAY['session_checklist'::character varying, 'adoption_milestone'::character varying])::text[])))
 );
+CREATE TABLE public.email_templates (
+    id uuid NOT NULL,
+    organization_id uuid NOT NULL,
+    template_key character varying(100) NOT NULL,
+    locale character varying(10) DEFAULT 'en'::character varying NOT NULL,
+    subject text NOT NULL,
+    body_html text NOT NULL,
+    body_text text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
 CREATE TABLE public.family_event_history (
     id uuid NOT NULL,
     family_event_id uuid NOT NULL,
@@ -366,6 +377,13 @@ CREATE TABLE public.organization_permissions (
     revoked_at timestamp with time zone,
     revoked_by uuid
 );
+CREATE TABLE public.organization_role_permission_defaults (
+    organization_id uuid NOT NULL,
+    role_tier character varying(16) NOT NULL,
+    permission_key character varying(64) NOT NULL,
+    granted boolean DEFAULT true NOT NULL,
+    CONSTRAINT organization_role_permission_defaults_tier_check CHECK (((role_tier)::text = ANY ((ARRAY['associate'::character varying, 'admin'::character varying])::text[])))
+);
 CREATE TABLE public.organization_users (
     id uuid NOT NULL,
     organization_id uuid NOT NULL,
@@ -384,7 +402,7 @@ CREATE TABLE public.organization_users (
     CONSTRAINT organization_users_card_visibility_check CHECK ((card_visibility = ANY (ARRAY['all'::text, 'admins'::text, 'named'::text]))),
     CONSTRAINT organization_users_email_visibility_check CHECK ((email_visibility = ANY (ARRAY['admins'::text, 'admins_and_foster_managers'::text, 'admins_or_named'::text, 'named'::text]))),
     CONSTRAINT organization_users_phone_visibility_check CHECK ((phone_visibility = ANY (ARRAY['admins'::text, 'admins_and_foster_managers'::text, 'admins_or_named'::text, 'named'::text]))),
-    CONSTRAINT organization_users_role_check CHECK (((role)::text = ANY ((ARRAY['associate'::character varying, 'foster'::character varying, 'admin'::character varying, 'super_admin'::character varying, 'pending_associate'::character varying, 'pending_foster'::character varying, 'pending_admin'::character varying, 'pending_super_admin'::character varying])::text[])))
+    CONSTRAINT organization_users_role_check CHECK (((role)::text = ANY ((ARRAY['associate'::character varying, 'admin'::character varying, 'super_admin'::character varying, 'pending_associate'::character varying, 'pending_admin'::character varying, 'pending_super_admin'::character varying])::text[])))
 );
 CREATE TABLE public.organization_visibility_grants (
     id uuid NOT NULL,
@@ -586,6 +604,10 @@ ALTER TABLE ONLY public.document_templates
     ADD CONSTRAINT document_templates_org_key_unique UNIQUE (organization_id, template_key);
 ALTER TABLE ONLY public.document_templates
     ADD CONSTRAINT document_templates_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.email_templates
+    ADD CONSTRAINT email_templates_organization_id_template_key_locale_key UNIQUE (organization_id, template_key, locale);
+ALTER TABLE ONLY public.email_templates
+    ADD CONSTRAINT email_templates_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.family_event_history
     ADD CONSTRAINT family_event_history_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.family_events
@@ -640,6 +662,8 @@ ALTER TABLE ONLY public.org_pet_home_hidden
     ADD CONSTRAINT org_pet_home_hidden_pkey PRIMARY KEY (user_id, pet_id);
 ALTER TABLE ONLY public.organization_permissions
     ADD CONSTRAINT organization_permissions_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.organization_role_permission_defaults
+    ADD CONSTRAINT organization_role_permission_defaults_pkey PRIMARY KEY (organization_id, role_tier, permission_key);
 ALTER TABLE ONLY public.organization_users
     ADD CONSTRAINT organization_users_organization_id_user_id_key UNIQUE (organization_id, user_id);
 ALTER TABLE ONLY public.organization_users
@@ -699,6 +723,7 @@ CREATE INDEX idx_audit_events_retention_tier ON public.audit_events USING btree 
 CREATE INDEX idx_custody_transfers_pet_status ON public.custody_transfers USING btree (pet_id, status);
 CREATE INDEX idx_custody_transfers_to_org ON public.custody_transfers USING btree (to_org_id, status);
 CREATE INDEX idx_document_templates_org_type ON public.document_templates USING btree (organization_id, template_type);
+CREATE INDEX idx_email_templates_org_key ON public.email_templates USING btree (organization_id, template_key);
 CREATE INDEX idx_family_event_history_event_id ON public.family_event_history USING btree (family_event_id);
 CREATE INDEX idx_family_events_org_id ON public.family_events USING btree (organization_id);
 CREATE INDEX idx_family_events_pet_id ON public.family_events USING btree (pet_id);
@@ -721,6 +746,7 @@ CREATE INDEX idx_org_foster_parents_org_id ON public.org_foster_parents USING bt
 CREATE UNIQUE INDEX idx_org_permissions_active ON public.organization_permissions USING btree (organization_id, user_id, permission_key) WHERE (revoked_at IS NULL);
 CREATE INDEX idx_org_permissions_org_user ON public.organization_permissions USING btree (organization_id, user_id);
 CREATE INDEX idx_org_pet_home_hidden_org ON public.org_pet_home_hidden USING btree (organization_id, pet_id);
+CREATE INDEX idx_org_role_permission_defaults_org_tier ON public.organization_role_permission_defaults USING btree (organization_id, role_tier);
 CREATE INDEX idx_org_users_user_id ON public.organization_users USING btree (user_id);
 CREATE INDEX idx_org_visibility_grants_grantee ON public.organization_visibility_grants USING btree (organization_id, grantee_user_id);
 CREATE INDEX idx_org_visibility_grants_subject ON public.organization_visibility_grants USING btree (organization_id, subject_user_id);
@@ -781,6 +807,8 @@ ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_to_user_id_fkey FOREIGN KEY (to_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.document_templates
     ADD CONSTRAINT document_templates_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.email_templates
+    ADD CONSTRAINT email_templates_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.family_event_history
     ADD CONSTRAINT family_event_history_family_event_id_fkey FOREIGN KEY (family_event_id) REFERENCES public.family_events(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.family_event_history
@@ -883,6 +911,8 @@ ALTER TABLE ONLY public.organization_permissions
     ADD CONSTRAINT organization_permissions_revoked_by_fkey FOREIGN KEY (revoked_by) REFERENCES public.users(id);
 ALTER TABLE ONLY public.organization_permissions
     ADD CONSTRAINT organization_permissions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.organization_role_permission_defaults
+    ADD CONSTRAINT organization_role_permission_defaults_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.organization_users
     ADD CONSTRAINT organization_users_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.organization_users

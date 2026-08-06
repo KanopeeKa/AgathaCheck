@@ -66,12 +66,14 @@ Future<void> showFosterInviteByEmailDialog({
               final message = channel == 'email'
                   ? l.orgFosterInviteSentEmail
                   : l.orgFosterInviteSentInApp;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(message)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(message)));
             } catch (e) {
               if (!ctx.mounted) return;
-              ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('$e')));
+              ScaffoldMessenger.of(
+                ctx,
+              ).showSnackBar(SnackBar(content: Text('$e')));
             }
           },
           child: Text(l.sendInvite),
