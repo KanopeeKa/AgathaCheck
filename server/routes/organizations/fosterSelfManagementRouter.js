@@ -8,7 +8,7 @@ import {
   visibilityFieldsFromRow,
 } from '../../lib/fosterVisibility.js';
 import { withdrawFosterAgreement } from '../../lib/fosterAgreementWithdrawal.js';
-import { ORG_ROLE_FOSTER, isOrgAdmin, normaliseRole } from '../../lib/orgRoles.js';
+import { isOrgAdmin, isOrgFosterParent } from '../../lib/orgRoles.js';
 import { extractUserId, requireMember } from './shared.js';
 import { publicError } from '../../config/security.js';
 
@@ -63,8 +63,9 @@ async function ensureMemberFosterRelationship(pool, orgId, userId) {
   return relationshipId;
 }
 
-function requireFosterSelf(role, res, userId, targetUserId) {
-  if (normaliseRole(role) !== ORG_ROLE_FOSTER && !isOrgAdmin(role)) {
+async function requireFosterSelf(pool, orgId, role, res, userId, targetUserId) {
+  const isSelfFoster = await isOrgFosterParent(pool, orgId, userId);
+  if (!isOrgAdmin(role) && !isSelfFoster) {
     res.status(403).json({ error: 'Forbidden' });
     return false;
   }
@@ -85,7 +86,7 @@ export function registerFosterSelfManagementRoutes(router, pool) {
     try {
       const role = await requireMember(pool, res, orgId, userId);
       if (!role) return;
-      if (!requireFosterSelf(role, res, userId, userId)) return;
+      if (!(await requireFosterSelf(pool, orgId, role, res, userId, userId))) return;
 
       const relationshipId = await ensureMemberFosterRelationship(pool, orgId, userId);
       if (!relationshipId) {
@@ -148,7 +149,7 @@ export function registerFosterSelfManagementRoutes(router, pool) {
     try {
       const role = await requireMember(pool, res, orgId, userId);
       if (!role) return;
-      if (!requireFosterSelf(role, res, userId, userId)) return;
+      if (!(await requireFosterSelf(pool, orgId, role, res, userId, userId))) return;
 
       const userResult = await pool.query(
         `SELECT TRIM(COALESCE(first_name, '') || ' ' || COALESCE(last_name, '')) AS display_name

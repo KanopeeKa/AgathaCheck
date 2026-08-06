@@ -4,7 +4,7 @@
  */
 import { hasEffectivePermission } from './orgPermissions.js';
 import {
-  ORG_ROLE_FOSTER,
+  ORG_ROLE_ASSOCIATE,
   isOrgAdmin,
   isSuperAdmin,
   normaliseRole,
@@ -63,16 +63,10 @@ export function normaliseAddressVisibility(value) {
 
 /** Role-specific defaults applied on membership create / migrate. */
 export function defaultPrivacyForRole(role) {
-  const normalised = normaliseRole(role);
-  const fosterDefaults = normalised === ORG_ROLE_FOSTER;
   return {
     card_visibility: CARD_VISIBILITY_ALL,
-    phone_visibility: fosterDefaults
-      ? CONTACT_VISIBILITY_ADMINS_AND_FOSTER_MANAGERS
-      : CONTACT_VISIBILITY_ADMINS_OR_NAMED,
-    email_visibility: fosterDefaults
-      ? CONTACT_VISIBILITY_ADMINS_AND_FOSTER_MANAGERS
-      : CONTACT_VISIBILITY_ADMINS_OR_NAMED,
+    phone_visibility: CONTACT_VISIBILITY_ADMINS_OR_NAMED,
+    email_visibility: CONTACT_VISIBILITY_ADMINS_OR_NAMED,
     address_visibility: ADDRESS_VISIBILITY_ADMINS_OR_NAMED,
   };
 }
@@ -87,7 +81,7 @@ export function enforceCardVisibilityFloor(value, subjectRole) {
 }
 
 export function privacySettingsFromRow(row = {}, role = null) {
-  const defaults = defaultPrivacyForRole(role || row.role || ORG_ROLE_FOSTER);
+  const defaults = defaultPrivacyForRole(role || row.role || ORG_ROLE_ASSOCIATE);
   return {
     card_visibility: enforceCardVisibilityFloor(
       row.card_visibility ?? defaults.card_visibility,

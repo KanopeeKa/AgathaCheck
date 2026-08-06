@@ -22,20 +22,13 @@ import {
   SESSION_STATUS_ADOPTION_IN_PROGRESS,
   SESSION_STATUS_PENDING_ACCEPTANCE,
 } from '../../../lib/fosterPlacements.js';
-import { isFosterParentMember } from '../../../lib/orgRoles.js';
+import { isOrgFosterParent } from '../../../lib/orgRoles.js';
 import { extractUserId, requirePermission } from '../shared.js';
 import { publicError } from '../../../config/security.js';
 import { queryPlacementDetailById } from './shared.js';
 
 async function assertFosterParent(pool, orgId, fosterUserId, res) {
-  const fosterMember = await pool.query(
-    'SELECT role FROM organization_users WHERE organization_id = $1 AND user_id = $2',
-    [orgId, fosterUserId],
-  );
-  if (
-    fosterMember.rows.length === 0
-    || !isFosterParentMember(fosterMember.rows[0].role)
-  ) {
+  if (!(await isOrgFosterParent(pool, orgId, fosterUserId))) {
     res.status(400).json({ error: 'Selected user is not a foster parent for this organization' });
     return false;
   }

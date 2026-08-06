@@ -7,6 +7,7 @@ import '../../../domain/entities/org_person.dart';
 import '../../../domain/services/admin_contacts.dart';
 import '../../../domain/services/org_people.dart';
 import '../../providers/organization_providers.dart';
+import '../../utils/org_people_route_params.dart';
 import '../admin_contacts/admin_contact_invite_dialog.dart';
 import '../org_person_tile.dart';
 import '../org_person_tile_grid.dart';
@@ -18,12 +19,18 @@ class OrgPeopleList extends ConsumerWidget {
     required this.people,
     required this.viewerUserId,
     required this.adminsOnly,
+    this.selectionMode = false,
+    this.selectedUserIds = const {},
+    this.onPersonSelectionToggle,
   });
 
   final String orgId;
   final List<OrgPersonSummary> people;
   final String? viewerUserId;
   final bool adminsOnly;
+  final bool selectionMode;
+  final Set<String> selectedUserIds;
+  final ValueChanged<String>? onPersonSelectionToggle;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,6 +72,10 @@ class OrgPeopleList extends ConsumerWidget {
             final isSelf = adminsOnly
                 ? viewerHasAdminSelfCard(person, viewerUserId)
                 : viewerIsSelfPerson(person, viewerUserId);
+            final selectable = personIsSelectableForBulk(person);
+            final userId = person.userId;
+            final isSelected =
+                userId != null && selectedUserIds.contains(userId);
             return OrgPersonTile(
               key: Key(
                 adminsOnly
@@ -78,11 +89,22 @@ class OrgPeopleList extends ConsumerWidget {
               role: person.role,
               isPending: person.isPending,
               isExternal: person.isExternal,
+              fosterApprovalState: person.fosterApprovalState,
+              fosterNeedsAttention: person.fosterNeedsAttention,
+              activeFosterCount: person.activeFosterCount,
               isSelf: isSelf,
-              onTap: person.isPending
+              selectionMode: selectionMode && selectable,
+              selected: isSelected,
+              onSelectionToggle: selectionMode && selectable && userId != null
+                  ? () => onPersonSelectionToggle?.call(userId)
+                  : null,
+              onTap: selectionMode || person.isPending
                   ? null
                   : () => context.push(person.detailPath(orgId)),
-              trailing: adminsOnly && !isSelf && canEditOthers
+              trailing: !selectionMode &&
+                      adminsOnly &&
+                      !isSelf &&
+                      canEditOthers
                   ? _OrgPeopleAdminMenu(
                       person: person,
                       orgId: orgId,

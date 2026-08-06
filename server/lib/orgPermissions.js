@@ -3,7 +3,6 @@ import { logAuditEventSafe } from './audit.js';
 import {
   ORG_ROLE_ADMIN,
   ORG_ROLE_ASSOCIATE,
-  ORG_ROLE_FOSTER,
   ORG_ROLE_SUPER_ADMIN,
   normaliseRole,
 } from './orgRoles.js';
@@ -17,25 +16,21 @@ export const G0_PERMISSION_DEFAULTS = Object.freeze({
   view_org_internal: Object.freeze([
     ORG_ROLE_SUPER_ADMIN,
     ORG_ROLE_ADMIN,
-    ORG_ROLE_FOSTER,
     ORG_ROLE_ASSOCIATE,
   ]),
   view_admin_contacts: Object.freeze([
     ORG_ROLE_SUPER_ADMIN,
     ORG_ROLE_ADMIN,
-    ORG_ROLE_FOSTER,
     ORG_ROLE_ASSOCIATE,
   ]),
   view_org_pets: Object.freeze([
     ORG_ROLE_SUPER_ADMIN,
     ORG_ROLE_ADMIN,
-    ORG_ROLE_FOSTER,
     ORG_ROLE_ASSOCIATE,
   ]),
   view_connections: Object.freeze([
     ORG_ROLE_SUPER_ADMIN,
     ORG_ROLE_ADMIN,
-    ORG_ROLE_FOSTER,
     ORG_ROLE_ASSOCIATE,
   ]),
   view_fostering_sessions: Object.freeze([ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN]),

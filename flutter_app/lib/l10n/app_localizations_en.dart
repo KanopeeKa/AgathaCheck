@@ -1824,6 +1824,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgAssociate => 'Associate';
 
   @override
+  String get orgFosterBadgeUnderReview => 'Foster · Under review';
+
+  @override
+  String get orgFosterBadgeApproved => 'Foster';
+
+  @override
+  String get orgFosterBadgeNeedsAttention => 'Foster · Needs attention';
+
+  @override
+  String get orgFosterBadgeExternal => 'Foster · External';
+
+  @override
   String get orgSelectNewRole => 'Select new role';
 
   @override
@@ -2203,6 +2215,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orgPeopleSearchEmpty => 'No people match your search';
+
+  @override
+  String get orgPeopleSelect => 'Select';
+
+  @override
+  String orgPeopleSelectedCount(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get orgPeopleBulkActions => 'Bulk actions';
+
+  @override
+  String get orgPeopleBulkChangeRole => 'Change role';
+
+  @override
+  String get orgPeopleBulkOnboardFoster => 'Onboard as foster';
+
+  @override
+  String get orgPeopleBulkOnboardFosterComingSoon =>
+      'Foster onboarding coming in a future update';
 
   @override
   String get addExternalFoster => 'Add foster manually';

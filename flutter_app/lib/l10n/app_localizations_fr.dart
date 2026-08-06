@@ -1843,6 +1843,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgAssociate => 'Associé';
 
   @override
+  String get orgFosterBadgeUnderReview => 'Famille d\'accueil · En examen';
+
+  @override
+  String get orgFosterBadgeApproved => 'Famille d\'accueil';
+
+  @override
+  String get orgFosterBadgeNeedsAttention => 'Famille d\'accueil · À traiter';
+
+  @override
+  String get orgFosterBadgeExternal => 'Famille d\'accueil · Externe';
+
+  @override
   String get orgSelectNewRole => 'Choisir le nouveau rôle';
 
   @override
@@ -2226,6 +2238,27 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get orgPeopleSearchEmpty =>
       'Aucune personne ne correspond à votre recherche';
+
+  @override
+  String get orgPeopleSelect => 'Sélectionner';
+
+  @override
+  String orgPeopleSelectedCount(int count) {
+    return '$count sélectionné(s)';
+  }
+
+  @override
+  String get orgPeopleBulkActions => 'Actions groupées';
+
+  @override
+  String get orgPeopleBulkChangeRole => 'Modifier le rôle';
+
+  @override
+  String get orgPeopleBulkOnboardFoster => 'Intégrer comme famille d\'accueil';
+
+  @override
+  String get orgPeopleBulkOnboardFosterComingSoon =>
+      'L\'intégration des familles d\'accueil arrive dans une prochaine mise à jour';
 
   @override
   String get addExternalFoster => 'Ajouter une famille d\'accueil manuellement';
