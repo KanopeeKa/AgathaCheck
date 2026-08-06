@@ -4069,6 +4069,24 @@ abstract class AppLocalizations {
   /// **'Everyone in your organisation. The green disk shows how many pets each person is currently fostering.'**
   String get orgPeopleDescription;
 
+  /// No description provided for @orgPeopleEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No people yet.'**
+  String get orgPeopleEmpty;
+
+  /// No description provided for @orgPeopleSearchPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get orgPeopleSearchPlaceholder;
+
+  /// No description provided for @orgPeopleSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No people match your search'**
+  String get orgPeopleSearchEmpty;
+
   /// No description provided for @addExternalFoster.
   ///
   /// In en, this message translates to:

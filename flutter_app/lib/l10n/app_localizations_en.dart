@@ -2196,6 +2196,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Everyone in your organisation. The green disk shows how many pets each person is currently fostering.';
 
   @override
+  String get orgPeopleEmpty => 'No people yet.';
+
+  @override
+  String get orgPeopleSearchPlaceholder => 'Search by name';
+
+  @override
+  String get orgPeopleSearchEmpty => 'No people match your search';
+
+  @override
   String get addExternalFoster => 'Add foster manually';
 
   @override
