@@ -3,12 +3,16 @@ import {
   PERMISSION_BUNDLE_PET_ADMIN,
   VIEW_PERMISSION_KEYS,
   applyBundlePreset,
+  buildRolePermissionDefaultsResponse,
+  effectiveTierDefaultKeys,
+  g0KeysForRole,
   grantPermission,
   revokePermission,
   hasEffectivePermission,
   hasPermission,
   hasPermissionForUser,
   permissionKeysForRole,
+  tierDefaultRowsFromGrantedKeys,
 } from '../lib/orgPermissions.js';
 import {
   ORG_ROLE_ADMIN,
@@ -176,6 +180,48 @@ describe('orgPermissions', () => {
     });
   });
 
+  describe('org tier defaults', () => {
+    it('unions org rows with G0 defaults for a tier', () => {
+      const orgRows = [
+        { role_tier: 'associate', permission_key: 'manage_pets', granted: true },
+        {
+          role_tier: 'associate',
+          permission_key: 'view_fostering_sessions',
+          granted: false,
+        },
+      ];
+      const keys = effectiveTierDefaultKeys('associate', orgRows);
+      expect(keys).toContain('manage_pets');
+      expect(keys).not.toContain('view_fostering_sessions');
+      expect(keys).toContain('view_org_pets');
+    });
+
+    it('permissionKeysForRole uses org tier defaults', () => {
+      const orgRows = [
+        { role_tier: 'admin', permission_key: 'manage_document_templates', granted: true },
+      ];
+      const keys = permissionKeysForRole(ORG_ROLE_ADMIN, [], orgRows);
+      expect(keys).toContain('manage_document_templates');
+    });
+
+    it('tierDefaultRowsFromGrantedKeys stores only deltas from G0', () => {
+      const g0Associate = g0KeysForRole(ORG_ROLE_ASSOCIATE);
+      const rows = tierDefaultRowsFromGrantedKeys('associate', [
+        ...g0Associate,
+        'manage_pets',
+      ]);
+      expect(rows).toEqual([
+        { role_tier: 'associate', permission_key: 'manage_pets', granted: true },
+      ]);
+    });
+
+    it('buildRolePermissionDefaultsResponse marks super_admin read-only', () => {
+      const response = buildRolePermissionDefaultsResponse();
+      expect(response.tiers.super_admin.editable).toBe(false);
+      expect(response.tiers.associate.editable).toBe(true);
+    });
+  });
+
   describe('hasPermissionForUser', () => {
     const orgId = 'org-1';
     const userId = 'user-1';
@@ -200,6 +246,9 @@ describe('orgPermissions', () => {
         (sql) => {
           if (sql.includes('FROM organization_users')) {
             return { rows: [{ role: ORG_ROLE_ASSOCIATE }] };
+          }
+          if (sql.includes('FROM organization_role_permission_defaults')) {
+            return { rows: [] };
           }
           if (sql.includes('FROM organization_permissions')) {
             return { rows: [{ permission_key: 'manage_pets' }] };

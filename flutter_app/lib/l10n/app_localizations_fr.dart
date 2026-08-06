@@ -1855,6 +1855,44 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgFosterBadgeExternal => 'Famille d\'accueil · Externe';
 
   @override
+  String get fosterOnboardingStatusTitle =>
+      'Statut d\'intégration de la famille d\'accueil';
+
+  @override
+  String get fosterOnboardingNotRecordedYet => 'Pas encore enregistré';
+
+  @override
+  String get fosterOnboardingConfirmStep => 'Confirmer';
+
+  @override
+  String get fosterOnboardingStepConnected => 'Rattaché à l\'organisation';
+
+  @override
+  String get fosterOnboardingStepProfile => 'Profil sur AgathaTrack';
+
+  @override
+  String get fosterOnboardingStepInvitationAccepted => 'Invitation acceptée';
+
+  @override
+  String get fosterOnboardingStepUnderReview => 'En cours d\'examen';
+
+  @override
+  String get fosterOnboardingStepOnboardingForm =>
+      'Formulaire d\'intégration complété';
+
+  @override
+  String get fosterOnboardingStepHomeVisit => 'Visite à domicile enregistrée';
+
+  @override
+  String get fosterOnboardingStepCompetencies => 'Compétences confirmées';
+
+  @override
+  String get fosterOnboardingStepAgreement => 'Accord signé';
+
+  @override
+  String get fosterOnboardingStepApproved => 'Famille d\'accueil approuvée';
+
+  @override
   String get orgSelectNewRole => 'Choisir le nouveau rôle';
 
   @override
@@ -2259,6 +2297,24 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get orgPeopleBulkOnboardFosterComingSoon =>
       'L\'intégration des familles d\'accueil arrive dans une prochaine mise à jour';
+
+  @override
+  String get orgFosterInviteByEmailTitle => 'Inviter à accueillir par e-mail';
+
+  @override
+  String get orgFosterInviteByEmailDescription =>
+      'Envoyez une invitation à accueillir via AgathaTrack. Les nouveaux utilisateurs recevront un e-mail ; les utilisateurs existants une notification dans l\'application.';
+
+  @override
+  String get orgFosterInviteSentEmail => 'Invitation par e-mail envoyée';
+
+  @override
+  String get orgFosterInviteSentInApp =>
+      'Invitation envoyée dans l\'application';
+
+  @override
+  String get orgFosterOnboardBulkSuccess =>
+      'Les personnes sélectionnées ont été invitées à l\'intégration famille d\'accueil';
 
   @override
   String get addExternalFoster => 'Ajouter une famille d\'accueil manuellement';
@@ -4775,8 +4831,35 @@ class AppLocalizationsFr extends AppLocalizations {
       'Appliquer des préréglages, gérer les dérogations et consulter le journal d\'audit.';
 
   @override
+  String get orgCustomisationsBundleDefaultsTitle =>
+      'Ensembles de permissions par défaut';
+
+  @override
+  String get orgCustomisationsBundleDefaultsSubtitle =>
+      'Configurer les permissions accordées par défaut à chaque niveau de rôle.';
+
+  @override
   String get orgDocumentTemplatesIntro =>
-      'Modèles utilisés pour les sessions d\'accueil et les parcours d\'adoption.';
+      'Modèles pour les sessions d\'accueil, les parcours d\'adoption et les e-mails d\'invitation à accueillir.';
+
+  @override
+  String get orgEmailTemplatesSection => 'Modèles d\'e-mails';
+
+  @override
+  String get orgEmailTemplateEditorTitle => 'Modifier le modèle d\'e-mail';
+
+  @override
+  String get orgEmailTemplateEditorHint =>
+      'Utilisez des variables telles que org.name, inviter.name et signup_url.';
+
+  @override
+  String get orgEmailTemplateBody => 'Corps de l\'e-mail';
+
+  @override
+  String get orgEmailTemplateSubject => 'Ligne d\'objet';
+
+  @override
+  String get orgEmailTemplateSaved => 'Modèle d\'e-mail enregistré';
 
   @override
   String get orgDocumentTemplatesEmpty =>
@@ -4784,7 +4867,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get orgRolesPermissionsIntro =>
-      'Sélectionnez des personnes, appliquez un préréglage de rôle, puis ajustez les permissions. Les modifications sont enregistrées lorsque vous appuyez sur Enregistrer.';
+      'Sélectionnez un membre, appliquez un préréglage, puis ajustez les permissions individuelles.';
 
   @override
   String get orgRolesPermissionsMemberLabel => 'Membre';
@@ -4848,55 +4931,56 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgPermissionBundleTeamAdmin => 'Admin équipe';
 
   @override
-  String get orgRolesPermissionsSelectedPeople => 'Personnes sélectionnées';
+  String get orgRoleDefaultsTitle => 'Ensembles de permissions par défaut';
 
   @override
-  String get orgRolesPermissionsAddMember =>
-      'Rechercher pour ajouter des membres';
+  String get orgRoleDefaultsIntro =>
+      'Choisissez le niveau de rôle à ajuster. Les modifications s\'appliquent à toute l\'organisation lors de l\'enregistrement.';
 
   @override
-  String orgRolesPermissionsApplyRolePreset(String role) {
-    return 'Appliquer $role';
+  String get orgRoleDefaultsTierPrompt =>
+      'Quel niveau de rôle souhaitez-vous ajuster ?';
+
+  @override
+  String get orgRoleDefaultsTierAssociate => 'Associé';
+
+  @override
+  String get orgRoleDefaultsTierAdmin => 'Admin';
+
+  @override
+  String get orgRoleDefaultsTierSuperAdmin => 'Super admin';
+
+  @override
+  String get orgRoleDefaultsReadOnlyHint =>
+      'Les permissions Super admin proviennent de la base plateforme et ne peuvent pas être modifiées par organisation.';
+
+  @override
+  String get orgRoleDefaultsSave => 'Enregistrer les défauts';
+
+  @override
+  String orgRoleDefaultsSaved(String tier) {
+    return 'Permissions par défaut mises à jour pour $tier';
   }
 
   @override
-  String orgRolesPermissionsPresetConfirmTitle(String role) {
-    return 'Appliquer les permissions $role ?';
+  String get orgRoleDefaultsConfirmTitle =>
+      'Appliquer à toute l\'organisation ?';
+
+  @override
+  String orgRoleDefaultsConfirmBody(String tier) {
+    return 'L\'enregistrement mettra à jour les permissions par défaut de chaque $tier de cette organisation. Les personnes avec des droits individuels supplémentaires pourront nécessiter une vérification manuelle.';
   }
 
   @override
-  String orgRolesPermissionsPresetConfirmBody(String role) {
-    return 'Cela préparera des modifications de permissions pour toutes les personnes sélectionnées. Les dérogations individuelles hors du niveau $role seront supprimées. Les modifications ne seront enregistrées qu\'après avoir appuyé sur Enregistrer.';
-  }
+  String get orgRoleDefaultsUnsavedTitle => 'Abandonner les modifications ?';
 
   @override
-  String get orgRolesPermissionsDetailedTitle => 'Permissions détaillées';
+  String get orgRoleDefaultsUnsavedBody =>
+      'Vous avez des modifications de permissions non enregistrées pour ce niveau de rôle.';
 
   @override
-  String get orgRolesPermissionsPendingChange => 'Modification en attente';
+  String get orgRoleDefaultsDiscard => 'Abandonner';
 
   @override
-  String get orgRolesPermissionsSave => 'Enregistrer';
-
-  @override
-  String get orgRolesPermissionsSaved =>
-      'Modifications de permissions enregistrées';
-
-  @override
-  String get orgRolesPermissionsUnsavedTitle =>
-      'Abandonner les modifications ?';
-
-  @override
-  String get orgRolesPermissionsUnsavedBody =>
-      'Vous avez des modifications non enregistrées. Quitter sans enregistrer ?';
-
-  @override
-  String get orgRolesPermissionsDiscard => 'Abandonner';
-
-  @override
-  String get orgRolesPermissionsStay => 'Continuer';
-
-  @override
-  String get orgRolesPermissionsSelectPeople =>
-      'Sélectionnez au moins une personne pour modifier les permissions.';
+  String get orgRoleDefaultsOtherPermissions => 'Autres permissions';
 }

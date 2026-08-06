@@ -19,6 +19,7 @@ import '../../features/organization/presentation/screens/organization_document_t
 import '../../features/organization/presentation/screens/organization_form_screen.dart';
 import '../../features/organization/presentation/screens/organization_legal_documents_screen.dart';
 import '../../features/organization/presentation/screens/organization_list_screen.dart';
+import '../../features/organization/presentation/screens/organization_role_defaults_screen.dart';
 import '../../features/organization/presentation/screens/organization_roles_permissions_screen.dart';
 import '../../features/organization/presentation/utils/org_people_route_params.dart';
 import '../../features/organization/presentation/screens/adoption_journey/adoption_journey_detail_screen.dart';
@@ -164,6 +165,14 @@ List<RouteBase> _orgManagementChildRoutes() {
                   orgId: id,
                   initialPeopleIds: initialPeopleIds,
                 );
+              },
+            ),
+            GoRoute(
+              path: 'bundle-defaults',
+              name: 'organizationRoleDefaults',
+              builder: (context, state) {
+                final id = state.pathParameters['id']!;
+                return OrganizationRoleDefaultsScreen(orgId: id);
               },
             ),
           ],

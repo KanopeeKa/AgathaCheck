@@ -425,4 +425,32 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     String orgId,
     String token,
   ) => _permissions.getDocumentTemplates(orgId, token);
+
+  Future<Map<String, dynamic>> updateEmailTemplate(
+    String orgId,
+    String templateKey, {
+    required String subject,
+    required String bodyHtml,
+    required String bodyText,
+    required String token,
+  }) => _permissions.updateEmailTemplate(
+    orgId,
+    templateKey,
+    subject: subject,
+    bodyHtml: bodyHtml,
+    bodyText: bodyText,
+    token: token,
+  );
+
+  Future<Map<String, dynamic>> getRolePermissionDefaults(
+    String orgId,
+    String token,
+  ) => _permissions.getRolePermissionDefaults(orgId, token);
+
+  Future<Map<String, dynamic>> saveRolePermissionDefaults(
+    String orgId,
+    String tier,
+    List<String> grantedKeys,
+    String token,
+  ) => _permissions.saveRolePermissionDefaults(orgId, tier, grantedKeys, token);
 }
