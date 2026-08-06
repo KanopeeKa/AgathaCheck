@@ -1,3 +1,4 @@
+import '../../domain/entities/foster_onboarding_step.dart';
 import '../../domain/entities/foster_parent.dart';
 import '../../domain/entities/foster_self_prefs.dart';
 import '../../domain/entities/org_person.dart';
@@ -34,6 +35,13 @@ mixin OrganizationRepositoryFosterParentsMixin
       token,
     );
     return OrgPersonDetail.fromJson(row);
+  }
+
+  @override
+  Future<FosterOnboardingStatus> confirmFosterOnboardingStep(
+    String orgId, OrgPersonKind kind, String recordId, String stepKey, {required String token}) async {
+    final row = await dataSource.confirmFosterOnboardingStep(orgId, kind.wire, recordId, stepKey, token);
+    return FosterOnboardingStatus.fromJson(row);
   }
 
   @override

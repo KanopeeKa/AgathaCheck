@@ -7,6 +7,7 @@ import '../../domain/entities/org_person.dart';
 import '../providers/organization_providers.dart';
 import '../widgets/org_shell_app_bar_title.dart';
 import '../widgets/org_shell_scaffold.dart';
+import '../widgets/foster_onboarding_timeline.dart';
 import '../widgets/foster_pet_mini_card.dart';
 import '../widgets/organization_role_labels.dart';
 import '../widgets/org_person_card.dart';
@@ -152,6 +153,15 @@ class _OrganizationPersonDetailScreenState
                   ),
                 ),
               ),
+              if (person.hasFosterRelationship && person.fosterOnboarding != null) ...[
+                const SizedBox(height: 16),
+                FosterOnboardingTimeline(
+                  orgId: widget.orgId,
+                  kind: widget.kind,
+                  recordId: widget.recordId,
+                  timeline: person.fosterOnboarding!,
+                ),
+              ],
               const SizedBox(height: 16),
               Text(
                 l.currentlyFostering,

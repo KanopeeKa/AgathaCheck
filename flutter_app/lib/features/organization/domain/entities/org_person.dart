@@ -1,5 +1,6 @@
 import 'organization_member.dart';
 import 'foster_placement.dart';
+import 'foster_onboarding_step.dart';
 
 /// Summary row in the organisation people directory.
 class OrgPersonSummary {
@@ -101,6 +102,7 @@ class OrgPersonDetail extends OrgPersonSummary {
     this.adminNotes = '',
     this.currentPlacements = const [],
     this.pastPlacements = const [],
+    this.fosterOnboarding,
   });
 
   final String fosterPhone;
@@ -108,6 +110,11 @@ class OrgPersonDetail extends OrgPersonSummary {
   final String adminNotes;
   final List<FosterPlacement> currentPlacements;
   final List<OrgPersonPlacementPet> pastPlacements;
+  final FosterOnboardingStatus? fosterOnboarding;
+
+  bool get hasFosterRelationship =>
+      isExternal || fosterApprovalState != null || fosterNeedsAttention ||
+      activeFosterCount > 0 || fosterOnboarding != null;
 
   factory OrgPersonDetail.fromJson(Map<String, dynamic> json) {
     final summary = OrgPersonSummary.fromJson(json);
@@ -125,6 +132,10 @@ class OrgPersonDetail extends OrgPersonSummary {
           );
         })
         .toList();
+    final fosterOnboardingJson = json['foster_onboarding'];
+    final fosterOnboarding = fosterOnboardingJson is Map
+        ? FosterOnboardingStatus.fromJson(Map<String, dynamic>.from(fosterOnboardingJson))
+        : null;
 
     return OrgPersonDetail(
       id: summary.id,
@@ -145,6 +156,7 @@ class OrgPersonDetail extends OrgPersonSummary {
       adminNotes: json['admin_notes']?.toString() ?? '',
       currentPlacements: current,
       pastPlacements: past,
+      fosterOnboarding: fosterOnboarding,
     );
   }
 }

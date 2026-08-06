@@ -2270,6 +2270,43 @@ class AppLocalizationsFr extends AppLocalizations {
   String get editFosterContact => 'Modifier le contact d\'accueil';
 
   @override
+  String get fosterOnboardingStatusTitle => 'État d\'intégration de l\'accueil';
+
+  @override
+  String get fosterOnboardingNotRecordedYet => 'Pas encore enregistré';
+
+  @override
+  String get fosterOnboardingConfirmStep => 'Confirmer';
+
+  @override
+  String get fosterOnboardingStepConnected => 'Rattaché à l\'organisation';
+
+  @override
+  String get fosterOnboardingStepProfile => 'Profil sur AgathaTrack';
+
+  @override
+  String get fosterOnboardingStepInvitationAccepted => 'Invitation acceptée';
+
+  @override
+  String get fosterOnboardingStepUnderReview => 'En cours d\'examen';
+
+  @override
+  String get fosterOnboardingStepOnboardingForm =>
+      'Formulaire d\'intégration complété';
+
+  @override
+  String get fosterOnboardingStepHomeVisit => 'Visite à domicile enregistrée';
+
+  @override
+  String get fosterOnboardingStepCompetencies => 'Compétences confirmées';
+
+  @override
+  String get fosterOnboardingStepAgreement => 'Accord signé';
+
+  @override
+  String get fosterOnboardingStepApproved => 'Accueil approuvé';
+
+  @override
   String get fosterContactSaved => 'Coordonnées d\'accueil enregistrées';
 
   @override

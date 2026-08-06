@@ -77,6 +77,18 @@ class OrganizationFosterParentsRemote {
     return data;
   }
 
+  Future<Map<String, dynamic>> confirmFosterOnboardingStep(
+    String orgId, String kind, String recordId, String stepKey, String token,
+  ) async {
+    final response = await _ctx.client.post(
+      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/people/$kind/$recordId/foster-onboarding/steps/$stepKey/confirm'),
+      headers: _ctx.headers(token),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) throw Exception(data['error'] ?? 'Failed to confirm foster onboarding step');
+    return data;
+  }
+
   Future<Map<String, dynamic>> createExternalFosterParent(
     String orgId, {
     required String displayName,

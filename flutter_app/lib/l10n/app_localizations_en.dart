@@ -2247,6 +2247,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editFosterContact => 'Edit foster contact';
 
   @override
+  String get fosterOnboardingStatusTitle => 'Foster onboarding status';
+
+  @override
+  String get fosterOnboardingNotRecordedYet => 'Not recorded yet';
+
+  @override
+  String get fosterOnboardingConfirmStep => 'Confirm';
+
+  @override
+  String get fosterOnboardingStepConnected => 'Connected to organisation';
+
+  @override
+  String get fosterOnboardingStepProfile => 'Profile on AgathaTrack';
+
+  @override
+  String get fosterOnboardingStepInvitationAccepted => 'Invitation accepted';
+
+  @override
+  String get fosterOnboardingStepUnderReview => 'Under review';
+
+  @override
+  String get fosterOnboardingStepOnboardingForm => 'Onboarding form completed';
+
+  @override
+  String get fosterOnboardingStepHomeVisit => 'Home visit recorded';
+
+  @override
+  String get fosterOnboardingStepCompetencies => 'Competencies confirmed';
+
+  @override
+  String get fosterOnboardingStepAgreement => 'Agreement signed';
+
+  @override
+  String get fosterOnboardingStepApproved => 'Approved foster';
+
+  @override
   String get fosterContactSaved => 'Foster contact details saved';
 
   @override

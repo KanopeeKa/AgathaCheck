@@ -1,3 +1,4 @@
+import 'package:pet_profile_app/features/organization/domain/entities/foster_onboarding_step.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/foster_self_prefs.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/foster_parent.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/foster_request.dart';
@@ -50,6 +51,12 @@ mixin RecordingOrganizationRepositoryFosterMixin
     fosterAddress: fosterAddress ?? '',
     adminNotes: adminNotes ?? '',
   );
+
+  @override
+  Future<FosterOnboardingStatus> confirmFosterOnboardingStep(
+    String orgId, OrgPersonKind kind, String recordId, String stepKey, {required String token}) async => FosterOnboardingStatus(resourceId: recordId, steps: [
+    FosterOnboardingStep(key: stepKey, label: stepKey, state: FosterOnboardingStepState.complete),
+  ]);
 
   @override
   Future<FosterParent> createExternalFosterParent(

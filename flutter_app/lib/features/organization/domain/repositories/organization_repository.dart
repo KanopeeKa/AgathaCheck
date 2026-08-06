@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import '../entities/archived_pet.dart';
 import '../entities/custody_transfer.dart';
+import '../entities/foster_onboarding_step.dart';
 import '../entities/foster_parent.dart';
 import '../entities/foster_self_prefs.dart';
 import '../entities/foster_placement.dart';
@@ -134,6 +135,13 @@ abstract class OrganizationRepository {
     String? adminNotes,
     String? displayName,
     String? email,
+    required String token,
+  });
+  Future<FosterOnboardingStatus> confirmFosterOnboardingStep(
+    String orgId,
+    OrgPersonKind kind,
+    String recordId,
+    String stepKey, {
     required String token,
   });
   Future<FosterParent> createExternalFosterParent(
