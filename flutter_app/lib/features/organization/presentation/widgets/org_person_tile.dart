@@ -30,6 +30,9 @@ class OrgPersonTile extends ConsumerWidget {
     this.semanticsLabel,
     this.onTap,
     this.trailing,
+    this.selectionMode = false,
+    this.selected = false,
+    this.onSelectionToggle,
   });
 
   final String recordId;
@@ -48,6 +51,9 @@ class OrgPersonTile extends ConsumerWidget {
   final String? semanticsLabel;
   final VoidCallback? onTap;
   final Widget? trailing;
+  final bool selectionMode;
+  final bool selected;
+  final VoidCallback? onSelectionToggle;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -93,7 +99,8 @@ class OrgPersonTile extends ConsumerWidget {
     return MergeSemantics(
       child: Semantics(
         identifier: 'org_person_tile_$recordId',
-        button: onTap != null,
+        button: onTap != null || (selectionMode && onSelectionToggle != null),
+        selected: selectionMode && selected,
         label: label,
         child: Card(
           key: Key('org_person_tile_$recordId'),
@@ -104,10 +111,16 @@ class OrgPersonTile extends ConsumerWidget {
             borderRadius: BorderRadius.circular(12),
             side: isSelf
                 ? BorderSide(color: colorScheme.primary, width: 2)
+                : selectionMode && selected
+                ? BorderSide(color: colorScheme.primary, width: 2)
                 : BorderSide(color: colorScheme.outlineVariant.withAlpha(120)),
           ),
           child: InkWell(
-            onTap: isPending ? null : onTap,
+            onTap: isPending
+                ? null
+                : selectionMode
+                ? onSelectionToggle
+                : onTap,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -122,7 +135,19 @@ class OrgPersonTile extends ConsumerWidget {
                         initials: initials,
                         isPending: isPending,
                       ),
-                      if (trailing != null)
+                      if (selectionMode)
+                        Positioned(
+                          top: 4,
+                          left: 4,
+                          child: Checkbox(
+                            key: Key('org_person_select_$recordId'),
+                            value: selected,
+                            onChanged: isPending
+                                ? null
+                                : (_) => onSelectionToggle?.call(),
+                          ),
+                        ),
+                      if (trailing != null && !selectionMode)
                         Positioned(top: 4, right: 4, child: trailing!),
                     ],
                   ),

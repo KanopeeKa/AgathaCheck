@@ -2240,6 +2240,27 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucune personne ne correspond à votre recherche';
 
   @override
+  String get orgPeopleSelect => 'Sélectionner';
+
+  @override
+  String orgPeopleSelectedCount(int count) {
+    return '$count sélectionné(s)';
+  }
+
+  @override
+  String get orgPeopleBulkActions => 'Actions groupées';
+
+  @override
+  String get orgPeopleBulkChangeRole => 'Modifier le rôle';
+
+  @override
+  String get orgPeopleBulkOnboardFoster => 'Intégrer comme famille d\'accueil';
+
+  @override
+  String get orgPeopleBulkOnboardFosterComingSoon =>
+      'L\'intégration des familles d\'accueil arrive dans une prochaine mise à jour';
+
+  @override
   String get addExternalFoster => 'Ajouter une famille d\'accueil manuellement';
 
   @override

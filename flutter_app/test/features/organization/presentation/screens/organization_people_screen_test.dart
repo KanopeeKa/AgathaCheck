@@ -8,6 +8,7 @@ import 'package:pet_profile_app/features/organization/domain/entities/organizati
 import 'package:pet_profile_app/features/organization/domain/entities/organization_member.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/screens/organization_people_screen.dart';
+import 'package:pet_profile_app/features/organization/presentation/screens/organization_roles_permissions_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
@@ -73,6 +74,7 @@ void main() {
     WidgetTester tester, {
     String role = 'super_admin',
     String? filter,
+    List<GoRoute>? extraRoutes,
   }) async {
     final location = filter == null
         ? '/o/orgs/org-1/people'
@@ -87,6 +89,15 @@ void main() {
             filter: state.uri.queryParameters['filter'],
           ),
         ),
+        GoRoute(
+          path: '/o/orgs/:id/customisations/roles',
+          builder: (context, state) => OrganizationRolesPermissionsScreen(
+            orgId: state.pathParameters['id']!,
+            initialPeopleIds:
+                state.uri.queryParameters['people']?.split(',') ?? const [],
+          ),
+        ),
+        ...?extraRoutes,
       ],
     );
 
@@ -171,6 +182,65 @@ void main() {
       expect(find.byKey(const Key('admin_contacts_add')), findsNothing);
     });
   });
+
+  group('OrganizationPeopleScreen — selection mode', () {
+    testWidgets('entering selection mode shows checkboxes on selectable tiles', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+
+      expect(find.byKey(const Key('org_people_select_toggle')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('org_people_select_toggle')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('org_person_select_ou-a')), findsOneWidget);
+      expect(find.byKey(const Key('org_person_select_ou-z')), findsOneWidget);
+      expect(find.byKey(const Key('org_people_cancel_select')), findsOneWidget);
+    });
+
+    testWidgets('selecting people shows bulk actions and navigates to roles', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+
+      await tester.tap(find.byKey(const Key('org_people_select_toggle')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('org_person_select_ou-a')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('org_person_select_ou-z')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('2 selected'), findsOneWidget);
+      expect(find.byKey(const Key('org_people_bulk_actions')), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('org_people_bulk_actions')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('org_people_bulk_change_role')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('org_roles_permissions_screen')), findsOneWidget);
+    });
+
+    testWidgets('cancel exits selection mode and clears selection', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+
+      await tester.tap(find.byKey(const Key('org_people_select_toggle')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('org_person_select_ou-a')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('1 selected'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('org_people_cancel_select')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('People'), findsOneWidget);
+      expect(find.byKey(const Key('org_person_select_ou-a')), findsNothing);
+    });
+  });
 }
 
 class _OrgPeopleRepo extends RecordingOrganizationRepository {
@@ -181,4 +251,29 @@ class _OrgPeopleRepo extends RecordingOrganizationRepository {
   @override
   Future<List<OrgPersonSummary>> getPeople(String orgId, String token) async =>
       _people;
+
+  @override
+  Future<List<OrganizationMember>> getMembers(
+    String orgId,
+    String token,
+  ) async => [
+    OrganizationMember(
+      id: 'ou-a',
+      organizationId: orgId,
+      userId: 'user-a',
+      role: OrgMemberRole.admin,
+      firstName: 'Anna',
+      lastName: 'Admin',
+      email: 'anna@example.com',
+    ),
+    OrganizationMember(
+      id: 'ou-z',
+      organizationId: orgId,
+      userId: 'user-z',
+      role: OrgMemberRole.admin,
+      firstName: 'Zara',
+      lastName: 'Admin',
+      email: 'zara@example.com',
+    ),
+  ];
 }

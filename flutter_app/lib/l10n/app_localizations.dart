@@ -4111,6 +4111,42 @@ abstract class AppLocalizations {
   /// **'No people match your search'**
   String get orgPeopleSearchEmpty;
 
+  /// No description provided for @orgPeopleSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get orgPeopleSelect;
+
+  /// No description provided for @orgPeopleSelectedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String orgPeopleSelectedCount(int count);
+
+  /// No description provided for @orgPeopleBulkActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk actions'**
+  String get orgPeopleBulkActions;
+
+  /// No description provided for @orgPeopleBulkChangeRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Change role'**
+  String get orgPeopleBulkChangeRole;
+
+  /// No description provided for @orgPeopleBulkOnboardFoster.
+  ///
+  /// In en, this message translates to:
+  /// **'Onboard as foster'**
+  String get orgPeopleBulkOnboardFoster;
+
+  /// No description provided for @orgPeopleBulkOnboardFosterComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster onboarding coming in a future update'**
+  String get orgPeopleBulkOnboardFosterComingSoon;
+
   /// No description provided for @addExternalFoster.
   ///
   /// In en, this message translates to:

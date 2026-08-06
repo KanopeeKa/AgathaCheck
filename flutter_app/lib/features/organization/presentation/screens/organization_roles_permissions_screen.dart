@@ -5,14 +5,21 @@ import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/services/org_permissions.dart';
+import '../../domain/entities/organization_member.dart';
 import '../providers/organization_providers.dart';
+import '../utils/org_people_route_params.dart';
 import '../widgets/org_shell_app_bar_title.dart';
 import '../widgets/org_shell_scaffold.dart';
 
 class OrganizationRolesPermissionsScreen extends ConsumerStatefulWidget {
-  const OrganizationRolesPermissionsScreen({super.key, required this.orgId});
+  const OrganizationRolesPermissionsScreen({
+    super.key,
+    required this.orgId,
+    this.initialPeopleIds = const [],
+  });
 
   final String orgId;
+  final List<String> initialPeopleIds;
 
   @override
   ConsumerState<OrganizationRolesPermissionsScreen> createState() =>
@@ -23,8 +30,26 @@ class _OrganizationRolesPermissionsScreenState
     extends ConsumerState<OrganizationRolesPermissionsScreen> {
   String? _selectedUserId;
   bool _busy = false;
+  bool _appliedInitialSelection = false;
 
   String get orgId => widget.orgId;
+
+  List<String> get _initialPeopleIds => widget.initialPeopleIds;
+
+  void _applyInitialSelection(List<OrganizationMember> members) {
+    if (_appliedInitialSelection || _initialPeopleIds.isEmpty) return;
+    final activeIds = members
+        .where((m) => !m.role.isPending)
+        .map((m) => m.userId)
+        .toSet();
+    final firstMatch = _initialPeopleIds
+        .where((id) => activeIds.contains(id))
+        .firstOrNull;
+    if (firstMatch != null) {
+      _selectedUserId = firstMatch;
+    }
+    _appliedInitialSelection = true;
+  }
 
   MemberPermissionsKey? get _permissionsKey {
     final userId = _selectedUserId;
@@ -103,6 +128,7 @@ class _OrganizationRolesPermissionsScreenState
           final activeMembers = members
               .where((m) => !m.role.isPending)
               .toList();
+          _applyInitialSelection(members);
           _selectedUserId ??= activeMembers.firstOrNull?.userId;
 
           return ListView(

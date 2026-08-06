@@ -20,6 +20,7 @@ import '../../features/organization/presentation/screens/organization_form_scree
 import '../../features/organization/presentation/screens/organization_legal_documents_screen.dart';
 import '../../features/organization/presentation/screens/organization_list_screen.dart';
 import '../../features/organization/presentation/screens/organization_roles_permissions_screen.dart';
+import '../../features/organization/presentation/utils/org_people_route_params.dart';
 import '../../features/organization/presentation/screens/adoption_journey/adoption_journey_detail_screen.dart';
 import '../../features/organization/presentation/screens/adoption_screening/adoption_visits_screen.dart';
 import '../../features/organization/presentation/screens/adoption_screening/prospects_screen.dart';
@@ -156,7 +157,13 @@ List<RouteBase> _orgManagementChildRoutes() {
               name: 'organizationRolesPermissions',
               builder: (context, state) {
                 final id = state.pathParameters['id']!;
-                return OrganizationRolesPermissionsScreen(orgId: id);
+                final initialPeopleIds = parseOrgPeopleIdsQuery(
+                  state.uri.queryParameters['people'],
+                );
+                return OrganizationRolesPermissionsScreen(
+                  orgId: id,
+                  initialPeopleIds: initialPeopleIds,
+                );
               },
             ),
           ],
