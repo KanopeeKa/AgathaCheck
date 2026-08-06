@@ -37,6 +37,36 @@ export function parsePersonRef(ref) {
   return { kind: ref.slice(0, idx), id: ref.slice(idx + 1) };
 }
 
+function memberFosterApprovalSql(aliasUserId, aliasOrgId) {
+  return `(
+    SELECT ofp.approval_state
+    FROM org_foster_parents ofp
+    WHERE ofp.organization_id = ${aliasOrgId}
+      AND ofp.user_id = ${aliasUserId}
+      AND ofp.opt_out_at IS NULL
+    ORDER BY ofp.created_at DESC
+    LIMIT 1
+  )`;
+}
+
+function memberFosterNeedsAttentionSql(aliasUserId, aliasOrgId) {
+  return `(
+    EXISTS (
+      SELECT 1 FROM org_foster_parents ofp
+      WHERE ofp.organization_id = ${aliasOrgId}
+        AND ofp.user_id = ${aliasUserId}
+        AND ofp.opt_out_at IS NULL
+        AND ofp.approval_state IN ('declined', 'archived')
+    )
+    OR EXISTS (
+      SELECT 1 FROM foster_placements fpl
+      WHERE fpl.organization_id = ${aliasOrgId}
+        AND fpl.foster_user_id = ${aliasUserId}
+        AND fpl.flagged_for_admin_review = true
+    )
+  )`;
+}
+
 function memberActiveCountSql(aliasUserId, aliasOrgId) {
   return `(
     SELECT COUNT(DISTINCT fpl.pet_id)::int
@@ -58,6 +88,8 @@ function externalActiveCountSql(aliasFpId, aliasOrgId) {
 }
 
 export function personSummaryToMap(row) {
+  const fosterApprovalState = row.foster_approval_state || null;
+  const fosterNeedsAttention = row.foster_needs_attention === true;
   return {
     id: personRef(row.kind, row.record_id),
     kind: row.kind,
@@ -70,6 +102,8 @@ export function personSummaryToMap(row) {
     is_pending: !!row.is_pending,
     active_foster_count: parseInt(row.active_foster_count, 10) || 0,
     category_rank: row.category_rank,
+    foster_approval_state: fosterApprovalState,
+    foster_needs_attention: fosterNeedsAttention,
   };
 }
 
@@ -161,6 +195,8 @@ export async function listOrgPeople(pool, orgId, viewer = null) {
             ou.phone_visibility,
             ou.email_visibility,
             ou.address_visibility,
+            ${memberFosterApprovalSql('u.id', 'ou.organization_id')} AS foster_approval_state,
+            ${memberFosterNeedsAttentionSql('u.id', 'ou.organization_id')} AS foster_needs_attention,
             ${memberActiveCountSql('u.id', 'ou.organization_id')} AS active_foster_count
      FROM organization_users ou
      JOIN users u ON u.id = ou.user_id
@@ -178,6 +214,8 @@ export async function listOrgPeople(pool, orgId, viewer = null) {
             NULL::text AS photo_url,
             NULL::varchar AS role,
             false AS is_pending,
+            fp.approval_state AS foster_approval_state,
+            (fp.approval_state IN ('declined', 'archived')) AS foster_needs_attention,
             ${externalActiveCountSql('fp.id', 'fp.organization_id')} AS active_foster_count
      FROM org_foster_parents fp
      WHERE fp.organization_id = $1
@@ -331,6 +369,8 @@ export async function getOrgPersonDetail(pool, orgId, kind, recordId, viewer = n
               ou.phone_visibility,
               ou.email_visibility,
               ou.address_visibility,
+              ${memberFosterApprovalSql('u.id', 'ou.organization_id')} AS foster_approval_state,
+              ${memberFosterNeedsAttentionSql('u.id', 'ou.organization_id')} AS foster_needs_attention,
               ${memberActiveCountSql('u.id', 'ou.organization_id')} AS active_foster_count
        FROM organization_users ou
        JOIN users u ON u.id = ou.user_id
@@ -365,6 +405,8 @@ export async function getOrgPersonDetail(pool, orgId, kind, recordId, viewer = n
             NULL::text AS photo_url,
             NULL::varchar AS role,
             false AS is_pending,
+            fp.approval_state AS foster_approval_state,
+            (fp.approval_state IN ('declined', 'archived')) AS foster_needs_attention,
             COALESCE(fp.phone, '') AS foster_phone,
             COALESCE(fp.foster_address, '') AS foster_address,
             COALESCE(fp.notes, '') AS admin_notes,

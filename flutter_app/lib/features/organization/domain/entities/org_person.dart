@@ -15,6 +15,8 @@ class OrgPersonSummary {
     this.isPending = false,
     this.activeFosterCount = 0,
     this.categoryRank = 3,
+    this.fosterApprovalState,
+    this.fosterNeedsAttention = false,
   });
 
   final String id;
@@ -28,6 +30,8 @@ class OrgPersonSummary {
   final bool isPending;
   final int activeFosterCount;
   final int categoryRank;
+  final String? fosterApprovalState;
+  final bool fosterNeedsAttention;
 
   bool get isExternal => kind == OrgPersonKind.external;
   bool get isMember => kind == OrgPersonKind.member;
@@ -63,6 +67,8 @@ class OrgPersonSummary {
       categoryRank: json['category_rank'] is int
           ? json['category_rank'] as int
           : int.tryParse(json['category_rank']?.toString() ?? '') ?? 3,
+      fosterApprovalState: json['foster_approval_state']?.toString(),
+      fosterNeedsAttention: json['foster_needs_attention'] == true,
     );
   }
 }
@@ -88,6 +94,8 @@ class OrgPersonDetail extends OrgPersonSummary {
     super.isPending,
     super.activeFosterCount,
     super.categoryRank,
+    super.fosterApprovalState,
+    super.fosterNeedsAttention,
     this.fosterPhone = '',
     this.fosterAddress = '',
     this.adminNotes = '',
@@ -130,6 +138,8 @@ class OrgPersonDetail extends OrgPersonSummary {
       isPending: summary.isPending,
       activeFosterCount: summary.activeFosterCount,
       categoryRank: summary.categoryRank,
+      fosterApprovalState: summary.fosterApprovalState,
+      fosterNeedsAttention: summary.fosterNeedsAttention,
       fosterPhone: json['foster_phone']?.toString() ?? '',
       fosterAddress: json['foster_address']?.toString() ?? '',
       adminNotes: json['admin_notes']?.toString() ?? '',

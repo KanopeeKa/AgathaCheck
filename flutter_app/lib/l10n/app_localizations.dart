@@ -3415,6 +3415,30 @@ abstract class AppLocalizations {
   /// **'Associate'**
   String get orgAssociate;
 
+  /// No description provided for @orgFosterBadgeUnderReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster · Under review'**
+  String get orgFosterBadgeUnderReview;
+
+  /// No description provided for @orgFosterBadgeApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster'**
+  String get orgFosterBadgeApproved;
+
+  /// No description provided for @orgFosterBadgeNeedsAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster · Needs attention'**
+  String get orgFosterBadgeNeedsAttention;
+
+  /// No description provided for @orgFosterBadgeExternal.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster · External'**
+  String get orgFosterBadgeExternal;
+
   /// No description provided for @orgSelectNewRole.
   ///
   /// In en, this message translates to:

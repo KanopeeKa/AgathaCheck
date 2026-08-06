@@ -16,7 +16,7 @@ import {
   loadFosterParentListContext,
 } from '../../lib/fosterParentPresenter.js';
 import { OPEN_PLACEMENT_STATUSES } from '../../lib/fosterPlacements.js';
-import { fosterParentMemberRolesSql } from '../../lib/orgRoles.js';
+import { fosterParentMemberRolesSql, isOrgFosterParent } from '../../lib/orgRoles.js';
 import { sendTransactionalEmail } from '../../services/mailService.js';
 import {
   applyFosterVisibilityToMap,
@@ -85,7 +85,15 @@ export function registerFosterParentsRoutes(router, pool) {
            LEFT JOIN org_foster_parents ofp
              ON ofp.organization_id = ou.organization_id AND ofp.user_id = u.id
            WHERE ou.organization_id = $1
-             AND ou.role IN (${fosterParentMemberRolesSql()})
+             AND (
+               ou.role IN (${fosterParentMemberRolesSql()})
+               OR EXISTS (
+                 SELECT 1 FROM org_foster_parents ofp_rel
+                 WHERE ofp_rel.organization_id = ou.organization_id
+                   AND ofp_rel.user_id = u.id
+                   AND ofp_rel.opt_out_at IS NULL
+               )
+             )
            ORDER BY display_name, u.email`,
           [orgId, OPEN_PLACEMENT_STATUSES],
         );
@@ -135,6 +143,8 @@ export function registerFosterParentsRoutes(router, pool) {
           [orgId, OPEN_PLACEMENT_STATUSES],
         );
 
+        const viewerIsFosterParent = await isOrgFosterParent(pool, orgId, userId);
+
         const combined = [
           ...memberResult.rows.map((row) => fosterParentToMap(row, {
             kind: 'member',
@@ -152,6 +162,7 @@ export function registerFosterParentsRoutes(router, pool) {
           .map((parent) => applyFosterVisibilityToMap(parent, {
             viewerRole: role,
             viewerUserId: userId,
+            viewerIsFosterParent,
           }))
           .filter(Boolean);
 

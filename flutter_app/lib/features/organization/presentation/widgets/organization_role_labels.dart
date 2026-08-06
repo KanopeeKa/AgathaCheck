@@ -9,7 +9,7 @@ String localizedOrgMemberRole(AppLocalizations l, OrgMemberRole role) {
     case OrgMemberRole.admin:
       return l.orgAdmin;
     case OrgMemberRole.foster:
-      return l.orgFoster;
+      return l.orgAssociate;
     case OrgMemberRole.associate:
       return l.orgAssociate;
     case OrgMemberRole.pendingSuperAdmin:
@@ -26,9 +26,9 @@ String localizedOrgRoleWire(AppLocalizations l, String wireRole) {
 
 List<String> invitableRoleWires({required bool isSuperAdmin}) {
   if (isSuperAdmin) {
-    return ['super_admin', 'admin', 'foster'];
+    return ['super_admin', 'admin', 'associate'];
   }
-  return ['admin', 'foster'];
+  return ['admin', 'associate'];
 }
 
 String invitableRoleLabel(AppLocalizations l, String wireRole) {

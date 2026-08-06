@@ -1843,6 +1843,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgAssociate => 'Associé';
 
   @override
+  String get orgFosterBadgeUnderReview => 'Famille d\'accueil · En examen';
+
+  @override
+  String get orgFosterBadgeApproved => 'Famille d\'accueil';
+
+  @override
+  String get orgFosterBadgeNeedsAttention => 'Famille d\'accueil · À traiter';
+
+  @override
+  String get orgFosterBadgeExternal => 'Famille d\'accueil · Externe';
+
+  @override
   String get orgSelectNewRole => 'Choisir le nouveau rôle';
 
   @override
