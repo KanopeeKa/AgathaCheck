@@ -454,6 +454,11 @@ abstract class OrganizationRepository {
     String permissionKey,
     String token,
   );
+  Future<Map<String, dynamic>> batchMemberPermissions(
+    String orgId,
+    List<Map<String, dynamic>> changes,
+    String token,
+  );
   Future<List<Map<String, dynamic>>> getOrgAuditEvents(
     String orgId,
     String token,

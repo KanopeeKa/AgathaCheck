@@ -54,6 +54,13 @@ mixin RecordingOrganizationRepositoryPermissionsMixin
   ) async => {'revoked': false};
 
   @override
+  Future<Map<String, dynamic>> batchMemberPermissions(
+    String orgId,
+    List<Map<String, dynamic>> changes,
+    String token,
+  ) async => {'applied_count': changes.length, 'change_count': changes.length};
+
+  @override
   Future<List<Map<String, dynamic>>> getOrgAuditEvents(
     String orgId,
     String token,

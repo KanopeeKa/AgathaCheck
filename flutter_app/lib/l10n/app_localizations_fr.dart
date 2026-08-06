@@ -4784,7 +4784,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get orgRolesPermissionsIntro =>
-      'Sélectionnez un membre, appliquez un préréglage, puis ajustez les permissions individuelles.';
+      'Sélectionnez des personnes, appliquez un préréglage de rôle, puis ajustez les permissions. Les modifications sont enregistrées lorsque vous appuyez sur Enregistrer.';
 
   @override
   String get orgRolesPermissionsMemberLabel => 'Membre';
@@ -4846,4 +4846,57 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get orgPermissionBundleTeamAdmin => 'Admin équipe';
+
+  @override
+  String get orgRolesPermissionsSelectedPeople => 'Personnes sélectionnées';
+
+  @override
+  String get orgRolesPermissionsAddMember =>
+      'Rechercher pour ajouter des membres';
+
+  @override
+  String orgRolesPermissionsApplyRolePreset(String role) {
+    return 'Appliquer $role';
+  }
+
+  @override
+  String orgRolesPermissionsPresetConfirmTitle(String role) {
+    return 'Appliquer les permissions $role ?';
+  }
+
+  @override
+  String orgRolesPermissionsPresetConfirmBody(String role) {
+    return 'Cela préparera des modifications de permissions pour toutes les personnes sélectionnées. Les dérogations individuelles hors du niveau $role seront supprimées. Les modifications ne seront enregistrées qu\'après avoir appuyé sur Enregistrer.';
+  }
+
+  @override
+  String get orgRolesPermissionsDetailedTitle => 'Permissions détaillées';
+
+  @override
+  String get orgRolesPermissionsPendingChange => 'Modification en attente';
+
+  @override
+  String get orgRolesPermissionsSave => 'Enregistrer';
+
+  @override
+  String get orgRolesPermissionsSaved =>
+      'Modifications de permissions enregistrées';
+
+  @override
+  String get orgRolesPermissionsUnsavedTitle =>
+      'Abandonner les modifications ?';
+
+  @override
+  String get orgRolesPermissionsUnsavedBody =>
+      'Vous avez des modifications non enregistrées. Quitter sans enregistrer ?';
+
+  @override
+  String get orgRolesPermissionsDiscard => 'Abandonner';
+
+  @override
+  String get orgRolesPermissionsStay => 'Continuer';
+
+  @override
+  String get orgRolesPermissionsSelectPeople =>
+      'Sélectionnez au moins une personne pour modifier les permissions.';
 }

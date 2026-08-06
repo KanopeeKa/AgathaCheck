@@ -4704,7 +4704,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orgRolesPermissionsIntro =>
-      'Select a member, apply a bundle preset, then fine-tune individual permissions.';
+      'Select people, apply a role preset, then fine-tune permissions. Changes are saved when you tap Save.';
 
   @override
   String get orgRolesPermissionsMemberLabel => 'Member';
@@ -4765,4 +4765,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orgPermissionBundleTeamAdmin => 'Team Admin';
+
+  @override
+  String get orgRolesPermissionsSelectedPeople => 'Selected people';
+
+  @override
+  String get orgRolesPermissionsAddMember => 'Search to add members';
+
+  @override
+  String orgRolesPermissionsApplyRolePreset(String role) {
+    return 'Apply $role';
+  }
+
+  @override
+  String orgRolesPermissionsPresetConfirmTitle(String role) {
+    return 'Apply $role permissions?';
+  }
+
+  @override
+  String orgRolesPermissionsPresetConfirmBody(String role) {
+    return 'This will stage permission changes for all selected people. Extra individual grants outside the $role tier will be removed. Changes are not saved until you tap Save.';
+  }
+
+  @override
+  String get orgRolesPermissionsDetailedTitle => 'Detailed permissions';
+
+  @override
+  String get orgRolesPermissionsPendingChange => 'Pending change';
+
+  @override
+  String get orgRolesPermissionsSave => 'Save changes';
+
+  @override
+  String get orgRolesPermissionsSaved => 'Permission changes saved';
+
+  @override
+  String get orgRolesPermissionsUnsavedTitle => 'Discard unsaved changes?';
+
+  @override
+  String get orgRolesPermissionsUnsavedBody =>
+      'You have unsaved permission changes. Leave without saving?';
+
+  @override
+  String get orgRolesPermissionsDiscard => 'Discard';
+
+  @override
+  String get orgRolesPermissionsStay => 'Keep editing';
+
+  @override
+  String get orgRolesPermissionsSelectPeople =>
+      'Select at least one person to edit permissions.';
 }

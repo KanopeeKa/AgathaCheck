@@ -1,5 +1,6 @@
 import {
   applyBundlePreset,
+  applyPermissionBatch,
   G0_PERMISSION_DEFAULTS,
   grantPermission,
   loadActivePermissionKeys,
@@ -176,6 +177,45 @@ export function registerPermissionsRoutes(router, pool) {
         effective_permissions: permissionKeysForRole(role, overrideKeys),
         overrides,
       });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.post('/:orgId/permissions/batch', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { orgId } = req.params;
+    const changes = req.body?.changes;
+
+    try {
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_permissions'))) {
+        return;
+      }
+      if (!Array.isArray(changes) || changes.length === 0) {
+        return res.status(400).json({ error: 'Invalid permission batch changes' });
+      }
+
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        const appliedCount = await applyPermissionBatch(client, {
+          organizationId: orgId,
+          changes,
+          grantedBy: userId,
+          req,
+        });
+        await client.query('COMMIT');
+        res.json({ applied_count: appliedCount, change_count: changes.length });
+      } catch (err) {
+        await client.query('ROLLBACK');
+        if (err.message?.startsWith('Invalid permission') || err.message?.startsWith('Member not found')) {
+          return res.status(400).json({ error: err.message });
+        }
+        throw err;
+      } finally {
+        client.release();
+      }
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }

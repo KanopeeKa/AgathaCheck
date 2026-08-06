@@ -108,6 +108,22 @@ class OrganizationPermissionsRemote {
     return json.decode(response.body) as Map<String, dynamic>;
   }
 
+  Future<Map<String, dynamic>> batchPermissions(
+    String orgId,
+    List<Map<String, dynamic>> changes,
+    String token,
+  ) async {
+    final response = await _ctx.client.post(
+      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/permissions/batch'),
+      headers: _ctx.headers(token),
+      body: json.encode({'changes': changes}),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to save permission changes');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
+
   Future<List<Map<String, dynamic>>> getAuditEvents(
     String orgId,
     String token,
