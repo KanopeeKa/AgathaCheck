@@ -14,6 +14,7 @@ import '../widgets/foster_onboarding_timeline.dart';
 import '../widgets/foster_pet_mini_card.dart';
 import '../widgets/organization_role_labels.dart';
 import '../widgets/org_person_card.dart';
+import '../widgets/org_person_detail_contact_dialog.dart';
 
 class OrganizationPersonDetailScreen extends ConsumerStatefulWidget {
   const OrganizationPersonDetailScreen({
@@ -254,93 +255,21 @@ class _OrganizationPersonDetailScreenState
     OrgPersonDetail person,
   ) async {
     final l = AppLocalizations.of(context)!;
-    final phoneController = TextEditingController(text: person.fosterPhone);
-    final addressController = TextEditingController(text: person.fosterAddress);
-    final notesController = TextEditingController(text: person.adminNotes);
-    final nameController = TextEditingController(text: person.displayName);
-    final emailController = TextEditingController(text: person.email ?? '');
+    final edits = await promptFosterContactEdit(context: context, person: person);
+    if (edits == null || !mounted) return;
 
-    final saved = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l.editFosterContact),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (person.isExternal) ...[
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: l.fosterParentDisplayName,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: emailController,
-                  decoration: InputDecoration(labelText: l.email),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 8),
-              ],
-              TextField(
-                controller: phoneController,
-                decoration: InputDecoration(labelText: l.phone),
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: addressController,
-                decoration: InputDecoration(labelText: l.fosterContactAddress),
-                maxLines: 2,
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: notesController,
-                decoration: InputDecoration(
-                  labelText: l.notes,
-                  helperText: l.orgNotesOperationalOnly,
-                ),
-                maxLines: 3,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l.save),
-          ),
-        ],
-      ),
-    );
-
-    if (saved != true || !mounted) return;
-
-    await ref
-        .read(orgPersonDetailProvider(_key).notifier)
-        .updateContact(
-          fosterPhone: phoneController.text.trim(),
-          fosterAddress: addressController.text.trim(),
-          adminNotes: notesController.text.trim(),
-          displayName: person.isExternal ? nameController.text.trim() : null,
-          email: person.isExternal ? emailController.text.trim() : null,
+    await ref.read(orgPersonDetailProvider(_key).notifier).updateContact(
+          fosterPhone: edits.fosterPhone,
+          fosterAddress: edits.fosterAddress,
+          adminNotes: edits.adminNotes,
+          displayName: edits.displayName,
+          email: edits.email,
         );
 
-    phoneController.dispose();
-    addressController.dispose();
-    notesController.dispose();
-    nameController.dispose();
-    emailController.dispose();
-
     if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l.fosterContactSaved)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.fosterContactSaved)),
+      );
     }
   }
 
