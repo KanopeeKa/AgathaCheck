@@ -13,6 +13,11 @@ import {
 } from '../../lib/orgPeople.js';
 import { extractUserId, requireOrgAdmin, requirePermission } from './shared.js';
 import { loadActivePermissionKeys } from '../../lib/orgPermissions.js';
+import {
+  buildFosterOnboardingTimeline,
+  confirmFosterOnboardingStep,
+  requireFosterOnboardingReviewPermission,
+} from './fosterOnboarding.js';
 
 export function registerMembersRoutes(router, pool) {
     router.get('/:orgId/members', async (req, res) => {
@@ -73,11 +78,34 @@ export function registerMembersRoutes(router, pool) {
         const viewer = { userId, role, permissionKeys };
         const detail = await getOrgPersonDetail(pool, orgId, kind, personId, viewer);
         if (!detail) return res.status(404).json({ error: 'Person not found' });
+        const fosterOnboarding = await buildFosterOnboardingTimeline(pool, orgId, kind, personId);
+        if (fosterOnboarding) detail.foster_onboarding = fosterOnboarding;
         res.json(detail);
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }
     });
+
+    router.post(
+      '/:orgId/people/:kind/:personId/foster-onboarding/steps/:stepKey/confirm',
+      async (req, res) => {
+        const userId = extractUserId(req);
+        if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+        const { orgId, kind, personId, stepKey } = req.params;
+        if (kind !== 'member' && kind !== 'external') {
+          return res.status(400).json({ error: 'Invalid person kind' });
+        }
+        try {
+          if (!(await requireFosterOnboardingReviewPermission(pool, res, orgId, userId))) return;
+          const result = await confirmFosterOnboardingStep(pool, orgId, kind, personId, stepKey, userId, req);
+          res.json(result);
+        } catch (err) {
+          if (err.statusCode === 400) return res.status(400).json({ error: err.message });
+          if (err.statusCode === 404) return res.status(404).json({ error: err.message });
+          res.status(500).json({ error: publicError(err) });
+        }
+      },
+    );
 
     router.put('/:orgId/people/:kind/:personId/contact', async (req, res) => {
       const userId = extractUserId(req);
@@ -91,6 +119,8 @@ export function registerMembersRoutes(router, pool) {
         await updateOrgPersonContact(pool, orgId, kind, personId, req.body || {});
         const detail = await getOrgPersonDetail(pool, orgId, kind, personId);
         if (!detail) return res.status(404).json({ error: 'Person not found' });
+        const fosterOnboarding = await buildFosterOnboardingTimeline(pool, orgId, kind, personId);
+        if (fosterOnboarding) detail.foster_onboarding = fosterOnboarding;
         res.json(detail);
       } catch (err) {
         if (err.statusCode === 400) {

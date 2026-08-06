@@ -38,6 +38,7 @@ mixin OrganizationRemoteFosterDelegations {
     token,
   );
 
+<<<<<<< HEAD
   Future<Map<String, dynamic>> fosterInvite(
     String orgId, {
     String? email,
@@ -51,6 +52,11 @@ mixin OrganizationRemoteFosterDelegations {
     },
     token,
   );
+=======
+  Future<Map<String, dynamic>> confirmFosterOnboardingStep(
+    String orgId, String kind, String recordId, String stepKey, String token,
+  ) => fosterParentsRemote.confirmFosterOnboardingStep(orgId, kind, recordId, stepKey, token);
+>>>>>>> origin/cursor/org-v4-h-foster-timeline-63a7
 
   Future<Map<String, dynamic>> createExternalFosterParent(
     String orgId, {

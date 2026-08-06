@@ -4267,6 +4267,78 @@ abstract class AppLocalizations {
   /// **'Edit foster contact'**
   String get editFosterContact;
 
+  /// No description provided for @fosterOnboardingStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster onboarding status'**
+  String get fosterOnboardingStatusTitle;
+
+  /// No description provided for @fosterOnboardingNotRecordedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not recorded yet'**
+  String get fosterOnboardingNotRecordedYet;
+
+  /// No description provided for @fosterOnboardingConfirmStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get fosterOnboardingConfirmStep;
+
+  /// No description provided for @fosterOnboardingStepConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected to organisation'**
+  String get fosterOnboardingStepConnected;
+
+  /// No description provided for @fosterOnboardingStepProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile on AgathaTrack'**
+  String get fosterOnboardingStepProfile;
+
+  /// No description provided for @fosterOnboardingStepInvitationAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation accepted'**
+  String get fosterOnboardingStepInvitationAccepted;
+
+  /// No description provided for @fosterOnboardingStepUnderReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get fosterOnboardingStepUnderReview;
+
+  /// No description provided for @fosterOnboardingStepOnboardingForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Onboarding form completed'**
+  String get fosterOnboardingStepOnboardingForm;
+
+  /// No description provided for @fosterOnboardingStepHomeVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Home visit recorded'**
+  String get fosterOnboardingStepHomeVisit;
+
+  /// No description provided for @fosterOnboardingStepCompetencies.
+  ///
+  /// In en, this message translates to:
+  /// **'Competencies confirmed'**
+  String get fosterOnboardingStepCompetencies;
+
+  /// No description provided for @fosterOnboardingStepAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement signed'**
+  String get fosterOnboardingStepAgreement;
+
+  /// No description provided for @fosterOnboardingStepApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved foster'**
+  String get fosterOnboardingStepApproved;
+
   /// No description provided for @fosterContactSaved.
   ///
   /// In en, this message translates to:
