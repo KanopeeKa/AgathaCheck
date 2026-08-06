@@ -52,6 +52,16 @@ class OrganizationCustomisationsScreen extends ConsumerWidget {
             semanticsLabel: l.orgCustomisationsRolesTitle,
             onTap: () => context.push('/o/orgs/$orgId/customisations/roles'),
           ),
+          const SizedBox(height: 12),
+          OrgSectionCard(
+            testKey: const Key('org_customisations_bundle_defaults'),
+            icon: Icons.tune_outlined,
+            title: l.orgCustomisationsBundleDefaultsTitle,
+            subtitle: l.orgCustomisationsBundleDefaultsSubtitle,
+            semanticsLabel: l.orgCustomisationsBundleDefaultsTitle,
+            onTap: () =>
+                context.push('/o/orgs/$orgId/customisations/bundle-defaults'),
+          ),
         ],
       ),
     );

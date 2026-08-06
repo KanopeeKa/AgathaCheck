@@ -136,4 +136,64 @@ class OrganizationPermissionsRemote {
     }
     return json.decode(response.body) as Map<String, dynamic>;
   }
+
+  Future<Map<String, dynamic>> updateEmailTemplate(
+    String orgId,
+    String templateKey, {
+    required String subject,
+    required String bodyHtml,
+    required String bodyText,
+    required String token,
+  }) async {
+    final response = await _ctx.client.put(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/email-templates/$templateKey',
+      ),
+      headers: _ctx.headers(token),
+      body: json.encode({
+        'subject': subject,
+        'body_html': bodyHtml,
+        'body_text': bodyText,
+      }),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to update email template');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getRolePermissionDefaults(
+    String orgId,
+    String token,
+  ) async {
+    final response = await _ctx.client.get(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/role-permission-defaults',
+      ),
+      headers: _ctx.headers(token),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to load role permission defaults');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> saveRolePermissionDefaults(
+    String orgId,
+    String tier,
+    List<String> grantedKeys,
+    String token,
+  ) async {
+    final response = await _ctx.client.put(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/role-permission-defaults',
+      ),
+      headers: _ctx.headers(token),
+      body: json.encode({'tier': tier, 'granted_keys': grantedKeys}),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to save role permission defaults');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
 }
