@@ -61,6 +61,7 @@ mixin OrganizationRepositoryPermissionsMixin on OrganizationRepositoryImplBase {
     required String subject,
     required String bodyHtml,
     required String bodyText,
+    String locale = 'en',
     required String token,
   }) => dataSource.updateEmailTemplate(
     orgId,
@@ -68,6 +69,7 @@ mixin OrganizationRepositoryPermissionsMixin on OrganizationRepositoryImplBase {
     subject: subject,
     bodyHtml: bodyHtml,
     bodyText: bodyText,
+    locale: locale,
     token: token,
   );
 

@@ -2,21 +2,23 @@ import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 
-/// App-bar bulk actions menu for the People screen (v4 Phase D).
 class OrgPeopleBulkActionsMenu extends StatelessWidget {
   const OrgPeopleBulkActionsMenu({
     super.key,
     required this.selectedCount,
     required this.onChangeRole,
+    required this.onOnboardFoster,
+    this.canOnboardFoster = false,
   });
 
   final int selectedCount;
   final VoidCallback onChangeRole;
+  final VoidCallback onOnboardFoster;
+  final bool canOnboardFoster;
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
 
     return PopupMenuButton<String>(
       key: const Key('org_people_bulk_actions'),
@@ -26,6 +28,9 @@ class OrgPeopleBulkActionsMenu extends StatelessWidget {
         switch (action) {
           case 'change_role':
             onChangeRole();
+            break;
+          case 'onboard_foster':
+            onOnboardFoster();
             break;
         }
       },
@@ -39,14 +44,8 @@ class OrgPeopleBulkActionsMenu extends StatelessWidget {
         PopupMenuItem(
           key: const Key('org_people_bulk_onboard_foster'),
           value: 'onboard_foster',
-          enabled: false,
-          child: Tooltip(
-            message: l.orgPeopleBulkOnboardFosterComingSoon,
-            child: Text(
-              l.orgPeopleBulkOnboardFoster,
-              style: TextStyle(color: colorScheme.onSurface.withAlpha(140)),
-            ),
-          ),
+          enabled: selectedCount > 0 && canOnboardFoster,
+          child: Text(l.orgPeopleBulkOnboardFoster),
         ),
       ],
     );

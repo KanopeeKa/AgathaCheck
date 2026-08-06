@@ -69,6 +69,24 @@ mixin RecordingOrganizationRepositoryPermissionsMixin
   ) async => {
     'session_checklist': <Map<String, dynamic>>[],
     'adoption_milestones': <Map<String, dynamic>>[],
+    'email_templates': <Map<String, dynamic>>[],
+  };
+
+  @override
+  Future<Map<String, dynamic>> updateEmailTemplate(
+    String orgId,
+    String templateKey, {
+    required String subject,
+    required String bodyHtml,
+    required String bodyText,
+    String locale = 'en',
+    required String token,
+  }) async => {
+    'template_key': templateKey,
+    'locale': locale,
+    'subject': subject,
+    'body_html': bodyHtml,
+    'body_text': bodyText,
   };
 
   @override

@@ -66,6 +66,19 @@ mixin OrganizationRepositoryFosterParentsMixin
   }
 
   @override
+  Future<Map<String, dynamic>> fosterInvite(
+    String orgId, {
+    String? email,
+    List<String>? userIds,
+    required String token,
+  }) => dataSource.fosterInvite(
+    orgId,
+    email: email,
+    userIds: userIds,
+    token: token,
+  );
+
+  @override
   Future<FosterParent> createExternalFosterParent(
     String orgId, {
     required String displayName,

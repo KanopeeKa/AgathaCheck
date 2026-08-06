@@ -70,40 +70,38 @@ void main() {
     expect(find.byKey(const Key('manage_fosters_tile_grid')), findsOneWidget);
     expect(find.byKey(const Key('foster_person_tile_fp-1')), findsOneWidget);
     expect(find.text('Eve Foster'), findsOneWidget);
+    expect(find.byKey(const Key('manage_fosters_invite_email')), findsOneWidget);
     expect(find.byKey(const Key('manage_fosters_menu')), findsOneWidget);
   });
 
-  testWidgets(
-    'manage fosters overflow menu lists email invite and manual actions',
-    (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            authProvider.overrideWith((ref) => FakeAuthNotifier()),
-            organizationListProvider.overrideWith(
-              _ManageFostersOrgListNotifier.new,
-            ),
-            organizationRepositoryProvider.overrideWithValue(
-              _FosterParentsRepo(const []),
-            ),
-          ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const ManageFostersScreen(orgId: 'org-1'),
+  testWidgets('manage fosters overflow menu lists foster requests and manual add', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          organizationListProvider.overrideWith(
+            _ManageFostersOrgListNotifier.new,
           ),
+          organizationRepositoryProvider.overrideWithValue(
+            _FosterParentsRepo(const []),
+          ),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const ManageFostersScreen(orgId: 'org-1'),
         ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byKey(const Key('manage_fosters_menu')));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Foster requests'), findsOneWidget);
-      expect(find.text('Invite Member'), findsOneWidget);
-      expect(find.text('Add foster manually'), findsOneWidget);
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('manage_fosters_menu')));
+    await tester.pumpAndSettle();
+    expect(find.text('Foster requests'), findsOneWidget);
+    expect(find.text('Invite Member'), findsNothing);
+    expect(find.text('Add foster manually'), findsOneWidget);
+  });
 
   testWidgets('external foster menu offers merge into registered account', (
     tester,

@@ -120,6 +120,28 @@ final documentTemplatesProvider =
       String
     >(DocumentTemplatesNotifier.new);
 
+extension DocumentTemplatesNotifierX on DocumentTemplatesNotifier {
+  Future<void> updateEmailTemplate(
+    String templateKey, {
+    required String subject,
+    required String bodyHtml,
+    required String bodyText,
+    String locale = 'en',
+  }) async {
+    final token = ref.read(orgTokenProvider)!;
+    await ref.read(organizationRepositoryProvider).updateEmailTemplate(
+      arg,
+      templateKey,
+      subject: subject,
+      bodyHtml: bodyHtml,
+      bodyText: bodyText,
+      locale: locale,
+      token: token,
+    );
+    ref.invalidateSelf();
+  }
+}
+
 class RolePermissionDefaultsNotifier
     extends FamilyAsyncNotifier<Map<String, dynamic>, String> {
   @override

@@ -143,6 +143,7 @@ class OrganizationPermissionsRemote {
     required String subject,
     required String bodyHtml,
     required String bodyText,
+    String locale = 'en',
     required String token,
   }) async {
     final response = await _ctx.client.put(
@@ -154,6 +155,7 @@ class OrganizationPermissionsRemote {
         'subject': subject,
         'body_html': bodyHtml,
         'body_text': bodyText,
+        'locale': locale,
       }),
     );
     if (response.statusCode >= 400) {

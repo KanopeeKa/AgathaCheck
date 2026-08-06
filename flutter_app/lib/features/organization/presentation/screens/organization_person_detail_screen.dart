@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/org_person.dart';
+import '../../domain/services/foster_onboarding.dart';
+import '../../domain/services/foster_visibility.dart';
+import '../providers/org_provider_people.dart';
 import '../providers/organization_providers.dart';
 import '../widgets/org_shell_app_bar_title.dart';
 import '../widgets/org_shell_scaffold.dart';
@@ -46,6 +49,8 @@ class _OrganizationPersonDetailScreenState
   Widget build(BuildContext context) {
     final detailAsync = ref.watch(orgPersonDetailProvider(_key));
     final isOrgAdmin = ref.watch(isOrgAdminProvider(widget.orgId));
+    final viewerRole = ref.watch(orgViewerRoleProvider(widget.orgId));
+    final canManageFostersFlag = canManageFosters(viewerRole, widget.orgId);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
@@ -148,6 +153,15 @@ class _OrganizationPersonDetailScreenState
                           label: Text(l.editFosterContact),
                         ),
                       ],
+                      if (canManageFostersFlag && personCanOnboardAsFoster(person)) ...[
+                        const SizedBox(height: 12),
+                        FilledButton.icon(
+                          key: const Key('org_person_onboard_foster'),
+                          onPressed: () => _onboardAsFoster(context, person),
+                          icon: const Icon(Icons.person_add_alt_1, size: 18),
+                          label: Text(l.orgPeopleBulkOnboardFoster),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -202,6 +216,27 @@ class _OrganizationPersonDetailScreenState
         },
       ),
     );
+  }
+
+  Future<void> _onboardAsFoster(
+    BuildContext context,
+    OrgPersonDetail person,
+  ) async {
+    final l = AppLocalizations.of(context)!;
+    if (person.userId == null) return;
+    try {
+      await ref
+          .read(orgPeopleProvider(widget.orgId).notifier)
+          .onboardAsFoster(userIds: [person.userId!]);
+      ref.invalidate(orgPersonDetailProvider(_key));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.orgFosterInviteSentInApp)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+    }
   }
 
   Future<void> _editContact(

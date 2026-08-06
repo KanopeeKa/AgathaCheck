@@ -25,3 +25,15 @@ Feature: Foster onboarding and approval
     When "Alice" opens Manage Fosters for "Rescue Hearts"
     And "Alice" adds a foster manually named "Bob" with email "bob@example.com"
     Then "Bob" should appear in the foster list
+
+  @P2
+  Scenario: Invite new foster by email from Manage Fosters
+    When "Alice" opens Manage Fosters for "Rescue Hearts"
+    And "Alice" invites "bob@example.com" to foster for "Rescue Hearts" by email
+    Then a foster invitation email is sent to "bob@example.com"
+
+  @P2
+  Scenario: Onboard existing member as foster from People
+    Given a registered user "Eve" is an associate of "Rescue Hearts"
+    When "Alice" bulk onboards "Eve" as foster for "Rescue Hearts"
+    Then "Eve" receives an in-app foster invitation for "Rescue Hearts"

@@ -426,6 +426,7 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     required String subject,
     required String bodyHtml,
     required String bodyText,
+    String locale = 'en',
     required String token,
   }) => _permissions.updateEmailTemplate(
     orgId,
@@ -433,6 +434,7 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     subject: subject,
     bodyHtml: bodyHtml,
     bodyText: bodyText,
+    locale: locale,
     token: token,
   );
 
