@@ -120,6 +120,46 @@ final documentTemplatesProvider =
       String
     >(DocumentTemplatesNotifier.new);
 
+class RolePermissionDefaultsNotifier
+    extends FamilyAsyncNotifier<Map<String, dynamic>, String> {
+  @override
+  Future<Map<String, dynamic>> build(String orgId) async {
+    final token = ref.watch(orgTokenProvider);
+    if (token == null) return {};
+    final repo = ref.read(organizationRepositoryProvider);
+    return repo.getRolePermissionDefaults(orgId, token);
+  }
+
+  Future<Map<String, dynamic>> saveTier(
+    String tier,
+    List<String> grantedKeys,
+  ) async {
+    final token = ref.read(orgTokenProvider)!;
+    final repo = ref.read(organizationRepositoryProvider);
+    final result = await repo.saveRolePermissionDefaults(
+      arg,
+      tier,
+      grantedKeys,
+      token,
+    );
+    final current = state.valueOrNull ?? {};
+    final tiers = Map<String, dynamic>.from(
+      current['tiers'] as Map<String, dynamic>? ?? {},
+    );
+    tiers[tier] = result;
+    state = AsyncData({...current, 'tiers': tiers});
+    ref.invalidate(orgEffectivePermissionsProvider(arg));
+    return result;
+  }
+}
+
+final rolePermissionDefaultsProvider =
+    AsyncNotifierProvider.family<
+      RolePermissionDefaultsNotifier,
+      Map<String, dynamic>,
+      String
+    >(RolePermissionDefaultsNotifier.new);
+
 void _syncOverrideCache(String orgId, Map<String, dynamic> data) {
   final overrides = (data['overrides'] as List? ?? [])
       .map((row) => (row as Map<String, dynamic>)['permission_key'] as String)
