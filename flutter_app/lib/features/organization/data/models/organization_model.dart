@@ -22,6 +22,7 @@ class OrganizationModel extends Organization {
     super.publicProfileMetadata,
     super.createdBy,
     super.role,
+    super.isFosterParent,
     super.memberCount,
     super.externalCount,
     super.petCount,
@@ -53,6 +54,7 @@ class OrganizationModel extends Organization {
           : const {},
       createdBy: json['created_by']?.toString(),
       role: json['role']?.toString() ?? 'member',
+      isFosterParent: json['is_foster_parent'] == true,
       memberCount: (json['member_count'] is int)
           ? json['member_count'] as int
           : int.tryParse(json['member_count']?.toString() ?? '0') ?? 0,
@@ -93,6 +95,7 @@ class OrganizationModel extends Organization {
       publicProfileMetadata: org.publicProfileMetadata,
       createdBy: org.createdBy,
       role: org.role,
+      isFosterParent: org.isFosterParent,
       memberCount: org.memberCount,
       externalCount: org.externalCount,
       petCount: org.petCount,

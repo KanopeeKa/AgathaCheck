@@ -20,6 +20,7 @@ class Organization {
     this.publicProfileMetadata = const {},
     this.createdBy,
     this.role = 'admin',
+    this.isFosterParent = false,
     this.memberCount = 0,
     this.externalCount = 0,
     this.petCount = 0,
@@ -47,6 +48,7 @@ class Organization {
   final Map<String, dynamic> publicProfileMetadata;
   final String? createdBy;
   final String role;
+  final bool isFosterParent;
   final int memberCount;
   final int externalCount;
   final int petCount;
@@ -57,7 +59,7 @@ class Organization {
 
   bool get isOrgAdmin => isSuperUser || role == 'admin';
 
-  bool get isFoster => role == 'foster';
+  bool get isFoster => role == 'foster' || isFosterParent;
 
   Organization copyWith({
     String? id,
@@ -80,6 +82,7 @@ class Organization {
     Map<String, dynamic>? publicProfileMetadata,
     String? createdBy,
     String? role,
+    bool? isFosterParent,
     int? memberCount,
     int? externalCount,
     int? petCount,
@@ -108,6 +111,7 @@ class Organization {
           publicProfileMetadata ?? this.publicProfileMetadata,
       createdBy: createdBy ?? this.createdBy,
       role: role ?? this.role,
+      isFosterParent: isFosterParent ?? this.isFosterParent,
       memberCount: memberCount ?? this.memberCount,
       externalCount: externalCount ?? this.externalCount,
       petCount: petCount ?? this.petCount,

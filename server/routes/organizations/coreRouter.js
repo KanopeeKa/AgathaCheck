@@ -26,6 +26,12 @@ export function registerCoreRoutes(router, pool) {
       try {
         const result = await pool.query(
           `SELECT o.*, ou.role,
+            EXISTS(
+              SELECT 1 FROM org_foster_parents fp
+              WHERE fp.organization_id = o.id
+                AND fp.user_id = $1
+                AND fp.opt_out_at IS NULL
+            ) AS is_foster_parent,
             ${ORG_COUNT_SELECT}
            FROM organizations o
            JOIN organization_users ou ON ou.organization_id = o.id AND ou.user_id = $1
