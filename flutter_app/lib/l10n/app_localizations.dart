@@ -3091,6 +3091,12 @@ abstract class AppLocalizations {
   /// **'Create Organisation'**
   String get createOrganization;
 
+  /// No description provided for @orgFormCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get orgFormCreate;
+
   /// No description provided for @editOrganization.
   ///
   /// In en, this message translates to:
@@ -3408,6 +3414,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Associate'**
   String get orgAssociate;
+
+  /// No description provided for @orgFosterBadgeUnderReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster · Under review'**
+  String get orgFosterBadgeUnderReview;
+
+  /// No description provided for @orgFosterBadgeApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster'**
+  String get orgFosterBadgeApproved;
+
+  /// No description provided for @orgFosterBadgeNeedsAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster · Needs attention'**
+  String get orgFosterBadgeNeedsAttention;
+
+  /// No description provided for @orgFosterBadgeExternal.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster · External'**
+  String get orgFosterBadgeExternal;
+
+  /// No description provided for @fosterOnboardingStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster onboarding status'**
+  String get fosterOnboardingStatusTitle;
+
+  /// No description provided for @fosterOnboardingNotRecordedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not recorded yet'**
+  String get fosterOnboardingNotRecordedYet;
+
+  /// No description provided for @fosterOnboardingConfirmStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get fosterOnboardingConfirmStep;
+
+  /// No description provided for @fosterOnboardingStepConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected to organisation'**
+  String get fosterOnboardingStepConnected;
+
+  /// No description provided for @fosterOnboardingStepProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile on AgathaTrack'**
+  String get fosterOnboardingStepProfile;
+
+  /// No description provided for @fosterOnboardingStepInvitationAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation accepted'**
+  String get fosterOnboardingStepInvitationAccepted;
+
+  /// No description provided for @fosterOnboardingStepUnderReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get fosterOnboardingStepUnderReview;
+
+  /// No description provided for @fosterOnboardingStepOnboardingForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Onboarding form completed'**
+  String get fosterOnboardingStepOnboardingForm;
+
+  /// No description provided for @fosterOnboardingStepHomeVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Home visit recorded'**
+  String get fosterOnboardingStepHomeVisit;
+
+  /// No description provided for @fosterOnboardingStepCompetencies.
+  ///
+  /// In en, this message translates to:
+  /// **'Competencies confirmed'**
+  String get fosterOnboardingStepCompetencies;
+
+  /// No description provided for @fosterOnboardingStepAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement signed'**
+  String get fosterOnboardingStepAgreement;
+
+  /// No description provided for @fosterOnboardingStepApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved foster'**
+  String get fosterOnboardingStepApproved;
 
   /// No description provided for @orgSelectNewRole.
   ///
@@ -4062,6 +4164,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Everyone in your organisation. The green disk shows how many pets each person is currently fostering.'**
   String get orgPeopleDescription;
+
+  /// No description provided for @orgPeopleEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No people yet.'**
+  String get orgPeopleEmpty;
+
+  /// No description provided for @orgPeopleSearchPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get orgPeopleSearchPlaceholder;
+
+  /// No description provided for @orgPeopleSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No people match your search'**
+  String get orgPeopleSearchEmpty;
+
+  /// No description provided for @orgPeopleSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get orgPeopleSelect;
+
+  /// No description provided for @orgPeopleSelectedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String orgPeopleSelectedCount(int count);
+
+  /// No description provided for @orgPeopleBulkActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk actions'**
+  String get orgPeopleBulkActions;
+
+  /// No description provided for @orgPeopleBulkChangeRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Change role'**
+  String get orgPeopleBulkChangeRole;
+
+  /// No description provided for @orgPeopleBulkOnboardFoster.
+  ///
+  /// In en, this message translates to:
+  /// **'Onboard as foster'**
+  String get orgPeopleBulkOnboardFoster;
+
+  /// No description provided for @orgPeopleBulkOnboardFosterComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster onboarding coming in a future update'**
+  String get orgPeopleBulkOnboardFosterComingSoon;
+
+  /// No description provided for @orgFosterInviteByEmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite to foster by email'**
+  String get orgFosterInviteByEmailTitle;
+
+  /// No description provided for @orgFosterInviteByEmailDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Send an invitation to foster via AgathaTrack. New users receive an email; existing users get an in-app notification.'**
+  String get orgFosterInviteByEmailDescription;
+
+  /// No description provided for @orgFosterInviteSentEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster invitation email sent'**
+  String get orgFosterInviteSentEmail;
+
+  /// No description provided for @orgFosterInviteSentInApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster invitation sent in the app'**
+  String get orgFosterInviteSentInApp;
+
+  /// No description provided for @orgFosterOnboardBulkSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected people invited to foster onboarding'**
+  String get orgFosterOnboardBulkSuccess;
+
+  /// No description provided for @orgEmailTemplatesSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Email templates'**
+  String get orgEmailTemplatesSectionTitle;
+
+  /// No description provided for @orgEmailTemplateEditorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit email template'**
+  String orgEmailTemplateEditorTitle(String key);
+
+  /// No description provided for @orgEmailTemplateEditorHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Use placeholders such as org.name, inviter.name, and signup_url.'**
+  String get orgEmailTemplateEditorHint;
+
+  /// No description provided for @orgEmailTemplateSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Email template saved'**
+  String get orgEmailTemplateSaved;
+
+  /// No description provided for @orgEmailTemplateSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Subject line'**
+  String get orgEmailTemplateSubject;
+
+  /// No description provided for @orgEmailTemplateBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Email body'**
+  String get orgEmailTemplateBody;
 
   /// No description provided for @addExternalFoster.
   ///
@@ -8373,11 +8595,29 @@ abstract class AppLocalizations {
   /// **'Apply bundle presets, manage overrides, and review the audit log.'**
   String get orgCustomisationsRolesSubtitle;
 
+  /// No description provided for @orgCustomisationsBundleDefaultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Default permission sets'**
+  String get orgCustomisationsBundleDefaultsTitle;
+
+  /// No description provided for @orgCustomisationsBundleDefaultsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure which permissions each role tier receives by default.'**
+  String get orgCustomisationsBundleDefaultsSubtitle;
+
   /// No description provided for @orgDocumentTemplatesIntro.
   ///
   /// In en, this message translates to:
-  /// **'Templates used for fostering sessions and adoption journeys.'**
+  /// **'Templates used for fostering sessions, adoption journeys, and foster invitation emails.'**
   String get orgDocumentTemplatesIntro;
+
+  /// No description provided for @orgEmailTemplatesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Email templates'**
+  String get orgEmailTemplatesSection;
 
   /// No description provided for @orgDocumentTemplatesEmpty.
   ///
@@ -8451,6 +8691,90 @@ abstract class AppLocalizations {
   /// **'{name} bundle applied'**
   String orgRolesPermissionsBundleApplied(String name);
 
+  /// No description provided for @orgRolesPermissionsSelectedPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected people'**
+  String get orgRolesPermissionsSelectedPeople;
+
+  /// No description provided for @orgRolesPermissionsAddMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Search to add members'**
+  String get orgRolesPermissionsAddMember;
+
+  /// No description provided for @orgRolesPermissionsApplyRolePreset.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply {role}'**
+  String orgRolesPermissionsApplyRolePreset(String role);
+
+  /// No description provided for @orgRolesPermissionsPresetConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply {role} permissions?'**
+  String orgRolesPermissionsPresetConfirmTitle(String role);
+
+  /// No description provided for @orgRolesPermissionsPresetConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will stage permission changes for all selected people. Extra individual grants outside the {role} tier will be removed. Changes are not saved until you tap Save.'**
+  String orgRolesPermissionsPresetConfirmBody(String role);
+
+  /// No description provided for @orgRolesPermissionsDetailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed permissions'**
+  String get orgRolesPermissionsDetailedTitle;
+
+  /// No description provided for @orgRolesPermissionsPendingChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending change'**
+  String get orgRolesPermissionsPendingChange;
+
+  /// No description provided for @orgRolesPermissionsSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get orgRolesPermissionsSave;
+
+  /// No description provided for @orgRolesPermissionsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission changes saved'**
+  String get orgRolesPermissionsSaved;
+
+  /// No description provided for @orgRolesPermissionsUnsavedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard unsaved changes?'**
+  String get orgRolesPermissionsUnsavedTitle;
+
+  /// No description provided for @orgRolesPermissionsUnsavedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved permission changes. Leave without saving?'**
+  String get orgRolesPermissionsUnsavedBody;
+
+  /// No description provided for @orgRolesPermissionsDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get orgRolesPermissionsDiscard;
+
+  /// No description provided for @orgRolesPermissionsStay.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get orgRolesPermissionsStay;
+
+  /// No description provided for @orgRolesPermissionsSelectPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one person to edit permissions.'**
+  String get orgRolesPermissionsSelectPeople;
+
   /// No description provided for @orgPermissionManageFosters.
   ///
   /// In en, this message translates to:
@@ -8498,6 +8822,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Team Admin'**
   String get orgPermissionBundleTeamAdmin;
+
+  /// No description provided for @orgRoleDefaultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Default permission sets'**
+  String get orgRoleDefaultsTitle;
+
+  /// No description provided for @orgRoleDefaultsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which role tier to adjust. Changes apply organisation-wide when saved.'**
+  String get orgRoleDefaultsIntro;
+
+  /// No description provided for @orgRoleDefaultsTierPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Which role tier do you want to adjust?'**
+  String get orgRoleDefaultsTierPrompt;
+
+  /// No description provided for @orgRoleDefaultsTierAssociate.
+  ///
+  /// In en, this message translates to:
+  /// **'Associate'**
+  String get orgRoleDefaultsTierAssociate;
+
+  /// No description provided for @orgRoleDefaultsTierAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get orgRoleDefaultsTierAdmin;
+
+  /// No description provided for @orgRoleDefaultsTierSuperAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Super Admin'**
+  String get orgRoleDefaultsTierSuperAdmin;
+
+  /// No description provided for @orgRoleDefaultsReadOnlyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Super Admin defaults come from the platform baseline and cannot be changed per organisation.'**
+  String get orgRoleDefaultsReadOnlyHint;
+
+  /// No description provided for @orgRoleDefaultsSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save defaults'**
+  String get orgRoleDefaultsSave;
+
+  /// No description provided for @orgRoleDefaultsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Default permissions updated for {tier}'**
+  String orgRoleDefaultsSaved(String tier);
+
+  /// No description provided for @orgRoleDefaultsConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply organisation-wide?'**
+  String get orgRoleDefaultsConfirmTitle;
+
+  /// No description provided for @orgRoleDefaultsConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving will update default permissions for every {tier} in this organisation. People with extra individual grants may need manual review.'**
+  String orgRoleDefaultsConfirmBody(String tier);
+
+  /// No description provided for @orgRoleDefaultsUnsavedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get orgRoleDefaultsUnsavedTitle;
+
+  /// No description provided for @orgRoleDefaultsUnsavedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved permission changes for this role tier.'**
+  String get orgRoleDefaultsUnsavedBody;
+
+  /// No description provided for @orgRoleDefaultsDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get orgRoleDefaultsDiscard;
+
+  /// No description provided for @orgRoleDefaultsOtherPermissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Other permissions'**
+  String get orgRoleDefaultsOtherPermissions;
 }
 
 class _AppLocalizationsDelegate

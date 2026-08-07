@@ -150,6 +150,17 @@ class _OrganizationFormScreenState
     return null;
   }
 
+  Organization _heroOrg(Organization? loaded) {
+    if (loaded != null) return loaded;
+    return Organization(
+      id: '',
+      name: _nameController.text.trim().isEmpty
+          ? ' '
+          : _nameController.text.trim(),
+      type: _selectedType,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -174,6 +185,7 @@ class _OrganizationFormScreenState
             orElse: () => null,
           )
         : null;
+    final heroOrg = _heroOrg(editingOrg);
 
     return OrgShellScaffold(
       key: const Key('org_form_screen'),
@@ -184,30 +196,14 @@ class _OrganizationFormScreenState
           : OrgNavTitleVariant.textOnly,
       leadingKey: const Key('org_form_back'),
       child: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          top: _isEditing ? 0 : 16,
-          bottom: 24,
-          left: _isEditing ? 0 : 16,
-          right: _isEditing ? 0 : 16,
+        padding: const EdgeInsets.only(bottom: 24),
+        child: _buildFormBody(
+          l: l,
+          theme: theme,
+          colorScheme: colorScheme,
+          heroOrg: heroOrg,
+          editingOrg: editingOrg,
         ),
-        child: _isEditing
-            ? _buildFormBody(
-                l: l,
-                theme: theme,
-                colorScheme: colorScheme,
-                editingOrg: editingOrg,
-              )
-            : Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 600),
-                  child: _buildFormBody(
-                    l: l,
-                    theme: theme,
-                    colorScheme: colorScheme,
-                    editingOrg: editingOrg,
-                  ),
-                ),
-              ),
       ),
     );
   }
@@ -216,6 +212,7 @@ class _OrganizationFormScreenState
     required AppLocalizations l,
     required ThemeData theme,
     required ColorScheme colorScheme,
+    required Organization heroOrg,
     required Organization? editingOrg,
   }) {
     return AutofillGroup(
@@ -224,58 +221,23 @@ class _OrganizationFormScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (editingOrg != null) ...[
-              OrganizationBrandingSection(
-                org: editingOrg,
-                theme: theme,
-                colorScheme: colorScheme,
-                l: l,
-                nameController: _nameController,
-                selectedType: _selectedType,
-                onTypeChanged: (value) => setState(() => _selectedType = value),
-                nameValidator: _nameValidator,
-              ),
-              const SizedBox(height: 16),
-            ],
+            OrganizationBrandingSection(
+              org: heroOrg,
+              theme: theme,
+              colorScheme: colorScheme,
+              l: l,
+              nameController: _nameController,
+              selectedType: _selectedType,
+              onTypeChanged: (value) => setState(() => _selectedType = value),
+              nameValidator: _nameValidator,
+              uploadsEnabled: _isEditing && heroOrg.id.isNotEmpty,
+            ),
+            const SizedBox(height: 16),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: _isEditing ? 16 : 0),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (!_isEditing) ...[
-                    TextFormField(
-                      key: const Key('org_name_field'),
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: '${l.organizationName} *',
-                        prefixIcon: const Icon(Icons.business),
-                      ),
-                      autofillHints: const [AutofillHints.organizationName],
-                      validator: _nameValidator,
-                      textInputAction: TextInputAction.next,
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<OrganizationType>(
-                      key: const Key('org_type_dropdown'),
-                      value: _selectedType,
-                      decoration: InputDecoration(
-                        labelText: l.organizationType,
-                        prefixIcon: const Icon(Icons.category),
-                      ),
-                      items: OrganizationType.values.map((type) {
-                        return DropdownMenuItem(
-                          value: type,
-                          child: Text(_localizedTypeLabel(l, type)),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() => _selectedType = value);
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                  ],
                   TextFormField(
                     key: const Key('org_email_field'),
                     controller: _emailController,
@@ -377,12 +339,17 @@ class _OrganizationFormScreenState
                               color: Colors.white,
                             ),
                           )
-                        : Text(
-                            _isEditing
-                                ? l.editOrganization
-                                : l.createOrganization,
-                          ),
+                        : Text(_isEditing ? l.save : l.orgFormCreate),
                   ),
+                  if (!_isEditing)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: OutlinedButton(
+                        key: const Key('org_cancel_button'),
+                        onPressed: _saving ? null : () => context.pop(),
+                        child: Text(l.cancel),
+                      ),
+                    ),
                   if (_isEditing && editingOrg != null)
                     OrgPermissionGate(
                       orgId: widget.orgId!,
@@ -413,14 +380,5 @@ class _OrganizationFormScreenState
         ),
       ),
     );
-  }
-
-  String _localizedTypeLabel(AppLocalizations l, OrganizationType type) {
-    switch (type) {
-      case OrganizationType.professional:
-        return l.orgTypeProfessional;
-      case OrganizationType.charity:
-        return l.orgTypeCharity;
-    }
   }
 }

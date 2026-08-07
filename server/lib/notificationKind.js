@@ -22,6 +22,7 @@ const VALID_PRIORITIES = new Set([
 const ADMINISTRATIVE_TYPES = new Set([
   'fosterRequestReceived',
   'fosterRequestResponded',
+  'fosterInvitationReceived',
   'fosterApprovalGranted',
   'fosterApprovalDeclined',
   'sessionStartingSoon',

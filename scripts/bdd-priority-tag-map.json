@@ -164,7 +164,9 @@
   "foster_onboarding.feature": {
     "Opening Manage Fosters from organisation menu": "P2",
     "Viewing fosters currently fostering": "P2",
-    "Adding a foster manually": "P2"
+    "Adding a foster manually": "P2",
+    "Invite new foster by email from Manage Fosters": "P2",
+    "Onboard existing member as foster from People": "P2"
   },
   "fostering_platform.feature": {
     "Foster request targets respect approved capacity filters": "P2",

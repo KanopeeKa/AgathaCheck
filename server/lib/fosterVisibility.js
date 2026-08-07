@@ -1,4 +1,4 @@
-import { isOrgAdmin, ORG_ROLE_FOSTER, normaliseRole } from './orgRoles.js';
+import { isOrgAdmin, normaliseRole } from './orgRoles.js';
 
 export const FOSTER_VISIBLE_TO_OTHER_FOSTERS = 'other_fosters';
 export const FOSTER_VISIBLE_TO_ADMINS = 'admins';
@@ -78,8 +78,8 @@ function viewerIsAdmin(viewerRole) {
   return isOrgAdmin(normaliseRole(viewerRole));
 }
 
-function viewerIsFoster(viewerRole) {
-  return normaliseRole(viewerRole) === ORG_ROLE_FOSTER;
+function viewerIsFoster(viewerRole, viewerIsFosterParent = false) {
+  return viewerIsFosterParent;
 }
 
 export function canViewerSeeFosterCard({
@@ -87,6 +87,7 @@ export function canViewerSeeFosterCard({
   viewerRole,
   viewerUserId,
   fosterUserId,
+  viewerIsFosterParent = false,
 }) {
   if (viewerUserId && fosterUserId && viewerUserId === fosterUserId) return true;
   const setting = normaliseVisibleTo(visibleTo);
@@ -94,7 +95,7 @@ export function canViewerSeeFosterCard({
   if (viewerIsAdmin(viewerRole)) {
     return setting === FOSTER_VISIBLE_TO_ADMINS || setting === FOSTER_VISIBLE_TO_BOTH;
   }
-  if (viewerIsFoster(viewerRole)) {
+  if (viewerIsFoster(viewerRole, viewerIsFosterParent)) {
     return setting === FOSTER_VISIBLE_TO_OTHER_FOSTERS || setting === FOSTER_VISIBLE_TO_BOTH;
   }
   return false;
@@ -116,6 +117,7 @@ export function contactFieldsForViewer({
   viewerRole,
   viewerUserId,
   fosterUserId,
+  viewerIsFosterParent = false,
 }) {
   if (viewerUserId && fosterUserId && viewerUserId === fosterUserId) {
     return { email: email || null, phone: phone || null };
@@ -123,7 +125,7 @@ export function contactFieldsForViewer({
   const setting = normaliseContactVisibility(contactVisibility);
   const showEmail = setting === FOSTER_CONTACT_EMAIL || setting === FOSTER_CONTACT_BOTH;
   const showPhone = setting === FOSTER_CONTACT_PHONE || setting === FOSTER_CONTACT_BOTH;
-  if (!viewerIsAdmin(viewerRole) && !viewerIsFoster(viewerRole)) {
+  if (!viewerIsAdmin(viewerRole) && !viewerIsFoster(viewerRole, viewerIsFosterParent)) {
     return { email: null, phone: null };
   }
   return {
@@ -135,6 +137,7 @@ export function contactFieldsForViewer({
 export function applyFosterVisibilityToMap(parentMap, {
   viewerRole,
   viewerUserId,
+  viewerIsFosterParent = false,
 }) {
   const fosterUserId = parentMap.user_id || null;
   if (!canViewerSeeFosterCard({
@@ -142,6 +145,7 @@ export function applyFosterVisibilityToMap(parentMap, {
     viewerRole,
     viewerUserId,
     fosterUserId,
+    viewerIsFosterParent,
   })) {
     return null;
   }
@@ -153,6 +157,7 @@ export function applyFosterVisibilityToMap(parentMap, {
     viewerRole,
     viewerUserId,
     fosterUserId,
+    viewerIsFosterParent,
   });
 
   return {

@@ -108,6 +108,22 @@ class OrganizationPermissionsRemote {
     return json.decode(response.body) as Map<String, dynamic>;
   }
 
+  Future<Map<String, dynamic>> batchPermissions(
+    String orgId,
+    List<Map<String, dynamic>> changes,
+    String token,
+  ) async {
+    final response = await _ctx.client.post(
+      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/permissions/batch'),
+      headers: _ctx.headers(token),
+      body: json.encode({'changes': changes}),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to save permission changes');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
+
   Future<List<Map<String, dynamic>>> getAuditEvents(
     String orgId,
     String token,
@@ -133,6 +149,68 @@ class OrganizationPermissionsRemote {
     );
     if (response.statusCode >= 400) {
       _ctx.throwApiError(response, 'Failed to load document templates');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> updateEmailTemplate(
+    String orgId,
+    String templateKey, {
+    required String subject,
+    required String bodyHtml,
+    required String bodyText,
+    String locale = 'en',
+    required String token,
+  }) async {
+    final response = await _ctx.client.put(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/email-templates/$templateKey',
+      ),
+      headers: _ctx.headers(token),
+      body: json.encode({
+        'subject': subject,
+        'body_html': bodyHtml,
+        'body_text': bodyText,
+        'locale': locale,
+      }),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to update email template');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getRolePermissionDefaults(
+    String orgId,
+    String token,
+  ) async {
+    final response = await _ctx.client.get(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/role-permission-defaults',
+      ),
+      headers: _ctx.headers(token),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to load role permission defaults');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> saveRolePermissionDefaults(
+    String orgId,
+    String tier,
+    List<String> grantedKeys,
+    String token,
+  ) async {
+    final response = await _ctx.client.put(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/role-permission-defaults',
+      ),
+      headers: _ctx.headers(token),
+      body: json.encode({'tier': tier, 'granted_keys': grantedKeys}),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to save role permission defaults');
     }
     return json.decode(response.body) as Map<String, dynamic>;
   }

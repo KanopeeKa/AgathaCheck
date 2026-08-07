@@ -78,9 +78,11 @@ enum OrgMemberRole {
   bool get isOrgAdmin =>
       this == OrgMemberRole.superAdmin || this == OrgMemberRole.admin;
 
-  bool get isFoster => this == OrgMemberRole.foster;
+  bool get isFoster =>
+      this == OrgMemberRole.foster || this == OrgMemberRole.associate;
 
-  bool get isAssociate => this == OrgMemberRole.associate;
+  bool get isAssociate =>
+      this == OrgMemberRole.associate || this == OrgMemberRole.foster;
 
   /// API wire value for confirmed roles (not pending).
   String toWire() {
@@ -93,7 +95,7 @@ enum OrgMemberRole {
         return 'admin';
       case OrgMemberRole.foster:
       case OrgMemberRole.pendingFoster:
-        return 'foster';
+        return 'associate';
       case OrgMemberRole.associate:
       case OrgMemberRole.pendingAssociate:
         return 'associate';
@@ -109,7 +111,7 @@ enum OrgMemberRole {
       case 'member':
         return OrgMemberRole.admin;
       case 'foster':
-        return OrgMemberRole.foster;
+        return OrgMemberRole.associate;
       case 'associate':
         return OrgMemberRole.associate;
       case 'pending_super_admin':
@@ -119,7 +121,7 @@ enum OrgMemberRole {
       case 'pending_member':
         return OrgMemberRole.pendingAdmin;
       case 'pending_foster':
-        return OrgMemberRole.pendingFoster;
+        return OrgMemberRole.pendingAssociate;
       case 'pending_associate':
         return OrgMemberRole.pendingAssociate;
       default:

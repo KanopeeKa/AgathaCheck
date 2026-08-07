@@ -3,6 +3,7 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   enableFlutterAccessibility,
+  fillSemanticsField,
   fillTextbox,
   selectDropdownOption,
   waitForFlutterRoutePattern,
@@ -19,12 +20,21 @@ export class OrganizationFormPage {
     await enableFlutterAccessibility(this.page);
     await dismissConsentBannerIfPresent(this.page);
     await this.page
-      .getByRole('button', { name: /Create Organisation|Edit Organisation/ })
+      .getByRole('heading', { name: /Create Organisation|Edit Organisation|Créer une organisation|Modifier l'organisation/i })
+      .or(this.page.getByRole('button', { name: /^(Create|Save)$/ }))
+      .first()
       .waitFor({ timeout: 30_000 });
   }
 
   async fillName(name: string): Promise<void> {
-    await fillTextbox(this.page, 'Organisation Name *', name);
+    const bySemantics = this.page.locator(
+      '[flt-semantics-identifier="org_name_field"]',
+    );
+    if ((await bySemantics.count()) > 0) {
+      await fillSemanticsField(this.page, 'org_name_field', name);
+      return;
+    }
+    await fillTextbox(this.page, /Organisation Name/i, name);
   }
 
   async selectType(type: 'Professional' | 'Charity'): Promise<void> {
@@ -36,7 +46,9 @@ export class OrganizationFormPage {
   }
 
   async save(): Promise<void> {
-    await this.page.getByRole('button', { name: /Create Organisation|Edit Organisation/ }).click();
+    await this.page
+      .getByRole('button', { name: /^(Create|Save)$/ })
+      .click();
   }
 
   async createOrganization(
@@ -50,7 +62,7 @@ export class OrganizationFormPage {
     await this.page
       .getByText('Organisation created')
       .first()
-      .or(this.page.getByRole('button', { name: 'Edit Organisation' }))
+      .or(this.page.getByRole('button', { name: 'Save' }))
       .first()
       .waitFor({ timeout: 30_000 });
     try {
@@ -64,7 +76,11 @@ export class OrganizationFormPage {
 
   async attemptSaveWithoutName(): Promise<void> {
     await this.expectLoaded();
-    await this.page.getByRole('textbox', { name: 'Organisation Name *' }).fill('');
+    const field = this.page.locator('[flt-semantics-identifier="org_name_field"]');
+    await field.waitFor({ state: 'visible' });
+    await field.click();
+    await this.page.keyboard.press('Control+a');
+    await this.page.keyboard.press('Backspace');
     await this.save();
   }
 

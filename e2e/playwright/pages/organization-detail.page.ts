@@ -22,7 +22,7 @@ export class OrganizationDetailPage {
 
   /** Visible on v2 profile (public blocks and/or gated member nav rows). */
   private static readonly profileLoadedMarker =
-    /Contact|Legal information|Admin contacts|Foster parents|Fostering sessions|^Pets$|^Animaux$|Connected organisations|Organisation Administration|Professional|Charity|Professionnel|Association|Organisation presentation|Organisation dashboard|Choose a section/i;
+    /Contact|Legal information|Admin contacts|People|Personnes|Foster parents|Fostering sessions|^Pets$|^Animaux$|Connected organisations|Organisation Administration|Professional|Charity|Professionnel|Association|Organisation presentation|Organisation dashboard|Choose a section/i;
 
   private orgIdFromUrl(): string | null {
     const match = this.page.url().match(/\/o\/orgs\/([^/?#]+)/);
@@ -56,12 +56,13 @@ export class OrganizationDetailPage {
     await expect(this.page.getByRole('button', { name: pattern })).toHaveCount(0);
   }
 
-  /** Admin contacts directory — members list after profile overflow menu removal (#604). */
+  /** Admin contacts directory — filtered People screen (`?filter=admins`). */
   private static readonly adminContactsSectionName = /^Admin contacts$/i;
 
   async openAdminContacts(): Promise<void> {
     const orgId = this.orgIdFromUrl();
-    const adminContactsRoute = /\/o\/orgs\/[^/]+\/admin-contacts(?:\/|$|\?)/;
+    // flutterRoutePath strips hash query strings — match /people path only.
+    const adminContactsRoute = /\/o\/orgs\/[^/]+\/people(?:\/)?$/;
 
     let navigated = false;
     if (await this.tryActivateSectionCard(OrganizationDetailPage.adminContactsSectionName)) {
@@ -77,7 +78,7 @@ export class OrganizationDetailPage {
         await navigateWithShellFallback(
           this.page,
           adminContactsRoute,
-          `/o/orgs/${orgId}/admin-contacts`,
+          `/o/orgs/${orgId}/people?filter=admins`,
           async () => {
             await refreshFlutterAccessibility(this.page);
           },

@@ -3,7 +3,6 @@ import { logAuditEventSafe } from './audit.js';
 import {
   ORG_ROLE_ADMIN,
   ORG_ROLE_ASSOCIATE,
-  ORG_ROLE_FOSTER,
   ORG_ROLE_SUPER_ADMIN,
   normaliseRole,
 } from './orgRoles.js';
@@ -17,25 +16,21 @@ export const G0_PERMISSION_DEFAULTS = Object.freeze({
   view_org_internal: Object.freeze([
     ORG_ROLE_SUPER_ADMIN,
     ORG_ROLE_ADMIN,
-    ORG_ROLE_FOSTER,
     ORG_ROLE_ASSOCIATE,
   ]),
   view_admin_contacts: Object.freeze([
     ORG_ROLE_SUPER_ADMIN,
     ORG_ROLE_ADMIN,
-    ORG_ROLE_FOSTER,
     ORG_ROLE_ASSOCIATE,
   ]),
   view_org_pets: Object.freeze([
     ORG_ROLE_SUPER_ADMIN,
     ORG_ROLE_ADMIN,
-    ORG_ROLE_FOSTER,
     ORG_ROLE_ASSOCIATE,
   ]),
   view_connections: Object.freeze([
     ORG_ROLE_SUPER_ADMIN,
     ORG_ROLE_ADMIN,
-    ORG_ROLE_FOSTER,
     ORG_ROLE_ASSOCIATE,
   ]),
   view_fostering_sessions: Object.freeze([ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN]),
@@ -69,6 +64,9 @@ export const VIEW_PERMISSION_KEYS = Object.freeze([
 export const PERMISSION_BUNDLE_FOSTER_ADMIN = 'foster_admin';
 export const PERMISSION_BUNDLE_PET_ADMIN = 'pet_admin';
 export const PERMISSION_BUNDLE_TEAM_ADMIN = 'team_admin';
+
+export const EDITABLE_ROLE_TIERS = Object.freeze(['associate', 'admin']);
+export const ROLE_TIER_SUPER_ADMIN = 'super_admin';
 
 /** @type {Readonly<Record<string, readonly string[]>>} */
 export const PERMISSION_BUNDLE_KEYS = Object.freeze({
@@ -106,8 +104,73 @@ const MEMBERSHIP_ROLE_SQL = `
   LIMIT 1
 `;
 
+const ORG_ROLE_DEFAULTS_SQL = `
+  SELECT role_tier, permission_key, granted
+  FROM organization_role_permission_defaults
+  WHERE organization_id = $1
+`;
+
 export function bundleSource(presetName) {
   return `bundle:${presetName}`;
+}
+
+export function roleForTier(roleTier) {
+  switch (roleTier) {
+    case 'associate':
+      return ORG_ROLE_ASSOCIATE;
+    case 'admin':
+      return ORG_ROLE_ADMIN;
+    case ROLE_TIER_SUPER_ADMIN:
+      return ORG_ROLE_SUPER_ADMIN;
+    default:
+      return null;
+  }
+}
+
+export function roleTierForRole(role) {
+  const normalised = normaliseRole(role);
+  if (normalised === ORG_ROLE_SUPER_ADMIN) return ROLE_TIER_SUPER_ADMIN;
+  if (normalised === ORG_ROLE_ADMIN) return 'admin';
+  if (normalised === ORG_ROLE_ASSOCIATE) return 'associate';
+  return null;
+}
+
+export function g0KeysForRole(role) {
+  const normalised = normaliseRole(role);
+  return Object.entries(G0_PERMISSION_DEFAULTS)
+    .filter(([, roles]) => roles.includes(normalised))
+    .map(([key]) => key);
+}
+
+export function effectiveTierDefaultKeys(roleTier, orgRows = []) {
+  const role = roleForTier(roleTier);
+  if (!role) return [];
+  const effective = new Set(g0KeysForRole(role));
+  for (const row of orgRows) {
+    if (row.role_tier !== roleTier) continue;
+    if (row.granted) {
+      effective.add(row.permission_key);
+    } else {
+      effective.delete(row.permission_key);
+    }
+  }
+  return [...effective];
+}
+
+export function tierDefaultRowsFromGrantedKeys(roleTier, grantedKeys) {
+  const role = roleForTier(roleTier);
+  if (!role) return [];
+  const g0Set = new Set(g0KeysForRole(role));
+  const grantedSet = new Set(grantedKeys);
+  const rows = [];
+  for (const key of Object.keys(G0_PERMISSION_DEFAULTS)) {
+    const inG0 = g0Set.has(key);
+    const granted = grantedSet.has(key);
+    if (inG0 !== granted) {
+      rows.push({ role_tier: roleTier, permission_key: key, granted });
+    }
+  }
+  return rows;
 }
 
 export function hasRoleDefaultPermission(role, permissionKey) {
@@ -117,8 +180,17 @@ export function hasRoleDefaultPermission(role, permissionKey) {
   return defaults.includes(normalised);
 }
 
-export function hasEffectivePermission(role, activeOverrideKeys, permissionKey) {
+export function hasEffectivePermission(
+  role,
+  activeOverrideKeys,
+  permissionKey,
+  orgRows = [],
+) {
   if (activeOverrideKeys.includes(permissionKey)) return true;
+  const tier = roleTierForRole(role);
+  if (tier) {
+    return effectiveTierDefaultKeys(tier, orgRows).includes(permissionKey);
+  }
   return hasRoleDefaultPermission(role, permissionKey);
 }
 
@@ -128,19 +200,142 @@ export function hasEffectivePermission(role, activeOverrideKeys, permissionKey) 
  */
 export function hasPermission(role, org, permissionKey) {
   const overrideKeys = org?.activePermissionKeys ?? [];
-  return hasEffectivePermission(role, overrideKeys, permissionKey);
+  const orgRows = org?.rolePermissionDefaults ?? [];
+  return hasEffectivePermission(role, overrideKeys, permissionKey, orgRows);
 }
 
-export function permissionKeysForRole(role, activeOverrideKeys = []) {
-  const defaults = Object.entries(G0_PERMISSION_DEFAULTS)
-    .filter(([, roles]) => roles.includes(normaliseRole(role)))
-    .map(([key]) => key);
+export function permissionKeysForRole(role, activeOverrideKeys = [], orgRows = []) {
+  const tier = roleTierForRole(role);
+  const defaults = tier
+    ? effectiveTierDefaultKeys(tier, orgRows)
+    : g0KeysForRole(role);
   return [...new Set([...defaults, ...activeOverrideKeys])];
 }
 
 export async function loadActivePermissionKeys(pool, organizationId, userId) {
   const { rows } = await pool.query(ACTIVE_PERMISSIONS_SQL, [organizationId, userId]);
   return rows.map((row) => row.permission_key);
+}
+
+export async function loadOrgRolePermissionDefaults(pool, organizationId) {
+  const { rows } = await pool.query(ORG_ROLE_DEFAULTS_SQL, [organizationId]);
+  return rows;
+}
+
+export function buildRolePermissionDefaultsResponse(orgRows = []) {
+  const tiers = {};
+  for (const roleTier of [...EDITABLE_ROLE_TIERS, ROLE_TIER_SUPER_ADMIN]) {
+    const g0Defaults = g0KeysForRole(roleForTier(roleTier));
+    const orgOverrides = orgRows
+      .filter((row) => row.role_tier === roleTier)
+      .map((row) => ({
+        permission_key: row.permission_key,
+        granted: row.granted,
+      }));
+    tiers[roleTier] = {
+      editable: EDITABLE_ROLE_TIERS.includes(roleTier),
+      g0_defaults: g0Defaults,
+      org_overrides: orgOverrides,
+      effective_defaults: effectiveTierDefaultKeys(roleTier, orgRows),
+    };
+  }
+  return {
+    tiers,
+    permission_keys: Object.keys(G0_PERMISSION_DEFAULTS),
+  };
+}
+
+export async function saveOrgRolePermissionDefaults(
+  pool,
+  { organizationId, roleTier, grantedKeys, savedBy, req = null },
+) {
+  if (!EDITABLE_ROLE_TIERS.includes(roleTier)) {
+    throw new Error(`Role tier is not editable: ${roleTier}`);
+  }
+
+  const deltaRows = tierDefaultRowsFromGrantedKeys(roleTier, grantedKeys);
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query(
+      `DELETE FROM organization_role_permission_defaults
+       WHERE organization_id = $1 AND role_tier = $2`,
+      [organizationId, roleTier],
+    );
+    for (const row of deltaRows) {
+      await client.query(
+        `INSERT INTO organization_role_permission_defaults (
+          organization_id, role_tier, permission_key, granted
+        ) VALUES ($1, $2, $3, $4)`,
+        [organizationId, row.role_tier, row.permission_key, row.granted],
+      );
+    }
+
+    const role = roleForTier(roleTier);
+    const { rows: members } = await client.query(
+      `SELECT user_id
+       FROM organization_users
+       WHERE organization_id = $1
+         AND role = $2`,
+      [organizationId, role],
+    );
+
+    const effectiveKeys = effectiveTierDefaultKeys(roleTier, deltaRows);
+    const g0Set = new Set(g0KeysForRole(role));
+    for (const { user_id: memberUserId } of members) {
+      const { rows: overrideRows } = await client.query(ACTIVE_PERMISSIONS_SQL, [
+        organizationId,
+        memberUserId,
+      ]);
+      for (const override of overrideRows) {
+        const key = override.permission_key;
+        if (effectiveKeys.includes(key) && g0Set.has(key)) {
+          await client.query(
+            `UPDATE organization_permissions
+             SET revoked_at = NOW(), revoked_by = $4
+             WHERE organization_id = $1
+               AND user_id = $2
+               AND permission_key = $3
+               AND revoked_at IS NULL`,
+            [organizationId, memberUserId, key, savedBy],
+          );
+        }
+      }
+    }
+
+    logAuditEventSafe(client, {
+      actorUserId: savedBy,
+      action: 'org_tier_defaults_updated',
+      resourceType: 'organization_role_permission_defaults',
+      resourceId: roleTier,
+      orgId: organizationId,
+      metadata: {
+        role_tier: roleTier,
+        override_count: deltaRows.length,
+        members_affected: members.length,
+      },
+      req,
+    });
+
+    await client.query('COMMIT');
+
+    return {
+      tier: roleTier,
+      editable: true,
+      g0_defaults: g0KeysForRole(role),
+      org_overrides: deltaRows.map((row) => ({
+        permission_key: row.permission_key,
+        granted: row.granted,
+      })),
+      effective_defaults: [...grantedKeys],
+      members_affected: members.length,
+    };
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
 export async function loadMembershipRole(pool, organizationId, userId) {
@@ -153,8 +348,11 @@ export async function hasPermissionForUser(pool, userId, organizationId, permiss
   const role = await loadMembershipRole(pool, organizationId, userId);
   if (!role || role.startsWith('pending_')) return false;
 
-  const overrideKeys = await loadActivePermissionKeys(pool, organizationId, userId);
-  return hasEffectivePermission(role, overrideKeys, permissionKey);
+  const [overrideKeys, orgRows] = await Promise.all([
+    loadActivePermissionKeys(pool, organizationId, userId),
+    loadOrgRolePermissionDefaults(pool, organizationId),
+  ]);
+  return hasEffectivePermission(role, overrideKeys, permissionKey, orgRows);
 }
 
 export async function grantPermission(
@@ -231,6 +429,57 @@ export async function revokePermission(
     });
   }
   return rowCount > 0;
+}
+
+/**
+ * Applies a batch of permission grants/revokes in a single transaction.
+ * Each change is audited individually (D16).
+ *
+ * @param {import('pg').Pool | import('pg').PoolClient} executor
+ */
+export async function applyPermissionBatch(
+  executor,
+  { organizationId, changes, grantedBy, req = null }
+) {
+  let applied = 0;
+  for (const change of changes) {
+    const userId = change?.user_id;
+    const permissionKey = change?.permission_key;
+    const granted = change?.granted;
+    if (!userId || !permissionKey || typeof granted !== 'boolean') {
+      throw new Error('Invalid permission batch change');
+    }
+    if (!G0_PERMISSION_DEFAULTS[permissionKey]) {
+      throw new Error(`Invalid permission key: ${permissionKey}`);
+    }
+
+    const role = await loadMembershipRole(executor, organizationId, userId);
+    if (!role || role.startsWith('pending_')) {
+      throw new Error(`Member not found: ${userId}`);
+    }
+
+    if (granted) {
+      const id = await grantPermission(executor, {
+        organizationId,
+        userId,
+        permissionKey,
+        grantedBy,
+        source: 'individual',
+        req,
+      });
+      if (id) applied += 1;
+    } else {
+      const revoked = await revokePermission(executor, {
+        organizationId,
+        userId,
+        permissionKey,
+        revokedBy: grantedBy,
+        req,
+      });
+      if (revoked) applied += 1;
+    }
+  }
+  return applied;
 }
 
 export async function applyBundlePreset(

@@ -3,12 +3,16 @@ import {
   PERMISSION_BUNDLE_PET_ADMIN,
   VIEW_PERMISSION_KEYS,
   applyBundlePreset,
+  buildRolePermissionDefaultsResponse,
+  effectiveTierDefaultKeys,
+  g0KeysForRole,
   grantPermission,
   revokePermission,
   hasEffectivePermission,
   hasPermission,
   hasPermissionForUser,
   permissionKeysForRole,
+  tierDefaultRowsFromGrantedKeys,
 } from '../lib/orgPermissions.js';
 import {
   ORG_ROLE_ADMIN,
@@ -52,7 +56,7 @@ describe('orgPermissions', () => {
           expect(hasPermission(role, null, key)).toBe(true);
         }
         expect(hasPermission(ORG_ROLE_FOSTER, null, key)).toBe(
-          roles.includes(ORG_ROLE_FOSTER)
+          roles.includes(ORG_ROLE_ASSOCIATE)
         );
         expect(hasPermission(ORG_ROLE_ASSOCIATE, null, key)).toBe(
           roles.includes(ORG_ROLE_ASSOCIATE)
@@ -80,7 +84,7 @@ describe('orgPermissions', () => {
     });
   });
 
-  describe('four wire roles', () => {
+  describe('three wire roles', () => {
     it('super_admin retains full G0 admin capability', () => {
       for (const key of LEGACY_G0_KEYS) {
         expect(hasPermission(ORG_ROLE_SUPER_ADMIN, null, key)).toBe(true);
@@ -94,7 +98,7 @@ describe('orgPermissions', () => {
       }
     });
 
-    it('foster and associate have no default admin grants', () => {
+    it('foster wire normalises to associate for admin grant checks', () => {
       expect(hasPermission(ORG_ROLE_FOSTER, null, 'manage_fosters')).toBe(false);
       expect(hasPermission(ORG_ROLE_ASSOCIATE, null, 'manage_fosters')).toBe(false);
       expect(hasPermission(ORG_ROLE_FOSTER, null, 'manage_pets')).toBe(false);
@@ -107,25 +111,21 @@ describe('orgPermissions', () => {
       view_org_internal: [
         ORG_ROLE_SUPER_ADMIN,
         ORG_ROLE_ADMIN,
-        ORG_ROLE_FOSTER,
         ORG_ROLE_ASSOCIATE,
       ],
       view_admin_contacts: [
         ORG_ROLE_SUPER_ADMIN,
         ORG_ROLE_ADMIN,
-        ORG_ROLE_FOSTER,
         ORG_ROLE_ASSOCIATE,
       ],
       view_org_pets: [
         ORG_ROLE_SUPER_ADMIN,
         ORG_ROLE_ADMIN,
-        ORG_ROLE_FOSTER,
         ORG_ROLE_ASSOCIATE,
       ],
       view_connections: [
         ORG_ROLE_SUPER_ADMIN,
         ORG_ROLE_ADMIN,
-        ORG_ROLE_FOSTER,
         ORG_ROLE_ASSOCIATE,
       ],
       view_fostering_sessions: [ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN],
@@ -141,7 +141,6 @@ describe('orgPermissions', () => {
       for (const role of [
         ORG_ROLE_SUPER_ADMIN,
         ORG_ROLE_ADMIN,
-        ORG_ROLE_FOSTER,
         ORG_ROLE_ASSOCIATE,
       ]) {
         it(`${role} ${grantedRoles.includes(role) ? 'has' : 'lacks'} ${key}`, () => {
@@ -181,6 +180,48 @@ describe('orgPermissions', () => {
     });
   });
 
+  describe('org tier defaults', () => {
+    it('unions org rows with G0 defaults for a tier', () => {
+      const orgRows = [
+        { role_tier: 'associate', permission_key: 'manage_pets', granted: true },
+        {
+          role_tier: 'associate',
+          permission_key: 'view_fostering_sessions',
+          granted: false,
+        },
+      ];
+      const keys = effectiveTierDefaultKeys('associate', orgRows);
+      expect(keys).toContain('manage_pets');
+      expect(keys).not.toContain('view_fostering_sessions');
+      expect(keys).toContain('view_org_pets');
+    });
+
+    it('permissionKeysForRole uses org tier defaults', () => {
+      const orgRows = [
+        { role_tier: 'admin', permission_key: 'manage_document_templates', granted: true },
+      ];
+      const keys = permissionKeysForRole(ORG_ROLE_ADMIN, [], orgRows);
+      expect(keys).toContain('manage_document_templates');
+    });
+
+    it('tierDefaultRowsFromGrantedKeys stores only deltas from G0', () => {
+      const g0Associate = g0KeysForRole(ORG_ROLE_ASSOCIATE);
+      const rows = tierDefaultRowsFromGrantedKeys('associate', [
+        ...g0Associate,
+        'manage_pets',
+      ]);
+      expect(rows).toEqual([
+        { role_tier: 'associate', permission_key: 'manage_pets', granted: true },
+      ]);
+    });
+
+    it('buildRolePermissionDefaultsResponse marks super_admin read-only', () => {
+      const response = buildRolePermissionDefaultsResponse();
+      expect(response.tiers.super_admin.editable).toBe(false);
+      expect(response.tiers.associate.editable).toBe(true);
+    });
+  });
+
   describe('hasPermissionForUser', () => {
     const orgId = 'org-1';
     const userId = 'user-1';
@@ -205,6 +246,9 @@ describe('orgPermissions', () => {
         (sql) => {
           if (sql.includes('FROM organization_users')) {
             return { rows: [{ role: ORG_ROLE_ASSOCIATE }] };
+          }
+          if (sql.includes('FROM organization_role_permission_defaults')) {
+            return { rows: [] };
           }
           if (sql.includes('FROM organization_permissions')) {
             return { rows: [{ permission_key: 'manage_pets' }] };

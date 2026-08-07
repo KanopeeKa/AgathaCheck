@@ -5,7 +5,7 @@ import '../../features/experience/domain/entities/app_experience.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../features/organization/presentation/widgets/org_shell_app_bar_title.dart';
 import '../../l10n/app_localizations.dart';
-import '../../features/organization/presentation/screens/admin_contacts_screen.dart';
+import '../../features/organization/presentation/screens/organization_people_screen.dart';
 import '../../features/organization/presentation/screens/accept_connection_screen.dart';
 import '../../features/organization/presentation/screens/archived_pet_detail_screen.dart';
 import '../../features/organization/presentation/screens/archived_pets_screen.dart';
@@ -19,7 +19,9 @@ import '../../features/organization/presentation/screens/organization_document_t
 import '../../features/organization/presentation/screens/organization_form_screen.dart';
 import '../../features/organization/presentation/screens/organization_legal_documents_screen.dart';
 import '../../features/organization/presentation/screens/organization_list_screen.dart';
+import '../../features/organization/presentation/screens/organization_role_defaults_screen.dart';
 import '../../features/organization/presentation/screens/organization_roles_permissions_screen.dart';
+import '../../features/organization/presentation/utils/org_people_route_params.dart';
 import '../../features/organization/presentation/screens/adoption_journey/adoption_journey_detail_screen.dart';
 import '../../features/organization/presentation/screens/adoption_screening/adoption_visits_screen.dart';
 import '../../features/organization/presentation/screens/adoption_screening/prospects_screen.dart';
@@ -156,17 +158,40 @@ List<RouteBase> _orgManagementChildRoutes() {
               name: 'organizationRolesPermissions',
               builder: (context, state) {
                 final id = state.pathParameters['id']!;
-                return OrganizationRolesPermissionsScreen(orgId: id);
+                final initialPeopleIds = parseOrgPeopleIdsQuery(
+                  state.uri.queryParameters['people'],
+                );
+                return OrganizationRolesPermissionsScreen(
+                  orgId: id,
+                  initialPeopleIds: initialPeopleIds,
+                );
+              },
+            ),
+            GoRoute(
+              path: 'bundle-defaults',
+              name: 'organizationRoleDefaults',
+              builder: (context, state) {
+                final id = state.pathParameters['id']!;
+                return OrganizationRoleDefaultsScreen(orgId: id);
               },
             ),
           ],
         ),
         GoRoute(
-          path: 'admin-contacts',
-          name: 'organizationAdminContacts',
+          path: 'people',
+          name: 'organizationPeople',
           builder: (context, state) {
             final id = state.pathParameters['id']!;
-            return AdminContactsScreen(orgId: id);
+            final filter = state.uri.queryParameters['filter'];
+            return OrganizationPeopleScreen(orgId: id, filter: filter);
+          },
+        ),
+        GoRoute(
+          path: 'admin-contacts',
+          name: 'organizationAdminContacts',
+          redirect: (context, state) {
+            final id = state.pathParameters['id']!;
+            return '/o/orgs/$id/people?filter=admins';
           },
         ),
         GoRoute(

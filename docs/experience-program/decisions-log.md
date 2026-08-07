@@ -134,6 +134,29 @@ Source of truth: [`organisation-ux-v3-delivery-plan.md`](organisation-ux-v3-deli
 | **D-v3-UPLOAD-1** | Cover/logo upload success for valid ≤2MB JPG/PNG/WebP; clear UI errors from server. | locked | v3 Phase 1 |
 | **D-v3-NOTIF-1** | No org-notification profile section this plan; unified bell unchanged. Full org-admin notification product **deferred** (DEF-NOTIF). | locked | v3 |
 
+### Organisation people, permissions & foster v4 (2026-08-06)
+
+Source of truth: [`organisation-people-permissions-v4-delivery-plan.md`](organisation-people-permissions-v4-delivery-plan.md).
+
+| ID | Decision | Status | Phase |
+|----|----------|--------|-------|
+| **D-v4-PEOPLE-1** | Unified **People** screen at `/o/orgs/:id/people` lists all org people (members, external fosters, pending invites) in one grid — self card pinned first, then alphabetical by last name. Everyone in the org may open the screen; per-tile actions respect viewer permissions. | locked | v4 Phase B |
+| **D-v4-PEOPLE-2** | **Admin contacts** dedicated screen is **removed**. Profile nav row label stays **Admin contacts** but routes to People with `filter=admins` (admin + super_admin wire roles). No second directory screen. | locked | v4 Phase B |
+| **D-v4-ROLE-1** | Wire roles narrow to **`associate \| admin \| super_admin`** — the `foster` wire role is **retired**. Existing `organization_users.role = foster` rows migrate to `associate`. Fostering is **not** a wire role. Supersedes D13 foster wire role. | locked | v4 Phase C |
+| **D-v4-ROLE-2** | Minimum app membership role is **associate**. External/manual fosters (`org_foster_parents` without user account) have **no wire role** — foster identity is badge + relationship only. | locked | v4 Phase C |
+| **D-v4-FOSTER-1** | Fostering status is a **badge** on people tiles and person profile (orthogonal to associate/admin/super_admin). Onboarding cannot be granted by a permission toggle — dedicated foster onboarding flow only. | locked | v4 Phase C/G |
+| **D-v4-PERM-1** | Roles & Permissions editor uses **staged changes + single Save** and **leave-without-save** warning. No immediate API call per toggle. | locked | v4 Phase E |
+| **D-v4-PERM-2** | Bulk permission UI: when selected people disagree on a key, control shows **indeterminate (centre)** position; changing it applies uniformly to all selected. Pending edits show a neutral marker (blue disc or arrow — same size for all). | locked | v4 Phase E |
+| **D-v4-PERM-3** | Top preset buttons are **Apply Associate**, **Apply Admin**, **Apply Super Admin** (replacing Apply Foster/Pet/Team Admin as role shortcuts). Foster Admin / Pet Admin / Team Admin remain **group headers** in the detailed permission list only. Preset buttons manipulate toggles; persistence is **per permission key**. | locked | v4 Phase E |
+| **D-v4-PERM-4** | Clicking a role preset sets ON all keys in that org's default set for the tier and OFF keys outside it (**resets extra individual grants** for the selection) — confirm before Save. | locked | v4 Phase E |
+| **D-v4-PERM-5** | Org-level **default permission sets** per tier (associate / admin / super_admin) are editable under Organisation Administration; saving applies org-wide with **confirmation** warning that individuals may need manual adjustment. Defaults layer on G0 baselines (both apply). Super-admin tier defaults are **not** editable per org. | locked | v4 Phase F |
+| **D-v4-PERM-6** | Detailed permissions section is renamed **Detailed permissions**, collapsible (collapsed by default). | locked | v4 Phase E |
+| **D-v4-NAV-1** | Profile nav adds **People** row **above Pets**. Admin contacts row remains (filtered People). Foster parents row remains for operational foster directory. | locked | v4 Phase B |
+| **D-v4-EDIT-1** | Create organisation uses the **same template as Edit** (including branding hero). Primary buttons: **Create** / **Save**. Create shows **Cancel** (not Delete). | locked | v4 Phase A |
+| **D-v4-FOSTER-2** | Foster invite for **existing** AgathaTrack users: **in-app notification only** (email deferred). New users: separate **Invitation to foster via AgathaTrack** email template (EN/FR), org-customisable under Document templates → Email templates. | locked | v4 Phase G |
+| **D-v4-FOSTER-3** | Foster onboarding **timeline** on person org profile: vertical stepper with checkmark-in-disc for completed steps; org staff may **override/confirm** any step. Steps without backend data show deferred placeholder until built. | locked | v4 Phase H |
+| **D-v4-BULK-1** | Bulk **Change role** from People routes to Roles & Permissions with selected people pre-loaded (same screen as single edit). | locked | v4 Phase D |
+
 ---
 
 ## How to use this log

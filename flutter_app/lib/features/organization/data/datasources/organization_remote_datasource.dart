@@ -410,6 +410,12 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     String token,
   ) => _permissions.revokePermission(orgId, targetUserId, permissionKey, token);
 
+  Future<Map<String, dynamic>> batchPermissions(
+    String orgId,
+    List<Map<String, dynamic>> changes,
+    String token,
+  ) => _permissions.batchPermissions(orgId, changes, token);
+
   Future<List<Map<String, dynamic>>> getAuditEvents(
     String orgId,
     String token,
@@ -419,4 +425,34 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     String orgId,
     String token,
   ) => _permissions.getDocumentTemplates(orgId, token);
+
+  Future<Map<String, dynamic>> updateEmailTemplate(
+    String orgId,
+    String templateKey, {
+    required String subject,
+    required String bodyHtml,
+    required String bodyText,
+    String locale = 'en',
+    required String token,
+  }) => _permissions.updateEmailTemplate(
+    orgId,
+    templateKey,
+    subject: subject,
+    bodyHtml: bodyHtml,
+    bodyText: bodyText,
+    locale: locale,
+    token: token,
+  );
+
+  Future<Map<String, dynamic>> getRolePermissionDefaults(
+    String orgId,
+    String token,
+  ) => _permissions.getRolePermissionDefaults(orgId, token);
+
+  Future<Map<String, dynamic>> saveRolePermissionDefaults(
+    String orgId,
+    String tier,
+    List<String> grantedKeys,
+    String token,
+  ) => _permissions.saveRolePermissionDefaults(orgId, tier, grantedKeys, token);
 }

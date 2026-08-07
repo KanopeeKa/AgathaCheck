@@ -180,7 +180,7 @@ describe('orgPeople helpers', () => {
                 organization_name: 'Shelter',
                 display_name: 'Jane Foster',
                 email: 'foster@example.com',
-                role: 'foster',
+                role: 'associate',
                 foster_phone: '555',
                 foster_address: 'Addr',
                 admin_notes: 'Notes',
@@ -214,7 +214,7 @@ describe('orgPeople helpers', () => {
         kind: 'member',
         record_id: 'ou-1',
         organization_name: 'Shelter',
-        role: 'foster',
+        role: 'associate',
       });
       expect(contacts[1]).toMatchObject({
         kind: 'external',

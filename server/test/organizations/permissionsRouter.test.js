@@ -171,6 +171,79 @@ describe('Organizations permissions API', () => {
     });
   });
 
+  describe('POST /:orgId/permissions/batch', () => {
+    it('applies permission changes in a batch', async () => {
+      const app = createApp(buildPermissionsPool({ targetRole: 'associate' }));
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/permissions/batch`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          changes: [
+            {
+              user_id: targetUserId,
+              permission_key: 'manage_pets',
+              granted: true,
+            },
+            {
+              user_id: targetUserId,
+              permission_key: 'manage_members',
+              granted: false,
+            },
+          ],
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('applied_count');
+      expect(res.body.change_count).toBe(2);
+    });
+
+    it('returns 400 for empty changes', async () => {
+      const app = createApp(buildPermissionsPool());
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/permissions/batch`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ changes: [] });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('returns 400 for invalid permission key', async () => {
+      const app = createApp(buildPermissionsPool());
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/permissions/batch`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          changes: [
+            {
+              user_id: targetUserId,
+              permission_key: 'not_a_key',
+              granted: true,
+            },
+          ],
+        });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('returns 403 for non-super-admin', async () => {
+      const app = createApp(buildPermissionsPool({ viewerRole: 'admin' }));
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/permissions/batch`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          changes: [
+            {
+              user_id: targetUserId,
+              permission_key: 'manage_pets',
+              granted: true,
+            },
+          ],
+        });
+
+      expect(res.statusCode).toBe(403);
+    });
+  });
+
   describe('POST /:orgId/members/:targetUserId/permissions/bundle', () => {
     it('applies a bundle preset', async () => {
       const app = createApp(buildPermissionsPool({ targetRole: 'associate' }));

@@ -28,6 +28,8 @@ import { migrateFamilyEventsTimeline } from './migrations/034_migrate_family_eve
 import { migrateOrganizationPermissions } from './migrations/036_organization_permissions.js';
 import { backfillWeightEntriesFromPets } from './migrations/040_backfill_weight_entries_from_pets.js';
 import { migrateOrgMemberPrivacy } from './migrations/042_org_member_privacy.js';
+import { migrateRetireFosterWireRole } from './migrations/044_org_retire_foster_wire_role.js';
+import { migrateOrganizationRolePermissionDefaults } from './migrations/045_organization_role_permission_defaults.js';
 import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 
 const { Pool } = pg;
@@ -109,6 +111,8 @@ const CODE_MIGRATIONS = {
   '036_organization_permissions.sql': migrateOrganizationPermissions,
   '040_backfill_weight_entries_from_pets.sql': backfillWeightEntriesFromPets,
   '042_org_member_privacy.sql': migrateOrgMemberPrivacy,
+  '044_org_retire_foster_wire_role.sql': migrateRetireFosterWireRole,
+  '045_organization_role_permission_defaults.sql': migrateOrganizationRolePermissionDefaults,
 };
 
 async function applyMigration(client, name, sql) {

@@ -1658,6 +1658,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createOrganization => 'Create Organisation';
 
   @override
+  String get orgFormCreate => 'Create';
+
+  @override
   String get editOrganization => 'Edit Organisation';
 
   @override
@@ -1819,6 +1822,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orgAssociate => 'Associate';
+
+  @override
+  String get orgFosterBadgeUnderReview => 'Foster · Under review';
+
+  @override
+  String get orgFosterBadgeApproved => 'Foster';
+
+  @override
+  String get orgFosterBadgeNeedsAttention => 'Foster · Needs attention';
+
+  @override
+  String get orgFosterBadgeExternal => 'Foster · External';
+
+  @override
+  String get fosterOnboardingStatusTitle => 'Foster onboarding status';
+
+  @override
+  String get fosterOnboardingNotRecordedYet => 'Not recorded yet';
+
+  @override
+  String get fosterOnboardingConfirmStep => 'Confirm';
+
+  @override
+  String get fosterOnboardingStepConnected => 'Connected to organisation';
+
+  @override
+  String get fosterOnboardingStepProfile => 'Profile on AgathaTrack';
+
+  @override
+  String get fosterOnboardingStepInvitationAccepted => 'Invitation accepted';
+
+  @override
+  String get fosterOnboardingStepUnderReview => 'Under review';
+
+  @override
+  String get fosterOnboardingStepOnboardingForm => 'Onboarding form completed';
+
+  @override
+  String get fosterOnboardingStepHomeVisit => 'Home visit recorded';
+
+  @override
+  String get fosterOnboardingStepCompetencies => 'Competencies confirmed';
+
+  @override
+  String get fosterOnboardingStepAgreement => 'Agreement signed';
+
+  @override
+  String get fosterOnboardingStepApproved => 'Approved foster';
 
   @override
   String get orgSelectNewRole => 'Select new role';
@@ -2191,6 +2242,74 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get orgPeopleDescription =>
       'Everyone in your organisation. The green disk shows how many pets each person is currently fostering.';
+
+  @override
+  String get orgPeopleEmpty => 'No people yet.';
+
+  @override
+  String get orgPeopleSearchPlaceholder => 'Search by name';
+
+  @override
+  String get orgPeopleSearchEmpty => 'No people match your search';
+
+  @override
+  String get orgPeopleSelect => 'Select';
+
+  @override
+  String orgPeopleSelectedCount(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get orgPeopleBulkActions => 'Bulk actions';
+
+  @override
+  String get orgPeopleBulkChangeRole => 'Change role';
+
+  @override
+  String get orgPeopleBulkOnboardFoster => 'Onboard as foster';
+
+  @override
+  String get orgPeopleBulkOnboardFosterComingSoon =>
+      'Foster onboarding coming in a future update';
+
+  @override
+  String get orgFosterInviteByEmailTitle => 'Invite to foster by email';
+
+  @override
+  String get orgFosterInviteByEmailDescription =>
+      'Send an invitation to foster via AgathaTrack. New users receive an email; existing users get an in-app notification.';
+
+  @override
+  String get orgFosterInviteSentEmail => 'Foster invitation email sent';
+
+  @override
+  String get orgFosterInviteSentInApp => 'Foster invitation sent in the app';
+
+  @override
+  String get orgFosterOnboardBulkSuccess =>
+      'Selected people invited to foster onboarding';
+
+  @override
+  String get orgEmailTemplatesSectionTitle => 'Email templates';
+
+  @override
+  String orgEmailTemplateEditorTitle(String key) {
+    return 'Edit email template';
+  }
+
+  @override
+  String get orgEmailTemplateEditorHint =>
+      'Use placeholders such as org.name, inviter.name, and signup_url.';
+
+  @override
+  String get orgEmailTemplateSaved => 'Email template saved';
+
+  @override
+  String get orgEmailTemplateSubject => 'Subject line';
+
+  @override
+  String get orgEmailTemplateBody => 'Email body';
 
   @override
   String get addExternalFoster => 'Add foster manually';
@@ -4650,8 +4769,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Apply bundle presets, manage overrides, and review the audit log.';
 
   @override
+  String get orgCustomisationsBundleDefaultsTitle => 'Default permission sets';
+
+  @override
+  String get orgCustomisationsBundleDefaultsSubtitle =>
+      'Configure which permissions each role tier receives by default.';
+
+  @override
   String get orgDocumentTemplatesIntro =>
-      'Templates used for fostering sessions and adoption journeys.';
+      'Templates used for fostering sessions, adoption journeys, and foster invitation emails.';
+
+  @override
+  String get orgEmailTemplatesSection => 'Email templates';
 
   @override
   String get orgDocumentTemplatesEmpty =>
@@ -4697,6 +4826,56 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get orgRolesPermissionsSelectedPeople => 'Selected people';
+
+  @override
+  String get orgRolesPermissionsAddMember => 'Search to add members';
+
+  @override
+  String orgRolesPermissionsApplyRolePreset(String role) {
+    return 'Apply $role';
+  }
+
+  @override
+  String orgRolesPermissionsPresetConfirmTitle(String role) {
+    return 'Apply $role permissions?';
+  }
+
+  @override
+  String orgRolesPermissionsPresetConfirmBody(String role) {
+    return 'This will stage permission changes for all selected people. Extra individual grants outside the $role tier will be removed. Changes are not saved until you tap Save.';
+  }
+
+  @override
+  String get orgRolesPermissionsDetailedTitle => 'Detailed permissions';
+
+  @override
+  String get orgRolesPermissionsPendingChange => 'Pending change';
+
+  @override
+  String get orgRolesPermissionsSave => 'Save changes';
+
+  @override
+  String get orgRolesPermissionsSaved => 'Permission changes saved';
+
+  @override
+  String get orgRolesPermissionsUnsavedTitle => 'Discard unsaved changes?';
+
+  @override
+  String get orgRolesPermissionsUnsavedBody =>
+      'You have unsaved permission changes. Leave without saving?';
+
+  @override
+  String get orgRolesPermissionsDiscard => 'Discard';
+
+  @override
+  String get orgRolesPermissionsStay => 'Keep editing';
+
+  @override
+  String get orgRolesPermissionsSelectPeople =>
+      'Select at least one person to edit permissions.';
+
+  @override
   String get orgPermissionManageFosters => 'Manage fosters';
 
   @override
@@ -4720,4 +4899,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orgPermissionBundleTeamAdmin => 'Team Admin';
+
+  @override
+  String get orgRoleDefaultsTitle => 'Default permission sets';
+
+  @override
+  String get orgRoleDefaultsIntro =>
+      'Choose which role tier to adjust. Changes apply organisation-wide when saved.';
+
+  @override
+  String get orgRoleDefaultsTierPrompt =>
+      'Which role tier do you want to adjust?';
+
+  @override
+  String get orgRoleDefaultsTierAssociate => 'Associate';
+
+  @override
+  String get orgRoleDefaultsTierAdmin => 'Admin';
+
+  @override
+  String get orgRoleDefaultsTierSuperAdmin => 'Super Admin';
+
+  @override
+  String get orgRoleDefaultsReadOnlyHint =>
+      'Super Admin defaults come from the platform baseline and cannot be changed per organisation.';
+
+  @override
+  String get orgRoleDefaultsSave => 'Save defaults';
+
+  @override
+  String orgRoleDefaultsSaved(String tier) {
+    return 'Default permissions updated for $tier';
+  }
+
+  @override
+  String get orgRoleDefaultsConfirmTitle => 'Apply organisation-wide?';
+
+  @override
+  String orgRoleDefaultsConfirmBody(String tier) {
+    return 'Saving will update default permissions for every $tier in this organisation. People with extra individual grants may need manual review.';
+  }
+
+  @override
+  String get orgRoleDefaultsUnsavedTitle => 'Discard changes?';
+
+  @override
+  String get orgRoleDefaultsUnsavedBody =>
+      'You have unsaved permission changes for this role tier.';
+
+  @override
+  String get orgRoleDefaultsDiscard => 'Discard';
+
+  @override
+  String get orgRoleDefaultsOtherPermissions => 'Other permissions';
 }

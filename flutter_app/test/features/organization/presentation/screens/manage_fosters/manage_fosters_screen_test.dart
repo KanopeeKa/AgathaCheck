@@ -70,11 +70,15 @@ void main() {
     expect(find.byKey(const Key('manage_fosters_tile_grid')), findsOneWidget);
     expect(find.byKey(const Key('foster_person_tile_fp-1')), findsOneWidget);
     expect(find.text('Eve Foster'), findsOneWidget);
+    expect(
+      find.byKey(const Key('manage_fosters_invite_email')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('manage_fosters_menu')), findsOneWidget);
   });
 
   testWidgets(
-    'manage fosters overflow menu lists email invite and manual actions',
+    'manage fosters overflow menu lists foster requests and manual add',
     (tester) async {
       await tester.pumpWidget(
         ProviderScope(
@@ -95,12 +99,10 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-
       await tester.tap(find.byKey(const Key('manage_fosters_menu')));
       await tester.pumpAndSettle();
-
       expect(find.text('Foster requests'), findsOneWidget);
-      expect(find.text('Invite Member'), findsOneWidget);
+      expect(find.text('Invite Member'), findsNothing);
       expect(find.text('Add foster manually'), findsOneWidget);
     },
   );

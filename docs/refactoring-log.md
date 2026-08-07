@@ -6,6 +6,24 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
+## organisation-people-permissions-v4 — People, roles, foster (2026-08-06)
+
+**Goal:** Unified People directory, retire `foster` wire role (badge instead), staged permissions editor, org tier defaults, foster invite + onboarding timeline.  
+**Plan:** `docs/experience-program/organisation-people-permissions-v4-delivery-plan.md` · **Decisions:** D-v4-* in `decisions-log.md`
+
+| Phase | Outcome | Branch | Status |
+|-------|---------|--------|--------|
+| A | Create/Edit org parity (Create/Save/Cancel, shared hero) | `cursor/org-v4-a-create-edit-form-63a7` | Planned |
+| B | People screen; admin contacts → filtered People | `cursor/org-v4-b-people-screen-63a7` | Planned |
+| C | Wire role migration + foster badge | `cursor/org-v4-c-role-badge-63a7` | Planned |
+| D | People multi-select + bulk actions | `cursor/org-v4-d-people-bulk-63a7` | Planned |
+| E | Staged permissions editor | `cursor/org-v4-e-permissions-staged-63a7` | Planned |
+| F | Org default permission sets | `cursor/org-v4-f-org-bundle-defaults-63a7` | Planned |
+| G | Foster invite + email templates | `cursor/org-v4-g-foster-invite-63a7` | Planned |
+| H | Foster onboarding timeline | `cursor/org-v4-h-foster-timeline-63a7` | Planned |
+
+---
+
 ## public-access-gate-a35f — Prod teaser + UAT Basic Auth (2026-08-05)
 
 **Goal:** Pre-launch public posture — prod static coming-soon + API `PUBLIC_ACCESS_MODE=coming_soon`; UAT flag-gated HTTP Basic Auth CI; canonical ops doc; live-host helper split (`liveUat` vs `liveProd`).  

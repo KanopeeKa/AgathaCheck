@@ -63,9 +63,14 @@ Future<void> _pumpNav(
         ),
       ),
       GoRoute(
-        path: '/o/orgs/:id/admin-contacts',
-        builder: (context, state) =>
-            const Scaffold(body: Text('admin contacts screen')),
+        path: '/o/orgs/:id/people',
+        builder: (context, state) => Scaffold(
+          body: Text(
+            state.uri.queryParameters['filter'] == 'admins'
+                ? 'admin contacts screen'
+                : 'people screen',
+          ),
+        ),
       ),
       GoRoute(
         path: '/o/orgs/:id/fosters',
@@ -135,6 +140,7 @@ void main() {
         findsNothing,
       );
       expect(find.byKey(const Key('org_profile_nav_pets')), findsNothing);
+      expect(find.byKey(const Key('org_profile_nav_people')), findsOneWidget);
       expect(
         find.byKey(const Key('org_profile_nav_connections')),
         findsNothing,
@@ -156,6 +162,14 @@ void main() {
       );
       expect(find.text('Fostering sessions'), findsOneWidget);
       expect(find.byKey(const Key('org_profile_nav_pets')), findsNothing);
+      expect(find.byKey(const Key('org_profile_nav_people')), findsOneWidget);
+    });
+
+    testWidgets('shows people row without permission gate', (tester) async {
+      await _pumpNav(tester, permissions: {});
+
+      expect(find.byKey(const Key('org_profile_nav_people')), findsOneWidget);
+      expect(find.text('People'), findsOneWidget);
     });
 
     testWidgets('shows pets row with pet count for view_org_pets', (
@@ -164,6 +178,7 @@ void main() {
       await _pumpNav(tester, permissions: {'view_org_pets'});
 
       expect(find.byKey(const Key('org_profile_nav_pets')), findsOneWidget);
+      expect(find.byKey(const Key('org_profile_nav_people')), findsOneWidget);
       expect(find.text('Pets'), findsOneWidget);
       expect(find.text('7 pets'), findsOneWidget);
     });
@@ -223,6 +238,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.byKey(const Key('org_profile_nav_pets')), findsOneWidget);
+      expect(find.byKey(const Key('org_profile_nav_people')), findsOneWidget);
       expect(
         find.byKey(const Key('org_profile_nav_connections')),
         findsOneWidget,
@@ -253,6 +269,26 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('pets screen'), findsOneWidget);
+    });
+
+    testWidgets('people row navigates to people route', (tester) async {
+      await _pumpNav(tester, permissions: {});
+
+      await tester.tap(find.byKey(const Key('org_profile_nav_people')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('people screen'), findsOneWidget);
+    });
+
+    testWidgets('admin contacts row navigates to filtered people route', (
+      tester,
+    ) async {
+      await _pumpNav(tester, permissions: {'view_admin_contacts'});
+
+      await tester.tap(find.byKey(const Key('org_profile_nav_admin_contacts')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('admin contacts screen'), findsOneWidget);
     });
 
     testWidgets('administration row navigates to customisations route', (

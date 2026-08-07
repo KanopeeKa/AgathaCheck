@@ -68,7 +68,7 @@ export function mapBddOrgRole(role: string): string {
     case 'member':
       return 'admin';
     case 'foster':
-      return 'foster';
+      return 'associate';
     default:
       return role;
   }
@@ -583,6 +583,27 @@ export async function inviteToOrganization(
   }
 
   return JSON.parse(body);
+}
+
+/** Onboard existing org member(s) as foster parent(s) (v4: associate wire + foster badge). */
+export async function fosterInviteToOrganization(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  options: { userIds: string[] },
+): Promise<void> {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/foster-invite`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ user_ids: options.userIds }),
+  });
+  const body = await res.text();
+  if (!res.ok) {
+    throw new Error(`fosterInviteToOrganization failed (${res.status}): ${body}`);
+  }
 }
 
 export async function getPendingInvites(
@@ -1895,7 +1916,7 @@ export async function seedRescueHearts(baseURL: string): Promise<{
   });
   await inviteToOrganization(baseURL, alice.accessToken, org.id, {
     email: eve.email,
-    role: 'foster',
+    role: 'associate',
   });
   const invites = await getPendingInvites(baseURL, eve.accessToken);
   const invite = invites.find((item) => item.organization_id === org.id);
@@ -1903,6 +1924,9 @@ export async function seedRescueHearts(baseURL: string): Promise<{
     throw new Error('No pending foster invite found for Rescue Hearts');
   }
   await acceptInvite(baseURL, eve.accessToken, invite.id);
+  await fosterInviteToOrganization(baseURL, alice.accessToken, org.id, {
+    userIds: [eve.userId],
+  });
   return { alice, eve, org };
 }
 

@@ -13,6 +13,7 @@ import {
   updateJourneyMilestoneItem,
   updateSessionChecklistItem,
 } from '../../lib/documentTemplates.js';
+import { listEmailTemplatesForOrg, upsertEmailTemplate } from '../../lib/emailTemplates.js';
 import { getJourneyForSession } from '../../lib/adoptionJourneys.js';
 import { extractUserId, requireMember, requireOrgAdmin } from './shared.js';
 import { publicError } from '../../config/security.js';
@@ -78,13 +79,15 @@ export function registerDocumentTemplatesRoutes(router, pool) {
         return res.json(templates);
       }
 
-      const [sessionTemplates, milestoneTemplates] = await Promise.all([
+      const [sessionTemplates, milestoneTemplates, emailTemplates] = await Promise.all([
         listTemplatesForOrg(pool, orgId, TEMPLATE_TYPE_SESSION_CHECKLIST),
         listTemplatesForOrg(pool, orgId, TEMPLATE_TYPE_ADOPTION_MILESTONE),
+        listEmailTemplatesForOrg(pool, orgId),
       ]);
       res.json({
         session_checklist: sessionTemplates,
         adoption_milestones: milestoneTemplates,
+        email_templates: emailTemplates,
       });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -241,6 +244,47 @@ export function registerDocumentTemplatesRoutes(router, pool) {
         fosterName: (placement.foster_name || '').trim() || 'Foster',
       });
       res.json({ format: 'markdown', content: markdown });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.put('/:orgId/email-templates/:templateKey', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { orgId, templateKey } = req.params;
+    const data = req.body || {};
+    const subject = (data.subject || '').trim();
+    const bodyHtml = (data.body_html || data.bodyHtml || '').trim();
+    const bodyText = (data.body_text || data.bodyText || '').trim();
+    const locale = data.locale || 'en';
+
+    if (!subject || !bodyHtml || !bodyText) {
+      return res.status(400).json({ error: 'subject, body_html, and body_text are required' });
+    }
+
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+
+      const result = await upsertEmailTemplate(pool, {
+        orgId,
+        templateKey,
+        locale,
+        subject,
+        bodyHtml,
+        bodyText,
+      });
+      if (result.error) {
+        return res.status(result.status).json({ error: result.error });
+      }
+      res.json({
+        template_key: result.row.template_key,
+        locale: result.row.locale,
+        subject: result.row.subject,
+        body_html: result.row.body_html,
+        body_text: result.row.body_text,
+        updated_at: result.row.updated_at,
+      });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }

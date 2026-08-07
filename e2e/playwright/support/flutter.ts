@@ -604,6 +604,17 @@ export async function fillTextbox(
   await typeIntoField(field, value);
 }
 
+/** Fill a borderless Flutter field located by `flt-semantics-identifier` (Widget Key on web). */
+export async function fillSemanticsField(
+  page: Page,
+  identifier: string,
+  value: string,
+): Promise<void> {
+  const field = page.locator(`[flt-semantics-identifier="${identifier}"]`);
+  await field.waitFor({ state: 'visible' });
+  await typeIntoField(field, value);
+}
+
 async function fieldHasValue(
   field: import('@playwright/test').Locator,
   value: string,

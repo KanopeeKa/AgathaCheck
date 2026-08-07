@@ -1,12 +1,17 @@
 import {
   applyBundlePreset,
+  applyPermissionBatch,
+  buildRolePermissionDefaultsResponse,
   G0_PERMISSION_DEFAULTS,
   grantPermission,
   loadActivePermissionKeys,
   loadMembershipRole,
+  loadOrgRolePermissionDefaults,
   PERMISSION_BUNDLE_KEYS,
   permissionKeysForRole,
   revokePermission,
+  saveOrgRolePermissionDefaults,
+  EDITABLE_ROLE_TIERS,
 } from '../../lib/orgPermissions.js';
 import { pseudonymizeActor } from '../../lib/audit.js';
 import { publicError } from '../../config/security.js';
@@ -90,6 +95,18 @@ async function loadActiveOverrides(pool, organizationId, userId) {
   }));
 }
 
+async function loadOrgDefaults(pool, organizationId) {
+  return loadOrgRolePermissionDefaults(pool, organizationId);
+}
+
+async function effectivePermissionsForMember(pool, organizationId, role, userId) {
+  const [overrideKeys, orgRows] = await Promise.all([
+    loadActivePermissionKeys(pool, organizationId, userId),
+    loadOrgDefaults(pool, organizationId),
+  ]);
+  return permissionKeysForRole(role, overrideKeys, orgRows);
+}
+
 export function registerPermissionsRoutes(router, pool) {
   router.get('/:orgId/permissions/me', async (req, res) => {
     const userId = extractUserId(req);
@@ -104,11 +121,65 @@ export function registerPermissionsRoutes(router, pool) {
 
       const overrideKeys = await loadActivePermissionKeys(pool, orgId, userId);
       const overrides = await loadActiveOverrides(pool, orgId, userId);
+      const orgRows = await loadOrgDefaults(pool, orgId);
       res.json({
         role,
-        effective_permissions: permissionKeysForRole(role, overrideKeys),
+        effective_permissions: permissionKeysForRole(role, overrideKeys, orgRows),
         overrides,
       });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.get('/:orgId/role-permission-defaults', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { orgId } = req.params;
+
+    try {
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_permissions'))) {
+        return;
+      }
+      const orgRows = await loadOrgDefaults(pool, orgId);
+      res.json(buildRolePermissionDefaultsResponse(orgRows));
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.put('/:orgId/role-permission-defaults', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { orgId } = req.params;
+    const roleTier = (req.body?.tier || '').trim();
+    const grantedKeys = req.body?.granted_keys;
+
+    try {
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_permissions'))) {
+        return;
+      }
+      if (!EDITABLE_ROLE_TIERS.includes(roleTier)) {
+        return res.status(400).json({ error: 'Invalid role tier' });
+      }
+      if (!Array.isArray(grantedKeys)) {
+        return res.status(400).json({ error: 'granted_keys must be an array' });
+      }
+      const invalidKey = grantedKeys.find(
+        (key) => typeof key !== 'string' || !G0_PERMISSION_DEFAULTS[key],
+      );
+      if (invalidKey) {
+        return res.status(400).json({ error: 'Invalid permission key' });
+      }
+
+      const result = await saveOrgRolePermissionDefaults(pool, {
+        organizationId: orgId,
+        roleTier,
+        grantedKeys,
+        savedBy: userId,
+        req,
+      });
+      res.json(result);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -124,6 +195,45 @@ export function registerPermissionsRoutes(router, pool) {
         return;
       }
       res.json({ presets: bundlePresetsResponse() });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.post('/:orgId/permissions/batch', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { orgId } = req.params;
+    const changes = req.body?.changes;
+
+    try {
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_permissions'))) {
+        return;
+      }
+      if (!Array.isArray(changes) || changes.length === 0) {
+        return res.status(400).json({ error: 'Invalid permission batch changes' });
+      }
+
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        const appliedCount = await applyPermissionBatch(client, {
+          organizationId: orgId,
+          changes,
+          grantedBy: userId,
+          req,
+        });
+        await client.query('COMMIT');
+        res.json({ applied_count: appliedCount, change_count: changes.length });
+      } catch (err) {
+        await client.query('ROLLBACK');
+        if (err.message?.startsWith('Invalid permission') || err.message?.startsWith('Member not found')) {
+          return res.status(400).json({ error: err.message });
+        }
+        throw err;
+      } finally {
+        client.release();
+      }
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -171,9 +281,10 @@ export function registerPermissionsRoutes(router, pool) {
 
       const overrideKeys = await loadActivePermissionKeys(pool, orgId, targetUserId);
       const overrides = await loadActiveOverrides(pool, orgId, targetUserId);
+      const orgRows = await loadOrgDefaults(pool, orgId);
       res.json({
         role,
-        effective_permissions: permissionKeysForRole(role, overrideKeys),
+        effective_permissions: permissionKeysForRole(role, overrideKeys, orgRows),
         overrides,
       });
     } catch (err) {
@@ -208,11 +319,15 @@ export function registerPermissionsRoutes(router, pool) {
         req,
       });
 
-      const overrideKeys = await loadActivePermissionKeys(pool, orgId, targetUserId);
       res.json({
         preset,
         granted_count: grantedCount,
-        effective_permissions: permissionKeysForRole(role, overrideKeys),
+        effective_permissions: await effectivePermissionsForMember(
+          pool,
+          orgId,
+          role,
+          targetUserId,
+        ),
         overrides: await loadActiveOverrides(pool, orgId, targetUserId),
       });
     } catch (err) {
@@ -249,9 +364,10 @@ export function registerPermissionsRoutes(router, pool) {
       });
 
       const overrideKeys = await loadActivePermissionKeys(pool, orgId, targetUserId);
+      const orgRows = await loadOrgDefaults(pool, orgId);
       res.json({
         permission_key: permissionKey,
-        effective_permissions: permissionKeysForRole(role, overrideKeys),
+        effective_permissions: permissionKeysForRole(role, overrideKeys, orgRows),
         overrides: await loadActiveOverrides(pool, orgId, targetUserId),
       });
     } catch (err) {
@@ -289,9 +405,10 @@ export function registerPermissionsRoutes(router, pool) {
       }
 
       const overrideKeys = await loadActivePermissionKeys(pool, orgId, targetUserId);
+      const orgRows = await loadOrgDefaults(pool, orgId);
       res.json({
         permission_key: permissionKey,
-        effective_permissions: permissionKeysForRole(role, overrideKeys),
+        effective_permissions: permissionKeysForRole(role, overrideKeys, orgRows),
         overrides: await loadActiveOverrides(pool, orgId, targetUserId),
       });
     } catch (err) {

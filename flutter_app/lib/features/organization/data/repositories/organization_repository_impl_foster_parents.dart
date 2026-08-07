@@ -1,3 +1,4 @@
+import '../../domain/entities/foster_onboarding_step.dart';
 import '../../domain/entities/foster_parent.dart';
 import '../../domain/entities/foster_self_prefs.dart';
 import '../../domain/entities/org_person.dart';
@@ -37,6 +38,24 @@ mixin OrganizationRepositoryFosterParentsMixin
   }
 
   @override
+  Future<FosterOnboardingStatus> confirmFosterOnboardingStep(
+    String orgId,
+    OrgPersonKind kind,
+    String recordId,
+    String stepKey, {
+    required String token,
+  }) async {
+    final row = await dataSource.confirmFosterOnboardingStep(
+      orgId,
+      kind.wire,
+      recordId,
+      stepKey,
+      token,
+    );
+    return FosterOnboardingStatus.fromJson(row);
+  }
+
+  @override
   Future<OrgPersonDetail> updatePersonContact(
     String orgId,
     OrgPersonKind kind,
@@ -64,6 +83,19 @@ mixin OrganizationRepositoryFosterParentsMixin
     );
     return OrgPersonDetail.fromJson(row);
   }
+
+  @override
+  Future<Map<String, dynamic>> fosterInvite(
+    String orgId, {
+    String? email,
+    List<String>? userIds,
+    required String token,
+  }) => dataSource.fosterInvite(
+    orgId,
+    email: email,
+    userIds: userIds,
+    token: token,
+  );
 
   @override
   Future<FosterParent> createExternalFosterParent(

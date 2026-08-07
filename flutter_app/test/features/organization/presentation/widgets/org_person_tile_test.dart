@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization_member.dart';
 import 'package:pet_profile_app/features/organization/presentation/utils/org_screen_theme.dart';
+import 'package:pet_profile_app/features/organization/presentation/widgets/org_foster_badge.dart';
 import 'package:pet_profile_app/features/organization/presentation/widgets/org_person_tile.dart';
 import 'package:pet_profile_app/features/organization/presentation/widgets/org_person_tile_grid.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_card.dart';
@@ -109,7 +110,7 @@ void main() {
                 recordId: 'b',
                 displayName: 'Bob',
                 initials: 'B',
-                role: OrgMemberRole.foster,
+                role: OrgMemberRole.associate,
               ),
             ],
           ),
@@ -149,5 +150,77 @@ void main() {
     final bar = tester.widget<Container>(barFinder);
     final decoration = bar.decoration! as BoxDecoration;
     expect(decoration.color, Colors.black);
+  });
+
+  testWidgets('shows foster badge for approved foster associate', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrap(
+        const SizedBox(
+          width: 200,
+          height: 220,
+          child: OrgPersonTile(
+            recordId: 'foster-1',
+            displayName: 'Foster Parent',
+            initials: 'FP',
+            role: OrgMemberRole.associate,
+            fosterApprovalState: 'approved',
+            activeFosterCount: 2,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Associate'), findsOneWidget);
+    expect(find.text('Foster'), findsOneWidget);
+    expect(find.byKey(const Key('org_foster_badge_approved')), findsOneWidget);
+  });
+
+  testWidgets('external person shows foster external badge without role bar', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrap(
+        const SizedBox(
+          width: 200,
+          height: 220,
+          child: OrgPersonTile(
+            recordId: 'ext-1',
+            displayName: 'Off App',
+            initials: 'OA',
+            isExternal: true,
+            fosterApprovalState: 'under_review',
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Foster · External'), findsOneWidget);
+    expect(find.byKey(const Key('org_person_role_bar_Foster')), findsNothing);
+  });
+
+  test('OrgFosterBadgeState resolves badge states', () {
+    expect(
+      OrgFosterBadgeState.resolve(isExternal: true),
+      OrgFosterBadgeState.external,
+    );
+    expect(
+      OrgFosterBadgeState.resolve(
+        isExternal: false,
+        fosterApprovalState: 'under_review',
+      ),
+      OrgFosterBadgeState.underReview,
+    );
+    expect(
+      OrgFosterBadgeState.resolve(
+        isExternal: false,
+        fosterNeedsAttention: true,
+        fosterApprovalState: 'approved',
+      ),
+      OrgFosterBadgeState.needsAttention,
+    );
   });
 }

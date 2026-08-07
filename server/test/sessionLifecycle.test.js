@@ -112,6 +112,9 @@ function buildSessionMockPool() {
     if (sql.includes('SELECT name FROM pets WHERE id = $1')) {
       return { rows: [{ name: 'Buddy' }] };
     }
+    if (sql.includes('FROM org_foster_parents') && sql.includes('user_id = $2')) {
+      return { rows: [{ id: relationshipId }] };
+    }
     if (sql.includes('SELECT id FROM org_foster_parents')) {
       return { rows: [{ id: relationshipId }] };
     }

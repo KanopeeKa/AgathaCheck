@@ -38,6 +38,30 @@ mixin OrganizationRemoteFosterDelegations {
     token,
   );
 
+  Future<Map<String, dynamic>> fosterInvite(
+    String orgId, {
+    String? email,
+    List<String>? userIds,
+    required String token,
+  }) => fosterParentsRemote.fosterInvite(orgId, {
+    if (email != null && email.isNotEmpty) 'email': email,
+    if (userIds != null && userIds.isNotEmpty) 'user_ids': userIds,
+  }, token);
+
+  Future<Map<String, dynamic>> confirmFosterOnboardingStep(
+    String orgId,
+    String kind,
+    String recordId,
+    String stepKey,
+    String token,
+  ) => fosterParentsRemote.confirmFosterOnboardingStep(
+    orgId,
+    kind,
+    recordId,
+    stepKey,
+    token,
+  );
+
   Future<Map<String, dynamic>> createExternalFosterParent(
     String orgId, {
     required String displayName,

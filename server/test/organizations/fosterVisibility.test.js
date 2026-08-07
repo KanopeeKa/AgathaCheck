@@ -24,8 +24,9 @@ describe('fosterVisibility', () => {
 
   it('shows full address by default to another foster', () => {
     const filtered = applyFosterVisibilityToMap(baseParent, {
-      viewerRole: 'foster',
+      viewerRole: 'associate',
       viewerUserId: 'other-foster',
+      viewerIsFosterParent: true,
     });
     expect(filtered?.foster_address).toBe('12 Oak Lane, Springfield');
     expect(filtered?.email).toBe('jane@example.com');
@@ -37,8 +38,9 @@ describe('fosterVisibility', () => {
       address_visibility: 'town',
     };
     const filtered = applyFosterVisibilityToMap(parent, {
-      viewerRole: 'foster',
+      viewerRole: 'associate',
       viewerUserId: 'other-foster',
+      viewerIsFosterParent: true,
     });
     expect(filtered?.foster_address).toBe('Springfield');
   });
@@ -47,13 +49,15 @@ describe('fosterVisibility', () => {
     const parent = { ...baseParent, visible_to: 'nobody' };
     expect(canViewerSeeFosterCard({
       visibleTo: parent.visible_to,
-      viewerRole: 'foster',
+      viewerRole: 'associate',
       viewerUserId: 'other',
       fosterUserId: parent.user_id,
+      viewerIsFosterParent: true,
     })).toBe(false);
     expect(applyFosterVisibilityToMap(parent, {
-      viewerRole: 'foster',
+      viewerRole: 'associate',
       viewerUserId: 'other',
+      viewerIsFosterParent: true,
     })).toBeNull();
   });
 
@@ -78,9 +82,10 @@ describe('fosterVisibility', () => {
       email: 'jane@example.com',
       phone: '555',
       contactVisibility: 'email',
-      viewerRole: 'foster',
+      viewerRole: 'associate',
       viewerUserId: 'other',
       fosterUserId: 'foster-1',
+      viewerIsFosterParent: true,
     });
     expect(contacts).toEqual({ email: 'jane@example.com', phone: null });
   });

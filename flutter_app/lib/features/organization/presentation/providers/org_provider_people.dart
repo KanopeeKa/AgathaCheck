@@ -96,6 +96,23 @@ class OrgPeopleNotifier
     await repo.deleteExternalFosterParent(arg, recordId, token);
     ref.invalidateSelf();
   }
+
+  Future<Map<String, dynamic>> onboardAsFoster({
+    String? email,
+    List<String>? userIds,
+  }) async {
+    final token = ref.read(orgTokenProvider)!;
+    final repo = ref.read(organizationRepositoryProvider);
+    final result = await repo.fosterInvite(
+      arg,
+      email: email,
+      userIds: userIds,
+      token: token,
+    );
+    ref.invalidateSelf();
+    ref.invalidate(orgFosterParentsProvider(arg));
+    return result;
+  }
 }
 
 final orgPeopleProvider =
@@ -121,6 +138,47 @@ class OrgPersonDetailNotifier
     }
     final repo = ref.read(organizationRepositoryProvider);
     return repo.getPersonDetail(key.orgId, key.kind, key.recordId, token);
+  }
+
+  Future<void> confirmFosterOnboardingStep(String stepKey) async {
+    final token = ref.read(orgTokenProvider)!;
+    final timeline = await ref
+        .read(organizationRepositoryProvider)
+        .confirmFosterOnboardingStep(
+          arg.orgId,
+          arg.kind,
+          arg.recordId,
+          stepKey,
+          token: token,
+        );
+    final current = state.valueOrNull;
+    if (current != null) {
+      state = AsyncData(
+        OrgPersonDetail(
+          id: current.id,
+          kind: current.kind,
+          recordId: current.recordId,
+          userId: current.userId,
+          displayName: current.displayName,
+          email: current.email,
+          role: current.role,
+          photoUrl: current.photoUrl,
+          isPending: current.isPending,
+          activeFosterCount: current.activeFosterCount,
+          categoryRank: current.categoryRank,
+          fosterApprovalState: current.fosterApprovalState,
+          fosterNeedsAttention: current.fosterNeedsAttention,
+          fosterPhone: current.fosterPhone,
+          fosterAddress: current.fosterAddress,
+          adminNotes: current.adminNotes,
+          currentPlacements: current.currentPlacements,
+          pastPlacements: current.pastPlacements,
+          fosterOnboarding: timeline,
+        ),
+      );
+    } else {
+      ref.invalidateSelf();
+    }
   }
 
   Future<void> updateContact({

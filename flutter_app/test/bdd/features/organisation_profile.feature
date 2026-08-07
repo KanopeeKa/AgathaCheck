@@ -51,7 +51,8 @@ Feature: Organisation profile
     Given a registered user "Bob"
     And "Bob" is a member of "Rescue Hearts" with role "associate"
     When "Bob" opens the organisation profile for "Rescue Hearts"
-    Then he should see a profile nav row for "Pets"
+    Then he should see a profile nav row for "People"
+    And he should see a profile nav row for "Pets"
     And he should not see inline pet previews on the profile
 
   @P1

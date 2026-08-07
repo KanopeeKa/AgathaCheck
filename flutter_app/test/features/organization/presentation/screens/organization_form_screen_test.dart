@@ -62,6 +62,9 @@ void main() {
     tester,
   ) async {
     await pumpForm(tester);
+    final l = AppLocalizations.of(
+      tester.element(find.byKey(const Key('org_form_screen'))),
+    )!;
 
     expect(find.byKey(const Key('org_form_screen')), findsOneWidget);
     expect(find.byKey(const Key('org_town_field')), findsOneWidget);
@@ -98,5 +101,44 @@ void main() {
     expect(find.byKey(const Key('org_cover_guidance')), findsOneWidget);
     expect(find.textContaining('1200×450'), findsOneWidget);
     expect(find.textContaining('256×256'), findsOneWidget);
+    expect(find.text(l.save), findsOneWidget);
+  });
+
+  testWidgets('create form shows hero, Create and Cancel', (tester) async {
+    final router = GoRouter(
+      initialLocation: '/o/orgs/new',
+      routes: [
+        GoRoute(
+          path: '/o/orgs/new',
+          builder: (context, state) => const OrganizationFormScreen(),
+        ),
+        GoRoute(
+          path: '/o/orgs',
+          builder: (context, state) => const Scaffold(body: Text('orgs list')),
+        ),
+      ],
+    );
+
+    final l = await AppLocalizations.delegate.load(const Locale('en'));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          organizationListProvider.overrideWith(_EditOrgListNotifier.new),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('org_edit_hero')), findsOneWidget);
+    expect(find.text(l.orgFormCreate), findsOneWidget);
+    expect(find.text(l.cancel), findsOneWidget);
+    expect(find.byKey(const Key('org_delete_button')), findsNothing);
   });
 }

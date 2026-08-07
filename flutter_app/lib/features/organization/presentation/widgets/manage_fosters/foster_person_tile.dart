@@ -45,6 +45,11 @@ class FosterPersonTile extends ConsumerWidget {
       photoUrl: parent.photoUrl,
       role: parent.isExternal ? null : parent.role,
       isExternal: parent.isExternal,
+      fosterApprovalState: parent.approvalState.toWire(),
+      fosterNeedsAttention:
+          parent.approvalState == FosterApprovalState.declined ||
+          parent.approvalState == FosterApprovalState.archived,
+      activeFosterCount: parent.activePetCount,
       isSelf: parent.isSelfCard,
       selfCardLabel: parent.isSelfCard
           ? AppLocalizations.of(context)!.fosterSelfPrefsYourCard

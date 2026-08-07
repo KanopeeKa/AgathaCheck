@@ -62,6 +62,57 @@ const permissionBundleFosterAdmin = 'foster_admin';
 const permissionBundlePetAdmin = 'pet_admin';
 const permissionBundleTeamAdmin = 'team_admin';
 
+/// Permission keys grouped under bundle headers in the detailed permissions UI.
+/// Mirrors server [PERMISSION_BUNDLE_KEYS] plus adoption/ops keys in foster admin.
+const Map<String, List<String>> permissionBundleKeyGroups = {
+  permissionBundleFosterAdmin: [
+    'manage_fosters',
+    'review_foster_onboarding',
+    'contact_fosters',
+    'confirm_foster_competencies',
+    'manage_fostering_sessions',
+    'home_visits',
+    'adopter_screening',
+    'manage_adoption_visits',
+    'start_adoption_journey',
+    'confirm_return_to_shelter',
+  ],
+  permissionBundlePetAdmin: ['manage_pets', 'transfer_pet_ownership'],
+  permissionBundleTeamAdmin: [
+    'manage_admin_contacts',
+    'manage_members',
+    'manage_document_templates',
+    'manage_permissions',
+  ],
+};
+
+/// View keys shown before bundle groups in the detailed permissions list.
+const List<String> permissionViewKeysOrdered = viewPermissionKeys;
+
+/// All permission keys in UI display order (views, then bundle groups).
+List<String> get orderedPermissionKeys {
+  final keys = <String>[...permissionViewKeysOrdered];
+  for (final group in permissionBundleKeyGroups.values) {
+    keys.addAll(group);
+  }
+  return keys;
+}
+
+/// G0 default permission keys for a wire role tier (Associate / Admin / Super Admin).
+Set<String> g0PermissionKeysForRole(OrgMemberRole role) {
+  return g0PermissionDefaults.entries
+      .where((entry) => entry.value.contains(role))
+      .map((entry) => entry.key)
+      .toSet();
+}
+
+/// Role tiers for Apply Associate / Admin / Super Admin preset buttons.
+const List<OrgMemberRole> permissionRoleTierPresets = [
+  OrgMemberRole.associate,
+  OrgMemberRole.admin,
+  OrgMemberRole.superAdmin,
+];
+
 /// Active permission overrides keyed by organisation — populated from API (Phase 5).
 final _viewerOverrideCache = <String, Set<String>>{};
 
