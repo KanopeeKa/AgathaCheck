@@ -3,6 +3,7 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   enableFlutterAccessibility,
+  fillSemanticsField,
   fillTextbox,
   selectDropdownOption,
   waitForFlutterRoutePattern,
@@ -26,7 +27,8 @@ export class OrganizationFormPage {
   }
 
   async fillName(name: string): Promise<void> {
-    await fillTextbox(this.page, 'Organisation Name *', name);
+    // Phase A hero field has no labelText; Key('org_name_field') → semantics identifier.
+    await fillSemanticsField(this.page, 'org_name_field', name);
   }
 
   async selectType(type: 'Professional' | 'Charity'): Promise<void> {
@@ -68,7 +70,11 @@ export class OrganizationFormPage {
 
   async attemptSaveWithoutName(): Promise<void> {
     await this.expectLoaded();
-    await this.page.getByRole('textbox', { name: 'Organisation Name *' }).fill('');
+    const field = this.page.locator('[flt-semantics-identifier="org_name_field"]');
+    await field.waitFor({ state: 'visible' });
+    await field.click();
+    await this.page.keyboard.press('Control+a');
+    await this.page.keyboard.press('Backspace');
     await this.save();
   }
 
