@@ -27,8 +27,14 @@ export class OrganizationFormPage {
   }
 
   async fillName(name: string): Promise<void> {
-    // Phase A hero field has no labelText; Key('org_name_field') → semantics identifier.
-    await fillSemanticsField(this.page, 'org_name_field', name);
+    const bySemantics = this.page.locator(
+      '[flt-semantics-identifier="org_name_field"]',
+    );
+    if ((await bySemantics.count()) > 0) {
+      await fillSemanticsField(this.page, 'org_name_field', name);
+      return;
+    }
+    await fillTextbox(this.page, /Organisation Name/i, name);
   }
 
   async selectType(type: 'Professional' | 'Charity'): Promise<void> {

@@ -250,20 +250,27 @@ class OrganizationBrandingSection extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        TextFormField(
-                          key: const Key('org_name_field'),
-                          controller: nameController,
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
+                        Semantics(
+                          identifier: 'org_name_field',
+                          textField: true,
+                          label: l.organizationName,
+                          child: TextFormField(
+                            key: const Key('org_name_field'),
+                            controller: nameController,
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            autofillHints: const [
+                              AutofillHints.organizationName,
+                            ],
+                            validator: nameValidator,
+                            textInputAction: TextInputAction.next,
                           ),
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          autofillHints: const [AutofillHints.organizationName],
-                          validator: nameValidator,
-                          textInputAction: TextInputAction.next,
                         ),
                         const SizedBox(height: 8),
                         DropdownButtonFormField<OrganizationType>(
