@@ -61,8 +61,8 @@ export class OrganizationDetailPage {
 
   async openAdminContacts(): Promise<void> {
     const orgId = this.orgIdFromUrl();
-    const adminContactsRoute =
-      /\/o\/orgs\/[^/]+\/people(?:\/)?\?filter=admins/;
+    // flutterRoutePath strips hash query strings — match /people path only.
+    const adminContactsRoute = /\/o\/orgs\/[^/]+\/people(?:\/)?$/;
 
     let navigated = false;
     if (await this.tryActivateSectionCard(OrganizationDetailPage.adminContactsSectionName)) {
