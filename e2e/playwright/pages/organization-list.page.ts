@@ -131,7 +131,9 @@ export class OrganizationListPage {
       await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/new/, 30_000);
     }
     await this.page
-      .getByRole('button', { name: /Create Organisation|Créer une organisation/i })
+      .getByRole('heading', { name: /Create Organisation|Créer une organisation/i })
+      .or(this.page.getByRole('button', { name: /^Create$|^Créer$/i }))
+      .first()
       .waitFor({ timeout: 30_000 });
   }
 

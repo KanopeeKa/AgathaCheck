@@ -19,7 +19,9 @@ export class OrganizationFormPage {
     await enableFlutterAccessibility(this.page);
     await dismissConsentBannerIfPresent(this.page);
     await this.page
-      .getByRole('button', { name: /Create Organisation|Edit Organisation/ })
+      .getByRole('heading', { name: /Create Organisation|Edit Organisation|Créer une organisation|Modifier l'organisation/i })
+      .or(this.page.getByRole('button', { name: /^(Create|Save)$/ }))
+      .first()
       .waitFor({ timeout: 30_000 });
   }
 
