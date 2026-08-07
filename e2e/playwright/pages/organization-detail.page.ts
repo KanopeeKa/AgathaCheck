@@ -231,21 +231,38 @@ export class OrganizationDetailPage {
 
   async openEdit(): Promise<void> {
     await enableFlutterAccessibility(this.page);
-    const edit = this.page.getByRole('button', {
-      name: /Edit organisation|Modifier l'organisation/i,
-    });
-    if (await edit.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await edit.click();
-    } else {
-      await this.page
-        .getByText(/Edit organisation|Edit Organization|Modifier l'organisation/i)
-        .first()
-        .click();
+    const orgId = this.orgIdFromUrl();
+    if (!orgId) {
+      throw new Error('openEdit: missing org id from profile URL');
     }
-    await this.page
-      .getByRole('button', { name: /Edit Organization|Edit organisation/i })
-      .last()
-      .waitFor({ timeout: 30_000 });
+
+    const editButton = this.page.getByRole('button', {
+      name: /Edit organisation|Edit organization|Modifier l'organisation/i,
+    });
+    if (await editButton.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await editButton.first().click();
+      const navigated = await waitForFlutterRoutePattern(
+        this.page,
+        /\/o\/orgs\/[^/]+\/edit/,
+        8_000,
+      )
+        .then(() => true)
+        .catch(() => false);
+      if (navigated) {
+        await refreshFlutterAccessibility(this.page);
+        return;
+      }
+    }
+
+    await navigateWithShellFallback(
+      this.page,
+      /\/o\/orgs\/[^/]+\/edit/,
+      `/o/orgs/${orgId}/edit`,
+      async () => {
+        await refreshFlutterAccessibility(this.page);
+      },
+      { helper: 'OrganizationDetailPage.openEdit', testTitle: null },
+    );
   }
 
   async openArchivedPets(): Promise<void> {
