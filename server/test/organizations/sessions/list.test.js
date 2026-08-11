@@ -13,6 +13,12 @@ const userId = 'admin-user';
 const token = jwt.sign({ id: userId, email: 'admin@example.com' }, JWT_SECRET, { expiresIn: '1h' });
 const orgId = 'org-1';
 
+function isoDateDaysFromNow(days) {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
 function makePlacementRow(overrides = {}) {
   return {
     id: 'placement-1',
@@ -70,7 +76,9 @@ function buildSessionsPool(rows, overrides = {}) {
 
 describe('GET /:orgId/placements list filters', () => {
   it('returns derived_status for nearly finished sessions', async () => {
-    const app = createApp(buildSessionsPool([makePlacementRow()]));
+    const app = createApp(buildSessionsPool([
+      makePlacementRow({ end_date: isoDateDaysFromNow(5) }),
+    ]));
     const res = await request(app)
       .get(`/api/organizations/${orgId}/placements`)
       .set('Authorization', `Bearer ${token}`)
