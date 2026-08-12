@@ -50,6 +50,15 @@ elif [[ -f /usr/local/bin/agatha-cloud-pg-init.sh ]]; then
   bash /usr/local/bin/agatha-cloud-pg-init.sh
 fi
 
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+BOOTSTRAP_DB="${ROOT}/e2e/scripts/bootstrap-db.sh"
+if [[ -f "$BOOTSTRAP_DB" ]]; then
+  log "ensuring database schema (bootstrap-db)"
+  bash "$BOOTSTRAP_DB"
+else
+  die "bootstrap-db.sh not found at ${BOOTSTRAP_DB}; cannot ensure application schema"
+fi
+
 if pg_isready -h localhost -p 5432 -q; then
   log "PostgreSQL ready on localhost:5432"
   exit 0
