@@ -56,7 +56,7 @@ if [[ -f "$BOOTSTRAP_DB" ]]; then
   log "ensuring database schema (bootstrap-db)"
   bash "$BOOTSTRAP_DB"
 else
-  log "bootstrap-db.sh not found — skipping schema bootstrap"
+  die "bootstrap-db.sh not found at ${BOOTSTRAP_DB}; cannot ensure application schema"
 fi
 
 if pg_isready -h localhost -p 5432 -q; then
