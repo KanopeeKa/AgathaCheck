@@ -132,24 +132,10 @@ void main() {
       expect(resolvePostLoginPath(eligibility: _dual()), '/g/home');
     });
 
-    test(
-      'guardian-only with show-org pref falls back to guardian',
-      () {
-        expect(
-          resolvePostLoginPath(
-            eligibility: _guardianOnly(),
-            showOrganisationSectionPref: true,
-          ),
-          '/g/home',
-        );
-      },
-    );
-
-    test('guardian-only ignores show-org pref when false', () {
+    test('guardian-only falls back to guardian', () {
       expect(
         resolvePostLoginPath(
           eligibility: _guardianOnly(),
-          showOrganisationSectionPref: false,
         ),
         '/g/home',
       );

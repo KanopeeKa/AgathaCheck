@@ -18,14 +18,12 @@ class ExperienceResolveScreen extends ConsumerWidget {
   ) {
     final pets = ref.read(petListProvider).valueOrNull ?? [];
     final orgs = ref.read(organizationListProvider).valueOrNull ?? [];
-    final showOrgPref = ref.read(showOrganisationSectionPrefProvider);
     final guardianOnboardingCompleted = ref.read(
       guardianOnboardingCompletedProvider,
     );
     final orgOnboardingCompleted = ref.read(orgOnboardingCompletedProvider);
     final path = resolvePostLoginPath(
       eligibility: eligibility,
-      showOrganisationSectionPref: showOrgPref,
       pets: pets,
       orgs: orgs,
       guardianOnboardingCompleted: guardianOnboardingCompleted,

@@ -108,7 +108,6 @@ final isFosterPortalUserProvider = Provider<bool>((ref) {
 
 String resolvePostLoginPath({
   required ExperienceEligibility eligibility,
-  bool showOrganisationSectionPref = false,
   List<Pet> pets = const [],
   List<Organization> orgs = const [],
   bool guardianOnboardingCompleted = true,
@@ -116,7 +115,6 @@ String resolvePostLoginPath({
 }) {
   final target = _resolvePostLoginExperience(
     eligibility: eligibility,
-    showOrganisationSectionPref: showOrganisationSectionPref,
   );
 
   var path = target.homePath();
@@ -135,7 +133,6 @@ String resolvePostLoginPath({
 
 AppExperience _resolvePostLoginExperience({
   required ExperienceEligibility eligibility,
-  required bool showOrganisationSectionPref,
 }) {
   if (!eligibility.canUseGuardian && eligibility.canUseOrganization) {
     return AppExperience.organization;

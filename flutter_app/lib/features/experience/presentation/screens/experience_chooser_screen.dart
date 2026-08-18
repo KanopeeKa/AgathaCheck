@@ -258,4 +258,3 @@ class _ExperienceCard extends StatelessWidget {
     );
   }
 }
-

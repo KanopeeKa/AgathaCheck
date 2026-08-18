@@ -6,12 +6,21 @@ import '../../../organization/presentation/providers/organization_providers.dart
 import '../../domain/services/pet_detail_actions.dart';
 import '../providers/pet_providers.dart';
 
+AppExperience _resolveExperience(AsyncValue petsAsync, AsyncValue orgsAsync) {
+  final pets = petsAsync.valueOrNull ?? [];
+  final orgs = orgsAsync.valueOrNull ?? [];
+  if (pets.isEmpty && orgs.isNotEmpty) {
+    return AppExperience.organization;
+  }
+  return AppExperience.guardian;
+}
+
 /// Resolved pet-detail policy for [petId], or restricted context while inputs load.
 final petDetailViewerContextProvider =
     Provider.family<PetDetailContext, String>((ref, petId) {
       final petsAsync = ref.watch(allPetsIncludingOrgProvider);
       final orgsAsync = ref.watch(organizationListProvider);
-      final experience = AppExperience.guardian;
+      final experience = _resolveExperience(petsAsync, orgsAsync);
 
       if (petsAsync.isLoading || orgsAsync.isLoading) {
         return PetDetailContext.restricted(experience: experience);

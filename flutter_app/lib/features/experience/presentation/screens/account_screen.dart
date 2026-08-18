@@ -22,7 +22,8 @@ class AccountScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final experience = AppExperience.guardian; // Default fallback for account screen
+    final experience =
+        AppExperience.guardian; // Default fallback for account screen
 
     return ExperienceShellScaffold(
       experience: experience,
@@ -151,4 +152,3 @@ class _AccountRow extends StatelessWidget {
     );
   }
 }
-

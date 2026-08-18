@@ -20,9 +20,7 @@ import 'experience_drawer_menu_item.dart';
 class ExperienceSectionDrawer extends ConsumerWidget {
   const ExperienceSectionDrawer({super.key});
 
-  String? _activeSemanticKey({
-    required String location,
-  }) {
+  String? _activeSemanticKey({required String location}) {
     if (location == '/account') return 'drawer_account';
     if (location.startsWith('/g/')) return 'drawer_guardian';
     if (location.startsWith('/o/')) return 'drawer_organisation';
@@ -34,10 +32,10 @@ class ExperienceSectionDrawer extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final auth = ref.watch(authProvider);
     final location = GoRouter.maybeOf(context)?.state.uri.path ?? '/';
-    final activeExperience = location.startsWith('/o/') ? AppExperience.organization : AppExperience.guardian;
-    final activeKey = _activeSemanticKey(
-      location: location,
-    );
+    final activeExperience = location.startsWith('/o/')
+        ? AppExperience.organization
+        : AppExperience.guardian;
+    final activeKey = _activeSemanticKey(location: location);
     final showOrganisationSection = ref.watch(showOrganisationSectionProvider);
     final topEntries = DrawerMenuConfig.sectionSwitcherEntries(
       l: l,
