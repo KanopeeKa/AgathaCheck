@@ -60,10 +60,6 @@ final experienceEligibilityProvider =
       );
     });
 
-final savedDefaultExperienceProvider = Provider<AppExperience?>((ref) {
-  return ref.watch(experiencePreferencesStoreProvider).readDefaultExperience();
-});
-
 final showOrganisationSectionPrefProvider = Provider<bool>((ref) {
   return ref
       .watch(experiencePreferencesStoreProvider)
@@ -82,10 +78,6 @@ final showOrganisationSectionProvider = Provider<bool>((ref) {
     showOrganisationSectionPref: pref,
     hasOrgMembership: hasMembership,
   );
-});
-
-final lastAppSectionProvider = Provider<AppExperience?>((ref) {
-  return ref.watch(experiencePreferencesStoreProvider).readLastAppSection();
 });
 
 /// When membership appears, persist show-org on (D-v3-VIS-1).
@@ -107,26 +99,6 @@ final organisationMembershipVisibilitySyncProvider = Provider<void>((ref) {
   });
 });
 
-final activeExperienceProvider = StateProvider<AppExperience?>((ref) => null);
-
-/// Home path for the user's current experience (active → last section → guardian).
-final experienceHomePathProvider = Provider<String>((ref) {
-  final active = ref.watch(activeExperienceProvider);
-  if (active != null) return active.homePath();
-
-  final lastSection = ref.watch(lastAppSectionProvider);
-  if (lastSection != null) return lastSection.homePath();
-
-  final eligibility = ref.watch(experienceEligibilityProvider).valueOrNull;
-  final showOrgPref = ref.watch(showOrganisationSectionPrefProvider);
-  final resolved = _resolveSectionForRouting(
-    eligibility: eligibility,
-    section: lastSection,
-    showOrganisationSectionPref: showOrgPref,
-  );
-  return resolved?.homePath() ?? AppExperience.guardian.homePath();
-});
-
 /// True when every org membership is foster-role (limited org portal).
 final isFosterPortalUserProvider = Provider<bool>((ref) {
   final orgs = ref.watch(organizationListProvider).valueOrNull;
@@ -134,17 +106,8 @@ final isFosterPortalUserProvider = Provider<bool>((ref) {
   return orgs.every((o) => o.isFoster);
 });
 
-/// Resolved experience for pet-detail and other cross-route context.
-final resolvedExperienceProvider = Provider<AppExperience>((ref) {
-  return ref.watch(activeExperienceProvider) ??
-      ref.watch(savedDefaultExperienceProvider) ??
-      AppExperience.guardian;
-});
-
 String resolvePostLoginPath({
   required ExperienceEligibility eligibility,
-  AppExperience? lastAppSection,
-  AppExperience? activeExperience,
   bool showOrganisationSectionPref = false,
   List<Pet> pets = const [],
   List<Organization> orgs = const [],
@@ -153,8 +116,6 @@ String resolvePostLoginPath({
 }) {
   final target = _resolvePostLoginExperience(
     eligibility: eligibility,
-    lastAppSection: lastAppSection,
-    activeExperience: activeExperience,
     showOrganisationSectionPref: showOrganisationSectionPref,
   );
 
@@ -174,65 +135,10 @@ String resolvePostLoginPath({
 
 AppExperience _resolvePostLoginExperience({
   required ExperienceEligibility eligibility,
-  AppExperience? lastAppSection,
-  AppExperience? activeExperience,
-  required bool showOrganisationSectionPref,
-}) {
-  AppExperience? pick(AppExperience section) {
-    if (section == AppExperience.guardian && eligibility.canUseGuardian) {
-      return section;
-    }
-    if (section == AppExperience.organization &&
-        OrganisationSectionVisibility.canAccessOrganizationSection(
-          hasOrgMembership: eligibility.hasOrgMembership,
-          showOrganisationSectionPref: showOrganisationSectionPref,
-        )) {
-      return section;
-    }
-    return null;
-  }
-
-  if (activeExperience != null) {
-    final resolved = pick(activeExperience);
-    if (resolved != null) return resolved;
-  }
-
-  if (lastAppSection != null) {
-    final resolved = pick(lastAppSection);
-    if (resolved != null) return resolved;
-  }
-
-  return _fallbackPostLoginExperience(
-    eligibility: eligibility,
-    showOrganisationSectionPref: showOrganisationSectionPref,
-  );
-}
-
-AppExperience _fallbackPostLoginExperience({
-  required ExperienceEligibility eligibility,
   required bool showOrganisationSectionPref,
 }) {
   if (!eligibility.canUseGuardian && eligibility.canUseOrganization) {
     return AppExperience.organization;
   }
   return AppExperience.guardian;
-}
-
-AppExperience? _resolveSectionForRouting({
-  required ExperienceEligibility? eligibility,
-  required AppExperience? section,
-  required bool showOrganisationSectionPref,
-}) {
-  if (eligibility == null || section == null) return null;
-  if (section == AppExperience.guardian && eligibility.canUseGuardian) {
-    return section;
-  }
-  if (section == AppExperience.organization &&
-      OrganisationSectionVisibility.canAccessOrganizationSection(
-        hasOrgMembership: eligibility.hasOrgMembership,
-        showOrganisationSectionPref: showOrganisationSectionPref,
-      )) {
-    return section;
-  }
-  return null;
 }

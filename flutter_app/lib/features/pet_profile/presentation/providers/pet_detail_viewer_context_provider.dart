@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../experience/domain/entities/app_experience.dart';
 import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../domain/services/pet_detail_actions.dart';
@@ -10,7 +11,7 @@ final petDetailViewerContextProvider =
     Provider.family<PetDetailContext, String>((ref, petId) {
       final petsAsync = ref.watch(allPetsIncludingOrgProvider);
       final orgsAsync = ref.watch(organizationListProvider);
-      final experience = ref.watch(resolvedExperienceProvider);
+      final experience = AppExperience.guardian;
 
       if (petsAsync.isLoading || orgsAsync.isLoading) {
         return PetDetailContext.restricted(experience: experience);

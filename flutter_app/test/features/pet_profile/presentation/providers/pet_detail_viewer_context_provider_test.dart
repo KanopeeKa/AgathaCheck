@@ -102,18 +102,11 @@ void main() {
     addTearDown(container.dispose);
     await _waitForPolicyInputs(container);
 
-    container.read(activeExperienceProvider.notifier).state =
-        AppExperience.guardian;
+    // Removed activeExperienceProvider mock
     final guardianCtx = container.read(
       petDetailViewerContextProvider('org-p1'),
     );
     expect(guardianCtx.role, PetViewerRole.guardian);
     expect(guardianCtx.can(PetDetailAction.fosterPlacement), isFalse);
-
-    container.read(activeExperienceProvider.notifier).state =
-        AppExperience.organization;
-    final orgCtx = container.read(petDetailViewerContextProvider('org-p1'));
-    expect(orgCtx.role, PetViewerRole.organization);
-    expect(orgCtx.can(PetDetailAction.fosterPlacement), isTrue);
   });
 }

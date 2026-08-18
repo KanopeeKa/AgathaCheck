@@ -167,9 +167,7 @@ void main() {
     return ProviderScope(
       overrides: [
         authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        resolvedExperienceProvider.overrideWith(
-          (ref) => AppExperience.guardian,
-        ),
+        // removed resolvedExperienceProvider mock
         allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]),
         healthEntriesNotifierProvider.overrideWith(
           () => _TestHealthEntriesNotifier(entries ?? allEntries),
@@ -333,9 +331,7 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          resolvedExperienceProvider.overrideWith(
-            (ref) => AppExperience.guardian,
-          ),
+          // removed resolvedExperienceProvider mock
           allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]),
           healthEntriesNotifierProvider.overrideWith(
             () => _TestHealthEntriesNotifier(allEntries),

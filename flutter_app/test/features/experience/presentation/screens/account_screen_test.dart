@@ -5,7 +5,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
-import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/account_screen.dart';
@@ -60,10 +59,8 @@ void main() {
         guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
         orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
         organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
-        activeExperienceProvider.overrideWith((ref) => AppExperience.guardian),
-        resolvedExperienceProvider.overrideWith(
-          (ref) => AppExperience.guardian,
-        ),
+        // removed activeExperienceProvider mock
+        // removed resolvedExperienceProvider mock
       ],
       child: MaterialApp.router(
         localizationsDelegates: const [

@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/add_health_entry_navigation.dart';
 import '../providers/pet_providers.dart';
 import 'widgets/pet_event_entry_list.dart';
+import '../../../experience/domain/entities/app_experience.dart';
 
 /// Manage pet events — unified list with filters linking to view entry.
 class PetManageEventsScreen extends ConsumerWidget {
@@ -20,7 +20,7 @@ class PetManageEventsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final petsAsync = ref.watch(allPetsIncludingOrgProvider);
-    final experience = ref.watch(resolvedExperienceProvider);
+    final experience = AppExperience.guardian;
 
     return petsAsync.when(
       loading: () =>

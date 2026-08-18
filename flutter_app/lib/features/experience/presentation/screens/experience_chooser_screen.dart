@@ -158,7 +158,6 @@ class _ExperienceChooserScreenState
     } else {
       await store.clear();
     }
-    ref.read(activeExperienceProvider.notifier).state = experience;
     if (!context.mounted) return;
     var path = experience.homePath();
     if (experience == AppExperience.guardian) {
@@ -259,3 +258,4 @@ class _ExperienceCard extends StatelessWidget {
     );
   }
 }
+

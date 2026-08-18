@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../providers/pet_providers.dart';
 import '../providers/pet_timeline_providers.dart';
 import '../widgets/pet_timeline/pet_timeline_view.dart';
 import '../widgets/pet_timeline/pet_timeline_fill_sheet.dart';
+import '../../../experience/domain/entities/app_experience.dart';
 
 /// Dedicated pet timeline screen with vertical spine and full composite segments.
 class PetTimelineScreen extends ConsumerWidget {
@@ -19,7 +19,7 @@ class PetTimelineScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final experience = ref.watch(resolvedExperienceProvider);
+    final experience = AppExperience.guardian;
     final petAsync = ref.watch(petByIdProvider(petId));
     final timelineAsync = ref.watch(petTimelineListProvider(petId));
 

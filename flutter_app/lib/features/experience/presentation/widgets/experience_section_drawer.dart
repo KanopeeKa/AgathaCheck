@@ -22,13 +22,10 @@ class ExperienceSectionDrawer extends ConsumerWidget {
 
   String? _activeSemanticKey({
     required String location,
-    required AppExperience activeExperience,
   }) {
     if (location == '/account') return 'drawer_account';
-    if (activeExperience == AppExperience.guardian) return 'drawer_guardian';
-    if (activeExperience == AppExperience.organization) {
-      return 'drawer_organisation';
-    }
+    if (location.startsWith('/g/')) return 'drawer_guardian';
+    if (location.startsWith('/o/')) return 'drawer_organisation';
     return null;
   }
 
@@ -36,12 +33,10 @@ class ExperienceSectionDrawer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final auth = ref.watch(authProvider);
-    final activeExperience =
-        ref.watch(activeExperienceProvider) ?? AppExperience.guardian;
     final location = GoRouter.maybeOf(context)?.state.uri.path ?? '/';
+    final activeExperience = location.startsWith('/o/') ? AppExperience.organization : AppExperience.guardian;
     final activeKey = _activeSemanticKey(
       location: location,
-      activeExperience: activeExperience,
     );
     final showOrganisationSection = ref.watch(showOrganisationSectionProvider);
     final topEntries = DrawerMenuConfig.sectionSwitcherEntries(
