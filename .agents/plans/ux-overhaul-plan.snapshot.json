@@ -4,7 +4,7 @@
   "approved_at": "2026-08-18T12:54:00Z",
   "approved_by": "human",
   "approved_until": "2026-08-20T12:54:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/ux-overhaul-integration-13e3",
   "control_issue": 645,
@@ -70,7 +70,11 @@
         "ownership_ref": "docs/refactoring-log.md#ux-overhaul"
       },
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/646",
+      "pr_head_sha": "pending"
     },
     {
       "id": "3",
@@ -93,8 +97,12 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/648",
+      "pr_head_sha": "pending"
     }
   ],
-  "content_hash": "sha256:2d405affd5319c08373fc87c6090a7ea9dfb05cf3a0bfaa6b60d200f93a3dd17"
+  "content_hash": "sha256:2b4e0265408eae3fa61bae0ac04d69556c8be33ae41632b1c7c7cf0316fa3228"
 }

@@ -173,17 +173,17 @@ file-split
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: 2
-last_completed_phase: 1
+autonomy: completed
+current_phase: null
+last_completed_phase: 3
 halt_reason: null
-next_action: "start phase 2: checkout cursor/ux-overhaul-phase2-13e3"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/ux-overhaul-phase1-13e3
+  branch: cursor/ux-overhaul-integration-13e3
   plan_path: .agents/plans/ux-overhaul-plan.md
-  plan_commit: 5c034dc2dcae50540b3370ddcd0ff4ae3d039a26
+  plan_commit: 22b0920b1428ca5c69f993c1bdc3b8431abb5db4
   snapshot_path: .agents/plans/ux-overhaul-plan.snapshot.json
-  snapshot_commit: 5c034dc2dcae50540b3370ddcd0ff4ae3d039a26
+  snapshot_commit: 22b0920b1428ca5c69f993c1bdc3b8431abb5db4
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
