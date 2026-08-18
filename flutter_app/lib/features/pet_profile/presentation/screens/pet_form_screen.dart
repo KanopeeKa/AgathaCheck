@@ -168,6 +168,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
       context: context,
       ref: ref,
       petId: widget.petId!,
+      petName: _nameController.text.trim(),
       onLoadingChanged: (bool loading) {
         if (mounted) setState(() => _isLoading = loading);
       },

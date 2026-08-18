@@ -9,6 +9,7 @@ Future<void> confirmDeletePet({
   required BuildContext context,
   required WidgetRef ref,
   required String petId,
+  required String petName,
   required ValueChanged<bool> onLoadingChanged,
 }) async {
   final l = AppLocalizations.of(context)!;
@@ -16,7 +17,7 @@ Future<void> confirmDeletePet({
     context: context,
     builder: (ctx) => AlertDialog(
       title: Text(l.deletePet),
-      content: Text(l.deletePetConfirm('')),
+      content: Text(l.deletePetConfirm(petName)),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(ctx, false),
