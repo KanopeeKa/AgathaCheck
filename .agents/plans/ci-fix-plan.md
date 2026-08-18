@@ -71,17 +71,17 @@ file-split
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: "1"
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: null
+next_action: "plan complete"
 artifact_ref:
-  branch: null
+  branch: cursor/ux-overhaul-integration-13e3
   plan_path: .agents/plans/ci-fix-plan.md
-  plan_commit: null
+  plan_commit: 594bb55158edad7b10b97dd6ffd08b3a0743b5a5
   snapshot_path: .agents/plans/ci-fix-plan.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 594bb55158edad7b10b97dd6ffd08b3a0743b5a5
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

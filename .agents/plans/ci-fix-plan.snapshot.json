@@ -4,7 +4,7 @@
   "approved_at": "2026-08-18T14:17:00Z",
   "approved_by": "human",
   "approved_until": "2026-08-20T14:17:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/ux-overhaul-integration-13e3",
   "control_issue": 650,
@@ -31,8 +31,12 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "pending",
+      "pr_head_sha": "pending"
     }
   ],
-  "content_hash": "sha256:b85fc5b616268feacefeaa7943b188e5207bf76249194c692537e341482db488"
+  "content_hash": "sha256:f2b00702996ee9472ae35d5460863962cdc1586bb7c3eb23cbe40f4b2c8d0840"
 }
