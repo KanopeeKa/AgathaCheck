@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../domain/services/experience_eligibility.dart';
+import '../../domain/entities/app_experience.dart';
+
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../providers/experience_providers.dart';
 
@@ -11,6 +13,7 @@ import '../providers/experience_providers.dart';
 class ExperienceResolveScreen extends ConsumerWidget {
   const ExperienceResolveScreen({super.key});
 
+  
   void _navigate(
     BuildContext context,
     WidgetRef ref,
@@ -18,26 +21,31 @@ class ExperienceResolveScreen extends ConsumerWidget {
   ) {
     final pets = ref.read(petListProvider).valueOrNull ?? [];
     final orgs = ref.read(organizationListProvider).valueOrNull ?? [];
-    final lastSection = ref.read(lastAppSectionProvider);
-    final showOrgPref = ref.read(showOrganisationSectionPrefProvider);
-    final active = ref.read(activeExperienceProvider);
-    final guardianOnboardingCompleted = ref.read(
-      guardianOnboardingCompletedProvider,
-    );
-    final orgOnboardingCompleted = ref.read(orgOnboardingCompletedProvider);
-    final path = resolvePostLoginPath(
-      eligibility: eligibility,
-      lastAppSection: lastSection,
-      activeExperience: active,
-      showOrganisationSectionPref: showOrgPref,
-      pets: pets,
-      orgs: orgs,
-      guardianOnboardingCompleted: guardianOnboardingCompleted,
-      orgOnboardingCompleted: orgOnboardingCompleted,
-    );
+    
+    // Deterministic Landing Rules:
+    // Has >0 pets -> Land on My Pets (/g/home)
+    // Has 0 pets AND >0 shelters -> Land on Shelters (/o/home)
+    // Has 0 pets AND 0 shelters -> Land on My Pets (/g/home)
+    
+    String path = '/g/home';
+    if (pets.isNotEmpty) {
+      path = '/g/home';
+    } else if (pets.isEmpty && orgs.isNotEmpty) {
+      path = '/o/home';
+    } else {
+      path = '/g/home';
+    }
+    
+    // Set the active experience based on the path
+    
+    if (path.startsWith('/o/')) {
+      ref.read(activeExperienceProvider.notifier).state = AppExperience.organization;
+    } else {
+      ref.read(activeExperienceProvider.notifier).state = AppExperience.guardian;
+    }
+
     context.go(path);
   }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(organisationMembershipVisibilitySyncProvider);
