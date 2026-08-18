@@ -113,9 +113,7 @@ String resolvePostLoginPath({
   bool guardianOnboardingCompleted = true,
   bool orgOnboardingCompleted = true,
 }) {
-  final target = _resolvePostLoginExperience(
-    eligibility: eligibility,
-  );
+  final target = _resolvePostLoginExperience(eligibility: eligibility);
 
   var path = target.homePath();
   path = GuardianOnboardingRules.resolveGuardianDestination(

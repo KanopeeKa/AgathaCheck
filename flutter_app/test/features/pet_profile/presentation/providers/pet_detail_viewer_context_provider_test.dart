@@ -100,9 +100,7 @@ void main() {
     await _waitForPolicyInputs(container);
 
     // Now uses resolveAutoExperience which will return organization since there's no guardian pet context
-    final orgCtx = container.read(
-      petDetailViewerContextProvider('org-p1'),
-    );
+    final orgCtx = container.read(petDetailViewerContextProvider('org-p1'));
     expect(orgCtx.role, PetViewerRole.organization);
     expect(orgCtx.can(PetDetailAction.fosterPlacement), isTrue);
   });

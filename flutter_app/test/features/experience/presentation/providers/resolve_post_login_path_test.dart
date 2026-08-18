@@ -133,12 +133,7 @@ void main() {
     });
 
     test('guardian-only falls back to guardian', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _guardianOnly(),
-        ),
-        '/g/home',
-      );
+      expect(resolvePostLoginPath(eligibility: _guardianOnly()), '/g/home');
     });
   });
 }

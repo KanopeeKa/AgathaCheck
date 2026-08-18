@@ -12,12 +12,12 @@ import '../providers/pet_providers.dart';
 AppExperience _resolveExperience(AsyncValue petsAsync, AsyncValue orgsAsync) {
   final pets = petsAsync.valueOrNull as List<Pet>? ?? [];
   final orgs = orgsAsync.valueOrNull as List<Organization>? ?? [];
-  
+
   final eligibility = ExperienceEligibilityRules.compute(
     pets: pets,
     orgMembershipCount: orgs.length,
   );
-  
+
   return eligibility.resolveAutoExperience() ?? AppExperience.guardian;
 }
 
