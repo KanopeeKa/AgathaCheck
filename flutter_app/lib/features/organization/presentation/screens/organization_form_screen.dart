@@ -154,9 +154,7 @@ class _OrganizationFormScreenState
     if (loaded != null) return loaded;
     return Organization(
       id: '',
-      name: _nameController.text.trim().isEmpty
-          ? ' '
-          : _nameController.text.trim(),
+      name: _nameController.text.trim(),
       type: _selectedType,
     );
   }
