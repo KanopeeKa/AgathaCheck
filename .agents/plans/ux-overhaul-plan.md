@@ -177,14 +177,14 @@ autonomy: active
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
-next_action: "start phase 2: checkout cursor/ux-overhaul-phase2-13e3"
+next_action: "continue phase 2 on branch cursor/ux-overhaul-phase2-13e3"
 artifact_ref:
   branch: cursor/ux-overhaul-phase1-13e3
   plan_path: .agents/plans/ux-overhaul-plan.md
-  plan_commit: be8595763452bf79bf8bee33b073f9c523f8394d
+  plan_commit: 28f59e0e5d8f0d70a489fef8c595358e7c41ba42
   snapshot_path: .agents/plans/ux-overhaul-plan.snapshot.json
-  snapshot_commit: be8595763452bf79bf8bee33b073f9c523f8394d
-open_prs: []
+  snapshot_commit: 28f59e0e5d8f0d70a489fef8c595358e7c41ba42
+open_prs: ["pending"]
 merge_commits: {}
 debt_issue_refs: []
 ```
