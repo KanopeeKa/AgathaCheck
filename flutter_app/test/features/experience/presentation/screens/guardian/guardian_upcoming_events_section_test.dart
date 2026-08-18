@@ -5,7 +5,6 @@ import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/core/widgets/dashboard_section.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/guardian/guardian_upcoming_events_section.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
-import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../../helpers/fakes.dart';

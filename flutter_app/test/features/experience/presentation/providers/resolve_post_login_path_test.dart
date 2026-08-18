@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
@@ -64,7 +63,6 @@ void main() {
         expect(
           resolvePostLoginPath(
             eligibility: _dual(),
-            lastAppSection: AppExperience.guardian,
             pets: const [
               Pet(id: '1', name: 'Mine', species: 'Cat'),
               Pet(
@@ -130,76 +128,12 @@ void main() {
       expect(resolvePostLoginPath(eligibility: _orgOnly()), '/o/home');
     });
 
-    test('dual-role user without last section falls back to guardian', () {
+    test('dual-role user falls back to guardian', () {
       expect(resolvePostLoginPath(eligibility: _dual()), '/g/home');
     });
 
-    test(
-      'dual-role user with last guardian section lands on guardian home',
-      () {
-        expect(
-          resolvePostLoginPath(
-            eligibility: _dual(),
-            lastAppSection: AppExperience.guardian,
-          ),
-          '/g/home',
-        );
-      },
-    );
-
-    test('dual-role user with last organisation section lands on org home', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _dual(),
-          lastAppSection: AppExperience.organization,
-        ),
-        '/o/home',
-      );
-    });
-
-    test(
-      'guardian-only with show-org pref and last org opens org dashboard',
-      () {
-        expect(
-          resolvePostLoginPath(
-            eligibility: _guardianOnly(),
-            lastAppSection: AppExperience.organization,
-            showOrganisationSectionPref: true,
-          ),
-          '/o/home',
-        );
-      },
-    );
-
-    test('guardian-only ignores last org when show-org pref is off', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _guardianOnly(),
-          lastAppSection: AppExperience.organization,
-          showOrganisationSectionPref: false,
-        ),
-        '/g/home',
-      );
-    });
-
-    test('active experience override wins when allowed', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _dual(),
-          activeExperience: AppExperience.organization,
-        ),
-        '/o/home',
-      );
-    });
-
-    test('invalid active experience is ignored', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _orgOnly(),
-          activeExperience: AppExperience.guardian,
-        ),
-        '/o/home',
-      );
+    test('guardian-only falls back to guardian', () {
+      expect(resolvePostLoginPath(eligibility: _guardianOnly()), '/g/home');
     });
   });
 }

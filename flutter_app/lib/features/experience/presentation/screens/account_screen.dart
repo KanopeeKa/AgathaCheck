@@ -7,10 +7,10 @@ import '../../../../core/widgets/dashboard_section.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../config/drawer_menu_config.dart';
-import '../providers/experience_providers.dart';
 import '../widgets/organisation_visibility_section.dart';
 import '../widgets/account_organisation_settings_section.dart';
 import '../widgets/experience_shell_scaffold.dart';
+import '../../domain/entities/app_experience.dart';
 
 /// Account dashboard at `/account` — global personal/app-level utilities.
 ///
@@ -22,7 +22,8 @@ class AccountScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final experience = ref.watch(resolvedExperienceProvider);
+    final experience =
+        AppExperience.guardian; // Default fallback for account screen
 
     return ExperienceShellScaffold(
       experience: experience,
