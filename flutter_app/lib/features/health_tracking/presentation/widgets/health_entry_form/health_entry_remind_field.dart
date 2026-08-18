@@ -16,43 +16,44 @@ class HealthEntryRemindField extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
 
-    return Row(
-      children: [
-        Expanded(
-          child: InputDecorator(
-            decoration: InputDecoration(
-              labelText: l.remindBefore,
-              prefixIcon: const Icon(Icons.notifications_active, size: 20),
-            ),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 60,
-                  child: TextFormField(
-                    key: const Key('remind_days_field'),
-                    initialValue: remindDaysBefore.toString(),
-                    textAlign: TextAlign.center,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                    onChanged: (v) {
-                      final val = int.tryParse(v);
-                      if (val != null && val >= 0) onChanged(val);
-                    },
-                  ),
-                ),
-                Text(
-                  l.daysBefore,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
-            ),
-          ),
+    return InputDecorator(
+      decoration: InputDecoration(
+        labelText: l.remindBefore,
+        prefixIcon: const Icon(Icons.notifications_active, size: 20),
+        border: InputBorder.none,
+        contentPadding: EdgeInsets.zero,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Wrap(
+          spacing: 8.0,
+          children: [
+            _buildChip(context, 0, 'None'),
+            _buildChip(context, 1, '1 day'),
+            _buildChip(context, 3, '3 days'),
+            _buildChip(context, 7, '1 week'),
+          ],
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildChip(BuildContext context, int value, String label) {
+    final isSelected = remindDaysBefore == value;
+    final theme = Theme.of(context);
+    
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        if (selected) {
+          onChanged(value);
+        }
+      },
+      selectedColor: theme.colorScheme.primaryContainer,
+      labelStyle: TextStyle(
+        color: isSelected ? theme.colorScheme.onPrimaryContainer : theme.colorScheme.onSurface,
+      ),
     );
   }
 }
