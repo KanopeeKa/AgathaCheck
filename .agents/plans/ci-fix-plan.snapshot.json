@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "plan_id": "ci-fix-plan",
+  "approved_at": "2026-08-18T14:17:00Z",
+  "approved_by": "human",
+  "approved_until": "2026-08-20T14:17:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/ux-overhaul-integration-13e3",
+  "control_issue": 650,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Fix Code Review & CI",
+      "branch": "cursor/ci-fix-phase1-13e3",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/providers/pet_detail_viewer_context_provider.dart",
+        "flutter_app/test/features/experience/presentation/providers/resolve_post_login_path_test.dart",
+        "flutter_app/lib/features/experience/presentation/providers/experience_providers.dart",
+        "flutter_app/lib/features/experience/presentation/screens/experience_resolve_screen.dart"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending"
+    }
+  ],
+  "content_hash": "sha256:b85fc5b616268feacefeaa7943b188e5207bf76249194c692537e341482db488"
+}
