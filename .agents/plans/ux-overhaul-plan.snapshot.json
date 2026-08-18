@@ -38,7 +38,11 @@
         "ownership_ref": "docs/refactoring-log.md#ux-overhaul"
       },
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/647",
+      "pr_head_sha": "pending"
     },
     {
       "id": "2",
@@ -92,5 +96,5 @@
       "status": "pending"
     }
   ],
-  "content_hash": "sha256:f4290416ee59e7301f13e37024736a40f2fe4f271cb86b1c8ae0b14dee76d221"
+  "content_hash": "sha256:2d405affd5319c08373fc87c6090a7ea9dfb05cf3a0bfaa6b60d200f93a3dd17"
 }
