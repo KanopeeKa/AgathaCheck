@@ -2,9 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
-import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
-import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
@@ -102,11 +99,11 @@ void main() {
     addTearDown(container.dispose);
     await _waitForPolicyInputs(container);
 
-    // Removed activeExperienceProvider mock
-    final guardianCtx = container.read(
+    // Now uses resolveAutoExperience which will return organization since there's no guardian pet context
+    final orgCtx = container.read(
       petDetailViewerContextProvider('org-p1'),
     );
-    expect(guardianCtx.role, PetViewerRole.guardian);
-    expect(guardianCtx.can(PetDetailAction.fosterPlacement), isFalse);
+    expect(orgCtx.role, PetViewerRole.organization);
+    expect(orgCtx.can(PetDetailAction.fosterPlacement), isTrue);
   });
 }
