@@ -93,8 +93,12 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/648",
+      "pr_head_sha": "pending"
     }
   ],
-  "content_hash": "sha256:2d405affd5319c08373fc87c6090a7ea9dfb05cf3a0bfaa6b60d200f93a3dd17"
+  "content_hash": "sha256:5ccf7e0425e6f732c70f65a886277e4c3007b8c1e42d6f55a36edc2964d95468"
 }
