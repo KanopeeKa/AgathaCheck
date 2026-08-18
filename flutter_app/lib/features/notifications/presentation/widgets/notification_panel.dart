@@ -340,7 +340,7 @@ class _NotificationList extends ConsumerWidget {
     }
     if (!context.mounted) return;
     Navigator.of(context).pop();
-    navigateFromNotification(context, n);
+    navigateFromNotification(context, ref, n);
   }
 }
 

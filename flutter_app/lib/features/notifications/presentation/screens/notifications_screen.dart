@@ -170,7 +170,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                 .markAsRead(n.id);
                           }
                           if (!context.mounted) return;
-                          navigateFromNotification(context, n);
+                          navigateFromNotification(context, ref, n);
                         },
                       ),
                     ),

@@ -4,15 +4,28 @@ import 'package:go_router/go_router.dart';
 import '../../domain/entities/app_notification.dart';
 import '../../domain/entities/notification_kind.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../features/experience/domain/entities/app_experience.dart';
+import '../../../../features/experience/presentation/providers/experience_providers.dart';
+
 /// Navigates from a notification tap to the appropriate destination.
 ///
 /// Care notifications with a health entry open the view-entry screen.
 /// Administrative pending-object types open the pending-actions surface.
 void navigateFromNotification(
   BuildContext context,
+  WidgetRef ref,
   AppNotification notification,
 ) {
   final wireType = notification.wireType;
+  
+  final organizationId = notification.organizationId;
+  if (organizationId != null && organizationId.isNotEmpty) {
+    ref.read(activeExperienceProvider.notifier).state = AppExperience.organization;
+  } else {
+    ref.read(activeExperienceProvider.notifier).state = AppExperience.guardian;
+  }
+
 
   switch (wireType) {
     case 'pendingFosterPlacementReceived':
