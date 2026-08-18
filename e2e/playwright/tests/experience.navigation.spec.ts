@@ -95,7 +95,7 @@ test.describe('Experience navigation', () => {
     await experience.expectUnifiedDrawerItems();
   });
 
-  test('login restores last organisation section after drawer switch', async ({
+  test('user without last section saved lands on guardian home', async ({
     page,
   }) => {
     await prepareLiveApiAccess(page, baseURL());
@@ -103,13 +103,8 @@ test.describe('Experience navigation', () => {
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
     const experience = new ExperiencePage(page);
-    await experience.openDrawerOrgView();
-    await waitForFlutterRoutePattern(page, /\/(?:o\/orgs|organizations)(?:\?|$)/, 30_000);
-
-    await logOutFromApp(page);
-    await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/o\/home/, 60_000);
-    await experience.expectOrgShell();
+    await experience.expectGuardianShell();
+    await expect(page.getByText(/How will you use Agatha Track/i)).not.toBeVisible();
   });
 
   test('user switches to organisation view from guardian drawer', async ({
