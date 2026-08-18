@@ -1,26 +1,24 @@
 {
   "@@locale": "en",
-
   "appTitle": "Agatha Track",
   "agathaCheckLogo": "Agatha Track logo",
-  "appTagline": "Agatha Track keeps your pet's health organised — whether you're a pet parent, a shelter, or a professional organisation.",
-  "appDescription": "Track vet visits, medications, weight, and daily care in one simple dashboard. Create organisations to collaborate with your team, share pets, and coordinate care across your entire network.",
+  "appTagline": "Agatha Track keeps your pet's health organised — whether you're a pet parent, a shelter, or a professional shelter.",
+  "appDescription": "Track vet visits, medications, weight, and daily care in one simple dashboard. Create shelters to collaborate with your team, share pets, and coordinate care across your entire network.",
   "appCta": "Log in to pick up where you left off, or create a free account to start keeping your pet's health history safe and accessible anytime.",
   "landingGuardianPathSummary": "For pet parents and foster carers",
   "landingGuardianPathExpandCta": "See how it works",
   "landingGuardianPathCollapseCta": "Show less",
   "landingGuardianPathDetail": "Track vet visits, medications, weight, and daily care in one place. Coordinate with your household and keep every pet's health history safe.",
   "landingOrgPathSummary": "For shelters, rescues, and care teams",
-  "landingOrgPathExpandCta": "See organisation features",
+  "landingOrgPathExpandCta": "See shelter features",
   "landingOrgPathCollapseCta": "Show less",
-  "landingOrgPathDetail": "Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation.",
+  "landingOrgPathDetail": "Manage inventory pets, coordinate staff and volunteers, and share care records across your shelter.",
   "landingPathScrollCta": "Learn more",
   "landingPetParentsSectionTitle": "Pet parents and foster carers",
   "landingPetParentsSectionBody": "Track vet visits, medications, weight, and daily care in one calm dashboard. Coordinate with your household and keep every pet's health history safe. Screenshots and walkthrough copy coming soon.",
   "landingCharitiesSectionTitle": "Shelters, rescues, and care teams",
-  "landingCharitiesSectionBody": "Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation. Product screenshots and case studies will be added here.",
+  "landingCharitiesSectionBody": "Manage inventory pets, coordinate staff and volunteers, and share care records across your shelter. Product screenshots and case studies will be added here.",
   "landingScreenshotPlaceholder": "Screenshot coming soon",
-
   "signIn": "Sign In",
   "signUp": "Sign Up",
   "createAccount": "Create Account",
@@ -42,7 +40,6 @@
   "passwordsDoNotMatch": "Passwords do not match",
   "forgotPassword": "Forgot Password?",
   "logOut": "Log Out",
-
   "resetPassword": "Reset Password",
   "forgotPasswordTitle": "Forgot Password",
   "enterResetCode": "Enter Reset Code",
@@ -58,7 +55,6 @@
   "useDifferentEmail": "Use a different email",
   "passwordResetTitle": "Password Reset",
   "backToSignIn": "Back to sign in",
-
   "myDetails": "My Details",
   "notLoggedIn": "Not logged in",
   "editProfile": "Edit profile",
@@ -76,13 +72,31 @@
   "detailsVisibleToShared": "These details are visible to people you share pets with",
   "profileUpdated": "Profile updated",
   "failedToPickPhoto": "Failed to pick photo: {error}",
-  "@failedToPickPhoto": { "placeholders": { "error": { "type": "String" } } },
+  "@failedToPickPhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "failedToSave": "Failed to save: {error}",
-  "@failedToSave": { "placeholders": { "error": { "type": "String" } } },
-  "petGuardian": "Pet Guardian",
+  "@failedToSave": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "petGuardian": "Pet Owner",
   "professionalMultiPet": "Professional Multi Pet",
   "categoryLabel": "Category: {category}",
-  "@categoryLabel": { "placeholders": { "category": { "type": "String" } } },
+  "@categoryLabel": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
   "firstName": "First Name",
   "lastName": "Last Name",
   "bio": "Bio",
@@ -93,11 +107,9 @@
   "edit": "Edit",
   "close": "Close",
   "retry": "Retry",
-
   "language": "Language",
   "english": "English",
   "french": "Français",
-
   "myPets": "My Pets",
   "myFosteredPets": "My Fostered Pets",
   "noFosteredPets": "You are not fostering any pets yet.",
@@ -112,11 +124,13 @@
   "petEventsSummary": "{count, plural, =1{1 event} other{{count} events}}",
   "@petEventsSummary": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "eventsHistoryEmpty": "No report history is available for this pet.",
-  "filterByOrganization": "Filter by organisation",
+  "filterByOrganization": "Filter by shelter",
   "notifications": "Notifications",
   "veterinarians": "Veterinarians",
   "events": "To Do",
@@ -124,47 +138,86 @@
   "addPet": "Add Pet",
   "addNewPet": "Add a new pet",
   "failedToLoadPets": "Failed to load pets: {error}",
-  "@failedToLoadPets": { "placeholders": { "error": { "type": "String" } } },
+  "@failedToLoadPets": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "noPetsYet": "No pets yet",
   "noPetsMatchFilter": "No pets match this filter.",
   "showAllPets": "Show all pets",
   "addFirstPet": "Tap + to add your first pet",
-
   "petDetails": "Pet Details",
   "petNotFound": "Pet not found",
   "errorWithMessage": "Error: {error}",
-  "@errorWithMessage": { "placeholders": { "error": { "type": "String" } } },
+  "@errorWithMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "goBack": "Go back",
   "editPet": "Edit Pet",
   "neuteredSpayed": "Neutered / Spayed: {date}",
-  "@neuteredSpayed": { "placeholders": { "date": { "type": "String" } } },
+  "@neuteredSpayed": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "idLabel": "ID: {id}",
-  "@idLabel": { "placeholders": { "id": { "type": "String" } } },
+  "@idLabel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "insuranceDetails": "Insurance Details",
   "noVetAssigned": "No vet assigned",
   "addVetFirst": "Add a veterinarian. No vets yet.",
   "selectVeterinarian": "Select veterinarian",
   "removeVet": "Remove vet",
   "passedAway": "Passed Away",
-
   "weightTracking": "Weight Tracking",
   "addEntry": "Add Health Event",
   "errorLoadingWeightData": "Error loading weight data: {error}",
-  "@errorLoadingWeightData": { "placeholders": { "error": { "type": "String" } } },
+  "@errorLoadingWeightData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "noWeightDataYet": "No weight data yet",
   "tapAddEntryToStart": "Tap \"Add Entry\" to start tracking",
   "addWeightEntry": "Add weight entry",
   "selectDate": "Select date for weight entry",
   "date": "Date",
   "weightWithUnit": "Weight ({unit})",
-  "@weightWithUnit": { "placeholders": { "unit": { "type": "String" } } },
+  "@weightWithUnit": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
   "notesOptional": "Notes (optional)",
   "pleaseEnterValidWeight": "Please enter a valid weight",
   "weightFormatHint": "Enter a number greater than 0, e.g. 12.5",
   "deleteWeightEntry": "Delete weight entry",
   "weightChartLabel": "Weight chart showing {count} entries",
-  "@weightChartLabel": { "placeholders": { "count": { "type": "int" } } },
-
+  "@weightChartLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "healthEvents": "Health Events",
   "otherEvents": "Other events",
   "addOtherEvent": "Add event",
@@ -173,10 +226,22 @@
   "addHealthEntry": "Add health entry",
   "noEntriesYet": "No entries yet",
   "noTypeEntriesYet": "No {type} entries yet",
-  "@noTypeEntriesYet": { "placeholders": { "type": { "type": "String" } } },
+  "@noTypeEntriesYet": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
   "tapPlusToAdd": "Tap + to add one",
   "errorLoadingEntries": "Error loading entries:\n{error}",
-  "@errorLoadingEntries": { "placeholders": { "error": { "type": "String" } } },
+  "@errorLoadingEntries": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "all": "All",
   "medications": "Medications",
   "preventives": "Preventives",
@@ -196,16 +261,45 @@
   "exportCsv": "Export CSV",
   "csvExport": "CSV Export",
   "exportFailed": "Export failed: {error}",
-  "@exportFailed": { "placeholders": { "error": { "type": "String" } } },
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "pdfExportFailed": "PDF export failed: {error}",
-  "@pdfExportFailed": { "placeholders": { "error": { "type": "String" } } },
+  "@pdfExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "markedAsDone": "{name} marked as done",
-  "@markedAsDone": { "placeholders": { "name": { "type": "String" } } },
+  "@markedAsDone": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "snoozedForDays": "{name} snoozed for {days} {dayLabel}",
-  "@snoozedForDays": { "placeholders": { "name": { "type": "String" }, "days": { "type": "int" }, "dayLabel": { "type": "String" } } },
+  "@snoozedForDays": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      },
+      "dayLabel": {
+        "type": "String"
+      }
+    }
+  },
   "day": "day",
   "days": "days",
-
   "entryName": "Entry Name *",
   "entryNameRequired": "Name is required",
   "selectPet": "Select Pet *",
@@ -230,9 +324,24 @@
   "periodYears": "Years",
   "every": "Every",
   "everyPeriod": "Every {period}",
-  "@everyPeriod": { "placeholders": { "period": { "type": "String" } } },
+  "@everyPeriod": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
   "everyNPeriods": "Every {n} {periods}",
-  "@everyNPeriods": { "placeholders": { "n": { "type": "int" }, "periods": { "type": "String" } } },
+  "@everyNPeriods": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "periods": {
+        "type": "String"
+      }
+    }
+  },
   "repeatEndDate": "Repeat End Date",
   "noEndDate": "No end date",
   "startDate": "Start Date",
@@ -249,10 +358,18 @@
   "eventHistoryLine": "Due {due}, completed {completed}, recorded {recorded} by {user}",
   "@eventHistoryLine": {
     "placeholders": {
-      "due": { "type": "String" },
-      "completed": { "type": "String" },
-      "recorded": { "type": "String" },
-      "user": { "type": "String" }
+      "due": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "recorded": {
+        "type": "String"
+      },
+      "user": {
+        "type": "String"
+      }
     }
   },
   "unknownUser": "Unknown user",
@@ -274,51 +391,111 @@
   "upTo4Photos": "up to 4 documents (jpg, png, pdf), max 2 MB",
   "removePhoto": "Remove document",
   "failedToPickImage": "Failed to pick image",
-
   "done": "Done",
   "doneOn": "Done {date}",
-  "@doneOn": { "placeholders": { "date": { "type": "String" } } },
+  "@doneOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "dueLabel": "Due {date}",
-  "@dueLabel": { "placeholders": { "date": { "type": "String" } } },
+  "@dueLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "snooze": "Snooze",
   "snoozeEntry": "Snooze {name}",
-  "@snoozeEntry": { "placeholders": { "name": { "type": "String" } } },
+  "@snoozeEntry": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "snoozeDays": "{count} {label}",
-  "@snoozeDays": { "placeholders": { "count": { "type": "int" }, "label": { "type": "String" } } },
+  "@snoozeDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "markAsDone": "Mark as done",
-
   "sharing": "Sharing",
   "couldNotLoadSharingInfo": "Could not load sharing info",
   "sessionExpired": "Session expired. Please log in again.",
   "shareLinkTitle": "Share Link",
   "shareLinkDescription": "Share this link so others can view {petName}'s profile:",
-  "@shareLinkDescription": { "placeholders": { "petName": { "type": "String" } } },
+  "@shareLinkDescription": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "linkCopied": "Link copied to clipboard",
   "copy": "Copy",
   "sharePet": "Share Pet",
   "noOneHasAccess": "No one else has access yet",
   "manageAccess": "Manage user access",
   "removeAccess": "Remove Access",
-  "guardian": "Guardian",
+  "guardian": "My Pets",
   "viewOnly": "View Only",
   "roleLabel": "Role: {role}",
-  "@roleLabel": { "placeholders": { "role": { "type": "String" } } },
+  "@roleLabel": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
   "acceptAndAdd": "Accept & Add to My Pets",
   "sharedBy": "Shared by",
   "shareLinkPending": "New link pending",
   "sharingWithActive": "Sharing with {userName} active",
-  "@sharingWithActive": { "placeholders": { "userName": { "type": "String" } } },
+  "@sharingWithActive": {
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
   "copyLinkAgain": "Copy link",
   "deleteLink": "Delete link",
   "deleteShareLinkConfirm": "Delete this share link? Anyone with the link will no longer be able to use it.",
   "stopFollowing": "Stop following",
   "stopFollowingConfirm": "Stop following {petName}? The pet will be removed from your list.",
-  "@stopFollowingConfirm": { "placeholders": { "petName": { "type": "String" } } },
+  "@stopFollowingConfirm": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "sharedPetFollowerDescription": "You are following {petName} via a share link. You can stop following at any time.",
-  "@sharedPetFollowerDescription": { "placeholders": { "petName": { "type": "String" } } },
+  "@sharedPetFollowerDescription": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "fosterSharingDescription": "While fostering {petName}, you can share a view-only link with others. You cannot transfer ownership.",
-  "@fosterSharingDescription": { "placeholders": { "petName": { "type": "String" } } },
-
+  "@fosterSharingDescription": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "healthIssues": "Health Issues",
   "addIssue": "Add Issue",
   "editIssue": "Edit Issue",
@@ -330,7 +507,13 @@
   "create": "Create",
   "update": "Update",
   "nEvents": "{count} event(s)",
-  "@nEvents": { "placeholders": { "count": { "type": "int" } } },
+  "@nEvents": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "startDateOptional": "Start Date",
   "endDateOptional": "End Date",
   "linkedEvents": "Linked Events",
@@ -346,17 +529,26 @@
   "issueReopenedNote": "Issue previously closed on {closedDate} and reopened on {reopenedDate}",
   "@issueReopenedNote": {
     "placeholders": {
-      "closedDate": { "type": "String" },
-      "reopenedDate": { "type": "String" }
+      "closedDate": {
+        "type": "String"
+      },
+      "reopenedDate": {
+        "type": "String"
+      }
     }
   },
   "linkEvent": "Link event",
   "showMore": "Show more",
-
   "addPetTitle": "Add Pet",
   "editPetTitle": "Edit Pet",
   "editPetNamed": "Edit {petName}",
-  "@editPetNamed": { "placeholders": { "petName": { "type": "String" } } },
+  "@editPetNamed": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "petName": "Name *",
   "petNameRequired": "Name is required",
   "species": "Species *",
@@ -372,12 +564,23 @@
   "savePet": "Save Pet",
   "deletePet": "Delete Pet",
   "deletePetConfirm": "Are you sure you want to delete {name}? This cannot be undone.",
-  "@deletePetConfirm": { "placeholders": { "name": { "type": "String" } } },
+  "@deletePetConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "petDeleted": "{name} deleted",
-  "@petDeleted": { "placeholders": { "name": { "type": "String" } } },
+  "@petDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "neuteredSpayedDate": "Neutered / Spayed Date",
   "idMicrochip": "ID / Microchip",
-
   "speciesDog": "Dog",
   "speciesCat": "Cat",
   "speciesBird": "Bird",
@@ -387,7 +590,6 @@
   "speciesFerret": "Ferret",
   "speciesHorsePoney": "Horse / Poney",
   "speciesOther": "Other",
-
   "notificationSettings": "Notification Settings",
   "inAppNotifications": "In-App Notifications",
   "overdueAlerts": "Overdue Alerts",
@@ -399,13 +601,11 @@
   "mutedPets": "Muted Pets",
   "saveSettings": "Save Settings",
   "settingsSaved": "Settings saved",
-
   "noNotifications": "No notifications",
   "markAllRead": "Mark all as read",
   "notificationSettingsTooltip": "Notification settings",
   "dueSoonAlertsLabel": "Due Soon Alerts",
   "generalLabel": "General",
-
   "addVet": "Add Vet",
   "editVet": "Edit Vet",
   "addNewVet": "Add a new veterinarian",
@@ -419,33 +619,67 @@
   "vetNotes": "Notes",
   "deleteVet": "Delete Vet",
   "deleteVetConfirm": "Are you sure you want to delete {name}?",
-  "@deleteVetConfirm": { "placeholders": { "name": { "type": "String" } } },
+  "@deleteVetConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "noVetsYet": "No veterinarians yet",
   "failedToLoadVets": "Failed to load vets: {error}",
-  "@failedToLoadVets": { "placeholders": { "error": { "type": "String" } } },
+  "@failedToLoadVets": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "failedToLoadVet": "Failed to load vet: {error}",
-  "@failedToLoadVet": { "placeholders": { "error": { "type": "String" } } },
+  "@failedToLoadVet": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "vetOptions": "Vet options",
   "linkedPets": "Linked Pets",
   "couldNotLoadPets": "Could not load pets: {error}",
-  "@couldNotLoadPets": { "placeholders": { "error": { "type": "String" } } },
+  "@couldNotLoadPets": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "noPetsAddFirst": "No pets yet. Add pets first to link them.",
   "unlink": "Unlink",
   "link": "Link",
   "availablePets": "Available pets:",
-
   "subscriptionTitle": "Subscription",
   "welcomeUnlimited": "Welcome to Agatha Track Unlimited!",
   "purchaseFailed": "Purchase failed: {error}",
-  "@purchaseFailed": { "placeholders": { "error": { "type": "String" } } },
+  "@purchaseFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "purchasesRestored": "Purchases restored successfully",
   "couldNotRestore": "Could not restore purchases: {error}",
-  "@couldNotRestore": { "placeholders": { "error": { "type": "String" } } },
+  "@couldNotRestore": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "restorePurchases": "Restore Purchases",
   "manageSubscription": "Manage Subscription",
   "subscribe": "Subscribe",
   "loadPlans": "Load Plans",
-
   "petReport": "Pet Report",
   "chooseSections": "Choose which sections to include",
   "petProfile": "Pet Profile",
@@ -461,20 +695,35 @@
   "generating": "Generating...",
   "reportGenerated": "Report downloaded",
   "reportFailed": "Report failed: {error}",
-  "@reportFailed": { "placeholders": { "error": { "type": "String" } } },
-
+  "@reportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "passedAwayConfirmTitle": "Mark as Passed Away",
   "passedAwayConfirmMessage": "Are you sure you want to mark {name} as having crossed the rainbow bridge?",
-  "@passedAwayConfirmMessage": { "placeholders": { "name": { "type": "String" } } },
+  "@passedAwayConfirmMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "passedAwayCondolence": "We are so sorry for your loss. {name}'s profile will be kept as a loving memorial.",
-  "@passedAwayCondolence": { "placeholders": { "name": { "type": "String" } } },
+  "@passedAwayCondolence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "confirm": "Confirm",
   "ok": "OK",
-
   "reminderSnooze": "Reminder snoozed. We'll remind you again later.",
   "dontWantToNeuter": "I don't want to neuter",
   "dontWantToChip": "I don't want to chip / identify my pet",
-
   "chipReminderDog": "Microchipping is recommended for dogs. It's a simple procedure that helps reunite you if your pet gets lost.",
   "chipReminderCat": "Microchipping is recommended for cats. It helps identify your cat and reunite you if they wander off.",
   "chipReminderFerret": "Microchipping is recommended for ferrets. It helps identify your pet if they escape.",
@@ -484,19 +733,41 @@
   "chipReminderFish": "A tank label is recommended for fish tanks. It helps track species and care requirements.",
   "chipReminderHamster": "A photo ID record is recommended for hamsters. Keep a photo for identification purposes.",
   "chipReminderDefault": "An identification method is recommended for your pet.",
-
   "neuterReminderTitle": "Neutering Reminder",
   "chipReminderTitle": "Identification Reminder",
-
   "pdfEventsChecklist": "Events Checklist",
   "pdfAllEvents": "All Events",
   "pdfGroupedBy": "{filter}  •  Grouped {group}",
-  "@pdfGroupedBy": { "placeholders": { "filter": { "type": "String" }, "group": { "type": "String" } } },
+  "@pdfGroupedBy": {
+    "placeholders": {
+      "filter": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
   "pdfNoEventsToDisplay": "No events to display.",
   "pdfGeneratedBy": "Generated {date} by Agatha Track",
-  "@pdfGeneratedBy": { "placeholders": { "date": { "type": "String" } } },
+  "@pdfGeneratedBy": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "pdfPageOf": "Page {current} of {total}",
-  "@pdfPageOf": { "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } } },
+  "@pdfPageOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "pdfPetLabel": "Pet",
   "pdfDueLabel": "Due",
   "pdfFreqLabel": "Freq",
@@ -504,7 +775,6 @@
   "pdfIssueLabel": "Issue",
   "pdfOnce": "Once",
   "pdfDone": "Done",
-
   "pdfReportTitle": "Pet Health Report",
   "pdfAgathaCheck": "AGATHA TRACK",
   "pdfPetProfileSection": "Pet Profile",
@@ -523,10 +793,18 @@
   "pdfNoHealthIssues": "No health issues recorded yet.",
   "pdfCurrentRecurring": "Current & Recurring Events",
   "pdfEventsFromTo": "Events from {from} to {to}",
-  "@pdfEventsFromTo": { "placeholders": { "from": { "type": "String" }, "to": { "type": "String" } } },
+  "@pdfEventsFromTo": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
   "pdfNoEventsInPeriod": "No events in this period.",
   "pdfAdminLog": "Administration Log",
-
   "pdfName": "Name",
   "pdfSpecies": "Species",
   "pdfBreed": "Breed",
@@ -552,69 +830,116 @@
   "pdfNotShared": "This pet is not shared with anyone.",
   "pdfRole": "Role",
   "pdfSince": "Since",
-  "pdfGuardian": "Guardian",
+  "pdfGuardian": "My Pets",
   "pdfShared": "Shared",
   "pdfUserNumber": "User #{id}",
-  "@pdfUserNumber": { "placeholders": { "id": { "type": "String" } } },
+  "@pdfUserNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "pdfNEvent": "{count} event",
-  "@pdfNEvent": { "placeholders": { "count": { "type": "int" } } },
+  "@pdfNEvent": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "pdfNEvents": "{count} events",
-  "@pdfNEvents": { "placeholders": { "count": { "type": "int" } } },
+  "@pdfNEvents": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "pdfFrom": "From {date}",
-  "@pdfFrom": { "placeholders": { "date": { "type": "String" } } },
+  "@pdfFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "pdfUntil": "Until {date}",
-  "@pdfUntil": { "placeholders": { "date": { "type": "String" } } },
+  "@pdfUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "pdfLinkedEvents": "Linked Events",
   "pdfCustom": "Custom",
   "pdfEvery": "Every {period}",
-  "@pdfEvery": { "placeholders": { "period": { "type": "String" } } },
+  "@pdfEvery": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
   "pdfEveryN": "Every {n} {periods}",
-  "@pdfEveryN": { "placeholders": { "n": { "type": "int" }, "periods": { "type": "String" } } },
-
+  "@pdfEveryN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "periods": {
+        "type": "String"
+      }
+    }
+  },
   "pdfFamilyEventsSection": "Family Events",
   "pdfNoFamilyEvents": "No family events recorded for this pet.",
   "pdfAssignedTo": "Assigned To",
   "pdfFromDate": "From",
   "pdfToDate": "To",
   "pdfOngoing": "Ongoing",
-
   "pdfNotificationsSection": "Notifications",
   "pdfNoNotifications": "No recent notifications for this pet.",
   "pdfNotificationType": "Type",
   "pdfNotificationMessage": "Message",
-
   "familyEventsSection": "Family Events",
   "familyEventsDesc": "Care assignments and foster stays",
   "notificationsSection": "Notifications",
   "notificationsDesc": "Recent alerts and reminders",
-
-  "myOrganizations": "My Organisations",
-  "organisationsDashboardTitle": "Organisations dashboard",
-  "discoverOrganizations": "Discover Organisations",
-  "orgDiscoveryEmpty": "No organisations to discover yet",
-  "orgDiscoveryLoadError": "Could not load discoverable organisations",
+  "myOrganizations": "My Shelters",
+  "organisationsDashboardTitle": "Shelters dashboard",
+  "discoverOrganizations": "Discover Shelters",
+  "orgDiscoveryEmpty": "No shelters to discover yet",
+  "orgDiscoveryLoadError": "Could not load discoverable shelters",
   "orgDiscoverySearchPlaceholder": "Search by name",
-  "orgDiscoverySearchEmpty": "No organisations match your search",
+  "orgDiscoverySearchEmpty": "No shelters match your search",
   "orgDiscoverBrowsingAs": "You are browsing as {name}",
   "@orgDiscoverBrowsingAs": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "orgDiscoverBrowsingAsFallback": "your account",
   "orgDiscoveryLocation": "{town}, {administrativeArea}",
   "@orgDiscoveryLocation": {
     "placeholders": {
-      "town": { "type": "String" },
-      "administrativeArea": { "type": "String" }
+      "town": {
+        "type": "String"
+      },
+      "administrativeArea": {
+        "type": "String"
+      }
     }
   },
-  "organizations": "Organisations",
-  "createOrganization": "Create Organisation",
+  "organizations": "Shelters",
+  "createOrganization": "Create Shelter",
   "orgFormCreate": "Create",
-  "editOrganization": "Edit Organisation",
-  "deleteOrganization": "Delete Organisation",
-  "organizationName": "Organisation Name",
+  "editOrganization": "Edit Shelter",
+  "deleteOrganization": "Delete Shelter",
+  "organizationName": "Shelter Name",
   "organizationType": "Type",
   "orgTypeProfessional": "Professional",
   "orgTypeCharity": "Charity",
@@ -626,8 +951,8 @@
   "orgPostcode": "Postcode",
   "orgImageHeroGuidance": "Landscape image (~8:3), at least 1200×450 px. JPG, PNG, or WebP up to 2 MB.",
   "orgImageLogoGuidance": "Square logo, at least 256×256 px. Shown as a circle. JPG, PNG, or WebP up to 2 MB.",
-  "orgProfileSettingsTooltip": "Edit organisation settings",
-  "orgProfileEditTooltip": "Edit organisation",
+  "orgProfileSettingsTooltip": "Edit shelter settings",
+  "orgProfileEditTooltip": "Edit shelter",
   "orgWebsite": "Website",
   "orgBio": "Bio",
   "orgMembers": "Members",
@@ -648,17 +973,16 @@
   "orgPetsNeedAttentionTooltip": "Pets that are not in foster, or whose foster placement ends within 10 days with no next session or adoption planned.",
   "orgPetsEmptyTab": "No pets match this view",
   "orgArchived": "Archived Pets",
-  "orgNoOrganizations": "No organisations yet",
-  "orgCreateFirst": "Create your first organisation to get started",
-  "createOrJoinOrganization": "Create an organisation",
-  "orgMembershipByEmailInvite": "To join an organisation, ask an admin to invite you by email.",
+  "orgNoOrganizations": "No shelters yet",
+  "orgCreateFirst": "Create your first shelter to get started",
+  "createOrJoinOrganization": "Create an shelter",
+  "orgMembershipByEmailInvite": "To join an shelter, ask an admin to invite you by email.",
   "orgInviteEmailRequired": "Email is required",
   "orgInviteEmailInvalid": "Enter a valid email address",
-  "joinOrganization": "Join Organisation",
+  "joinOrganization": "Join Shelter",
   "enterInviteCode": "Enter the invite code you received",
   "inviteCode": "Invite code",
-  "joinSuccess": "Successfully joined the organisation",
-  "create": "Create",
+  "joinSuccess": "Successfully joined the shelter",
   "join": "Join",
   "orgSuperUser": "Super admin",
   "orgSuperAdmin": "Super admin",
@@ -673,7 +997,7 @@
   "fosterOnboardingStatusTitle": "Foster onboarding status",
   "fosterOnboardingNotRecordedYet": "Not recorded yet",
   "fosterOnboardingConfirmStep": "Confirm",
-  "fosterOnboardingStepConnected": "Connected to organisation",
+  "fosterOnboardingStepConnected": "Connected to shelter",
   "fosterOnboardingStepProfile": "Profile on AgathaTrack",
   "fosterOnboardingStepInvitationAccepted": "Invitation accepted",
   "fosterOnboardingStepUnderReview": "Under review",
@@ -686,23 +1010,23 @@
   "orgInviteMember": "Invite Member",
   "orgInviteLinkCopied": "Invite link copied to clipboard",
   "orgInviteExpiry": "This invite link expires in 7 days",
-  "orgJoinSuccess": "Successfully joined organisation",
-  "orgLeave": "Leave Organisation",
-  "orgLeaveConfirm": "Are you sure you want to leave this organisation?",
+  "orgJoinSuccess": "Successfully joined shelter",
+  "orgLeave": "Leave Shelter",
+  "orgLeaveConfirm": "Are you sure you want to leave this shelter?",
   "orgRemoveMember": "Remove Member",
   "orgRemoveMemberConfirm": "Are you sure you want to remove this member?",
   "orgChangeRole": "Change Role",
   "orgPromoteToSuperUser": "Promote to Super User",
   "orgDemoteToMember": "Demote to Member",
-  "orgDeleteConfirm": "Are you sure you want to delete this organisation? This action cannot be undone.",
+  "orgDeleteConfirm": "Are you sure you want to delete this shelter? This action cannot be undone.",
   "orgDeleteRequireNoPets": "Transfer or remove all pets before deleting",
-  "orgNoPets": "No pets in this organisation",
+  "orgNoPets": "No pets in this shelter",
   "orgNoMembers": "No members",
   "orgNoArchived": "No archived records",
   "orgAddPet": "Add Pet",
   "transferPet": "Transfer Pet",
   "transferToUser": "Transfer to User",
-  "transferToOrganization": "Transfer to Organisation",
+  "transferToOrganization": "Transfer to Shelter",
   "transferType": "Transfer Type",
   "transferTypeAdoption": "Adoption",
   "transferTypeTransfer": "Transfer",
@@ -713,46 +1037,78 @@
   "confirmTransfer": "Confirm Transfer",
   "transferConfirmTitle": "Confirm Transfer",
   "transferConfirmMessage": "Are you sure you want to transfer {petName}? This action cannot be undone.",
-  "@transferConfirmMessage": { "placeholders": { "petName": { "type": "String" } } },
+  "@transferConfirmMessage": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "transferSuccess": "Custody transfer request sent",
   "transferRequestSent": "Custody transfer request sent. The recipient must accept to complete the transfer.",
   "pendingCustodyTransfers": "Pending custody transfers",
   "acceptCustodyTransfer": "Accept transfer",
   "custodyTransferAccepted": "Custody transfer accepted",
   "custodyTransferKindIndividual": "Adoption to individual",
-  "custodyTransferKindOrgToOrg": "Transfer to organisation",
-  "custodyTransferKindReturn": "Return to organisation",
-  "orgConnections": "Connected organisations",
-  "orgConnectionsEmpty": "No connected organisations yet",
+  "custodyTransferKindOrgToOrg": "Transfer to shelter",
+  "custodyTransferKindReturn": "Return to shelter",
+  "orgConnections": "Connected shelters",
+  "orgConnectionsEmpty": "No connected shelters yet",
   "orgConnectionCount": "{count, plural, =1{1 connection} other{{count} connections}}",
   "@orgConnectionCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-  "createConnectionRequest": "Connect to organisation",
-  "targetOrgId": "Target organisation ID",
-  "connectionTokenCreated": "Connection link created. Share this token with the other organisation's admin:",
+  "createConnectionRequest": "Connect to shelter",
+  "targetOrgId": "Target shelter ID",
+  "connectionTokenCreated": "Connection link created. Share this token with the other shelter's admin:",
   "acceptConnection": "Accept connection",
-  "connectionAccepted": "Organisations are now connected",
+  "connectionAccepted": "Shelters are now connected",
   "disconnectOrganisation": "Disconnect",
   "disconnectOrganisationConfirm": "Disconnect from {orgName}? Pending transfers between you will be cancelled.",
-  "@disconnectOrganisationConfirm": { "placeholders": { "orgName": { "type": "String" } } },
-  "transferToOrganisation": "Transfer to organisation",
-  "selectConnectedOrg": "Select connected organisation",
-  "requestReturnToOrg": "Return to organisation",
+  "@disconnectOrganisationConfirm": {
+    "placeholders": {
+      "orgName": {
+        "type": "String"
+      }
+    }
+  },
+  "transferToOrganisation": "Transfer to shelter",
+  "selectConnectedOrg": "Select connected shelter",
+  "requestReturnToOrg": "Return to shelter",
   "returnRequestSent": "Return request sent",
   "homeHiddenPets": "Hidden from home list",
   "hideFromHomeList": "Hide from home list",
-  "hideFromHomeListConfirm": "Hide {petName} from your home pet list? The pet stays visible in the organisation section.",
-  "@hideFromHomeListConfirm": { "placeholders": { "petName": { "type": "String" } } },
+  "hideFromHomeListConfirm": "Hide {petName} from your home pet list? The pet stays visible in the shelter section.",
+  "@hideFromHomeListConfirm": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "hideFosteredPet": "Hide fostered pet",
   "hideFosteredPetConfirm": "Hide {petName} from your list and health dashboard?",
-  "@hideFosteredPetConfirm": { "placeholders": { "petName": { "type": "String" } } },
+  "@hideFosteredPetConfirm": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "frozenShadow": "Frozen shadow",
   "shadowSnapshotReadOnly": "Point-in-time snapshot — does not sync with the live pet.",
   "shadowCapturedAt": "Captured {date}",
-  "@shadowCapturedAt": { "placeholders": { "date": { "type": "String" } } },
+  "@shadowCapturedAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "shadowHealthEntries": "Health entries in snapshot",
   "shadowWeightEntries": "Weight entries in snapshot",
   "revokeConnectionRequest": "Revoke request",
@@ -765,37 +1121,69 @@
   "transferOwnershipDescription": "Transfer full ownership to another user. You will keep shared access unless they remove you.",
   "archivedPets": "Archived Pets",
   "archivedOn": "Archived on {date}",
-  "@archivedOn": { "placeholders": { "date": { "type": "String" } } },
+  "@archivedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "noArchivedPets": "No archived pets",
-  "orgNameRequired": "Organisation name is required",
-  "orgCreated": "Organisation created",
-  "orgUpdated": "Organisation updated",
-  "orgDeleted": "Organisation deleted",
+  "orgNameRequired": "Shelter name is required",
+  "orgCreated": "Shelter created",
+  "orgUpdated": "Shelter updated",
+  "orgDeleted": "Shelter deleted",
   "memberCount": "{count} members",
-  "@memberCount": { "placeholders": { "count": { "type": "int" } } },
+  "@memberCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "orgMemberCountSummary": "{registered} registered members + {external} external",
   "@orgMemberCountSummary": {
     "placeholders": {
-      "registered": { "type": "int" },
-      "external": { "type": "int" }
+      "registered": {
+        "type": "int"
+      },
+      "external": {
+        "type": "int"
+      }
     }
   },
   "orgMemberCountRegisteredOnly": "{registered} registered members",
   "@orgMemberCountRegisteredOnly": {
-    "placeholders": { "registered": { "type": "int" } }
+    "placeholders": {
+      "registered": {
+        "type": "int"
+      }
+    }
   },
   "orgUploadPicture": "Upload picture",
   "orgUploadCover": "Upload cover",
   "orgUploadLogo": "Upload logo",
-  "orgPicture": "Organisation picture",
-  "orgLogo": "Organisation logo",
+  "orgPicture": "Shelter picture",
+  "orgLogo": "Shelter logo",
   "petCount": "{count} pets",
-  "@petCount": { "placeholders": { "count": { "type": "int" } } },
+  "@petCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "remindBefore": "Remind me",
   "daysBefore": "day(s) before",
   "undoComplete": "Undo\nComplete",
   "undoCompleteDone": "{name} marked as not completed",
-  "@undoCompleteDone": { "placeholders": { "name": { "type": "String" } } },
+  "@undoCompleteDone": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "addUser": "Add a User",
   "inviteByEmail": "Invite by Email",
   "sendInvite": "Send Invite",
@@ -803,9 +1191,21 @@
   "inviteSent": "Invitation sent successfully",
   "pendingInvites": "Pending Invitations",
   "inviteToJoinOrg": "You've been invited to join {orgName}",
-  "@inviteToJoinOrg": { "placeholders": { "orgName": { "type": "String" } } },
+  "@inviteToJoinOrg": {
+    "placeholders": {
+      "orgName": {
+        "type": "String"
+      }
+    }
+  },
   "inviteAsRole": "as {role}",
-  "@inviteAsRole": { "placeholders": { "role": { "type": "String" } } },
+  "@inviteAsRole": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
   "acceptInvite": "Accept",
   "declineInvite": "Decline",
   "userNotFound": "No user found with this email",
@@ -814,15 +1214,27 @@
   "alreadyMember": "This user is already a member",
   "enterEmail": "Enter the user's email address",
   "invitedBy": "Invited by {name}",
-  "@invitedBy": { "placeholders": { "name": { "type": "String" } } },
+  "@invitedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "people": "People",
-  "orgPeopleDescription": "Everyone in your organisation. The green disk shows how many pets each person is currently fostering.",
+  "orgPeopleDescription": "Everyone in your shelter. The green disk shows how many pets each person is currently fostering.",
   "orgPeopleEmpty": "No people yet.",
   "orgPeopleSearchPlaceholder": "Search by name",
   "orgPeopleSearchEmpty": "No people match your search",
   "orgPeopleSelect": "Select",
   "orgPeopleSelectedCount": "{count} selected",
-  "@orgPeopleSelectedCount": { "placeholders": { "count": { "type": "int" } } },
+  "@orgPeopleSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "orgPeopleBulkActions": "Bulk actions",
   "orgPeopleBulkChangeRole": "Change role",
   "orgPeopleBulkOnboardFoster": "Onboard as foster",
@@ -833,27 +1245,21 @@
   "orgFosterInviteSentInApp": "Foster invitation sent in the app",
   "orgFosterOnboardBulkSuccess": "Selected people invited to foster onboarding",
   "orgEmailTemplatesSectionTitle": "Email templates",
-  "orgEmailTemplateEditorTitle": "Edit email template: {key}",
-  "@orgEmailTemplateEditorTitle": { "placeholders": { "key": { "type": "String" } } },
-  "orgEmailTemplateEditorHint": "Placeholders: org.name, org.description, org.contact_email, inviter.name, inviter.role, signup_url, org.logo_url",
+  "orgEmailTemplateEditorTitle": "Edit email template",
+  "@orgEmailTemplateEditorTitle": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "orgEmailTemplateEditorHint": "Use placeholders such as org.name, inviter.name, and signup_url.",
   "orgEmailTemplateSaved": "Email template saved",
-  "orgEmailTemplateSubject": "Subject",
-  "orgEmailTemplateBody": "Body text",
+  "orgEmailTemplateSubject": "Subject line",
+  "orgEmailTemplateBody": "Email body",
   "addExternalFoster": "Add foster manually",
   "fosterContactAddress": "Foster contact address",
   "editFosterContact": "Edit foster contact",
-  "fosterOnboardingStatusTitle": "Foster onboarding status",
-  "fosterOnboardingNotRecordedYet": "Not recorded yet",
-  "fosterOnboardingConfirmStep": "Confirm",
-  "fosterOnboardingStepConnected": "Connected to organisation",
-  "fosterOnboardingStepProfile": "Profile on AgathaTrack",
-  "fosterOnboardingStepInvitationAccepted": "Invitation accepted",
-  "fosterOnboardingStepUnderReview": "Under review",
-  "fosterOnboardingStepOnboardingForm": "Onboarding form completed",
-  "fosterOnboardingStepHomeVisit": "Home visit recorded",
-  "fosterOnboardingStepCompetencies": "Competencies confirmed",
-  "fosterOnboardingStepAgreement": "Agreement signed",
-  "fosterOnboardingStepApproved": "Approved foster",
   "fosterContactSaved": "Foster contact details saved",
   "currentlyFostering": "Currently fostering",
   "previouslyFostered": "Previously fostered",
@@ -868,7 +1274,7 @@
   "externalFosterNoticeSent": "External foster added and privacy notice sent",
   "orgNotesOperationalOnly": "Operational notes only — avoid sensitive personal information",
   "fosterParents": "Foster parents",
-  "fosterParentsDescription": "Members and contacts who can foster organisation pets. Pet counts reflect active placements.",
+  "fosterParentsDescription": "Members and contacts who can foster shelter pets. Pet counts reflect active placements.",
   "manageFostersTitle": "Manage fosters",
   "manageFostersDescription": "Operational view of foster families — invite, review, and track who is fostering now.",
   "manageFostersTabNew": "New",
@@ -896,8 +1302,12 @@
   "manageFostersMergeConfirmBody": "Link {manualName} to the registered account for {registeredName}? Shelter notes stay on this relationship.",
   "@manageFostersMergeConfirmBody": {
     "placeholders": {
-      "manualName": { "type": "String" },
-      "registeredName": { "type": "String" }
+      "manualName": {
+        "type": "String"
+      },
+      "registeredName": {
+        "type": "String"
+      }
     }
   },
   "manageFostersMergeConfirmAction": "Link account",
@@ -928,12 +1338,12 @@
   "fosterSelfPrefsContactBoth": "Email and phone",
   "fosterSelfPrefsMessageChannelLabel": "Message notifications",
   "fosterWithdrawAgreementTitle": "Withdraw agreement",
-  "fosterWithdrawAgreementWarning": "Withdrawing your agreement to follow organisation rules will flag your active fostering sessions for admin review and notify all organisation admins. This action is difficult to undo.",
+  "fosterWithdrawAgreementWarning": "Withdrawing your agreement to follow shelter rules will flag your active fostering sessions for admin review and notify all shelter admins. This action is difficult to undo.",
   "fosterWithdrawAgreementConfirmLabel": "Type withdraw to confirm",
   "fosterWithdrawAgreementConfirmHint": "withdraw",
   "fosterWithdrawAgreementSubmit": "Confirm withdrawal",
   "fosterWithdrawAgreementSuccess": "Agreement withdrawn. Admins have been notified.",
-  "fosterRulesAgreementLabel": "I agree to follow organisation rules and terms",
+  "fosterRulesAgreementLabel": "I agree to follow shelter rules and terms",
   "fosterRequestsTitle": "Foster requests",
   "fosterRequestsDescription": "Send structured outreach to approved foster families and track their responses.",
   "fosterRequestsEmpty": "No foster requests yet. Send one when you need help placing pets.",
@@ -957,16 +1367,26 @@
   "fosterRequestPetsLabel": "Pets: {names}",
   "@fosterRequestPetsLabel": {
     "placeholders": {
-      "names": { "type": "String" }
+      "names": {
+        "type": "String"
+      }
     }
   },
   "fosterRequestTargetsSummary": "{targetCount} targets · {canHelp} can help · {cannotHelp} cannot help · {pending} pending",
   "@fosterRequestTargetsSummary": {
     "placeholders": {
-      "targetCount": { "type": "int" },
-      "canHelp": { "type": "int" },
-      "cannotHelp": { "type": "int" },
-      "pending": { "type": "int" }
+      "targetCount": {
+        "type": "int"
+      },
+      "canHelp": {
+        "type": "int"
+      },
+      "cannotHelp": {
+        "type": "int"
+      },
+      "pending": {
+        "type": "int"
+      }
     }
   },
   "fosterRequestDetailTitle": "Foster request",
@@ -980,7 +1400,9 @@
   "fosterRequestEarliestAvailability": "Available from {date}",
   "@fosterRequestEarliestAvailability": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "fosterRequestRespondTitle": "Respond to foster request",
@@ -1001,30 +1423,72 @@
   "fosterParentDeleted": "Foster parent removed",
   "deleteFosterParent": "Remove foster parent",
   "deleteFosterParentConfirm": "Remove {name} from the foster parent directory?",
-  "@deleteFosterParentConfirm": { "placeholders": { "name": { "type": "String" } } },
+  "@deleteFosterParentConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "fosterPlacement": "Foster placement",
   "fosterPlacementNotInFoster": "This pet is not currently in foster care.",
   "fosterPlacementNotInFosterShort": "Not in foster",
   "startFosterPlacement": "Start foster placement",
   "startFosterPlacementDescription": "Invite a foster parent to care for {petName}. They must accept before the placement begins.",
-  "@startFosterPlacementDescription": { "placeholders": { "petName": { "type": "String" } } },
+  "@startFosterPlacementDescription": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "fosterPlacementStarted": "Foster placement request sent",
   "endFosterPlacement": "End foster period",
-  "endFosterPlacementConfirm": "End the foster period for {petName}? The pet returns to organisation custody.",
-  "@endFosterPlacementConfirm": { "placeholders": { "petName": { "type": "String" } } },
+  "endFosterPlacementConfirm": "End the foster period for {petName}? The pet returns to shelter custody.",
+  "@endFosterPlacementConfirm": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "fosterPlacementEnded": "Foster period ended",
   "fosterPlacementPending": "Pending acceptance",
   "fosterPlacementInProgress": "In foster care",
   "fosterPlacementStatus": "Status: {status}",
-  "@fosterPlacementStatus": { "placeholders": { "status": { "type": "String" } } },
+  "@fosterPlacementStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
   "fosterPlacementAssignedTo": "Foster parent: {name}",
-  "@fosterPlacementAssignedTo": { "placeholders": { "name": { "type": "String" } } },
+  "@fosterPlacementAssignedTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "fosterPlacementStartDate": "Start date: {date}",
-  "@fosterPlacementStartDate": { "placeholders": { "date": { "type": "String" } } },
+  "@fosterPlacementStartDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "noFosterParentsWithAccounts": "Add a foster parent with an app account first (invite by email).",
   "pendingFosterPlacements": "Pending foster placements",
   "fosterPlacementInviteFrom": "From {orgName}",
-  "@fosterPlacementInviteFrom": { "placeholders": { "orgName": { "type": "String" } } },
+  "@fosterPlacementInviteFrom": {
+    "placeholders": {
+      "orgName": {
+        "type": "String"
+      }
+    }
+  },
   "fosterPlacementAccepted": "Foster placement accepted",
   "fosterPlacementDeclined": "Foster placement declined",
   "fosteringSessionDetailTitle": "Fostering session",
@@ -1041,7 +1505,7 @@
   "fosteringSessionStatusCancelled": "Cancelled",
   "fosteringSessionPreparationTitle": "Preparation checklist",
   "fosteringSessionPreparationPlaceholder": "Track shelter preparation steps before handover. Full checklist tracking arrives in a later release.",
-  "fosteringSessionChecklistDescription": "Track foster readiness items from your organisation templates.",
+  "fosteringSessionChecklistDescription": "Track foster readiness items from your shelter templates.",
   "fosteringSessionChecklistEmpty": "No checklist items configured yet.",
   "fosteringSessionChecklistRequired": "Required",
   "fosteringSessionRegisterExport": "View register export",
@@ -1050,7 +1514,13 @@
   "fosteringSessionExpediteAdoptionSuccess": "Visit completed and adoption journey started",
   "fosteringSessionStartAdoptionSuccess": "Adoption journey started",
   "fosteringSessionVisitPathBlocked": "Adoption cannot start yet: {reason}",
-  "@fosteringSessionVisitPathBlocked": { "placeholders": { "reason": { "type": "String" } } },
+  "@fosteringSessionVisitPathBlocked": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "fosteringSessionChecklistSupplies": "Confirm supplies and equipment are ready",
   "fosteringSessionChecklistMedical": "Review medical records and medications",
   "fosteringSessionChecklistTransport": "Arrange transport to the foster home",
@@ -1060,7 +1530,13 @@
   "fosteringSessionFosterStartLabel": "Foster confirms pickup",
   "fosteringSessionAwaitingConfirmation": "Awaiting confirmation",
   "fosteringSessionConfirmedAt": "Confirmed {timestamp}",
-  "@fosteringSessionConfirmedAt": { "placeholders": { "timestamp": { "type": "String" } } },
+  "@fosteringSessionConfirmedAt": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
   "fosteringSessionStartPreparation": "Start preparation",
   "fosteringSessionMarkReady": "Mark ready to start",
   "fosteringSessionConfirmShelterStart": "Confirm shelter handover",
@@ -1079,7 +1555,13 @@
   "fosteringSessionEndConfirmCancelled": "Cancel this fostering session without marking a return handover.",
   "startAdoption": "Start adoption",
   "startAdoptionDescription": "Begin the adoption process for {petName}. You can add optional pre-adoption conditions (e.g. neutering) before the foster parent confirms.",
-  "@startAdoptionDescription": { "placeholders": { "petName": { "type": "String" } } },
+  "@startAdoptionDescription": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "adoptionConditions": "Pre-adoption conditions",
   "adoptionConditionsHint": "Optional — e.g. must be neutered before adoption",
   "adoptionStarted": "Adoption process started",
@@ -1088,19 +1570,43 @@
   "waitingAdoptionConfirmation": "Awaiting foster confirmation",
   "pendingAdoptionConditions": "Pending pre-adoption conditions",
   "cancelAdoption": "Cancel adoption",
-  "cancelAdoptionConfirm": "Cancel the adoption process for {petName}? The pet returns to organisation custody.",
-  "@cancelAdoptionConfirm": { "placeholders": { "petName": { "type": "String" } } },
+  "cancelAdoptionConfirm": "Cancel the adoption process for {petName}? The pet returns to shelter custody.",
+  "@cancelAdoptionConfirm": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "adoptionCancelled": "Adoption cancelled",
   "directAdopt": "Direct adopt",
   "directAdoptDescription": "Skip the foster period and invite {petName}'s new owner to confirm adoption directly.",
-  "@directAdoptDescription": { "placeholders": { "petName": { "type": "String" } } },
+  "@directAdoptDescription": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "pendingAdoptionConfirmations": "Pending adoptions",
   "confirmAdoption": "Confirm adoption",
   "confirmAdoptionDescription": "Confirm that you are adopting {petName}. Ownership will transfer to you.",
-  "@confirmAdoptionDescription": { "placeholders": { "petName": { "type": "String" } } },
+  "@confirmAdoptionDescription": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "adoptionConfirmed": "Adoption complete — you are now the owner",
   "assignedPets": "{count} pets assigned",
-  "@assignedPets": { "placeholders": { "count": { "type": "int" } } },
+  "@assignedPets": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "familyEvents": "Family Events",
   "noFamilyEvents": "No family events yet",
   "addFamilyEvent": "Add Family Event",
@@ -1119,23 +1625,49 @@
   "notSet": "Not set",
   "petOwnership": "Pet Ownership",
   "myPet": "My Pet",
-  "orgPet": "Organisation Pet",
-
+  "orgPet": "Shelter Pet",
   "petTimelineTitle": "Timeline",
   "petTimelineNoData": "No data",
   "petTimelineFillAction": "Fill",
   "petTimelineLoadError": "Could not load timeline",
   "petTimelineManualEntry": "Manual entry",
   "petTimelineUnknownPerson": "Unknown",
-  "petTimelineCustodySegmentHidden": "Guardian custody",
+  "petTimelineCustodySegmentHidden": "My Pets custody",
   "petTimelineFosteringSession": "Fostering with {fosterName}",
-  "@petTimelineFosteringSession": { "placeholders": { "fosterName": { "type": "String" } } },
-  "petTimelineCustodySegment": "Guardian: {guardianName}",
-  "@petTimelineCustodySegment": { "placeholders": { "guardianName": { "type": "String" } } },
+  "@petTimelineFosteringSession": {
+    "placeholders": {
+      "fosterName": {
+        "type": "String"
+      }
+    }
+  },
+  "petTimelineCustodySegment": "My Pets: {guardianName}",
+  "@petTimelineCustodySegment": {
+    "placeholders": {
+      "guardianName": {
+        "type": "String"
+      }
+    }
+  },
   "petTimelineDateRange": "{startDate} – {endDate}",
-  "@petTimelineDateRange": { "placeholders": { "startDate": { "type": "String" }, "endDate": { "type": "String" } } },
+  "@petTimelineDateRange": {
+    "placeholders": {
+      "startDate": {
+        "type": "String"
+      },
+      "endDate": {
+        "type": "String"
+      }
+    }
+  },
   "petTimelineFillTitle": "Add timeline entry for {petName}",
-  "@petTimelineFillTitle": { "placeholders": { "petName": { "type": "String" } } },
+  "@petTimelineFillTitle": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "petTimelineFillTitleLabel": "Title",
   "petTimelineFillTitleRequired": "Title is required",
   "petTimelineFillDescriptionLabel": "Description",
@@ -1144,17 +1676,31 @@
   "petTimelineFillEndDateLabel": "End date",
   "petTimelineFillError": "Could not save timeline entry",
   "petTimelineJoinedAgatha": "Joined {appTitle}",
-  "@petTimelineJoinedAgatha": { "placeholders": { "appTitle": { "type": "String" } } },
+  "@petTimelineJoinedAgatha": {
+    "placeholders": {
+      "appTitle": {
+        "type": "String"
+      }
+    }
+  },
   "deleteTimelineEntryConfirm": "Are you sure you want to delete this timeline entry?",
   "bulkShare": "Bulk share",
   "bulkShareSelectHint": "Select pets to share",
   "bulkShareAction": "Share selected",
   "bulkShareDone": "Share links created for selected pets",
   "bulkShareNoneSelected": "Select at least one pet",
-
   "pendingShares": "Pending Shares",
   "petSharedWithYou": "{guardianName} wants to share {petName} with you",
-  "@petSharedWithYou": { "placeholders": { "guardianName": { "type": "String" }, "petName": { "type": "String" } } },
+  "@petSharedWithYou": {
+    "placeholders": {
+      "guardianName": {
+        "type": "String"
+      },
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "acceptShare": "Accept",
   "declineShare": "Decline",
   "shareAccepted": "Share accepted",
@@ -1162,25 +1708,39 @@
   "acceptShareToHint": "Choose where this shared pet should appear.",
   "shareDeclined": "Share declined",
   "sharedPets": "Shared Pets",
-
   "invited": "Invited",
   "pendingInvite": "Pending",
-
   "hideSharedPet": "Hide Pet",
   "hide": "Hide",
   "unhide": "Unhide",
-  "hideSharedPetConfirm": "Hide {petName}? You won't see it in your list, events, or notifications. You can unhide it later from the organisation page.",
-  "@hideSharedPetConfirm": { "placeholders": { "petName": { "type": "String" } } },
+  "hideSharedPetConfirm": "Hide {petName}? You won't see it in your list, events, or notifications. You can unhide it later from the shelter page.",
+  "@hideSharedPetConfirm": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "petHidden": "{petName} has been hidden",
-  "@petHidden": { "placeholders": { "petName": { "type": "String" } } },
+  "@petHidden": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "petUnhidden": "{petName} is now visible again",
-  "@petUnhidden": { "placeholders": { "petName": { "type": "String" } } },
+  "@petUnhidden": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "hiddenSharedPets": "Hidden Shared Pets",
-
   "help": "Help",
   "helpTitle": "Help & FAQ",
   "helpSubtitle": "Find answers to common questions about every feature in Agatha Track.",
-
   "faqAccountTitle": "Account & Authentication",
   "faqAccountQ1": "How do I create an account?",
   "faqAccountA1": "Tap \"Sign Up\" on the landing page. Enter your email address, choose a password, and provide your first and last name. You will be logged in automatically after signing up.",
@@ -1192,7 +1752,6 @@
   "faqAccountA4": "Go to the user menu (your avatar in the top-right corner), then tap \"My Details\". From there you can edit your name, bio, profile photo, and change your password.",
   "faqAccountQ5": "How do I log out?",
   "faqAccountA5": "Open the user menu (avatar icon in the top-right corner) and tap \"Logout\". You will be returned to the landing page.",
-
   "faqPetProfileTitle": "Pet Profiles",
   "faqPetProfileQ1": "How do I add a new pet?",
   "faqPetProfileA1": "Tap the \"+\" button on the main pet list screen. Fill in your pet's name, species, breed, date of birth, and optional details like microchip number and photo. Each pet is assigned a unique colour for easy identification.",
@@ -1206,21 +1765,19 @@
   "faqPetProfileA5": "Each pet is assigned a unique colour from a palette of 15 colours when created. This colour appears on cards, charts, and throughout the app to help you quickly identify each pet at a glance.",
   "faqPetProfileQ6": "How is my pet's age calculated?",
   "faqPetProfileA6": "Age is automatically calculated from the date of birth you enter. It updates dynamically and is displayed on the pet's detail page and profile cards.",
-
   "faqHealthTitle": "Health Tracking",
   "faqHealthQ1": "What types of health entries can I track?",
   "faqHealthA1": "You can track medications, preventive treatments (vaccinations, deworming, flea/tick treatments), vet visits, and medical procedures. Each type has its own icon and colour in the dashboard.",
   "faqHealthQ2": "How do I add a health entry?",
   "faqHealthA2": "You can add entries from two places: the pet's detail page (specific to that pet) or the global Health Dashboard (accessible from the medical icon in the top bar). Fill in the type, name, date, and optional details like frequency, notes, and photo attachments.",
   "faqHealthQ3": "What is the Health Dashboard?",
-  "faqHealthA3": "The Health Dashboard is a global view of all health events across all your pets. It is organised into tabs by type (medications, preventives, vet visits, etc.) and shows upcoming, due, and overdue entries. You can filter by organisation to focus on specific groups of pets.",
+  "faqHealthA3": "The Health Dashboard is a global view of all health events across all your pets. It is organised into tabs by type (medications, preventives, vet visits, etc.) and shows upcoming, due, and overdue entries. You can filter by shelter to focus on specific groups of pets.",
   "faqHealthQ4": "How do recurring health entries work?",
   "faqHealthA4": "When creating a health entry, you can set a frequency (e.g., daily, weekly, monthly, yearly, or a custom number of days). The app will automatically schedule the next occurrence and notify you when it is due.",
   "faqHealthQ5": "What are Health Issues?",
   "faqHealthA5": "Health Issues let you track ongoing medical conditions (e.g., allergies, chronic illness). Each issue can have a start date, optional end date, and can be linked to related health entries for a complete medical history.",
   "faqHealthQ6": "Can I attach photos to health entries?",
   "faqHealthA6": "Yes. When creating or editing a health entry, you can attach a photo — for example, a picture of a prescription, lab results, or a wound. The photo is stored with the entry and visible on the detail view.",
-
   "faqWeightTitle": "Weight Tracking",
   "faqWeightQ1": "How do I record my pet's weight?",
   "faqWeightA1": "Open the pet's detail page and scroll to the Weight section. Tap the add button to enter a new weight reading. You can choose between kilograms (kg) and pounds (lb).",
@@ -1228,7 +1785,6 @@
   "faqWeightA2": "Weight history is shown as an interactive line chart on the pet's detail page. You can see trends over time and tap individual data points for details. The chart uses your pet's unique colour.",
   "faqWeightQ3": "Can I switch between kg and lb?",
   "faqWeightA3": "Yes. Use the unit toggle on the weight section to switch between kilograms and pounds. The conversion is applied to all displayed values.",
-
   "faqVetTitle": "Veterinarian Management",
   "faqVetQ1": "How do I add a veterinarian?",
   "faqVetA1": "Go to the Veterinarians section (accessible from the stethoscope icon in the top bar). Tap the \"+\" button and fill in the clinic name, vet name, phone number, email, address, and website.",
@@ -1236,53 +1792,47 @@
   "faqVetA2": "When editing a pet's profile, you can select a veterinarian from your saved list. This links the vet to the pet so their contact information is readily available on the pet's detail page.",
   "faqVetQ3": "Can I edit or delete a vet?",
   "faqVetA3": "Yes. From the Veterinarians list, tap on a vet to view their details, then use the edit or delete options. Deleting a vet removes the link from any associated pets but does not delete the pets themselves.",
-
   "faqSharingTitle": "Pet Sharing",
   "faqSharingQ1": "How do I share a pet with someone?",
   "faqSharingA1": "Open the pet's detail page, expand the Sharing section, and tap Share Link. Send the link to one person. Each link works for a single recipient — when they accept, the pet appears in their list immediately.",
   "faqSharingQ2": "What happens when someone accepts a share?",
   "faqSharingA2": "The pet is added to their list right away with a \"shared\" badge. The owner is notified and can see who is following in the Sharing section.",
   "faqSharingQ3": "Can I hide a shared pet?",
-  "faqSharingA3": "Yes. Swipe left on a shared pet's card to hide it. Hidden pets will not appear in your pet list, health dashboard, or generate notifications. You can unhide them from the organisation's detail page under \"Hidden Shared Pets\".",
+  "faqSharingA3": "Yes. Swipe left on a shared pet's card to hide it. Hidden pets will not appear in your pet list, health dashboard, or generate notifications. You can unhide them from the shelter's detail page under \"Hidden Shared Pets\".",
   "faqSharingQ4": "What is the difference between sharing and transferring?",
-  "faqSharingA4": "Sharing gives someone view access to a pet — the original owner retains full control. Transferring ownership (personal pets) moves the pet to another user; you keep shared access unless they remove you. Organisation pet transfers are managed separately.",
-
-  "faqOrgTitle": "Organisations",
-  "faqOrgQ1": "What are organisations for?",
-  "faqOrgA1": "Organisations let multiple people collaborate on pet care. They are ideal for vet clinics, shelters, charities, and foster networks. You can create Professional or Charity organisations.",
-  "faqOrgQ2": "How do I create an organisation?",
-  "faqOrgA2": "Go to the Organisations page (accessible from the business icon in the top bar or from My Details). Tap \"Create\" and choose Professional or Charity, then fill in the name and details. You become the super user automatically.",
-  "faqOrgQ3": "How do I invite people to my organisation?",
-  "faqOrgA3": "From the organisation's detail page, tap \"Add User\". Enter the person's email address and choose their role — either \"Member\" or \"Super User\". They will receive a pending invite they can accept or decline.",
+  "faqSharingA4": "Sharing gives someone view access to a pet — the original owner retains full control. Transferring ownership (personal pets) moves the pet to another user; you keep shared access unless they remove you. Shelter pet transfers are managed separately.",
+  "faqOrgTitle": "Shelters",
+  "faqOrgQ1": "What are shelters for?",
+  "faqOrgA1": "Shelters let multiple people collaborate on pet care. They are ideal for vet clinics, shelters, charities, and foster networks. You can create Professional or Charity shelters.",
+  "faqOrgQ2": "How do I create an shelter?",
+  "faqOrgA2": "Go to the Shelters page (accessible from the business icon in the top bar or from My Details). Tap \"Create\" and choose Professional or Charity, then fill in the name and details. You become the super user automatically.",
+  "faqOrgQ3": "How do I invite people to my shelter?",
+  "faqOrgA3": "From the shelter's detail page, tap \"Add User\". Enter the person's email address and choose their role — either \"Member\" or \"Super User\". They will receive a pending invite they can accept or decline.",
   "faqOrgQ4": "What is the difference between a Member and a Super User?",
-  "faqOrgA4": "Members can view and manage pets within the organisation. Super Users have additional permissions: they can invite or remove members, edit organisation details, transfer pets, and manage archives.",
-  "faqOrgQ5": "How do I archive or restore a pet in an organisation?",
-  "faqOrgA5": "Super Users can archive a pet from the organisation's pet list (e.g., after an adoption). Archived pets are hidden from the active list but preserved for record-keeping. They can be restored at any time from the Archived Pets section.",
-
+  "faqOrgA4": "Members can view and manage pets within the shelter. Super Users have additional permissions: they can invite or remove members, edit shelter details, transfer pets, and manage archives.",
+  "faqOrgQ5": "How do I archive or restore a pet in an shelter?",
+  "faqOrgA5": "Super Users can archive a pet from the shelter's pet list (e.g., after an adoption). Archived pets are hidden from the active list but preserved for record-keeping. They can be restored at any time from the Archived Pets section.",
   "faqFamilyEventsTitle": "Family Events",
   "faqFamilyEventsQ1": "What are Family Events?",
-  "faqFamilyEventsA1": "Family Events are care assignments for organisation pets. They record who is responsible for a pet during a specific period — such as a foster stay or temporary care. Each event has an assigned member, date range, and optional notes.",
+  "faqFamilyEventsA1": "Family Events are care assignments for shelter pets. They record who is responsible for a pet during a specific period — such as a foster stay or temporary care. Each event has an assigned member, date range, and optional notes.",
   "faqFamilyEventsQ2": "How do I create a Family Event?",
-  "faqFamilyEventsA2": "Open an organisation pet's detail page and scroll to the Family Events section. Tap the add button, choose the assigned member, set the from and optional to dates, and add any notes. All organisation members will be notified.",
+  "faqFamilyEventsA2": "Open an shelter pet's detail page and scroll to the Family Events section. Tap the add button, choose the assigned member, set the from and optional to dates, and add any notes. All shelter members will be notified.",
   "faqFamilyEventsQ3": "Do Family Events appear in the Health Dashboard?",
-  "faqFamilyEventsA3": "Yes. Family Events have their own dedicated tab in the Health Dashboard. They also trigger reminder notifications when an event's end date is approaching, so all organisation members stay informed.",
-
+  "faqFamilyEventsA3": "Yes. Family Events have their own dedicated tab in the Health Dashboard. They also trigger reminder notifications when an event's end date is approaching, so all shelter members stay informed.",
   "faqNotificationsTitle": "Notifications",
   "faqNotificationsQ1": "What notifications will I receive?",
-  "faqNotificationsA1": "You will receive in-app notifications for: due or overdue health entries, upcoming medication reminders, organisation invites, share requests, pet memorials, and family event reminders.",
+  "faqNotificationsA1": "You will receive in-app notifications for: due or overdue health entries, upcoming medication reminders, shelter invites, share requests, pet memorials, and family event reminders.",
   "faqNotificationsQ2": "How do I manage notification preferences?",
   "faqNotificationsA2": "Go to the Notifications screen (bell icon in the top bar) and tap the settings icon. From there you can customise which types of notifications you receive.",
   "faqNotificationsQ3": "Can I mute notifications for a specific pet?",
   "faqNotificationsA3": "Yes. Each pet has a mute option in its notification settings. Muted pets will not generate any health-related notifications until unmuted.",
   "faqNotificationsQ4": "Can I snooze a notification?",
   "faqNotificationsA4": "Yes. You can snooze individual notifications to be reminded again after a chosen number of days. The snoozed reminder will reappear counting from today, not from the original due date.",
-
   "faqReportsTitle": "Reports",
   "faqReportsQ1": "How do I generate a pet report?",
   "faqReportsA1": "Open a pet's detail page and tap the report/PDF icon. You can customise what to include — profile information, weight history, health events, health issues, family events, notifications, and sharing details. The report is generated as a downloadable PDF.",
   "faqReportsQ2": "What information is included in a report?",
-  "faqReportsA2": "Reports can include: pet profile details (name, breed, age, ID), a weight chart and history table, a list of all health entries by type, recorded health issues, family event assignments and foster stays (for organisation pets), recent notifications and alerts, and sharing access details. You choose which sections to include before generating.",
-
+  "faqReportsA2": "Reports can include: pet profile details (name, breed, age, ID), a weight chart and history table, a list of all health entries by type, recorded health issues, family event assignments and foster stays (for shelter pets), recent notifications and alerts, and sharing access details. You choose which sections to include before generating.",
   "faqSubscriptionTitle": "Subscription",
   "faqSubscriptionQ1": "Is Agatha Track free to use?",
   "faqSubscriptionA1": "Agatha Track offers a free tier with core features. An optional premium subscription unlocks additional capabilities and removes limits. Visit the Subscription page from My Details to learn more.",
@@ -1290,13 +1840,11 @@
   "faqSubscriptionA2": "Go to My Details and tap \"Subscription\". Choose a plan and complete the purchase through your platform's payment system. Your subscription is managed securely through RevenueCat.",
   "faqSubscriptionQ3": "How do I cancel my subscription?",
   "faqSubscriptionA3": "Subscriptions can be managed or cancelled through your device's app store settings (App Store or Google Play). Changes take effect at the end of the current billing period.",
-
   "faqLanguageTitle": "Language & Accessibility",
   "faqLanguageQ1": "How do I change the app language?",
   "faqLanguageA1": "Go to My Details and use the language dropdown to switch between English and French. The change takes effect immediately across the entire app and is saved to your profile.",
   "faqLanguageQ2": "Is the app accessible?",
   "faqLanguageA2": "Yes. Agatha Track includes accessibility features throughout: semantic labels for screen readers, tooltips on all interactive elements, proper form field labelling, and keyboard navigation support.",
-
   "consentBannerTitle": "Your Privacy Matters",
   "consentBannerMessage": "We use essential cookies and services to make Agatha Track work. We'd also like to set optional cookies for analytics and marketing to improve your experience. You can manage your preferences at any time.",
   "consentAcceptAll": "Accept All",
@@ -1312,10 +1860,15 @@
   "consentSavePreferences": "Save Preferences",
   "consentPreferencesSaved": "Privacy preferences saved",
   "consentLastUpdated": "Last updated: {timestamp}",
-  "@consentLastUpdated": { "placeholders": { "timestamp": { "type": "String" } } },
-
+  "@consentLastUpdated": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
   "aboutUs": "About Us",
-  "aboutIntro": "Agatha Track helps pet guardians and organisations keep their animals' health organised. Track vet visits, medications, weight, and daily care — whether you manage one pet or coordinate across a whole team.",
+  "aboutIntro": "Agatha Track helps pet guardians and shelters keep their animals' health organised. Track vet visits, medications, weight, and daily care — whether you manage one pet or coordinate across a whole team.",
   "privacyPolicy": "Privacy Notice",
   "termsOfService": "Terms of Use",
   "legalInformation": "Legal Information",
@@ -1326,13 +1879,12 @@
   "legalDocumentLoadError": "Unable to load this legal document. Please try again later.",
   "appVersion": "Version 1.0.0",
   "version": "Version",
-
   "ppDataController": "Data Controller",
   "ppDataControllerDesc": "The data controller is responsible for processing your personal data in accordance with Regulation (EU) 2016/679 (General Data Protection Regulation, \"GDPR\"). Contact us for data controller details.",
   "ppScope": "Scope",
   "ppScopeDesc": "This Privacy Policy applies to the Agatha Track application, a pet management platform available as a web application, and describes how we collect, use, store, and protect your personal data.",
   "ppDataCollected": "Data We Collect",
-  "ppDataCollectedDesc": "We collect the following categories of data:\n\n• Account Data: email address, password (hashed), first name, last name, display name, category, bio, profile photo, locale preference.\n• Pet Data: pet name, species, breed, date of birth, sex, chip/microchip ID, insurance information, pet photo, passed-away status.\n• Health Tracking Data: health entries (medications, preventives, vet visits), photos/attachments, health issues, administration history.\n• Weight Tracking Data: weight entries (value, date, unit).\n• Veterinarian Contact Data: vet name, clinic, phone, email, address.\n• Organisation Data: organisation name, type, description, membership, roles, family events.\n• Sharing Data: pet access records, share links, pending invitations.\n• Notification Data: in-app notifications, notification preferences.\n• Technical Data: JWT authentication tokens, local preferences.",
+  "ppDataCollectedDesc": "We collect the following categories of data:\n\n• Account Data: email address, password (hashed), first name, last name, display name, category, bio, profile photo, locale preference.\n• Pet Data: pet name, species, breed, date of birth, sex, chip/microchip ID, insurance information, pet photo, passed-away status.\n• Health Tracking Data: health entries (medications, preventives, vet visits), photos/attachments, health issues, administration history.\n• Weight Tracking Data: weight entries (value, date, unit).\n• Veterinarian Contact Data: vet name, clinic, phone, email, address.\n• Shelter Data: shelter name, type, description, membership, roles, family events.\n• Sharing Data: pet access records, share links, pending invitations.\n• Notification Data: in-app notifications, notification preferences.\n• Technical Data: JWT authentication tokens, local preferences.",
   "ppLegalBasis": "Legal Basis for Processing",
   "ppLegalBasisDesc": "We process your personal data on the following legal bases under GDPR Article 6:\n\n• Consent (Art. 6(1)(a)): For optional data such as profile photos, pet photos, and bio text.\n• Contractual Necessity (Art. 6(1)(b)): For data required to provide the core service.\n• Legitimate Interest (Art. 6(1)(f)): For security measures and service improvement.\n• Legal Obligation (Art. 6(1)(c)): Where required by applicable law.",
   "ppHowWeUse": "How We Use Your Data",
@@ -1355,7 +1907,6 @@
   "ppChangesDesc": "We may update this Privacy Policy from time to time. We will notify you of material changes via in-app notification or by updating the last updated date.",
   "ppContact": "Contact Us",
   "ppContactDesc": "For any questions, requests, or concerns about this Privacy Policy or our data processing practices, please contact us through the App or via email.",
-
   "tosAcceptance": "Introduction and Acceptance",
   "tosAcceptanceDesc": "These Terms of Service govern your access to and use of the Agatha Track application. By creating an account or using the App, you agree to be bound by these Terms. If you do not agree, you must not use the App.",
   "tosEligibility": "Eligibility",
@@ -1363,7 +1914,7 @@
   "tosAccountSecurity": "Account Registration and Security",
   "tosAccountSecurityDesc": "To use the App, you must register with a valid email address and password. You are responsible for maintaining the confidentiality of your login credentials and all activities that occur under your account.",
   "tosServiceDescription": "Description of Service",
-  "tosServiceDescriptionDesc": "The App provides pet profile management, health tracking, weight tracking, veterinarian contacts, organisation management, pet sharing, family events, pet reports, notifications, and subscription management.",
+  "tosServiceDescriptionDesc": "The App provides pet profile management, health tracking, weight tracking, veterinarian contacts, shelter management, pet sharing, family events, pet reports, notifications, and subscription management.",
   "tosUserContent": "User Content and Responsibilities",
   "tosUserContentDesc": "You retain ownership of all content you upload. By uploading content, you grant us a limited licence to store, process, and display it solely for providing the Service. You agree not to upload unlawful, harmful, or infringing content. The App is not a substitute for professional veterinary advice.",
   "tosProhibitedUses": "Prohibited Uses",
@@ -1380,7 +1931,6 @@
   "tosGoverningLawDesc": "These Terms are governed by applicable European Union and national law. For EU consumers, you benefit from mandatory consumer protection laws of your country of residence. You may use the European Commission's Online Dispute Resolution (ODR) platform to resolve disputes online.",
   "tosContact": "Contact Information",
   "tosContactDesc": "For questions about these Terms, please contact us through the App or via email.",
-
   "exportMyData": "Export My Data",
   "exportMyDataSubtitle": "Download all your data as a JSON file",
   "dataExported": "Your data has been exported",
@@ -1388,21 +1938,54 @@
   "consentReset": "Consent preferences reset. The consent banner will appear on next launch.",
   "deleteAccount": "Delete Account",
   "deleteAccountSubtitle": "Permanently delete your account and all data",
-  "deleteAccountWarning": "This action is irreversible. All your pets, health entries, weight records, notifications, and organisation memberships will be permanently deleted. Enter your password to confirm.",
+  "deleteAccountWarning": "This action is irreversible. All your pets, health entries, weight records, notifications, and shelter memberships will be permanently deleted. Enter your password to confirm.",
   "error": "Error",
   "maxPhotosReached": "Maximum 4 documents per event",
   "failedToLoadPhotos": "Failed to load documents: {error}",
-  "@failedToLoadPhotos": { "placeholders": { "error": { "type": "String" } } },
+  "@failedToLoadPhotos": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "failedToAddPhoto": "Failed to add document: {error}",
-  "@failedToAddPhoto": { "placeholders": { "error": { "type": "String" } } },
+  "@failedToAddPhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "failedToUploadPhotoNamed": "Failed to upload document \"{name}\": {error}",
-  "@failedToUploadPhotoNamed": { "placeholders": { "name": { "type": "String" }, "error": { "type": "String" } } },
+  "@failedToUploadPhotoNamed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "deletePhotoTitle": "Delete Document",
   "deletePhotoConfirm": "Remove this document? This cannot be undone.",
   "failedToDeletePhoto": "Failed to delete document: {error}",
-  "@failedToDeletePhoto": { "placeholders": { "error": { "type": "String" } } },
+  "@failedToDeletePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "failedToLoadEntry": "Failed to load entry: {error}",
-  "@failedToLoadEntry": { "placeholders": { "error": { "type": "String" } } },
+  "@failedToLoadEntry": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "createHealthIssuesHint": "You can create health issues from the pet's profile page",
   "noPetsFoundAddFirst": "No pets found. Please add a pet first.",
   "entryNameHint": "e.g., Heartgard, Annual Checkup",
@@ -1413,7 +1996,13 @@
   "pickADate": "Pick a date",
   "notesHint": "Additional information...",
   "addEntryForPets": "Add Entry for {count} Pets",
-  "@addEntryForPets": { "placeholders": { "count": { "type": "int" } } },
+  "@addEntryForPets": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "administrationHistory": "Administration History",
   "selectAtLeastOnePet": "Please select at least one pet",
   "markAsCompletedTitle": "Mark as Completed?",
@@ -1422,10 +2011,22 @@
   "keepActive": "Keep Active",
   "markCompletedAction": "Mark Completed",
   "entriesCreated": "{count} entries created",
-  "@entriesCreated": { "placeholders": { "count": { "type": "int" } } },
+  "@entriesCreated": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "noHistoryYet": "No history yet.",
   "viewEntryTitle": "View {name}",
-  "@viewEntryTitle": { "placeholders": { "name": { "type": "String" } } },
+  "@viewEntryTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "seeHistory": "See history",
   "closeEventAction": "Close event",
   "reopenEventAction": "Reopen event",
@@ -1437,29 +2038,63 @@
   "remindedDaysBefore": "You will be reminded {count} {dayLabel} before",
   "@remindedDaysBefore": {
     "placeholders": {
-      "count": { "type": "int" },
-      "dayLabel": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "dayLabel": {
+        "type": "String"
+      }
     }
   },
   "recurrenceRepeatsEveryUntil": "Repeats every {interval} {period} until {date}",
   "@recurrenceRepeatsEveryUntil": {
     "placeholders": {
-      "interval": { "type": "int" },
-      "period": { "type": "String" },
-      "date": { "type": "String" }
+      "interval": {
+        "type": "int"
+      },
+      "period": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
     }
   },
   "occurrenceSkipped": "Skipped",
   "entryNotFound": "Entry not found",
   "nextOccurrence": "Next occurrence",
   "deleteEntryNamedConfirm": "Delete \"{name}\"? This cannot be undone.",
-  "@deleteEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
+  "@deleteEntryNamedConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "deleteRecurringEntryNamedConfirm": "Delete \"{name}\"? All iterations of this recurring event will be permanently removed.",
-  "@deleteRecurringEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
+  "@deleteRecurringEntryNamedConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "failedToDelete": "Failed to delete: {error}",
-  "@failedToDelete": { "placeholders": { "error": { "type": "String" } } },
+  "@failedToDelete": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "failedToLoadHistory": "Failed to load history: {error}",
-  "@failedToLoadHistory": { "placeholders": { "error": { "type": "String" } } },
+  "@failedToLoadHistory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "petLabel": "Pet",
   "unknownPet": "Unknown pet",
   "selectPets": "Select Pets",
@@ -1471,9 +2106,21 @@
   "cameraOption": "Camera",
   "galleryFilesOption": "Gallery / Files",
   "photoCountLabel": "{count}/4 Documents",
-  "@photoCountLabel": { "placeholders": { "count": { "type": "int" } } },
+  "@photoCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "pendingUploadSuffix": " ({count} will upload on save)",
-  "@pendingUploadSuffix": { "placeholders": { "count": { "type": "int" } } },
+  "@pendingUploadSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "pendingLabel": "Pending",
   "unsupportedDocumentFormat": "Only JPG, PNG, and PDF documents are supported",
   "documentTooLarge": "Document must be 2 MB or smaller",
@@ -1486,20 +2133,20 @@
   "continueButton": "Continue",
   "experienceChooserTitle": "How will you use Agatha Track?",
   "experienceChooserSubtitle": "Choose the experience that fits what you need today.",
-  "experienceGuardianTitle": "Individual Pet Guardian",
+  "experienceGuardianTitle": "Individual Pet Owner",
   "experienceGuardianSubtitle": "Track care, reminders, and shared looking-after for your pets.",
-  "experienceOrganizationTitle": "Shelter / Organisation",
+  "experienceOrganizationTitle": "Shelter / Shelter",
   "experienceOrganizationSubtitle": "Manage pets, fosters, adoptions, and your team.",
   "experienceBoardingTitle": "Pet boarding",
   "experienceBoardingSubtitle": "Coming soon",
   "experienceRememberChoice": "Remember my choice for next time",
   "experienceRememberChoiceHint": "You can change your default view later in Settings.",
-  "experienceOrgView": "Organisation view",
-  "drawerCreateOrg": "Create an organisation",
-  "orgNotificationsDrawer": "Organisation notifications",
-  "guardianNotificationsDrawer": "Guardian notifications",
+  "experienceOrgView": "Shelter view",
+  "drawerCreateOrg": "Create an shelter",
+  "orgNotificationsDrawer": "Shelter notifications",
+  "guardianNotificationsDrawer": "My Pets notifications",
   "myVets": "My vets",
-  "guardianDashboardTitle": "Guardian dashboard",
+  "guardianDashboardTitle": "My Pets dashboard",
   "upcomingPetEvents": "Upcoming Pet Events",
   "dueAndOverdue": "Due and Overdue",
   "allEvents": "All Events",
@@ -1508,21 +2155,27 @@
   "addAnEvent": "Add an event",
   "dashboardAddPet": "Add a pet",
   "vetLinkedPetCount": "{count, plural, =1{1 pet} other{{count} pets}}",
-  "@vetLinkedPetCount": { "placeholders": { "count": { "type": "int" } } },
+  "@vetLinkedPetCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "vetLinkedPets": "Linked pets",
   "vetNotFound": "Veterinarian not found",
   "selectPetForWeight": "Select a pet for weight entry",
   "selectPetForEvent": "Select a pet for this event",
   "orgVets": "Org vets",
-  "myOrganisation": "My Organisation",
-  "experienceGuardianView": "Pet guardian view",
+  "myOrganisation": "My Shelter",
+  "experienceGuardianView": "Pet my pets view",
   "experienceDefaultSettingTitle": "Default experience",
   "experienceDefaultSettingSubtitle": "Used when you sign in. You can still switch anytime from the menu.",
-  "experienceShowOrganisationSectionTitle": "Show organisation section",
-  "experienceShowOrganisationSectionSubtitle": "Adds Organisation to the menu so you can create or manage shelters and rescues.",
-  "experienceShowOrganisationSectionMemberLocked": "Organisation stays visible because you belong to at least one organisation.",
+  "experienceShowOrganisationSectionTitle": "Show shelter section",
+  "experienceShowOrganisationSectionSubtitle": "Adds Shelter to the menu so you can create or manage shelters and rescues.",
+  "experienceShowOrganisationSectionMemberLocked": "Shelter stays visible because you belong to at least one shelter.",
   "experienceGuardianInviteHint": "Add a pet or open a pet profile to share care with someone.",
-  "experienceOrganizationInviteHint": "Invite team members to help run your organisation.",
+  "experienceOrganizationInviteHint": "Invite team members to help run your shelter.",
   "guardianOnboardingTitle": "Get started",
   "guardianOnboardingSkip": "Skip for now",
   "guardianOnboardingWelcomeTitle": "Welcome to Agatha Track",
@@ -1534,31 +2187,55 @@
   "guardianOnboardingReminderStepBody": "Medications, preventives, and vet visits — we will remind you when they are due.",
   "guardianOnboardingReminderNameLabel": "Reminder name",
   "guardianOnboardingFinish": "Finish setup",
-  "orgOnboardingTitle": "Set up your organisation",
+  "orgOnboardingTitle": "Set up your shelter",
   "orgOnboardingSkip": "Skip for now",
-  "orgOnboardingWelcomeTitle": "Welcome to your organisation workspace",
-  "orgOnboardingWelcomeBody": "Create your organisation profile, add your first inventory pet, and set a reminder to stay on top of care.",
+  "orgOnboardingWelcomeTitle": "Welcome to your shelter workspace",
+  "orgOnboardingWelcomeBody": "Create your shelter profile, add your first inventory pet, and set a reminder to stay on top of care.",
   "orgOnboardingGetStarted": "Get started",
-  "orgOnboardingOrgStepTitle": "Create your organisation",
-  "orgOnboardingOrgStepBody": "Tell us about your shelter or organisation. You can add more details later.",
+  "orgOnboardingOrgStepTitle": "Create your shelter",
+  "orgOnboardingOrgStepBody": "Tell us about your shelter or shelter. You can add more details later.",
   "orgOnboardingPetStepTitle": "Add your first inventory pet",
-  "orgOnboardingPetStepBody": "Add a pet your organisation is caring for. Foster and adoption workflows come next.",
+  "orgOnboardingPetStepBody": "Add a pet your shelter is caring for. Foster and adoption workflows come next.",
   "orgOnboardingReminderStepTitle": "Set your first reminder",
   "orgOnboardingReminderStepBody": "Medications, vaccines, and vet visits — we will remind your team when they are due.",
   "orgOnboardingFinish": "Finish setup",
   "failedToSaveOnboarding": "Could not save your setup: {error}",
-  "@failedToSaveOnboarding": { "placeholders": { "error": { "type": "String" } } },
+  "@failedToSaveOnboarding": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "sharedWithGroupTitle": "Shared with {name}",
-  "@sharedWithGroupTitle": { "placeholders": { "name": { "type": "String" } } },
+  "@sharedWithGroupTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "fosteredViaGroupTitle": "Fostered via {orgName}",
-  "@fosteredViaGroupTitle": { "placeholders": { "orgName": { "type": "String" } } },
-  "petResponsibilityGuardian": "You are the pet guardian",
-  "petResponsibilityOrgCustody": "{orgName} · Organisation custody",
-  "@petResponsibilityOrgCustody": { "placeholders": { "orgName": { "type": "String" } } },
+  "@fosteredViaGroupTitle": {
+    "placeholders": {
+      "orgName": {
+        "type": "String"
+      }
+    }
+  },
+  "petResponsibilityGuardian": "You are the pet owner",
+  "petResponsibilityOrgCustody": "{orgName} · Shelter custody",
+  "@petResponsibilityOrgCustody": {
+    "placeholders": {
+      "orgName": {
+        "type": "String"
+      }
+    }
+  },
   "homeAllCaughtUp": "You're all caught up",
   "homeNoDueEvents": "No events are overdue or due today.",
   "open": "Open",
-  "viewOrganization": "View organisation",
+  "viewOrganization": "View shelter",
   "prospectsTitle": "Prospects",
   "prospectsEmpty": "No prospects yet",
   "adoptionVisitsTitle": "Adoption visits",
@@ -1574,9 +2251,8 @@
   "adoptionJourneyMilestonesTitle": "Adoption milestones",
   "adoptionJourneyMilestonesEmpty": "No milestones configured yet.",
   "adoptionJourneyStatusUnknown": "Unknown",
-
-  "drawerGuardian": "Guardian",
-  "drawerOrganisation": "Organisation",
+  "drawerGuardian": "My Pets",
+  "drawerOrganisation": "Shelter",
   "drawerAccount": "Account",
   "drawerItemUnreadSemantics": "{label}, {count} unread",
   "@drawerItemUnreadSemantics": {
@@ -1592,27 +2268,33 @@
   "notificationsBellTooltip": "Open notifications",
   "sectionDrawerTooltip": "Open menu",
   "failedToLoadNotifications": "Failed to load notifications: {error}",
-  "@failedToLoadNotifications": { "placeholders": { "error": { "type": "String" } } },
+  "@failedToLoadNotifications": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "notificationKindAll": "All",
   "notificationKindCare": "Care",
-  "notificationKindOrganisation": "Organisation",
+  "notificationKindOrganisation": "Shelter",
   "notificationActionNeeded": "Action needed",
   "accountTitle": "Account",
   "accountProfileSection": "Profile",
   "accountPreferencesSection": "Preferences",
   "accountSupportSection": "Support",
   "accountActionsSection": "Account actions",
-  "accountOrgSettingsTitle": "Organisation settings",
-  "accountOrgSettingsEmpty": "You are not a member of any organisation yet.",
-  "accountOrgPrivacySection": "Privacy in this organisation",
+  "accountOrgSettingsTitle": "Shelter settings",
+  "accountOrgSettingsEmpty": "You are not a member of any shelter yet.",
+  "accountOrgPrivacySection": "Privacy in this shelter",
   "accountOrgPrivacySaved": "Privacy settings saved",
-  "accountOrgLeaveSection": "Leave organisation",
-  "accountOrgLeaveSubtitle": "Remove your membership from this organisation.",
+  "accountOrgLeaveSection": "Leave shelter",
+  "accountOrgLeaveSubtitle": "Remove your membership from this shelter.",
   "accountOrgCardVisibilityLabel": "Who can see your directory card",
   "accountOrgPhoneVisibilityLabel": "Who can see your phone number",
   "accountOrgEmailVisibilityLabel": "Who can see your email address",
   "accountOrgAddressVisibilityLabel": "Who can see your address",
-  "accountOrgCardVisibilityAll": "Everyone in the organisation",
+  "accountOrgCardVisibilityAll": "Everyone in the shelter",
   "accountOrgCardVisibilityAdmins": "Admins only",
   "accountOrgCardVisibilityNamed": "Named people only",
   "accountOrgContactVisibilityAdmins": "Admins only",
@@ -1628,11 +2310,16 @@
   "accountOrgNamedPhoneLabel": "Can see your phone",
   "accountOrgNamedEmailLabel": "Can see your email",
   "accountOrgNamedAddressLabel": "Can see your address",
-
   "adminContactsTitle": "Admin contacts",
   "orgPersonProfileTitle": "{name} - Profile",
-  "@orgPersonProfileTitle": { "placeholders": { "name": { "type": "String" } } },
-  "adminContactsDescription": "Internal directory of organisation admins. Tap a tile to open their profile.",
+  "@orgPersonProfileTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "adminContactsDescription": "Internal directory of shelter admins. Tap a tile to open their profile.",
   "adminContactsEmpty": "No admin contacts yet.",
   "adminContactsYourCard": "Your card",
   "adminContactsAddAdmin": "Add admin",
@@ -1644,52 +2331,87 @@
   "adminContactsPhoneVisibilityLabel": "Who can see your phone number",
   "adminContactsPhoneVisibilityFosters": "Fosters",
   "adminContactsPhoneVisibilityAdmins": "Admins",
-  "adminContactsPhoneVisibilityAll": "Everyone in the organisation",
+  "adminContactsPhoneVisibilityAll": "Everyone in the shelter",
   "adminContactsPhoneVisibilityNobody": "Nobody",
   "adminContactsMessageChannelLabel": "Message notifications",
   "adminContactsMessageChannelInApp": "In app",
   "adminContactsMessageChannelEmail": "Email",
   "adminContactsMessageChannelBoth": "In app and email",
   "adminContactsSelfCardSemantics": "Your admin contact card, {name}",
-  "@adminContactsSelfCardSemantics": { "placeholders": { "name": { "type": "String" } } },
+  "@adminContactsSelfCardSemantics": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "adminContactsCardSemantics": "Admin contact {name}, {role}",
-  "@adminContactsCardSemantics": { "placeholders": { "name": { "type": "String" }, "role": { "type": "String" } } },
-  "adminContactsRemoveConfirm": "Remove {name} from this organisation?",
-  "@adminContactsRemoveConfirm": { "placeholders": { "name": { "type": "String" } } },
+  "@adminContactsCardSemantics": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "adminContactsRemoveConfirm": "Remove {name} from this shelter?",
+  "@adminContactsRemoveConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "adminContactsRemoved": "{name} was removed",
-  "@adminContactsRemoved": { "placeholders": { "name": { "type": "String" } } },
-
-  "orgDashboardIntro": "Choose a section to manage your organisation.",
+  "@adminContactsRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "orgDashboardIntro": "Choose a section to manage your shelter.",
   "orgDashboardPetsSubtitle": "Browse pets, tabs, and care filters.",
-  "orgDashboardConnectionsSubtitle": "Manage links with other organisations.",
+  "orgDashboardConnectionsSubtitle": "Manage links with other shelters.",
   "orgProfileFosteringSessionsTitle": "Fostering sessions",
   "orgFosteringSessionsListTitle": "Fostering sessions",
   "orgFosteringSessionsManage": "Manage sessions",
   "orgFosteringSessionsEmpty": "No fostering sessions match this view",
   "fosteringSessionDerivedNearlyFinished": "Nearly finished",
-  "orgDashboardEditSubtitle": "Update organisation details and branding.",
-
-  "orgPresentationTitle": "Organisation presentation",
+  "orgDashboardEditSubtitle": "Update shelter details and branding.",
+  "orgPresentationTitle": "Shelter presentation",
   "orgPresentationSubtitle": "Public-facing identity, legal details, and contact information.",
   "orgPresentationContactTitle": "Contact",
   "orgPresentationLegalTitle": "Legal information",
   "orgLegalIdentifierRna": "RNA",
   "orgLegalIdentifierSiren": "SIREN",
   "orgLegalIdentifierSiret": "SIRET",
-
   "orgLegalDocumentsTitle": "Legal & documents",
-  "orgLegalDocumentsSubtitle": "Read and download public organisation documents.",
-  "orgLegalDocumentsIntro": "These documents are published by your organisation for members to read and download.",
+  "orgLegalDocumentsSubtitle": "Read and download public shelter documents.",
+  "orgLegalDocumentsIntro": "These documents are published by your shelter for members to read and download.",
   "orgLegalDocumentsEmpty": "No public documents are available yet.",
   "orgLegalDocumentsTypeSession": "Session documents",
   "orgLegalDocumentsTypeAdoption": "Adoption documents",
   "orgLegalDocumentsDownload": "Download {title}",
-  "@orgLegalDocumentsDownload": { "placeholders": { "title": { "type": "String" } } },
+  "@orgLegalDocumentsDownload": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "orgLegalDocumentsDownloaded": "Downloaded {title}",
-  "@orgLegalDocumentsDownloaded": { "placeholders": { "title": { "type": "String" } } },
-
-  "orgCustomisationsTitle": "Organisation Administration",
-  "orgCustomisationsIntro": "Configure templates and delegate permissions for this organisation.",
+  "@orgLegalDocumentsDownloaded": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "orgCustomisationsTitle": "Shelter Administration",
+  "orgCustomisationsIntro": "Configure templates and delegate permissions for this shelter.",
   "orgCustomisationsTemplatesTitle": "Document templates",
   "orgCustomisationsTemplatesSubtitle": "Session checklists and adoption milestone templates.",
   "orgCustomisationsRolesTitle": "Roles & permissions",
@@ -1698,11 +2420,6 @@
   "orgCustomisationsBundleDefaultsSubtitle": "Configure which permissions each role tier receives by default.",
   "orgDocumentTemplatesIntro": "Templates used for fostering sessions, adoption journeys, and foster invitation emails.",
   "orgEmailTemplatesSection": "Email templates",
-  "orgEmailTemplateEditorTitle": "Edit email template",
-  "orgEmailTemplateEditorHint": "Use placeholders such as org.name, inviter.name, and signup_url.",
-  "orgEmailTemplateBody": "Email body",
-  "orgEmailTemplateSubject": "Subject line",
-  "orgEmailTemplateSaved": "Email template saved",
   "orgDocumentTemplatesEmpty": "No document templates are configured yet.",
   "orgRolesPermissionsIntro": "Select a member, apply a bundle preset, then fine-tune individual permissions.",
   "orgRolesPermissionsMemberLabel": "Member",
@@ -1714,17 +2431,47 @@
   "orgRolesPermissionsAuditTitle": "Audit log",
   "orgRolesPermissionsAuditEmpty": "No audit events recorded yet.",
   "orgRolesPermissionsApplyBundle": "Apply {name}",
-  "@orgRolesPermissionsApplyBundle": { "placeholders": { "name": { "type": "String" } } },
+  "@orgRolesPermissionsApplyBundle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "orgRolesPermissionsBundleApplied": "{name} bundle applied",
-  "@orgRolesPermissionsBundleApplied": { "placeholders": { "name": { "type": "String" } } },
+  "@orgRolesPermissionsBundleApplied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "orgRolesPermissionsSelectedPeople": "Selected people",
   "orgRolesPermissionsAddMember": "Search to add members",
   "orgRolesPermissionsApplyRolePreset": "Apply {role}",
-  "@orgRolesPermissionsApplyRolePreset": { "placeholders": { "role": { "type": "String" } } },
+  "@orgRolesPermissionsApplyRolePreset": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
   "orgRolesPermissionsPresetConfirmTitle": "Apply {role} permissions?",
-  "@orgRolesPermissionsPresetConfirmTitle": { "placeholders": { "role": { "type": "String" } } },
+  "@orgRolesPermissionsPresetConfirmTitle": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
   "orgRolesPermissionsPresetConfirmBody": "This will stage permission changes for all selected people. Extra individual grants outside the {role} tier will be removed. Changes are not saved until you tap Save.",
-  "@orgRolesPermissionsPresetConfirmBody": { "placeholders": { "role": { "type": "String" } } },
+  "@orgRolesPermissionsPresetConfirmBody": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
   "orgRolesPermissionsDetailedTitle": "Detailed permissions",
   "orgRolesPermissionsPendingChange": "Pending change",
   "orgRolesPermissionsSave": "Save changes",
@@ -1743,20 +2490,45 @@
   "orgPermissionBundlePetAdmin": "Pet Admin",
   "orgPermissionBundleTeamAdmin": "Team Admin",
   "orgRoleDefaultsTitle": "Default permission sets",
-  "orgRoleDefaultsIntro": "Choose which role tier to adjust. Changes apply organisation-wide when saved.",
+  "orgRoleDefaultsIntro": "Choose which role tier to adjust. Changes apply shelter-wide when saved.",
   "orgRoleDefaultsTierPrompt": "Which role tier do you want to adjust?",
   "orgRoleDefaultsTierAssociate": "Associate",
   "orgRoleDefaultsTierAdmin": "Admin",
   "orgRoleDefaultsTierSuperAdmin": "Super Admin",
-  "orgRoleDefaultsReadOnlyHint": "Super Admin defaults come from the platform baseline and cannot be changed per organisation.",
+  "orgRoleDefaultsReadOnlyHint": "Super Admin defaults come from the platform baseline and cannot be changed per shelter.",
   "orgRoleDefaultsSave": "Save defaults",
   "orgRoleDefaultsSaved": "Default permissions updated for {tier}",
-  "@orgRoleDefaultsSaved": { "placeholders": { "tier": { "type": "String" } } },
-  "orgRoleDefaultsConfirmTitle": "Apply organisation-wide?",
-  "orgRoleDefaultsConfirmBody": "Saving will update default permissions for every {tier} in this organisation. People with extra individual grants may need manual review.",
-  "@orgRoleDefaultsConfirmBody": { "placeholders": { "tier": { "type": "String" } } },
+  "@orgRoleDefaultsSaved": {
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "orgRoleDefaultsConfirmTitle": "Apply shelter-wide?",
+  "orgRoleDefaultsConfirmBody": "Saving will update default permissions for every {tier} in this shelter. People with extra individual grants may need manual review.",
+  "@orgRoleDefaultsConfirmBody": {
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
   "orgRoleDefaultsUnsavedTitle": "Discard changes?",
   "orgRoleDefaultsUnsavedBody": "You have unsaved permission changes for this role tier.",
   "orgRoleDefaultsDiscard": "Discard",
-  "orgRoleDefaultsOtherPermissions": "Other permissions"
+  "orgRoleDefaultsOtherPermissions": "Other permissions",
+  "ftueAddMyPetTitle": "Add my pet",
+  "ftueAddMyPetSubtitle": "Track health and care for your own pets",
+  "ftueFosterTitle": "I'm fostering a pet",
+  "ftueFosterSubtitle": "Connect with a shelter to care for their animals",
+  "ftueShelterTitle": "I'm connecting as part of a shelter",
+  "ftueShelterSubtitle": "Manage your rescue, staff, and inventory pets",
+  "ftueFosterInviteDialogTitle": "Foster Invite Required",
+  "ftueFosterInviteDialogBody": "To foster a pet, you need an invite link from your shelter. If you have an invite code, enter it below.",
+  "ftueFosterInviteCodeLabel": "Invite Code (optional)",
+  "ftueFosterInviteSubmit": "Submit Code",
+  "ftueFosterInviteClose": "I'll wait for a link",
+  "myPetsEmptyShelterCrosslink": "You aren't caring for any pets right now. Looking for your shelter's animals?",
+  "myPetsEmptyShelterCrosslinkCta": "Go to Shelters"
 }
