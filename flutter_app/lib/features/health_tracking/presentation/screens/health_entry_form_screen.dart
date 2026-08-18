@@ -313,16 +313,9 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
 
     final l = AppLocalizations.of(context)!;
     switch (outcome) {
-      case HealthEntrySubmitValidationFailed(:final reason):
-        final message = switch (reason) {
-          HealthEntrySubmitValidation.nameRequired => l.entryNameRequired,
-          HealthEntrySubmitValidation.dueOrCompletedRequired =>
-            l.dueOrCompletedRequired,
-          HealthEntrySubmitValidation.noPetsSelected => l.selectAtLeastOnePet,
-        };
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+      case HealthEntrySubmitValidationFailed():
+        // Validation errors are shown in the UI via FormState.validate()
+        break;
       case HealthEntrySubmitError(:final error):
         ScaffoldMessenger.of(
           context,
