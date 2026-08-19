@@ -132,7 +132,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     final theme = Theme.of(context);
     final xp = theme.extension<ExperienceColors>() ?? ExperienceColors.light;
     final screenWidth = MediaQuery.of(context).size.width;
-    final isWide = screenWidth > 800;
+    final isWide = screenWidth >= 920;
     final l10n = AppLocalizations.of(context)!;
 
     final authCard = LandingAuthCard(
@@ -200,9 +200,12 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
                     _scrollToSection(_charitiesSectionKey),
               ),
               const SizedBox(height: 32),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
-                child: authCard,
+              Align(
+                alignment: Alignment.center,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  child: authCard,
+                ),
               ),
             ],
           );
@@ -213,13 +216,16 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           builder: (context, constraints) {
             return SingleChildScrollView(
               controller: _scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              padding: EdgeInsets.symmetric(
+                horizontal: screenWidth < 600 ? 20 : 24,
+                vertical: screenWidth < 600 ? 24 : 32,
+              ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 900),
+                    constraints: const BoxConstraints(maxWidth: 960),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [

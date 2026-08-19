@@ -40,7 +40,7 @@ class LandingBrandingSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Semantics(
-          label: 'App tagline',
+          header: true,
           child: Text(
             l10n.appTagline,
             textAlign: TextAlign.center,

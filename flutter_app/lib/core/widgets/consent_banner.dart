@@ -20,28 +20,35 @@ class _ConsentBannerState extends ConsumerState<ConsentBanner> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Material(
-      elevation: 8,
-      child: Container(
-        width: double.infinity,
+    return Semantics(
+      container: true,
+      liveRegion: true,
+      child: Material(
         color: theme.colorScheme.surfaceContainerHighest,
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.cookie_outlined,
-                      color: theme.colorScheme.primary,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
+        elevation: 6,
+        shadowColor: theme.colorScheme.shadow,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.cookie_outlined,
+                    color: theme.colorScheme.primary,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Semantics(
+                      header: true,
                       child: Text(
                         l10n.consentBannerTitle,
                         style: theme.textTheme.titleMedium?.copyWith(
@@ -49,23 +56,24 @@ class _ConsentBannerState extends ConsumerState<ConsentBanner> {
                         ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  l10n.consentBannerMessage,
-                  style: theme.textTheme.bodySmall,
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.consentBannerMessage,
+                style: theme.textTheme.bodySmall,
+              ),
+              const SizedBox(height: 16),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final actions = [
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () => _showPreferences(context),
                         child: Text(l10n.consentManagePreferences),
                       ),
                     ),
-                    const SizedBox(width: 12),
                     Expanded(
                       child: FilledButton(
                         onPressed: () {
@@ -74,10 +82,29 @@ class _ConsentBannerState extends ConsumerState<ConsentBanner> {
                         child: Text(l10n.consentAcceptAll),
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ];
+
+                  if (constraints.maxWidth < 400) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        actions[0],
+                        const SizedBox(height: 12),
+                        actions[1],
+                      ],
+                    );
+                  }
+
+                  return Row(
+                    children: [
+                      actions[0],
+                      const SizedBox(width: 12),
+                      actions[1],
+                    ],
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ),
