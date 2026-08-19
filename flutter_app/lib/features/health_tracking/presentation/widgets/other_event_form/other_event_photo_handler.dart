@@ -1,4 +1,3 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +6,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../data/datasources/health_remote_datasource.dart';
 import '../../controllers/health_entry_form_constants.dart';
 import '../../providers/health_providers.dart';
+import '../../utils/health_document_picker.dart';
 
 /// Photo/document pick, upload, and delete for [OtherEventFormScreen].
 class OtherEventPhotoHandler {
@@ -97,22 +97,14 @@ class OtherEventPhotoHandler {
     }
 
     try {
-      final result = await FilePicker.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: healthDocumentAllowedExtensions,
-        withData: true,
-      );
-      final file = result?.files.single;
+      final file = await pickSingleHealthDocument();
       if (file == null) return;
       if (!isMounted()) return;
-      if (file.path == null && file.bytes == null) {
-        throw Exception(AppLocalizations.of(context)!.failedToPickImage);
-      }
+      final bytes = await file.readAsBytes();
+      if (bytes.isEmpty) return;
 
-      final picked = file.path != null
-          ? XFile(file.path!, name: file.name)
-          : XFile.fromData(file.bytes!, name: file.name);
-      await addPickedDocument(picked, byteLength: file.size);
+      final picked = XFile.fromData(bytes, name: file.name);
+      await addPickedDocument(picked, byteLength: bytes.length);
     } catch (e) {
       if (isMounted()) {
         setUploading(false);
