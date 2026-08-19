@@ -206,7 +206,9 @@ export async function completeExperienceChooserIfPresent(
   page: Page,
   choice: ExperienceChoice = 'guardian',
   timeout?: number,
+  options: { skipGuardianOnboarding?: boolean } = {},
 ): Promise<void> {
+  const skipGuardianOnboarding = options.skipGuardianOnboarding ?? true;
   const effectiveTimeout = timeout ?? postLoginTimeout(30_000);
   await dismissConsentBannerIfPresent(page);
   await refreshFlutterAccessibility(page);
@@ -236,7 +238,7 @@ export async function completeExperienceChooserIfPresent(
       : /\/o\/(home|onboarding)/;
   await waitForFlutterRoutePattern(page, homePattern, effectiveTimeout);
   const route = flutterRoutePath(page.url());
-  if (choice === 'guardian' && route === '/g/onboarding') {
+  if (choice === 'guardian' && route === '/g/onboarding' && skipGuardianOnboarding) {
     await skipGuardianOnboardingIfPresent(page, effectiveTimeout);
   }
   if (choice === 'organization' && route === '/o/onboarding') {
