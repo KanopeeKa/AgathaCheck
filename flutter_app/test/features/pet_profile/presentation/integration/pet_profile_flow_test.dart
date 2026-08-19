@@ -78,7 +78,13 @@ void main() {
       await pumpApp(tester, frames: 5);
       for (var i = 0; i < 30; i++) {
         await tester.pump(const Duration(milliseconds: 50));
-        if (find.text(l10nFromTester(tester).myPets).evaluate().isNotEmpty) {
+        final ftueTrackPets = find.byKey(const Key('ftue_action_track_pets'));
+        if (ftueTrackPets.evaluate().isNotEmpty) {
+          await tester.tap(ftueTrackPets);
+          await pumpApp(tester, frames: 5);
+        }
+        if (find.text('My Pets').evaluate().isNotEmpty &&
+            find.text('No pets yet').evaluate().isNotEmpty) {
           return;
         }
       }
