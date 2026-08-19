@@ -13,10 +13,9 @@ import {
   dismissConsentBannerIfPresent,
   dashboardSectionGroup,
   flutterGotoUrl,
+  reachAuthenticatedHome,
   refreshFlutterAccessibility,
   semanticsByName,
-  skipGuardianOnboardingIfPresent,
-  waitForPostLoginRoute,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
@@ -31,10 +30,7 @@ async function loginGuardian(
   const landing = new LandingPage(page);
   await landing.goto();
   await landing.login(email, password);
-  await dismissConsentBannerIfPresent(page);
-  await waitForPostLoginRoute(page);
-  await skipGuardianOnboardingIfPresent(page);
-  await refreshFlutterAccessibility(page);
+  await reachAuthenticatedHome(page);
 }
 
 test.describe('Guardian dashboard', () => {
