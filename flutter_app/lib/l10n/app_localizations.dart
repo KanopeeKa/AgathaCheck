@@ -7818,7 +7818,7 @@ abstract class AppLocalizations {
   /// No description provided for @experienceShowOrganisationSectionMemberLocked.
   ///
   /// In en, this message translates to:
-  /// **'Shelters stays visible because you belong to at least one shelter.'**
+  /// **'Shelters stay visible because you belong to at least one shelter.'**
   String get experienceShowOrganisationSectionMemberLocked;
 
   /// No description provided for @experienceGuardianInviteHint.

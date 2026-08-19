@@ -1536,7 +1536,7 @@
   "experienceDefaultSettingSubtitle": "Used when you sign in. You can still switch anytime from the menu.",
   "experienceShowOrganisationSectionTitle": "Show shelters section",
   "experienceShowOrganisationSectionSubtitle": "Adds Shelters to the menu so you can create or manage a shelter or rescue.",
-  "experienceShowOrganisationSectionMemberLocked": "Shelters stays visible because you belong to at least one shelter.",
+  "experienceShowOrganisationSectionMemberLocked": "Shelters stay visible because you belong to at least one shelter.",
   "experienceGuardianInviteHint": "Add a pet or open a pet profile to share care with someone.",
   "experienceOrganizationInviteHint": "Invite team members to help run your organisation.",
   "guardianOnboardingTitle": "Get started",

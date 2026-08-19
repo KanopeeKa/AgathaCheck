@@ -4328,7 +4328,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get experienceShowOrganisationSectionMemberLocked =>
-      'Shelters stays visible because you belong to at least one shelter.';
+      'Shelters stay visible because you belong to at least one shelter.';
 
   @override
   String get experienceGuardianInviteHint =>

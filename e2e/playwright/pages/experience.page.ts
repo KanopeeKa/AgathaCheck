@@ -144,7 +144,7 @@ export class ExperiencePage {
     await refreshFlutterAccessibility(this.page);
     await expect(
       this.page.getByText(
-        'Shelters stays visible because you belong to at least one shelter.',
+        'Shelters stay visible because you belong to at least one shelter.',
       ),
     ).toBeVisible({ timeout: 15_000 });
     const toggle = this.page.getByRole('switch', { name: /Show shelters section/i });
