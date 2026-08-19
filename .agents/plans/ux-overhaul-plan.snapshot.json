@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "plan_id": "ux-overhaul-plan",
+  "approved_at": "2026-08-18T12:54:00Z",
+  "approved_by": "human",
+  "approved_until": "2026-08-20T12:54:00Z",
+  "autonomy": "completed",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/ux-overhaul-integration-13e3",
+  "control_issue": 645,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Routing, Navigation & Form Polish",
+      "branch": "cursor/ux-overhaul-phase1-13e3",
+      "allowed_paths": [
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/features/experience/presentation/screens/**",
+        "flutter_app/lib/features/health_tracking/presentation/**",
+        "flutter_app/lib/features/pet_profile/presentation/**",
+        "flutter_app/lib/features/organization/presentation/**",
+        "flutter_app/lib/l10n/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "spawn-integration"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/ux-overhaul-integration-13e3",
+        "ownership_ref": "docs/refactoring-log.md#ux-overhaul"
+      },
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/647",
+      "pr_head_sha": "pending"
+    },
+    {
+      "id": "2",
+      "title": "Onboarding & Empty States",
+      "branch": "cursor/ux-overhaul-phase2-13e3",
+      "allowed_paths": [
+        "flutter_app/lib/features/auth/presentation/**",
+        "flutter_app/lib/features/experience/presentation/**",
+        "flutter_app/lib/features/organization/presentation/**",
+        "flutter_app/lib/l10n/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "spawn-integration"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/ux-overhaul-integration-13e3",
+        "ownership_ref": "docs/refactoring-log.md#ux-overhaul"
+      },
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/646",
+      "pr_head_sha": "pending"
+    },
+    {
+      "id": "3",
+      "title": "Architecture Cleanup",
+      "branch": "cursor/ux-overhaul-phase3-13e3",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/domain/**",
+        "flutter_app/lib/features/experience/data/**",
+        "flutter_app/lib/features/experience/presentation/**",
+        "flutter_app/lib/core/router/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/648",
+      "pr_head_sha": "pending"
+    }
+  ],
+  "content_hash": "sha256:2b4e0265408eae3fa61bae0ac04d69556c8be33ae41632b1c7c7cf0316fa3228"
+}
