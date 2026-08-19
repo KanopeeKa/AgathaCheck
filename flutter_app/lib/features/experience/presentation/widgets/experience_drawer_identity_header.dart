@@ -43,7 +43,7 @@ class ExperienceDrawerIdentityHeader extends StatelessWidget {
               height: 40,
               width: 40,
               fit: BoxFit.cover,
-              semanticLabel: 'Agatha Track logo',
+              semanticLabel: 'AgathaTrack logo',
             ),
           ),
           const SizedBox(height: 12),

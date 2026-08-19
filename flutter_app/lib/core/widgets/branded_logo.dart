@@ -5,7 +5,7 @@ import '../branding/logo_assets.dart';
 import '../../features/experience/domain/entities/app_experience.dart';
 import 'web_image.dart';
 
-/// Agatha Track logo image, tinted plum (guardian) or teal (organisation).
+/// Canonical AgathaTrack logo image.
 class BrandedLogo extends StatelessWidget {
   const BrandedLogo({
     super.key,
@@ -57,7 +57,7 @@ class BrandedLogo extends StatelessWidget {
         fit: BoxFit.cover,
         fallback: fallback,
         clipOval: clipOval,
-        semanticsLabel: 'Agatha Track logo',
+        semanticsLabel: 'AgathaTrack logo',
       );
     } else {
       image = Image.asset(
@@ -75,6 +75,6 @@ class BrandedLogo extends StatelessWidget {
       }
     }
 
-    return Semantics(label: 'Agatha Track logo', child: image);
+    return Semantics(label: 'AgathaTrack logo', child: image);
   }
 }

@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/experience/domain/entities/app_experience.dart';
 
-/// Experience-aware Agatha Track logo asset paths (plum vs teal).
+/// Experience-compatible paths for the canonical AgathaTrack logo mark.
 class LogoAssets {
   LogoAssets._();
 

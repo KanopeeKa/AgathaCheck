@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../branding/logo_assets.dart';
 import '../../features/experience/domain/entities/app_experience.dart';
 
-/// A reusable AppBar title widget that displays the Agatha Track logo
+/// A reusable AppBar title widget that displays the AgathaTrack logo
 /// followed by the screen title text.
 ///
 /// Tapping the logo navigates to the home page (`/`).
@@ -43,8 +43,8 @@ class AppLogoTitle extends StatelessWidget {
         width: 32,
         fit: BoxFit.cover,
         semanticLabel: linkLogo
-            ? 'Agatha Track logo – tap to go home'
-            : 'Agatha Track logo',
+            ? 'AgathaTrack logo – tap to go home'
+            : 'AgathaTrack logo',
       ),
     );
 
