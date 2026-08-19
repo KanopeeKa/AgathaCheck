@@ -6,6 +6,9 @@ export const modules: ModuleMap = {
   "./components/mockups/pet-profile/GuardianCockpitMidnightOrchid.tsx": () => import("../components/mockups/pet-profile/GuardianCockpitMidnightOrchid.tsx"),
   "./components/mockups/pet-profile/GuardianCockpitSunlitCitrus.tsx": () => import("../components/mockups/pet-profile/GuardianCockpitSunlitCitrus.tsx"),
   "./components/mockups/pet-profile/GuardianShelterDeepTealClay.tsx": () => import("../components/mockups/pet-profile/GuardianShelterDeepTealClay.tsx"),
+  "./components/mockups/pet-profile/GuardianShelterEucalyptusSaffron.tsx": () => import("../components/mockups/pet-profile/GuardianShelterEucalyptusSaffron.tsx"),
   "./components/mockups/pet-profile/GuardianShelterHarbourOchre.tsx": () => import("../components/mockups/pet-profile/GuardianShelterHarbourOchre.tsx"),
-  "./components/mockups/pet-profile/GuardianShelterLagoonMarigold.tsx": () => import("../components/mockups/pet-profile/GuardianShelterLagoonMarigold.tsx")
+  "./components/mockups/pet-profile/GuardianShelterLagoonMarigold.tsx": () => import("../components/mockups/pet-profile/GuardianShelterLagoonMarigold.tsx"),
+  "./components/mockups/pet-profile/GuardianShelterOliveApricot.tsx": () => import("../components/mockups/pet-profile/GuardianShelterOliveApricot.tsx"),
+  "./components/mockups/pet-profile/GuardianShelterSageGolden.tsx": () => import("../components/mockups/pet-profile/GuardianShelterSageGolden.tsx")
 };
