@@ -1634,7 +1634,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myOrganizations => 'Mes organisations';
 
   @override
-  String get organisationsDashboardTitle => 'Tableau de bord des organisations';
+  String get organisationsDashboardTitle => 'Tableau de bord des refuges';
 
   @override
   String get discoverOrganizations => 'Découvrir des organisations';
@@ -4258,7 +4258,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Vous pourrez modifier la vue par défaut plus tard dans les Paramètres.';
 
   @override
-  String get experienceOrgView => 'Vue organisation';
+  String get experienceOrgView => 'Vue refuges';
 
   @override
   String get drawerCreateOrg => 'Créer une organisation';
@@ -4273,7 +4273,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myVets => 'Mes vétérinaires';
 
   @override
-  String get guardianDashboardTitle => 'Tableau de bord gardien';
+  String get guardianDashboardTitle => 'Tableau de bord Mes animaux';
 
   @override
   String get upcomingPetEvents => 'Événements à venir';
@@ -4326,7 +4326,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myOrganisation => 'Mon organisation';
 
   @override
-  String get experienceGuardianView => 'Vue gardien';
+  String get experienceGuardianView => 'Vue Mes animaux';
 
   @override
   String get experienceDefaultSettingTitle => 'Expérience par défaut';
@@ -4337,15 +4337,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get experienceShowOrganisationSectionTitle =>
-      'Afficher la section Organisation';
+      'Afficher la section Refuges';
 
   @override
   String get experienceShowOrganisationSectionSubtitle =>
-      'Ajoute Organisation au menu pour créer ou gérer des refuges et associations.';
+      'Ajoute Refuges au menu pour créer ou gérer un refuge ou une association.';
 
   @override
   String get experienceShowOrganisationSectionMemberLocked =>
-      'Organisation reste visible car vous appartenez à au moins une organisation.';
+      'La section Refuges reste visible car vous appartenez à au moins un refuge.';
 
   @override
   String get experienceGuardianInviteHint =>
@@ -4517,10 +4517,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get adoptionJourneyStatusUnknown => 'Inconnu';
 
   @override
-  String get drawerGuardian => 'Gardien';
+  String get drawerGuardian => 'Mes animaux';
 
   @override
-  String get drawerOrganisation => 'Organisation';
+  String get drawerOrganisation => 'Refuges';
 
   @override
   String get drawerAccount => 'Compte';

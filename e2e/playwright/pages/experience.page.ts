@@ -90,7 +90,7 @@ export class ExperiencePage {
   async openDrawerOrgView(): Promise<void> {
     await openExperienceDrawer(this.page);
     await this.page
-      .getByRole('button', { name: /^Organisation\b/i })
+      .getByRole('button', { name: /^Shelters\b/i })
       .or(this.page.locator('[flt-semantics-identifier="drawer_organisation"]'))
       .first()
       .click();
@@ -131,7 +131,7 @@ export class ExperiencePage {
       await refreshFlutterAccessibility(this.page);
       const toggle = this.page
         .locator('[flt-semantics-identifier="show_organisation_section_toggle"]')
-        .or(this.page.getByText('Show organisation section', { exact: true }));
+        .or(this.page.getByText('Show shelters section', { exact: true }));
       await expect(toggle.first()).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
@@ -140,7 +140,7 @@ export class ExperiencePage {
     await refreshFlutterAccessibility(this.page);
     const toggle = this.page
       .locator('[flt-semantics-identifier="show_organisation_section_toggle"]')
-      .or(this.page.getByRole('switch', { name: /Show organisation section/i }));
+      .or(this.page.getByRole('switch', { name: /Show shelters section/i }));
     await toggle.first().click();
     await refreshFlutterAccessibility(this.page);
     await this.page.waitForTimeout(400);
@@ -150,10 +150,10 @@ export class ExperiencePage {
     await refreshFlutterAccessibility(this.page);
     await expect(
       this.page.getByText(
-        'Organisation stays visible because you belong to at least one organisation.',
+        'Shelters stays visible because you belong to at least one shelter.',
       ),
     ).toBeVisible({ timeout: 15_000 });
-    const toggle = this.page.getByRole('switch', { name: /Show organisation section/i });
+    const toggle = this.page.getByRole('switch', { name: /Show shelters section/i });
     await expect(toggle).toBeVisible();
     await expect(toggle).toBeChecked();
     await expect(toggle).toBeDisabled();
@@ -172,8 +172,8 @@ export class ExperiencePage {
   async expectDrawerWithoutOrganisation(): Promise<void> {
     await openExperienceDrawer(this.page);
     await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByRole('button', { name: /^Guardian\b/i })).toBeVisible();
-    await expect(this.page.getByRole('button', { name: /^Organisation\b/i })).not.toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^My Pets\b/i })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^Shelters\b/i })).not.toBeVisible();
     await expect(this.page.getByRole('button', { name: /^Account\b/i })).toBeVisible();
   }
 
@@ -182,8 +182,8 @@ export class ExperiencePage {
     await openExperienceDrawer(this.page);
     await refreshFlutterAccessibility(this.page);
     // Flutter web exposes drawer rows as buttons (label may repeat in accessible name).
-    await expect(this.page.getByRole('button', { name: /^Guardian\b/i })).toBeVisible();
-    await expect(this.page.getByRole('button', { name: /^Organisation\b/i })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^My Pets\b/i })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^Shelters\b/i })).toBeVisible();
     await expect(this.page.getByRole('button', { name: /^Account\b/i })).toBeVisible();
     // Deprecated items must not appear
     await expect(this.page.getByText('Events', { exact: true })).not.toBeVisible();

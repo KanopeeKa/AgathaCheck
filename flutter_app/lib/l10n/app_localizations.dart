@@ -3028,7 +3028,7 @@ abstract class AppLocalizations {
   /// No description provided for @organisationsDashboardTitle.
   ///
   /// In en, this message translates to:
-  /// **'Organisations dashboard'**
+  /// **'Shelters dashboard'**
   String get organisationsDashboardTitle;
 
   /// No description provided for @discoverOrganizations.
@@ -7572,7 +7572,7 @@ abstract class AppLocalizations {
   /// No description provided for @experienceOrgView.
   ///
   /// In en, this message translates to:
-  /// **'Organisation view'**
+  /// **'Shelters view'**
   String get experienceOrgView;
 
   /// No description provided for @drawerCreateOrg.
@@ -7602,7 +7602,7 @@ abstract class AppLocalizations {
   /// No description provided for @guardianDashboardTitle.
   ///
   /// In en, this message translates to:
-  /// **'Guardian dashboard'**
+  /// **'My Pets dashboard'**
   String get guardianDashboardTitle;
 
   /// No description provided for @upcomingPetEvents.
@@ -7692,7 +7692,7 @@ abstract class AppLocalizations {
   /// No description provided for @experienceGuardianView.
   ///
   /// In en, this message translates to:
-  /// **'Pet guardian view'**
+  /// **'My Pets view'**
   String get experienceGuardianView;
 
   /// No description provided for @experienceDefaultSettingTitle.
@@ -7710,19 +7710,19 @@ abstract class AppLocalizations {
   /// No description provided for @experienceShowOrganisationSectionTitle.
   ///
   /// In en, this message translates to:
-  /// **'Show organisation section'**
+  /// **'Show shelters section'**
   String get experienceShowOrganisationSectionTitle;
 
   /// No description provided for @experienceShowOrganisationSectionSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Adds Organisation to the menu so you can create or manage shelters and rescues.'**
+  /// **'Adds Shelters to the menu so you can create or manage a shelter or rescue.'**
   String get experienceShowOrganisationSectionSubtitle;
 
   /// No description provided for @experienceShowOrganisationSectionMemberLocked.
   ///
   /// In en, this message translates to:
-  /// **'Organisation stays visible because you belong to at least one organisation.'**
+  /// **'Shelters stays visible because you belong to at least one shelter.'**
   String get experienceShowOrganisationSectionMemberLocked;
 
   /// No description provided for @experienceGuardianInviteHint.
@@ -8022,13 +8022,13 @@ abstract class AppLocalizations {
   /// No description provided for @drawerGuardian.
   ///
   /// In en, this message translates to:
-  /// **'Guardian'**
+  /// **'My Pets'**
   String get drawerGuardian;
 
   /// No description provided for @drawerOrganisation.
   ///
   /// In en, this message translates to:
-  /// **'Organisation'**
+  /// **'Shelters'**
   String get drawerOrganisation;
 
   /// No description provided for @drawerAccount.

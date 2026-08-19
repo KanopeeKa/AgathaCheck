@@ -1620,7 +1620,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myOrganizations => 'My Organisations';
 
   @override
-  String get organisationsDashboardTitle => 'Organisations dashboard';
+  String get organisationsDashboardTitle => 'Shelters dashboard';
 
   @override
   String get discoverOrganizations => 'Discover Organisations';
@@ -4190,7 +4190,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'You can change your default view later in Settings.';
 
   @override
-  String get experienceOrgView => 'Organisation view';
+  String get experienceOrgView => 'Shelters view';
 
   @override
   String get drawerCreateOrg => 'Create an organisation';
@@ -4205,7 +4205,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myVets => 'My vets';
 
   @override
-  String get guardianDashboardTitle => 'Guardian dashboard';
+  String get guardianDashboardTitle => 'My Pets dashboard';
 
   @override
   String get upcomingPetEvents => 'Upcoming Pet Events';
@@ -4258,7 +4258,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myOrganisation => 'My Organisation';
 
   @override
-  String get experienceGuardianView => 'Pet guardian view';
+  String get experienceGuardianView => 'My Pets view';
 
   @override
   String get experienceDefaultSettingTitle => 'Default experience';
@@ -4268,16 +4268,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Used when you sign in. You can still switch anytime from the menu.';
 
   @override
-  String get experienceShowOrganisationSectionTitle =>
-      'Show organisation section';
+  String get experienceShowOrganisationSectionTitle => 'Show shelters section';
 
   @override
   String get experienceShowOrganisationSectionSubtitle =>
-      'Adds Organisation to the menu so you can create or manage shelters and rescues.';
+      'Adds Shelters to the menu so you can create or manage a shelter or rescue.';
 
   @override
   String get experienceShowOrganisationSectionMemberLocked =>
-      'Organisation stays visible because you belong to at least one organisation.';
+      'Shelters stays visible because you belong to at least one shelter.';
 
   @override
   String get experienceGuardianInviteHint =>
@@ -4445,10 +4444,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adoptionJourneyStatusUnknown => 'Unknown';
 
   @override
-  String get drawerGuardian => 'Guardian';
+  String get drawerGuardian => 'My Pets';
 
   @override
-  String get drawerOrganisation => 'Organisation';
+  String get drawerOrganisation => 'Shelters';
 
   @override
   String get drawerAccount => 'Account';

@@ -48,7 +48,7 @@ test.describe('Account area organisation visibility', () => {
     await refreshFlutterAccessibility(page);
     await expect(
       page
-        .getByRole('button', { name: /^Organisation\b/i })
+        .getByRole('button', { name: /^Shelters\b/i })
         .or(page.locator('[flt-semantics-identifier="drawer_organisation"]'))
         .first(),
     ).toBeVisible({ timeout: 15_000 });

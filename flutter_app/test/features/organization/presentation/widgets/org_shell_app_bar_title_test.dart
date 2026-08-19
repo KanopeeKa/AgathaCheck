@@ -14,7 +14,7 @@ void main() {
         home: Scaffold(
           appBar: AppBar(
             title: const OrgShellAppBarTitle(
-              title: 'Organisations dashboard',
+              title: 'Shelters dashboard',
               variant: OrgNavTitleVariant.dashboard,
             ),
           ),
@@ -25,7 +25,7 @@ void main() {
 
     expect(find.byType(Image), findsOneWidget);
     expect(find.byType(OrgAdaptiveNavTitle), findsOneWidget);
-    expect(find.text('Organisations dashboard'), findsOneWidget);
+    expect(find.text('Shelters dashboard'), findsOneWidget);
   });
 
   testWidgets('withOrgLogo variant shows org thumbnail and title', (
