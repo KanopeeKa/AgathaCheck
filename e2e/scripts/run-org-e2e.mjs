@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Run organisation journey Playwright specs (PR ci-e2e-org / local pre-push).
+ * Run organisation journey Playwright specs (ci-full-audit / local pre-push; not PR CI).
  */
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';

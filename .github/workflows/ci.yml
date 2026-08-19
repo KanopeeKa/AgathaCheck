@@ -31,7 +31,6 @@ jobs:
       run_backend: ${{ steps.scope.outputs.run_backend }}
       run_e2e_audit: ${{ steps.scope.outputs.run_e2e_audit }}
       run_flutter_integration: ${{ steps.scope.outputs.run_flutter_integration }}
-      run_org_e2e: ${{ steps.scope.outputs.run_org_e2e }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -165,18 +164,6 @@ jobs:
       test_suite: smoke-ci
       web_artifact_name: ${{ needs.flutter-build-web.outputs.artifact_name }}
 
-  # Org journey E2E — when org Flutter or org Playwright paths change (retries 0).
-  ci-e2e-org:
-    needs: [ci-scope, flutter-build-web]
-    if: >-
-      always() &&
-      needs.ci-scope.outputs.run_org_e2e == 'true' &&
-      needs.flutter-build-web.result == 'success'
-    uses: ./.github/workflows/_reusable-e2e-local.yml
-    with:
-      test_suite: org-journey
-      web_artifact_name: ${{ needs.flutter-build-web.outputs.artifact_name }}
-
   # Umbrella required check: ci-gate / CI passed (reusable workflow caller/reusable name form).
   # Maintenance: any new blocking ci.yml job MUST be added to needs: + inputs below and to
   # scripts/ci/assert-ci-gate.sh — see docs/ci-cd-gates.md and docs/promotion-contract.md.
@@ -197,7 +184,6 @@ jobs:
       - flutter-integration
       - flutter-build-web
       - ci-e2e-canary
-      - ci-e2e-org
     if: always()
     uses: ./.github/workflows/_reusable-ci-gate.yml
     with:
@@ -216,4 +202,3 @@ jobs:
       flutter_integration: ${{ needs.flutter-integration.result }}
       flutter_build_web: ${{ needs.flutter-build-web.result }}
       ci_e2e_canary: ${{ needs.ci-e2e-canary.result }}
-      ci_e2e_org: ${{ needs.ci-e2e-org.result }}

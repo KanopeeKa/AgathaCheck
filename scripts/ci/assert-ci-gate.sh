@@ -57,8 +57,10 @@ declare -A RESULTS=(
   [flutter-integration]="${FLUTTER_INTEGRATION:-}"
   [flutter-build-web]="${FLUTTER_BUILD_WEB:-}"
   [ci-e2e-canary]="${CI_E2E_CANARY:-}"
-  [ci-e2e-org]="${CI_E2E_ORG:-}"
 )
+if [[ -n "${CI_E2E_ORG:-}" ]]; then
+  RESULTS[ci-e2e-org]="${CI_E2E_ORG}"
+fi
 
 # ci-e2e-canary skips when flutter-build-web fails or scope skips stack; require green when build ran.
 ci_e2e_canary_passes() {
@@ -78,6 +80,9 @@ ci_e2e_canary_passes() {
 ci_e2e_org_passes() {
   local org="${CI_E2E_ORG:-}"
   local build="${FLUTTER_BUILD_WEB:-}"
+  if [[ -z "$org" ]]; then
+    return 0
+  fi
   if job_expects_skip "ci-e2e-org"; then
     [[ "$org" == "success" || "$org" == "skipped" ]]
     return
@@ -111,7 +116,8 @@ trap 'rm -f "$SUMMARY_TMP"' EXIT
   echo "|-----|--------|------|"
   for job in startup-smoke test-suite flutter-analyze \
     flutter-test-pet-core flutter-test-pet-screens flutter-test-pet-widgets flutter-test-health flutter-test-org flutter-test-rest-a flutter-test-rest-b \
-    flutter-coverage flutter-integration flutter-build-web ci-e2e-canary ci-e2e-org; do
+    flutter-coverage flutter-integration flutter-build-web ci-e2e-canary \
+    ${CI_E2E_ORG:+ci-e2e-org}; do
     result="${RESULTS[$job]}"
     if [[ "$job" == "ci-e2e-canary" ]]; then
       if ci_e2e_canary_passes; then

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Organisation journey Playwright specs — run on PR when org Flutter paths change.
+ * Organisation journey Playwright specs — full suite for ci-full-audit / pre-uat-e2e / local pre-push.
+ * PR CI covers org via @smoke-ci in ci-e2e-canary (see org-e2e-specs.mjs ORG_JOURNEY_SPECS).
  * Curated from pre-UAT shards 3, 12, and foster onboarding (shard 13).
  *
  * Usage:
@@ -29,7 +30,7 @@ export const ORG_JOURNEY_SPECS = [
   'playwright/tests/foster.onboarding.spec.ts',
 ];
 
-/** Repo-relative paths that should trigger org journey E2E on PR. */
+/** Repo-relative paths that should trigger org Flutter shard on PR. */
 export const ORG_E2E_TRIGGER_PATHS = [
   /^flutter_app\/lib\/features\/organization\//,
   /^flutter_app\/test\/features\/organization\//,
