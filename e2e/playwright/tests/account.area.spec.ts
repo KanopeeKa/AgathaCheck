@@ -10,8 +10,7 @@ import { seedDualRoleUser } from '../support/api';
 import {
   openExperienceDrawer,
   refreshFlutterAccessibility,
-  skipGuardianOnboardingIfPresent,
-  waitForPostLoginRoute,
+  reachAuthenticatedHome,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
@@ -26,10 +25,7 @@ async function loginFromLanding(
   const landing = new LandingPage(page);
   await landing.goto();
   await landing.login(email, password);
-  // waitForPostLoginRoute + skipGuardianOnboardingIfPresent already dismiss consent
-  // and refresh semantics — avoid stacking redundant ~800ms refreshes (Copilot #584).
-  await waitForPostLoginRoute(page);
-  await skipGuardianOnboardingIfPresent(page);
+  await reachAuthenticatedHome(page);
 }
 
 test.describe('Account area organisation visibility', () => {

@@ -14,10 +14,9 @@ import { createPet, seedDualRoleUser, seedRescueHearts, signupUser } from '../su
 import {
   dismissConsentBannerIfPresent,
   logOutFromApp,
+  reachAuthenticatedHome,
   refreshFlutterAccessibility,
-  skipGuardianOnboardingIfPresent,
   skipOrgOnboardingIfPresent,
-  waitForPostLoginRoute,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
@@ -32,9 +31,7 @@ async function loginFromLanding(
   const landing = new LandingPage(page);
   await landing.goto();
   await landing.login(email, password);
-  await dismissConsentBannerIfPresent(page);
-  await waitForPostLoginRoute(page);
-  await skipGuardianOnboardingIfPresent(page);
+  await reachAuthenticatedHome(page);
   await skipOrgOnboardingIfPresent(page);
   await refreshFlutterAccessibility(page);
 }
