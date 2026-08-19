@@ -1,0 +1,19 @@
+kind = "design"
+previewPath = "/__mockup/"
+title = "Guardian Operations States"
+description = "Managed preview sandbox for responsive and interaction-state explorations of the Guardian Operations Desk."
+version = "1.0.0"
+id = "artifacts/guardian-operations-states"
+router = "path"
+
+[[services]]
+name = "Component Preview Server"
+paths = [ "/__mockup/" ]
+localPort = 20986
+
+[services.development]
+run = "npm run dev"
+
+[services.env]
+PORT = "20986"
+BASE_PATH = "/__mockup/"
