@@ -179,9 +179,7 @@ class HealthIssuesController {
       if (!context.mounted) return;
 
       final data = await file.readAsBytes();
-      if (data.isEmpty) {
-        throw Exception(l.failedToPickImage);
-      }
+      if (data.isEmpty) return;
       final validation = validateDocumentBytes(file.name, data.length);
       if (validation == 'unsupported') {
         ScaffoldMessenger.of(

@@ -101,9 +101,7 @@ class OtherEventPhotoHandler {
       if (file == null) return;
       if (!isMounted()) return;
       final bytes = await file.readAsBytes();
-      if (bytes.isEmpty) {
-        throw Exception(AppLocalizations.of(context)!.failedToPickImage);
-      }
+      if (bytes.isEmpty) return;
 
       final picked = XFile.fromData(bytes, name: file.name);
       await addPickedDocument(picked, byteLength: bytes.length);
