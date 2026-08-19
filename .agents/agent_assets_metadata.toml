@@ -1,0 +1,9 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "EaUK4RIHu57E237_fZboO"
+uri = "file://screenshots/design-baseline-local-flutter.jpg"
+type = "image"
+title = "Phase 0 — landing baseline"
+description = "Current Flutter landing and sign-in screen, captured locally from the CI-built web bundle for visual review."
