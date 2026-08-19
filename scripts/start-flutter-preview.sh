@@ -56,22 +56,28 @@ needs_web_build() {
 }
 
 if needs_web_build; then
-  if ! git diff --quiet -- "${LOCKFILE}"; then
+  if ! git diff --quiet -- "${LOCKFILE}" ||
+    ! git diff --cached --quiet -- "${LOCKFILE}"; then
     echo "Refusing to overwrite uncommitted changes in ${LOCKFILE}." >&2
     exit 1
   fi
 
   lockfile_backup="$(mktemp)"
   cp "${LOCKFILE}" "${lockfile_backup}"
+  restore_lockfile() {
+    cp "${lockfile_backup}" "${LOCKFILE}"
+    touch -r "${lockfile_backup}" "${LOCKFILE}"
+    rm -f "${lockfile_backup}"
+  }
+  trap restore_lockfile EXIT INT TERM
   build_status=0
   (
     cd flutter_app
     flutter pub get
     flutter build web --release --no-tree-shake-icons
   ) || build_status=$?
-  cp "${lockfile_backup}" "${LOCKFILE}"
-  touch -r "${lockfile_backup}" "${LOCKFILE}"
-  rm -f "${lockfile_backup}"
+  restore_lockfile
+  trap - EXIT INT TERM
 
   if [[ "${build_status}" -ne 0 ]]; then
     exit "${build_status}"

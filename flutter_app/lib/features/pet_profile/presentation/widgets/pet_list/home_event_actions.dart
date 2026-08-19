@@ -38,7 +38,7 @@ class HomeEventActions {
   /// Persists the completion on the server (mark taken).  Does NOT show a
   /// SnackBar — the compact mobile row manages its own inline confirmation.
   static Future<void> commitCompletion(
-    BuildContext context,
+    BuildContext _context,
     WidgetRef ref,
     HealthEntry entry,
     DateTime completedOn,
@@ -51,7 +51,7 @@ class HomeEventActions {
   /// Calls [HealthEntriesNotifier.undoComplete] to reverse the last
   /// completion.  Used by the inline Undo affordance on compact mobile rows.
   static Future<void> undoCompletion(
-    BuildContext context,
+    BuildContext _context,
     WidgetRef ref,
     HealthEntry entry,
   ) async {

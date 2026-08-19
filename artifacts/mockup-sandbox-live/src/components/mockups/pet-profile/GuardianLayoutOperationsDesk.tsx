@@ -25,7 +25,6 @@ export default function GuardianLayoutOperationsDesk() {
   const [activePet, setActivePet] = useState(0);
   const [tasks, setTasks] = useState(initialTasks);
   const [tab, setTab] = useState('Today');
-  const [menuOpen, setMenuOpen] = useState(false);
   const [composer, setComposer] = useState(false);
   const [notice, setNotice] = useState('');
   const pet = pets[activePet];

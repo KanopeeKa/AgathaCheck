@@ -25,10 +25,20 @@ import type { Plugin } from 'vite';
 
 const MOCKUPS_DIR = 'src/components/mockups';
 const GENERATED_MODULE = 'src/.generated/mockup-components.ts';
+const SAFE_COMPONENT_IMPORT_PATH =
+  /^(?:\.\.\/)+components\/mockups\/(?:[A-Za-z0-9][A-Za-z0-9_-]*\/)*[A-Za-z0-9][A-Za-z0-9_-]*\.tsx$/;
 
 interface DiscoveredComponent {
   globKey: string;
   importPath: string;
+}
+
+function moduleSpecifierLiteral(importPath: string): string {
+  if (!SAFE_COMPONENT_IMPORT_PATH.test(importPath)) {
+    throw new Error(`Unsafe mockup component import path: ${importPath}`);
+  }
+
+  return JSON.stringify(importPath);
 }
 
 export function mockupPreviewPlugin(): Plugin {
@@ -73,7 +83,7 @@ export function mockupPreviewPlugin(): Plugin {
     const entries = components
       .map(
         (c) =>
-          `  ${JSON.stringify(c.globKey)}: () => import(${JSON.stringify(c.importPath)})`,
+          `  ${JSON.stringify(c.globKey)}: () => import(${moduleSpecifierLiteral(c.importPath)})`,
       )
       .join(',\n');
 

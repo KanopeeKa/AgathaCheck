@@ -45,7 +45,7 @@ const initialEvents: Event[] = [
 ];
 
 export function GuardianOperationsMobileState() {
-  const [events, setEvents] = useState(initialEvents);
+  const events = initialEvents;
   const [completedId, setCompletedId] = useState<number | null>(2);
   const [notice, setNotice] = useState('Water check saved · Miso is all set');
   const [menuOpen, setMenuOpen] = useState(false);
