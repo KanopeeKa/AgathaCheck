@@ -49,7 +49,8 @@ audience chooser before authentication.
 - **Design** — token drift, spacing rhythm, off-brand tone
 - **Landing/auth** — one universal entry point; shelter/foster context is
   supporting copy, not a login path; guardian/organisation context begins after
-  authentication
+  authentication; palette, typography, spacing, states, and logo rules must
+  agree with the expanded landing section in `docs/design/tokens.md`
 
 ### 3. System first
 

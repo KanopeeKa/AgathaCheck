@@ -1,5 +1,5 @@
 ---
-description: File size limits, domain structure, and extraction conventions for Agatha Track
+description: File size limits, domain structure, and extraction conventions for AgathaTrack
 globs: flutter_app/lib/**,server/**
 ---
 

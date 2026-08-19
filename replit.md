@@ -20,7 +20,7 @@ AgathaTrack is a modular Flutter application designed for comprehensive pet mana
 - **Calendar dates**: user-facing dates are calendar days, `YYYY-MM-DD` on the wire (`docs/calendar-dates.md`).
 
 ## System Architecture
-The application is built with a clean architecture, separating concerns into data, domain, and presentation layers within feature modules. The UI follows Material 3 design principles with a deep purple/violet theme and utilizes GoRouter for navigation.
+The application is built with a clean architecture, separating concerns into data, domain, and presentation layers within feature modules. The UI follows Material 3 design principles, with experience-aware guardian and organisation tokens, and utilizes GoRouter for navigation.
 
 **Key Technical Implementations & Features:**
 
