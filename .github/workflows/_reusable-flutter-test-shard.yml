@@ -21,7 +21,8 @@ jobs:
   test-shard:
     name: Flutter tests (${{ inputs.shard }})
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # Allow a bounded lcov bootstrap retry plus the domain test suite.
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v5
 
@@ -62,7 +63,7 @@ jobs:
         uses: ./.github/actions/setup-lcov
 
       - name: Run shard tests with coverage
-        timeout-minutes: 20
+        timeout-minutes: 30
         working-directory: flutter_app
         run: bash scripts/run_tests_ci_shard.sh "${{ inputs.shard }}"
 
