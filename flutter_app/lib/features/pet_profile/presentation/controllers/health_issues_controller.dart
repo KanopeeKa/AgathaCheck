@@ -1,7 +1,5 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,6 +9,7 @@ import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/domain/entities/health_issue.dart';
 import '../../../health_tracking/domain/entities/health_issue_document.dart';
 import '../../../health_tracking/presentation/controllers/health_entry_form_constants.dart';
+import '../../../health_tracking/presentation/utils/health_document_picker.dart';
 import '../../../health_tracking/presentation/providers/health_issue_providers.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
@@ -175,20 +174,14 @@ class HealthIssuesController {
     }
 
     try {
-      final result = await FilePicker.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: healthDocumentAllowedExtensions,
-        withData: true,
-      );
-      final file = result?.files.single;
+      final file = await pickSingleHealthDocument();
       if (file == null) return;
       if (!context.mounted) return;
 
-      final bytes = file.bytes;
-      if (bytes == null && file.path == null) {
+      final data = await file.readAsBytes();
+      if (data.isEmpty) {
         throw Exception(l.failedToPickImage);
       }
-      final data = bytes ?? await XFile(file.path!).readAsBytes();
       final validation = validateDocumentBytes(file.name, data.length);
       if (validation == 'unsupported') {
         ScaffoldMessenger.of(
