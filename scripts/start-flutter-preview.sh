@@ -10,6 +10,7 @@ readonly FLUTTER_ARCHIVE_URL="https://storage.googleapis.com/flutter_infra_relea
 readonly FLUTTER_ARCHIVE_SHA256="e1ec95e6c550458a34de93580cb85dac24da0e9bedb9bb42811f050ac5a0c7d5"
 readonly TOOL_CACHE="${XDG_CACHE_HOME:-"${HOME}/.cache"}/agatha-track"
 readonly FLUTTER_SDK="${TOOL_CACHE}/flutter-${FLUTTER_VERSION}"
+readonly WEB_BUILD_ENTRYPOINT="flutter_app/build/web/index.html"
 
 install_flutter() {
   if [[ -x "${FLUTTER_SDK}/bin/flutter" ]]; then
@@ -40,24 +41,43 @@ export PATH="${FLUTTER_SDK}/bin:${PATH}"
 flutter --version
 
 readonly LOCKFILE="flutter_app/pubspec.lock"
-if ! git diff --quiet -- "${LOCKFILE}"; then
-  echo "Refusing to overwrite uncommitted changes in ${LOCKFILE}." >&2
-  exit 1
-fi
+needs_web_build() {
+  if [[ ! -f "${WEB_BUILD_ENTRYPOINT}" ]]; then
+    return 0
+  fi
 
-lockfile_backup="$(mktemp)"
-cp "${LOCKFILE}" "${lockfile_backup}"
-build_status=0
-(
-  cd flutter_app
-  flutter pub get
-  flutter build web --release --no-tree-shake-icons
-) || build_status=$?
-cp "${lockfile_backup}" "${LOCKFILE}"
-rm -f "${lockfile_backup}"
+  local changed_source
+  changed_source="$(
+    find flutter_app/lib flutter_app/web \
+      flutter_app/pubspec.yaml flutter_app/pubspec.lock \
+      -type f -newer "${WEB_BUILD_ENTRYPOINT}" -print -quit
+  )"
+  [[ -n "${changed_source}" ]]
+}
 
-if [[ "${build_status}" -ne 0 ]]; then
-  exit "${build_status}"
+if needs_web_build; then
+  if ! git diff --quiet -- "${LOCKFILE}"; then
+    echo "Refusing to overwrite uncommitted changes in ${LOCKFILE}." >&2
+    exit 1
+  fi
+
+  lockfile_backup="$(mktemp)"
+  cp "${LOCKFILE}" "${lockfile_backup}"
+  build_status=0
+  (
+    cd flutter_app
+    flutter pub get
+    flutter build web --release --no-tree-shake-icons
+  ) || build_status=$?
+  cp "${lockfile_backup}" "${LOCKFILE}"
+  touch -r "${lockfile_backup}" "${LOCKFILE}"
+  rm -f "${lockfile_backup}"
+
+  if [[ "${build_status}" -ne 0 ]]; then
+    exit "${build_status}"
+  fi
+else
+  echo "Flutter source unchanged; reusing the existing web bundle."
 fi
 
 cd server
