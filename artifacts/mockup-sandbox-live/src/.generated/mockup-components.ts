@@ -7,6 +7,7 @@ export const modules: ModuleMap = {
   "./components/mockups/pet-profile/GuardianCockpitSunlitCitrus.tsx": () => import("../components/mockups/pet-profile/GuardianCockpitSunlitCitrus.tsx"),
   "./components/mockups/pet-profile/GuardianLayoutCareJournal.tsx": () => import("../components/mockups/pet-profile/GuardianLayoutCareJournal.tsx"),
   "./components/mockups/pet-profile/GuardianLayoutOperationsDesk.tsx": () => import("../components/mockups/pet-profile/GuardianLayoutOperationsDesk.tsx"),
+  "./components/mockups/pet-profile/GuardianOperationsFlutterReady.tsx": () => import("../components/mockups/pet-profile/GuardianOperationsFlutterReady.tsx"),
   "./components/mockups/pet-profile/GuardianOperationsOriginalSections.tsx": () => import("../components/mockups/pet-profile/GuardianOperationsOriginalSections.tsx"),
   "./components/mockups/pet-profile/GuardianShelterDeepTealClay.tsx": () => import("../components/mockups/pet-profile/GuardianShelterDeepTealClay.tsx"),
   "./components/mockups/pet-profile/GuardianShelterEucalyptusSaffron.tsx": () => import("../components/mockups/pet-profile/GuardianShelterEucalyptusSaffron.tsx"),
