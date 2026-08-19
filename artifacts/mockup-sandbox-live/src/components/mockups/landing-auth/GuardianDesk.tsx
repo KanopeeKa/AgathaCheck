@@ -18,29 +18,15 @@ import {
 } from 'lucide-react';
 
 type Mode = 'sign-in' | 'create';
-type Audience = 'guardian' | 'organisation';
 
 export default function GuardianDesk() {
   const [mode, setMode] = useState<Mode>('sign-in');
-  const [audience, setAudience] = useState<Audience>('guardian');
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [notice, setNotice] = useState('');
-
-  const choosePath = (nextAudience: Audience) => {
-    setAudience(nextAudience);
-    setNotice(
-      nextAudience === 'guardian'
-        ? 'The guardian desk is ready when you are.'
-        : 'Organisation access keeps every handover in view.',
-    );
-    window.setTimeout(() => {
-      document.getElementById('guardian-access')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 40);
-  };
 
   const switchMode = (nextMode: Mode) => {
     setMode(nextMode);
@@ -62,7 +48,7 @@ export default function GuardianDesk() {
       setNotice('Add your name, email and a password to get started.');
       return;
     }
-    setNotice(`Welcome, ${firstName}. Your ${audience === 'guardian' ? 'guardian' : 'organisation'} desk is ready to set up.`);
+    setNotice(`Welcome, ${firstName}. Your care desk is ready to set up.`);
   };
 
   return (
@@ -185,9 +171,6 @@ export default function GuardianDesk() {
         .gd-help:hover{color:var(--gd-olive)}
         .gd-access h2{margin:0;color:var(--gd-ink);font-family:'Instrument Serif',Georgia,serif;font-size:39px;font-weight:400;line-height:1.02;letter-spacing:-.055em}
         .gd-access-intro{max-width:370px;margin:12px 0 25px;color:#748177;font-size:13px;line-height:1.55}
-        .gd-audience-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:19px;padding:5px;border:1px solid var(--gd-line);border-radius:12px;background:rgba(255,255,255,.26)}
-        .gd-audience-switch button{display:flex;align-items:center;justify-content:center;gap:7px;min-height:35px;border:0;border-radius:8px;background:transparent;color:#829085;font-size:10px;font-weight:700;cursor:pointer}
-        .gd-audience-switch button.active{background:var(--gd-panel);color:var(--gd-olive);box-shadow:0 3px 10px rgba(58,76,61,.08)}
         .gd-auth-card{padding:24px;border:1px solid var(--gd-line);border-radius:17px;background:var(--gd-panel);box-shadow:0 14px 32px rgba(49,69,54,.075)}
         .gd-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:-4px 0 22px;border-bottom:1px solid #e0e5dc}
         .gd-tabs button{position:relative;border:0;background:transparent;color:#929d94;padding:9px 5px 12px;font-size:11px;font-weight:700;cursor:pointer}
@@ -329,21 +312,12 @@ export default function GuardianDesk() {
               <span className="gd-kicker-label">Open your care desk</span>
               <a className="gd-help" href="#how-it-works"><Sparkles size={12} /> How it works <ArrowUpRight size={12} /></a>
             </div>
-            <h2>{mode === 'sign-in' ? 'Welcome back, guardian.' : 'Start with what matters.'}</h2>
+            <h2>{mode === 'sign-in' ? 'Welcome back.' : 'Start with what matters.'}</h2>
             <p className="gd-access-intro">
               {mode === 'sign-in'
                 ? 'Pick up the care plan where you left it. Your people, your notes, and the next right thing are waiting.'
                 : 'Make everyday care easier to share. Set up your desk in a few minutes, then invite the people you trust.'}
             </p>
-
-            <div className="gd-audience-switch" aria-label="Choose your AgathaTrack space">
-              <button className={audience === 'guardian' ? 'active' : ''} onClick={() => setAudience('guardian')} type="button">
-                  <HeartHandshake size={14} /> Pet guardian
-              </button>
-              <button className={audience === 'organisation' ? 'active' : ''} onClick={() => setAudience('organisation')} type="button">
-                <Building2 size={14} /> Organisation
-              </button>
-            </div>
 
             <div className="gd-auth-card">
               <div className="gd-tabs" role="tablist" aria-label="Account action">
