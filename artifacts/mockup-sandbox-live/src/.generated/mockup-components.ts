@@ -10,5 +10,6 @@ export const modules: ModuleMap = {
   "./components/mockups/pet-profile/GuardianShelterHarbourOchre.tsx": () => import("../components/mockups/pet-profile/GuardianShelterHarbourOchre.tsx"),
   "./components/mockups/pet-profile/GuardianShelterLagoonMarigold.tsx": () => import("../components/mockups/pet-profile/GuardianShelterLagoonMarigold.tsx"),
   "./components/mockups/pet-profile/GuardianShelterOliveApricot.tsx": () => import("../components/mockups/pet-profile/GuardianShelterOliveApricot.tsx"),
+  "./components/mockups/pet-profile/GuardianShelterOliveGoldenOchre.tsx": () => import("../components/mockups/pet-profile/GuardianShelterOliveGoldenOchre.tsx"),
   "./components/mockups/pet-profile/GuardianShelterSageGolden.tsx": () => import("../components/mockups/pet-profile/GuardianShelterSageGolden.tsx")
 };
