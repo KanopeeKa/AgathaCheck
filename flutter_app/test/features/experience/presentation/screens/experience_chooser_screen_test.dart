@@ -8,14 +8,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 Widget _wrap(Widget child) {
   return ProviderScope(
     child: MaterialApp(
-    localizationsDelegates: const [
-      AppLocalizations.delegate,
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-    ],
-    supportedLocales: AppLocalizations.supportedLocales,
-    home: child,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: child,
     ),
   );
 }
@@ -39,6 +39,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('ftue_foster_code_field')), findsOneWidget);
-    expect(find.byKey(const Key('ftue_foster_continue_button')), findsOneWidget);
+    expect(
+      find.byKey(const Key('ftue_foster_continue_button')),
+      findsOneWidget,
+    );
   });
 }

@@ -162,9 +162,7 @@ AppExperience _resolvePostLoginExperience({
   if (pets.isNotEmpty) {
     return AppExperience.guardian;
   }
-  if (pets.isEmpty &&
-      orgs.isNotEmpty &&
-      eligibility.canUseOrganization) {
+  if (pets.isEmpty && orgs.isNotEmpty && eligibility.canUseOrganization) {
     return AppExperience.organization;
   }
   return AppExperience.guardian;

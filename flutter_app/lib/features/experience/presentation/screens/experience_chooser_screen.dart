@@ -36,7 +36,8 @@ class ExperienceChooserScreen extends ConsumerWidget {
                 hintText: l.enterInviteCode,
               ),
               textInputAction: TextInputAction.done,
-              onSubmitted: (_) => Navigator.pop(ctx, codeController.text.trim()),
+              onSubmitted: (_) =>
+                  Navigator.pop(ctx, codeController.text.trim()),
             ),
           ],
         ),
