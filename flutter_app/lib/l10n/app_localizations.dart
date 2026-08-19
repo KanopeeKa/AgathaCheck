@@ -8912,6 +8912,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Other permissions'**
   String get orgRoleDefaultsOtherPermissions;
+
+  /// No description provided for @dueEventRowOpenLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Open {name} for {petName}'**
+  String dueEventRowOpenLabel(String name, String petName);
+
+  /// No description provided for @dueEventRowMarkDoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark {name} as done'**
+  String dueEventRowMarkDoneLabel(String name);
+
+  /// No description provided for @dueEventRowUndoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo completion of {name}'**
+  String dueEventRowUndoLabel(String name);
+
+  /// No description provided for @urgencyOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get urgencyOverdue;
+
+  /// No description provided for @urgencyDueToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Due today'**
+  String get urgencyDueToday;
+
+  /// No description provided for @urgencyDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {date}'**
+  String urgencyDueDate(String date);
+
+  /// No description provided for @completedEventSemanticLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}, completed, for {petName}'**
+  String completedEventSemanticLabel(String name, String petName);
+
+  /// No description provided for @careCompletionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not mark this care item as done. Try again.'**
+  String get careCompletionFailed;
 }
 
 class _AppLocalizationsDelegate

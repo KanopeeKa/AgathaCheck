@@ -21,8 +21,36 @@ runs:
           echo "::notice::lcov already available: $(lcov --version | head -1)"
           exit 0
         fi
-        sudo apt-get update
-        sudo apt-get install -y lcov
+
+        apt_update() {
+          timeout 120s sudo apt-get \
+            -o Acquire::Retries=2 \
+            -o Acquire::http::Timeout=20 \
+            -o Acquire::https::Timeout=20 \
+            update
+        }
+
+        if ! apt_update; then
+          echo "::warning::Azure Ubuntu mirror update timed out; retrying the canonical mirror."
+          mapfile -t apt_sources < <(
+            grep -rl 'http://azure.archive.ubuntu.com/ubuntu' \
+              /etc/apt/sources.list /etc/apt/sources.list.d 2>/dev/null || true
+          )
+          if [[ ${#apt_sources[@]} -eq 0 ]]; then
+            echo "::error::Unable to locate an Azure Ubuntu mirror source for fallback." >&2
+            exit 1
+          fi
+          sudo sed -i \
+            's|http://azure.archive.ubuntu.com/ubuntu|http://archive.ubuntu.com/ubuntu|g' \
+            "${apt_sources[@]}"
+          apt_update
+        fi
+
+        timeout 120s sudo env DEBIAN_FRONTEND=noninteractive apt-get \
+          -o Acquire::Retries=2 \
+          -o Acquire::http::Timeout=20 \
+          -o Acquire::https::Timeout=20 \
+          install -y lcov
         lcov --version | head -1
 
     - name: lcov apt cache summary

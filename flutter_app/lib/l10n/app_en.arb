@@ -1758,5 +1758,41 @@
   "orgRoleDefaultsUnsavedTitle": "Discard changes?",
   "orgRoleDefaultsUnsavedBody": "You have unsaved permission changes for this role tier.",
   "orgRoleDefaultsDiscard": "Discard",
-  "orgRoleDefaultsOtherPermissions": "Other permissions"
+  "orgRoleDefaultsOtherPermissions": "Other permissions",
+
+  "dueEventRowOpenLabel": "Open {name} for {petName}",
+  "@dueEventRowOpenLabel": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "petName": { "type": "String" }
+    }
+  },
+  "dueEventRowMarkDoneLabel": "Mark {name} as done",
+  "@dueEventRowMarkDoneLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "dueEventRowUndoLabel": "Undo completion of {name}",
+  "@dueEventRowUndoLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "urgencyOverdue": "Overdue",
+  "urgencyDueToday": "Due today",
+  "urgencyDueDate": "Due {date}",
+  "@urgencyDueDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "completedEventSemanticLabel": "{name}, completed, for {petName}",
+  "@completedEventSemanticLabel": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "petName": { "type": "String" }
+    }
+  },
+  "careCompletionFailed": "Could not mark this care item as done. Try again."
 }

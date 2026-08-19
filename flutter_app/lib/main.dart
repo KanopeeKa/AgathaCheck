@@ -93,11 +93,17 @@ class _ConsentOverlay extends ConsumerWidget {
       children: [
         child,
         if (!consent.hasResponded)
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: const ConsentBanner(),
+          Positioned.fill(
+            child: SafeArea(
+              minimum: const EdgeInsets.all(16),
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 480),
+                  child: const ConsentBanner(),
+                ),
+              ),
+            ),
           ),
       ],
     );

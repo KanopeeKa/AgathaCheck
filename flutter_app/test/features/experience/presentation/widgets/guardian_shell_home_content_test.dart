@@ -95,6 +95,42 @@ void main() {
     expect(find.text('No pets yet'), findsOneWidget);
     expect(find.text('My Pets'), findsOneWidget);
   });
+
+  testWidgets('uses a two-column desk layout on wide screens', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(900, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(buildDashboard());
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('guardian_desk_secondary_sections_wide')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('guardian_desk_secondary_sections_narrow')),
+      findsNothing,
+    );
+  });
+
+  testWidgets('uses a single-column desk layout on narrow screens', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(899, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(buildDashboard());
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('guardian_desk_secondary_sections_narrow')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('guardian_desk_secondary_sections_wide')),
+      findsNothing,
+    );
+  });
 }
 
 class _TestVetListNotifier extends VetListNotifier {

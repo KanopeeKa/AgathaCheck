@@ -25,6 +25,16 @@ abstract final class AppColorTokens {
   static const Color guardianLight = Color(0xFFF4EEF2);
   static const Color guardianSoft = Color(0xFFE7DCE2);
 
+  // Guardian operations desk (guardian care) — reserved for the guardian home
+  // presentation while the wider experience colour migration is phased.
+  static const Color guardianCarePrimary = Color(0xFF5E7A68);
+  static const Color guardianCareActive = Color(0xFF405B4B);
+  static const Color guardianCareLight = Color(0xFFE8F1E9);
+
+  // Organisation context — distinct from warning and error semantics.
+  static const Color organizationOchre = Color(0xFFB98223);
+  static const Color organizationOchreLight = Color(0xFFF8EDCE);
+
   // Organisation
   static const Color organizationPrimary = Color(0xFF218B6C);
   static const Color organizationHover = Color(0xFF1B765C);

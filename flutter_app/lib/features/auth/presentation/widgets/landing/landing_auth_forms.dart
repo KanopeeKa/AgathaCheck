@@ -361,10 +361,34 @@ class LandingAuthCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
+            AnimatedBuilder(
+              animation: tabController,
+              builder: (context, _) {
+                final isSignIn = tabController.index == 0;
+                return Semantics(
+                  header: true,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 180),
+                    child: Text(
+                      isSignIn ? l10n.signInToAccount : l10n.createYourAccount,
+                      key: ValueKey(isSignIn),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 12),
             TabBar(
               controller: tabController,
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelStyle: theme.textTheme.labelLarge,
+              unselectedLabelStyle: theme.textTheme.labelLarge,
               tabs: [
                 Tab(text: l10n.signIn),
                 Tab(text: l10n.createAccount),

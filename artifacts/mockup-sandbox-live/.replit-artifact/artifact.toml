@@ -1,0 +1,19 @@
+kind = "design"
+previewPath = "/__mockup/"
+title = "Mockup Sandbox"
+description = "An isolated sandbox for reviewing the Guardian Cockpit design variation."
+version = "1.0.0"
+id = "artifacts/mockup-sandbox-live"
+router = "path"
+
+[[services]]
+name = "Component Preview Server"
+paths = [ "/__mockup/" ]
+localPort = 18145
+
+[services.development]
+run = "npm run dev"
+
+[services.env]
+PORT = "18145"
+BASE_PATH = "/__mockup/"
