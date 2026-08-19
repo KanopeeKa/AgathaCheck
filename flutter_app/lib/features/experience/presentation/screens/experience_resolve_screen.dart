@@ -7,15 +7,16 @@ import '../../domain/services/experience_eligibility.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../providers/experience_providers.dart';
 
-/// Loads eligibility after login and routes to chooser or the correct home.
+/// Loads eligibility after login and routes to FTUE or the correct home.
 class ExperienceResolveScreen extends ConsumerWidget {
   const ExperienceResolveScreen({super.key});
 
   void _navigate(
     BuildContext context,
     WidgetRef ref,
-    ExperienceEligibility eligibility,
-  ) {
+    ExperienceEligibility eligibility, {
+    required bool hasPendingOrgInvites,
+  }) {
     final pets = ref.read(petListProvider).valueOrNull ?? [];
     final orgs = ref.read(organizationListProvider).valueOrNull ?? [];
     final guardianOnboardingCompleted = ref.read(
@@ -28,6 +29,7 @@ class ExperienceResolveScreen extends ConsumerWidget {
       orgs: orgs,
       guardianOnboardingCompleted: guardianOnboardingCompleted,
       orgOnboardingCompleted: orgOnboardingCompleted,
+      hasPendingOrgInvites: hasPendingOrgInvites,
     );
     context.go(path);
   }
@@ -35,10 +37,23 @@ class ExperienceResolveScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(organisationMembershipVisibilitySyncProvider);
+    final pendingInvites = ref.watch(pendingOrgInvitesProvider);
+    final hasPendingOrgInvites = pendingInvites.maybeWhen(
+      data: (invites) => invites.isNotEmpty,
+      orElse: () => false,
+    );
+
     ref.listen<AsyncValue<ExperienceEligibility>>(
       experienceEligibilityProvider,
       (_, next) {
-        next.whenData((eligibility) => _navigate(context, ref, eligibility));
+        next.whenData(
+          (eligibility) => _navigate(
+            context,
+            ref,
+            eligibility,
+            hasPendingOrgInvites: hasPendingOrgInvites,
+          ),
+        );
       },
     );
 
@@ -47,7 +62,12 @@ class ExperienceResolveScreen extends ConsumerWidget {
       data: (e) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!context.mounted) return;
-          _navigate(context, ref, e);
+          _navigate(
+            context,
+            ref,
+            e,
+            hasPendingOrgInvites: hasPendingOrgInvites,
+          );
         });
       },
       error: (_, __) {

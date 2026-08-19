@@ -111,7 +111,7 @@ void main() {
           home: ExperienceShellScaffold(
             experience: AppExperience.guardian,
             currentLocation: '/g/home',
-            screenTitle: 'Guardian dashboard',
+            screenTitle: 'My Pets dashboard',
             child: const SizedBox.shrink(),
           ),
         ),
@@ -119,7 +119,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Guardian dashboard'), findsOneWidget);
+    expect(find.text('My Pets dashboard'), findsOneWidget);
   });
 
   testWidgets('contextual actions appear before pipe and bell', (tester) async {

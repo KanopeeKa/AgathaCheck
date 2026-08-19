@@ -106,14 +106,36 @@ final isFosterPortalUserProvider = Provider<bool>((ref) {
   return orgs.every((o) => o.isFoster);
 });
 
+/// True when the user has no pets or shelter memberships and should pick a path.
+bool needsFirstTimeExperience({
+  required List<Pet> pets,
+  required List<Organization> orgs,
+  bool hasPendingOrgInvites = false,
+}) {
+  return pets.isEmpty && orgs.isEmpty && !hasPendingOrgInvites;
+}
+
 String resolvePostLoginPath({
   required ExperienceEligibility eligibility,
   List<Pet> pets = const [],
   List<Organization> orgs = const [],
   bool guardianOnboardingCompleted = true,
   bool orgOnboardingCompleted = true,
+  bool hasPendingOrgInvites = false,
 }) {
-  final target = _resolvePostLoginExperience(eligibility: eligibility);
+  if (needsFirstTimeExperience(
+    pets: pets,
+    orgs: orgs,
+    hasPendingOrgInvites: hasPendingOrgInvites,
+  )) {
+    return '/app/choose';
+  }
+
+  final target = _resolvePostLoginExperience(
+    eligibility: eligibility,
+    pets: pets,
+    orgs: orgs,
+  );
 
   var path = target.homePath();
   path = GuardianOnboardingRules.resolveGuardianDestination(
@@ -131,8 +153,16 @@ String resolvePostLoginPath({
 
 AppExperience _resolvePostLoginExperience({
   required ExperienceEligibility eligibility,
+  List<Pet> pets = const [],
+  List<Organization> orgs = const [],
 }) {
   if (!eligibility.canUseGuardian && eligibility.canUseOrganization) {
+    return AppExperience.organization;
+  }
+  if (pets.isNotEmpty) {
+    return AppExperience.guardian;
+  }
+  if (pets.isEmpty && orgs.isNotEmpty && eligibility.canUseOrganization) {
     return AppExperience.organization;
   }
   return AppExperience.guardian;

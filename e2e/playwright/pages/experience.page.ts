@@ -20,45 +20,39 @@ export class ExperiencePage {
     await dismissConsentBannerIfPresent(this.page);
     await refreshFlutterAccessibility(this.page);
     await this.page
-      .getByText(/How will you use Agatha Track/i)
+      .getByText(/Welcome to Agatha Track|Bienvenue sur Agatha Track/i)
       .waitFor({ timeout: 30_000 });
   }
 
   async selectGuardianCard(): Promise<void> {
-    await this.page.getByText('Individual Pet Guardian').click();
+    await this.page
+      .getByRole('button', { name: /Track my pets|Suivre mes animaux/i })
+      .or(this.page.locator('[flt-semantics-identifier="ftue_action_track_pets"]'))
+      .first()
+      .click();
   }
 
-  async chooseGuardian(remember = false): Promise<void> {
+  async chooseGuardian(_remember = false): Promise<void> {
     await this.selectGuardianCard();
-    if (remember) {
-      await this.page.getByRole('checkbox').click();
-    }
-    await this.page.getByRole('button', { name: 'Continue' }).click();
-    await waitForFlutterRoutePattern(this.page, /\/g\/home/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/g\/(home|onboarding)/, 30_000);
   }
 
-  /** Continue on chooser without tapping a card (guardian is pre-selected). */
-  async continuePreselectedGuardian(remember = false): Promise<void> {
-    await dismissConsentBannerIfPresent(this.page);
-    await refreshFlutterAccessibility(this.page);
-    if (remember) {
-      await this.page.getByRole('checkbox').click();
-    }
-    await this.page.getByRole('button', { name: 'Continue' }).click();
-    await waitForFlutterRoutePattern(this.page, /\/g\/home/, 30_000);
+  /** @deprecated FTUE actions navigate directly — no pre-selected continue step. */
+  async continuePreselectedGuardian(_remember = false): Promise<void> {
+    await this.chooseGuardian();
   }
 
   async selectOrganizationCard(): Promise<void> {
-    await this.page.getByText('Shelter / Organisation').click();
+    await this.page
+      .getByRole('button', { name: /Run a shelter|Gérer un refuge/i })
+      .or(this.page.locator('[flt-semantics-identifier="ftue_action_run_shelter"]'))
+      .first()
+      .click();
   }
 
-  async chooseOrganization(remember = false): Promise<void> {
+  async chooseOrganization(_remember = false): Promise<void> {
     await this.selectOrganizationCard();
-    if (remember) {
-      await this.page.getByRole('checkbox').click();
-    }
-    await this.page.getByRole('button', { name: 'Continue' }).click();
-    await waitForFlutterRoutePattern(this.page, /\/o\/home/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/o\/(home|onboarding)/, 30_000);
   }
 
   /** After navigation reversal: no Home button; hamburger on root, bell always present. */
@@ -90,7 +84,7 @@ export class ExperiencePage {
   async openDrawerOrgView(): Promise<void> {
     await openExperienceDrawer(this.page);
     await this.page
-      .getByRole('button', { name: /^Organisation\b/i })
+      .getByRole('button', { name: /^Shelters\b/i })
       .or(this.page.locator('[flt-semantics-identifier="drawer_organisation"]'))
       .first()
       .click();
@@ -131,7 +125,7 @@ export class ExperiencePage {
       await refreshFlutterAccessibility(this.page);
       const toggle = this.page
         .locator('[flt-semantics-identifier="show_organisation_section_toggle"]')
-        .or(this.page.getByText('Show organisation section', { exact: true }));
+        .or(this.page.getByText('Show shelters section', { exact: true }));
       await expect(toggle.first()).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
@@ -140,7 +134,7 @@ export class ExperiencePage {
     await refreshFlutterAccessibility(this.page);
     const toggle = this.page
       .locator('[flt-semantics-identifier="show_organisation_section_toggle"]')
-      .or(this.page.getByRole('switch', { name: /Show organisation section/i }));
+      .or(this.page.getByRole('switch', { name: /Show shelters section/i }));
     await toggle.first().click();
     await refreshFlutterAccessibility(this.page);
     await this.page.waitForTimeout(400);
@@ -150,10 +144,10 @@ export class ExperiencePage {
     await refreshFlutterAccessibility(this.page);
     await expect(
       this.page.getByText(
-        'Organisation stays visible because you belong to at least one organisation.',
+        'Shelters stay visible because you belong to at least one shelter.',
       ),
     ).toBeVisible({ timeout: 15_000 });
-    const toggle = this.page.getByRole('switch', { name: /Show organisation section/i });
+    const toggle = this.page.getByRole('switch', { name: /Show shelters section/i });
     await expect(toggle).toBeVisible();
     await expect(toggle).toBeChecked();
     await expect(toggle).toBeDisabled();
@@ -172,8 +166,8 @@ export class ExperiencePage {
   async expectDrawerWithoutOrganisation(): Promise<void> {
     await openExperienceDrawer(this.page);
     await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByRole('button', { name: /^Guardian\b/i })).toBeVisible();
-    await expect(this.page.getByRole('button', { name: /^Organisation\b/i })).not.toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^My Pets\b/i })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^Shelters\b/i })).not.toBeVisible();
     await expect(this.page.getByRole('button', { name: /^Account\b/i })).toBeVisible();
   }
 
@@ -182,8 +176,8 @@ export class ExperiencePage {
     await openExperienceDrawer(this.page);
     await refreshFlutterAccessibility(this.page);
     // Flutter web exposes drawer rows as buttons (label may repeat in accessible name).
-    await expect(this.page.getByRole('button', { name: /^Guardian\b/i })).toBeVisible();
-    await expect(this.page.getByRole('button', { name: /^Organisation\b/i })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^My Pets\b/i })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^Shelters\b/i })).toBeVisible();
     await expect(this.page.getByRole('button', { name: /^Account\b/i })).toBeVisible();
     // Deprecated items must not appear
     await expect(this.page.getByText('Events', { exact: true })).not.toBeVisible();

@@ -105,7 +105,7 @@ void main() {
       expect(toggle.onChanged, isNull);
       expect(
         find.text(
-          'Organisation stays visible because you belong to at least one organisation.',
+          'Shelters stay visible because you belong to at least one shelter.',
         ),
         findsOneWidget,
       );

@@ -47,11 +47,23 @@ class GuardianMyPetsSection extends ConsumerWidget {
                 if (personalPets.isEmpty &&
                     fosterPets.isEmpty &&
                     sharedPets.isEmpty)
-                  Text(
-                    l.noPetsYet,
-                    style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        l.noPetsYet,
+                        style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextButton.icon(
+                        key: const Key('my_pets_explore_shelters_link'),
+                        onPressed: () => context.go('/o/orgs'),
+                        icon: const Icon(Icons.business_outlined, size: 18),
+                        label: Text(l.noPetsExploreShelters),
+                      ),
+                    ],
                   )
                 else if (personalPets.isNotEmpty)
                   PetTileStrip(

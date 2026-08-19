@@ -59,7 +59,7 @@ test.describe('Experience navigation', () => {
     await waitForFlutterRoutePattern(page, /\/o\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.expectOrgShell();
-    await expect(page.getByText(/How will you use Agatha Track/i)).not.toBeVisible();
+    await expect(page.getByText(/Welcome to Agatha Track|Bienvenue sur Agatha Track/i)).not.toBeVisible();
   });
 
   test('dual-role user lands on guardian home when no last section saved', async ({
@@ -71,7 +71,7 @@ test.describe('Experience navigation', () => {
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.expectGuardianShell();
-    await expect(page.getByText(/How will you use Agatha Track/i)).not.toBeVisible();
+    await expect(page.getByText(/Welcome to Agatha Track|Bienvenue sur Agatha Track/i)).not.toBeVisible();
   });
 
   test('drawer hides Organisation for guardian-only users by default', async ({
@@ -104,7 +104,7 @@ test.describe('Experience navigation', () => {
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.expectGuardianShell();
-    await expect(page.getByText(/How will you use Agatha Track/i)).not.toBeVisible();
+    await expect(page.getByText(/Welcome to Agatha Track|Bienvenue sur Agatha Track/i)).not.toBeVisible();
   });
 
   test('user switches to organisation view from guardian drawer', async ({

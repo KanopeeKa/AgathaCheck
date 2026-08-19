@@ -16,43 +16,48 @@ class HealthEntryRemindField extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
 
-    return Row(
-      children: [
-        Expanded(
-          child: InputDecorator(
-            decoration: InputDecoration(
-              labelText: l.remindBefore,
-              prefixIcon: const Icon(Icons.notifications_active, size: 20),
-            ),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 60,
-                  child: TextFormField(
-                    key: const Key('remind_days_field'),
-                    initialValue: remindDaysBefore.toString(),
-                    textAlign: TextAlign.center,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                    onChanged: (v) {
-                      final val = int.tryParse(v);
-                      if (val != null && val >= 0) onChanged(val);
-                    },
-                  ),
-                ),
-                Text(
-                  l.daysBefore,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
-            ),
-          ),
+    return InputDecorator(
+      decoration: InputDecoration(
+        labelText: l.remindBefore,
+        prefixIcon: const Icon(Icons.notifications_active, size: 20),
+        border: InputBorder.none,
+        contentPadding: EdgeInsets.zero,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Wrap(
+          spacing: 8,
+          children: [
+            _buildChip(context, value: 0, label: l.remindChipNone),
+            _buildChip(context, value: 1, label: l.remindChipOneDay),
+            _buildChip(context, value: 3, label: l.remindChipThreeDays),
+            _buildChip(context, value: 7, label: l.remindChipOneWeek),
+          ],
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildChip(
+    BuildContext context, {
+    required int value,
+    required String label,
+  }) {
+    final isSelected = remindDaysBefore == value;
+    final theme = Theme.of(context);
+
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        if (selected) onChanged(value);
+      },
+      selectedColor: theme.colorScheme.primaryContainer,
+      labelStyle: TextStyle(
+        color: isSelected
+            ? theme.colorScheme.onPrimaryContainer
+            : theme.colorScheme.onSurface,
+      ),
     );
   }
 }

@@ -3028,7 +3028,7 @@ abstract class AppLocalizations {
   /// No description provided for @organisationsDashboardTitle.
   ///
   /// In en, this message translates to:
-  /// **'Organisations dashboard'**
+  /// **'Shelters dashboard'**
   String get organisationsDashboardTitle;
 
   /// No description provided for @discoverOrganizations.
@@ -7521,6 +7521,102 @@ abstract class AppLocalizations {
   /// **'Choose the experience that fits what you need today.'**
   String get experienceChooserSubtitle;
 
+  /// No description provided for @ftueTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Agatha Track'**
+  String get ftueTitle;
+
+  /// No description provided for @ftueSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to do first?'**
+  String get ftueSubtitle;
+
+  /// No description provided for @ftueActionTrackPetsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Track my pets'**
+  String get ftueActionTrackPetsTitle;
+
+  /// No description provided for @ftueActionTrackPetsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a pet and start tracking care, reminders, and vet visits.'**
+  String get ftueActionTrackPetsSubtitle;
+
+  /// No description provided for @ftueActionRunShelterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Run a shelter or rescue'**
+  String get ftueActionRunShelterTitle;
+
+  /// No description provided for @ftueActionRunShelterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up your organisation workspace and manage inventory pets.'**
+  String get ftueActionRunShelterSubtitle;
+
+  /// No description provided for @ftueActionFosteringTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m fostering a pet'**
+  String get ftueActionFosteringTitle;
+
+  /// No description provided for @ftueActionFosteringSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a share link or start from your foster dashboard.'**
+  String get ftueActionFosteringSubtitle;
+
+  /// No description provided for @ftueFosteringDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fostering a pet'**
+  String get ftueFosteringDialogTitle;
+
+  /// No description provided for @ftueFosteringDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'If your shelter sent you a share link, paste the code below. You can also skip and explore the app.'**
+  String get ftueFosteringDialogBody;
+
+  /// No description provided for @noPetsExploreShelters.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore shelters and rescues'**
+  String get noPetsExploreShelters;
+
+  /// No description provided for @shelterSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelter settings'**
+  String get shelterSettings;
+
+  /// No description provided for @remindChipNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get remindChipNone;
+
+  /// No description provided for @remindChipOneDay.
+  ///
+  /// In en, this message translates to:
+  /// **'1 day'**
+  String get remindChipOneDay;
+
+  /// No description provided for @remindChipThreeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'3 days'**
+  String get remindChipThreeDays;
+
+  /// No description provided for @remindChipOneWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'1 week'**
+  String get remindChipOneWeek;
+
   /// No description provided for @experienceGuardianTitle.
   ///
   /// In en, this message translates to:
@@ -7572,7 +7668,7 @@ abstract class AppLocalizations {
   /// No description provided for @experienceOrgView.
   ///
   /// In en, this message translates to:
-  /// **'Organisation view'**
+  /// **'Shelters view'**
   String get experienceOrgView;
 
   /// No description provided for @drawerCreateOrg.
@@ -7602,7 +7698,7 @@ abstract class AppLocalizations {
   /// No description provided for @guardianDashboardTitle.
   ///
   /// In en, this message translates to:
-  /// **'Guardian dashboard'**
+  /// **'My Pets dashboard'**
   String get guardianDashboardTitle;
 
   /// No description provided for @upcomingPetEvents.
@@ -7692,7 +7788,7 @@ abstract class AppLocalizations {
   /// No description provided for @experienceGuardianView.
   ///
   /// In en, this message translates to:
-  /// **'Pet guardian view'**
+  /// **'My Pets view'**
   String get experienceGuardianView;
 
   /// No description provided for @experienceDefaultSettingTitle.
@@ -7710,19 +7806,19 @@ abstract class AppLocalizations {
   /// No description provided for @experienceShowOrganisationSectionTitle.
   ///
   /// In en, this message translates to:
-  /// **'Show organisation section'**
+  /// **'Show shelters section'**
   String get experienceShowOrganisationSectionTitle;
 
   /// No description provided for @experienceShowOrganisationSectionSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Adds Organisation to the menu so you can create or manage shelters and rescues.'**
+  /// **'Adds Shelters to the menu so you can create or manage a shelter or rescue.'**
   String get experienceShowOrganisationSectionSubtitle;
 
   /// No description provided for @experienceShowOrganisationSectionMemberLocked.
   ///
   /// In en, this message translates to:
-  /// **'Organisation stays visible because you belong to at least one organisation.'**
+  /// **'Shelters stay visible because you belong to at least one shelter.'**
   String get experienceShowOrganisationSectionMemberLocked;
 
   /// No description provided for @experienceGuardianInviteHint.
@@ -8022,13 +8118,13 @@ abstract class AppLocalizations {
   /// No description provided for @drawerGuardian.
   ///
   /// In en, this message translates to:
-  /// **'Guardian'**
+  /// **'My Pets'**
   String get drawerGuardian;
 
   /// No description provided for @drawerOrganisation.
   ///
   /// In en, this message translates to:
-  /// **'Organisation'**
+  /// **'Shelters'**
   String get drawerOrganisation;
 
   /// No description provided for @drawerAccount.
