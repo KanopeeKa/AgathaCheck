@@ -38,6 +38,7 @@ paths:
 4. **Consistency** — Uses `Theme`/`colorScheme`? Matches neighboring screens?
 5. **Copy** — Operational text direct; no cute tone in admin/health flows; strings in l10n.
 6. **States** — If you touched a list/form/action, are empty/loading/error still reasonable?
+7. **Auth entry** — If the change touches landing/auth, confirm the entry is role-neutral: sign-in/create-account only, with guardian/shelter/organisation context deferred until after authentication.
 
 ## Output (keep short)
 

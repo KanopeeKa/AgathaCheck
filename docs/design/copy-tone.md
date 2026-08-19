@@ -21,6 +21,22 @@ Everyday UI work: follow the bullets in `design.mdc`. Use this file for `/ui-des
 
 All user-facing strings belong in ARB/l10n. Localize enum `.label` when touched — `.agents/memory/localization-enum-labels.md`.
 
+## AgathaTrack landing/auth copy
+
+- Use **AgathaTrack** as the current product name. **AgathaCheck** is legacy
+  wording and must not be introduced in new UI or design work.
+- The landing page speaks to a shared care desk: calm, practical, and
+  reassuring without being cute.
+- Shelter/foster-team language may establish the product context, for example:
+  “For shelters and foster teams, every handover and next step stays close at
+  hand.”
+- Keep the login path universal. Do not ask users to choose “pet guardian,”
+  “shelter,” or “organisation” before signing in. That context belongs inside
+  the authenticated experience.
+- Prefer short supporting copy over feature lists or role-based marketing
+  gates. The form should make the next action obvious: sign in or create an
+  account.
+
 ## Org branding
 
 Orgs may customize **logo, name, and photo** via `organization_branding_section.dart` and related APIs.

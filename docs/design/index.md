@@ -31,6 +31,17 @@ Copy patterns from these — do not invent parallel styles:
 | Auth / landing layout | `features/auth/presentation/screens/landing_screen.dart` |
 | Theme (current) | `flutter_app/lib/core/theme/app_theme.dart` |
 
+## Approved landing/auth direction
+
+The reviewed landing direction is the **AgathaTrack Operations Desk** treatment:
+
+- Calm deep olive story panel, warm-paper auth surface, muted gold accent, and the approved protective shelter arch mark.
+- A short shelter/foster-team message is supporting context, not an audience gate.
+- Authentication is role-neutral: the landing page offers sign-in/create-account only. Guardian, shelter, organisation, and other care contexts are resolved inside the authenticated app.
+- Preserve the existing email/password, password visibility, forgot-password, validation, localization, accessibility, and native web password-manager behavior when this direction is integrated.
+
+The live reference is `artifacts/mockup-sandbox-live/src/components/mockups/landing-auth/GuardianDesk.tsx`; the approved static preview is `shape:guardian-care-landing-static` on the canvas. This is a landing-direction decision, not a replacement of the current global Flutter tokens until production integration is explicitly implemented.
+
 ## Phased UI refactor (only when explicitly requested)
 
 1. **Tokens** — `app_theme.dart` only; no screen churn

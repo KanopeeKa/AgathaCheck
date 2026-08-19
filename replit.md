@@ -1,7 +1,7 @@
-# Agatha Track (PetProfileApp)
+# AgathaTrack (PetProfileApp)
 
 ## Overview
-Agatha Track is a modular Flutter application designed for comprehensive pet management. It enables users to manage pet profiles, track health, log weight, and maintain veterinarian contacts. The platform offers robust authentication, in-app notifications, detailed pet reports, and adheres to GDPR data rights and consent management. The project aims to provide a scalable, production-ready solution for pet owners and organizations, with future potential for native mobile and advanced sharing capabilities.
+AgathaTrack is a modular Flutter application designed for comprehensive pet management and care coordination. It enables users to manage pet profiles, track health, log weight, and maintain veterinarian contacts. The platform offers robust authentication, in-app notifications, detailed pet reports, and adheres to GDPR data rights and consent management. The project aims to provide a scalable, production-ready solution for guardians, shelters, foster teams, and organisations, with future potential for native mobile and advanced sharing capabilities.
 
 ## User Preferences
 - Clean architecture with feature-driven structure

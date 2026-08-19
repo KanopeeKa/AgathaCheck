@@ -24,6 +24,9 @@ AgathaTrack is **calm care coordination** — professional for shelters, warm fo
 - **Copy:** operational flows = direct; warmth OK in onboarding, empty states, confirmations. No cute jokes in medical/admin tasks.
 - **Context:** one product — guardian (`/g/*`) vs org (`/o/*`) differs by route/`AppExperience`, not a second visual system. See `docs/experience-split-plan.md`.
 - **Strings:** user-facing text in ARB/l10n; localize enum `.label` when touched (`.agents/memory/localization-enum-labels.md`). Copy tone: `docs/design/copy-tone.md`.
+- **Landing/auth:** keep the pre-login path role-neutral. Do not add a guardian, shelter, foster, or organisation chooser to sign-in/create-account; resolve care context after authentication.
+- **Landing direction:** use the approved AgathaTrack Operations Desk reference when working on landing/auth: deep olive story panel, warm paper auth surface, muted gold accent, and the protective shelter arch mark. See `docs/design/tokens.md`; do not treat it as a global theme replacement until the production integration is approved.
+- **Brand:** use AgathaTrack in new user-facing copy. AgathaCheck is legacy wording. Prefer the canonical mark in `flutter_app/assets/branding/agathatrack-care-mark.svg` and preserve existing asset filenames where compatibility requires them.
 
 ## Deeper work
 
