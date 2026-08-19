@@ -4952,4 +4952,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orgRoleDefaultsOtherPermissions => 'Other permissions';
+
+  @override
+  String dueEventRowOpenLabel(String name, String petName) {
+    return 'Open $name for $petName';
+  }
+
+  @override
+  String dueEventRowMarkDoneLabel(String name) {
+    return 'Mark $name as done';
+  }
+
+  @override
+  String dueEventRowUndoLabel(String name) {
+    return 'Undo completion of $name';
+  }
+
+  @override
+  String get urgencyOverdue => 'Overdue';
+
+  @override
+  String get urgencyDueToday => 'Due today';
+
+  @override
+  String urgencyDueDate(String date) {
+    return 'Due $date';
+  }
+
+  @override
+  String completedEventSemanticLabel(String name, String petName) {
+    return '$name, completed, for $petName';
+  }
+
+  @override
+  String get careCompletionFailed =>
+      'Could not mark this care item as done. Try again.';
 }

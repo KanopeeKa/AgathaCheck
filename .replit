@@ -4,7 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
-packages = ["flutter", "chromium"]
+packages = ["flutter", "chromium", "shellcheck"]
 
 [workflows]
 runButton = "Project"

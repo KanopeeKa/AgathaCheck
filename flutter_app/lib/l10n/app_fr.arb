@@ -1691,5 +1691,41 @@
   "orgRoleDefaultsUnsavedTitle": "Abandonner les modifications ?",
   "orgRoleDefaultsUnsavedBody": "Vous avez des modifications de permissions non enregistrées pour ce niveau de rôle.",
   "orgRoleDefaultsDiscard": "Abandonner",
-  "orgRoleDefaultsOtherPermissions": "Autres permissions"
+  "orgRoleDefaultsOtherPermissions": "Autres permissions",
+
+  "dueEventRowOpenLabel": "Ouvrir {name} pour {petName}",
+  "@dueEventRowOpenLabel": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "petName": { "type": "String" }
+    }
+  },
+  "dueEventRowMarkDoneLabel": "Marquer {name} comme fait",
+  "@dueEventRowMarkDoneLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "dueEventRowUndoLabel": "Annuler la complétion de {name}",
+  "@dueEventRowUndoLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "urgencyOverdue": "En retard",
+  "urgencyDueToday": "Aujourd'hui",
+  "urgencyDueDate": "Échéance {date}",
+  "@urgencyDueDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "completedEventSemanticLabel": "{name}, terminé, pour {petName}",
+  "@completedEventSemanticLabel": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "petName": { "type": "String" }
+    }
+  },
+  "careCompletionFailed": "Impossible de marquer ce soin comme terminé. Réessayez."
 }
