@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../../health_tracking/presentation/providers/health_issue_providers.dart';
 import '../../../health_tracking/presentation/widgets/health_issue_card.dart';
 import '../controllers/health_issues_controller.dart';
+import '../../../experience/domain/entities/app_experience.dart';
 
 /// Dedicated health issues screen with expandable issue cards.
 class PetHealthIssuesScreen extends ConsumerWidget {
@@ -18,7 +18,7 @@ class PetHealthIssuesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final experience = ref.watch(resolvedExperienceProvider);
+    final experience = AppExperience.guardian;
     final issuesAsync = ref.watch(healthIssueNotifierProvider(petId));
     final controller = HealthIssuesController(ref);
 

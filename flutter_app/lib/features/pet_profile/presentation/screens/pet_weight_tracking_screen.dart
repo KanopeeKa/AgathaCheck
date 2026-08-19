@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import 'widgets/weight_tracking_section.dart';
+import '../../../experience/domain/entities/app_experience.dart';
 
 /// Dedicated weight tracking screen for a pet.
 class PetWeightTrackingScreen extends ConsumerWidget {
@@ -16,7 +16,7 @@ class PetWeightTrackingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final experience = ref.watch(resolvedExperienceProvider);
+    final experience = AppExperience.guardian;
 
     void onAddEntry() => openAddWeightEntrySheet(context, ref, petId);
 

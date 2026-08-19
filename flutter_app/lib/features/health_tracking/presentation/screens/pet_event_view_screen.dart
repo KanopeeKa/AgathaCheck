@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../providers/health_providers.dart';
 import '../widgets/pet_event_lifecycle.dart';
 import '../widgets/pet_event_view_body.dart';
 import '../widgets/pet_event_view_providers.dart';
+import '../../../experience/domain/entities/app_experience.dart';
 
 /// Read-only event detail screen at `/pet/:petId/events/:entryId`.
 class PetEventViewScreen extends ConsumerWidget {
@@ -25,7 +25,7 @@ class PetEventViewScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final experience = ref.watch(resolvedExperienceProvider);
+    final experience = AppExperience.guardian;
     final petsAsync = ref.watch(allPetsIncludingOrgProvider);
     final entryAsync = ref.watch(
       petHealthEntryByIdProvider((petId: petId, entryId: entryId)),
