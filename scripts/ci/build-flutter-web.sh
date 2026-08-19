@@ -30,6 +30,10 @@ if [[ "$RUN_CLEAN" == "true" ]]; then
   (cd flutter_app && flutter clean)
 fi
 
+# Drop stale dart2js plugin registrant. CI cache restore-keys can reuse
+# `.dart_tool` from an older pubspec.lock (e.g. file_picker 12 beta vs federated 12.0.0).
+rm -rf flutter_app/.dart_tool/flutter_build
+
 (cd flutter_app && flutter pub get)
 
 if [[ "$RUN_CODEGEN" == "true" ]]; then
