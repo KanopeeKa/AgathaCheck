@@ -4,204 +4,154 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../organization/presentation/providers/organization_providers.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../domain/services/guardian_onboarding_rules.dart';
 import '../../domain/services/org_onboarding_rules.dart';
+import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../organization/presentation/providers/organization_providers.dart';
 import '../providers/experience_providers.dart';
 
-/// Post-login experience selection when user may use both shells.
-class ExperienceChooserScreen extends ConsumerStatefulWidget {
+/// Action-oriented first-time experience after sign-up or when account is empty.
+class ExperienceChooserScreen extends ConsumerWidget {
   const ExperienceChooserScreen({super.key});
 
-  @override
-  ConsumerState<ExperienceChooserScreen> createState() =>
-      _ExperienceChooserScreenState();
-}
+  Future<void> _showFosteringDialog(BuildContext context) async {
+    final l = AppLocalizations.of(context)!;
+    final codeController = TextEditingController();
+    final code = await showDialog<String?>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.ftueFosteringDialogTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(l.ftueFosteringDialogBody),
+            const SizedBox(height: 16),
+            TextField(
+              key: const Key('ftue_foster_code_field'),
+              controller: codeController,
+              decoration: InputDecoration(
+                labelText: l.inviteCode,
+                hintText: l.enterInviteCode,
+              ),
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => Navigator.pop(ctx, codeController.text.trim()),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l.cancel),
+          ),
+          FilledButton(
+            key: const Key('ftue_foster_continue_button'),
+            onPressed: () => Navigator.pop(ctx, codeController.text.trim()),
+            child: Text(l.continueButton),
+          ),
+        ],
+      ),
+    );
+    codeController.dispose();
+    if (!context.mounted) return;
+    if (code != null && code.isNotEmpty) {
+      context.go('/shared/$code');
+      return;
+    }
+    context.go('/g/home');
+  }
 
-class _ExperienceChooserScreenState
-    extends ConsumerState<ExperienceChooserScreen> {
-  AppExperience? _selected;
-  bool _remember = false;
+  void _goGuardianOnboarding(BuildContext context, WidgetRef ref) {
+    final pets = ref.read(petListProvider).valueOrNull ?? [];
+    final completed = ref.read(guardianOnboardingCompletedProvider);
+    final path = GuardianOnboardingRules.resolveGuardianDestination(
+      targetPath: AppExperience.guardian.homePath(),
+      pets: pets,
+      onboardingCompleted: completed,
+    );
+    context.go(path);
+  }
+
+  void _goShelterOnboarding(BuildContext context, WidgetRef ref) {
+    final pets = ref.read(petListProvider).valueOrNull ?? [];
+    final orgs = ref.read(organizationListProvider).valueOrNull ?? [];
+    final completed = ref.read(orgOnboardingCompletedProvider);
+    final path = OrgOnboardingRules.resolveOrgDestination(
+      targetPath: AppExperience.organization.homePath(),
+      pets: pets,
+      orgs: orgs,
+      onboardingCompleted: completed,
+    );
+    context.go(path);
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final eligibilityAsync = ref.watch(experienceEligibilityProvider);
+    final colors = context.experienceColors;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l.experienceChooserTitle)),
-      body: eligibilityAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(l.failedToLoadPets(e.toString()))),
-        data: (eligibility) {
-          final options = eligibility.availableExperiences;
-          final defaultSelection = options.contains(AppExperience.guardian)
-              ? AppExperience.guardian
-              : options.first;
-          if (_selected == null || !options.contains(_selected)) {
-            _selected = defaultSelection;
-          }
-          final showRemember = eligibility.showChooser;
-
-          return ListView(
-            padding: const EdgeInsets.all(24),
-            children: [
-              Text(
-                l.experienceChooserSubtitle,
-                style: theme.textTheme.titleMedium,
-              ),
-              const SizedBox(height: 24),
-              if (options.contains(AppExperience.guardian))
-                _ExperienceCard(
-                  key: const Key('experience_card_guardian'),
-                  title: l.experienceGuardianTitle,
-                  subtitle: l.experienceGuardianSubtitle,
-                  icon: Icons.pets,
-                  selected: _selected == AppExperience.guardian,
-                  accentColor: context.experienceColors.guardianPrimary,
-                  onAccentColor: context.experienceColors.guardianOnPrimary,
-                  accentContainer: context.experienceColors.guardianLight,
-                  onTap: () =>
-                      setState(() => _selected = AppExperience.guardian),
-                ),
-              if (options.contains(AppExperience.organization)) ...[
-                const SizedBox(height: 12),
-                _ExperienceCard(
-                  key: const Key('experience_card_organization'),
-                  title: l.experienceOrganizationTitle,
-                  subtitle: l.experienceOrganizationSubtitle,
-                  icon: Icons.business,
-                  selected: _selected == AppExperience.organization,
-                  accentColor: context.experienceColors.organizationPrimary,
-                  onAccentColor: context.experienceColors.organizationOnPrimary,
-                  accentContainer: context.experienceColors.organizationLight,
-                  onTap: () =>
-                      setState(() => _selected = AppExperience.organization),
-                ),
-              ],
-              const SizedBox(height: 12),
-              _ExperienceCard(
-                key: const Key('experience_card_boarding'),
-                title: l.experienceBoardingTitle,
-                subtitle: l.experienceBoardingSubtitle,
-                icon: Icons.house_siding_outlined,
-                selected: false,
-                enabled: false,
-                accentColor: theme.colorScheme.outline,
-                onAccentColor: theme.colorScheme.onSurface,
-                accentContainer: theme.colorScheme.surfaceContainerHighest,
-                onTap: () {},
-              ),
-              if (showRemember) ...[
-                const SizedBox(height: 24),
-                CheckboxListTile(
-                  key: const Key('remember_experience_choice'),
-                  value: _remember,
-                  onChanged: (v) => setState(() => _remember = v ?? false),
-                  title: Text(l.experienceRememberChoice),
-                  controlAffinity: ListTileControlAffinity.leading,
-                  contentPadding: EdgeInsets.zero,
-                ),
-                const SizedBox(height: 8),
-                Semantics(
-                  container: true,
-                  label: l.experienceRememberChoiceHint,
-                  child: Container(
-                    key: const Key('remember_experience_hint'),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          size: 20,
-                          color: theme.colorScheme.primary,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            l.experienceRememberChoiceHint,
-                            style: theme.textTheme.bodySmall,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-              const SizedBox(height: 32),
-              FilledButton(
-                key: const Key('experience_continue_button'),
-                onPressed: _selected == null
-                    ? null
-                    : () => _continue(context, _selected!),
-                child: Text(l.continueButton),
-              ),
-            ],
-          );
-        },
+      appBar: AppBar(title: Text(l.ftueTitle)),
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          Text(l.ftueSubtitle, style: theme.textTheme.titleMedium),
+          const SizedBox(height: 24),
+          _FtueActionCard(
+            key: const Key('ftue_action_track_pets'),
+            title: l.ftueActionTrackPetsTitle,
+            subtitle: l.ftueActionTrackPetsSubtitle,
+            icon: Icons.pets,
+            accentColor: colors.guardianPrimary,
+            onAccentColor: colors.guardianOnPrimary,
+            accentContainer: colors.guardianLight,
+            onTap: () => _goGuardianOnboarding(context, ref),
+          ),
+          const SizedBox(height: 12),
+          _FtueActionCard(
+            key: const Key('ftue_action_run_shelter'),
+            title: l.ftueActionRunShelterTitle,
+            subtitle: l.ftueActionRunShelterSubtitle,
+            icon: Icons.business_outlined,
+            accentColor: colors.organizationPrimary,
+            onAccentColor: colors.organizationOnPrimary,
+            accentContainer: colors.organizationLight,
+            onTap: () => _goShelterOnboarding(context, ref),
+          ),
+          const SizedBox(height: 12),
+          _FtueActionCard(
+            key: const Key('ftue_action_fostering'),
+            title: l.ftueActionFosteringTitle,
+            subtitle: l.ftueActionFosteringSubtitle,
+            icon: Icons.home_outlined,
+            accentColor: theme.colorScheme.tertiary,
+            onAccentColor: theme.colorScheme.onTertiary,
+            accentContainer: theme.colorScheme.tertiaryContainer,
+            onTap: () => _showFosteringDialog(context),
+          ),
+        ],
       ),
     );
   }
-
-  Future<void> _continue(BuildContext context, AppExperience experience) async {
-    final store = ref.read(experiencePreferencesStoreProvider);
-    if (_remember) {
-      await store.writeDefaultExperience(experience);
-    } else {
-      await store.clear();
-    }
-    if (!context.mounted) return;
-    var path = experience.homePath();
-    if (experience == AppExperience.guardian) {
-      final pets = ref.read(petListProvider).valueOrNull ?? [];
-      final completed = ref.read(guardianOnboardingCompletedProvider);
-      path = GuardianOnboardingRules.resolveGuardianDestination(
-        targetPath: path,
-        pets: pets,
-        onboardingCompleted: completed,
-      );
-    } else if (experience == AppExperience.organization) {
-      final pets = ref.read(petListProvider).valueOrNull ?? [];
-      final orgs = ref.read(organizationListProvider).valueOrNull ?? [];
-      final completed = ref.read(orgOnboardingCompletedProvider);
-      path = OrgOnboardingRules.resolveOrgDestination(
-        targetPath: path,
-        pets: pets,
-        orgs: orgs,
-        onboardingCompleted: completed,
-      );
-    }
-    context.go(path);
-  }
 }
 
-class _ExperienceCard extends StatelessWidget {
-  const _ExperienceCard({
+class _FtueActionCard extends StatelessWidget {
+  const _FtueActionCard({
     super.key,
     required this.title,
     required this.subtitle,
     required this.icon,
-    required this.selected,
     required this.onTap,
     required this.accentColor,
     required this.onAccentColor,
     required this.accentContainer,
-    this.enabled = true,
   });
 
   final String title;
   final String subtitle;
   final IconData icon;
-  final bool selected;
-  final bool enabled;
   final VoidCallback onTap;
   final Color accentColor;
   final Color onAccentColor;
@@ -210,48 +160,43 @@ class _ExperienceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final borderColor = selected
-        ? accentColor
-        : theme.colorScheme.outlineVariant;
 
-    return Opacity(
-      opacity: enabled ? 1 : 0.5,
-      child: Material(
-        color: selected
-            ? accentContainer.withValues(alpha: 0.65)
-            : theme.colorScheme.surface,
+    return Material(
+      color: theme.colorScheme.surface,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          onTap: enabled ? onTap : null,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: borderColor, width: selected ? 2 : 1),
-            ),
-            child: Row(
-              children: [
-                Icon(icon, size: 36, color: accentColor),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title, style: theme.textTheme.titleMedium),
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: theme.colorScheme.outlineVariant),
+          ),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: accentContainer.withValues(alpha: 0.65),
+                child: Icon(icon, color: accentColor),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                if (selected) Icon(Icons.check_circle, color: accentColor),
-              ],
-            ),
+              ),
+              Icon(Icons.chevron_right, color: accentColor),
+            ],
           ),
         ),
       ),

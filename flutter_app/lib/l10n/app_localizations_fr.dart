@@ -4230,6 +4230,58 @@ class AppLocalizationsFr extends AppLocalizations {
       'Choisissez l\'expérience adaptée à vos besoins du jour.';
 
   @override
+  String get ftueTitle => 'Bienvenue sur Agatha Track';
+
+  @override
+  String get ftueSubtitle => 'Que souhaitez-vous faire en premier ?';
+
+  @override
+  String get ftueActionTrackPetsTitle => 'Suivre mes animaux';
+
+  @override
+  String get ftueActionTrackPetsSubtitle =>
+      'Ajoutez un animal et suivez soins, rappels et visites vétérinaires.';
+
+  @override
+  String get ftueActionRunShelterTitle => 'Gérer un refuge ou une association';
+
+  @override
+  String get ftueActionRunShelterSubtitle =>
+      'Configurez votre espace organisation et gérez les animaux en inventaire.';
+
+  @override
+  String get ftueActionFosteringTitle => 'Je suis famille d\'accueil';
+
+  @override
+  String get ftueActionFosteringSubtitle =>
+      'Ouvrez un lien de partage ou commencez depuis votre tableau de bord.';
+
+  @override
+  String get ftueFosteringDialogTitle => 'Famille d\'accueil';
+
+  @override
+  String get ftueFosteringDialogBody =>
+      'Si votre refuge vous a envoyé un lien, collez le code ci-dessous. Vous pouvez aussi passer cette étape.';
+
+  @override
+  String get noPetsExploreShelters => 'Découvrir les refuges et associations';
+
+  @override
+  String get shelterSettings => 'Paramètres du refuge';
+
+  @override
+  String get remindChipNone => 'Aucun';
+
+  @override
+  String get remindChipOneDay => '1 jour';
+
+  @override
+  String get remindChipThreeDays => '3 jours';
+
+  @override
+  String get remindChipOneWeek => '1 semaine';
+
+  @override
   String get experienceGuardianTitle => 'Gardien d\'animal individuel';
 
   @override

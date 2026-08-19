@@ -62,5 +62,6 @@ void navigateFromNotification(
   final organizationId = notification.organizationId;
   if (organizationId != null && organizationId.isNotEmpty) {
     context.go('/o/orgs/$organizationId');
+    return;
   }
 }

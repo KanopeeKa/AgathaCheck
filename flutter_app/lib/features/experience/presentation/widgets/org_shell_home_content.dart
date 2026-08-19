@@ -69,6 +69,20 @@ class OrgShellHomeContent extends ConsumerWidget {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            if (orgs.length == 1)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    key: const Key('org_home_shelter_settings'),
+                    onPressed: () =>
+                        context.push('/account/orgs/${orgs.first.id}'),
+                    icon: const Icon(Icons.settings_outlined, size: 18),
+                    label: Text(l.shelterSettings),
+                  ),
+                ),
+              ),
             PendingFosterPlacementsSection(),
             PendingAdoptionPlacementsSection(),
             PendingCustodyTransfersSection(),

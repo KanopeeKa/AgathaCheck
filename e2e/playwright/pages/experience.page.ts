@@ -20,45 +20,39 @@ export class ExperiencePage {
     await dismissConsentBannerIfPresent(this.page);
     await refreshFlutterAccessibility(this.page);
     await this.page
-      .getByText(/How will you use Agatha Track/i)
+      .getByText(/Welcome to Agatha Track|Bienvenue sur Agatha Track/i)
       .waitFor({ timeout: 30_000 });
   }
 
   async selectGuardianCard(): Promise<void> {
-    await this.page.getByText('Individual Pet Guardian').click();
+    await this.page
+      .getByRole('button', { name: /Track my pets|Suivre mes animaux/i })
+      .or(this.page.locator('[flt-semantics-identifier="ftue_action_track_pets"]'))
+      .first()
+      .click();
   }
 
-  async chooseGuardian(remember = false): Promise<void> {
+  async chooseGuardian(_remember = false): Promise<void> {
     await this.selectGuardianCard();
-    if (remember) {
-      await this.page.getByRole('checkbox').click();
-    }
-    await this.page.getByRole('button', { name: 'Continue' }).click();
-    await waitForFlutterRoutePattern(this.page, /\/g\/home/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/g\/(home|onboarding)/, 30_000);
   }
 
-  /** Continue on chooser without tapping a card (guardian is pre-selected). */
-  async continuePreselectedGuardian(remember = false): Promise<void> {
-    await dismissConsentBannerIfPresent(this.page);
-    await refreshFlutterAccessibility(this.page);
-    if (remember) {
-      await this.page.getByRole('checkbox').click();
-    }
-    await this.page.getByRole('button', { name: 'Continue' }).click();
-    await waitForFlutterRoutePattern(this.page, /\/g\/home/, 30_000);
+  /** @deprecated FTUE actions navigate directly — no pre-selected continue step. */
+  async continuePreselectedGuardian(_remember = false): Promise<void> {
+    await this.chooseGuardian();
   }
 
   async selectOrganizationCard(): Promise<void> {
-    await this.page.getByText('Shelter / Organisation').click();
+    await this.page
+      .getByRole('button', { name: /Run a shelter|Gérer un refuge/i })
+      .or(this.page.locator('[flt-semantics-identifier="ftue_action_run_shelter"]'))
+      .first()
+      .click();
   }
 
-  async chooseOrganization(remember = false): Promise<void> {
+  async chooseOrganization(_remember = false): Promise<void> {
     await this.selectOrganizationCard();
-    if (remember) {
-      await this.page.getByRole('checkbox').click();
-    }
-    await this.page.getByRole('button', { name: 'Continue' }).click();
-    await waitForFlutterRoutePattern(this.page, /\/o\/home/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/o\/(home|onboarding)/, 30_000);
   }
 
   /** After navigation reversal: no Home button; hamburger on root, bell always present. */

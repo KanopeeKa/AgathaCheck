@@ -201,7 +201,7 @@ export async function expectHomeShellHidden(
 
 export type ExperienceChoice = 'guardian' | 'organization';
 
-/** Complete the post-login experience chooser when dual-role users land on `/app/choose`. */
+/** Complete the post-login FTUE when empty accounts land on `/app/choose`. */
 export async function completeExperienceChooserIfPresent(
   page: Page,
   choice: ExperienceChoice = 'guardian',
@@ -211,18 +211,25 @@ export async function completeExperienceChooserIfPresent(
   await dismissConsentBannerIfPresent(page);
   await refreshFlutterAccessibility(page);
 
-  const chooserHeading = page.getByText(/How will you use Agatha Track/i);
+  const chooserHeading = page.getByText(/Welcome to Agatha Track|Bienvenue sur Agatha Track/i);
   const onChooserUrl = flutterRoutePath(page.url()) === '/app/choose';
   const chooserVisible = onChooserUrl
     || (await chooserHeading.isVisible({ timeout: 3_000 }).catch(() => false));
   if (!chooserVisible) return;
 
   if (choice === 'guardian') {
-    await page.getByText('Individual Pet Guardian').click();
+    await page
+      .getByRole('button', { name: /Track my pets|Suivre mes animaux/i })
+      .or(page.locator('[flt-semantics-identifier="ftue_action_track_pets"]'))
+      .first()
+      .click();
   } else {
-    await page.getByText('Shelter / Organisation').click();
+    await page
+      .getByRole('button', { name: /Run a shelter|Gérer un refuge/i })
+      .or(page.locator('[flt-semantics-identifier="ftue_action_run_shelter"]'))
+      .first()
+      .click();
   }
-  await page.getByRole('button', { name: 'Continue' }).click();
   const homePattern =
     choice === 'guardian'
       ? /\/g\/(home|onboarding)/
@@ -257,7 +264,7 @@ export async function waitForPostLoginRoute(page: Page, timeout?: number): Promi
       return;
     }
 
-    if (await page.getByText(/How will you use Agatha Track/i).isVisible({ timeout: 1_000 }).catch(() => false)) {
+    if (await page.getByText(/Welcome to Agatha Track|Bienvenue sur Agatha Track/i).isVisible({ timeout: 1_000 }).catch(() => false)) {
       return;
     }
 

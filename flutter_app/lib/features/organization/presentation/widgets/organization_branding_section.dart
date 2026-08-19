@@ -260,10 +260,11 @@ class OrganizationBrandingSection extends ConsumerWidget {
                             style: theme.textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               border: InputBorder.none,
                               isDense: true,
                               contentPadding: EdgeInsets.zero,
+                              hintText: l.organizationName,
                             ),
                             autofillHints: const [
                               AutofillHints.organizationName,

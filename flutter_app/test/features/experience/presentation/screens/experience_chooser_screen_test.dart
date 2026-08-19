@@ -1,118 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
-import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/experience_chooser_screen.dart';
-import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-Widget _wrap(Widget child, {List<Override> overrides = const []}) {
+Widget _wrap(Widget child) {
   return ProviderScope(
-    overrides: overrides,
     child: MaterialApp(
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: child,
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: AppLocalizations.supportedLocales,
+    home: child,
     ),
   );
 }
 
 void main() {
-  final dualEligibility = ExperienceEligibilityRules.compute(
-    pets: const [
-      Pet(id: '1', name: 'A', species: 'Cat'),
-      Pet(
-        id: '2',
-        name: 'B',
-        species: 'Dog',
-        organizationId: 'o1',
-        organizationName: 'Shelter',
-      ),
-    ],
-    orgMembershipCount: 1,
-  );
-
-  testWidgets('dual-role chooser pre-selects guardian card', (tester) async {
-    await tester.pumpWidget(
-      _wrap(
-        const ExperienceChooserScreen(),
-        overrides: [
-          experienceEligibilityProvider.overrideWith(
-            (ref) => AsyncValue.data(dualEligibility),
-          ),
-        ],
-      ),
-    );
+  testWidgets('FTUE shows three action cards', (tester) async {
+    await tester.pumpWidget(_wrap(const ExperienceChooserScreen()));
     await tester.pumpAndSettle();
 
-    final guardianCard = tester.widget<Material>(
-      find
-          .ancestor(
-            of: find.byKey(const Key('experience_card_guardian')),
-            matching: find.byType(Material),
-          )
-          .first,
-    );
-    expect(guardianCard.color, isNotNull);
-
-    expect(
-      find.descendant(
-        of: find.byKey(const Key('experience_card_guardian')),
-        matching: find.byIcon(Icons.check_circle),
-      ),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('ftue_action_track_pets')), findsOneWidget);
+    expect(find.byKey(const Key('ftue_action_run_shelter')), findsOneWidget);
+    expect(find.byKey(const Key('ftue_action_fostering')), findsOneWidget);
+    expect(find.text('Welcome to Agatha Track'), findsOneWidget);
   });
 
-  testWidgets('chooser shows remember hint for dual users', (tester) async {
-    await tester.pumpWidget(
-      _wrap(
-        const ExperienceChooserScreen(),
-        overrides: [
-          experienceEligibilityProvider.overrideWith(
-            (ref) => AsyncValue.data(dualEligibility),
-          ),
-        ],
-      ),
-    );
+  testWidgets('fostering action opens optional code dialog', (tester) async {
+    await tester.pumpWidget(_wrap(const ExperienceChooserScreen()));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('remember_experience_choice')), findsOneWidget);
-    expect(find.byKey(const Key('remember_experience_hint')), findsOneWidget);
-    expect(find.byKey(const Key('experience_card_guardian')), findsOneWidget);
-    expect(
-      find.byKey(const Key('experience_card_organization')),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('chooser hides organisation card for guardian-only eligibility', (
-    tester,
-  ) async {
-    final guardianOnly = ExperienceEligibilityRules.compute(
-      pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
-      orgMembershipCount: 0,
-    );
-    await tester.pumpWidget(
-      _wrap(
-        const ExperienceChooserScreen(),
-        overrides: [
-          experienceEligibilityProvider.overrideWith(
-            (ref) => AsyncValue.data(guardianOnly),
-          ),
-        ],
-      ),
-    );
+    await tester.tap(find.byKey(const Key('ftue_action_fostering')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('experience_card_guardian')), findsOneWidget);
-    expect(find.byKey(const Key('experience_card_organization')), findsNothing);
+    expect(find.byKey(const Key('ftue_foster_code_field')), findsOneWidget);
+    expect(find.byKey(const Key('ftue_foster_continue_button')), findsOneWidget);
   });
 }

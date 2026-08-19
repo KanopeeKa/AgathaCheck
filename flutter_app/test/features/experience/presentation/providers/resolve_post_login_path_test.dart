@@ -40,20 +40,51 @@ void main() {
       expect(
         resolvePostLoginPath(
           eligibility: _guardianOnly(),
+          pets: const [Pet(id: '1', name: 'Mine', species: 'Cat')],
           guardianOnboardingCompleted: true,
         ),
         '/g/home',
       );
     });
 
-    test('guardian-only user with no pets goes to onboarding', () {
+    test('guardian-only user with no pets goes to FTUE', () {
       expect(
         resolvePostLoginPath(
           eligibility: _guardianOnly(),
           pets: const [],
           guardianOnboardingCompleted: false,
         ),
+        '/app/choose',
+      );
+    });
+
+    test('guardian-only user with no pets and pending invites skips FTUE', () {
+      expect(
+        resolvePostLoginPath(
+          eligibility: _guardianOnly(),
+          pets: const [],
+          guardianOnboardingCompleted: false,
+          hasPendingOrgInvites: true,
+        ),
         '/g/onboarding',
+      );
+    });
+
+    test('org-only user with no pets lands on shelter home', () {
+      expect(
+        resolvePostLoginPath(
+          eligibility: _orgOnly(),
+          pets: const [],
+          orgs: const [
+            Organization(
+              id: 'o1',
+              name: 'Rescue',
+              type: OrganizationType.charity,
+            ),
+          ],
+          orgOnboardingCompleted: true,
+        ),
+        '/o/home',
       );
     });
 
@@ -125,15 +156,58 @@ void main() {
     });
 
     test('org-only user lands on organisation home', () {
-      expect(resolvePostLoginPath(eligibility: _orgOnly()), '/o/home');
+      expect(
+        resolvePostLoginPath(
+          eligibility: _orgOnly(),
+          pets: const [
+            Pet(
+              id: '2',
+              name: 'Shelter',
+              species: 'Dog',
+              organizationId: 'o1',
+              organizationName: 'Rescue',
+            ),
+          ],
+          orgs: const [
+            Organization(
+              id: 'o1',
+              name: 'Rescue',
+              type: OrganizationType.charity,
+            ),
+          ],
+        ),
+        '/o/home',
+      );
     });
 
-    test('dual-role user falls back to guardian', () {
-      expect(resolvePostLoginPath(eligibility: _dual()), '/g/home');
+    test('dual-role user falls back to guardian when pets exist', () {
+      expect(
+        resolvePostLoginPath(
+          eligibility: _dual(),
+          pets: const [
+            Pet(id: '1', name: 'Mine', species: 'Cat'),
+            Pet(
+              id: '2',
+              name: 'Shelter',
+              species: 'Dog',
+              organizationId: 'o1',
+              organizationName: 'Rescue',
+            ),
+          ],
+          orgs: const [
+            Organization(
+              id: 'o1',
+              name: 'Rescue',
+              type: OrganizationType.charity,
+            ),
+          ],
+        ),
+        '/g/home',
+      );
     });
 
-    test('guardian-only falls back to guardian', () {
-      expect(resolvePostLoginPath(eligibility: _guardianOnly()), '/g/home');
+    test('guardian-only empty account goes to FTUE', () {
+      expect(resolvePostLoginPath(eligibility: _guardianOnly()), '/app/choose');
     });
   });
 }

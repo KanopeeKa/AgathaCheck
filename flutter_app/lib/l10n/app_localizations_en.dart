@@ -4163,6 +4163,58 @@ class AppLocalizationsEn extends AppLocalizations {
       'Choose the experience that fits what you need today.';
 
   @override
+  String get ftueTitle => 'Welcome to Agatha Track';
+
+  @override
+  String get ftueSubtitle => 'What would you like to do first?';
+
+  @override
+  String get ftueActionTrackPetsTitle => 'Track my pets';
+
+  @override
+  String get ftueActionTrackPetsSubtitle =>
+      'Add a pet and start tracking care, reminders, and vet visits.';
+
+  @override
+  String get ftueActionRunShelterTitle => 'Run a shelter or rescue';
+
+  @override
+  String get ftueActionRunShelterSubtitle =>
+      'Set up your organisation workspace and manage inventory pets.';
+
+  @override
+  String get ftueActionFosteringTitle => 'I\'m fostering a pet';
+
+  @override
+  String get ftueActionFosteringSubtitle =>
+      'Open a share link or start from your foster dashboard.';
+
+  @override
+  String get ftueFosteringDialogTitle => 'Fostering a pet';
+
+  @override
+  String get ftueFosteringDialogBody =>
+      'If your shelter sent you a share link, paste the code below. You can also skip and explore the app.';
+
+  @override
+  String get noPetsExploreShelters => 'Explore shelters and rescues';
+
+  @override
+  String get shelterSettings => 'Shelter settings';
+
+  @override
+  String get remindChipNone => 'None';
+
+  @override
+  String get remindChipOneDay => '1 day';
+
+  @override
+  String get remindChipThreeDays => '3 days';
+
+  @override
+  String get remindChipOneWeek => '1 week';
+
+  @override
   String get experienceGuardianTitle => 'Individual Pet Guardian';
 
   @override
