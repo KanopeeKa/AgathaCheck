@@ -90,7 +90,6 @@ but are not individually required once the ruleset is migrated.
 | `flutter-integration / Flutter integration` | `flutter-integration` | `Flutter integration` | `_reusable-flutter-integration.yml` |
 | `flutter-build-web / Build Flutter web` | `flutter-build-web` | `Build Flutter web` | `_reusable-build-web.yml` |
 | `ci-e2e-canary / Playwright @smoke-ci canary (localhost)` | `ci-e2e-canary` | `Playwright @smoke-ci canary (localhost)` | `_reusable-e2e-local.yml` |
-| `ci-e2e-org / Playwright org journey (localhost)` | `ci-e2e-org` | `Playwright org journey (localhost)` | `_reusable-e2e-local.yml` |
 | `test-suite / Backend (Node.js Jest + Dart analyze)` | `test-suite` | `Backend (Node.js Jest + Dart analyze)` | `_reusable-test.yml` |
 | `test-suite / E2E package audit` | `test-suite` | `E2E package audit` | `_reusable-test.yml` |
 | `Analyze JavaScript` | — | `Analyze JavaScript` | `codeql.yml` (direct job; **required separately**) |
@@ -103,10 +102,9 @@ checks listed in **Main protection** ruleset should be removed when
 the merge gate `flutter-coverage / Flutter domain coverage` covers shard failures (enforced via `ci-gate`).
 
 **Blocking via `ci-gate`:** `ci-e2e-canary / Playwright @smoke-ci canary (localhost)` —
-PR Playwright canary (`@smoke-ci`, retries 0). Required when `flutter-build-web` succeeds; skipped when build fails (gate still fails on build). Enforced in `scripts/ci/assert-ci-gate.sh`. See [e2e-ci-canary-plan.md](./e2e-ci-canary-plan.md).
+PR Playwright canary (`@smoke-ci`, retries 0), including three org journeys (discovery, profile, dashboard). Required when `flutter-build-web` succeeds; skipped when build fails (gate still fails on build). Enforced in `scripts/ci/assert-ci-gate.sh`. See [e2e-ci-canary-plan.md](./e2e-ci-canary-plan.md).
 
-**Blocking via `ci-gate`:** `ci-e2e-org / Playwright org journey (localhost)` —
-13 org journey specs when org Flutter or org Playwright paths change (retries 0). Governance also runs `check-org-e2e-locators.mjs` when org Flutter changes without a matching E2E touch. Skipped when out of scope or `flutter-build-web` fails.
+**Full org journey E2E** (13 specs) runs in **`ci-full-audit.yml`** and **`pre-uat-e2e.yml`**, not on every PR. Governance still runs `check-org-e2e-locators.mjs` when org Flutter changes without a matching E2E touch.
 
 #### Path-scoped PR CI (`ci-scope`)
 
@@ -117,7 +115,7 @@ PR Playwright canary (`@smoke-ci`, retries 0). Required when `flutter-build-web`
 
 | Always runs | May skip on narrow diffs |
 |-------------|--------------------------|
-| `startup-smoke`, `test-suite` (governance + backend + e2e audit), CodeQL | Flutter analyze*, shards, coverage, integration, build-web, `@smoke-ci` canary, org journey E2E |
+| `startup-smoke`, `test-suite` (governance + backend + e2e audit), CodeQL | Flutter analyze*, shards, coverage, integration, build-web, `@smoke-ci` canary |
 
 \*Flutter **analyze** still runs when `server/routes/**` or `server/lib/**` changed (API contract), even if `flutter_app/**` is untouched.
 

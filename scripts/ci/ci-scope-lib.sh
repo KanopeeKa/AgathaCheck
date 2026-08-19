@@ -28,8 +28,6 @@ CI_SCOPE_SHARD_HEALTH=false
 CI_SCOPE_SHARD_ORG=false
 CI_SCOPE_SHARD_REST_A=false
 CI_SCOPE_SHARD_REST_B=false
-CI_SCOPE_HAS_ORG_E2E_TOUCH=false
-CI_SCOPE_HAS_ORG_JOURNEY_TRIGGER=false
 
 ci_scope_reset() {
   CI_SCOPE_FORCE_FULL=false
@@ -54,8 +52,6 @@ ci_scope_reset() {
   CI_SCOPE_SHARD_ORG=false
   CI_SCOPE_SHARD_REST_A=false
   CI_SCOPE_SHARD_REST_B=false
-  CI_SCOPE_HAS_ORG_E2E_TOUCH=false
-  CI_SCOPE_HAS_ORG_JOURNEY_TRIGGER=false
 }
 
 ci_scope_enable_shard() {
@@ -134,7 +130,6 @@ ci_scope_classify_flutter_shard() {
       ci_scope_enable_shard health
       ;;
     flutter_app/lib/features/organization/*|flutter_app/test/features/organization/*)
-      CI_SCOPE_HAS_ORG_JOURNEY_TRIGGER=true
       ci_scope_enable_shard org
       ;;
     flutter_app/lib/core/router/organization_routes.dart)
@@ -205,7 +200,6 @@ ci_scope_classify_path() {
       ;;
     flutter_app/lib/core/router/organization_routes.dart)
       CI_SCOPE_HAS_FLUTTER=true
-      CI_SCOPE_HAS_ORG_JOURNEY_TRIGGER=true
       ci_scope_enable_shard org
       ;;
     flutter_app/lib/core/*|flutter_app/lib/l10n/*|flutter_app/pubspec.*)
@@ -228,8 +222,6 @@ ci_scope_classify_path() {
     e2e/playwright/tests/organisation*.spec.ts|e2e/playwright/tests/foster.onboarding.spec.ts|e2e/playwright/pages/organization*.page.ts|e2e/playwright/pages/manage-fosters.page.ts)
       CI_SCOPE_FORCE_FULL=true
       CI_SCOPE_HAS_E2E=true
-      CI_SCOPE_HAS_ORG_E2E_TOUCH=true
-      CI_SCOPE_HAS_ORG_JOURNEY_TRIGGER=true
       ;;
     e2e/*)
       CI_SCOPE_FORCE_FULL=true
@@ -333,12 +325,8 @@ ci_scope_run_integration() {
   return 1
 }
 
-# Organisation journey Playwright — when org Flutter or org E2E paths change on a PR.
-ci_scope_run_org_e2e() {
-  ci_scope_run_flutter_stack || return 1
-  [[ "$CI_SCOPE_HAS_ORG_JOURNEY_TRIGGER" == true || "$CI_SCOPE_HAS_ORG_E2E_TOUCH" == true ]] && return 0
-  return 1
-}
+# Organisation journey Playwright — full suite runs in ci-full-audit / pre-uat-e2e only.
+# PR CI covers org via @smoke-ci in ci-e2e-canary.
 
 ci_scope_bool() {
   if "$1"; then
@@ -351,15 +339,14 @@ ci_scope_bool() {
 ci_scope_emit_json() {
   local scope
   scope="$(ci_scope_resolve_name)"
-  local run_analyze run_stack run_backend run_e2e_audit run_integration run_org_e2e
+  local run_analyze run_stack run_backend run_e2e_audit run_integration
   run_analyze="$(ci_scope_bool ci_scope_run_flutter_analyze)"
   run_stack="$(ci_scope_bool ci_scope_run_flutter_stack)"
   run_backend="$(ci_scope_bool ci_scope_run_backend)"
   run_e2e_audit="$(ci_scope_bool ci_scope_run_e2e_audit)"
   run_integration="$(ci_scope_bool ci_scope_run_integration)"
-  run_org_e2e="$(ci_scope_bool ci_scope_run_org_e2e)"
 
-  python3 - "$scope" "$CI_SCOPE_FORCE_FULL" "$CI_SCOPE_ESCAPE_FULL" "$run_analyze" "$run_stack" "$run_backend" "$run_e2e_audit" "$run_integration" "$run_org_e2e" \
+  python3 - "$scope" "$CI_SCOPE_FORCE_FULL" "$CI_SCOPE_ESCAPE_FULL" "$run_analyze" "$run_stack" "$run_backend" "$run_e2e_audit" "$run_integration" \
     "$CI_SCOPE_SHARD_PET_CORE" "$CI_SCOPE_SHARD_PET_SCREENS" "$CI_SCOPE_SHARD_PET_WIDGETS" \
     "$CI_SCOPE_SHARD_HEALTH" "$CI_SCOPE_SHARD_ORG" "$CI_SCOPE_SHARD_REST_A" "$CI_SCOPE_SHARD_REST_B" <<'PY'
 import json, sys
@@ -373,7 +360,6 @@ import json, sys
     run_backend,
     run_e2e_audit,
     run_integration,
-    run_org_e2e,
     shard_pet_core,
     shard_pet_screens,
     shard_pet_widgets,
@@ -381,7 +367,7 @@ import json, sys
     shard_org,
     shard_rest_a,
     shard_rest_b,
-) = sys.argv[1:17]
+) = sys.argv[1:16]
 
 def b(v):
     return v == "true"
@@ -391,7 +377,6 @@ run_stack = b(run_stack)
 run_backend = b(run_backend)
 run_e2e_audit = b(run_e2e_audit)
 run_integration = b(run_integration)
-run_org_e2e = b(run_org_e2e)
 
 shard_map = {
     "pet-core": b(shard_pet_core),
@@ -435,8 +420,6 @@ else:
         skip_jobs.append("flutter-coverage")
 if not run_integration:
     skip_jobs.append("flutter-integration")
-if not run_org_e2e:
-    skip_jobs.append("ci-e2e-org")
 
 run_flutter_coverage = run_stack and len(run_shards) == len(shard_map)
 
@@ -452,7 +435,6 @@ print(
             "run_backend": run_backend,
             "run_e2e_audit": run_e2e_audit,
             "run_flutter_integration": run_integration,
-            "run_org_e2e": run_org_e2e,
             "run_shards": run_shards,
             "skip_jobs": skip_jobs,
         },

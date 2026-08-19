@@ -3,6 +3,7 @@
 # Full suite: thirteen parallel matrix legs (file-balanced manifest in e2e/scripts/shard-files.mjs);
 # callers pass shard_total: 13 and matrix.shard [1..13] — keep in sync when changing shard count.
 # PR canary: test_suite smoke-ci runs @smoke-ci only (retries 0).
+# Full org journey: test_suite org-journey (ci-full-audit / manual only).
 name: Reusable E2E (localhost)
 
 on:
