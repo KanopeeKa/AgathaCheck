@@ -60,10 +60,7 @@ class _ConsentBannerState extends ConsumerState<ConsentBanner> {
                 ],
               ),
               const SizedBox(height: 8),
-              Text(
-                l10n.consentBannerMessage,
-                style: theme.textTheme.bodySmall,
-              ),
+              Text(l10n.consentBannerMessage, style: theme.textTheme.bodySmall),
               const SizedBox(height: 16),
               LayoutBuilder(
                 builder: (context, constraints) {

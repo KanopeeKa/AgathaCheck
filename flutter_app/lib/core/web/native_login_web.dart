@@ -22,7 +22,8 @@ void ensureNativeLoginInlineViewRegistered() {
     container.style.display = 'block';
 
     final root =
-        web.document.getElementById('agatha-native-login') as web.HTMLDivElement?;
+        web.document.getElementById('agatha-native-login')
+            as web.HTMLDivElement?;
     if (root != null) {
       root.style.height = '100%';
       container.append(root);

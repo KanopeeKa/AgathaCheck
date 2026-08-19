@@ -373,9 +373,7 @@ class LandingAuthCard extends StatelessWidget {
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 180),
                     child: Text(
-                      isSignIn
-                          ? l10n.signInToAccount
-                          : l10n.createYourAccount,
+                      isSignIn ? l10n.signInToAccount : l10n.createYourAccount,
                       key: ValueKey(isSignIn),
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
