@@ -27,7 +27,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd /home/runner/workspace/server && npm ci && PORT=5000 node bin/start.js"
+args = "bash scripts/start-flutter-preview.sh"
 waitForPort = 5000
 
 [[ports]]
