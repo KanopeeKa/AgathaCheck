@@ -4,8 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
-import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
-import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/experience_section_drawer.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
@@ -33,9 +31,7 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          activeExperienceProvider.overrideWith(
-            (ref) => AppExperience.guardian,
-          ),
+          // removed activeExperienceProvider mock
           organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
         ],
         child: MaterialApp(

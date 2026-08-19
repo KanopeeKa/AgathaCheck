@@ -60,9 +60,7 @@ void main() {
     return ProviderScope(
       overrides: [
         authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        resolvedExperienceProvider.overrideWith(
-          (ref) => AppExperience.guardian,
-        ),
+        // removed resolvedExperienceProvider mock
         experienceEligibilityProvider.overrideWith(
           (ref) => AsyncValue.data(
             ExperienceEligibilityRules.compute(

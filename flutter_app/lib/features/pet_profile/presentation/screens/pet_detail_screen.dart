@@ -48,7 +48,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
 
         final theme = Theme.of(context);
         final isOrgPet = pet.organizationId != null;
-        final experience = ref.watch(resolvedExperienceProvider);
+        final experience = AppExperience.guardian;
         final useOrgChrome =
             isOrgPet && experience == AppExperience.organization;
         final viewerContext = ref.watch(
@@ -84,6 +84,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
           experience: experience,
           currentLocation: GoRouterState.of(context).uri.path,
           screenTitle: pet.name,
+          backPath: '/g/home',
           contextualActions: contextualActions,
           child: CustomScrollView(
             slivers: [
