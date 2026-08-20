@@ -94,7 +94,7 @@ void main() {
           _placement(
             id: 'pl-1',
             petId: 'pet-2',
-            endDate: DateTime(2026, 8, 30),
+            endDate: DateTime(2026, 12, 30),
           ),
         ],
         archivedPets: const [],
@@ -108,7 +108,7 @@ void main() {
           _placement(
             id: 'pl-1',
             petId: 'pet-2',
-            endDate: DateTime(2026, 8, 30),
+            endDate: DateTime(2026, 12, 30),
           ),
         ],
       );
