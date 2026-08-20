@@ -163,7 +163,8 @@ export async function expectHomeShellVisible(
 
 /**
  * Wait for home after mutations that `context.go('/')` (delete pet, mark passed away).
- * Flutter redirects `/` → `/app/resolve` → `/g/home` or `/o/home`.
+ * Flutter redirects `/` → `/app/resolve` → `/g/home`, `/o/home`, or `/app/choose` when
+ * the account has no pets left.
  */
 export async function waitForHomeAfterMutation(
   page: Page,
@@ -172,9 +173,10 @@ export async function waitForHomeAfterMutation(
   const effectiveTimeout = timeout ?? postLoginTimeout(30_000);
   await waitForFlutterRoutePattern(
     page,
-    /\/(g|o)\/(home|onboarding)|\/app\/resolve/,
+    /\/(g|o)\/(home|onboarding)|\/app\/(resolve|choose)/,
     effectiveTimeout,
   );
+  await completeExperienceChooserIfPresent(page, 'guardian', effectiveTimeout);
   await waitForFlutterRoutePattern(page, /\/(g|o)\/(home|onboarding)/, effectiveTimeout);
   await skipGuardianOnboardingIfPresent(page, effectiveTimeout);
   await skipOrgOnboardingIfPresent(page, effectiveTimeout);
@@ -213,10 +215,27 @@ export async function completeExperienceChooserIfPresent(
   await dismissConsentBannerIfPresent(page);
   await refreshFlutterAccessibility(page);
 
-  const chooserHeading = page.getByText(/Welcome to Agatha Track|Bienvenue sur Agatha Track/i);
-  const onChooserUrl = flutterRoutePath(page.url()) === '/app/choose';
-  const chooserVisible = onChooserUrl
-    || (await chooserHeading.isVisible({ timeout: 3_000 }).catch(() => false));
+  const path = flutterRoutePath(page.url());
+  // Onboarding wizards reuse "Welcome to Agatha Track" — not the FTUE chooser.
+  if (path === '/g/onboarding' || path === '/o/onboarding') return;
+
+  const ftueTrackPets = page
+    .locator('[flt-semantics-identifier="ftue_action_track_pets"]')
+    .or(page.getByRole('button', { name: /Track my pets|Suivre mes animaux/i }));
+  const ftueRunShelter = page
+    .locator('[flt-semantics-identifier="ftue_action_run_shelter"]')
+    .or(page.getByRole('button', { name: /Run a shelter|Gérer un refuge/i }));
+  const onChooserUrl = path === '/app/choose';
+  const waitChooserButton = (target: ReturnType<Page['locator']>) =>
+    target
+      .first()
+      .waitFor({ state: 'visible', timeout: 3_000 })
+      .then(() => true)
+      .catch(() => false);
+  const chooserVisible =
+    onChooserUrl ||
+    (await waitChooserButton(ftueTrackPets)) ||
+    (await waitChooserButton(ftueRunShelter));
   if (!chooserVisible) return;
 
   await refreshFlutterAccessibility(page);

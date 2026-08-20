@@ -1,6 +1,11 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { escapeRegExp, refreshFlutterAccessibility, semanticsByName } from '../support/flutter';
+import {
+  escapeRegExp,
+  filterChipByName,
+  refreshFlutterAccessibility,
+  semanticsByName,
+} from '../support/flutter';
 
 /**
  * Health dashboard (`/health`).
@@ -167,7 +172,6 @@ export class HealthDashboardPage {
 
   /** Guardian `/g/events` global list — status filter chip (manage-events filter bar). */
   async selectDueOverdueFilter(): Promise<void> {
-    const { filterChipByName } = await import('../support/flutter');
     const chip = filterChipByName(
       this.page,
       /Due and Overdue|À faire et en retard/i,
