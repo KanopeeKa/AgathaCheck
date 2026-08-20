@@ -23,6 +23,9 @@ class ExperienceResolveScreen extends ConsumerWidget {
       guardianOnboardingCompletedProvider,
     );
     final orgOnboardingCompleted = ref.read(orgOnboardingCompletedProvider);
+    final lastAppSection = ref
+        .read(experiencePreferencesStoreProvider)
+        .readLastAppSection();
     final path = resolvePostLoginPath(
       eligibility: eligibility,
       pets: pets,
@@ -30,6 +33,7 @@ class ExperienceResolveScreen extends ConsumerWidget {
       guardianOnboardingCompleted: guardianOnboardingCompleted,
       orgOnboardingCompleted: orgOnboardingCompleted,
       hasPendingOrgInvites: hasPendingOrgInvites,
+      lastAppSection: lastAppSection,
     );
     context.go(path);
   }

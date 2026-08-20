@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
@@ -201,6 +202,51 @@ void main() {
               type: OrganizationType.charity,
             ),
           ],
+        ),
+        '/g/home',
+      );
+    });
+
+    test('dual-role user restores last organisation section when set', () {
+      expect(
+        resolvePostLoginPath(
+          eligibility: _dual(),
+          pets: const [
+            Pet(id: '1', name: 'Mine', species: 'Cat'),
+            Pet(
+              id: '2',
+              name: 'Shelter',
+              species: 'Dog',
+              organizationId: 'o1',
+              organizationName: 'Rescue',
+            ),
+          ],
+          orgs: const [
+            Organization(
+              id: 'o1',
+              name: 'Rescue',
+              type: OrganizationType.charity,
+            ),
+          ],
+          lastAppSection: AppExperience.organization,
+        ),
+        '/o/home',
+      );
+    });
+
+    test('dual-role user restores last guardian section when set', () {
+      expect(
+        resolvePostLoginPath(
+          eligibility: _dual(),
+          pets: const [Pet(id: '1', name: 'Mine', species: 'Cat')],
+          orgs: const [
+            Organization(
+              id: 'o1',
+              name: 'Rescue',
+              type: OrganizationType.charity,
+            ),
+          ],
+          lastAppSection: AppExperience.guardian,
         ),
         '/g/home',
       );

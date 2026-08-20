@@ -22,7 +22,8 @@ export class AccountPage {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.evaluate(
       ({ key, value }) => {
-        window.localStorage.setItem(key, JSON.stringify(value));
+        // SharedPreferences stores plain wire strings (not JSON-encoded).
+        window.localStorage.setItem(key, value);
       },
       { key: LAST_APP_SECTION_KEY, value: section },
     );
