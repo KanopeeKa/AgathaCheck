@@ -4,11 +4,12 @@
  * Scenario: My Pets shows all personal pets with Manage pets link
  * Scenario: Global events screen shows unified list without tabs
  * Scenario: Global events screen supports pet and cohort filters
+ * Scenario: Pending foster placement surfaces as a notification, not a dashboard banner
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
-import { createPet, createHealthEntry, signupUser } from '../support/api';
+import { createPet, createHealthEntry, signupUser, seedRescueHearts, createOrgPet, createFosterPlacement } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   dashboardSectionGroup,
@@ -19,6 +20,7 @@ import {
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
+import { NotificationsPage } from '../pages/notifications.page';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
@@ -121,5 +123,27 @@ test.describe('Guardian dashboard', () => {
     await expect(page.getByRole('checkbox', { name: 'All Pets', exact: true })).toBeVisible();
     await expect(page.getByRole('checkbox', { name: 'OwnedPet', exact: true })).toBeVisible();
     await expect(page.getByRole('checkbox', { name: 'FosterPet', exact: true })).toBeVisible();
+  });
+
+  test('pending foster placement surfaces as notification not dashboard banner', async ({
+    page,
+  }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const { alice, eve, org } = await seedRescueHearts(baseURL());
+    const pet = await createOrgPet(baseURL(), alice.accessToken, org.id, {
+      name: 'PendingPal',
+      species: 'dog',
+    });
+    await createFosterPlacement(baseURL(), alice.accessToken, org.id, pet.id, eve.userId, {
+      startDate: new Date().toISOString().slice(0, 10),
+    });
+
+    await loginGuardian(page, eve.email, eve.password);
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await expect(page.getByText('Pending foster placements')).not.toBeVisible();
+
+    const notifications = new NotificationsPage(page);
+    await notifications.openPanelViaBell();
+    await notifications.expectNotificationVisible(/foster|placement|PendingPal/i);
   });
 });

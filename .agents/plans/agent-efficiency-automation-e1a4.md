@@ -118,13 +118,13 @@ autonomy: active
 current_phase: 3
 last_completed_phase: 2
 halt_reason: null
-next_action: "start phase 3: checkout cursor/sprint-bdd-backlog-integration-e1a4"
+next_action: "continue phase 3 on branch cursor/sprint-bdd-backlog-integration-e1a4"
 artifact_ref:
-  branch: cursor/agent-efficiency-automation-e1a4
+  branch: cursor/sprint-bdd-backlog-integration-e1a4
   plan_path: .agents/plans/agent-efficiency-automation-e1a4.md
-  plan_commit: 71567dd86285f68681106667ca11806abd006094
+  plan_commit: 12139ef2530d99af20b049c5e277aadeb999efdb
   snapshot_path: .agents/plans/agent-efficiency-automation-e1a4.snapshot.json
-  snapshot_commit: 71567dd86285f68681106667ca11806abd006094
+  snapshot_commit: 12139ef2530d99af20b049c5e277aadeb999efdb
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

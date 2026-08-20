@@ -6,11 +6,14 @@
  * Scenario: Drawer hides Organisation for guardian-only users by default
  * Scenario: Drawer shows Organisation when user is an org member
  * Scenario: User switches to organisation view from guardian drawer
+ * Scenario: Bell shows a single combined unread badge across both notification kinds
+ * Scenario: Hamburger is shown only on section root screens
+ * Scenario: Guardian chooser hides organisation option for guardian-only users
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
-import { createPet, seedDualRoleUser, seedRescueHearts, signupUser } from '../support/api';
+import { createPet, seedDualRoleUser, seedRescueHearts, signupUser, seedOverdueNotification, fosterInviteToOrganization, createOrganization } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   logOutFromApp,
@@ -18,6 +21,7 @@ import {
   refreshFlutterAccessibility,
   skipOrgOnboardingIfPresent,
   waitForFlutterRoutePattern,
+  flutterGotoUrl,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
 
@@ -116,5 +120,66 @@ test.describe('Experience navigation', () => {
     await expect(
       page.getByRole('button', { name: /open notifications/i }),
     ).toBeVisible({ timeout: 15_000 });
+  });
+
+  test('bell badge shows combined unread count across notification kinds', async ({ page }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const user = await signupUser(baseURL(), {
+      firstName: 'Badge',
+      lastName: 'Bell',
+      email: `bell-${Date.now()}@example.com`,
+    });
+    await createPet(baseURL(), user.accessToken, { name: 'Milo' });
+    await seedOverdueNotification(baseURL(), user.accessToken, {
+      petName: 'Milo',
+      entryName: 'Vaccine',
+    });
+    const org = await createOrganization(baseURL(), user.accessToken, {
+      name: 'Bell Test Shelter',
+      type: 'charity',
+    });
+    const foster = await signupUser(baseURL(), {
+      firstName: 'F',
+      lastName: 'Invite',
+      email: `foster-${Date.now()}@example.com`,
+    });
+    await fosterInviteToOrganization(baseURL(), user.accessToken, org.id, {
+      email: foster.email,
+      firstName: foster.firstName,
+      lastName: foster.lastName,
+    });
+
+    await loginFromLanding(page, user.email, user.password);
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    const experience = new ExperiencePage(page);
+    await experience.expectBellBadge(2);
+  });
+
+  test('hamburger is visible on guardian home but not on sub-screens', async ({
+    page,
+    testUser,
+  }) => {
+    await loginFromLanding(page, testUser.email, testUser.password);
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await expect(page.getByRole('button', { name: /open menu/i })).toBeVisible();
+
+    await page.goto(flutterGotoUrl('/g/pets'));
+    await refreshFlutterAccessibility(page);
+    await expect(page.getByRole('button', { name: /open menu/i })).not.toBeVisible();
+    await expect(page.getByRole('button', { name: /back/i })).toBeVisible();
+  });
+
+  test('guardian chooser hides organisation option for guardian-only users', async ({
+    page,
+    testUser,
+  }) => {
+    const experience = new ExperiencePage(page);
+    await experience.gotoChooser();
+    await expect(
+      page.getByRole('button', { name: /Run a shelter|Gérer un refuge/i }),
+    ).not.toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /Track my pets|Suivre mes animaux/i }),
+    ).toBeVisible();
   });
 });
