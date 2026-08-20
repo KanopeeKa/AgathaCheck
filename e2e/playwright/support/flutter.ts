@@ -219,18 +219,29 @@ export async function completeExperienceChooserIfPresent(
     || (await chooserHeading.isVisible({ timeout: 3_000 }).catch(() => false));
   if (!chooserVisible) return;
 
+  await refreshFlutterAccessibility(page);
+
+  const clickFtueAction = async (identifier: string, label: RegExp) => {
+    const card = page.locator(`[flt-semantics-identifier="${identifier}"]`);
+    const byLabel = page.getByRole('button', { name: label });
+    const target = card.or(byLabel).first();
+    const visible = await target
+      .waitFor({ state: 'visible', timeout: 15_000 })
+      .then(() => true)
+      .catch(() => false);
+    if (!visible && flutterRoutePath(page.url()) === '/app/choose') {
+      await page.goto(flutterGotoUrl('/app/resolve'));
+      await page.waitForTimeout(1_500);
+      await refreshFlutterAccessibility(page);
+      if (flutterRoutePath(page.url()) !== '/app/choose') return;
+    }
+    await target.click({ timeout: effectiveTimeout });
+  };
+
   if (choice === 'guardian') {
-    await page
-      .getByRole('button', { name: /Track my pets|Suivre mes animaux/i })
-      .or(page.locator('[flt-semantics-identifier="ftue_action_track_pets"]'))
-      .first()
-      .click();
+    await clickFtueAction('ftue_action_track_pets', /Track my pets|Suivre mes animaux/i);
   } else {
-    await page
-      .getByRole('button', { name: /Run a shelter|Gérer un refuge/i })
-      .or(page.locator('[flt-semantics-identifier="ftue_action_run_shelter"]'))
-      .first()
-      .click();
+    await clickFtueAction('ftue_action_run_shelter', /Run a shelter|Gérer un refuge/i);
   }
   const homePattern =
     choice === 'guardian'
