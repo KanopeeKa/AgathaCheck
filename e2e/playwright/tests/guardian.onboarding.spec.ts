@@ -9,6 +9,7 @@ import { ExperiencePage } from '../pages/experience.page';
 import { OnboardingPage } from '../pages/onboarding.page';
 import { signupUser } from '../support/api';
 import {
+  completeExperienceChooserIfPresent,
   completeGuardianOnboarding,
   dismissConsentBannerIfPresent,
   refreshFlutterAccessibility,
@@ -34,6 +35,9 @@ test.describe('Guardian onboarding', () => {
     await landing.login(user.email, user.password);
     await dismissConsentBannerIfPresent(page);
     await waitForPostLoginRoute(page);
+    await completeExperienceChooserIfPresent(page, 'guardian', undefined, {
+      skipGuardianOnboarding: false,
+    });
 
     await waitForFlutterRoutePattern(page, /\/g\/onboarding/, 60_000);
     const onboarding = new OnboardingPage(page);
@@ -52,6 +56,9 @@ test.describe('Guardian onboarding', () => {
     await landing.login(user.email, user.password);
     await dismissConsentBannerIfPresent(page);
     await waitForPostLoginRoute(page);
+    await completeExperienceChooserIfPresent(page, 'guardian', undefined, {
+      skipGuardianOnboarding: false,
+    });
 
     await completeGuardianOnboarding(page, 'Bella');
 
