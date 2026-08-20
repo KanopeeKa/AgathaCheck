@@ -100,6 +100,10 @@ export class MyDetailsPage {
     await this.typeIntoProfileField(/^First Name/, firstName);
   }
 
+  async fillLastName(lastName: string): Promise<void> {
+    await this.typeIntoProfileField(/^Last Name/, lastName);
+  }
+
   async fillBio(bio: string): Promise<void> {
     await this.typeIntoProfileField(/^Bio/, bio);
   }
