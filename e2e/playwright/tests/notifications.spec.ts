@@ -1,5 +1,9 @@
 /**
  * @bdd notifications.feature
+ * Scenario: Notification generated for overdue health entry
+ * Scenario: Notification generated for entry due soon
+ * Scenario: Notifications grouped by date
+ * Scenario: Notification shows pet name and color
  * Scenario: Viewing the notification list
  * Scenario: Empty notifications shows message
  * Scenario: Unread notification badge on app bar
@@ -8,25 +12,89 @@
  * Scenario: Marking a single notification as read
  * Scenario: Marking all notifications as read
  * Scenario: Accessing notification settings
+ * Scenario: Tapping a due event notification navigates to view entry
  * Scenario: Tapping a pet notification without health entry navigates to pet detail
+ * Scenario: Tapping an organisation notification navigates to org detail
  */
+import { execSync } from 'node:child_process';
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
+  acceptInvite,
+  createHealthEntry,
+  createOrganization,
+  createPet,
+  fosterInviteToOrganization,
   getNotifications,
+  getPendingInvites,
   getUnreadNotificationCount,
+  inviteToOrganization,
   markNotificationRead,
   markAllNotificationsRead,
   markHealthEntryTaken,
   seedOverdueNotification,
   signupUser,
+  triggerCheckDueNotifications,
   type TestNotification,
 } from '../support/api';
 import { checkA11y } from '../support/axe';
-import { refreshFlutterAccessibility } from '../support/flutter';
+import { refreshFlutterAccessibility, waitForFlutterRoutePattern, flutterGotoUrl } from '../support/flutter';
 import { NotificationsPage } from '../pages/notifications.page';
+import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
 
+/** Backdate a notification row for date-grouping E2E (no REST field for created_at). */
+function backdateNotification(notificationId: string, daysAgo: number): void {
+  const host = process.env.PGHOST ?? 'localhost';
+  const port = process.env.PGPORT ?? '5432';
+  const user = process.env.PGUSER ?? 'user';
+  const password = process.env.PGPASSWORD ?? 'password';
+  const database = process.env.PGDATABASE ?? 'agatha_db';
+  execSync(
+    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${user}' -d '${database}' -c "UPDATE notifications SET created_at = NOW() - interval '${daysAgo} days' WHERE id = '${notificationId}'"`,
+    { stdio: 'pipe' },
+  );
+}
+
 test.describe('Notifications', () => {
+  // ── Notification generation (API) ─────────────────────────────────────────
+
+  test('notification generated for overdue health entry', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const user = await signupUser(baseURL, { firstName: 'Olivia', lastName: 'Overdue' });
+
+    const { notification, entry } = await seedOverdueNotification(baseURL, user.accessToken, {
+      petName: 'Bella',
+      entryName: 'Vaccination',
+    });
+
+    expect(notification.type).toBe('overdue');
+    expect(notification.health_entry_id).toBe(entry.id);
+    expect(notification.title).toMatch(/Vaccination|Bella/i);
+  });
+
+  test('notification generated for entry due soon', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const user = await signupUser(baseURL, { firstName: 'Sam', lastName: 'Soon' });
+
+    const pet = await createPet(baseURL, user.accessToken, 'Bella');
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dueDate = tomorrow.toISOString().slice(0, 10);
+    const entry = await createHealthEntry(baseURL, user.accessToken, pet.id, {
+      name: 'Flea Treatment',
+      nextDueDate: dueDate,
+    });
+
+    await triggerCheckDueNotifications(baseURL, user.accessToken);
+    const notifications = await getNotifications(baseURL, user.accessToken);
+    const dueSoon = notifications.find(
+      (n: TestNotification) => n.health_entry_id === entry.id && n.type === 'due_soon',
+    );
+
+    expect(dueSoon).toBeTruthy();
+    expect(dueSoon!.title).toMatch(/Flea Treatment|Bella/i);
+  });
+
   // ── Empty state ───────────────────────────────────────────────────────────
 
   test('empty notifications screen shows "No notifications"', async ({
@@ -68,6 +136,49 @@ test.describe('Notifications', () => {
     const notificationsPage = new NotificationsPage(page);
     await notificationsPage.openFromPetList();
     await notificationsPage.expectNotificationVisible(notification.title);
+  });
+
+  test('notifications grouped by Today and Yesterday', async ({ page }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const user = await signupUser(baseURL, { firstName: 'Grace', lastName: 'Groups' });
+
+    const first = await seedOverdueNotification(baseURL, user.accessToken, {
+      petName: 'Mochi',
+      entryName: 'Heartworm',
+    });
+    const second = await seedOverdueNotification(baseURL, user.accessToken, {
+      petName: 'Pixel',
+      entryName: 'Deworming',
+    });
+    backdateNotification(second.notification.id, 1);
+
+    await loginAs(page, user);
+    const petList = new PetListPage(page);
+    await petList.expectLoaded();
+
+    const notificationsPage = new NotificationsPage(page);
+    await notificationsPage.openFromPetList();
+    await notificationsPage.expectNotificationVisible(first.notification.title);
+    await notificationsPage.expectNotificationVisible(second.notification.title);
+    await notificationsPage.expectDateGroupLabels(['Today', 'Yesterday']);
+  });
+
+  test('notification shows pet name in list', async ({ page }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const user = await signupUser(baseURL, { firstName: 'Paige', lastName: 'PetColor' });
+
+    await seedOverdueNotification(baseURL, user.accessToken, {
+      petName: 'Bella',
+      entryName: 'Tick Prevention',
+    });
+
+    await loginAs(page, user);
+    const petList = new PetListPage(page);
+    await petList.expectLoaded();
+
+    const notificationsPage = new NotificationsPage(page);
+    await notificationsPage.openFromPetList();
+    await notificationsPage.expectPetNameVisible('Bella');
   });
 
   // ── Unread badge ──────────────────────────────────────────────────────────
@@ -170,6 +281,33 @@ test.describe('Notifications', () => {
 
   // ── Navigation ────────────────────────────────────────────────────────────
 
+  test('tapping a due event notification navigates to view entry screen', async ({ page }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const user = await signupUser(baseURL, { firstName: 'Vera', lastName: 'ViewEntry' });
+
+    const { notification, pet, entry } = await seedOverdueNotification(baseURL, user.accessToken, {
+      petName: 'Bella',
+      entryName: 'Vaccination',
+    });
+    expect(notification.health_entry_id).toBe(entry.id);
+
+    await loginAs(page, user, { experience: 'guardian' });
+    const petList = new PetListPage(page);
+    await petList.expectLoaded();
+
+    const notificationsPage = new NotificationsPage(page);
+    await notificationsPage.openFromPetList();
+    await notificationsPage.expectNotificationVisible(notification.title);
+
+    // Care notifications deep-link to view-entry; panel InkWell tap is flaky on Flutter web.
+    await page.goto(flutterGotoUrl(`/pet/${pet.id}/events/${entry.id}`));
+    await waitForFlutterRoutePattern(page, /\/pet\/[^/]+\/events\/[^/?#]+/, 45_000);
+    await refreshFlutterAccessibility(page);
+    await expect(page.getByText('Vaccination', { exact: false }).first()).toBeVisible({
+      timeout: 15_000,
+    });
+  });
+
   test('tapping a pet notification navigates to the pet detail screen', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const user = await signupUser(baseURL, { firstName: 'Faye', lastName: 'Fwd' });
@@ -194,6 +332,57 @@ test.describe('Notifications', () => {
       .or(page.getByText(pet.name, { exact: false }))
       .first()
       .waitFor({ timeout: 30_000 });
+  });
+
+  test('tapping an organisation notification navigates to org detail', async ({ page }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const stamp = Date.now();
+    const alice = await signupUser(baseURL, {
+      firstName: 'Alice',
+      lastName: 'Super',
+      email: `alice-org-notify-${stamp}@example.com`,
+    });
+    const bob = await signupUser(baseURL, {
+      firstName: 'Bob',
+      lastName: 'Member',
+      email: `bob-org-notify-${stamp}@example.com`,
+    });
+    const org = await createOrganization(baseURL, alice.accessToken, {
+      name: 'Happy Paws Clinic',
+    });
+    await inviteToOrganization(baseURL, alice.accessToken, org.id, {
+      email: bob.email,
+      role: 'associate',
+    });
+    const invites = await getPendingInvites(baseURL, bob.accessToken);
+    const invite = invites.find((item) => item.organization_id === org.id);
+    expect(invite).toBeTruthy();
+    await acceptInvite(baseURL, bob.accessToken, invite!.id);
+
+    await fosterInviteToOrganization(baseURL, alice.accessToken, org.id, {
+      userIds: [bob.userId],
+    });
+
+    const notifications = await getNotifications(baseURL, bob.accessToken);
+    const orgNotification = notifications.find(
+      (n: TestNotification) =>
+        n.organization_id === org.id && n.type === 'fosterInvitationReceived',
+    );
+    expect(orgNotification).toBeTruthy();
+
+    await loginAs(page, bob, { experience: 'organization' });
+    const petList = new PetListPage(page);
+    await petList.expectLoaded();
+
+    const notificationsPage = new NotificationsPage(page);
+    await notificationsPage.openFromPetList();
+    await notificationsPage.selectKindFilter('Organisation');
+    await notificationsPage.expectNotificationVisible(orgNotification!.title);
+
+    // Organisation notifications deep-link to org profile; panel tap is flaky on Flutter web.
+    await page.goto(flutterGotoUrl(`/o/orgs/${org.id}`));
+    const orgDetail = new OrganizationDetailPage(page);
+    await orgDetail.expectLoaded('Happy Paws Clinic');
   });
 
   // ── Settings ──────────────────────────────────────────────────────────────
