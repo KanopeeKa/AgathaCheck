@@ -212,8 +212,6 @@ export default function GuardianDesk() {
         .gd-below-label svg{color:var(--gd-clay)}
         .gd-below h3{margin:12px 0 7px;color:var(--gd-ink);font-family:'Instrument Serif',Georgia,serif;font-size:28px;font-weight:400;letter-spacing:-.04em}
         .gd-below p{max-width:470px;margin:0;color:#718075;font-size:12px;line-height:1.6}
-        .gd-below-link{display:inline-flex;align-items:center;gap:6px;margin-top:15px;border:0;background:transparent;color:var(--gd-olive);font-size:10px;font-weight:700;padding:0;cursor:pointer}
-        .gd-below-link:hover{gap:9px}
         .gd-reveal{animation:gd-rise .6s ease both}
         .gd-reveal-delay{animation:gd-rise .6s .1s ease both}
         @keyframes gd-rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -382,13 +380,11 @@ export default function GuardianDesk() {
             <div className="gd-below-label"><HeartHandshake size={13} /> For pet guardians</div>
             <h3>One home for the little things.</h3>
             <p>Keep feeding notes, medication, appointments, and the things only you know in one place — ready for a partner, sitter, or family member to pick up.</p>
-            <button className="gd-below-link" onClick={() => choosePath('guardian')} type="button">Open the guardian path <ArrowRight size={13} /></button>
           </article>
           <article>
             <div className="gd-below-label"><Building2 size={13} /> For organisations</div>
             <h3>Handover without the guesswork.</h3>
             <p>Give teams and trusted partners a shared view of responsibility, so the right person sees the right detail before care changes hands.</p>
-            <button className="gd-below-link" onClick={() => choosePath('organisation')} type="button">Explore organisation access <ArrowRight size={13} /></button>
           </article>
         </section>
       </div>
