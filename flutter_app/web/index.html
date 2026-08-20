@@ -219,11 +219,15 @@
       var ctrl = {
         onSubmit: null,
         onForgot: null,
-        configure: function (emailText, passwordText, signInText, forgotText) {
+        _emailRequired: 'Email is required',
+        _passwordRequired: 'Password is required',
+        configure: function (emailText, passwordText, signInText, forgotText, emailRequiredText, passwordRequiredText) {
           emailLabel.textContent = emailText || 'Email';
           pwLabel.textContent = passwordText || 'Password';
           submitBtn.textContent = signInText || 'Sign In';
           forgotBtn.textContent = forgotText || 'Forgot Password?';
+          ctrl._emailRequired = emailRequiredText || 'Email is required';
+          ctrl._passwordRequired = passwordRequiredText || 'Password is required';
         },
         attach: function () {
           this.setError('');
@@ -261,8 +265,12 @@
         ev.preventDefault();
         var email = (emailInput.value || '').trim();
         var pw = pwInput.value || '';
-        if (!email || !pw) {
-          ctrl.setError(' ');
+        if (!email) {
+          ctrl.setError(ctrl._emailRequired);
+          return;
+        }
+        if (!pw) {
+          ctrl.setError(ctrl._passwordRequired);
           return;
         }
         ctrl.setError('');

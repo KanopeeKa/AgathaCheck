@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import { fillLabelledField, reachAuthenticatedHome, refreshFlutterAccessibility, waitForFlutter, flutterRoutePath, dismissConsentBannerIfPresent } from '../support/flutter';
 import { isLiveHostingTarget } from '../support/hosting';
 
@@ -144,5 +144,128 @@ export class LandingPage {
 
   async expectLoginError(): Promise<void> {
     await this.page.getByText(/invalid|required|error/i).first().waitFor();
+  }
+
+  async submitLoginForm(): Promise<void> {
+    const nativeSubmit = this.page.locator('#anl-submit');
+    if (
+      await nativeSubmit
+        .waitFor({ state: 'visible', timeout: 2_000 })
+        .then(() => true)
+        .catch(() => false)
+    ) {
+      await nativeSubmit.click();
+      await this.page.waitForTimeout(300);
+      return;
+    }
+    await this.page.getByRole('button', { name: 'Sign In', exact: true }).click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectLoginValidation(message: string | RegExp): Promise<void> {
+    const nativeError = this.page.locator('#anl-error');
+    if (
+      await nativeError
+        .waitFor({ state: 'visible', timeout: 2_000 })
+        .then(() => true)
+        .catch(() => false)
+    ) {
+      if (message instanceof RegExp) {
+        await expect(nativeError).toHaveText(message);
+      } else {
+        await expect(nativeError).toHaveText(message);
+      }
+      return;
+    }
+    await this.page.getByText(message).first().waitFor({ timeout: 15_000 });
+  }
+
+  async openCreateAccountTab(): Promise<void> {
+    await this.page.getByRole('tab', { name: 'Create Account' }).click();
+    await this.page.getByRole('button', { name: 'Create Account', exact: true }).waitFor();
+  }
+
+  async openSignInTab(): Promise<void> {
+    await this.page.getByRole('tab', { name: 'Sign In' }).click();
+    await this.page.getByRole('button', { name: 'Sign In', exact: true }).waitFor();
+  }
+
+  async expectCreateAccountHeading(): Promise<void> {
+    await expect(this.page.getByRole('tab', { name: 'Create Account' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    await this.page.getByRole('button', { name: 'Create Account', exact: true }).waitFor({
+      timeout: 15_000,
+    });
+  }
+
+  async expectSignInHeading(): Promise<void> {
+    await expect(this.page.getByRole('tab', { name: 'Sign In' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    await this.page.getByRole('button', { name: 'Sign In', exact: true }).waitFor({
+      timeout: 15_000,
+    });
+  }
+
+  async toggleLoginPasswordVisibility(): Promise<void> {
+    const nativeToggle = this.page.locator('#anl-password-toggle');
+    if (
+      await nativeToggle
+        .waitFor({ state: 'visible', timeout: 2_000 })
+        .then(() => true)
+        .catch(() => false)
+    ) {
+      await nativeToggle.click();
+      return;
+    }
+    await this.page.getByRole('button', { name: /Show password|Hide password/i }).click();
+  }
+
+  async expectLoginPasswordFieldType(type: 'password' | 'text'): Promise<void> {
+    const nativePassword = this.page.locator('#anl-password');
+    if (
+      await nativePassword
+        .waitFor({ state: 'visible', timeout: 2_000 })
+        .then(() => true)
+        .catch(() => false)
+    ) {
+      await expect(nativePassword).toHaveAttribute('type', type);
+      return;
+    }
+    const passwordField = this.page.getByRole('textbox', { name: 'Password' });
+    if (type === 'text') {
+      await expect(passwordField).toHaveValue(/.+/);
+    }
+  }
+
+  async fillLoginEmail(email: string): Promise<void> {
+    const nativeEmail = this.page.locator('#anl-email');
+    if (
+      await nativeEmail
+        .waitFor({ state: 'visible', timeout: 2_000 })
+        .then(() => true)
+        .catch(() => false)
+    ) {
+      await nativeEmail.fill(email);
+      return;
+    }
+    await fillLabelledField(this.page, 'Email', email);
+  }
+
+  async fillLoginPassword(password: string): Promise<void> {
+    const nativePassword = this.page.locator('#anl-password');
+    if (
+      await nativePassword
+        .waitFor({ state: 'visible', timeout: 2_000 })
+        .then(() => true)
+        .catch(() => false)
+    ) {
+      await nativePassword.fill(password);
+      return;
+    }
+    await fillLabelledField(this.page, 'Password', password);
   }
 }

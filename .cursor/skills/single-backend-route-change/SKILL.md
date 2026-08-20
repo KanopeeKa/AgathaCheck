@@ -37,7 +37,8 @@ server/test/<domain>/
 1. Read existing domain: `docs/architecture/index.md` + current route module.
 2. Implement Node handler + tests first (supertest + mock pool).
 3. If Flutter consumes the endpoint, update repository/datasource in matching `flutter_app/lib/features/<feature>/`.
-4. **Verify:**
+4. **UI check (when Flutter UI changed)** — If step 3 touched presentation screens/widgets, run **`/ui-check`** before opening the PR.
+5. **Verify:**
    ```bash
    cd server && npx jest --env=node --forceExit test/<domain>/
    node scripts/check_file_size.js

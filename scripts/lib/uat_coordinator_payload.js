@@ -120,8 +120,8 @@ function buildUatCoordinatorPayload({
       escalate: shouldEscalate(primary),
     },
     triage: {
-      playbook: 'docs/agent-efficiency/uat-coordinator-plan.md §4',
-      skill: '.cursor/skills/uat-coordinator/SKILL.md',
+      playbook: 'docs/e2e/uat-deploy-tiers.md',
+      skill: 'docs/e2e/uat-promote-manual.md (manual recovery)',
     },
     constraints: {
       ...safety,

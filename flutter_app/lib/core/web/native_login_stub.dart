@@ -8,6 +8,8 @@ class NativeLogin {
     required String passwordLabel,
     required String signInLabel,
     required String forgotLabel,
+    required String emailRequiredLabel,
+    required String passwordRequiredLabel,
     required void Function(String email, String password) onSubmit,
     required void Function() onForgot,
   }) {}

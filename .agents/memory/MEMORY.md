@@ -12,9 +12,12 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 | `/spawn-sprint-agents` | Parallel sprint coordination |
 | `/security-error-audit` | 5xx redaction grep |
 | `/pre-push-verify` | Which tests to run |
+| `/babysit-plus` | Autonomous PR triage, debt, CI loop, merge (composer-2.5 only) |
+| `/babysit-uat` | Final merge to `main` + pre-UAT E2E gate |
 | `/execute-plan` | Multi-phase autonomy — see `execute-plan-autonomy.md` |
-| `/ui-check` | Quick UX/a11y pass on UI changes |
+| `/ui-check` | Quick UX/a11y pass on UI changes — **auto-reminded** when `pre-push-changed.sh` detects presentation edits |
 | `/ui-design-deep` | In-depth UX/design review or refactor planning |
+| `/review-bugbot` | Pre-push local review to dedupe paid Bugbot runs (command) |
 
 ## Design (UI/UX)
 
@@ -36,7 +39,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [JWT secret dev/test fallback](jwt-secret-dev-fallback.md) — keep the prod-gated 'default_secret' fallback; CI/Jest sign tokens with it and workflows set no secret.
 - [Error-leak redaction patterns](error-leak-redaction-patterns.md) — grep err.message + e.toString() + $e + details on the backend; one pattern misses sites. Also: `/security-error-audit` skill.
 - [Localization & enum .label](localization-enum-labels.md) — "fully localize" must also map enum `.label` getters (dropdowns/displays) to ARB keys, not just inline literals.
-- [Replit agent operating policy](replit-agent-operating-policy.md) — READ FIRST every task: repo .cursor rules are binding; PR flow to main; sensitive paths need confirmation.
+- [Replit agent operating policy](replit-agent-operating-policy.md) — **Legacy (Replit only).** Cursor Cloud agents: use `AGENTS.md` + `.cursor/rules/` instead.
 - [Flutter pub cache Matrix4 quirk](flutter-pubcache-matrix4.md) — `flutter test` failing inside the SDK's painting lib (Matrix4/Vector4 undefined) = stale cache; run `flutter pub get` first.
 - [Replit Flutter preview compatibility](replit-flutter-preview-compatibility.md) — preview toolchain can lag the app’s Dart requirement; never treat an older CI bundle as current-source visual verification.
 - [Mockup sandbox hygiene](mockup-sandbox-registration.md) — use managed sandboxes; keep nested installs artifact-scoped and prevent verification builds from dirtying tracked dist output.
