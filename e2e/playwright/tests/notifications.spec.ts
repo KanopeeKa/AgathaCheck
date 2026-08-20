@@ -8,7 +8,7 @@
  * Scenario: Marking a single notification as read
  * Scenario: Marking all notifications as read
  * Scenario: Accessing notification settings
- * Scenario: Tapping a pet notification navigates to pet detail
+ * Scenario: Tapping a pet notification without health entry navigates to pet detail
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {

@@ -34,6 +34,8 @@ fi
 echo "Changed files ($(echo "$CHANGED" | wc -l)):"
 echo "$CHANGED" | sed 's/^/  /'
 
+bash "$ROOT/scripts/check_ui_touch_reminder.sh" "$MERGE_BASE" || true
+
 needs_governance=false
 needs_server=false
 needs_flutter=false

@@ -49,6 +49,8 @@ class _LandingLoginFormState extends State<LandingLoginForm> {
       passwordLabel: widget.l10n.password,
       signInLabel: widget.l10n.signIn,
       forgotLabel: widget.l10n.forgotPassword,
+      emailRequiredLabel: widget.l10n.emailRequired,
+      passwordRequiredLabel: widget.l10n.passwordRequired,
       onSubmit: (email, password) => widget.onNativeLogin(email, password),
       onForgot: widget.onNativeForgot,
     );

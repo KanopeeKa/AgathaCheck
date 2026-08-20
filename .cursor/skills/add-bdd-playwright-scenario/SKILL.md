@@ -36,7 +36,8 @@ paths:
    node e2e/scripts/check_bdd_coverage.js
    node scripts/check_bdd_priority_tags.js
    ```
-10. **Update matrix** — add row in `docs/quality/bdd-journey-matrix.md` for the scenario.
+10. **UI check (when spec touches Flutter journeys)** — If the scenario adds or changes visible UI, run **`/ui-check`** on affected screens before opening the PR.
+11. **Update matrix** — add row in `docs/quality/bdd-journey-matrix.md` for the scenario.
 
 ## Parallel sprint rules
 

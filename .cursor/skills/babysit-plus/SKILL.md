@@ -39,6 +39,7 @@ Required for **all** agent PR work (not only babysit+). Canonical checklist: `do
 3. **Design quality** — Against existing codebase patterns, assess **robustness**, **maintainability**, and **testability**. Prefer the smallest change that meets the requirement; avoid drive-by refactors.
 4. **Better solution check** — If a clearer pattern, safer abstraction, or simpler approach would satisfy the requirement with equal or less scope, **adopt it now** — adjust code and tests before opening the PR. Do not defer with "we'll fix in review."
 5. **Verification** — Run `./scripts/pre-push-changed.sh` after any adjustments from this review.
+6. **UI-touching PRs** — If the diff includes `flutter_app/lib/**/presentation/**`, theme, or router files, complete the **`/ui-check`** checklist (`.cursor/skills/ui-check/SKILL.md` §Steps) before create/update PR. Escalate to `/ui-design-deep` when the skill says so.
 
 Optional: `/review-bugbot` on the branch diff before push to dedupe a paid Bugbot PR review.
 

@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "plan_id": "agent-efficiency-automation-e1a4",
+  "approved_at": "2026-08-20T00:00:00Z",
+  "approved_by": "pending-operator",
+  "approved_until": "2026-08-22T00:00:00Z",
+  "content_hash": "sha256:06db4a80be848282207643d417f498c9e34f8e4a317aefc8455b39f3fff27bda",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Agent efficiency hooks",
+      "branch": "cursor/agent-efficiency-automation-e1a4",
+      "allowed_paths": [
+        ".cursor/commands/**",
+        ".cursor/skills/**",
+        ".agents/memory/MEMORY.md",
+        "scripts/check_ui_touch_reminder.sh",
+        "scripts/pre-push-changed.sh",
+        "docs/agent-efficiency/**"
+      ],
+      "forbidden_paths": [
+        "server/routes/**",
+        "db/migrations/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": "Land in single PR with phase 2 easy wins",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "BDD drift + auth validation E2E",
+      "branch": "cursor/agent-efficiency-automation-e1a4",
+      "allowed_paths": [
+        "e2e/playwright/tests/auth.login.spec.ts",
+        "e2e/playwright/tests/notifications.spec.ts",
+        "e2e/playwright/pages/landing.page.ts",
+        "flutter_app/web/index.html",
+        "flutter_app/lib/core/web/**",
+        "flutter_app/lib/features/auth/presentation/widgets/landing/**",
+        "scripts/bdd-priority-tag-map.json"
+      ],
+      "forbidden_paths": [
+        "server/routes/**",
+        "db/migrations/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Parallel BDD backlog sprint",
+      "branch": "cursor/sprint-bdd-backlog-integration-e1a4",
+      "allowed_paths": [
+        "e2e/**",
+        "flutter_app/test/bdd/**",
+        "docs/quality/bdd-journey-matrix.md",
+        "docs/refactoring-log.md"
+      ],
+      "forbidden_paths": [
+        "server/routes/**",
+        "db/migrations/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/sprint-bdd-backlog-integration-e1a4",
+        "skill": "/spawn-sprint-agents",
+        "foundation_first": [
+          "e2e/playwright/support/api.ts"
+        ]
+      },
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Requires approve-autonomous + spawn sprint",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

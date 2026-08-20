@@ -44,6 +44,8 @@ extension type _NativeLoginController._(JSObject _) implements JSObject {
     JSString passwordLabel,
     JSString signInLabel,
     JSString forgotLabel,
+    JSString emailRequiredLabel,
+    JSString passwordRequiredLabel,
   );
   external void attach();
   external void detach();
@@ -67,6 +69,8 @@ class NativeLogin {
     required String passwordLabel,
     required String signInLabel,
     required String forgotLabel,
+    required String emailRequiredLabel,
+    required String passwordRequiredLabel,
     required void Function(String email, String password) onSubmit,
     required void Function() onForgot,
   }) {
@@ -82,6 +86,8 @@ class NativeLogin {
       passwordLabel.toJS,
       signInLabel.toJS,
       forgotLabel.toJS,
+      emailRequiredLabel.toJS,
+      passwordRequiredLabel.toJS,
     );
     c.attach();
   }

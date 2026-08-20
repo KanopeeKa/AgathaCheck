@@ -20,6 +20,10 @@ git fetch origin main
 git rebase origin/main   # or rebase onto integration parent
 ```
 
+## UI-touching changes (automatic reminder)
+
+When `./scripts/pre-push-changed.sh` detects edits under `flutter_app/lib/features/*/presentation/**`, theme, or router files, it prints a **UI touch reminder**. Treat that as mandatory: run the **`/ui-check`** checklist before opening or updating the PR (read `.cursor/skills/ui-check/SKILL.md` §Steps). Escalate to **`/ui-design-deep`** for theme, landing/auth, or multi-screen work.
+
 ## Changed-files script logic
 
 `pre-push-changed.sh` diffs vs `origin/main` and runs:
