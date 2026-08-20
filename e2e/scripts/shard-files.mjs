@@ -37,6 +37,7 @@ export const SHARDS = [
   ['playwright/tests/notifications.spec.ts'],
   [
     'playwright/tests/pet.profiles.spec.ts',
+    'playwright/tests/pet.timeline.spec.ts',
     'playwright/tests/organisation.pet-filters.spec.ts',
   ],
   ['playwright/tests/veterinarian.spec.ts'],
