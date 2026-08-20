@@ -10,7 +10,6 @@
  * Scenario: Navigating from signup to login
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
-import { LandingPage } from '../pages/landing.page';
 import { checkA11y } from '../support/axe';
 import { expectHomeShellHidden } from '../support/flutter';
 

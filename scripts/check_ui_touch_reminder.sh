@@ -7,7 +7,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 MERGE_BASE="${1:-origin/main}"
-CHANGED="$(git diff --name-only "$MERGE_BASE" HEAD 2>/dev/null; git diff --name-only; git diff --cached --name-only)"
+CHANGED="$(git diff --name-only "$MERGE_BASE" HEAD 2>/dev/null || true; git diff --name-only 2>/dev/null || true; git diff --cached --name-only 2>/dev/null || true)"
 CHANGED="$(echo "$CHANGED" | sort -u | grep -v '^$' || true)"
 
 if [[ -z "$CHANGED" ]]; then
