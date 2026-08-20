@@ -114,15 +114,17 @@ docs/refactoring-log.md
 ## Runtime state
 
 ```yaml
-autonomy: halted
-current_phase: "1"
-last_completed_phase: null
-halt_reason: "Awaiting approve-autonomous on control issue"
-next_action: "Phase 1+2 land in cursor/agent-efficiency-automation-e1a4; phase 3 needs spawn sprint"
+autonomy: active
+current_phase: 3
+last_completed_phase: 2
+halt_reason: null
+next_action: "continue phase 3 on branch cursor/sprint-bdd-backlog-integration-e1a4"
 artifact_ref:
-  branch: cursor/agent-efficiency-automation-e1a4
+  branch: cursor/sprint-bdd-backlog-integration-e1a4
   plan_path: .agents/plans/agent-efficiency-automation-e1a4.md
+  plan_commit: 12139ef2530d99af20b049c5e277aadeb999efdb
   snapshot_path: .agents/plans/agent-efficiency-automation-e1a4.snapshot.json
+  snapshot_commit: 12139ef2530d99af20b049c5e277aadeb999efdb
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

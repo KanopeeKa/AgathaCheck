@@ -122,6 +122,31 @@ export class VetListPage {
     await this.page.waitForTimeout(500);
   }
 
+  async expectVetLinkedPetCount(vetName: string, count: number): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const countLabel = count === 1 ? '1 pet' : `${count} pets`;
+    const row = this.vetRowLocator(vetName);
+    await expect(row.getByText(new RegExp(countLabel, 'i'))).toBeVisible({ timeout: 15_000 });
+  }
+
+  async openVetDetail(vetName: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await this.vetRowLocator(vetName).click();
+    await waitForFlutterRoutePattern(this.page, /\/(g|o)\/vets\/[^/]+$/, 30_000);
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectLinkedPetNames(...names: string[]): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    for (const name of names) {
+      await this.page
+        .getByRole('button', { name: new RegExp(name, 'i') })
+        .or(this.page.getByText(name, { exact: true }))
+        .first()
+        .waitFor({ timeout: 15_000 });
+    }
+  }
+
   async expectPhoneVisible(phone: string, vetName?: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const phoneLocator = this.page.getByText(new RegExp(escapeRegExp(phone), 'i'));

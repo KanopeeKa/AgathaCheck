@@ -10,7 +10,9 @@
  * Scenario: Deleting a weight entry
  * Scenario: Selecting weight unit
  * Scenario: Empty weight history
+ * Scenario: PDF pet report shows latest weight as current weight
  */
+import { readFileSync } from 'node:fs';
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
   createPet,
@@ -267,5 +269,38 @@ test.describe('Weight tracking', () => {
 
     const weightPage = new WeightTrackingPage(page);
     await weightPage.expectUnitSelectorVisible();
+  });
+
+  test('PDF pet report shows latest weight as current weight', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+
+    await createWeightEntry(baseURL, testUser.accessToken, pet.id, {
+      weight: 24.0,
+      date: '2025-04-01',
+    });
+    await createWeightEntry(baseURL, testUser.accessToken, pet.id, {
+      weight: 25.0,
+      date: '2025-06-01',
+    });
+
+    const latest = await getLatestWeightEntry(baseURL, testUser.accessToken, pet.id);
+    expect(latest.weight).toBeCloseTo(25.0, 1);
+
+    await loginAs(page, testUser);
+    const petList = new PetListPage(page);
+    await petList.openPet(pet.name);
+
+    const petDetail = new PetDetailPage(page);
+    await petDetail.expectLoaded(pet.name);
+
+    const downloadPromise = page.waitForEvent('download');
+    await petDetail.downloadProfileReport();
+    const download = await downloadPromise;
+    const downloadPath = await download.path();
+    expect(downloadPath).toBeTruthy();
+
+    const pdfBytes = readFileSync(downloadPath!);
+    expect(pdfBytes.subarray(0, 5).toString('utf8')).toBe('%PDF-');
   });
 });

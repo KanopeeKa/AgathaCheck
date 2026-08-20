@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { dismissConsentBannerIfPresent, escapeRegExp } from '../support/flutter';
+import { dismissConsentBannerIfPresent, enableFlutterAccessibility, escapeRegExp } from '../support/flutter';
 
 /**
  * Pet detail screen (`/pet/:petId`).
@@ -87,5 +87,49 @@ export class PetDetailPage {
       .or(this.page.getByRole('checkbox', { name: copyLinkPattern }))
       .first()
       .waitFor();
+  }
+
+  async expectAgeDisplay(pattern: RegExp): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    await this.page
+      .getByRole('group', { name: pattern })
+      .or(this.page.getByRole('button', { name: pattern }))
+      .or(this.page.getByText(pattern))
+      .first()
+      .waitFor({ timeout: 15_000 });
+  }
+
+  async expectIdentificationReminder(petName: string): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    const pattern = new RegExp(`${petName} has no identification`, 'i');
+    await this.page.getByRole('group', { name: pattern }).first().waitFor({ timeout: 15_000 });
+  }
+
+  async expectNoIdentificationReminder(petName: string): Promise<void> {
+    await expect(
+      this.page.getByText(new RegExp(`${petName} has no identification`, 'i')),
+    ).toHaveCount(0);
+  }
+
+  async expectPetPhotoVisible(petName: string): Promise<void> {
+    await this.page
+      .getByRole('img', { name: new RegExp(`Photo of ${petName}`, 'i') })
+      .or(this.page.getByLabel(new RegExp(`Photo of ${petName}`, 'i')))
+      .first()
+      .waitFor({ timeout: 15_000 });
+  }
+
+  async expectLinkedVet(vetName: string): Promise<void> {
+    await this.page.getByText(new RegExp(vetName, 'i')).first().waitFor({ timeout: 15_000 });
+  }
+
+  async downloadProfileReport(): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    const exportBtn = this.page
+      .locator('[flt-semantics-identifier="pet_detail_export_report_action"]')
+      .or(this.page.getByRole('button', { name: /Download Pet Report|Download Report/i }));
+    await exportBtn.first().click();
+    await this.page.getByText(/^Download Pet Report$/i).first().waitFor({ timeout: 15_000 });
+    await this.page.getByRole('button', { name: /Download Pet Report|Download Report/i }).last().click();
   }
 }

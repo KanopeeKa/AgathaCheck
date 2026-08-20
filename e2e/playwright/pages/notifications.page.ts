@@ -141,6 +141,24 @@ export class NotificationsPage {
       .waitFor({ timeout: 15_000 });
   }
 
+  /** Assert date-group section headers (e.g. Today, Yesterday). */
+  async expectDateGroupLabels(labels: string[]): Promise<void> {
+    for (const label of labels) {
+      await expect(
+        this.page
+          .getByRole('group', { name: new RegExp(`^${label}$`, 'i') })
+          .first(),
+      ).toBeVisible({ timeout: 15_000 });
+    }
+  }
+
+  /** Assert a pet name appears in the notification list (colour strip is visual-only). */
+  async expectPetNameVisible(petName: string): Promise<void> {
+    await expect(
+      this.page.getByText(petName, { exact: false }).first(),
+    ).toBeVisible({ timeout: 15_000 });
+  }
+
   async expectNotificationCount(expectedCount: number): Promise<void> {
     await expect(
       this.page.getByText(/notification:/, { exact: false }),
@@ -166,8 +184,27 @@ export class NotificationsPage {
   }
 
   async clickNotification(titleText: string): Promise<void> {
-    await this.page.getByText(titleText, { exact: false }).first().click();
-    await this.page.waitForTimeout(600);
+    await refreshFlutterAccessibility(this.page);
+    const escaped = titleText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const row = this.page
+      .getByRole('button', {
+        name: new RegExp(
+          `(?:Overdue|Due soon|Administrative|General|Reminder|Completed) notification:.*${escaped}`,
+          'i',
+        ),
+      })
+      .first();
+    await row.waitFor({ timeout: 15_000 });
+    await row.scrollIntoViewIfNeeded();
+    // Flutter web often misses InkWell when Playwright clicks the semantics node.
+    const box = await row.boundingBox();
+    if (box) {
+      await this.page.mouse.click(box.x + box.width * 0.75, box.y + box.height / 2);
+    } else {
+      await row.focus();
+      await this.page.keyboard.press('Enter');
+    }
+    await this.page.waitForTimeout(800);
   }
 
   /** Digit locator for the experience-shell bell badge (Flutter web Stack semantics). */
@@ -270,6 +307,7 @@ export class NotificationsPage {
     const chip = this.page.getByRole('button', { name: new RegExp(`^${kind}$`, 'i') });
     await chip.waitFor({ timeout: 10_000 });
     await chip.click();
+    await refreshFlutterAccessibility(this.page);
     await this.page.waitForTimeout(400);
   }
 }

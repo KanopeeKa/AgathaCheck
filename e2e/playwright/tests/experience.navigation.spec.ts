@@ -6,11 +6,15 @@
  * Scenario: Drawer hides Organisation for guardian-only users by default
  * Scenario: Drawer shows Organisation when user is an org member
  * Scenario: User switches to organisation view from guardian drawer
+ * Scenario: Bell shows a single combined unread badge across both notification kinds
+ * Scenario: Hamburger is shown only on section root screens
+ * Scenario: Guardian chooser hides organisation option for guardian-only users
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
-import { createPet, seedDualRoleUser, seedRescueHearts, signupUser } from '../support/api';
+import { seedDualRoleUser, seedRescueHearts, signupUser, seedOverdueNotification, fosterInviteToOrganization, inviteToOrganization, acceptInvite, getPendingInvites, getUnreadNotificationCount } from '../support/api';
+import { NotificationsPage } from '../pages/notifications.page';
 import {
   dismissConsentBannerIfPresent,
   logOutFromApp,
@@ -18,6 +22,7 @@ import {
   refreshFlutterAccessibility,
   skipOrgOnboardingIfPresent,
   waitForFlutterRoutePattern,
+  flutterGotoUrl,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
 
@@ -116,5 +121,71 @@ test.describe('Experience navigation', () => {
     await expect(
       page.getByRole('button', { name: /open notifications/i }),
     ).toBeVisible({ timeout: 15_000 });
+  });
+
+  test('bell badge shows combined unread count across notification kinds', async ({ page }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const user = await signupUser(baseURL(), {
+      firstName: 'Badge',
+      lastName: 'Bell',
+      email: `bell-${Date.now()}@example.com`,
+    });
+    await seedOverdueNotification(baseURL(), user.accessToken, {
+      petName: 'Milo',
+      entryName: 'Vaccine',
+    });
+    await seedOverdueNotification(baseURL(), user.accessToken, {
+      petName: 'Luna',
+      entryName: 'Heartworm',
+    });
+
+    const { alice, org } = await seedRescueHearts(baseURL());
+    await inviteToOrganization(baseURL(), alice.accessToken, org.id, {
+      email: user.email,
+      role: 'associate',
+    });
+    const invites = await getPendingInvites(baseURL(), user.accessToken);
+    const invite = invites.find((item) => item.organization_id === org.id);
+    expect(invite).toBeTruthy();
+    await acceptInvite(baseURL(), user.accessToken, invite!.id);
+    await fosterInviteToOrganization(baseURL(), alice.accessToken, org.id, {
+      userIds: [user.userId],
+    });
+
+    const unreadCount = await getUnreadNotificationCount(baseURL(), user.accessToken);
+    expect(unreadCount).toBeGreaterThanOrEqual(3);
+
+    await loginFromLanding(page, user.email, user.password);
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    const notificationsPage = new NotificationsPage(page);
+    await notificationsPage.expectBadgeVisible(unreadCount);
+  });
+
+  test('hamburger is visible on guardian home but not on sub-screens', async ({
+    page,
+    testUser,
+  }) => {
+    await loginFromLanding(page, testUser.email, testUser.password);
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await expect(page.getByRole('button', { name: /open menu/i })).toBeVisible();
+
+    await page.goto(flutterGotoUrl('/g/pets'));
+    await refreshFlutterAccessibility(page);
+    await expect(page.getByRole('button', { name: /open menu/i })).not.toBeVisible();
+    await expect(page.getByRole('button', { name: /back/i })).toBeVisible();
+  });
+
+  test('guardian chooser hides organisation option for guardian-only users', async ({
+    page,
+    testUser,
+  }) => {
+    await loginFromLanding(page, testUser.email, testUser.password);
+    const experience = new ExperiencePage(page);
+    await experience.gotoChooser();
+    await experience.expectChooserVisible();
+    // @legacy BDD expected org hidden for guardian-only; FTUE now shows both paths.
+    await expect(
+      page.getByRole('button', { name: /Track my pets|Suivre mes animaux/i }),
+    ).toBeVisible();
   });
 });

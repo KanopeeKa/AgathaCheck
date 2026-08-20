@@ -11,44 +11,39 @@ import { MyDetailsPage } from '../pages/my-details.page';
 import { LandingPage } from '../pages/landing.page';
 
 test.describe('Authentication – profile and session', () => {
-  test('user can log out and is returned to the landing page', async ({ page, testUser }) => {
+  test('Logging out from the app', async ({ page, testUser }) => {
     await loginAs(page, testUser);
 
     await logOutFromApp(page);
     await page.waitForTimeout(2000);
 
-    // Should be back on the landing / login page
     const landing = new LandingPage(page);
     await landing.goto();
     await expect(page.getByRole('button', { name: 'Sign In', exact: true })).toBeVisible();
     await expectHomeShellHidden(page);
   });
 
-  test('user can view the My Details screen showing their name and email', async ({
-    page,
-    testUser,
-  }) => {
+  test('Viewing user details', async ({ page, testUser }) => {
     await loginAs(page, testUser);
 
     const myDetails = new MyDetailsPage(page);
     await myDetails.openFromUserMenu();
+    await myDetails.expectDisplayName(`${testUser.firstName} ${testUser.lastName}`);
     await myDetails.expectEmail(testUser.email);
   });
 
-  test('user can update their first name from My Details', async ({ page, testUser }) => {
+  test('Updating user profile', async ({ page, testUser }) => {
     await loginAs(page, testUser);
 
     const myDetails = new MyDetailsPage(page);
     await myDetails.openFromUserMenu();
-
-    // Open the editor sheet and update first name
     await myDetails.openEditSheet();
-    const updatedName = `Updated${Date.now()}`;
-    await myDetails.fillFirstName(updatedName);
+    await myDetails.fillFirstName('Bob');
+    await myDetails.fillLastName('Jones');
     await myDetails.saveProfileEdits();
 
     await myDetails.expectProfileUpdated();
-    await myDetails.expectDisplayName(updatedName);
+    await myDetails.expectDisplayName('Bob Jones');
   });
 
   test('user can update their bio from My Details', async ({ page, testUser }) => {
@@ -58,7 +53,6 @@ test.describe('Authentication – profile and session', () => {
     const myDetails = new MyDetailsPage(page);
     await myDetails.openFromUserMenu();
 
-    // Open the editor sheet and update bio
     await myDetails.openEditSheet();
     const bio = `E2E test bio ${Date.now()}`;
     await myDetails.fillBio(bio);

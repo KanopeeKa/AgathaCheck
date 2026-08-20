@@ -2,8 +2,11 @@
  * @bdd account_area.feature
  * Scenario: Guardian-only user can enable show organisation section
  * Scenario: Org member cannot disable show organisation section
+ * Scenario: Login restores last active organisation section
+ * Scenario: Login restores last active guardian section
  */
 import { test, expect } from '../fixtures/auth.fixture';
+import { AccountPage } from '../pages/account.page';
 import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
 import { seedDualRoleUser } from '../support/api';
@@ -11,8 +14,10 @@ import {
   openExperienceDrawer,
   refreshFlutterAccessibility,
   reachAuthenticatedHome,
+  skipOrgOnboardingIfPresent,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
+import { clearBrowserSessionState } from '../support/session';
 import { prepareLiveApiAccess } from '../support/waf';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
@@ -26,6 +31,7 @@ async function loginFromLanding(
   await landing.goto();
   await landing.login(email, password);
   await reachAuthenticatedHome(page);
+  await skipOrgOnboardingIfPresent(page);
 }
 
 test.describe('Account area organisation visibility', () => {
@@ -61,5 +67,31 @@ test.describe('Account area organisation visibility', () => {
     const experience = new ExperiencePage(page);
     await experience.gotoAccountFromDrawer();
     await experience.expectShowOrganisationToggleLockedOn();
+  });
+});
+
+test.describe('Account area login section restore', () => {
+  test('login restores last active organisation section', async ({ page }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const { user } = await seedDualRoleUser(baseURL());
+    await clearBrowserSessionState(page);
+    await AccountPage.seedLastAppSection(page, 'organization');
+
+    await loginFromLanding(page, user.email, user.password);
+
+    const account = new AccountPage(page);
+    await account.expectOrganisationHomeScreen();
+  });
+
+  test('login restores last active guardian section', async ({ page }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const { user } = await seedDualRoleUser(baseURL());
+    await clearBrowserSessionState(page);
+    await AccountPage.seedLastAppSection(page, 'guardian');
+
+    await loginFromLanding(page, user.email, user.password);
+
+    const account = new AccountPage(page);
+    await account.expectGuardianHomeScreen();
   });
 });

@@ -6,9 +6,9 @@
  * Scenario: Message affordance is hidden until in-app messaging ships
  * Scenario: Admin contacts screen shows people as pet-style tiles
  * Scenario: Foster parents directory shows pet-style tiles
- * @legacy Scenario: Member sees admin contacts preview on organisation profile
- * @legacy Scenario: Member sees connected organisation tiles on profile
- * @legacy Scenario: Team admin sees manage connections entry on profile
+ * Scenario: Member sees admin contacts preview on organisation profile
+ * Scenario: Member sees connected organisation tiles on profile
+ * Scenario: Team admin sees manage connections entry on profile
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import {
