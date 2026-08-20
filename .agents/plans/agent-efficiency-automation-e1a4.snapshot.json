@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "plan_id": "agent-efficiency-automation-e1a4",
-  "approved_at": "2026-08-20T00:00:00Z",
-  "approved_by": "pending-operator",
-  "approved_until": "2026-08-22T00:00:00Z",
-  "content_hash": "sha256:06db4a80be848282207643d417f498c9e34f8e4a317aefc8455b39f3fff27bda",
-  "autonomy": "halted",
+  "approved_at": "2026-08-20T14:56:01Z",
+  "approved_by": "operator /execute-plan agent-efficiency-automation-e1a4",
+  "approved_until": "2026-08-22T14:56:01Z",
+  "content_hash": "sha256:8bf72754dc6f4416e52496a1cf6cfd793952e5f3c1a9316d5996a1a3786ab435",
+  "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
-  "control_issue": 1,
+  "control_issue": 666,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
@@ -40,8 +40,8 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": "Land in single PR with phase 2 easy wins",
-      "pr_url": null,
-      "pr_head_sha": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/664",
+      "pr_head_sha": "4ecdd72a97e3e1586dfcce6e048d753406aa54e6",
       "merge_commit": null,
       "debt_issue_refs": []
     },
@@ -73,8 +73,8 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/664",
+      "pr_head_sha": "4ecdd72a97e3e1586dfcce6e048d753406aa54e6",
       "merge_commit": null,
       "debt_issue_refs": []
     },
