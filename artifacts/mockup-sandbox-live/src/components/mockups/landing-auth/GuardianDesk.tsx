@@ -250,7 +250,7 @@ export default function GuardianDesk() {
       `}</style>
 
       <div className="gd-frame">
-        <section className="gd-story" aria-labelledby="guardian-desk-title">
+          <section className="gd-story" aria-labelledby="guardian-desk-title">
           <div className="gd-topbar gd-reveal">
             <div className="gd-brand">
               <span className="gd-brand-mark"><img src={`${import.meta.env.BASE_URL}agathatrack-care-mark.svg`} alt="" /></span>
@@ -261,7 +261,7 @@ export default function GuardianDesk() {
 
           <div className="gd-story-copy">
             <div className="gd-eyebrow gd-reveal-delay">The guardian operations desk</div>
-            <h1 className="gd-reveal">Keep care close.<br /><em>Keep everyone ready.</em></h1>
+            <h1 id="guardian-desk-title" className="gd-reveal">Keep care close.<br /><em>Keep everyone ready.</em></h1>
             <p className="gd-lede gd-reveal-delay">
                AgathaTrack turns the small, important details of looking after an animal into a shared view of today, what comes next, and who has it covered.
             </p>
@@ -318,17 +318,17 @@ export default function GuardianDesk() {
             </p>
 
             <div className="gd-auth-card">
-              <div className="gd-tabs" role="tablist" aria-label="Account action">
-                <button className={mode === 'sign-in' ? 'active' : ''} onClick={() => switchMode('sign-in')} type="button" role="tab" aria-selected={mode === 'sign-in'}>Sign in</button>
-                <button className={mode === 'create' ? 'active' : ''} onClick={() => switchMode('create')} type="button" role="tab" aria-selected={mode === 'create'}>Create account</button>
+              <div className="gd-tabs">
+                <button className={mode === 'sign-in' ? 'active' : ''} onClick={() => switchMode('sign-in')} type="button" aria-pressed={mode === 'sign-in'}>Sign in</button>
+                <button className={mode === 'create' ? 'active' : ''} onClick={() => switchMode('create')} type="button" aria-pressed={mode === 'create'}>Create account</button>
               </div>
 
-              <form className="gd-form" onSubmit={handleSubmit}>
+              <form className="gd-form" onSubmit={handleSubmit} noValidate>
                 {mode === 'create' && (
                   <div className="gd-form-row">
                     <label className="gd-field">
-                      <span>First name</span>
-                      <div className="gd-input-wrap"><UserRound size={15} /><input value={firstName} onChange={(event) => setFirstName(event.target.value)} placeholder="Jordan" autoComplete="given-name" /></div>
+                      <span>First name <span>Required</span></span>
+                      <div className="gd-input-wrap"><UserRound size={15} /><input value={firstName} onChange={(event) => setFirstName(event.target.value)} placeholder="Jordan" autoComplete="given-name" required /></div>
                     </label>
                     <label className="gd-field">
                       <span>Last name <span>Optional</span></span>

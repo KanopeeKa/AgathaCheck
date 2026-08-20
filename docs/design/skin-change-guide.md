@@ -48,9 +48,10 @@ landing-scoped or become shared theme tokens before changing
 
 ## 3. Logo assets
 
-Canonical design source: `attached_assets/brand_marks/agathatrack-care-mark.svg`.
-The Flutter runtime copy lives under `flutter_app/assets/branding/`; preserve
-the existing compatibility filenames below when replacing assets.
+Canonical repository source and Flutter runtime asset:
+`flutter_app/assets/branding/agathatrack-care-mark.svg`. Preserve the existing
+compatibility filenames below when replacing assets. The mockup public copy is
+`artifacts/mockup-sandbox-live/public/agathatrack-care-mark.svg`.
 
 The app supports two logo variants selected by `AppExperience` (guardian vs
 organisation) via `flutter_app/lib/core/branding/logo_assets.dart`

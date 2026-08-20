@@ -116,9 +116,11 @@ letter-spaced; avoid applying that treatment to paragraphs or error messages.
 The canonical mark is the protective shelter arch over simple cat and dog
 forms. Do not replace it with paws, paw prints, or a generic pet icon.
 
-- Source of truth: `attached_assets/brand_marks/agathatrack-care-mark.svg`.
-- Flutter runtime copy: `flutter_app/assets/branding/agathatrack-care-mark.svg`
-  plus the existing PNG/JPG compatibility assets.
+- Canonical repository source and Flutter runtime asset:
+  `flutter_app/assets/branding/agathatrack-care-mark.svg`, plus the existing
+  PNG/JPG compatibility assets.
+- Mockup public copy:
+  `artifacts/mockup-sandbox-live/public/agathatrack-care-mark.svg`.
 - The gold surround is a landing composition treatment, not part of the SVG
   itself.
 
