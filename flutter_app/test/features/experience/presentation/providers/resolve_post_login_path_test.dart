@@ -238,9 +238,7 @@ void main() {
       expect(
         resolvePostLoginPath(
           eligibility: _dual(),
-          pets: const [
-            Pet(id: '1', name: 'Mine', species: 'Cat'),
-          ],
+          pets: const [Pet(id: '1', name: 'Mine', species: 'Cat')],
           orgs: const [
             Organization(
               id: 'o1',
