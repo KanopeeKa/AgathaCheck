@@ -4,8 +4,8 @@
   "approved_at": "2026-08-20T14:56:01Z",
   "approved_by": "operator /execute-plan agent-efficiency-automation-e1a4",
   "approved_until": "2026-08-22T14:56:01Z",
-  "content_hash": "sha256:8f1010e8d81670e46c5c1bd99183dbab9ba1ac37f985be03243ecb56aa2da3b1",
-  "autonomy": "active",
+  "content_hash": "sha256:7e630285673249f818a64f5ce8b2da662650d1bbd8b5e29c31138bc3fee41812",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 666,
@@ -106,10 +106,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/667",
+      "pr_head_sha": "9bff4889"
     }
   ]
 }
