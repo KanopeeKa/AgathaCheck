@@ -226,10 +226,16 @@ export async function completeExperienceChooserIfPresent(
     .locator('[flt-semantics-identifier="ftue_action_run_shelter"]')
     .or(page.getByRole('button', { name: /Run a shelter|Gérer un refuge/i }));
   const onChooserUrl = path === '/app/choose';
+  const waitChooserButton = (target: ReturnType<Page['locator']>) =>
+    target
+      .first()
+      .waitFor({ state: 'visible', timeout: 3_000 })
+      .then(() => true)
+      .catch(() => false);
   const chooserVisible =
     onChooserUrl ||
-    (await ftueTrackPets.first().isVisible({ timeout: 3_000 }).catch(() => false)) ||
-    (await ftueRunShelter.first().isVisible({ timeout: 3_000 }).catch(() => false));
+    (await waitChooserButton(ftueTrackPets)) ||
+    (await waitChooserButton(ftueRunShelter));
   if (!chooserVisible) return;
 
   await refreshFlutterAccessibility(page);
