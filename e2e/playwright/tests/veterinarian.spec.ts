@@ -3,6 +3,7 @@
  * Scenario: Creating a veterinarian with all details
  * Scenario: Creating a veterinarian with only a name
  * Scenario: Viewing the veterinarian list
+ * Scenario: Viewing vet with linked pets
  * Scenario: Empty vet list shows prompt
  * Scenario: Editing a veterinarian's phone number
  * Scenario: Deleting a veterinarian
@@ -12,9 +13,11 @@
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
+  createPet,
   createVetFull,
   getVets,
   signupUser,
+  updatePetVet,
 } from '../support/api';
 import { checkA11y } from '../support/axe';
 import { PetListPage } from '../pages/pet-list.page';
@@ -86,6 +89,33 @@ test.describe('Veterinarian management', () => {
     await vetList.expectLoaded();
     await vetList.expectVetVisible('Dr. Smith');
     await vetList.expectVetVisible('Dr. Jones');
+  });
+
+  test('vet list shows linked pets for a veterinarian', async ({ page }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const user = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Vet' });
+    const vet = await createVetFull(baseURL, user.accessToken, { name: 'Dr. Smith' });
+    const bella = await createPet(baseURL, user.accessToken, 'Bella', 'Dog');
+    const max = await createPet(baseURL, user.accessToken, 'Max', 'Cat');
+    await updatePetVet(baseURL, user.accessToken, bella.id, {
+      name: 'Bella',
+      species: 'Dog',
+      vetId: vet.id,
+    });
+    await updatePetVet(baseURL, user.accessToken, max.id, {
+      name: 'Max',
+      species: 'Cat',
+      vetId: vet.id,
+    });
+
+    const petList = await loginAs(page, user);
+    await petList.openVets();
+
+    const vetList = new VetListPage(page);
+    await vetList.expectLoaded();
+    await vetList.expectVetLinkedPetCount('Dr. Smith', 2);
+    await vetList.openVetDetail('Dr. Smith');
+    await vetList.expectLinkedPetNames('Bella', 'Max');
   });
 
   test('empty vet list shows no-vets prompt', async ({ page, testUser }) => {

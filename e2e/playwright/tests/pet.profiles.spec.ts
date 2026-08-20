@@ -3,6 +3,8 @@
  * Scenario: Empty pet list shows prompt on guardian dashboard
  * Scenario: Creating a new pet with required fields
  * Scenario: Creating a pet with all fields populated
+ * Scenario: Pet is assigned a unique color on creation
+ * Scenario: Age is dynamically calculated from date of birth
  * Scenario: Viewing the pet list
  * Scenario: Viewing pet details
  * Scenario: Editing a pet's name
@@ -10,12 +12,23 @@
  * Scenario: Deleting a pet
  * Scenario: Cancelling pet deletion
  * Scenario: Marking a pet as passed away
+ * Scenario: Passed away pets appear in a collapsible section
+ * Scenario: Showing identification reminder for pet without ID
+ * Scenario: No identification reminder for pet with ID
+ * Scenario: Adding a photo to a pet profile
+ * Scenario: Linking a veterinarian to a pet
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
-import { createPet, getPet } from '../support/api';
+import { createPet, createVet, getAllPets, getPet } from '../support/api';
 import { PetFormPage } from '../pages/pet-form.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
+import {
+  getPetRecord,
+  PET_COLOR_PALETTE,
+  TINY_PNG_BASE64,
+  updatePetFields,
+} from '../pages/pet-profile.seed';
 import { dashboardSectionGroup } from '../support/flutter';
 
 test.describe('Pet profiles', () => {
@@ -191,5 +204,128 @@ test.describe('Pet profiles', () => {
 
     // After confirming, we are redirected to the pet list
     await petList.expectLoaded();
+  });
+
+  test('new pet is assigned a color from the 15-color palette', async ({ testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Luna', 'Dog');
+    await getAllPets(baseURL, testUser.accessToken);
+
+    const record = await getPetRecord(baseURL, testUser.accessToken, pet.id);
+    expect(record.colorValue).toBeDefined();
+    expect(record.colorValue).not.toBeNull();
+    expect(PET_COLOR_PALETTE).toContain(record.colorValue);
+  });
+
+  test('pet age is calculated from date of birth on the profile', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Milo', 'Dog');
+    await updatePetFields(baseURL, testUser.accessToken, pet.id, {
+      name: 'Milo',
+      species: 'Dog',
+      dateOfBirth: '2022-01-01',
+    });
+
+    const seeded = await getPetRecord(baseURL, testUser.accessToken, pet.id);
+    expect(seeded.dateOfBirth).toBe('2022-01-01');
+
+    const petList = await loginAs(page, testUser);
+    await petList.openPet('Milo');
+
+    const detail = new PetDetailPage(page);
+    await detail.expectLoaded('Milo');
+    await detail.expectAgeDisplay(/\d+(\.\d+)?\s+yrs|\d+\s+months?/i);
+  });
+
+  test('passed away pets appear in the collapsed Rainbow Bridge section', async ({
+    page,
+    testUser,
+  }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    await createPet(baseURL, testUser.accessToken, 'Max', 'Dog');
+    const buddy = await createPet(baseURL, testUser.accessToken, 'Buddy', 'Dog');
+    await updatePetFields(baseURL, testUser.accessToken, buddy.id, {
+      name: 'Buddy',
+      species: 'Dog',
+      passedAway: true,
+    });
+
+    const petList = await loginAs(page, testUser);
+    await petList.openManagePets();
+    await petList.expectPetVisible('Max');
+    await petList.expectRainbowBridgeSection();
+    await expect(
+      page.getByRole('button', { name: /Pet:\s*Buddy/i }),
+    ).not.toBeVisible();
+    await petList.expandRainbowBridgeSection();
+    await petList.expectPetVisible('Buddy');
+  });
+
+  test('identification reminder shows for pet without chip ID', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Luna', 'Fish');
+
+    const petList = await loginAs(page, testUser);
+    await petList.openPet(pet.name);
+
+    const detail = new PetDetailPage(page);
+    await detail.expectLoaded('Luna');
+    await detail.expectIdentificationReminder('Luna');
+  });
+
+  test('no identification reminder when pet has chip ID', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Luna', 'Dog');
+    await updatePetFields(baseURL, testUser.accessToken, pet.id, {
+      name: 'Luna',
+      species: 'Dog',
+      chipId: 'FR-123-456',
+    });
+
+    const petList = await loginAs(page, testUser);
+    await petList.openPet('Luna');
+
+    const detail = new PetDetailPage(page);
+    await detail.expectLoaded('Luna');
+    await detail.expectNoIdentificationReminder('Luna');
+  });
+
+  test('pet profile displays uploaded photo', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
+    await updatePetFields(baseURL, testUser.accessToken, pet.id, {
+      name: 'Bella',
+      species: 'Dog',
+      photoPath: TINY_PNG_BASE64,
+    });
+
+    const petList = await loginAs(page, testUser);
+    await petList.openPet('Bella');
+
+    const detail = new PetDetailPage(page);
+    await detail.expectLoaded('Bella');
+    await detail.expectPetPhotoVisible('Bella');
+  });
+
+  test('user can link a veterinarian to a pet from the edit form', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
+    await createVet(baseURL, testUser.accessToken, 'Dr. Jones');
+
+    const petList = await loginAs(page, testUser);
+    await petList.openPet('Bella');
+
+    const detail = new PetDetailPage(page);
+    await detail.expectLoaded('Bella');
+    await detail.openEdit();
+
+    const editForm = new PetFormPage(page);
+    await editForm.expectLoaded();
+    await editForm.selectVeterinarian('Dr. Jones');
+    await editForm.save();
+
+    await detail.expectLoaded('Bella');
+    const updated = await getPetRecord(baseURL, testUser.accessToken, pet.id);
+    expect(updated.vetId).toBeTruthy();
   });
 });

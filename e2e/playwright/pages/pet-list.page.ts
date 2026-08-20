@@ -307,6 +307,22 @@ export class PetListPage {
     }).toPass({ timeout: 20_000 });
   }
 
+  async expectRainbowBridgeSection(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await this.page.getByText('Rainbow Bridge').first().waitFor({ timeout: 15_000 });
+  }
+
+  async expandRainbowBridgeSection(): Promise<void> {
+    await this.expectRainbowBridgeSection();
+    await this.page.getByText('Rainbow Bridge').first().click();
+    await this.page.waitForTimeout(500);
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectNoPendingSharesSection(): Promise<void> {
+    await expect(this.page.getByText(/^Pending Shares$/i)).toHaveCount(0);
+  }
+
   async expectSectionHeader(title: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);

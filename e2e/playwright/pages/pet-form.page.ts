@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   enableFlutterAccessibility,
+  fillLabelledField,
   homeShellLocator,
   refreshFlutterAccessibility,
   selectDropdownOption,
@@ -125,5 +126,14 @@ export class PetFormPage {
     await this.page.getByRole('button', { name: 'Cancel', exact: true }).click();
     await this.page.waitForTimeout(500);
     await this.page.getByRole('button', { name: /Update Pet/ }).waitFor({ timeout: 15_000 });
+  }
+
+  async fillChipId(chipId: string): Promise<void> {
+    await fillLabelledField(this.page, 'ID / Microchip', chipId);
+  }
+
+  async selectVeterinarian(vetName: string): Promise<void> {
+    await selectDropdownOption(this.page, 'Veterinarians', vetName);
+    await refreshFlutterAccessibility(this.page);
   }
 }
