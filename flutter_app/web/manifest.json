@@ -1,11 +1,11 @@
 {
-    "name": "Agatha",
-    "short_name": "Agatha",
+    "name": "AgathaTrack",
+    "short_name": "AgathaTrack",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#755B68",
-    "theme_color": "#755B68",
-    "description": "Pet profile and health management app.",
+    "background_color": "#F5F2E9",
+    "theme_color": "#3B5849",
+    "description": "Calm care coordination for pet guardians, shelters, and foster teams.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

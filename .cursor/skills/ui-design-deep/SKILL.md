@@ -29,6 +29,12 @@ paths:
 8. Auth/landing on web: `.agents/memory/flutter-web-password-managers.md`
 9. Screens/widgets under review
 
+For landing/auth work, also treat `docs/design/index.md`, `docs/design/tokens.md`,
+and `docs/design/copy-tone.md` as the approved direction. The landing reference
+is role-neutral and uses the Operations Desk treatment: deep olive, warm paper,
+muted gold, and the protective shelter arch mark. Do not introduce an
+audience chooser before authentication.
+
 ## Steps
 
 ### 1. Scope
@@ -41,6 +47,10 @@ paths:
 - **UX** — confusion, weak hierarchy, friction, missing states
 - **A11y** — contrast, semantics, keyboard/focus, touch, forms, motion
 - **Design** — token drift, spacing rhythm, off-brand tone
+- **Landing/auth** — one universal entry point; shelter/foster context is
+  supporting copy, not a login path; guardian/organisation context begins after
+  authentication; palette, typography, spacing, states, and logo rules must
+  agree with the expanded landing section in `docs/design/tokens.md`
 
 ### 3. System first
 

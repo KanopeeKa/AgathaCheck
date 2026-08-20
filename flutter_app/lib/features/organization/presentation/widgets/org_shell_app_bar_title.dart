@@ -80,7 +80,7 @@ class OrgShellAppBarTitle extends ConsumerWidget {
         height: 32,
         width: 32,
         fit: BoxFit.cover,
-        semanticLabel: 'Agatha Track logo',
+        semanticLabel: 'AgathaTrack logo',
       ),
     );
   }

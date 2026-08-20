@@ -42,6 +42,7 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
+    - assets/branding/
     - assets/logo-plum.png
     - assets/logo-plum.jpg
     - assets/logo-teal.png

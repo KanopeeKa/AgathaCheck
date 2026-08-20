@@ -33,6 +33,12 @@ These live outside `lib/` (or use a different color type) so they can't
 literally `import` `app_color_tokens.dart`. Update them together with the
 token file when re-skinning — each links back to which token it mirrors.
 
+The approved landing palette in `docs/design/tokens.md` is currently a
+landing-direction reference, not a silent global re-skin. When production
+landing integration begins, decide explicitly whether those values remain
+landing-scoped or become shared theme tokens before changing
+`app_color_tokens.dart`.
+
 | File | Why it's separate | What to update |
 |------|--------------------|-----------------|
 | `flutter_app/lib/core/theme/pdf_report_tokens.dart` | The `pdf` package's `PdfColor` is a different type from Flutter's `Color`; PDF report generation can't read `ThemeData` at runtime. | Hex values, each commented with the `AppColorTokens` constant it mirrors. `test/core/theme/pdf_report_tokens_test.dart` fails if the two drift. |
@@ -41,6 +47,11 @@ token file when re-skinning — each links back to which token it mirrors.
 | `server/lib/email/branding.js` | Node backend, not Flutter — used in transactional email HTML. | `PRIMARY_COLOR`, `PRIMARY_COLOR_HOVER`. |
 
 ## 3. Logo assets
+
+Canonical repository source and Flutter runtime asset:
+`flutter_app/assets/branding/agathatrack-care-mark.svg`. Preserve the existing
+compatibility filenames below when replacing assets. The mockup public copy is
+`artifacts/mockup-sandbox-live/public/agathatrack-care-mark.svg`.
 
 The app supports two logo variants selected by `AppExperience` (guardian vs
 organisation) via `flutter_app/lib/core/branding/logo_assets.dart`

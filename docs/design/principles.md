@@ -12,6 +12,11 @@ Calm, dependable, emotionally intelligent, low-stress. Users feel oriented and i
 
 One design system; subtle context via `AppExperience` (`/g/*` guardian, `/o/*` organisation), copy, and selective accent — not two brands. Org branding rules: `copy-tone.md`.
 
+The landing/auth surface is intentionally **role-neutral**. It introduces
+AgathaTrack as a shared care-coordination desk; guardian, shelter, foster, and
+organisation context is resolved after authentication rather than through a
+pre-login chooser.
+
 ## Visual direction
 
 - Warm neutral surfaces; hierarchy from spacing and typography more than decorative color
@@ -20,6 +25,10 @@ One design system; subtle context via `AppExperience` (`/g/*` guardian, `/o/*` o
 - **Warm accent:** coral `#D6A08F` — restrained; never primary CTA
 - **Success:** `#2B7A2E` (S2) — small signals, not large fills
 - Semantic colors stay functional and shared across modes
+- **Approved landing direction:** deep olive story panel, warm paper auth panel,
+  muted gold mark/accent, and the protective shelter arch logo. See
+  `tokens.md` for the landing reference values; this is pending production
+  integration and does not silently replace the app-wide palette.
 
 Tokens: `docs/design/tokens.md` · Implementation: `flutter_app/lib/core/theme/`
 
