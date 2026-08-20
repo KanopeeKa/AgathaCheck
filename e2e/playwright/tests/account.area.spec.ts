@@ -11,13 +11,13 @@ import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
 import { seedDualRoleUser } from '../support/api';
 import {
+  logOutFromApp,
   openExperienceDrawer,
   refreshFlutterAccessibility,
   reachAuthenticatedHome,
   skipOrgOnboardingIfPresent,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
-import { clearBrowserSessionState } from '../support/session';
 import { prepareLiveApiAccess } from '../support/waf';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
@@ -74,9 +74,13 @@ test.describe('Account area login section restore', () => {
   test('login restores last active organisation section', async ({ page }) => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
-    await clearBrowserSessionState(page);
-    await AccountPage.seedLastAppSection(page, 'organization');
 
+    await loginFromLanding(page, user.email, user.password);
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    const experience = new ExperiencePage(page);
+    await experience.openDrawerOrgView();
+
+    await logOutFromApp(page);
     await loginFromLanding(page, user.email, user.password);
 
     const account = new AccountPage(page);
@@ -86,9 +90,20 @@ test.describe('Account area login section restore', () => {
   test('login restores last active guardian section', async ({ page }) => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
-    await clearBrowserSessionState(page);
-    await AccountPage.seedLastAppSection(page, 'guardian');
 
+    await loginFromLanding(page, user.email, user.password);
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    const experience = new ExperiencePage(page);
+    await experience.openDrawerOrgView();
+    await openExperienceDrawer(page);
+    await page
+      .getByRole('button', { name: /^My Pets\b/i })
+      .or(page.locator('[flt-semantics-identifier="drawer_guardian"]'))
+      .first()
+      .click();
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+
+    await logOutFromApp(page);
     await loginFromLanding(page, user.email, user.password);
 
     const account = new AccountPage(page);

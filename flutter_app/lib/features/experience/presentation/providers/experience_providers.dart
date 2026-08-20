@@ -122,6 +122,7 @@ String resolvePostLoginPath({
   bool guardianOnboardingCompleted = true,
   bool orgOnboardingCompleted = true,
   bool hasPendingOrgInvites = false,
+  AppExperience? lastAppSection,
 }) {
   if (needsFirstTimeExperience(
     pets: pets,
@@ -135,6 +136,7 @@ String resolvePostLoginPath({
     eligibility: eligibility,
     pets: pets,
     orgs: orgs,
+    lastAppSection: lastAppSection,
   );
 
   var path = target.homePath();
@@ -155,9 +157,15 @@ AppExperience _resolvePostLoginExperience({
   required ExperienceEligibility eligibility,
   List<Pet> pets = const [],
   List<Organization> orgs = const [],
+  AppExperience? lastAppSection,
 }) {
   if (!eligibility.canUseGuardian && eligibility.canUseOrganization) {
     return AppExperience.organization;
+  }
+  if (eligibility.showChooser &&
+      lastAppSection != null &&
+      eligibility.availableExperiences.contains(lastAppSection)) {
+    return lastAppSection;
   }
   if (pets.isNotEmpty) {
     return AppExperience.guardian;
