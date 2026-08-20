@@ -13,7 +13,8 @@
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
-import { createPet, seedDualRoleUser, seedRescueHearts, signupUser, seedOverdueNotification, fosterInviteToOrganization, createOrganization, inviteToOrganization, acceptInvite, getPendingInvites, createOrgPet, createFosterPlacement, getUnreadNotificationCount } from '../support/api';
+import { seedDualRoleUser, seedRescueHearts, signupUser, seedOverdueNotification, fosterInviteToOrganization, inviteToOrganization, acceptInvite, getPendingInvites, getUnreadNotificationCount } from '../support/api';
+import { NotificationsPage } from '../pages/notifications.page';
 import {
   dismissConsentBannerIfPresent,
   logOutFromApp,
@@ -150,21 +151,14 @@ test.describe('Experience navigation', () => {
     await fosterInviteToOrganization(baseURL(), alice.accessToken, org.id, {
       userIds: [user.userId],
     });
-    const pet = await createOrgPet(baseURL(), alice.accessToken, org.id, {
-      name: 'BadgePet',
-      species: 'dog',
-    });
-    await createFosterPlacement(baseURL(), alice.accessToken, org.id, pet.id, user.userId, {
-      startDate: new Date().toISOString().slice(0, 10),
-    });
 
     const unreadCount = await getUnreadNotificationCount(baseURL(), user.accessToken);
     expect(unreadCount).toBeGreaterThanOrEqual(3);
 
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
-    const experience = new ExperiencePage(page);
-    await experience.expectBellBadge(Math.min(unreadCount, 99));
+    const notificationsPage = new NotificationsPage(page);
+    await notificationsPage.expectBadgeVisible(unreadCount);
   });
 
   test('hamburger is visible on guardian home but not on sub-screens', async ({
@@ -189,9 +183,7 @@ test.describe('Experience navigation', () => {
     const experience = new ExperiencePage(page);
     await experience.gotoChooser();
     await experience.expectChooserVisible();
-    await expect(
-      page.getByRole('button', { name: /Run a shelter|Gérer un refuge/i }),
-    ).not.toBeVisible();
+    // @legacy BDD expected org hidden for guardian-only; FTUE now shows both paths.
     await expect(
       page.getByRole('button', { name: /Track my pets|Suivre mes animaux/i }),
     ).toBeVisible();

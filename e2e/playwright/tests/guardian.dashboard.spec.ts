@@ -18,6 +18,7 @@ import {
   refreshFlutterAccessibility,
   semanticsByName,
   waitForFlutterRoutePattern,
+  skipGuardianOnboardingIfPresent,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
 import { NotificationsPage } from '../pages/notifications.page';
@@ -137,8 +138,12 @@ test.describe('Guardian dashboard', () => {
     await createFosterPlacement(baseURL(), alice.accessToken, org.id, pet.id, eve.userId, {
       startDate: new Date().toISOString().slice(0, 10),
     });
+    await createPet(baseURL(), eve.accessToken, 'EveDashPet');
 
     await loginAs(page, eve, { experience: 'guardian' });
+    await page.goto(flutterGotoUrl('/g/home'));
+    await refreshFlutterAccessibility(page);
+    await skipGuardianOnboardingIfPresent(page);
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
     await expect(page.getByText('Pending foster placements')).not.toBeVisible();
 

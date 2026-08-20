@@ -17,6 +17,7 @@ import {
   flutterGotoUrl,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
+  expectAppBarTitle,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
 
@@ -61,7 +62,9 @@ test.describe('Pet timeline', () => {
     await loginAs(page, user);
     await page.goto(flutterGotoUrl(`/pet/${pet.id}/timeline`));
     await refreshFlutterAccessibility(page);
-    await expect(page.getByText(/Timeline|Chronologie|Max/i).first()).toBeVisible({
+    await waitForFlutterRoutePattern(page, new RegExp(`/pet/${pet.id}/timeline`), 60_000);
+    await expectAppBarTitle(page, /Timeline|Chronologie/i);
+    await expect(page.getByText(/No data|Aucune donnée/i).first()).toBeVisible({
       timeout: 30_000,
     });
   });
