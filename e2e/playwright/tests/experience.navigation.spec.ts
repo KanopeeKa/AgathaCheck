@@ -13,7 +13,7 @@
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
-import { createPet, seedDualRoleUser, seedRescueHearts, signupUser, seedOverdueNotification, fosterInviteToOrganization, createOrganization } from '../support/api';
+import { createPet, seedDualRoleUser, seedRescueHearts, signupUser, seedOverdueNotification, fosterInviteToOrganization, createOrganization, inviteToOrganization, acceptInvite, getPendingInvites, createOrgPet, createFosterPlacement, getUnreadNotificationCount } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   logOutFromApp,
@@ -129,30 +129,42 @@ test.describe('Experience navigation', () => {
       lastName: 'Bell',
       email: `bell-${Date.now()}@example.com`,
     });
-    await createPet(baseURL(), user.accessToken, { name: 'Milo' });
     await seedOverdueNotification(baseURL(), user.accessToken, {
       petName: 'Milo',
       entryName: 'Vaccine',
     });
-    const org = await createOrganization(baseURL(), user.accessToken, {
-      name: 'Bell Test Shelter',
-      type: 'charity',
+    await seedOverdueNotification(baseURL(), user.accessToken, {
+      petName: 'Luna',
+      entryName: 'Heartworm',
     });
-    const foster = await signupUser(baseURL(), {
-      firstName: 'F',
-      lastName: 'Invite',
-      email: `foster-${Date.now()}@example.com`,
+
+    const { alice, org } = await seedRescueHearts(baseURL());
+    await inviteToOrganization(baseURL(), alice.accessToken, org.id, {
+      email: user.email,
+      role: 'associate',
     });
-    await fosterInviteToOrganization(baseURL(), user.accessToken, org.id, {
-      email: foster.email,
-      firstName: foster.firstName,
-      lastName: foster.lastName,
+    const invites = await getPendingInvites(baseURL(), user.accessToken);
+    const invite = invites.find((item) => item.organization_id === org.id);
+    expect(invite).toBeTruthy();
+    await acceptInvite(baseURL(), user.accessToken, invite!.id);
+    await fosterInviteToOrganization(baseURL(), alice.accessToken, org.id, {
+      userIds: [user.userId],
     });
+    const pet = await createOrgPet(baseURL(), alice.accessToken, org.id, {
+      name: 'BadgePet',
+      species: 'dog',
+    });
+    await createFosterPlacement(baseURL(), alice.accessToken, org.id, pet.id, user.userId, {
+      startDate: new Date().toISOString().slice(0, 10),
+    });
+
+    const unreadCount = await getUnreadNotificationCount(baseURL(), user.accessToken);
+    expect(unreadCount).toBeGreaterThanOrEqual(3);
 
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
     const experience = new ExperiencePage(page);
-    await experience.expectBellBadge(2);
+    await experience.expectBellBadge(Math.min(unreadCount, 99));
   });
 
   test('hamburger is visible on guardian home but not on sub-screens', async ({
@@ -173,8 +185,10 @@ test.describe('Experience navigation', () => {
     page,
     testUser,
   }) => {
+    await loginFromLanding(page, testUser.email, testUser.password);
     const experience = new ExperiencePage(page);
     await experience.gotoChooser();
+    await experience.expectChooserVisible();
     await expect(
       page.getByRole('button', { name: /Run a shelter|Gérer un refuge/i }),
     ).not.toBeVisible();

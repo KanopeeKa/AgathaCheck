@@ -4,7 +4,7 @@
  * Scenario: Timeline screen shows date of birth and joined markers
  * Scenario: Guardian navigates to timeline from pet profile
  */
-import { test, expect } from '../fixtures/auth.fixture';
+import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
   acceptFosterPlacement,
   createFosterPlacement,
@@ -40,6 +40,7 @@ test.describe('Pet timeline', () => {
     );
     await acceptFosterPlacement(baseURL(), eve.accessToken, placement.id);
 
+    await loginAs(page, eve);
     await page.goto(flutterGotoUrl(`/pet/${pet.id}/timeline`));
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, new RegExp(`/pet/${pet.id}/timeline`), 60_000);
@@ -57,6 +58,7 @@ test.describe('Pet timeline', () => {
     });
     const pet = await createPet(baseURL(), user.accessToken, 'Max', 'dog');
 
+    await loginAs(page, user);
     await page.goto(flutterGotoUrl(`/pet/${pet.id}/timeline`));
     await refreshFlutterAccessibility(page);
     await expect(page.getByText(/Timeline|Chronologie|Max/i).first()).toBeVisible({
@@ -73,6 +75,7 @@ test.describe('Pet timeline', () => {
     });
     const pet = await createPet(baseURL(), user.accessToken, 'Max', 'dog');
 
+    await loginAs(page, user);
     await page.goto(flutterGotoUrl(`/pet/${pet.id}`));
     await refreshFlutterAccessibility(page);
     await page.goto(flutterGotoUrl(`/pet/${pet.id}/timeline`));

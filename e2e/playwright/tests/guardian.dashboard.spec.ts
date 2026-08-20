@@ -6,7 +6,7 @@
  * Scenario: Global events screen supports pet and cohort filters
  * Scenario: Pending foster placement surfaces as a notification, not a dashboard banner
  */
-import { test, expect } from '../fixtures/auth.fixture';
+import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
 import { createPet, createHealthEntry, signupUser, seedRescueHearts, createOrgPet, createFosterPlacement } from '../support/api';
@@ -138,7 +138,7 @@ test.describe('Guardian dashboard', () => {
       startDate: new Date().toISOString().slice(0, 10),
     });
 
-    await loginGuardian(page, eve.email, eve.password);
+    await loginAs(page, eve, { experience: 'guardian' });
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
     await expect(page.getByText('Pending foster placements')).not.toBeVisible();
 
