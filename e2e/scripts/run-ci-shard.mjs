@@ -31,9 +31,10 @@ if (files.length === 0) {
   process.exit(1);
 }
 
+const playwrightBin = path.join(e2eRoot, 'node_modules', '.bin', 'playwright');
 const result = spawnSync(
-  'npx',
-  ['playwright', 'test', '--project=full', '--max-failures=1', ...files],
+  playwrightBin,
+  ['test', '--project=full', '--max-failures=1', ...files],
   {
     cwd: e2eRoot,
     stdio: 'inherit',
