@@ -5408,6 +5408,123 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fosterQuestionnaireReviewLink => 'Review questionnaire';
 
   @override
+  String get fosterHomeVisitAdminTitle => 'Home visit';
+
+  @override
+  String get fosterHomeVisitAdminLink => 'Manage home visit';
+
+  @override
+  String get fosterHomeVisitStatusTitle => 'Home visit status';
+
+  @override
+  String get fosterHomeVisitStatusLink => 'View home visit status';
+
+  @override
+  String get fosterHomeVisitStatusIntro =>
+      'Your scheduled home visit details are shown below. The visit address is shared separately by the shelter.';
+
+  @override
+  String get fosterHomeVisitStatusUnavailable =>
+      'Home visit status is not available for your account in this organisation.';
+
+  @override
+  String get fosterHomeVisitStatusEmpty =>
+      'No home visit is scheduled yet. The shelter will contact you when a visit is arranged.';
+
+  @override
+  String get fosterHomeVisitStatusActiveTitle => 'Scheduled visit';
+
+  @override
+  String get fosterHomeVisitStatusLatestValidatedTitle =>
+      'Latest validated visit';
+
+  @override
+  String get fosterHomeVisitStatusScheduled => 'Scheduled';
+
+  @override
+  String get fosterHomeVisitStatusCancelled => 'Cancelled';
+
+  @override
+  String get fosterHomeVisitStatusValidated => 'Validated';
+
+  @override
+  String get fosterHomeVisitScheduleTitle => 'Schedule home visit';
+
+  @override
+  String get fosterHomeVisitScheduleAction => 'Schedule visit';
+
+  @override
+  String get fosterHomeVisitScheduleSaved => 'Home visit scheduled';
+
+  @override
+  String get fosterHomeVisitRescheduleAction => 'Reschedule visit';
+
+  @override
+  String get fosterHomeVisitRescheduleSaved => 'Home visit rescheduled';
+
+  @override
+  String get fosterHomeVisitCancelTitle => 'Cancel home visit';
+
+  @override
+  String get fosterHomeVisitCancelAction => 'Cancel visit';
+
+  @override
+  String get fosterHomeVisitCancelReasonLabel =>
+      'Cancellation reason (optional)';
+
+  @override
+  String get fosterHomeVisitCancelSaved => 'Home visit cancelled';
+
+  @override
+  String get fosterHomeVisitValidateTitle => 'Validate home visit';
+
+  @override
+  String get fosterHomeVisitValidateAction => 'Record validation';
+
+  @override
+  String get fosterHomeVisitValidateSaved => 'Home visit validation recorded';
+
+  @override
+  String get fosterHomeVisitDateLabel => 'Visit date';
+
+  @override
+  String get fosterHomeVisitDateRequired => 'Select a visit date';
+
+  @override
+  String get fosterHomeVisitTimeLabel => 'Visit time (24h)';
+
+  @override
+  String get fosterHomeVisitTimeInvalid => 'Enter a valid time as HH:MM (24h)';
+
+  @override
+  String get fosterHomeVisitAddressLabel => 'Visit address';
+
+  @override
+  String get fosterHomeVisitOutcomeLabel => 'Validation outcome';
+
+  @override
+  String get fosterHomeVisitOutcomeRequired => 'Select an outcome';
+
+  @override
+  String get fosterHomeVisitOutcomeYes => 'Yes — home suitable';
+
+  @override
+  String get fosterHomeVisitOutcomeNo => 'No — not suitable';
+
+  @override
+  String get fosterHomeVisitOutcomeReasonLabel => 'Outcome reason';
+
+  @override
+  String get fosterHomeVisitOutcomeReasonRequired =>
+      'Outcome reason is required when validation is No';
+
+  @override
+  String get fosterHomeVisitHistoryTitle => 'Previous visits';
+
+  @override
+  String get fosterHomeVisitHistoryEmpty => 'No previous home visits recorded.';
+
+  @override
   String get fosterQuestionnaireSubmissionSummaryTitle => 'Submission summary';
 
   @override

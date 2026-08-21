@@ -5500,6 +5500,126 @@ class AppLocalizationsFr extends AppLocalizations {
   String get fosterQuestionnaireReviewLink => 'Revoir le questionnaire';
 
   @override
+  String get fosterHomeVisitAdminTitle => 'Visite à domicile';
+
+  @override
+  String get fosterHomeVisitAdminLink => 'Gérer la visite à domicile';
+
+  @override
+  String get fosterHomeVisitStatusTitle => 'Statut de la visite à domicile';
+
+  @override
+  String get fosterHomeVisitStatusLink => 'Voir le statut de la visite';
+
+  @override
+  String get fosterHomeVisitStatusIntro =>
+      'Les détails de votre visite à domicile planifiée sont indiqués ci-dessous. L\'adresse vous sera communiquée séparément par le refuge.';
+
+  @override
+  String get fosterHomeVisitStatusUnavailable =>
+      'Le statut de visite à domicile n\'est pas disponible pour votre compte dans cette organisation.';
+
+  @override
+  String get fosterHomeVisitStatusEmpty =>
+      'Aucune visite à domicile n\'est encore planifiée. Le refuge vous contactera lorsqu\'une visite sera organisée.';
+
+  @override
+  String get fosterHomeVisitStatusActiveTitle => 'Visite planifiée';
+
+  @override
+  String get fosterHomeVisitStatusLatestValidatedTitle =>
+      'Dernière visite validée';
+
+  @override
+  String get fosterHomeVisitStatusScheduled => 'Planifiée';
+
+  @override
+  String get fosterHomeVisitStatusCancelled => 'Annulée';
+
+  @override
+  String get fosterHomeVisitStatusValidated => 'Validée';
+
+  @override
+  String get fosterHomeVisitScheduleTitle => 'Planifier une visite à domicile';
+
+  @override
+  String get fosterHomeVisitScheduleAction => 'Planifier la visite';
+
+  @override
+  String get fosterHomeVisitScheduleSaved => 'Visite à domicile planifiée';
+
+  @override
+  String get fosterHomeVisitRescheduleAction => 'Reporter la visite';
+
+  @override
+  String get fosterHomeVisitRescheduleSaved => 'Visite à domicile reportée';
+
+  @override
+  String get fosterHomeVisitCancelTitle => 'Annuler la visite à domicile';
+
+  @override
+  String get fosterHomeVisitCancelAction => 'Annuler la visite';
+
+  @override
+  String get fosterHomeVisitCancelReasonLabel =>
+      'Motif d\'annulation (facultatif)';
+
+  @override
+  String get fosterHomeVisitCancelSaved => 'Visite à domicile annulée';
+
+  @override
+  String get fosterHomeVisitValidateTitle => 'Valider la visite à domicile';
+
+  @override
+  String get fosterHomeVisitValidateAction => 'Enregistrer la validation';
+
+  @override
+  String get fosterHomeVisitValidateSaved =>
+      'Validation de la visite enregistrée';
+
+  @override
+  String get fosterHomeVisitDateLabel => 'Date de visite';
+
+  @override
+  String get fosterHomeVisitDateRequired => 'Sélectionnez une date de visite';
+
+  @override
+  String get fosterHomeVisitTimeLabel => 'Heure de visite (24 h)';
+
+  @override
+  String get fosterHomeVisitTimeInvalid =>
+      'Saisissez une heure valide au format HH:MM (24 h)';
+
+  @override
+  String get fosterHomeVisitAddressLabel => 'Adresse de visite';
+
+  @override
+  String get fosterHomeVisitOutcomeLabel => 'Résultat de validation';
+
+  @override
+  String get fosterHomeVisitOutcomeRequired => 'Sélectionnez un résultat';
+
+  @override
+  String get fosterHomeVisitOutcomeYes => 'Oui — domicile adapté';
+
+  @override
+  String get fosterHomeVisitOutcomeNo => 'Non — domicile inadapté';
+
+  @override
+  String get fosterHomeVisitOutcomeReasonLabel => 'Motif du résultat';
+
+  @override
+  String get fosterHomeVisitOutcomeReasonRequired =>
+      'Le motif est obligatoire lorsque la validation est Non';
+
+  @override
+  String get fosterHomeVisitHistoryTitle => 'Visites précédentes';
+
+  @override
+  String get fosterHomeVisitHistoryEmpty =>
+      'Aucune visite à domicile précédente enregistrée.';
+
+  @override
   String get fosterQuestionnaireSubmissionSummaryTitle =>
       'Résumé de la soumission';
 
