@@ -118,6 +118,7 @@ class GuardianDashboardPetCard extends StatelessWidget {
       image = Image.asset(
         pet.photoPath!.substring('asset://'.length),
         fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _placeholder(color),
       );
     } else if (pet.photoPath?.isNotEmpty ?? false) {
       try {

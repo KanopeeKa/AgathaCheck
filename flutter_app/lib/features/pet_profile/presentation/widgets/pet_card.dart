@@ -184,6 +184,7 @@ class PetCard extends StatelessWidget {
         return Image.asset(
           pet.photoPath!.substring('asset://'.length),
           fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => _buildPlaceholder(petColor),
         );
       }
       try {

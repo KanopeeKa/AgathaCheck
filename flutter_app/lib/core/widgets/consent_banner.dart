@@ -276,6 +276,7 @@ class _ConsentPreferencesSheetState
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(l10n.consentPreferencesSaved)),
                       );
+                      Navigator.of(context).pop();
                     },
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColorTokens.operationsOlive,

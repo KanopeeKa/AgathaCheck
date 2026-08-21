@@ -37,7 +37,7 @@ class LandingBrandingSection extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'AgathaTrack',
+                  l10n.appTitle,
                   style: text.titleLarge?.copyWith(
                     color: AppColorTokens.operationsPaper,
                     fontWeight: FontWeight.w700,

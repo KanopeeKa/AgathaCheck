@@ -5,38 +5,81 @@
 # without changing the caller's working directory or shell options.
 
 readonly AGATHA_FLUTTER_VERSION="3.44.0"
-readonly AGATHA_FLUTTER_ARCHIVE="flutter_linux_${AGATHA_FLUTTER_VERSION}-stable.tar.xz"
-readonly AGATHA_FLUTTER_ARCHIVE_URL="https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/${AGATHA_FLUTTER_ARCHIVE}"
-readonly AGATHA_FLUTTER_ARCHIVE_SHA256="e1ec95e6c550458a34de93580cb85dac24da0e9bedb9bb42811f050ac5a0c7d5"
 readonly AGATHA_FLUTTER_CACHE="${XDG_CACHE_HOME:-"${HOME}/.cache"}/agatha-track"
-readonly AGATHA_FLUTTER_SDK="${AGATHA_FLUTTER_CACHE}/flutter-${AGATHA_FLUTTER_VERSION}"
 
 agatha_flutter_install() {
-  if [[ -x "${AGATHA_FLUTTER_SDK}/bin/flutter" ]]; then
+  local platform
+  local archive
+  local archive_path
+  local archive_sha256
+  local archive_type
+  local sdk_path
+
+  case "$(uname -s)" in
+    Linux*)
+      platform="linux"
+      archive="flutter_linux_${AGATHA_FLUTTER_VERSION}-stable.tar.xz"
+      archive_sha256="e1ec95e6c550458a34de93580cb85dac24da0e9bedb9bb42811f050ac5a0c7d5"
+      archive_type="tar.xz"
+      ;;
+    Darwin*)
+      platform="macos"
+      archive="flutter_macos_${AGATHA_FLUTTER_VERSION}-stable.zip"
+      archive_sha256=""
+      archive_type="zip"
+      ;;
+    MINGW*|MSYS*|CYGWIN*)
+      platform="windows"
+      archive="flutter_windows_${AGATHA_FLUTTER_VERSION}-stable.zip"
+      archive_sha256=""
+      archive_type="zip"
+      ;;
+    *)
+      echo "Unsupported host platform: $(uname -s)" >&2
+      return 1
+      ;;
+  esac
+
+  sdk_path="${AGATHA_FLUTTER_CACHE}/flutter-${AGATHA_FLUTTER_VERSION}-${platform}"
+  if [[ -x "${sdk_path}/bin/flutter" ]]; then
     return
   fi
 
   mkdir -p "${AGATHA_FLUTTER_CACHE}"
   local install_dir
   install_dir="$(mktemp -d "${AGATHA_FLUTTER_CACHE}/flutter-install.XXXXXX")"
-  local archive_path="${install_dir}/${AGATHA_FLUTTER_ARCHIVE}"
-  trap 'rm -rf "${install_dir}"' RETURN
+  archive_path="${install_dir}/${archive}"
 
   echo "Downloading Flutter ${AGATHA_FLUTTER_VERSION}..."
   curl --fail --location --retry 3 --show-error \
-    "${AGATHA_FLUTTER_ARCHIVE_URL}" --output "${archive_path}"
-  echo "${AGATHA_FLUTTER_ARCHIVE_SHA256}  ${archive_path}" |
-    sha256sum --check --status
+    "https://storage.googleapis.com/flutter_infra_release/releases/stable/${platform}/${archive}" \
+    --output "${archive_path}"
+  if [[ -n "${archive_sha256}" ]]; then
+    echo "${archive_sha256}  ${archive_path}" |
+      sha256sum --check --status
+  fi
 
-  tar --extract --xz --file "${archive_path}" --directory "${install_dir}"
+  if [[ "${archive_type}" == "tar.xz" ]]; then
+    tar --extract --xz --file "${archive_path}" --directory "${install_dir}"
+  else
+    unzip -q "${archive_path}" -d "${install_dir}"
+  fi
   test -x "${install_dir}/flutter/bin/flutter"
-  rm -rf "${AGATHA_FLUTTER_SDK}"
-  mv "${install_dir}/flutter" "${AGATHA_FLUTTER_SDK}"
+  rm -rf "${sdk_path}"
+  mv "${install_dir}/flutter" "${sdk_path}"
+  rm -rf "${install_dir}"
 }
 
 agatha_flutter_use() {
   agatha_flutter_install
-  export PATH="${AGATHA_FLUTTER_SDK}/bin:${PATH}"
+  local platform
+  case "$(uname -s)" in
+    Linux*) platform="linux" ;;
+    Darwin*) platform="macos" ;;
+    MINGW*|MSYS*|CYGWIN*) platform="windows" ;;
+    *) echo "Unsupported host platform: $(uname -s)" >&2; return 1 ;;
+  esac
+  export PATH="${AGATHA_FLUTTER_CACHE}/flutter-${AGATHA_FLUTTER_VERSION}-${platform}/bin:${PATH}"
 }
 
 agatha_flutter_verify() {

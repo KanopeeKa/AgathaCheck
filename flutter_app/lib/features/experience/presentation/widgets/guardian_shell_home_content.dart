@@ -42,7 +42,10 @@ class GuardianShellHomeContent extends ConsumerWidget {
       hasAttention: careSummary?.hasAttention ?? false,
     );
     final previewPets = careSummary == null
-        ? shellPets.take(4).toList(growable: false)
+        ? shellPets
+              .where((pet) => !pet.passedAway)
+              .take(4)
+              .toList(growable: false)
         : guardianTodayPreviewPets(allPets, controller, careSummary);
     final baseTheme = Theme.of(context);
     final deskTheme = baseTheme.copyWith(
