@@ -233,13 +233,17 @@ class _FosterHomeVisitAdminScreenState
                     showAddress: true,
                   ),
                 ] else if (!_showScheduleForm) ...[
-                  OutlinedButton.icon(
-                    key: const Key('foster_home_visit_open_schedule'),
-                    onPressed: _busy
-                        ? null
-                        : () => setState(() => _showScheduleForm = true),
-                    icon: const Icon(Icons.event_available_outlined),
-                    label: Text(l.fosterHomeVisitScheduleTitle),
+                  Semantics(
+                    identifier: 'foster_home_visit_open_schedule',
+                    button: true,
+                    child: OutlinedButton.icon(
+                      key: const Key('foster_home_visit_open_schedule'),
+                      onPressed: _busy
+                          ? null
+                          : () => setState(() => _showScheduleForm = true),
+                      icon: const Icon(Icons.event_available_outlined),
+                      label: Text(l.fosterHomeVisitScheduleTitle),
+                    ),
                   ),
                 ] else ...[
                   FosterHomeVisitScheduleForm(
