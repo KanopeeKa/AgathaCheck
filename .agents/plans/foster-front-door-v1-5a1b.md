@@ -278,17 +278,17 @@ docs/fostering-platform/**
 
 ```yaml
 autonomy: active
-current_phase: 3
-last_completed_phase: 2
+current_phase: 4
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 3 on branch cursor/foster-home-visit-backend-5a1b"
+next_action: "continue phase 4 on branch cursor/foster-home-visit-ui-5a1b"
 artifact_ref:
-  branch: cursor/foster-home-visit-backend-5a1b
+  branch: cursor/foster-home-visit-ui-5a1b
   plan_path: .agents/plans/foster-front-door-v1-5a1b.md
-  plan_commit: 3ba541c6d82af3356ebab8a19d059559419be115
+  plan_commit: 1c10455db6949a8538b5d1fcbabde855741ae931
   snapshot_path: .agents/plans/foster-front-door-v1-5a1b.snapshot.json
-  snapshot_commit: 3ba541c6d82af3356ebab8a19d059559419be115
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/677"]
+  snapshot_commit: 1c10455db6949a8538b5d1fcbabde855741ae931
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```

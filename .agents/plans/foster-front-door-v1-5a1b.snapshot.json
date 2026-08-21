@@ -4,7 +4,7 @@
   "approved_at": "2026-08-21T14:14:00Z",
   "approved_by": "user-chat-2026-08-21-track-a-c1",
   "approved_until": "2026-08-23T14:14:00Z",
-  "content_hash": "sha256:c1707b55efed95ae3c69e6948dba7adade8a27f3493728260653a86ad4c95544",
+  "content_hash": "sha256:b5ef674c671588561a3f2f7408e7145b394b9668986a92d795ff678a44c89dcd",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/foster-front-door-v1-5a1b-integration",
@@ -146,12 +146,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/677",
-      "pr_head_sha": "3ba541c6"
+      "pr_head_sha": "85b3a807"
     },
     {
       "id": "4",
@@ -186,12 +186,9 @@
       },
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {

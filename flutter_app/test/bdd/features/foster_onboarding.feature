@@ -47,3 +47,12 @@ Feature: Foster onboarding and approval
     And "Eve" acknowledges and submits the questionnaire
     Then "Eve" sees the automatic Go confirmation message
     And the foster onboarding form step is complete for "Eve"
+
+  @P1
+  Scenario: Admin schedules and validates home visit yes
+    Given a registered user "Eve" is a foster parent of "Rescue Hearts"
+    When "Alice" opens the foster home visit screen for "Eve" in "Rescue Hearts"
+    And "Alice" schedules a home visit for "Eve"
+    And "Alice" validates the home visit with outcome yes
+    Then the foster home visit onboarding step is complete for "Eve"
+    And "Eve" sees the validated home visit status

@@ -166,7 +166,8 @@
     "Adding a foster manually": "P2",
     "Invite new foster by email from Manage Fosters": "P2",
     "Onboard existing member as foster from People": "P2",
-    "Candidate submits foster questionnaire with AUTO_GO path": "P1"
+    "Candidate submits foster questionnaire with AUTO_GO path": "P1",
+    "Admin schedules and validates home visit yes": "P1"
   },
   "fostering_platform.feature": {
     "Foster request targets respect approved capacity filters": "P2",
