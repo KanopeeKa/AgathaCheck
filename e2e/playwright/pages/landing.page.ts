@@ -146,15 +146,21 @@ export class LandingPage {
   }
 
   async submitLoginForm(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
     const nativeSubmit = this.page.locator('#anl-submit');
+    const nativeForm = this.page.locator('#anl-form');
     if (
       await nativeSubmit
         .waitFor({ state: 'visible', timeout: 2_000 })
         .then(() => true)
         .catch(() => false)
     ) {
-      await nativeSubmit.click();
+      // Dart attachInline drives busy/disabled; wait so Playwright does not hang on click.
+      await expect(nativeSubmit).toBeEnabled({ timeout: 15_000 });
+      // requestSubmit avoids Flutter glass-pane intercepting pointer events on the inline bridge.
+      await nativeForm.evaluate((form: HTMLFormElement) => form.requestSubmit());
       await this.page.waitForTimeout(300);
+      await refreshFlutterAccessibility(this.page);
       return;
     }
     await this.page.getByRole('button', { name: 'Sign In', exact: true }).click();

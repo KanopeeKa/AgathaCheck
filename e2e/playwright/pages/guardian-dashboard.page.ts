@@ -79,18 +79,19 @@ export class GuardianDashboardPage {
   }
 
   async expectAllPetsDestination(): Promise<void> {
+    // All Pets is a section footer link (sibling of the My Pets group), not inside the group.
     await expect(
-      this.section('myPets')
-        .getByRole('button', { name: /All Pets|Tous les animaux/i })
-        .or(this.section('myPets').getByText(/All Pets|Tous les animaux/i))
+      this.page
+        .getByRole('button', { name: /^All Pets$|^Tous les animaux$/i })
+        .or(this.page.getByText(/^All Pets$|^Tous les animaux$/i))
         .first(),
     ).toBeVisible();
   }
 
   async openAllPets(): Promise<void> {
-    await this.section('myPets')
-      .getByRole('button', { name: /All Pets|Tous les animaux/i })
-      .or(this.section('myPets').getByText(/All Pets|Tous les animaux/i))
+    await this.page
+      .getByRole('button', { name: /^All Pets$|^Tous les animaux$/i })
+      .or(this.page.getByText(/^All Pets$|^Tous les animaux$/i))
       .first()
       .click();
     await waitForFlutterRoutePattern(this.page, /\/g\/pets(?:\?|$)/, 30_000);
