@@ -105,7 +105,8 @@ test.describe('Guardian dashboard', () => {
     const pet = await createPet(baseURL(), user.accessToken, 'PriorityPet');
     await createHealthEntry(baseURL(), user.accessToken, pet.id, { name: 'Overdue Care', nextDueDate: dateOffset(-1) });
     await createHealthEntry(baseURL(), user.accessToken, pet.id, { name: 'Today Care', nextDueDate: today });
-    await createHealthEntry(baseURL(), user.accessToken, pet.id, { name: 'Upcoming Care', nextDueDate: dateOffset(3) });
+    // Default remind_days_before is 1 — upcoming must fall inside that window.
+    await createHealthEntry(baseURL(), user.accessToken, pet.id, { name: 'Upcoming Care', nextDueDate: dateOffset(1) });
     await loginGuardian(page, user.email, user.password);
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.open();
