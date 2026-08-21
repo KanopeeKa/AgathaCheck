@@ -36,6 +36,7 @@ import '../../features/organization/presentation/screens/organization_person_det
 import '../../features/organization/presentation/screens/organization_pets_screen.dart';
 import '../../features/organization/presentation/screens/transfer_pet_screen.dart';
 import '../../features/organization/presentation/screens/transfer_pet_to_org_screen.dart';
+import '../../features/organization/foster_questionnaire/presentation/providers/foster_questionnaire_providers.dart';
 import '../../features/organization/foster_questionnaire/presentation/screens/foster_questionnaire_review_screen.dart';
 
 /// Org management routes under `/o/orgs` (org-mode shell on the list hub).
@@ -208,6 +209,7 @@ List<RouteBase> _orgManagementChildRoutes() {
             return ManageFostersScreen(orgId: id);
           },
         ),
+        buildFosterQuestionnaireRoute(),
         GoRoute(
           path: 'foster-questionnaire/:fosterParentId/review',
           name: 'fosterQuestionnaireReview',
