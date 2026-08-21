@@ -278,18 +278,18 @@ docs/fostering-platform/**
 
 ```yaml
 autonomy: active
-current_phase: 4
-last_completed_phase: 3
+current_phase: 5
+last_completed_phase: 4
 halt_reason: null
-next_action: "continue phase 4 on branch cursor/foster-home-visit-ui-5a1b"
+next_action: "start phase 5: checkout cursor/foster-document-wire-5a1b"
 artifact_ref:
   branch: cursor/foster-home-visit-ui-5a1b
   plan_path: .agents/plans/foster-front-door-v1-5a1b.md
-  plan_commit: 1c10455db6949a8538b5d1fcbabde855741ae931
+  plan_commit: b9eef033d0f3239d9932b861069f15745cf573ba
   snapshot_path: .agents/plans/foster-front-door-v1-5a1b.snapshot.json
-  snapshot_commit: 1c10455db6949a8538b5d1fcbabde855741ae931
+  snapshot_commit: b9eef033d0f3239d9932b861069f15745cf573ba
 open_prs: []
-merge_commits: {}
+merge_commits: {"4":"2ecf66fb"}
 debt_issue_refs: []
 ```
 
