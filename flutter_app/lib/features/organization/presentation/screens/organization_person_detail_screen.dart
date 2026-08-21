@@ -10,6 +10,7 @@ import '../providers/org_provider_people.dart';
 import '../providers/organization_providers.dart';
 import '../widgets/org_shell_app_bar_title.dart';
 import '../widgets/org_shell_scaffold.dart';
+import '../../foster_questionnaire/presentation/widgets/foster_onboarding/foster_questionnaire_review_link.dart';
 import '../widgets/foster_onboarding_timeline.dart';
 import '../widgets/foster_pet_mini_card.dart';
 import '../widgets/organization_role_labels.dart';
@@ -178,6 +179,13 @@ class _OrganizationPersonDetailScreenState
                   recordId: widget.recordId,
                   timeline: person.fosterOnboarding!,
                 ),
+                if (person.hasFosterRelationship) ...[
+                  const SizedBox(height: 12),
+                  FosterQuestionnaireReviewLink(
+                    orgId: widget.orgId,
+                    fosterParentId: person.id,
+                  ),
+                ],
               ],
               const SizedBox(height: 16),
               Text(
