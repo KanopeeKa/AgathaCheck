@@ -10,6 +10,11 @@ import {
   flutterGotoUrl,
   homeShellLocator,
   isExperienceShellVisible,
+  petCardByName,
+  petCardHiddenLocator,
+  petListCardLocator,
+  petListCardWithOrgPattern,
+  postPetMutationShellLocator,
   refreshFlutterAccessibility,
   semanticsByName,
   skipGuardianOnboardingIfPresent,
@@ -184,26 +189,21 @@ export class PetListPage {
   }
 
   async expectPetVisible(name: string): Promise<void> {
-    await semanticsByName(
-      this.page,
-      new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i'),
-    ).waitFor({ timeout: 30_000 });
+    await refreshFlutterAccessibility(this.page);
+    await petCardByName(this.page, name).waitFor({ timeout: 30_000 });
   }
 
   async expectPetCount(n: number): Promise<void> {
-    await expect(
-      this.page
-        .getByRole('button', { name: /Pet:/i })
-        .or(this.page.getByRole('group', { name: /Pet:/i })),
-    ).toHaveCount(n, { timeout: 30_000 });
+    const route = flutterRoutePath(this.page.url());
+    if (route === '/g/home' || route === '/') {
+      await this.openManagePets();
+    }
+    await expect(petListCardLocator(this.page)).toHaveCount(n, { timeout: 30_000 });
   }
 
   async openPet(name: string): Promise<void> {
     await this.expectPetVisible(name);
-    await semanticsByName(
-      this.page,
-      new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i'),
-    ).click();
+    await petCardByName(this.page, name).click();
     await this.page.waitForTimeout(1000);
   }
 
@@ -260,10 +260,7 @@ export class PetListPage {
       .or(this.page.getByText(/Hide Pet|Masquer l'animal/i))
       .or(this.page.getByRole('dialog', { name: /Hide Pet|Masquer l'animal/i }));
 
-    const card = semanticsByName(
-      this.page,
-      new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i'),
-    );
+    const card = petCardByName(this.page, name);
     const box = await card.boundingBox();
     if (!box) throw new Error(`Pet card "${name}" not found`);
     const startX = box.x + box.width * 0.92;
@@ -299,11 +296,7 @@ export class PetListPage {
   async expectPetHidden(name: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(
-        this.page
-          .getByRole('button', { name: new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i') })
-          .or(this.page.getByRole('group', { name: new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i') })),
-      ).toHaveCount(0);
+      await expect(petCardHiddenLocator(this.page, name)).toHaveCount(0);
     }).toPass({ timeout: 20_000 });
   }
 
@@ -332,11 +325,19 @@ export class PetListPage {
     }).toPass({ timeout: 30_000 });
   }
 
-  /** Org pets show aria-label "Pet: Name, OrgName, …" on the home list. */
+  /** Org inventory on `/o/home` uses PetCard — "Pet: Name, OrgName, …". */
   async expectPetUnderOrganization(petName: string, orgName: string): Promise<void> {
+    const route = flutterRoutePath(this.page.url());
+    if (route !== '/o/home') {
+      await dismissConsentBannerIfPresent(this.page);
+      await this.page.goto(flutterGotoUrl('/o/home'));
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, /^\/o\/home(?:\?|$)/, 30_000);
+      await skipOrgOnboardingIfPresent(this.page);
+    }
     await semanticsByName(
       this.page,
-      new RegExp(`Pet:\\s*${escapeRegExp(petName)}.*${escapeRegExp(orgName)}`, 'i'),
+      petListCardWithOrgPattern(petName, orgName),
     ).waitFor({ timeout: 30_000 });
   }
 

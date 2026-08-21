@@ -3,6 +3,8 @@ import { expect } from '@playwright/test';
 import {
   dashboardSectionGroup,
   flutterGotoUrl,
+  petCardByName,
+  petCardHiddenLocator,
   refreshFlutterAccessibility,
   semanticsByName,
   waitForFlutterRoutePattern,
@@ -59,9 +61,9 @@ export class GuardianDashboardPage {
 
   async expectPetPreview(names: string[], omittedName: string): Promise<void> {
     for (const name of names) {
-      await expect(semanticsByName(this.page, new RegExp(name, 'i')).first()).toBeVisible();
+      await expect(petCardByName(this.page, name)).toBeVisible();
     }
-    await expect(semanticsByName(this.page, new RegExp(omittedName, 'i'))).toHaveCount(0);
+    await expect(petCardHiddenLocator(this.page, omittedName)).toHaveCount(0);
   }
 
   async expectCarePriorityOrder(names: string[]): Promise<void> {
