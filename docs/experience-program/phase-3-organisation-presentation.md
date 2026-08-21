@@ -1,3 +1,11 @@
+---
+title: Phase 3 — Organisation presentation & access control
+owner: Experience Program Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [experience,guardian,organisation]
+---
 # Phase 3 — Organisation presentation & access control
 
 > **Status: SUPERSEDED (2026-08-02).** Organisation v2 replaces the section-card dashboard IA with a

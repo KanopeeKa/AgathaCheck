@@ -1,3 +1,11 @@
+---
+title: Phase 5 UI design review (`/ui-design-deep`)
+owner: Experience Program Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [experience,guardian,organisation]
+---
 # Phase 5 UI design review (`/ui-design-deep`)
 
 **Plan:** `experience-program-36bd` phase 5  

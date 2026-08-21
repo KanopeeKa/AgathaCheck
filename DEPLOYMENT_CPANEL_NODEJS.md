@@ -1,3 +1,11 @@
+---
+title: Deployment Guide to cPanel Node.js
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [deployment,operations]
+---
 # Deployment Guide to cPanel Node.js
 
 ## Prerequisites Checklist

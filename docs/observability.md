@@ -1,3 +1,11 @@
+---
+title: Observability and audit logging
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [documentation]
+---
 # Observability and audit logging
 
 Agatha Track uses a layered observability model:

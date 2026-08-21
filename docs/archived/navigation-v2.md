@@ -1,3 +1,16 @@
+---
+title: Navigation V2
+owner: Documentation Team
+audience: both
+status: superseded
+last_updated: 2026-08-21
+tags: [archived,historical]
+---
+
+> ⚠️ **ARCHIVED**: This document has been superseded by newer documentation.
+> It is kept for historical reference only. Do not use for active development.
+
+
 # Navigation v2 — specification
 
 > **Status: SUPERSEDED (2026-07-25).** This model did not work for users and is being fully

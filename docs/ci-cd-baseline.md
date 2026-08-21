@@ -1,3 +1,11 @@
+---
+title: CI/CD baseline metrics
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [documentation]
+---
 # CI/CD baseline metrics
 
 Pre-refactor snapshot and post-program metrics for the CI/CD hardening program

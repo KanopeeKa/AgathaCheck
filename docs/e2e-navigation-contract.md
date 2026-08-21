@@ -1,3 +1,11 @@
+---
+title: E2E navigation contract
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [documentation]
+---
 # E2E navigation contract
 
 Playwright page-object **action methods** (open, navigate, goBack) must not return until:

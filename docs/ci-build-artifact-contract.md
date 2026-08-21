@@ -1,3 +1,11 @@
+---
+title: Flutter web build artifact contract
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [documentation]
+---
 # Flutter web build artifact contract
 
 Single source of truth for release web builds across CI, UAT, and PROD.

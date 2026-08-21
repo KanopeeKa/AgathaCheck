@@ -1,3 +1,11 @@
+---
+title: Organisation member privacy (v3)
+owner: Architecture Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [architecture,design,domain]
+---
 # Organisation member privacy (v3)
 
 **Status:** Design note for Organisation UX v3 Phase 8  

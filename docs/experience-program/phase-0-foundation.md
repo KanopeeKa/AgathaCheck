@@ -1,3 +1,11 @@
+---
+title: Phase 0 — Foundation
+owner: Experience Program Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [experience,guardian,organisation]
+---
 # Phase 0 — Foundation
 
 **Parent:** [`roadmap-delivery-plan.md`](roadmap-delivery-plan.md) · [`program-contract.md`](program-contract.md)

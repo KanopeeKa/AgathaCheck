@@ -1,3 +1,16 @@
+---
+title: Experience Split Plan
+owner: Documentation Team
+audience: both
+status: superseded
+last_updated: 2026-08-21
+tags: [archived,historical]
+---
+
+> ⚠️ **ARCHIVED**: This document has been superseded by newer documentation.
+> It is kept for historical reference only. Do not use for active development.
+
+
 # AgathaTrack experience split — implementation plan
 
 **Branch:** `cursor/org-onboarding-wizard-17a0`  

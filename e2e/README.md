@@ -1,3 +1,11 @@
+---
+title: Agatha Track E2E / BDD Tests
+owner: Documentation Team
+audience: human
+status: active
+last_updated: 2026-08-21
+tags: [testing,e2e,playwright]
+---
 # Agatha Track E2E / BDD Tests
 
 Browser-level end-to-end tests for Agatha Track using [Playwright](https://playwright.dev). These tests drive the **real Flutter web UI** served by the Node backend on a single origin (`http://localhost:3000`), matching production deployment.

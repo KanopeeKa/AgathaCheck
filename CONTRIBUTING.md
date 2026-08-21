@@ -1,3 +1,11 @@
+---
+title: Contributing to Agatha Track
+owner: Documentation Team
+audience: human
+status: active
+last_updated: 2026-08-21
+tags: [contributing,workflow]
+---
 # Contributing to Agatha Track
 
 Thank you for contributing. This project uses **trunk-based development** on `main`, with **integration branches** for multi-agent sprint work.

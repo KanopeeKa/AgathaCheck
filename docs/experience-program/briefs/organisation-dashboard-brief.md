@@ -1,3 +1,11 @@
+---
+title: Organisation dashboard and organisation architecture brief
+owner: Experience Program Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [experience,guardian,organisation]
+---
 > **Status:** Locked master brief (source of truth). **IA superseded by Organisation v2** — see
 > [`../organisation-v2-delivery-plan.md`](../organisation-v2-delivery-plan.md) (D-v2-IA-1/2):
 > `/o/orgs/:id` is a profile composer; the section-card dashboard is no longer the primary entry.

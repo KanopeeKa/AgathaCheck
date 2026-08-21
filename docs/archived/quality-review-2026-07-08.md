@@ -1,3 +1,16 @@
+---
+title: Quality Review 2026 07 08
+owner: Documentation Team
+audience: both
+status: superseded
+last_updated: 2026-08-21
+tags: [archived,historical]
+---
+
+> ⚠️ **ARCHIVED**: This document has been superseded by newer documentation.
+> It is kept for historical reference only. Do not use for active development.
+
+
 # Quality review — 2026-07-08
 
 Post–Sprint 4.3 assessment: progress, gaps, and recommended direction.  

@@ -1,3 +1,11 @@
+---
+title: Organisation pet custody model
+owner: Architecture Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [architecture,design,domain]
+---
 # Organisation pet custody model
 
 Authoritative reference for guardianship, care, shadows, org connections, and transfers.
