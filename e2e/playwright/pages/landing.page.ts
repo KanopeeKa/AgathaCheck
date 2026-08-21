@@ -83,8 +83,7 @@ export class LandingPage {
     const attempts = isLiveHostingTarget() ? 2 : 1;
     for (let attempt = 1; attempt <= attempts; attempt++) {
       await this.fillLoginForm(email, password);
-      await this.page.getByRole('button', { name: 'Sign In', exact: true }).click();
-      await refreshFlutterAccessibility(this.page);
+      await this.submitLoginForm();
 
       if (attempt >= attempts) return;
 
