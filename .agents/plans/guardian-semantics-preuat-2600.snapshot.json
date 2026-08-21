@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "plan_id": "guardian-semantics-preuat-2600",
+  "approved_at": "2026-08-21T21:15:00Z",
+  "approved_by": "user-chat-2026-08-21-execute-plan-babysit-uat-standing-grant",
+  "approved_until": "2026-08-23T21:15:00Z",
+  "content_hash": "sha256:a36941f967dcf87f4e93350861d2a16a04c999120a3496b4a5b72ddcae0e8fae",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 688,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Batch remedial + parallel audit + local tier-A + babysit-uat",
+      "branch": "cursor/preuat-fix-14c6c5b6-2600",
+      "allowed_paths": [
+        "e2e/playwright/**",
+        ".agents/plans/guardian-semantics-preuat-2600.*"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "mode": "static-audit-only",
+        "agents": [
+          {
+            "id": "audit-org-auth",
+            "shards": [
+              3,
+              12
+            ]
+          },
+          {
+            "id": "audit-pet-help",
+            "shards": [
+              6,
+              11
+            ]
+          },
+          {
+            "id": "audit-guardian-misc",
+            "shards": [
+              1,
+              8,
+              9,
+              13
+            ]
+          }
+        ]
+      },
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/687",
+      "pr_head_sha": "acea398c",
+      "debt_issue_refs": []
+    }
+  ]
+}

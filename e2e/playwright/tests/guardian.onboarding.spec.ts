@@ -12,6 +12,7 @@ import {
   completeExperienceChooserIfPresent,
   completeGuardianOnboarding,
   dismissConsentBannerIfPresent,
+  petCardByName,
   refreshFlutterAccessibility,
   waitForPostLoginRoute,
   waitForFlutterRoutePattern,
@@ -64,7 +65,7 @@ test.describe('Guardian onboarding', () => {
 
     const experience = new ExperiencePage(page);
     await experience.expectGuardianShell();
-    await expect(page.getByText('Bella')).toBeVisible();
+    await expect(petCardByName(page, 'Bella')).toBeVisible();
     await refreshFlutterAccessibility(page);
   });
 });

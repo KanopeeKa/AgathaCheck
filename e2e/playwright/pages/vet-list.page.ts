@@ -154,24 +154,34 @@ export class VetListPage {
       throw new Error('expectPhoneVisible: vetName required for guardian compact-row list');
     }
 
-    const phoneText = this.page.getByText(new RegExp(escapeRegExp(phone), 'i'));
+    const phonePattern = new RegExp(escapeRegExp(phone), 'i');
+    // Guardian detail merges fields into one group label; org list cards use Veterinarian: … Phone: …
+    const phoneLocator = this.page.getByText(phonePattern).or(semanticsByName(this.page, phonePattern));
     const orgCardPattern = new RegExp(
       `Veterinarian:\\s*${escapeRegExp(vetName)}[\\s\\S]*${escapeRegExp(phone)}`,
       'i',
     );
+    const detailGroupPattern = new RegExp(
+      `${escapeRegExp(vetName)}[\\s\\S]*Phone[\\s\\S]*${escapeRegExp(phone)}`,
+      'i',
+    );
 
-    // Guardian compact rows omit phone on the list; org cards embed it in semantics.
+    // Guardian compact rows omit phone on the list; open detail (or match merged semantics) to assert phone.
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       if (await semanticsByName(this.page, orgCardPattern).isVisible().catch(() => false)) {
+        return;
+      }
+      if (await semanticsByName(this.page, detailGroupPattern).isVisible().catch(() => false)) {
         return;
       }
 
       const route = flutterRoutePath(this.page.url());
       const onDetail = /\/(g|o)\/vets\/[^/]+$/.test(route);
       const onList = /\/(g|o)\/vets(?:\?|$)/.test(route);
+      const phoneVisible = await phoneLocator.first().isVisible().catch(() => false);
 
-      if (!onDetail || !(await phoneText.first().isVisible().catch(() => false))) {
+      if (!onDetail || !phoneVisible) {
         if (!onList) {
           await this.page.goto(flutterGotoUrl('/g/vets'));
           await waitForFlutterRoutePattern(this.page, /\/g\/vets(?:\?|$)/, 30_000);
@@ -183,7 +193,7 @@ export class VetListPage {
         await refreshFlutterAccessibility(this.page);
       }
 
-      await expect(phoneText.first()).toBeVisible({ timeout: 15_000 });
+      await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
     }).toPass({ timeout: 45_000 });
   }
 }
