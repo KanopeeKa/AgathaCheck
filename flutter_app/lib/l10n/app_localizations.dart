@@ -9645,6 +9645,228 @@ abstract class AppLocalizations {
   /// **'Review questionnaire'**
   String get fosterQuestionnaireReviewLink;
 
+  /// No description provided for @fosterHomeVisitAdminTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Home visit'**
+  String get fosterHomeVisitAdminTitle;
+
+  /// No description provided for @fosterHomeVisitAdminLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage home visit'**
+  String get fosterHomeVisitAdminLink;
+
+  /// No description provided for @fosterHomeVisitStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Home visit status'**
+  String get fosterHomeVisitStatusTitle;
+
+  /// No description provided for @fosterHomeVisitStatusLink.
+  ///
+  /// In en, this message translates to:
+  /// **'View home visit status'**
+  String get fosterHomeVisitStatusLink;
+
+  /// No description provided for @fosterHomeVisitStatusIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Your scheduled home visit details are shown below. The visit address is shared separately by the shelter.'**
+  String get fosterHomeVisitStatusIntro;
+
+  /// No description provided for @fosterHomeVisitStatusUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Home visit status is not available for your account in this organisation.'**
+  String get fosterHomeVisitStatusUnavailable;
+
+  /// No description provided for @fosterHomeVisitStatusEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No home visit is scheduled yet. The shelter will contact you when a visit is arranged.'**
+  String get fosterHomeVisitStatusEmpty;
+
+  /// No description provided for @fosterHomeVisitStatusActiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled visit'**
+  String get fosterHomeVisitStatusActiveTitle;
+
+  /// No description provided for @fosterHomeVisitStatusLatestValidatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest validated visit'**
+  String get fosterHomeVisitStatusLatestValidatedTitle;
+
+  /// No description provided for @fosterHomeVisitStatusScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get fosterHomeVisitStatusScheduled;
+
+  /// No description provided for @fosterHomeVisitStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get fosterHomeVisitStatusCancelled;
+
+  /// No description provided for @fosterHomeVisitStatusValidated.
+  ///
+  /// In en, this message translates to:
+  /// **'Validated'**
+  String get fosterHomeVisitStatusValidated;
+
+  /// No description provided for @fosterHomeVisitScheduleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule home visit'**
+  String get fosterHomeVisitScheduleTitle;
+
+  /// No description provided for @fosterHomeVisitScheduleAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule visit'**
+  String get fosterHomeVisitScheduleAction;
+
+  /// No description provided for @fosterHomeVisitScheduleSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Home visit scheduled'**
+  String get fosterHomeVisitScheduleSaved;
+
+  /// No description provided for @fosterHomeVisitRescheduleAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Reschedule visit'**
+  String get fosterHomeVisitRescheduleAction;
+
+  /// No description provided for @fosterHomeVisitRescheduleSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Home visit rescheduled'**
+  String get fosterHomeVisitRescheduleSaved;
+
+  /// No description provided for @fosterHomeVisitCancelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel home visit'**
+  String get fosterHomeVisitCancelTitle;
+
+  /// No description provided for @fosterHomeVisitCancelAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel visit'**
+  String get fosterHomeVisitCancelAction;
+
+  /// No description provided for @fosterHomeVisitCancelReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation reason (optional)'**
+  String get fosterHomeVisitCancelReasonLabel;
+
+  /// No description provided for @fosterHomeVisitCancelSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Home visit cancelled'**
+  String get fosterHomeVisitCancelSaved;
+
+  /// No description provided for @fosterHomeVisitValidateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Validate home visit'**
+  String get fosterHomeVisitValidateTitle;
+
+  /// No description provided for @fosterHomeVisitValidateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Record validation'**
+  String get fosterHomeVisitValidateAction;
+
+  /// No description provided for @fosterHomeVisitValidateSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Home visit validation recorded'**
+  String get fosterHomeVisitValidateSaved;
+
+  /// No description provided for @fosterHomeVisitDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit date'**
+  String get fosterHomeVisitDateLabel;
+
+  /// No description provided for @fosterHomeVisitDateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a visit date'**
+  String get fosterHomeVisitDateRequired;
+
+  /// No description provided for @fosterHomeVisitTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit time (24h)'**
+  String get fosterHomeVisitTimeLabel;
+
+  /// No description provided for @fosterHomeVisitTimeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid time as HH:MM (24h)'**
+  String get fosterHomeVisitTimeInvalid;
+
+  /// No description provided for @fosterHomeVisitAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit address'**
+  String get fosterHomeVisitAddressLabel;
+
+  /// No description provided for @fosterHomeVisitOutcomeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Validation outcome'**
+  String get fosterHomeVisitOutcomeLabel;
+
+  /// No description provided for @fosterHomeVisitOutcomeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an outcome'**
+  String get fosterHomeVisitOutcomeRequired;
+
+  /// No description provided for @fosterHomeVisitOutcomeYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes — home suitable'**
+  String get fosterHomeVisitOutcomeYes;
+
+  /// No description provided for @fosterHomeVisitOutcomeNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No — not suitable'**
+  String get fosterHomeVisitOutcomeNo;
+
+  /// No description provided for @fosterHomeVisitOutcomeReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Outcome reason'**
+  String get fosterHomeVisitOutcomeReasonLabel;
+
+  /// No description provided for @fosterHomeVisitOutcomeReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Outcome reason is required when validation is No'**
+  String get fosterHomeVisitOutcomeReasonRequired;
+
+  /// No description provided for @fosterHomeVisitHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous visits'**
+  String get fosterHomeVisitHistoryTitle;
+
+  /// No description provided for @fosterHomeVisitHistoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No previous home visits recorded.'**
+  String get fosterHomeVisitHistoryEmpty;
+
   /// No description provided for @fosterQuestionnaireSubmissionSummaryTitle.
   ///
   /// In en, this message translates to:

@@ -7,6 +7,7 @@ import '../../../domain/entities/organization_member.dart';
 import '../../providers/organization_providers.dart';
 import '../../screens/manage_fosters/manage_fosters_screen.dart';
 import '../organization_add_foster_parent_dialog.dart';
+import '../../../foster_home_visit/presentation/widgets/foster_home_visit_forms.dart';
 import 'foster_merge_dialog.dart';
 
 class FosterSummaryCard extends ConsumerWidget {
@@ -133,6 +134,10 @@ class FosterSummaryCard extends ConsumerWidget {
               if (statusChips.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Wrap(spacing: 6, runSpacing: 6, children: statusChips),
+              ],
+              if (parent.isSelfCard) ...[
+                const SizedBox(height: 12),
+                FosterHomeVisitStatusLink(orgId: orgId),
               ],
             ],
           ),
