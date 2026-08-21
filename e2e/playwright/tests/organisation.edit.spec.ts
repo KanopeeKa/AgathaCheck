@@ -98,10 +98,10 @@ test.describe('Organisation edit', () => {
 
     const detail = new OrganizationDetailPage(page);
     await detail.expectLoaded(ORG_NAME);
+    await detail.openEdit();
     await enableFlutterAccessibility(page);
 
-    await page.getByRole('button', { name: 'Edit organisation' }).click();
-    await expect(page.getByRole('button', { name: 'Edit Organisation' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Edit Organisation/i })).toBeVisible();
   });
 
   test('@P1 super admin sees delete organisation control on edit screen only', async ({
