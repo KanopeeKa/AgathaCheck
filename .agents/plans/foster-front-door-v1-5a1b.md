@@ -285,10 +285,10 @@ next_action: "continue phase 3 on branch cursor/foster-home-visit-backend-5a1b"
 artifact_ref:
   branch: cursor/foster-home-visit-backend-5a1b
   plan_path: .agents/plans/foster-front-door-v1-5a1b.md
-  plan_commit: 0c5459ccf0b89f1ec787d8fc66c0dfb02eb6b5ad
+  plan_commit: 3ba541c6d82af3356ebab8a19d059559419be115
   snapshot_path: .agents/plans/foster-front-door-v1-5a1b.snapshot.json
-  snapshot_commit: 0c5459ccf0b89f1ec787d8fc66c0dfb02eb6b5ad
-open_prs: []
+  snapshot_commit: 3ba541c6d82af3356ebab8a19d059559419be115
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/677"]
 merge_commits: {}
 debt_issue_refs: []
 ```
