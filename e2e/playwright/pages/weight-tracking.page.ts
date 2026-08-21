@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
+  fillTextbox,
   flutterGotoUrl,
   flutterRoutePath,
   refreshFlutterAccessibility,
@@ -131,19 +132,12 @@ export class WeightTrackingPage {
    * The date picker is a button / InkWell; skipping date selection uses today by default.
    */
   async fillWeightForm(weight: string | number): Promise<void> {
-    const weightInput = this.page
-      .locator('input[aria-label*="Weight"]')
-      .or(this.page.getByRole('textbox', { name: /Weight/i }))
-      .first();
-    await weightInput.click();
-    await weightInput.fill(String(weight));
+    await fillTextbox(this.page, /Weight/i, String(weight));
   }
 
   /** Click the Save button in the Add Weight Entry bottom-sheet. */
   async saveWeightEntry(): Promise<void> {
-    await this.page
-      .getByRole('button', { name: /^Save$/i })
-      .click();
+    await this.page.getByRole('button', { name: /^Save$/i }).click();
     await this.page.waitForTimeout(800);
     await refreshFlutterAccessibility(this.page);
   }

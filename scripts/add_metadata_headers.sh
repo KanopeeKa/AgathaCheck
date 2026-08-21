@@ -2,6 +2,9 @@
 
 # Script to add metadata headers to markdown files
 # Usage: ./scripts/add_metadata_headers.sh [--dry-run] [--force]
+#
+# Detects YAML frontmatter by checking for '---' followed by metadata fields
+# This avoids false positives from markdown horizontal rules (---)
 
 set -euo pipefail
 
@@ -20,6 +23,20 @@ for arg in "$@"; do
       ;;
   esac
 done
+
+# Function to check if file has valid YAML frontmatter
+has_frontmatter() {
+  local filepath="$1"
+  
+  # Check for --- followed by metadata fields (title:, owner:, etc.)
+  # This pattern matches YAML frontmatter but not markdown horizontal rules
+  if grep -qE '^---$' "$filepath" && \
+     grep -A 5 '^---$' "$filepath" | grep -qE '^(title|owner|audience|status|last_updated|tags):'; then
+    return 0  # Has valid frontmatter
+  fi
+  
+  return 1  # Does not have valid frontmatter
+}
 
 # Function to generate metadata header for a file
 generate_header() {
@@ -71,6 +88,7 @@ generate_header() {
     */quality*) tags="quality,testing,bdd" ;;
     */ops*) tags="operations,deployment" ;;
     */archived*) tags="archived,historical" ;;
+    */plans*) tags="plan,documentation,roadmap" ;;
   esac
   
   # For root-level files, determine tags by filename
@@ -101,26 +119,36 @@ generate_header() {
 add_header_to_file() {
   local filepath="$1"
   
-  # Skip if file already has a header
-  if grep -q '^---$' "$filepath"; then
+  # Skip if file already has valid frontmatter
+  if has_frontmatter "$filepath"; then
     if [[ "$FORCE" == true ]]; then
-      echo "✏️  Forcing update: $filepath"
-      # Remove existing header (from --- to ---)
+      echo " Forcing update: $filepath"
+      # Remove existing frontmatter (from --- to --- with metadata)
       local tmpfile=$(mktemp)
       local in_header=false
+      local header_line_count=0
+      
       while IFS= read -r line; do
         if [[ "$line" == "---" ]]; then
           if [[ "$in_header" == false ]]; then
             in_header=true
+            header_line_count=0
             continue
           else
-            in_header=false
-            continue
+            # Check if we've seen metadata fields (this is the closing ---)
+            if [[ $header_line_count -gt 0 ]]; then
+              in_header=false
+              continue
+            fi
           fi
         fi
-        if [[ "$in_header" == false ]]; then
-          echo "$line" >> "$tmpfile"
+        
+        if [[ "$in_header" == true ]]; then
+          header_line_count=$((header_line_count + 1))
+          continue
         fi
+        
+        echo "$line" >> "$tmpfile"
       done < "$filepath"
       mv "$tmpfile" "$filepath"
       
@@ -130,9 +158,9 @@ add_header_to_file() {
       echo "$header" > "$tmpfile2"
       cat "$filepath" >> "$tmpfile2"
       mv "$tmpfile2" "$filepath"
-      echo "✅ Updated header: $filepath"
+      echo " Updated header: $filepath"
     else
-      echo "✅ Already has header: $filepath"
+      echo " Already has header: $filepath"
       return 0
     fi
   else
@@ -140,7 +168,7 @@ add_header_to_file() {
     local header=$(generate_header "$filepath")
     
     if [[ "$DRY_RUN" == true ]]; then
-      echo "📝 Would add header to: $filepath"
+      echo " Would add header to: $filepath"
       echo "$header"
       return 0
     fi
@@ -155,7 +183,7 @@ add_header_to_file() {
     # Replace original
     mv "$tmpfile" "$filepath"
     
-    echo "✅ Added header to: $filepath"
+    echo " Added header to: $filepath"
   fi
 }
 
@@ -175,19 +203,19 @@ handle_directory() {
   done
 }
 
-echo "🚀 Starting metadata header addition..."
+echo "Starting metadata header addition..."
 echo "Repository root: $REPO_ROOT"
 echo "Dry run: $DRY_RUN"
 echo "Force: $FORCE"
 echo ""
 
 # Process docs/ directory
-echo "📁 Processing docs/ directory..."
+echo "Processing docs/ directory..."
 handle_directory "$REPO_ROOT/docs"
 
 # Process root markdown files
 echo ""
-echo "📁 Processing root directory..."
+echo "Processing root directory..."
 for file in "$REPO_ROOT"/*.md; do
   if [[ -f "$file" ]]; then
     add_header_to_file "$file"
@@ -196,14 +224,14 @@ done
 
 # Process e2e/ directory
 echo ""
-echo "📁 Processing e2e/ directory..."
+echo "Processing e2e/ directory..."
 handle_directory "$REPO_ROOT/e2e"
 
 echo ""
-echo "✨ Metadata header addition complete!"
+echo "Metadata header addition complete!"
 
 if [[ "$DRY_RUN" == true ]]; then
   echo ""
-  echo "💡 This was a dry run. No files were modified."
-  echo "   Run without --dry-run to apply changes."
+  echo "This was a dry run. No files were modified."
+  echo "Run without --dry-run to apply changes."
 fi
