@@ -3,7 +3,7 @@ import {
   dismissConsentBannerIfPresent,
   enableFlutterAccessibility,
   fillLabelledField,
-  homeShellLocator,
+  postPetMutationShellLocator,
   refreshFlutterAccessibility,
   selectDropdownOption,
   waitForHomeAfterMutation,
@@ -57,12 +57,7 @@ export class PetFormPage {
     await this.page
       .getByRole('button', { name: /Save Pet|Update Pet/ })
       .waitFor({ state: 'hidden', timeout: 30_000 });
-    await homeShellLocator(this.page)
-      .or(this.page.getByRole('button', { name: /Pet:/i }))
-      .or(this.page.getByRole('group', { name: /Pet:/i }))
-      .or(this.page.getByRole('button', { name: 'Edit Organisation' }))
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await postPetMutationShellLocator(this.page).waitFor({ timeout: 30_000 });
   }
 
   async createPet(name: string, species: string): Promise<void> {

@@ -155,9 +155,7 @@ test.describe('Pet profiles', () => {
     await editForm.confirmDelete();
 
     await petList.expectLoaded();
-    await expect(
-      page.getByRole('button', { name: /Pet:\s*Luna/i }),
-    ).not.toBeVisible();
+    await petList.expectPetHidden('Luna');
   });
 
   test('user can cancel pet deletion and the pet remains in the list', async ({
@@ -254,9 +252,7 @@ test.describe('Pet profiles', () => {
     await petList.openManagePets();
     await petList.expectPetVisible('Max');
     await petList.expectRainbowBridgeSection();
-    await expect(
-      page.getByRole('button', { name: /Pet:\s*Buddy/i }),
-    ).not.toBeVisible();
+    await petList.expectPetHidden('Buddy');
     await petList.expandRainbowBridgeSection();
     await petList.expectPetVisible('Buddy');
   });

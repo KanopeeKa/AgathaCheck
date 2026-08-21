@@ -573,6 +573,76 @@ export function filterChipByName(page: Page, pattern: string | RegExp): Locator 
     .first();
 }
 
+/**
+ * Accessible name for [PetCard] on full lists (`/g/pets`, org home): "Pet: Bella, dog".
+ * Guardian Today dashboard cards use {@link guardianDashboardPetNamePattern} instead.
+ */
+export function petListCardNamePattern(petName: string): RegExp {
+  return new RegExp(`Pet:\\s*${escapeRegExp(petName)}`, 'i');
+}
+
+/**
+ * Guardian Today dashboard preview card: "Max, My Fostered Pets, All clear".
+ * See `GuardianDashboardPetCard` semantics in Flutter.
+ */
+export function guardianDashboardPetNamePattern(petName: string): RegExp {
+  return new RegExp(`^${escapeRegExp(petName)},\\s`, 'i');
+}
+
+/** Match a pet tile on either the dashboard preview or a full pet list surface. */
+export function petCardNamePattern(petName: string): RegExp {
+  const name = escapeRegExp(petName);
+  return new RegExp(`(?:Pet:\\s*${name}|^${name},)`, 'i');
+}
+
+/** Org inventory on `/o/home` — "Pet: Max, Rescue Hearts, dog". */
+export function petListCardWithOrgPattern(petName: string, orgName: string): RegExp {
+  return new RegExp(
+    `Pet:\\s*${escapeRegExp(petName)}.*${escapeRegExp(orgName)}`,
+    'i',
+  );
+}
+
+/** Locator for a visible pet card (dashboard or list semantics). */
+export function petCardByName(page: Page, petName: string) {
+  return semanticsByName(page, petCardNamePattern(petName));
+}
+
+/** Locator union used when asserting a pet is absent from the shell. */
+export function petCardHiddenLocator(page: Page, petName: string) {
+  const pattern = petCardNamePattern(petName);
+  return page
+    .getByRole('button', { name: pattern })
+    .or(page.getByRole('group', { name: pattern }))
+    .or(page.getByRole('checkbox', { name: pattern }))
+    .or(page.getByRole('tab', { name: pattern }));
+}
+
+/** Any pet list tile on `/g/pets` (legacy Pet: prefix only). */
+export function petListCardLocator(page: Page) {
+  return page
+    .getByRole('button', { name: /Pet:/i })
+    .or(page.getByRole('group', { name: /Pet:/i }));
+}
+
+/** Home shell or a pet tile after save/create (dashboard or list). */
+export function postPetMutationShellLocator(page: Page) {
+  const dashboardPet = page
+    .getByRole('button', {
+      name: /,\s*(?:My Pets|My Fostered Pets|Shared Pets|Mes animaux|Animaux partagés)/i,
+    })
+    .or(
+      page.getByRole('group', {
+        name: /,\s*(?:My Pets|My Fostered Pets|Shared Pets|Mes animaux|Animaux partagés)/i,
+      }),
+    );
+  return homeShellLocator(page)
+    .or(petListCardLocator(page))
+    .or(dashboardPet)
+    .or(page.getByRole('button', { name: 'Edit Organisation' }))
+    .first();
+}
+
 /** Flutter MergeSemantics nodes may surface as button, checkbox, tab, or group (3.44 web). */
 export function semanticsByName(page: Page, pattern: string | RegExp) {
   const name =
