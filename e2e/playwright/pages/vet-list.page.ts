@@ -7,6 +7,8 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
+  flutterGotoUrl,
+  flutterRoutePath,
   refreshFlutterAccessibility,
   semanticsByName,
   waitForFlutterRoutePattern,
@@ -148,37 +150,37 @@ export class VetListPage {
   }
 
   async expectPhoneVisible(phone: string, vetName?: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    const phoneLocator = this.page.getByText(new RegExp(escapeRegExp(phone), 'i'));
-    const detailGroupPattern =
-      vetName != null
-        ? new RegExp(`${escapeRegExp(vetName)}[\\s\\S]*${escapeRegExp(phone)}`, 'i')
-        : new RegExp(escapeRegExp(phone), 'i');
-    const phoneAssertion = semanticsByName(this.page, detailGroupPattern).or(phoneLocator).first();
-
-    if (vetName) {
-      const cardPattern = new RegExp(
-        `Veterinarian:\\s*${escapeRegExp(vetName)}[\\s\\S]*${escapeRegExp(phone)}`,
-        'i',
-      );
-      if (await semanticsByName(this.page, cardPattern).isVisible({ timeout: 2_000 }).catch(() => false)) {
-        return;
-      }
-      if (await phoneAssertion.isVisible({ timeout: 2_000 }).catch(() => false)) {
-        return;
-      }
-    } else if (await phoneLocator.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
-      return;
-    }
-
     if (!vetName) {
       throw new Error('expectPhoneVisible: vetName required for guardian compact-row list');
     }
 
-    await this.vetRowLocator(vetName).click();
-    await waitForFlutterRoutePattern(this.page, /\/(g|o)\/vets\/[^/]+$/, 30_000);
-    await refreshFlutterAccessibility(this.page);
-    // Guardian detail card merges fields into one group label; phone is not a separate text node.
-    await phoneAssertion.waitFor({ timeout: 15_000 });
+    const phoneText = this.page.getByText(new RegExp(escapeRegExp(phone), 'i'));
+    const orgCardPattern = new RegExp(
+      `Veterinarian:\\s*${escapeRegExp(vetName)}[\\s\\S]*${escapeRegExp(phone)}`,
+      'i',
+    );
+
+    // Guardian compact rows omit phone on the list; org cards embed it in semantics.
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      if (await semanticsByName(this.page, orgCardPattern).isVisible().catch(() => false)) {
+        return;
+      }
+      if (await phoneText.first().isVisible().catch(() => false)) {
+        return;
+      }
+
+      const onDetail = /\/(g|o)\/vets\/[^/]+$/.test(flutterRoutePath(this.page.url()));
+      if (onDetail) {
+        if (await phoneText.first().isVisible().catch(() => false)) {
+          return;
+        }
+        await this.page.goto(flutterGotoUrl('/g/vets'));
+        await waitForFlutterRoutePattern(this.page, /\/g\/vets(?:\?|$)/, 30_000);
+        await this.expectLoaded();
+      }
+      await this.openVetDetail(vetName);
+      await expect(phoneText.first()).toBeVisible({ timeout: 5_000 });
+    }).toPass({ timeout: 30_000 });
   }
 }
