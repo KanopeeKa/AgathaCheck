@@ -3511,6 +3511,582 @@ abstract class AppLocalizations {
   /// **'Approved foster'**
   String get fosterOnboardingStepApproved;
 
+  /// No description provided for @fosterQuestionnaireTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster candidate questionnaire'**
+  String get fosterQuestionnaireTitle;
+
+  /// No description provided for @fosterQuestionnaireCandidateMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not need to know everything before applying. The shelter will provide guidance, explain the care required and support you throughout the foster process.'**
+  String get fosterQuestionnaireCandidateMessage;
+
+  /// No description provided for @fosterQuestionnaireDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'This is an initial suitability screen and matching profile, not a final placement decision. A shelter administrator reviews applications that contain a reservation, a clarification requirement or a No Go outcome.'**
+  String get fosterQuestionnaireDisclaimer;
+
+  /// No description provided for @fosterQuestionnaireSectionNavLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Questionnaire sections'**
+  String get fosterQuestionnaireSectionNavLabel;
+
+  /// No description provided for @fosterQuestionnaireSectionProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Matching profile'**
+  String get fosterQuestionnaireSectionProfile;
+
+  /// No description provided for @fosterQuestionnaireSectionScreening.
+  ///
+  /// In en, this message translates to:
+  /// **'Screening'**
+  String get fosterQuestionnaireSectionScreening;
+
+  /// No description provided for @fosterQuestionnaireSectionAcknowledgement.
+  ///
+  /// In en, this message translates to:
+  /// **'Review and submit'**
+  String get fosterQuestionnaireSectionAcknowledgement;
+
+  /// No description provided for @fosterQuestionnaireProfileIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'These questions help the shelter understand the types of animals you could foster. They do not produce a negative screening result.'**
+  String get fosterQuestionnaireProfileIntro;
+
+  /// No description provided for @fosterQuestionnaireScreeningIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer each screening question honestly. The shelter may review answers marked with a reservation or No Go.'**
+  String get fosterQuestionnaireScreeningIntro;
+
+  /// No description provided for @fosterQuestionnaireAcknowledgementIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Please read the acknowledgement below and confirm before submitting.'**
+  String get fosterQuestionnaireAcknowledgementIntro;
+
+  /// No description provided for @fosterQuestionnaireAcknowledgementCheckbox.
+  ///
+  /// In en, this message translates to:
+  /// **'I confirm the acknowledgement above'**
+  String get fosterQuestionnaireAcknowledgementCheckbox;
+
+  /// No description provided for @fosterQuestionnaireOptionalNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional note'**
+  String get fosterQuestionnaireOptionalNoteLabel;
+
+  /// No description provided for @fosterQuestionnaireOtherSpeciesNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe other species'**
+  String get fosterQuestionnaireOtherSpeciesNoteLabel;
+
+  /// No description provided for @fosterQuestionnaireBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get fosterQuestionnaireBack;
+
+  /// No description provided for @fosterQuestionnaireNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get fosterQuestionnaireNext;
+
+  /// No description provided for @fosterQuestionnaireSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit questionnaire'**
+  String get fosterQuestionnaireSubmit;
+
+  /// No description provided for @fosterQuestionnaireSubmitSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Questionnaire submitted'**
+  String get fosterQuestionnaireSubmitSuccessTitle;
+
+  /// No description provided for @fosterQuestionnaireSubmitReviewMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for completing the questionnaire. Some answers need a shelter administrator to review them. This does not necessarily mean that you cannot foster.'**
+  String get fosterQuestionnaireSubmitReviewMessage;
+
+  /// No description provided for @fosterQuestionnaireSubmitAutoGoMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for completing the questionnaire. Based on your screening answers, no immediate concern was identified. The shelter will follow its normal matching process.'**
+  String get fosterQuestionnaireSubmitAutoGoMessage;
+
+  /// No description provided for @fosterQuestionnaireSectionIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete all required fields in this section.'**
+  String get fosterQuestionnaireSectionIncomplete;
+
+  /// No description provided for @fosterQuestionnaireAcknowledgementRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'You must confirm the acknowledgement before submitting.'**
+  String get fosterQuestionnaireAcknowledgementRequired;
+
+  /// No description provided for @fosterQuestionnairePf01OtherNoteRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please describe the other species you would foster.'**
+  String get fosterQuestionnairePf01OtherNoteRequired;
+
+  /// No description provided for @fosterQuestionnairePf05RequiresSpecies.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one species above before entering capacity.'**
+  String get fosterQuestionnairePf05RequiresSpecies;
+
+  /// No description provided for @fosterQuestionnairePf05CapacityRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a non-negative whole number for each selected species.'**
+  String get fosterQuestionnairePf05CapacityRequired;
+
+  /// No description provided for @fosterQuestionnairePf06AvailabilityRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your general availability dates.'**
+  String get fosterQuestionnairePf06AvailabilityRequired;
+
+  /// No description provided for @fosterQuestionnaireErrorMissingTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Questionnaire template is unavailable.'**
+  String get fosterQuestionnaireErrorMissingTemplate;
+
+  /// No description provided for @fosterQuestionnaireLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load questionnaire: {error}'**
+  String fosterQuestionnaireLoadError(String error);
+
+  /// No description provided for @fosterQuestionnaireSubmitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not submit questionnaire: {error}'**
+  String fosterQuestionnaireSubmitError(String error);
+
+  /// No description provided for @fosterQuestionnaireCapacityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Capacity for {species}'**
+  String fosterQuestionnaireCapacityLabel(String species);
+
+  /// No description provided for @fosterQuestionnaireAvailabilityStartLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Available from'**
+  String get fosterQuestionnaireAvailabilityStartLabel;
+
+  /// No description provided for @fosterQuestionnaireAvailabilityEndLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Available until'**
+  String get fosterQuestionnaireAvailabilityEndLabel;
+
+  /// No description provided for @fosterQuestionnaireDateNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get fosterQuestionnaireDateNotSet;
+
+  /// No description provided for @fosterQuestionnairePf01Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Which types of animal would you be willing to foster?'**
+  String get fosterQuestionnairePf01Label;
+
+  /// No description provided for @fosterQuestionnairePf02Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Which ages of animal would you be willing to foster?'**
+  String get fosterQuestionnairePf02Label;
+
+  /// No description provided for @fosterQuestionnairePf03Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Which experience level best describes the animals you could safely foster?'**
+  String get fosterQuestionnairePf03Label;
+
+  /// No description provided for @fosterQuestionnairePf04Label.
+  ///
+  /// In en, this message translates to:
+  /// **'What level of health needs would you be willing to manage in a foster animal?'**
+  String get fosterQuestionnairePf04Label;
+
+  /// No description provided for @fosterQuestionnairePf05Label.
+  ///
+  /// In en, this message translates to:
+  /// **'How many animals of each selected type could you care for at the same time?'**
+  String get fosterQuestionnairePf05Label;
+
+  /// No description provided for @fosterQuestionnairePf06Label.
+  ///
+  /// In en, this message translates to:
+  /// **'When are you generally available to foster, and when are you unavailable?'**
+  String get fosterQuestionnairePf06Label;
+
+  /// No description provided for @fosterQuestionnairePf03Help.
+  ///
+  /// In en, this message translates to:
+  /// **'The shelter will provide guidance and support at every level. This answer helps the shelter begin with a suitable match.'**
+  String get fosterQuestionnairePf03Help;
+
+  /// No description provided for @fosterQuestionnairePf04Help.
+  ///
+  /// In en, this message translates to:
+  /// **'The shelter will explain the care required and only propose an animal when the placement is considered suitable.'**
+  String get fosterQuestionnairePf04Help;
+
+  /// No description provided for @fosterQuestionnairePf05Help.
+  ///
+  /// In en, this message translates to:
+  /// **'The shelter will subtract animals already in the foster process when matching.'**
+  String get fosterQuestionnairePf05Help;
+
+  /// No description provided for @fosterQuestionnairePf06Help.
+  ///
+  /// In en, this message translates to:
+  /// **'You can update holidays, work periods or other unavailable times later.'**
+  String get fosterQuestionnairePf06Help;
+
+  /// No description provided for @fosterQuestionnaireSpeciesCat.
+  ///
+  /// In en, this message translates to:
+  /// **'Cats'**
+  String get fosterQuestionnaireSpeciesCat;
+
+  /// No description provided for @fosterQuestionnaireSpeciesDog.
+  ///
+  /// In en, this message translates to:
+  /// **'Dogs'**
+  String get fosterQuestionnaireSpeciesDog;
+
+  /// No description provided for @fosterQuestionnaireSpeciesRabbit.
+  ///
+  /// In en, this message translates to:
+  /// **'Rabbits'**
+  String get fosterQuestionnaireSpeciesRabbit;
+
+  /// No description provided for @fosterQuestionnaireSpeciesHorsePony.
+  ///
+  /// In en, this message translates to:
+  /// **'Horses or ponies'**
+  String get fosterQuestionnaireSpeciesHorsePony;
+
+  /// No description provided for @fosterQuestionnaireSpeciesOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get fosterQuestionnaireSpeciesOther;
+
+  /// No description provided for @fosterQuestionnaireAgeYoung.
+  ///
+  /// In en, this message translates to:
+  /// **'Very young animals'**
+  String get fosterQuestionnaireAgeYoung;
+
+  /// No description provided for @fosterQuestionnaireAgeAdult.
+  ///
+  /// In en, this message translates to:
+  /// **'Adult animals'**
+  String get fosterQuestionnaireAgeAdult;
+
+  /// No description provided for @fosterQuestionnaireAgeSenior.
+  ///
+  /// In en, this message translates to:
+  /// **'Senior animals'**
+  String get fosterQuestionnaireAgeSenior;
+
+  /// No description provided for @fosterQuestionnaireAgeAny.
+  ///
+  /// In en, this message translates to:
+  /// **'Any age, subject to matching'**
+  String get fosterQuestionnaireAgeAny;
+
+  /// No description provided for @fosterQuestionnaireExperienceExpert.
+  ///
+  /// In en, this message translates to:
+  /// **'Expert: substantial relevant experience with complex animals'**
+  String get fosterQuestionnaireExperienceExpert;
+
+  /// No description provided for @fosterQuestionnaireExperienceIntermediate.
+  ///
+  /// In en, this message translates to:
+  /// **'Intermediate: some relevant experience with involved animals'**
+  String get fosterQuestionnaireExperienceIntermediate;
+
+  /// No description provided for @fosterQuestionnaireExperienceNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New: little or no relevant experience; start with easy animals'**
+  String get fosterQuestionnaireExperienceNew;
+
+  /// No description provided for @fosterQuestionnaireHealthEasy.
+  ///
+  /// In en, this message translates to:
+  /// **'Easy health needs'**
+  String get fosterQuestionnaireHealthEasy;
+
+  /// No description provided for @fosterQuestionnaireHealthMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Involved health needs'**
+  String get fosterQuestionnaireHealthMedium;
+
+  /// No description provided for @fosterQuestionnaireHealthComplex.
+  ///
+  /// In en, this message translates to:
+  /// **'Complex health needs'**
+  String get fosterQuestionnaireHealthComplex;
+
+  /// No description provided for @fosterQuestionnaireHealthUnsure.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsure — explain needs before deciding'**
+  String get fosterQuestionnaireHealthUnsure;
+
+  /// No description provided for @fosterQuestionnaireQ01Prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you at least 21 years old, or do you meet the minimum age set by this shelter?'**
+  String get fosterQuestionnaireQ01Prompt;
+
+  /// No description provided for @fosterQuestionnaireQ02Prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Do the people who share your home agree to fostering and understand that it involves temporary care and shelter guidance?'**
+  String get fosterQuestionnaireQ02Prompt;
+
+  /// No description provided for @fosterQuestionnaireQ03Prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Are there any children, adults or household circumstances that could affect safe fostering?'**
+  String get fosterQuestionnaireQ03Prompt;
+
+  /// No description provided for @fosterQuestionnaireQ04Prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Can you provide the time and supervision needed for a foster animal?'**
+  String get fosterQuestionnaireQ04Prompt;
+
+  /// No description provided for @fosterQuestionnaireQ05Prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Can you arrange reliable transport for veterinary care, handover, emergencies and shelter appointments when needed?'**
+  String get fosterQuestionnaireQ05Prompt;
+
+  /// No description provided for @fosterQuestionnaireQ06Prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you willing and able to follow the shelter\'s instructions for feeding, hygiene, medication, safety, monitoring and escalation?'**
+  String get fosterQuestionnaireQ06Prompt;
+
+  /// No description provided for @fosterQuestionnaireQ07Prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Can you recognise when an animal may need urgent help and contact the shelter or veterinary service rather than making an unsafe decision alone?'**
+  String get fosterQuestionnaireQ07Prompt;
+
+  /// No description provided for @fosterQuestionnaireQ08Prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you willing to respect the agreed foster period, shelter rules, confidentiality, safety instructions and return process?'**
+  String get fosterQuestionnaireQ08Prompt;
+
+  /// No description provided for @fosterQuestionnaireQ01Help.
+  ///
+  /// In en, this message translates to:
+  /// **'The default minimum age is 21. A shelter may set a different minimum age in its settings.'**
+  String get fosterQuestionnaireQ01Help;
+
+  /// No description provided for @fosterQuestionnaireQ02Help.
+  ///
+  /// In en, this message translates to:
+  /// **'The shelter will explain the expected care and can answer questions before a placement is agreed.'**
+  String get fosterQuestionnaireQ02Help;
+
+  /// No description provided for @fosterQuestionnaireQ03Help.
+  ///
+  /// In en, this message translates to:
+  /// **'This is about safe matching, not judging your household. You can explain the circumstances in a note.'**
+  String get fosterQuestionnaireQ03Help;
+
+  /// No description provided for @fosterQuestionnaireQ06Help.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not need to know everything in advance. The shelter will provide guidance and support.'**
+  String get fosterQuestionnaireQ06Help;
+
+  /// No description provided for @fosterQuestionnaireQ07Help.
+  ///
+  /// In en, this message translates to:
+  /// **'The shelter will explain the emergency process and provide a named contact or service route.'**
+  String get fosterQuestionnaireQ07Help;
+
+  /// No description provided for @fosterQuestionnaireQ08Help.
+  ///
+  /// In en, this message translates to:
+  /// **'The shelter will explain the rules before a placement and will support you throughout the foster process.'**
+  String get fosterQuestionnaireQ08Help;
+
+  /// No description provided for @fosterQuestionnaireQ01A.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, I meet the applicable minimum age.'**
+  String get fosterQuestionnaireQ01A;
+
+  /// No description provided for @fosterQuestionnaireQ01B.
+  ///
+  /// In en, this message translates to:
+  /// **'I am not sure whether I meet the applicable age or placement requirement.'**
+  String get fosterQuestionnaireQ01B;
+
+  /// No description provided for @fosterQuestionnaireQ01C.
+  ///
+  /// In en, this message translates to:
+  /// **'No, I do not meet the applicable minimum age.'**
+  String get fosterQuestionnaireQ01C;
+
+  /// No description provided for @fosterQuestionnaireQ02A.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, the relevant household members agree.'**
+  String get fosterQuestionnaireQ02A;
+
+  /// No description provided for @fosterQuestionnaireQ02B.
+  ///
+  /// In en, this message translates to:
+  /// **'I am not sure that everyone agrees or understands yet.'**
+  String get fosterQuestionnaireQ02B;
+
+  /// No description provided for @fosterQuestionnaireQ02C.
+  ///
+  /// In en, this message translates to:
+  /// **'No, a relevant household member does not agree.'**
+  String get fosterQuestionnaireQ02C;
+
+  /// No description provided for @fosterQuestionnaireQ03A.
+  ///
+  /// In en, this message translates to:
+  /// **'No known circumstance would prevent a suitable placement.'**
+  String get fosterQuestionnaireQ03A;
+
+  /// No description provided for @fosterQuestionnaireQ03B.
+  ///
+  /// In en, this message translates to:
+  /// **'There are circumstances that require careful matching, supervision or extra guidance.'**
+  String get fosterQuestionnaireQ03B;
+
+  /// No description provided for @fosterQuestionnaireQ03C.
+  ///
+  /// In en, this message translates to:
+  /// **'There is currently a circumstance that makes fostering unsafe or unsuitable.'**
+  String get fosterQuestionnaireQ03C;
+
+  /// No description provided for @fosterQuestionnaireQ04A.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, I can provide suitable daily care and supervision.'**
+  String get fosterQuestionnaireQ04A;
+
+  /// No description provided for @fosterQuestionnaireQ04B.
+  ///
+  /// In en, this message translates to:
+  /// **'The animal would sometimes be alone or my routine varies, so matching and safeguards would be needed.'**
+  String get fosterQuestionnaireQ04B;
+
+  /// No description provided for @fosterQuestionnaireQ04C.
+  ///
+  /// In en, this message translates to:
+  /// **'No, I cannot currently provide the required time or supervision.'**
+  String get fosterQuestionnaireQ04C;
+
+  /// No description provided for @fosterQuestionnaireQ05A.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, I have suitable transport or a reliable arrangement.'**
+  String get fosterQuestionnaireQ05A;
+
+  /// No description provided for @fosterQuestionnaireQ05B.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport is possible with advance planning or depends on another person or service.'**
+  String get fosterQuestionnaireQ05B;
+
+  /// No description provided for @fosterQuestionnaireQ05C.
+  ///
+  /// In en, this message translates to:
+  /// **'No, I cannot reliably arrange required transport.'**
+  String get fosterQuestionnaireQ05C;
+
+  /// No description provided for @fosterQuestionnaireQ06A.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, I am willing to follow guidance, learn and ask for help.'**
+  String get fosterQuestionnaireQ06A;
+
+  /// No description provided for @fosterQuestionnaireQ06B.
+  ///
+  /// In en, this message translates to:
+  /// **'I would need training, additional support or a limited placement type.'**
+  String get fosterQuestionnaireQ06B;
+
+  /// No description provided for @fosterQuestionnaireQ06C.
+  ///
+  /// In en, this message translates to:
+  /// **'No, I am not currently able or willing to follow the required care guidance.'**
+  String get fosterQuestionnaireQ06C;
+
+  /// No description provided for @fosterQuestionnaireQ07A.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, I can follow the shelter\'s emergency and escalation process.'**
+  String get fosterQuestionnaireQ07A;
+
+  /// No description provided for @fosterQuestionnaireQ07B.
+  ///
+  /// In en, this message translates to:
+  /// **'I would need clear written guidance, a named contact or additional support, but I am willing to follow the process.'**
+  String get fosterQuestionnaireQ07B;
+
+  /// No description provided for @fosterQuestionnaireQ07C.
+  ///
+  /// In en, this message translates to:
+  /// **'No, I would not be able to follow the required escalation process.'**
+  String get fosterQuestionnaireQ07C;
+
+  /// No description provided for @fosterQuestionnaireQ08A.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, I understand and agree to follow them.'**
+  String get fosterQuestionnaireQ08A;
+
+  /// No description provided for @fosterQuestionnaireQ08B.
+  ///
+  /// In en, this message translates to:
+  /// **'I may have constraints that need to be agreed in advance.'**
+  String get fosterQuestionnaireQ08B;
+
+  /// No description provided for @fosterQuestionnaireQ08C.
+  ///
+  /// In en, this message translates to:
+  /// **'No, I am not able to agree to these requirements.'**
+  String get fosterQuestionnaireQ08C;
+
   /// No description provided for @orgSelectNewRole.
   ///
   /// In en, this message translates to:
@@ -9056,6 +9632,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not mark this care item as done. Try again.'**
   String get careCompletionFailed;
+
+  /// No description provided for @fosterQuestionnaireReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Questionnaire review'**
+  String get fosterQuestionnaireReviewTitle;
+
+  /// No description provided for @fosterQuestionnaireReviewLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Review questionnaire'**
+  String get fosterQuestionnaireReviewLink;
+
+  /// No description provided for @fosterQuestionnaireSubmissionSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission summary'**
+  String get fosterQuestionnaireSubmissionSummaryTitle;
+
+  /// No description provided for @fosterQuestionnaireResultLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Result'**
+  String get fosterQuestionnaireResultLabel;
+
+  /// No description provided for @fosterQuestionnaireSubmittedAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get fosterQuestionnaireSubmittedAtLabel;
+
+  /// No description provided for @fosterQuestionnaireTemplateVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Form version'**
+  String get fosterQuestionnaireTemplateVersionLabel;
+
+  /// No description provided for @fosterQuestionnaireTriggeringAnswersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Answers requiring review'**
+  String get fosterQuestionnaireTriggeringAnswersTitle;
+
+  /// No description provided for @fosterQuestionnaireNoTriggeringAnswers.
+  ///
+  /// In en, this message translates to:
+  /// **'No screening answers flagged for review.'**
+  String get fosterQuestionnaireNoTriggeringAnswers;
+
+  /// No description provided for @fosterQuestionnaireQ02BMandatoryFollowup.
+  ///
+  /// In en, this message translates to:
+  /// **'Household agreement follow-up required (Q02 B)'**
+  String get fosterQuestionnaireQ02BMandatoryFollowup;
+
+  /// No description provided for @fosterQuestionnaireGeneralNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Candidate note'**
+  String get fosterQuestionnaireGeneralNoteLabel;
+
+  /// No description provided for @fosterQuestionnaireAnswerOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected option'**
+  String get fosterQuestionnaireAnswerOption;
+
+  /// No description provided for @fosterQuestionnaireAnswerValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer'**
+  String get fosterQuestionnaireAnswerValue;
+
+  /// No description provided for @fosterQuestionnaireCandidateNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Candidate note on this answer'**
+  String get fosterQuestionnaireCandidateNoteLabel;
+
+  /// No description provided for @fosterQuestionnairePreviousDecisionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous decisions'**
+  String get fosterQuestionnairePreviousDecisionsTitle;
+
+  /// No description provided for @fosterQuestionnaireRecordDecisionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record decision'**
+  String get fosterQuestionnaireRecordDecisionTitle;
+
+  /// No description provided for @fosterQuestionnaireDecisionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision'**
+  String get fosterQuestionnaireDecisionLabel;
+
+  /// No description provided for @fosterQuestionnaireDecisionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a decision'**
+  String get fosterQuestionnaireDecisionRequired;
+
+  /// No description provided for @fosterQuestionnaireStructuredReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Structured reason'**
+  String get fosterQuestionnaireStructuredReasonLabel;
+
+  /// No description provided for @fosterQuestionnaireStructuredReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Structured reason is required'**
+  String get fosterQuestionnaireStructuredReasonRequired;
+
+  /// No description provided for @fosterQuestionnaireStaffNotesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff notes (optional)'**
+  String get fosterQuestionnaireStaffNotesLabel;
+
+  /// No description provided for @fosterQuestionnaireSubmitDecision.
+  ///
+  /// In en, this message translates to:
+  /// **'Save decision'**
+  String get fosterQuestionnaireSubmitDecision;
+
+  /// No description provided for @fosterQuestionnaireDecisionSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision recorded'**
+  String get fosterQuestionnaireDecisionSaved;
+
+  /// No description provided for @fosterQuestionnaireDecisionApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get fosterQuestionnaireDecisionApproved;
+
+  /// No description provided for @fosterQuestionnaireDecisionApprovedWithConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved with conditions'**
+  String get fosterQuestionnaireDecisionApprovedWithConditions;
+
+  /// No description provided for @fosterQuestionnaireDecisionClarificationRequested.
+  ///
+  /// In en, this message translates to:
+  /// **'Clarification requested'**
+  String get fosterQuestionnaireDecisionClarificationRequested;
+
+  /// No description provided for @fosterQuestionnaireDecisionNotApprovedAtThisTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Not approved at this time'**
+  String get fosterQuestionnaireDecisionNotApprovedAtThisTime;
+
+  /// No description provided for @fosterQuestionnaireDecisionReassessmentNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Reassessment needed'**
+  String get fosterQuestionnaireDecisionReassessmentNeeded;
+
+  /// No description provided for @fosterQuestionnaireOutcomeGo.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get fosterQuestionnaireOutcomeGo;
+
+  /// No description provided for @fosterQuestionnaireOutcomeGoWithReservation.
+  ///
+  /// In en, this message translates to:
+  /// **'Review recommended'**
+  String get fosterQuestionnaireOutcomeGoWithReservation;
+
+  /// No description provided for @fosterQuestionnaireOutcomeNoGo.
+  ///
+  /// In en, this message translates to:
+  /// **'Does not meet criteria'**
+  String get fosterQuestionnaireOutcomeNoGo;
+
+  /// No description provided for @fosterQuestionnaireQuestionQ01.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum age'**
+  String get fosterQuestionnaireQuestionQ01;
+
+  /// No description provided for @fosterQuestionnaireQuestionQ02.
+  ///
+  /// In en, this message translates to:
+  /// **'Household agreement'**
+  String get fosterQuestionnaireQuestionQ02;
+
+  /// No description provided for @fosterQuestionnaireQuestionQ03.
+  ///
+  /// In en, this message translates to:
+  /// **'Household safety'**
+  String get fosterQuestionnaireQuestionQ03;
+
+  /// No description provided for @fosterQuestionnaireQuestionQ04.
+  ///
+  /// In en, this message translates to:
+  /// **'Time and supervision'**
+  String get fosterQuestionnaireQuestionQ04;
+
+  /// No description provided for @fosterQuestionnaireQuestionQ05.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport'**
+  String get fosterQuestionnaireQuestionQ05;
+
+  /// No description provided for @fosterQuestionnaireQuestionQ06.
+  ///
+  /// In en, this message translates to:
+  /// **'Care instructions'**
+  String get fosterQuestionnaireQuestionQ06;
+
+  /// No description provided for @fosterQuestionnaireQuestionQ07.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency escalation'**
+  String get fosterQuestionnaireQuestionQ07;
+
+  /// No description provided for @fosterQuestionnaireQuestionQ08.
+  ///
+  /// In en, this message translates to:
+  /// **'Other commitments'**
+  String get fosterQuestionnaireQuestionQ08;
 }
 
 class _AppLocalizationsDelegate

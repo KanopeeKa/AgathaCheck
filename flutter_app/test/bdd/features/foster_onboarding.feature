@@ -37,3 +37,13 @@ Feature: Foster onboarding and approval
     Given a registered user "Eve" is an associate of "Rescue Hearts"
     When "Alice" bulk onboards "Eve" as foster for "Rescue Hearts"
     Then "Eve" receives an in-app foster invitation for "Rescue Hearts"
+
+  @P1
+  Scenario: Candidate submits foster questionnaire with AUTO_GO path
+    Given a registered user "Eve" is a foster parent of "Rescue Hearts"
+    When "Eve" opens the foster candidate questionnaire for "Rescue Hearts"
+    And "Eve" completes the matching profile questions
+    And "Eve" completes the questionnaire with all Go screening answers
+    And "Eve" acknowledges and submits the questionnaire
+    Then "Eve" sees the automatic Go confirmation message
+    And the foster onboarding form step is complete for "Eve"

@@ -1892,6 +1892,371 @@ class AppLocalizationsFr extends AppLocalizations {
   String get fosterOnboardingStepApproved => 'Accueil approuvé';
 
   @override
+  String get fosterQuestionnaireTitle => 'Questionnaire candidat accueil';
+
+  @override
+  String get fosterQuestionnaireCandidateMessage =>
+      'Vous n\'avez pas besoin de tout savoir avant de postuler. Le refuge vous guidera, expliquera les soins requis et vous accompagnera tout au long du processus d\'accueil.';
+
+  @override
+  String get fosterQuestionnaireDisclaimer =>
+      'Il s\'agit d\'un premier filtre d\'adéquation et d\'un profil de mise en relation, pas d\'une décision finale de placement. Un administrateur du refuge examine les candidatures comportant une réserve, une demande de clarification ou un résultat No Go.';
+
+  @override
+  String get fosterQuestionnaireSectionNavLabel => 'Sections du questionnaire';
+
+  @override
+  String get fosterQuestionnaireSectionProfile => 'Profil de mise en relation';
+
+  @override
+  String get fosterQuestionnaireSectionScreening => 'Filtrage';
+
+  @override
+  String get fosterQuestionnaireSectionAcknowledgement =>
+      'Vérification et envoi';
+
+  @override
+  String get fosterQuestionnaireProfileIntro =>
+      'Ces questions aident le refuge à comprendre quels types d\'animaux vous pourriez accueillir. Elles ne produisent pas de résultat de filtrage négatif.';
+
+  @override
+  String get fosterQuestionnaireScreeningIntro =>
+      'Répondez honnêtement à chaque question de filtrage. Le refuge peut examiner les réponses marquées avec une réserve ou No Go.';
+
+  @override
+  String get fosterQuestionnaireAcknowledgementIntro =>
+      'Veuillez lire la confirmation ci-dessous et la valider avant d\'envoyer.';
+
+  @override
+  String get fosterQuestionnaireAcknowledgementCheckbox =>
+      'Je confirme la déclaration ci-dessus';
+
+  @override
+  String get fosterQuestionnaireOptionalNoteLabel => 'Note facultative';
+
+  @override
+  String get fosterQuestionnaireOtherSpeciesNoteLabel =>
+      'Décrire les autres espèces';
+
+  @override
+  String get fosterQuestionnaireBack => 'Retour';
+
+  @override
+  String get fosterQuestionnaireNext => 'Continuer';
+
+  @override
+  String get fosterQuestionnaireSubmit => 'Envoyer le questionnaire';
+
+  @override
+  String get fosterQuestionnaireSubmitSuccessTitle => 'Questionnaire envoyé';
+
+  @override
+  String get fosterQuestionnaireSubmitReviewMessage =>
+      'Merci d\'avoir complété le questionnaire. Certaines réponses nécessitent l\'examen d\'un administrateur du refuge. Cela ne signifie pas nécessairement que vous ne pouvez pas accueillir.';
+
+  @override
+  String get fosterQuestionnaireSubmitAutoGoMessage =>
+      'Merci d\'avoir complété le questionnaire. D\'après vos réponses de filtrage, aucun problème immédiat n\'a été identifié. Le refuge suivra son processus habituel de mise en relation.';
+
+  @override
+  String get fosterQuestionnaireSectionIncomplete =>
+      'Veuillez compléter tous les champs obligatoires de cette section.';
+
+  @override
+  String get fosterQuestionnaireAcknowledgementRequired =>
+      'Vous devez confirmer la déclaration avant d\'envoyer.';
+
+  @override
+  String get fosterQuestionnairePf01OtherNoteRequired =>
+      'Veuillez décrire les autres espèces que vous accueillerez.';
+
+  @override
+  String get fosterQuestionnairePf05RequiresSpecies =>
+      'Sélectionnez au moins une espèce ci-dessus avant d\'indiquer la capacité.';
+
+  @override
+  String get fosterQuestionnairePf05CapacityRequired =>
+      'Saisissez un nombre entier positif ou nul pour chaque espèce sélectionnée.';
+
+  @override
+  String get fosterQuestionnairePf06AvailabilityRequired =>
+      'Indiquez vos dates de disponibilité générale.';
+
+  @override
+  String get fosterQuestionnaireErrorMissingTemplate =>
+      'Le modèle de questionnaire est indisponible.';
+
+  @override
+  String fosterQuestionnaireLoadError(String error) {
+    return 'Impossible de charger le questionnaire : $error';
+  }
+
+  @override
+  String fosterQuestionnaireSubmitError(String error) {
+    return 'Impossible d\'envoyer le questionnaire : $error';
+  }
+
+  @override
+  String fosterQuestionnaireCapacityLabel(String species) {
+    return 'Capacité pour $species';
+  }
+
+  @override
+  String get fosterQuestionnaireAvailabilityStartLabel =>
+      'Disponible à partir du';
+
+  @override
+  String get fosterQuestionnaireAvailabilityEndLabel => 'Disponible jusqu\'au';
+
+  @override
+  String get fosterQuestionnaireDateNotSet => 'Non défini';
+
+  @override
+  String get fosterQuestionnairePf01Label =>
+      'Quels types d\'animaux seriez-vous prêt(e) à accueillir ?';
+
+  @override
+  String get fosterQuestionnairePf02Label =>
+      'Quels âges d\'animaux seriez-vous prêt(e) à accueillir ?';
+
+  @override
+  String get fosterQuestionnairePf03Label =>
+      'Quel niveau d\'expérience décrit le mieux les animaux que vous pourriez accueillir en toute sécurité ?';
+
+  @override
+  String get fosterQuestionnairePf04Label =>
+      'Quel niveau de besoins de santé seriez-vous prêt(e) à gérer pour un animal accueilli ?';
+
+  @override
+  String get fosterQuestionnairePf05Label =>
+      'Combien d\'animaux de chaque type sélectionné pourriez-vous accueillir en même temps ?';
+
+  @override
+  String get fosterQuestionnairePf06Label =>
+      'Quand êtes-vous généralement disponible pour accueillir, et quand ne l\'êtes-vous pas ?';
+
+  @override
+  String get fosterQuestionnairePf03Help =>
+      'Le refuge fournira des conseils et un accompagnement à chaque niveau. Cette réponse aide le refuge à commencer avec une mise en relation adaptée.';
+
+  @override
+  String get fosterQuestionnairePf04Help =>
+      'Le refuge expliquera les soins requis et ne proposera un animal que lorsque le placement est considéré comme adapté.';
+
+  @override
+  String get fosterQuestionnairePf05Help =>
+      'Le refuge déduira les animaux déjà en cours d\'accueil lors de la mise en relation.';
+
+  @override
+  String get fosterQuestionnairePf06Help =>
+      'Vous pourrez mettre à jour les congés, périodes de travail ou autres indisponibilités plus tard.';
+
+  @override
+  String get fosterQuestionnaireSpeciesCat => 'Chats';
+
+  @override
+  String get fosterQuestionnaireSpeciesDog => 'Chiens';
+
+  @override
+  String get fosterQuestionnaireSpeciesRabbit => 'Lapins';
+
+  @override
+  String get fosterQuestionnaireSpeciesHorsePony => 'Chevaux ou poneys';
+
+  @override
+  String get fosterQuestionnaireSpeciesOther => 'Autre';
+
+  @override
+  String get fosterQuestionnaireAgeYoung => 'Animaux très jeunes';
+
+  @override
+  String get fosterQuestionnaireAgeAdult => 'Animaux adultes';
+
+  @override
+  String get fosterQuestionnaireAgeSenior => 'Animaux seniors';
+
+  @override
+  String get fosterQuestionnaireAgeAny =>
+      'Tout âge, sous réserve de mise en relation';
+
+  @override
+  String get fosterQuestionnaireExperienceExpert =>
+      'Expert : expérience pertinente substantielle avec des animaux complexes';
+
+  @override
+  String get fosterQuestionnaireExperienceIntermediate =>
+      'Intermédiaire : expérience pertinente avec des animaux nécessitant un suivi';
+
+  @override
+  String get fosterQuestionnaireExperienceNew =>
+      'Nouveau : peu ou pas d\'expérience pertinente ; commencer avec des animaux faciles';
+
+  @override
+  String get fosterQuestionnaireHealthEasy => 'Besoins de santé simples';
+
+  @override
+  String get fosterQuestionnaireHealthMedium => 'Besoins de santé importants';
+
+  @override
+  String get fosterQuestionnaireHealthComplex => 'Besoins de santé complexes';
+
+  @override
+  String get fosterQuestionnaireHealthUnsure =>
+      'Incertain — expliquer les besoins avant de décider';
+
+  @override
+  String get fosterQuestionnaireQ01Prompt =>
+      'Avez-vous au moins 21 ans, ou respectez-vous l\'âge minimum fixé par ce refuge ?';
+
+  @override
+  String get fosterQuestionnaireQ02Prompt =>
+      'Les personnes qui partagent votre foyer acceptent-elles l\'accueil et comprennent-elles qu\'il s\'agit de soins temporaires avec l\'accompagnement du refuge ?';
+
+  @override
+  String get fosterQuestionnaireQ03Prompt =>
+      'Y a-t-il des enfants, adultes ou circonstances domestiques qui pourraient affecter un accueil en toute sécurité ?';
+
+  @override
+  String get fosterQuestionnaireQ04Prompt =>
+      'Pouvez-vous consacrer le temps et la supervision nécessaires à un animal accueilli ?';
+
+  @override
+  String get fosterQuestionnaireQ05Prompt =>
+      'Pouvez-vous organiser un transport fiable pour les soins vétérinaires, les transferts, les urgences et les rendez-vous au refuge si nécessaire ?';
+
+  @override
+  String get fosterQuestionnaireQ06Prompt =>
+      'Êtes-vous prêt(e) et capable de suivre les instructions du refuge pour l\'alimentation, l\'hygiène, les médicaments, la sécurité, le suivi et l\'escalade ?';
+
+  @override
+  String get fosterQuestionnaireQ07Prompt =>
+      'Pouvez-vous reconnaître quand un animal peut avoir besoin d\'aide urgente et contacter le refuge ou un service vétérinaire plutôt que de prendre une décision dangereuse seul(e) ?';
+
+  @override
+  String get fosterQuestionnaireQ08Prompt =>
+      'Êtes-vous prêt(e) à respecter la période d\'accueil convenue, les règles du refuge, la confidentialité, les consignes de sécurité et le processus de retour ?';
+
+  @override
+  String get fosterQuestionnaireQ01Help =>
+      'L\'âge minimum par défaut est 21 ans. Un refuge peut définir un âge minimum différent dans ses paramètres.';
+
+  @override
+  String get fosterQuestionnaireQ02Help =>
+      'Le refuge expliquera les soins attendus et pourra répondre aux questions avant qu\'un placement ne soit convenu.';
+
+  @override
+  String get fosterQuestionnaireQ03Help =>
+      'Il s\'agit d\'une mise en relation sûre, pas d\'un jugement sur votre foyer. Vous pouvez expliquer les circonstances dans une note.';
+
+  @override
+  String get fosterQuestionnaireQ06Help =>
+      'Vous n\'avez pas besoin de tout savoir à l\'avance. Le refuge fournira des conseils et un accompagnement.';
+
+  @override
+  String get fosterQuestionnaireQ07Help =>
+      'Le refuge expliquera la procédure d\'urgence et fournira un contact ou un service désigné.';
+
+  @override
+  String get fosterQuestionnaireQ08Help =>
+      'Le refuge expliquera les règles avant un placement et vous accompagnera tout au long du processus d\'accueil.';
+
+  @override
+  String get fosterQuestionnaireQ01A =>
+      'Oui, je respecte l\'âge minimum applicable.';
+
+  @override
+  String get fosterQuestionnaireQ01B =>
+      'Je ne suis pas sûr(e) de respecter l\'âge ou l\'exigence de placement applicable.';
+
+  @override
+  String get fosterQuestionnaireQ01C =>
+      'Non, je ne respecte pas l\'âge minimum applicable.';
+
+  @override
+  String get fosterQuestionnaireQ02A =>
+      'Oui, les membres concernés du foyer sont d\'accord.';
+
+  @override
+  String get fosterQuestionnaireQ02B =>
+      'Je ne suis pas sûr(e) que tout le monde soit d\'accord ou comprenne encore.';
+
+  @override
+  String get fosterQuestionnaireQ02C =>
+      'Non, un membre concerné du foyer n\'est pas d\'accord.';
+
+  @override
+  String get fosterQuestionnaireQ03A =>
+      'Aucune circonstance connue n\'empêcherait un placement adapté.';
+
+  @override
+  String get fosterQuestionnaireQ03B =>
+      'Il y a des circonstances nécessitant une mise en relation prudente, une supervision ou des conseils supplémentaires.';
+
+  @override
+  String get fosterQuestionnaireQ03C =>
+      'Il existe actuellement une circonstance rendant l\'accueil dangereux ou inadapté.';
+
+  @override
+  String get fosterQuestionnaireQ04A =>
+      'Oui, je peux fournir des soins quotidiens et une supervision adaptés.';
+
+  @override
+  String get fosterQuestionnaireQ04B =>
+      'L\'animal serait parfois seul ou mon emploi du temps varie, donc une mise en relation et des garanties seraient nécessaires.';
+
+  @override
+  String get fosterQuestionnaireQ04C =>
+      'Non, je ne peux actuellement pas fournir le temps ou la supervision requis.';
+
+  @override
+  String get fosterQuestionnaireQ05A =>
+      'Oui, j\'ai un transport adapté ou un arrangement fiable.';
+
+  @override
+  String get fosterQuestionnaireQ05B =>
+      'Le transport est possible avec une planification à l\'avance ou dépend d\'une autre personne ou d\'un service.';
+
+  @override
+  String get fosterQuestionnaireQ05C =>
+      'Non, je ne peux pas organiser de transport fiable si nécessaire.';
+
+  @override
+  String get fosterQuestionnaireQ06A =>
+      'Oui, je suis prêt(e) à suivre les conseils, apprendre et demander de l\'aide.';
+
+  @override
+  String get fosterQuestionnaireQ06B =>
+      'J\'aurais besoin de formation, d\'un accompagnement supplémentaire ou d\'un type de placement limité.';
+
+  @override
+  String get fosterQuestionnaireQ06C =>
+      'Non, je ne suis actuellement pas en mesure ou disposé(e) à suivre les conseils de soins requis.';
+
+  @override
+  String get fosterQuestionnaireQ07A =>
+      'Oui, je peux suivre la procédure d\'urgence et d\'escalade du refuge.';
+
+  @override
+  String get fosterQuestionnaireQ07B =>
+      'J\'aurais besoin de conseils écrits clairs, d\'un contact désigné ou d\'un accompagnement supplémentaire, mais je suis prêt(e) à suivre la procédure.';
+
+  @override
+  String get fosterQuestionnaireQ07C =>
+      'Non, je ne pourrais pas suivre la procédure d\'escalade requise.';
+
+  @override
+  String get fosterQuestionnaireQ08A =>
+      'Oui, je comprends et accepte de les respecter.';
+
+  @override
+  String get fosterQuestionnaireQ08B =>
+      'J\'ai peut-être des contraintes à convenir à l\'avance.';
+
+  @override
+  String get fosterQuestionnaireQ08C =>
+      'Non, je ne peux pas accepter ces exigences.';
+
+  @override
   String get orgSelectNewRole => 'Choisir le nouveau rôle';
 
   @override
@@ -5127,4 +5492,131 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get careCompletionFailed =>
       'Impossible de marquer ce soin comme terminé. Réessayez.';
+
+  @override
+  String get fosterQuestionnaireReviewTitle => 'Revue du questionnaire';
+
+  @override
+  String get fosterQuestionnaireReviewLink => 'Revoir le questionnaire';
+
+  @override
+  String get fosterQuestionnaireSubmissionSummaryTitle =>
+      'Résumé de la soumission';
+
+  @override
+  String get fosterQuestionnaireResultLabel => 'Résultat';
+
+  @override
+  String get fosterQuestionnaireSubmittedAtLabel => 'Soumis le';
+
+  @override
+  String get fosterQuestionnaireTemplateVersionLabel => 'Version du formulaire';
+
+  @override
+  String get fosterQuestionnaireTriggeringAnswersTitle =>
+      'Réponses nécessitant un examen';
+
+  @override
+  String get fosterQuestionnaireNoTriggeringAnswers =>
+      'Aucune réponse de dépistage signalée pour examen.';
+
+  @override
+  String get fosterQuestionnaireQ02BMandatoryFollowup =>
+      'Suivi requis pour l\'accord du foyer (Q02 B)';
+
+  @override
+  String get fosterQuestionnaireGeneralNoteLabel => 'Note du candidat';
+
+  @override
+  String get fosterQuestionnaireAnswerOption => 'Option sélectionnée';
+
+  @override
+  String get fosterQuestionnaireAnswerValue => 'Réponse';
+
+  @override
+  String get fosterQuestionnaireCandidateNoteLabel =>
+      'Note du candidat sur cette réponse';
+
+  @override
+  String get fosterQuestionnairePreviousDecisionsTitle =>
+      'Décisions précédentes';
+
+  @override
+  String get fosterQuestionnaireRecordDecisionTitle =>
+      'Enregistrer une décision';
+
+  @override
+  String get fosterQuestionnaireDecisionLabel => 'Décision';
+
+  @override
+  String get fosterQuestionnaireDecisionRequired => 'Sélectionnez une décision';
+
+  @override
+  String get fosterQuestionnaireStructuredReasonLabel => 'Motif structuré';
+
+  @override
+  String get fosterQuestionnaireStructuredReasonRequired =>
+      'Le motif structuré est obligatoire';
+
+  @override
+  String get fosterQuestionnaireStaffNotesLabel =>
+      'Notes internes (facultatif)';
+
+  @override
+  String get fosterQuestionnaireSubmitDecision => 'Enregistrer la décision';
+
+  @override
+  String get fosterQuestionnaireDecisionSaved => 'Décision enregistrée';
+
+  @override
+  String get fosterQuestionnaireDecisionApproved => 'Approuvé';
+
+  @override
+  String get fosterQuestionnaireDecisionApprovedWithConditions =>
+      'Approuvé sous conditions';
+
+  @override
+  String get fosterQuestionnaireDecisionClarificationRequested =>
+      'Clarification demandée';
+
+  @override
+  String get fosterQuestionnaireDecisionNotApprovedAtThisTime =>
+      'Non approuvé pour le moment';
+
+  @override
+  String get fosterQuestionnaireDecisionReassessmentNeeded =>
+      'Réévaluation nécessaire';
+
+  @override
+  String get fosterQuestionnaireOutcomeGo => 'Conforme';
+
+  @override
+  String get fosterQuestionnaireOutcomeGoWithReservation => 'Examen recommandé';
+
+  @override
+  String get fosterQuestionnaireOutcomeNoGo => 'Ne répond pas aux critères';
+
+  @override
+  String get fosterQuestionnaireQuestionQ01 => 'Âge minimum';
+
+  @override
+  String get fosterQuestionnaireQuestionQ02 => 'Accord du foyer';
+
+  @override
+  String get fosterQuestionnaireQuestionQ03 => 'Sécurité du foyer';
+
+  @override
+  String get fosterQuestionnaireQuestionQ04 => 'Temps et supervision';
+
+  @override
+  String get fosterQuestionnaireQuestionQ05 => 'Transport';
+
+  @override
+  String get fosterQuestionnaireQuestionQ06 => 'Consignes de soins';
+
+  @override
+  String get fosterQuestionnaireQuestionQ07 => 'Escalade d\'urgence';
+
+  @override
+  String get fosterQuestionnaireQuestionQ08 => 'Autres engagements';
 }
