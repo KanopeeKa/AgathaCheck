@@ -16,6 +16,7 @@ import { registerPermissionsRoutes } from './permissionsRouter.js';
 import { registerPlacementsRoutes } from './placementsRouter.js';
 import { registerConnectionRoutes } from './connectionsRouter.js';
 import { registerDiscoverRoutes } from './discoverRouter.js';
+import { registerFosterQuestionnaireRoutes } from './fosterQuestionnaireRouter.js';
 
 export default function organizationsRoutes(pool) {
   const router = express.Router();
@@ -28,6 +29,7 @@ export default function organizationsRoutes(pool) {
   registerMemberPrivacyRoutes(router, pool);
   registerPetsRoutes(router, pool);
   registerFosterParentsRoutes(router, pool);
+  registerFosterQuestionnaireRoutes(router, pool);
   registerFosterInviteRoutes(router, pool);
   registerFosterRequestsRoutes(router, pool);
   registerProspectsRoutes(router, pool);

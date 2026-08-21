@@ -38,6 +38,11 @@ describe('fosterOnboarding helpers', () => {
     expect(steps.find((s) => s.key === 'onboarding_form')?.deferred).toBe(true);
     expect(steps.find((s) => s.key === 'invitation_accepted')?.state).toBe('current');
   });
+
+  it('auto-completes onboarding_form when questionnaire submitted', () => {
+    const steps = buildFosterOnboardingSteps(externalContext({ questionnaireSubmitted: true }));
+    expect(steps.find((s) => s.key === 'onboarding_form')?.state).toBe('complete');
+  });
 });
 
 describe('POST foster onboarding step confirm', () => {
