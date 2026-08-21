@@ -321,8 +321,12 @@ export class PetListPage {
       await refreshFlutterAccessibility(this.page);
       const route = flutterRoutePath(this.page.url());
       if (route === '/o/home') {
-        // Org inventory uses PetListSectionHeader (plain title text), not DashboardSection groups.
-        await expect(this.page.getByText(title, { exact: true }).first()).toBeVisible();
+        // Org inventory groups pets under PetListSectionHeader semantics: "OrgName 3".
+        const orgSectionPattern = new RegExp(`${escapeRegExp(title)}(?:\\s+\\d+)?$`, 'i');
+        await expect(
+          semanticsByName(this.page, orgSectionPattern)
+            .or(this.page.getByRole('group', { name: orgSectionPattern })),
+        ).toBeVisible();
         return;
       }
       // Group role only on guardian desk — getByText fallback matches pet cards whose aria-label
