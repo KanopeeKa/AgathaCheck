@@ -44,7 +44,25 @@ A person becomes an approved foster for a shelter with reusable global profile d
 - [x] DPIA checklist items for J1 Ph4
 - [x] Flutter: opt-out toggle, retention chip, updated lawful-basis copy
 
-**Status:** Phase 4 complete (pending integration → main)
+**Status:** Phase 4 complete
+
+## Phase 5 — Questionnaire, home visit, revalidation, claim (active)
+
+**Plan:** `.agents/plans/foster-front-door-v1-5a1b.md` · **Integration:** `cursor/foster-front-door-v1-5a1b-integration` · **Control issue:** #671
+
+| Phase | Outcome | Branch |
+|-------|---------|--------|
+| 0 | Policy + default form v1.3 XML | `cursor/foster-front-door-policy-5a1b` |
+| 1 | Questionnaire engine (backend) | `cursor/foster-questionnaire-backend-5a1b` |
+| 2 | Questionnaire UI (spawn) | spawn branches under integration |
+| 3 | Home visit backend | `cursor/foster-home-visit-backend-5a1b` |
+| 4 | Home visit UI (spawn) | spawn branches under integration |
+| 5 | Document bundle wire-up | `cursor/foster-document-wire-5a1b` |
+| 6 | Annual revalidation | spawn backend + flutter |
+| 7 | Offline foster claim invite | spawn backend + flutter |
+
+**Canonical questionnaire:** `regulatory/forms/default-foster-candidate-form-v1.3.xml`  
+**Product rules:** [`product-rules-foster-v1.md`](product-rules-foster-v1.md)
 
 ## Out of scope (Phase 3 backend)
 

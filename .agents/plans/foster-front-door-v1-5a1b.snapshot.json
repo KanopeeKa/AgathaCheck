@@ -1,0 +1,323 @@
+{
+  "schema_version": 1,
+  "plan_id": "foster-front-door-v1-5a1b",
+  "approved_at": "2026-08-21T14:14:00Z",
+  "approved_by": "user-chat-2026-08-21-track-a-c1",
+  "approved_until": "2026-08-23T14:14:00Z",
+  "content_hash": "sha256:273482ee025dc07ed8f74de0718fbd6dfb8be639507b0f1e8e832e45f9128d6d",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/foster-front-door-v1-5a1b-integration",
+  "control_issue": 671,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "0",
+      "title": "Policy + canonical form seed",
+      "branch": "cursor/foster-front-door-policy-5a1b",
+      "allowed_paths": [
+        "regulatory/forms/**",
+        "docs/fostering-platform/**",
+        "docs/refactoring-log.md",
+        ".agents/plans/foster-front-door-v1-5a1b.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "1",
+      "title": "Questionnaire engine backend",
+      "branch": "cursor/foster-questionnaire-backend-5a1b",
+      "allowed_paths": [
+        "db/migrations/**",
+        "db/schema/**",
+        "server/lib/fosterQuestionnaire.js",
+        "server/routes/organizations/fosterQuestionnaireRouter.js",
+        "server/routes/organizations/fosterOnboarding.js",
+        "server/routes/organizations/index.js",
+        "server/test/organizations/fosterQuestionnaire.test.js",
+        "server/test/organizations/fosterOnboarding.test.js",
+        "server/test/organizations/helpers*.js",
+        "scripts/db/**",
+        "docs/fostering-platform/**",
+        ".agents/plans/foster-front-door-v1-5a1b.*"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Questionnaire UI spawn",
+      "branch": "cursor/foster-questionnaire-ui-5a1b",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/bdd/features/foster_onboarding.feature",
+        "flutter_app/lib/l10n/**",
+        "e2e/playwright/tests/foster.questionnaire.spec.ts",
+        "e2e/playwright/pages/**",
+        "docs/refactoring-log.md",
+        ".agents/plans/foster-front-door-v1-5a1b.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**",
+        "e2e/playwright/support/api.ts"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "spawn-integration"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/foster-front-door-v1-5a1b-integration",
+        "ownership_ref": "docs/refactoring-log.md#foster-front-door-v1-5a1b"
+      },
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Home visit backend",
+      "branch": "cursor/foster-home-visit-backend-5a1b",
+      "allowed_paths": [
+        "db/migrations/**",
+        "db/schema/**",
+        "server/lib/fosterHomeVisits.js",
+        "server/routes/organizations/fosterHomeVisitsRouter.js",
+        "server/routes/organizations/fosterOnboarding.js",
+        "server/routes/organizations/index.js",
+        "server/test/organizations/fosterHomeVisits.test.js",
+        "scripts/db/**",
+        "docs/fostering-platform/**",
+        ".agents/plans/foster-front-door-v1-5a1b.*"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Home visit UI spawn",
+      "branch": "cursor/foster-home-visit-ui-5a1b",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/bdd/features/foster_onboarding.feature",
+        "flutter_app/lib/l10n/**",
+        "e2e/playwright/tests/foster.home-visit.spec.ts",
+        "e2e/playwright/pages/**",
+        "docs/refactoring-log.md",
+        ".agents/plans/foster-front-door-v1-5a1b.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**",
+        "e2e/playwright/support/api.ts"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "spawn-integration"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/foster-front-door-v1-5a1b-integration",
+        "ownership_ref": "docs/refactoring-log.md#foster-front-door-v1-5a1b"
+      },
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "Document bundle wire-up",
+      "branch": "cursor/foster-document-wire-5a1b",
+      "allowed_paths": [
+        "server/lib/fosterOnboarding.js",
+        "server/routes/organizations/fosterOnboarding.js",
+        "server/routes/organizations/documentTemplatesRouter.js",
+        "server/lib/documentTemplates.js",
+        "server/test/organizations/fosterOnboarding.test.js",
+        "server/test/organizations/fosterDocumentWire.test.js",
+        "flutter_app/lib/features/organization/**/foster_onboarding/**",
+        "flutter_app/test/features/organization/**",
+        "docs/fostering-platform/**",
+        ".agents/plans/foster-front-door-v1-5a1b.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "6",
+      "title": "Annual revalidation spawn",
+      "branch": "cursor/foster-revalidation-5a1b",
+      "allowed_paths": [
+        "db/migrations/**",
+        "db/schema/**",
+        "server/lib/fosterRevalidation.js",
+        "server/scripts/fosterRevalidationCheck.js",
+        "server/routes/organizations/fosterRevalidationRouter.js",
+        "server/routes/organizations/index.js",
+        "server/test/organizations/fosterRevalidation.test.js",
+        "flutter_app/lib/features/organization/**/foster_revalidation/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/lib/l10n/**",
+        "docs/fostering-platform/**",
+        "docs/refactoring-log.md",
+        ".agents/plans/foster-front-door-v1-5a1b.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "spawn-integration"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/foster-front-door-v1-5a1b-integration",
+        "ownership_ref": "docs/refactoring-log.md#foster-front-door-v1-5a1b"
+      },
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "7",
+      "title": "Offline foster claim spawn",
+      "branch": "cursor/foster-claim-invite-5a1b",
+      "allowed_paths": [
+        "server/lib/fosterClaim.js",
+        "server/routes/organizations/fosterClaimRouter.js",
+        "server/routes/organizations/fosterParentsRouter.js",
+        "server/lib/fosterProfiles.js",
+        "server/lib/email/templates/fosterClaimInvite.js",
+        "server/test/organizations/fosterClaim.test.js",
+        "flutter_app/lib/features/organization/**/foster_claim/**",
+        "flutter_app/lib/features/organization/presentation/widgets/manage_fosters/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/lib/l10n/**",
+        "e2e/playwright/tests/foster.claim.spec.ts",
+        "docs/fostering-platform/**",
+        "docs/refactoring-log.md",
+        ".agents/plans/foster-front-door-v1-5a1b.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/playwright/support/api.ts"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "spawn-integration"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/foster-front-door-v1-5a1b-integration",
+        "ownership_ref": "docs/refactoring-log.md#foster-front-door-v1-5a1b"
+      },
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
