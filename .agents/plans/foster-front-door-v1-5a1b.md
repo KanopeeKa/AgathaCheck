@@ -285,9 +285,9 @@ next_action: "continue phase 4 on branch cursor/foster-home-visit-ui-5a1b"
 artifact_ref:
   branch: cursor/foster-home-visit-ui-5a1b
   plan_path: .agents/plans/foster-front-door-v1-5a1b.md
-  plan_commit: 235cfb4fa9ef7831cf384cbb2a0ea7a363613246
+  plan_commit: 1c10455db6949a8538b5d1fcbabde855741ae931
   snapshot_path: .agents/plans/foster-front-door-v1-5a1b.snapshot.json
-  snapshot_commit: 235cfb4fa9ef7831cf384cbb2a0ea7a363613246
+  snapshot_commit: 1c10455db6949a8538b5d1fcbabde855741ae931
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

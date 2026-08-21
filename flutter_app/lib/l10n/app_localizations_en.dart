@@ -5479,10 +5479,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fosterHomeVisitValidateTitle => 'Validate home visit';
 
   @override
-  String get fosterHomeVisitValidateAction => 'Record validation';
+  String get fosterHomeVisitValidateAction => 'Record visit outcome';
 
   @override
   String get fosterHomeVisitValidateSaved => 'Home visit validation recorded';
+
+  @override
+  String get fosterHomeVisitValidatedPanelTitle => 'Home visit validated';
+
+  @override
+  String get fosterHomeVisitValidatedPanelMessage =>
+      'Visit outcome recorded. The foster onboarding home visit step is complete.';
+
+  @override
+  String get fosterHomeVisitStatusApproved => 'Home visit approved';
 
   @override
   String get fosterHomeVisitDateLabel => 'Visit date';

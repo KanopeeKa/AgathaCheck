@@ -30,6 +30,7 @@ class _FosterHomeVisitAdminScreenState
     extends ConsumerState<FosterHomeVisitAdminScreen> {
   var _busy = false;
   var _showReschedule = false;
+  var _showScheduleForm = false;
 
   FosterHomeVisitAdminKey get _key => (
     orgId: widget.orgId,
@@ -89,51 +90,161 @@ class _FosterHomeVisitAdminScreenState
     }, l.fosterHomeVisitCancelSaved);
   }
 
+  FosterHomeVisit? _findScheduled(List<FosterHomeVisit> visits) {
+    for (final visit in visits) {
+      if (visit.isScheduled) return visit;
+    }
+    return null;
+  }
+
+  FosterHomeVisit? _findLatestValidated(List<FosterHomeVisit> visits) {
+    for (final visit in visits) {
+      if (visit.status == FosterHomeVisitStatus.validated) return visit;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final visitsAsync = ref.watch(fosterHomeVisitAdminProvider(_key));
 
-    return OrgShellScaffold(
-      title: l.fosterHomeVisitAdminTitle,
-      orgId: widget.orgId,
-      navVariant: OrgNavTitleVariant.withOrgLogo,
-      leadingKey: const Key('foster_home_visit_admin_back'),
-      child: visitsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('$error')),
-        data: (visits) {
-          FosterHomeVisit? scheduled;
-          for (final visit in visits) {
-            if (visit.isScheduled) {
-              scheduled = visit;
-              break;
-            }
-          }
+    return Semantics(
+      identifier: 'foster_home_visit_admin_screen',
+      container: true,
+      child: OrgShellScaffold(
+        title: l.fosterHomeVisitAdminTitle,
+        orgId: widget.orgId,
+        navVariant: OrgNavTitleVariant.withOrgLogo,
+        leadingKey: const Key('foster_home_visit_admin_back'),
+        child: visitsAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => Center(child: Text('$error')),
+          data: (visits) {
+            final scheduled = _findScheduled(visits);
+            final latestValidated = scheduled == null
+                ? _findLatestValidated(visits)
+                : null;
 
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              if (scheduled != null) ...[
-                FosterHomeVisitStatusPanel(
-                  snapshot: FosterHomeVisitStatusSnapshot(activeVisit: scheduled),
-                  showAddress: true,
-                ),
-                const SizedBox(height: 16),
-                if (!_showReschedule)
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                if (scheduled != null) ...[
+                  FosterHomeVisitStatusPanel(
+                    snapshot: FosterHomeVisitStatusSnapshot(activeVisit: scheduled),
+                    showAddress: true,
+                  ),
+                  const SizedBox(height: 16),
+                  if (!_showReschedule)
+                    OutlinedButton.icon(
+                      key: const Key('foster_home_visit_reschedule_toggle'),
+                      onPressed: _busy
+                          ? null
+                          : () => setState(() => _showReschedule = true),
+                      icon: const Icon(Icons.edit_calendar_outlined),
+                      label: Text(l.fosterHomeVisitRescheduleAction),
+                    )
+                  else ...[
+                    FosterHomeVisitScheduleForm(
+                      busy: _busy,
+                      initialAddress: scheduled.address,
+                      submitLabel: l.fosterHomeVisitRescheduleAction,
+                      onSubmit: ({
+                        required visitDate,
+                        required visitTime,
+                        required address,
+                        required notes,
+                      }) async {
+                        await _run(() async {
+                          await ref
+                              .read(fosterHomeVisitAdminProvider(_key).notifier)
+                              .rescheduleVisit(
+                                scheduled!.id,
+                                visitDate: visitDate,
+                                visitTime: visitTime,
+                                address: address,
+                                notes: notes,
+                              );
+                          setState(() => _showReschedule = false);
+                        }, l.fosterHomeVisitRescheduleSaved);
+                      },
+                    ),
+                    TextButton(
+                      onPressed: _busy
+                          ? null
+                          : () => setState(() => _showReschedule = false),
+                      child: Text(l.cancel),
+                    ),
+                  ],
+                  const SizedBox(height: 12),
                   OutlinedButton.icon(
-                    key: const Key('foster_home_visit_reschedule_toggle'),
+                    key: const Key('foster_home_visit_cancel_button'),
+                    onPressed: _busy ? null : () => _confirmCancel(scheduled!),
+                    icon: const Icon(Icons.event_busy_outlined),
+                    label: Text(l.fosterHomeVisitCancelAction),
+                  ),
+                  const SizedBox(height: 24),
+                  FosterHomeVisitValidateForm(
+                    busy: _busy,
+                    onSubmit: ({
+                      required outcome,
+                      required outcomeReason,
+                    }) async {
+                      await _run(() async {
+                        await ref
+                            .read(fosterHomeVisitAdminProvider(_key).notifier)
+                            .validateVisit(
+                              scheduled!.id,
+                              outcome: outcome,
+                              outcomeReason: outcomeReason,
+                            );
+                        setState(() => _showScheduleForm = false);
+                      }, l.fosterHomeVisitValidateSaved);
+                    },
+                  ),
+                ] else if (latestValidated != null) ...[
+                  Semantics(
+                    identifier: 'foster_home_visit_validated_panel',
+                    container: true,
+                    child: Card(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l.fosterHomeVisitValidatedPanelTitle,
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(l.fosterHomeVisitValidatedPanelMessage),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  FosterHomeVisitStatusPanel(
+                    snapshot: FosterHomeVisitStatusSnapshot(
+                      latestValidated: latestValidated,
+                    ),
+                    showAddress: true,
+                  ),
+                ] else if (!_showScheduleForm) ...[
+                  OutlinedButton.icon(
+                    key: const Key('foster_home_visit_open_schedule'),
                     onPressed: _busy
                         ? null
-                        : () => setState(() => _showReschedule = true),
-                    icon: const Icon(Icons.edit_calendar_outlined),
-                    label: Text(l.fosterHomeVisitRescheduleAction),
-                  )
-                else ...[
+                        : () => setState(() => _showScheduleForm = true),
+                    icon: const Icon(Icons.event_available_outlined),
+                    label: Text(l.fosterHomeVisitScheduleTitle),
+                  ),
+                ] else ...[
                   FosterHomeVisitScheduleForm(
                     busy: _busy,
-                    initialAddress: scheduled.address,
-                    submitLabel: l.fosterHomeVisitRescheduleAction,
+                    initialAddress: widget.initialAddress,
                     onSubmit: ({
                       required visitDate,
                       required visitTime,
@@ -143,77 +254,23 @@ class _FosterHomeVisitAdminScreenState
                       await _run(() async {
                         await ref
                             .read(fosterHomeVisitAdminProvider(_key).notifier)
-                            .rescheduleVisit(
-                              scheduled!.id,
+                            .scheduleVisit(
                               visitDate: visitDate,
                               visitTime: visitTime,
                               address: address,
                               notes: notes,
                             );
-                        setState(() => _showReschedule = false);
-                      }, l.fosterHomeVisitRescheduleSaved);
+                        setState(() => _showScheduleForm = false);
+                      }, l.fosterHomeVisitScheduleSaved);
                     },
                   ),
-                  TextButton(
-                    onPressed: _busy
-                        ? null
-                        : () => setState(() => _showReschedule = false),
-                    child: Text(l.cancel),
-                  ),
                 ],
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  key: const Key('foster_home_visit_cancel_button'),
-                  onPressed: _busy ? null : () => _confirmCancel(scheduled!),
-                  icon: const Icon(Icons.event_busy_outlined),
-                  label: Text(l.fosterHomeVisitCancelAction),
-                ),
                 const SizedBox(height: 24),
-                FosterHomeVisitValidateForm(
-                  busy: _busy,
-                  onSubmit: ({
-                    required outcome,
-                    required outcomeReason,
-                  }) async {
-                    await _run(() async {
-                      await ref
-                          .read(fosterHomeVisitAdminProvider(_key).notifier)
-                          .validateVisit(
-                            scheduled!.id,
-                            outcome: outcome,
-                            outcomeReason: outcomeReason,
-                          );
-                    }, l.fosterHomeVisitValidateSaved);
-                  },
-                ),
-              ] else ...[
-                FosterHomeVisitScheduleForm(
-                  busy: _busy,
-                  initialAddress: widget.initialAddress,
-                  onSubmit: ({
-                    required visitDate,
-                    required visitTime,
-                    required address,
-                    required notes,
-                  }) async {
-                    await _run(() async {
-                      await ref
-                          .read(fosterHomeVisitAdminProvider(_key).notifier)
-                          .scheduleVisit(
-                            visitDate: visitDate,
-                            visitTime: visitTime,
-                            address: address,
-                            notes: notes,
-                          );
-                    }, l.fosterHomeVisitScheduleSaved);
-                  },
-                ),
+                FosterHomeVisitHistoryList(visits: visits),
               ],
-              const SizedBox(height: 24),
-              FosterHomeVisitHistoryList(visits: visits),
-            ],
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

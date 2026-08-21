@@ -5571,11 +5571,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get fosterHomeVisitValidateTitle => 'Valider la visite à domicile';
 
   @override
-  String get fosterHomeVisitValidateAction => 'Enregistrer la validation';
+  String get fosterHomeVisitValidateAction =>
+      'Enregistrer le résultat de visite';
 
   @override
   String get fosterHomeVisitValidateSaved =>
       'Validation de la visite enregistrée';
+
+  @override
+  String get fosterHomeVisitValidatedPanelTitle => 'Visite à domicile validée';
+
+  @override
+  String get fosterHomeVisitValidatedPanelMessage =>
+      'Résultat de visite enregistré. L\'étape visite à domicile de l\'intégration est terminée.';
+
+  @override
+  String get fosterHomeVisitStatusApproved => 'Visite à domicile approuvée';
 
   @override
   String get fosterHomeVisitDateLabel => 'Date de visite';

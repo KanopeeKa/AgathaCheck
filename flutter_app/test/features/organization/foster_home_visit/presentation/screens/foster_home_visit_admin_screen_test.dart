@@ -38,6 +38,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Schedule home visit'), findsOneWidget);
+    expect(
+      find.byKey(const Key('foster_home_visit_open_schedule')),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const Key('foster_home_visit_open_schedule')));
+    await tester.pumpAndSettle();
+
     expect(find.byKey(const Key('foster_home_visit_schedule_submit')), findsOneWidget);
     expect(find.text('No previous home visits recorded.'), findsOneWidget);
   });

@@ -185,15 +185,15 @@ final fosterSelfParentIdProvider = Provider.family<String?, String>((ref, orgId)
 });
 
 String fosterHomeVisitAdminRoutePath(String orgId, String fosterParentId) =>
-    '/o/orgs/$orgId/foster-home-visits/$fosterParentId/admin';
+    '/o/orgs/$orgId/foster-home-visits/$fosterParentId';
 
-String fosterHomeVisitStatusRoutePath(String orgId) =>
-    '/o/orgs/$orgId/foster-home-visit/status';
+String fosterHomeVisitStatusRoutePath(String orgId, String fosterParentId) =>
+    '/o/orgs/$orgId/foster-home-visits/$fosterParentId/status';
 
 List<RouteBase> buildFosterHomeVisitRoutes() {
   return [
     GoRoute(
-      path: 'foster-home-visits/:fosterParentId/admin',
+      path: 'foster-home-visits/:fosterParentId',
       name: 'fosterHomeVisitAdmin',
       builder: (context, state) {
         final orgId = state.pathParameters['id']!;
@@ -205,11 +205,15 @@ List<RouteBase> buildFosterHomeVisitRoutes() {
       },
     ),
     GoRoute(
-      path: 'foster-home-visit/status',
+      path: 'foster-home-visits/:fosterParentId/status',
       name: 'fosterHomeVisitStatus',
       builder: (context, state) {
         final orgId = state.pathParameters['id']!;
-        return FosterHomeVisitStatusScreen(orgId: orgId);
+        final fosterParentId = state.pathParameters['fosterParentId']!;
+        return FosterHomeVisitStatusScreen(
+          orgId: orgId,
+          fosterParentId: fosterParentId,
+        );
       },
     ),
   ];

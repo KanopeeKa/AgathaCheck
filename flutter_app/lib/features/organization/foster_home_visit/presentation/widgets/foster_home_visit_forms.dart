@@ -106,14 +106,18 @@ class _FosterHomeVisitScheduleFormState extends State<FosterHomeVisitScheduleFor
             ),
           ),
           const SizedBox(height: 12),
-          OutlinedButton.icon(
-            key: const Key('foster_home_visit_date_picker'),
-            onPressed: widget.busy ? null : _pickDate,
-            icon: const Icon(Icons.event_outlined),
-            label: Text(
-              _visitDate == null
-                  ? l.fosterHomeVisitDateLabel
-                  : formatCalendarDateDisplay(_visitDate!),
+          Semantics(
+            identifier: 'foster_home_visit_schedule_date',
+            button: true,
+            child: OutlinedButton.icon(
+              key: const Key('foster_home_visit_date_picker'),
+              onPressed: widget.busy ? null : _pickDate,
+              icon: const Icon(Icons.event_outlined),
+              label: Text(
+                _visitDate == null
+                    ? l.fosterHomeVisitDateLabel
+                    : formatCalendarDateDisplay(_visitDate!),
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -208,6 +212,10 @@ class _FosterHomeVisitValidateFormState extends State<FosterHomeVisitValidateFor
   }
 
   Future<void> _submit() async {
+    if (_selectedOutcome == null || _selectedOutcome!.isEmpty) {
+      setState(() {});
+      return;
+    }
     if (!_formKey.currentState!.validate()) return;
     await widget.onSubmit(
       outcome: _selectedOutcome!,
@@ -232,33 +240,37 @@ class _FosterHomeVisitValidateFormState extends State<FosterHomeVisitValidateFor
             ),
           ),
           const SizedBox(height: 12),
-          DropdownButtonFormField<String>(
-            key: const Key('foster_home_visit_outcome_dropdown'),
-            initialValue: _selectedOutcome,
-            decoration: InputDecoration(
-              labelText: l.fosterHomeVisitOutcomeLabel,
-              border: const OutlineInputBorder(),
+          Semantics(
+            identifier: 'foster_home_visit_outcome_yes',
+            child: RadioListTile<String>(
+              key: const Key('foster_home_visit_outcome_yes'),
+              title: Text(l.fosterHomeVisitOutcomeYes),
+              value: 'yes',
+              groupValue: _selectedOutcome,
+              onChanged: widget.busy
+                  ? null
+                  : (value) => setState(() => _selectedOutcome = value),
             ),
-            items: [
-              DropdownMenuItem(
-                value: 'yes',
-                child: Text(l.fosterHomeVisitOutcomeYes),
-              ),
-              DropdownMenuItem(
-                value: 'no',
-                child: Text(l.fosterHomeVisitOutcomeNo),
-              ),
-            ],
-            onChanged: widget.busy
-                ? null
-                : (value) => setState(() => _selectedOutcome = value),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return l.fosterHomeVisitOutcomeRequired;
-              }
-              return null;
-            },
           ),
+          Semantics(
+            identifier: 'foster_home_visit_outcome_no',
+            child: RadioListTile<String>(
+              key: const Key('foster_home_visit_outcome_no'),
+              title: Text(l.fosterHomeVisitOutcomeNo),
+              value: 'no',
+              groupValue: _selectedOutcome,
+              onChanged: widget.busy
+                  ? null
+                  : (value) => setState(() => _selectedOutcome = value),
+            ),
+          ),
+          if (_selectedOutcome == null)
+            Text(
+              l.fosterHomeVisitOutcomeRequired,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.error,
+              ),
+            ),
           const SizedBox(height: 12),
           TextFormField(
             key: const Key('foster_home_visit_outcome_reason'),
@@ -353,7 +365,9 @@ class FosterHomeVisitStatusLink extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     return OutlinedButton.icon(
       key: const Key('foster_home_visit_status_link'),
-      onPressed: () => context.push(fosterHomeVisitStatusRoutePath(orgId)),
+      onPressed: () => context.push(
+        fosterHomeVisitStatusRoutePath(orgId, fosterParentId),
+      ),
       icon: const Icon(Icons.event_note_outlined, size: 18),
       label: Text(l.fosterHomeVisitStatusLink),
     );

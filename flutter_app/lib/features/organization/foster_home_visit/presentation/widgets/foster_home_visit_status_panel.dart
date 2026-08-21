@@ -49,7 +49,10 @@ class FosterHomeVisitStatusPanel extends StatelessWidget {
         ],
         if (validated != null)
           _VisitStatusCard(
-            title: l.fosterHomeVisitStatusLatestValidatedTitle,
+            title: validated.outcome == FosterHomeVisitOutcome.yes &&
+                    !showAddress
+                ? l.fosterHomeVisitStatusApproved
+                : l.fosterHomeVisitStatusLatestValidatedTitle,
             visit: validated,
             showAddress: showAddress,
           ),

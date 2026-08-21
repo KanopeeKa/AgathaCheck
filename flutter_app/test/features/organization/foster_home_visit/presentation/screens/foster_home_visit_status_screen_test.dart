@@ -16,7 +16,6 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          fosterSelfParentIdProvider('org-1').overrideWith((ref) => 'fp-1'),
           fosterHomeVisitRepositoryProvider.overrideWithValue(
             FakeFosterHomeVisitRepository(
               status: const FosterHomeVisitStatusSnapshot(
@@ -36,7 +35,10 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: FosterHomeVisitStatusScreen(orgId: 'org-1'),
+            body: FosterHomeVisitStatusScreen(
+              orgId: 'org-1',
+              fosterParentId: 'fp-1',
+            ),
           ),
         ),
       ),
@@ -49,12 +51,51 @@ void main() {
     expect(find.textContaining('Visit address'), findsNothing);
   });
 
+  testWidgets('status screen shows validated yes without address', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          fosterHomeVisitRepositoryProvider.overrideWithValue(
+            FakeFosterHomeVisitRepository(
+              status: const FosterHomeVisitStatusSnapshot(
+                latestValidated: FosterHomeVisit(
+                  id: 'hv-1',
+                  organizationId: 'org-1',
+                  orgFosterParentId: 'fp-1',
+                  status: FosterHomeVisitStatus.validated,
+                  visitDate: '2026-10-01',
+                  visitTime: '11:00',
+                  outcome: FosterHomeVisitOutcome.yes,
+                ),
+              ),
+            ),
+          ),
+        ],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: FosterHomeVisitStatusScreen(
+              orgId: 'org-1',
+              fosterParentId: 'fp-1',
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('Home visit approved'), findsOneWidget);
+    expect(find.textContaining('Visit address'), findsNothing);
+  });
+
   testWidgets('status screen shows empty state when no visits', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          fosterSelfParentIdProvider('org-1').overrideWith((ref) => 'fp-1'),
           fosterHomeVisitRepositoryProvider.overrideWithValue(
             FakeFosterHomeVisitRepository(),
           ),
@@ -63,7 +104,10 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: FosterHomeVisitStatusScreen(orgId: 'org-1'),
+            body: FosterHomeVisitStatusScreen(
+              orgId: 'org-1',
+              fosterParentId: 'fp-1',
+            ),
           ),
         ),
       ),

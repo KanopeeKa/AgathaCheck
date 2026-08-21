@@ -9780,7 +9780,7 @@ abstract class AppLocalizations {
   /// No description provided for @fosterHomeVisitValidateAction.
   ///
   /// In en, this message translates to:
-  /// **'Record validation'**
+  /// **'Record visit outcome'**
   String get fosterHomeVisitValidateAction;
 
   /// No description provided for @fosterHomeVisitValidateSaved.
@@ -9788,6 +9788,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Home visit validation recorded'**
   String get fosterHomeVisitValidateSaved;
+
+  /// No description provided for @fosterHomeVisitValidatedPanelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Home visit validated'**
+  String get fosterHomeVisitValidatedPanelTitle;
+
+  /// No description provided for @fosterHomeVisitValidatedPanelMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit outcome recorded. The foster onboarding home visit step is complete.'**
+  String get fosterHomeVisitValidatedPanelMessage;
+
+  /// No description provided for @fosterHomeVisitStatusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Home visit approved'**
+  String get fosterHomeVisitStatusApproved;
 
   /// No description provided for @fosterHomeVisitDateLabel.
   ///
