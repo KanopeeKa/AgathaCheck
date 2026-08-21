@@ -166,21 +166,24 @@ export class VetListPage {
       if (await semanticsByName(this.page, orgCardPattern).isVisible().catch(() => false)) {
         return;
       }
-      if (await phoneText.first().isVisible().catch(() => false)) {
-        return;
+
+      const route = flutterRoutePath(this.page.url());
+      const onDetail = /\/(g|o)\/vets\/[^/]+$/.test(route);
+      const onList = /\/(g|o)\/vets(?:\?|$)/.test(route);
+
+      if (!onDetail || !(await phoneText.first().isVisible().catch(() => false))) {
+        if (!onList) {
+          await this.page.goto(flutterGotoUrl('/g/vets'));
+          await waitForFlutterRoutePattern(this.page, /\/g\/vets(?:\?|$)/, 30_000);
+        }
+        await this.expectLoaded();
+        await this.expectVetVisible(vetName);
+        await this.openVetDetail(vetName);
+        await waitForFlutterRoutePattern(this.page, /\/(g|o)\/vets\/[^/]+$/, 30_000);
+        await refreshFlutterAccessibility(this.page);
       }
 
-      const onDetail = /\/(g|o)\/vets\/[^/]+$/.test(flutterRoutePath(this.page.url()));
-      if (onDetail) {
-        if (await phoneText.first().isVisible().catch(() => false)) {
-          return;
-        }
-        await this.page.goto(flutterGotoUrl('/g/vets'));
-        await waitForFlutterRoutePattern(this.page, /\/g\/vets(?:\?|$)/, 30_000);
-        await this.expectLoaded();
-      }
-      await this.openVetDetail(vetName);
-      await expect(phoneText.first()).toBeVisible({ timeout: 5_000 });
-    }).toPass({ timeout: 30_000 });
+      await expect(phoneText.first()).toBeVisible({ timeout: 15_000 });
+    }).toPass({ timeout: 45_000 });
   }
 }
