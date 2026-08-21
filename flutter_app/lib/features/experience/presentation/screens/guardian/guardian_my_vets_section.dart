@@ -19,26 +19,52 @@ class GuardianMyVetsSection extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final auth = ref.watch(authProvider);
     final vetListAsync = ref.watch(vetListProvider);
-    final pets = ref.watch(petListProvider).valueOrNull ?? [];
+    final petsAsync = ref.watch(petListProvider);
 
     return DashboardSection(
       title: l.myVets,
+      headerAction: TextButton.icon(
+        onPressed: () => context.go('/g/vets/add'),
+        icon: const Icon(Icons.add, size: 18),
+        label: Text(l.addVet),
+      ),
       previewBuilder: (ctx) {
         if (auth.accessToken == null) {
-          return const SizedBox(
-            height: 24,
-            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          return Semantics(
+            container: true,
+            liveRegion: true,
+            label: l.myVets,
+            child: const SizedBox(
+              key: Key('guardian_vets_auth_waiting'),
+              height: 24,
+              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            ),
           );
         }
 
         return vetListAsync.when(
-          loading: () => const SizedBox(
-            height: 24,
-            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          loading: () => Semantics(
+            container: true,
+            liveRegion: true,
+            label: l.myVets,
+            child: const SizedBox(
+              key: Key('guardian_vets_loading'),
+              height: 24,
+              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            ),
           ),
-          error: (_, __) => TextButton(
-            onPressed: () => ref.read(vetListProvider.notifier).refresh(),
-            child: Text(l.retry),
+          error: (_, __) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const ExcludeSemantics(child: Icon(Icons.error_outline)),
+              const SizedBox(height: 4),
+              Text(l.error),
+              TextButton.icon(
+                onPressed: () => ref.read(vetListProvider.notifier).refresh(),
+                icon: const Icon(Icons.refresh, size: 18),
+                label: Text(l.retry),
+              ),
+            ],
           ),
           data: (vets) {
             if (vets.isEmpty) {
@@ -55,7 +81,9 @@ class GuardianMyVetsSection extends ConsumerWidget {
                   .map(
                     (vet) => VetCompactRow(
                       vet: vet,
-                      linkedPetCount: _linkedPetCount(vet.id, pets),
+                      linkedPetCount: petsAsync.hasValue
+                          ? _linkedPetCount(vet.id, petsAsync.value!)
+                          : null,
                       onTap: () => context.go('/g/vets/${vet.id}'),
                     ),
                   )

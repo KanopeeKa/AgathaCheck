@@ -31,6 +31,16 @@ abstract final class AppColorTokens {
   static const Color guardianCareActive = Color(0xFF405B4B);
   static const Color guardianCareLight = Color(0xFFE8F1E9);
 
+  // Guardian Operations Desk surfaces. These are intentionally scoped to the
+  // landing and guardian desk rather than replacing the global app palette.
+  static const Color operationsOlive = Color(0xFF2F4439);
+  static const Color operationsOliveLight = Color(0xFF3F6250);
+  static const Color operationsPaper = Color(0xFFF5F2E9);
+  static const Color operationsSurface = Color(0xFFFFFDF8);
+  static const Color operationsInk = Color(0xFF26332C);
+  static const Color operationsGold = Color(0xFFC9A65A);
+  static const Color operationsDeskCanvas = Color(0xFFF0EEE5);
+
   // Organisation context — distinct from warning and error semantics.
   static const Color organizationOchre = Color(0xFFB98223);
   static const Color organizationOchreLight = Color(0xFFF8EDCE);

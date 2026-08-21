@@ -127,7 +127,9 @@ void main() {
         entryHistoryProvider.overrideWith(_historyFor),
       ],
       child: MaterialApp.router(
-        theme: AppTheme.lightTheme,
+        theme: AppTheme.lightTheme.copyWith(
+          splashFactory: NoSplash.splashFactory,
+        ),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         routerConfig: router,

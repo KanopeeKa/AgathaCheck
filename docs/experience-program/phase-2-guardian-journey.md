@@ -9,9 +9,28 @@ Replace the mixed-feed Guardian dashboard with the brief's three symmetric previ
 resolve the two concepts the brief's own vocabulary needed redefining for this codebase: "Event"
 (D17) and "family events" → pet timeline (D18).
 
+## Guardian Today execution contract
+
+The dashboard implementation uses **Today** as a compact presentation and
+prioritisation layer above exactly three management sections: **My Pets**, **Due
+and Overdue**, and **My Vets**. Today is not a fourth section, a new route, or a
+replacement for any dedicated screen. Full collections and object actions remain
+behind the existing dashboard links and routes.
+
+The implementation-safe details, stable data authorities, action destinations,
+accessibility requirements, and file ownership boundaries are documented in the
+[Guardian Today dashboard contract](guardian-today-contract.md). That handoff
+must be read alongside this phase document and the locked master brief.
+
+This branch is presentation-only at the data boundary: it must not add a backend
+API, schema, generic event entity, permission rule, notification kind, or
+alternative navigation shell. Pending inboxes remain governed by D10 and must
+not return as dashboard banners. The existing Guardian/Organisation/Account
+drawer, root/sub-screen header behavior, and global bell remain unchanged.
+
 ## In scope
 
-- `/g/home` rebuilt as My Pets / Upcoming Pet Events / My Vets, using Phase 0's shared
+- `/g/home` rebuilt as Today orientation plus My Pets / Due and Overdue / My Vets, using Phase 0's shared
   dashboard-section widget
 - Pending-inbox → administrative-notification migration (D10)
 - Pet card visual redesign (shared `pet_card.dart`, verified on all 3 existing call sites)
@@ -49,7 +68,7 @@ timeline widget on the org-side pet detail screen.
 
 ## Business rules
 
-1. Dashboard shows at most 4 pets (My Pets), 5 upcoming items (Upcoming Pet Events), and the full
+1. Dashboard shows at most 4 pets (My Pets), 5 care priorities (Due and Overdue), and the full
    vet list in compact row form (My Vets is text-based, not card-based, no stated cap in the
    brief — keep it uncapped but scannable).
 2. Pet card status bar colour: plum for guardian-owned, green for foster — reuse
@@ -69,6 +88,18 @@ timeline widget on the org-side pet detail screen.
    dashboard never has a window with neither the old banner nor a working notification.
 6. Bulk share: multi-select toggle on All Pets screen → existing single-share dialog fires once
    per selected pet — no new bulk backend endpoint (D23).
+
+### Today branch clarifications
+
+- The four-pet and five-care-item limits apply to the dashboard preview only;
+  dedicated full screens retain their existing collection behavior.
+- Pet previews use bounded rectangular cards with a roughly 96–112 px photo
+  region, accessible placeholders, and relationship/status text or icon support.
+- Care loading, empty, error, completed, and undo states must remain truthful and
+  distinguishable; retryable errors must not be rendered as an empty due list.
+- The five-tab bottom bar, universal Add action, and a new Today route are
+  deferred navigation work, not Phase 2 dashboard work. See
+  [the contract](guardian-today-contract.md) and D34–D37 in the decisions log.
 
 ## Screens and navigation
 

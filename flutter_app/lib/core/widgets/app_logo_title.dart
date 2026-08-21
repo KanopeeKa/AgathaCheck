@@ -21,6 +21,7 @@ class AppLogoTitle extends StatelessWidget {
 
   /// When false, only the logo is shown (no title text).
   final bool showTitle;
+  final bool useShellLogo;
 
   const AppLogoTitle({
     super.key,
@@ -28,12 +29,15 @@ class AppLogoTitle extends StatelessWidget {
     this.experience,
     this.linkLogo = true,
     this.showTitle = true,
+    this.useShellLogo = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final resolved = experience ?? LogoAssets.experienceForContext(context);
-    final assetPath = LogoAssets.pngFor(resolved);
+    final assetPath = useShellLogo
+        ? LogoAssets.pngForShell(resolved)
+        : LogoAssets.pngFor(resolved);
 
     final logo = ClipRRect(
       borderRadius: BorderRadius.circular(6),

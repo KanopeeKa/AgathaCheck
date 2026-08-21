@@ -19,6 +19,7 @@ import '../../features/pet_profile/presentation/screens/pet_form_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_timeline_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_weight_tracking_screen.dart';
 import '../../features/pet_profile/presentation/widgets/pet_edit_permission_guard.dart';
+import '../../features/experience/presentation/screens/guardian/guardian_desk_preview_screen.dart';
 import '../../features/organization/presentation/screens/archived_pets_screen.dart';
 import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
 import '../../features/about/presentation/screens/about_screen.dart';
@@ -32,6 +33,13 @@ import '../providers/analytics_providers.dart';
 import 'experience_routes.dart';
 import 'organization_routes.dart';
 import 'vet_routes.dart';
+
+bool get _designReviewEnabled {
+  final host = Uri.base.host.toLowerCase();
+  return host == '127.0.0.1' ||
+      host == 'localhost' ||
+      host.endsWith('.replit.dev');
+}
 
 class AuthChangeNotifier extends ChangeNotifier {
   AuthState _authState;
@@ -63,9 +71,13 @@ final authChangeNotifierProvider = Provider<AuthChangeNotifier>((ref) {
 final routerProvider = Provider<GoRouter>((ref) {
   final authNotifier = ref.watch(authChangeNotifierProvider);
   final analyticsObserver = ref.watch(analyticsRouteObserverProvider);
+  final initialLocation =
+      _designReviewEnabled && Uri.base.path == '/preview/guardian-desk'
+      ? '/preview/guardian-desk'
+      : '/';
 
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: initialLocation,
     refreshListenable: authNotifier,
     observers: [analyticsObserver],
     redirect: (context, state) {
@@ -78,6 +90,9 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       if (!isLoggedIn) {
         if (path == '/landing') return null;
+        if (_designReviewEnabled && path == '/preview/guardian-desk') {
+          return null;
+        }
         if (path == '/forgot-password') return null;
         if (path.startsWith('/shared/')) return null;
         if (isPublicOrganizationProfilePath(path)) return null;
@@ -104,6 +119,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'landing',
         builder: (context, state) => const LandingScreen(),
       ),
+      if (_designReviewEnabled)
+        GoRoute(
+          path: '/preview/guardian-desk',
+          name: 'guardianDeskPreview',
+          builder: (context, state) => const GuardianDeskPreviewScreen(),
+        ),
       GoRoute(
         path: '/forgot-password',
         name: 'forgotPassword',

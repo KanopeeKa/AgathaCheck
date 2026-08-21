@@ -20,7 +20,7 @@ Widget _wrap(Widget child) {
 }
 
 void main() {
-  testWidgets('landing branding shows guardian and org path buttons', (
+  testWidgets('landing branding presents the role-neutral operations desk', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -30,8 +30,6 @@ void main() {
             return LandingBrandingSection(
               theme: Theme.of(context),
               l10n: AppLocalizations.of(context)!,
-              onPetParentsPressed: () {},
-              onCharitiesPressed: () {},
             );
           },
         ),
@@ -39,75 +37,12 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('landing_guardian_path_card')), findsOneWidget);
-    expect(find.byKey(const Key('landing_org_path_card')), findsOneWidget);
-    expect(find.text('For pet parents and foster carers'), findsOneWidget);
-    expect(find.text('For shelters, rescues, and care teams'), findsOneWidget);
-  });
-
-  testWidgets('landing path buttons invoke scroll callbacks', (tester) async {
-    var petParentsPressed = false;
-    var charitiesPressed = false;
-
-    await tester.pumpWidget(
-      _wrap(
-        Builder(
-          builder: (context) {
-            return LandingBrandingSection(
-              theme: Theme.of(context),
-              l10n: AppLocalizations.of(context)!,
-              onPetParentsPressed: () => petParentsPressed = true,
-              onCharitiesPressed: () => charitiesPressed = true,
-            );
-          },
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byKey(const Key('landing_guardian_path_card')));
-    await tester.pumpAndSettle();
-    expect(petParentsPressed, isTrue);
-
-    await tester.tap(find.byKey(const Key('landing_org_path_card')));
-    await tester.pumpAndSettle();
-    expect(charitiesPressed, isTrue);
-  });
-
-  testWidgets('landing path cards use experience accent fills', (tester) async {
-    await tester.pumpWidget(
-      _wrap(
-        Builder(
-          builder: (context) {
-            return LandingBrandingSection(
-              theme: Theme.of(context),
-              l10n: AppLocalizations.of(context)!,
-              onPetParentsPressed: () {},
-              onCharitiesPressed: () {},
-            );
-          },
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    final guardianMaterial = tester.widget<Material>(
-      find.descendant(
-        of: find.byKey(const Key('landing_guardian_path_card')),
-        matching: find.byType(Material),
-      ),
-    );
-    final orgMaterial = tester.widget<Material>(
-      find.descendant(
-        of: find.byKey(const Key('landing_org_path_card')),
-        matching: find.byType(Material),
-      ),
-    );
-
-    expect(guardianMaterial.color, isNotNull);
-    expect(orgMaterial.color, isNotNull);
-    expect(guardianMaterial.color, isNot(equals(orgMaterial.color)));
-    expect(guardianMaterial.elevation, 0);
-    expect(orgMaterial.elevation, 0);
+    expect(find.text('THE GUARDIAN OPERATIONS DESK'), findsOneWidget);
+    expect(find.text('Keep care close.\nKeep everyone ready.'), findsOneWidget);
+    expect(find.text('Today at a glance'), findsOneWidget);
+    expect(find.text('Clear handovers'), findsOneWidget);
+    expect(find.text('Private by design'), findsOneWidget);
+    expect(find.byKey(const Key('landing_guardian_path_card')), findsNothing);
+    expect(find.byKey(const Key('landing_org_path_card')), findsNothing);
   });
 }

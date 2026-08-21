@@ -42,6 +42,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Replit agent operating policy](replit-agent-operating-policy.md) — **Legacy (Replit only).** Cursor Cloud agents: use `AGENTS.md` + `.cursor/rules/` instead.
 - [Flutter pub cache Matrix4 quirk](flutter-pubcache-matrix4.md) — `flutter test` failing inside the SDK's painting lib (Matrix4/Vector4 undefined) = stale cache; run `flutter pub get` first.
 - [Replit Flutter preview compatibility](replit-flutter-preview-compatibility.md) — preview toolchain can lag the app’s Dart requirement; never treat an older CI bundle as current-source visual verification.
+- [GitHub API publishing fallback](github-api-publish-fallback.md) — when shell Git auth is unavailable but GitHub OAuth works, publish a verified branch through guarded Git data API calls.
 - [Mockup sandbox hygiene](mockup-sandbox-registration.md) — use managed sandboxes; keep nested installs artifact-scoped and prevent verification builds from dirtying tracked dist output.
 - [Body-supplied organization_id validation](body-supplied-org-id-validation.md) — pet create/update must verify caller is in organization_users before persisting org_id; backend enforces 403 on non-member.
 - [UAT live E2E & deploy triage](uat-live-e2e-triage.md) — migrations/ownership, auth bypass, **`E2E=1` required on UAT Node**, API seed-before-login, 500/401/429 symptom map; full runbook `docs/e2e/uat-live-operations-runbook.md`.

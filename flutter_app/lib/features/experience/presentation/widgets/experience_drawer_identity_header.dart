@@ -20,7 +20,7 @@ class ExperienceDrawerIdentityHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final assetPath = LogoAssets.pngFor(experience);
+    final assetPath = LogoAssets.pngForShell(experience);
 
     final firstName = user?.firstName?.trim() ?? '';
     final lastName = user?.lastName?.trim() ?? '';

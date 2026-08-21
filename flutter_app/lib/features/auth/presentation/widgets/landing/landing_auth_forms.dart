@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/web/native_login.dart';
 import '../../../../../core/web/native_login_inline_view.dart';
@@ -358,10 +359,16 @@ class LandingAuthCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 0,
+      color: AppColorTokens.operationsSurface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(
+          color: AppColorTokens.operationsOlive.withValues(alpha: 0.16),
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(28),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
@@ -375,29 +382,65 @@ class LandingAuthCard extends StatelessWidget {
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 180),
                     child: Text(
-                      isSignIn ? l10n.signInToAccount : l10n.createYourAccount,
+                      isSignIn
+                          ? l10n.landingDeskWelcomeBack
+                          : l10n.landingDeskCreateHeading,
                       key: ValueKey(isSignIn),
-                      style: theme.textTheme.titleLarge?.copyWith(
+                      style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w700,
+                        color: AppColorTokens.operationsInk,
                       ),
                     ),
                   ),
                 );
               },
             ),
-            const SizedBox(height: 12),
-            TabBar(
-              controller: tabController,
-              indicatorSize: TabBarIndicatorSize.tab,
-              labelStyle: theme.textTheme.labelLarge,
-              unselectedLabelStyle: theme.textTheme.labelLarge,
-              tabs: [
-                Tab(text: l10n.signIn),
-                Tab(text: l10n.createAccount),
-              ],
-              onTap: (_) => onTabTap(),
+            const SizedBox(height: 8),
+            AnimatedBuilder(
+              animation: tabController,
+              builder: (context, _) {
+                final isSignIn = tabController.index == 0;
+                return Text(
+                  isSignIn
+                      ? l10n.landingDeskWelcomeBackBody
+                      : l10n.landingDeskCreateBody,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColorTokens.operationsInk.withValues(alpha: 0.7),
+                    height: 1.4,
+                  ),
+                );
+              },
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: AppColorTokens.operationsPaper,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: TabBar(
+                controller: tabController,
+                indicatorSize: TabBarIndicatorSize.tab,
+                indicator: BoxDecoration(
+                  color: AppColorTokens.operationsOliveLight,
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                labelColor: AppColorTokens.operationsSurface,
+                unselectedLabelColor: AppColorTokens.operationsInk,
+                labelStyle: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                unselectedLabelStyle: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                dividerColor: Colors.transparent,
+                tabs: [
+                  Tab(text: l10n.signIn),
+                  Tab(text: l10n.createAccount),
+                ],
+                onTap: (_) => onTabTap(),
+              ),
+            ),
+            const SizedBox(height: 26),
             AnimatedBuilder(
               animation: tabController,
               builder: (context, _) {

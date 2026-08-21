@@ -1,10 +1,10 @@
-modules = ["dart-3.10", "nodejs-20", "python-3.11", "postgresql-16"]
+modules = ["dart-3.12", "nodejs-20", "python-3.11", "postgresql-16"]
 [agent]
 expertMode = true
 
 [nix]
 channel = "stable-25_05"
-packages = ["flutter", "chromium", "shellcheck"]
+packages = ["flutter", "chromium", "glib", "gtk3", "nss", "atk", "cups", "pango", "libdrm", "mesa", "libglvnd", "xorg.libX11", "xorg.libxcb", "xorg.libXcomposite", "xorg.libXdamage", "xorg.libXfixes", "xorg.libXrandr", "xorg.libXi", "xorg.libXtst", "shellcheck"]
 
 [workflows]
 runButton = "Project"
@@ -55,3 +55,7 @@ run = ["bash", "-c", "cd server && PORT=5000 exec node bin/start.js"]
 [userenv]
 
 [userenv.shared]
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 600000

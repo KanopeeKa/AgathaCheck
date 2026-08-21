@@ -116,6 +116,32 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 
 ---
 
+### J3a — Guardian operations desk (P0)
+
+**Goal:** Orient a guardian to care that needs attention while preserving the
+existing full pet, event, vet, and notification workflows.
+
+| Pri | Behaviour | Gherkin scenario | Playwright | Status |
+|-----|-----------|------------------|------------|--------|
+| P0 | Three management sections | Dashboard shows exactly three sections | `guardian.dashboard.spec.ts` | ✅ |
+| P0 | Today orientation | Today orientation prioritises attention above the management sections | `guardian.dashboard.spec.ts` | ✅ |
+| P0 | Bounded pet preview | My Pets preview is capped at four with an All Pets destination | `guardian.dashboard.spec.ts` | ✅ |
+| P0 | Care priority and action | Care preview orders overdue, due today, and upcoming items; Care preview supports completion and undo | `guardian.dashboard.spec.ts` | ✅ |
+| P1 | Vet hand-off | My Vets preview reaches linked vet details | `guardian.dashboard.spec.ts` | ✅ |
+| P1 | Truthful first use | Empty Guardian dashboard shows first-use guidance without false alerts | `guardian.dashboard.spec.ts` | ✅ |
+| P1 | Global notification hand-off | Pending foster placement surfaces as a notification, not a dashboard banner | `guardian.dashboard.spec.ts` | ✅ |
+| P1 | Full Events continuity | Global events screen shows unified list without tabs; Global events screen supports pet and cohort filters | `guardian.dashboard.spec.ts` | ✅ |
+
+**Verified responsive contract:** the suite enters `/g/home` directly, checks
+the 320px narrow layout for no horizontal overflow, proves completion/undo at
+375×812, and exercises the wide 1280×800 hierarchy. It also verifies
+destination navigation, browser back, the shell notification panel, and an axe
+smoke scan after Flutter semantics are enabled. Today is intentionally an
+orientation layer, never a fourth `DashboardSection`, route, or notification
+feed.
+
+---
+
 ### J4 — Notifications
 
 **Goal:** Surface due/overdue work and manage read state.

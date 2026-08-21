@@ -6,7 +6,11 @@ export interface ApiFetchResponse {
   ok: boolean;
   status: number;
   text(): Promise<string>;
-  json(): Promise<unknown>;
+  /**
+   * Keep callers compatible while making response shapes explicit at use sites.
+   * `unknown` prevents an untyped endpoint response from silently becoming `any`.
+   */
+  json<T = unknown>(): Promise<T>;
 }
 
 let playwrightPage: Page | null = null;
@@ -27,7 +31,7 @@ function wrapPlaywrightResponse(res: APIResponse): ApiFetchResponse {
     ok: res.ok(),
     status: res.status(),
     text: () => res.text(),
-    json: () => res.json(),
+    json: <T = unknown>() => res.json() as Promise<T>,
   };
 }
 
@@ -36,7 +40,7 @@ function wrapNodeResponse(res: Response): ApiFetchResponse {
     ok: res.ok,
     status: res.status,
     text: () => res.text(),
-    json: () => res.json(),
+    json: <T = unknown>() => res.json() as Promise<T>,
   };
 }
 
@@ -45,7 +49,7 @@ function wrapBrowserResult(result: { ok: boolean; status: number; text: string }
     ok: result.ok,
     status: result.status,
     text: async () => result.text,
-    json: async () => JSON.parse(result.text),
+    json: async <T = unknown>() => JSON.parse(result.text) as T,
   };
 }
 

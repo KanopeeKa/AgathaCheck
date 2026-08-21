@@ -5,6 +5,9 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
+source "$ROOT/scripts/flutter-sdk.sh"
+agatha_flutter_use
+agatha_flutter_verify
 
 echo "==> Governance gates"
 node scripts/check_file_size.js

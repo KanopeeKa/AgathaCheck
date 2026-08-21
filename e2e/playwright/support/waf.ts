@@ -26,7 +26,7 @@ type ProbeResult = 'ok' | 'waf' | 'health_down' | 'auth_down';
 
 async function probeBackendHealth(page: Page, baseURL: string): Promise<ProbeResult> {
   const healthUrl = `${baseURL}/backend/health`;
-  const result = await page.evaluate(async ([url, markers]: [string, string[]]) => {
+  const result = await page.evaluate(async ([url, markers]: [string, readonly string[]]) => {
     try {
       const res = await fetch(url, { credentials: 'include' });
       const body = await res.text();
@@ -36,7 +36,7 @@ async function probeBackendHealth(page: Page, baseURL: string): Promise<ProbeRes
     } catch {
       return 'down';
     }
-  }, [healthUrl, WAF_MARKERS] as [string, string[]]);
+  }, [healthUrl, WAF_MARKERS] as [string, readonly string[]]);
 
   if (result === 'ok' || result === 'waf') {
     return result;
@@ -53,7 +53,7 @@ async function probeAuthSignup(page: Page, baseURL: string): Promise<ProbeResult
   const signupUrl = `${baseURL}/backend/api/auth/signup`;
   const bypassHeaders = e2eBypassHeadersForUrl(baseURL);
   const result = await page.evaluate(
-    async ([url, markers, headers]: [string, string[], Record<string, string>]) => {
+    async ([url, markers, headers]: [string, readonly string[], Record<string, string>]) => {
       try {
         const res = await fetch(url, {
           method: 'POST',
@@ -72,7 +72,11 @@ async function probeAuthSignup(page: Page, baseURL: string): Promise<ProbeResult
         return 'down';
       }
     },
-    [signupUrl, WAF_MARKERS, bypassHeaders] as [string, string[], Record<string, string>],
+    [signupUrl, WAF_MARKERS, bypassHeaders] as [
+      string,
+      readonly string[],
+      Record<string, string>,
+    ],
   );
 
   if (result === 'ok' || result === 'waf') {

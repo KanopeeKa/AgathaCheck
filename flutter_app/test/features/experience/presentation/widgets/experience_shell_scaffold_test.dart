@@ -55,6 +55,7 @@ Widget _buildApp({
       organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
     ],
     child: MaterialApp(
+      theme: ThemeData(splashFactory: NoSplash.splashFactory),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -101,6 +102,7 @@ void main() {
           organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
         ],
         child: MaterialApp(
+          theme: ThemeData(splashFactory: NoSplash.splashFactory),
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -141,6 +143,7 @@ void main() {
           organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
         ],
         child: MaterialApp(
+          theme: ThemeData(splashFactory: NoSplash.splashFactory),
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -174,7 +177,9 @@ void main() {
     );
   });
 
-  testWidgets('section root shows hamburger, not back arrow', (tester) async {
+  testWidgets('baseline: section root shows hamburger, not back arrow', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
@@ -188,7 +193,9 @@ void main() {
     expect(find.byKey(const Key('experience_back_button')), findsNothing);
   });
 
-  testWidgets('non-root path shows back arrow, not hamburger', (tester) async {
+  testWidgets('baseline: non-root path shows back arrow, not hamburger', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
@@ -202,7 +209,9 @@ void main() {
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
 
-  testWidgets('org section root /o/orgs shows hamburger', (tester) async {
+  testWidgets('baseline: org section root /o/orgs shows hamburger', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
@@ -217,7 +226,9 @@ void main() {
     expect(find.byKey(const Key('experience_back_button')), findsNothing);
   });
 
-  testWidgets('bell is always visible on shell screens', (tester) async {
+  testWidgets('baseline: bell is always visible on shell screens', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
@@ -233,7 +244,9 @@ void main() {
     );
   });
 
-  testWidgets('bell badge shows combined unread count', (tester) async {
+  testWidgets('baseline: bell badge shows combined unread count', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
@@ -251,7 +264,9 @@ void main() {
     );
   });
 
-  testWidgets('no Home button present (navigation reversal)', (tester) async {
+  testWidgets('baseline: no Home button present (navigation reversal)', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
@@ -264,48 +279,52 @@ void main() {
     expect(find.byKey(const Key('experience_nav_home')), findsNothing);
   });
 
-  testWidgets('drawer hides Organisation by default for guardian-only users', (
+  testWidgets(
+    'baseline: drawer hides Organisation by default for guardian-only users',
+    (tester) async {
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.guardian,
+          currentLocation: '/g/home',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('experience_settings_menu')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('drawer_guardian')), findsOneWidget);
+      expect(find.byKey(const Key('drawer_organisation')), findsNothing);
+      expect(find.byKey(const Key('drawer_account')), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'baseline: drawer shows Organisation when show-org pref is enabled',
+    (tester) async {
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.guardian,
+          currentLocation: '/g/home',
+          showOrganisationSection: true,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('experience_settings_menu')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('drawer_guardian')), findsOneWidget);
+      expect(find.byKey(const Key('drawer_organisation')), findsOneWidget);
+      expect(find.byKey(const Key('drawer_account')), findsOneWidget);
+    },
+  );
+
+  testWidgets('baseline: drawer does not contain deprecated items', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      _buildApp(
-        prefs: prefs,
-        experience: AppExperience.guardian,
-        currentLocation: '/g/home',
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byKey(const Key('experience_settings_menu')));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('drawer_guardian')), findsOneWidget);
-    expect(find.byKey(const Key('drawer_organisation')), findsNothing);
-    expect(find.byKey(const Key('drawer_account')), findsOneWidget);
-  });
-
-  testWidgets('drawer shows Organisation when show-org pref is enabled', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _buildApp(
-        prefs: prefs,
-        experience: AppExperience.guardian,
-        currentLocation: '/g/home',
-        showOrganisationSection: true,
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byKey(const Key('experience_settings_menu')));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('drawer_guardian')), findsOneWidget);
-    expect(find.byKey(const Key('drawer_organisation')), findsOneWidget);
-    expect(find.byKey(const Key('drawer_account')), findsOneWidget);
-  });
-
-  testWidgets('drawer does not contain deprecated items', (tester) async {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
@@ -331,7 +350,7 @@ void main() {
     expect(find.byKey(const Key('drawer_logout')), findsNothing);
   });
 
-  testWidgets('org non-root path shows back button', (tester) async {
+  testWidgets('baseline: org non-root path shows back button', (tester) async {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,

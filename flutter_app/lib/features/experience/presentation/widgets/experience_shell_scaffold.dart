@@ -102,7 +102,11 @@ class ExperienceShellScaffold extends ConsumerWidget {
                   variant: orgNavVariant!,
                   organization: organization,
                 )
-              : AppLogoTitle(title: screenTitle!, experience: experience),
+              : AppLogoTitle(
+                  title: screenTitle!,
+                  experience: experience,
+                  useShellLogo: experience == AppExperience.guardian,
+                ),
           actions: [
             if (contextualActions.isNotEmpty) ...contextualActions,
             if (contextualActions.isNotEmpty)

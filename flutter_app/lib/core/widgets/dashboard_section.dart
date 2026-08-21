@@ -44,20 +44,36 @@ class DashboardSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: ExcludeSemantics(
-                        child: Text(
-                          title,
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final titleWidget = ExcludeSemantics(
+                      child: Text(
+                        title,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                    if (headerAction != null) headerAction!,
-                  ],
+                    );
+                    if (headerAction == null) return titleWidget;
+
+                    if (constraints.maxWidth < 440) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          titleWidget,
+                          const SizedBox(height: 4),
+                          headerAction!,
+                        ],
+                      );
+                    }
+
+                    return Row(
+                      children: [
+                        Expanded(child: titleWidget),
+                        headerAction!,
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(height: 12),
                 previewBuilder(context),

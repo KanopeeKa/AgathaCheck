@@ -33,6 +33,22 @@ HealthEntry _due(String id, String name) => HealthEntry(
 
 final _dueEntry = _due('due-entry-1', 'Midday water check');
 
+HealthEntry _entryAt(
+  String id,
+  String name,
+  DateTime dueDate, {
+  int remindDaysBefore = 1,
+}) => HealthEntry(
+  id: id,
+  petId: _pet.id,
+  name: name,
+  type: HealthEntryType.other,
+  frequency: HealthFrequency.daily,
+  startDate: DateTime(2024, 1, 1),
+  nextDueDate: dueDate,
+  remindDaysBefore: remindDaysBefore,
+);
+
 // ---------------------------------------------------------------------------
 // Notifier helpers
 // ---------------------------------------------------------------------------
@@ -115,6 +131,67 @@ class _SlowMarkTakenNotifier extends HealthEntriesNotifier {
   }
 }
 
+class _FailingMarkTakenNotifier extends HealthEntriesNotifier {
+  _FailingMarkTakenNotifier(this._initial);
+
+  final List<HealthEntry> _initial;
+
+  @override
+  Future<List<HealthEntry>> build() async => List<HealthEntry>.from(_initial);
+
+  @override
+  Future<void> markTaken(
+    String id, {
+    String notes = '',
+    DateTime? completedOn,
+  }) async {
+    throw StateError('server rejected completion');
+  }
+}
+
+class _SlowUndoNotifier extends HealthEntriesNotifier {
+  _SlowUndoNotifier(this._initial, this._undoCompleter);
+
+  final List<HealthEntry> _initial;
+  final Completer<void> _undoCompleter;
+  int undoCompleteCalls = 0;
+
+  @override
+  Future<List<HealthEntry>> build() async => List<HealthEntry>.from(_initial);
+
+  @override
+  Future<void> markTaken(
+    String id, {
+    String notes = '',
+    DateTime? completedOn,
+  }) async {
+    final current = state.valueOrNull ?? _initial;
+    state = AsyncValue.data(current.where((e) => e.id != id).toList());
+  }
+
+  @override
+  Future<void> undoComplete(String id) async {
+    undoCompleteCalls++;
+    await _undoCompleter.future;
+    final current = state.valueOrNull ?? const <HealthEntry>[];
+    final restored = _initial.firstWhere((entry) => entry.id == id);
+    state = AsyncValue.data([...current, restored]);
+  }
+}
+
+class _MutableHealthEntriesNotifier extends HealthEntriesNotifier {
+  _MutableHealthEntriesNotifier(this._initial);
+
+  final List<HealthEntry> _initial;
+
+  @override
+  Future<List<HealthEntry>> build() async => List<HealthEntry>.from(_initial);
+
+  void publishTerminalError() {
+    state = AsyncValue.error(StateError('unavailable'), StackTrace.current);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Widget builder
 // ---------------------------------------------------------------------------
@@ -122,6 +199,7 @@ class _SlowMarkTakenNotifier extends HealthEntriesNotifier {
 Widget _buildSection({
   List<Pet> pets = const [],
   HealthEntriesNotifier Function()? notifierFactory,
+  VoidCallback? onAddEvent,
 }) {
   return ProviderScope(
     overrides: [
@@ -130,10 +208,14 @@ Widget _buildSection({
       ),
     ],
     child: MaterialApp(
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.lightTheme.copyWith(
+        splashFactory: NoSplash.splashFactory,
+      ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: GuardianUpcomingEventsSection(pets: pets)),
+      home: Scaffold(
+        body: GuardianUpcomingEventsSection(pets: pets, onAddEvent: onAddEvent),
+      ),
     ),
   );
 }
@@ -143,7 +225,7 @@ Widget _buildSection({
 // ---------------------------------------------------------------------------
 
 void main() {
-  testWidgets('upcoming events section renders title', (tester) async {
+  testWidgets('baseline: upcoming care section renders title', (tester) async {
     await tester.pumpWidget(_buildSection());
     await tester.pumpAndSettle();
 
@@ -151,7 +233,18 @@ void main() {
     expect(find.byType(DashboardSection), findsOneWidget);
   });
 
-  group('breakpoints', () {
+  testWidgets('retains the existing Add an event handoff', (tester) async {
+    var addEventCalls = 0;
+
+    await tester.pumpWidget(_buildSection(onAddEvent: () => addEventCalls++));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add an event'));
+    await tester.pumpAndSettle();
+
+    expect(addEventCalls, 1);
+  });
+
+  group('baseline: responsive care preview', () {
     testWidgets('uses compact completion rows at a 390px phone width', (
       tester,
     ) async {
@@ -218,9 +311,110 @@ void main() {
       expect(find.byKey(const Key('mobile_due_event_list')), findsNothing);
       expect(find.text('No events are overdue or due today.'), findsOneWidget);
     });
+
+    testWidgets(
+      'prioritizes overdue, due-today, then reminder-window entries and caps at five',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(390, 844));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final today = DateTime.now();
+        final entries = [
+          _entryAt(
+            'upcoming-later',
+            'Upcoming later',
+            today.add(const Duration(days: 2)),
+            remindDaysBefore: 3,
+          ),
+          _entryAt('due-today', 'Due today', today),
+          _entryAt(
+            'overdue-recent',
+            'Overdue recent',
+            today.subtract(const Duration(days: 1)),
+          ),
+          _entryAt(
+            'upcoming-soon',
+            'Upcoming soon',
+            today.add(const Duration(days: 1)),
+            remindDaysBefore: 3,
+          ),
+          _entryAt(
+            'overdue-oldest',
+            'Overdue oldest',
+            today.subtract(const Duration(days: 4)),
+          ),
+          _entryAt(
+            'outside-window',
+            'Outside window',
+            today.add(const Duration(days: 7)),
+          ),
+        ];
+
+        await tester.pumpWidget(
+          _buildSection(
+            pets: const [_pet],
+            notifierFactory: () => _FixedHealthEntriesNotifier(entries),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final rows = tester.widgetList<MobileDueEventRow>(
+          find.byType(MobileDueEventRow),
+        );
+        expect(rows, hasLength(5));
+        expect(rows.map((row) => row.entry.id), [
+          'overdue-oldest',
+          'overdue-recent',
+          'due-today',
+          'upcoming-soon',
+          'upcoming-later',
+        ]);
+      },
+    );
   });
 
-  group('list-level optimistic completion merge', () {
+  testWidgets('error state is retryable and not shown as the empty state', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _buildSection(
+        pets: const [_pet],
+        notifierFactory: _ErrorHealthEntriesNotifier.new,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('We couldn\'t load care right now.'), findsOneWidget);
+    expect(find.text('Retry'), findsOneWidget);
+    expect(find.text('No events are overdue or due today.'), findsNothing);
+  });
+
+  testWidgets(
+    'terminal error replaces a cached preview rather than showing it as empty or fresh data',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final notifier = _MutableHealthEntriesNotifier([_dueEntry]);
+
+      await tester.pumpWidget(
+        _buildSection(pets: const [_pet], notifierFactory: () => notifier),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(const Key('mobile_due_row_due-entry-1')),
+        findsOneWidget,
+      );
+
+      notifier.publishTerminalError();
+      await tester.pumpAndSettle();
+
+      expect(find.text('We couldn\'t load care right now.'), findsOneWidget);
+      expect(find.text('Retry'), findsOneWidget);
+      expect(find.byKey(const Key('mobile_due_row_due-entry-1')), findsNothing);
+      expect(find.text('No events are overdue or due today.'), findsNothing);
+    },
+  );
+
+  group('baseline: list-level optimistic completion merge', () {
     testWidgets(
       'completed row remains visible after server excludes the entry',
       (tester) async {
@@ -396,7 +590,12 @@ void main() {
           findsOneWidget,
           reason: 'completed icon must be present during AsyncLoading',
         );
-        expect(find.byType(CircularProgressIndicator), findsNothing);
+        expect(
+          find.byKey(const Key('guardian_due_events_refreshing')),
+          findsOneWidget,
+          reason:
+              'cached refresh must remain visibly distinct from settled data',
+        );
 
         // Now let markTaken complete (server removes entry, AsyncData arrives).
         completer.complete();
@@ -413,5 +612,72 @@ void main() {
         expect(find.text('Undo Complete'), findsOneWidget);
       },
     );
+
+    testWidgets(
+      'completion failure rolls back the optimistic row and reports feedback',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(390, 844));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(
+          _buildSection(
+            pets: const [_pet],
+            notifierFactory: () => _FailingMarkTakenNotifier([_dueEntry]),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byIcon(Icons.check));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Mark Completed'));
+        await tester.pumpAndSettle();
+
+        expect(find.byIcon(Icons.check_circle), findsNothing);
+        expect(find.byIcon(Icons.check), findsOneWidget);
+        expect(
+          find.text('Could not mark this care item as done. Try again.'),
+          findsOneWidget,
+        );
+        expect(find.text('Undo Complete'), findsNothing);
+      },
+    );
+
+    testWidgets('Undo stays visible until the authoritative undo succeeds', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final undoCompleter = Completer<void>();
+      final notifier = _SlowUndoNotifier([_dueEntry], undoCompleter);
+
+      await tester.pumpWidget(
+        _buildSection(pets: const [_pet], notifierFactory: () => notifier),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.check));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Mark Completed'));
+      await tester.pumpAndSettle();
+      expect(find.text('Undo Complete'), findsOneWidget);
+
+      await tester.tap(find.text('Undo Complete'));
+      await tester.pump();
+
+      expect(notifier.undoCompleteCalls, 1);
+      expect(find.text('Undo Complete'), findsOneWidget);
+      expect(find.byIcon(Icons.check_circle), findsOneWidget);
+
+      undoCompleter.complete();
+      await tester.pumpAndSettle();
+
+      expect(find.text('Undo Complete'), findsNothing);
+      expect(find.byIcon(Icons.check), findsOneWidget);
+    });
   });
+}
+
+class _ErrorHealthEntriesNotifier extends HealthEntriesNotifier {
+  @override
+  Future<List<HealthEntry>> build() async => throw StateError('unavailable');
 }

@@ -77,6 +77,7 @@
     "No badge when all notifications are read": "P1",
     "Marking a single notification as read": "P1",
     "Marking all notifications as read": "P1",
+    "Tapping a pet notification navigates to pet detail": "P1",
     "Tapping a due event notification navigates to view entry": "P1",
     "Tapping a pet notification without health entry navigates to pet detail": "P1",
     "Tapping an organisation notification navigates to org detail": "P1",
@@ -254,8 +255,13 @@
     "Org super-admin completes onboarding with inventory pet and reminder": "P1"
   },
   "guardian_dashboard.feature": {
-    "Dashboard shows exactly three sections": "P1",
-    "My Pets shows all personal pets with Manage pets link": "P1",
+    "Dashboard shows exactly three sections": "P0",
+    "Today orientation prioritises attention above the management sections": "P0",
+    "My Pets preview is capped at four with an All Pets destination": "P0",
+    "Care preview orders overdue, due today, and upcoming items": "P0",
+    "Care preview supports completion and undo": "P0",
+    "My Vets preview reaches linked vet details": "P1",
+    "Empty Guardian dashboard shows first-use guidance without false alerts": "P1",
     "Pending foster placement surfaces as a notification, not a dashboard banner": "P1",
     "Global events screen shows unified list without tabs": "P1",
     "Global events screen supports pet and cohort filters": "P1"
