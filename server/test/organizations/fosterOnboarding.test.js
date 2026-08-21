@@ -43,6 +43,11 @@ describe('fosterOnboarding helpers', () => {
     const steps = buildFosterOnboardingSteps(externalContext({ questionnaireSubmitted: true }));
     expect(steps.find((s) => s.key === 'onboarding_form')?.state).toBe('complete');
   });
+
+  it('auto-completes home_visit when validated yes exists', () => {
+    const steps = buildFosterOnboardingSteps(externalContext({ homeVisitValidatedYes: true }));
+    expect(steps.find((s) => s.key === 'home_visit')?.state).toBe('complete');
+  });
 });
 
 describe('POST foster onboarding step confirm', () => {
