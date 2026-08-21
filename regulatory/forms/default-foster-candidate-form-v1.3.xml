@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fosterCandidateForm version="1.3" locale="en-GB" jurisdictionScope="Europe-UK-generic">
+  <metadata>
+    <title>Foster Candidate Pre-Screen</title>
+    <purpose>
+      Capture the minimum important information needed to assess whether a candidate can provide a safe, stable and suitable temporary home for a vulnerable animal, while protecting the wellbeing of the animal, the candidate and the candidate's household.
+    </purpose>
+    <candidateMessage>
+      You do not need to know everything before applying. The shelter will provide guidance, explain the care required and support you throughout the foster process. You must be willing to follow the shelter's instructions and ask for help whenever needed.
+    </candidateMessage>
+    <disclaimer>
+      This is an initial suitability screen and matching profile, not a final placement decision. A shelter administrator reviews applications that contain a reservation, a clarification requirement or a No Go outcome. The shelter may suggest a different type of animal or ask for further information.
+    </disclaimer>
+    <completionRules>
+      <rule id="R1">The candidate must answer every required question.</rule>
+      <rule id="R2">The candidate may add a note to explain any answer and may add a general note at the end.</rule>
+      <rule id="R3">Screening questions produce Go, Go with reservation or No Go.</rule>
+      <rule id="R4">Matching-profile questions describe the candidate's suitable placement range and do not produce a negative screening result.</rule>
+      <rule id="R5">If all screening questions are Go, the application receives an automatic Go unless the shelter has configured a light-touch review.</rule>
+      <rule id="R6">If any screening question is Go with reservation or No Go, admin review is required.</rule>
+      <rule id="R7">A matching profile must not be treated as approval for a specific animal.</rule>
+    </completionRules>
+  </metadata>
+
+  <outcomeDefinitions>
+    <outcome id="GO" label="Go" reviewRequired="false">The answer does not identify an immediate concern for this question.</outcome>
+    <outcome id="GO_WITH_RESERVATION" label="Go with reservation" reviewRequired="true">The candidate may be suitable, but the shelter should clarify the situation, record conditions or match only with appropriate animals.</outcome>
+    <outcome id="NO_GO" label="No Go" reviewRequired="true">The answer indicates that the candidate cannot currently meet the shelter's minimum requirement for this question. The candidate may still explain or clarify before the shelter decides.</outcome>
+  </outcomeDefinitions>
+
+  <matchingLevels>
+    <level id="EASY" label="Easy animals" description="Animals with no identified complex medical, behavioural, age-related or care requirements beyond ordinary foster care." />
+    <level id="MEDIUM" label="Involved animals" description="Animals requiring additional support, adjustment, monitoring or care planning, but not the highest level of complexity." />
+    <level id="COMPLEX" label="Complex animals" description="Animals requiring substantial experience, intensive care, complex medical or behavioural support, or a high level of supervision." />
+    <rule>Matching levels are guidance for filtering and placement discussion. The shelter remains responsible for deciding whether a particular animal is suitable.</rule>
+  </matchingLevels>
+
+  <profileFields>
+    <field id="PF01" code="SPECIES_WILLING_TO_FOSTER" scope="global" source="candidate" matchingRelevant="true" required="true" responseType="multiSelect">
+      <label>Which types of animal would you be willing to foster?</label>
+      <option id="CAT" label="Cats" />
+      <option id="DOG" label="Dogs" />
+      <option id="RABBIT" label="Rabbits" />
+      <option id="HORSE_PONY" label="Horses or ponies" />
+      <option id="OTHER" label="Other" noteRequired="true" />
+    </field>
+    <field id="PF02" code="PET_AGE_RANGE" scope="global" source="candidate" matchingRelevant="true" required="true" responseType="multiSelect">
+      <label>Which ages of animal would you be willing to foster?</label>
+      <option id="YOUNG" label="Very young animals" />
+      <option id="ADULT" label="Adult animals" />
+      <option id="SENIOR" label="Senior animals" />
+      <option id="ANY_AGE" label="Any age, subject to matching" />
+    </field>
+    <field id="PF03" code="EXPERIENCE_LEVEL" scope="global" source="candidate" matchingRelevant="true" required="true" responseType="singleChoice">
+      <label>Which experience level best describes the animals you could safely foster?</label>
+      <helpText>The shelter will provide guidance and support at every level. This answer helps the shelter begin with a suitable match.</helpText>
+      <option id="EXPERT" outcome="GO" matchingLevel="COMPLEX">Expert: I have substantial relevant experience and can consider complex animals with shelter support.</option>
+      <option id="INTERMEDIARY" outcome="GO" matchingLevel="MEDIUM">Intermediate: I have some relevant experience and can consider involved animals with shelter support.</option>
+      <option id="NEW" outcome="GO" matchingLevel="EASY">New: I have little or no relevant experience and would like to start with easy animals with shelter support.</option>
+    </field>
+    <field id="PF04" code="HEALTH_NEEDS_ACCEPTED_IN_ANIMAL" scope="global" source="candidate" matchingRelevant="true" required="true" responseType="singleChoice">
+      <label>What level of health needs would you be willing to manage in a foster animal?</label>
+      <helpText>The shelter will explain the care required, provide guidance and support, and only propose an animal when the placement is considered suitable. This question is about the animal's needs, not your own health.</helpText>
+      <option id="ANIMAL_HEALTH_EASY" outcome="GO" matchingLevel="EASY">Easy health needs: I can foster animals with no known medical treatment or only routine care.</option>
+      <option id="ANIMAL_HEALTH_MEDIUM" outcome="GO" matchingLevel="MEDIUM">Involved health needs: I may be able to manage light or moderate treatment or monitoring with shelter guidance.</option>
+      <option id="ANIMAL_HEALTH_COMPLEX" outcome="GO" matchingLevel="COMPLEX">Complex health needs: I may be able to manage intensive treatment, significant monitoring or complex medical care with shelter support.</option>
+      <option id="ANIMAL_HEALTH_UNSURE" outcome="GO" matchingLevel="EASY">I am unsure and would like the shelter to explain the needs before I decide.</option>
+    </field>
+    <field id="PF05" code="CAPACITY_PER_SPECIES" scope="global" source="candidate" matchingRelevant="true" required="true" responseType="numberBySpecies">
+      <label>How many animals of each selected type could you care for at the same time?</label>
+      <helpText>The shelter will subtract animals already in the foster process when matching.</helpText>
+      <validation>Non-negative whole number. Shelter may review unusually high values.</validation>
+    </field>
+    <field id="PF06" code="AVAILABILITY" scope="global" source="candidate" matchingRelevant="true" required="true" responseType="availabilityAndUnavailability">
+      <label>When are you generally available to foster, and when are you unavailable?</label>
+      <helpText>You can update holidays, work periods or other unavailable times later. The shelter will use this to avoid contacting you when you cannot help.</helpText>
+    </field>
+  </profileFields>
+
+  <screeningQuestions>
+    <section id="eligibility" title="Basic eligibility and suitability">
+      <question id="Q01" code="MINIMUM_AGE" category="screening" required="true" noteAllowed="true" shelterOverrideAllowed="true" defaultMinimumAge="21">
+        <prompt>Are you at least 21 years old, or do you meet the minimum age set by this shelter?</prompt>
+        <helpText>The default minimum age is 21. A shelter may set a different minimum age in its settings. The shelter may also apply additional rules for particular animals or placements.</helpText>
+        <option id="Q01_A" outcome="GO">Yes, I meet the applicable minimum age.</option>
+        <option id="Q01_B" outcome="GO_WITH_RESERVATION">I am not sure whether I meet the applicable age or placement requirement.</option>
+        <option id="Q01_C" outcome="NO_GO">No, I do not meet the applicable minimum age.</option>
+      </question>
+
+      <question id="Q02" code="HOUSEHOLD_AGREEMENT" category="screening" required="true" noteAllowed="true" adminNoteRequiredIf="Q02_B">
+        <prompt>Do the people who share your home agree to fostering and understand that it involves temporary care and shelter guidance?</prompt>
+        <helpText>The shelter will explain the expected care and can answer questions before a placement is agreed.</helpText>
+        <option id="Q02_A" outcome="GO">Yes, the relevant household members agree.</option>
+        <option id="Q02_B" outcome="GO_WITH_RESERVATION">I am not sure that everyone agrees or understands yet.</option>
+        <option id="Q02_C" outcome="NO_GO">No, a relevant household member does not agree.</option>
+      </question>
+    </section>
+
+    <section id="household-and-practical-care" title="Household and practical care">
+      <question id="Q03" code="HOUSEHOLD_SAFETY" category="screening" required="true" noteAllowed="true">
+        <prompt>Are there any children, adults or household circumstances that could affect safe fostering?</prompt>
+        <helpText>This is about safe matching, not judging your household. You can explain the circumstances in a note.</helpText>
+        <option id="Q03_A" outcome="GO">No known circumstance would prevent a suitable placement.</option>
+        <option id="Q03_B" outcome="GO_WITH_RESERVATION">There are circumstances that require careful matching, supervision or extra guidance.</option>
+        <option id="Q03_C" outcome="NO_GO">There is currently a circumstance that makes fostering unsafe or unsuitable.</option>
+      </question>
+
+      <question id="Q04" code="TIME_AND_SUPERVISION" category="screening" required="true" noteAllowed="true">
+        <prompt>Can you provide the time and supervision needed for a foster animal, including during settling-in, treatment or behavioural support?</prompt>
+        <option id="Q04_A" outcome="GO">Yes, I can provide suitable daily care and supervision.</option>
+        <option id="Q04_B" outcome="GO_WITH_RESERVATION">The animal would sometimes be alone or my routine varies, so matching and safeguards would be needed.</option>
+        <option id="Q04_C" outcome="NO_GO">No, I cannot currently provide the required time or supervision.</option>
+      </question>
+
+      <question id="Q05" code="TRANSPORT" category="screening" required="true" noteAllowed="true">
+        <prompt>Can you arrange reliable transport for veterinary care, handover, emergencies and shelter appointments when needed?</prompt>
+        <option id="Q05_A" outcome="GO">Yes, I have suitable transport or a reliable arrangement.</option>
+        <option id="Q05_B" outcome="GO_WITH_RESERVATION">Transport is possible with advance planning or depends on another person or service.</option>
+        <option id="Q05_C" outcome="NO_GO">No, I cannot reliably arrange required transport.</option>
+      </question>
+    </section>
+
+    <section id="commitment-and-care" title="Commitment and ability to follow guidance">
+      <question id="Q06" code="CARE_INSTRUCTIONS" category="screening" required="true" noteAllowed="true">
+        <prompt>Are you willing and able to follow the shelter's instructions for feeding, hygiene, medication, safety, monitoring and escalation?</prompt>
+        <helpText>You do not need to know everything in advance. The shelter will provide guidance and support, and you must ask for help whenever needed.</helpText>
+        <option id="Q06_A" outcome="GO">Yes, I am willing to follow guidance, learn and ask for help.</option>
+        <option id="Q06_B" outcome="GO_WITH_RESERVATION">I would need training, additional support or a limited placement type.</option>
+        <option id="Q06_C" outcome="NO_GO">No, I am not currently able or willing to follow the required care guidance.</option>
+      </question>
+
+      <question id="Q07" code="EMERGENCY_ESCALATION" category="screening" required="true" noteAllowed="true">
+        <prompt>Can you recognise when an animal may need urgent help and contact the shelter or veterinary service rather than making an unsafe decision alone?</prompt>
+        <helpText>The shelter will explain the emergency process and provide a named contact or service route.</helpText>
+        <option id="Q07_A" outcome="GO">Yes, I can follow the shelter's emergency and escalation process.</option>
+        <option id="Q07_B" outcome="GO">I would need clear written guidance, a named contact or additional support, but I am willing to follow the process.</option>
+        <option id="Q07_C" outcome="NO_GO">No, I would not be able to follow the required escalation process.</option>
+      </question>
+
+      <question id="Q08" code="COMMITMENT_AND_RULES" category="screening" required="true" noteAllowed="true">
+        <prompt>Are you willing to respect the agreed foster period, shelter rules, confidentiality, safety instructions and return process?</prompt>
+        <helpText>The shelter will explain the rules before a placement and will support you throughout the foster process.</helpText>
+        <option id="Q08_A" outcome="GO">Yes, I understand and agree to follow them.</option>
+        <option id="Q08_B" outcome="GO_WITH_RESERVATION">I may have constraints that need to be agreed in advance.</option>
+        <option id="Q08_C" outcome="NO_GO">No, I am not able to agree to these requirements.</option>
+      </question>
+    </section>
+  </screeningQuestions>
+
+  <submission>
+    <requiredFields>
+      <field>Candidate identity or account reference</field>
+      <field>Organisation reference</field>
+      <field>Answers to every screening and matching-profile question</field>
+      <field>Submission timestamp</field>
+      <field>Candidate acknowledgement</field>
+    </requiredFields>
+    <candidateAcknowledgement>
+      I confirm that my answers are accurate to the best of my knowledge. I understand that the shelter will provide guidance and support, that I must follow its instructions and ask for help when needed, and that the shelter will decide which animals are suitable for me to foster.
+    </candidateAcknowledgement>
+    <resultLogic>
+      <condition if="all screening answers outcome=GO" result="AUTO_GO" reviewRequired="false" />
+      <condition if="any screening answer outcome=GO_WITH_RESERVATION" result="ADMIN_REVIEW_REQUIRED" reviewRequired="true" />
+      <condition if="any screening answer outcome=NO_GO" result="ADMIN_REVIEW_REQUIRED_WITH_POTENTIAL_BLOCKER" reviewRequired="true" />
+      <condition if="matching profile contains any level" result="MATCHING_PROFILE_UPDATED" reviewRequired="false" />
+    </resultLogic>
+    <candidateMessageWhenReviewRequired>
+      Thank you for completing the questionnaire. Some answers need a shelter administrator to review them. This does not necessarily mean that you cannot foster. The administrator may ask for clarification, suggest a different type of placement or explain what support would be needed before fostering can go ahead.
+    </candidateMessageWhenReviewRequired>
+    <candidateMessageWhenAutoGo>
+      Thank you for completing the questionnaire. Based on your screening answers, no immediate concern was identified. The shelter will follow its normal process and will match you only with animals suitable for your experience, availability, household circumstances and stated care preferences.
+    </candidateMessageWhenAutoGo>
+  </submission>
+
+  <adminReview>
+    <requiredWhen>At least one screening answer is Go with reservation or No Go, or a question is configured by the shelter as requiring review.</requiredWhen>
+    <mandatoryFollowUp>
+      <condition>Q02 answer is Q02_B.</condition>
+      <action>Admin must speak with the candidate and record a staff-only note before deciding.</action>
+    </mandatoryFollowUp>
+    <adminCapabilities>
+      <capability>View screening answers, matching profile and candidate notes.</capability>
+      <capability>See which answers caused review.</capability>
+      <capability>Request clarification from the candidate.</capability>
+      <capability>Record staff-only notes.</capability>
+      <capability>Approve for suitable placements.</capability>
+      <capability>Approve with conditions or restrictions.</capability>
+      <capability>Decline at this time.</capability>
+      <capability>Mark for later reassessment.</capability>
+    </adminCapabilities>
+    <recommendedDecisionLabels>
+      <label>Approved</label>
+      <label>Approved with conditions</label>
+      <label>Clarification requested</label>
+      <label>Not approved at this time</label>
+      <label>Reassessment needed</label>
+    </recommendedDecisionLabels>
+    <candidateFacingPrinciple>Do not use the phrase "red flag". Explain concerns in plain, respectful language and provide a next step where possible.</candidateFacingPrinciple>
+  </adminReview>
+
+  <shelterConfiguration>
+    <defaultSettings>
+      <setting id="DEFAULT_MINIMUM_AGE" value="21" overridable="true" scope="organisation" />
+      <setting id="AUTOMATIC_GO_POLICY" value="automatic_go_if_all_screening_answers_are_go" overridable="true" />
+      <setting id="GLOBAL_TAXONOMY" value="shared_v1_taxonomy" overridable="false" />
+    </defaultSettings>
+    <allowedCustomisation>
+      <item>Translate or adapt wording without changing the meaning of the outcomes.</item>
+      <item>Adapt help text to the shelter's species and operating model.</item>
+      <item>Add shelter-specific follow-up questions after this default form.</item>
+      <item>Define conditions attached to Approved with conditions.</item>
+      <item>Override the default minimum age of 21.</item>
+    </allowedCustomisation>
+    <notAllowedWithoutGovernanceReview>
+      <item>Changing the outcome classification of an answer without versioning the questionnaire.</item>
+      <item>Adding detailed health, financial, criminal-record or other sensitive questions without documented necessity and privacy review.</item>
+      <item>Using this form as the sole basis for automated rejection without a clarification path.</item>
+    </notAllowedWithoutGovernanceReview>
+  </shelterConfiguration>
+
+  <privacyNotice>
+    <shortText>Your answers are used by the shelter to assess foster suitability, match you with appropriate animals and protect animal and human welfare. Only information needed for these purposes should be provided. The shelter will explain who can access your answers, how long they are kept and how you can exercise your data-protection rights.</shortText>
+    <healthDataRule>This version does not ask about the candidate's own health. Any future health-related question must be collected only to the minimum extent necessary for safe matching and support.</healthDataRule>
+    <shelterConfigurationRequired>
+      <item>Privacy-controller identity and contact details.</item>
+      <item>Lawful basis and purpose wording.</item>
+      <item>Recipients or categories of recipients.</item>
+      <item>Retention period or retention criteria.</item>
+      <item>Data-protection contact and rights instructions.</item>
+    </shelterConfigurationRequired>
+  </privacyNotice>
+
+  <versioning>
+    <questionnaireVersion>1.3</questionnaireVersion>
+    <versionRule>Submitted answers retain the questionnaire version and option outcomes used at submission time.</versionRule>
+    <auditEvents>
+      <event>FOSTER_CANDIDATE_FORM_STARTED</event>
+      <event>FOSTER_CANDIDATE_FORM_SUBMITTED</event>
+      <event>FOSTER_CANDIDATE_PROFILE_UPDATED</event>
+      <event>FOSTER_CANDIDATE_REVIEW_REQUESTED</event>
+      <event>FOSTER_CANDIDATE_CLARIFICATION_REQUESTED</event>
+      <event>FOSTER_CANDIDATE_ADMIN_NOTE_RECORDED</event>
+      <event>FOSTER_CANDIDATE_DECISION_RECORDED</event>
+      <event>FOSTER_CANDIDATE_FORM_VERSION_PUBLISHED</event>
+    </auditEvents>
+  </versioning>
+</fosterCandidateForm>

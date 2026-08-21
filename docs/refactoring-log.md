@@ -2,6 +2,35 @@
 
 Tracks planned and completed refactor / quality work. See also `docs/refactoring-debt.md` and `docs/architecture/modularity.md`.
 
+---
+
+## foster-front-door-v1-5a1b — Questionnaire, home visit, revalidation, claim (2026-08-21)
+
+**Goal:** Replace manual foster onboarding checkboxes with v1.3 questionnaire, home visit lifecycle, document wire-up, annual revalidation, offline foster claim.  
+**Plan:** `.agents/plans/foster-front-door-v1-5a1b.md` · **Integration:** `cursor/foster-front-door-v1-5a1b-integration` · **Control issue:** #671  
+**Deferred:** sitter persona, duplicate meds, broadcast messaging.
+
+### Spawn ownership map (phases 2, 4, 6, 7)
+
+| Agent | Branch | Owns | Avoid |
+|-------|--------|------|-------|
+| flutter-candidate | `cursor/foster-q-candidate-ui-5a1b` | Candidate questionnaire screens/widgets | admin review, e2e |
+| flutter-admin | `cursor/foster-q-admin-ui-5a1b` | Admin review/decision UI | candidate form, e2e |
+| e2e-foster-q | `cursor/foster-q-e2e-5a1b` | `foster.questionnaire.spec.ts`, BDD scenarios | `api.ts`, flutter lib |
+| flutter-home-visit | `cursor/foster-hv-flutter-5a1b` | Home visit schedule/validate UI | backend, e2e |
+| e2e-home-visit | `cursor/foster-hv-e2e-5a1b` | `foster.home-visit.spec.ts` | `api.ts`, flutter lib |
+| node-revalidation | `cursor/foster-reval-backend-5a1b` | Revalidation job + API | flutter |
+| flutter-revalidation | `cursor/foster-reval-flutter-5a1b` | Revalidation UI | server |
+| node-claim | `cursor/foster-claim-backend-5a1b` | Claim token + accept API | flutter |
+| flutter-claim | `cursor/foster-claim-flutter-5a1b` | Connect-to-account + accept UI | server |
+
+**Never parallelize:** `e2e/playwright/support/api.ts`, same Flutter widget file, same migration number.
+
+| Phase | Outcome | Status |
+|-------|---------|--------|
+| 0 | Policy + form XML | In progress |
+| 1–7 | See plan | Pending |
+
 **Policy:** Multi-agent / sprint milestones use an **integration branch** → single PR to `main`. Single-agent domain PRs may go direct to `main`. Full E2E on UAT only. See `.cursor/rules/merge-policy.mdc` and `.cursor/rules/agent-coordination.mdc`.
 
 ---
