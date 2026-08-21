@@ -1,4 +1,5 @@
 import { logAuditEventSafe } from '../../lib/audit.js';
+import { hasQuestionnaireSubmission } from '../../lib/fosterQuestionnaire.js';
 import { hasPermissionForUser } from '../../lib/orgPermissions.js';
 import { normaliseRole } from '../../lib/orgRoles.js';
 
@@ -59,12 +60,16 @@ export async function loadFosterOnboardingContext(pool, orgId, kind, personId) {
     );
     const row = result.rows[0];
     if (!row) return null;
+    const questionnaireSubmitted = await hasQuestionnaireSubmission(
+      pool, orgId, row.foster_parent_id,
+    );
     return {
       kind, personId, fosterParentId: row.foster_parent_id, userId: row.user_id,
       role: null, isPending: false, approvalState: row.approval_state || null,
       rulesAgreementAt: row.rules_agreement_at || null,
       fosterProfileId: row.foster_profile_id || null,
       confirmedCompetencies: parseJsonArray(row.confirmed_competencies),
+      questionnaireSubmitted,
     };
   }
   const result = await pool.query(
@@ -82,12 +87,16 @@ export async function loadFosterOnboardingContext(pool, orgId, kind, personId) {
   );
   const row = result.rows[0];
   if (!row) return null;
+  const questionnaireSubmitted = row.foster_parent_id
+    ? await hasQuestionnaireSubmission(pool, orgId, row.foster_parent_id)
+    : false;
   return {
     kind, personId, fosterParentId: row.foster_parent_id || null, userId: row.user_id,
     role: normaliseRole(row.role || ''), isPending: row.is_pending === true,
     approvalState: row.approval_state || null, rulesAgreementAt: row.rules_agreement_at || null,
     fosterProfileId: row.foster_profile_id || null,
     confirmedCompetencies: parseJsonArray(row.confirmed_competencies),
+    questionnaireSubmitted,
   };
 }
 
@@ -117,7 +126,8 @@ function isStepAutoComplete(stepKey, context, overrides) {
       return context.kind === 'member' && !context.isPending;
     case 'under_review':
       return ['under_review', 'approved', 'declined', 'archived'].includes(context.approvalState);
-    case 'onboarding_form': case 'home_visit': return false;
+    case 'onboarding_form': return context.questionnaireSubmitted === true;
+    case 'home_visit': return false;
     case 'competencies': return context.confirmedCompetencies.length > 0;
     case 'agreement': return !!context.rulesAgreementAt;
     case 'approved': return context.approvalState === 'approved';

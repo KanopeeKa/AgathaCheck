@@ -52,7 +52,8 @@
     "043_remove_org_primary_contact.sql",
     "044_org_retire_foster_wire_role.sql",
     "045_organization_role_permission_defaults.sql",
-    "046_email_templates.sql"
+    "046_email_templates.sql",
+    "047_foster_questionnaire.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
