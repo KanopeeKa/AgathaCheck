@@ -328,7 +328,7 @@ export class PetListPage {
   /** Org inventory on `/o/home` uses PetCard — "Pet: Name, OrgName, …". */
   async expectPetUnderOrganization(petName: string, orgName: string): Promise<void> {
     const route = flutterRoutePath(this.page.url());
-    if (!route.startsWith('/o/')) {
+    if (route !== '/o/home') {
       await dismissConsentBannerIfPresent(this.page);
       await this.page.goto(flutterGotoUrl('/o/home'));
       await refreshFlutterAccessibility(this.page);

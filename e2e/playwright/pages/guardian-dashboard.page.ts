@@ -69,7 +69,7 @@ export class GuardianDashboardPage {
   async expectCarePriorityOrder(names: string[]): Promise<void> {
     const positions = await Promise.all(
       names.map(async (name) => {
-        const card = petCardByName(this.page, name);
+        const card = semanticsByName(this.page, new RegExp(name, 'i')).first();
         await expect(card).toBeVisible();
         const box = await card.boundingBox();
         if (box == null) throw new Error(`Care priority "${name}" has no visible bounds`);
