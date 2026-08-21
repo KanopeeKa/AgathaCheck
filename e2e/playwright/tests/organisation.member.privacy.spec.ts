@@ -3,41 +3,24 @@
  * Scenario: Member updates privacy settings from Account
  * Scenario: Profile Leave navigates to Account org settings
  */
-import { test, expect } from '../fixtures/auth.fixture';
-import { LandingPage } from '../pages/landing.page';
+import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { ExperiencePage } from '../pages/experience.page';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { seedDualRoleUser } from '../support/api';
 import {
-  dismissConsentBannerIfPresent,
   flutterGotoUrl,
   refreshFlutterAccessibility,
-  waitForPostLoginRoute,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
-async function loginFromLanding(
-  page: import('@playwright/test').Page,
-  email: string,
-  password: string,
-): Promise<void> {
-  const landing = new LandingPage(page);
-  await landing.goto();
-  await landing.login(email, password);
-  await dismissConsentBannerIfPresent(page);
-  await waitForPostLoginRoute(page);
-  await refreshFlutterAccessibility(page);
-}
-
 test.describe('Organisation member privacy', () => {
   test('member updates privacy settings from Account', async ({ page }) => {
     await prepareLiveApiAccess(page, baseURL());
     const { user, org } = await seedDualRoleUser(baseURL());
-    await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await loginAs(page, user);
 
     const experience = new ExperiencePage(page);
     await experience.gotoAccountFromDrawer();
@@ -74,8 +57,7 @@ test.describe('Organisation member privacy', () => {
   test('profile Leave navigates to Account org settings', async ({ page }) => {
     await prepareLiveApiAccess(page, baseURL());
     const { user, org } = await seedDualRoleUser(baseURL());
-    await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await loginAs(page, user);
 
     await page.goto(flutterGotoUrl(`/o/orgs/${org.id}`));
     try {

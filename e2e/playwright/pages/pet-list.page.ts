@@ -319,7 +319,13 @@ export class PetListPage {
   async expectSectionHeader(title: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      // Group role only — getByText fallback matches pet cards whose aria-label
+      const route = flutterRoutePath(this.page.url());
+      if (route === '/o/home') {
+        // Org inventory uses PetListSectionHeader (plain title text), not DashboardSection groups.
+        await expect(this.page.getByText(title, { exact: true }).first()).toBeVisible();
+        return;
+      }
+      // Group role only on guardian desk — getByText fallback matches pet cards whose aria-label
       // includes the org name (e.g. "Pet: Bella, Happy Paws Clinic, dog").
       await expect(dashboardSectionGroup(this.page, title)).toBeVisible();
     }).toPass({ timeout: 30_000 });
