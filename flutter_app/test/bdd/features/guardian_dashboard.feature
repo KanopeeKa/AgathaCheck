@@ -1,21 +1,64 @@
 Feature: Guardian dashboard
   As a guardian
-  I want a dashboard that previews my pets, upcoming events, and vets
-  So that I can act quickly without wading through a mixed feed
+  I want a calm operations desk for my pets and care
+  So that I can orient myself and act quickly
 
-  @P1
+  @implemented
+  @P0
   Scenario: Dashboard shows exactly three sections
     Given I am signed in as a guardian with pets, due health entries, and vets
     When I view the Guardian dashboard
     Then I should see "My Pets", "Due and Overdue", and "My Vets" sections only
 
-  @P1
-  Scenario: My Pets shows all personal pets with Manage pets link
+  @implemented
+  @P0
+  Scenario: Today orientation prioritises attention above the management sections
+    Given I am signed in as a guardian with overdue and due-today care
+    When I view the Guardian dashboard
+    Then I should see a Today orientation before the management sections
+    And I should see the most urgent care first
+
+  @implemented
+  @P0
+  Scenario: My Pets preview is capped at four with an All Pets destination
     Given I have 6 pets
     When I view the Guardian dashboard
-    Then I should see 6 pet cards
-    And I should see a "Manage pets" link
+    Then I should see at most 4 pet cards
+    And I should see an "All Pets" link
 
+  @implemented
+  @P0
+  Scenario: Care preview orders overdue, due today, and upcoming items
+    Given I am signed in as a guardian with overdue, due-today, and upcoming care
+    When I view the Guardian dashboard
+    Then the Due and Overdue preview should show those priorities in urgency order
+    And I should be able to open the full Events screen
+
+  @implemented
+  @P0
+  Scenario: Care preview supports completion and undo
+    Given I am signed in as a guardian with due care
+    When I complete a care item from the Guardian dashboard
+    Then the care item should acknowledge completion
+    And I should be able to undo that completion
+
+  @implemented
+  @P1
+  Scenario: My Vets preview reaches linked vet details
+    Given I am signed in as a guardian with a linked veterinarian
+    When I view the Guardian dashboard
+    Then I should see the veterinarian and linked-pet count
+    And I should be able to open the veterinarian detail screen
+
+  @implemented
+  @P1
+  Scenario: Empty Guardian dashboard shows first-use guidance without false alerts
+    Given I am signed in as a guardian with no pets
+    When I view the Guardian dashboard
+    Then I should see first-use Today guidance
+    And I should not see an overdue care alert
+
+  @implemented
   @P1
   Scenario: Pending foster placement surfaces as a notification, not a dashboard banner
     Given an organisation has sent me a pending foster placement
@@ -23,6 +66,7 @@ Feature: Guardian dashboard
     Then I should not see a pending-placement banner on the dashboard
     And I should see an unresolved administrative notification in the bell panel
 
+  @implemented
   @P1
   Scenario: Global events screen shows unified list without tabs
     Given I am signed in as a guardian with pets, due health entries, and vets
@@ -30,6 +74,7 @@ Feature: Guardian dashboard
     Then I should see an "Events" list without type tabs
     And I should see an "Add an event" action
 
+  @implemented
   @P1
   Scenario: Global events screen supports pet and cohort filters
     Given I am signed in as a guardian with owned and foster pets and health entries

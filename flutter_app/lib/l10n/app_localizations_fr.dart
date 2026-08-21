@@ -27,6 +27,44 @@ class AppLocalizationsFr extends AppLocalizations {
       'Connectez-vous pour reprendre là où vous vous êtes arrêté, ou créez un compte gratuit pour commencer à garder l\'historique de santé de votre animal en sécurité et accessible à tout moment.';
 
   @override
+  String get landingDeskEyebrow => 'Le bureau de coordination des soins';
+
+  @override
+  String get landingDeskHeadline =>
+      'Gardez les soins proches.\nGardez tout le monde prêt.';
+
+  @override
+  String get landingDeskBody =>
+      'Un dossier partagé et apaisant pour les soins quotidiens, les rendez-vous et chaque passation.';
+
+  @override
+  String get landingDeskPromiseAtAGlance => 'La journée en un regard';
+
+  @override
+  String get landingDeskPromiseHandovers => 'Des passations claires';
+
+  @override
+  String get landingDeskPromisePrivate => 'Conçu pour la confidentialité';
+
+  @override
+  String get landingDeskCareNote =>
+      'Pensé pour les arrangements de soins qui évoluent autour de chaque animal.';
+
+  @override
+  String get landingDeskWelcomeBack => 'Bon retour.';
+
+  @override
+  String get landingDeskWelcomeBackBody =>
+      'Ouvrez votre bureau de soins et reprenez là où vous vous étiez arrêté.';
+
+  @override
+  String get landingDeskCreateHeading => 'Créez votre bureau de soins.';
+
+  @override
+  String get landingDeskCreateBody =>
+      'Gardez les personnes et les informations liées à chaque animal connectées.';
+
+  @override
   String get landingGuardianPathSummary =>
       'Pour les particuliers et les familles d\'accueil';
 
@@ -532,6 +570,52 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get today => 'Aujourd\'hui';
+
+  @override
+  String get todayAllClear => 'Tout est en ordre.';
+
+  @override
+  String todayAttentionSummary(int overdueCount, int dueTodayCount) {
+    return '$overdueCount en retard · $dueTodayCount à faire aujourd\'hui';
+  }
+
+  @override
+  String get todayLoadError =>
+      'Impossible de charger le résumé des soins d\'aujourd\'hui.';
+
+  @override
+  String todayOverdueCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count soins en retard',
+      one: '1 soin en retard',
+      zero: 'Aucun soin en retard',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String todayDueCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count soins à faire aujourd\'hui',
+      one: '1 soin à faire aujourd\'hui',
+      zero: 'Aucun soin à faire aujourd\'hui',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careStatusAllClear => 'Tout est en ordre';
+
+  @override
+  String get careStatusUpcoming => 'Soin à venir';
+
+  @override
+  String get careLoadError =>
+      'Impossible de charger les soins pour le moment.';
 
   @override
   String get tomorrow => 'Demain';

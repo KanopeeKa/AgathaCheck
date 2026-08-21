@@ -8,12 +8,16 @@ class LogoAssets {
   LogoAssets._();
 
   static const plumPng = 'assets/logo-plum.png';
+  static const guardianLightArchPng = 'assets/logo-guardian-light-arch.png';
   static const tealPng = 'assets/logo-teal.png';
   static const plumJpg = 'assets/logo-plum.jpg';
   static const tealJpg = 'assets/logo-teal.jpg';
 
   static String pngFor(AppExperience experience) =>
       experience == AppExperience.organization ? tealPng : plumPng;
+
+  static String pngForShell(AppExperience experience) =>
+      experience == AppExperience.guardian ? guardianLightArchPng : tealPng;
 
   static String jpgFor(AppExperience experience) =>
       experience == AppExperience.organization ? tealJpg : plumJpg;

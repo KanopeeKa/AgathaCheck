@@ -128,6 +128,72 @@ abstract class AppLocalizations {
   /// **'Log in to pick up where you left off, or create a free account to start keeping your pet\'s health history safe and accessible anytime.'**
   String get appCta;
 
+  /// No description provided for @landingDeskEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'The Guardian Operations Desk'**
+  String get landingDeskEyebrow;
+
+  /// No description provided for @landingDeskHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep care close.\nKeep everyone ready.'**
+  String get landingDeskHeadline;
+
+  /// No description provided for @landingDeskBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A calm, shared record for daily care, appointments, and every handover in between.'**
+  String get landingDeskBody;
+
+  /// No description provided for @landingDeskPromiseAtAGlance.
+  ///
+  /// In en, this message translates to:
+  /// **'Today at a glance'**
+  String get landingDeskPromiseAtAGlance;
+
+  /// No description provided for @landingDeskPromiseHandovers.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear handovers'**
+  String get landingDeskPromiseHandovers;
+
+  /// No description provided for @landingDeskPromisePrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Private by design'**
+  String get landingDeskPromisePrivate;
+
+  /// No description provided for @landingDeskCareNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Made for the caring arrangements that change around every pet.'**
+  String get landingDeskCareNote;
+
+  /// No description provided for @landingDeskWelcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back.'**
+  String get landingDeskWelcomeBack;
+
+  /// No description provided for @landingDeskWelcomeBackBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Open your care desk and pick up where you left off.'**
+  String get landingDeskWelcomeBackBody;
+
+  /// No description provided for @landingDeskCreateHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your care desk.'**
+  String get landingDeskCreateHeading;
+
+  /// No description provided for @landingDeskCreateBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the people and information around each pet connected.'**
+  String get landingDeskCreateBody;
+
   /// No description provided for @landingGuardianPathSummary.
   ///
   /// In en, this message translates to:
@@ -1045,6 +1111,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Today'**
   String get today;
+
+  /// No description provided for @todayAllClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything is on track.'**
+  String get todayAllClear;
+
+  /// No description provided for @todayAttentionSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{overdueCount} overdue · {dueTodayCount} due today'**
+  String todayAttentionSummary(int overdueCount, int dueTodayCount);
+
+  /// No description provided for @todayLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load today\'s care summary.'**
+  String get todayLoadError;
+
+  /// No description provided for @todayOverdueCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No overdue care} =1{1 overdue item} other{{count} overdue items}}'**
+  String todayOverdueCount(int count);
+
+  /// No description provided for @todayDueCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Nothing due today} =1{1 item due today} other{{count} items due today}}'**
+  String todayDueCount(int count);
+
+  /// No description provided for @careStatusAllClear.
+  ///
+  /// In en, this message translates to:
+  /// **'All clear'**
+  String get careStatusAllClear;
+
+  /// No description provided for @careStatusUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Care coming up'**
+  String get careStatusUpcoming;
+
+  /// No description provided for @careLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load care right now.'**
+  String get careLoadError;
 
   /// No description provided for @tomorrow.
   ///

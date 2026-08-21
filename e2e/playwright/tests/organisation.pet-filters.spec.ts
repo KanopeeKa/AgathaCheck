@@ -16,6 +16,7 @@ import {
   initiateDirectAdoption,
   seedHappyPawsClinic,
   seedRescueHearts,
+  type TestUser,
 } from '../support/api';
 import { enableFlutterAccessibility, refreshFlutterAccessibility, waitForFlutterRoutePattern, escapeRegExp, semanticsByName } from '../support/flutter';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
@@ -32,7 +33,7 @@ function isoDay(offsetDays: number): string {
 async function openOrgPetsScreen(
   page: import('@playwright/test').Page,
   baseURL: string,
-  alice: { accessToken: string },
+  alice: TestUser,
   org: { id: string },
   orgName: string,
 ) {

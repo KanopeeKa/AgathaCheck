@@ -361,7 +361,7 @@ export class OrganizationDetailPage {
         async () => {
           await refreshFlutterAccessibility(this.page);
         },
-        { helper: 'OrganizationDetailPage.openPetsSection' },
+        { helper: 'OrganizationDetailPage.openPetsSection', testTitle: null },
       );
     }
     await refreshFlutterAccessibility(this.page);

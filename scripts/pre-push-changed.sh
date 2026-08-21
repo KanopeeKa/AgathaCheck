@@ -9,6 +9,10 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
+# shellcheck disable=SC1091
+source "$ROOT/scripts/flutter-sdk.sh"
+agatha_flutter_use
+agatha_flutter_verify
 # shellcheck source=scripts/ci/ci-scope-lib.sh
 source "$ROOT/scripts/ci/ci-scope-lib.sh"
 

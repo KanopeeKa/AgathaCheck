@@ -79,6 +79,10 @@ function apiUrl(path: string, baseURL: string): string {
   return `${root}${API_PREFIX}${path}`;
 }
 
+function parseJson<T>(text: string): T {
+  return JSON.parse(text) as T;
+}
+
 export async function signupUser(
   baseURL: string,
   overrides: Partial<{
@@ -111,7 +115,7 @@ export async function signupUser(
     throw new Error(`signup failed (${res.status}): ${body}`);
   }
 
-  const json = await res.json();
+  const json = await res.json<{ access_token: string; user: { id: string } }>();
   return {
     email,
     password,
@@ -133,7 +137,7 @@ export async function getCurrentUser(
     const body = await res.text();
     throw new Error(`getCurrentUser failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<{ id: string; email: string; bio?: string; first_name?: string; last_name?: string }>();
 }
 
 export async function updateUserProfile(
@@ -161,14 +165,20 @@ export async function updateUserProfile(
     throw new Error(`updateUserProfile failed (${res.status}): ${body}`);
   }
 
-  const json = await res.json();
+  const json = await res.json<{
+    id?: string;
+    user_id?: string;
+    email: string;
+    first_name?: string;
+    last_name?: string;
+  }>();
   return {
     email: json.email,
     password: '',
     firstName: json.first_name ?? '',
     lastName: json.last_name ?? '',
     accessToken: token,
-    userId: json.id ?? json.user_id,
+    userId: json.id ?? json.user_id ?? '',
   };
 }
 
@@ -191,7 +201,7 @@ export async function exportUserData(
     const body = await res.text();
     throw new Error(`exportUserData failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<UserDataExport>();
 }
 
 export async function deleteAccount(
@@ -247,7 +257,7 @@ export async function createPet(
     throw new Error(`createPet failed (${res.status}): ${body}`);
   }
 
-  const json = await res.json();
+  const json = await res.json<TestPet>();
   return { id: json.id, name: json.name };
 }
 
@@ -280,7 +290,7 @@ export async function updatePetProfile(
     throw new Error(`updatePetProfile failed (${res.status}): ${body}`);
   }
 
-  return res.json();
+  return res.json<TestPet & { weight?: number | null }>();
 }
 
 export async function createOrganization(
@@ -312,7 +322,7 @@ export async function createOrganization(
     throw new Error(`createOrganization failed (${res.status}): ${body}`);
   }
 
-  const json = await res.json();
+  const json = await res.json<TestOrganization>();
   return {
     id: json.id,
     name: json.name,
@@ -335,7 +345,7 @@ export async function getOrganizations(
     throw new Error(`getOrganizations failed (${res.status}): ${body}`);
   }
 
-  return res.json();
+  return res.json<TestOrganization[]>();
 }
 
 export async function updateOrganization(
@@ -358,7 +368,7 @@ export async function updateOrganization(
     throw new Error(`updateOrganization failed (${res.status}): ${body}`);
   }
 
-  const json = await res.json();
+  const json = await res.json<TestOrganization>();
   return {
     id: json.id ?? orgId,
     name: json.name,
@@ -404,7 +414,7 @@ export async function discoverOrganizations(
     throw new Error(`discoverOrganizations failed (${res.status}): ${body}`);
   }
 
-  return res.json();
+  return res.json<DiscoverOrganizationsResponse>();
 }
 
 /** Paginate discover results until [orgId] is found (or return undefined). */
@@ -429,7 +439,7 @@ export async function findDiscoverableOrganization(
 export async function setOrganizationDiscoverability(
   baseURL: string,
   token: string,
-  org: Pick<TestOrganization, 'id' | 'name' | 'type'>,
+  org: Pick<TestOrganization, 'id' | 'name' | 'type' | 'bio'>,
   isDiscoverable: boolean,
 ): Promise<void> {
   await updateOrganization(baseURL, token, org.id, {
@@ -443,7 +453,7 @@ export async function setOrganizationDiscoverability(
 export async function setOrganizationDiscoveryProfile(
   baseURL: string,
   token: string,
-  org: Pick<TestOrganization, 'id' | 'name' | 'type'>,
+  org: Pick<TestOrganization, 'id' | 'name' | 'type' | 'bio'>,
   profile: {
     town?: string;
     administrative_area?: string;
@@ -492,7 +502,7 @@ export async function getMemberPrivacySettings(
     const body = await res.text();
     throw new Error(`getMemberPrivacySettings failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<MemberPrivacySettings>();
 }
 
 /** Update per-org member privacy and optional named grants (v3 Account settings). */
@@ -520,7 +530,7 @@ export async function updateMemberPrivacySettings(
     const body = await res.text();
     throw new Error(`updateMemberPrivacySettings failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<MemberPrivacySettings>();
 }
 
 /**
@@ -531,7 +541,7 @@ export async function seedDiscoverableOrganization(
   baseURL: string,
   overrides: Partial<{
     name: string;
-    type: string;
+    type: 'charity' | 'professional';
     town: string;
     administrativeArea: string;
     description: string;
@@ -582,7 +592,7 @@ export async function inviteToOrganization(
     throw new Error(`inviteToOrganization failed (${res.status}): ${body}`);
   }
 
-  return JSON.parse(body);
+  return parseJson<{ success: boolean; user_id: string }>(body);
 }
 
 /** Onboard existing org member(s) as foster parent(s) (v4: associate wire + foster badge). */
@@ -619,7 +629,7 @@ export async function getPendingInvites(
     throw new Error(`getPendingInvites failed (${res.status}): ${body}`);
   }
 
-  const raw: Array<Record<string, unknown>> = await res.json();
+  const raw = await res.json<Array<Record<string, unknown>>>();
   return raw.map((item) => ({
     id: String(item.id),
     organization_id: String(item.organization_id),
@@ -643,7 +653,7 @@ export async function acceptInvite(
     throw new Error(`acceptInvite failed (${res.status}): ${body}`);
   }
 
-  return res.json();
+  return res.json<{ organization_id: string; role: string }>();
 }
 
 export async function declineInvite(
@@ -676,7 +686,7 @@ export async function getOrgMembers(
     throw new Error(`getOrgMembers failed (${res.status}): ${body}`);
   }
 
-  return res.json();
+  return res.json<TestOrgMember[]>();
 }
 
 export async function leaveOrganization(
@@ -736,7 +746,7 @@ export async function createShareLink(
     throw new Error(`createShareLink failed (${res.status}): ${body}`);
   }
 
-  const json = await res.json();
+  const json = await res.json<ShareLink>();
   return { share_code: json.share_code, link_id: json.link_id };
 }
 
@@ -773,7 +783,7 @@ export async function createVet(
     throw new Error(`createVet failed (${res.status}): ${body}`);
   }
 
-  const json = await res.json();
+  const json = await res.json<{ id: string; name: string }>();
   return { id: json.id, name: json.name };
 }
 
@@ -812,7 +822,7 @@ export async function createVetFull(
     throw new Error(`createVetFull failed (${res.status}): ${body}`);
   }
 
-  return res.json() as Promise<TestVet>;
+  return res.json<TestVet>();
 }
 
 export async function getVets(baseURL: string, token: string): Promise<TestVet[]> {
@@ -825,7 +835,7 @@ export async function getVets(baseURL: string, token: string): Promise<TestVet[]
     throw new Error(`getVets failed (${res.status}): ${body}`);
   }
 
-  return res.json() as Promise<TestVet[]>;
+  return res.json<TestVet[]>();
 }
 
 export async function updateVetDetails(
@@ -850,7 +860,7 @@ export async function updateVetDetails(
     const body = await getRes.text();
     throw new Error(`getVetById failed (${getRes.status}): ${body}`);
   }
-  const current = (await getRes.json()) as TestVet;
+  const current = await getRes.json<TestVet>();
 
   const res = await apiFetch(apiUrl(`/vets/${vetId}`, baseURL), {
     method: 'PUT',
@@ -874,7 +884,7 @@ export async function updateVetDetails(
     throw new Error(`updateVetDetails failed (${res.status}): ${body}`);
   }
 
-  return res.json() as Promise<TestVet>;
+  return res.json<TestVet>();
 }
 
 export async function deleteVet(baseURL: string, token: string, vetId: string): Promise<void> {
@@ -912,7 +922,7 @@ export async function acceptShareByCode(
     throw new Error(`acceptShareByCode failed (${res.status}): ${text}`);
   }
 
-  return res.json() as Promise<{ pet_id?: string }>;
+  return res.json<{ pet_id?: string }>();
 }
 
 export async function updatePetVet(
@@ -959,7 +969,13 @@ export async function getHealthEntry(
     const body = await res.text();
     throw new Error(`getHealthEntry failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<{
+    status: string;
+    completed_on: string | null;
+    name: string;
+    dosage?: string | null;
+    next_due_date?: string | null;
+  }>();
 }
 
 export async function markHealthEntryTaken(
@@ -1021,7 +1037,7 @@ export async function createHealthEntry(
     throw new Error(`createHealthEntry failed (${res.status}): ${body}`);
   }
 
-  const json = await res.json();
+  const json = await res.json<TestHealthEntry>();
   return { id: json.id, name: json.name };
 }
 
@@ -1061,7 +1077,7 @@ export async function updateHealthEntry(
     throw new Error(`updateHealthEntry failed (${res.status}): ${body}`);
   }
 
-  const json = await res.json();
+  const json = await res.json<TestHealthEntry>();
   return { id: json.id, name: json.name };
 }
 
@@ -1093,7 +1109,7 @@ export async function undoCompleteHealthEntry(
     const body = await res.text();
     throw new Error(`undoCompleteHealthEntry failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<{ status: string; next_due_date: string | null; name: string }>();
 }
 
 export async function getHealthEntries(
@@ -1107,7 +1123,7 @@ export async function getHealthEntries(
     const body = await res.text();
     throw new Error(`getHealthEntries failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<Array<{ id: string; name: string; type: string; status: string; next_due_date: string | null }>>();
 }
 
 export async function exportHealthEntriesCsv(
@@ -1136,7 +1152,7 @@ export async function getHealthEntryHistory(
     const body = await res.text();
     throw new Error(`getHealthEntryHistory failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<Array<{ id: string; status: string; completed_on: string | null; changed_at: string }>>();
 }
 
 // ── Notification helpers ──────────────────────────────────────────────────────
@@ -1166,7 +1182,7 @@ export async function getNotifications(
     const body = await res.text();
     throw new Error(`getNotifications failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<TestNotification[]>();
 }
 
 export async function getUnreadNotificationCount(
@@ -1180,8 +1196,8 @@ export async function getUnreadNotificationCount(
     const body = await res.text();
     throw new Error(`getUnreadNotificationCount failed (${res.status}): ${body}`);
   }
-  const json = await res.json();
-  return json.unread_count as number;
+  const json = await res.json<{ unread_count: number }>();
+  return json.unread_count;
 }
 
 export async function markNotificationRead(
@@ -1300,7 +1316,7 @@ export async function createWeightEntry(
     const body = await res.text();
     throw new Error(`createWeightEntry failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<TestWeightEntry>();
 }
 
 export async function getWeightEntries(
@@ -1316,7 +1332,7 @@ export async function getWeightEntries(
     const body = await res.text();
     throw new Error(`getWeightEntries failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<TestWeightEntry[]>();
 }
 
 export async function getLatestWeightEntry(
@@ -1332,7 +1348,7 @@ export async function getLatestWeightEntry(
     const body = await res.text();
     throw new Error(`getLatestWeightEntry failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<TestWeightEntry>();
 }
 
 export async function updateWeightEntry(
@@ -1358,7 +1374,7 @@ export async function updateWeightEntry(
     const body = await res.text();
     throw new Error(`updateWeightEntry failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<TestWeightEntry>();
 }
 
 export async function deleteWeightEntry(
@@ -1399,7 +1415,7 @@ export async function createOrgPet(
     const body = await res.text();
     throw new Error(`createOrgPet failed (${res.status}): ${body}`);
   }
-  const json = await res.json();
+  const json = await res.json<TestPet>();
   return { id: json.id, name: json.name };
 }
 
@@ -1430,7 +1446,7 @@ export async function requestCustodyTransfer(
     const text = await res.text();
     throw new Error(`requestCustodyTransfer failed (${res.status}): ${text}`);
   }
-  return res.json();
+  return res.json<{ id: string; status: string }>();
 }
 
 export async function acceptCustodyTransfer(
@@ -1459,7 +1475,7 @@ export async function getPendingCustodyTransfers(
     const text = await res.text();
     throw new Error(`getPendingCustodyTransfers failed (${res.status}): ${text}`);
   }
-  return res.json();
+  return res.json<Array<{ id: string; pet_name?: string; transfer_kind: string }>>();
 }
 
 export async function createOrgConnectionRequest(
@@ -1480,7 +1496,7 @@ export async function createOrgConnectionRequest(
     const text = await res.text();
     throw new Error(`createOrgConnectionRequest failed (${res.status}): ${text}`);
   }
-  return res.json();
+  return res.json<{ token: string }>();
 }
 
 export async function acceptOrgConnectionRequest(
@@ -1513,7 +1529,7 @@ export async function getOrgArchivedPets(
     const text = await res.text();
     throw new Error(`getOrgArchivedPets failed (${res.status}): ${text}`);
   }
-  return res.json();
+  return res.json<Array<{ id: string; pet_name: string; shadow_snapshot?: Record<string, unknown> }>>();
 }
 
 export async function transferOrgPetToUser(
@@ -1535,7 +1551,7 @@ export async function transferOrgPetToUser(
     const text = await res.text();
     throw new Error(`transferOrgPetToUser failed (${res.status}): ${text}`);
   }
-  return res.json();
+  return res.json<{ transfer_id?: string; pending?: boolean }>();
 }
 
 // ── Foster placement helpers (Sprint 6.A) ─────────────────────────────────────
@@ -1573,7 +1589,7 @@ export async function getPet(
     const body = await res.text();
     throw new Error(`getPet failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<TestPetDetail>();
 }
 
 export async function createFosterPlacement(
@@ -1601,7 +1617,7 @@ export async function createFosterPlacement(
     const text = await res.text();
     throw new Error(`createFosterPlacement failed (${res.status}): ${text}`);
   }
-  return res.json();
+  return res.json<TestFosterPlacement>();
 }
 
 export async function acceptFosterPlacement(
@@ -1617,7 +1633,7 @@ export async function acceptFosterPlacement(
     const text = await res.text();
     throw new Error(`acceptFosterPlacement failed (${res.status}): ${text}`);
   }
-  return res.json();
+  return res.json<TestFosterPlacement>();
 }
 
 export async function getPendingFosterPlacements(
@@ -1631,7 +1647,7 @@ export async function getPendingFosterPlacements(
     const text = await res.text();
     throw new Error(`getPendingFosterPlacements failed (${res.status}): ${text}`);
   }
-  return res.json();
+  return res.json<TestFosterPlacement[]>();
 }
 
 export async function endFosterPlacement(
@@ -1656,7 +1672,7 @@ export async function endFosterPlacement(
     const text = await res.text();
     throw new Error(`endFosterPlacement failed (${res.status}): ${text}`);
   }
-  const placement = (await res.json()) as TestFosterPlacement;
+  const placement = await res.json<TestFosterPlacement>();
 
   // J3 active sessions require a second step to confirm return to shelter.
   if (placement.session_status === 'end_pending_confirmation') {
@@ -1678,7 +1694,7 @@ export async function endFosterPlacement(
       const text = await completeRes.text();
       throw new Error(`endFosterPlacement end-session failed (${completeRes.status}): ${text}`);
     }
-    return completeRes.json();
+    return completeRes.json<TestFosterPlacement>();
   }
 
   return placement;
@@ -1711,7 +1727,7 @@ export async function initiateDirectAdoption(
     const text = await res.text();
     throw new Error(`initiateDirectAdoption failed (${res.status}): ${text}`);
   }
-  return res.json();
+  return res.json<TestFosterPlacement>();
 }
 
 export async function getPendingAdoptions(
@@ -1725,7 +1741,7 @@ export async function getPendingAdoptions(
     const text = await res.text();
     throw new Error(`getPendingAdoptions failed (${res.status}): ${text}`);
   }
-  return res.json();
+  return res.json<TestFosterPlacement[]>();
 }
 
 export async function confirmAdoption(
@@ -1741,7 +1757,7 @@ export async function confirmAdoption(
     const text = await res.text();
     throw new Error(`confirmAdoption failed (${res.status}): ${text}`);
   }
-  return res.json();
+  return res.json<TestFosterPlacement & { adopted?: boolean; new_owner_id?: string }>();
 }
 
 export async function requestOrgToOrgTransfer(
@@ -1785,7 +1801,7 @@ export async function tryRequestCustodyTransfer(
   const text = await res.text();
   let parsed: unknown = text;
   try {
-    parsed = JSON.parse(text);
+    parsed = parseJson<unknown>(text);
   } catch {
     // keep raw text
   }
@@ -1818,7 +1834,7 @@ export async function requestPetReturn(
     const text = await res.text();
     throw new Error(`requestPetReturn failed (${res.status}): ${text}`);
   }
-  return res.json();
+  return res.json<{ id: string; status: string }>();
 }
 
 export async function disconnectOrgs(
@@ -2004,7 +2020,7 @@ export async function getEligibleFosterTargets(
     const body = await res.text();
     throw new Error(`getEligibleFosterTargets failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<EligibleFosterTarget[]>();
 }
 
 export async function setFosterCapacity(
@@ -2052,7 +2068,7 @@ export async function addManualFoster(
     const body = await res.text();
     throw new Error(`addManualFoster failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<TestFosterParent>();
 }
 
 export async function approveFosterParent(
@@ -2076,7 +2092,7 @@ export async function approveFosterParent(
     const body = await res.text();
     throw new Error(`approveFosterParent failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<TestFosterParent>();
 }
 
 export async function getFosterParents(
@@ -2091,7 +2107,7 @@ export async function getFosterParents(
     const body = await res.text();
     throw new Error(`getFosterParents failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<TestFosterParent[]>();
 }
 
 export async function createViewToAdoptSession(
@@ -2116,7 +2132,7 @@ export async function createViewToAdoptSession(
     const body = await res.text();
     throw new Error(`createViewToAdoptSession failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<TestFosterPlacement>();
 }
 
 export async function createAdoptionVisit(
@@ -2145,7 +2161,7 @@ export async function createAdoptionVisit(
     const body = await res.text();
     throw new Error(`createAdoptionVisit failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<TestAdoptionVisit>();
 }
 
 export async function recordAdoptionVisitOutcome(
@@ -2170,7 +2186,7 @@ export async function recordAdoptionVisitOutcome(
     const body = await res.text();
     throw new Error(`recordAdoptionVisitOutcome failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<TestAdoptionVisit>();
 }
 
 export async function startAdoptionJourney(
@@ -2197,7 +2213,7 @@ export async function startAdoptionJourney(
   if (!res.ok) {
     throw new Error(`startAdoptionJourney failed (${res.status}): ${bodyText}`);
   }
-  return JSON.parse(bodyText);
+  return parseJson<{ adoption_journey?: TestAdoptionJourney; placement_id?: string }>(bodyText);
 }
 
 export async function getAdoptionJourney(
@@ -2214,7 +2230,7 @@ export async function getAdoptionJourney(
     const body = await res.text();
     throw new Error(`getAdoptionJourney failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<{ adoption_journey: TestAdoptionJourney }>();
 }
 
 export async function completeVisitAndStartAdoption(
@@ -2247,7 +2263,7 @@ export async function completeVisitAndStartAdoption(
   if (!res.ok) {
     throw new Error(`completeVisitAndStartAdoption failed (${res.status}): ${bodyText}`);
   }
-  return JSON.parse(bodyText);
+  return parseJson<{ adoption_journey?: TestAdoptionJourney }>(bodyText);
 }
 
 // ── Org pet management helpers (Sprint 6.1 BDD) ───────────────────────────────
@@ -2270,7 +2286,7 @@ export async function getAllPets(
     const body = await res.text();
     throw new Error(`getAllPets failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<TestPetSummary[]>();
 }
 
 export interface TestFamilyEvent {
@@ -2294,7 +2310,7 @@ export async function getFamilyEvents(
     const body = await res.text();
     throw new Error(`getFamilyEvents failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<TestFamilyEvent[]>();
 }
 
 export async function createFamilyEvent(
@@ -2330,7 +2346,7 @@ export async function createFamilyEvent(
     const bodyText = await res.text();
     throw new Error(`createFamilyEvent failed (${res.status}): ${bodyText}`);
   }
-  return res.json();
+  return res.json<TestFamilyEvent>();
 }
 
 export async function deleteFamilyEvent(
@@ -2372,7 +2388,7 @@ export async function getOrgPeople(
     const body = await res.text();
     throw new Error(`getOrgPeople failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<OrgPersonSummary[]>();
 }
 
 export async function updateOrgPersonContact(
@@ -2414,7 +2430,7 @@ export async function updateOrgPersonContact(
     const body = await res.text();
     throw new Error(`updateOrgPersonContact failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<Record<string, unknown>>();
 }
 
 export interface OrgConnectionRow {
@@ -2436,7 +2452,7 @@ export async function getOrgConnections(
     const body = await res.text();
     throw new Error(`getOrgConnections failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<OrgConnectionRow[]>();
 }
 
 export interface OrgPermissionsMe {
@@ -2456,7 +2472,7 @@ export async function getOrgPermissionsMe(
     const body = await res.text();
     throw new Error(`getOrgPermissionsMe failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<OrgPermissionsMe>();
 }
 
 export async function applyOrgPermissionBundle(
@@ -2481,7 +2497,7 @@ export async function applyOrgPermissionBundle(
     const body = await res.text();
     throw new Error(`applyOrgPermissionBundle failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<{ preset: string; granted_count: number; effective_permissions: string[] }>();
 }
 
 export async function tryGrantOrgPermission(
@@ -2524,7 +2540,7 @@ export async function getOrgAuditEvents(
     const body = await res.text();
     throw new Error(`getOrgAuditEvents failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<OrgAuditEvent[]>();
 }
 
 export async function getOrgPublicProfile(
@@ -2539,7 +2555,7 @@ export async function getOrgPublicProfile(
     const body = await res.text();
     throw new Error(`getOrgPublicProfile failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<Record<string, unknown>>();
 }
 
 export async function tryGetOrgPublicProfile(
@@ -2553,7 +2569,7 @@ export async function tryGetOrgPublicProfile(
   if (!res.ok) {
     return { ok: false, status: res.status };
   }
-  return { ok: true, status: res.status, body: await res.json() };
+  return { ok: true, status: res.status, body: await res.json<Record<string, unknown>>() };
 }
 
 export interface OrgFosteringSessionRow {
@@ -2586,7 +2602,7 @@ export async function getOrgPlacements(
     const body = await res.text();
     throw new Error(`getOrgPlacements failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<OrgFosteringSessionRow[]>();
 }
 
 export interface RedactedOrgPet {
@@ -2614,7 +2630,7 @@ export async function getRedactedOrgPet(
     const body = await res.text();
     throw new Error(`getRedactedOrgPet failed (${res.status}): ${body}`);
   }
-  return res.json();
+  return res.json<RedactedOrgPet>();
 }
 
 export async function tryGetRedactedOrgPet(
@@ -2630,7 +2646,7 @@ export async function tryGetRedactedOrgPet(
   if (!res.ok) {
     return { ok: false, status: res.status };
   }
-  return { ok: true, status: res.status, body: await res.json() };
+  return { ok: true, status: res.status, body: await res.json<RedactedOrgPet>() };
 }
 
 /** Invite an existing user and accept membership (BDD org journeys). */

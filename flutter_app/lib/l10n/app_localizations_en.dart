@@ -27,6 +27,43 @@ class AppLocalizationsEn extends AppLocalizations {
       'Log in to pick up where you left off, or create a free account to start keeping your pet\'s health history safe and accessible anytime.';
 
   @override
+  String get landingDeskEyebrow => 'The Guardian Operations Desk';
+
+  @override
+  String get landingDeskHeadline => 'Keep care close.\nKeep everyone ready.';
+
+  @override
+  String get landingDeskBody =>
+      'A calm, shared record for daily care, appointments, and every handover in between.';
+
+  @override
+  String get landingDeskPromiseAtAGlance => 'Today at a glance';
+
+  @override
+  String get landingDeskPromiseHandovers => 'Clear handovers';
+
+  @override
+  String get landingDeskPromisePrivate => 'Private by design';
+
+  @override
+  String get landingDeskCareNote =>
+      'Made for the caring arrangements that change around every pet.';
+
+  @override
+  String get landingDeskWelcomeBack => 'Welcome back.';
+
+  @override
+  String get landingDeskWelcomeBackBody =>
+      'Open your care desk and pick up where you left off.';
+
+  @override
+  String get landingDeskCreateHeading => 'Create your care desk.';
+
+  @override
+  String get landingDeskCreateBody =>
+      'Keep the people and information around each pet connected.';
+
+  @override
   String get landingGuardianPathSummary => 'For pet parents and foster carers';
 
   @override
@@ -526,6 +563,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get today => 'Today';
+
+  @override
+  String get todayAllClear => 'Everything is on track.';
+
+  @override
+  String todayAttentionSummary(int overdueCount, int dueTodayCount) {
+    return '$overdueCount overdue · $dueTodayCount due today';
+  }
+
+  @override
+  String get todayLoadError => 'We couldn\'t load today\'s care summary.';
+
+  @override
+  String todayOverdueCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count overdue items',
+      one: '1 overdue item',
+      zero: 'No overdue care',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String todayDueCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items due today',
+      one: '1 item due today',
+      zero: 'Nothing due today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careStatusAllClear => 'All clear';
+
+  @override
+  String get careStatusUpcoming => 'Care coming up';
+
+  @override
+  String get careLoadError => 'We couldn\'t load care right now.';
 
   @override
   String get tomorrow => 'Tomorrow';

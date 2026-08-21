@@ -36,3 +36,21 @@ runs:
         flutter-version: ${{ inputs.flutter-version }}
         cache: true
         pub-cache: false
+
+    - name: Verify Flutter and Dart versions
+      shell: bash
+      env:
+        EXPECTED_FLUTTER_VERSION: ${{ inputs.flutter-version }}
+      run: |
+        flutter_version="$(flutter --version 2>&1 | head -n 1)"
+        dart_version="$(dart --version 2>&1)"
+        echo "${flutter_version}"
+        echo "${dart_version}"
+        [[ "${flutter_version}" == "Flutter ${EXPECTED_FLUTTER_VERSION} "* ]] || {
+          echo "::error::Expected Flutter ${EXPECTED_FLUTTER_VERSION}; found ${flutter_version}"
+          exit 1
+        }
+        dart --version 2>&1 | grep -Eq 'Dart SDK version: 3\.(1[2-9]|[2-9][0-9])(\.| )' || {
+          echo "::error::Expected Dart 3.12 or newer; found ${dart_version}"
+          exit 1
+        }

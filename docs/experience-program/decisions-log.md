@@ -64,6 +64,15 @@ Source: agent/human chat, 2026-07-25 — analysis + Q&A rounds. See
 | **D23** | Bulk share = thin Flutter-only multi-select wrapper around the existing single-pet share endpoint (loop per selected pet). No new backend bulk endpoint. | locked | Phase 2 |
 | **D24** | Vet detail becomes **display-first** (Call/Email actions visible immediately); a separate edit mode/screen replaces today's edit-first `VetFormScreen` default. | locked | Phase 2 |
 
+## Guardian Today dashboard contract
+
+| ID | Decision | Status | Phase |
+|----|----------|--------|-------|
+| **D34** | Guardian `/g/home` remains exactly three management sections: **My Pets**, **Due and Overdue**, and **My Vets**. **Today** is a compact orientation/prioritisation layer above them, not a fourth section, management screen, or new route. | locked | Phase 2 |
+| **D35** | The dashboard preview is capped at **4 pets** and **5 care items**. Pet previews use bounded rectangular cards with an approximately **96–112 px** photo region, accessible placeholders, and ownership/status text or icon support. My Vets remains an uncapped compact, scannable row list unless separately revised. | locked | Phase 2 |
+| **D36** | Guardian Today is presentation-only over existing providers and helpers. Ownership/relationship semantics, due ordering, server-authoritative completion/undo, retryable error states, existing routes, and global notifications remain unchanged. “Events” continues to mean computed health/weight/other care entries under D17, never a new generic event entity. | locked | Phase 2 |
+| **D37** | A five-tab bottom bar, universal Add action, and new Today route are deferred from this branch. They require a separate decision covering shared Guardian/Organisation shell semantics, root/back/deep-link behavior, Add scope and permissions, accessibility, and native portability. | deferred | Future navigation decision |
+
 ## G — Organisation presentation
 
 | ID | Decision | Status | Phase |

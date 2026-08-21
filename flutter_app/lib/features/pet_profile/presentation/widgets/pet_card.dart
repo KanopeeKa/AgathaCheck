@@ -180,6 +180,12 @@ class PetCard extends StatelessWidget {
 
   Widget _buildPhotoOrPlaceholder(Color petColor) {
     if (pet.photoPath != null && pet.photoPath!.isNotEmpty) {
+      if (pet.photoPath!.startsWith('asset://')) {
+        return Image.asset(
+          pet.photoPath!.substring('asset://'.length),
+          fit: BoxFit.cover,
+        );
+      }
       try {
         final bytes = base64Decode(pet.photoPath!);
         return Image.memory(bytes, fit: BoxFit.cover);

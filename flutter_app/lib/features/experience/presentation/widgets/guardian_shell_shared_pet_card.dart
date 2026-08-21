@@ -16,6 +16,7 @@ class GuardianShellSharedPetCard extends StatelessWidget {
     required this.theme,
     required this.ref,
     required this.parentContext,
+    this.child,
   });
 
   final Pet pet;
@@ -23,6 +24,7 @@ class GuardianShellSharedPetCard extends StatelessWidget {
   final ThemeData theme;
   final WidgetRef ref;
   final BuildContext parentContext;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +80,8 @@ class GuardianShellSharedPetCard extends StatelessWidget {
         }
         return false;
       },
-      child: PetCard(pet: pet, onTap: () => context.go('/pet/${pet.id}')),
+      child:
+          child ?? PetCard(pet: pet, onTap: () => context.go('/pet/${pet.id}')),
     );
   }
 }

@@ -216,7 +216,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(
-        find.byKey(const Key('pet_card_Buddy')),
+        find.byKey(const Key('guardian_dashboard_pet_card_buddy')),
         findsOneWidget,
         reason: 'Should show Buddy in the list',
       );

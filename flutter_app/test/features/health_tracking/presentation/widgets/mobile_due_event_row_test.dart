@@ -48,7 +48,7 @@ Widget _buildRow(
   Locale locale = const Locale('en'),
 }) {
   return MaterialApp(
-    theme: AppTheme.lightTheme,
+    theme: AppTheme.lightTheme.copyWith(splashFactory: NoSplash.splashFactory),
     locale: locale,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,

@@ -21,3 +21,10 @@ uri = "file://screenshots/guardian-mobile-completion-state.jpg"
 type = "image"
 title = "Guardian mobile completion"
 description = "Rendered Guardian mobile Due and Overdue state showing a completed care item and the inline confirmation treatment."
+
+[[outputs]]
+id = "6PbygYhf7JrCxktCJGlGz"
+uri = "file://screenshots/guardian-desk-preview.jpg"
+type = "image"
+title = "Guardian desk review state"
+description = "Synthetic owned and fostered pets in the live Operations Desk dashboard skin."
