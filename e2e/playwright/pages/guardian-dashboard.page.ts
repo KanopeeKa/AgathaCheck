@@ -32,9 +32,8 @@ export class GuardianDashboardPage {
     await expect(this.section('myPets')).toBeVisible();
     await expect(this.section('dueAndOverdue')).toBeVisible();
     await expect(this.section('myVets')).toBeVisible();
-    await expect(
-      this.page.getByRole('group').filter({ hasText: /Today/i }),
-    ).toHaveCount(0);
+    // Today is an orientation layer above the three management domains — not a fourth section.
+    await this.expectTodayOrientation();
   }
 
   today(): Locator {
