@@ -1,4 +1,5 @@
 import { logAuditEventSafe } from '../../lib/audit.js';
+import { hasValidatedHomeVisitYes } from '../../lib/fosterHomeVisits.js';
 import { hasQuestionnaireSubmission } from '../../lib/fosterQuestionnaire.js';
 import { hasPermissionForUser } from '../../lib/orgPermissions.js';
 import { normaliseRole } from '../../lib/orgRoles.js';
@@ -63,6 +64,9 @@ export async function loadFosterOnboardingContext(pool, orgId, kind, personId) {
     const questionnaireSubmitted = await hasQuestionnaireSubmission(
       pool, orgId, row.foster_parent_id,
     );
+    const homeVisitValidatedYes = await hasValidatedHomeVisitYes(
+      pool, orgId, row.foster_parent_id,
+    );
     return {
       kind, personId, fosterParentId: row.foster_parent_id, userId: row.user_id,
       role: null, isPending: false, approvalState: row.approval_state || null,
@@ -70,6 +74,7 @@ export async function loadFosterOnboardingContext(pool, orgId, kind, personId) {
       fosterProfileId: row.foster_profile_id || null,
       confirmedCompetencies: parseJsonArray(row.confirmed_competencies),
       questionnaireSubmitted,
+      homeVisitValidatedYes,
     };
   }
   const result = await pool.query(
@@ -90,6 +95,9 @@ export async function loadFosterOnboardingContext(pool, orgId, kind, personId) {
   const questionnaireSubmitted = row.foster_parent_id
     ? await hasQuestionnaireSubmission(pool, orgId, row.foster_parent_id)
     : false;
+  const homeVisitValidatedYes = row.foster_parent_id
+    ? await hasValidatedHomeVisitYes(pool, orgId, row.foster_parent_id)
+    : false;
   return {
     kind, personId, fosterParentId: row.foster_parent_id || null, userId: row.user_id,
     role: normaliseRole(row.role || ''), isPending: row.is_pending === true,
@@ -97,6 +105,7 @@ export async function loadFosterOnboardingContext(pool, orgId, kind, personId) {
     fosterProfileId: row.foster_profile_id || null,
     confirmedCompetencies: parseJsonArray(row.confirmed_competencies),
     questionnaireSubmitted,
+    homeVisitValidatedYes,
   };
 }
 
@@ -127,7 +136,7 @@ function isStepAutoComplete(stepKey, context, overrides) {
     case 'under_review':
       return ['under_review', 'approved', 'declined', 'archived'].includes(context.approvalState);
     case 'onboarding_form': return context.questionnaireSubmitted === true;
-    case 'home_visit': return false;
+    case 'home_visit': return context.homeVisitValidatedYes === true;
     case 'competencies': return context.confirmedCompetencies.length > 0;
     case 'agreement': return !!context.rulesAgreementAt;
     case 'approved': return context.approvalState === 'approved';
