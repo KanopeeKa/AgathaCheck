@@ -22,7 +22,24 @@ runs:
     - name: Install Playwright Chromium
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      run: npx playwright install chromium --with-deps --force
+      run: |
+        npx playwright install chromium --with-deps
+
+        headless_shell_dir="$(
+          npx playwright install --dry-run chromium |
+            awk '/Chrome Headless Shell/{getline; print $3; exit}'
+        )"
+        headless_shell="$headless_shell_dir/chrome-headless-shell-linux64/chrome-headless-shell"
+
+        if [[ ! -x "$headless_shell" ]]; then
+          echo "::warning::Playwright Chromium cache is missing the expected headless shell; forcing browser reconciliation"
+          npx playwright install chromium --with-deps --force
+        fi
+
+        if [[ ! -x "$headless_shell" ]]; then
+          echo "::error::Playwright headless shell is still missing: $headless_shell"
+          exit 1
+        fi
 
     - name: Playwright cache summary
       shell: bash
