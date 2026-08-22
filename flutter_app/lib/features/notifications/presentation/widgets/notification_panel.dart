@@ -42,36 +42,44 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
     final notificationsAsync = ref.watch(notificationsProvider);
 
     return Drawer(
-      width: MediaQuery.of(context).size.width * 0.88,
+      width: _panelWidth(context),
       child: SafeArea(
-        child: Column(
-          children: [
-            _PanelHeader(l: l, theme: theme, onMarkAllRead: _markAllRead),
-            _KindFilterChips(
-              l: l,
-              xp: xp,
-              selected: _selectedKind,
-              onSelected: (kind) => setState(() => _selectedKind = kind),
-            ),
-            const Divider(height: 1),
-            Expanded(
-              child: notificationsAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => _ErrorView(
-                  error: e,
-                  l: l,
-                  theme: theme,
-                  onRetry: () =>
-                      ref.read(notificationsProvider.notifier).refresh(),
-                ),
-                data: (all) =>
-                    _NotificationList(all: all, selectedKind: _selectedKind),
+        child: FocusTraversalGroup(
+          child: Column(
+            children: [
+              _PanelHeader(l: l, theme: theme, onMarkAllRead: _markAllRead),
+              _KindFilterChips(
+                l: l,
+                xp: xp,
+                selected: _selectedKind,
+                onSelected: (kind) => setState(() => _selectedKind = kind),
               ),
-            ),
-          ],
+              const Divider(height: 1),
+              Expanded(
+                child: notificationsAsync.when(
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (e, _) => _ErrorView(
+                    error: e,
+                    l: l,
+                    theme: theme,
+                    onRetry: () =>
+                        ref.read(notificationsProvider.notifier).refresh(),
+                  ),
+                  data: (all) =>
+                      _NotificationList(all: all, selectedKind: _selectedKind),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  double _panelWidth(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    return screenWidth > 600 ? 480 : screenWidth * 0.92;
   }
 
   Future<void> _markAllRead() async {
@@ -100,35 +108,43 @@ class _PanelHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 8, 4),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Text(
-              l.notifications,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          Text(
+            l.notifications,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
           ),
-          _headerIconButton(
-            icon: Icons.settings_outlined,
-            tooltip: l.notificationSettingsTooltip,
-            onPressed: () {
-              final router = GoRouter.of(context);
-              Navigator.of(context).pop();
-              router.push('/notifications/settings');
-            },
-          ),
-          TextButton.icon(
-            key: const Key('mark_all_read_button'),
-            icon: const Icon(Icons.done_all, size: 18),
-            label: Text(l.markAllRead),
-            onPressed: onMarkAllRead,
-          ),
-          _headerIconButton(
-            icon: Icons.close,
-            tooltip: l.close,
-            onPressed: () => Navigator.of(context).pop(),
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 4,
+              children: [
+                _headerIconButton(
+                  icon: Icons.settings_outlined,
+                  tooltip: l.notificationSettingsTooltip,
+                  onPressed: () {
+                    final router = GoRouter.of(context);
+                    Navigator.of(context).pop();
+                    router.push('/notifications/settings');
+                  },
+                ),
+                TextButton.icon(
+                  key: const Key('mark_all_read_button'),
+                  icon: const Icon(Icons.done_all, size: 18),
+                  label: Text(l.markAllRead),
+                  onPressed: onMarkAllRead,
+                ),
+                _headerIconButton(
+                  icon: Icons.close,
+                  tooltip: l.close,
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -277,45 +293,86 @@ class _NotificationList extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(l.noNotifications, style: theme.textTheme.bodyLarge),
+            if (selectedKind != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                selectedKind == NotificationKind.care
+                    ? l.notificationKindCare
+                    : l.notificationKindOrganisation,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
           ],
         ),
       );
     }
 
-    final grouped = groupNotificationsByDate(context, filtered);
+    final pinned = selectedKind == NotificationKind.administrative
+        ? filtered.where(_isUrgentAdministrative).toList()
+        : const <AppNotification>[];
+    final pinnedIds = pinned.map((notification) => notification.id).toSet();
+    final grouped = groupNotificationsByDate(
+      context,
+      filtered
+          .where((notification) => !pinnedIds.contains(notification.id))
+          .toList(),
+    );
 
     return RefreshIndicator(
       onRefresh: () => ref.read(notificationsProvider.notifier).refresh(),
-      child: ListView.builder(
+      child: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        itemCount: grouped.length,
-        itemBuilder: (context, i) {
-          final group = grouped[i];
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                child: Text(
-                  group.label,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurfaceVariant,
+        children: [
+          if (pinned.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: Text(
+                l.notificationUrgent,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.error,
+                ),
+              ),
+            ),
+            ...pinned.map((notification) => _tile(context, ref, notification)),
+          ],
+          ...grouped.map(
+            (group) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                  child: Text(
+                    group.label,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
-              ),
-              ...group.notifications.map(
-                (n) => NotificationTile(
-                  notification: n,
-                  listScope: _scopeForNotification(n),
-                  showActionNeeded: _needsAction(n),
-                  onTap: () => _onTap(context, ref, n),
+                ...group.notifications.map(
+                  (notification) => _tile(context, ref, notification),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _tile(
+    BuildContext context,
+    WidgetRef ref,
+    AppNotification notification,
+  ) {
+    return NotificationTile(
+      notification: notification,
+      listScope: _scopeForNotification(notification),
+      showActionNeeded: _needsAction(notification),
+      onTap: () => _onTap(context, ref, notification),
     );
   }
 
@@ -324,11 +381,13 @@ class _NotificationList extends ConsumerWidget {
       ? NotificationScope.organization
       : NotificationScope.guardian;
 
-  /// Heuristic: administrative + not resolved + not read → "Action needed".
+  /// Administrative resolution is independent from a user's read state.
   bool _needsAction(AppNotification n) =>
+      n.kind == NotificationKind.administrative && n.resolvedAt == null;
+
+  bool _isUrgentAdministrative(AppNotification n) =>
       n.kind == NotificationKind.administrative &&
-      n.resolvedAt == null &&
-      !n.isRead;
+      n.priority == NotificationPriority.urgent;
 
   Future<void> _onTap(
     BuildContext context,

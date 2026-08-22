@@ -14,6 +14,13 @@ import '../../helpers/organization_provider_test_helpers.dart';
 
 const _orgId = 'org-1';
 
+Finder _findBySemanticsIdentifier(String identifier) {
+  return find.byWidgetPredicate(
+    (widget) =>
+        widget is Semantics && widget.properties.identifier == identifier,
+  );
+}
+
 class _ConnectionsRepo extends RecordingOrganizationRepository {
   _ConnectionsRepo(this._connections);
 
@@ -249,7 +256,48 @@ void main() {
       );
       expect(find.text('Manage members'), findsNothing);
       expect(find.text('Manage fosters'), findsNothing);
+      for (final identifier in const [
+        'org_profile_nav_admin_contacts',
+        'org_profile_nav_people',
+        'org_profile_nav_foster_parents',
+        'org_profile_nav_fostering_sessions',
+        'org_profile_nav_pets',
+        'org_profile_nav_connections',
+        'org_profile_nav_administration',
+      ]) {
+        expect(_findBySemanticsIdentifier(identifier), findsOneWidget);
+      }
     });
+
+    testWidgets(
+      'keeps People directly after Admin contacts in the member flow',
+      (tester) async {
+        await _pumpNav(
+          tester,
+          permissions: {
+            'view_admin_contacts',
+            'view_org_internal',
+            'view_fostering_sessions',
+            'view_org_pets',
+            'view_connections',
+            'manage_permissions',
+          },
+        );
+
+        final adminY = tester
+            .getTopLeft(find.byKey(const Key('org_profile_nav_admin_contacts')))
+            .dy;
+        final peopleY = tester
+            .getTopLeft(find.byKey(const Key('org_profile_nav_people')))
+            .dy;
+        final fostersY = tester
+            .getTopLeft(find.byKey(const Key('org_profile_nav_foster_parents')))
+            .dy;
+
+        expect(adminY, lessThan(peopleY));
+        expect(peopleY, lessThan(fostersY));
+      },
+    );
 
     testWidgets('connections row navigates to connections route', (
       tester,

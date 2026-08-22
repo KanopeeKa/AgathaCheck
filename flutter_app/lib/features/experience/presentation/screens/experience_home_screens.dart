@@ -81,8 +81,6 @@ class OrgHomeScreen extends ConsumerStatefulWidget {
 }
 
 class _OrgHomeScreenState extends ConsumerState<OrgHomeScreen> {
-  final _controller = PetListController();
-
   @override
   void initState() {
     super.initState();
@@ -108,8 +106,6 @@ class _OrgHomeScreenState extends ConsumerState<OrgHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final petListAsync = ref.watch(petListProvider);
-
     ref.listen(petListProvider, (_, next) {
       next.whenData((_) => _redirectIfOnboardingNeeded());
     });
@@ -120,12 +116,7 @@ class _OrgHomeScreenState extends ConsumerState<OrgHomeScreen> {
     return ExperienceShellScaffold(
       experience: AppExperience.organization,
       currentLocation: GoRouterState.of(context).uri.path,
-      child: petListAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('$e')),
-        data: (pets) =>
-            OrgShellHomeContent(allPets: pets, controller: _controller),
-      ),
+      child: const OrgShellHomeContent(),
     );
   }
 }

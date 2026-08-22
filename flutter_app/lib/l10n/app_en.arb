@@ -1640,6 +1640,9 @@
   "notificationKindCare": "Care",
   "notificationKindOrganisation": "Organisation",
   "notificationActionNeeded": "Action needed",
+  "notificationRead": "Read",
+  "notificationUnread": "Unread",
+  "notificationUrgent": "Urgent",
   "accountTitle": "Account",
   "accountProfileSection": "Profile",
   "accountPreferencesSection": "Preferences",
@@ -1837,5 +1840,6 @@
       "petName": { "type": "String" }
     }
   },
-  "careCompletionFailed": "Could not mark this care item as done. Try again."
+  "careCompletionFailed": "Could not mark this care item as done. Try again.",
+  "undoCompleteFailed": "Could not undo completion. Try again."
 }

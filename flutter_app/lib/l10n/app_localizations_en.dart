@@ -4614,6 +4614,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationActionNeeded => 'Action needed';
 
   @override
+  String get notificationRead => 'Read';
+
+  @override
+  String get notificationUnread => 'Unread';
+
+  @override
+  String get notificationUrgent => 'Urgent';
+
+  @override
   String get accountTitle => 'Account';
 
   @override
@@ -5119,4 +5128,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get careCompletionFailed =>
       'Could not mark this care item as done. Try again.';
+
+  @override
+  String get undoCompleteFailed => 'Could not undo completion. Try again.';
 }

@@ -67,28 +67,32 @@ class OrganisationProfileScreen extends ConsumerWidget {
               ),
             ),
           ],
-          child: ListView(
-            padding: const EdgeInsets.only(bottom: 24),
-            children: [
-              OrgPresentationHero(org: org, localizedTypeLabel: typeLabel),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: OrgPresentationLegalBlock(org: org, l: l),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: OrgPresentationContactBlock(
-                  org: org,
-                  title: l.orgPresentationContactTitle,
+          child: Semantics(
+            identifier: 'org_profile_surface',
+            container: true,
+            child: ListView(
+              padding: const EdgeInsets.only(bottom: 24),
+              children: [
+                OrgPresentationHero(org: org, localizedTypeLabel: typeLabel),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: OrgPresentationLegalBlock(org: org, l: l),
                 ),
-              ),
-              if (profile.isMember) ...[
-                const SizedBox(height: 24),
-                OrganisationProfileMemberSections(orgId: orgId),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: OrgPresentationContactBlock(
+                    org: org,
+                    title: l.orgPresentationContactTitle,
+                  ),
+                ),
+                if (profile.isMember) ...[
+                  const SizedBox(height: 24),
+                  OrganisationProfileMemberSections(orgId: orgId),
+                ],
               ],
-            ],
+            ),
           ),
         );
       },

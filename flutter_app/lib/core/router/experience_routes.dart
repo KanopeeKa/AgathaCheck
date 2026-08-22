@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/experience/domain/entities/app_experience.dart';
@@ -14,10 +15,13 @@ import '../../features/experience/presentation/screens/org_onboarding_screen.dar
 import '../../features/experience/presentation/widgets/foster_portal_route_guard.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../features/experience/presentation/screens/guardian/guardian_all_pets_screen.dart';
+import '../../features/experience/presentation/screens/guardian/add_event_type_picker_sheet.dart';
 import '../../features/experience/presentation/screens/guardian/guardian_due_events_screen.dart';
 import '../../features/health_tracking/domain/health_events_scope.dart';
 import '../../features/health_tracking/presentation/screens/health_dashboard_screen.dart';
-import '../../features/health_tracking/presentation/widgets/add_health_entry_navigation.dart';
+import '../../features/pet_profile/domain/entities/pet.dart';
+import '../../features/pet_profile/presentation/controllers/pet_list_controller.dart';
+import '../../features/pet_profile/presentation/providers/pet_providers.dart';
 
 List<RouteBase> buildExperienceRoutes() {
   return [
@@ -142,12 +146,15 @@ List<RouteBase> buildExperienceRoutes() {
   ];
 }
 
-class _GuardianEventsScreen extends StatelessWidget {
+class _GuardianEventsScreen extends ConsumerWidget {
   const _GuardianEventsScreen();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
+    final petsAsync = ref.watch(petListProvider);
+    final allPets = petsAsync.valueOrNull ?? const <Pet>[];
+    final shellPets = PetListController().guardianShellPets(allPets);
     return ExperienceShellScaffold(
       experience: AppExperience.guardian,
       currentLocation: GoRouterState.of(context).uri.path,
@@ -158,7 +165,9 @@ class _GuardianEventsScreen extends StatelessWidget {
           key: const Key('global_events_add_app_bar'),
           tooltip: l.addAnEvent,
           icon: const Icon(Icons.add),
-          onPressed: () => navigateToAddHealthEntry(context),
+          onPressed: petsAsync.hasValue
+              ? () => showAddEventTypePickerSheet(context, pets: shellPets)
+              : null,
         ),
       ],
       child: const GuardianDueEventsScreen(),

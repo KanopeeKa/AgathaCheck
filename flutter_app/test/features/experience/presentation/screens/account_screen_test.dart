@@ -32,7 +32,7 @@ void main() {
     prefs = await SharedPreferences.getInstance();
   });
 
-  Widget buildApp({ExperienceEligibility? eligibility}) {
+  Widget buildApp({ExperienceEligibility? eligibility, double textScale = 1}) {
     final resolvedEligibility =
         eligibility ??
         ExperienceEligibilityRules.compute(
@@ -63,6 +63,12 @@ void main() {
         // removed resolvedExperienceProvider mock
       ],
       child: MaterialApp.router(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          child: child!,
+        ),
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -91,6 +97,7 @@ void main() {
 
     expect(find.byKey(const Key('experience_settings_menu')), findsOneWidget);
     expect(find.byKey(const Key('account_hamburger')), findsNothing);
+    expect(find.byKey(const Key('account_identity_summary')), findsOneWidget);
     expect(find.byKey(const Key('account_my_details')), findsOneWidget);
     expect(find.byKey(const Key('account_sign_out')), findsOneWidget);
     expect(find.text('Profile'), findsOneWidget);
@@ -113,6 +120,32 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Preferences'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'account landing remains usable at narrow width with large text',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 700);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(buildApp(textScale: 2));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('account_identity_summary')), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('account_sign_out')),
+        200,
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('account_sign_out')), findsOneWidget);
+      expect(
+        tester.getRect(find.byKey(const Key('account_sign_out'))).bottom,
+        lessThanOrEqualTo(700),
+      );
+      expect(tester.takeException(), isNull);
     },
   );
 }

@@ -89,6 +89,16 @@ export class ExperiencePage {
       .first()
       .click();
     await waitForFlutterRoutePattern(this.page, /\/(?:o\/orgs|organizations)(?:\?|$)/, 30_000);
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page
+          .getByText(
+            /Shelters dashboard|Tableau de bord des refuges|My Organisations|Mes organisations/i,
+          )
+          .first(),
+      ).toBeVisible({ timeout: 3_000 });
+    }).toPass({ timeout: 30_000 });
   }
 
   async gotoChooser(): Promise<void> {

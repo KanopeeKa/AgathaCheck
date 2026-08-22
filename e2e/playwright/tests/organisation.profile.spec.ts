@@ -257,6 +257,15 @@ test.describe('Organisation profile', () => {
 
     const detail = new OrganizationDetailPage(page);
     await detail.expectLoaded(ORG_NAME);
+    await detail.expectProfileNavOrder([
+      'org_profile_nav_admin_contacts',
+      'org_profile_nav_people',
+      'org_profile_nav_foster_parents',
+      'org_profile_nav_fostering_sessions',
+      'org_profile_nav_pets',
+      'org_profile_nav_connections',
+      'org_profile_nav_administration',
+    ]);
     await detail.expectProfileNavRow(/Organisation Administration/i);
   });
 

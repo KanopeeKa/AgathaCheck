@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../core/widgets/shell_notification_bell.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../notifications/presentation/widgets/notification_panel.dart';
 import '../../../organization/domain/entities/organization.dart';
@@ -78,6 +79,11 @@ class ExperienceShellScaffold extends ConsumerWidget {
         backgroundColor: isOrg ? orgListScaffoldBackground(context) : null,
         appBar: AppBar(
           automaticallyImplyLeading: false,
+          toolbarHeight: 64,
+          backgroundColor: AppColorTokens.background,
+          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+          elevation: 0,
           leading: isRoot
               ? Builder(
                   builder: (ctx) => IconButton(
@@ -110,14 +116,11 @@ class ExperienceShellScaffold extends ConsumerWidget {
           actions: [
             if (contextualActions.isNotEmpty) ...contextualActions,
             if (contextualActions.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Text(
-                  '|',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
+              VerticalDivider(
+                width: 16,
+                indent: 18,
+                endIndent: 18,
+                color: theme.colorScheme.outlineVariant,
               ),
             Builder(builder: (ctx) => const ShellNotificationBell()),
           ],

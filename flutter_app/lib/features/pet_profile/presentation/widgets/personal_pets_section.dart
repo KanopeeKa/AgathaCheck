@@ -16,6 +16,11 @@ class PersonalPetsSection extends StatelessWidget {
   final Set<String> selectedPetIds;
   final ValueChanged<String>? onPetSelectionToggle;
 
+  /// When provided (and [bulkShareMode] is false), replaces the default
+  /// square [PetCard] tiles with a vertical list of custom cards.
+  /// The shared-pet Dismissible wrapper is applied around the custom card.
+  final Widget Function(Pet pet)? cardBuilder;
+
   const PersonalPetsSection({
     super.key,
     required this.personalActive,
@@ -27,6 +32,7 @@ class PersonalPetsSection extends StatelessWidget {
     this.bulkShareMode = false,
     this.selectedPetIds = const {},
     this.onPetSelectionToggle,
+    this.cardBuilder,
   });
 
   @override
@@ -38,6 +44,31 @@ class PersonalPetsSection extends StatelessWidget {
 
     final sorted = [...personalActive];
     sortPetsByCreatedAt(sorted);
+
+    // When a custom cardBuilder is provided and not in bulk-share mode,
+    // render a vertical list of custom cards (preserving the hide-wrapper
+    // for shared pets).
+    if (cardBuilder != null && !bulkShareMode) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final pet in sorted)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: pet.isShared
+                  ? _SharedDismissible(
+                      pet: pet,
+                      l: l,
+                      theme: theme,
+                      ref: ref,
+                      parentContext: parentContext,
+                      child: cardBuilder!(pet),
+                    )
+                  : cardBuilder!(pet),
+            ),
+        ],
+      );
+    }
 
     return PetTileStrip(
       useWrap: true,
@@ -154,6 +185,86 @@ class _EmptySection extends StatelessWidget {
         padding: const EdgeInsets.all(32),
         child: Text(message, style: Theme.of(context).textTheme.bodyLarge),
       ),
+    );
+  }
+}
+
+/// Dismissible wrapper for shared pets in the custom-card list path.
+class _SharedDismissible extends StatelessWidget {
+  const _SharedDismissible({
+    required this.pet,
+    required this.l,
+    required this.theme,
+    required this.ref,
+    required this.parentContext,
+    required this.child,
+  });
+
+  final Pet pet;
+  final dynamic l;
+  final ThemeData theme;
+  final WidgetRef ref;
+  final BuildContext parentContext;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible(
+      key: Key('hide_${pet.id}'),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              l.hideSharedPet,
+              style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.visibility_off,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+      confirmDismiss: (_) async {
+        final confirmed = await showDialog<bool>(
+          context: parentContext,
+          builder: (ctx) => AlertDialog(
+            title: Text(l.hideSharedPet),
+            content: Text(l.hideSharedPetConfirm(pet.name)),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(l.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text(l.hide),
+              ),
+            ],
+          ),
+        );
+        if (confirmed == true) {
+          await ref
+              .read(hiddenSharedPetsProvider.notifier)
+              .hideSharedPet(pet.id);
+          if (parentContext.mounted) {
+            ScaffoldMessenger.of(
+              parentContext,
+            ).showSnackBar(SnackBar(content: Text(l.petHidden(pet.name))));
+          }
+        }
+        return false;
+      },
+      child: child,
     );
   }
 }

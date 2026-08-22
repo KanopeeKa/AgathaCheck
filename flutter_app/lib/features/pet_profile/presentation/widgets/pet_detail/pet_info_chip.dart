@@ -21,12 +21,16 @@ class PetInfoChip extends StatelessWidget {
         children: [
           Icon(icon, size: 16, color: colorScheme.onSecondaryContainer),
           const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 13,
-              color: colorScheme.onSecondaryContainer,
-              fontWeight: FontWeight.w500,
+          Flexible(
+            child: Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: TextStyle(
+                fontSize: 13,
+                color: colorScheme.onSecondaryContainer,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -60,12 +64,16 @@ class PetInfoChipWidget extends StatelessWidget {
         children: [
           iconWidget,
           const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 13,
-              color: colorScheme.onSecondaryContainer,
-              fontWeight: FontWeight.w500,
+          Flexible(
+            child: Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: TextStyle(
+                fontSize: 13,
+                color: colorScheme.onSecondaryContainer,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
