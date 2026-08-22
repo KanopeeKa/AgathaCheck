@@ -1,0 +1,51 @@
+name: Auto Babysit PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull Request Number'
+        required: false
+      merge:
+        description: 'Merge after fixing'
+        required: false
+        default: 'false'
+
+concurrency:
+  group: auto-babysit-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  babysit:
+    name: Auto Babysit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run universal babysit (read-only mode)
+        id: babysit
+        run: |
+          chmod +x ./scripts/universal_babysit.sh
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          if [[ -z "$PR_NUMBER" ]]; then
+            PR_NUMBER=${{ inputs.pr_number }}
+          fi
+          if [[ -z "$PR_NUMBER" ]]; then
+            echo "No PR number found"
+            exit 1
+          fi
+          MERGE_FLAG=""
+          if [[ "${{ inputs.merge }}" == "true" || github.event.action == 'ready_for_review' ]]; then
+            MERGE_FLAG="--merge"
+          fi
+          ./scripts/universal_babysit.sh --pr "$PR_NUMBER" $MERGE_FLAG --dry-run
+        continue-on-error: true
