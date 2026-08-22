@@ -9,8 +9,8 @@ tags: [domain,health_tracking,plans]
 
 # Health tracking — plans index
 
-Index of delivery plans for this domain. Link to source of truth (.agents/plans/ or relocated delivery docs) — do not duplicate full plan bodies here.
-
 | Plan | Summary | Status | Source |
 |------|---------|--------|--------|
-| — | TODO: migrate | — | — |
+| Guardian semantics pre-UAT | Health/due semantics hardening | See snapshot | [.agents/plans/guardian-semantics-preuat-2600.md](/.agents/plans/guardian-semantics-preuat-2600.md) |
+
+Experience program Phase 2 covers Guardian due-events reframing — [/docs/experience-program/phase-2-guardian-journey.md](/docs/experience-program/phase-2-guardian-journey.md).

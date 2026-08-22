@@ -9,6 +9,8 @@ tags: [domain,health_tracking,lessons]
 
 # Health tracking — lessons index
 
-One-line summaries linking to .agents/memory/*.md entries relevant to this domain.
+| Lesson | Summary | Source |
+|--------|---------|--------|
+| Health entry completion | Three-date model, recurrence anchors, mark-taken and undo | [.agents/memory/health-entry-completion.md](/.agents/memory/health-entry-completion.md) |
 
-- TODO: migrate lesson links
+Also referenced in [features/specs.md](../features/specs.md) as core domain semantics.

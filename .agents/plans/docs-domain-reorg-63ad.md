@@ -130,16 +130,16 @@ Migrate AgathaTrack documentation from document-type-first layout into a **domai
 
 ```yaml
 autonomy: active
-current_phase: 1
+current_phase: 2
 last_completed_phase: null
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/docs-domain-scaffold-63ad"
+next_action: "continue phase 2 on branch cursor/docs-domain-auth-pet-health-63ad"
 artifact_ref:
-  branch: cursor/docs-domain-scaffold-63ad
+  branch: cursor/docs-domain-auth-pet-health-63ad
   plan_path: .agents/plans/docs-domain-reorg-63ad.md
-  plan_commit: 0d571bbdea63f72d090521812488131d08404af6
+  plan_commit: f00d95b109cf5719a7a5b296c97842e218aa06dd
   snapshot_path: .agents/plans/docs-domain-reorg-63ad.snapshot.json
-  snapshot_commit: 0d571bbdea63f72d090521812488131d08404af6
+  snapshot_commit: f00d95b109cf5719a7a5b296c97842e218aa06dd
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
