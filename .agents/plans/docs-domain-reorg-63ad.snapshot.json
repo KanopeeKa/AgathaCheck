@@ -4,7 +4,7 @@
   "approved_at": "2026-08-22T15:52:00Z",
   "approved_by": "Cloud agent — standing grant user chat 2026-08-22 docs reorg",
   "approved_until": "2026-08-24T15:52:00Z",
-  "content_hash": "sha256:0128428c0b983c60b6a16bea2ea61f7f7c3a2eea890d8f9a566de18d60621abd",
+  "content_hash": "sha256:fc091ec04fea855f2ea66709e5bc6b9a9989d42da82da8f08059607af569dd9f",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/docs-domain-reorg-integration-63ad",
@@ -33,10 +33,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/700",
+      "pr_head_sha": "f00d95b109cf5719a7a5b296c97842e218aa06dd"
     },
     {
       "id": "2",
