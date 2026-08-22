@@ -1,7 +1,7 @@
 # Pet activity model (product layer)
 
 **Status:** Locked for Organisation v2 (Slice 1)  
-**Related:** [/docs/experience-program/organisation-v2-delivery-plan.md](/docs/experience-program/organisation-v2-delivery-plan.md) (D-v2-ACT-*), [/docs/observability.md](/docs/observability.md)
+**Related:** [/docs/domains/organization/changes/organisation-v2-delivery-plan.md](/docs/domains/organization/changes/organisation-v2-delivery-plan.md) (D-v2-ACT-*), [/docs/observability.md](/docs/observability.md)
 
 ---
 

@@ -11,10 +11,11 @@ tags: [domain,fostering,plans]
 
 | Plan | Summary | Status | Source |
 |------|---------|--------|--------|
-| Fostering platform roadmap | Delivery timeline | Active | [changes/roadmap-delivery-plan.md](changes/roadmap-delivery-plan.md) |
-| Phase 4 foster pet operations | Foster self-management | Active | [/docs/experience-program/phase-4-foster-pet-operations.md](/docs/experience-program/phase-4-foster-pet-operations.md) |
+| Fostering platform roadmap | Delivery timeline | Active | [roadmap-delivery-plan.md](roadmap-delivery-plan.md) |
+| Phase 4 foster pet operations | Foster self-management | Active | [phase-4-foster-pet-operations.md](phase-4-foster-pet-operations.md) |
+| Org & fostering strategy | Roles, placements, increments | Active | [org-fostering-strategy.md](org-fostering-strategy.md) |
 | Fostering foundation | Platform foundation | See snapshot | [.agents/plans/fostering-platform-foundation-e877.md](/.agents/plans/fostering-platform-foundation-e877.md) |
 | Fostering J1 phase 2–4 | Onboarding phases | See snapshot | [.agents/plans/fostering-platform-j1-phase2-e877.md](/.agents/plans/fostering-platform-j1-phase2-e877.md) |
 | Fostering wave C | Wave C delivery | See snapshot | [.agents/plans/fostering-platform-wave-c-e877.md](/.agents/plans/fostering-platform-wave-c-e877.md) |
 
-Strategy reference (mixed org/foster): [/docs/org-fostering-strategy.md](/docs/org-fostering-strategy.md)
+Cross-cutting program: [/docs/experience-program/README.md](/docs/experience-program/README.md)

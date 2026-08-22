@@ -13,4 +13,4 @@ tags: [domain,health_tracking,plans]
 |------|---------|--------|--------|
 | Guardian semantics pre-UAT | Health/due semantics hardening | See snapshot | [.agents/plans/guardian-semantics-preuat-2600.md](/.agents/plans/guardian-semantics-preuat-2600.md) |
 
-Experience program Phase 2 covers Guardian due-events reframing — [/docs/experience-program/phase-2-guardian-journey.md](/docs/experience-program/phase-2-guardian-journey.md).
+Experience program Phase 2 covers Guardian due-events reframing — [/docs/domains/pet_profile/changes/phase-2-guardian-journey.md](/docs/domains/pet_profile/changes/phase-2-guardian-journey.md).

@@ -9,7 +9,7 @@ tags: [domain,organization,specs,permissions]
 
 # Organization roles and permissions
 
-Extracted from [/docs/org-fostering-strategy.md](/docs/org-fostering-strategy.md) (org-identity sections). Foster **placement lifecycle** and transfer workflows belong in the [fostering domain](/docs/domains/fostering/README.md).
+Extracted from [/docs/domains/fostering/changes/org-fostering-strategy.md](/docs/domains/fostering/changes/org-fostering-strategy.md) (org-identity sections). Foster **placement lifecycle** and transfer workflows belong in the [fostering domain](/docs/domains/fostering/README.md).
 
 ## Glossary (org roles)
 
