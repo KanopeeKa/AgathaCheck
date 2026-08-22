@@ -14,6 +14,8 @@
 ///      test/features/experience/presentation/widgets/ for navigation assertions.
 library guardian_routes_test;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -81,6 +83,11 @@ final _guardianEligibility = ExperienceEligibilityRules.compute(
   orgMembershipCount: 0,
 );
 
+class _LoadingPetListNotifier extends PetListNotifier {
+  @override
+  Future<List<Pet>> build() => Completer<List<Pet>>().future;
+}
+
 // ---------------------------------------------------------------------------
 // Minimum provider overrides for the guardian experience shell to mount
 // without hitting real services or native SDKs.
@@ -88,6 +95,7 @@ final _guardianEligibility = ExperienceEligibilityRules.compute(
 List<Override> _guardianShellOverrides({
   required SharedPreferences prefs,
   List<Pet> pets = const [],
+  bool petsLoading = false,
 }) {
   return [
     sharedPreferencesProvider.overrideWithValue(prefs),
@@ -98,7 +106,9 @@ List<Override> _guardianShellOverrides({
     combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
     guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
     orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
-    petListProvider.overrideWith(() => TestPetListNotifier(pets)),
+    petListProvider.overrideWith(
+      () => petsLoading ? _LoadingPetListNotifier() : TestPetListNotifier(pets),
+    ),
     vetListProvider.overrideWith(FakeVetListNotifier.new),
     organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
     healthEntriesNotifierProvider.overrideWith(
@@ -160,9 +170,14 @@ Widget _app({
   required GoRouter router,
   required SharedPreferences prefs,
   List<Pet> pets = const [],
+  bool petsLoading = false,
 }) {
   return ProviderScope(
-    overrides: _guardianShellOverrides(prefs: prefs, pets: pets),
+    overrides: _guardianShellOverrides(
+      prefs: prefs,
+      pets: pets,
+      petsLoading: petsLoading,
+    ),
     child: MaterialApp.router(
       routerConfig: router,
       localizationsDelegates: const [
@@ -367,6 +382,22 @@ void main() {
         find.byKey(const Key('global_events_add_app_bar')),
         findsOneWidget,
       );
+    });
+
+    testWidgets('add button is disabled while pets are loading', (
+      tester,
+    ) async {
+      final router = _buildStubRouter(initialLocation: '/g/events');
+      await tester.pumpWidget(
+        _app(router: router, prefs: prefs, petsLoading: true),
+      );
+      await _settle(tester);
+
+      final addButton = tester.widget<IconButton>(
+        find.byKey(const Key('global_events_add_app_bar')),
+      );
+      expect(addButton.onPressed, isNull);
+      expect(find.byIcon(Icons.medical_services_outlined), findsNothing);
     });
   });
 

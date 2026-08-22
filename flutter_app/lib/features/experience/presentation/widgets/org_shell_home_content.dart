@@ -38,7 +38,7 @@ class OrgShellHomeContent extends ConsumerWidget {
             title: l.orgNoOrganizations,
             detail: l.createOrJoinOrganization,
             action: FilledButton.icon(
-              onPressed: () => context.push('/organizations/new'),
+              onPressed: () => context.push('/o/orgs/new'),
               icon: const Icon(Icons.add),
               label: Text(l.create),
             ),
@@ -72,7 +72,7 @@ class OrgShellHomeContent extends ConsumerWidget {
             const SizedBox(height: 8),
             OutlinedButton.icon(
               key: const Key('org_home_create'),
-              onPressed: () => context.push('/organizations/new'),
+              onPressed: () => context.push('/o/orgs/new'),
               icon: const Icon(Icons.add),
               label: Text(l.create),
             ),

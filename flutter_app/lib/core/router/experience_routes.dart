@@ -152,7 +152,8 @@ class _GuardianEventsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final allPets = ref.watch(petListProvider).valueOrNull ?? const <Pet>[];
+    final petsAsync = ref.watch(petListProvider);
+    final allPets = petsAsync.valueOrNull ?? const <Pet>[];
     final shellPets = PetListController().guardianShellPets(allPets);
     return ExperienceShellScaffold(
       experience: AppExperience.guardian,
@@ -164,8 +165,9 @@ class _GuardianEventsScreen extends ConsumerWidget {
           key: const Key('global_events_add_app_bar'),
           tooltip: l.addAnEvent,
           icon: const Icon(Icons.add),
-          onPressed: () =>
-              showAddEventTypePickerSheet(context, pets: shellPets),
+          onPressed: petsAsync.hasValue
+              ? () => showAddEventTypePickerSheet(context, pets: shellPets)
+              : null,
         ),
       ],
       child: const GuardianDueEventsScreen(),

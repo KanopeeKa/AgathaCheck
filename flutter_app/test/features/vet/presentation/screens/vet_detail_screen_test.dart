@@ -106,10 +106,10 @@ Widget _buildApp({
   required String vetId,
   required List<Vet> vets,
   List<Pet> pets = const [],
-  String initialLocation = '/g/vets/vet-1',
+  String? initialLocation,
 }) {
   final router = GoRouter(
-    initialLocation: initialLocation,
+    initialLocation: initialLocation ?? '/g/vets/$vetId',
     routes: [
       GoRoute(
         path: '/g/vets/:id',
@@ -202,9 +202,7 @@ void main() {
       await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
       await tester.pumpAndSettle();
 
-      // The word "Email" in the field label should not appear
-      // (vetEmail key = "Email", phone key also not shown here)
-      expect(find.text('Phone'), findsNothing);
+      expect(find.text('Email'), findsNothing);
     });
 
     testWidgets('shows linked-pets section when pet is linked to vet', (
