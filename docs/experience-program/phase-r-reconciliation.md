@@ -1,3 +1,11 @@
+---
+title: Phase R — Reconciliation
+owner: Experience Program Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [experience,guardian,organisation]
+---
 # Phase R — Reconciliation
 
 **Parent:** [`roadmap-delivery-plan.md`](roadmap-delivery-plan.md) · [`decisions-log.md`](decisions-log.md)

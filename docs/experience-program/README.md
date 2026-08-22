@@ -1,3 +1,11 @@
+---
+title: Experience program — navigation, Guardian dashboard, Organisation presentation
+owner: Experience Program Team
+audience: human
+status: active
+last_updated: 2026-08-21
+tags: [experience,guardian,organisation]
+---
 # Experience program — navigation, Guardian dashboard, Organisation presentation
 
 Planning and contract documents for the navigation reversal + Guardian dashboard redesign +

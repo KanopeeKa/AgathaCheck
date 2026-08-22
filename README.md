@@ -1,3 +1,11 @@
+---
+title: Agatha Track
+owner: Documentation Team
+audience: human
+status: active
+last_updated: 2026-08-21
+tags: [overview,getting-started]
+---
 # Agatha Track
 
 A modular Flutter web application for comprehensive pet management, built with clean architecture principles and feature-driven design. Backed by a Postgres database and a Node.js API server.

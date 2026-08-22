@@ -1,3 +1,11 @@
+---
+title: J1 — Foster onboarding and approval
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [fostering,organisation,adoption]
+---
 # J1 — Foster onboarding and approval
 
 **Status:** Phase 2 complete  

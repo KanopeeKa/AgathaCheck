@@ -1,3 +1,11 @@
+---
+title: Canonical Gherkin specifications for Agatha Track user journeys.
+owner: Documentation Team
+audience: human
+status: active
+last_updated: 2026-08-21
+tags: [testing,e2e,playwright]
+---
 # Canonical Gherkin specifications for Agatha Track user journeys.
 #
 # Executable Playwright implementations live in:

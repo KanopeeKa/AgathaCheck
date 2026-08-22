@@ -1,3 +1,11 @@
+---
+title: Skin-change guide
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [design,ui,ux]
+---
 # Skin-change guide
 
 **One question, one answer:** to change AgathaTrack's color scheme, edit

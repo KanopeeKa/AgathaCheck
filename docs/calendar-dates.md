@@ -1,3 +1,11 @@
+---
+title: Calendar dates in Agatha Track
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [documentation]
+---
 # Calendar dates in Agatha Track
 
 Some fields represent a **calendar day** (due date, date of birth, weight day,

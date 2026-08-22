@@ -1,3 +1,11 @@
+---
+title: Guardian Today presentation foundation
+owner: Experience Program Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [experience,guardian,organisation]
+---
 # Guardian Today presentation foundation
 
 The Guardian Today presentation foundation is a pure, local adapter for existing

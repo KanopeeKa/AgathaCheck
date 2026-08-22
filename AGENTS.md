@@ -1,3 +1,11 @@
+---
+title: AGENTS.md
+owner: Documentation Team
+audience: agent
+status: active
+last_updated: 2026-08-21
+tags: [agent,workflow]
+---
 # AGENTS.md
 
 ## Cursor Cloud specific instructions
