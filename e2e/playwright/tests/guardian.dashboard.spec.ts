@@ -23,6 +23,7 @@ import {
   updatePetVet,
 } from '../support/api';
 import {
+  dashboardSectionGroup,
   flutterGotoUrl,
   reachAuthenticatedHome,
   refreshFlutterAccessibility,
@@ -162,7 +163,13 @@ test.describe('Guardian dashboard', () => {
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.open();
     await dashboard.expectTodayOrientation();
-    await expect(page.getByText(/overdue/i)).not.toBeVisible();
+    const dueSection = dashboardSectionGroup(page, 'dueAndOverdue');
+    await expect(dueSection).toBeVisible();
+    await expect(
+      dueSection
+        .getByText(/You're all caught up|No events are overdue or due today/i)
+        .first(),
+    ).toBeVisible();
   });
 
   test('Pending foster placement surfaces as a notification, not a dashboard banner', async ({ page, testUser }) => {

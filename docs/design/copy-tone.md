@@ -1,3 +1,11 @@
+---
+title: Copy tone and org branding
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [design,ui,ux]
+---
 # Copy tone and org branding
 
 Everyday UI work: follow the bullets in `design.mdc`. Use this file for `/ui-design-deep` or copy/branding tasks.

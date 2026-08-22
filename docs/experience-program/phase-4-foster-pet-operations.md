@@ -1,3 +1,11 @@
+---
+title: Phase 4 — Foster & pet operations
+owner: Experience Program Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [experience,guardian,organisation]
+---
 # Phase 4 — Foster & pet operations
 
 **Parent:** [`roadmap-delivery-plan.md`](roadmap-delivery-plan.md) · [`program-contract.md`](program-contract.md)  

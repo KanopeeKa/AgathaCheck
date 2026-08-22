@@ -23,7 +23,7 @@ paths:
 2. `docs/design/ui-rework-plan.md` — if theme rework or multi-phase UI work
 3. `docs/design/principles.md` — personality, palette target, layout
 4. `docs/design/copy-tone.md` — copy and org branding boundaries
-5. `docs/experience-split-plan.md` — if guardian/org/foster context matters
+5. `docs/archived/experience-split-plan.md (archived, see Experience Program)` — if guardian/org/foster context matters
 6. `flutter_app/lib/core/theme/app_theme.dart` (+ `docs/design/tokens.md` once Phase 0 lands)
 7. `.cursor/rules/design.mdc` + `accessibility.mdc`
 8. Auth/landing on web: `.agents/memory/flutter-web-password-managers.md`

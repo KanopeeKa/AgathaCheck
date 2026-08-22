@@ -1,3 +1,11 @@
+---
+title: Design tokens
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [design,ui,ux]
+---
 # Design tokens
 
 Canonical palette for AgathaTrack. Implemented in `flutter_app/lib/core/theme/`.  

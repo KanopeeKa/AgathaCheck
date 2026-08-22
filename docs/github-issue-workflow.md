@@ -1,3 +1,11 @@
+---
+title: GitHub issue workflow
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [documentation]
+---
 # GitHub issue workflow
 
 This document describes how issues are filed, triaged, and moved through delivery for Agatha Track.

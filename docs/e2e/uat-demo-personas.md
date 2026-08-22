@@ -1,3 +1,11 @@
+---
+title: UAT demo personas
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [testing,e2e,playwright]
+---
 # UAT demo personas
 
 Stable identities for **manual UAT and shared demo environments only**.

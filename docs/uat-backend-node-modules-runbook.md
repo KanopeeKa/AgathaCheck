@@ -1,3 +1,11 @@
+---
+title: UAT backend `node_modules` runbook (CloudLinux / o2switch)
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [documentation]
+---
 # UAT backend `node_modules` runbook (CloudLinux / o2switch)
 
 Operational contract for **Agatha Track UAT** (`uat.agathatrack.com`).

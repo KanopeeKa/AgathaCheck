@@ -1,3 +1,11 @@
+---
+title: Agatha Track — Database Deployment Guide
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [deployment,operations]
+---
 # Agatha Track — Database Deployment Guide
 
 ## Overview

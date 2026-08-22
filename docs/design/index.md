@@ -1,3 +1,11 @@
+---
+title: Design guidance (agent map)
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [design,ui,ux]
+---
 # Design guidance (agent map)
 
 Lightweight by default. Go deeper only when the task needs it.

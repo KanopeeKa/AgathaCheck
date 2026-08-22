@@ -1,3 +1,11 @@
+---
+title: Design principles (deep reference)
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [design,ui,ux]
+---
 # Design principles (deep reference)
 
 Read when using `/ui-design-deep` or planning a UI refactor. Everyday work does **not** need this file.

@@ -1,3 +1,11 @@
+---
+title: Guardian Today orientation handoff
+owner: Experience Program Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [experience,guardian,organisation]
+---
 # Guardian Today orientation handoff
 
 `GuardianTodayOrientation` is the compact, provider-free orientation layer for

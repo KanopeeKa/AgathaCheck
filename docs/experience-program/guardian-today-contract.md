@@ -1,3 +1,11 @@
+---
+title: Guardian Today dashboard contract
+owner: Experience Program Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [experience,guardian,organisation]
+---
 # Guardian Today dashboard contract
 
 **Status:** Locked implementation handoff

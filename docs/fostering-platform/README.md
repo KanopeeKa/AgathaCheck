@@ -1,3 +1,11 @@
+---
+title: Fostering & adoption platform specs
+owner: Documentation Team
+audience: human
+status: active
+last_updated: 2026-08-21
+tags: [fostering,organisation,adoption]
+---
 # Fostering & adoption platform specs
 
 Planning documents for the second-generation fostering and adoption roadmap. **No implementation lives here** — these are agent handoff contracts.

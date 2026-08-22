@@ -1,3 +1,11 @@
+---
+title: Phase 0 — Settings content audit (Q3)
+owner: Experience Program Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [experience,guardian,organisation]
+---
 # Phase 0 — Settings content audit (Q3)
 
 **Status:** Sprint 0.1 deliverable · resolves program-contract Q3  

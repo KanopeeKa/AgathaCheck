@@ -1,3 +1,11 @@
+---
+title: Navigation redesign brief
+owner: Experience Program Team
+audience: both
+status: active
+last_updated: 2026-08-21
+tags: [experience,guardian,organisation]
+---
 > **Status:** Locked master brief (source of truth). Do not edit inline — track deviations in
 > [`../decisions-log.md`](../decisions-log.md) and feature-level detail in
 > [`../phase-1-navigation.md`](../phase-1-navigation.md). Imported verbatim 2026-07-25.
