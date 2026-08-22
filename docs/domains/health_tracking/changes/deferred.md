@@ -9,8 +9,8 @@ tags: [domain,health_tracking,deferred]
 
 # Health tracking — deferred work
 
-Subset of technical/refactoring debt scoped to this domain.
-
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| — | — | — | TODO: migrate from docs/technical-debt.md / docs/refactoring-debt.md |
+| `health_entry_form_controller.dart` further slim | P4 | Small | Optional frequency widget extract — [/docs/refactoring-debt.md](/docs/refactoring-debt.md) |
+
+Cross-cutting audit extension (health flows partially covered) remains in [/docs/technical-debt.md](/docs/technical-debt.md) until phase 5 split.

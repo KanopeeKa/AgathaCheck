@@ -1,5 +1,5 @@
 ---
-title: Authentication & profile deferred work
+title: Auth deferred work
 owner: Documentation Team
 audience: both
 status: active
@@ -7,10 +7,8 @@ last_updated: 2026-08-22
 tags: [domain,auth,deferred]
 ---
 
-# Authentication & profile — deferred work
-
-Subset of technical/refactoring debt scoped to this domain.
+# Authentication — deferred work
 
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| — | — | — | TODO: migrate from docs/technical-debt.md / docs/refactoring-debt.md |
+| — | — | — | No auth-specific rows isolated yet; cross-cutting audit/GDPR items remain in [/docs/technical-debt.md](/docs/technical-debt.md) until phase 5 split |
