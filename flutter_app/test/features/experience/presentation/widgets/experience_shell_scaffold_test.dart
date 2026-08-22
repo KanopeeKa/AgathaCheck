@@ -124,7 +124,9 @@ void main() {
     expect(find.text('My Pets dashboard'), findsOneWidget);
   });
 
-  testWidgets('contextual actions appear before pipe and bell', (tester) async {
+  testWidgets('contextual actions appear before divider and bell', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -170,7 +172,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('contextual_test_action')), findsOneWidget);
-    expect(find.text('|'), findsOneWidget);
+    expect(find.text('|'), findsNothing);
+    expect(find.byType(VerticalDivider), findsOneWidget);
     expect(
       find.byKey(const Key('experience_notification_bell')),
       findsOneWidget,

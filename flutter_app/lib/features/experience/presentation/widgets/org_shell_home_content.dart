@@ -3,153 +3,187 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../organization/domain/entities/organization.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/presentation/controllers/pet_list_controller.dart';
-import '../../../pet_profile/presentation/widgets/pet_card.dart';
-import '../../../pet_profile/presentation/widgets/pet_list/due_events_section.dart';
-import '../../../pet_profile/presentation/widgets/pet_list/pending_adoption_placements_section.dart';
-import '../../../pet_profile/presentation/widgets/pet_list/pending_custody_transfers_section.dart';
-import '../../../pet_profile/presentation/widgets/pet_list/pending_foster_placements_section.dart';
-import '../../../pet_profile/presentation/widgets/pet_list/pet_list_section_header.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
+import '../../../organization/presentation/widgets/org_card.dart';
 
-/// Organisation shell home: due events (org pets) + pets grouped by org.
+/// Organisation shell home: a calm switcher into each organisation workspace.
+///
+/// Operational destinations stay inside the selected organisation's profile.
+/// This keeps the section root useful for orientation without duplicating the
+/// pet/event feeds or turning the global drawer into an organisation sitemap.
 class OrgShellHomeContent extends ConsumerWidget {
-  const OrgShellHomeContent({
-    super.key,
-    required this.allPets,
-    required this.controller,
-  });
-
-  final List<Pet> allPets;
-  final PetListController controller;
+  const OrgShellHomeContent({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
     final orgsAsync = ref.watch(organizationListProvider);
-    final orgPets = controller.orgShellPets(allPets);
-    final orgGroups = controller.getOrgGroups(orgPets);
 
     return orgsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('$e')),
+      error: (e, _) => _OrgHubMessage(
+        icon: Icons.error_outline,
+        title: l.orgNoOrganizations,
+        detail: '$e',
+        action: TextButton(
+          onPressed: () => ref.invalidate(organizationListProvider),
+          child: Text(l.retry),
+        ),
+      ),
       data: (orgs) {
         if (orgs.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.business_outlined,
-                    size: 80,
-                    color: theme.colorScheme.outline,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l.orgNoOrganizations,
-                    style: theme.textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 24),
-                  FilledButton.icon(
-                    onPressed: () => context.push('/organizations/new'),
-                    icon: const Icon(Icons.add),
-                    label: Text(l.create),
-                  ),
-                ],
-              ),
+          return _OrgHubMessage(
+            icon: Icons.business_outlined,
+            title: l.orgNoOrganizations,
+            detail: l.createOrJoinOrganization,
+            action: FilledButton.icon(
+              onPressed: () => context.push('/organizations/new'),
+              icon: const Icon(Icons.add),
+              label: Text(l.create),
             ),
           );
         }
 
         return ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
           children: [
-            if (orgs.length == 1)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    key: const Key('org_home_shelter_settings'),
-                    onPressed: () =>
-                        context.push('/account/orgs/${orgs.first.id}'),
-                    icon: const Icon(Icons.settings_outlined, size: 18),
-                    label: Text(l.shelterSettings),
-                  ),
+            _OrgHubHeader(
+              title: l.organisationsDashboardTitle,
+              subtitle: l.orgMembershipByEmailInvite,
+            ),
+            const SizedBox(height: 20),
+            Text(
+              l.myOrganizations,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 10),
+            ...orgs.map(
+              (org) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: OrgCard(
+                  organization: org,
+                  onTap: () => context.push('/o/orgs/${org.id}'),
                 ),
               ),
-            PendingFosterPlacementsSection(),
-            PendingAdoptionPlacementsSection(),
-            PendingCustodyTransfersSection(),
-            DueEventsSection(pets: orgPets, showInlineActions: true),
-            ...orgGroups.entries.map((entry) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  PetListSectionHeader(
-                    icon: Icons.business,
-                    title: entry.key,
-                    count: entry.value.length,
-                  ),
-                  ...entry.value.map(
-                    (pet) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: PetCard(
-                        pet: pet,
-                        onTap: () => context.push('/pet/${pet.id}'),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        final orgId = entry.value
-                            .map((p) => p.organizationId)
-                            .whereType<String>()
-                            .firstOrNull;
-                        if (orgId != null) {
-                          context.push('/organizations/$orgId');
-                          return;
-                        }
-                        Organization? match;
-                        for (final o in orgs) {
-                          if (o.name == entry.key) {
-                            match = o;
-                            break;
-                          }
-                        }
-                        if (match != null) {
-                          context.push('/organizations/${match.id}');
-                        }
-                      },
-                      icon: const Icon(Icons.open_in_new, size: 18),
-                      label: Text(l.viewOrganization),
-                    ),
-                  ),
-                ],
-              );
-            }),
-            if (orgPets.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: Center(
-                  child: Text(
-                    l.orgNoPets,
-                    style: theme.textTheme.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              key: const Key('org_home_create'),
+              onPressed: () => context.push('/organizations/new'),
+              icon: const Icon(Icons.add),
+              label: Text(l.create),
+            ),
           ],
         );
       },
+    );
+  }
+}
+
+class _OrgHubHeader extends StatelessWidget {
+  const _OrgHubHeader({required this.title, required this.subtitle});
+
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Semantics(
+      header: true,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.primaryContainer,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colors.primary.withValues(alpha: 0.18)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.business_center_outlined,
+                color: colors.primary,
+                size: 30,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: colors.onPrimaryContainer,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onPrimaryContainer.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _OrgHubMessage extends StatelessWidget {
+  const _OrgHubMessage({
+    required this.icon,
+    required this.title,
+    required this.detail,
+    required this.action,
+  });
+
+  final IconData icon;
+  final String title;
+  final String detail;
+  final Widget action;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 64, color: theme.colorScheme.outline),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              style: theme.textTheme.headlineSmall,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              detail,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            action,
+          ],
+        ),
+      ),
     );
   }
 }

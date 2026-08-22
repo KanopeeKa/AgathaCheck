@@ -9,6 +9,13 @@ import '../providers/vet_providers.dart';
 import '../utils/vet_accent.dart';
 
 /// Display-first vet detail screen (D24). Edit is a separate route.
+///
+/// Call and Email are presented as primary action buttons so they are
+/// immediately discoverable, not hidden inside a detail row.  When a phone
+/// number or email address is absent the corresponding action is omitted so
+/// the screen never implies that an unavailable contact method can be used.
+/// When the device launcher reports that it cannot open the URI the screen
+/// reports the failure via a SnackBar rather than silently doing nothing.
 class VetDetailScreen extends ConsumerWidget {
   const VetDetailScreen({
     super.key,
@@ -28,7 +35,7 @@ class VetDetailScreen extends ConsumerWidget {
 
     return vetListAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('$e')),
+      error: (e, _) => Center(child: Text(l.failedToLoadVets('$e'))),
       data: (vets) {
         final vet = vets.where((v) => v.id == vetId).firstOrNull;
         if (vet == null) {
@@ -41,11 +48,15 @@ class VetDetailScreen extends ConsumerWidget {
           organizationId: vet.organizationId,
         );
 
+        final hasPhone = vet.phone.isNotEmpty;
+        final hasEmail = vet.email.isNotEmpty;
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // ── Identity card ───────────────────────────────────────────
               Card(
                 color: accent.surface,
                 child: Padding(
@@ -81,30 +92,20 @@ class VetDetailScreen extends ConsumerWidget {
                           value: vet.address,
                         ),
                       ],
-                      if (vet.phone.isNotEmpty) ...[
+                      if (hasPhone) ...[
                         const SizedBox(height: 12),
                         _DetailRow(
                           icon: Icons.phone_outlined,
                           label: l.phone,
                           value: vet.phone,
-                          action: IconButton(
-                            icon: const Icon(Icons.call),
-                            tooltip: l.phone,
-                            onPressed: () => _launchTel(vet.phone),
-                          ),
                         ),
                       ],
-                      if (vet.email.isNotEmpty) ...[
+                      if (hasEmail) ...[
                         const SizedBox(height: 12),
                         _DetailRow(
                           icon: Icons.email_outlined,
-                          label: l.email,
+                          label: l.vetEmail,
                           value: vet.email,
-                          action: IconButton(
-                            icon: const Icon(Icons.mail_outline),
-                            tooltip: l.email,
-                            onPressed: () => _launchMail(vet.email),
-                          ),
                         ),
                       ],
                       if (vet.website.isNotEmpty) ...[
@@ -119,7 +120,7 @@ class VetDetailScreen extends ConsumerWidget {
                         const SizedBox(height: 12),
                         _DetailRow(
                           icon: Icons.notes,
-                          label: l.notes,
+                          label: l.vetNotes,
                           value: vet.notes,
                         ),
                       ],
@@ -127,6 +128,17 @@ class VetDetailScreen extends ConsumerWidget {
                   ),
                 ),
               ),
+
+              // ── Primary contact actions ─────────────────────────────────
+              const SizedBox(height: 12),
+              _VetContactActions(
+                phone: vet.phone,
+                email: vet.email,
+                hasPhone: hasPhone,
+                hasEmail: hasEmail,
+              ),
+
+              // ── Linked pets ─────────────────────────────────────────────
               if (linkedPets.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 Text(
@@ -145,11 +157,14 @@ class VetDetailScreen extends ConsumerWidget {
                   ),
                 ),
               ],
+
+              // ── Edit ────────────────────────────────────────────────────
               const SizedBox(height: 24),
               FilledButton.icon(
+                key: const Key('vet_detail_edit_button'),
                 onPressed: () => context.go('$listPath/edit/$vetId'),
                 icon: const Icon(Icons.edit_outlined),
-                label: Text(l.edit),
+                label: Text(l.editVet),
               ),
             ],
           ),
@@ -157,30 +172,181 @@ class VetDetailScreen extends ConsumerWidget {
       },
     );
   }
+}
 
-  Future<void> _launchTel(String phone) async {
-    final uri = Uri(scheme: 'tel', path: phone);
-    if (await canLaunchUrl(uri)) await launchUrl(uri);
+// ---------------------------------------------------------------------------
+// Contact action buttons
+// ---------------------------------------------------------------------------
+
+/// Renders prominently-sized Call and Email buttons for whichever contact
+/// methods the vet record actually provides.
+///
+/// Each button occupies at least 48 dp in height and uses an icon + label so
+/// the action is readable at a glance and discoverable by screen-readers.
+/// When both phone and email are absent the widget collapses to nothing rather
+/// than presenting an empty row — the absence is already clear from the detail
+/// card above which shows no phone or email field.
+///
+/// If the device launcher reports that it cannot open the URI (e.g. no phone
+/// or mail app is installed) the widget reports the failure via a [SnackBar]
+/// rather than silently doing nothing.
+class _VetContactActions extends StatelessWidget {
+  const _VetContactActions({
+    required this.phone,
+    required this.email,
+    required this.hasPhone,
+    required this.hasEmail,
+  });
+
+  final String phone;
+  final String email;
+  final bool hasPhone;
+  final bool hasEmail;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+
+    // Nothing to show when neither contact method is present.
+    if (!hasPhone && !hasEmail) return const SizedBox.shrink();
+
+    return Row(
+      children: [
+        if (hasPhone) ...[
+          Expanded(
+            child: _ContactButton(
+              key: const Key('vet_call_button'),
+              icon: Icons.call,
+              label: l.adminContactsCall,
+              tooltip: '${l.adminContactsCall} ${l.phone}',
+              onPressed: () => _launchTel(context, phone, l),
+            ),
+          ),
+        ],
+        if (hasPhone && hasEmail) const SizedBox(width: 12),
+        if (hasEmail) ...[
+          Expanded(
+            child: _ContactButton(
+              key: const Key('vet_email_button'),
+              icon: Icons.mail_outline,
+              label: l.vetEmail,
+              tooltip: l.vetEmail,
+              onPressed: () => _launchMail(context, email, l),
+            ),
+          ),
+        ],
+      ],
+    );
   }
 
-  Future<void> _launchMail(String email) async {
+  Future<void> _launchTel(
+    BuildContext context,
+    String phone,
+    AppLocalizations l,
+  ) async {
+    final uri = Uri(scheme: 'tel', path: phone);
+    await _launch(context, uri, l);
+  }
+
+  Future<void> _launchMail(
+    BuildContext context,
+    String email,
+    AppLocalizations l,
+  ) async {
     final uri = Uri(scheme: 'mailto', path: email);
-    if (await canLaunchUrl(uri)) await launchUrl(uri);
+    await _launch(context, uri, l);
+  }
+
+  Future<void> _launch(
+    BuildContext context,
+    Uri uri,
+    AppLocalizations l,
+  ) async {
+    bool canLaunch = false;
+    try {
+      canLaunch = await canLaunchUrl(uri);
+    } catch (_) {
+      canLaunch = false;
+    }
+
+    if (!canLaunch) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(_launchFailedMessage(uri.scheme, l))),
+        );
+      }
+      return;
+    }
+
+    try {
+      await launchUrl(uri);
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(_launchFailedMessage(uri.scheme, l))),
+        );
+      }
+    }
+  }
+
+  /// Compose a truthful failure message from existing localisation keys.
+  ///
+  /// There is no dedicated "cannot open phone/email app" ARB entry so the
+  /// message uses the action label and retry hint — both localised — to
+  /// communicate that something went wrong without silently ignoring it.
+  String _launchFailedMessage(String scheme, AppLocalizations l) {
+    // e.g. "Call · Retry" / "E-mail · Réessayer"
+    final action = scheme == 'tel' ? l.adminContactsCall : l.vetEmail;
+    return '$action · ${l.retry}';
   }
 }
+
+// ---------------------------------------------------------------------------
+// Small helpers
+// ---------------------------------------------------------------------------
+
+class _ContactButton extends StatelessWidget {
+  const _ContactButton({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.tooltip,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String label;
+  final String tooltip;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: FilledButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon),
+        label: Text(label),
+        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Detail row (unchanged visual contract)
+// ---------------------------------------------------------------------------
 
 class _DetailRow extends StatelessWidget {
   const _DetailRow({
     required this.icon,
     required this.label,
     required this.value,
-    this.action,
   });
 
   final IconData icon;
   final String label;
   final String value;
-  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -204,7 +370,6 @@ class _DetailRow extends StatelessWidget {
             ],
           ),
         ),
-        if (action != null) action!,
       ],
     );
   }

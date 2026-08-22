@@ -38,6 +38,12 @@ function isOrgDetailRoute(page: Page): boolean {
   return /\/o\/orgs\/[^/?#]+/.test(flutterRoutePath(page.url()));
 }
 
+const organizationHubHeading =
+  /Shelters dashboard|Tableau de bord des refuges|My Organisations|Mes organisations/i;
+
+const organizationProfileSurfaceSelector =
+  '[flt-semantics-identifier="org_profile_surface"]';
+
 /** Read org id from OrgCard semantics identifier (`org_membership_<id>`). */
 async function resolveMembershipOrgId(page: Page, name: string): Promise<string | undefined> {
   await refreshFlutterAccessibility(page);
@@ -100,13 +106,12 @@ export class OrganizationListPage {
     await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)|\/organizations/, 30_000);
     await refreshFlutterAccessibility(this.page);
     if (await isExperienceShellVisible(this.page)) {
-      // Embedded shell has no app bar; the section header is always near the top.
-      // The Create button sits at the bottom of a ListView and is often absent from
-      // the Flutter web semantics tree until scrolled (UAT shard 1/11, PR #471).
+      // The rebuilt shell root is a workspace switcher. Its stable header is the
+      // dashboard heading; "My Organisations" remains the membership-list label.
       await expect(async () => {
         await refreshFlutterAccessibility(this.page);
         await expect(
-          this.page.getByText(/My Organisations|Mes organisations/i).first(),
+          this.page.getByText(organizationHubHeading).first(),
         ).toBeVisible({ timeout: 3_000 });
       }).toPass({ timeout: 30_000 });
       return;
@@ -130,6 +135,7 @@ export class OrganizationListPage {
       await refreshFlutterAccessibility(this.page);
       await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/new/, 30_000);
     }
+    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/new/, 30_000);
     await this.page
       .getByRole('heading', { name: /Create Organisation|Créer une organisation/i })
       .or(this.page.getByRole('button', { name: /^Create$|^Créer$/i }))
@@ -197,6 +203,13 @@ export class OrganizationListPage {
     }
 
     await refreshFlutterAccessibility(this.page);
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expectAppBarTitle(this.page, name);
+      await expect(
+        this.page.locator(organizationProfileSurfaceSelector),
+      ).toBeVisible({ timeout: 3_000 });
+    }).toPass({ timeout: 30_000 });
   }
 
   async acceptInviteForOrg(orgName: string): Promise<void> {
@@ -280,5 +293,9 @@ export class OrganizationListPage {
       await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/discover/, 20_000);
     }
     await refreshFlutterAccessibility(this.page);
+    await expectAppBarTitle(
+      this.page,
+      /Discover Organisations|Découvrir des organisations/i,
+    );
   }
 }

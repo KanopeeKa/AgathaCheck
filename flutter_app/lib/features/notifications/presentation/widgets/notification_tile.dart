@@ -6,6 +6,7 @@ import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/app_notification.dart';
+import '../../domain/entities/notification_kind.dart';
 import '../../domain/entities/notification_scope.dart';
 import '../utils/notification_accent.dart';
 
@@ -30,9 +31,31 @@ class NotificationTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     final xp = context.experienceColors;
     final accent = resolveNotificationAccent(context, listScope);
     final isUnread = !notification.isRead;
+    final isAdministrative =
+        notification.kind == NotificationKind.administrative;
+    final isUrgent =
+        isAdministrative &&
+        notification.priority == NotificationPriority.urgent;
+    final isResolved = isAdministrative && notification.resolvedAt != null;
+    final stateLabel = isAdministrative
+        ? (isResolved ? l.issueStatusResolved : l.notificationActionNeeded)
+        : (isUnread ? l.notificationUnread : l.notificationRead);
+    final semantics = <String>[
+      isAdministrative
+          ? l.notificationKindOrganisation
+          : l.notificationKindCare,
+      notification.type.label,
+      notification.title,
+      formatNotificationRelativeTime(notification.createdAt),
+      stateLabel,
+      if (isUrgent) l.notificationUrgent,
+      if (notification.petName != null && notification.petName!.isNotEmpty)
+        'pet: ${notification.petName}',
+    ];
 
     IconData icon;
     Color iconColor;
@@ -77,10 +100,11 @@ class NotificationTile extends ConsumerWidget {
     final tileColor = isUnread ? accent.unreadSurface : null;
     final stripColor = petColor ?? accent.primary.withAlpha(180);
 
-    return MergeSemantics(
-      child: Semantics(
-        label:
-            '${notification.type.label} notification: ${notification.title}, ${formatNotificationRelativeTime(notification.createdAt)}${isUnread ? ', unread' : ''}${notification.petName != null ? ', pet: ${notification.petName}' : ''}',
+    return Semantics(
+      button: true,
+      onTap: onTap,
+      label: semantics.join(', '),
+      child: ExcludeSemantics(
         child: InkWell(
           onTap: onTap,
           child: Container(
@@ -128,6 +152,7 @@ class NotificationTile extends ConsumerWidget {
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 2),
                                     child: Row(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Icon(
                                           Icons.pets,
@@ -135,14 +160,17 @@ class NotificationTile extends ConsumerWidget {
                                           color: petColor ?? accent.primary,
                                         ),
                                         const SizedBox(width: 4),
-                                        Text(
-                                          notification.petName!,
-                                          style: theme.textTheme.labelMedium
-                                              ?.copyWith(
-                                                color:
-                                                    petColor ?? accent.primary,
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                        Flexible(
+                                          child: Text(
+                                            notification.petName!,
+                                            style: theme.textTheme.labelMedium
+                                                ?.copyWith(
+                                                  color:
+                                                      petColor ??
+                                                      accent.primary,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -158,48 +186,61 @@ class NotificationTile extends ConsumerWidget {
                                 const SizedBox(height: 2),
                                 Text(
                                   notification.message,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: theme.colorScheme.onSurfaceVariant,
                                   ),
                                 ),
+                                const SizedBox(height: 8),
+                                Wrap(
+                                  spacing: 6,
+                                  runSpacing: 4,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(
+                                      formatNotificationRelativeTime(
+                                        notification.createdAt,
+                                      ),
+                                      style: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                    ),
+                                    _KindChip(
+                                      label: isAdministrative
+                                          ? l.notificationKindOrganisation
+                                          : l.notificationKindCare,
+                                      color: accent.primary,
+                                    ),
+                                    if (!isAdministrative && isUnread)
+                                      _StatusChip(
+                                        icon: Icons.mark_email_unread_outlined,
+                                        label: l.notificationUnread,
+                                        color: accent.primary,
+                                      ),
+                                    if (showActionNeeded)
+                                      _StatusChip(
+                                        icon: Icons.assignment_late_outlined,
+                                        label: l.notificationActionNeeded,
+                                        color: xp.organizationPrimary,
+                                      ),
+                                    if (isResolved)
+                                      _StatusChip(
+                                        icon: Icons.check_circle_outline,
+                                        label: l.issueStatusResolved,
+                                        color: xp.success,
+                                      ),
+                                    if (isUrgent)
+                                      _StatusChip(
+                                        icon: Icons.priority_high,
+                                        label: l.notificationUrgent,
+                                        color: theme.colorScheme.error,
+                                      ),
+                                  ],
+                                ),
                               ],
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                formatNotificationRelativeTime(
-                                  notification.createdAt,
-                                ),
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                              if (isUnread)
-                                ExcludeSemantics(
-                                  child: Container(
-                                    margin: const EdgeInsets.only(top: 4),
-                                    width: 8,
-                                    height: 8,
-                                    decoration: BoxDecoration(
-                                      color: accent.primary,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                              if (showActionNeeded)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 4),
-                                  child: _ActionNeededChip(
-                                    color: xp.organizationPrimary,
-                                  ),
-                                ),
-                            ],
                           ),
                         ],
                       ),
@@ -215,28 +256,65 @@ class NotificationTile extends ConsumerWidget {
   }
 }
 
-/// Trailing chip shown on administrative rows with an open referenced object.
-class _ActionNeededChip extends StatelessWidget {
-  const _ActionNeededChip({required this.color});
+class _KindChip extends StatelessWidget {
+  const _KindChip({required this.label, required this.color});
 
+  final String label;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withAlpha(20),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         border: Border.all(color: color, width: 1),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(
-        l.notificationActionNeeded,
-        style: TextStyle(
-          color: color,
-          fontSize: 10,
-          fontWeight: FontWeight.w600,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 3),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

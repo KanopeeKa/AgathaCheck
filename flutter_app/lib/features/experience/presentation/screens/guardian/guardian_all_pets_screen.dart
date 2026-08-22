@@ -17,7 +17,7 @@ class GuardianAllPetsScreen extends ConsumerWidget {
     return ExperienceShellScaffold(
       experience: AppExperience.guardian,
       currentLocation: GoRouterState.of(context).uri.path,
-      screenTitle: l.managePets,
+      screenTitle: l.allPets,
       contextualActions: [
         IconButton(
           key: const Key('add_pet_app_bar'),

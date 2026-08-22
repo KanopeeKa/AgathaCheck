@@ -8295,6 +8295,24 @@ abstract class AppLocalizations {
   /// **'Action needed'**
   String get notificationActionNeeded;
 
+  /// No description provided for @notificationRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
+  String get notificationRead;
+
+  /// No description provided for @notificationUnread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get notificationUnread;
+
+  /// No description provided for @notificationUrgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Urgent'**
+  String get notificationUrgent;
+
   /// No description provided for @accountTitle.
   ///
   /// In en, this message translates to:
@@ -9170,6 +9188,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not mark this care item as done. Try again.'**
   String get careCompletionFailed;
+
+  /// No description provided for @undoCompleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not undo completion. Try again.'**
+  String get undoCompleteFailed;
 }
 
 class _AppLocalizationsDelegate

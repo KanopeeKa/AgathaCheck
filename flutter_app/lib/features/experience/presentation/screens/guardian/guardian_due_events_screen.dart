@@ -10,6 +10,13 @@ import '../../../../pet_profile/presentation/controllers/pet_list_controller.dar
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../../pet_profile/presentation/screens/widgets/pet_event_entry_list.dart';
 
+import 'global_events_list.dart';
+export 'global_events_list.dart' show GlobalEventsList;
+
+// ---------------------------------------------------------------------------
+// Filter value types
+// ---------------------------------------------------------------------------
+
 /// Cohort filter for the global guardian events list.
 enum GuardianEventsCohortFilter { all, myPets, fosterPets }
 
@@ -29,34 +36,24 @@ class GuardianGlobalEventsFilters {
     ManageEventsFilters? eventFilters,
     Set<GuardianEventsCohortFilter>? cohorts,
     Set<String>? petIds,
-  }) {
-    return GuardianGlobalEventsFilters(
-      eventFilters: eventFilters ?? this.eventFilters,
-      cohorts: cohorts ?? this.cohorts,
-      petIds: petIds ?? this.petIds,
-    );
-  }
+  }) => GuardianGlobalEventsFilters(
+    eventFilters: eventFilters ?? this.eventFilters,
+    cohorts: cohorts ?? this.cohorts,
+    petIds: petIds ?? this.petIds,
+  );
 
   GuardianGlobalEventsFilters toggleCohort(GuardianEventsCohortFilter value) {
     if (value == GuardianEventsCohortFilter.all) {
       return copyWith(cohorts: {});
     }
     final next = Set<GuardianEventsCohortFilter>.from(cohorts);
-    if (next.contains(value)) {
-      next.remove(value);
-    } else {
-      next.add(value);
-    }
+    next.contains(value) ? next.remove(value) : next.add(value);
     return copyWith(cohorts: next);
   }
 
   GuardianGlobalEventsFilters togglePetId(String petId) {
     final next = Set<String>.from(petIds);
-    if (next.contains(petId)) {
-      next.remove(petId);
-    } else {
-      next.add(petId);
-    }
+    next.contains(petId) ? next.remove(petId) : next.add(petId);
     return copyWith(petIds: next);
   }
 
@@ -68,6 +65,10 @@ class GuardianGlobalEventsFilters {
   bool isPetSelected(String? petId) =>
       petId == null ? petIds.isEmpty : petIds.contains(petId);
 }
+
+// ---------------------------------------------------------------------------
+// Provider
+// ---------------------------------------------------------------------------
 
 /// Histories for all guardian shell-pet entries (global events list).
 final guardianGlobalEventHistoriesProvider =
@@ -91,6 +92,11 @@ final guardianGlobalEventHistoriesProvider =
       return histories;
     });
 
+// ---------------------------------------------------------------------------
+// Pure filter/sort functions
+// ---------------------------------------------------------------------------
+
+/// Returns the subset of [shellPets] that match the cohort and pet-id filters.
 List<Pet> guardianGlobalEventsPets(
   List<Pet> shellPets,
   GuardianGlobalEventsFilters filters,
@@ -116,6 +122,7 @@ List<Pet> guardianGlobalEventsPets(
   return pets;
 }
 
+/// Filters and sorts [entries] to the scoped pets and applied event filters.
 List<HealthEntry> filterGuardianGlobalEvents(
   List<HealthEntry> entries,
   List<Pet> scopedPets,
@@ -123,13 +130,25 @@ List<HealthEntry> filterGuardianGlobalEvents(
   Map<String, List<HealthHistoryEntry>> histories,
 ) {
   final petIds = scopedPets.map((pet) => pet.id).toSet();
-  final scopedEntries = entries.where((e) => petIds.contains(e.petId)).toList();
-  return filterAndSortManageEvents(
-    scopedEntries,
-    filters.eventFilters,
-    histories,
-  );
+  // The provider response is already the server-authoritative order for this
+  // destination. Apply the manage-event predicates without calling
+  // filterAndSortManageEvents, whose dedicated pet-management screens
+  // intentionally impose a different local sort.
+  return entries
+      .where((entry) => petIds.contains(entry.petId))
+      .where(
+        (entry) => matchesManageEventsFilters(
+          entry,
+          filters.eventFilters,
+          histories[entry.id] ?? const [],
+        ),
+      )
+      .toList();
 }
+
+// ---------------------------------------------------------------------------
+// Screen widget
+// ---------------------------------------------------------------------------
 
 /// Guardian events screen (`/g/events`) — unified list for all shell pets.
 class GuardianDueEventsScreen extends ConsumerWidget {
@@ -137,11 +156,15 @@ class GuardianDueEventsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final petsAsync = ref.watch(petListProvider);
 
     return petsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(child: Text('$error')),
+      error: (_, __) => _PetLoadErrorView(
+        message: l.careLoadError,
+        onRetry: () => ref.invalidate(petListProvider),
+      ),
       data: (allPets) {
         final shellPets = PetListController().guardianShellPets(allPets);
         return GlobalEventsList(shellPets: shellPets);
@@ -150,113 +173,46 @@ class GuardianDueEventsScreen extends ConsumerWidget {
   }
 }
 
-/// Unified global events list with manage-events filters plus pet/cohort filters.
-class GlobalEventsList extends ConsumerStatefulWidget {
-  const GlobalEventsList({super.key, required this.shellPets});
+/// Localized, retryable pet-load error shown in [GuardianDueEventsScreen].
+class _PetLoadErrorView extends StatelessWidget {
+  const _PetLoadErrorView({required this.message, required this.onRetry});
 
-  final List<Pet> shellPets;
-
-  @override
-  ConsumerState<GlobalEventsList> createState() => _GlobalEventsListState();
-}
-
-class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
-  GuardianGlobalEventsFilters _filters = const GuardianGlobalEventsFilters();
+  final String message;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final entriesAsync = ref.watch(healthEntriesNotifierProvider);
-    final historiesAsync = ref.watch(guardianGlobalEventHistoriesProvider);
-    final scopedPets = guardianGlobalEventsPets(widget.shellPets, _filters);
-
-    return entriesAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(child: Text(l.errorWithMessage('$error'))),
-      data: (entries) {
-        return historiesAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) =>
-              Center(child: Text(l.errorWithMessage('$error'))),
-          data: (histories) {
-            final visible = filterGuardianGlobalEvents(
-              entries,
-              scopedPets,
-              _filters,
-              histories,
-            );
-
-            return RefreshIndicator(
-              onRefresh: () async {
-                ref.invalidate(healthEntriesNotifierProvider);
-                ref.invalidate(guardianGlobalEventHistoriesProvider);
-              },
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.only(bottom: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                      child: Text(
-                        l.eventsNavLabel,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    GuardianGlobalEventsFilterBar(
-                      shellPets: widget.shellPets,
-                      filters: _filters,
-                      onChanged: (filters) =>
-                          setState(() => _filters = filters),
-                    ),
-                    ManageEventsFilterBar(
-                      filters: _filters.eventFilters,
-                      onChanged: (eventFilters) => setState(
-                        () => _filters = _filters.copyWith(
-                          eventFilters: eventFilters,
-                        ),
-                      ),
-                    ),
-                    if (visible.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Text(
-                          l.noEntriesYet,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      )
-                    else
-                      ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: visible.length,
-                        separatorBuilder: (_, __) => const Divider(height: 1),
-                        itemBuilder: (context, index) {
-                          final entry = visible[index];
-                          return EventListCard(
-                            entry: entry,
-                            history: histories[entry.id] ?? const [],
-                            petId: entry.petId,
-                          );
-                        },
-                      ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.error_outline,
+              color: Theme.of(context).colorScheme.error,
+              size: 40,
+            ),
+            const SizedBox(height: 12),
+            Text(message, textAlign: TextAlign.center),
+            const SizedBox(height: 8),
+            TextButton.icon(
+              key: const Key('pet_load_error_retry'),
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh, size: 18),
+              label: Text(l.retry),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Filter bar widget
+// ---------------------------------------------------------------------------
 
 /// Pet and cohort filter chips for the global guardian events list.
 class GuardianGlobalEventsFilterBar extends StatelessWidget {
@@ -282,7 +238,7 @@ class GuardianGlobalEventsFilterBar extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _FilterChipRow(
+          _ChipRow(
             children: [
               _cohortChip(GuardianEventsCohortFilter.all, l.all),
               _cohortChip(GuardianEventsCohortFilter.myPets, l.myPets),
@@ -294,7 +250,7 @@ class GuardianGlobalEventsFilterBar extends StatelessWidget {
           ),
           if (sortedPets.length > 1) ...[
             const SizedBox(height: 8),
-            _FilterChipRow(
+            _ChipRow(
               children: [
                 FilterChip(
                   key: const Key('global_events_pet_all'),
@@ -327,8 +283,8 @@ class GuardianGlobalEventsFilterBar extends StatelessWidget {
   }
 }
 
-class _FilterChipRow extends StatelessWidget {
-  const _FilterChipRow({required this.children});
+class _ChipRow extends StatelessWidget {
+  const _ChipRow({required this.children});
 
   final List<Widget> children;
 

@@ -11,12 +11,11 @@ import '../providers/experience_providers.dart';
 import '../utils/drawer_menu_actions.dart';
 import 'experience_drawer_identity_header.dart';
 import 'experience_drawer_menu.dart';
-import 'experience_drawer_menu_item.dart';
 
-/// Unified section-switcher drawer with user identity header.
+/// Unified, full-height section-switcher drawer.
 ///
-/// Top block: logo (no home link), user name, email, Account.
-/// Scrollable: Guardian + Organisation section switchers.
+/// Brand and close controls stay at the top; Guardian and Organisation are the
+/// only scrollable section choices; Account is a quiet, bottom-pinned utility.
 class ExperienceSectionDrawer extends ConsumerWidget {
   const ExperienceSectionDrawer({super.key});
 
@@ -49,28 +48,12 @@ class ExperienceSectionDrawer extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(4, 4, 8, 0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  key: const Key('drawer_close'),
-                  icon: const Icon(Icons.close),
-                  tooltip: l.close,
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
-            ),
-            ExperienceDrawerIdentityHeader(
-              user: auth.user,
+            ExperienceDrawerBrandHeader(
               experience: activeExperience,
-            ),
-            ExperienceDrawerMenuItem(
-              key: const Key('drawer_account'),
-              item: accountItem,
-              isActive: activeKey == 'drawer_account',
-              onTap: () =>
-                  handleExperienceDrawerItemTap(context, ref, accountItem),
+              brandLabel: l.appTitle,
+              logoLabel: l.agathaCheckLogo,
+              closeTooltip: l.close,
+              onClose: () => Navigator.pop(context),
             ),
             const Divider(height: 1),
             Expanded(
@@ -80,6 +63,14 @@ class ExperienceSectionDrawer extends ConsumerWidget {
                 onItemTap: (item) =>
                     handleExperienceDrawerItemTap(context, ref, item),
               ),
+            ),
+            const Divider(height: 1),
+            ExperienceDrawerIdentityHeader(
+              user: auth.user,
+              item: accountItem,
+              isActive: activeKey == 'drawer_account',
+              onTap: () =>
+                  handleExperienceDrawerItemTap(context, ref, accountItem),
             ),
           ],
         ),

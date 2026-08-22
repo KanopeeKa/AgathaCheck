@@ -50,16 +50,24 @@ class OrganisationProfileSectionNav extends ConsumerWidget {
               permissionKey: 'view_admin_contacts',
               child: _OrganisationProfileNavRow(
                 rowKey: const Key('org_profile_nav_admin_contacts'),
+                semanticIdentifier: 'org_profile_nav_admin_contacts',
                 title: l.adminContactsTitle,
                 onTap: () =>
                     context.push('/o/orgs/$orgId/people?filter=admins'),
               ),
+            ),
+            _OrganisationProfileNavRow(
+              rowKey: const Key('org_profile_nav_people'),
+              semanticIdentifier: 'org_profile_nav_people',
+              title: l.people,
+              onTap: () => context.push('/o/orgs/$orgId/people'),
             ),
             OrgPermissionGate(
               orgId: orgId,
               permissionKey: 'view_org_internal',
               child: _OrganisationProfileNavRow(
                 rowKey: const Key('org_profile_nav_foster_parents'),
+                semanticIdentifier: 'org_profile_nav_foster_parents',
                 title: l.fosterParents,
                 onTap: () => context.push('/o/orgs/$orgId/fosters'),
               ),
@@ -69,20 +77,17 @@ class OrganisationProfileSectionNav extends ConsumerWidget {
               permissionKey: 'view_fostering_sessions',
               child: _OrganisationProfileNavRow(
                 rowKey: const Key('org_profile_nav_fostering_sessions'),
+                semanticIdentifier: 'org_profile_nav_fostering_sessions',
                 title: l.orgProfileFosteringSessionsTitle,
                 onTap: () => context.push('/o/orgs/$orgId/sessions'),
               ),
-            ),
-            _OrganisationProfileNavRow(
-              rowKey: const Key('org_profile_nav_people'),
-              title: l.people,
-              onTap: () => context.push('/o/orgs/$orgId/people'),
             ),
             OrgPermissionGate(
               orgId: orgId,
               permissionKey: 'view_org_pets',
               child: _OrganisationProfileNavRow(
                 rowKey: const Key('org_profile_nav_pets'),
+                semanticIdentifier: 'org_profile_nav_pets',
                 title: l.orgPets,
                 countLabel: petCount > 0 ? l.petCount(petCount) : null,
                 onTap: () => context.push('/o/orgs/$orgId/pets'),
@@ -93,6 +98,7 @@ class OrganisationProfileSectionNav extends ConsumerWidget {
               permissionKey: 'view_connections',
               child: _OrganisationProfileNavRow(
                 rowKey: const Key('org_profile_nav_connections'),
+                semanticIdentifier: 'org_profile_nav_connections',
                 title: l.orgConnections,
                 countLabel: connectionsCount != null && connectionsCount > 0
                     ? l.orgConnectionCount(connectionsCount)
@@ -105,6 +111,7 @@ class OrganisationProfileSectionNav extends ConsumerWidget {
               permissionKey: 'manage_permissions',
               child: _OrganisationProfileNavRow(
                 rowKey: const Key('org_profile_nav_administration'),
+                semanticIdentifier: 'org_profile_nav_administration',
                 title: l.orgCustomisationsTitle,
                 onTap: () => context.push('/o/orgs/$orgId/customisations'),
               ),
@@ -119,12 +126,14 @@ class OrganisationProfileSectionNav extends ConsumerWidget {
 class _OrganisationProfileNavRow extends StatelessWidget {
   const _OrganisationProfileNavRow({
     required this.rowKey,
+    required this.semanticIdentifier,
     required this.title,
     required this.onTap,
     this.countLabel,
   });
 
   final Key rowKey;
+  final String semanticIdentifier;
   final String title;
   final String? countLabel;
   final VoidCallback onTap;
@@ -137,6 +146,7 @@ class _OrganisationProfileNavRow extends StatelessWidget {
     return Column(
       children: [
         Semantics(
+          identifier: semanticIdentifier,
           button: true,
           label: countLabel != null ? '$title, $countLabel' : title,
           child: ListTile(

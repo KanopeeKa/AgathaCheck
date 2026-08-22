@@ -20,9 +20,11 @@ import { OrganizationListPage } from './organization-list.page';
 export class OrganizationDetailPage {
   constructor(private readonly page: Page) {}
 
-  /** Visible on v2 profile (public blocks and/or gated member nav rows). */
-  private static readonly profileLoadedMarker =
-    /Contact|Legal information|Admin contacts|People|Personnes|Foster parents|Fostering sessions|^Pets$|^Animaux$|Connected organisations|Organisation Administration|Professional|Charity|Professionnel|Association|Organisation presentation|Organisation dashboard|Choose a section/i;
+  private static readonly profileSurfaceSelector =
+    '[flt-semantics-identifier="org_profile_surface"]';
+
+  private static readonly profileNavSelector =
+    '[flt-semantics-identifier^="org_profile_nav_"]';
 
   private orgIdFromUrl(): string | null {
     const match = this.page.url().match(/\/o\/orgs\/([^/?#]+)/);
@@ -35,10 +37,14 @@ export class OrganizationDetailPage {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await expectAppBarTitle(this.page, orgName);
-      await expect(
-        this.page.getByText(OrganizationDetailPage.profileLoadedMarker).first(),
-      ).toBeVisible();
+      await this.expectProfileSurfaceVisible();
     }).toPass({ timeout: 30_000 });
+  }
+
+  private async expectProfileSurfaceVisible(): Promise<void> {
+    await expect(
+      this.page.locator(OrganizationDetailPage.profileSurfaceSelector),
+    ).toBeVisible({ timeout: 3_000 });
   }
 
   async expectProfileNavRow(name: RegExp | string): Promise<void> {
@@ -54,6 +60,20 @@ export class OrganizationDetailPage {
     await enableFlutterAccessibility(this.page);
     const pattern = typeof name === 'string' ? new RegExp(escapeRegExp(name), 'i') : name;
     await expect(this.page.getByRole('button', { name: pattern })).toHaveCount(0);
+  }
+
+  /** The v4 profile IA is intentionally ordered for operational triage. */
+  async expectProfileNavOrder(expectedIdentifiers: string[]): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const actualIdentifiers = await this.page
+        .locator(OrganizationDetailPage.profileNavSelector)
+        .evaluateAll((rows) =>
+          rows.map((row) => row.getAttribute('flt-semantics-identifier')),
+        );
+      expect(actualIdentifiers).toEqual(expectedIdentifiers);
+    }).toPass({ timeout: 30_000 });
   }
 
   /** Admin contacts directory — filtered People screen (`?filter=admins`). */

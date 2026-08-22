@@ -614,8 +614,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careStatusUpcoming => 'Soin à venir';
 
   @override
-  String get careLoadError =>
-      'Impossible de charger les soins pour le moment.';
+  String get careLoadError => 'Impossible de charger les soins pour le moment.';
 
   @override
   String get tomorrow => 'Demain';
@@ -4690,6 +4689,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notificationActionNeeded => 'Action requise';
 
   @override
+  String get notificationRead => 'Lu';
+
+  @override
+  String get notificationUnread => 'Non lu';
+
+  @override
+  String get notificationUrgent => 'Urgent';
+
+  @override
   String get accountTitle => 'Compte';
 
   @override
@@ -5211,4 +5219,8 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get careCompletionFailed =>
       'Impossible de marquer ce soin comme terminé. Réessayez.';
+
+  @override
+  String get undoCompleteFailed =>
+      'Impossible d\'annuler la complétion. Réessayez.';
 }

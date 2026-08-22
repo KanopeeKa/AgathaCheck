@@ -1573,6 +1573,9 @@
   "notificationKindCare": "Soins",
   "notificationKindOrganisation": "Organisation",
   "notificationActionNeeded": "Action requise",
+  "notificationRead": "Lu",
+  "notificationUnread": "Non lu",
+  "notificationUrgent": "Urgent",
   "accountTitle": "Compte",
   "accountProfileSection": "Profil",
   "accountPreferencesSection": "Préférences",
@@ -1770,5 +1773,6 @@
       "petName": { "type": "String" }
     }
   },
-  "careCompletionFailed": "Impossible de marquer ce soin comme terminé. Réessayez."
+  "careCompletionFailed": "Impossible de marquer ce soin comme terminé. Réessayez.",
+  "undoCompleteFailed": "Impossible d'annuler la complétion. Réessayez."
 }

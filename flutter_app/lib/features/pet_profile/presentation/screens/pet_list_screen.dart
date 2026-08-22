@@ -6,8 +6,12 @@ import '../../../../core/utils/constants.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../experience/presentation/screens/guardian/guardian_dashboard_helpers.dart';
+import '../../../experience/presentation/widgets/guardian_full_list_pet_card.dart';
+import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/events_nav_icon_button.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
+import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 import '../controllers/pet_list_controller.dart';
 import '../widgets/org_filter_chips.dart';
@@ -20,7 +24,9 @@ import '../widgets/pet_list/pending_custody_transfers_section.dart';
 import '../widgets/pet_list/pending_adoption_placements_section.dart';
 import '../widgets/pet_list/pending_foster_placements_section.dart';
 import '../widgets/pet_list/pending_shares_section.dart';
+import '../widgets/pet_list/pet_list_bulk_share_bar.dart';
 import '../../../experience/presentation/screens/guardian/guardian_bulk_share.dart';
+import '../widgets/pet_list/guardian_passed_away_section.dart';
 import '../widgets/pet_list/pet_list_section_header.dart';
 
 /// Screen that displays the list of all pets owned by the user.
@@ -55,6 +61,32 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
     });
   }
 
+  Future<void> _executeBulkShare(BuildContext context, dynamic l) async {
+    final pets = ref.read(petListProvider).valueOrNull ?? [];
+    final owned = _controller
+        .getPersonalActive(_controller.guardianShellPets(pets))
+        .where((p) => !p.isShared && !p.isFoster && p.organizationId == null)
+        .where((p) => _selectedPetIds.contains(p.id))
+        .map((p) => (id: p.id, name: p.name))
+        .toList();
+    if (owned.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.bulkShareNoneSelected)));
+      return;
+    }
+    await runBulkShareForPets(context, ref, owned);
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.bulkShareDone)));
+      setState(() {
+        _bulkShareMode = false;
+        _selectedPetIds.clear();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final petListAsync = ref.watch(petListProvider);
@@ -63,6 +95,22 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
 
+    final entriesAsync = widget.embeddedInShell
+        ? ref.watch(healthEntriesNotifierProvider)
+        : null;
+    final careSummary = (entriesAsync != null && entriesAsync.hasValue)
+        ? GuardianTodayCareSummary.forPets(
+            entries: entriesAsync.valueOrNull!,
+            pets: _controller.guardianShellPets(petListAsync.valueOrNull ?? []),
+          )
+        : null;
+    Widget guardianListCard(Pet pet) => GuardianFullListPetCard(
+      pet: pet,
+      careState: careSummary != null
+          ? guardianTodayPetCareState(pet, careSummary)
+          : GuardianTodayPetCareState.clear,
+      onTap: () => context.go('/pet/${pet.id}'),
+    );
     final scaffoldBody = petListAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(
@@ -202,6 +250,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                     }
                   });
                 },
+                cardBuilder: widget.embeddedInShell ? guardianListCard : null,
               ),
             ],
             if (_controller.orgFilter == null ||
@@ -218,6 +267,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                 orgFilter: _controller.orgFilter,
                 l: l,
                 theme: theme,
+                tileBuilder: widget.embeddedInShell ? guardianListCard : null,
               ),
             ],
             if (!widget.embeddedInShell &&
@@ -231,7 +281,14 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                 ref: ref,
                 parentContext: context,
               ),
-            PassedAwayPetsSection(allPassedAway: allPassedAway, theme: theme),
+            if (widget.embeddedInShell)
+              GuardianPassedAwaySection(
+                pets: allPassedAway,
+                header: l.passedAway,
+                cardBuilder: guardianListCard,
+              )
+            else
+              PassedAwayPetsSection(allPassedAway: allPassedAway, theme: theme),
           ],
         );
       },
@@ -242,66 +299,16 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (widget.enableBulkShare)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      _bulkShareMode ? l.bulkShareSelectHint : l.managePets,
-                      style: theme.textTheme.titleMedium,
-                    ),
-                  ),
-                  TextButton(
-                    key: const Key('bulk_share_toggle'),
-                    onPressed: () {
-                      setState(() {
-                        _bulkShareMode = !_bulkShareMode;
-                        if (!_bulkShareMode) _selectedPetIds.clear();
-                      });
-                    },
-                    child: Text(_bulkShareMode ? l.cancel : l.bulkShare),
-                  ),
-                  if (_bulkShareMode)
-                    FilledButton(
-                      key: const Key('bulk_share_action'),
-                      onPressed: () async {
-                        final pets =
-                            ref.read(petListProvider).valueOrNull ?? [];
-                        final owned = _controller
-                            .getPersonalActive(
-                              _controller.guardianShellPets(pets),
-                            )
-                            .where(
-                              (p) =>
-                                  !p.isShared &&
-                                  !p.isFoster &&
-                                  p.organizationId == null,
-                            )
-                            .where((p) => _selectedPetIds.contains(p.id))
-                            .map((p) => (id: p.id, name: p.name))
-                            .toList();
-                        if (owned.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l.bulkShareNoneSelected)),
-                          );
-                          return;
-                        }
-                        await runBulkShareForPets(context, ref, owned);
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l.bulkShareDone)),
-                          );
-                          setState(() {
-                            _bulkShareMode = false;
-                            _selectedPetIds.clear();
-                          });
-                        }
-                      },
-                      child: Text(l.bulkShareAction),
-                    ),
-                ],
-              ),
+            PetListBulkShareBar(
+              bulkShareMode: _bulkShareMode,
+              l: l,
+              onToggle: () {
+                setState(() {
+                  _bulkShareMode = !_bulkShareMode;
+                  if (!_bulkShareMode) _selectedPetIds.clear();
+                });
+              },
+              onAction: () => _executeBulkShare(context, l),
             ),
           Expanded(
             child: Stack(
