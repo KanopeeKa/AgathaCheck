@@ -1,0 +1,16 @@
+---
+title: Organization plans index
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [domain,organization,plans]
+---
+
+# Organization — plans index
+
+Index of delivery plans for this domain. Link to source of truth (.agents/plans/ or relocated delivery docs) — do not duplicate full plan bodies here.
+
+| Plan | Summary | Status | Source |
+|------|---------|--------|--------|
+| — | TODO: migrate | — | — |

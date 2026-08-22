@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "plan_id": "docs-domain-reorg-63ad",
+  "approved_at": "2026-08-22T15:52:00Z",
+  "approved_by": "Cloud agent — standing grant user chat 2026-08-22 docs reorg",
+  "approved_until": "2026-08-24T15:52:00Z",
+  "content_hash": "sha256:1867893943da3b462f39a8f4d802825d2595227290ee0b698d89a64ebe2c0b6d",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/docs-domain-reorg-integration-63ad",
+  "control_issue": 699,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Scaffold domain tree",
+      "branch": "cursor/docs-domain-scaffold-63ad",
+      "allowed_paths": [
+        "docs/domains/**",
+        "docs/README.md",
+        ".agents/plans/docs-domain-reorg-63ad.*"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Migrate auth, pet_profile, health_tracking",
+      "branch": "cursor/docs-domain-auth-pet-health-63ad",
+      "allowed_paths": [
+        "docs/domains/auth/**",
+        "docs/domains/pet_profile/**",
+        "docs/domains/health_tracking/**",
+        "docs/architecture/pet-activity-model.md",
+        "docs/experience-program/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/docs-domain-reorg-integration-63ad",
+        "ownership_ref": "docs/refactoring-log.md#docs-domain-reorg-phase-2"
+      },
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Migrate organization",
+      "branch": "cursor/docs-domain-organization-63ad",
+      "allowed_paths": [
+        "docs/domains/organization/**",
+        "docs/architecture/org-custody-model.md",
+        "docs/architecture/org-member-privacy.md",
+        "docs/org-fostering-strategy.md",
+        "docs/design/skin-change-guide.md",
+        "docs/experience-program/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Migrate fostering and remaining domains",
+      "branch": "cursor/docs-domain-fostering-rest-63ad",
+      "allowed_paths": [
+        "docs/domains/fostering/**",
+        "docs/domains/weight_tracking/**",
+        "docs/domains/vet/**",
+        "docs/domains/sharing/**",
+        "docs/domains/notifications/**",
+        "docs/domains/subscription/**",
+        "docs/domains/help_about/**",
+        "docs/fostering-platform/**",
+        "docs/experience-program/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/docs-domain-reorg-integration-63ad",
+        "ownership_ref": "docs/refactoring-log.md#docs-domain-reorg-phase-4"
+      },
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "Debt split and cross-cutting deferred",
+      "branch": "cursor/docs-domain-debt-split-63ad",
+      "allowed_paths": [
+        "docs/domains/**/changes/deferred.md",
+        "docs/deferred.md",
+        "docs/technical-debt.md",
+        "docs/refactoring-debt.md",
+        "docs/archived/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "6",
+      "title": "Link fixes, index rewrite, verify",
+      "branch": "cursor/docs-domain-links-index-63ad",
+      "allowed_paths": [
+        "docs/**",
+        "README.md",
+        "AGENTS.md",
+        ".cursor/**",
+        ".github/**",
+        "CONTRIBUTING.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
