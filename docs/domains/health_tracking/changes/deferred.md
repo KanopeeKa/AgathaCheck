@@ -11,6 +11,4 @@ tags: [domain,health_tracking,deferred]
 
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| `health_entry_form_controller.dart` further slim | P4 | Small | Optional frequency widget extract — [/docs/refactoring-debt.md](/docs/refactoring-debt.md) |
-
-Cross-cutting audit extension (health flows partially covered) remains in [/docs/technical-debt.md](/docs/technical-debt.md) until phase 5 split.
+| `health_entry_form_controller` optional frequency extract | P4 | Small | Phase 2 done — optional further slimming of frequency/recurrence widgets |

@@ -4,7 +4,7 @@
   "approved_at": "2026-08-22T23:35:00Z",
   "approved_by": "User chat 2026-08-22 — full .md audit standing grant (roadmap chain)",
   "approved_until": "2026-08-24T23:35:00Z",
-  "content_hash": "sha256:2073debfc66d25e9bb3256a64c51d59ebc51ac2f913b52ff2c26e1d46afe7cf8",
+  "content_hash": "sha256:af9509c7d7240a99ab3e3b2445ff3766e2efce7a6c44d97172ceddeaaff347dd",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -32,10 +32,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/710",
+      "pr_head_sha": "5444111c"
     },
     {
       "id": "2",
@@ -60,12 +62,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {

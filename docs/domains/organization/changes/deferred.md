@@ -9,8 +9,8 @@ tags: [domain,organization,deferred]
 
 # Organization — deferred work
 
-Subset of technical/refactoring debt scoped to this domain.
-
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| — | — | — | TODO: migrate from docs/technical-debt.md / docs/refactoring-debt.md |
+| Extend `audit_events` to org admin routes | P2 | Medium | Auth/pets/health partially covered — org admin, file uploads still missing |
+| Organisation pet timeline — remove event + ending notifications | P3 | Medium | Sprint 6.3 defer — no family-event delete UI; org notification cron not wired |
+| Help FAQ copy debt | P3 | Small | FAQ strings still reference top-bar bell / stethoscope — update after nav phase 3 |

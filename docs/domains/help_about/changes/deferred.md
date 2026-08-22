@@ -9,8 +9,6 @@ tags: [domain,help_about,deferred]
 
 # Help & about — deferred work
 
-Subset of technical/refactoring debt scoped to this domain.
-
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| — | — | — | TODO: migrate from docs/technical-debt.md / docs/refactoring-debt.md |
+| FAQ navigation copy update | P3 | Small | Help strings reference legacy nav chrome — update when shell migration completes |

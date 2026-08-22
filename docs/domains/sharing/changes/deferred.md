@@ -9,8 +9,6 @@ tags: [domain,sharing,deferred]
 
 # Sharing — deferred work
 
-Subset of technical/refactoring debt scoped to this domain.
-
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| — | — | — | TODO: migrate from docs/technical-debt.md / docs/refactoring-debt.md |
+| Extend `audit_events` to share-link routes | P2 | Medium | Part of cross-cutting audit logging — see `docs/deferred.md` |

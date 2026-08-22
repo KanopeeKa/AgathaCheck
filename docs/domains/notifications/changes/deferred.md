@@ -9,8 +9,6 @@ tags: [domain,notifications,deferred]
 
 # Notifications — deferred work
 
-Subset of technical/refactoring debt scoped to this domain.
-
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| — | — | — | TODO: migrate from docs/technical-debt.md / docs/refactoring-debt.md |
+| Automated retention jobs (notification rows) | P2 | Medium | Documented in `INTERNAL_GDPR.md` (90-day notifications) — not coded |

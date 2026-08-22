@@ -11,9 +11,9 @@ tags: [experience,guardian,organisation]
 > `/o/orgs/:id` is a profile composer; the section-card dashboard is no longer the primary entry.
 > Do not edit inline — track deviations in
 > [`/docs/experience-program/decisions-log.md`](/docs/experience-program/decisions-log.md) and feature-level detail in
-> [`/docs/experience-program/phase-3-organisation-presentation.md`](/docs/experience-program/phase-3-organisation-presentation.md),
-> [`/docs/experience-program/phase-4-foster-pet-operations.md`](/docs/experience-program/phase-4-foster-pet-operations.md), and
-> [`/docs/experience-program/phase-5-organisation-customisations.md`](/docs/experience-program/phase-5-organisation-customisations.md).
+> [`/docs/domains/organization/changes/phase-3-organisation-presentation.md`](/docs/domains/organization/changes/phase-3-organisation-presentation.md),
+> [`/docs/domains/fostering/changes/phase-4-foster-pet-operations.md`](/docs/domains/fostering/changes/phase-4-foster-pet-operations.md), and
+> [`/docs/domains/organization/changes/phase-5-organisation-customisations.md`](/docs/domains/organization/changes/phase-5-organisation-customisations.md).
 > Imported verbatim 2026-07-25. This brief predates and must be reconciled with the shipped
 > fostering platform (`//docs/domains/fostering/features/g0-contract-pack.md`) — see decisions log D7–D10.
 
