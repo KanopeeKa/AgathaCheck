@@ -39,16 +39,16 @@ Update `docs/README.md` legacy tables; run `validate_docs.sh`; grep-fix stale pa
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 3
+last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/docs-domain-audit-report-63ad"
+next_action: "continue phase 3 on branch cursor/docs-domain-audit-index-63ad"
 artifact_ref:
-  branch: cursor/docs-domain-audit-report-63ad
+  branch: cursor/docs-domain-audit-index-63ad
   plan_path: .agents/plans/docs-domain-audit-63ad.md
-  plan_commit: 7d60926234a9753f9d4d8beee5ae627a7b745726
+  plan_commit: 358ab7a47a541ed60094daa4a64fa1967f0a6a6d
   snapshot_path: .agents/plans/docs-domain-audit-63ad.snapshot.json
-  snapshot_commit: 7d60926234a9753f9d4d8beee5ae627a7b745726
+  snapshot_commit: 358ab7a47a541ed60094daa4a64fa1967f0a6a6d
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
