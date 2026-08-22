@@ -9,8 +9,7 @@ tags: [domain,subscription,deferred]
 
 # Subscription — deferred work
 
-Subset of technical/refactoring debt scoped to this domain.
-
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| — | — | — | TODO: migrate from docs/technical-debt.md / docs/refactoring-debt.md |
+| `subscriptions.feature` Playwright E2E | P2 | Medium | Deferred — billing provider decision; see [/docs/technical-debt.md](/docs/technical-debt.md) |
+| RevenueCat UAT sandbox wiring | P3 | Medium | Blocked on billing provider decision |

@@ -1,5 +1,5 @@
 ---
-title: Help & about journeys
+title: Help and about journeys
 owner: Documentation Team
 audience: both
 status: active
@@ -9,6 +9,18 @@ tags: [domain,help_about,journeys]
 
 # Help & about journeys
 
-TODO: migrate user-facing flow documentation from experience program and architecture sources.
+## Open Help from user menu
 
-Organize as one ## heading per user-facing flow (login, pet create, etc.).
+Guardians navigate to the Help page from the account/user menu.
+
+## FAQ accordion
+
+Help displays feature sections as expandable FAQ groups; multiple sections may be open; content available in EN and FR.
+
+## About
+
+About screens present app version and project information (`flutter_app/lib/features/about/`).
+
+---
+
+BDD: `help_faq.feature`
