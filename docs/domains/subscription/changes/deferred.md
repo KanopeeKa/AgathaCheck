@@ -11,5 +11,5 @@ tags: [domain,subscription,deferred]
 
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| `subscriptions.feature` Playwright E2E | P2 | Medium | Deferred — billing provider decision; see [/docs/technical-debt.md](/docs/technical-debt.md) |
-| RevenueCat UAT sandbox wiring | P3 | Medium | Blocked on billing provider decision |
+| `subscriptions.feature` Playwright E2E | P2 | Medium | Deferred Sprint 7.2 — billing provider decision pending (likely EU-based, not RevenueCat). Gherkin spec (11 scenarios) remains. |
+| RevenueCat UAT sandbox wiring | P3 | Medium | Blocked on billing provider decision — see `docs/technical-debt.md` legacy index |

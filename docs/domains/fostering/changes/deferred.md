@@ -9,8 +9,6 @@ tags: [domain,fostering,deferred]
 
 # Fostering — deferred work
 
-Subset of technical/refactoring debt scoped to this domain.
-
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| — | — | — | TODO: migrate from docs/technical-debt.md / docs/refactoring-debt.md |
+| Extend `audit_events` to foster placement routes | P2 | Medium | Part of cross-cutting audit logging — see `docs/deferred.md` |
