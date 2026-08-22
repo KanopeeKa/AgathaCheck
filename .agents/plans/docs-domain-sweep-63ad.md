@@ -40,9 +40,16 @@ Move phase-4 foster ops, org-fostering-strategy; relocate sprint execution plans
 ```yaml
 autonomy: completed
 current_phase: null
-last_completed_phase: "3"
+last_completed_phase: 3
 halt_reason: null
-next_action: null
-merge_commits:
-  "706": "6ec7fb22c7b37ab8790a7c6d09bd4b318d39c989"
+next_action: "plan complete"
+artifact_ref:
+  branch: main
+  plan_path: .agents/plans/docs-domain-sweep-63ad.md
+  plan_commit: ad509f1d124dda1f663e424bdaa400b79a1d70ba
+  snapshot_path: .agents/plans/docs-domain-sweep-63ad.snapshot.json
+  snapshot_commit: ad509f1d124dda1f663e424bdaa400b79a1d70ba
+open_prs: []
+merge_commits: {"1":"6ec7fb22c7b37ab8790a7c6d09bd4b318d39c989","2":"6ec7fb22c7b37ab8790a7c6d09bd4b318d39c989","3":"6ec7fb22c7b37ab8790a7c6d09bd4b318d39c989"}
+debt_issue_refs: []
 ```
