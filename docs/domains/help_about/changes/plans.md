@@ -9,8 +9,7 @@ tags: [domain,help_about,plans]
 
 # Help & about — plans index
 
-Index of delivery plans for this domain. Link to source of truth (.agents/plans/ or relocated delivery docs) — do not duplicate full plan bodies here.
-
 | Plan | Summary | Status | Source |
 |------|---------|--------|--------|
-| — | TODO: migrate | — | — |
+| Sprint 6.4 — Help FAQ | +10 BDD scenarios, Playwright `help.faq.spec.ts` | Planned | [/docs/plans/sprint-6-execution-plan.md](/docs/plans/sprint-6-execution-plan.md) |
+| Navigation shell backlog | FAQ copy vs new bell/drawer chrome | Deferred | [changes/deferred.md](deferred.md) |

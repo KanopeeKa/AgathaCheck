@@ -9,6 +9,8 @@ tags: [domain,notifications,lessons]
 
 # Notifications — lessons index
 
-One-line summaries linking to .agents/memory/*.md entries relevant to this domain.
+| Lesson | Summary | Source |
+|--------|---------|--------|
+| UAT live E2E — home refresh | `refreshByRemount()` after API seed when due events missing on home | [.agents/memory/uat-live-e2e-triage.md](/.agents/memory/uat-live-e2e-triage.md) |
 
-- TODO: migrate lesson links
+Kind vs scope semantics: [/docs/experience-program/decisions-log.md](/docs/experience-program/decisions-log.md) §B

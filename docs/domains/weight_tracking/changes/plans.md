@@ -9,8 +9,11 @@ tags: [domain,weight_tracking,plans]
 
 # Weight tracking — plans index
 
-Index of delivery plans for this domain. Link to source of truth (.agents/plans/ or relocated delivery docs) — do not duplicate full plan bodies here.
+No standalone delivery plan — weight tracking ships as part of pet profile / health program.
 
 | Plan | Summary | Status | Source |
 |------|---------|--------|--------|
-| — | TODO: migrate | — | — |
+| Weight tracking BDD | Entry CRUD, profile integration | Active | `weight_tracking.feature` |
+| E2E | Weight entry journey | Active | `weight.tracking.spec.ts` |
+
+Calendar wire format: [/docs/calendar-dates.md](/docs/calendar-dates.md)

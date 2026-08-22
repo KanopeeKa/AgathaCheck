@@ -9,6 +9,6 @@ tags: [domain,subscription,lessons]
 
 # Subscription — lessons index
 
-One-line summaries linking to .agents/memory/*.md entries relevant to this domain.
+No subscription-specific `.agents/memory/` entries. RevenueCat wiring is documented in FAQ strings and regulatory assets.
 
-- TODO: migrate lesson links
+Deferred E2E investment until billing architecture is decided — see [changes/deferred.md](deferred.md).

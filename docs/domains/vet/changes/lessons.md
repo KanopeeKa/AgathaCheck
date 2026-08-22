@@ -9,6 +9,8 @@ tags: [domain,vet,lessons]
 
 # Veterinarians — lessons index
 
-One-line summaries linking to .agents/memory/*.md entries relevant to this domain.
+| Lesson | Summary | Source |
+|--------|---------|--------|
+| Calendar dates on wire | Weight/health dates use `YYYY-MM-DD` — vet-linked pet flows share same date rules | [/docs/calendar-dates.md](/docs/calendar-dates.md) |
 
-- TODO: migrate lesson links
+No vet-specific `.agents/memory/` entries today.

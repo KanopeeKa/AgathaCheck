@@ -9,6 +9,10 @@ tags: [domain,fostering,lessons]
 
 # Fostering — lessons index
 
-One-line summaries linking to .agents/memory/*.md entries relevant to this domain.
+| Lesson | Summary | Source |
+|--------|---------|--------|
+| G0 contract pack | Vocabulary, permissions, audit catalog for fostering | [features/g0-contract-pack.md](../features/g0-contract-pack.md) |
+| Fostering platform foundation | J1 onboarding execute-plan | [.agents/plans/fostering-platform-foundation-e877.md](/.agents/plans/fostering-platform-foundation-e877.md) |
+| Body-supplied org ID validation | API guard patterns for org-scoped routes | [.agents/memory/body-supplied-org-id-validation.md](/.agents/memory/body-supplied-org-id-validation.md) |
 
-- TODO: migrate lesson links
+Delivery plans: [changes/plans.md](plans.md) · Roadmap: [changes/roadmap-delivery-plan.md](roadmap-delivery-plan.md)

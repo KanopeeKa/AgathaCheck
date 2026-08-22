@@ -9,8 +9,8 @@ tags: [domain,vet,deferred]
 
 # Veterinarians — deferred work
 
-Subset of technical/refactoring debt scoped to this domain.
-
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| — | — | — | TODO: migrate from docs/technical-debt.md / docs/refactoring-debt.md |
+| Dedicated Playwright E2E spec | P3 | Small | Optional `vet.*.spec.ts` if PR CI scope needs explicit journey coverage |
+
+No domain-scoped rows in legacy debt indexes as of wave 3 audit.

@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "plan_id": "docs-domain-stubs-63ad",
+  "approved_at": "2026-08-22T23:55:00Z",
+  "approved_by": "User chat 2026-08-22 — docs roadmap continuation (standing grant)",
+  "approved_until": "2026-08-24T23:55:00Z",
+  "content_hash": "sha256:8e1c1037147778129e294aeaa9617494a8b4ada6e0fb3904a4a601231f8c1b78",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 714,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Domain stub completion",
+      "branch": "cursor/docs-domain-stubs-content-63ad",
+      "allowed_paths": [
+        "docs/domains/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "YAML frontmatter wave",
+      "branch": "cursor/docs-domain-metadata-63ad",
+      "allowed_paths": [
+        "docs/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

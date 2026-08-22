@@ -9,6 +9,8 @@ tags: [domain,sharing,lessons]
 
 # Sharing — lessons index
 
-One-line summaries linking to .agents/memory/*.md entries relevant to this domain.
+| Lesson | Summary | Source |
+|--------|---------|--------|
+| Sharing section split | Role-specific files under `widgets/sharing/` | [/docs/refactoring-debt.md](/docs/refactoring-debt.md) |
 
-- TODO: migrate lesson links
+Audit logging extension for share routes: [changes/deferred.md](deferred.md)
