@@ -9,6 +9,7 @@ tags: [domain,organization,lessons]
 
 # Organization — lessons index
 
-One-line summaries linking to .agents/memory/*.md entries relevant to this domain.
-
-- TODO: migrate lesson links
+| Lesson | Summary | Source |
+|--------|---------|--------|
+| Body-supplied org ID validation | Validate org IDs from request body against membership | [.agents/memory/body-supplied-org-id-validation.md](/.agents/memory/body-supplied-org-id-validation.md) |
+| Public access gate | Public-facing feature access rules | [.agents/memory/public-access-gate.md](/.agents/memory/public-access-gate.md) |

@@ -1,5 +1,7 @@
 # Organization & fostering — delivery strategy
 
+> **Docs reorg (2026-08):** Org **roles/permissions** → [/docs/domains/organization/features/org-roles-and-permissions.md](/docs/domains/organization/features/org-roles-and-permissions.md). Foster **placement lifecycle** → [/docs/domains/fostering/](/docs/domains/fostering/) (phase 4). Custody **data model** → [/docs/domains/organization/features/org-custody-model.md](/docs/domains/organization/features/org-custody-model.md).
+
 This document is the authoritative roadmap for org roles, pet custody, sharing,
 transfer, and foster placements. It is updated each increment.
 

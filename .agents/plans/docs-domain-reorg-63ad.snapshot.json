@@ -4,7 +4,7 @@
   "approved_at": "2026-08-22T15:52:00Z",
   "approved_by": "Cloud agent — standing grant user chat 2026-08-22 docs reorg",
   "approved_until": "2026-08-24T15:52:00Z",
-  "content_hash": "sha256:fc091ec04fea855f2ea66709e5bc6b9a9989d42da82da8f08059607af569dd9f",
+  "content_hash": "sha256:42309af0def25157c804cb3d92c1c8f0176f201a592c53ceca03978ad7c9af17",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/docs-domain-reorg-integration-63ad",
@@ -38,7 +38,8 @@
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/700",
-      "pr_head_sha": "f00d95b109cf5719a7a5b296c97842e218aa06dd"
+      "pr_head_sha": "f00d95b109cf5719a7a5b296c97842e218aa06dd",
+      "merge_commit": "4cd540999fab1ccbe2cba9c22fadf9acdf5b24ea"
     },
     {
       "id": "2",
@@ -67,9 +68,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "pending",
       "status_reason": null,
       "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
@@ -97,12 +101,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
