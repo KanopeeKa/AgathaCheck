@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "plan_id": "docs-domain-audit-63ad",
+  "approved_at": "2026-08-22T23:35:00Z",
+  "approved_by": "User chat 2026-08-22 — full .md audit standing grant (roadmap chain)",
+  "approved_until": "2026-08-24T23:35:00Z",
+  "content_hash": "sha256:2073debfc66d25e9bb3256a64c51d59ebc51ac2f913b52ff2c26e1d46afe7cf8",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 709,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Full audit artifact",
+      "branch": "cursor/docs-domain-audit-report-63ad",
+      "allowed_paths": [
+        "docs/plans/docs-domain-audit-63ad.md",
+        ".agents/plans/docs-domain-audit-63ad.*"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Debt row migration",
+      "branch": "cursor/docs-domain-audit-debt-63ad",
+      "allowed_paths": [
+        "docs/domains/**/changes/deferred.md",
+        "docs/technical-debt.md",
+        "docs/refactoring-debt.md",
+        "docs/domains/organization/features/organisation-dashboard-brief.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Index cleanup and validate",
+      "branch": "cursor/docs-domain-audit-index-63ad",
+      "allowed_paths": [
+        "docs/README.md",
+        "docs/refactoring-log.md",
+        "docs/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
