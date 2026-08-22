@@ -9,6 +9,8 @@ tags: [domain,help_about,lessons]
 
 # Help & about — lessons index
 
-One-line summaries linking to .agents/memory/*.md entries relevant to this domain.
+| Lesson | Summary | Source |
+|--------|---------|--------|
+| FAQ navigation copy debt | Help strings may reference legacy nav chrome | [changes/deferred.md](deferred.md) |
 
-- TODO: migrate lesson links
+Localization: FAQ strings live in ARB — follow [.agents/memory/localization-enum-labels.md](/.agents/memory/localization-enum-labels.md) when editing enums tied to help copy.

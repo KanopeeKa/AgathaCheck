@@ -9,8 +9,8 @@ tags: [domain,weight_tracking,deferred]
 
 # Weight tracking — deferred work
 
-Subset of technical/refactoring debt scoped to this domain.
-
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| — | — | — | TODO: migrate from docs/technical-debt.md / docs/refactoring-debt.md |
+| Playwright weight form stability | P3 | Small | Flutter web fill timing — see UAT triage memory if E2E flakes return |
+
+No other domain-scoped deferrals in legacy debt indexes as of wave 3 audit.

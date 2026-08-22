@@ -29,4 +29,4 @@ tags: [domain,vet,specs]
 
 ---
 
-*Stub — no dedicated architecture doc existed before domain-first reorg.*
+**Plans:** [changes/plans.md](../changes/plans.md)

@@ -9,6 +9,6 @@ tags: [domain,weight_tracking,lessons]
 
 # Weight tracking — lessons index
 
-One-line summaries linking to .agents/memory/*.md entries relevant to this domain.
-
-- TODO: migrate lesson links
+| Lesson | Summary | Source |
+|--------|---------|--------|
+| Calendar dates | User-facing dates are calendar days on the wire | [/docs/calendar-dates.md](/docs/calendar-dates.md) |

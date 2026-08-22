@@ -9,8 +9,11 @@ tags: [domain,sharing,plans]
 
 # Sharing — plans index
 
-Index of delivery plans for this domain. Link to source of truth (.agents/plans/ or relocated delivery docs) — do not duplicate full plan bodies here.
+No dedicated delivery plan — share links and collaborators ship with pet profile modularization.
 
 | Plan | Summary | Status | Source |
 |------|---------|--------|--------|
-| — | TODO: migrate | — | — |
+| Sharing BDD | Share link acceptance, collaborator roles | Active | `sharing.feature` |
+| Widget modularization | Role-specific sharing widgets | Done | [/docs/refactoring-debt.md](/docs/refactoring-debt.md) (completed domains) |
+
+API: `server/routes/sharing.js`

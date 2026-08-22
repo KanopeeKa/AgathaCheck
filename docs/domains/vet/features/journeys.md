@@ -25,4 +25,4 @@ Phone and other fields can be updated. Deletion requires confirmation; cancel ke
 
 ---
 
-*Stub seeded from veterinarian_management.feature — expand during domain migration.*
+BDD: `veterinarian_management.feature`

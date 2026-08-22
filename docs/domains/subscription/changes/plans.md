@@ -9,8 +9,9 @@ tags: [domain,subscription,plans]
 
 # Subscription — plans index
 
-Index of delivery plans for this domain. Link to source of truth (.agents/plans/ or relocated delivery docs) — do not duplicate full plan bodies here.
-
 | Plan | Summary | Status | Source |
 |------|---------|--------|--------|
-| — | TODO: migrate | — | — |
+| Subscriptions BDD | 11 premium-tier scenarios | Spec only | `subscriptions.feature` |
+| Billing provider decision | RevenueCat vs EU billing | Deferred | [changes/deferred.md](deferred.md) |
+
+No `.agents/plans/` snapshot dedicated to subscription today.

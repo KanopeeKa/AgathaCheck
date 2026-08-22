@@ -9,8 +9,9 @@ tags: [domain,vet,plans]
 
 # Veterinarians — plans index
 
-Index of delivery plans for this domain. Link to source of truth (.agents/plans/ or relocated delivery docs) — do not duplicate full plan bodies here.
+No dedicated delivery plan — domain shipped with core pet profile work. Coverage via BDD and API tests.
 
 | Plan | Summary | Status | Source |
 |------|---------|--------|--------|
-| — | TODO: migrate | — | — |
+| Veterinarian management BDD | CRUD + pet linking scenarios | Active | `veterinarian_management.feature` |
+| Playwright E2E | Not dedicated today | — | BDD/integration paths |
