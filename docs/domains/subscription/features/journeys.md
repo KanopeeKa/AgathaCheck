@@ -9,6 +9,6 @@ tags: [domain,subscription,journeys]
 
 # Subscription journeys
 
-TODO: migrate user-facing flow documentation from experience program and architecture sources.
+Premium tier purchase and entitlement flows (RevenueCat integration today). **Billing provider under product review** — EU-based solution may replace RevenueCat; see deferred work.
 
-Organize as one ## heading per user-facing flow (login, pet create, etc.).
+BDD spec `subscriptions.feature` (11 scenarios) documents intended journeys; Playwright E2E deferred until billing architecture is decided.

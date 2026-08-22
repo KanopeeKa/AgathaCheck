@@ -1,24 +1,19 @@
 ---
-title: Fostering & adoption platform specs
+title: Fostering platform index (relocated)
 owner: Documentation Team
-audience: human
-status: active
-last_updated: 2026-08-21
-tags: [fostering,organisation,adoption]
+audience: both
+status: superseded
+last_updated: 2026-08-22
+tags: [fostering,migration]
 ---
-# Fostering & adoption platform specs
 
-Planning documents for the second-generation fostering and adoption roadmap. **No implementation lives here** — these are agent handoff contracts.
+# Fostering platform — relocated
 
-| Doc | Purpose |
-|-----|---------|
-| [`g0-contract-pack.md`](g0-contract-pack.md) | Platform contract layer — invariants, vocabulary, ownership, cross-journey APIs |
-| [`migration-appendix.md`](migration-appendix.md) | Current → target entity/status mapping (**locked**) |
-| `j1-foster-onboarding.md` … `j5-adoption-conversion.md` | Journey specs (TODO) |
-| `g1-document-artefact-packs.md` | Template packs and register export hooks (TODO) |
+Domain-first index: [/docs/domains/fostering/README.md](/docs/domains/fostering/README.md)
 
-**Related code/docs today**
-
-- `docs/org-fostering-strategy.md` — legacy increment log (superseded by this folder when delivery starts)
-- `docs/architecture/org-custody-model.md` — guardianship, care, shadows, transfers
-- `regulatory/internal/dpia-foster-directory.md` — DPIA for foster directory (requires update before J1/J4 launch)
+| Former path | New location |
+|-------------|--------------|
+| j1-foster-onboarding.md | [/docs/domains/fostering/features/j1-foster-onboarding.md](/docs/domains/fostering/features/j1-foster-onboarding.md) |
+| g0-contract-pack.md | [/docs/domains/fostering/features/g0-contract-pack.md](/docs/domains/fostering/features/g0-contract-pack.md) |
+| migration-appendix.md | [/docs/domains/fostering/features/migration-appendix.md](/docs/domains/fostering/features/migration-appendix.md) |
+| roadmap-delivery-plan.md | [/docs/domains/fostering/changes/roadmap-delivery-plan.md](/docs/domains/fostering/changes/roadmap-delivery-plan.md) |

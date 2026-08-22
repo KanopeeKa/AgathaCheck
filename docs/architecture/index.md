@@ -26,10 +26,13 @@ Full conventions: `docs/architecture/modularity.md`.
 
 ## Domain map
 
+Product domains are documented under [/docs/domains/](/docs/domains/). Each row links to the domain README.
+
 ### Authentication & profile
 
 | | Path |
 |---|------|
+| **Docs** | [/docs/domains/auth/README.md](/docs/domains/auth/README.md) |
 | Flutter | `flutter_app/lib/features/auth/` |
 | Node routes | `server/routes/auth/` |
 | Jest | `server/test/auth/` |
@@ -40,6 +43,7 @@ Full conventions: `docs/architecture/modularity.md`.
 
 | | Path |
 |---|------|
+| **Docs** | [/docs/domains/pet_profile/README.md](/docs/domains/pet_profile/README.md) |
 | Flutter | `flutter_app/lib/features/pet_profile/` |
 | Node routes | `server/routes/pets/` |
 | Jest | `server/test/pets/` |
@@ -50,6 +54,7 @@ Full conventions: `docs/architecture/modularity.md`.
 
 | | Path |
 |---|------|
+| **Docs** | [/docs/domains/health_tracking/README.md](/docs/domains/health_tracking/README.md) |
 | Flutter | `flutter_app/lib/features/health_tracking/` |
 | Node routes | `server/routes/healthEntries/`, `healthIssues.js` |
 | Jest | `healthEntries.test.js`, `healthIssues.test.js` |
@@ -62,6 +67,7 @@ Full conventions: `docs/architecture/modularity.md`.
 
 | | Path |
 |---|------|
+| **Docs** | [/docs/domains/weight_tracking/README.md](/docs/domains/weight_tracking/README.md) |
 | Flutter | `flutter_app/lib/features/weight_tracking/` |
 | Node routes | `server/routes/weightEntries.js` |
 | Jest | `weightEntries.test.js` |
@@ -72,6 +78,7 @@ Full conventions: `docs/architecture/modularity.md`.
 
 | | Path |
 |---|------|
+| **Docs** | [/docs/domains/vet/README.md](/docs/domains/vet/README.md) |
 | Flutter | `flutter_app/lib/features/vet/` |
 | Node routes | `server/routes/vets.js` |
 | Jest | `vets.test.js` |
@@ -81,6 +88,7 @@ Full conventions: `docs/architecture/modularity.md`.
 
 | | Path |
 |---|------|
+| **Docs** | [/docs/domains/sharing/README.md](/docs/domains/sharing/README.md) |
 | Flutter | `flutter_app/lib/features/sharing/` |
 | Node routes | `server/routes/sharing.js` |
 | Jest | `sharing.test.js`, `sharedPetAccess.test.js` |
@@ -91,6 +99,7 @@ Full conventions: `docs/architecture/modularity.md`.
 
 | | Path |
 |---|------|
+| **Docs** | [/docs/domains/notifications/README.md](/docs/domains/notifications/README.md) |
 | Flutter | `flutter_app/lib/features/notifications/` |
 | Node routes | `server/routes/notifications.js` |
 | Jest | `notifications.test.js` |
@@ -101,6 +110,8 @@ Full conventions: `docs/architecture/modularity.md`.
 
 | | Path |
 |---|------|
+| **Docs (org identity)** | [/docs/domains/organization/README.md](/docs/domains/organization/README.md) |
+| **Docs (foster workflows)** | [/docs/domains/fostering/README.md](/docs/domains/fostering/README.md) |
 | Flutter | `flutter_app/lib/features/organization/` |
 | Node routes | `server/routes/organizations/`, `fosterPlacements.js`, `custodyTransfers.js` |
 | Jest | `server/test/organizations/`, `fosterPlacements.test.js`, `custodyTransfers.test.js`, `orgConnections.test.js` |
@@ -114,6 +125,7 @@ Full conventions: `docs/architecture/modularity.md`.
 
 | | Path |
 |---|------|
+| **Docs** | [/docs/domains/subscription/README.md](/docs/domains/subscription/README.md) |
 | Flutter | `flutter_app/lib/features/subscription/` |
 | BDD | `subscriptions.feature` |
 | E2E | — (UAT RevenueCat sandbox required) |
@@ -122,6 +134,7 @@ Full conventions: `docs/architecture/modularity.md`.
 
 | | Path |
 |---|------|
+| **Docs** | [/docs/domains/help_about/README.md](/docs/domains/help_about/README.md) |
 | Flutter | `flutter_app/lib/features/help/`, `about/` |
 | BDD | `help_faq.feature` |
 
