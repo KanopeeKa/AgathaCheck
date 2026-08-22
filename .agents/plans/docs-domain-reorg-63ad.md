@@ -130,6 +130,7 @@ Migrate AgathaTrack documentation from document-type-first layout into a **domai
 
 ```yaml
 autonomy: active
+<<<<<<< HEAD
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
@@ -140,6 +141,18 @@ artifact_ref:
   plan_commit: c83d655218f6f9b3b0d6b9220362fad7c14daaff
   snapshot_path: .agents/plans/docs-domain-reorg-63ad.snapshot.json
   snapshot_commit: c83d655218f6f9b3b0d6b9220362fad7c14daaff
+=======
+current_phase: 3
+last_completed_phase: null
+halt_reason: null
+next_action: "continue phase 3 on branch cursor/docs-domain-organization-63ad"
+artifact_ref:
+  branch: cursor/docs-domain-organization-63ad
+  plan_path: .agents/plans/docs-domain-reorg-63ad.md
+  plan_commit: 4cd540999fab1ccbe2cba9c22fadf9acdf5b24ea
+  snapshot_path: .agents/plans/docs-domain-reorg-63ad.snapshot.json
+  snapshot_commit: 4cd540999fab1ccbe2cba9c22fadf9acdf5b24ea
+>>>>>>> ac24ec95 (docs: fix organisation-dashboard-brief links)
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
