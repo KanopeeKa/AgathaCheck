@@ -1,5 +1,7 @@
 # Technical debt & deferred work
 
+> **Docs reorg (2026-08):** Cross-cutting rows moved to [/docs/deferred.md](/docs/deferred.md). Domain-scoped items → `docs/domains/<domain>/changes/deferred.md`. This file remains as the legacy index until fully split.
+
 Living index of intentional deferrals, low-priority improvements, and follow-ups.
 Use this for **context and prioritisation**; create [GitHub Issues](https://github.com/KanopeeKa/AgathaCheck/issues) when something is ready to schedule.
 

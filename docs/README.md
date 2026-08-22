@@ -3,7 +3,7 @@ title: Agatha Track Documentation
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-21
+last_updated: 2026-08-22
 tags: [overview,table-of-contents,documentation]
 ---
 
@@ -29,13 +29,37 @@ Foundational documents that describe the project's architecture, setup, and work
 
 ---
 
-## Domain-Specific Documentation
+## Product domains (domain-first)
 
-### Organization & Fostering
+Each product area has a one-screen index under `docs/domains/<domain>/` with journeys, specs, plans, lessons, and deferred work.
+
+| Domain | Index | Focus |
+|--------|-------|-------|
+| Authentication | [/docs/domains/auth/README.md](/docs/domains/auth/README.md) | Login, signup, profile |
+| Pet profiles | [/docs/domains/pet_profile/README.md](/docs/domains/pet_profile/README.md) | Pets, guardian dashboard, timeline |
+| Health tracking | [/docs/domains/health_tracking/README.md](/docs/domains/health_tracking/README.md) | Medication, due dates, health issues |
+| Weight tracking | [/docs/domains/weight_tracking/README.md](/docs/domains/weight_tracking/README.md) | Weight history and charts |
+| Veterinarians | [/docs/domains/vet/README.md](/docs/domains/vet/README.md) | Vet contacts and pet links |
+| Sharing | [/docs/domains/sharing/README.md](/docs/domains/sharing/README.md) | Share links and collaborators |
+| Notifications | [/docs/domains/notifications/README.md](/docs/domains/notifications/README.md) | In-app notification feed |
+| Organization | [/docs/domains/organization/README.md](/docs/domains/organization/README.md) | Org identity, permissions, privacy, custody model |
+| Fostering | [/docs/domains/fostering/README.md](/docs/domains/fostering/README.md) | Placements, adoption, custody transfers |
+| Subscription | [/docs/domains/subscription/README.md](/docs/domains/subscription/README.md) | Premium tiers (billing TBD) |
+| Help & about | [/docs/domains/help_about/README.md](/docs/domains/help_about/README.md) | FAQ and about screens |
+
+Cross-cutting deferred work: [/docs/deferred.md](/docs/deferred.md)
+
+---
+
+## Domain-Specific Documentation (legacy paths)
+
+> **Migration in progress:** content is moving into `docs/domains/` above. Stubs remain at former paths until link pass completes.
+
+### Organization & Fostering (legacy index)
 
 | Document | Purpose | Status |
 |----------|---------|--------|
-| [/docs/fostering-platform/README.md](/docs/fostering-platform/README.md) | Master index for fostering features | Active |
+| [/docs/fostering-platform/README.md](/docs/fostering-platform/README.md) | Redirect → [fostering domain](/docs/domains/fostering/README.md) | Superseded |
 | [/docs/fostering-platform/g0-contract-pack.md](/docs/fostering-platform/g0-contract-pack.md) | Core fostering workflow contracts | Active |
 | [/docs/fostering-platform/j1-foster-onboarding.md](/docs/fostering-platform/j1-foster-onboarding.md) | Foster parent onboarding flow | Active |
 | [/docs/fostering-platform/migration-appendix.md](/docs/fostering-platform/migration-appendix.md) | Data migration guides | Active |
@@ -138,7 +162,7 @@ The **active** program for navigation reversal, Guardian dashboard, and Organisa
 | Document | Purpose | Status |
 |----------|---------|--------|
 | [/docs/github-issue-workflow.md](/docs/github-issue-workflow.md) | Issue lifecycle and triage | Active |
-| [/docs/technical-debt.md](/docs/technical-debt.md) | Product/infra deferrals | Active |
+| [/docs/technical-debt.md](/docs/technical-debt.md) | Product/infra deferrals (splitting → domains + deferred.md) | Active |
 | [/docs/refactoring-debt.md](/docs/refactoring-debt.md) | Refactoring uncertainty log | Active |
 | [/docs/refactoring-log.md](/docs/refactoring-log.md) | Completed refactoring work | Active |
 | [/docs/sprint-6-execution-plan.md](/docs/sprint-6-execution-plan.md) | Sprint 6 deliverables | Active |
@@ -270,4 +294,4 @@ tags: [comma, separated, tags]
 
 ---
 
-*Last updated: 2026-08-21*
+*Last updated: 2026-08-22*
