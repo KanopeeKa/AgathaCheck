@@ -35,4 +35,4 @@ All Pets screen lists owned and foster pets with visual distinction (Guardian vs
 
 ---
 
-**Related plans:** [/docs/experience-program/phase-2-guardian-journey.md](/docs/experience-program/phase-2-guardian-journey.md) · **Specs:** [specs.md](specs.md) · [pet-activity-model.md](pet-activity-model.md)
+**Related plans:** [/docs/domains/pet_profile/changes/phase-2-guardian-journey.md](/docs/domains/pet_profile/changes/phase-2-guardian-journey.md) · **Specs:** [specs.md](specs.md) · [pet-activity-model.md](pet-activity-model.md)

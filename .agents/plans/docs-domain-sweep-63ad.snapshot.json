@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "plan_id": "docs-domain-sweep-63ad",
+  "approved_at": "2026-08-22T23:14:00Z",
+  "approved_by": "User chat 2026-08-22 — docs sweep standing grant",
+  "approved_until": "2026-08-24T23:14:00Z",
+  "content_hash": "sha256:d7bf4b18b5a323008af899ddf1a68e3a09f10d456a4e7f3a177781f113494241",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 705,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "pet_profile delivery docs",
+      "branch": "cursor/docs-domain-sweep-pet-63ad",
+      "allowed_paths": [
+        "docs/domains/pet_profile/**",
+        "docs/experience-program/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "organization delivery docs",
+      "branch": "cursor/docs-domain-sweep-org-63ad",
+      "allowed_paths": [
+        "docs/domains/organization/**",
+        "docs/experience-program/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "fostering plans link sweep",
+      "branch": "cursor/docs-domain-sweep-rest-63ad",
+      "allowed_paths": [
+        "docs/**",
+        "README.md",
+        "AGENTS.md",
+        ".cursor/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

@@ -165,8 +165,8 @@ The **active** program for navigation reversal, Guardian dashboard, and Organisa
 | [/docs/technical-debt.md](/docs/technical-debt.md) | Product/infra deferrals (splitting → domains + deferred.md) | Active |
 | [/docs/refactoring-debt.md](/docs/refactoring-debt.md) | Refactoring uncertainty log | Active |
 | [/docs/refactoring-log.md](/docs/refactoring-log.md) | Completed refactoring work | Active |
-| [/docs/sprint-6-execution-plan.md](/docs/sprint-6-execution-plan.md) | Sprint 6 deliverables | Active |
-| [/docs/sprint-10-flutter-344-execution-plan.md](/docs/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 upgrade plan | Active |
+| [/docs/plans/sprint-6-execution-plan.md](/docs/plans/sprint-6-execution-plan.md) | Sprint 6 deliverables | Active |
+| [/docs/plans/sprint-10-flutter-344-execution-plan.md](/docs/plans/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 upgrade plan | Active |
 | [/docs/ci-build-artifact-contract.md](/docs/ci-build-artifact-contract.md) | Build artifact specifications | Active |
 | [/docs/promotion-contract.md](/docs/promotion-contract.md) | UAT to PROD promotion rules | Active |
 | [/docs/db-schema-bootstrap-plan.md](/docs/db-schema-bootstrap-plan.md) | Database initialization | Active |

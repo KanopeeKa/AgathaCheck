@@ -3,40 +3,51 @@ title: Experience program — navigation, Guardian dashboard, Organisation prese
 owner: Experience Program Team
 audience: human
 status: active
-last_updated: 2026-08-21
+last_updated: 2026-08-22
 tags: [experience,guardian,organisation]
 ---
+
 # Experience program — navigation, Guardian dashboard, Organisation presentation
 
-Planning and contract documents for the navigation reversal + Guardian dashboard redesign +
-Organisation presentation/access-control rework. Master briefs are locked, product-truth
-documents; everything else here is the delivery plan built on top of them.
+**Cross-cutting program** for navigation reversal, shell contracts, and phase ordering. Domain-specific **delivery plans** relocated to `docs/domains/<domain>/changes/` (2026-08 docs sweep).
+
+## Read first
 
 | Doc | Purpose |
-|---|---|
-| [`briefs/navigation-brief.md`](briefs/navigation-brief.md) | Locked master brief — navigation redesign |
-| [`briefs/guardian-dashboard-brief.md`](briefs/guardian-dashboard-brief.md) | Locked master brief — Guardian dashboard redesign |
-| [`briefs/organisation-dashboard-brief.md`](briefs/organisation-dashboard-brief.md) | Locked master brief — Organisation dashboard and architecture |
-| [`decisions-log.md`](decisions-log.md) | **Read first.** Every locked/TBD product decision, with IDs referenced everywhere else |
-| [`program-contract.md`](program-contract.md) | Cross-cutting contract: vocabulary, notification model, permission model, gates, testing, logging, localisation, asset rules |
-| [`roadmap-delivery-plan.md`](roadmap-delivery-plan.md) | Phase order, sprint breakdown, branch naming, merge policy |
-| [`phase-r-reconciliation.md`](phase-r-reconciliation.md) | Close out navigation-v2 and the paused org-mode-nav plan before new work starts |
-| [`phase-0-foundation.md`](phase-0-foundation.md) | Shared primitives (notification schema, dashboard-section widget, permission helper scaffolding) |
-| [`phase-1-navigation.md`](phase-1-navigation.md) | Drawer, header, bell, unified notifications, Account area |
-| [`phase-2-guardian-journey.md`](phase-2-guardian-journey.md) | Guardian dashboard, Events redefinition, pet timeline, vets, bulk share |
-| [`phase-3-organisation-presentation.md`](phase-3-organisation-presentation.md) | Org dashboard, modular org detail, admin contacts, discoverability, legal fields, pet tabs |
-| [`phase-4-foster-pet-operations.md`](phase-4-foster-pet-operations.md) | Foster self-management, agreement withdrawal, permission threading |
-| [`phase-5-organisation-customisations.md`](phase-5-organisation-customisations.md) | Templates relocation, roles/permissions admin UI, audit log viewer |
-| [`organisation-v2-delivery-plan.md`](organisation-v2-delivery-plan.md) | Organisation v2 — profile composer, view permissions, activity log |
-| [`organisation-ux-v3-delivery-plan.md`](organisation-ux-v3-delivery-plan.md) | Organisation UX v3 — show-org, chrome, discover, nav rows, Account privacy, upload P0 |
-| [`organisation-people-permissions-v4-delivery-plan.md`](organisation-people-permissions-v4-delivery-plan.md) | **Active (2026-08-06).** People directory, role/foster badge split, staged permissions, org defaults, foster invite + timeline |
+|-----|---------|
+| [decisions-log.md](decisions-log.md) | Locked/TBD product decisions (IDs referenced everywhere) |
+| [program-contract.md](program-contract.md) | Vocabulary, notifications, permissions, gates, testing |
+| [roadmap-delivery-plan.md](roadmap-delivery-plan.md) | Phase order, sprint breakdown, merge policy |
+| [phase-r-reconciliation.md](phase-r-reconciliation.md) | Close out navigation-v2 before new work |
 
-**Related prior work this program reconciles with:**
+## Cross-cutting phases (stay here)
 
-- `docs/design/navigation-v2.md` — superseded (see `phase-r-reconciliation.md`)
-- `docs/fostering-platform/` — kept and extended, not replaced (foster/pet operational model)
-- `docs/architecture/org-custody-model.md` — kept as-is, pet timeline reads from it
+| Doc | Purpose |
+|-----|---------|
+| [phase-0-foundation.md](phase-0-foundation.md) | Shared primitives |
+| [phase-0-settings-audit.md](phase-0-settings-audit.md) | Settings audit |
+| [phase-1-navigation.md](phase-1-navigation.md) | Drawer, header, bell, Account |
 
-**Status tracking:** phase docs carry their own exit criteria; there is no separate execute-plan
-snapshot for this program (single-agent, sequential delivery per decision D33) — see
-`roadmap-delivery-plan.md` for the reasoning.
+## Locked briefs (cross-cutting or relocated)
+
+| Brief | Location |
+|-------|----------|
+| Navigation | [briefs/navigation-brief.md](briefs/navigation-brief.md) |
+| Guardian dashboard | [/docs/domains/pet_profile/features/guardian-dashboard-brief.md](/docs/domains/pet_profile/features/guardian-dashboard-brief.md) |
+| Organisation dashboard | [/docs/domains/organization/features/organisation-dashboard-brief.md](/docs/domains/organization/features/organisation-dashboard-brief.md) |
+
+## Domain delivery plans (relocated)
+
+| Domain | Plans index |
+|--------|-------------|
+| Pet profile / Guardian | [/docs/domains/pet_profile/changes/plans.md](/docs/domains/pet_profile/changes/plans.md) |
+| Organization | [/docs/domains/organization/changes/plans.md](/docs/domains/organization/changes/plans.md) |
+| Fostering | [/docs/domains/fostering/changes/plans.md](/docs/domains/fostering/changes/plans.md) |
+
+## Related
+
+- [Fostering platform docs](/docs/domains/fostering/README.md) — operational contracts (not replaced)
+- [Org custody model](/docs/domains/organization/features/org-custody-model.md)
+- Superseded: `docs/archived/navigation-v2.md` — see phase-r-reconciliation
+
+**Status:** Phase docs carry exit criteria; sequential delivery per decision D33 — see roadmap-delivery-plan.md.
