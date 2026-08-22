@@ -60,11 +60,9 @@ Cross-cutting deferred work: [/docs/deferred.md](/docs/deferred.md)
 | Document | Purpose | Status |
 |----------|---------|--------|
 | [/docs/fostering-platform/README.md](/docs/fostering-platform/README.md) | Redirect → [fostering domain](/docs/domains/fostering/README.md) | Superseded |
-| [/docs/fostering-platform/g0-contract-pack.md](/docs/fostering-platform/g0-contract-pack.md) | Core fostering workflow contracts | Active |
-| [/docs/fostering-platform/j1-foster-onboarding.md](/docs/fostering-platform/j1-foster-onboarding.md) | Foster parent onboarding flow | Active |
-| [/docs/fostering-platform/migration-appendix.md](/docs/fostering-platform/migration-appendix.md) | Data migration guides | Active |
-| [/docs/fostering-platform/roadmap-delivery-plan.md](/docs/fostering-platform/roadmap-delivery-plan.md) | Fostering platform delivery timeline | Active |
-| [/docs/org-fostering-strategy.md](/docs/org-fostering-strategy.md) | Organization roles and permission matrix | Active |
+| [/docs/org-fostering-strategy.md](/docs/org-fostering-strategy.md) | Redirect → [fostering/changes/org-fostering-strategy.md](/docs/domains/fostering/changes/org-fostering-strategy.md) | Superseded |
+
+Fostering feature docs (g0, j1, migration appendix, roadmap) live under [/docs/domains/fostering/](/docs/domains/fostering/README.md).
 
 ### Experience Program
 
@@ -162,11 +160,12 @@ The **active** program for navigation reversal, Guardian dashboard, and Organisa
 | Document | Purpose | Status |
 |----------|---------|--------|
 | [/docs/github-issue-workflow.md](/docs/github-issue-workflow.md) | Issue lifecycle and triage | Active |
-| [/docs/technical-debt.md](/docs/technical-debt.md) | Product/infra deferrals (splitting → domains + deferred.md) | Active |
-| [/docs/refactoring-debt.md](/docs/refactoring-debt.md) | Refactoring uncertainty log | Active |
+| [/docs/technical-debt.md](/docs/technical-debt.md) | Legacy pointer → domain deferred + [/docs/deferred.md](/docs/deferred.md) | Active |
+| [/docs/refactoring-debt.md](/docs/refactoring-debt.md) | Cross-cutting refactor uncertainty log | Active |
 | [/docs/refactoring-log.md](/docs/refactoring-log.md) | Completed refactoring work | Active |
 | [/docs/plans/sprint-6-execution-plan.md](/docs/plans/sprint-6-execution-plan.md) | Sprint 6 deliverables | Active |
 | [/docs/plans/sprint-10-flutter-344-execution-plan.md](/docs/plans/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 upgrade plan | Active |
+| [/docs/plans/docs-domain-audit-63ad.md](/docs/plans/docs-domain-audit-63ad.md) | Full `.md` inventory audit (wave 3) | Active |
 | [/docs/ci-build-artifact-contract.md](/docs/ci-build-artifact-contract.md) | Build artifact specifications | Active |
 | [/docs/promotion-contract.md](/docs/promotion-contract.md) | UAT to PROD promotion rules | Active |
 | [/docs/db-schema-bootstrap-plan.md](/docs/db-schema-bootstrap-plan.md) | Database initialization | Active |
