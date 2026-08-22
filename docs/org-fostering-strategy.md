@@ -100,7 +100,7 @@ flowchart TB
 ### Increment 0 — Foundation ✓ merged
 
 - Email-only org invites in Flutter (no invite-code / join-by-code UI).
-- Document 501 stubs in `API.md`.
+- Document 501 stubs in `docs/api-reference.md`.
 
 ### Increment 1 — Three org roles ✓ in progress
 
@@ -155,7 +155,7 @@ flowchart TB
 
 ## API stubs (501)
 
-See `API.md` § Not implemented. Flutter must not call these from primary workflows.
+See `docs/api-reference.md` § Not implemented. Flutter must not call these from primary workflows.
 
 | Endpoint | Planned increment |
 |----------|-------------------|
