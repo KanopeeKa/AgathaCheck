@@ -1,3 +1,11 @@
+---
+title: Experience program decisions log
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [experience, decisions]
+---
 # Experience program — decisions log
 
 Single source of truth for **locked product decisions**. Other docs in this program reference

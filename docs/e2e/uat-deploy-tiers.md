@@ -1,3 +1,11 @@
+---
+title: UAT deploy tiers
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [e2e, uat, deploy]
+---
 # UAT deploy tiers
 
 Single source of truth for the UAT release pipeline (CI-driven, Jul 2026).

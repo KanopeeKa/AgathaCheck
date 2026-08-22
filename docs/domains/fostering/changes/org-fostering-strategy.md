@@ -1,3 +1,11 @@
+---
+title: Organisation fostering strategy
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [domain, fostering, plans]
+---
 # Organization & fostering — delivery strategy
 
 > **Docs reorg (2026-08):** Org **roles/permissions** → [/docs/domains/organization/features/org-roles-and-permissions.md](/docs/domains/organization/features/org-roles-and-permissions.md). Foster **placement lifecycle** → [/docs/domains/fostering/](/docs/domains/fostering/) (phase 4). Custody **data model** → [/docs/domains/organization/features/org-custody-model.md](/docs/domains/organization/features/org-custody-model.md).

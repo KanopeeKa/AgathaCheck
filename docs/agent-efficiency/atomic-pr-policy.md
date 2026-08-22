@@ -1,3 +1,11 @@
+---
+title: Atomic Pr Policy
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [agent-efficiency, policy]
+---
 # Atomic PR policy (canonical)
 
 Single source of truth for **one-outcome PRs**, **snag handling**, and **zero untracked debt**.

@@ -1,3 +1,11 @@
+---
+title: Execute Plan Schema
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [agent-efficiency, policy]
+---
 # Execute-plan snapshot schema (canonical)
 
 **Schema version:** 1  

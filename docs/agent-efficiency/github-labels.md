@@ -1,3 +1,11 @@
+---
+title: Github Labels
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [agent-efficiency, policy]
+---
 # GitHub labels — autonomous workflows
 
 Labels for `/execute-plan`, `/babysit-plus`, and debt tracking. Create in repo settings if missing (document-only in Phase A).

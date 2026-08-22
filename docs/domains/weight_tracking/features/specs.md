@@ -28,4 +28,4 @@ tags: [domain,weight_tracking,specs]
 
 ---
 
-*Stub — no dedicated architecture doc existed before domain-first reorg.*
+**Lessons:** [changes/lessons.md](../changes/lessons.md)

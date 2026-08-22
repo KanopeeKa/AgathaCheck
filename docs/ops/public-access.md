@@ -1,3 +1,11 @@
+---
+title: Public access rules
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [ops, public-access]
+---
 # Public access posture (canonical)
 
 **Single source of truth** for pre-launch and launch public access on Agatha Track hosting.

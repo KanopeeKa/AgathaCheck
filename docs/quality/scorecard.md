@@ -1,3 +1,11 @@
+---
+title: Quality scorecard
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [quality, metrics]
+---
 # Quality scorecard
 
 Living metrics for Agatha Track quality. Update when CI or test counts change materially.

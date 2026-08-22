@@ -1,3 +1,11 @@
+---
+title: Uat Coordinator Bootstrap
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [agent-efficiency, policy]
+---
 # UAT coordinator bootstrap (Phase 1b)
 
 **Outcome:** The deploy queue ledger is live — merges enqueue entries and `health-check` passes.

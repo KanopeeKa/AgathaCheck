@@ -1,3 +1,11 @@
+---
+title: Experience program contract
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [experience, contract]
+---
 # Experience program — platform contract
 
 **Status:** Locked baseline for delivery  

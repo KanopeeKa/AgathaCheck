@@ -1,3 +1,11 @@
+---
+title: UAT promote manual
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [e2e, uat, promotion]
+---
 # Manual UAT promote and deploy
 
 Human fallback when agent UAT babysit is unavailable, hit retry cap, or subagent died before remedial work.

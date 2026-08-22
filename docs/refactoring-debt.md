@@ -1,3 +1,11 @@
+---
+title: Refactoring debt tracker
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [debt, refactoring]
+---
 # Refactoring debt & deferred decisions
 
 Living tracker for modularization work, items parked for human review, and architectural decisions deferred during the domain-by-domain refactor.

@@ -1,3 +1,11 @@
+---
+title: Sprint 6 execution plan
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [plans, sprint, bdd]
+---
 # Sprint 6 — execution plan (remainder)
 
 **Status after 6.1:** 87/165 BDD scenarios mapped (52.7%). CI gate: 81 ✅  

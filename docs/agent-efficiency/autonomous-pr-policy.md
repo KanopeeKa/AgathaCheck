@@ -1,3 +1,11 @@
+---
+title: Autonomous Pr Policy
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [agent-efficiency, policy]
+---
 # Autonomous PR policy (canonical)
 
 Single source of truth for `/babysit`, `/babysit-plus`, and `/execute-plan`. Skills and commands **link here**; they do not restate full policy in different wording.

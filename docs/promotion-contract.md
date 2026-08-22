@@ -1,3 +1,11 @@
+---
+title: UAT promotion contract
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [uat, promotion]
+---
 # Promotion contract
 
 Canonical reference for **auto-promotion** on `KanopeeKa/AgathaCheck`: merge to

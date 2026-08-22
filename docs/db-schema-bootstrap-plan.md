@@ -1,3 +1,11 @@
+---
+title: Database schema bootstrap plan
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [database, bootstrap]
+---
 # Database schema bootstrap — phased plan
 
 **Status:** Phase 3 complete (fast bootstrap). Phases 4–5 tracked in execute-plan `db-schema-bootstrap-345`.  

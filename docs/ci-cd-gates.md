@@ -1,3 +1,11 @@
+---
+title: CI/CD gates
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [ci, gates]
+---
 # CI/CD gate contract
 
 Single source of truth for **blocking vs advisory** automation and PROD promotion

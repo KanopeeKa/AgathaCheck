@@ -1,3 +1,11 @@
+---
+title: Architecture index
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [architecture, index]
+---
 # Architecture index (agent quick-reference)
 
 Thin map for agents — read this **before** broad codebase search.  

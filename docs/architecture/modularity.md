@@ -1,3 +1,11 @@
+---
+title: Modularity conventions
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [architecture, modularity]
+---
 # Modularity & refactoring rules
 
 Conventions for Agatha Track to keep files small, testable, and aligned across

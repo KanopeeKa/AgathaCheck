@@ -1,3 +1,11 @@
+---
+title: Fostering G0 contract pack
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [domain, fostering, specs]
+---
 # G0 — Platform contract pack (fostering & adoption)
 
 **Status:** Draft baseline for agent handoff  
