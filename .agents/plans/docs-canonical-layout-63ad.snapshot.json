@@ -4,7 +4,7 @@
   "approved_at": "2026-08-23T14:15:00Z",
   "approved_by": "User chat 2026-08-23 — canonical docs layout approved; Replit redesign as design canonical",
   "approved_until": "2026-08-25T14:15:00Z",
-  "content_hash": "sha256:5cb2e96d0bcc0039df3f78dcc9b5128c85cff2436e903ec6731931eea4fa6101",
+  "content_hash": "sha256:c726357570a0c85799d3f2225d6d2cd01076b9bee63ce332e39ed08d5f319097",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/docs-canonical-layout-integration-63ad",
@@ -33,10 +33,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/725"
     },
     {
       "id": "2",
@@ -90,12 +91,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/727"
     },
     {
       "id": "4",
@@ -118,12 +118,10 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     },
     {
       "id": "5",
