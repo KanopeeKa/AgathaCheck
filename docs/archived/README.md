@@ -28,14 +28,14 @@ This directory contains documentation that:
 
 ## 📚 **Archived Documents**
 
-### Superseded by Experience Program
+### Superseded by navigation domain docs
 
-These documents have been replaced by the [Experience Program](../experience-program/README.md) documentation.
+These documents have been replaced by the [navigation domain](/docs/domains/navigation/README.md) and related domain decision docs.
 
 | Original Path | Archived Path | Replacement | Reason |
 |---------------|---------------|--------------|--------|
-| `docs/design/navigation-v2.md` | [navigation-v2.md](navigation-v2.md) | [experience-program/](../experience-program/) | Navigation redesign superseded |
-| `docs/experience-split-plan.md` | [experience-split-plan.md](experience-split-plan.md) | [experience-program/phase-r-reconciliation.md](../experience-program/phase-r-reconciliation.md) | Reconciled into Phase R |
+| `docs/design/navigation-v2.md` | [navigation-v2.md](navigation-v2.md) | [navigation domain](/docs/domains/navigation/README.md) | Navigation redesign superseded |
+| `docs/experience-split-plan.md` | [experience-split-plan.md](experience-split-plan.md) | [phase-r-reconciliation.md](/docs/domains/navigation/changes/phase-r-reconciliation.md) | Reconciled into Phase R |
 
 ### Point-in-Time Snapshots
 
@@ -116,7 +116,7 @@ When archiving a document, prepend the following header:
 ## 🔗 **Related Documentation**
 
 - [Master Documentation Index](../README.md)
-- [Experience Program](../experience-program/README.md) - Supersedes many archived docs
+- [Navigation domain](/docs/domains/navigation/README.md) - Supersedes many archived docs
 - [Refactoring Log](../refactoring-log.md) - Tracks changes including documentation updates
 
 ---

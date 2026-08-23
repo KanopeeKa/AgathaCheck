@@ -37,4 +37,4 @@ Notification rows served via `notification_remote_datasource`; preferences entit
 
 ---
 
-Contract detail: [/docs/experience-program/program-contract.md](/docs/experience-program/program-contract.md) §3
+Contract detail: [/docs/domains/cross-domain/changes/program-contract.md](/docs/domains/cross-domain/changes/program-contract.md) §3

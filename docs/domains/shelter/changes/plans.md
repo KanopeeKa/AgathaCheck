@@ -9,7 +9,7 @@ tags: [domain,organization,plans]
 
 # Organization — plans index
 
-Delivery plans relocated from `docs/experience-program/`.
+Delivery plans for the shelter domain.
 
 | Plan | Summary | Status | Source |
 |------|---------|--------|--------|
@@ -29,4 +29,4 @@ Delivery plans relocated from `docs/experience-program/`.
 
 Locked brief: [features/shelter-dashboard-brief.md](../features/shelter-dashboard-brief.md)
 
-Program decisions: [/docs/experience-program/decisions-log.md](/docs/experience-program/decisions-log.md)
+Program decisions: [shelter-decisions.md](../features/shelter-decisions.md) · Cross-domain index: [navigation README](/docs/domains/navigation/README.md#decision-index-split-from-experience-program-decisions-log)

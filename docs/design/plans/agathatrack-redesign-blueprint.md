@@ -12,7 +12,7 @@ tags: [design,ui,ux]
 
 **Purpose:** A screen-by-screen, decision-led blueprint for completing the AgathaTrack redesign without reopening locked product choices.
 
-**Read with:** `docs/experience-program/decisions-log.md`, `docs/design/tokens.md`, `docs/design/copy-tone.md`, and `docs/e2e-navigation-contract.md`.
+**Read with:** `docs/domains/navigation/README.md`, `docs/design/tokens.md`, `docs/design/copy-tone.md`, and `docs/e2e/navigation-contract.md`.
 
 ---
 
@@ -58,7 +58,7 @@ This blueprint implements the decisions below; it does not reinterpret them.
 | Landing/auth | One role-neutral entry path. Experience context resolves after authentication. | Do not ask users to choose Guardian/Shelter/Foster before sign-in. |
 | Branding | Organisations can personalise logo, name, and approved image surfaces only. | System colours, focus, danger, warning, success, and contrast remain product-controlled. |
 
-The governing decisions are D1–D11, D17–D18, D25–D37, D-v2-*, D-v3-*, and D-v4-* in the experience-program decisions log.
+The governing decisions are D1–D11, D17–D18, D25–D37, D-v2-*, D-v3-*, and D-v4-* in the domain decision docs indexed at `docs/domains/navigation/README.md`.
 
 ---
 

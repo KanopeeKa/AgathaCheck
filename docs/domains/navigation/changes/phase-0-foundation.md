@@ -8,7 +8,7 @@ tags: [experience,guardian,organisation]
 ---
 # Phase 0 — Foundation
 
-**Parent:** [`roadmap-delivery-plan.md`](roadmap-delivery-plan.md) · [`program-contract.md`](program-contract.md)
+**Parent:** [roadmap-delivery-plan.md](../../cross-domain/changes/roadmap-delivery-plan.md) · [program-contract.md](../../cross-domain/changes/program-contract.md)
 
 ## Purpose
 
