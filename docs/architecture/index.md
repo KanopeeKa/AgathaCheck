@@ -3,7 +3,7 @@ title: Architecture index
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-08-23
 tags: [architecture, index]
 ---
 # Architecture index (agent quick-reference)
@@ -26,8 +26,9 @@ Full conventions: `docs/architecture/modularity.md`.
 | Page objects | `e2e/playwright/pages/` | Reusable UI vocabulary |
 | E2E API helpers | `e2e/playwright/support/api.ts` | **Serialize edits** across agents |
 | Governance scripts | `scripts/` | file size, BDD gate, priority tags |
-| Calendar dates | `docs/calendar-dates.md` | `YYYY-MM-DD` wire format |
-| Design / UX | `docs/design/index.md` | Tiers, `ui-rework-plan.md`, `/ui-check`, `/ui-design-deep` |
+| Calendar dates | `docs/architecture/calendar-dates.md` | `YYYY-MM-DD` wire format |
+| API reference | `docs/architecture/api-reference.md` | REST endpoints |
+| Design / UX | `docs/design/index.md` | Tiers, `system.md`, `/ui-check`, `/ui-design-deep` |
 | Experience program (nav reversal, Guardian/Org rework) | `docs/experience-program/` | **Active** — supersedes `docs/design/navigation-v2.md`; read `decisions-log.md` first |
 
 ---

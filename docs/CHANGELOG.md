@@ -19,7 +19,7 @@ All notable changes to project documentation.
 - `scripts/add_metadata_headers.sh` for automated header management (PR #692)
 - `scripts/validate_docs.sh` for automated documentation validation
 - Metadata headers to all documentation files (PR #692)
-- `docs/api-reference.md` (moved from root API.md) (PR #693)
+- `docs/architecture/api-reference.md` (moved from root API.md) (PR #693)
 - `docs/CHANGELOG.md` for documentation change tracking
 
 ### Changed

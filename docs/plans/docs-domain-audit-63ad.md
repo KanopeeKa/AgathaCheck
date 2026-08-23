@@ -321,8 +321,8 @@ Full inventory of repository `.md` files (2026-08-22 wave 3). **Outcome:** waves
 ## platform-index (13)
 - docs/CHANGELOG.md
 - docs/README.md
-- docs/api-reference.md
-- docs/calendar-dates.md
+- docs/architecture/api-reference.md
+- docs/architecture/calendar-dates.md
 - docs/pipelines/ci-build-artifact-contract.md
 - docs/pipelines/ci-cd-baseline.md
 - docs/pipelines/ci-cd-gates.md

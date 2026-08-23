@@ -15,7 +15,7 @@ import 'package:pet_profile_app/features/weight_tracking/data/models/weight_entr
 import '../../helpers/calendar_date_field_expectations.dart';
 
 void main() {
-  group('calendar date field inventory (docs/calendar-dates.md)', () {
+  group('calendar date field inventory (docs/architecture/calendar-dates.md)', () {
     expectCalendarDateFieldBehavior(
       entity: 'PetModel',
       field: 'dateOfBirth',

@@ -22,10 +22,10 @@ Foundational documents that describe the project's architecture, setup, and work
 | Document | Purpose | Audience |
 |----------|---------|----------|
 | [/docs/architecture/index.md](/docs/architecture/index.md) | Domain map, tech stack, and code organization | Both |
-| [/API.md](/API.md) | REST endpoint reference (authoritative) | Both |
+| [/docs/architecture/api-reference.md](/docs/architecture/api-reference.md) | REST endpoint reference (authoritative) | Both |
+| [/docs/architecture/calendar-dates.md](/docs/architecture/calendar-dates.md) | `YYYY-MM-DD` wire format specification | Both |
 | [/docs/pipelines/ci-cd-baseline.md](/docs/pipelines/ci-cd-baseline.md) | Pipeline metrics and performance targets | Both |
 | [/docs/pipelines/ci-cd-gates.md](/docs/pipelines/ci-cd-gates.md) | Blocking vs advisory gates, UAT/PROD rules | Both |
-| [/docs/calendar-dates.md](/docs/calendar-dates.md) | `YYYY-MM-DD` wire format specification | Both |
 
 ---
 
