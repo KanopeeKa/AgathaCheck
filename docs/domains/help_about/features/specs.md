@@ -27,3 +27,7 @@ User-facing legal text also ships in `flutter_app/assets/legal/` (EN/FR) and `re
 ## Copy debt
 
 FAQ strings may still reference legacy nav patterns (top-bar bell wording) — update after navigation shell migration completes.
+
+## Localization
+
+FAQ strings live in ARB. When editing enums tied to help copy, follow [.agents/memory/localization-enum-labels.md](/.agents/memory/localization-enum-labels.md).
