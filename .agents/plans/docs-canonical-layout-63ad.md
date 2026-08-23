@@ -74,7 +74,7 @@ Extend `validate_docs.sh` / CI: doc placement, no hex outside tokens, feature ma
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: completed
 current_phase: null
 last_completed_phase: 9
 halt_reason: null
@@ -82,9 +82,9 @@ next_action: "plan complete"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/docs-canonical-layout-63ad.md
-  plan_commit: 24cb0dfca74328c1075e7210b38b9775394d3807
+  plan_commit: ad82e940c599cd7158e423810e73c660515180d4
   snapshot_path: .agents/plans/docs-canonical-layout-63ad.snapshot.json
-  snapshot_commit: 24cb0dfca74328c1075e7210b38b9775394d3807
+  snapshot_commit: ad82e940c599cd7158e423810e73c660515180d4
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
