@@ -12,7 +12,7 @@ tags: [design,ui,ux]
 
 **Purpose:** A screen-by-screen, decision-led blueprint for completing the AgathaTrack redesign without reopening locked product choices.
 
-**Read with:** `docs/experience-program/decisions-log.md`, `docs/design/tokens.md`, `docs/design/copy-tone.md`, and `docs/e2e/navigation-contract.md`.
+**Read with:** `docs/experience-program/decisions-log.md`, `docs/design/tokens.md`, `docs/design/copy-tone.md`, and `docs/e2e-navigation-contract.md`.
 
 ---
 

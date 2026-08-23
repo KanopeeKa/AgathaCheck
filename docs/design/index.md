@@ -41,14 +41,19 @@ Copy patterns from these — do not invent parallel styles:
 
 ## Approved landing/auth direction
 
-The reviewed landing direction is the **AgathaTrack Operations Desk** treatment:
+The reviewed landing direction is the **AgathaTrack Care Desk** treatment:
 
-- Calm deep olive story panel, warm-paper auth surface, muted gold accent, and the approved protective shelter arch mark.
+- Warm-paper auth surface, Guardian-plum primary action, cooler Shelter-teal
+  photographic story surface, and the approved protective arch mark.
 - A short shelter/foster-team message is supporting context, not an audience gate.
-- Authentication is role-neutral: the landing page offers sign-in/create-account only. Guardian, shelter, organisation, and other care contexts are resolved inside the authenticated app.
+- Authentication is role-neutral: the landing page offers sign-in/create-account only. Guardian, Shelter, and other care contexts are resolved inside the authenticated app.
 - Preserve the existing email/password, password visibility, forgot-password, validation, localization, accessibility, and native web password-manager behavior when this direction is integrated.
 
-The live reference is `artifacts/mockup-sandbox-live/src/components/mockups/landing-auth/GuardianDesk.tsx`; the approved static preview is `shape:guardian-care-landing-static` on the canvas. The expanded palette, typography, layout, and interaction roles live in `tokens.md`. This is a landing-direction decision, not a replacement of the current global Flutter tokens until production integration is explicitly implemented.
+The approved static preview is `shape:guardian-care-landing-static` on the
+canvas. Its companion source files are the plum/teal landing image and logo
+board in `attached_assets/`. The older olive/gold `GuardianDesk.tsx` mockup is
+historical only. The expanded palette, typography, layout, and interaction
+roles live in `DESIGN_SYSTEM.md` and `tokens.md`.
 
 ## Phased UI refactor (only when explicitly requested)
 

@@ -1,5 +1,5 @@
 ---
-title: Copy tone and org branding
+title: Copy tone and Shelter branding
 owner: Documentation Team
 audience: both
 status: active
@@ -45,11 +45,13 @@ All user-facing strings belong in ARB/l10n. Localize enum `.label` when touched 
   gates. The form should make the next action obvious: sign in or create an
   account.
 
-## Org branding
+## Shelter branding
 
-Orgs may customize **logo, name, and photo** via `organization_branding_section.dart` and related APIs.
+Shelters may customize **logo, name, and photo** via
+`organization_branding_section.dart` and related APIs. Technical
+`organization` identifiers remain unchanged until a dedicated migration.
 
-**Orgs must not override (system-locked):**
+**Shelters must not override (system-locked):**
 
 - Error, warning, success, and danger colors
 - Focus indicators and focus visibility
@@ -58,4 +60,4 @@ Orgs may customize **logo, name, and photo** via `organization_branding_section.
 
 **Accent:** org-specific tints may appear on avatars, chips, or headers only where the feature already supports it. If an org color fails WCAG AA contrast on its surface, fall back to `colorScheme` tokens.
 
-**Rule:** one product — org branding personalizes identity, not the interaction system.
+**Rule:** one product — Shelter branding personalizes identity, not the interaction system.

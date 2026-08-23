@@ -20,7 +20,7 @@ Widget _wrap(Widget child) {
 }
 
 void main() {
-  testWidgets('landing branding presents the role-neutral operations desk', (
+  testWidgets('landing branding presents a role-neutral care story', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -37,11 +37,15 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('THE GUARDIAN OPERATIONS DESK'), findsOneWidget);
+    expect(find.text('CARE COORDINATION, THOUGHTFULLY KEPT.'), findsOneWidget);
     expect(find.text('Keep care close.\nKeep everyone ready.'), findsOneWidget);
     expect(find.text('Today at a glance'), findsOneWidget);
     expect(find.text('Clear handovers'), findsOneWidget);
     expect(find.text('Private by design'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('Care coordination, thoughtfully kept.'),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('landing_guardian_path_card')), findsNothing);
     expect(find.byKey(const Key('landing_org_path_card')), findsNothing);
   });

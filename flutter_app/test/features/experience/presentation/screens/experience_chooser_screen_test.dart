@@ -28,7 +28,7 @@ void main() {
     expect(find.byKey(const Key('ftue_action_track_pets')), findsOneWidget);
     expect(find.byKey(const Key('ftue_action_run_shelter')), findsOneWidget);
     expect(find.byKey(const Key('ftue_action_fostering')), findsOneWidget);
-    expect(find.text('Welcome to Agatha Track'), findsOneWidget);
+    expect(find.text('Welcome to AgathaTrack'), findsOneWidget);
   });
 
   testWidgets('fostering action opens optional code dialog', (tester) async {

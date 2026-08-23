@@ -128,7 +128,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Date of Birth'), findsOneWidget);
-    expect(find.text('Joined Agatha Track'), findsOneWidget);
+    expect(find.text('Joined AgathaTrack'), findsOneWidget);
     expect(find.text('Guardian: Jane Doe'), findsOneWidget);
     expect(find.text('2020-03-15'), findsOneWidget);
     expect(find.text('2024-01-10'), findsOneWidget);

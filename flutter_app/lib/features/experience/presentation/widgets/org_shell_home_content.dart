@@ -24,8 +24,8 @@ class OrgShellHomeContent extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => _OrgHubMessage(
         icon: Icons.error_outline,
-        title: l.orgNoOrganizations,
-        detail: '$e',
+        title: l.orgLoadErrorTitle,
+        detail: l.orgLoadError,
         action: TextButton(
           onPressed: () => ref.invalidate(organizationListProvider),
           child: Text(l.retry),

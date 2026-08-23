@@ -22,7 +22,7 @@ class AppTheme {
   static const Color orgCharityBadgeBg = AppColorTokens.organizationLight;
   static const Color orgCharityBadgeFg = AppColorTokens.organizationPrimary;
   static const Color orgSuperUserBg = AppColorTokens.warmAccentLight;
-  static const Color orgSuperUserFg = Color(0xFF8B5E4A);
+  static const Color orgSuperUserFg = AppColorTokens.warmAccentText;
   static const Color orgChipBg = AppColorTokens.organizationLight;
   static const Color orgChipFg = AppColorTokens.organizationPrimary;
 
@@ -48,7 +48,7 @@ class AppTheme {
       onSurfaceVariant: AppColorTokens.muted,
       outline: AppColorTokens.border,
       outlineVariant: AppColorTokens.borderStrong,
-      shadow: Color(0x142D3338),
+      shadow: AppColorTokens.shadow,
       surfaceContainerHighest: AppColorTokens.surfaceAlt,
       surfaceContainerHigh: AppColorTokens.surfaceAlt,
       surfaceContainer: AppColorTokens.surface,

@@ -1,3 +1,8 @@
-<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="180" height="180" rx="36" fill="#FF3C00"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">AgathaTrack protective pet arch</title>
+  <path d="M25 96V58c0-24 17-40 39-40s39 16 39 40v38"
+        fill="none" stroke="#755B68" stroke-linecap="round" stroke-linejoin="round" stroke-width="12"/>
+  <path fill="#755B68" d="M39 93c0-14 3-25 11-31l-2-12 10 7c2-2 5-2 7 0l9-7-2 12c8 6 11 17 11 31H39Zm16-29c-2 0-4 2-4 5s2 5 4 5 4-2 4-5-2-5-4-5Zm12 0c-2 0-4 2-4 5s2 5 4 5 4-2 4-5-2-5-4-5Z"/>
+  <path fill="#1D7C84" d="M76 94c0-14 2-25 10-31l-2-14 10 8 10-8-2 14c8 6 10 17 10 31H76Zm14-31c-2 0-4 2-4 4s2 4 4 4 4-2 4-4-2-4-4-4Zm8 0c-2 0-4 2-4 4s2 4 4 4 4-2 4-4-2-4-4-4Z"/>
+  <path d="M88 75c3 3 7 3 10 0" fill="none" stroke="#FFFDF8" stroke-linecap="round" stroke-width="2.5"/>
 </svg>

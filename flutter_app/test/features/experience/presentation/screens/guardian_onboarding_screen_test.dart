@@ -31,6 +31,6 @@ void main() {
       findsOneWidget,
     );
     expect(find.byKey(const Key('guardian_onboarding_skip')), findsOneWidget);
-    expect(find.text('Welcome to Agatha Track'), findsOneWidget);
+    expect(find.text('Welcome to AgathaTrack'), findsOneWidget);
   });
 }

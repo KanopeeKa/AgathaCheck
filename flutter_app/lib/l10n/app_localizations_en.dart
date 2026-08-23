@@ -9,25 +9,25 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Agatha Track';
+  String get appTitle => 'AgathaTrack';
 
   @override
-  String get agathaCheckLogo => 'Agatha Track logo';
+  String get agathaCheckLogo => 'AgathaTrack logo';
 
   @override
   String get appTagline =>
-      'Agatha Track keeps your pet\'s health organised — whether you\'re a pet parent, a shelter, or a professional organisation.';
+      'AgathaTrack keeps your pet\'s health organised — whether you care at home, in a shelter, or as part of a team.';
 
   @override
   String get appDescription =>
-      'Track vet visits, medications, weight, and daily care in one simple dashboard. Create organisations to collaborate with your team, share pets, and coordinate care across your entire network.';
+      'Track vet visits, medications, weight, and daily care in one calm dashboard. Keep people, pets, and next steps connected wherever care happens.';
 
   @override
   String get appCta =>
       'Log in to pick up where you left off, or create a free account to start keeping your pet\'s health history safe and accessible anytime.';
 
   @override
-  String get landingDeskEyebrow => 'The Guardian Operations Desk';
+  String get landingDeskEyebrow => 'Care coordination, thoughtfully kept.';
 
   @override
   String get landingDeskHeadline => 'Keep care close.\nKeep everyone ready.';
@@ -1280,7 +1280,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get subscriptionTitle => 'Subscription';
 
   @override
-  String get welcomeUnlimited => 'Welcome to Agatha Track Unlimited!';
+  String get welcomeUnlimited => 'Welcome to AgathaTrack Unlimited!';
 
   @override
   String purchaseFailed(String error) {
@@ -1442,7 +1442,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String pdfGeneratedBy(String date) {
-    return 'Generated $date by Agatha Track';
+    return 'Generated $date by AgathaTrack';
   }
 
   @override
@@ -1475,7 +1475,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pdfReportTitle => 'Pet Health Report';
 
   @override
-  String get pdfAgathaCheck => 'AGATHA TRACK';
+  String get pdfAgathaCheck => 'AGATHATRACK';
 
   @override
   String get pdfPetProfileSection => 'Pet Profile';
@@ -1854,6 +1854,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orgNoOrganizations => 'No organisations yet';
+
+  @override
+  String get orgLoadErrorTitle => 'We couldn’t load your shelters';
+
+  @override
+  String get orgLoadError =>
+      'We couldn’t load your shelters. Please try again.';
 
   @override
   String get orgCreateFirst => 'Create your first organisation to get started';
@@ -3329,7 +3336,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpSubtitle =>
-      'Find answers to common questions about every feature in Agatha Track.';
+      'Find answers to common questions about every feature in AgathaTrack.';
 
   @override
   String get faqAccountTitle => 'Account & Authentication';
@@ -3657,11 +3664,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get faqSubscriptionTitle => 'Subscription';
 
   @override
-  String get faqSubscriptionQ1 => 'Is Agatha Track free to use?';
+  String get faqSubscriptionQ1 => 'Is AgathaTrack free to use?';
 
   @override
   String get faqSubscriptionA1 =>
-      'Agatha Track offers a free tier with core features. An optional premium subscription unlocks additional capabilities and removes limits. Visit the Subscription page from My Details to learn more.';
+      'AgathaTrack offers a free tier with core features. An optional premium subscription unlocks additional capabilities and removes limits. Visit the Subscription page from My Details to learn more.';
 
   @override
   String get faqSubscriptionQ2 => 'How do I subscribe?';
@@ -3692,14 +3699,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqLanguageA2 =>
-      'Yes. Agatha Track includes accessibility features throughout: semantic labels for screen readers, tooltips on all interactive elements, proper form field labelling, and keyboard navigation support.';
+      'Yes. AgathaTrack includes accessibility features throughout: semantic labels for screen readers, tooltips on all interactive elements, proper form field labelling, and keyboard navigation support.';
 
   @override
   String get consentBannerTitle => 'Your Privacy Matters';
 
   @override
   String get consentBannerMessage =>
-      'We use essential cookies and services to make Agatha Track work. We\'d also like to set optional cookies for analytics and marketing to improve your experience. You can manage your preferences at any time.';
+      'We use essential cookies and services to make AgathaTrack work. We\'d also like to set optional cookies for analytics and marketing to improve your experience. You can manage your preferences at any time.';
 
   @override
   String get consentAcceptAll => 'Accept All';
@@ -3733,7 +3740,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get consentMarketingDescription =>
-      'Allows us to send you relevant updates and offers about Agatha Track features and services.';
+      'Allows us to send you relevant updates and offers about AgathaTrack features and services.';
 
   @override
   String get consentSavePreferences => 'Save Preferences';
@@ -3751,7 +3758,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutIntro =>
-      'Agatha Track helps pet guardians and organisations keep their animals\' health organised. Track vet visits, medications, weight, and daily care — whether you manage one pet or coordinate across a whole team.';
+      'AgathaTrack helps pet guardians and shelters keep their animals\' health organised. Track vet visits, medications, weight, and daily care — whether you manage one pet or coordinate across a whole team.';
 
   @override
   String get privacyPolicy => 'Privacy Notice';
@@ -3764,7 +3771,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get legalDocumentsIntro =>
-      'Review our legal documents for information about how Agatha Track operates, how we handle personal data, and your rights.';
+      'Review our legal documents for information about how AgathaTrack operates, how we handle personal data, and your rights.';
 
   @override
   String get legalNotice => 'Legal Notice';
@@ -4237,14 +4244,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get continueButton => 'Continue';
 
   @override
-  String get experienceChooserTitle => 'How will you use Agatha Track?';
+  String get experienceChooserTitle => 'How will you use AgathaTrack?';
 
   @override
   String get experienceChooserSubtitle =>
       'Choose the experience that fits what you need today.';
 
   @override
-  String get ftueTitle => 'Welcome to Agatha Track';
+  String get ftueTitle => 'Welcome to AgathaTrack';
 
   @override
   String get ftueSubtitle => 'What would you like to do first?';
@@ -4426,7 +4433,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get guardianOnboardingSkip => 'Skip for now';
 
   @override
-  String get guardianOnboardingWelcomeTitle => 'Welcome to Agatha Track';
+  String get guardianOnboardingWelcomeTitle => 'Welcome to AgathaTrack';
 
   @override
   String get guardianOnboardingWelcomeBody =>

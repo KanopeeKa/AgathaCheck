@@ -1,6 +1,6 @@
-/** Shared Agatha Track branding for transactional emails. */
+/** Shared AgathaTrack branding for transactional emails. */
 
-export const APP_NAME = 'Agatha Track';
+export const APP_NAME = 'AgathaTrack';
 export const PRIMARY_COLOR = '#755B68';
 export const PRIMARY_COLOR_HOVER = '#664C59';
 export const LOGO_CID = 'agatha-logo';

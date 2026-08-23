@@ -17,7 +17,7 @@ function escapeHtml(value) {
 }
 
 /**
- * Wrap transactional email body HTML in a shared Agatha Track layout.
+ * Wrap transactional email body HTML in a shared AgathaTrack layout.
  *
  * @param {object} options
  * @param {string} options.title - Main heading shown in the email body.
