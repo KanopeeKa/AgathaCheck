@@ -168,7 +168,7 @@ file-split
 |-------|-------|
 | **spawn_allowed** | `true` |
 | **integration_branch** | `cursor/ux-overhaul-integration-13e3` |
-| **ownership_ref** | `docs/refactoring-log.md#ux-overhaul` |
+| **ownership_ref** | `docs/debt/refactoring-log.md#ux-overhaul` |
 
 ## Runtime state
 

@@ -38,7 +38,7 @@ const FORBIDDEN_ACTIONS = [
   'run production deployments',
   'apply database migrations',
   'modify authentication, billing, or permissions code',
-  'weaken CI gates to pass (see docs/ci-cd-gates.md)',
+  'weaken CI gates to pass (see docs/pipelines/ci-cd-gates.md)',
 ];
 
 function issueHasBlockingLabels(labels) {

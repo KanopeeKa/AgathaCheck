@@ -13,7 +13,7 @@ tags: [agent-efficiency, policy]
 **Status:** ~~Phase 1–2 merged (#281, #307); **Phase 1b bootstrap in progress**; Phase 3 not started~~ **Removed Jul 2026**  
 **Soak:** Jul 23 2026 — 50 deploy runs, 26% success; see [§Jul 23 soak review](#jul-23-soak-review)  
 **Owner track:** Agent efficiency + CI/CD reliability  
-**Related:** [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Post-merge UAT, [e2e-ci-canary-plan.md](../e2e-ci-canary-plan.md) Phase 5, [promotion-contract.md](../promotion-contract.md), [github-issue-workflow.md](../github-issue-workflow.md)  
+**Related:** [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Post-merge UAT, [e2e-ci-canary-plan.md](../pipelines/e2e-ci-canary-plan.md) Phase 5, [promotion-contract.md](../pipelines/promotion-contract.md), [github-issue-workflow.md](../github-issue-workflow.md)  
 **Supersedes (when implemented):** per-merge Task sub-agents in babysit-plus §8; per-plan-only UAT watch ledgers
 
 ---
@@ -371,7 +371,7 @@ Addresses Jul 23 queue pile-up. **Not in original plan; required for merge-rate 
 | `UAT_DEPLOY_CADENCE_ENABLED` | `true` | Set `false` to promote on every merge (legacy) |
 | `UAT_CANCEL_IN_PROGRESS` | `false` | Cancel stale queued deploys (freshness over audit) |
 
-**Trade-off:** Skipping promote delays UAT for held merges but saves ~45–60 min × N doomed runs. Aligns with [promotion-contract.md](../promotion-contract.md) §Concurrency optional freshness mode.
+**Trade-off:** Skipping promote delays UAT for held merges but saves ~45–60 min × N doomed runs. Aligns with [promotion-contract.md](../pipelines/promotion-contract.md) §Concurrency optional freshness mode.
 
 **Exit:** 5 rapid merges with head failure → ≤2 deploy runs start (not 5).
 
@@ -570,7 +570,7 @@ See `docs/e2e/uat-waf-queue-lessons.md` §10 and operator cheat sheet.
 
 ## References
 
-- `docs/promotion-contract.md` §Concurrency
+- `docs/pipelines/promotion-contract.md` §Concurrency
 - `.github/scripts/issue-agent-handlers.js`
 - `.github/workflows/deploy-uat.yml` — `agent-uat-notify`
 - `.cursor/skills/babysit-plus/SKILL.md` §8

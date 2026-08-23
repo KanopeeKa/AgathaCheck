@@ -86,7 +86,7 @@ One **execute-plan per journey wave** (48h autonomy window each). Multi-phase pl
 
 ## Sprint ownership map (Wave B example — after J1 Ph3)
 
-Publish before spawning parallel agents (`docs/refactoring-log.md` §Fostering platform).
+Publish before spawning parallel agents (`docs/debt/refactoring-log.md` §Fostering platform).
 
 | Agent | Branch suffix | Owns | Avoid |
 |-------|---------------|------|-------|

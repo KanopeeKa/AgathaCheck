@@ -29,7 +29,7 @@ Full inventory of repository `.md` files (2026-08-22 wave 3). **Outcome:** waves
 ## Wave 3 actions
 
 1. Migrate domain-scoped debt rows from `technical-debt.md` / `refactoring-debt.md` into `docs/domains/*/changes/deferred.md`.
-2. Trim legacy debt files to pointers + changelog (dedupe with `docs/deferred.md`).
+2. Trim legacy debt files to pointers + changelog (dedupe with `docs/debt/deferred.md`).
 3. Fix `docs/README.md` fostering-platform table (only redirect README remains).
 4. Fix organisation dashboard brief links to domain `changes/` paths.
 
@@ -38,15 +38,15 @@ Full inventory of repository `.md` files (2026-08-22 wave 3). **Outcome:** waves
 | Path | Reason to keep |
 |------|----------------|
 | `docs/design/skin-change-guide.md` | Whole-app palette swap (`app_color_tokens.dart`); org teal is one consumer |
-| `docs/e2e-navigation-contract.md` | Cross-cutting Playwright contract; 15+ inbound links |
-| `docs/e2e-ci-canary-plan.md` | Cross-cutting CI initiative; linked from `ci-cd-gates.md` |
+| `docs/e2e/navigation-contract.md` | Cross-cutting Playwright contract; 15+ inbound links |
+| `docs/pipelines/e2e-ci-canary-plan.md` | Cross-cutting CI initiative; linked from `ci-cd-gates.md` |
 | `docs/experience-program/*` (non-stub) | Program-level decisions, roadmap, phases 0–1, reconciliation |
 | `.agents/plans/*`, `.agents/memory/*` | Policy: link-out only, never physical move |
 
 ## Full inventory by category
 
 ## agent-efficiency (12)
-- docs/agent-efficiency-plan.md
+- docs/agent-efficiency/plans/agent-efficiency-plan.md
 - docs/agent-efficiency/atomic-pr-policy.md
 - docs/agent-efficiency/autonomous-pr-policy.md
 - docs/agent-efficiency/execute-plan-runtime.md
@@ -157,9 +157,9 @@ Full inventory of repository `.md` files (2026-08-22 wave 3). **Outcome:** waves
 - server/routes/pets/README.md
 
 ## debt-index (3)
-- docs/deferred.md
-- docs/refactoring-debt.md
-- docs/technical-debt.md
+- docs/debt/deferred.md
+- docs/debt/refactoring-debt.md
+- docs/debt/technical-debt.md
 
 ## design (7)
 - docs/design/agathatrack-redesign-blueprint.md
@@ -264,8 +264,8 @@ Full inventory of repository `.md` files (2026-08-22 wave 3). **Outcome:** waves
 - docs/domains/weight_tracking/features/specs.md
 
 ## e2e-ops (9)
-- docs/e2e-ci-canary-plan.md
-- docs/e2e-navigation-contract.md
+- docs/pipelines/e2e-ci-canary-plan.md
+- docs/e2e/navigation-contract.md
 - docs/e2e/uat-agent-babysit.md
 - docs/e2e/uat-demo-data.md
 - docs/e2e/uat-demo-personas.md
@@ -323,15 +323,15 @@ Full inventory of repository `.md` files (2026-08-22 wave 3). **Outcome:** waves
 - docs/README.md
 - docs/api-reference.md
 - docs/calendar-dates.md
-- docs/ci-build-artifact-contract.md
-- docs/ci-cd-baseline.md
-- docs/ci-cd-gates.md
-- docs/db-schema-bootstrap-plan.md
-- docs/github-issue-workflow.md
-- docs/observability.md
-- docs/promotion-contract.md
-- docs/refactoring-log.md
-- docs/uat-backend-node-modules-runbook.md
+- docs/pipelines/ci-build-artifact-contract.md
+- docs/pipelines/ci-cd-baseline.md
+- docs/pipelines/ci-cd-gates.md
+- docs/pipelines/db-schema-bootstrap-plan.md
+- docs/agent-efficiency/github-issue-workflow.md
+- docs/ops/observability.md
+- docs/pipelines/promotion-contract.md
+- docs/debt/refactoring-log.md
+- docs/pipelines/uat-backend-node-modules-runbook.md
 
 ## quality (2)
 - docs/quality/bdd-journey-matrix.md

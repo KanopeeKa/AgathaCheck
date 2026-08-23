@@ -42,7 +42,7 @@ Standing grant: user chat "go ahead with the plan and sequenced suggestions /exe
 
 ```
 e2e/playwright/**
-docs/e2e-navigation-contract.md
+docs/e2e/navigation-contract.md
 .agents/plans/e2e-flutter344-uat-unblock-5641.*
 ```
 

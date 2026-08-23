@@ -31,7 +31,7 @@ On o2switch / CloudLinux, **do not** run bare `npm install` in the application r
 
 Use **cPanel → Setup Node.js App → Run NPM Install** (creates `backend/node_modules` as a symlink into `~/nodevenv/...`).
 
-See `docs/uat-backend-node-modules-runbook.md` for recovery steps and forbidden commands.
+See `docs/pipelines/uat-backend-node-modules-runbook.md` for recovery steps and forbidden commands.
 
 ### 2. **Verify Database Migration**
 The schema is managed by the Node.js migration runner (`server/scripts/migrate.js`) and the canonical schema file `db/migrations/v3__initial_uuid_schema.sql` (19 application tables + a `_migrations` tracker, all UUID-keyed).

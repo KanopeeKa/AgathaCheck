@@ -91,8 +91,8 @@ Add tests **before or during** extraction, not after.
 ## Documentation
 
 - Update `docs/api-reference.md` only when wire format changes.
-- Park deferrals in `docs/refactoring-debt.md`.
-- Product/infra deferrals stay in `docs/technical-debt.md`.
+- Park deferrals in `docs/debt/refactoring-debt.md`.
+- Product/infra deferrals stay in `docs/debt/technical-debt.md`.
 
 ---
 

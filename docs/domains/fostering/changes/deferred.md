@@ -11,4 +11,4 @@ tags: [domain,fostering,deferred]
 
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| Extend `audit_events` to foster placement routes | P2 | Medium | Part of cross-cutting audit logging — see `docs/deferred.md` |
+| Extend `audit_events` to foster placement routes | P2 | Medium | Part of cross-cutting audit logging — see `docs/debt/deferred.md` |

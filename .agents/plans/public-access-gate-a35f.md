@@ -50,7 +50,7 @@ Teaser deploy path is **perishable** (documented removal after launch). Enabling
 ```
 public/coming-soon/**
 docs/ops/public-access.md
-docs/refactoring-log.md
+docs/debt/refactoring-log.md
 .agents/memory/public-access-gate.md
 .agents/plans/public-access-gate-a35f.*
 e2e/playwright/support/hosting.ts
@@ -147,7 +147,7 @@ scripts/prod-post-deploy-smoke.sh
 scripts/ci/prod-post-deploy-smoke.test.js
 scripts/ci/public-access-smoke-lib.sh
 docs/ops/public-access.md
-docs/promotion-contract.md
+docs/pipelines/promotion-contract.md
 .agents/plans/public-access-gate-a35f.*
 ```
 

@@ -407,7 +407,7 @@ details. Title: **Foster onboarding status**. Shown when person has foster relat
 - [ ] Checkmark-in-disc for completed steps
 - [ ] Org staff can confirm/override any step
 - [ ] Deferred steps visible with placeholder copy
-- [ ] Open questions documented in `docs/refactoring-debt.md` for missing form/home-visit/agreement data
+- [ ] Open questions documented in `docs/debt/refactoring-debt.md` for missing form/home-visit/agreement data
 
 ---
 

@@ -225,7 +225,7 @@ every grant/revoke with actor + timestamp.
 3. **Sequential:** 3 → 4 → 5 (each depends on the prior phase's schema/permission work)
 
 **Never parallelize within a phase without an explicit ownership map** (`agent-coordination.mdc`)
-— if Phase 3 is split, publish the ownership map in `docs/refactoring-log.md` before spawning.
+— if Phase 3 is split, publish the ownership map in `docs/debt/refactoring-log.md` before spawning.
 
 ---
 

@@ -172,7 +172,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             if [ "${{ inputs.allow_unverified_deploy }}" = "true" ]; then
               echo "::warning::allow_unverified_deploy=true — proceeding without SSH invariant (emergency bypass)."
-              echo "::warning::See docs/uat-backend-node-modules-runbook.md — required follow-up checks and owner sign-off apply."
+              echo "::warning::See docs/pipelines/uat-backend-node-modules-runbook.md — required follow-up checks and owner sign-off apply."
               exit 0
             fi
             echo "::error::Manual UAT deploy requires SSH invariant enforcement."
@@ -297,7 +297,7 @@ jobs:
           CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
           CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
           APP_DOMAIN: uat.agathatrack.com
-          # Never bare npm on UAT — o2switch uses nodevenv symlinks (see docs/uat-backend-node-modules-runbook.md).
+          # Never bare npm on UAT — o2switch uses nodevenv symlinks (see docs/pipelines/uat-backend-node-modules-runbook.md).
           NPM_INSTALL: false
         run: bash scripts/cpanel-restart-app.sh
 

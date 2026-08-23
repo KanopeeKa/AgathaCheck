@@ -172,7 +172,7 @@
       "branch": "cursor/experience-org-presentation-36bd",
       "allowed_paths": [
         "docs/experience-program/**",
-        "docs/refactoring-log.md",
+        "docs/debt/refactoring-log.md",
         "db/migrations/**",
         "db/schema/canonical.sql",
         "server/routes/organizations/**",
@@ -197,7 +197,7 @@
       "spawn_allowed": true,
       "spawn_config": {
         "integration_branch": "cursor/sprint-exp-org-presentation-integration-36bd",
-        "ownership_ref": "docs/refactoring-log.md#experience-program-phase-3"
+        "ownership_ref": "docs/debt/refactoring-log.md#experience-program-phase-3"
       },
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",

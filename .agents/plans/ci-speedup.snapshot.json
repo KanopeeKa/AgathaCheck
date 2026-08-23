@@ -52,7 +52,7 @@
         ".github/workflows/ci.yml",
         ".github/workflows/_reusable-ci-gate.yml",
         "scripts/ci/assert-ci-gate.sh",
-        "docs/ci-cd-gates.md",
+        "docs/pipelines/ci-cd-gates.md",
         ".agents/plans/**"
       ],
       "forbidden_paths": [
@@ -86,7 +86,7 @@
         ".github/workflows/ci.yml",
         "scripts/ci/assert-ci-gate.sh",
         ".github/workflows/_reusable-ci-gate.yml",
-        "docs/ci-cd-gates.md",
+        "docs/pipelines/ci-cd-gates.md",
         "scripts/ci/ci-scope.test.js",
         ".agents/plans/**"
       ],
@@ -116,7 +116,7 @@
       "allowed_paths": [
         ".github/workflows/**",
         "scripts/ci/**",
-        "docs/ci-cd-gates.md",
+        "docs/pipelines/ci-cd-gates.md",
         "scripts/pre-push-changed.sh",
         ".agents/plans/**"
       ],

@@ -35,7 +35,7 @@
       "spawn_allowed": true,
       "spawn_config": {
         "integration_branch": "cursor/ux-overhaul-integration-13e3",
-        "ownership_ref": "docs/refactoring-log.md#ux-overhaul"
+        "ownership_ref": "docs/debt/refactoring-log.md#ux-overhaul"
       },
       "exit_checklist": "default",
       "status": "merged",
@@ -67,7 +67,7 @@
       "spawn_allowed": true,
       "spawn_config": {
         "integration_branch": "cursor/ux-overhaul-integration-13e3",
-        "ownership_ref": "docs/refactoring-log.md#ux-overhaul"
+        "ownership_ref": "docs/debt/refactoring-log.md#ux-overhaul"
       },
       "exit_checklist": "default",
       "status": "merged",

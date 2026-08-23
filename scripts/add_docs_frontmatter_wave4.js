@@ -19,19 +19,19 @@ const FILE_META = {
     title: 'Sprint 10 Flutter 3.44 execution plan',
     tags: ['plans', 'sprint', 'flutter'],
   },
-  'docs/agent-efficiency-plan.md': {
+  'docs/agent-efficiency/plans/agent-efficiency-plan.md': {
     title: 'Agent efficiency plan',
     tags: ['agent', 'workflow'],
   },
-  'docs/refactoring-log.md': {
+  'docs/debt/refactoring-log.md': {
     title: 'Refactoring log',
     tags: ['refactoring', 'sprint'],
   },
-  'docs/refactoring-debt.md': {
+  'docs/debt/refactoring-debt.md': {
     title: 'Refactoring debt tracker',
     tags: ['debt', 'refactoring'],
   },
-  'docs/technical-debt.md': {
+  'docs/debt/technical-debt.md': {
     title: 'Technical debt index',
     tags: ['debt', 'technical'],
   },
@@ -39,28 +39,28 @@ const FILE_META = {
     title: 'API reference (docs index)',
     tags: ['api', 'reference'],
   },
-  'docs/ci-cd-gates.md': {
+  'docs/pipelines/ci-cd-gates.md': {
     title: 'CI/CD gates',
     tags: ['ci', 'gates'],
   },
-  'docs/ci-cd-baseline.md': {
+  'docs/pipelines/ci-cd-baseline.md': {
     title: 'CI/CD baseline metrics',
     tags: ['ci', 'metrics'],
     skip: true,
   },
-  'docs/db-schema-bootstrap-plan.md': {
+  'docs/pipelines/db-schema-bootstrap-plan.md': {
     title: 'Database schema bootstrap plan',
     tags: ['database', 'bootstrap'],
   },
-  'docs/e2e-ci-canary-plan.md': {
+  'docs/pipelines/e2e-ci-canary-plan.md': {
     title: 'E2E CI canary plan',
     tags: ['e2e', 'ci', 'canary'],
   },
-  'docs/e2e-navigation-contract.md': {
+  'docs/e2e/navigation-contract.md': {
     title: 'E2E navigation contract',
     tags: ['e2e', 'navigation', 'playwright'],
   },
-  'docs/promotion-contract.md': {
+  'docs/pipelines/promotion-contract.md': {
     title: 'UAT promotion contract',
     tags: ['uat', 'promotion'],
   },

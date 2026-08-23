@@ -21,7 +21,7 @@
         "server/scripts/seed-migration-ledger.js",
         "scripts/db/**",
         "scripts/ci/pr-startup-smoke.sh",
-        "docs/db-schema-bootstrap-plan.md",
+        "docs/pipelines/db-schema-bootstrap-plan.md",
         "DEPLOYMENT_DB.md",
         ".agents/plans/db-schema-bootstrap-345.*"
       ],
@@ -58,7 +58,7 @@
         "server/test/seed.test.js",
         "scripts/db/uat-reset.sh",
         "scripts/db/guard-non-prod.js",
-        "docs/db-schema-bootstrap-plan.md",
+        "docs/pipelines/db-schema-bootstrap-plan.md",
         "docs/e2e/uat-demo-personas.md",
         ".agents/plans/db-schema-bootstrap-345.*"
       ],
@@ -91,8 +91,8 @@
         "scripts/db/**",
         "server/scripts/**",
         "DEPLOYMENT_DB.md",
-        "docs/db-schema-bootstrap-plan.md",
-        "docs/ci-cd-gates.md",
+        "docs/pipelines/db-schema-bootstrap-plan.md",
+        "docs/pipelines/ci-cd-gates.md",
         ".agents/plans/db-schema-bootstrap-345.*"
       ],
       "forbidden_paths": [

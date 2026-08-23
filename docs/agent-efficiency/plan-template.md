@@ -111,7 +111,7 @@ If a phase uses parallel agents:
 |-------|-------|
 | **spawn_allowed** | `true` |
 | **integration_branch** | `cursor/sprint-N-topic-integration-aec1` |
-| **ownership_ref** | `docs/refactoring-log.md#sprint-N` |
+| **ownership_ref** | `docs/debt/refactoring-log.md#sprint-N` |
 
 Publish ownership map **before** spawning. See `/spawn-sprint-agents`.
 

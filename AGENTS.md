@@ -12,7 +12,7 @@ tags: [agent,workflow]
 
 This repo is **Agatha Track**: Flutter web (`flutter_app/`) + Node.js API (`server/`) + PostgreSQL.
 
-**Agent quick-start:** `docs/architecture/index.md` · Skills in `.cursor/skills/` · Plan in `docs/agent-efficiency-plan.md`
+**Agent quick-start:** `docs/architecture/index.md` · Skills in `.cursor/skills/` · Plan in `docs/agent-efficiency/plans/agent-efficiency-plan.md`
 
 ### Toolchain
 
@@ -94,7 +94,7 @@ node scripts/github_issue_workflow.js comment --issue <n> --body "…"
 
 Move Project board columns manually when you want **In Progress** / **Done** on the board. GitHub Actions workflows may still update the board when `GH_PROJECTS_PAT` is configured in repo secrets.
 
-See `docs/github-issue-workflow.md` for the full issue lifecycle.
+See `docs/agent-efficiency/github-issue-workflow.md` for the full issue lifecycle.
 
 ### Policies (details in `.cursor/rules/` + Skills)
 
@@ -103,6 +103,6 @@ See `docs/github-issue-workflow.md` for the full issue lifecycle.
 - Modularity ≤500 lines · BDD gate: `node e2e/scripts/check_bdd_coverage.js --report-only` (currently ≥150 mapped of 241 total; totals drift)
 - Single-agent PRs → `main`; multi-agent → integration branch (`/spawn-sprint-agents`)
 - Memories: `.agents/memory/MEMORY.md`
-- Sprint log: `docs/refactoring-log.md`
+- Sprint log: `docs/debt/refactoring-log.md`
 - Single-backend (Node.js only): no Dart port in `server/`
 - **UAT pipeline:** `docs/e2e/uat-deploy-tiers.md` — pre-UAT E2E gates promotion; deploy is HTTP smoke only

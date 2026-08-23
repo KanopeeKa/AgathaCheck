@@ -92,7 +92,7 @@ Mirror tests: flutter_app/test/features/FEATURE_NAME/
 Exit:
 - node scripts/check_file_size.js
 - flutter test test/features/FEATURE_NAME/ --concurrency=1
-- Log in docs/refactoring-log.md
+- Log in docs/debt/refactoring-log.md
 ```
 
 ---
@@ -118,7 +118,7 @@ Also run: /security-error-audit before push
 Merge integration cursor/sprint-N-TOPIC-integration-13e3 → main
 
 Checklist:
-- [ ] All sprint items in docs/refactoring-log.md marked Done
+- [ ] All sprint items in docs/debt/refactoring-log.md marked Done
 - [ ] ./scripts/pre-push.sh green on integration tip
 - [ ] BDD gate still passes
 - [ ] No merge conflicts with origin/main

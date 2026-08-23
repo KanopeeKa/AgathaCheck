@@ -54,7 +54,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - **Experience program (active, 2026-07-25):** `docs/experience-program/decisions-log.md` — navigation reversal (nav-v2 superseded), Guardian dashboard rework, Organisation presentation/access-control rework. **Org people/permissions v4 (2026-08-06):** `docs/experience-program/organisation-people-permissions-v4-delivery-plan.md` + D-v4-* in decisions log — read before touching People screen, roles/permissions, foster badge, or admin contacts.
 - **Execute-plan autonomy:** `.agents/memory/execute-plan-autonomy.md` — gate `0` = proceed; no permission prompts; per-phase workers; integration branch for 2+ phases
 - Domain map: `docs/architecture/index.md`
-- Efficiency plan: `docs/agent-efficiency-plan.md`
+- Efficiency plan: `docs/agent-efficiency/plans/agent-efficiency-plan.md`
 - Pre-push: `./scripts/pre-push-changed.sh` (iteration) · `./scripts/pre-push.sh` (merge)
 - PR hygiene: pre-PR self-review + Bugbot-first + babysit on `composer-2.5` — `docs/agent-efficiency/pr-review-cost-efficiency.md`
 - PR reviews: fix valid Bugbot/Copilot/human feedback **in the same PR** before merge — no follow-up debt for locator/assertion hardening.

@@ -11,6 +11,8 @@ tags: [fostering,migration]
 
 Domain-first index: [/docs/domains/fostering/README.md](/docs/domains/fostering/README.md)
 
+> **Note:** `docs/fostering-platform/` is a **legacy redirect folder only**. All fostering product documentation lives under `docs/domains/fostering/` (features, changes, journeys). Do not add new docs here.
+
 | Former path | New location |
 |-------------|--------------|
 | j1-foster-onboarding.md | [/docs/domains/fostering/features/j1-foster-onboarding.md](/docs/domains/fostering/features/j1-foster-onboarding.md) |

@@ -14,6 +14,6 @@ No dedicated delivery plan — share links and collaborators ship with pet profi
 | Plan | Summary | Status | Source |
 |------|---------|--------|--------|
 | Sharing BDD | Share link acceptance, collaborator roles | Active | `sharing.feature` |
-| Widget modularization | Role-specific sharing widgets | Done | [/docs/refactoring-debt.md](/docs/refactoring-debt.md) (completed domains) |
+| Widget modularization | Role-specific sharing widgets | Done | [/docs/debt/refactoring-debt.md](/docs/debt/refactoring-debt.md) (completed domains) |
 
 API: `server/routes/sharing.js`

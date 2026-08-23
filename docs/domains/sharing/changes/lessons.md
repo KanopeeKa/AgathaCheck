@@ -11,6 +11,6 @@ tags: [domain,sharing,lessons]
 
 | Lesson | Summary | Source |
 |--------|---------|--------|
-| Sharing section split | Role-specific files under `widgets/sharing/` | [/docs/refactoring-debt.md](/docs/refactoring-debt.md) |
+| Sharing section split | Role-specific files under `widgets/sharing/` | [/docs/debt/refactoring-debt.md](/docs/debt/refactoring-debt.md) |
 
 Audit logging extension for share routes: [changes/deferred.md](deferred.md)

@@ -178,7 +178,7 @@ default-grant table as G0 §7. Checked via the same helper as every other permis
 ### 4.5 Audit (D16)
 
 New `audit_events` `event_type` values (existing table, existing retention tiers —
-`docs/observability.md`): `permission_granted`, `permission_revoked`, `role_changed`,
+`docs/ops/observability.md`): `permission_granted`, `permission_revoked`, `role_changed`,
 `bundle_preset_applied`, `admin_contact_visibility_changed`, `foster_visibility_changed`,
 `member_visibility_changed`.
 `resource_type = 'organization_permission'` or `'organization_user'`; `metadata` carries
@@ -269,7 +269,7 @@ by adding the replacement feature's scenarios in the same PR sequence.
 
 ## 8. Logging and observability
 
-Follow `docs/observability.md` as-is — no new logging system needed.
+Follow `docs/ops/observability.md` as-is — no new logging system needed.
 
 | New surface | Audit event? | Application log? | PostHog? |
 |---|---|---|---|
@@ -278,7 +278,7 @@ Follow `docs/observability.md` as-is — no new logging system needed.
 | Pet timeline manual entry create/edit | `audit_events` `resource_type = 'pet_timeline_entry'` | Standard | No |
 | Agreement withdrawal | `audit_events` (already exists conceptually — align with G0's audit catalog, add `foster_agreement_withdrawn` `event_type`) | Standard, plus explicit `logger.warn` given the urgent-notification fan-out | No |
 | Admin contact / foster self-management preference changes | `audit_events` per D16/§4.5 | Standard | No |
-| **Sensitive-screen exclusions** | — | — | Add the new Admin Contacts self-card screen and permission-management screen to the existing PostHog sensitive-screen exclusion list (`docs/observability.md` §Support investigation workflow already excludes org person detail — extend, don't duplicate, the exclusion list) |
+| **Sensitive-screen exclusions** | — | — | Add the new Admin Contacts self-card screen and permission-management screen to the existing PostHog sensitive-screen exclusion list (`docs/ops/observability.md` §Support investigation workflow already excludes org person detail — extend, don't duplicate, the exclusion list) |
 
 ---
 

@@ -17,8 +17,8 @@
       "branch": "cursor/e2e-canary-phase0-instrument-48ef",
       "allowed_paths": [
         "e2e/scripts/**",
-        "docs/ci-cd-baseline.md",
-        "docs/e2e-ci-canary-plan.md",
+        "docs/pipelines/ci-cd-baseline.md",
+        "docs/pipelines/e2e-ci-canary-plan.md",
         ".agents/plans/**"
       ],
       "forbidden_paths": [
@@ -46,7 +46,7 @@
       "branch": "cursor/e2e-canary-phase1-tags-48ef",
       "allowed_paths": [
         "e2e/**",
-        "docs/e2e-ci-canary-plan.md",
+        "docs/pipelines/e2e-ci-canary-plan.md",
         "e2e/README.md",
         ".cursor/rules/accessibility.mdc",
         ".agents/plans/**",
@@ -80,7 +80,7 @@
       "allowed_paths": [
         ".github/workflows/**",
         "scripts/ci/**",
-        "docs/ci-cd-gates.md",
+        "docs/pipelines/ci-cd-gates.md",
         "e2e/**",
         ".agents/plans/**"
       ],
@@ -111,7 +111,7 @@
       "allowed_paths": [
         ".github/workflows/**",
         "scripts/ci/**",
-        "docs/ci-cd-gates.md",
+        "docs/pipelines/ci-cd-gates.md",
         ".agents/plans/**"
       ],
       "forbidden_paths": [
@@ -143,7 +143,7 @@
         ".github/workflows/deploy-uat.yml",
         ".github/workflows/_reusable-e2e-local.yml",
         "e2e/**",
-        "docs/e2e-ci-canary-plan.md",
+        "docs/pipelines/e2e-ci-canary-plan.md",
         "docs/e2e/**",
         ".agents/plans/**"
       ],
@@ -175,7 +175,7 @@
       "allowed_paths": [
         "e2e/**",
         ".github/workflows/deploy-uat.yml",
-        "docs/ci-cd-baseline.md",
+        "docs/pipelines/ci-cd-baseline.md",
         ".agents/plans/**"
       ],
       "forbidden_paths": [

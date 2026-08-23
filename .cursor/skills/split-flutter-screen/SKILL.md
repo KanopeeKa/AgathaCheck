@@ -37,7 +37,7 @@ paths:
    cd flutter_app && flutter test test/features/<feature>/ --concurrency=1
    ```
 7. **UI check (mandatory)** — Run **`/ui-check`** on the extracted screen/widgets before opening the PR (`pre-push-changed.sh` also prints a reminder when presentation paths change).
-8. Log completed split in `docs/refactoring-log.md` if part of a sprint.
+8. Log completed split in `docs/debt/refactoring-log.md` if part of a sprint.
 
 ## Do not
 

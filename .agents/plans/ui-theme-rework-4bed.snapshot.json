@@ -21,7 +21,7 @@
         "docs/design/tokens.md",
         "docs/design/principles.md",
         "docs/design/ui-rework-plan.md",
-        "docs/refactoring-log.md"
+        "docs/debt/refactoring-log.md"
       ],
       "forbidden_paths": [
         "flutter_app/lib/features/**",
@@ -235,7 +235,7 @@
       "branch": "cursor/ui-theme-phase7-closeout-4bed",
       "allowed_paths": [
         "docs/design/**",
-        "docs/refactoring-log.md",
+        "docs/debt/refactoring-log.md",
         "flutter_app/lib/**"
       ],
       "forbidden_paths": [

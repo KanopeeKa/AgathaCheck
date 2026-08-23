@@ -14,7 +14,7 @@ tags: [plans, sprint, flutter]
 **Integration branch:** `cursor/sprint-10-flutter-344-integration-c246`  
 **Single PR:** integration → `main` when exit criteria met.
 
-Companion: `docs/refactoring-log.md` · Skill: `/spawn-sprint-agents` · Verify: `./scripts/pre-push.sh`
+Companion: `docs/debt/refactoring-log.md` · Skill: `/spawn-sprint-agents` · Verify: `./scripts/pre-push.sh`
 
 ---
 

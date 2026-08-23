@@ -57,7 +57,7 @@ No new tables. UI-only relocation + a new audit-log read view over existing `aud
    `manage_permissions`-gated endpoint.
 4. Audit log viewer reads `audit_events` filtered to this organisation's `organization_id`,
    showing actor, action, resource, and timestamp — no raw metadata beyond what
-   `docs/observability.md` already permits logging (never health/foster PII payloads).
+   `docs/ops/observability.md` already permits logging (never health/foster PII payloads).
 5. This screen is where the program's "freeze feature scope at sprint start, changes through
    change control" governance principle becomes visible to the people actually running an
    organisation — the audit log viewer doubles as their "who changed what" surface.

@@ -257,7 +257,7 @@ cd flutter_app && flutter test --concurrency=1 --exclude-tags=integration
 
 - [ ] Grep for remaining `Color(0x` outside `app_theme.dart` / charts — zero or documented exceptions
 - [ ] Update `docs/design/principles.md` — remove transitional purple note
-- [ ] Log completion in `docs/refactoring-log.md`
+- [ ] Log completion in `docs/debt/refactoring-log.md`
 - [ ] Optional: add `@smoke-a11y` to any high-traffic journey not yet covered
 - [ ] Run `/ui-design-deep` pass on one screen per experience (`/g/*`, `/o/*`) for consistency audit
 

@@ -8,7 +8,7 @@ description: Coordinate parallel cloud agents on an integration branch with file
 ## When to use
 
 - User requests parallel work across domains (E2E features, route splits, multiple screens).
-- Sprint items in `docs/refactoring-log.md` marked with parallel agents.
+- Sprint items in `docs/debt/refactoring-log.md` marked with parallel agents.
 
 ## Workflow
 
@@ -16,7 +16,7 @@ description: Coordinate parallel cloud agents on an integration branch with file
    ```
    cursor/sprint-<N>-<topic>-integration-13e3
    ```
-2. **Publish ownership map** in `docs/refactoring-log.md` before spawning:
+2. **Publish ownership map** in `docs/debt/refactoring-log.md` before spawning:
 
    | Agent | Branch | Owns | Avoid |
    |-------|--------|------|-------|

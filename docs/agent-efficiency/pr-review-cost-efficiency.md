@@ -139,4 +139,4 @@ Do **not** wait on Cursor Bugbot — it is disabled for this repo.
 
 - [autonomous-pr-policy.md](./autonomous-pr-policy.md) — triage buckets, debt issues, merge gates
 - [atomic-pr-policy.md](./atomic-pr-policy.md) — one outcome per PR
-- [e2e-ci-canary-plan.md](../e2e-ci-canary-plan.md) — Copilot/babysit polling cross-ref
+- [e2e-ci-canary-plan.md](../pipelines/e2e-ci-canary-plan.md) — Copilot/babysit polling cross-ref

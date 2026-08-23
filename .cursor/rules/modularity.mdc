@@ -34,5 +34,5 @@ Exceptions: generated code (`l10n/`, `*.g.dart`, `*.mocks.dart`), lockfiles, can
 
 ## Refactoring tracking
 
-- Log planned and completed refactor work in `docs/refactoring-log.md` (by sprint).
-- Park uncertain items in `docs/refactoring-debt.md`.
+- Log planned and completed refactor work in `docs/debt/refactoring-log.md` (by sprint).
+- Park uncertain items in `docs/debt/refactoring-debt.md`.

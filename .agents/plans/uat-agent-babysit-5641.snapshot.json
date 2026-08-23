@@ -108,8 +108,8 @@
         ".cursor/skills/execute-plan/SKILL.md",
         ".cursor/skills/uat-coordinator/SKILL.md",
         "docs/agent-efficiency/autonomous-pr-policy.md",
-        "docs/ci-cd-gates.md",
-        "docs/promotion-contract.md",
+        "docs/pipelines/ci-cd-gates.md",
+        "docs/pipelines/promotion-contract.md",
         "e2e/README.md",
         ".agents/memory/**",
         ".agents/plans/uat-agent-babysit-5641.*"

@@ -18,8 +18,8 @@
       "allowed_paths": [
         "docs/experience-program/**",
         "docs/architecture/**",
-        "docs/refactoring-log.md",
-        "docs/refactoring-debt.md",
+        "docs/debt/refactoring-log.md",
+        "docs/debt/refactoring-debt.md",
         "docs/quality/**",
         ".agents/plans/organisation-ux-v3-badd.md",
         ".agents/plans/organisation-ux-v3-badd.snapshot.json",
@@ -236,7 +236,7 @@
       "spawn_allowed": true,
       "spawn_config": {
         "integration_branch": "cursor/organisation-ux-v3-integration-badd",
-        "ownership_ref": "docs/refactoring-log.md#organisation-ux-v3"
+        "ownership_ref": "docs/debt/refactoring-log.md#organisation-ux-v3"
       },
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
@@ -396,7 +396,7 @@
       "spawn_allowed": true,
       "spawn_config": {
         "integration_branch": "cursor/organisation-ux-v3-integration-badd",
-        "ownership_ref": "docs/refactoring-log.md#organisation-ux-v3"
+        "ownership_ref": "docs/debt/refactoring-log.md#organisation-ux-v3"
       },
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",

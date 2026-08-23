@@ -16,7 +16,7 @@ Do **not** duplicate these truth tables into other docs — link here.
 | **`agathatrack.com` (prod)** | Static **coming-soon teaser** + API **`PUBLIC_ACCESS_MODE=coming_soon`** until launch |
 | **`uat.agathatrack.com` (UAT)** | Full app; optional Apache **HTTP Basic Auth** (cPanel Directory Privacy) for CI/ops |
 
-Related pointers only: [promotion-contract.md](../promotion-contract.md) · [uat-deploy-tiers.md](../e2e/uat-deploy-tiers.md) · [uat-waf-queue-lessons.md](../e2e/uat-waf-queue-lessons.md)
+Related pointers only: [promotion-contract.md](../pipelines/promotion-contract.md) · [uat-deploy-tiers.md](../e2e/uat-deploy-tiers.md) · [uat-waf-queue-lessons.md](../e2e/uat-waf-queue-lessons.md)
 
 ---
 
