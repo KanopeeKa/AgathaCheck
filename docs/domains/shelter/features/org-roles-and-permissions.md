@@ -5,6 +5,8 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain,organization,specs,permissions]
+domain: shelter
+feature_id: org-roles-and-permissions
 ---
 
 # Organization roles and permissions

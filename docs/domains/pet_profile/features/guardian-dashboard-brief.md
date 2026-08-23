@@ -5,6 +5,8 @@ audience: both
 status: active
 last_updated: 2026-08-21
 tags: [experience,guardian,organisation]
+domain: pet_profile
+feature_id: guardian-dashboard-brief
 ---
 > **Status:** Locked master brief (source of truth). Do not edit inline — track deviations in
 > [pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md) and feature-level detail in

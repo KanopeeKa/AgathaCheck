@@ -5,6 +5,8 @@ audience: both
 status: active
 last_updated: 2026-08-21
 tags: [experience,guardian,organisation]
+domain: navigation
+feature_id: navigation-brief
 ---
 > **Status:** Locked master brief (source of truth). Do not edit inline — track deviations in
 > [navigation-decisions.md](navigation-decisions.md) and feature-level detail in

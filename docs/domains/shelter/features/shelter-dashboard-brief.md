@@ -5,6 +5,8 @@ audience: both
 status: active
 last_updated: 2026-08-21
 tags: [experience,guardian,organisation]
+domain: shelter
+feature_id: shelter-dashboard-brief
 ---
 > **Status:** Locked master brief (source of truth). **IA superseded by Organisation v2** — see
 > [`/docs/domains/shelter/changes/organisation-v2-delivery-plan.md`](/docs/domains/shelter/changes/organisation-v2-delivery-plan.md) (D-v2-IA-1/2):

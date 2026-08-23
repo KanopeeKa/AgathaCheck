@@ -66,7 +66,7 @@ One verifiable outcome per PR (atomic PR policy).
 | Topic | Path |
 |-------|------|
 | Theme | `flutter_app/lib/core/theme/app_theme.dart` |
-| Experiences | `flutter_app/lib/features/experience/`, `docs/experience-split-plan.md` |
+| Experiences | `flutter_app/lib/features/experience/`, `docs/archived/experience-split-plan.md` |
 | Auth / landing | `flutter_app/lib/features/auth/presentation/` |
 | A11y + E2E | `.cursor/rules/accessibility.mdc`, `e2e/playwright/support/axe.ts` |
 

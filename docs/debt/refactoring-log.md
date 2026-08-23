@@ -152,7 +152,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 ## Experience split — Phases 1–2 (2026-07-15)
 
 **Branch:** `cursor/experience-split-17a0`  
-**Plan:** `docs/experience-split-plan.md`
+**Plan:** `docs/archived/experience-split-plan.md`
 
 | # | Deliverable | Status |
 |---|-------------|--------|
@@ -167,7 +167,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 ## Experience split — Phase 3 (2026-07-15)
 
 **Branch:** `cursor/experience-phase3-pet-detail-17a0`  
-**Plan:** `docs/experience-split-plan.md`
+**Plan:** `docs/archived/experience-split-plan.md`
 
 | # | Deliverable | Status |
 |---|-------------|--------|
@@ -214,7 +214,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 | # | Action | Status | Parallel agent | Owns |
 |---|--------|--------|----------------|------|
-| 5.1 | Quality review doc + integration-branch policy + agent-coordination rule | **Done** | `docs/quality/review-2026-07-08.md`, `.cursor/rules/` |
+| 5.1 | Quality review doc + integration-branch policy + agent-coordination rule | **Done** | `docs/archived/quality-review-2026-07-08.md`, `.cursor/rules/` |
 | 5.2 | CI: `check_file_size.js` (500-line gate + grandfather ratchet) | **Done** | `scripts/check_file_size.js`, governance CI job |
 | 5.3 | CI: `check_bdd_coverage.js` (81/161 gate, ratchet later) | **Done** | `_reusable-test.yml` |
 | 5.4 | Split placements/foster monoliths (663 + 653 + 518 lines) | **Done** | Node `routes/organizations/placements/`; Dart `lib/organizations/placements/`; Flutter `pet_foster_placement/` |
@@ -434,7 +434,7 @@ Use this template when spawning agents on an integration branch:
 
 | Date | Change |
 |---|---|
-| 2026-07-23 | UI navigation v2 execute-plan started (`ui-navigation-v2-14ee`, control #299): `docs/design/navigation-v2.md`; experience-split + tokens amended |
+| 2026-07-23 | UI navigation v2 execute-plan started (`ui-navigation-v2-14ee`, control #299): `docs/archived/navigation-v2.md`; experience-split + tokens amended |
 | 2026-07-23 | UI theme rework complete (`ui-theme-rework-4bed`): plum guardian / teal org tokens, phases 0–7 merged (#273–#294); `docs/design/tokens.md` |
 | 2026-07-22 | Sprint 11 planned: UI theme rework — `docs/design/plans/ui-rework-plan.md`; design governance PR #267 |
 | 2026-07-19 | PR C (#220): due-events E2E restores home `DueEventsSection` assertion via `PetListPage.refreshByRemount()` after API seed (#216 events-screen proxy superseded). |

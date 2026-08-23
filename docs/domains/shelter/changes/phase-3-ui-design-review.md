@@ -44,7 +44,7 @@ Shared components: `DashboardSection`, `OrgCard`, `ExperienceShellScaffold`, `or
 
 ### Design
 
-- **Requirement:** Organisation accent teal `#218B6C` via `ExperienceColors.organizationPrimary` / `org_screen_theme.dart` — no scattered greens.
+- **Requirement:** Organisation accent Shelter teal via `ExperienceColors.organizationPrimary` / `org_screen_theme.dart` (see [tokens.md](/docs/design/tokens.md) `organization.primary`) — no scattered greens.
 - **Requirement:** Discover tiles show logo, name, town/admin area, description snippet only — never legal identifiers or admin phone numbers.
 - **Recommendation:** Presentation hero uses cover + logo overlap (brief) — max height ~180dp mobile, avoid full-bleed that pushes actions below fold.
 - **Preference:** Section cards on org dashboard use `Card` + `outlineVariant` border (match Guardian `DashboardSection`).

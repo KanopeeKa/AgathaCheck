@@ -48,7 +48,7 @@ system. Do not introduce screen-specific hex values for future landing work.
 | File | Why it's separate | What to update |
 |------|--------------------|-----------------|
 | `flutter_app/lib/core/theme/pdf_report_tokens.dart` | The `pdf` package's `PdfColor` is a different type from Flutter's `Color`; PDF report generation can't read `ThemeData` at runtime. | Hex values, each commented with the `AppColorTokens` constant it mirrors. `test/core/theme/pdf_report_tokens_test.dart` fails if the two drift. |
-| `flutter_app/web/manifest.json` | PWA metadata read by the browser before Flutter boots. | `background_color`, `theme_color` (currently `#755B68` = `guardianPrimary`). |
+| `flutter_app/web/manifest.json` | PWA metadata read by the browser before Flutter boots. | `background_color`, `theme_color` (currently `guardianPrimary` per [tokens.md](./tokens.md)). |
 | `flutter_app/web/index.html` | Native HTML/CSS login form (for password-manager autofill) rendered before/alongside the Flutter canvas — see the comment in that file. | Inline `<style>` block: input border/focus colors, submit button background/hover, link color, and the `prefers-color-scheme: dark` block. |
 | `server/lib/email/branding.js` | Node backend, not Flutter — used in transactional email HTML. | `PRIMARY_COLOR`, `PRIMARY_COLOR_HOVER`. |
 

@@ -181,7 +181,7 @@ Semantic **background fill only** — no borders on menu rows.
 
 Shell top bar uses experience primary (plum on `/g/*`, green on `/o/*`). Utility group never uses mode primary as row background.
 
-**Ownership accents** (pets, vets, notifications): plum = guardian/personal; green = fostered/org-linked. Pair with text + icon (`docs/design/navigation-v2.md`).
+**Ownership accents** (pets, vets, notifications): plum = guardian/personal; green = fostered/org-linked. Pair with text + icon (`docs/archived/navigation-v2.md`).
 
 **Super admin** tag: warm coral (`orgSuperUserBg` / `orgSuperUserFg`) — distinct from ownership colors.
 

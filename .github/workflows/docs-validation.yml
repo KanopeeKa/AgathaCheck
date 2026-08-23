@@ -6,6 +6,8 @@ on:
       - '**.md'
       - '.cursor/**'
       - '.agents/**'
+      - 'scripts/validate_docs.sh'
+      - 'scripts/check_doc_placement.js'
     types: [opened, synchronize, reopened, edited]
   workflow_dispatch:
 
@@ -23,9 +25,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install backend deps (js-yaml for doc placement checks)
+        run: cd server && npm ci
+
       - name: Run documentation validation
         id: validate
         run: |
           chmod +x ./scripts/validate_docs.sh
           ./scripts/validate_docs.sh --strict
-        continue-on-error: true

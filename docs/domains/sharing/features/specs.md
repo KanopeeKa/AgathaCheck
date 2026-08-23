@@ -5,6 +5,7 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain,sharing,specs]
+domain: sharing
 ---
 
 # Sharing specs

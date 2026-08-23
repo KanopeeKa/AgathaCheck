@@ -17,7 +17,7 @@ phases build on a clean, unambiguous baseline.
 
 ## In scope
 
-- Mark `docs/design/navigation-v2.md` superseded (D2)
+- Mark `docs/archived/navigation-v2.md` superseded (D2)
 - Close the paused `org-mode-navigation-acf1` plan: branch `cursor/org-mode-nav-phase3-shell-acf1`,
   control issue #262, and its sibling orphaned branches
   (`plan-snapshot-uat-resume-4bed`, `sync-org-mode-plan-snapshot-acf1`) (D6)
@@ -40,8 +40,8 @@ None (documentation-only phase).
 
 ## Business rules
 
-1. `docs/design/navigation-v2.md` gets a status header identical in spirit to how
-   `docs/experience-split-plan.md` was already marked superseded — link forward to
+1. `docs/archived/navigation-v2.md` gets a status header identical in spirit to how
+   `docs/archived/experience-split-plan.md` was already marked superseded — link forward to
    [navigation README](/docs/domains/navigation/README.md).
 2. Before closing branch `cursor/org-mode-nav-phase3-shell-acf1`, diff it against `main` once more
    to confirm no unmerged change beyond the router-file extraction has appeared since the last
@@ -75,7 +75,7 @@ Single phase, sprints R.1–R.4 (see `roadmap-delivery-plan.md`).
 **Exit criteria:**
 
 - Canonical domain docs merged to `main`
-- `docs/design/navigation-v2.md` header updated
+- `docs/archived/navigation-v2.md` header updated
 - Branch `cursor/org-mode-nav-phase3-shell-acf1` and its siblings deleted; issue #262 closed
 - `@legacy` tags present on `experience_navigation.feature` (one superseded scenario) and
   `organisation_pet_timeline.feature` (feature-level); `notifications.feature` is extended in

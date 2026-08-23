@@ -5,6 +5,8 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain, fostering, specs]
+domain: fostering
+feature_id: g0-contract-pack
 ---
 # G0 — Platform contract pack (fostering & adoption)
 
