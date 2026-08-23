@@ -9,7 +9,7 @@ tags: [domain,fostering,specs,placements]
 
 # Foster placement lifecycle
 
-Extracted from [/docs/domains/fostering/changes/org-fostering-strategy.md](/docs/domains/fostering/changes/org-fostering-strategy.md). Custody **data model** (guardianship vs care) lives in the [organization domain](/docs/domains/organization/features/org-custody-model.md).
+Extracted from [/docs/domains/fostering/changes/org-fostering-strategy.md](/docs/domains/fostering/changes/org-fostering-strategy.md). Custody **data model** (guardianship vs care) lives in the [organization domain](/docs/domains/shelter/features/org-custody-model.md).
 
 ## State machine
 

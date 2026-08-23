@@ -115,16 +115,16 @@ Product domains are documented under [/docs/domains/](/docs/domains/). Each row 
 | BDD | `notifications.feature` |
 | E2E | `notifications.spec.ts` |
 
-### Organization (incl. foster, custody, adoption)
+### Shelter (incl. foster, custody, adoption)
 
 | | Path |
 |---|------|
-| **Docs (org identity)** | [/docs/domains/organization/README.md](/docs/domains/organization/README.md) |
+| **Docs (org identity)** | [/docs/domains/shelter/README.md](/docs/domains/shelter/README.md) |
 | **Docs (foster workflows)** | [/docs/domains/fostering/README.md](/docs/domains/fostering/README.md) |
 | Flutter | `flutter_app/lib/features/organization/` |
 | Node routes | `server/routes/organizations/`, `fosterPlacements.js`, `custodyTransfers.js` |
 | Jest | `server/test/organizations/`, `fosterPlacements.test.js`, `custodyTransfers.test.js`, `orgConnections.test.js` |
-| Architecture | `docs/architecture/org-custody-model.md`, `docs/fostering-platform/g0-contract-pack.md`, `docs/experience-program/phase-3-organisation-presentation.md` (historical), **`docs/experience-program/organisation-v2-delivery-plan.md`** (v2 profile composer), **`docs/experience-program/organisation-ux-v3-delivery-plan.md`** (v3 UX — visibility, chrome, nav rows, privacy — **active**), **`docs/architecture/org-member-privacy.md`** (v3 Account per-org privacy), **`docs/architecture/pet-activity-model.md`** |
+| Architecture | `docs/domains/shelter/features/org-custody-model.md`, `docs/domains/fostering/features/g0-contract-pack.md`, `docs/experience-program/phase-3-organisation-presentation.md` (historical), **`docs/experience-program/organisation-v2-delivery-plan.md`** (v2 profile composer), **`docs/experience-program/organisation-ux-v3-delivery-plan.md`** (v3 UX — visibility, chrome, nav rows, privacy — **active**), **`docs/domains/shelter/features/org-member-privacy.md`** (v3 Account per-org privacy), **`docs/architecture/pet-activity-model.md`** |
 | BDD | `organisation_profile.feature`, `organisation_discovery.feature`, `admin_contacts.feature`, `fostering_sessions.feature`, `redacted_org_pet.feature`, `organisation_management.feature`, … |
 | E2E | `organisation.profile.spec.ts`, `organisation.discovery.spec.ts`, `organisation.redacted-pet.spec.ts`, `organisation.pet-filters.spec.ts`, `organisation.management.spec.ts`, `organisation.pet.management.spec.ts`, `adoption.spec.ts` |
 

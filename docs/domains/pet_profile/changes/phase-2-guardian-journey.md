@@ -59,7 +59,7 @@ drawer, root/sub-screen header behavior, and global bell remain unchanged.
 ## Depends on
 
 Phase 1 (shell + notification panel must exist so pending inboxes have somewhere to surface).
-`docs/architecture/org-custody-model.md` (`custody_transfers` as the pet-timeline's guardian-segment
+`docs/domains/shelter/features/org-custody-model.md` (`custody_transfers` as the pet-timeline's guardian-segment
 source).
 
 ## Exposes to

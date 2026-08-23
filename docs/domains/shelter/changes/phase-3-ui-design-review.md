@@ -9,7 +9,7 @@ tags: [experience,guardian,organisation]
 # Phase 3 UI design review (`/ui-design-deep`)
 
 **Plan:** `experience-program-36bd` phase 3  
-**Brief:** [`briefs/organisation-dashboard-brief.md`](briefs/organisation-dashboard-brief.md)  
+**Brief:** [`briefs/shelter-dashboard-brief.md`](briefs/shelter-dashboard-brief.md)  
 **Spec:** [`phase-3-organisation-presentation.md`](phase-3-organisation-presentation.md)  
 **Date:** 2026-07-26
 

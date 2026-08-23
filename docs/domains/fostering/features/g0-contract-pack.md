@@ -16,7 +16,7 @@ This document is the **platform contract layer**. Journey agents (J1–J5) must 
 
 **Changelog (pre-merge):** Fixed session status enum consistency (`adoption_in_progress`, `end_pending_confirmation`); added verification, design, legal, security, schema-gap, and PR quality-gate sections per review pass.
 
-**Related:** [`README.md`](README.md) · `docs/architecture/org-custody-model.md` · `regulatory/internal/dpia-foster-directory.md` · `docs/design/index.md`
+**Related:** [`README.md`](README.md) · `docs/domains/shelter/features/org-custody-model.md` · `regulatory/internal/dpia-foster-directory.md` · `docs/design/index.md`
 
 ---
 
@@ -254,7 +254,7 @@ J5 starts only when:
 **Same-day expedite (explicit admin action):** admin may invoke a single orchestrated action (e.g. complete visit with positive outcome and start journey) when all involved dates share the same calendar day (`YYYY-MM-DD`). All gate predicates still run; nothing is silently skipped.
 
 On J5 start: session → `adoption_in_progress` (non-terminal; foster care continues).  
-J5 close event: session → `converted_to_adoption` (terminal); triggers existing custody transfer / shadow semantics per `docs/architecture/org-custody-model.md`.
+J5 close event: session → `converted_to_adoption` (terminal); triggers existing custody transfer / shadow semantics per `docs/domains/shelter/features/org-custody-model.md`.
 
 ### 5.7 G1 hooks (no independent state)
 

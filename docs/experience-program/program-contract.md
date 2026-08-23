@@ -28,7 +28,7 @@ discipline as `g0-contract-pack.md` so the two programs read consistently.
 | `docs/experience-split-plan.md` | Already superseded by navigation-v2; stays superseded |
 | `cursor/org-mode-nav-phase3-shell-acf1` branch, control issue #262 | **Closed** (D6), not resumed |
 | `docs/fostering-platform/g0-contract-pack.md` (J1–J5, merged) | **Kept and extended.** Vocabulary (foster profile, shelter–foster relationship, fostering session, participant comment vs staff note), permission-key catalog (§7), and audit event catalog (§8) are the foundation this program builds role bundles and self-management visibility on top of — not a parallel model |
-| `docs/architecture/org-custody-model.md` | Kept as-is; pet timeline (D18) reads from `custody_transfers`, does not duplicate it |
+| `docs/domains/shelter/features/org-custody-model.md` | Kept as-is; pet timeline (D18) reads from `custody_transfers`, does not duplicate it |
 | `family_events` table, `familyEventsRouter.js`, `organisation_pet_timeline.feature` | **Superseded and retired** (D18, D19) |
 
 ---

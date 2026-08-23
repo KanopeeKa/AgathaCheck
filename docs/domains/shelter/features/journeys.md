@@ -15,7 +15,7 @@ User-facing flows for charity/rescue organisation identity, discovery, and admin
 
 Public org profiles (`/o/orgs/:id`) present the organisation to visitors and members. Discovery flows help users find and join organisations.
 
-Locked brief (IA partially superseded by v2): [organisation-dashboard-brief.md](organisation-dashboard-brief.md).
+Locked brief (IA partially superseded by v2): [shelter-dashboard-brief.md](shelter-dashboard-brief.md).
 
 ## People and permissions
 

@@ -1,6 +1,6 @@
 /**
  * Per-org member privacy (Organisation UX v3 Phase 8).
- * @see docs/architecture/org-member-privacy.md
+ * @see docs/domains/shelter/features/org-member-privacy.md
  */
 import { hasEffectivePermission } from './orgPermissions.js';
 import {

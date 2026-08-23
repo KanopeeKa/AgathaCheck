@@ -34,20 +34,20 @@ tags: [experience,guardian,organisation]
 |-------|----------|
 | Navigation | [briefs/navigation-brief.md](briefs/navigation-brief.md) |
 | Guardian dashboard | [/docs/domains/pet_profile/features/guardian-dashboard-brief.md](/docs/domains/pet_profile/features/guardian-dashboard-brief.md) |
-| Organisation dashboard | [/docs/domains/organization/features/organisation-dashboard-brief.md](/docs/domains/organization/features/organisation-dashboard-brief.md) |
+| Organisation dashboard | [/docs/domains/shelter/features/shelter-dashboard-brief.md](/docs/domains/shelter/features/shelter-dashboard-brief.md) |
 
 ## Domain delivery plans (relocated)
 
 | Domain | Plans index |
 |--------|-------------|
 | Pet profile / Guardian | [/docs/domains/pet_profile/changes/plans.md](/docs/domains/pet_profile/changes/plans.md) |
-| Organization | [/docs/domains/organization/changes/plans.md](/docs/domains/organization/changes/plans.md) |
+| Organization | [/docs/domains/shelter/changes/plans.md](/docs/domains/shelter/changes/plans.md) |
 | Fostering | [/docs/domains/fostering/changes/plans.md](/docs/domains/fostering/changes/plans.md) |
 
 ## Related
 
 - [Fostering platform docs](/docs/domains/fostering/README.md) — operational contracts (not replaced)
-- [Org custody model](/docs/domains/organization/features/org-custody-model.md)
+- [Org custody model](/docs/domains/shelter/features/org-custody-model.md)
 - Superseded: `docs/archived/navigation-v2.md` — see phase-r-reconciliation
 
 **Status:** Phase docs carry exit criteria; sequential delivery per decision D33 — see roadmap-delivery-plan.md.

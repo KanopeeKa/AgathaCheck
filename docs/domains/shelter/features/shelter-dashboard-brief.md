@@ -1,5 +1,5 @@
 ---
-title: Organisation dashboard and organisation architecture brief
+title: Shelter dashboard and shelter architecture brief
 owner: Experience Program Team
 audience: both
 status: active
@@ -7,13 +7,13 @@ last_updated: 2026-08-21
 tags: [experience,guardian,organisation]
 ---
 > **Status:** Locked master brief (source of truth). **IA superseded by Organisation v2** — see
-> [`/docs/domains/organization/changes/organisation-v2-delivery-plan.md`](/docs/domains/organization/changes/organisation-v2-delivery-plan.md) (D-v2-IA-1/2):
+> [`/docs/domains/shelter/changes/organisation-v2-delivery-plan.md`](/docs/domains/shelter/changes/organisation-v2-delivery-plan.md) (D-v2-IA-1/2):
 > `/o/orgs/:id` is a profile composer; the section-card dashboard is no longer the primary entry.
 > Do not edit inline — track deviations in
 > [`/docs/experience-program/decisions-log.md`](/docs/experience-program/decisions-log.md) and feature-level detail in
-> [`/docs/domains/organization/changes/phase-3-organisation-presentation.md`](/docs/domains/organization/changes/phase-3-organisation-presentation.md),
+> [`/docs/domains/shelter/changes/phase-3-organisation-presentation.md`](/docs/domains/shelter/changes/phase-3-organisation-presentation.md),
 > [`/docs/domains/fostering/changes/phase-4-foster-pet-operations.md`](/docs/domains/fostering/changes/phase-4-foster-pet-operations.md), and
-> [`/docs/domains/organization/changes/phase-5-organisation-customisations.md`](/docs/domains/organization/changes/phase-5-organisation-customisations.md).
+> [`/docs/domains/shelter/changes/phase-5-organisation-customisations.md`](/docs/domains/shelter/changes/phase-5-organisation-customisations.md).
 > Imported verbatim 2026-07-25. This brief predates and must be reconciled with the shipped
 > fostering platform (`//docs/domains/fostering/features/g0-contract-pack.md`) — see decisions log D7–D10.
 
