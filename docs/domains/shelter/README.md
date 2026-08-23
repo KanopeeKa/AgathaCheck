@@ -21,7 +21,6 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | Implementation specs | [features/specs.md](features/specs.md) |
 | Dashboard brief | [features/shelter-dashboard-brief.md](features/shelter-dashboard-brief.md) |
 | Plans index | [changes/plans.md](changes/plans.md) |
-| Lessons index | [changes/lessons.md](changes/lessons.md) |
 | Deferred work | [changes/deferred.md](changes/deferred.md) |
 
 ## Code map

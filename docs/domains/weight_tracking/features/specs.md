@@ -25,7 +25,3 @@ tags: [domain,weight_tracking,specs]
 - Jest: server/test/weightEntries.test.js
 - BDD: flutter_app/test/bdd/features/weight_tracking.feature
 - E2E: e2e/playwright/tests/weight.tracking.spec.ts
-
----
-
-**Lessons:** [changes/lessons.md](../changes/lessons.md)

@@ -173,44 +173,38 @@ Full inventory of repository `.md` files (2026-08-22 wave 3). **Outcome:** waves
 ## domain-canonical (91)
 - docs/domains/auth/README.md
 - docs/domains/auth/changes/deferred.md
-- docs/domains/auth/changes/lessons.md
 - docs/domains/auth/changes/plans.md
 - docs/domains/auth/features/journeys.md
 - docs/domains/auth/features/specs.md
 - docs/domains/fostering/README.md
 - docs/domains/fostering/changes/deferred.md
-- docs/domains/fostering/changes/lessons.md
+- docs/domains/fostering/changes/j1-foster-onboarding.md
 - docs/domains/fostering/changes/org-fostering-strategy.md
 - docs/domains/fostering/changes/phase-4-foster-pet-operations.md
 - docs/domains/fostering/changes/plans.md
 - docs/domains/fostering/changes/roadmap-delivery-plan.md
 - docs/domains/fostering/features/foster-placement-lifecycle.md
 - docs/domains/fostering/features/g0-contract-pack.md
-- docs/domains/fostering/features/j1-foster-onboarding.md
 - docs/domains/fostering/features/journeys.md
 - docs/domains/fostering/features/migration-appendix.md
 - docs/domains/fostering/features/specs.md
 - docs/domains/health_tracking/README.md
 - docs/domains/health_tracking/changes/deferred.md
-- docs/domains/health_tracking/changes/lessons.md
 - docs/domains/health_tracking/changes/plans.md
 - docs/domains/health_tracking/features/journeys.md
 - docs/domains/health_tracking/features/specs.md
 - docs/domains/help_about/README.md
 - docs/domains/help_about/changes/deferred.md
-- docs/domains/help_about/changes/lessons.md
 - docs/domains/help_about/changes/plans.md
 - docs/domains/help_about/features/journeys.md
 - docs/domains/help_about/features/specs.md
 - docs/domains/notifications/README.md
 - docs/domains/notifications/changes/deferred.md
-- docs/domains/notifications/changes/lessons.md
 - docs/domains/notifications/changes/plans.md
 - docs/domains/notifications/features/journeys.md
 - docs/domains/notifications/features/specs.md
 - docs/domains/shelter/README.md
 - docs/domains/shelter/changes/deferred.md
-- docs/domains/shelter/changes/lessons.md
 - docs/domains/shelter/changes/organisation-people-permissions-v4-delivery-plan.md
 - docs/domains/shelter/changes/organisation-ux-v3-delivery-plan.md
 - docs/domains/shelter/changes/organisation-v2-delivery-plan.md
@@ -231,7 +225,6 @@ Full inventory of repository `.md` files (2026-08-22 wave 3). **Outcome:** waves
 - docs/domains/pet_profile/changes/guardian-today-orientation-handoff.md
 - docs/domains/pet_profile/changes/guardian-today-presentation-foundation.md
 - docs/domains/pet_profile/changes/guardian-ui-wave2-issue-briefs.md
-- docs/domains/pet_profile/changes/lessons.md
 - docs/domains/pet_profile/changes/phase-2-guardian-journey.md
 - docs/domains/pet_profile/changes/plans.md
 - docs/domains/pet_profile/features/guardian-dashboard-brief.md
@@ -240,25 +233,21 @@ Full inventory of repository `.md` files (2026-08-22 wave 3). **Outcome:** waves
 - docs/domains/pet_profile/features/specs.md
 - docs/domains/sharing/README.md
 - docs/domains/sharing/changes/deferred.md
-- docs/domains/sharing/changes/lessons.md
 - docs/domains/sharing/changes/plans.md
 - docs/domains/sharing/features/journeys.md
 - docs/domains/sharing/features/specs.md
 - docs/domains/subscription/README.md
 - docs/domains/subscription/changes/deferred.md
-- docs/domains/subscription/changes/lessons.md
 - docs/domains/subscription/changes/plans.md
 - docs/domains/subscription/features/journeys.md
 - docs/domains/subscription/features/specs.md
 - docs/domains/vet/README.md
 - docs/domains/vet/changes/deferred.md
-- docs/domains/vet/changes/lessons.md
 - docs/domains/vet/changes/plans.md
 - docs/domains/vet/features/journeys.md
 - docs/domains/vet/features/specs.md
 - docs/domains/weight_tracking/README.md
 - docs/domains/weight_tracking/changes/deferred.md
-- docs/domains/weight_tracking/changes/lessons.md
 - docs/domains/weight_tracking/changes/plans.md
 - docs/domains/weight_tracking/features/journeys.md
 - docs/domains/weight_tracking/features/specs.md
@@ -313,10 +302,10 @@ Full inventory of repository `.md` files (2026-08-22 wave 3). **Outcome:** waves
 - docs/ops/public-access.md
 
 ## plans-index (4)
-- docs/plans/README.md
-- docs/plans/documentation-consolidation-plan.md
-- docs/plans/sprint-10-flutter-344-execution-plan.md
-- docs/plans/sprint-6-execution-plan.md
+- docs/domains/cross-domain/changes/docs-domain-audit-63ad.md
+- docs/domains/cross-domain/changes/documentation-consolidation-plan.md
+- docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md
+- docs/domains/cross-domain/changes/sprint-6-execution-plan.md
 
 ## platform-index (13)
 - docs/CHANGELOG.md

@@ -20,4 +20,8 @@ tags: [domain,sharing,specs]
 
 ## Widget modularization
 
-Sharing UI split under `flutter_app/lib/features/pet_profile/widgets/sharing/` (see refactoring-debt completed domains).
+Sharing UI split under `flutter_app/lib/features/pet_profile/widgets/sharing/` — see [/docs/debt/refactoring-debt.md](/docs/debt/refactoring-debt.md).
+
+## Deferred
+
+Audit logging extension for share routes — see [changes/deferred.md](../changes/deferred.md).

@@ -42,6 +42,7 @@ Generic re-skin checklist (all runtimes): [/docs/design/skin-change-guide.md](/d
 
 Org pet list last-activity sorting uses the pet_profile product activity model — [/docs/domains/pet_profile/features/pet-activity-model.md](/docs/domains/pet_profile/features/pet-activity-model.md).
 
----
+## Engineering rules
 
-**Lessons:** [changes/lessons.md](../changes/lessons.md)
+- Body-supplied org ID validation on org-scoped routes — [.agents/memory/body-supplied-org-id-validation.md](/.agents/memory/body-supplied-org-id-validation.md) (also in [org-roles-and-permissions.md](org-roles-and-permissions.md)).
+- Public-facing feature access rules — [/docs/ops/public-access.md](/docs/ops/public-access.md) and [.agents/memory/public-access-gate.md](/.agents/memory/public-access-gate.md).

@@ -34,6 +34,9 @@ Notification rows served via `notification_remote_datasource`; preferences entit
 
 - BDD: `flutter_app/test/bdd/features/notifications.feature`
 - Extend scenarios when panel filter chips and administrative resolved semantics ship (program-contract §6.1)
+- UAT live E2E: call `refreshByRemount()` after API seed when due events are missing on home — see [.agents/memory/uat-live-e2e-triage.md](/.agents/memory/uat-live-e2e-triage.md).
+
+Kind vs scope semantics: [notification-decisions.md](notification-decisions.md) §B.
 
 ---
 

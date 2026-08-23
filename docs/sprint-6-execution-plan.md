@@ -11,4 +11,4 @@ tags: [migration,documentation]
 
 This document moved during the domain-first docs reorg:
 
-[/docs/plans/sprint-6-execution-plan.md](/docs/plans/sprint-6-execution-plan.md)
+[/docs/domains/cross-domain/changes/sprint-6-execution-plan.md](/docs/domains/cross-domain/changes/sprint-6-execution-plan.md)
