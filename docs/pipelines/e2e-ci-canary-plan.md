@@ -4,7 +4,7 @@ owner: Documentation Team
 audience: both
 status: active
 last_updated: 2026-08-22
-tags: [e2e, ci, canary]
+tags: [e2e, ci, canary, plan, pipeline]
 ---
 # E2E fail-fast canary — phased implementation plan
 

@@ -4,7 +4,7 @@ owner: Documentation Team
 audience: both
 status: active
 last_updated: 2026-08-22
-tags: [uat, promotion]
+tags: [uat, promotion, pipeline]
 ---
 # Promotion contract
 
