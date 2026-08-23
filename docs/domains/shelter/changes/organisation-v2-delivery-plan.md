@@ -374,7 +374,7 @@ e2e/playwright/tests/
 #### PR-9: Doc sweep + l10n
 - Supersession banners on `phase-3-organisation-presentation.md`, roadmap.
 - `docs/architecture/api-reference.md` new endpoints.
-- `docs/org-fostering-strategy.md` — email deferred note.
+- `docs/domains/fostering/changes/org-fostering-strategy.md` — email deferred note.
 - Tech debt: structured addresses API evaluation.
 - EN/FR ARB parity; `flutter gen-l10n`.
 

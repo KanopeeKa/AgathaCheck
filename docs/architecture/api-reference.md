@@ -18,7 +18,7 @@ tags: [api, reference]
 
 **Auth.** Unless noted as *public*, endpoints require `Authorization: Bearer <JWT>`
 (access token from signup/login). Organization routes enforce membership and role
-checks (`super_admin`, `admin`, `foster`). See `docs/org-fostering-strategy.md`.
+checks (`super_admin`, `admin`, `foster`). See `docs/domains/fostering/changes/org-fostering-strategy.md`.
 
 ### Auth (`/api/auth`)
 | Method | Path | Notes |
@@ -145,7 +145,7 @@ Share links are **single-use**: once accepted, the same link cannot be used by a
 
 ### Pet family events (`/api/pets/:id/family-events`) — Node backend
 
-Org placement/foster periods (legacy shape; see `docs/org-fostering-strategy.md` for
+Org placement/foster periods (legacy shape; see `docs/domains/fostering/changes/org-fostering-strategy.md` for
 the planned `foster_placements` model):
 
 | Method | Path | Notes |
@@ -172,7 +172,7 @@ These endpoints are placeholders. They return `501` with
 Lifecycle stubs (acknowledge without full side effects):
 `DELETE /api/pets/:id/data`, `POST /api/pets/:id/passed-away` (use `DELETE`/`PUT /api/pets/:id` for real changes).
 
-**Roadmap:** `docs/org-fostering-strategy.md`
+**Roadmap:** `docs/domains/fostering/changes/org-fostering-strategy.md`
 
 ---
 

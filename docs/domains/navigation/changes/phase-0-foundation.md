@@ -34,7 +34,7 @@ onward is pure feature work rather than plumbing-plus-feature work.
 
 ## Depends on
 
-Phase R (clean baseline). `docs/fostering-platform/g0-contract-pack.md` §7 (existing permission
+Phase R (clean baseline). `docs/domains/fostering/features/g0-contract-pack.md` §7 (existing permission
 key defaults) as the read model for the helper scaffolding.
 
 ## Exposes to

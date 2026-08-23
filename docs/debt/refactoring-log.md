@@ -229,7 +229,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 ## Sprint 6 — Org-operator BDD + help (complete)
 
 **Integration branch:** `cursor/sprint-6-org-bdd-integration-feec`  
-**Execution plan:** `docs/sprint-6-execution-plan.md`  
+**Execution plan:** `docs/domains/cross-domain/changes/sprint-6-execution-plan.md`  
 **Integration PR:** **Merged** #116 → `main`
 
 | # | Action | Status | Notes |
@@ -330,7 +330,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 ## Sprint 10 — Flutter 3.44 / Dart 3.12 toolchain upgrade (in progress)
 
 **Goal:** Upgrade Flutter 3.32 → 3.44 (Dart 3.8 → 3.12); unblock blocked pub Dependabot PRs (#77–#81).  
-**Execution plan:** `docs/sprint-10-flutter-344-execution-plan.md`  
+**Execution plan:** `docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md`  
 **Integration branch:** `cursor/sprint-10-flutter-344-integration-4379` → single PR to `main`
 
 | # | Action | Status | Agent / notes |
@@ -371,9 +371,9 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 ## Fostering platform (J1–J5 + G1)
 
-**Goal:** Second-generation fostering & adoption per `docs/fostering-platform/`.  
-**Coordination:** [`roadmap-delivery-plan.md`](fostering-platform/roadmap-delivery-plan.md)  
-**Contract:** [`g0-contract-pack.md`](fostering-platform/g0-contract-pack.md) · [`migration-appendix.md`](fostering-platform/migration-appendix.md)
+**Goal:** Second-generation fostering & adoption per `docs/domains/fostering/`.  
+**Coordination:** [`roadmap-delivery-plan.md`](/docs/domains/fostering/changes/roadmap-delivery-plan.md)  
+**Contract:** [`g0-contract-pack.md`](/docs/domains/fostering/features/g0-contract-pack.md) · [`migration-appendix.md`](/docs/domains/fostering/features/migration-appendix.md)
 
 | Wave | execute-plan | Status |
 |------|--------------|--------|
@@ -443,7 +443,7 @@ Use this template when spawning agents on an integration branch:
 | 2026-07-16 | #188 merged: E1b org-only user lands on organisation home |
 | 2026-07-16 | #187 merged: E2E guardian shell nav hardening (chooser, strict-mode, shell fallbacks) |
 | 2026-07-16 | #186 merged: Experience Phase 3 pet detail context |
-| 2026-07-10 | Sprint 10 planned: Flutter 3.44 / Dart 3.12 upgrade; execution plan `docs/sprint-10-flutter-344-execution-plan.md` |
+| 2026-07-10 | Sprint 10 planned: Flutter 3.44 / Dart 3.12 upgrade; execution plan `docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md` |
 | 2026-07-10 | Sprint 9 merged #129: Bugbot remediation (token migration, photo URLs, pet sync rollback, E2E hardening); dart-foster audit |
 | 2026-07-09 | Sprint 7: GDPR data-rights E2E; BDD gate 105/165; subscriptions E2E deferred (EU billing review) |
 | 2026-07-09 | Sprint 6 complete (#116): 113/165 BDD; org custody + help FAQ |

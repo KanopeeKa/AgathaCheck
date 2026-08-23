@@ -11,11 +11,11 @@ const path = require('path');
 const REPO = path.resolve(__dirname, '..');
 
 const FILE_META = {
-  'docs/plans/sprint-6-execution-plan.md': {
+  'docs/domains/cross-domain/changes/sprint-6-execution-plan.md': {
     title: 'Sprint 6 execution plan',
     tags: ['plans', 'sprint', 'bdd'],
   },
-  'docs/plans/sprint-10-flutter-344-execution-plan.md': {
+  'docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md': {
     title: 'Sprint 10 Flutter 3.44 execution plan',
     tags: ['plans', 'sprint', 'flutter'],
   },

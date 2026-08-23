@@ -10,7 +10,7 @@ tags: [domain, fostering, specs]
 
 **Status:** Draft baseline for agent handoff  
 **Last updated:** 2026-07-25  
-**Supersedes:** informal journey boundaries only — does not replace `docs/org-fostering-strategy.md` until journey delivery begins.
+**Supersedes:** informal journey boundaries only — does not replace [org-fostering-strategy.md](../changes/org-fostering-strategy.md) until journey delivery begins.
 
 This document is the **platform contract layer**. Journey agents (J1–J5) must reference G0 instead of redefining shared rules. G1 (document and compliance artefact packs) depends on stable hooks defined here and implemented in J3/J5.
 

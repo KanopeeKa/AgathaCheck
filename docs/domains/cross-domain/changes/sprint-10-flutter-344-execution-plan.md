@@ -271,7 +271,7 @@ If Sprint 10 already contains these versions, **close** the Dependabot PRs as su
 Sprint 10 — Flutter 3.44 / Dart 3.12 toolchain upgrade.
 
 Integration branch: cursor/sprint-10-flutter-344-integration-c246
-Plan: docs/sprint-10-flutter-344-execution-plan.md
+Plan: docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md
 
 You own Wave E (coordinator) OR Wave A if starting fresh:
 - Rebase integration on origin/main
