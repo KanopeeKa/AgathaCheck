@@ -9,7 +9,7 @@ tags: [architecture,design,domain]
 # Organisation pet custody model
 
 Authoritative reference for guardianship, care, shadows, org connections, and transfers.
-Supersedes parts of `docs/org-fostering-strategy.md` glossary where they conflict.
+Supersedes parts of `docs/domains/fostering/changes/org-fostering-strategy.md` glossary where they conflict.
 
 ## Glossary
 

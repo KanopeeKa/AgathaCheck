@@ -15,7 +15,7 @@ tags: [experience, roadmap]
 Defines **sequential gates**, **sprint boundaries**, and **branch naming** for delivery. Phase
 docs (linked below) own detailed scenarios and screens; this doc owns **order and sprint
 breakdown only** — same split of responsibility as
-`docs/fostering-platform/roadmap-delivery-plan.md`.
+`docs/domains/fostering/changes/roadmap-delivery-plan.md`.
 
 **Default delivery mode (D33): single agent, sequential, direct-to-`main` per phase.** Each phase
 below is small enough to be one agent's focused work, verified end-to-end before the next phase
