@@ -185,7 +185,9 @@ Invoke **/spawn-sprint-agents** per `spawn_config` before parallel work. Publish
 | Integration / non-`main` base | **/babysit-plus** only — ends at merge |
 | **`main`** (final plan PR) | **/babysit-uat** — pre-UAT E2E gate on merge SHA |
 
-Do **not** poll `deploy-uat` or prod-ready. See [uat-deploy-tiers.md](../../../docs/e2e/uat-deploy-tiers.md) and `/babysit-uat` skill.
+**Pre-UAT failure on final merge:** `/babysit-uat` delegates remedial work to **/e2e-debug** (diff since last green, parallel shard fixes on one remedial branch), then merges the remedial PR and re-watches. Do **not** inline remedial playbooks in execute-plan.
+
+Do **not** poll `deploy-uat` or prod-ready. See [uat-deploy-tiers.md](../../../docs/e2e/uat-deploy-tiers.md), `/babysit-uat`, and `/e2e-debug`.
 
 ---
 
@@ -292,7 +294,7 @@ Commit plan artifacts on the phase branch (`artifact_branch_policy: phase-branch
 - `merge_commit` recorded
 - `git merge-base --is-ancestor <merge_commit> origin/<base_branch>`
 
-For **babysit-uat** on final main merge, phase gate also requires **pre-UAT E2E green** for that `merge_commit` before `complete-plan`.
+For **babysit-uat** on final main merge, phase gate also requires **pre-UAT E2E green** for that `merge_commit` before `complete-plan`. If watch fails, run **/e2e-debug** (reactive) before remedial merge — remedial branch is usually already prepared by `/e2e-debug` on the same execute-plan session.
 
 ```bash
 gh pr view <url> --json state,mergedAt,mergeCommit,baseRefName
@@ -371,6 +373,7 @@ See autonomous-pr-policy §Escalation. Includes security/crypto, breaking API, p
 |-------|------|
 | `/babysit-plus` | Intermediate phase PRs — triage, debt, CI, merge |
 | `/babysit-uat` | **Final** PR to `main` — babysit+ + pre-UAT E2E |
+| `/e2e-debug` | Pre-UAT remedial — delegated from babysit-uat / execute-plan on failure |
 | `/pre-push-verify` | Before every push; full suite before merge |
 | `/spawn-sprint-agents` | Phase with `spawn_allowed: true` (parallel within one phase) |
 | Task `generalPurpose` | Per-phase implementation worker (orchestrator retains babysit+ / merge) |

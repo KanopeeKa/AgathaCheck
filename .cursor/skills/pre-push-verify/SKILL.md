@@ -10,6 +10,7 @@ description: Run the correct pre-push verification before git push — changed-f
 | Situation | Command |
 |-----------|---------|
 | **During agent iteration** (most pushes) | `./scripts/pre-push-changed.sh` |
+| **E2E remedial shard replay** (`/e2e-debug`) | `./scripts/pre-push-changed.sh --e2e-shards 3,12` (stack must be up) |
 | **Before integration→main PR** or single-agent merge | `./scripts/pre-push.sh` |
 | **Unsure / touched many domains** | `./scripts/pre-push.sh` |
 
@@ -35,6 +36,8 @@ When `./scripts/pre-push-changed.sh` detects edits under `flutter_app/lib/featur
 | `flutter_app/lib/features/<x>/**` | analyze + `test/features/<x>/` (domain-scoped) |
 | `e2e/**` | BDD coverage + file size gates |
 | `scripts/**`, `.github/**` | Governance gates |
+
+**E2E remedial:** `/e2e-debug` uses `./scripts/pre-push-changed.sh --e2e-shards <list>` after `./scripts/babysit_uat_bootstrap_stack.sh`. This is **not** part of normal iteration pushes.
 
 **Local vs PR CI:** `pre-push-changed.sh` targets **feature domains** touched in the diff. PR CI currently runs **all Flutter test shards** whenever the Flutter stack runs — Phase F2 of `ci-test-depth-abc9` will align PR shards with changed domains.
 

@@ -14,6 +14,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 | `/pre-push-verify` | Which tests to run |
 | `/babysit-plus` | Autonomous PR triage, debt, CI loop, merge (composer-2.5 only) |
 | `/babysit-uat` | Final merge to `main` + pre-UAT E2E gate |
+| `/e2e-debug` | Pre-UAT remedial — diff since last green, parallel shard fixes |
 | `/execute-plan` | Multi-phase autonomy — see `execute-plan-autonomy.md` |
 | `/ui-check` | Quick UX/a11y pass on UI changes — **auto-reminded** when `pre-push-changed.sh` detects presentation edits |
 | `/ui-design-deep` | In-depth UX/design review or refactor planning |

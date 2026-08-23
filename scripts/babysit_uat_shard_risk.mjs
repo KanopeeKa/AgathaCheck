@@ -5,6 +5,7 @@
  * Usage:
  *   node scripts/babysit_uat_shard_risk.mjs --paths-file changed.txt
  *   node scripts/babysit_uat_shard_risk.mjs --pr 612
+ *   node scripts/babysit_uat_shard_risk.mjs --since-sha <sha>
  *   git diff --name-only origin/main...HEAD | node scripts/babysit_uat_shard_risk.mjs
  *
  * JSON stdout: { shards: [{ index, risk, specs, reasons }], merge_action: "wait"|"act_now" }
@@ -104,11 +105,34 @@ for (let i = 0; i < SHARDS.length; i++) {
 
 function usageError(msg) {
   console.error(`babysit_uat_shard_risk: ${msg}`);
-  console.error('usage: node scripts/babysit_uat_shard_risk.mjs [--paths-file <file> | --pr <n>]');
+  console.error('usage: node scripts/babysit_uat_shard_risk.mjs [--paths-file <file> | --pr <n> | --since-sha <sha> [--to-sha <sha>]]');
   process.exit(2);
 }
 
 function readChangedPaths() {
+  const sinceIdx = process.argv.indexOf('--since-sha');
+  if (sinceIdx !== -1) {
+    const baseSha = process.argv[sinceIdx + 1];
+    if (!baseSha || baseSha.startsWith('-')) {
+      usageError('--since-sha requires a commit SHA');
+    }
+    const toIdx = process.argv.indexOf('--to-sha');
+    const toSha =
+      toIdx !== -1 && process.argv[toIdx + 1] && !process.argv[toIdx + 1].startsWith('-')
+        ? process.argv[toIdx + 1]
+        : 'origin/main';
+    spawnSync('git', ['fetch', 'origin', 'main', '--depth=1', '--quiet'], { cwd: repoRoot });
+    const diff = spawnSync('git', ['diff', '--name-only', baseSha, toSha], {
+      cwd: repoRoot,
+      encoding: 'utf8',
+    });
+    if (diff.status !== 0) {
+      console.error(diff.stderr || diff.stdout);
+      process.exit(1);
+    }
+    return diff.stdout.split('\n').map((p) => p.trim()).filter(Boolean);
+  }
+
   const pathsFileIdx = process.argv.indexOf('--paths-file');
   if (pathsFileIdx !== -1) {
     const file = process.argv[pathsFileIdx + 1];

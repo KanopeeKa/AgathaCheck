@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "plan_id": "e2e-debug-skill-6bba",
+  "approved_at": "2026-08-23T14:37:00Z",
+  "approved_by": "user chat — go for it /execute-plan",
+  "approved_until": "2026-08-25T14:37:00Z",
+  "content_hash": "sha256:2e5e788115c067b704d67d749f66a9dc12a4e344a4db3b4fa1de3833d321fa01",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Skill + scripts + alignment",
+      "branch": "cursor/e2e-debug-skill-6bba",
+      "allowed_paths": [
+        ".cursor/skills/e2e-debug/**",
+        ".cursor/skills/babysit-uat/SKILL.md",
+        ".cursor/skills/execute-plan/SKILL.md",
+        ".cursor/skills/pre-push-verify/SKILL.md",
+        ".cursor/rules/agent-core.mdc",
+        ".agents/memory/MEMORY.md",
+        ".agents/plans/e2e-debug-skill-6bba.*",
+        "scripts/e2e_debug_resolve.mjs",
+        "scripts/e2e_debug_resolve.test.mjs",
+        "scripts/babysit_uat_shard_risk.mjs",
+        "scripts/pre-push-changed.sh"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
