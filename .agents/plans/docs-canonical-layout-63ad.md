@@ -75,16 +75,16 @@ Extend `validate_docs.sh` / CI: doc placement, no hex outside tokens, feature ma
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/docs-canonical-scaffold-63ad"
+next_action: "start phase 2: checkout cursor/docs-canonical-platform-63ad"
 artifact_ref:
   branch: cursor/docs-canonical-scaffold-63ad
   plan_path: .agents/plans/docs-canonical-layout-63ad.md
-  plan_commit: 01518c7d50e2667a6b38834d9b9049b98862e7b4
+  plan_commit: 1e3a1b9e89446a085b1374b41bccaf593ae51c14
   snapshot_path: .agents/plans/docs-canonical-layout-63ad.snapshot.json
-  snapshot_commit: 01518c7d50e2667a6b38834d9b9049b98862e7b4
+  snapshot_commit: 1e3a1b9e89446a085b1374b41bccaf593ae51c14
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
