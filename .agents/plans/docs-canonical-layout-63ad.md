@@ -82,10 +82,10 @@ next_action: "continue phase 8 on branch cursor/docs-canonical-cleanup-63ad"
 artifact_ref:
   branch: cursor/docs-canonical-cleanup-63ad
   plan_path: .agents/plans/docs-canonical-layout-63ad.md
-  plan_commit: 40873c8d5f9342992231bcd314b3de245042e4e3
+  plan_commit: 2916756620d74aebd264faffe2bf5bff8ec0f436
   snapshot_path: .agents/plans/docs-canonical-layout-63ad.snapshot.json
-  snapshot_commit: 40873c8d5f9342992231bcd314b3de245042e4e3
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/732"]
+  snapshot_commit: 2916756620d74aebd264faffe2bf5bff8ec0f436
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/732","https://github.com/KanopeeKa/AgathaCheck/pull/735"]
 merge_commits: {}
 debt_issue_refs: []
 ```
