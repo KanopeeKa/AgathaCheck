@@ -9,7 +9,7 @@ tags: [domain,notifications,journeys]
 
 # Notifications journeys
 
-User-facing flows for the global bell and in-app notification feed (D7–D11 in [/docs/experience-program/decisions-log.md](/docs/experience-program/decisions-log.md)).
+User-facing flows for the global bell and in-app notification feed (D7–D11 in [notification-decisions.md](../features/notification-decisions.md)).
 
 ## Open notification panel from header bell
 

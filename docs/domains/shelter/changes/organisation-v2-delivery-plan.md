@@ -10,7 +10,7 @@ tags: [domain, organization, plans]
 
 **Status:** Locked — implementation in progress (`execute-plan organisation-v2-abc9`, control issue #537)  
 **Supersedes:** Experience-program Phase 3 “section-card dashboard” as primary organisation IA  
-**Parent:** [`program-contract.md`](program-contract.md) · [`decisions-log.md`](decisions-log.md)  
+**Parent:** [../../cross-domain/changes/program-contract.md](../../cross-domain/changes/program-contract.md) · [shelter-decisions.md](../features/shelter-decisions.md)  
 **Last updated:** 2026-08-02
 
 ---
@@ -209,7 +209,7 @@ e2e/playwright/tests/
 ### Phase F0 — Foundation (2 PRs)
 
 #### PR-F1: v2 decisions & architecture docs
-- Append v2 block to `decisions-log.md`.
+- Append v2 block to [shelter-decisions.md](../features/shelter-decisions.md).
 - Mark organisation dashboard brief § IA as superseded (header note).
 - `docs/architecture/pet-activity-model.md`.
 - Extend `docs/ops/observability.md` (pet activity vs audit).

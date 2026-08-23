@@ -75,17 +75,17 @@ Extend `validate_docs.sh` / CI: doc placement, no hex outside tokens, feature ma
 
 ```yaml
 autonomy: active
-current_phase: 4
-last_completed_phase: 3
+current_phase: 6
+last_completed_phase: 5
 halt_reason: null
-next_action: "continue phase 4 on branch cursor/docs-canonical-debt-63ad"
+next_action: "continue phase 6 on branch cursor/docs-canonical-dissolve-xp-63ad"
 artifact_ref:
-  branch: cursor/docs-canonical-debt-63ad
+  branch: cursor/docs-canonical-dissolve-xp-63ad
   plan_path: .agents/plans/docs-canonical-layout-63ad.md
-  plan_commit: 447ccbd9415a97770b4f8e4c436656b0dc36743b
+  plan_commit: 8105f01e1139fb87ec4317a86b5379dd390bad5e
   snapshot_path: .agents/plans/docs-canonical-layout-63ad.snapshot.json
-  snapshot_commit: 447ccbd9415a97770b4f8e4c436656b0dc36743b
-open_prs: []
+  snapshot_commit: 8105f01e1139fb87ec4317a86b5379dd390bad5e
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/732"]
 merge_commits: {}
 debt_issue_refs: []
 ```

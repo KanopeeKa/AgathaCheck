@@ -20,4 +20,4 @@ Active and recent **multi-domain** execution plans (BDD sprints, toolchain, docu
 
 Domain-scoped execute-plan snapshots remain in `.agents/plans/` (link from domain `changes/plans.md` indexes).
 
-Experience program (navigation shell, cross-phase contract): [/docs/experience-program/README.md](/docs/experience-program/README.md)
+Navigation shell & cross-domain delivery: [/docs/domains/navigation/README.md](/docs/domains/navigation/README.md)

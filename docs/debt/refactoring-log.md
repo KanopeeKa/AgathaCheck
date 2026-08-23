@@ -17,7 +17,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 ## organisation-people-permissions-v4 — People, roles, foster (2026-08-06)
 
 **Goal:** Unified People directory, retire `foster` wire role (badge instead), staged permissions editor, org tier defaults, foster invite + onboarding timeline.  
-**Plan:** `docs/experience-program/organisation-people-permissions-v4-delivery-plan.md` · **Decisions:** D-v4-* in `decisions-log.md`
+**Plan:** `docs/domains/shelter/changes/organisation-people-permissions-v4-delivery-plan.md` · **Decisions:** D-v4-* in `shelter-decisions.md`
 
 | Phase | Outcome | Branch | Status |
 |-------|---------|--------|--------|
@@ -417,7 +417,7 @@ Use this template when spawning agents on an integration branch:
 ## Experience program — Phase 3 (`experience-program-phase-3`)
 
 **Integration branch:** `cursor/sprint-exp-org-presentation-integration-36bd`  
-**Control issue:** #379 · **UI review:** `docs/experience-program/phase-3-ui-design-review.md`
+**Control issue:** #379 · **UI review:** `docs/domains/shelter/changes/phase-3-ui-design-review.md`
 
 | Agent | Branch | Owns | Avoid |
 |-------|--------|------|-------|
@@ -469,7 +469,7 @@ Use this template when spawning agents on an integration branch:
 
 | Agent / phase | Branch | Owns | Avoid |
 |---------------|--------|------|-------|
-| F0-F1 docs | `cursor/org-v2-f0-docs-abc9` | `docs/experience-program/**`, `docs/architecture/pet-activity-model.md` | product code |
+| F0-F1 docs | `cursor/org-v2-f0-docs-abc9` | `docs/domains/shelter/changes/**`, `docs/domains/cross-domain/changes/**`, `docs/architecture/pet-activity-model.md` | product code |
 | F0-F2 perms | `cursor/org-v2-f0-perms-abc9` | `server/lib/orgPermissions.js`, permissions routes, Flutter org permission providers | profile UI |
 | Slice 1+ | per snapshot | see `organisation-v2-delivery-plan.md` | — |
 | 8a–9 hardening | `cursor/org-v2-8-9-hardening-abc9` | BDD completion (admin contacts, permissions, customisations); gate **150/231**; docs + FR l10n | — |
@@ -480,12 +480,12 @@ Use this template when spawning agents on an integration branch:
 
 **Goal:** Show-org visibility, last-section login, org chrome, dashboard/discover IA, profile nav-rows, Account per-org privacy, people tiles, upload P0, pre-UAT green.  
 **Integration branch:** `cursor/organisation-ux-v3-integration-badd` → single PR to `main`.  
-**Plan:** `docs/experience-program/organisation-ux-v3-delivery-plan.md` · `.agents/plans/organisation-ux-v3-badd.md`  
+**Plan:** `docs/domains/shelter/changes/organisation-ux-v3-delivery-plan.md` · `.agents/plans/organisation-ux-v3-badd.md`  
 **Control issue:** #567
 
 | Agent / phase | Branch | Owns | Avoid |
 |---------------|--------|------|-------|
-| 0 docs | `cursor/org-ux-v3-0-docs-badd` | `docs/experience-program/**`, architecture pointers, debt issues | product code |
+| 0 docs | `cursor/org-ux-v3-0-docs-badd` | `docs/domains/shelter/changes/**`, `docs/domains/cross-domain/changes/**`, architecture pointers, debt issues | product code |
 | 1 upload | `cursor/org-ux-v3-1-upload-badd` | org image upload routes + Flutter branding upload + edit BDD | profile IA |
 | 2 visibility | `cursor/org-ux-v3-2-visibility-badd` | experience prefs, drawer, login last-section, Account toggle | org profile widgets |
 | 3 chrome | `cursor/org-ux-v3-3-chrome-badd` | org shell app bar / teal scaffold | discover API |

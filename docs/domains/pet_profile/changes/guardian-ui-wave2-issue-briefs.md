@@ -103,7 +103,7 @@ UI + policy doc update
 
 ### Affected screens
 - `ExperienceSectionDrawer`
-- `docs/experience-program/phase-1-navigation.md` (delete bottom-pin Account rules; update §1, §9)
+- [phase-1-navigation.md](/docs/domains/navigation/changes/phase-1-navigation.md) (delete bottom-pin Account rules; update §1, §9)
 - Drawer/account tests
 
 ### Desired behavior
