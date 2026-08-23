@@ -4,7 +4,7 @@ owner: Documentation Team
 audience: both
 status: active
 last_updated: 2026-08-22
-tags: [database, bootstrap]
+tags: [database, bootstrap, plan]
 ---
 # Database schema bootstrap — phased plan
 

@@ -4,7 +4,7 @@ owner: Documentation Team
 audience: both
 status: active
 last_updated: 2026-08-21
-tags: [documentation]
+tags: [documentation, pipeline]
 ---
 # CI/CD baseline metrics
 

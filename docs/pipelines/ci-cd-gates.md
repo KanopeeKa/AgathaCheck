@@ -4,7 +4,7 @@ owner: Documentation Team
 audience: both
 status: active
 last_updated: 2026-08-22
-tags: [ci, gates]
+tags: [ci, gates, pipeline]
 ---
 # CI/CD gate contract
 
