@@ -120,7 +120,7 @@ const FILE_META = {
     title: 'UAT deploy tiers',
     tags: ['e2e', 'uat', 'deploy'],
   },
-  'docs/design/ui-rework-plan.md': {
+  'docs/design/plans/ui-rework-plan.md': {
     title: 'UI rework plan',
     tags: ['design', 'ui'],
   },
