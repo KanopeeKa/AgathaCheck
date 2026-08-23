@@ -3,14 +3,16 @@
  * Scenario: New org super-admin sees onboarding wizard after first login
  * Scenario: Org super-admin completes onboarding with inventory pet and reminder
  */
-import { test, expect } from '../fixtures/auth.fixture';
+import { test } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
 import { OnboardingPage } from '../pages/onboarding.page';
+import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { seedRescueHearts } from '../support/api';
 import {
   completeOrgOnboarding,
   dismissConsentBannerIfPresent,
+  flutterGotoUrl,
   refreshFlutterAccessibility,
   waitForPostLoginRoute,
   waitForFlutterRoutePattern,
@@ -41,7 +43,7 @@ test.describe('Organisation onboarding', () => {
     page,
   }) => {
     await prepareLiveApiAccess(page, baseURL());
-    const { alice } = await seedRescueHearts(baseURL());
+    const { alice, org } = await seedRescueHearts(baseURL());
 
     const landing = new LandingPage(page);
     await landing.goto();
@@ -53,7 +55,13 @@ test.describe('Organisation onboarding', () => {
 
     const experience = new ExperiencePage(page);
     await experience.expectOrgShell();
-    await expect(page.getByText('Max')).toBeVisible();
+
+    // Organization home is intentionally a shelter switcher. The inventory
+    // created during onboarding belongs in the selected shelter's Pets view.
+    await page.goto(flutterGotoUrl(`/o/orgs/${org.id}`));
+    const organization = new OrganizationDetailPage(page);
+    await organization.expectLoaded(org.name);
+    await organization.expectPetVisible('Max');
     await refreshFlutterAccessibility(page);
   });
 });
