@@ -9,7 +9,7 @@ tags: [experience,guardian,organisation]
 # Phase 4 — Foster & pet operations
 
 **Parent:** [`roadmap-delivery-plan.md`](roadmap-delivery-plan.md) · [`program-contract.md`](program-contract.md)  
-**Brief:** [`briefs/organisation-dashboard-brief.md`](briefs/organisation-dashboard-brief.md) §Fosters
+**Brief:** [`briefs/shelter-dashboard-brief.md`](briefs/shelter-dashboard-brief.md) §Fosters
 
 ## Purpose
 

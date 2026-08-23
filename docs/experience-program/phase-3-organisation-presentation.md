@@ -11,4 +11,4 @@ tags: [migration,documentation]
 
 This document moved during the domain-first docs reorg:
 
-[/docs/domains/organization/changes/phase-3-organisation-presentation.md](/docs/domains/organization/changes/phase-3-organisation-presentation.md)
+[/docs/domains/shelter/changes/phase-3-organisation-presentation.md](/docs/domains/shelter/changes/phase-3-organisation-presentation.md)

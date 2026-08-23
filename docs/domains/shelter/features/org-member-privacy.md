@@ -9,7 +9,7 @@ tags: [architecture,design,domain]
 # Organisation member privacy (v3)
 
 **Status:** Design note for Organisation UX v3 Phase 8  
-**Parent:** [/docs/domains/organization/changes/organisation-ux-v3-delivery-plan.md](/docs/domains/organization/changes/organisation-ux-v3-delivery-plan.md) · **D-v3-PRIV-1/2**
+**Parent:** [/docs/domains/shelter/changes/organisation-ux-v3-delivery-plan.md](/docs/domains/shelter/changes/organisation-ux-v3-delivery-plan.md) · **D-v3-PRIV-1/2**
 
 ## Purpose
 

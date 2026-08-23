@@ -25,7 +25,7 @@ API and workflow contracts for foster platform foundation:
 
 ## Custody transfers
 
-Transfer kinds and acceptor rules are defined in the organization custody model — [/docs/domains/organization/features/org-custody-model.md](/docs/domains/organization/features/org-custody-model.md). This domain owns the **workflows** that invoke those transfers.
+Transfer kinds and acceptor rules are defined in the organization custody model — [/docs/domains/shelter/features/org-custody-model.md](/docs/domains/shelter/features/org-custody-model.md). This domain owns the **workflows** that invoke those transfers.
 
 ## Node routes
 
