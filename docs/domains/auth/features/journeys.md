@@ -5,6 +5,7 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain,auth,journeys]
+domain: auth
 ---
 
 # Authentication journeys

@@ -5,6 +5,7 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain,weight_tracking,journeys]
+domain: weight_tracking
 ---
 
 # Weight tracking journeys

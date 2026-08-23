@@ -5,6 +5,7 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain,organization,specs]
+domain: shelter
 ---
 
 # Organization specs

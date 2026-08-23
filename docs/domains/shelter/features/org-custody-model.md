@@ -5,6 +5,8 @@ audience: both
 status: active
 last_updated: 2026-08-21
 tags: [architecture,design,domain]
+domain: shelter
+feature_id: org-custody-model
 ---
 # Organisation pet custody model
 

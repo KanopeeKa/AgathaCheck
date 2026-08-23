@@ -5,6 +5,8 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain, pet_profile, specs]
+domain: pet_profile
+feature_id: pet-activity-model
 ---
 # Pet activity model (product layer)
 

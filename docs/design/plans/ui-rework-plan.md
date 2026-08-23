@@ -22,7 +22,7 @@ Product goal: calm, trustworthy care coordination — warm neutrals, sage operat
 
 | Item | Location | Notes |
 |------|----------|-------|
-| Theme | `flutter_app/lib/core/theme/app_theme.dart` | Material 3, purple seed `#6750A4` |
+| Theme | `flutter_app/lib/core/theme/app_theme.dart` | Material 3, legacy purple seed (pre–theme rework) |
 | Org palette constants | `AppTheme.org*` in same file | Used across ~20 org widgets |
 | Hardcoded `Color(0x…)` | 5 files outside theme | `org_person_card`, `pet_card`, `pet_form_edit_actions`, `pet_photo`, `app_theme` |
 | Screens | 67 under `presentation/screens/` | Many already split into widgets |
@@ -35,11 +35,11 @@ Product goal: calm, trustworthy care coordination — warm neutrals, sage operat
 
 | # | Decision | Proposal |
 |---|----------|----------|
-| D1 | Guardian primary | Plum `#755B68` — full primary on `/g/*` |
-| D2 | Organisation primary | Teal `#218B6C` — full primary on `/o/*` |
-| D3 | Warm accent | Coral `#D6A08F` — never primary CTA |
-| D4 | Success | `#2B7A2E` (S2) |
-| D5 | Surfaces | `#F8F5F1` background; white cards |
+| D1 | Guardian primary | Guardian plum (`plum-500` / `guardianPrimary` in [tokens.md](../tokens.md)) — full primary on `/g/*` |
+| D2 | Organisation primary | Shelter teal (`teal-500` / `organizationPrimary` in [tokens.md](../tokens.md)) — full primary on `/o/*` |
+| D3 | Warm accent | Coral (`coral-500` in [tokens.md](../tokens.md)) — never primary CTA |
+| D4 | Success | `success-500` in [tokens.md](../tokens.md) (S2) |
+| D5 | Surfaces | `neutral-100` background; white cards per [tokens.md](../tokens.md) |
 | D6 | Typography | Material 3 defaults |
 | D7 | Dark mode | Out of scope until native apps |
 | D8 | Org branding | Logo/name/photo only (`copy-tone.md`) |

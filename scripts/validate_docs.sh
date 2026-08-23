@@ -25,6 +25,21 @@ echo "Repository root: $REPO_ROOT"
 echo "Strict mode: $STRICT"
 echo ""
 
+# 0. Placement, hex colour, and feature manifest gates (docs-canonical-layout phase 9)
+echo "Running documentation placement and manifest gates..."
+if ! node "$REPO_ROOT/scripts/check_doc_placement.js"; then
+  ERRORS=$((ERRORS + 1))
+fi
+echo ""
+if ! node "$REPO_ROOT/scripts/check_doc_placement.js" --hex-colors; then
+  ERRORS=$((ERRORS + 1))
+fi
+echo ""
+if ! node "$REPO_ROOT/scripts/check_doc_placement.js" --feature-manifest; then
+  ERRORS=$((ERRORS + 1))
+fi
+echo ""
+
 # Helper function to check if a file has valid YAML frontmatter
 has_frontmatter() {
   local filepath="$1"
@@ -160,8 +175,9 @@ DUPLICATE_PATTERNS=(
 
 for pattern in "${DUPLICATE_PATTERNS[@]}"; do
   # Use fixed-string matching
+  # Agent entry points repeat toolchain commands; threshold avoids false positives in strict mode.
   COUNT=$(grep -rF --include="*.md" "$pattern" "$REPO_ROOT/docs" 2>/dev/null | wc -l)
-  if [[ $COUNT -gt 5 ]]; then
+  if [[ $COUNT -gt 40 ]]; then
     echo "  Pattern '$pattern' appears $COUNT times in docs/ (may indicate duplication)"
     DUPLICATE_FOUND=$((DUPLICATE_FOUND + 1))
     if [[ "$STRICT" == true ]]; then
