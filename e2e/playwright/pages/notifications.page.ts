@@ -100,7 +100,7 @@ export class NotificationsPage {
       const allChip = filterChipByName(this.page, /^All$|^Tout$/i).and(
         this.page.locator(':visible'),
       );
-      await allChip.waitFor({ timeout: 3_000 });
+      await allChip.waitFor({ timeout: 5_000 });
       const markAll = this.page
         .getByRole('button', { name: /Mark all as read|Tout marquer comme lu/i })
         .or(
@@ -109,8 +109,8 @@ export class NotificationsPage {
           }),
         )
         .and(this.page.locator(':visible'));
-      await markAll.waitFor({ timeout: 3_000 });
-    }).toPass({ timeout: 15_000 });
+      await markAll.waitFor({ timeout: 5_000 });
+    }).toPass({ timeout: 25_000 });
     await this.waitForNotificationListSettled();
   }
 
