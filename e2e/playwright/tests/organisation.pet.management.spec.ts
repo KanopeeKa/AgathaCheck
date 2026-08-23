@@ -83,7 +83,7 @@ test.describe('Organisation pet management', () => {
     await petList.expectSectionHeader('My Pets');
     await petList.expectPetVisible('Milo');
 
-    // Nav v2 guardian shell shows personal pets only; org inventory is on /o/home.
+    // Nav v2 guardian shell shows personal pets only; org inventory is on /o/orgs/:id/pets.
     await petList.goHome({ experience: 'organization' });
     await petList.expectSectionHeader(ORG_NAME);
     await petList.expectPetUnderOrganization('Bella', ORG_NAME);
