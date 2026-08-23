@@ -1,3 +1,11 @@
+---
+title: Organisation UX v3 delivery plan
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [domain, organization, plans]
+---
 # Organisation UX v3 — delivery plan
 
 **Status:** Locked for planning — awaiting `approve-autonomous` on execute-plan control issue  

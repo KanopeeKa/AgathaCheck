@@ -1,3 +1,11 @@
+---
+title: Pr Review Cost Efficiency
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [agent-efficiency, policy]
+---
 # PR review & cost efficiency
 
 Single source of truth for **pre-PR self-review**, **Bugbot configuration**, **Copilot fallback**, and **Cloud Agent model choice** during PR babysitting.

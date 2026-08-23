@@ -1,3 +1,11 @@
+---
+title: E2E CI canary plan
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [e2e, ci, canary]
+---
 # E2E fail-fast canary — phased implementation plan
 
 **Status:** Partially superseded by [e2e/uat-deploy-tiers.md](./e2e/uat-deploy-tiers.md) (Jul 2026) — full E2E now runs in `pre-uat-e2e.yml`; live `@smoke-uat` is advisory via `uat-live-e2e.yml`. PR `@smoke-ci` goals below remain current.

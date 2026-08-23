@@ -1,3 +1,11 @@
+---
+title: Technical debt index
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [debt, technical]
+---
 # Technical debt & deferred work
 
 > **Docs reorg (2026-08):** Cross-cutting rows live in [/docs/deferred.md](/docs/deferred.md). Domain-scoped items live in `docs/domains/<domain>/changes/deferred.md`. This file is a **legacy index pointer** — add new deferrals to the appropriate domain or cross-cutting file, not here.

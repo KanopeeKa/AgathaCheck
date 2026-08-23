@@ -1,3 +1,11 @@
+---
+title: UAT WAF queue lessons
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [e2e, uat, incident]
+---
 # UAT WAF, smoke, and queue — lessons learned (Jul 2026)
 
 Institutional knowledge from the Jul 24–25 deploy/smoke/coordinator incident chain. Use this **before** debugging the same symptoms again.

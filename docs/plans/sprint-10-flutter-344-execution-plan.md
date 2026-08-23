@@ -1,3 +1,11 @@
+---
+title: Sprint 10 Flutter 3.44 execution plan
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [plans, sprint, flutter]
+---
 # Sprint 10 — Flutter 3.44 / Dart 3.12 toolchain upgrade
 
 **Status:** In progress  

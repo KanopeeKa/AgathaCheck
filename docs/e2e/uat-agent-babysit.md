@@ -1,3 +1,11 @@
+---
+title: UAT agent babysit
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [e2e, uat, agent]
+---
 # UAT agent babysit (manual ops only)
 
 **Default path:** CI owns promotion — merge to `main` triggers `pre-uat-e2e.yml` →

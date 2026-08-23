@@ -1,3 +1,11 @@
+---
+title: Organisation people permissions v4 delivery plan
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [domain, organization, plans]
+---
 # Organisation people, permissions & foster v4 — delivery plan
 
 **Status:** Locked for implementation (2026-08-06)  

@@ -1,3 +1,11 @@
+---
+title: Experience program roadmap
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [experience, roadmap]
+---
 # Experience program — delivery plan (Phase R + 0–5)
 
 **Status:** Ready to start  

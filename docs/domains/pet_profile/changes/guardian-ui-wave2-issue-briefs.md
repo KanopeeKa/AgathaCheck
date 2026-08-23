@@ -1,3 +1,11 @@
+---
+title: Guardian UI wave 2 issue briefs
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [domain, pet_profile, plans]
+---
 # Guardian UI wave 2 — feature issue briefs
 
 **Status:** Planning snapshot (2026-07-27). One brief = one atomic PR = one sprint outcome.  

@@ -1,3 +1,11 @@
+---
+title: Fostering migration appendix
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [domain, fostering, specs]
+---
 # Migration appendix — fostering platform
 
 **Status:** `locked` (J3 gate satisfied)  

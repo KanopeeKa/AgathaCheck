@@ -1,3 +1,11 @@
+---
+title: UAT live operations runbook
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [e2e, uat, runbook]
+---
 # UAT live E2E & deploy operations runbook
 
 Institutional knowledge from UAT `@smoke` / deploy hardening (July 2026). Use this to **triage failures fast** and **avoid reintroducing** the same classes of bug.

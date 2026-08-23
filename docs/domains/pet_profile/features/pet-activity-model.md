@@ -1,3 +1,11 @@
+---
+title: Pet activity model
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [domain, pet_profile, specs]
+---
 # Pet activity model (product layer)
 
 **Status:** Locked for Organisation v2 (Slice 1)  

@@ -1,3 +1,11 @@
+---
+title: Prompt Templates
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [agent-efficiency, policy]
+---
 # Copy-paste prompt templates for cloud agents
 
 Use with `/spawn-sprint-agents`. Replace placeholders in `ALL_CAPS`.

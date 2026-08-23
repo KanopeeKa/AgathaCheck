@@ -1,3 +1,11 @@
+---
+title: API reference (docs index)
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [api, reference]
+---
 # Agatha Track API — Endpoint Reference
 
 > This top section is the authoritative, current endpoint list (generated from

@@ -1,3 +1,11 @@
+---
+title: Phase Exit Checklists
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [agent-efficiency, policy]
+---
 # Phase exit checklists
 
 Named profiles referenced by `exit_checklist` in plan snapshots. Agents must run **every applicable item** before calling babysit-plus merge step.

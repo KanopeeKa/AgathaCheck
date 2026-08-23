@@ -1,3 +1,11 @@
+---
+title: Fostering roadmap delivery plan
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [domain, fostering, plans]
+---
 # Fostering platform — delivery plan (J1–J5 + G1)
 
 **Status:** Active coordination doc  

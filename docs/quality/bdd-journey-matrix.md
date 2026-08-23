@@ -1,3 +1,11 @@
+---
+title: BDD journey matrix
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [quality, bdd]
+---
 # BDD journey matrix & traceability
 
 Living map between **customer journeys**, **Gherkin scenarios**, and **Playwright executors**.  

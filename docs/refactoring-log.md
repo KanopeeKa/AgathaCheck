@@ -1,3 +1,11 @@
+---
+title: Refactoring log
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [refactoring, sprint]
+---
 # Refactoring log (by sprint)
 
 Tracks planned and completed refactor / quality work. See also `docs/refactoring-debt.md` and `docs/architecture/modularity.md`.

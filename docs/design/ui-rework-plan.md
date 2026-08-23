@@ -1,3 +1,11 @@
+---
+title: UI rework plan
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [design, ui]
+---
 # UI rework — phased execution plan
 
 **Status:** Complete (phases 0–7 merged 2026-07-23)  

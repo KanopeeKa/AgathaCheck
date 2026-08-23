@@ -1,3 +1,11 @@
+---
+title: UAT demo data
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [e2e, uat, demo]
+---
 # UAT demo data
 
 Rich synthetic dataset for **UAT and live demos**. Stable credentials, fixed UUIDs, and idempotent seeds.

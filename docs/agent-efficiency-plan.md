@@ -1,3 +1,11 @@
+---
+title: Agent efficiency plan
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [agent, workflow]
+---
 # Agent efficiency — implementation plan
 
 Living plan to reduce token burn, speed up agent iterations, and encode recurring

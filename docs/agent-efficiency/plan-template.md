@@ -1,3 +1,11 @@
+---
+title: Plan Template
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [agent-efficiency, policy]
+---
 # Plan template — execute-plan
 
 Copy to `.agents/plans/<plan_id>.md` and fill in. Pair with `<plan_id>.snapshot.json` at approval time (see [execute-plan-schema.md](./execute-plan-schema.md)).

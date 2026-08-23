@@ -1,3 +1,11 @@
+---
+title: Execute Plan Runtime
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [agent-efficiency, policy]
+---
 # Execute-plan runtime (Phase C)
 
 Control issue + plan artifact runtime for `/execute-plan` and `/babysit-plus`. The [execute-plan skill](../../.cursor/skills/execute-plan/SKILL.md) orchestrates these commands; agents call them directly during autonomous runs.

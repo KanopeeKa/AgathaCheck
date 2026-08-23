@@ -1,3 +1,11 @@
+---
+title: Uat Coordinator Plan
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [agent-efficiency, policy]
+---
 # Cross-agent UAT coordinator — implementation plan
 
 > **SUPERSEDED (Jul 2026):** UAT coordinator removed. CI owns promotion via `pre-uat-e2e.yml` → `promote-uat.yml` → `deploy-uat.yml`. See [uat-deploy-tiers.md](../e2e/uat-deploy-tiers.md). This document is retained for historical context only.

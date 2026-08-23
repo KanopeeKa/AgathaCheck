@@ -1,3 +1,11 @@
+---
+title: Organisation v2 delivery plan
+owner: Documentation Team
+audience: both
+status: active
+last_updated: 2026-08-22
+tags: [domain, organization, plans]
+---
 # Organisation v2 — delivery plan
 
 **Status:** Locked — implementation in progress (`execute-plan organisation-v2-abc9`, control issue #537)  
