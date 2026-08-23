@@ -3,7 +3,7 @@ title: Agatha Track Documentation
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-08-23
 tags: [overview,table-of-contents,documentation]
 ---
 
@@ -23,8 +23,8 @@ Foundational documents that describe the project's architecture, setup, and work
 |----------|---------|----------|
 | [/docs/architecture/index.md](/docs/architecture/index.md) | Domain map, tech stack, and code organization | Both |
 | [/API.md](/API.md) | REST endpoint reference (authoritative) | Both |
-| [/docs/ci-cd-baseline.md](/docs/ci-cd-baseline.md) | Pipeline metrics and performance targets | Both |
-| [/docs/ci-cd-gates.md](/docs/ci-cd-gates.md) | Blocking vs advisory gates, UAT/PROD rules | Both |
+| [/docs/pipelines/ci-cd-baseline.md](/docs/pipelines/ci-cd-baseline.md) | Pipeline metrics and performance targets | Both |
+| [/docs/pipelines/ci-cd-gates.md](/docs/pipelines/ci-cd-gates.md) | Blocking vs advisory gates, UAT/PROD rules | Both |
 | [/docs/calendar-dates.md](/docs/calendar-dates.md) | `YYYY-MM-DD` wire format specification | Both |
 
 ---
@@ -47,7 +47,25 @@ Each product area has a one-screen index under `docs/domains/<domain>/` with jou
 | Subscription | [/docs/domains/subscription/README.md](/docs/domains/subscription/README.md) | Premium tiers (billing TBD) |
 | Help & about | [/docs/domains/help_about/README.md](/docs/domains/help_about/README.md) | FAQ and about screens |
 
-Cross-cutting deferred work: [/docs/deferred.md](/docs/deferred.md)
+Cross-cutting deferred work: [/docs/debt/deferred.md](/docs/debt/deferred.md)
+
+---
+
+## Documentation by type (cross-cutting)
+
+Product behaviour → `docs/domains/<domain>/`. Platform, CI, agents, and debt → folders below.
+
+| Folder | Index | Contents |
+|--------|-------|----------|
+| **Pipelines** | [/docs/pipelines/README.md](/docs/pipelines/README.md) | CI/CD gates, promotion, canary, deploy runbooks |
+| **Agent efficiency** | [/docs/agent-efficiency/plans/README.md](/docs/agent-efficiency/plans/README.md) | Master agent plan + policies in `docs/agent-efficiency/` |
+| **Debt** | [/docs/debt/README.md](/docs/debt/README.md) | Deferred work, refactor log, technical debt indexes |
+| **Operations** | [/docs/ops/public-access.md](/docs/ops/public-access.md) | Observability, public access |
+| **E2E / UAT** | [/docs/e2e/uat-deploy-tiers.md](/docs/e2e/uat-deploy-tiers.md) | Live E2E ops, promotion manuals |
+| **Plans** | [/docs/plans/README.md](/docs/plans/README.md) | Sprint execution plans (cross-domain) |
+| **Experience program** | [/docs/experience-program/README.md](/docs/experience-program/README.md) | Navigation/guardian/org program (cross-cutting product) |
+
+**Fostering:** canonical tree is [/docs/domains/fostering/](/docs/domains/fostering/README.md). `docs/fostering-platform/` is a legacy redirect only.
 
 ---
 
@@ -118,8 +136,8 @@ The **active** program for navigation reversal, Guardian dashboard, and Organisa
 | Document | Purpose | Status |
 |----------|---------|--------|
 | [/e2e/README.md](/e2e/README.md) | Playwright E2E test suite | Active |
-| [/docs/e2e-navigation-contract.md](/docs/e2e-navigation-contract.md) | Page object action contracts | Active |
-| [/docs/e2e-ci-canary-plan.md](/docs/e2e-ci-canary-plan.md) | Canary deployment strategy | Active |
+| [/docs/e2e/navigation-contract.md](/docs/e2e/navigation-contract.md) | Page object action contracts | Active |
+| [/docs/pipelines/e2e-ci-canary-plan.md](/docs/pipelines/e2e-ci-canary-plan.md) | Canary deployment strategy | Active |
 | [/docs/e2e/uat-deploy-tiers.md](/docs/e2e/uat-deploy-tiers.md) | UAT deployment tier definitions | Active |
 | [/docs/e2e/uat-live-operations-runbook.md](/docs/e2e/uat-live-operations-runbook.md) | Live UAT troubleshooting | Active |
 | [/docs/e2e/uat-promote-manual.md](/docs/e2e/uat-promote-manual.md) | Manual promotion workflow | Active |
@@ -134,7 +152,7 @@ The **active** program for navigation reversal, Guardian dashboard, and Organisa
 
 | Document | Purpose | Status |
 |----------|---------|--------|
-| [/docs/agent-efficiency-plan.md](/docs/agent-efficiency-plan.md) | **Start here** - Master plan for agent improvements | Active |
+| [/docs/agent-efficiency/plans/agent-efficiency-plan.md](/docs/agent-efficiency/plans/agent-efficiency-plan.md) | **Start here** - Master plan for agent improvements | Active |
 | [/docs/agent-efficiency/atomic-pr-policy.md](/docs/agent-efficiency/atomic-pr-policy.md) | One outcome per PR rules | Active |
 | [/docs/agent-efficiency/autonomous-pr-policy.md](/docs/agent-efficiency/autonomous-pr-policy.md) | Multi-phase plan autonomy rules | Active |
 | [/docs/agent-efficiency/execute-plan-runtime.md](/docs/agent-efficiency/execute-plan-runtime.md) | Plan execution engine | Active |
@@ -159,17 +177,17 @@ The **active** program for navigation reversal, Guardian dashboard, and Organisa
 
 | Document | Purpose | Status |
 |----------|---------|--------|
-| [/docs/github-issue-workflow.md](/docs/github-issue-workflow.md) | Issue lifecycle and triage | Active |
-| [/docs/technical-debt.md](/docs/technical-debt.md) | Legacy pointer → domain deferred + [/docs/deferred.md](/docs/deferred.md) | Active |
-| [/docs/refactoring-debt.md](/docs/refactoring-debt.md) | Cross-cutting refactor uncertainty log | Active |
-| [/docs/refactoring-log.md](/docs/refactoring-log.md) | Completed refactoring work | Active |
+| [/docs/agent-efficiency/github-issue-workflow.md](/docs/agent-efficiency/github-issue-workflow.md) | Issue lifecycle and triage | Active |
+| [/docs/debt/technical-debt.md](/docs/debt/technical-debt.md) | Legacy pointer → domain deferred + [/docs/debt/deferred.md](/docs/debt/deferred.md) | Active |
+| [/docs/debt/refactoring-debt.md](/docs/debt/refactoring-debt.md) | Cross-cutting refactor uncertainty log | Active |
+| [/docs/debt/refactoring-log.md](/docs/debt/refactoring-log.md) | Completed refactoring work | Active |
 | [/docs/plans/sprint-6-execution-plan.md](/docs/plans/sprint-6-execution-plan.md) | Sprint 6 deliverables | Active |
 | [/docs/plans/sprint-10-flutter-344-execution-plan.md](/docs/plans/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 upgrade plan | Active |
 | [/docs/plans/docs-domain-audit-63ad.md](/docs/plans/docs-domain-audit-63ad.md) | Full `.md` inventory audit (wave 3) | Active |
-| [/docs/ci-build-artifact-contract.md](/docs/ci-build-artifact-contract.md) | Build artifact specifications | Active |
-| [/docs/promotion-contract.md](/docs/promotion-contract.md) | UAT to PROD promotion rules | Active |
-| [/docs/db-schema-bootstrap-plan.md](/docs/db-schema-bootstrap-plan.md) | Database initialization | Active |
-| [/docs/uat-backend-node-modules-runbook.md](/docs/uat-backend-node-modules-runbook.md) | UAT backend node modules guide | Active |
+| [/docs/pipelines/ci-build-artifact-contract.md](/docs/pipelines/ci-build-artifact-contract.md) | Build artifact specifications | Active |
+| [/docs/pipelines/promotion-contract.md](/docs/pipelines/promotion-contract.md) | UAT to PROD promotion rules | Active |
+| [/docs/pipelines/db-schema-bootstrap-plan.md](/docs/pipelines/db-schema-bootstrap-plan.md) | Database initialization | Active |
+| [/docs/pipelines/uat-backend-node-modules-runbook.md](/docs/pipelines/uat-backend-node-modules-runbook.md) | UAT backend node modules guide | Active |
 
 ---
 
@@ -211,7 +229,7 @@ See [/docs/archived/README.md](/docs/archived/README.md) for the full list.
 ### For Agents
 1. Start with [Agent Guide](/AGENTS.md) for agent-specific setup
 2. Use [Architecture Index](/docs/architecture/index.md) for domain mapping
-3. Check [Agent Efficiency Plan](/docs/agent-efficiency-plan.md) for workflows
+3. Check [Agent Efficiency Plan](/docs/agent-efficiency/plans/agent-efficiency-plan.md) for workflows
 4. Reference [.cursor/skills/](/.cursor/skills/) for reusable skills
 
 ### Quick Links by Task

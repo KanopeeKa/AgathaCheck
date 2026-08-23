@@ -10,7 +10,7 @@ tags: [e2e, uat, promotion]
 
 Human fallback when agent UAT babysit is unavailable, hit retry cap, or subagent died before remedial work.
 
-**Related:** [uat-agent-babysit.md](./uat-agent-babysit.md) · [promotion-contract.md](../promotion-contract.md)
+**Related:** [uat-agent-babysit.md](./uat-agent-babysit.md) · [promotion-contract.md](../pipelines/promotion-contract.md)
 
 ---
 
@@ -83,7 +83,7 @@ gh workflow run deploy-uat.yml -f deploy_ref="uat-$(date -u +%y%m%d)-${PR_NUMBER
 
 ## Tag format
 
-`uat-YYMMDD-PR#` — see [promotion-contract.md](../promotion-contract.md).
+`uat-YYMMDD-PR#` — see [promotion-contract.md](../pipelines/promotion-contract.md).
 
 Example: `uat-260727-481` for PR #481 merged on 2026-07-27.
 

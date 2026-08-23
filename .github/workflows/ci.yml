@@ -1,7 +1,7 @@
 name: CI
 
 # Caller job ids below map to GitHub required checks as `{job_id} / {reusable job name}`.
-# See docs/ci-cd-gates.md §1 (branch protection table).
+# See docs/pipelines/ci-cd-gates.md §1 (branch protection table).
 on:
   pull_request:
     branches: [ "main" ]
@@ -166,7 +166,7 @@ jobs:
 
   # Umbrella required check: ci-gate / CI passed (reusable workflow caller/reusable name form).
   # Maintenance: any new blocking ci.yml job MUST be added to needs: + inputs below and to
-  # scripts/ci/assert-ci-gate.sh — see docs/ci-cd-gates.md and docs/promotion-contract.md.
+  # scripts/ci/assert-ci-gate.sh — see docs/pipelines/ci-cd-gates.md and docs/pipelines/promotion-contract.md.
   ci-gate:
     needs:
       - ci-scope

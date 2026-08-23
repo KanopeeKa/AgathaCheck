@@ -162,7 +162,7 @@ Grandfathered in Sprint 5.1 file-size gate; **split in Sprint 5.2–5.3**:
 
 ## Recommended sprint themes (5–7)
 
-See `docs/refactoring-log.md` for the full parallel-agent plan. Summary:
+See `docs/debt/refactoring-log.md` for the full parallel-agent plan. Summary:
 
 | Sprint | Focus | Parallel agents |
 |--------|-------|-----------------|

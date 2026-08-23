@@ -215,7 +215,7 @@ After merge to `main`:
 4. **Do not poll** `deploy-uat.yml` or prod-ready from the main session.
 5. Applies only on **final merge to `main`**, not intermediate integration-branch merges.
 
-See `docs/e2e/uat-deploy-tiers.md` · `docs/ci-cd-gates.md` §3 · `docs/e2e/uat-promote-manual.md`.
+See `docs/e2e/uat-deploy-tiers.md` · `docs/pipelines/ci-cd-gates.md` §3 · `docs/e2e/uat-promote-manual.md`.
 
 **Infra-only blockers** (e.g. `UAT_AUTO_MIGRATE` unset with pending live migrations) → comment on PR/control issue and escalate; do not weaken gates.
 

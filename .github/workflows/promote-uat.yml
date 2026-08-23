@@ -3,7 +3,7 @@ name: Promote UAT (tag on merge to main)
 # Pre-UAT E2E green → uat-YYMMDD-PR# tag → deploy-uat.yml (workflow_run).
 # Manual replay: workflow_dispatch with commit_sha + pr_number.
 # Throttle: tag only when origin/main HEAD matches the green E2E commit.
-# See docs/promotion-contract.md and docs/e2e/uat-deploy-tiers.md
+# See docs/pipelines/promotion-contract.md and docs/e2e/uat-deploy-tiers.md
 on:
   workflow_run:
     workflows:

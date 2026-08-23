@@ -91,7 +91,7 @@ Migration files live in `db/migrations/`:
 - `db/schema/canonical.sql` — **generated** end-state snapshot; verified by `scripts/db/check-schema-equivalence.sh`
 - `db/migrations/archive/v3__initial_uuid_schema.sql` — archived legacy baseline (regeneration + CI only)
 
-**Phased bootstrap model:** [docs/db-schema-bootstrap-plan.md](docs/db-schema-bootstrap-plan.md)
+**Phased bootstrap model:** [docs/pipelines/db-schema-bootstrap-plan.md](docs/pipelines/db-schema-bootstrap-plan.md)
 
 Fresh installs (dev/E2E) use `e2e/scripts/bootstrap-db.sh` (canonical + migration ledger). Production/UAT upgrades use `migrate.js up` only.
 
@@ -141,7 +141,7 @@ Set `APP_ENV=production` on production hosts. Destructive/bootstrap scripts refu
 
 **Database credentials (recommended):** application runtime user — DML only (`SELECT`, `INSERT`, `UPDATE`, `DELETE`). Migration user — DDL for `migrate.js up` only; no `DROP DATABASE`. Never use superuser credentials in the app `.env`.
 
-**Breaking schema changes:** use expand-and-contract (add → backfill → deploy code → drop in a later migration). See `docs/db-schema-bootstrap-plan.md`.
+**Breaking schema changes:** use expand-and-contract (add → backfill → deploy code → drop in a later migration). See `docs/pipelines/db-schema-bootstrap-plan.md`.
 
 > Replit-managed production deployments use the **Publish** flow (which provisions and migrates the production DB through the Replit UI) — do **not** run `fresh` against a Replit-managed prod DB.
 

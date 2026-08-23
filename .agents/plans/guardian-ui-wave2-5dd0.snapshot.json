@@ -269,7 +269,7 @@
       "title": "Spawn: weight, timeline, health-issue docs API",
       "branch": "cursor/guardian-wave2-spawn-foundation-5dd0",
       "allowed_paths": [
-        "docs/refactoring-log.md",
+        "docs/debt/refactoring-log.md",
         ".agents/plans/guardian-ui-wave2-5dd0.md",
         ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
       ],

@@ -118,7 +118,7 @@ node scripts/execute_plan_runtime.js current-phase <plan_id>
 
 ### Project status (control issue)
 
-Aligns with `docs/github-issue-workflow.md` status field. **Cloud Agents skip board updates** — comments + `busy` label only.
+Aligns with `docs/agent-efficiency/github-issue-workflow.md` status field. **Cloud Agents skip board updates** — comments + `busy` label only.
 
 | When | Agent action |
 |------|----------------|

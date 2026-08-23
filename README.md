@@ -133,7 +133,7 @@ Tests span domain, data, provider/controller, and widget layers, with integratio
 - [`API.md`](API.md) — REST endpoint reference (authoritative section at the top)
 - [`docs/calendar-dates.md`](docs/calendar-dates.md) — calendar-date wire format (`YYYY-MM-DD`)
 - [`docs/org-fostering-strategy.md`](docs/org-fostering-strategy.md) — organisation roles, fostering increments, and permission matrix
-- [`docs/technical-debt.md`](docs/technical-debt.md) — deferred work and low-priority improvements
+- [`docs/debt/technical-debt.md`](docs/debt/technical-debt.md) — deferred work and low-priority improvements
 
 ## Tech Stack
 
@@ -230,7 +230,7 @@ lib/
 - Customizable per-pet PDF reports
 - Full English / French localization with locale persistence
 - GDPR data rights: account deletion, JSON export, consent management
-- Observability: tiered audit logging, structured API logs, consent-gated PostHog analytics (see `docs/observability.md`)
+- Observability: tiered audit logging, structured API logs, consent-gated PostHog analytics (see `docs/ops/observability.md`)
 - Material 3 design with deep purple / violet theme
 - Clean architecture with clear layer separation
 - Comprehensive test coverage (Flutter widget/model tests, 380+ backend Jest tests)

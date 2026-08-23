@@ -18,8 +18,8 @@
       "allowed_paths": [
         "docs/experience-program/**",
         "docs/architecture/**",
-        "docs/observability.md",
-        "docs/refactoring-log.md",
+        "docs/ops/observability.md",
+        "docs/debt/refactoring-log.md",
         ".agents/plans/organisation-v2-abc9.md",
         ".agents/plans/organisation-v2-abc9.snapshot.json"
       ],
@@ -488,7 +488,7 @@
       "allowed_paths": [
         "e2e/scripts/check_bdd_coverage.js",
         "docs/quality/**",
-        "docs/refactoring-log.md",
+        "docs/debt/refactoring-log.md",
         ".agents/plans/organisation-v2-abc9.md",
         ".agents/plans/organisation-v2-abc9.snapshot.json"
       ],

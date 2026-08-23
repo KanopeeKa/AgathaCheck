@@ -10,7 +10,7 @@ tags: [e2e, uat, deploy]
 
 Single source of truth for the UAT release pipeline (CI-driven, Jul 2026).
 
-**Related:** [ci-cd-gates.md](../ci-cd-gates.md) · [promotion-contract.md](../promotion-contract.md) · [uat-promote-manual.md](./uat-promote-manual.md)
+**Related:** [ci-cd-gates.md](../pipelines/ci-cd-gates.md) · [promotion-contract.md](../pipelines/promotion-contract.md) · [uat-promote-manual.md](./uat-promote-manual.md)
 
 ---
 

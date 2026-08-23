@@ -20,7 +20,7 @@ flutter_app/test/bdd/features/
 
 Playwright specs in `playwright/tests/` are annotated with `@bdd <feature>` comments and implement priority user journeys from those files. Over time we can wire [@cucumber/cucumber](https://github.com/cucumber/cucumber-js) to execute the `.feature` files directly; the page objects in `playwright/pages/` are the reusable layer for either approach.
 
-**Navigation contract:** page-object actions must wait for route + ready state before returning. See [`docs/e2e-navigation-contract.md`](../docs/e2e-navigation-contract.md).
+**Navigation contract:** page-object actions must wait for route + ready state before returning. See [`docs/e2e/navigation-contract.md`](../docs/e2e/navigation-contract.md).
 
 **UAT live ops:** symptom triage, env checklist, and prevention patterns — [`docs/e2e/uat-live-operations-runbook.md`](../docs/e2e/uat-live-operations-runbook.md). **WAF + queue lessons (Jul 2026):** [`docs/e2e/uat-waf-queue-lessons.md`](../docs/e2e/uat-waf-queue-lessons.md).
 
@@ -116,7 +116,7 @@ cd e2e && npm run test:ci-shard -- 3   # run one shard locally (stack must be ru
 | `ci.yml` | PR → `main` (+ manual dispatch) | Flutter analyze + unit/widget tests + web build; backend Jest |
 | `codeql.yml` | PR → `main` (+ weekly schedule) | Static security analysis (JavaScript/TypeScript) |
 | `e2e.yml` | manual + weekly cron (non-blocking) | Full Playwright against **localhost** (11 file-balanced shards) |
-| `promote-uat.yml` | after Pre-UAT E2E green (`workflow_run`) + manual dispatch | Create `uat-YYMMDD-PR#` tag (see `docs/promotion-contract.md`) |
+| `promote-uat.yml` | after Pre-UAT E2E green (`workflow_run`) + manual dispatch | Create `uat-YYMMDD-PR#` tag (see `docs/pipelines/promotion-contract.md`) |
 | `pre-uat-e2e.yml` | `push` → `main` + `workflow_dispatch` | Full localhost Playwright (11 shards) — async post-merge, does not block merges |
 | `deploy-uat.yml` | push → `uat-*` tag | FTP deploy → HTTP post-deploy smoke → `prod-ready` gate |
 | `uat-live-e2e.yml` | nightly + manual (advisory) | Live `@smoke-uat` with WAF warmup — does not block promotion |

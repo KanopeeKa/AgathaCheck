@@ -8,8 +8,8 @@ alwaysApply: true
 ## Start here
 
 - **Domain map:** `docs/architecture/index.md` (read before broad search)
-- **Efficiency plan:** `docs/agent-efficiency-plan.md`
-- **Sprint status:** `docs/refactoring-log.md`
+- **Efficiency plan:** `docs/agent-efficiency/plans/agent-efficiency-plan.md`
+- **Sprint status:** `docs/debt/refactoring-log.md`
 - **Institutional memory:** `.agents/memory/MEMORY.md`
 
 ## PR hygiene (always)

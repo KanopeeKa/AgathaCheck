@@ -1,6 +1,6 @@
 ---
 description: Parallel cloud-agent coordination — ownership, integration branches, verification
-globs: docs/refactoring-log.md,docs/agent-efficiency-plan.md,docs/agent-efficiency/**,.cursor/skills/spawn-sprint-agents/**
+globs: docs/debt/refactoring-log.md,docs/agent-efficiency/plans/agent-efficiency-plan.md,docs/agent-efficiency/**,.cursor/skills/spawn-sprint-agents/**
 ---
 
 # Agent coordination (parallel work)
@@ -10,7 +10,7 @@ Use when spawning **multiple agents** from one user request.
 ## Workflow
 
 1. Create `cursor/sprint-<N>-<topic>-integration-13e3` from `main`.
-2. Publish **file ownership map** in `docs/refactoring-log.md` before spawning agents.
+2. Publish **file ownership map** in `docs/debt/refactoring-log.md` before spawning agents.
 3. **Foundation agent first** (if needed): shared `api.ts`, fixtures, CI scripts — merge to integration.
 4. Spawn parallel agents on **disjoint paths** only.
 5. Each agent: branch from integration → work → push → verify tip on correct branch.

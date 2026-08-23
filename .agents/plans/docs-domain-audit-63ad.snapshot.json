@@ -45,8 +45,8 @@
       "branch": "cursor/docs-domain-audit-debt-63ad",
       "allowed_paths": [
         "docs/domains/**/changes/deferred.md",
-        "docs/technical-debt.md",
-        "docs/refactoring-debt.md",
+        "docs/debt/technical-debt.md",
+        "docs/debt/refactoring-debt.md",
         "docs/domains/organization/features/organisation-dashboard-brief.md"
       ],
       "forbidden_paths": [
@@ -75,7 +75,7 @@
       "branch": "cursor/docs-domain-audit-index-63ad",
       "allowed_paths": [
         "docs/README.md",
-        "docs/refactoring-log.md",
+        "docs/debt/refactoring-log.md",
         "docs/**"
       ],
       "forbidden_paths": [

@@ -78,7 +78,7 @@ Close the gap between BDD mapping metrics and real test execution: add depth/exe
 | **branch** | `cursor/ci-test-depth-f2-ci-scope-abc9` |
 | **exit_checklist** | `governance` |
 
-**allowed_paths:** `scripts/ci/**`, `.github/workflows/ci.yml`, `.github/workflows/_reusable-ci-gate.yml`, `.github/workflows/_reusable-flutter-coverage.yml`, `docs/ci-cd-gates.md`, `.agents/plans/**`
+**allowed_paths:** `scripts/ci/**`, `.github/workflows/ci.yml`, `.github/workflows/_reusable-ci-gate.yml`, `.github/workflows/_reusable-flutter-coverage.yml`, `docs/pipelines/ci-cd-gates.md`, `.agents/plans/**`
 
 **Scope:** Extend `ci-scope-lib.sh` to emit `run_shards[]`; per-shard job `if`; coverage merge for partial shards; Jest path scoping on PR.
 
@@ -97,7 +97,7 @@ Close the gap between BDD mapping metrics and real test execution: add depth/exe
 | **branch** | `cursor/ci-test-depth-f3-shards-abc9` |
 | **exit_checklist** | `governance` |
 
-**allowed_paths:** `e2e/scripts/shard-files.mjs`, `e2e/scripts/run-ci-shard.mjs`, `.github/workflows/pre-uat-e2e.yml`, `.github/workflows/e2e.yml`, `e2e/README.md`, `docs/ci-cd-gates.md`, `.agents/plans/**`
+**allowed_paths:** `e2e/scripts/shard-files.mjs`, `e2e/scripts/run-ci-shard.mjs`, `.github/workflows/pre-uat-e2e.yml`, `.github/workflows/e2e.yml`, `e2e/README.md`, `docs/pipelines/ci-cd-gates.md`, `.agents/plans/**`
 
 **Scope:** Add all orphan specs to manifest (12 shards); rebalance heavy groups; update workflow matrix.
 
@@ -154,7 +154,7 @@ Close the gap between BDD mapping metrics and real test execution: add depth/exe
 | **branch** | `cursor/ci-test-depth-integration-abc9` |
 | **exit_checklist** | `governance` |
 
-**allowed_paths:** `.agents/plans/**`, `docs/refactoring-log.md`
+**allowed_paths:** `.agents/plans/**`, `docs/debt/refactoring-log.md`
 
 **Scope:** Single PR integration → main; `./scripts/pre-push.sh` green.
 

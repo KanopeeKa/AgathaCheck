@@ -11,5 +11,5 @@ tags: [domain,pet_profile,deferred]
 
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| Rename `pet_profile_app` package | P4 | Large | Cosmetic; defer until dedicated rename sprint — [/docs/refactoring-debt.md](/docs/refactoring-debt.md) |
-| `family_events_controller.dart` stub | P4 | — | Not wired; use foster placements — [/docs/refactoring-debt.md](/docs/refactoring-debt.md) |
+| Rename `pet_profile_app` package | P4 | Large | Cosmetic; defer until dedicated rename sprint — [/docs/debt/refactoring-debt.md](/docs/debt/refactoring-debt.md) |
+| `family_events_controller.dart` stub | P4 | — | Not wired; use foster placements — [/docs/debt/refactoring-debt.md](/docs/debt/refactoring-debt.md) |

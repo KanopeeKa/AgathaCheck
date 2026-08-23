@@ -83,7 +83,7 @@
         ".github/workflows/ci.yml",
         ".github/workflows/_reusable-ci-gate.yml",
         ".github/workflows/_reusable-flutter-coverage.yml",
-        "docs/ci-cd-gates.md",
+        "docs/pipelines/ci-cd-gates.md",
         ".agents/plans/**"
       ],
       "forbidden_paths": [
@@ -115,7 +115,7 @@
         ".github/workflows/pre-uat-e2e.yml",
         ".github/workflows/e2e.yml",
         "e2e/README.md",
-        "docs/ci-cd-gates.md",
+        "docs/pipelines/ci-cd-gates.md",
         ".agents/plans/**"
       ],
       "forbidden_paths": [
@@ -165,7 +165,7 @@
       "spawn_allowed": true,
       "spawn_config": {
         "integration_branch": "cursor/ci-test-depth-integration-abc9",
-        "ownership_ref": "docs/refactoring-log.md#ci-test-depth-abc9"
+        "ownership_ref": "docs/debt/refactoring-log.md#ci-test-depth-abc9"
       },
       "merge_method": "squash",
       "exit_checklist": "default",
@@ -212,7 +212,7 @@
       "branch": "cursor/ci-test-depth-integration-abc9",
       "allowed_paths": [
         ".agents/plans/**",
-        "docs/refactoring-log.md"
+        "docs/debt/refactoring-log.md"
       ],
       "forbidden_paths": [
         "db/migrations/**",

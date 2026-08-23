@@ -15,7 +15,7 @@ tags: [plans, sprint, bdd]
 **Integration branch (multi-agent):** `cursor/sprint-6-org-bdd-integration-13e3`  
 **Single-agent alternative:** direct-to-`main` PRs per wave (allowed for disjoint domains)
 
-Companion: `docs/refactoring-log.md` · Skill: `/spawn-sprint-agents` · Templates: `docs/agent-efficiency/prompt-templates.md`
+Companion: `docs/debt/refactoring-log.md` · Skill: `/spawn-sprint-agents` · Templates: `docs/agent-efficiency/prompt-templates.md`
 
 ---
 
@@ -157,7 +157,7 @@ Add API helpers (mirror Node routes in `server/routes/organizations/placements/`
 
 **Critical:** Add exact `Scenario:` lines to `@bdd` header block for **each** test (gate counts headers, not feature file names).
 
-**Risk:** Foster/hide flows are UI-heavy; budget hybrid API+UI like 6.1. Park impossible UI in `docs/refactoring-debt.md` only with explicit human review.
+**Risk:** Foster/hide flows are UI-heavy; budget hybrid API+UI like 6.1. Park impossible UI in `docs/debt/refactoring-debt.md` only with explicit human review.
 
 ---
 

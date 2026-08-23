@@ -71,7 +71,7 @@ CI blocks **new** files above 500 lines. **`scripts/file-size-allowlist.json` is
 | `pet_form_screen.dart` | 464 | Sprint 2 — Done |
 | `server/routes/healthEntries.js` | 1 (re-export) | Sprint 4 — Done |
 
-See `docs/quality/review-2026-07-08.md` and `docs/refactoring-log.md`.
+See `docs/quality/review-2026-07-08.md` and `docs/debt/refactoring-log.md`.
 
 ## npm audit (server)
 

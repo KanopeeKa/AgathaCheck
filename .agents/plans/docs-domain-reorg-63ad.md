@@ -105,9 +105,9 @@ Migrate AgathaTrack documentation from document-type-first layout into a **domai
 | **spawn_allowed** | `false` |
 | **exit_checklist** | `default` |
 
-**allowed_paths:** `docs/domains/**/changes/deferred.md`, `docs/deferred.md`, `docs/technical-debt.md`, `docs/refactoring-debt.md`, `docs/archived/**`
+**allowed_paths:** `docs/domains/**/changes/deferred.md`, `docs/debt/deferred.md`, `docs/debt/technical-debt.md`, `docs/debt/refactoring-debt.md`, `docs/archived/**`
 
-**Scope:** Split debt rows into domain `changes/deferred.md` + `docs/deferred.md`; archive or redirect old debt files.
+**Scope:** Split debt rows into domain `changes/deferred.md` + `docs/debt/deferred.md`; archive or redirect old debt files.
 
 ---
 

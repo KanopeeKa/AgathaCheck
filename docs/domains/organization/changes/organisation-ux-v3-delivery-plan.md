@@ -166,7 +166,7 @@ If autonomy window &lt; remaining work: split execute-plan at Phase 7 boundary i
 
 - Append D-v3-* to `decisions-log.md`; header-note supersessions (D25, D26, D-v2-IA-4, default-experience radios).
 - Mark this delivery plan as source of truth for v3 IA.
-- Update `docs/architecture/index.md` pointer; `docs/refactoring-log.md` ownership map for spawn phases.
+- Update `docs/architecture/index.md` pointer; `docs/debt/refactoring-log.md` ownership map for spawn phases.
 - Open debt issues: **DEF-NOTIF**, **DEF-MSG**, **DEF-NOTIF-COUNTS** (labels `tech-debt`, `plan:organisation-ux-v3-badd`).
 - Privacy enum design note in this doc or `docs/architecture/org-member-privacy.md` (short).
 
@@ -489,7 +489,7 @@ If autonomy window &lt; remaining work: split execute-plan at Phase 7 boundary i
 
 ## Parallelism map (`/spawn-sprint-agents`)
 
-Publish in `docs/refactoring-log.md` before spawn.
+Publish in `docs/debt/refactoring-log.md` before spawn.
 
 | When | Agents | Owns | Avoid |
 |------|--------|------|-------|

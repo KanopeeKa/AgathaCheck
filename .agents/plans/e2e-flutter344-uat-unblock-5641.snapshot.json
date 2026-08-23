@@ -16,7 +16,7 @@
       "branch": "cursor/e2e-flutter344-uat-unblock-5641",
       "allowed_paths": [
         "e2e/playwright/**",
-        "docs/e2e-navigation-contract.md",
+        "docs/e2e/navigation-contract.md",
         ".agents/plans/e2e-flutter344-uat-unblock-5641.*"
       ],
       "forbidden_paths": [

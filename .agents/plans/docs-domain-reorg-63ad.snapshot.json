@@ -63,7 +63,7 @@
       "spawn_allowed": true,
       "spawn_config": {
         "integration_branch": "cursor/docs-domain-reorg-integration-63ad",
-        "ownership_ref": "docs/refactoring-log.md#docs-domain-reorg-phase-2"
+        "ownership_ref": "docs/debt/refactoring-log.md#docs-domain-reorg-phase-2"
       },
       "merge_mode": "auto",
       "merge_method": "squash",
@@ -133,7 +133,7 @@
       "spawn_allowed": true,
       "spawn_config": {
         "integration_branch": "cursor/docs-domain-reorg-integration-63ad",
-        "ownership_ref": "docs/refactoring-log.md#docs-domain-reorg-phase-4"
+        "ownership_ref": "docs/debt/refactoring-log.md#docs-domain-reorg-phase-4"
       },
       "merge_mode": "auto",
       "merge_method": "squash",
@@ -151,9 +151,9 @@
       "branch": "cursor/docs-domain-debt-split-63ad",
       "allowed_paths": [
         "docs/domains/**/changes/deferred.md",
-        "docs/deferred.md",
-        "docs/technical-debt.md",
-        "docs/refactoring-debt.md",
+        "docs/debt/deferred.md",
+        "docs/debt/technical-debt.md",
+        "docs/debt/refactoring-debt.md",
         "docs/archived/**"
       ],
       "forbidden_paths": [

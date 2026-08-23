@@ -19,4 +19,4 @@ alwaysApply: true
 - Integration: `cursor/sprint-<N>-<topic>-integration-13e3`
 - Agent: `cursor/<descriptive-name>-13e3` or `cursor/<descriptive-name>-feec`
 
-Full ownership matrix and anti-patterns: `.cursor/rules/agent-coordination.mdc` and `docs/agent-efficiency-plan.md`.
+Full ownership matrix and anti-patterns: `.cursor/rules/agent-coordination.mdc` and `docs/agent-efficiency/plans/agent-efficiency-plan.md`.

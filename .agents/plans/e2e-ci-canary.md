@@ -14,7 +14,7 @@
 
 ## Goal
 
-Add a fast PR Playwright canary (`@smoke-ci`, retries 0), harden UAT live smoke (`@smoke-uat`, retries 0), and tune full localhost shard retries — without removing the 10-shard UAT prod-ready contract. Canonical spec: `docs/e2e-ci-canary-plan.md`.
+Add a fast PR Playwright canary (`@smoke-ci`, retries 0), harden UAT live smoke (`@smoke-uat`, retries 0), and tune full localhost shard retries — without removing the 10-shard UAT prod-ready contract. Canonical spec: `docs/pipelines/e2e-ci-canary-plan.md`.
 
 ## Autonomy
 
@@ -41,7 +41,7 @@ Add a fast PR Playwright canary (`@smoke-ci`, retries 0), harden UAT live smoke 
 | **branch** | `cursor/e2e-canary-phase0-instrument-48ef` |
 | **exit_checklist** | `governance` |
 
-**Scope:** `summarize-playwright-retries.mjs`, `check-smoke-tags.mjs` skeleton, baseline retry note in `docs/ci-cd-baseline.md`. No workflow/gate changes.
+**Scope:** `summarize-playwright-retries.mjs`, `check-smoke-tags.mjs` skeleton, baseline retry note in `docs/pipelines/ci-cd-baseline.md`. No workflow/gate changes.
 
 **Exit:** Documented retry recovery; tag lint skeleton ready for Phase 1.
 
@@ -77,7 +77,7 @@ Add a fast PR Playwright canary (`@smoke-ci`, retries 0), harden UAT live smoke 
 | **branch** | `cursor/e2e-canary-phase2b-ci-blocking-48ef` |
 | **exit_checklist** | `governance` |
 
-**Scope:** Add canary to `ci-gate` / `assert-ci-gate.sh` / `docs/ci-cd-gates.md`.
+**Scope:** Add canary to `ci-gate` / `assert-ci-gate.sh` / `docs/pipelines/ci-cd-gates.md`.
 
 **Exit:** `ci-gate / CI passed` requires canary; soak ≥5 green advisory runs, &lt;5% pass-on-retry.
 

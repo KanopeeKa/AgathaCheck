@@ -26,8 +26,8 @@
 - [ ] Form fields have labels; interactive cards use semantics where appropriate
 - [ ] Flutter UI touched → `/ui-check` done or N/A (note in PR if non-trivial)
 - [ ] User journeys: Gherkin + Playwright with `@bdd` (or debt issue linked)
-- [ ] `docs/refactoring-log.md` updated if part of sprint refactor work
-- [ ] `docs/refactoring-debt.md` or `docs/technical-debt.md` updated for deferrals
+- [ ] `docs/debt/refactoring-log.md` updated if part of sprint refactor work
+- [ ] `docs/debt/refactoring-debt.md` or `docs/debt/technical-debt.md` updated for deferrals
 
 ## Test plan
 

@@ -27,7 +27,7 @@ Sprint **4.3** target: **≥ 50% of all Gherkin scenarios (161)** have a Playwri
 
 ## Recommended standard (hybrid BDD)
 
-We use a **spec-first hybrid** (not full Cucumber execution yet — see `docs/refactoring-debt.md`):
+We use a **spec-first hybrid** (not full Cucumber execution yet — see `docs/debt/refactoring-debt.md`):
 
 1. **Gherkin scenarios remain canonical** — product language, readable by QA/product.
 2. **Priority tags in feature files** — `@P0`, `@P1`, `@P2` on each `Scenario` (Cucumber tag convention).  

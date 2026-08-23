@@ -43,7 +43,7 @@ If you are unsure whether `main` moved while you worked, run the fetch + rebase 
 ./scripts/pre-push.sh
 ```
 
-For faster iteration during development, use `./scripts/pre-push-changed.sh` (runs a subset based on changed files). See `/pre-push-verify` skill and `docs/agent-efficiency-plan.md`.
+For faster iteration during development, use `./scripts/pre-push-changed.sh` (runs a subset based on changed files). See `/pre-push-verify` skill and `docs/agent-efficiency/plans/agent-efficiency-plan.md`.
 
 Manual breakdown if needed:
 
@@ -81,11 +81,11 @@ Use the PR template checklist. In summary:
 | Flutter widget | Widget test in mirrored `test/features/` path |
 | User journey | Gherkin scenario + Playwright spec with `@bdd` comment |
 | Security fix | No raw errors in 5xx; audit clean for high+ |
-| Refactor | Reduce file size if touching files >500 lines; update `docs/refactoring-log.md` |
+| Refactor | Reduce file size if touching files >500 lines; update `docs/debt/refactoring-log.md` |
 
 ## CI gates on `main`
 
-**Gate contract (blocking vs advisory, UAT/PROD rules):** [docs/ci-cd-gates.md](docs/ci-cd-gates.md)
+**Gate contract (blocking vs advisory, UAT/PROD rules):** [docs/pipelines/ci-cd-gates.md](docs/pipelines/ci-cd-gates.md)
 
 - Flutter analyze, format, and parallel domain test shards (`pet-core`, `pet-screens`, `pet-widgets`, `health`, `org`, `rest-a`, `rest-b`) + merged domain coverage
 - Flutter integration test (blocking)
@@ -114,6 +114,6 @@ See `e2e/README.md` for details.
 
 ## Debt and deferrals
 
-- Refactoring uncertainty → `docs/refactoring-debt.md`
-- Product/infra deferrals → `docs/technical-debt.md`
-- Sprint refactor plan → `docs/refactoring-log.md`
+- Refactoring uncertainty → `docs/debt/refactoring-debt.md`
+- Product/infra deferrals → `docs/debt/technical-debt.md`
+- Sprint refactor plan → `docs/debt/refactoring-log.md`

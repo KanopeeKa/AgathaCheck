@@ -103,7 +103,7 @@ scripts/bdd-priority-tag-map.json
 e2e/**
 flutter_app/test/bdd/**
 docs/quality/bdd-journey-matrix.md
-docs/refactoring-log.md
+docs/debt/refactoring-log.md
 ```
 
 **Exit criteria:**

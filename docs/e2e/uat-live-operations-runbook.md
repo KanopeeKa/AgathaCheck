@@ -10,7 +10,7 @@ tags: [e2e, uat, runbook]
 
 Institutional knowledge from UAT `@smoke` / deploy hardening (July 2026). Use this to **triage failures fast** and **avoid reintroducing** the same classes of bug.
 
-**Related:** [uat-backend-node-modules-runbook.md](../uat-backend-node-modules-runbook.md) · [e2e-navigation-contract.md](../e2e-navigation-contract.md) · [e2e/README.md](../../e2e/README.md) · **[uat-waf-queue-lessons.md](./uat-waf-queue-lessons.md)** (Jul 2026 incident chain)
+**Related:** [uat-backend-node-modules-runbook.md](../pipelines/uat-backend-node-modules-runbook.md) · [e2e-navigation-contract.md](../e2e-navigation-contract.md) · [e2e/README.md](../../e2e/README.md) · **[uat-waf-queue-lessons.md](./uat-waf-queue-lessons.md)** (Jul 2026 incident chain)
 
 ---
 
@@ -31,7 +31,7 @@ GitHub Actions deploy-uat.yml
 | Layer | Typical symptoms | First log / file |
 |-------|------------------|------------------|
 | **Workflow / secrets** | Smoke skipped; `ssh_invariant=failed` | Deploy job summary; `deploy-uat.yml` |
-| **Passenger / node_modules** | `/backend/health` HTML not JSON | `docs/uat-backend-node-modules-runbook.md` |
+| **Passenger / node_modules** | `/backend/health` HTML not JSON | `docs/pipelines/uat-backend-node-modules-runbook.md` |
 | **DB migrations** | API `500` on routes using new tables/columns | SSH step `=== Database migrations ===` |
 | **DB ownership** | `doit être le propriétaire de la relation …` | Same SSH step; `migrate.js` output |
 | **Auth / rate limit** | `401` on API seed; `429` on signup; **all** smoke timeout on login | UAT access logs; `server/config/rateLimit.js`; UAT Node `E2E=1` |

@@ -11,4 +11,4 @@ tags: [domain,auth,deferred]
 
 | Item | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| — | — | — | No auth-specific rows isolated yet; cross-cutting audit/GDPR items remain in [/docs/technical-debt.md](/docs/technical-debt.md) until phase 5 split |
+| — | — | — | No auth-specific rows isolated yet; cross-cutting audit/GDPR items remain in [/docs/debt/technical-debt.md](/docs/debt/technical-debt.md) until phase 5 split |

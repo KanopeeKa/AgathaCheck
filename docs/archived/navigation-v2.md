@@ -190,7 +190,7 @@ New authenticated routes **must** register chrome mode in `app_router.dart` / `e
 |------|--------|--------|
 | 1 Hubs | `/g/*` home area, `/o/*` hubs, `/organizations` | execute-plan phases 2–5 |
 | 2 Deep | pet detail, forms, vet forms | execute-plan phase 10+ (debt until done) |
-| 3 Long tail | help, paywall, transfer flows | `docs/refactoring-debt.md` |
+| 3 Long tail | help, paywall, transfer flows | `docs/debt/refactoring-debt.md` |
 | 4 Excluded | landing, shared anonymous | — |
 
 ---

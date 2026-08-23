@@ -197,7 +197,7 @@ e2e/playwright/tests/
 ### Gate ratchet
 
 - Ratchet `e2e/scripts/check_bdd_coverage.js` **once** in Slice 8 after net-new scenarios are mapped.
-- Update `docs/quality/scorecard.md`, `docs/quality/bdd-journey-matrix.md`, `docs/refactoring-log.md`.
+- Update `docs/quality/scorecard.md`, `docs/quality/bdd-journey-matrix.md`, `docs/debt/refactoring-log.md`.
 - Target: org persona features **≥90%** scenario→Playwright; overall gate **≥130 mapped** (exact number set when scenario count final).
 
 ---
@@ -212,7 +212,7 @@ e2e/playwright/tests/
 - Append v2 block to `decisions-log.md`.
 - Mark organisation dashboard brief § IA as superseded (header note).
 - `docs/architecture/pet-activity-model.md`.
-- Extend `docs/observability.md` (pet activity vs audit).
+- Extend `docs/ops/observability.md` (pet activity vs audit).
 - Update `docs/architecture/index.md`.
 
 **Tests:** none (docs).

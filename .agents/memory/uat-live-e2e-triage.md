@@ -65,4 +65,4 @@ Never depend on post-login API create + stale home list on live UAT.
 - WAF: `e2e/playwright/support/waf.ts`, `waf-markers.ts`
 - SSH deploy: `scripts/ci/uat-ssh-backend-deploy.sh`
 - Queue: `scripts/uat_queue_runtime.js`, coordination issue `UAT_COORDINATION_ISSUE`
-- node_modules: `docs/uat-backend-node-modules-runbook.md`
+- node_modules: `docs/pipelines/uat-backend-node-modules-runbook.md`

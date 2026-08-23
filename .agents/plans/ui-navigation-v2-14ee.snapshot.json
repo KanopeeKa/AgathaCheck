@@ -20,8 +20,8 @@
         "docs/design/index.md",
         "docs/experience-split-plan.md",
         "docs/design/tokens.md",
-        "docs/refactoring-debt.md",
-        "docs/refactoring-log.md",
+        "docs/debt/refactoring-debt.md",
+        "docs/debt/refactoring-log.md",
         ".agents/plans/ui-navigation-v2-14ee.md",
         ".agents/plans/ui-navigation-v2-14ee.snapshot.json"
       ],

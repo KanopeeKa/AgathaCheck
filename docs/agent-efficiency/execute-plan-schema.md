@@ -117,7 +117,7 @@ Unclassified out-of-path file → `status: blocked`, `status_reason: drift`.
 ```json
 {
   "integration_branch": "cursor/sprint-12-example-integration-aec1",
-  "ownership_ref": "docs/refactoring-log.md#sprint-12-example"
+  "ownership_ref": "docs/debt/refactoring-log.md#sprint-12-example"
 }
 ```
 

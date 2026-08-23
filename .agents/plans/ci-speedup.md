@@ -48,7 +48,7 @@ Speed up PR CI via runner setup caching, Flutter shard rebalancing, path-scoped 
 
 - [ ] Composites used by E2E local + Flutter shard/coverage workflows
 - [ ] No change to test commands or gate thresholds
-- [ ] `docs/ci-cd-gates.md` unchanged (no new blocking jobs)
+- [ ] `docs/pipelines/ci-cd-gates.md` unchanged (no new blocking jobs)
 
 ### Phase 2 — Rebalance `rest` Flutter shard
 
@@ -57,7 +57,7 @@ Speed up PR CI via runner setup caching, Flutter shard rebalancing, path-scoped 
 | **id** | `2` |
 | **branch** | `cursor/ci-speedup-phase2-shards-b697` |
 
-**allowed_paths:** `flutter_app/scripts/run_tests_ci_shard.sh`, `flutter_app/scripts/merge_flutter_coverage.sh`, `.github/workflows/ci.yml`, `scripts/ci/assert-ci-gate.sh`, `.github/workflows/_reusable-ci-gate.yml`, `docs/ci-cd-gates.md`, `.agents/plans/**`
+**allowed_paths:** `flutter_app/scripts/run_tests_ci_shard.sh`, `flutter_app/scripts/merge_flutter_coverage.sh`, `.github/workflows/ci.yml`, `scripts/ci/assert-ci-gate.sh`, `.github/workflows/_reusable-ci-gate.yml`, `docs/pipelines/ci-cd-gates.md`, `.agents/plans/**`
 
 **Scope:** Split `rest` → `rest-a` / `rest-b`; update merge + ci-gate lists.
 
@@ -68,7 +68,7 @@ Speed up PR CI via runner setup caching, Flutter shard rebalancing, path-scoped 
 | **id** | `3` |
 | **branch** | `cursor/ci-speedup-phase3-scope-b697` |
 
-**allowed_paths:** `scripts/ci/ci-scope-lib.sh`, `scripts/ci/resolve-ci-scope.sh`, `scripts/pre-push-changed.sh`, `.github/workflows/ci.yml`, `scripts/ci/assert-ci-gate.sh`, `.github/workflows/_reusable-ci-gate.yml`, `docs/ci-cd-gates.md`, `scripts/ci/ci-scope.test.js`, `.agents/plans/**`
+**allowed_paths:** `scripts/ci/ci-scope-lib.sh`, `scripts/ci/resolve-ci-scope.sh`, `scripts/pre-push-changed.sh`, `.github/workflows/ci.yml`, `scripts/ci/assert-ci-gate.sh`, `.github/workflows/_reusable-ci-gate.yml`, `docs/pipelines/ci-cd-gates.md`, `scripts/ci/ci-scope.test.js`, `.agents/plans/**`
 
 ### Phase 4 — Conditional ancillary gates + 12-merge full audit
 
@@ -77,7 +77,7 @@ Speed up PR CI via runner setup caching, Flutter shard rebalancing, path-scoped 
 | **id** | `4` |
 | **branch** | `cursor/ci-speedup-phase4-audit-b697` |
 
-**allowed_paths:** `.github/workflows/**`, `scripts/ci/**`, `docs/ci-cd-gates.md`, `scripts/pre-push-changed.sh`, `.agents/plans/**`
+**allowed_paths:** `.github/workflows/**`, `scripts/ci/**`, `docs/pipelines/ci-cd-gates.md`, `scripts/pre-push-changed.sh`, `.agents/plans/**`
 
 **Scope:** Conditional npm audit / integration; `ci-full-audit.yml` on main every 12 merges; agent issue spawn on failure.
 
