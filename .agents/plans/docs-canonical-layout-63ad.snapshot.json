@@ -4,7 +4,7 @@
   "approved_at": "2026-08-23T14:15:00Z",
   "approved_by": "User chat 2026-08-23 — canonical docs layout approved; Replit redesign as design canonical",
   "approved_until": "2026-08-25T14:15:00Z",
-  "content_hash": "sha256:eb339d23c422bceb98b12c211169f54675338b9f26bf48c0aa34fc168fb8198c",
+  "content_hash": "sha256:39fc4b329b8771f740a96661e8d8e8f4ad111535372b6adc876d70f8e357aa82",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/docs-canonical-layout-integration-63ad",
@@ -257,10 +257,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/737"
     }
   ]
 }
