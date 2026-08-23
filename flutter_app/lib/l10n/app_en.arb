@@ -676,6 +676,7 @@
   "orgPetsEmptyTab": "No pets match this view",
   "orgArchived": "Archived Pets",
   "orgNoOrganizations": "No organisations yet",
+  "orgLoadErrorTitle": "We couldn’t load your shelters",
   "orgLoadError": "We couldn’t load your shelters. Please try again.",
   "orgCreateFirst": "Create your first organisation to get started",
   "createOrJoinOrganization": "Create an organisation",

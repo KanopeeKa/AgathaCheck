@@ -629,6 +629,7 @@
   "orgPetsEmptyTab": "Aucun animal ne correspond à cette vue",
   "orgArchived": "Animaux archivés",
   "orgNoOrganizations": "Aucune organisation",
+  "orgLoadErrorTitle": "Impossible de charger vos refuges",
   "orgLoadError": "Impossible de charger vos refuges. Veuillez réessayer.",
   "orgCreateFirst": "Créez votre première organisation pour commencer",
   "createOrJoinOrganization": "Créer une organisation",

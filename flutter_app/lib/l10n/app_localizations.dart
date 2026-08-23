@@ -3433,6 +3433,12 @@ abstract class AppLocalizations {
   /// **'No organisations yet'**
   String get orgNoOrganizations;
 
+  /// No description provided for @orgLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load your shelters'**
+  String get orgLoadErrorTitle;
+
   /// No description provided for @orgLoadError.
   ///
   /// In en, this message translates to:

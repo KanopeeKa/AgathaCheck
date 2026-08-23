@@ -1876,6 +1876,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgNoOrganizations => 'Aucune organisation';
 
   @override
+  String get orgLoadErrorTitle => 'Impossible de charger vos refuges';
+
+  @override
   String get orgLoadError =>
       'Impossible de charger vos refuges. Veuillez réessayer.';
 

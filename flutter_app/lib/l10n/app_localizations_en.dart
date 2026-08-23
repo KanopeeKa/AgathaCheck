@@ -1856,6 +1856,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgNoOrganizations => 'No organisations yet';
 
   @override
+  String get orgLoadErrorTitle => 'We couldn’t load your shelters';
+
+  @override
   String get orgLoadError =>
       'We couldn’t load your shelters. Please try again.';
 
