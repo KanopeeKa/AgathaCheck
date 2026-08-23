@@ -47,7 +47,7 @@ Each product area has a one-screen index under `docs/domains/<domain>/` with jou
 | Subscription | [/docs/domains/subscription/README.md](/docs/domains/subscription/README.md) | Premium tiers (billing TBD) |
 | Help & about | [/docs/domains/help_about/README.md](/docs/domains/help_about/README.md) | FAQ and about screens |
 
-Cross-cutting deferred work: [/docs/debt/deferred.md](/docs/debt/deferred.md)
+Cross-cutting open debt: [/docs/debt/debt.md](/docs/debt/debt.md)
 
 ---
 
@@ -59,7 +59,7 @@ Product behaviour → `docs/domains/<domain>/`. Platform, CI, agents, and debt �
 |--------|-------|----------|
 | **Pipelines** | [/docs/pipelines/README.md](/docs/pipelines/README.md) | CI/CD gates, promotion, canary, deploy runbooks |
 | **Agent efficiency** | [/docs/agent-efficiency/plans/README.md](/docs/agent-efficiency/plans/README.md) | Master agent plan + policies in `docs/agent-efficiency/` |
-| **Debt** | [/docs/debt/README.md](/docs/debt/README.md) | Deferred work, refactor log, technical debt indexes |
+| **Debt** | [/docs/debt/README.md](/docs/debt/README.md) | Open debt register (`debt.md`) + refactor changelog |
 | **Operations** | [/docs/ops/public-access.md](/docs/ops/public-access.md) | Observability, public access |
 | **E2E / UAT** | [/docs/e2e/uat-deploy-tiers.md](/docs/e2e/uat-deploy-tiers.md) | Live E2E ops, promotion manuals |
 | **Plans** | [/docs/plans/README.md](/docs/plans/README.md) | Sprint execution plans (cross-domain) |
@@ -182,8 +182,8 @@ The **active** program for navigation reversal, Guardian dashboard, and Organisa
 | Document | Purpose | Status |
 |----------|---------|--------|
 | [/docs/agent-efficiency/github-issue-workflow.md](/docs/agent-efficiency/github-issue-workflow.md) | Issue lifecycle and triage | Active |
-| [/docs/debt/technical-debt.md](/docs/debt/technical-debt.md) | Legacy pointer → domain deferred + [/docs/debt/deferred.md](/docs/debt/deferred.md) | Active |
-| [/docs/debt/refactoring-debt.md](/docs/debt/refactoring-debt.md) | Cross-cutting refactor uncertainty log | Active |
+| **Open debt** | [/docs/debt/debt.md](/docs/debt/debt.md) | Single register — OPEN items only |
+| [/docs/debt/refactoring-log.md](/docs/debt/refactoring-log.md) | Sprint refactor history (completed work) | Active |
 | [/docs/debt/refactoring-log.md](/docs/debt/refactoring-log.md) | Completed refactoring work | Active |
 | [/docs/plans/sprint-6-execution-plan.md](/docs/plans/sprint-6-execution-plan.md) | Sprint 6 deliverables | Active |
 | [/docs/plans/sprint-10-flutter-344-execution-plan.md](/docs/plans/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 upgrade plan | Active |

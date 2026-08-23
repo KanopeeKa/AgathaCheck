@@ -11,9 +11,7 @@ tags: [debt,deferred,refactoring]
 
 | Document | Purpose |
 |----------|---------|
-| [deferred.md](./deferred.md) | Cross-cutting platform deferrals |
-| [technical-debt.md](./technical-debt.md) | Legacy index → domain `changes/deferred.md` tables |
-| [refactoring-debt.md](./refactoring-debt.md) | Refactor uncertainty and modularization parking lot |
-| [refactoring-log.md](./refactoring-log.md) | Completed refactor and sprint history |
+| **[debt.md](./debt.md)** | **OPEN items only** — single register (Domain \| PR \| Type \| Priority \| Description) |
+| [refactoring-log.md](./refactoring-log.md) | Completed refactor and sprint history (not open debt) |
 
-Domain-scoped deferrals: `docs/domains/<domain>/changes/deferred.md`
+Legacy indexes (`deferred.md`, `technical-debt.md`, `refactoring-debt.md`) redirect here. Domain `changes/deferred.md` files point at filtered rows in `debt.md`.
