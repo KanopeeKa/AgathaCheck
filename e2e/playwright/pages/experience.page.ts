@@ -5,6 +5,7 @@ import {
   flutterGotoUrl,
   openExperienceDrawer,
   refreshFlutterAccessibility,
+  welcomeAgathaTrackText,
   waitForFlutterRoute,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
@@ -19,9 +20,7 @@ export class ExperiencePage {
   async expectChooserVisible(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await refreshFlutterAccessibility(this.page);
-    await this.page
-      .getByText(/Welcome to Agatha Track|Bienvenue sur Agatha Track/i)
-      .waitFor({ timeout: 30_000 });
+    await this.page.getByText(welcomeAgathaTrackText).waitFor({ timeout: 30_000 });
   }
 
   async selectGuardianCard(): Promise<void> {

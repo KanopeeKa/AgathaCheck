@@ -22,9 +22,9 @@ import {
 } from '../pages/help.page';
 
 const EN_SUBTITLE =
-  'Find answers to common questions about every feature in Agatha Track.';
+  'Find answers to common questions about every feature in AgathaTrack.';
 const FR_SUBTITLE =
-  'Trouvez les réponses à vos questions sur toutes les fonctionnalités d\'Agatha Track.';
+  "Trouvez les réponses à vos questions sur toutes les fonctionnalités d'AgathaTrack.";
 
 const PET_PROFILES_Q1 = 'How do I add a new pet?';
 const PET_PROFILES_A1_SNIPPET = 'Tap the "+" button on the main pet list screen';
