@@ -1,14 +1,14 @@
 ---
 name: babysit-uat
-description: Babysit+ through merge, then gate on pre-UAT E2E on main with risk-ranked local shard replay and remedial PR loop. Use for final merge to main or when post-merge E2E drift must be caught before promotion.
+description: Babysit+ through merge, then gate on pre-UAT E2E on main. On failure delegates remedial work to /e2e-debug, then merges remedial PR and re-watches. Does not poll promote-uat or deploy-uat.
 ---
 
 # Babysit-UAT
 
 **Babysit+ through merge**, then **pre-UAT E2E green** for that merge commit on `main`. Does **not** poll `promote-uat` or `deploy-uat` (current policy).
 
-**Builds on:** `/babysit-plus` (§0–7) · **Canonical policy:** `docs/agent-efficiency/autonomous-pr-policy.md`  
-**Shard risk:** `scripts/babysit_uat_shard_risk.mjs` (Option A — diff → shard overlap)  
+**Builds on:** `/babysit-plus` (§0–7) · **Remedial:** `/e2e-debug` (§Phase 3) · **Canonical policy:** `docs/agent-efficiency/autonomous-pr-policy.md`  
+**Shard risk:** `scripts/babysit_uat_shard_risk.mjs` · **Scope resolve:** `scripts/e2e_debug_resolve.mjs`  
 **Manual ops sibling:** `scripts/agent-uat-babysit.sh` (full replay; ops only)
 
 ---
@@ -37,7 +37,7 @@ description: Babysit+ through merge, then gate on pre-UAT E2E on main with risk-
 
 ## Model
 
-**`composer-2.5` only** for babysit phases (sync, triage, CI, merge, UAT orchestration). Shard-fix **Task** subagents may use implementation models; orchestrator stays on `composer-2.5`.
+**`composer-2.5` only** for babysit phases (sync, triage, CI, merge, UAT orchestration). **`/e2e-debug` subagents also use `composer-2.5` only.**
 
 ---
 
@@ -55,78 +55,47 @@ Run **all** of `/babysit-plus` §0–7:
 
 ## Phase 2 — Shard risk sense-check
 
-From the **merged PR file list** (not post-merge diff):
+From the **merged PR file list** (pre-merge proactive signal):
 
 ```bash
 node scripts/babysit_uat_shard_risk.mjs --pr <n>
-# or: git diff --name-only <base>...<merge_sha> | node scripts/babysit_uat_shard_risk.mjs
 ```
 
 | `merge_action` | Round 1 behaviour | Round 2+ behaviour |
 |----------------|-------------------|---------------------|
-| `wait` (low/medium only) | Poll `pre-uat-e2e` for `merge_sha`; local runs **only** on CI failure | **Wait** for workflow failure first; then local on failed shards only |
-| `act_now` (any **high** shard) | Bootstrap stack + run at-risk shards locally **in parallel with** CI poll | Wait for CI failure first (assume round-1 fix was complete) |
+| `wait` (low/medium only) | Poll `pre-uat-e2e` for `merge_sha`; **no** local runs until failure | **Wait** for workflow failure first |
+| `act_now` (any **high** shard) | Poll CI **in parallel** with **proactive `/e2e-debug --proactive`** on remedial branch | Wait for CI failure first |
 
 **Zero-risk shards:** never run locally unless CI reports them failed.
 
 ---
 
-## Phase 3 — Kick into action
+## Phase 3 — Remedial (delegate to /e2e-debug)
 
-When CI fails **or** `merge_action == act_now` (round 1):
+When CI fails **or** `merge_action == act_now` (round 1 proactive):
 
-### 3a. Remedial PR (single patch)
+Run **/e2e-debug** with:
 
-```bash
-git fetch origin main
-git checkout -b cursor/preuat-fix-<short-sha>-8f3a origin/main
-```
+| Parameter | Value |
+|-----------|-------|
+| `merge_sha` | failing merge (omit for proactive-only before first failure) |
+| `failed_shards` | from `./scripts/babysit_uat_watch_preuat.sh <merge_sha> --json` when available |
+| `round` | current remedial round |
+| `plan_id` | when in execute-plan |
 
-One remedial PR for all shard fixes — avoids stacked pre-UAT queue patches.
+**Do not** duplicate remedial steps here — `/e2e-debug` owns triage, remedial branch, parallel shard workers, local validation, remedial PR.
 
-### 3b. Order shards
-
-Use JSON from `babysit_uat_shard_risk.mjs` (already sorted high → low). On CI failure, prepend `failed_shards` from watch script.
-
-### 3c. Local stack
-
-```bash
-./scripts/babysit_uat_bootstrap_stack.sh
-```
-
-### 3d. Main session — sequential shard runs
-
-```bash
-./scripts/babysit_uat_run_shard.sh <shard>
-```
-
-Highest risk first. **Do not** run zero-risk shards.
-
-### 3e. On local shard failure → Task subagent
-
-Spawn a **simple Task subagent** (`generalPurpose`) scoped to fix that shard's failing specs on the **same remedial PR branch**:
-
-- Pass: shard index, spec list, Playwright trace/log excerpt, remedial branch name
-- Subagent: implement fix, `pre-push-changed.sh`, push to remedial branch
-- **Main session continues** the next at-risk shard while subagent works
-
-When a subagent finishes, incorporate its push before the next shard if the same specs overlap.
-
-### 3f. Exit remedial loop
-
-Proceed when **every at-risk shard** is green locally **or** has a pushed fix on the remedial PR ready for babysit.
-
-Open/update remedial PR → run **Phase 4** on that PR.
+**Exit Phase 3** when remedial PR is open/updated and ready → **Phase 4**.
 
 ---
 
 ## Phase 4 — Babysit-UAT remedial (round 2+)
 
-On the remedial PR:
+On the **remedial PR** from `/e2e-debug`:
 
-1. Full **Phase 1** (babysit+ merge to `main`)
+1. Full **Phase 1** (babysit+ merge remedial to `main`)
 2. **Phase 2** with `round >= 2`: **only** `./scripts/babysit_uat_watch_preuat.sh <merge_sha>` until failure or success
-3. On failure → Phase 3 for **failed shards only** (no proactive high-risk local runs)
+3. On failure → **Phase 3** again (`/e2e-debug` with `round >= 2`, failed shards only)
 4. Repeat until watch exits 0
 
 **Success:** `pre-uat-e2e.yml` green for latest remedial `merge_sha`. **Stop** — do not poll promote/deploy.
@@ -159,6 +128,7 @@ Same as babysit+ §9. Plus: infra-only UAT blockers (`UAT_AUTO_MIGRATE`, WAF) �
 
 | Skill | When |
 |-------|------|
+| `/e2e-debug` | Pre-UAT remedial fix loop (Phase 3) |
 | `/babysit-plus` | Intermediate execute-plan merges; PRs that skip pre-UAT |
 | `/execute-plan` | Final main merge delegates here |
-| `/pre-push-verify` | Before every push |
+| `/pre-push-verify` | Before every push; `--e2e-shards` during remedial |

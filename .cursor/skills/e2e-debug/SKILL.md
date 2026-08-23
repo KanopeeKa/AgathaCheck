@@ -1,0 +1,207 @@
+---
+name: e2e-debug
+description: >-
+  Pre-UAT E2E remedial workflow — diff since last green pre-UAT run, union failed
+  and at-risk shards, parallel shard workers on one remedial branch, local isolated
+  shard replay. Use when pre-UAT is red, proactively before CI finishes on high-risk
+  merges, or when /babysit-uat or /execute-plan delegates remedial work.
+paths:
+  - e2e/**
+  - scripts/babysit_uat*.sh
+  - scripts/babysit_uat*.mjs
+  - scripts/e2e_debug*.mjs
+---
+
+# E2E debug
+
+Pre-UAT **remedial fix loop** — triage CI, scope shards from **diff since last green** `pre-uat-e2e.yml`, fix on **one remedial branch**, validate locally, open remedial PR. **Does not merge** — hand off to **/babysit-uat** for merge + watch.
+
+**Canonical scripts:** `scripts/e2e_debug_resolve.mjs` · `scripts/babysit_uat_shard_risk.mjs`  
+**Memory:** `.agents/memory/uat-live-e2e-triage.md` · `docs/e2e/uat-deploy-tiers.md`
+
+---
+
+## When to use
+
+| Caller | Mode |
+|--------|------|
+| Pre-UAT failed (`babysit_uat_watch_preuat.sh` exit 1) | **Reactive** — `--merge-sha` |
+| `/babysit-uat` Phase 2 `act_now` or Phase 3 | **Proactive** or **reactive** |
+| `/execute-plan` final merge pre-UAT red | **Reactive** — same remedial branch |
+| Manual `/e2e-debug` on red main | **Reactive** |
+| High-risk merge landed; CI still running | **Proactive** — `--proactive` |
+
+---
+
+## Inputs
+
+| Input | Required | Notes |
+|-------|----------|-------|
+| `merge_sha` | reactive | Failing merge commit on `main` |
+| `failed_shards` | optional | From watch JSON; resolve also reads CI |
+| `plan_id` | when in execute-plan | Control-issue comment |
+| `remedial_branch` | optional | Default from resolve JSON |
+| `round` | optional | `2+` = failed shards only (no proactive expansion) |
+
+---
+
+## Model
+
+**`composer-2.5` only** for orchestrator and **all** shard Task subagents (audit, fix, isolated replay). No thinking/high models for remedial orchestration.
+
+---
+
+## Phase 1 — Resolve scope
+
+```bash
+git fetch origin main
+
+# Reactive (pre-UAT failed for this merge):
+node scripts/e2e_debug_resolve.mjs --merge-sha <merge_sha> --json
+
+# Proactive (high-risk on main, CI still running):
+node scripts/e2e_debug_resolve.mjs --proactive --json
+
+# Round 2+ (only CI-reported failures — pass explicit baseline if needed):
+node scripts/e2e_debug_resolve.mjs --merge-sha <merge_sha> --json
+# Then restrict target_shards to failed_shards only
+```
+
+**Union rule:** `target_shards = failed_shards ∪ { medium/high risk from diff since baseline }`. Include **low** risk only when `e2e/playwright/support/` changed. Pre-UAT matrix uses **fail-fast** — CI `failed_shards` is often incomplete.
+
+Record: `baseline_sha`, `target_shards`, `remedial_branch`, `parallel_workers`.
+
+---
+
+## Phase 2 — CI triage (reactive)
+
+When `failing_run_id` present:
+
+```bash
+gh run view <failing_run_id> --log-failed
+gh run download <failing_run_id> -D /tmp/preuat-artifacts
+```
+
+Read `test-results/**/error-context.md`, traces, shard job logs. Map shard → specs:
+
+```bash
+node e2e/scripts/shard-files.mjs <shard_index>
+```
+
+---
+
+## Phase 3 — Remedial branch
+
+```bash
+git checkout -b <remedial_branch> origin/main
+# default: cursor/preuat-fix-<head8>-6bba from resolve JSON
+```
+
+**One remedial PR** for all shard fixes — no stacked pre-UAT patches.
+
+---
+
+## Phase 4 — Ownership (parallel workers)
+
+Publish before spawning workers:
+
+| Worker | Owns | Never touch |
+|--------|------|-------------|
+| **orchestrator** | `e2e/playwright/support/*`, shared helpers | — |
+| **shard-N** | specs in shard N (`node e2e/scripts/shard-files.mjs N`) + their `pages/*` | other shards' specs, `support/*` |
+
+**Never parallelize** the same spec file or page object across workers.
+
+---
+
+## Phase 5 — Parallel workers (`parallel_workers: true`)
+
+Spawn **Task subagents** (`generalPurpose`, **`composer-2.5`**) — one per target shard:
+
+| Subagent task | Allowed |
+|---------------|---------|
+| Static audit (grep locators, semantics drift) | Yes — parallel |
+| Code fixes on disjoint owned files | Yes — parallel |
+| Playwright on **same Cloud pod** | **No** — port/DB races |
+
+**Playwright validation:**
+
+| Environment | Command |
+|-------------|---------|
+| **Separate Cloud Agent pod** per shard (preferred for parallel) | `./scripts/babysit_uat_bootstrap_stack.sh` then `./scripts/babysit_uat_run_shard_isolated.sh <N>` |
+| **Single orchestrator pod** | Sequential `./scripts/babysit_uat_run_shard.sh <N>` after workers push fixes |
+
+Workers push to **same remedial branch**; orchestrator rebases between pushes when specs overlap.
+
+**Single shard:** orchestrator fixes + validates locally — no subagents required.
+
+---
+
+## Phase 6 — Local stack (once per pod)
+
+```bash
+./scripts/babysit_uat_bootstrap_stack.sh
+cd e2e && npx playwright install chromium --with-deps   # fresh pods
+# Confirm flutter_app/build/web/main.dart.js is complete before UI tests
+```
+
+Validate each `target_shard` (high → low risk):
+
+```bash
+./scripts/babysit_uat_run_shard.sh <shard>
+# or isolated (parallel pods): ./scripts/babysit_uat_run_shard_isolated.sh <shard>
+```
+
+---
+
+## Phase 7 — Verify + PR
+
+```bash
+./scripts/pre-push-changed.sh
+./scripts/pre-push-changed.sh --e2e-shards <comma-separated target_shards>
+```
+
+Open/update remedial PR to `main`. PR body: baseline SHA, target shards, failing run URL, drift checklist hits.
+
+**Hand off to /babysit-uat** on remedial PR (Phase 4 remedial loop):
+
+- `/babysit-plus` merge remedial PR
+- `./scripts/babysit_uat_watch_preuat.sh <new_merge_sha>`
+
+Do **not** poll promote/deploy.
+
+---
+
+## Drift checklist (common fixes)
+
+| Symptom | Check |
+|---------|-------|
+| `Pet: Max` timeout | Dashboard card label changed — `pet-list.page.ts` |
+| `Welcome to Agatha Track` on wrong route | FTUE vs `/g/onboarding` — `flutter.ts` |
+| Section heading not found | Semantics **group** not text — `semanticsByName` |
+| `flutter-view` timeout | Incomplete web build or server down |
+| `Executable doesn't exist` | `npx playwright install chromium` |
+| Post-login wrong shell | `/g/home` vs `/g/pets` route drift |
+
+Full symptom map: `.agents/memory/uat-live-e2e-triage.md`
+
+---
+
+## Round 2+ (remedial failed again)
+
+1. `node scripts/e2e_debug_resolve.mjs --merge-sha <remedial_merge_sha> --json`
+2. **Only** fix `failed_shards` from watch — no proactive expansion
+3. Same remedial branch or new `cursor/preuat-fix-<sha>-6bba` from current `origin/main`
+4. Max **3** full loops per original feature PR (inherits `/babysit-uat` budget)
+
+---
+
+## Related
+
+| Skill | When |
+|-------|------|
+| `/babysit-uat` | Merge remedial PR + pre-UAT watch — **after** this skill |
+| `/pre-push-verify` | `--e2e-shards` after fixes |
+| `/spawn-sprint-agents` | Ownership pattern only — **no** integration branch for remedial |
+| `/execute-plan` | Delegates here on pre-UAT failure before `complete-plan` |
+| `/add-bdd-playwright-scenario` | Adding coverage — not remedial |

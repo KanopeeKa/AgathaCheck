@@ -5,6 +5,7 @@
 # Usage:
 #   ./scripts/pre-push-changed.sh           # vs origin/main
 #   ./scripts/pre-push-changed.sh --full    # delegate to pre-push.sh
+#   ./scripts/pre-push-changed.sh --e2e-shards 3,12   # run listed pre-UAT shards (stack must be up)
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -15,6 +16,25 @@ agatha_flutter_use
 agatha_flutter_verify
 # shellcheck source=scripts/ci/ci-scope-lib.sh
 source "$ROOT/scripts/ci/ci-scope-lib.sh"
+
+E2E_SHARDS=""
+ARGS=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --full)
+      exec "$ROOT/scripts/pre-push.sh"
+      ;;
+    --e2e-shards)
+      E2E_SHARDS="${2:?--e2e-shards requires comma-separated shard indices}"
+      shift 2
+      ;;
+    *)
+      ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+set -- "${ARGS[@]}"
 
 if [[ "${1:-}" == "--full" ]]; then
   exec "$ROOT/scripts/pre-push.sh"
@@ -126,6 +146,7 @@ run_governance() {
     node e2e/scripts/check-org-e2e-locators.mjs
   fi
   node --test scripts/babysit_uat_shard_risk.test.mjs
+  node --test scripts/e2e_debug_resolve.test.mjs
   bash scripts/ci/check-uat-ssh-action-pin.sh
   bash scripts/ci/shellcheck-uat-deploy-scripts.sh
   bash scripts/ci/assert-prod-deploy-db-commands.sh
@@ -205,3 +226,19 @@ fi
 
 echo "✓ Changed-files pre-push passed"
 echo "  Run ./scripts/pre-push.sh before merging to main"
+
+if [[ -n "$E2E_SHARDS" ]]; then
+  echo "==> Pre-UAT shard replay (--e2e-shards)"
+  if ! curl -sf http://localhost:3000/ >/dev/null 2>&1; then
+    echo "WARN: localhost:3000 not reachable — run ./scripts/babysit_uat_bootstrap_stack.sh first" >&2
+    exit 1
+  fi
+  IFS=',' read -ra SHARD_LIST <<< "$E2E_SHARDS"
+  for shard in "${SHARD_LIST[@]}"; do
+    shard="${shard//[[:space:]]/}"
+    [[ -z "$shard" ]] && continue
+    echo "    shard $shard"
+    "$ROOT/scripts/babysit_uat_run_shard.sh" "$shard"
+  done
+  echo "✓ E2E shard replay passed"
+fi
