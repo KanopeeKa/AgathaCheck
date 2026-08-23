@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { refreshFlutterAccessibility } from '../support/flutter';
+import { refreshFlutterAccessibility, welcomeAgathaTrackText } from '../support/flutter';
 
 /**
  * Guardian and organisation onboarding wizards.
@@ -12,7 +12,7 @@ export class OnboardingPage {
 
   async expectGuardianVisible(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByText('Welcome to Agatha Track')).toBeVisible({
+    await expect(this.page.getByText(welcomeAgathaTrackText)).toBeVisible({
       timeout: 30_000,
     });
     await expect(

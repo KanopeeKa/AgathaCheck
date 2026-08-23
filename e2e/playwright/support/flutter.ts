@@ -2,6 +2,10 @@ import type { Locator, Page } from '@playwright/test';
 import { isLiveHostingTarget, isLiveUatTarget } from './hosting';
 import { passHostingWaf } from './waf';
 
+/** Welcome title on FTUE chooser and guardian onboarding (`AgathaTrack` on wire). */
+export const welcomeAgathaTrackText =
+  /Welcome to Agatha\s*Track|Bienvenue sur Agatha\s*Track/i;
+
 function postLoginTimeout(fallback = 60_000): number {
   // Longer timeouts on any live host (UAT or prod).
   return isLiveHostingTarget() ? 120_000 : fallback;
@@ -216,7 +220,7 @@ export async function completeExperienceChooserIfPresent(
   await refreshFlutterAccessibility(page);
 
   const path = flutterRoutePath(page.url());
-  // Onboarding wizards reuse "Welcome to Agatha Track" — not the FTUE chooser.
+  // Onboarding wizards reuse the FTUE welcome title — not the experience chooser.
   if (path === '/g/onboarding' || path === '/o/onboarding') return;
 
   const ftueTrackPets = page
@@ -296,7 +300,7 @@ export async function waitForPostLoginRoute(page: Page, timeout?: number): Promi
       return;
     }
 
-    if (await page.getByText(/Welcome to Agatha Track|Bienvenue sur Agatha Track/i).isVisible({ timeout: 1_000 }).catch(() => false)) {
+    if (await page.getByText(welcomeAgathaTrackText).isVisible({ timeout: 1_000 }).catch(() => false)) {
       return;
     }
 
