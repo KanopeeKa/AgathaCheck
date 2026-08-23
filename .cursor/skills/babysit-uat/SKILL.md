@@ -85,6 +85,8 @@ Run **/e2e-debug** with:
 
 **Do not** duplicate remedial steps here — `/e2e-debug` owns triage, remedial branch, parallel shard workers, local validation, remedial PR.
 
+`/e2e-debug` runs **Phase 0 preflight** (`e2e_debug_status.mjs`) before bootstrap — if another session is busy, wait or join the open remedial PR instead of spawning duplicate work.
+
 **Exit Phase 3** when remedial PR is open/updated and ready → **Phase 4**.
 
 ---

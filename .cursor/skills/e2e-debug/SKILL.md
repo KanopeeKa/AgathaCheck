@@ -10,14 +10,56 @@ paths:
   - scripts/babysit_uat*.sh
   - scripts/babysit_uat*.mjs
   - scripts/e2e_debug*.mjs
+  - scripts/e2e_debug_status.mjs
 ---
 
 # E2E debug
 
 Pre-UAT **remedial fix loop** — triage CI, scope shards from **diff since last green** `pre-uat-e2e.yml`, fix on **one remedial branch**, validate locally, open remedial PR. **Does not merge** — hand off to **/babysit-uat** for merge + watch.
 
-**Canonical scripts:** `scripts/e2e_debug_resolve.mjs` · `scripts/babysit_uat_shard_risk.mjs`  
+**Canonical scripts:** `scripts/e2e_debug_status.mjs` (preflight) · `scripts/e2e_debug_resolve.mjs` · `scripts/babysit_uat_shard_risk.mjs`  
 **Memory:** `.agents/memory/uat-live-e2e-triage.md` · `docs/e2e/uat-deploy-tiers.md`
+
+---
+
+## Phase 0 — Preflight (mandatory — before anything else)
+
+**Do not** bootstrap the stack, spawn shard workers, or create a remedial branch until preflight passes.
+
+```bash
+node scripts/e2e_debug_status.mjs --json
+```
+
+| Exit / `safe_to_start` | Action |
+|------------------------|--------|
+| `0` / `true` | Proceed to Phase 1 |
+| `2` / `false`, `reason: e2e_debug_in_progress` | **Stop** — another agent holds `e2e-debug` + `busy` on a control issue. Wait, or comment on that issue and coordinate |
+| `2` / `false`, `reason: open_remedial_pr` | **Join** the open remedial PR — do not start a duplicate branch/stack. Re-run with `--join --remedial-branch <branch>` after resolve |
+| `2` / `false`, `reason: join_branch_mismatch` | Use `open_remedial_pr.branch` from JSON — one remedial PR per failure wave |
+
+**Claim session** (when starting fresh — control issue from `/execute-plan` or babysit-uat context):
+
+```bash
+node scripts/e2e_debug_status.mjs --claim --issue <control_issue> --merge-sha <merge_sha> --json
+```
+
+Adds `e2e-debug` + `busy` on the issue so parallel agents do not duplicate orchestration. Claim re-checks preflight, provisions the `e2e-debug` label, adds both labels in one edit, and rolls back on race detection.
+
+**Join existing remedial PR** (after resolve returns `remedial_branch`):
+
+```bash
+node scripts/e2e_debug_status.mjs --join --remedial-branch <remedial_branch> --json
+git fetch origin <remedial_branch>
+git checkout <remedial_branch>
+```
+
+**Release** when remedial PR is ready for `/babysit-uat` handoff (or session halts):
+
+```bash
+node scripts/e2e_debug_status.mjs --release --issue <control_issue> --json
+```
+
+`--force` bypasses the busy guard (ops recovery only — document why in the issue comment).
 
 ---
 
@@ -163,6 +205,12 @@ Validate each `target_shard` (high → low risk):
 
 Open/update remedial PR to `main`. PR body: baseline SHA, target shards, failing run URL, drift checklist hits.
 
+Release the preflight claim:
+
+```bash
+node scripts/e2e_debug_status.mjs --release --issue <control_issue> --json
+```
+
 **Hand off to /babysit-uat** on remedial PR (Phase 4 remedial loop):
 
 - `/babysit-plus` merge remedial PR
@@ -189,10 +237,34 @@ Full symptom map: `.agents/memory/uat-live-e2e-triage.md`
 
 ## Round 2+ (remedial failed again)
 
-1. `node scripts/e2e_debug_resolve.mjs --merge-sha <remedial_merge_sha> --json`
-2. **Only** fix `failed_shards` from watch — no proactive expansion
-3. Same remedial branch or new `cursor/preuat-fix-<sha>-6bba` from current `origin/main`
-4. Max **3** full loops per original feature PR (inherits `/babysit-uat` budget)
+1. `node scripts/e2e_debug_status.mjs --join --remedial-branch <branch> --json` (or fresh preflight if branch changed)
+2. `node scripts/e2e_debug_resolve.mjs --merge-sha <remedial_merge_sha> --json`
+3. **Only** fix `failed_shards` from watch — no proactive expansion
+4. Same remedial branch or new `cursor/preuat-fix-<sha>-6bba` from current `origin/main`
+5. Max **3** full loops per original feature PR (inherits `/babysit-uat` budget)
+
+---
+
+## Avoid wasting time
+
+| Do first (cheap) | Defer (expensive) |
+|------------------|-------------------|
+| Phase 0 preflight | Bootstrap stack + Playwright install |
+| `e2e_debug_resolve.mjs` + CI log triage | Local shard replay |
+| Static grep/locator audit per shard | Full isolated pod per shard |
+| `--join` existing remedial PR | New remedial branch + duplicate PR |
+
+| Rule | Why |
+|------|-----|
+| **Preflight before bootstrap** | Stack + `playwright install` is minutes; duplicate agents race on the same remedial branch |
+| **Join, don't fork** | One remedial PR per failure wave — open PR without `--join` means continue that branch |
+| **Proactive only when `merge_action == act_now`** | Round 1 high-risk only; round 2+ waits for CI `failed_shards` |
+| **Static audit before Playwright** | Grep locators/semantics drift in parallel; run shards only when audit finds drift or CI proved failure |
+| **Sequential Playwright on one pod** | Never parallel `babysit_uat_run_shard.sh` on the same pod — port/DB races |
+| **Isolated pods for parallel replay** | `babysit_uat_run_shard_isolated.sh` only when separate Cloud Agent pods |
+| **`--e2e-shards` not full suite** | `./scripts/pre-push-changed.sh --e2e-shards <target_shards>` after fixes |
+| **Subscribe to CI, don't poll** | Use `cursor-subscriptions` `subscribe_github_ci` on `pre-uat-e2e.yml` while fixing |
+| **Release `busy` on handoff** | Unblocks the next remedial round if babysit-uat must re-delegate |
 
 ---
 

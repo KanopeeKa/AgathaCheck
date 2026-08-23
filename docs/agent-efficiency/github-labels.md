@@ -60,6 +60,17 @@ Remove revoke label; comment `resume-plan <plan_id>`.
 
 ---
 
+## E2E remedial (`/e2e-debug`)
+
+| Label | Purpose |
+|-------|---------|
+| `e2e-debug` | Marks the control issue for an active pre-UAT remedial session (create in repo settings if missing) |
+| `busy` | Combined with `e2e-debug` — another agent is orchestrating remedial work (preflight blocks) |
+
+**Preflight:** `node scripts/e2e_debug_status.mjs --json` before bootstrap. **Claim:** `--claim --issue <n>` · **Release:** `--release --issue <n>` when handing off to `/babysit-uat`.
+
+---
+
 ## UAT coordinator (cross-agent queue)
 
 | Label | Purpose |
