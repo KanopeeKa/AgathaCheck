@@ -707,7 +707,7 @@ looping animation beyond a loading affordance.
 | Runtime color constants | `flutter_app/lib/core/theme/app_color_tokens.dart` |
 | Material component themes | `flutter_app/lib/core/theme/app_theme.dart` |
 | Guardian / Organisation context overrides | `flutter_app/lib/core/theme/experience_colors.dart` |
-| Product decisions and screen behavior | `docs/design/agathatrack-redesign-blueprint.md` |
+| Product decisions and screen behavior | `docs/design/plans/agathatrack-redesign-blueprint.md` |
 | Landing reference | approved Guardian Operations Desk landing mockup |
 
 When implementation needs a value not defined here, add a named token first.

@@ -133,7 +133,7 @@ The **active** program for navigation reversal, Guardian dashboard, and Organisa
 | [/docs/design/tokens.md](/docs/design/tokens.md) | Design tokens and theming | Active |
 | [/docs/design/copy-tone.md](/docs/design/copy-tone.md) | Writing style and tone guide | Active |
 | [/docs/design/skin-change-guide.md](/docs/design/skin-change-guide.md) | Theming and branding customization | Active |
-| [/docs/design/ui-rework-plan.md](/docs/design/ui-rework-plan.md) | Comprehensive UI overhaul plan | Active |
+| [/docs/design/plans/ui-rework-plan.md](/docs/design/plans/ui-rework-plan.md) | Comprehensive UI overhaul plan | Active |
 
 ### Testing & Quality
 
