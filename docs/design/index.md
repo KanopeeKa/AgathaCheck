@@ -22,7 +22,7 @@ Lightweight by default. Go deeper only when the task needs it.
 
 **Canonical system:** [`system.md`](./system.md) (Operations Desk / Replit direction).  
 **Token tables:** [`tokens.md`](./tokens.md) — only file for hex colour values.  
-**Execution plan:** `ui-rework-plan.md` (phases 0–7).
+**Execution plans:** [`plans/ui-rework-plan.md`](./plans/ui-rework-plan.md), [`plans/agathatrack-redesign-blueprint.md`](./plans/agathatrack-redesign-blueprint.md).
 
 ## Reference implementations
 

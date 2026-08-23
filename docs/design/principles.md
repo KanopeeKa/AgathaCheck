@@ -3,7 +3,7 @@ title: Design principles (deep reference)
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-21
+last_updated: 2026-08-23
 tags: [design,ui,ux]
 ---
 # Design principles (deep reference)
@@ -18,7 +18,7 @@ Calm, dependable, emotionally intelligent, low-stress. Users feel oriented and i
 
 ## Audience
 
-One design system; subtle context via `AppExperience` (`/g/*` guardian, `/o/*` organisation), copy, and selective accent — not two brands. Org branding rules: `copy-tone.md`.
+One design system; subtle context via `AppExperience` (`/g/*` Guardian, `/o/*` Shelter), copy, and selective accent — not two brands. Shelter (teal) product copy rules: `copy-tone.md`.
 
 The landing/auth surface is intentionally **role-neutral**. It introduces
 AgathaTrack as a shared care-coordination desk; guardian, shelter, foster, and
@@ -27,18 +27,13 @@ pre-login chooser.
 
 ## Visual direction
 
-- Warm neutral surfaces; hierarchy from spacing and typography more than decorative color
-- **Guardian primary:** plum `#755B68` — full primary on `/g/*` CTAs
-- **Organisation primary:** teal `#218B6C` — full primary on `/o/*` CTAs
-- **Warm accent:** coral `#D6A08F` — restrained; never primary CTA
-- **Success:** `#2B7A2E` (S2) — small signals, not large fills
-- Semantic colors stay functional and shared across modes
-- **Approved landing direction:** deep olive story panel, warm paper auth panel,
-  muted gold mark/accent, and the protective shelter arch logo. See
-  `tokens.md` for the landing reference values; this is pending production
-  integration and does not silently replace the app-wide palette.
+- Warm neutral surfaces; hierarchy from spacing and typography more than decorative colour
+- **Guardian** and **Shelter** each have a primary accent for CTAs in their experience context — never use colour alone for permission or severity
+- **Coral** is decorative only — never a primary action, error, or warning colour
+- Semantic colours stay functional and shared across modes
+- **Landing / auth** uses the Operations Desk direction: warm paper, Guardian plum primary, Shelter teal story surface, protective arch mark — see [`system.md`](./system.md) and [`tokens.md`](./tokens.md) for exact values (Replit-approved canonical)
 
-Tokens: `docs/design/tokens.md` · Implementation: `flutter_app/lib/core/theme/`
+**Colour values:** [`tokens.md`](./tokens.md) only. **Components and layout:** [`system.md`](./system.md). **Implementation:** `flutter_app/lib/core/theme/`
 
 ## Layout
 

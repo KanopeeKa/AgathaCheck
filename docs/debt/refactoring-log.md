@@ -350,7 +350,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 ## Sprint 11 — UI theme rework (planned)
 
 **Goal:** Calm care-coordination visual system — sage palette, tokenized theme, phased screen alignment.  
-**Execution plan:** `docs/design/ui-rework-plan.md` (phases 0–7)  
+**Execution plan:** `docs/design/plans/ui-rework-plan.md` (phases 0–7)  
 **Governance:** `docs/design/index.md`, `.cursor/rules/design.mdc`, skills `/ui-check`, `/ui-design-deep`  
 **PR #267:** design governance + plan doc
 
@@ -436,7 +436,7 @@ Use this template when spawning agents on an integration branch:
 |---|---|
 | 2026-07-23 | UI navigation v2 execute-plan started (`ui-navigation-v2-14ee`, control #299): `docs/design/navigation-v2.md`; experience-split + tokens amended |
 | 2026-07-23 | UI theme rework complete (`ui-theme-rework-4bed`): plum guardian / teal org tokens, phases 0–7 merged (#273–#294); `docs/design/tokens.md` |
-| 2026-07-22 | Sprint 11 planned: UI theme rework — `docs/design/ui-rework-plan.md`; design governance PR #267 |
+| 2026-07-22 | Sprint 11 planned: UI theme rework — `docs/design/plans/ui-rework-plan.md`; design governance PR #267 |
 | 2026-07-19 | PR C (#220): due-events E2E restores home `DueEventsSection` assertion via `PetListPage.refreshByRemount()` after API seed (#216 events-screen proxy superseded). |
 | 2026-07-19 | #219 merged: E2E shell-navigation fallback contract (`navigateWithShellFallback`). |
 | 2026-07-19 | #218 merged: UAT pre-flight health probe before live smoke workers. |

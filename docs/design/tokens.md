@@ -3,17 +3,14 @@ title: Design tokens
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-21
+last_updated: 2026-08-23
 tags: [design,ui,ux]
 ---
 # Design tokens
 
-Canonical palette for AgathaTrack. Implemented in `flutter_app/lib/core/theme/`.  
-**Phase 0:** `app_theme.dart` + `ExperienceColors` extension. Screens adopt experience tokens in later phases.
+Canonical **colour tables** for AgathaTrack. Full component and layout spec: [`system.md`](./system.md) (Operations Desk / Replit-approved). Implemented in `flutter_app/lib/core/theme/`.
 
-**Re-skinning the app?** See `skin-change-guide.md` for the full checklist —
-the one file to edit (`app_color_tokens.dart`) plus logos, web manifest,
-PDF report tokens, and email branding that mirror it.
+**Re-skinning?** See [`skin-change-guide.md`](./skin-change-guide.md) — edit `app_color_tokens.dart` plus logos, web manifest, PDF, and email branding.
 
 ## Foundations
 

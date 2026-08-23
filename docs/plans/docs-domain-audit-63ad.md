@@ -162,13 +162,13 @@ Full inventory of repository `.md` files (2026-08-22 wave 3). **Outcome:** waves
 - docs/debt/technical-debt.md
 
 ## design (7)
-- docs/design/agathatrack-redesign-blueprint.md
+- docs/design/plans/agathatrack-redesign-blueprint.md
 - docs/design/copy-tone.md
 - docs/design/index.md
 - docs/design/principles.md
 - docs/design/skin-change-guide.md
 - docs/design/tokens.md
-- docs/design/ui-rework-plan.md
+- docs/design/plans/ui-rework-plan.md
 
 ## domain-canonical (91)
 - docs/domains/auth/README.md

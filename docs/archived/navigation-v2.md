@@ -208,4 +208,4 @@ New authenticated routes **must** register chrome mode in `app_router.dart` / `e
 
 - `docs/design/tokens.md` — color tokens and drawer groups
 - `docs/experience-split-plan.md` — experience URLs and chooser (amended)
-- `docs/design/ui-rework-plan.md` — visual rework phases
+- `docs/design/plans/ui-rework-plan.md` — visual rework phases
