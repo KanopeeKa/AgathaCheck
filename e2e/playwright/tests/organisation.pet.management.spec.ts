@@ -54,7 +54,7 @@ test.describe('Organisation pet management', () => {
     expect(bella?.organization_name).toBe(ORG_NAME);
 
     await petList.goHome();
-    await petList.expectPetUnderOrganization('Bella', ORG_NAME);
+    await new OrganizationListPage(page).expectOrgVisible(ORG_NAME);
   });
 
   test('all organisation members can see an organisation pet', async ({ page }) => {
@@ -67,7 +67,7 @@ test.describe('Organisation pet management', () => {
 
     const petList = await loginAs(page, bob, { experience: 'organization' });
     await petList.expectLoaded();
-    await petList.expectPetUnderOrganization('Bella', ORG_NAME);
+    await petList.expectPetUnderOrganization('Bella', ORG_NAME, org.id);
   });
 
   test('organisation pets appear grouped by organisation', async ({ page }) => {
@@ -86,7 +86,7 @@ test.describe('Organisation pet management', () => {
     // Nav v2 guardian shell shows personal pets only; org inventory is on /o/orgs/:id/pets.
     await petList.goHome({ experience: 'organization' });
     await petList.expectSectionHeader(ORG_NAME);
-    await petList.expectPetUnderOrganization('Bella', ORG_NAME);
+    await petList.expectPetUnderOrganization('Bella', ORG_NAME, org.id);
   });
 
   test('assigning a member to an organisation pet on creation', async ({ page }) => {

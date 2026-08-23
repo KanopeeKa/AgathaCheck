@@ -339,10 +339,23 @@ export class PetListPage {
     orgName: string,
     orgId?: string,
   ): Promise<void> {
+    const detail = new OrganizationDetailPage(this.page);
+    if (orgId) {
+      const petsPath = `/o/orgs/${orgId}/pets`;
+      const petsRoute = new RegExp(`^${escapeRegExp(petsPath)}(?:\\?|$)`);
+      if (!petsRoute.test(flutterRoutePath(this.page.url()))) {
+        await dismissConsentBannerIfPresent(this.page);
+        await this.page.goto(flutterGotoUrl(petsPath));
+        await refreshFlutterAccessibility(this.page);
+        await waitForFlutterRoutePattern(this.page, petsRoute, 30_000);
+      }
+      await detail.expectPetVisibleOnPetsScreen(petName);
+      return;
+    }
+
     await this.openOrganizations();
     const orgList = new OrganizationListPage(this.page);
-    await orgList.openOrg(orgName, orgId);
-    const detail = new OrganizationDetailPage(this.page);
+    await orgList.openOrg(orgName);
     await detail.expectLoaded(orgName);
     await detail.expectPetVisible(petName);
   }

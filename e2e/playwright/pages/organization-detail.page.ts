@@ -7,6 +7,7 @@ import {
   expectAppBarTitle,
   fillTextbox,
   flutterGotoUrl,
+  flutterRoutePath,
   navigateWithShellFallback,
   refreshFlutterAccessibility,
   selectDropdownOption,
@@ -191,6 +192,17 @@ export class OrganizationDetailPage {
 
   async expectPetVisible(name: string): Promise<void> {
     await this.openPetsSection();
+    await this.expectPetVisibleOnPetsScreen(name);
+  }
+
+  /** Assert a pet row on the org pets screen (opens `/pets` when needed). */
+  async expectPetVisibleOnPetsScreen(name: string): Promise<void> {
+    const petsRoute = /\/o\/orgs\/[^/]+\/pets/;
+    if (!petsRoute.test(flutterRoutePath(this.page.url()))) {
+      await this.openPetsSection();
+    } else {
+      await refreshFlutterAccessibility(this.page);
+    }
     // Fostered pets live on In foster / All — not the default Need attention tab.
     await this.selectOrgPetsTab(OrganizationDetailPage.allPetsTabName);
     const pattern = new RegExp(escapeRegExp(name), 'i');
