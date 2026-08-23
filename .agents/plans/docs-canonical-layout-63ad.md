@@ -82,10 +82,10 @@ next_action: "continue phase 6 on branch cursor/docs-canonical-dissolve-xp-63ad"
 artifact_ref:
   branch: cursor/docs-canonical-dissolve-xp-63ad
   plan_path: .agents/plans/docs-canonical-layout-63ad.md
-  plan_commit: 73678be0a5189a75f6e0226da711eadbbbaedf7c
+  plan_commit: 8105f01e1139fb87ec4317a86b5379dd390bad5e
   snapshot_path: .agents/plans/docs-canonical-layout-63ad.snapshot.json
-  snapshot_commit: 73678be0a5189a75f6e0226da711eadbbbaedf7c
-open_prs: []
+  snapshot_commit: 8105f01e1139fb87ec4317a86b5379dd390bad5e
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/732"]
 merge_commits: {}
 debt_issue_refs: []
 ```
