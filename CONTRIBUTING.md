@@ -114,6 +114,5 @@ See `e2e/README.md` for details.
 
 ## Debt and deferrals
 
-- Refactoring uncertainty → `docs/debt/refactoring-debt.md`
-- Product/infra deferrals → `docs/debt/technical-debt.md`
+- Refactoring uncertainty or deferrals → `docs/debt/debt.md`
 - Sprint refactor plan → `docs/debt/refactoring-log.md`

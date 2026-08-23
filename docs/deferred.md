@@ -1,12 +1,12 @@
 ---
-title: Cross-cutting deferred work (relocated)
+title: Deferred work (relocated)
 owner: Documentation Team
 audience: both
 status: superseded
 last_updated: 2026-08-23
-tags: [migration,documentation]
+tags: [migration, debt]
 ---
 
-# Cross-cutting deferred work — relocated
+# Deferred work — relocated
 
-[/docs/debt/deferred.md](/docs/debt/deferred.md)
+[/docs/debt/debt.md](/docs/debt/debt.md)
