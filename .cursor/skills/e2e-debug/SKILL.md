@@ -43,7 +43,7 @@ node scripts/e2e_debug_status.mjs --json
 node scripts/e2e_debug_status.mjs --claim --issue <control_issue> --merge-sha <merge_sha> --json
 ```
 
-Adds `e2e-debug` + `busy` on the issue so parallel agents do not duplicate orchestration.
+Adds `e2e-debug` + `busy` on the issue so parallel agents do not duplicate orchestration. Claim re-checks preflight, provisions the `e2e-debug` label, adds both labels in one edit, and rolls back on race detection.
 
 **Join existing remedial PR** (after resolve returns `remedial_branch`):
 

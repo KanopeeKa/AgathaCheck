@@ -3,7 +3,12 @@
  * Tests for e2e_debug_status.mjs
  */
 import assert from 'node:assert/strict';
-import { evaluatePreflight, isRemedialBranch } from './e2e_debug_status.mjs';
+import {
+  evaluatePreflight,
+  isRemedialBranch,
+  issueMatchesE2eDebugSession,
+  SESSION_START_MARKER,
+} from './e2e_debug_status.mjs';
 
 assert.equal(isRemedialBranch('cursor/preuat-fix-abc12345-6bba'), true);
 assert.equal(isRemedialBranch('cursor/preuat-fix-14c6c5b6-2600'), false);
@@ -92,6 +97,22 @@ assert.equal(isRemedialBranch('cursor/other-branch-6bba'), false);
   });
   assert.equal(result.safe_to_start, true);
   assert.equal(result.reason, 'clear');
+}
+
+{
+  assert.equal(
+    issueMatchesE2eDebugSession({ labels: [{ name: 'e2e-debug' }], title: '[execute-plan] foo' }),
+    true,
+  );
+  assert.equal(
+    issueMatchesE2eDebugSession({ labels: [{ name: 'busy' }], title: '[execute-plan] foo' }, true),
+    true,
+  );
+  assert.equal(
+    issueMatchesE2eDebugSession({ labels: [{ name: 'busy' }], title: '[execute-plan] foo' }, false),
+    false,
+  );
+  assert.equal(SESSION_START_MARKER, '/e2e-debug session start');
 }
 
 console.log('e2e_debug_status tests passed');

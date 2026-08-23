@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const REMEDIAL_BRANCH_RE = /^cursor\/preuat-fix-[0-9a-f]{6,40}-6bba$/i;
+export const SESSION_START_MARKER = '/e2e-debug session start';
 
 function usageError(msg) {
   console.error(`e2e_debug_status: ${msg}`);
@@ -45,6 +46,22 @@ function ghRun(args) {
     process.exit(1);
   }
   return result.stdout || '';
+}
+
+function ghTry(args) {
+  const result = spawnSync('gh', args, { cwd: repoRoot, encoding: 'utf8' });
+  return {
+    ok: result.status === 0,
+    stdout: result.stdout || '',
+    stderr: result.stderr || '',
+    status: result.status ?? 1,
+  };
+}
+
+function resolveRepo() {
+  const data = ghJson(['repo', 'view', '--json', 'nameWithOwner']);
+  const [owner, repo] = String(data.nameWithOwner).split('/');
+  return { owner, repo };
 }
 
 function parseArgs() {
@@ -106,6 +123,21 @@ function parseArgs() {
 
 export function isRemedialBranch(branch) {
   return REMEDIAL_BRANCH_RE.test(branch || '');
+}
+
+/**
+ * @param {{ labels?: { name: string }[], title?: string }} issue
+ * @param {boolean} hasSessionComment
+ */
+export function issueMatchesE2eDebugSession(issue, hasSessionComment = false) {
+  const labels = (issue.labels || []).map((label) => label.name);
+  if (labels.includes('e2e-debug')) {
+    return true;
+  }
+  if (/e2e-debug/i.test(issue.title || '')) {
+    return true;
+  }
+  return hasSessionComment;
 }
 
 /**
@@ -206,6 +238,19 @@ function findOpenRemedialPrs() {
   return prs.filter((pr) => isRemedialBranch(pr.headRefName));
 }
 
+function issueHasSessionStartComment(issueNumber) {
+  const { owner, repo } = resolveRepo();
+  const comments = ghJson([
+    'api',
+    `repos/${owner}/${repo}/issues/${issueNumber}/comments`,
+    '--paginate',
+  ]);
+  if (!Array.isArray(comments)) {
+    return false;
+  }
+  return comments.some((comment) => (comment.body || '').includes(SESSION_START_MARKER));
+}
+
 function findBusyE2eDebugIssues() {
   const issues = ghJson([
     'issue',
@@ -223,15 +268,132 @@ function findBusyE2eDebugIssues() {
     return [];
   }
   return issues.filter((issue) => {
-    const labels = (issue.labels || []).map((label) => label.name);
-    if (labels.includes('e2e-debug')) {
+    if (issueMatchesE2eDebugSession(issue)) {
       return true;
     }
-    return /e2e-debug/i.test(issue.title || '');
+    return issueHasSessionStartComment(issue.number);
   });
 }
 
-function claimWork(issueNumber, mergeSha) {
+function getIssue(issueNumber) {
+  return ghJson(['issue', 'view', String(issueNumber), '--json', 'number,url,title,labels']);
+}
+
+function issueHasLabel(issue, label) {
+  return (issue.labels || []).some((entry) => entry.name === label);
+}
+
+function ensureE2eDebugLabel() {
+  const created = ghTry([
+    'label',
+    'create',
+    'e2e-debug',
+    '--description',
+    'Active /e2e-debug pre-UAT remedial session',
+    '--color',
+    'd93f0b',
+  ]);
+  if (!created.ok && !/already exists/i.test(created.stderr)) {
+    console.error(created.stderr || created.stdout);
+    process.exit(1);
+  }
+}
+
+function postIssueComment(issueNumber, body) {
+  const result = spawnSync(
+    'node',
+    ['scripts/github_issue_workflow.js', 'comment', '--issue', String(issueNumber), '--body', body],
+    { cwd: repoRoot, encoding: 'utf8' },
+  );
+  if (result.status !== 0) {
+    console.error(result.stderr || result.stdout);
+    process.exit(1);
+  }
+}
+
+function rollbackClaim(issueNumber) {
+  ghTry([
+    'issue',
+    'edit',
+    String(issueNumber),
+    '--remove-label',
+    'busy',
+    '--remove-label',
+    'e2e-debug',
+  ]);
+}
+
+function claimBlocked(payload) {
+  if (process.argv.includes('--json')) {
+    console.log(JSON.stringify(payload, null, 2));
+  } else {
+    console.error(`claim blocked: ${payload.reason}`);
+    if (payload.busy_issue?.url) {
+      console.error(`busy_issue: ${payload.busy_issue.url}`);
+    }
+  }
+  process.exit(2);
+}
+
+function claimWork(issueNumber, mergeSha, { force = false } = {}) {
+  const remedialPrs = findOpenRemedialPrs();
+  const busyIssues = findBusyE2eDebugIssues();
+  const preflight = evaluatePreflight({
+    remedialPrs,
+    busyIssues,
+    join: false,
+    force,
+    remedialBranch: null,
+  });
+
+  if (!preflight.safe_to_start && preflight.reason === 'e2e_debug_in_progress') {
+    claimBlocked({
+      action: 'claim',
+      ok: false,
+      reason: 'e2e_debug_in_progress',
+      busy_issue: preflight.busy_issue,
+      blockers: preflight.blockers,
+    });
+  }
+
+  if (!preflight.safe_to_start && preflight.reason === 'open_remedial_pr') {
+    claimBlocked({
+      action: 'claim',
+      ok: false,
+      reason: 'open_remedial_pr',
+      open_remedial_pr: preflight.open_remedial_pr,
+      recommended_action: 'join_existing_pr',
+      blockers: preflight.blockers,
+    });
+  }
+
+  const issue = getIssue(issueNumber);
+  if (!force && issueHasLabel(issue, 'busy')) {
+    claimBlocked({
+      action: 'claim',
+      ok: false,
+      reason: 'issue_already_busy',
+      issue: issueNumber,
+      url: issue.url,
+    });
+  }
+
+  ensureE2eDebugLabel();
+
+  const labelResult = ghTry([
+    'issue',
+    'edit',
+    String(issueNumber),
+    '--add-label',
+    'e2e-debug',
+    '--add-label',
+    'busy',
+  ]);
+  if (!labelResult.ok) {
+    console.error(labelResult.stderr || labelResult.stdout);
+    process.exit(1);
+  }
+
   const body = [
     '## /e2e-debug session start',
     mergeSha ? `- merge_sha: \`${mergeSha}\`` : null,
@@ -241,25 +403,17 @@ function claimWork(issueNumber, mergeSha) {
   ]
     .filter(Boolean)
     .join('\n');
+  postIssueComment(issueNumber, body);
 
-  const result = spawnSync(
-    'node',
-    ['scripts/github_issue_workflow.js', 'start-work', '--issue', String(issueNumber), '--body', body],
-    { cwd: repoRoot, encoding: 'utf8' },
-  );
-  if (result.status !== 0) {
-    console.error(result.stderr || result.stdout);
-    process.exit(1);
-  }
-
-  const labelResult = spawnSync(
-    'gh',
-    ['issue', 'edit', String(issueNumber), '--add-label', 'e2e-debug'],
-    { cwd: repoRoot, encoding: 'utf8' },
-  );
-  if (labelResult.status !== 0) {
-    // Label may not exist yet — busy + session comment still guard duplicates.
-    console.error(labelResult.stderr || labelResult.stdout);
+  const competitors = findBusyE2eDebugIssues().filter((entry) => entry.number !== issueNumber);
+  if (competitors.length > 0) {
+    rollbackClaim(issueNumber);
+    claimBlocked({
+      action: 'claim',
+      ok: false,
+      reason: 'claim_race_detected',
+      competitors,
+    });
   }
 
   return { ok: true, issue: issueNumber, merge_sha: mergeSha ?? null };
@@ -273,13 +427,17 @@ function releaseWork(issueNumber) {
     'Remedial PR ready for `/babysit-uat` handoff (or session halted).',
   ].join('\n');
 
-  spawnSync(
-    'node',
-    ['scripts/github_issue_workflow.js', 'comment', '--issue', String(issueNumber), '--body', body],
-    { cwd: repoRoot, encoding: 'utf8' },
-  );
+  postIssueComment(issueNumber, body);
 
-  ghRun(['issue', 'edit', String(issueNumber), '--remove-label', 'busy']);
+  ghRun([
+    'issue',
+    'edit',
+    String(issueNumber),
+    '--remove-label',
+    'busy',
+    '--remove-label',
+    'e2e-debug',
+  ]);
   return { ok: true, issue: issueNumber };
 }
 
@@ -287,7 +445,7 @@ function main() {
   const opts = parseArgs();
 
   if (opts.claim) {
-    const claim = claimWork(opts.issue, opts.mergeSha);
+    const claim = claimWork(opts.issue, opts.mergeSha, { force: opts.force });
     const payload = { action: 'claim', ...claim };
     if (opts.json) {
       console.log(JSON.stringify(payload, null, 2));
