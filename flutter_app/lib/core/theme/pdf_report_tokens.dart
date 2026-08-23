@@ -23,14 +23,14 @@ abstract final class PdfReportTokens {
   static const PdfColor inverse = PdfColors.white;
 
   /// Mirrors `AppColorTokens.border`.
-  static const PdfColor border = PdfColor.fromInt(0xFFE5DDD6);
+  static const PdfColor border = PdfColor.fromInt(0xFFE4DDD6);
 
   /// Mirrors `AppColorTokens.heading`.
-  static const PdfColor heading = PdfColor.fromInt(0xFF2D3338);
+  static const PdfColor heading = PdfColor.fromInt(0xFF1F2937);
 
   /// Mirrors `AppColorTokens.muted`.
-  static const PdfColor muted = PdfColor.fromInt(0xFF68737A);
+  static const PdfColor muted = PdfColor.fromInt(0xFF667085);
 
   /// Mirrors `AppColorTokens.surfaceAlt`.
-  static const PdfColor neutralBg = PdfColor.fromInt(0xFFF3EDE7);
+  static const PdfColor neutralBg = PdfColor.fromInt(0xFFF2ECE6);
 }

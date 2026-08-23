@@ -360,19 +360,44 @@ class LandingAuthCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
-      color: AppColorTokens.operationsSurface,
+      color: AppColorTokens.landingSurface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-        side: BorderSide(
-          color: AppColorTokens.operationsOlive.withValues(alpha: 0.16),
-        ),
+        borderRadius: BorderRadius.circular(28),
+        side: BorderSide(color: AppColorTokens.landingLine),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(28),
+        padding: const EdgeInsets.all(30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
+            Row(
+              children: [
+                Container(
+                  height: 40,
+                  width: 40,
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: AppColorTokens.landingTealSoft,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Image.asset(
+                    'assets/branding/agathatrack-care-mark.png',
+                    excludeFromSemantics: true,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  l10n.appTitle,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: AppColorTokens.landingInk,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.4,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 28),
             AnimatedBuilder(
               animation: tabController,
               builder: (context, _) {
@@ -388,7 +413,7 @@ class LandingAuthCard extends StatelessWidget {
                       key: ValueKey(isSignIn),
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: AppColorTokens.operationsInk,
+                        color: AppColorTokens.landingInk,
                       ),
                     ),
                   ),
@@ -405,7 +430,7 @@ class LandingAuthCard extends StatelessWidget {
                       ? l10n.landingDeskWelcomeBackBody
                       : l10n.landingDeskCreateBody,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: AppColorTokens.operationsInk.withValues(alpha: 0.7),
+                    color: AppColorTokens.landingInkSoft,
                     height: 1.4,
                   ),
                 );
@@ -414,18 +439,21 @@ class LandingAuthCard extends StatelessWidget {
             const SizedBox(height: 20),
             DecoratedBox(
               decoration: BoxDecoration(
-                color: AppColorTokens.operationsPaper,
+                border: Border.all(color: AppColorTokens.landingLine),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: TabBar(
                 controller: tabController,
                 indicatorSize: TabBarIndicatorSize.tab,
-                indicator: BoxDecoration(
-                  color: AppColorTokens.operationsOliveLight,
-                  borderRadius: BorderRadius.circular(11),
+                indicator: const UnderlineTabIndicator(
+                  borderSide: BorderSide(
+                    color: AppColorTokens.guardianPrimary,
+                    width: 3,
+                  ),
+                  insets: EdgeInsets.symmetric(horizontal: 18),
                 ),
-                labelColor: AppColorTokens.operationsSurface,
-                unselectedLabelColor: AppColorTokens.operationsInk,
+                labelColor: AppColorTokens.guardianPrimary,
+                unselectedLabelColor: AppColorTokens.landingInkSoft,
                 labelStyle: theme.textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),

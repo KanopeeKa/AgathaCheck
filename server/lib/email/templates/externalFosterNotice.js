@@ -23,7 +23,7 @@ export function buildExternalFosterNoticeEmail({
     '',
     strings.textContact,
     '',
-    '— Agatha Track',
+    '— AgathaTrack',
   ].join('\n');
 
   const bodyHtml = `

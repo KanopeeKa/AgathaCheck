@@ -43,6 +43,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/branding/
+    - assets/landing/
     - assets/demo_pets/
     - assets/logo-plum.png
     - assets/logo-plum.jpg

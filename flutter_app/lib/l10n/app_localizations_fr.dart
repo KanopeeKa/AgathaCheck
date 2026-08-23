@@ -9,25 +9,26 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get appTitle => 'Agatha Track';
+  String get appTitle => 'AgathaTrack';
 
   @override
-  String get agathaCheckLogo => 'Logo Agatha Track';
+  String get agathaCheckLogo => 'Logo AgathaTrack';
 
   @override
   String get appTagline =>
-      'Agatha Track organise la santé de vos animaux — que vous soyez un particulier, un refuge ou une organisation professionnelle.';
+      'AgathaTrack organise la santé de vos animaux — à la maison, dans un refuge ou avec une équipe de soins.';
 
   @override
   String get appDescription =>
-      'Suivez les visites vétérinaires, les médicaments, le poids et les soins quotidiens dans un tableau de bord simple. Créez des organisations pour collaborer avec votre équipe, partager des animaux et coordonner les soins sur tout votre réseau.';
+      'Suivez les visites vétérinaires, les médicaments, le poids et les soins quotidiens dans un tableau de bord apaisant. Gardez les personnes, les animaux et les prochaines étapes connectés partout où les soins ont lieu.';
 
   @override
   String get appCta =>
       'Connectez-vous pour reprendre là où vous vous êtes arrêté, ou créez un compte gratuit pour commencer à garder l\'historique de santé de votre animal en sécurité et accessible à tout moment.';
 
   @override
-  String get landingDeskEyebrow => 'Le bureau de coordination des soins';
+  String get landingDeskEyebrow =>
+      'La coordination des soins, en toute sérénité.';
 
   @override
   String get landingDeskHeadline =>
@@ -1292,7 +1293,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get subscriptionTitle => 'Abonnement';
 
   @override
-  String get welcomeUnlimited => 'Bienvenue dans Agatha Track Illimité !';
+  String get welcomeUnlimited => 'Bienvenue dans AgathaTrack Illimité !';
 
   @override
   String purchaseFailed(String error) {
@@ -1455,7 +1456,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String pdfGeneratedBy(String date) {
-    return 'Généré le $date par Agatha Track';
+    return 'Généré le $date par AgathaTrack';
   }
 
   @override
@@ -1488,7 +1489,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pdfReportTitle => 'Rapport Santé Animal';
 
   @override
-  String get pdfAgathaCheck => 'AGATHA TRACK';
+  String get pdfAgathaCheck => 'AGATHATRACK';
 
   @override
   String get pdfPetProfileSection => 'Profil de l\'animal';
@@ -1873,6 +1874,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get orgNoOrganizations => 'Aucune organisation';
+
+  @override
+  String get orgLoadError =>
+      'Impossible de charger vos refuges. Veuillez réessayer.';
 
   @override
   String get orgCreateFirst =>
@@ -3386,7 +3391,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get helpSubtitle =>
-      'Trouvez les réponses à vos questions sur toutes les fonctionnalités d\'Agatha Track.';
+      'Trouvez les réponses à vos questions sur toutes les fonctionnalités d\'AgathaTrack.';
 
   @override
   String get faqAccountTitle => 'Compte & Authentification';
@@ -3721,11 +3726,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get faqSubscriptionTitle => 'Abonnement';
 
   @override
-  String get faqSubscriptionQ1 => 'Agatha Track est-il gratuit ?';
+  String get faqSubscriptionQ1 => 'AgathaTrack est-il gratuit ?';
 
   @override
   String get faqSubscriptionA1 =>
-      'Agatha Track propose un niveau gratuit avec les fonctionnalités essentielles. Un abonnement premium optionnel débloque des fonctionnalités supplémentaires. Visitez la page Abonnement depuis Mes informations pour en savoir plus.';
+      'AgathaTrack propose un niveau gratuit avec les fonctionnalités essentielles. Un abonnement premium optionnel débloque des fonctionnalités supplémentaires. Visitez la page Abonnement depuis Mes informations pour en savoir plus.';
 
   @override
   String get faqSubscriptionQ2 => 'Comment m\'abonner ?';
@@ -3756,14 +3761,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqLanguageA2 =>
-      'Oui. Agatha Track inclut des fonctionnalités d\'accessibilité : étiquettes sémantiques pour les lecteurs d\'écran, infobulles sur tous les éléments interactifs, étiquetage approprié des champs de formulaire et support de la navigation au clavier.';
+      'Oui. AgathaTrack inclut des fonctionnalités d\'accessibilité : étiquettes sémantiques pour les lecteurs d\'écran, infobulles sur tous les éléments interactifs, étiquetage approprié des champs de formulaire et support de la navigation au clavier.';
 
   @override
   String get consentBannerTitle => 'Votre vie privée compte';
 
   @override
   String get consentBannerMessage =>
-      'Nous utilisons des cookies et services essentiels pour faire fonctionner Agatha Track. Nous aimerions également définir des cookies optionnels pour l\'analyse et le marketing afin d\'améliorer votre expérience. Vous pouvez gérer vos préférences à tout moment.';
+      'Nous utilisons des cookies et services essentiels pour faire fonctionner AgathaTrack. Nous aimerions également définir des cookies optionnels pour l\'analyse et le marketing afin d\'améliorer votre expérience. Vous pouvez gérer vos préférences à tout moment.';
 
   @override
   String get consentAcceptAll => 'Tout accepter';
@@ -3797,7 +3802,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get consentMarketingDescription =>
-      'Nous permet de vous envoyer des mises à jour et offres pertinentes concernant les fonctionnalités et services d\'Agatha Track.';
+      'Nous permet de vous envoyer des mises à jour et offres pertinentes concernant les fonctionnalités et services d\'AgathaTrack.';
 
   @override
   String get consentSavePreferences => 'Enregistrer les préférences';
@@ -3816,7 +3821,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get aboutIntro =>
-      'Agatha Track aide les gardiens d\'animaux et les organisations à organiser la santé de leurs animaux. Suivez les visites vétérinaires, les médicaments, le poids et les soins quotidiens — que vous gériez un seul animal ou coordonniez toute une équipe.';
+      'AgathaTrack aide les gardiens d\'animaux et les refuges à organiser la santé de leurs animaux. Suivez les visites vétérinaires, les médicaments, le poids et les soins quotidiens — que vous gériez un seul animal ou coordonniez toute une équipe.';
 
   @override
   String get privacyPolicy => 'Politique de confidentialité';
@@ -3829,7 +3834,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get legalDocumentsIntro =>
-      'Consultez nos documents juridiques pour en savoir plus sur le fonctionnement d\'Agatha Track, le traitement des données personnelles et vos droits.';
+      'Consultez nos documents juridiques pour en savoir plus sur le fonctionnement d\'AgathaTrack, le traitement des données personnelles et vos droits.';
 
   @override
   String get legalNotice => 'Mentions légales';
@@ -4306,14 +4311,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get continueButton => 'Continuer';
 
   @override
-  String get experienceChooserTitle => 'Comment utiliserez-vous Agatha Track ?';
+  String get experienceChooserTitle => 'Comment utiliserez-vous AgathaTrack ?';
 
   @override
   String get experienceChooserSubtitle =>
       'Choisissez l\'expérience adaptée à vos besoins du jour.';
 
   @override
-  String get ftueTitle => 'Bienvenue sur Agatha Track';
+  String get ftueTitle => 'Bienvenue sur AgathaTrack';
 
   @override
   String get ftueSubtitle => 'Que souhaitez-vous faire en premier ?';
@@ -4497,7 +4502,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get guardianOnboardingSkip => 'Passer pour l\'instant';
 
   @override
-  String get guardianOnboardingWelcomeTitle => 'Bienvenue sur Agatha Track';
+  String get guardianOnboardingWelcomeTitle => 'Bienvenue sur AgathaTrack';
 
   @override
   String get guardianOnboardingWelcomeBody =>

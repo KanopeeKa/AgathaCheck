@@ -36,6 +36,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Health entry completion semantics](health-entry-completion.md) — UI derives overdue/completed from next_due_date only (no status field); mark-taken must advance/sentinel next_due_date in the backend.
 - [Guardian mobile completion](guardian-mobile-completion.md) — compact dashboard completion keeps a reversible list-level preview while the server remains authoritative.
 - [Canonical product name](canonical-product-name.md) — use AgathaTrack in current product UI and copy; AgathaCheck is the legacy name.
+- [Shelter terminology and evolving design](shelter-terminology-and-evolving-design.md) — Shelter is the canonical teal mode; evolve prior references screen by screen.
 - [JWT secret dev/test fallback](jwt-secret-dev-fallback.md) — keep the prod-gated 'default_secret' fallback; CI/Jest sign tokens with it and workflows set no secret.
 - [Error-leak redaction patterns](error-leak-redaction-patterns.md) — grep err.message + e.toString() + $e + details on the backend; one pattern misses sites. Also: `/security-error-audit` skill.
 - [Localization & enum .label](localization-enum-labels.md) — "fully localize" must also map enum `.label` getters (dropdowns/displays) to ARB keys, not just inline literals.
@@ -51,7 +52,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 
 ## Quick references
 
-- **Experience program (active, 2026-07-25):** `docs/experience-program/decisions-log.md` — navigation reversal (nav-v2 superseded), Guardian dashboard rework, Organisation presentation/access-control rework. **Org people/permissions v4 (2026-08-06):** `docs/experience-program/organisation-people-permissions-v4-delivery-plan.md` + D-v4-* in decisions log — read before touching People screen, roles/permissions, foster badge, or admin contacts.
+- **Experience program:** earlier references and file names using “Organisation” are legacy; interpret them through the current Shelter terminology and evolve screens deliberately.
 - **Execute-plan autonomy:** `.agents/memory/execute-plan-autonomy.md` — gate `0` = proceed; no permission prompts; per-phase workers; integration branch for 2+ phases
 - Domain map: `docs/architecture/index.md`
 - Efficiency plan: `docs/agent-efficiency/plans/agent-efficiency-plan.md`

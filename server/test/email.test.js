@@ -51,16 +51,16 @@ describe('password reset email template', () => {
   it('builds English multipart content with branding and CTA', () => {
     const { subject, text, html } = buildPasswordResetEmail({ locale: 'en', code: '482915' });
 
-    expect(subject).toBe('Your Agatha Track password reset code');
+    expect(subject).toBe('Your AgathaTrack password reset code');
     expect(text).toContain('482915');
     expect(text).toContain('https://uat.agathatrack.com/forgot-password');
     expect(text).toContain("If you didn't request this");
 
-    expect(html).toContain('Agatha Track');
+    expect(html).toContain('AgathaTrack');
     expect(html).toContain('#755B68');
     expect(html).toContain('cid:agatha-logo');
     expect(html).toContain('482915');
-    expect(html).toContain('Open Agatha Track');
+    expect(html).toContain('Open AgathaTrack');
     expect(html).toContain('https://uat.agathatrack.com/forgot-password');
     expect(html).toContain('uat.agathatrack.com');
   });
@@ -68,13 +68,13 @@ describe('password reset email template', () => {
   it('builds French multipart content', () => {
     const { subject, text, html } = buildPasswordResetEmail({ locale: 'fr', code: '123456' });
 
-    expect(subject).toBe('Votre code de réinitialisation Agatha Track');
+    expect(subject).toBe('Votre code de réinitialisation AgathaTrack');
     expect(text).toContain('123456');
     expect(text).toContain('Il expire dans 15 minutes.');
     expect(text).toContain("Si vous n'avez pas demandé ceci");
 
     expect(html).toContain('Réinitialisez votre mot de passe');
-    expect(html).toContain('Ouvrir Agatha Track');
+    expect(html).toContain('Ouvrir AgathaTrack');
     expect(html).toContain('123456');
   });
 

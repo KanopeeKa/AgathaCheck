@@ -101,25 +101,25 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Agatha Track'**
+  /// **'AgathaTrack'**
   String get appTitle;
 
   /// No description provided for @agathaCheckLogo.
   ///
   /// In en, this message translates to:
-  /// **'Agatha Track logo'**
+  /// **'AgathaTrack logo'**
   String get agathaCheckLogo;
 
   /// No description provided for @appTagline.
   ///
   /// In en, this message translates to:
-  /// **'Agatha Track keeps your pet\'s health organised — whether you\'re a pet parent, a shelter, or a professional organisation.'**
+  /// **'AgathaTrack keeps your pet\'s health organised — whether you care at home, in a shelter, or as part of a team.'**
   String get appTagline;
 
   /// No description provided for @appDescription.
   ///
   /// In en, this message translates to:
-  /// **'Track vet visits, medications, weight, and daily care in one simple dashboard. Create organisations to collaborate with your team, share pets, and coordinate care across your entire network.'**
+  /// **'Track vet visits, medications, weight, and daily care in one calm dashboard. Keep people, pets, and next steps connected wherever care happens.'**
   String get appDescription;
 
   /// No description provided for @appCta.
@@ -131,7 +131,7 @@ abstract class AppLocalizations {
   /// No description provided for @landingDeskEyebrow.
   ///
   /// In en, this message translates to:
-  /// **'The Guardian Operations Desk'**
+  /// **'Care coordination, thoughtfully kept.'**
   String get landingDeskEyebrow;
 
   /// No description provided for @landingDeskHeadline.
@@ -2386,7 +2386,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcomeUnlimited.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to Agatha Track Unlimited!'**
+  /// **'Welcome to AgathaTrack Unlimited!'**
   String get welcomeUnlimited;
 
   /// No description provided for @purchaseFailed.
@@ -2662,7 +2662,7 @@ abstract class AppLocalizations {
   /// No description provided for @pdfGeneratedBy.
   ///
   /// In en, this message translates to:
-  /// **'Generated {date} by Agatha Track'**
+  /// **'Generated {date} by AgathaTrack'**
   String pdfGeneratedBy(String date);
 
   /// No description provided for @pdfPageOf.
@@ -2722,7 +2722,7 @@ abstract class AppLocalizations {
   /// No description provided for @pdfAgathaCheck.
   ///
   /// In en, this message translates to:
-  /// **'AGATHA TRACK'**
+  /// **'AGATHATRACK'**
   String get pdfAgathaCheck;
 
   /// No description provided for @pdfPetProfileSection.
@@ -3432,6 +3432,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No organisations yet'**
   String get orgNoOrganizations;
+
+  /// No description provided for @orgLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load your shelters. Please try again.'**
+  String get orgLoadError;
 
   /// No description provided for @orgCreateFirst.
   ///
@@ -6066,7 +6072,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Find answers to common questions about every feature in Agatha Track.'**
+  /// **'Find answers to common questions about every feature in AgathaTrack.'**
   String get helpSubtitle;
 
   /// No description provided for @faqAccountTitle.
@@ -6630,13 +6636,13 @@ abstract class AppLocalizations {
   /// No description provided for @faqSubscriptionQ1.
   ///
   /// In en, this message translates to:
-  /// **'Is Agatha Track free to use?'**
+  /// **'Is AgathaTrack free to use?'**
   String get faqSubscriptionQ1;
 
   /// No description provided for @faqSubscriptionA1.
   ///
   /// In en, this message translates to:
-  /// **'Agatha Track offers a free tier with core features. An optional premium subscription unlocks additional capabilities and removes limits. Visit the Subscription page from My Details to learn more.'**
+  /// **'AgathaTrack offers a free tier with core features. An optional premium subscription unlocks additional capabilities and removes limits. Visit the Subscription page from My Details to learn more.'**
   String get faqSubscriptionA1;
 
   /// No description provided for @faqSubscriptionQ2.
@@ -6690,7 +6696,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqLanguageA2.
   ///
   /// In en, this message translates to:
-  /// **'Yes. Agatha Track includes accessibility features throughout: semantic labels for screen readers, tooltips on all interactive elements, proper form field labelling, and keyboard navigation support.'**
+  /// **'Yes. AgathaTrack includes accessibility features throughout: semantic labels for screen readers, tooltips on all interactive elements, proper form field labelling, and keyboard navigation support.'**
   String get faqLanguageA2;
 
   /// No description provided for @consentBannerTitle.
@@ -6702,7 +6708,7 @@ abstract class AppLocalizations {
   /// No description provided for @consentBannerMessage.
   ///
   /// In en, this message translates to:
-  /// **'We use essential cookies and services to make Agatha Track work. We\'d also like to set optional cookies for analytics and marketing to improve your experience. You can manage your preferences at any time.'**
+  /// **'We use essential cookies and services to make AgathaTrack work. We\'d also like to set optional cookies for analytics and marketing to improve your experience. You can manage your preferences at any time.'**
   String get consentBannerMessage;
 
   /// No description provided for @consentAcceptAll.
@@ -6762,7 +6768,7 @@ abstract class AppLocalizations {
   /// No description provided for @consentMarketingDescription.
   ///
   /// In en, this message translates to:
-  /// **'Allows us to send you relevant updates and offers about Agatha Track features and services.'**
+  /// **'Allows us to send you relevant updates and offers about AgathaTrack features and services.'**
   String get consentMarketingDescription;
 
   /// No description provided for @consentSavePreferences.
@@ -6792,7 +6798,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutIntro.
   ///
   /// In en, this message translates to:
-  /// **'Agatha Track helps pet guardians and organisations keep their animals\' health organised. Track vet visits, medications, weight, and daily care — whether you manage one pet or coordinate across a whole team.'**
+  /// **'AgathaTrack helps pet guardians and shelters keep their animals\' health organised. Track vet visits, medications, weight, and daily care — whether you manage one pet or coordinate across a whole team.'**
   String get aboutIntro;
 
   /// No description provided for @privacyPolicy.
@@ -6816,7 +6822,7 @@ abstract class AppLocalizations {
   /// No description provided for @legalDocumentsIntro.
   ///
   /// In en, this message translates to:
-  /// **'Review our legal documents for information about how Agatha Track operates, how we handle personal data, and your rights.'**
+  /// **'Review our legal documents for information about how AgathaTrack operates, how we handle personal data, and your rights.'**
   String get legalDocumentsIntro;
 
   /// No description provided for @legalNotice.
@@ -7626,7 +7632,7 @@ abstract class AppLocalizations {
   /// No description provided for @experienceChooserTitle.
   ///
   /// In en, this message translates to:
-  /// **'How will you use Agatha Track?'**
+  /// **'How will you use AgathaTrack?'**
   String get experienceChooserTitle;
 
   /// No description provided for @experienceChooserSubtitle.
@@ -7638,7 +7644,7 @@ abstract class AppLocalizations {
   /// No description provided for @ftueTitle.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to Agatha Track'**
+  /// **'Welcome to AgathaTrack'**
   String get ftueTitle;
 
   /// No description provided for @ftueSubtitle.
@@ -7962,7 +7968,7 @@ abstract class AppLocalizations {
   /// No description provided for @guardianOnboardingWelcomeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to Agatha Track'**
+  /// **'Welcome to AgathaTrack'**
   String get guardianOnboardingWelcomeTitle;
 
   /// No description provided for @guardianOnboardingWelcomeBody.

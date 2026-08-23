@@ -24,7 +24,7 @@ describe('external foster notice email template', () => {
     expect(subject).toContain('Happy Paws Shelter');
     expect(text).toContain('Happy Paws Shelter');
     expect(text).toContain('https://uat.agathatrack.com/legal/privacy-notice');
-    expect(text).toContain('Agatha Track');
+    expect(text).toContain('AgathaTrack');
 
     expect(html).toContain('Happy Paws Shelter');
     expect(html).toContain('https://uat.agathatrack.com/legal/privacy-notice');

@@ -25,7 +25,7 @@ class OrgShellHomeContent extends ConsumerWidget {
       error: (e, _) => _OrgHubMessage(
         icon: Icons.error_outline,
         title: l.orgNoOrganizations,
-        detail: '$e',
+        detail: l.orgLoadError,
         action: TextButton(
           onPressed: () => ref.invalidate(organizationListProvider),
           child: Text(l.retry),

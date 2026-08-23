@@ -8,10 +8,11 @@ tags: [design,ui,ux]
 ---
 # Skin-change guide
 
-**One question, one answer:** to change AgathaTrack's color scheme, edit
-`flutter_app/lib/core/theme/app_color_tokens.dart`. Every screen, component,
-and (as of this guide) generated PDF report reads its colors from that file
-— nothing else in `lib/` should need to change for a straight palette swap.
+**One question, one answer:** change shared AgathaTrack colour values in
+`flutter_app/lib/core/theme/app_color_tokens.dart`. Flutter screens should
+consume those values through `ThemeData` or `ExperienceColors`; companion
+runtimes and generated logo derivatives must be refreshed as part of the same
+brand change.
 
 This page is the full checklist for a re-skin: the one file that drives the
 Flutter app, the handful of companion files that can't share Dart constants
@@ -41,11 +42,8 @@ These live outside `lib/` (or use a different color type) so they can't
 literally `import` `app_color_tokens.dart`. Update them together with the
 token file when re-skinning — each links back to which token it mirrors.
 
-The approved landing palette in `docs/design/tokens.md` is currently a
-landing-direction reference, not a silent global re-skin. When production
-landing integration begins, decide explicitly whether those values remain
-landing-scoped or become shared theme tokens before changing
-`app_color_tokens.dart`.
+Landing palette roles are semantic aliases of the shared plum/teal/neutral
+system. Do not introduce screen-specific hex values for future landing work.
 
 | File | Why it's separate | What to update |
 |------|--------------------|-----------------|

@@ -21,7 +21,7 @@ export function buildPasswordResetEmail({ locale = 'en', code }) {
     '',
     strings.textSecurity,
     '',
-    `— Agatha Track`,
+    `— AgathaTrack`,
     getPublicUrl().replace(/^https?:\/\//, ''),
   ].join('\n');
 

@@ -19,34 +19,30 @@ PDF report tokens, and email branding that mirror it.
 
 | Token | Hex | Flutter role |
 |-------|-----|--------------|
-| background | `#F8F5F1` | `scaffoldBackgroundColor` |
-| surface | `#FFFFFF` | cards, sheets |
-| surfaceAlt | `#F3EDE7` | grouped sections |
-| border | `#E5DDD6` | dividers, outlines |
-| borderStrong | `#D5CCC4` | emphasis borders |
-| shadow | `rgba(45,51,56,0.08)` | elevation shadows |
+| background | `#F7F4EF` | `scaffoldBackgroundColor` |
+| surface | `#FFFDFC` | cards, sheets |
+| surfaceAlt | `#F2ECE6` | grouped sections |
+| border | `#E4DDD6` | dividers, outlines |
+| borderStrong | `#D6CBC3` | emphasis borders |
+| shadow | `rgba(31,41,55,0.08)` | elevation shadows |
 
-## Approved landing direction (pending production integration)
+## Approved landing direction
 
-The approved landing/auth prototype introduces a distinct Operations Desk
-surface treatment. These values are the visual reference for the landing
-integration; they do **not** replace the current app-wide tokens until the
-production screen and theme rollout are implemented.
+The public landing uses the same Guardian plum, Shelter teal, and warm-neutral
+system as the app. Its composition is distinct, but it must not introduce a
+third, one-off palette.
 
 | Token | Hex | Use |
 |-------|-----|-----|
-| landingPaper | `#F5F2E9` | warm-paper auth surface |
-| landingPaperDeep | `#EBE9DC` | subtle paper grouping |
-| landingPanel | `#FBFAF5` | auth card surface |
-| landingInk | `#2F4439` | landing text |
-| landingInkSoft | `#52685A` | secondary landing text |
-| landingOlive | `#3B5849` | story panel / care-desk context |
-| landingOliveDark | `#2F483D` | deep olive depth |
-| landingSage | `#A8B9A0` | restrained supporting tint |
-| landingGold | `#CAA75C` | logo surround, rules, focused accents |
-| landingGoldSoft | `#EFE5C5` | low-emphasis gold surface |
-| landingClay | `#C47D68` | exceptional warm signal only |
-| landingLine | `#D6DFD3` | light borders and dividers |
+| landingPaper | `#F7F4EF` | warm public canvas |
+| landingPanel | `#FFFDFC` | auth and care-preview cards |
+| landingInk | `#1F2937` | landing text |
+| landingInkSoft | `#52606D` | secondary landing text |
+| landingPlum | `#755B68` | universal primary action |
+| landingTeal | `#1D7C84` | photo arches, focus, care context |
+| landingTealDeep | `#14656C` | high-contrast teal content |
+| landingTealSoft | `#E6F2F2` | quiet teal surface |
+| landingLine | `#D9E5E1` | light borders and dividers |
 
 ### Landing color roles
 
@@ -55,29 +51,20 @@ than inventing nearby one-off colors:
 
 | Role | Hex / value | Use |
 |------|-------------|-----|
-| storyText | `#F2F2E9` | primary text on the olive story panel |
-| storyTextStrong | `#F6F3E8` | large display text and high-emphasis story content |
-| storyTextMuted | `#C7D0C5` | story lede and supporting copy |
-| storyMeta | `#CBD4C7` | compact top-bar metadata |
-| storyAccent | `#D6C481` | eyebrow, icon, rule, and display emphasis |
-| storyLive | `#C6D693` | small live/synced indicator |
-| inputSurface | `#FDFCF8` | email/password input surface |
-| inputBorder | `#D8E0D6` | resting input border |
-| inputFocusBorder | `#839C82` | focused input border |
-| inputFocusRing | `#E4EBDE` | 3px focus halo around inputs |
+| storyText | `#1F2937` | high-emphasis public story text |
+| storyTextMuted | `#52606D` | story lede and supporting copy |
+| storyAccent | `#1D7C84` | care-context emphasis |
+| inputSurface | `#FFFDFC` | email/password input surface |
+| inputBorder | `#D9E5E1` | resting input border |
+| inputFocusBorder | `#1D7C84` | focused input border |
+| inputFocusRing | `rgba(29,124,132,0.16)` | 3px focus halo around inputs |
 | noticeSurface | `#F4EDCF` | inline informational notice |
 | noticeBorder | `#DFD7AE` | informational notice border |
 | noticeText | `#78683D` | informational notice text |
 | buttonShadow | `#294336` | restrained depth under the primary landing button |
 
-Alpha overlays are part of the composition, not standalone brand colors:
-
-- Story gold atmosphere: `rgba(205,181,104,0.18)` at the upper-right.
-- Story sage atmosphere: `rgba(164,192,159,0.20)` at the lower-left.
-- Signal pills: `rgba(225,228,202,0.09)` with
-  `rgba(225,228,202,0.19)` border.
-- Desk preview: `rgba(18,42,31,0.22)` with a quiet
-  `rgba(221,228,206,0.22)` border.
+Do not introduce extra landing overlays or atmospheric colors without first
+adding a semantic token in `app_color_tokens.dart`.
 
 Landing authentication has one universal entry point. Do not add a
 guardian/shelter/organisation selector to the login form; experience and
@@ -111,7 +98,7 @@ letter-spaced; avoid applying that treatment to paragraphs or error messages.
 
 ### Landing interaction states
 
-- Active sign-in/create-account tab: olive text plus a muted-gold underline;
+- Active sign-in/create-account tab: plum text plus a teal underline;
   do not rely on color alone.
 - Input focus: visible border and focus ring; never remove the browser or
   Flutter focus treatment.
@@ -129,17 +116,17 @@ forms. Do not replace it with paws, paw prints, or a generic pet icon.
   PNG/JPG compatibility assets.
 - Mockup public copy:
   `artifacts/mockup-sandbox-live/public/agathatrack-care-mark.svg`.
-- The gold surround is a landing composition treatment, not part of the SVG
+- The warm-paper surround is a landing composition treatment, not part of the SVG
   itself.
 
 ## Typography colors
 
 | Token | Hex | Use |
 |-------|-----|-----|
-| heading | `#2D3338` | titles |
-| body | `#394249` | primary text → `onSurface` |
-| muted | `#68737A` | secondary → `onSurfaceVariant` |
-| disabled | `#A3ABB1` | disabled controls only |
+| heading | `#1F2937` | titles |
+| body | `#374151` | primary text → `onSurface` |
+| muted | `#667085` | secondary → `onSurfaceVariant` |
+| disabled | `#98A2B3` | disabled controls only |
 | inverse | `#FFFFFF` | on primary buttons |
 
 ## Guardian mode (default primary — landing + `/g/*`)
@@ -154,15 +141,15 @@ forms. Do not replace it with paws, paw prints, or a generic pet icon.
 
 Full primary on all guardian CTAs (option A).
 
-## Organisation mode (`/o/*`)
+## Shelter mode (`/o/*`)
 
 | Token | Hex |
 |-------|-----|
-| primary | `#218B6C` |
-| hover | `#1B765C` |
-| active | `#17664F` |
-| light | `#EAF7F2` |
-| soft | `#D8EFE6` |
+| primary | `#1D7C84` |
+| hover | `#176972` |
+| active | `#125860` |
+| light | `#EAF5F5` |
+| soft | `#D8ECEC` |
 
 Org-guardianship pet photo border on guardian home: **primary** teal (subtle).
 
