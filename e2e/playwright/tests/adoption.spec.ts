@@ -142,8 +142,8 @@ test.describe('Organisation custody', () => {
 
     const eveList = await loginAs(page, eve);
     await eveList.expectPetVisible('Max');
-    const aliceList = await loginAs(page, alice);
-    await aliceList.expectPetUnderOrganization('Max', 'Rescue Hearts');
+    const detail = await openOrganization(page, alice, 'Rescue Hearts', org.id);
+    await detail.expectPetVisible('Max');
   });
 
   test('direct adoption requires foster confirmation', async ({ page }) => {
