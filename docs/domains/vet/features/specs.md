@@ -5,6 +5,7 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain,vet,specs]
+domain: vet
 ---
 
 # Veterinarian specs
@@ -17,6 +18,7 @@ tags: [domain,vet,specs]
 
 ## Validation & edge cases
 
+- Calendar dates on the wire use `YYYY-MM-DD` — same rules as weight/health entries ([/docs/architecture/calendar-dates.md](/docs/architecture/calendar-dates.md)).
 - Empty list shows a no-vets prompt.
 - Delete is destructive after confirmation; cancel preserves the record.
 - Shared pet views may show linked vet in veterinarian section (sharing.feature).

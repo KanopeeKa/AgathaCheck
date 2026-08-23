@@ -5,6 +5,7 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain,pet_profile,specs]
+domain: pet_profile
 ---
 
 # Pet profile specs
@@ -27,12 +28,16 @@ Event types (v1): `health_log`, `foster_session`, `profile_edit`, `document_uplo
 ## Pet CRUD validation
 
 - Pets belong to a guardian account; foster pets appear via organisation custody (see organization / fostering domains).
-- Calendar dates on the wire use `YYYY-MM-DD` ([/docs/calendar-dates.md](/docs/calendar-dates.md)).
+- Calendar dates on the wire use `YYYY-MM-DD` ([/docs/architecture/calendar-dates.md](/docs/architecture/calendar-dates.md)).
 
 ## Sharing section on pet detail
 
 Role-specific sharing UI lives under `flutter_app/lib/features/pet_profile/widgets/sharing/` — see sharing domain for share-link semantics.
 
+## Guardian mobile completion
+
+Due-events preview supports reversible mobile completion with transient cache during refresh — see [.agents/memory/guardian-mobile-completion.md](/.agents/memory/guardian-mobile-completion.md).
+
 ---
 
-**Lessons:** [changes/lessons.md](../changes/lessons.md) · **Plans:** [changes/plans.md](../changes/plans.md)
+**Plans:** [changes/plans.md](../changes/plans.md)

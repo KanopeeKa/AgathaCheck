@@ -8,8 +8,8 @@ tags: [experience,guardian,organisation]
 ---
 # Phase 4 — Foster & pet operations
 
-**Parent:** [`roadmap-delivery-plan.md`](roadmap-delivery-plan.md) · [`program-contract.md`](program-contract.md)  
-**Brief:** [`briefs/organisation-dashboard-brief.md`](briefs/organisation-dashboard-brief.md) §Fosters
+**Parent:** [../../cross-domain/changes/roadmap-delivery-plan.md](../../cross-domain/changes/roadmap-delivery-plan.md) · [../../cross-domain/changes/program-contract.md](../../cross-domain/changes/program-contract.md)  
+**Brief:** [`briefs/shelter-dashboard-brief.md`](briefs/shelter-dashboard-brief.md) §Fosters
 
 ## Purpose
 
@@ -98,7 +98,7 @@ adding more.
 
 ## Phases with exit criteria
 
-Sprints 4.1–4.5 (see `roadmap-delivery-plan.md`).
+Sprints 4.1–4.5 (see [roadmap-delivery-plan.md](/docs/domains/cross-domain/changes/roadmap-delivery-plan.md)).
 
 **Exit criteria:**
 

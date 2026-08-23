@@ -5,18 +5,20 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain, fostering, specs]
+domain: fostering
+feature_id: g0-contract-pack
 ---
 # G0 — Platform contract pack (fostering & adoption)
 
 **Status:** Draft baseline for agent handoff  
 **Last updated:** 2026-07-25  
-**Supersedes:** informal journey boundaries only — does not replace `docs/org-fostering-strategy.md` until journey delivery begins.
+**Supersedes:** informal journey boundaries only — does not replace [org-fostering-strategy.md](../changes/org-fostering-strategy.md) until journey delivery begins.
 
 This document is the **platform contract layer**. Journey agents (J1–J5) must reference G0 instead of redefining shared rules. G1 (document and compliance artefact packs) depends on stable hooks defined here and implemented in J3/J5.
 
 **Changelog (pre-merge):** Fixed session status enum consistency (`adoption_in_progress`, `end_pending_confirmation`); added verification, design, legal, security, schema-gap, and PR quality-gate sections per review pass.
 
-**Related:** [`README.md`](README.md) · `docs/architecture/org-custody-model.md` · `regulatory/internal/dpia-foster-directory.md` · `docs/design/index.md`
+**Related:** [`README.md`](README.md) · `docs/domains/shelter/features/org-custody-model.md` · `regulatory/internal/dpia-foster-directory.md` · `docs/design/index.md`
 
 ---
 
@@ -35,7 +37,7 @@ These are non-negotiable architectural rules. Any journey spec or PR that violat
 | I7 | **Participant comments ≠ staff notes** — separate fields, separate storage, separate access rules everywhere (platform-wide). |
 | I8 | **Indirect collection requires transparency at first contact** — manual foster and prospect records must send Art. 14-style notice on first outreach (source, purpose, rights, opt-out). |
 | I9 | **Global reusable data ≠ shelter-local data** — never mix in one field or expose local screening data across shelters. |
-| I10 | **Calendar dates on the wire** — `YYYY-MM-DD` for all user-facing dates (`docs/calendar-dates.md`). |
+| I10 | **Calendar dates on the wire** — `YYYY-MM-DD` for all user-facing dates (`docs/architecture/calendar-dates.md`). |
 
 ---
 
@@ -254,7 +256,7 @@ J5 starts only when:
 **Same-day expedite (explicit admin action):** admin may invoke a single orchestrated action (e.g. complete visit with positive outcome and start journey) when all involved dates share the same calendar day (`YYYY-MM-DD`). All gate predicates still run; nothing is silently skipped.
 
 On J5 start: session → `adoption_in_progress` (non-terminal; foster care continues).  
-J5 close event: session → `converted_to_adoption` (terminal); triggers existing custody transfer / shadow semantics per `docs/architecture/org-custody-model.md`.
+J5 close event: session → `converted_to_adoption` (terminal); triggers existing custody transfer / shadow semantics per `docs/domains/shelter/features/org-custody-model.md`.
 
 ### 5.7 G1 hooks (no independent state)
 
@@ -659,7 +661,7 @@ Journey-specific open questions belong in J1–J5 specs, not here.
 | `README.md` | Index for this folder |
 | `g0-contract-pack.md` | **This file** |
 | `migration-appendix.md` | **Locked** — status mapping, dual-write plan, in-flight row handling |
-| `j1-foster-onboarding.md` | TODO |
+| `j1-foster-onboarding.md` | [changes/j1-foster-onboarding.md](../changes/j1-foster-onboarding.md) — complete |
 | `j2-matching-requests.md` | TODO |
 | `j3-fostering-sessions.md` | TODO |
 | `j4-adoption-visits.md` | TODO |

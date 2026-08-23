@@ -23,4 +23,4 @@ Cross-cutting documentation for GitHub Actions, merge gates, UAT promotion, and 
 
 **E2E deploy tiers** (pre-UAT vs live smoke): [/docs/e2e/uat-deploy-tiers.md](/docs/e2e/uat-deploy-tiers.md)
 
-**Sprint execution plans** (BDD/toolchain): [/docs/plans/README.md](/docs/plans/README.md)
+**Sprint execution plans** (BDD/toolchain): [/docs/domains/cross-domain/README.md#cross-cutting-execution-plans](/docs/domains/cross-domain/README.md#cross-cutting-execution-plans)

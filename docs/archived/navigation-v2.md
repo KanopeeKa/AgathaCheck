@@ -14,8 +14,8 @@ tags: [archived,historical]
 # Navigation v2 — specification
 
 > **Status: SUPERSEDED (2026-07-25).** This model did not work for users and is being fully
-> reversed by the Experience program — see `docs/experience-program/decisions-log.md` (D1, D2)
-> and `docs/experience-program/phase-1-navigation.md`. Kept here as historical record only; do not
+> reversed by the navigation shell program — see `docs/domains/navigation/features/navigation-decisions.md` (D1, D2)
+> and `docs/domains/navigation/changes/phase-1-navigation.md`. Kept here as historical record only; do not
 > implement new work against this spec.
 
 **Status:** ~~Approved (execute-plan `ui-navigation-v2-14ee`)~~ Superseded — see banner above  
@@ -208,4 +208,4 @@ New authenticated routes **must** register chrome mode in `app_router.dart` / `e
 
 - `docs/design/tokens.md` — color tokens and drawer groups
 - `docs/experience-split-plan.md` — experience URLs and chooser (amended)
-- `docs/design/ui-rework-plan.md` — visual rework phases
+- `docs/design/plans/ui-rework-plan.md` — visual rework phases

@@ -5,6 +5,7 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain,weight_tracking,specs]
+domain: weight_tracking
 ---
 
 # Weight tracking specs
@@ -12,7 +13,7 @@ tags: [domain,weight_tracking,specs]
 ## Data model
 
 - Weight entries belong to a pet; stored via server/routes/weightEntries.js.
-- Weight is numeric (kg); date is a calendar day on the wire (see /docs/calendar-dates.md).
+- Weight is numeric (kg); date is a calendar day on the wire (see /docs/architecture/calendar-dates.md).
 - Sort order for history: chronological by entry date.
 
 ## Profile integration
@@ -25,7 +26,3 @@ tags: [domain,weight_tracking,specs]
 - Jest: server/test/weightEntries.test.js
 - BDD: flutter_app/test/bdd/features/weight_tracking.feature
 - E2E: e2e/playwright/tests/weight.tracking.spec.ts
-
----
-
-**Lessons:** [changes/lessons.md](../changes/lessons.md)

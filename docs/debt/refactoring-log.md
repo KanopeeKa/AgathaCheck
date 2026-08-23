@@ -17,7 +17,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 ## organisation-people-permissions-v4 — People, roles, foster (2026-08-06)
 
 **Goal:** Unified People directory, retire `foster` wire role (badge instead), staged permissions editor, org tier defaults, foster invite + onboarding timeline.  
-**Plan:** `docs/experience-program/organisation-people-permissions-v4-delivery-plan.md` · **Decisions:** D-v4-* in `decisions-log.md`
+**Plan:** `docs/domains/shelter/changes/organisation-people-permissions-v4-delivery-plan.md` · **Decisions:** D-v4-* in `shelter-decisions.md`
 
 | Phase | Outcome | Branch | Status |
 |-------|---------|--------|--------|
@@ -152,7 +152,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 ## Experience split — Phases 1–2 (2026-07-15)
 
 **Branch:** `cursor/experience-split-17a0`  
-**Plan:** `docs/experience-split-plan.md`
+**Plan:** `docs/archived/experience-split-plan.md`
 
 | # | Deliverable | Status |
 |---|-------------|--------|
@@ -167,7 +167,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 ## Experience split — Phase 3 (2026-07-15)
 
 **Branch:** `cursor/experience-phase3-pet-detail-17a0`  
-**Plan:** `docs/experience-split-plan.md`
+**Plan:** `docs/archived/experience-split-plan.md`
 
 | # | Deliverable | Status |
 |---|-------------|--------|
@@ -214,7 +214,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 | # | Action | Status | Parallel agent | Owns |
 |---|--------|--------|----------------|------|
-| 5.1 | Quality review doc + integration-branch policy + agent-coordination rule | **Done** | `docs/quality/review-2026-07-08.md`, `.cursor/rules/` |
+| 5.1 | Quality review doc + integration-branch policy + agent-coordination rule | **Done** | `docs/archived/quality-review-2026-07-08.md`, `.cursor/rules/` |
 | 5.2 | CI: `check_file_size.js` (500-line gate + grandfather ratchet) | **Done** | `scripts/check_file_size.js`, governance CI job |
 | 5.3 | CI: `check_bdd_coverage.js` (81/161 gate, ratchet later) | **Done** | `_reusable-test.yml` |
 | 5.4 | Split placements/foster monoliths (663 + 653 + 518 lines) | **Done** | Node `routes/organizations/placements/`; Dart `lib/organizations/placements/`; Flutter `pet_foster_placement/` |
@@ -229,7 +229,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 ## Sprint 6 — Org-operator BDD + help (complete)
 
 **Integration branch:** `cursor/sprint-6-org-bdd-integration-feec`  
-**Execution plan:** `docs/sprint-6-execution-plan.md`  
+**Execution plan:** `docs/domains/cross-domain/changes/sprint-6-execution-plan.md`  
 **Integration PR:** **Merged** #116 → `main`
 
 | # | Action | Status | Notes |
@@ -330,7 +330,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 ## Sprint 10 — Flutter 3.44 / Dart 3.12 toolchain upgrade (in progress)
 
 **Goal:** Upgrade Flutter 3.32 → 3.44 (Dart 3.8 → 3.12); unblock blocked pub Dependabot PRs (#77–#81).  
-**Execution plan:** `docs/sprint-10-flutter-344-execution-plan.md`  
+**Execution plan:** `docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md`  
 **Integration branch:** `cursor/sprint-10-flutter-344-integration-4379` → single PR to `main`
 
 | # | Action | Status | Agent / notes |
@@ -350,7 +350,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 ## Sprint 11 — UI theme rework (planned)
 
 **Goal:** Calm care-coordination visual system — sage palette, tokenized theme, phased screen alignment.  
-**Execution plan:** `docs/design/ui-rework-plan.md` (phases 0–7)  
+**Execution plan:** `docs/design/plans/ui-rework-plan.md` (phases 0–7)  
 **Governance:** `docs/design/index.md`, `.cursor/rules/design.mdc`, skills `/ui-check`, `/ui-design-deep`  
 **PR #267:** design governance + plan doc
 
@@ -371,9 +371,9 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 ## Fostering platform (J1–J5 + G1)
 
-**Goal:** Second-generation fostering & adoption per `docs/fostering-platform/`.  
-**Coordination:** [`roadmap-delivery-plan.md`](fostering-platform/roadmap-delivery-plan.md)  
-**Contract:** [`g0-contract-pack.md`](fostering-platform/g0-contract-pack.md) · [`migration-appendix.md`](fostering-platform/migration-appendix.md)
+**Goal:** Second-generation fostering & adoption per `docs/domains/fostering/`.  
+**Coordination:** [`roadmap-delivery-plan.md`](/docs/domains/fostering/changes/roadmap-delivery-plan.md)  
+**Contract:** [`g0-contract-pack.md`](/docs/domains/fostering/features/g0-contract-pack.md) · [`migration-appendix.md`](/docs/domains/fostering/features/migration-appendix.md)
 
 | Wave | execute-plan | Status |
 |------|--------------|--------|
@@ -417,7 +417,7 @@ Use this template when spawning agents on an integration branch:
 ## Experience program — Phase 3 (`experience-program-phase-3`)
 
 **Integration branch:** `cursor/sprint-exp-org-presentation-integration-36bd`  
-**Control issue:** #379 · **UI review:** `docs/experience-program/phase-3-ui-design-review.md`
+**Control issue:** #379 · **UI review:** `docs/domains/shelter/changes/phase-3-ui-design-review.md`
 
 | Agent | Branch | Owns | Avoid |
 |-------|--------|------|-------|
@@ -434,16 +434,16 @@ Use this template when spawning agents on an integration branch:
 
 | Date | Change |
 |---|---|
-| 2026-07-23 | UI navigation v2 execute-plan started (`ui-navigation-v2-14ee`, control #299): `docs/design/navigation-v2.md`; experience-split + tokens amended |
+| 2026-07-23 | UI navigation v2 execute-plan started (`ui-navigation-v2-14ee`, control #299): `docs/archived/navigation-v2.md`; experience-split + tokens amended |
 | 2026-07-23 | UI theme rework complete (`ui-theme-rework-4bed`): plum guardian / teal org tokens, phases 0–7 merged (#273–#294); `docs/design/tokens.md` |
-| 2026-07-22 | Sprint 11 planned: UI theme rework — `docs/design/ui-rework-plan.md`; design governance PR #267 |
+| 2026-07-22 | Sprint 11 planned: UI theme rework — `docs/design/plans/ui-rework-plan.md`; design governance PR #267 |
 | 2026-07-19 | PR C (#220): due-events E2E restores home `DueEventsSection` assertion via `PetListPage.refreshByRemount()` after API seed (#216 events-screen proxy superseded). |
 | 2026-07-19 | #219 merged: E2E shell-navigation fallback contract (`navigateWithShellFallback`). |
 | 2026-07-19 | #218 merged: UAT pre-flight health probe before live smoke workers. |
 | 2026-07-16 | #188 merged: E1b org-only user lands on organisation home |
 | 2026-07-16 | #187 merged: E2E guardian shell nav hardening (chooser, strict-mode, shell fallbacks) |
 | 2026-07-16 | #186 merged: Experience Phase 3 pet detail context |
-| 2026-07-10 | Sprint 10 planned: Flutter 3.44 / Dart 3.12 upgrade; execution plan `docs/sprint-10-flutter-344-execution-plan.md` |
+| 2026-07-10 | Sprint 10 planned: Flutter 3.44 / Dart 3.12 upgrade; execution plan `docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md` |
 | 2026-07-10 | Sprint 9 merged #129: Bugbot remediation (token migration, photo URLs, pet sync rollback, E2E hardening); dart-foster audit |
 | 2026-07-09 | Sprint 7: GDPR data-rights E2E; BDD gate 105/165; subscriptions E2E deferred (EU billing review) |
 | 2026-07-09 | Sprint 6 complete (#116): 113/165 BDD; org custody + help FAQ |
@@ -469,7 +469,7 @@ Use this template when spawning agents on an integration branch:
 
 | Agent / phase | Branch | Owns | Avoid |
 |---------------|--------|------|-------|
-| F0-F1 docs | `cursor/org-v2-f0-docs-abc9` | `docs/experience-program/**`, `docs/architecture/pet-activity-model.md` | product code |
+| F0-F1 docs | `cursor/org-v2-f0-docs-abc9` | `docs/domains/shelter/changes/**`, `docs/domains/cross-domain/changes/**`, `docs/architecture/pet-activity-model.md` | product code |
 | F0-F2 perms | `cursor/org-v2-f0-perms-abc9` | `server/lib/orgPermissions.js`, permissions routes, Flutter org permission providers | profile UI |
 | Slice 1+ | per snapshot | see `organisation-v2-delivery-plan.md` | — |
 | 8a–9 hardening | `cursor/org-v2-8-9-hardening-abc9` | BDD completion (admin contacts, permissions, customisations); gate **150/231**; docs + FR l10n | — |
@@ -480,12 +480,12 @@ Use this template when spawning agents on an integration branch:
 
 **Goal:** Show-org visibility, last-section login, org chrome, dashboard/discover IA, profile nav-rows, Account per-org privacy, people tiles, upload P0, pre-UAT green.  
 **Integration branch:** `cursor/organisation-ux-v3-integration-badd` → single PR to `main`.  
-**Plan:** `docs/experience-program/organisation-ux-v3-delivery-plan.md` · `.agents/plans/organisation-ux-v3-badd.md`  
+**Plan:** `docs/domains/shelter/changes/organisation-ux-v3-delivery-plan.md` · `.agents/plans/organisation-ux-v3-badd.md`  
 **Control issue:** #567
 
 | Agent / phase | Branch | Owns | Avoid |
 |---------------|--------|------|-------|
-| 0 docs | `cursor/org-ux-v3-0-docs-badd` | `docs/experience-program/**`, architecture pointers, debt issues | product code |
+| 0 docs | `cursor/org-ux-v3-0-docs-badd` | `docs/domains/shelter/changes/**`, `docs/domains/cross-domain/changes/**`, architecture pointers, debt issues | product code |
 | 1 upload | `cursor/org-ux-v3-1-upload-badd` | org image upload routes + Flutter branding upload + edit BDD | profile IA |
 | 2 visibility | `cursor/org-ux-v3-2-visibility-badd` | experience prefs, drawer, login last-section, Account toggle | org profile widgets |
 | 3 chrome | `cursor/org-ux-v3-3-chrome-badd` | org shell app bar / teal scaffold | discover API |

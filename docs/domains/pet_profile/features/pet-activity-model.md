@@ -5,11 +5,13 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain, pet_profile, specs]
+domain: pet_profile
+feature_id: pet-activity-model
 ---
 # Pet activity model (product layer)
 
 **Status:** Locked for Organisation v2 (Slice 1)  
-**Related:** [/docs/domains/organization/changes/organisation-v2-delivery-plan.md](/docs/domains/organization/changes/organisation-v2-delivery-plan.md) (D-v2-ACT-*), [/docs/ops/observability.md](/docs/ops/observability.md)
+**Related:** [/docs/domains/shelter/changes/organisation-v2-delivery-plan.md](/docs/domains/shelter/changes/organisation-v2-delivery-plan.md) (D-v2-ACT-*), [/docs/ops/observability.md](/docs/ops/observability.md)
 
 ---
 

@@ -11,5 +11,5 @@ tags: [domain,help_about,plans]
 
 | Plan | Summary | Status | Source |
 |------|---------|--------|--------|
-| Sprint 6.4 — Help FAQ | +10 BDD scenarios, Playwright `help.faq.spec.ts` | Planned | [/docs/plans/sprint-6-execution-plan.md](/docs/plans/sprint-6-execution-plan.md) |
+| Sprint 6.4 — Help FAQ | +10 BDD scenarios, Playwright `help.faq.spec.ts` | Planned | [/docs/domains/cross-domain/changes/sprint-6-execution-plan.md](/docs/domains/cross-domain/changes/sprint-6-execution-plan.md) |
 | Navigation shell backlog | FAQ copy vs new bell/drawer chrome | Deferred | [changes/deferred.md](deferred.md) |

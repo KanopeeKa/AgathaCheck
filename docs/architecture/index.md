@@ -3,7 +3,7 @@ title: Architecture index
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-08-23
 tags: [architecture, index]
 ---
 # Architecture index (agent quick-reference)
@@ -26,9 +26,10 @@ Full conventions: `docs/architecture/modularity.md`.
 | Page objects | `e2e/playwright/pages/` | Reusable UI vocabulary |
 | E2E API helpers | `e2e/playwright/support/api.ts` | **Serialize edits** across agents |
 | Governance scripts | `scripts/` | file size, BDD gate, priority tags |
-| Calendar dates | `docs/calendar-dates.md` | `YYYY-MM-DD` wire format |
-| Design / UX | `docs/design/index.md` | Tiers, `ui-rework-plan.md`, `/ui-check`, `/ui-design-deep` |
-| Experience program (nav reversal, Guardian/Org rework) | `docs/experience-program/` | **Active** — supersedes `docs/design/navigation-v2.md`; read `decisions-log.md` first |
+| Calendar dates | `docs/architecture/calendar-dates.md` | `YYYY-MM-DD` wire format |
+| API reference | `docs/architecture/api-reference.md` | REST endpoints |
+| Design / UX | `docs/design/index.md` | Tiers, `system.md`, `/ui-check`, `/ui-design-deep` |
+| Navigation shell & phased delivery | `docs/domains/navigation/` + `docs/domains/cross-domain/changes/` | **Active** — supersedes `docs/archived/navigation-v2.md`; read [navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md) first |
 
 ---
 
@@ -114,16 +115,16 @@ Product domains are documented under [/docs/domains/](/docs/domains/). Each row 
 | BDD | `notifications.feature` |
 | E2E | `notifications.spec.ts` |
 
-### Organization (incl. foster, custody, adoption)
+### Shelter (incl. foster, custody, adoption)
 
 | | Path |
 |---|------|
-| **Docs (org identity)** | [/docs/domains/organization/README.md](/docs/domains/organization/README.md) |
+| **Docs (org identity)** | [/docs/domains/shelter/README.md](/docs/domains/shelter/README.md) |
 | **Docs (foster workflows)** | [/docs/domains/fostering/README.md](/docs/domains/fostering/README.md) |
 | Flutter | `flutter_app/lib/features/organization/` |
 | Node routes | `server/routes/organizations/`, `fosterPlacements.js`, `custodyTransfers.js` |
 | Jest | `server/test/organizations/`, `fosterPlacements.test.js`, `custodyTransfers.test.js`, `orgConnections.test.js` |
-| Architecture | `docs/architecture/org-custody-model.md`, `docs/fostering-platform/g0-contract-pack.md`, `docs/experience-program/phase-3-organisation-presentation.md` (historical), **`docs/experience-program/organisation-v2-delivery-plan.md`** (v2 profile composer), **`docs/experience-program/organisation-ux-v3-delivery-plan.md`** (v3 UX — visibility, chrome, nav rows, privacy — **active**), **`docs/architecture/org-member-privacy.md`** (v3 Account per-org privacy), **`docs/architecture/pet-activity-model.md`** |
+| Architecture | `docs/domains/shelter/features/org-custody-model.md`, `docs/domains/fostering/features/g0-contract-pack.md`, `docs/domains/shelter/changes/phase-3-organisation-presentation.md` (historical), **`docs/domains/shelter/changes/organisation-v2-delivery-plan.md`** (v2 profile composer), **`docs/domains/shelter/changes/organisation-ux-v3-delivery-plan.md`** (v3 UX — visibility, chrome, nav rows, privacy — **active**), **`docs/domains/shelter/features/org-member-privacy.md`** (v3 Account per-org privacy), **`docs/architecture/pet-activity-model.md`** |
 | BDD | `organisation_profile.feature`, `organisation_discovery.feature`, `admin_contacts.feature`, `fostering_sessions.feature`, `redacted_org_pet.feature`, `organisation_management.feature`, … |
 | E2E | `organisation.profile.spec.ts`, `organisation.discovery.spec.ts`, `organisation.redacted-pet.spec.ts`, `organisation.pet-filters.spec.ts`, `organisation.management.spec.ts`, `organisation.pet.management.spec.ts`, `adoption.spec.ts` |
 
@@ -177,6 +178,6 @@ Product domains are documented under [/docs/domains/](/docs/domains/). Each row 
 | BDD → Playwright | `/add-bdd-playwright-scenario` skill |
 | Parallel sprint | `/spawn-sprint-agents` skill |
 | Before push | `/pre-push-verify` skill or `./scripts/pre-push-changed.sh` |
-| UI review / theme rework | `docs/design/index.md` · `/ui-check` · `/ui-design-deep` · `docs/design/ui-rework-plan.md` |
+| UI review / theme rework | `docs/design/index.md` · `/ui-check` · `/ui-design-deep` · `docs/design/plans/ui-rework-plan.md` |
 | Security audit | `/security-error-audit` skill |
 | UAT deploy / live smoke red | `docs/e2e/uat-live-operations-runbook.md` · `docs/e2e/uat-waf-queue-lessons.md` · `.agents/memory/uat-live-e2e-triage.md` |

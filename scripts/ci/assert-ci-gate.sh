@@ -3,7 +3,7 @@
 # When adding a new blocking job to ci.yml, add its needs.*.result env below
 # AND add the job id to ci-gate needs: in .github/workflows/ci.yml.
 # Optional CI_SCOPE_JSON (from ci-scope job) marks jobs that may be skipped.
-# See docs/ci-cd-gates.md and docs/promotion-contract.md.
+# See docs/pipelines/ci-cd-gates.md and docs/pipelines/promotion-contract.md.
 set -euo pipefail
 
 SUMMARY_FILE="${GITHUB_STEP_SUMMARY:-}"

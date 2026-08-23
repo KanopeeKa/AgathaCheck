@@ -13,4 +13,4 @@ tags: [domain,auth,plans]
 |------|---------|--------|--------|
 | Public access gate | Public-facing route gating | See snapshot | [.agents/plans/public-access-gate-a35f.md](/.agents/plans/public-access-gate-a35f.md) |
 
-Experience-program navigation and shell phases that touch auth chrome remain cross-cutting in [/docs/experience-program/](/docs/experience-program/).
+Navigation shell and cross-domain contract: [navigation README](/docs/domains/navigation/README.md) · [program-contract.md](/docs/domains/cross-domain/changes/program-contract.md)

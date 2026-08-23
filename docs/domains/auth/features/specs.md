@@ -5,6 +5,7 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain,auth,specs]
+domain: auth
 ---
 
 # Authentication specs
@@ -22,6 +23,7 @@ Canonical auth API under `server/routes/auth/` (session, profile, password modul
 
 Session expiry surfaces as `SessionExpiredException` → login redirect with SnackBar — datasources must not bypass the shared HTTP client.
 
----
+## Engineering rules
 
-**Lessons:** [changes/lessons.md](../changes/lessons.md)
+- All authenticated HTTP must use `authHttpClientProvider`; multipart uploads must use `client.send()` — see [.agents/memory/auth-token-refresh.md](/.agents/memory/auth-token-refresh.md).
+- Non-prod `default_secret` JWT fallback is load-bearing for Jest/CI — do not throw unconditionally when unset — see [.agents/memory/jwt-secret-dev-fallback.md](/.agents/memory/jwt-secret-dev-fallback.md).

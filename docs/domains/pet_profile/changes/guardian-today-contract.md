@@ -163,7 +163,7 @@ The next tasks should use this ownership boundary:
   mapping.
 
 The locked master brief remains unchanged. Any future product deviation must be
-recorded in `decisions-log.md` before implementation.
+recorded in [pet-profile-decisions.md](../features/pet-profile-decisions.md) before implementation.
 
 ## Baseline characterization coverage
 

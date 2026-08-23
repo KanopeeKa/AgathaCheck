@@ -5,11 +5,13 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain,fostering,specs,placements]
+domain: fostering
+feature_id: foster-placement-lifecycle
 ---
 
 # Foster placement lifecycle
 
-Extracted from [/docs/domains/fostering/changes/org-fostering-strategy.md](/docs/domains/fostering/changes/org-fostering-strategy.md). Custody **data model** (guardianship vs care) lives in the [organization domain](/docs/domains/organization/features/org-custody-model.md).
+Extracted from [/docs/domains/fostering/changes/org-fostering-strategy.md](/docs/domains/fostering/changes/org-fostering-strategy.md). Custody **data model** (guardianship vs care) lives in the [organization domain](/docs/domains/shelter/features/org-custody-model.md).
 
 ## State machine
 
@@ -45,4 +47,4 @@ flowchart TB
 
 ## Contracts
 
-Full API/workflow contracts: [g0-contract-pack.md](g0-contract-pack.md) · Onboarding: [j1-foster-onboarding.md](j1-foster-onboarding.md)
+Full API/workflow contracts: [g0-contract-pack.md](g0-contract-pack.md) · Onboarding: [j1-foster-onboarding.md](../changes/j1-foster-onboarding.md)

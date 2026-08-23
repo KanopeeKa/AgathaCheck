@@ -5,6 +5,7 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain,notifications,specs]
+domain: notifications
 ---
 
 # Notifications specs
@@ -34,7 +35,10 @@ Notification rows served via `notification_remote_datasource`; preferences entit
 
 - BDD: `flutter_app/test/bdd/features/notifications.feature`
 - Extend scenarios when panel filter chips and administrative resolved semantics ship (program-contract §6.1)
+- UAT live E2E: call `refreshByRemount()` after API seed when due events are missing on home — see [.agents/memory/uat-live-e2e-triage.md](/.agents/memory/uat-live-e2e-triage.md).
+
+Kind vs scope semantics: [notification-decisions.md](notification-decisions.md) §B.
 
 ---
 
-Contract detail: [/docs/experience-program/program-contract.md](/docs/experience-program/program-contract.md) §3
+Contract detail: [/docs/domains/cross-domain/changes/program-contract.md](/docs/domains/cross-domain/changes/program-contract.md) §3

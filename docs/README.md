@@ -22,10 +22,10 @@ Foundational documents that describe the project's architecture, setup, and work
 | Document | Purpose | Audience |
 |----------|---------|----------|
 | [/docs/architecture/index.md](/docs/architecture/index.md) | Domain map, tech stack, and code organization | Both |
-| [/API.md](/API.md) | REST endpoint reference (authoritative) | Both |
+| [/docs/architecture/api-reference.md](/docs/architecture/api-reference.md) | REST endpoint reference (authoritative) | Both |
+| [/docs/architecture/calendar-dates.md](/docs/architecture/calendar-dates.md) | `YYYY-MM-DD` wire format specification | Both |
 | [/docs/pipelines/ci-cd-baseline.md](/docs/pipelines/ci-cd-baseline.md) | Pipeline metrics and performance targets | Both |
 | [/docs/pipelines/ci-cd-gates.md](/docs/pipelines/ci-cd-gates.md) | Blocking vs advisory gates, UAT/PROD rules | Both |
-| [/docs/calendar-dates.md](/docs/calendar-dates.md) | `YYYY-MM-DD` wire format specification | Both |
 
 ---
 
@@ -42,12 +42,12 @@ Each product area has a one-screen index under `docs/domains/<domain>/` with jou
 | Veterinarians | [/docs/domains/vet/README.md](/docs/domains/vet/README.md) | Vet contacts and pet links |
 | Sharing | [/docs/domains/sharing/README.md](/docs/domains/sharing/README.md) | Share links and collaborators |
 | Notifications | [/docs/domains/notifications/README.md](/docs/domains/notifications/README.md) | In-app notification feed |
-| Organization | [/docs/domains/organization/README.md](/docs/domains/organization/README.md) | Org identity, permissions, privacy, custody model |
+| Shelter | [/docs/domains/shelter/README.md](/docs/domains/shelter/README.md) | Shelter identity, permissions, privacy, custody model |
 | Fostering | [/docs/domains/fostering/README.md](/docs/domains/fostering/README.md) | Placements, adoption, custody transfers |
 | Subscription | [/docs/domains/subscription/README.md](/docs/domains/subscription/README.md) | Premium tiers (billing TBD) |
 | Help & about | [/docs/domains/help_about/README.md](/docs/domains/help_about/README.md) | FAQ and about screens |
 
-Cross-cutting deferred work: [/docs/debt/deferred.md](/docs/debt/deferred.md)
+Cross-cutting open debt: [/docs/debt/debt.md](/docs/debt/debt.md)
 
 ---
 
@@ -59,56 +59,54 @@ Product behaviour → `docs/domains/<domain>/`. Platform, CI, agents, and debt �
 |--------|-------|----------|
 | **Pipelines** | [/docs/pipelines/README.md](/docs/pipelines/README.md) | CI/CD gates, promotion, canary, deploy runbooks |
 | **Agent efficiency** | [/docs/agent-efficiency/plans/README.md](/docs/agent-efficiency/plans/README.md) | Master agent plan + policies in `docs/agent-efficiency/` |
-| **Debt** | [/docs/debt/README.md](/docs/debt/README.md) | Deferred work, refactor log, technical debt indexes |
+| **Debt** | [/docs/debt/README.md](/docs/debt/README.md) | Open debt register (`debt.md`) + refactor changelog |
 | **Operations** | [/docs/ops/public-access.md](/docs/ops/public-access.md) | Observability, public access |
 | **E2E / UAT** | [/docs/e2e/uat-deploy-tiers.md](/docs/e2e/uat-deploy-tiers.md) | Live E2E ops, promotion manuals |
-| **Plans** | [/docs/plans/README.md](/docs/plans/README.md) | Sprint execution plans (cross-domain) |
-| **Experience program** | [/docs/experience-program/README.md](/docs/experience-program/README.md) | Navigation/guardian/org program (cross-cutting product) |
-
-**Fostering:** canonical tree is [/docs/domains/fostering/](/docs/domains/fostering/README.md). `docs/fostering-platform/` is a legacy redirect only.
+| **Design** | [/docs/design/system.md](/docs/design/system.md) | Operations Desk visual spec (canonical) |
+| **Database** | [/docs/db/README.md](/docs/db/README.md) | Schema and migration index |
+| **Documentation** | [/docs/domains/documentation/standards.md](/docs/domains/documentation/standards.md) | Doc structure and enforcement |
+| **Navigation** | [/docs/domains/navigation/README.md](/docs/domains/navigation/README.md) | Shell and routing UX |
+| **Cross-domain** | [/docs/domains/cross-domain/README.md](/docs/domains/cross-domain/README.md) | Shared requirements, sprint execution plans |
 
 ---
 
-## Domain-Specific Documentation (legacy paths)
+## Navigation & cross-domain delivery
 
-> **Migration in progress:** content is moving into `docs/domains/` above. Stubs remain at former paths until link pass completes.
-
-### Organization & Fostering (legacy index)
+Navigation shell reversal and phased delivery (formerly `docs/experience-program/`).
 
 | Document | Purpose | Status |
 |----------|---------|--------|
-| [/docs/fostering-platform/README.md](/docs/fostering-platform/README.md) | Redirect → [fostering domain](/docs/domains/fostering/README.md) | Superseded |
-| [/docs/org-fostering-strategy.md](/docs/org-fostering-strategy.md) | Redirect → [fostering/changes/org-fostering-strategy.md](/docs/domains/fostering/changes/org-fostering-strategy.md) | Superseded |
+| [/docs/domains/navigation/README.md](/docs/domains/navigation/README.md) | **Start here** — decision index, briefs, phase 0–1 | Active |
+| [/docs/domains/navigation/features/navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md) | Shell decisions D1–D6, D27 | Active |
+| [/docs/domains/cross-domain/changes/program-contract.md](/docs/domains/cross-domain/changes/program-contract.md) | Cross-cutting contracts and vocabulary | Active |
+| [/docs/domains/cross-domain/changes/roadmap-delivery-plan.md](/docs/domains/cross-domain/changes/roadmap-delivery-plan.md) | Phase order and sprint breakdown | Active |
+| [/docs/domains/navigation/changes/phase-r-reconciliation.md](/docs/domains/navigation/changes/phase-r-reconciliation.md) | Cleanup of legacy navigation work | Active |
+| [/docs/domains/navigation/changes/phase-0-foundation.md](/docs/domains/navigation/changes/phase-0-foundation.md) | Shared primitives and scaffolding | Active |
+| [/docs/domains/navigation/changes/phase-1-navigation.md](/docs/domains/navigation/changes/phase-1-navigation.md) | Drawer, header, notifications | Active |
 
-Fostering feature docs (g0, j1, migration appendix, roadmap) live under [/docs/domains/fostering/](/docs/domains/fostering/README.md).
+**Domain decisions** (split from former decisions log):
 
-### Experience Program
+| Domain | File | IDs |
+|--------|------|-----|
+| Notifications | [/docs/domains/notifications/features/notification-decisions.md](/docs/domains/notifications/features/notification-decisions.md) | D7–D11 |
+| Pet profile | [/docs/domains/pet_profile/features/pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md) | D17–D24, D34–D37 |
+| Shelter | [/docs/domains/shelter/features/shelter-decisions.md](/docs/domains/shelter/features/shelter-decisions.md) | D12–D16, D20–D31, D-v2–v4 |
+| Cross-domain | [/docs/domains/cross-domain/changes/delivery-decisions.md](/docs/domains/cross-domain/changes/delivery-decisions.md) | D32–D33 |
 
-The **active** program for navigation reversal, Guardian dashboard, and Organisation UX rework.
+**Domain delivery plans:**
 
-| Document | Purpose | Status |
-|----------|---------|--------|
-| [/docs/experience-program/README.md](/docs/experience-program/README.md) | Program overview and document index | Active |
-| [/docs/experience-program/decisions-log.md](/docs/experience-program/decisions-log.md) | **Read first** - All product decisions with IDs | Active |
-| [/docs/experience-program/program-contract.md](/docs/experience-program/program-contract.md) | Cross-cutting contracts and vocabulary | Active |
-| [/docs/experience-program/roadmap-delivery-plan.md](/docs/experience-program/roadmap-delivery-plan.md) | Phase order and sprint breakdown | Active |
-| [/docs/experience-program/phase-0-foundation.md](/docs/experience-program/phase-0-foundation.md) | Shared primitives and scaffolding | Active |
-| [/docs/experience-program/phase-1-navigation.md](/docs/experience-program/phase-1-navigation.md) | Drawer, header, notifications | Active |
-| [/docs/experience-program/phase-2-guardian-journey.md](/docs/experience-program/phase-2-guardian-journey.md) | Guardian dashboard and pet timeline | Active |
-| [/docs/experience-program/phase-3-organisation-presentation.md](/docs/experience-program/phase-3-organisation-presentation.md) | Org dashboard and profile composer | Active |
-| [/docs/experience-program/phase-4-foster-pet-operations.md](/docs/experience-program/phase-4-foster-pet-operations.md) | Foster self-management | Active |
-| [/docs/experience-program/phase-5-organisation-customisations.md](/docs/experience-program/phase-5-organisation-customisations.md) | Templates and permissions admin | Active |
-| [/docs/experience-program/phase-5-ui-design-review.md](/docs/experience-program/phase-5-ui-design-review.md) | UI design review | Active |
-| [/docs/experience-program/phase-r-reconciliation.md](/docs/experience-program/phase-r-reconciliation.md) | Cleanup of legacy navigation work | Active |
-| [/docs/experience-program/organisation-v2-delivery-plan.md](/docs/experience-program/organisation-v2-delivery-plan.md) | Profile composer and view permissions | Active |
-| [/docs/experience-program/organisation-ux-v3-delivery-plan.md](/docs/experience-program/organisation-ux-v3-delivery-plan.md) | Show-org, chrome, nav rows, privacy | Active |
-| [/docs/experience-program/organisation-people-permissions-v4-delivery-plan.md](/docs/experience-program/organisation-people-permissions-v4-delivery-plan.md) | People directory and staged permissions | **Active (2026-08-06)** |
+| Domain | Plans index |
+|--------|-------------|
+| Pet profile / Guardian | [/docs/domains/pet_profile/changes/plans.md](/docs/domains/pet_profile/changes/plans.md) |
+| Shelter | [/docs/domains/shelter/changes/plans.md](/docs/domains/shelter/changes/plans.md) |
+| Fostering | [/docs/domains/fostering/changes/plans.md](/docs/domains/fostering/changes/plans.md) |
 
-**Briefs** (Locked product-truth documents):
-- [/docs/experience-program/briefs/navigation-brief.md](/docs/experience-program/briefs/navigation-brief.md)
-- [/docs/experience-program/briefs/guardian-dashboard-brief.md](/docs/experience-program/briefs/guardian-dashboard-brief.md)
-- [/docs/experience-program/briefs/organisation-dashboard-brief.md](/docs/experience-program/briefs/organisation-dashboard-brief.md)
-- [/docs/experience-program/briefs/guardian-ui-wave2-issue-briefs.md](/docs/experience-program/briefs/guardian-ui-wave2-issue-briefs.md)
+**Locked briefs:**
+
+- [/docs/domains/navigation/features/navigation-brief.md](/docs/domains/navigation/features/navigation-brief.md)
+- [/docs/domains/pet_profile/features/guardian-dashboard-brief.md](/docs/domains/pet_profile/features/guardian-dashboard-brief.md)
+- [/docs/domains/shelter/features/shelter-dashboard-brief.md](/docs/domains/shelter/features/shelter-dashboard-brief.md)
+- [/docs/domains/pet_profile/changes/guardian-ui-wave2-issue-briefs.md](/docs/domains/pet_profile/changes/guardian-ui-wave2-issue-briefs.md)
 
 ### Architecture
 
@@ -116,8 +114,8 @@ The **active** program for navigation reversal, Guardian dashboard, and Organisa
 |----------|---------|--------|
 | [/docs/architecture/index.md](/docs/architecture/index.md) | **Start here** - Domain to code mapping | Active |
 | [/docs/architecture/modularity.md](/docs/architecture/modularity.md) | Clean architecture principles | Active |
-| [/docs/architecture/org-custody-model.md](/docs/architecture/org-custody-model.md) | Pet custody and transfer model | Active |
-| [/docs/architecture/org-member-privacy.md](/docs/architecture/org-member-privacy.md) | Per-organization privacy rules | Active |
+| [/docs/domains/shelter/features/org-custody-model.md](/docs/domains/shelter/features/org-custody-model.md) | Pet custody and transfer model | Active |
+| [/docs/domains/shelter/features/org-member-privacy.md](/docs/domains/shelter/features/org-member-privacy.md) | Per-shelter privacy rules | Active |
 | [/docs/architecture/pet-activity-model.md](/docs/architecture/pet-activity-model.md) | Pet activity tracking and timeline | Active |
 
 ### Design
@@ -129,7 +127,7 @@ The **active** program for navigation reversal, Guardian dashboard, and Organisa
 | [/docs/design/tokens.md](/docs/design/tokens.md) | Design tokens and theming | Active |
 | [/docs/design/copy-tone.md](/docs/design/copy-tone.md) | Writing style and tone guide | Active |
 | [/docs/design/skin-change-guide.md](/docs/design/skin-change-guide.md) | Theming and branding customization | Active |
-| [/docs/design/ui-rework-plan.md](/docs/design/ui-rework-plan.md) | Comprehensive UI overhaul plan | Active |
+| [/docs/design/plans/ui-rework-plan.md](/docs/design/plans/ui-rework-plan.md) | Comprehensive UI overhaul plan | Active |
 
 ### Testing & Quality
 
@@ -178,12 +176,12 @@ The **active** program for navigation reversal, Guardian dashboard, and Organisa
 | Document | Purpose | Status |
 |----------|---------|--------|
 | [/docs/agent-efficiency/github-issue-workflow.md](/docs/agent-efficiency/github-issue-workflow.md) | Issue lifecycle and triage | Active |
-| [/docs/debt/technical-debt.md](/docs/debt/technical-debt.md) | Legacy pointer → domain deferred + [/docs/debt/deferred.md](/docs/debt/deferred.md) | Active |
-| [/docs/debt/refactoring-debt.md](/docs/debt/refactoring-debt.md) | Cross-cutting refactor uncertainty log | Active |
+| **Open debt** | [/docs/debt/debt.md](/docs/debt/debt.md) | Single register — OPEN items only |
+| [/docs/debt/refactoring-log.md](/docs/debt/refactoring-log.md) | Sprint refactor history (completed work) | Active |
 | [/docs/debt/refactoring-log.md](/docs/debt/refactoring-log.md) | Completed refactoring work | Active |
-| [/docs/plans/sprint-6-execution-plan.md](/docs/plans/sprint-6-execution-plan.md) | Sprint 6 deliverables | Active |
-| [/docs/plans/sprint-10-flutter-344-execution-plan.md](/docs/plans/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 upgrade plan | Active |
-| [/docs/plans/docs-domain-audit-63ad.md](/docs/plans/docs-domain-audit-63ad.md) | Full `.md` inventory audit (wave 3) | Active |
+| [/docs/domains/cross-domain/changes/sprint-6-execution-plan.md](/docs/domains/cross-domain/changes/sprint-6-execution-plan.md) | Sprint 6 deliverables | Active |
+| [/docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md](/docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 upgrade plan | Active |
+| [/docs/domains/cross-domain/changes/docs-domain-audit-63ad.md](/docs/domains/cross-domain/changes/docs-domain-audit-63ad.md) | Full `.md` inventory audit (wave 3) | Active |
 | [/docs/pipelines/ci-build-artifact-contract.md](/docs/pipelines/ci-build-artifact-contract.md) | Build artifact specifications | Active |
 | [/docs/pipelines/promotion-contract.md](/docs/pipelines/promotion-contract.md) | UAT to PROD promotion rules | Active |
 | [/docs/pipelines/db-schema-bootstrap-plan.md](/docs/pipelines/db-schema-bootstrap-plan.md) | Database initialization | Active |
@@ -212,8 +210,8 @@ Agent-focused documentation and skills:
 See [/docs/archived/README.md](/docs/archived/README.md) for the full list.
 
 ### Key Archived Documents
-- [/docs/archived/navigation-v2.md](/docs/archived/navigation-v2.md) - Superseded by [Experience Program](/docs/experience-program/)
-- [/docs/archived/experience-split-plan.md](/docs/archived/experience-split-plan.md) - Superseded by [Phase R](/docs/experience-program/phase-r-reconciliation.md)
+- [/docs/archived/navigation-v2.md](/docs/archived/navigation-v2.md) - Superseded by [navigation domain](/docs/domains/navigation/README.md)
+- [/docs/archived/experience-split-plan.md](/docs/archived/experience-split-plan.md) - Superseded by [Phase R](/docs/domains/navigation/changes/phase-r-reconciliation.md)
 - [/docs/archived/quality-review-2026-07-08.md](/docs/archived/quality-review-2026-07-08.md) - Point-in-time snapshot
 
 ---
@@ -243,7 +241,7 @@ See [/docs/archived/README.md](/docs/archived/README.md) for the full list.
 | **Agent workflow?** | [Agent Guide](/AGENTS.md) |
 | **API changes?** | [API Reference](/API.md) |
 | **UAT deployment?** | [E2E README](/e2e/README.md) |
-| **Org/foster features?** | [Fostering Platform](/docs/fostering-platform/README.md) |
+| **Org/foster features?** | [Fostering domain](/docs/domains/fostering/README.md) |
 | **UI/UX changes?** | [Design Index](/docs/design/index.md) |
 
 ---
@@ -311,4 +309,4 @@ tags: [comma, separated, tags]
 
 ---
 
-*Last updated: 2026-08-22*
+*Last updated: 2026-08-23*

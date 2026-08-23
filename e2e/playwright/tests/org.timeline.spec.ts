@@ -149,7 +149,7 @@ test.describe('Organisation pet timeline', () => {
   });
 
   // Legacy family_events API rows are not mirrored on the health dashboard feed yet.
-  // See docs/refactoring-debt.md — dashboard lists HealthEntry rows only.
+  // See docs/debt/refactoring-debt.md — dashboard lists HealthEntry rows only.
   test.skip('family events appear in the health dashboard', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const { alice, org, pet } = await seedRescueHeartsWithPet(baseURL);

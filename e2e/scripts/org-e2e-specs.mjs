@@ -2,7 +2,7 @@
 /**
  * Organisation journey Playwright specs — full suite for ci-full-audit / pre-uat-e2e / local pre-push.
  * PR CI org coverage: @smoke-ci tests in organisation.discovery/profile/dashboard.spec.ts
- * via ci-e2e-canary (see docs/ci-cd-gates.md).
+ * via ci-e2e-canary (see docs/pipelines/ci-cd-gates.md).
  * Curated from pre-UAT shards 3, 12, and foster onboarding (shard 13).
  *
  * Usage:

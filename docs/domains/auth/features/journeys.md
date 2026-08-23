@@ -5,6 +5,7 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain,auth,journeys]
+domain: auth
 ---
 
 # Authentication journeys
@@ -33,4 +34,4 @@ Login ↔ sign-up navigation links on the unauthenticated shell.
 
 ---
 
-**Lessons:** [changes/lessons.md](../changes/lessons.md) · **Specs:** [specs.md](specs.md)
+**Specs:** [specs.md](specs.md)

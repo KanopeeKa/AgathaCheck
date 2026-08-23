@@ -5,6 +5,7 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain,health_tracking,journeys]
+domain: health_tracking
 ---
 
 # Health tracking journeys
@@ -33,4 +34,4 @@ Separate health-issue records track conditions linked to pets (see BDD health_tr
 
 ---
 
-**Specs:** [specs.md](specs.md) · **Lessons:** [changes/lessons.md](../changes/lessons.md)
+**Specs:** [specs.md](specs.md)

@@ -9,7 +9,7 @@ tags: [domain,pet_profile,plans]
 
 # Pet profile — plans index
 
-Delivery plans and phase docs for the guardian / pet_profile domain. Full bodies live in this folder (relocated from `docs/experience-program/`).
+Delivery plans and phase docs for the guardian / pet_profile domain.
 
 | Plan | Summary | Status | Source |
 |------|---------|--------|--------|
@@ -25,4 +25,4 @@ Delivery plans and phase docs for the guardian / pet_profile domain. Full bodies
 
 Locked brief: [features/guardian-dashboard-brief.md](../features/guardian-dashboard-brief.md)
 
-Cross-cutting program index: [/docs/experience-program/README.md](/docs/experience-program/README.md)
+Cross-cutting index: [navigation README](/docs/domains/navigation/README.md) · [cross-domain roadmap](/docs/domains/cross-domain/changes/roadmap-delivery-plan.md)

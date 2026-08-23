@@ -11,11 +11,11 @@ const path = require('path');
 const REPO = path.resolve(__dirname, '..');
 
 const FILE_META = {
-  'docs/plans/sprint-6-execution-plan.md': {
+  'docs/domains/cross-domain/changes/sprint-6-execution-plan.md': {
     title: 'Sprint 6 execution plan',
     tags: ['plans', 'sprint', 'bdd'],
   },
-  'docs/plans/sprint-10-flutter-344-execution-plan.md': {
+  'docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md': {
     title: 'Sprint 10 Flutter 3.44 execution plan',
     tags: ['plans', 'sprint', 'flutter'],
   },
@@ -35,7 +35,7 @@ const FILE_META = {
     title: 'Technical debt index',
     tags: ['debt', 'technical'],
   },
-  'docs/api-reference.md': {
+  'docs/architecture/api-reference.md': {
     title: 'API reference (docs index)',
     tags: ['api', 'reference'],
   },
@@ -84,15 +84,15 @@ const FILE_META = {
     title: 'Public access rules',
     tags: ['ops', 'public-access'],
   },
-  'docs/experience-program/decisions-log.md': {
-    title: 'Experience program decisions log',
-    tags: ['experience', 'decisions'],
+  'docs/domains/navigation/features/navigation-decisions.md': {
+    title: 'Navigation decisions',
+    tags: ['navigation', 'decisions'],
   },
-  'docs/experience-program/program-contract.md': {
+  'docs/domains/cross-domain/changes/program-contract.md': {
     title: 'Experience program contract',
     tags: ['experience', 'contract'],
   },
-  'docs/experience-program/roadmap-delivery-plan.md': {
+  'docs/domains/cross-domain/changes/roadmap-delivery-plan.md': {
     title: 'Experience program roadmap',
     tags: ['experience', 'roadmap'],
   },
@@ -120,7 +120,7 @@ const FILE_META = {
     title: 'UAT deploy tiers',
     tags: ['e2e', 'uat', 'deploy'],
   },
-  'docs/design/ui-rework-plan.md': {
+  'docs/design/plans/ui-rework-plan.md': {
     title: 'UI rework plan',
     tags: ['design', 'ui'],
   },
@@ -132,15 +132,15 @@ const FILE_META = {
     title: 'Guardian UI wave 2 issue briefs',
     tags: ['domain', 'pet_profile', 'plans'],
   },
-  'docs/domains/organization/changes/organisation-people-permissions-v4-delivery-plan.md': {
+  'docs/domains/shelter/changes/organisation-people-permissions-v4-delivery-plan.md': {
     title: 'Organisation people permissions v4 delivery plan',
     tags: ['domain', 'organization', 'plans'],
   },
-  'docs/domains/organization/changes/organisation-v2-delivery-plan.md': {
+  'docs/domains/shelter/changes/organisation-v2-delivery-plan.md': {
     title: 'Organisation v2 delivery plan',
     tags: ['domain', 'organization', 'plans'],
   },
-  'docs/domains/organization/changes/organisation-ux-v3-delivery-plan.md': {
+  'docs/domains/shelter/changes/organisation-ux-v3-delivery-plan.md': {
     title: 'Organisation UX v3 delivery plan',
     tags: ['domain', 'organization', 'plans'],
   },

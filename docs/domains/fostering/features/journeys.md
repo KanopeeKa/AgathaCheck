@@ -5,6 +5,7 @@ audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain,fostering,journeys]
+domain: fostering
 ---
 
 # Fostering journeys
@@ -15,7 +16,7 @@ Custody **transfer workflows** in AgathaTrack (code still under `organization/` 
 
 Foster parents accept invitations, complete onboarding, and gain access to assigned pets.
 
-Full flow: [j1-foster-onboarding.md](j1-foster-onboarding.md)
+Full flow: [j1-foster-onboarding.md](../changes/j1-foster-onboarding.md)
 
 ## Foster self-management
 
