@@ -10,8 +10,8 @@ tags: [experience, contract]
 
 **Status:** Locked baseline for delivery  
 **Last updated:** 2026-07-25  
-**Related:** [`decisions-log.md`](decisions-log.md) · [`roadmap-delivery-plan.md`](roadmap-delivery-plan.md) · [`briefs/`](briefs/) ·
-`docs/fostering-platform/g0-contract-pack.md` (this contract does not restate G0 — it extends it for the navigation/guardian/organisation-presentation surfaces G0 does not cover)
+**Related:** [navigation README](/docs/domains/navigation/README.md#decision-index-split-from-experience-program-decisions-log) · [roadmap-delivery-plan.md](roadmap-delivery-plan.md) · [navigation-brief.md](/docs/domains/navigation/features/navigation-brief.md) ·
+[/docs/domains/fostering/features/g0-contract-pack.md](/docs/domains/fostering/features/g0-contract-pack.md) (this contract does not restate G0 — it extends it for the navigation/guardian/organisation-presentation surfaces G0 does not cover)
 
 This is the platform contract layer for the **Experience program** (navigation reversal + Guardian
 dashboard + Organisation presentation/access-control rework). Phase docs reference this file
@@ -337,8 +337,9 @@ Everything already in `design.mdc` / `accessibility.mdc` applies. Program-specif
 - New Node routes: `server/routes/<domain>/`, mirrored tests in `server/test/<domain>/`.
 - No hand-written file above 500 lines at merge time — plan the split (`/split-flutter-screen`)
   as part of the feature's design, not as cleanup after the fact.
-- New docs for this program live under `docs/experience-program/` (this folder) — do not scatter
-  new planning notes elsewhere; extend these files or add a clearly cross-referenced new one.
+- New planning docs live under `docs/domains/<domain>/features/` or `changes/` per
+  [documentation standards](/docs/domains/documentation/standards.md) — do not scatter notes in
+  loose `docs/*.md` files; extend domain feature docs or add a clearly cross-referenced change doc.
 
 ---
 

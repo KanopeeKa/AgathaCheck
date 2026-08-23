@@ -84,15 +84,15 @@ const FILE_META = {
     title: 'Public access rules',
     tags: ['ops', 'public-access'],
   },
-  'docs/experience-program/decisions-log.md': {
-    title: 'Experience program decisions log',
-    tags: ['experience', 'decisions'],
+  'docs/domains/navigation/features/navigation-decisions.md': {
+    title: 'Navigation decisions',
+    tags: ['navigation', 'decisions'],
   },
-  'docs/experience-program/program-contract.md': {
+  'docs/domains/cross-domain/changes/program-contract.md': {
     title: 'Experience program contract',
     tags: ['experience', 'contract'],
   },
-  'docs/experience-program/roadmap-delivery-plan.md': {
+  'docs/domains/cross-domain/changes/roadmap-delivery-plan.md': {
     title: 'Experience program roadmap',
     tags: ['experience', 'roadmap'],
   },

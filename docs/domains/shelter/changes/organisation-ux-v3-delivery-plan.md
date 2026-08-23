@@ -9,7 +9,7 @@ tags: [domain, organization, plans]
 # Organisation UX v3 — delivery plan
 
 **Status:** Locked for planning — awaiting `approve-autonomous` on execute-plan control issue  
-**Parent:** [`organisation-v2-delivery-plan.md`](organisation-v2-delivery-plan.md) · [`decisions-log.md`](decisions-log.md)  
+**Parent:** [organisation-v2-delivery-plan.md](organisation-v2-delivery-plan.md) · [shelter-decisions.md](../features/shelter-decisions.md)  
 **Execute-plan:** `.agents/plans/organisation-ux-v3-badd.md` (chained slices `v3a` / `v3b` if 48h window requires split)  
 **Created:** 2026-08-04  
 **Last updated:** 2026-08-04
@@ -34,7 +34,7 @@ This plan may show **message** affordances and **count placeholders** only where
 
 ## Locked decisions (v3)
 
-Append to `decisions-log.md` in Phase 0.
+Append to [shelter-decisions.md](../features/shelter-decisions.md) in Phase 0.
 
 | ID | Decision |
 |----|----------|
@@ -164,7 +164,7 @@ If autonomy window &lt; remaining work: split execute-plan at Phase 7 boundary i
 
 **Scope:**
 
-- Append D-v3-* to `decisions-log.md`; header-note supersessions (D25, D26, D-v2-IA-4, default-experience radios).
+- Append D-v3-* to [shelter-decisions.md](../features/shelter-decisions.md); header-note supersessions (D25, D26, D-v2-IA-4, default-experience radios).
 - Mark this delivery plan as source of truth for v3 IA.
 - Update `docs/architecture/index.md` pointer; `docs/debt/refactoring-log.md` ownership map for spawn phases.
 - Open debt issues: **DEF-NOTIF**, **DEF-MSG**, **DEF-NOTIF-COUNTS** (labels `tech-debt`, `plan:organisation-ux-v3-badd`).

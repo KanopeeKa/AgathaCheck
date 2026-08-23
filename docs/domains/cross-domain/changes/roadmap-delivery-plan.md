@@ -10,7 +10,7 @@ tags: [experience, roadmap]
 
 **Status:** Ready to start  
 **Last updated:** 2026-07-25  
-**Parent:** [`program-contract.md`](program-contract.md) · [`decisions-log.md`](decisions-log.md)
+**Parent:** [program-contract.md](program-contract.md) · [delivery-decisions.md](delivery-decisions.md)
 
 Defines **sequential gates**, **sprint boundaries**, and **branch naming** for delivery. Phase
 docs (linked below) own detailed scenarios and screens; this doc owns **order and sprint
@@ -75,7 +75,7 @@ parallel agents.
 
 ## Phase R — Reconciliation
 
-**Doc:** [`phase-r-reconciliation.md`](phase-r-reconciliation.md)  
+**Doc:** [phase-r-reconciliation.md](../../navigation/changes/phase-r-reconciliation.md)  
 **Goal:** Close out conflicting prior work before new implementation starts. No product code
 changes beyond doc headers and BDD tags.
 
@@ -84,7 +84,7 @@ changes beyond doc headers and BDD tags.
 | R.1 | Header-tag `docs/design/navigation-v2.md` superseded (D2); link forward to this program |
 | R.2 | Close `cursor/org-mode-nav-phase3-shell-acf1` branch + control issue #262 (D6) with a comment explaining supersession; delete the stale branch and its sibling plan-snapshot branches once closed |
 | R.3 | Tag `experience_navigation.feature` (one scenario) and `organisation_pet_timeline.feature` (feature-level) `@legacy` (G0 §14.2 pattern) — do not delete yet; `notifications.feature` needs no `@legacy` tag (see `program-contract.md` §6.1) |
-| R.4 | Publish this `docs/experience-program/` folder itself (this PR) |
+| R.4 | Publish canonical domain docs for navigation shell and cross-domain contract (this reorg) |
 
 **Exit criteria:** decisions log + contract + roadmap merged to `main`; acf1 branch/issue closed;
 `@legacy` tags in place; no BDD coverage regression (tags don't remove scenarios yet).
@@ -93,7 +93,7 @@ changes beyond doc headers and BDD tags.
 
 ## Phase 0 — Foundation
 
-**Doc:** [`phase-0-foundation.md`](phase-0-foundation.md)  
+**Doc:** [phase-0-foundation.md](../../navigation/changes/phase-0-foundation.md)  
 **Goal:** Contracts and shared primitives every later phase depends on — no visible UI change yet.
 
 | Sprint | Deliverable |
@@ -112,7 +112,7 @@ screen.
 
 ## Phase 1 — Shell & navigation reversal
 
-**Doc:** [`phase-1-navigation.md`](phase-1-navigation.md)  
+**Doc:** [phase-1-navigation.md](../../navigation/changes/phase-1-navigation.md)  
 **Goal:** Ship the reversed navigation model end-to-end. This is the highest-risk phase (touches
 every authenticated screen's chrome) — do it in full before Guardian/Organisation content changes.
 
@@ -133,7 +133,7 @@ authenticated screen; `/account` reachable and content-complete per the audit; B
 
 ## Phase 2 — Guardian journey
 
-**Doc:** [`phase-2-guardian-journey.md`](phase-2-guardian-journey.md)
+**Doc:** [phase-2-guardian-journey.md](../../pet_profile/changes/phase-2-guardian-journey.md)
 
 | Sprint | Deliverable |
 |---|---|
@@ -154,7 +154,7 @@ manual QA; BDD/E2E green.
 
 ## Phase 3 — Organisation presentation & access control
 
-**Doc:** [`phase-3-organisation-presentation.md`](phase-3-organisation-presentation.md)  
+**Doc:** [phase-3-organisation-presentation.md](../../shelter/changes/phase-3-organisation-presentation.md)  
 **Largest phase — candidate for `/spawn-sprint-agents` split if desired** (disjoint paths: Admin
 Contacts screen vs Discover Organisations vs Pet screen tabs vs role/permission backend). Default
 plan keeps it sequential single-agent per D33; flag to the user if scope proves too large for one
@@ -182,7 +182,7 @@ bundle preset + one individual override.
 
 ## Phase 4 — Foster & pet operations
 
-**Doc:** [`phase-4-foster-pet-operations.md`](phase-4-foster-pet-operations.md)  
+**Doc:** [phase-4-foster-pet-operations.md](../../fostering/changes/phase-4-foster-pet-operations.md)  
 **Goal:** This is the smallest phase because J1–J5 already ship most of the operational
 substance. Scope is deliberately narrow: self-management privacy + the withdrawal flow +
 threading the new permission bundles through existing foster/pet actions.
@@ -203,7 +203,7 @@ role string where a permission key now exists.
 
 ## Phase 5 — Organisation customisations
 
-**Doc:** [`phase-5-organisation-customisations.md`](phase-5-organisation-customisations.md)
+**Doc:** [phase-5-organisation-customisations.md](../../shelter/changes/phase-5-organisation-customisations.md)
 
 | Sprint | Deliverable |
 |---|---|

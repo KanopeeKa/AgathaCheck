@@ -13,4 +13,4 @@ tags: [domain,notifications,lessons]
 |--------|---------|--------|
 | UAT live E2E — home refresh | `refreshByRemount()` after API seed when due events missing on home | [.agents/memory/uat-live-e2e-triage.md](/.agents/memory/uat-live-e2e-triage.md) |
 
-Kind vs scope semantics: [/docs/experience-program/decisions-log.md](/docs/experience-program/decisions-log.md) §B
+Kind vs scope semantics: [notification-decisions.md](../features/notification-decisions.md) §B

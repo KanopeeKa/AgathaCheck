@@ -18,4 +18,4 @@ tags: [domain,fostering,plans]
 | Fostering J1 phase 2–4 | Onboarding phases | See snapshot | [.agents/plans/fostering-platform-j1-phase2-e877.md](/.agents/plans/fostering-platform-j1-phase2-e877.md) |
 | Fostering wave C | Wave C delivery | See snapshot | [.agents/plans/fostering-platform-wave-c-e877.md](/.agents/plans/fostering-platform-wave-c-e877.md) |
 
-Cross-cutting program: [/docs/experience-program/README.md](/docs/experience-program/README.md)
+Cross-cutting delivery: [navigation README](/docs/domains/navigation/README.md) · [cross-domain roadmap](/docs/domains/cross-domain/changes/roadmap-delivery-plan.md)

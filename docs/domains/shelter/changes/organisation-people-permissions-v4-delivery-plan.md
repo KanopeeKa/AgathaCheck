@@ -9,7 +9,7 @@ tags: [domain, organization, plans]
 # Organisation people, permissions & foster v4 — delivery plan
 
 **Status:** Locked for implementation (2026-08-06)  
-**Parent:** [`decisions-log.md`](decisions-log.md) (D-v4-*) · [`organisation-ux-v3-delivery-plan.md`](organisation-ux-v3-delivery-plan.md)  
+**Parent:** [shelter-decisions.md](../features/shelter-decisions.md) (D-v4-*) · [organisation-ux-v3-delivery-plan.md](organisation-ux-v3-delivery-plan.md)  
 **Supersedes (partially):** D13 foster wire role · Admin contacts as standalone screen · immediate-save permissions UI · Apply Foster/Pet/Team Admin as top-level preset buttons
 
 ---
@@ -35,7 +35,7 @@ foster onboarding timeline on person profiles.
 
 ## Locked decisions
 
-All rows logged as **D-v4-*** in [`decisions-log.md`](decisions-log.md). Read that file before
+All rows logged as **D-v4-*** in [shelter-decisions.md](../features/shelter-decisions.md). Read that file before
 implementing any phase.
 
 ### Conceptual model
@@ -495,7 +495,7 @@ starting Phase A).
 
 ## Related docs to update when implementing
 
-- [`program-contract.md`](program-contract.md) §4 — wire roles (3 not 4)
+- [../../cross-domain/changes/program-contract.md](../../cross-domain/changes/program-contract.md) §4 — wire roles (3 not 4)
 - [`g0-contract-pack.md`](/docs/domains/fostering/features/g0-contract-pack.md) §4.3 — foster badge note
 "- [`docs/architecture/api-reference.md`](/docs/architecture/api-reference.md) 2014 new routes
 - [`j1-foster-onboarding.md`](/docs/domains/fostering/features/j1-foster-onboarding.md) — invite flows reopened

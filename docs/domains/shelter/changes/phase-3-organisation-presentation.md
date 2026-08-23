@@ -11,10 +11,10 @@ tags: [experience,guardian,organisation]
 > **Status: SUPERSEDED (2026-08-02).** Organisation v2 replaces the section-card dashboard IA with a
 > single **profile composer** at `/o/orgs/:id`. See
 > [`organisation-v2-delivery-plan.md`](organisation-v2-delivery-plan.md) and
-> [`decisions-log.md`](decisions-log.md) (D-v2-IA-1). Kept as historical record for Phase 3 sprint
+> [shelter-decisions.md](../features/shelter-decisions.md) (D-v2-IA-1). Kept as historical record for Phase 3 sprint
 > planning; do not implement new work against this spec.
 
-**Parent:** [`roadmap-delivery-plan.md`](roadmap-delivery-plan.md) · [`program-contract.md`](program-contract.md)  
+**Parent:** [../../cross-domain/changes/roadmap-delivery-plan.md](../../cross-domain/changes/roadmap-delivery-plan.md) · [../../cross-domain/changes/program-contract.md](../../cross-domain/changes/program-contract.md)  
 **Brief:** [`briefs/shelter-dashboard-brief.md`](briefs/shelter-dashboard-brief.md)  
 **Note:** Largest phase in the program. Default plan is single-agent sequential (D33); consider
 `/spawn-sprint-agents` if the sprint list below proves too large for one sitting — sprints 3.3,

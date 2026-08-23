@@ -8,7 +8,7 @@ tags: [experience,guardian,organisation]
 ---
 # Phase R — Reconciliation
 
-**Parent:** [`roadmap-delivery-plan.md`](roadmap-delivery-plan.md) · [`decisions-log.md`](decisions-log.md)
+**Parent:** [roadmap-delivery-plan.md](../../cross-domain/changes/roadmap-delivery-plan.md) · [navigation-decisions.md](../features/navigation-decisions.md)
 
 ## Purpose
 
@@ -22,7 +22,7 @@ phases build on a clean, unambiguous baseline.
   control issue #262, and its sibling orphaned branches
   (`plan-snapshot-uat-resume-4bed`, `sync-org-mode-plan-snapshot-acf1`) (D6)
 - Tag affected BDD scenarios `@legacy` ahead of their Phase 1/2 rewrites (D1, D7, D18)
-- Publish `docs/experience-program/` itself
+- Publish canonical navigation and cross-domain delivery docs under `docs/domains/`
 
 ## Out of scope / forbidden ownership
 
@@ -42,7 +42,7 @@ None (documentation-only phase).
 
 1. `docs/design/navigation-v2.md` gets a status header identical in spirit to how
    `docs/experience-split-plan.md` was already marked superseded — link forward to
-   `docs/experience-program/README.md`.
+   [navigation README](/docs/domains/navigation/README.md).
 2. Before closing branch `cursor/org-mode-nav-phase3-shell-acf1`, diff it against `main` once more
    to confirm no unmerged change beyond the router-file extraction has appeared since the last
    check in this program's planning session (2026-07-25) — if new commits exist, re-evaluate D6
@@ -74,7 +74,7 @@ Single phase, sprints R.1–R.4 (see `roadmap-delivery-plan.md`).
 
 **Exit criteria:**
 
-- `docs/experience-program/` merged to `main`
+- Canonical domain docs merged to `main`
 - `docs/design/navigation-v2.md` header updated
 - Branch `cursor/org-mode-nav-phase3-shell-acf1` and its siblings deleted; issue #262 closed
 - `@legacy` tags present on `experience_navigation.feature` (one superseded scenario) and

@@ -86,33 +86,43 @@ Product behaviour → `docs/domains/<domain>/`. Platform, CI, agents, and debt �
 
 Fostering feature docs (g0, j1, migration appendix, roadmap) live under [/docs/domains/fostering/](/docs/domains/fostering/README.md).
 
-### Experience Program
+### Navigation & cross-domain delivery
 
-The **active** program for navigation reversal, Guardian dashboard, and Organisation UX rework.
+Navigation shell reversal and phased delivery (formerly `docs/experience-program/`).
 
 | Document | Purpose | Status |
 |----------|---------|--------|
-| [/docs/experience-program/README.md](/docs/experience-program/README.md) | Program overview and document index | Active |
-| [/docs/experience-program/decisions-log.md](/docs/experience-program/decisions-log.md) | **Read first** - All product decisions with IDs | Active |
-| [/docs/experience-program/program-contract.md](/docs/experience-program/program-contract.md) | Cross-cutting contracts and vocabulary | Active |
-| [/docs/experience-program/roadmap-delivery-plan.md](/docs/experience-program/roadmap-delivery-plan.md) | Phase order and sprint breakdown | Active |
-| [/docs/experience-program/phase-0-foundation.md](/docs/experience-program/phase-0-foundation.md) | Shared primitives and scaffolding | Active |
-| [/docs/experience-program/phase-1-navigation.md](/docs/experience-program/phase-1-navigation.md) | Drawer, header, notifications | Active |
-| [/docs/experience-program/phase-2-guardian-journey.md](/docs/experience-program/phase-2-guardian-journey.md) | Guardian dashboard and pet timeline | Active |
-| [/docs/experience-program/phase-3-organisation-presentation.md](/docs/experience-program/phase-3-organisation-presentation.md) | Org dashboard and profile composer | Active |
-| [/docs/experience-program/phase-4-foster-pet-operations.md](/docs/experience-program/phase-4-foster-pet-operations.md) | Foster self-management | Active |
-| [/docs/experience-program/phase-5-organisation-customisations.md](/docs/experience-program/phase-5-organisation-customisations.md) | Templates and permissions admin | Active |
-| [/docs/experience-program/phase-5-ui-design-review.md](/docs/experience-program/phase-5-ui-design-review.md) | UI design review | Active |
-| [/docs/experience-program/phase-r-reconciliation.md](/docs/experience-program/phase-r-reconciliation.md) | Cleanup of legacy navigation work | Active |
-| [/docs/experience-program/organisation-v2-delivery-plan.md](/docs/experience-program/organisation-v2-delivery-plan.md) | Profile composer and view permissions | Active |
-| [/docs/experience-program/organisation-ux-v3-delivery-plan.md](/docs/experience-program/organisation-ux-v3-delivery-plan.md) | Show-org, chrome, nav rows, privacy | Active |
-| [/docs/experience-program/organisation-people-permissions-v4-delivery-plan.md](/docs/experience-program/organisation-people-permissions-v4-delivery-plan.md) | People directory and staged permissions | **Active (2026-08-06)** |
+| [/docs/domains/navigation/README.md](/docs/domains/navigation/README.md) | **Start here** — decision index, briefs, phase 0–1 | Active |
+| [/docs/domains/navigation/features/navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md) | Shell decisions D1–D6, D27 | Active |
+| [/docs/domains/cross-domain/changes/program-contract.md](/docs/domains/cross-domain/changes/program-contract.md) | Cross-cutting contracts and vocabulary | Active |
+| [/docs/domains/cross-domain/changes/roadmap-delivery-plan.md](/docs/domains/cross-domain/changes/roadmap-delivery-plan.md) | Phase order and sprint breakdown | Active |
+| [/docs/domains/navigation/changes/phase-r-reconciliation.md](/docs/domains/navigation/changes/phase-r-reconciliation.md) | Cleanup of legacy navigation work | Active |
+| [/docs/domains/navigation/changes/phase-0-foundation.md](/docs/domains/navigation/changes/phase-0-foundation.md) | Shared primitives and scaffolding | Active |
+| [/docs/domains/navigation/changes/phase-1-navigation.md](/docs/domains/navigation/changes/phase-1-navigation.md) | Drawer, header, notifications | Active |
 
-**Briefs** (Locked product-truth documents):
-- [/docs/experience-program/briefs/navigation-brief.md](/docs/experience-program/briefs/navigation-brief.md)
-- [/docs/experience-program/briefs/guardian-dashboard-brief.md](/docs/experience-program/briefs/guardian-dashboard-brief.md)
-- [/docs/experience-program/briefs/shelter-dashboard-brief.md](/docs/experience-program/briefs/shelter-dashboard-brief.md)
-- [/docs/experience-program/briefs/guardian-ui-wave2-issue-briefs.md](/docs/experience-program/briefs/guardian-ui-wave2-issue-briefs.md)
+**Domain decisions** (split from former decisions log):
+
+| Domain | File | IDs |
+|--------|------|-----|
+| Notifications | [/docs/domains/notifications/features/notification-decisions.md](/docs/domains/notifications/features/notification-decisions.md) | D7–D11 |
+| Pet profile | [/docs/domains/pet_profile/features/pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md) | D17–D24, D34–D37 |
+| Shelter | [/docs/domains/shelter/features/shelter-decisions.md](/docs/domains/shelter/features/shelter-decisions.md) | D12–D16, D20–D31, D-v2–v4 |
+| Cross-domain | [/docs/domains/cross-domain/changes/delivery-decisions.md](/docs/domains/cross-domain/changes/delivery-decisions.md) | D32–D33 |
+
+**Domain delivery plans:**
+
+| Domain | Plans index |
+|--------|-------------|
+| Pet profile / Guardian | [/docs/domains/pet_profile/changes/plans.md](/docs/domains/pet_profile/changes/plans.md) |
+| Shelter | [/docs/domains/shelter/changes/plans.md](/docs/domains/shelter/changes/plans.md) |
+| Fostering | [/docs/domains/fostering/changes/plans.md](/docs/domains/fostering/changes/plans.md) |
+
+**Locked briefs:**
+
+- [/docs/domains/navigation/features/navigation-brief.md](/docs/domains/navigation/features/navigation-brief.md)
+- [/docs/domains/pet_profile/features/guardian-dashboard-brief.md](/docs/domains/pet_profile/features/guardian-dashboard-brief.md)
+- [/docs/domains/shelter/features/shelter-dashboard-brief.md](/docs/domains/shelter/features/shelter-dashboard-brief.md)
+- [/docs/domains/pet_profile/changes/guardian-ui-wave2-issue-briefs.md](/docs/domains/pet_profile/changes/guardian-ui-wave2-issue-briefs.md)
 
 ### Architecture
 
@@ -216,8 +226,8 @@ Agent-focused documentation and skills:
 See [/docs/archived/README.md](/docs/archived/README.md) for the full list.
 
 ### Key Archived Documents
-- [/docs/archived/navigation-v2.md](/docs/archived/navigation-v2.md) - Superseded by [Experience Program](/docs/experience-program/)
-- [/docs/archived/experience-split-plan.md](/docs/archived/experience-split-plan.md) - Superseded by [Phase R](/docs/experience-program/phase-r-reconciliation.md)
+- [/docs/archived/navigation-v2.md](/docs/archived/navigation-v2.md) - Superseded by [navigation domain](/docs/domains/navigation/README.md)
+- [/docs/archived/experience-split-plan.md](/docs/archived/experience-split-plan.md) - Superseded by [Phase R](/docs/domains/navigation/changes/phase-r-reconciliation.md)
 - [/docs/archived/quality-review-2026-07-08.md](/docs/archived/quality-review-2026-07-08.md) - Point-in-time snapshot
 
 ---

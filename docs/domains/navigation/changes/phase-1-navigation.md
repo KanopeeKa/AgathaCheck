@@ -8,8 +8,8 @@ tags: [experience,guardian,organisation]
 ---
 # Phase 1 — Shell & navigation reversal
 
-**Parent:** [`roadmap-delivery-plan.md`](roadmap-delivery-plan.md) · [`program-contract.md`](program-contract.md)  
-**Brief:** [`briefs/navigation-brief.md`](briefs/navigation-brief.md), [`briefs/guardian-dashboard-brief.md`](briefs/guardian-dashboard-brief.md) §Notifications
+**Parent:** [roadmap-delivery-plan.md](../../cross-domain/changes/roadmap-delivery-plan.md) · [program-contract.md](../../cross-domain/changes/program-contract.md)  
+**Brief:** [navigation-brief.md](../features/navigation-brief.md), [guardian-dashboard-brief.md](/docs/domains/pet_profile/features/guardian-dashboard-brief.md) §Notifications
 
 ## Purpose
 

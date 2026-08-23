@@ -7,7 +7,7 @@ last_updated: 2026-08-21
 tags: [experience,guardian,organisation]
 ---
 > **Status:** Locked master brief (source of truth). Do not edit inline — track deviations in
-> [`/docs/experience-program/decisions-log.md`](/docs/experience-program/decisions-log.md) and feature-level detail in
+> [pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md) and feature-level detail in
 > [`/docs/domains/pet_profile/changes/phase-2-guardian-journey.md`](/docs/domains/pet_profile/changes/phase-2-guardian-journey.md). Imported verbatim 2026-07-25.
 > Note: "Events" and "family events" terminology in this brief is **redefined** by decisions
 > D17 and D18 — see the decisions log before implementing.
