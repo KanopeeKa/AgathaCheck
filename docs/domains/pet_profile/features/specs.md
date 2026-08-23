@@ -27,7 +27,7 @@ Event types (v1): `health_log`, `foster_session`, `profile_edit`, `document_uplo
 ## Pet CRUD validation
 
 - Pets belong to a guardian account; foster pets appear via organisation custody (see organization / fostering domains).
-- Calendar dates on the wire use `YYYY-MM-DD` ([/docs/calendar-dates.md](/docs/calendar-dates.md)).
+- Calendar dates on the wire use `YYYY-MM-DD` ([/docs/architecture/calendar-dates.md](/docs/architecture/calendar-dates.md)).
 
 ## Sharing section on pet detail
 

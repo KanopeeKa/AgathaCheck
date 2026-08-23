@@ -11,4 +11,4 @@ tags: [domain,weight_tracking,lessons]
 
 | Lesson | Summary | Source |
 |--------|---------|--------|
-| Calendar dates | User-facing dates are calendar days on the wire | [/docs/calendar-dates.md](/docs/calendar-dates.md) |
+| Calendar dates | User-facing dates are calendar days on the wire | [/docs/architecture/calendar-dates.md](/docs/architecture/calendar-dates.md) |

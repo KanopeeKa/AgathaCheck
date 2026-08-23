@@ -9,7 +9,7 @@ Repo docs are the source of truth. `.cursor/rules/*.mdc` + `AGENTS.md` are the a
 
 **Binding engineering rules:**
 - **Modularity**: CI enforces a 500-line limit on all hand-written `.js`/`.dart` files across `flutter_app/lib`, `server/routes` (`scripts/check_file_size.js`); grandfathered files have an allowlist with a ratchet ceiling. Target new files <300 lines.
-- **Calendar dates**: wire dates are `YYYY-MM-DD` (see `docs/calendar-dates.md`).
+- **Calendar dates**: wire dates are `YYYY-MM-DD` (see `docs/architecture/calendar-dates.md`).
 - **Security**: never return raw `err.message`/`e.toString()`/`$e` in prod 5xx — use `publicError()`; rate-limit DB/filesystem routes; UUID filenames + path containment for uploads.
 - **Atomic outcome**: one verifiable outcome per change set; snags >15 lines become separate work items, never silently deferred.
 

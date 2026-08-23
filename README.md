@@ -130,8 +130,8 @@ Tests span domain, data, provider/controller, and widget layers, with integratio
 
 ## Documentation
 
-- [`API.md`](API.md) — REST endpoint reference (authoritative section at the top)
-- [`docs/calendar-dates.md`](docs/calendar-dates.md) — calendar-date wire format (`YYYY-MM-DD`)
+- [`docs/architecture/api-reference.md`](docs/architecture/api-reference.md) — REST endpoint reference (authoritative section at the top)
+- [`docs/architecture/calendar-dates.md`](docs/architecture/calendar-dates.md) — calendar-date wire format (`YYYY-MM-DD`)
 - [`docs/org-fostering-strategy.md`](docs/org-fostering-strategy.md) — organisation roles, fostering increments, and permission matrix
 - [`docs/debt/technical-debt.md`](docs/debt/technical-debt.md) — deferred work and low-priority improvements
 

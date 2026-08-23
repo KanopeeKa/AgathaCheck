@@ -115,7 +115,7 @@ Checks:
 ### Auto-Fix Script (`auto_fix_docs.sh`)
 
 Auto-fixes:
-- ✅ Broken links (API.md → docs/api-reference.md)
+- ✅ Broken links (API.md → docs/architecture/api-reference.md)
 - ✅ Missing metadata headers
 - ✅ Outdated references
 - ✅ Relative to absolute path conversions

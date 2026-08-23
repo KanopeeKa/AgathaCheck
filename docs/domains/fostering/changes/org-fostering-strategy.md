@@ -18,7 +18,7 @@ transfer, and foster placements. It is updated each increment.
 **Canonical backend:** Node.js (`server/`). Dart/Shelf parity is not a blocker.
 
 **Mobile portability:** All state changes are API-driven; calendar dates use
-`YYYY-MM-DD` on the wire (`docs/calendar-dates.md`); email notifications can
+`YYYY-MM-DD` on the wire (`docs/architecture/calendar-dates.md`); email notifications can
 later become push + deep links without changing core semantics.
 
 ---
@@ -110,7 +110,7 @@ flowchart TB
 ### Increment 0 — Foundation ✓ merged
 
 - Email-only org invites in Flutter (no invite-code / join-by-code UI).
-- Document 501 stubs in `docs/api-reference.md`.
+- Document 501 stubs in `docs/architecture/api-reference.md`.
 
 ### Increment 1 — Three org roles ✓ in progress
 
@@ -165,7 +165,7 @@ flowchart TB
 
 ## API stubs (501)
 
-See `docs/api-reference.md` § Not implemented. Flutter must not call these from primary workflows.
+See `docs/architecture/api-reference.md` § Not implemented. Flutter must not call these from primary workflows.
 
 | Endpoint | Planned increment |
 |----------|-------------------|

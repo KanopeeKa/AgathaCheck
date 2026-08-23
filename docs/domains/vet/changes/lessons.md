@@ -11,6 +11,6 @@ tags: [domain,vet,lessons]
 
 | Lesson | Summary | Source |
 |--------|---------|--------|
-| Calendar dates on wire | Weight/health dates use `YYYY-MM-DD` — vet-linked pet flows share same date rules | [/docs/calendar-dates.md](/docs/calendar-dates.md) |
+| Calendar dates on wire | Weight/health dates use `YYYY-MM-DD` — vet-linked pet flows share same date rules | [/docs/architecture/calendar-dates.md](/docs/architecture/calendar-dates.md) |
 
 No vet-specific `.agents/memory/` entries today.

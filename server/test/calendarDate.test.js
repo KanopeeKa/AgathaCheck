@@ -25,7 +25,7 @@ describe('dateToIsoDate', () => {
   });
 });
 
-describe('calendar date field inventory (docs/calendar-dates.md)', () => {
+describe('calendar date field inventory (docs/architecture/calendar-dates.md)', () => {
   const samples = [
     '2026-12-18',
     '2026-12-18T00:00:00.000Z',

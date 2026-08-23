@@ -25,7 +25,7 @@ AgathaTrack is a modular Flutter application designed for comprehensive pet mana
 - **`AGENTS.md`** (root): toolchain, migration commands, pre-push scripts, policy index. Key: use `cd server && node scripts/migrate.js up` for migrations. Never use `gen_random_uuid()` in SQL (generate UUIDs in code).
 - **`.cursor/rules/`**: atomic-pr (one verifiable outcome per PR; snag ladder; no silent deferral), single-backend (Node.js only), modularity (CI enforces a 500-line limit on all hand-written `.js`/`.dart` files in `flutter_app/lib`, `server/routes` via `scripts/check_file_size.js`; grandfathered files have an allowlist with a ratchet ceiling), security (`publicError()` redaction, `createApiLimiter()` on DB routes, UUID filenames), testing (BDD coverage gate ≥105 mapped scenarios — denominator is dynamic, computed from feature files by `e2e/scripts/check_bdd_coverage.js`), merge-policy, agent-coordination, accessibility.
 - **`.cursor/skills/`**: babysit-plus, execute-plan, pre-push-verify, security-error-audit, single-backend-route-change, add-bdd-playwright-scenario, split-flutter-screen, spawn-sprint-agents.
-- **Calendar dates**: user-facing dates are calendar days, `YYYY-MM-DD` on the wire (`docs/calendar-dates.md`).
+- **Calendar dates**: user-facing dates are calendar days, `YYYY-MM-DD` on the wire (`docs/architecture/calendar-dates.md`).
 
 ## System Architecture
 The application is built with a clean architecture, separating concerns into data, domain, and presentation layers within feature modules. The UI follows Material 3 design principles, with experience-aware guardian and organisation tokens, and utilizes GoRouter for navigation.

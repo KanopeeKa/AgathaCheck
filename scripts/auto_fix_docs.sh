@@ -101,7 +101,7 @@ apply_fixes() {
       if [[ -n "$bad_link" ]]; then
         # Try to find the correct path
         local link_path=$(echo "$bad_link" | grep -oE '\([^)]*\)' | tr -d '()')
-        local fixed_link=$(echo "$link_path" | sed 's|^API\.md|docs/api-reference.md|; s|^docs/|/docs/|')
+        local fixed_link=$(echo "$link_path" | sed 's|^API\.md|docs/architecture/api-reference.md|; s|^docs/|/docs/|')
         
         if [[ -f "$REPO_ROOT/${link_path#/}" || -f "$REPO_ROOT/${link_path#/}.md" ]]; then
           sed -i "s|${bad_link}|${bad_link}|g" "$REPO_ROOT/$path"
@@ -141,7 +141,7 @@ EOF
     if echo "$body" | grep -qi "outdated\|old.*path\|moved.*to"; then
       echo "    -> Updating outdated reference"
       if echo "$body" | grep -q "API\.md"; then
-        sed -i 's|API\.md|docs/api-reference.md|g' "$REPO_ROOT/$path"
+        sed -i 's|API\.md|docs/architecture/api-reference.md|g' "$REPO_ROOT/$path"
         fixes_applied=$((fixes_applied + 1))
       fi
     fi
