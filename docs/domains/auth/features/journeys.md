@@ -33,4 +33,4 @@ Login ↔ sign-up navigation links on the unauthenticated shell.
 
 ---
 
-**Lessons:** [changes/lessons.md](../changes/lessons.md) · **Specs:** [specs.md](specs.md)
+**Specs:** [specs.md](specs.md)

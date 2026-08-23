@@ -33,4 +33,4 @@ Separate health-issue records track conditions linked to pets (see BDD health_tr
 
 ---
 
-**Specs:** [specs.md](specs.md) · **Lessons:** [changes/lessons.md](../changes/lessons.md)
+**Specs:** [specs.md](specs.md)

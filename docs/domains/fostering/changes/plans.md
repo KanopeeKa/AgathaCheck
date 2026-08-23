@@ -11,6 +11,7 @@ tags: [domain,fostering,plans]
 
 | Plan | Summary | Status | Source |
 |------|---------|--------|--------|
+| J1 foster onboarding | Onboarding and approval phases | Complete | [j1-foster-onboarding.md](j1-foster-onboarding.md) |
 | Fostering platform roadmap | Delivery timeline | Active | [roadmap-delivery-plan.md](roadmap-delivery-plan.md) |
 | Phase 4 foster pet operations | Foster self-management | Active | [phase-4-foster-pet-operations.md](phase-4-foster-pet-operations.md) |
 | Org & fostering strategy | Roles, placements, increments | Active | [org-fostering-strategy.md](org-fostering-strategy.md) |

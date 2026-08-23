@@ -45,4 +45,4 @@ flowchart TB
 
 ## Contracts
 
-Full API/workflow contracts: [g0-contract-pack.md](g0-contract-pack.md) · Onboarding: [j1-foster-onboarding.md](j1-foster-onboarding.md)
+Full API/workflow contracts: [g0-contract-pack.md](g0-contract-pack.md) · Onboarding: [j1-foster-onboarding.md](../changes/j1-foster-onboarding.md)

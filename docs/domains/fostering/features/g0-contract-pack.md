@@ -659,7 +659,7 @@ Journey-specific open questions belong in J1–J5 specs, not here.
 | `README.md` | Index for this folder |
 | `g0-contract-pack.md` | **This file** |
 | `migration-appendix.md` | **Locked** — status mapping, dual-write plan, in-flight row handling |
-| `j1-foster-onboarding.md` | TODO |
+| `j1-foster-onboarding.md` | [changes/j1-foster-onboarding.md](../changes/j1-foster-onboarding.md) — complete |
 | `j2-matching-requests.md` | TODO |
 | `j3-fostering-sessions.md` | TODO |
 | `j4-adoption-visits.md` | TODO |

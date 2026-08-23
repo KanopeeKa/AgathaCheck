@@ -62,12 +62,11 @@ Product behaviour → `docs/domains/<domain>/`. Platform, CI, agents, and debt �
 | **Debt** | [/docs/debt/README.md](/docs/debt/README.md) | Open debt register (`debt.md`) + refactor changelog |
 | **Operations** | [/docs/ops/public-access.md](/docs/ops/public-access.md) | Observability, public access |
 | **E2E / UAT** | [/docs/e2e/uat-deploy-tiers.md](/docs/e2e/uat-deploy-tiers.md) | Live E2E ops, promotion manuals |
-| **Plans** | [/docs/plans/README.md](/docs/plans/README.md) | Sprint execution plans (cross-domain) |
 | **Design** | [/docs/design/system.md](/docs/design/system.md) | Operations Desk visual spec (canonical) |
 | **Database** | [/docs/db/README.md](/docs/db/README.md) | Schema and migration index |
 | **Documentation** | [/docs/domains/documentation/standards.md](/docs/domains/documentation/standards.md) | Doc structure and enforcement |
 | **Navigation** | [/docs/domains/navigation/README.md](/docs/domains/navigation/README.md) | Shell and routing UX |
-| **Cross-domain** | [/docs/domains/cross-domain/README.md](/docs/domains/cross-domain/README.md) | Shared requirements and plans |
+| **Cross-domain** | [/docs/domains/cross-domain/README.md](/docs/domains/cross-domain/README.md) | Shared requirements, sprint execution plans |
 
 **Fostering:** canonical tree is [/docs/domains/fostering/](/docs/domains/fostering/README.md). `docs/fostering-platform/` is a legacy redirect only.
 
@@ -195,9 +194,9 @@ Navigation shell reversal and phased delivery (formerly `docs/experience-program
 | **Open debt** | [/docs/debt/debt.md](/docs/debt/debt.md) | Single register — OPEN items only |
 | [/docs/debt/refactoring-log.md](/docs/debt/refactoring-log.md) | Sprint refactor history (completed work) | Active |
 | [/docs/debt/refactoring-log.md](/docs/debt/refactoring-log.md) | Completed refactoring work | Active |
-| [/docs/plans/sprint-6-execution-plan.md](/docs/plans/sprint-6-execution-plan.md) | Sprint 6 deliverables | Active |
-| [/docs/plans/sprint-10-flutter-344-execution-plan.md](/docs/plans/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 upgrade plan | Active |
-| [/docs/plans/docs-domain-audit-63ad.md](/docs/plans/docs-domain-audit-63ad.md) | Full `.md` inventory audit (wave 3) | Active |
+| [/docs/domains/cross-domain/changes/sprint-6-execution-plan.md](/docs/domains/cross-domain/changes/sprint-6-execution-plan.md) | Sprint 6 deliverables | Active |
+| [/docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md](/docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 upgrade plan | Active |
+| [/docs/domains/cross-domain/changes/docs-domain-audit-63ad.md](/docs/domains/cross-domain/changes/docs-domain-audit-63ad.md) | Full `.md` inventory audit (wave 3) | Active |
 | [/docs/pipelines/ci-build-artifact-contract.md](/docs/pipelines/ci-build-artifact-contract.md) | Build artifact specifications | Active |
 | [/docs/pipelines/promotion-contract.md](/docs/pipelines/promotion-contract.md) | UAT to PROD promotion rules | Active |
 | [/docs/pipelines/db-schema-bootstrap-plan.md](/docs/pipelines/db-schema-bootstrap-plan.md) | Database initialization | Active |

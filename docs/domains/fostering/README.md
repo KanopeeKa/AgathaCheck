@@ -20,7 +20,6 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | User journeys | [features/journeys.md](features/journeys.md) |
 | Implementation specs | [features/specs.md](features/specs.md) |
 | Plans index | [changes/plans.md](changes/plans.md) |
-| Lessons index | [changes/lessons.md](changes/lessons.md) |
 | Deferred work | [changes/deferred.md](changes/deferred.md) |
 
 ## Code map

@@ -41,7 +41,3 @@ Managed via `server/routes/healthIssues.js` with separate CRUD from entries.
 ## Org family events alignment
 
 Org family events use `from_date` = due, `to_date` = completed on; `family_event_history` stores the three-date audit trail (see fostering/organization domains).
-
----
-
-**Lessons:** [changes/lessons.md](../changes/lessons.md)

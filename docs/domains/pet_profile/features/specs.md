@@ -33,6 +33,10 @@ Event types (v1): `health_log`, `foster_session`, `profile_edit`, `document_uplo
 
 Role-specific sharing UI lives under `flutter_app/lib/features/pet_profile/widgets/sharing/` — see sharing domain for share-link semantics.
 
+## Guardian mobile completion
+
+Due-events preview supports reversible mobile completion with transient cache during refresh — see [.agents/memory/guardian-mobile-completion.md](/.agents/memory/guardian-mobile-completion.md).
+
 ---
 
-**Lessons:** [changes/lessons.md](../changes/lessons.md) · **Plans:** [changes/plans.md](../changes/plans.md)
+**Plans:** [changes/plans.md](../changes/plans.md)
