@@ -157,7 +157,7 @@ the planned `foster_placements` model):
 | POST | `/family-events/:eventId/mark-complete` | Set completed date |
 | GET | `/family-events/:eventId/history` | History rows |
 
-Calendar dates on the wire: `YYYY-MM-DD` (`docs/calendar-dates.md`).
+Calendar dates on the wire: `YYYY-MM-DD` (`docs/architecture/calendar-dates.md`).
 
 ### Not implemented (return `501 Not Implemented`)
 

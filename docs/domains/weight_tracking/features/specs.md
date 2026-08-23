@@ -12,7 +12,7 @@ tags: [domain,weight_tracking,specs]
 ## Data model
 
 - Weight entries belong to a pet; stored via server/routes/weightEntries.js.
-- Weight is numeric (kg); date is a calendar day on the wire (see /docs/calendar-dates.md).
+- Weight is numeric (kg); date is a calendar day on the wire (see /docs/architecture/calendar-dates.md).
 - Sort order for history: chronological by entry date.
 
 ## Profile integration

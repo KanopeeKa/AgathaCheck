@@ -35,7 +35,7 @@ These are non-negotiable architectural rules. Any journey spec or PR that violat
 | I7 | **Participant comments ≠ staff notes** — separate fields, separate storage, separate access rules everywhere (platform-wide). |
 | I8 | **Indirect collection requires transparency at first contact** — manual foster and prospect records must send Art. 14-style notice on first outreach (source, purpose, rights, opt-out). |
 | I9 | **Global reusable data ≠ shelter-local data** — never mix in one field or expose local screening data across shelters. |
-| I10 | **Calendar dates on the wire** — `YYYY-MM-DD` for all user-facing dates (`docs/calendar-dates.md`). |
+| I10 | **Calendar dates on the wire** — `YYYY-MM-DD` for all user-facing dates (`docs/architecture/calendar-dates.md`). |
 
 ---
 

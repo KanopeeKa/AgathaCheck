@@ -35,7 +35,7 @@ const FILE_META = {
     title: 'Technical debt index',
     tags: ['debt', 'technical'],
   },
-  'docs/api-reference.md': {
+  'docs/architecture/api-reference.md': {
     title: 'API reference (docs index)',
     tags: ['api', 'reference'],
   },

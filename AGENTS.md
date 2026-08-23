@@ -79,7 +79,7 @@ Web build: `flutter build web --release --no-tree-shake-icons`
 
 ### Calendar dates
 
-User-facing dates are calendar days (`YYYY-MM-DD` on the wire). See `docs/calendar-dates.md`.
+User-facing dates are calendar days (`YYYY-MM-DD` on the wire). See `docs/architecture/calendar-dates.md`.
 
 ### GitHub issues (Cloud Agents)
 

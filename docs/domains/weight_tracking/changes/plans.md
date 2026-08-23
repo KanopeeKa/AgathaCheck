@@ -16,4 +16,4 @@ No standalone delivery plan — weight tracking ships as part of pet profile / h
 | Weight tracking BDD | Entry CRUD, profile integration | Active | `weight_tracking.feature` |
 | E2E | Weight entry journey | Active | `weight.tracking.spec.ts` |
 
-Calendar wire format: [/docs/calendar-dates.md](/docs/calendar-dates.md)
+Calendar wire format: [/docs/architecture/calendar-dates.md](/docs/architecture/calendar-dates.md)
