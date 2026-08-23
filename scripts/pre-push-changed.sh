@@ -147,6 +147,7 @@ run_governance() {
   fi
   node --test scripts/babysit_uat_shard_risk.test.mjs
   node --test scripts/e2e_debug_resolve.test.mjs
+  node --test scripts/e2e_debug_status.test.mjs
   bash scripts/ci/check-uat-ssh-action-pin.sh
   bash scripts/ci/shellcheck-uat-deploy-scripts.sh
   bash scripts/ci/assert-prod-deploy-db-commands.sh
