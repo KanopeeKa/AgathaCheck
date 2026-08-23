@@ -4,8 +4,8 @@
   "approved_at": "2026-08-22T23:55:00Z",
   "approved_by": "User chat 2026-08-22 — docs roadmap continuation (standing grant)",
   "approved_until": "2026-08-24T23:55:00Z",
-  "content_hash": "sha256:a8dd94214f614d15e9ae49bff156c18c7fdbd82a4289c2ac5625b2745d22d008",
-  "autonomy": "active",
+  "content_hash": "sha256:f63db5b47bf62b73c8b0db51acdbc81f9359fffe6385600587dd88e94bcd2c82",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 714,
@@ -57,10 +57,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/716",
+      "pr_head_sha": "1101bf00"
     }
   ]
 }

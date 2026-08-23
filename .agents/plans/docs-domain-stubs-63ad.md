@@ -32,17 +32,17 @@ Add metadata headers to 46 docs flagged by `validate_docs.sh`; re-run validation
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/docs-domain-stubs-content-63ad"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/docs-domain-stubs-content-63ad
+  branch: main
   plan_path: .agents/plans/docs-domain-stubs-63ad.md
-  plan_commit: ff922e297aced5218e22a03274d1b121469c0781
+  plan_commit: 5cf5bb938129abfbfabfecba6e3e06f8b6cbb868
   snapshot_path: .agents/plans/docs-domain-stubs-63ad.snapshot.json
-  snapshot_commit: ff922e297aced5218e22a03274d1b121469c0781
+  snapshot_commit: 5cf5bb938129abfbfabfecba6e3e06f8b6cbb868
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
