@@ -1,0 +1,273 @@
+{
+  "schema_version": 1,
+  "plan_id": "docs-canonical-layout-63ad",
+  "approved_at": "2026-08-23T14:15:00Z",
+  "approved_by": "User chat 2026-08-23 — canonical docs layout approved; Replit redesign as design canonical",
+  "approved_until": "2026-08-25T14:15:00Z",
+  "content_hash": "sha256:f62127c0be34f1968f2621597d2ff631f637fa687909f5be52f8bca9f0989200",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/docs-canonical-layout-integration-63ad",
+  "control_issue": 724,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Scaffold + design system home",
+      "branch": "cursor/docs-canonical-scaffold-63ad",
+      "allowed_paths": [
+        "docs/**",
+        "DESIGN_SYSTEM.md",
+        ".agents/agent_assets_metadata.toml"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Platform contracts",
+      "branch": "cursor/docs-canonical-platform-63ad",
+      "allowed_paths": [
+        "docs/**",
+        "AGENTS.md",
+        "README.md",
+        "CONTRIBUTING.md",
+        ".cursor/**",
+        "scripts/**",
+        ".github/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "3",
+      "title": "Design dedupe",
+      "branch": "cursor/docs-canonical-design-63ad",
+      "allowed_paths": [
+        "docs/design/**",
+        "DESIGN_SYSTEM.md",
+        "docs/README.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "4",
+      "title": "Open debt register",
+      "branch": "cursor/docs-canonical-debt-63ad",
+      "allowed_paths": [
+        "docs/debt/**",
+        "docs/domains/**/changes/deferred.md",
+        "docs/README.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "5",
+      "title": "Shelter rename (docs)",
+      "branch": "cursor/docs-canonical-shelter-63ad",
+      "allowed_paths": [
+        "docs/**",
+        ".agents/memory/**",
+        "README.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "6",
+      "title": "Dissolve experience-program",
+      "branch": "cursor/docs-canonical-dissolve-xp-63ad",
+      "allowed_paths": [
+        "docs/**",
+        ".cursor/**",
+        "README.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "7",
+      "title": "Lessons and plans hygiene",
+      "branch": "cursor/docs-canonical-features-63ad",
+      "allowed_paths": [
+        "docs/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "8",
+      "title": "Stub and legacy cleanup",
+      "branch": "cursor/docs-canonical-cleanup-63ad",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/**",
+        "e2e/**",
+        "README.md",
+        "AGENTS.md",
+        ".cursor/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "9",
+      "title": "Documentation enforcement",
+      "branch": "cursor/docs-canonical-enforce-63ad",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/validate_docs.sh",
+        "scripts/check_doc_placement.js",
+        ".github/workflows/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    }
+  ]
+}

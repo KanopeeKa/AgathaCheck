@@ -63,7 +63,11 @@ Product behaviour â†’ `docs/domains/<domain>/`. Platform, CI, agents, and debt â
 | **Operations** | [/docs/ops/public-access.md](/docs/ops/public-access.md) | Observability, public access |
 | **E2E / UAT** | [/docs/e2e/uat-deploy-tiers.md](/docs/e2e/uat-deploy-tiers.md) | Live E2E ops, promotion manuals |
 | **Plans** | [/docs/plans/README.md](/docs/plans/README.md) | Sprint execution plans (cross-domain) |
-| **Experience program** | [/docs/experience-program/README.md](/docs/experience-program/README.md) | Navigation/guardian/org program (cross-cutting product) |
+| **Design** | [/docs/design/system.md](/docs/design/system.md) | Operations Desk visual spec (canonical) |
+| **Database** | [/docs/db/README.md](/docs/db/README.md) | Schema and migration index |
+| **Documentation** | [/docs/domains/documentation/standards.md](/docs/domains/documentation/standards.md) | Doc structure and enforcement |
+| **Navigation** | [/docs/domains/navigation/README.md](/docs/domains/navigation/README.md) | Shell and routing UX |
+| **Cross-domain** | [/docs/domains/cross-domain/README.md](/docs/domains/cross-domain/README.md) | Shared requirements and plans |
 
 **Fostering:** canonical tree is [/docs/domains/fostering/](/docs/domains/fostering/README.md). `docs/fostering-platform/` is a legacy redirect only.
 

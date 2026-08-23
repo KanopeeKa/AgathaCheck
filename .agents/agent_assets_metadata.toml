@@ -31,7 +31,7 @@ description = "Synthetic owned and fostered pets in the live Operations Desk das
 
 [[outputs]]
 id = "Z5XrBIlCLTTt50qvRdfmf"
-uri = "file://DESIGN_SYSTEM.md"
+uri = "file://docs/design/system.md"
 type = "text"
 title = "AgathaTrack Design System"
 description = "Comprehensive mobile-first UI and skin specification derived from the approved Operations Desk blueprint and current Flutter theme tokens."
