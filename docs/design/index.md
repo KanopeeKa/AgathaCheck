@@ -3,7 +3,7 @@ title: Design guidance (agent map)
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-21
+last_updated: 2026-08-23
 tags: [design,ui,ux]
 ---
 # Design guidance (agent map)
@@ -16,16 +16,13 @@ Lightweight by default. Go deeper only when the task needs it.
 |------|------|----------------|
 | **0 — Everyday** | Small UI fix, one widget, routine feature work | `.cursor/rules/design.mdc` + `accessibility.mdc` |
 | **1 — UI check** | Review before merge, polish pass, “does this feel right?” | Skill `/ui-check` |
-| **2 — Design deep** | New flow, auth/landing refresh, theme work, multi-screen consistency | Skill `/ui-design-deep` + `principles.md` |
+| **2 — Design deep** | New flow, auth/landing refresh, theme work, multi-screen consistency | Skill `/ui-design-deep` + `principles.md` + `system.md` |
 
 ## Theme project
 
-**Execution plan:** `ui-rework-plan.md` (phases 0–7).  
-**Navigation v2:** `navigation-v2.md` (execute-plan `ui-navigation-v2-14ee`).  
-**Deliverable in Phase 0:** `tokens.md` — live at `docs/design/tokens.md`.  
-**Changing the color scheme (re-skin)?** Start at `skin-change-guide.md` —
-the single file to edit plus every companion file (logos, web manifest,
-PDF reports, emails) that needs updating alongside it.
+**Canonical system:** [`system.md`](./system.md) (Operations Desk / Replit direction).  
+**Token tables:** [`tokens.md`](./tokens.md) — only file for hex colour values.  
+**Execution plan:** `ui-rework-plan.md` (phases 0–7).
 
 ## Reference implementations
 
@@ -53,7 +50,7 @@ The approved static preview is `shape:guardian-care-landing-static` on the
 canvas. Its companion source files are the plum/teal landing image and logo
 board in `attached_assets/`. The older olive/gold `GuardianDesk.tsx` mockup is
 historical only. The expanded palette, typography, layout, and interaction
-roles live in `DESIGN_SYSTEM.md` and `tokens.md`.
+roles live in [`system.md`](./system.md) and [`tokens.md`](./tokens.md).
 
 ## Phased UI refactor (only when explicitly requested)
 
