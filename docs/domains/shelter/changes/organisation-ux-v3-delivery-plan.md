@@ -168,7 +168,7 @@ If autonomy window &lt; remaining work: split execute-plan at Phase 7 boundary i
 - Mark this delivery plan as source of truth for v3 IA.
 - Update `docs/architecture/index.md` pointer; `docs/debt/refactoring-log.md` ownership map for spawn phases.
 - Open debt issues: **DEF-NOTIF**, **DEF-MSG**, **DEF-NOTIF-COUNTS** (labels `tech-debt`, `plan:organisation-ux-v3-badd`).
-- Privacy enum design note in this doc or `docs/architecture/org-member-privacy.md` (short).
+- Privacy enum design note in this doc or `docs/domains/shelter/features/org-member-privacy.md` (short).
 
 **Tests:** none (docs).
 

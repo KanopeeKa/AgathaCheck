@@ -36,9 +36,9 @@ tags: [debt, deferred, tech-debt]
 | platform | — | refactor | P3 | Navigation v2 shell migration backlog (execute-plan `ui-navigation-v2-14ee`) |
 | platform | — | tech debt | P4 | Remove legacy `npm run test:mocha` when no local scripts depend on it |
 | platform | — | tech debt | P4 | Executable Cucumber BDD runner (Gherkin exists; Playwright is executor) |
-| organization | — | tech debt | P2 | Extend `audit_events` to org admin routes and file uploads |
-| organization | — | deferred decision | P3 | Org pet timeline — remove-event + ending notifications (Sprint 6.3 defer) |
-| organization | — | tech debt | P3 | Help FAQ copy still references legacy nav chrome — update after shell migration |
+| shelter | — | tech debt | P2 | Extend `audit_events` to org admin routes and file uploads |
+| shelter | — | deferred decision | P3 | Org pet timeline — remove-event + ending notifications (Sprint 6.3 defer) |
+| shelter | — | tech debt | P3 | Help FAQ copy still references legacy nav chrome — update after shell migration |
 | fostering | — | tech debt | P2 | Extend `audit_events` to foster placement routes |
 | sharing | — | tech debt | P2 | Extend `audit_events` to share-link routes |
 | notifications | — | tech debt | P2 | Automated notification row retention (90-day policy documented, not coded) |

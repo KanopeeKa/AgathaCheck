@@ -9,6 +9,6 @@ tags: [experience,organization,migration]
 
 # Organisation dashboard brief — relocated
 
-**[/docs/domains/organization/features/organisation-dashboard-brief.md](/docs/domains/organization/features/organisation-dashboard-brief.md)**
+**[/docs/domains/shelter/features/shelter-dashboard-brief.md](/docs/domains/shelter/features/shelter-dashboard-brief.md)**
 
-Journey overview: [/docs/domains/organization/features/journeys.md](/docs/domains/organization/features/journeys.md)
+Journey overview: [/docs/domains/shelter/features/journeys.md](/docs/domains/shelter/features/journeys.md)

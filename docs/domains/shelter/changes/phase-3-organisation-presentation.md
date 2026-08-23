@@ -15,7 +15,7 @@ tags: [experience,guardian,organisation]
 > planning; do not implement new work against this spec.
 
 **Parent:** [`roadmap-delivery-plan.md`](roadmap-delivery-plan.md) · [`program-contract.md`](program-contract.md)  
-**Brief:** [`briefs/organisation-dashboard-brief.md`](briefs/organisation-dashboard-brief.md)  
+**Brief:** [`briefs/shelter-dashboard-brief.md`](briefs/shelter-dashboard-brief.md)  
 **Note:** Largest phase in the program. Default plan is single-agent sequential (D33); consider
 `/spawn-sprint-agents` if the sprint list below proves too large for one sitting — sprints 3.3,
 3.6, and 3.8 are the most independent of each other (disjoint files) and are the natural split

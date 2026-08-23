@@ -11,4 +11,4 @@ tags: [migration,documentation]
 
 This document moved during the domain-first docs reorg:
 
-[/docs/domains/organization/changes/phase-3-ui-design-review.md](/docs/domains/organization/changes/phase-3-ui-design-review.md)
+[/docs/domains/shelter/changes/phase-3-ui-design-review.md](/docs/domains/shelter/changes/phase-3-ui-design-review.md)

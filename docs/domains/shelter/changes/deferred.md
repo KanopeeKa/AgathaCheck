@@ -9,4 +9,4 @@ tags: [domain,organization,deferred]
 
 # Organization — deferred work
 
-Open rows: [/docs/debt/debt.md](/docs/debt/debt.md) (filter **Domain = organization**).
+Open rows: [/docs/debt/debt.md](/docs/debt/debt.md) (filter **Domain = shelter**).

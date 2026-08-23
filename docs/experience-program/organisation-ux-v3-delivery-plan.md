@@ -11,4 +11,4 @@ tags: [migration,documentation]
 
 This document moved during the domain-first docs reorg:
 
-[/docs/domains/organization/changes/organisation-ux-v3-delivery-plan.md](/docs/domains/organization/changes/organisation-ux-v3-delivery-plan.md)
+[/docs/domains/shelter/changes/organisation-ux-v3-delivery-plan.md](/docs/domains/shelter/changes/organisation-ux-v3-delivery-plan.md)

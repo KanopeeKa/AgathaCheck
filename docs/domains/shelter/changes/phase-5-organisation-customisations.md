@@ -9,7 +9,7 @@ tags: [experience,guardian,organisation]
 # Phase 5 — Organisation customisations
 
 **Parent:** [`roadmap-delivery-plan.md`](roadmap-delivery-plan.md) · [`program-contract.md`](program-contract.md)  
-**Brief:** [`briefs/organisation-dashboard-brief.md`](briefs/organisation-dashboard-brief.md) §Organisation customisations
+**Brief:** [`briefs/shelter-dashboard-brief.md`](briefs/shelter-dashboard-brief.md) §Organisation customisations
 
 ## Purpose
 

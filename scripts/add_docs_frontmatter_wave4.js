@@ -132,15 +132,15 @@ const FILE_META = {
     title: 'Guardian UI wave 2 issue briefs',
     tags: ['domain', 'pet_profile', 'plans'],
   },
-  'docs/domains/organization/changes/organisation-people-permissions-v4-delivery-plan.md': {
+  'docs/domains/shelter/changes/organisation-people-permissions-v4-delivery-plan.md': {
     title: 'Organisation people permissions v4 delivery plan',
     tags: ['domain', 'organization', 'plans'],
   },
-  'docs/domains/organization/changes/organisation-v2-delivery-plan.md': {
+  'docs/domains/shelter/changes/organisation-v2-delivery-plan.md': {
     title: 'Organisation v2 delivery plan',
     tags: ['domain', 'organization', 'plans'],
   },
-  'docs/domains/organization/changes/organisation-ux-v3-delivery-plan.md': {
+  'docs/domains/shelter/changes/organisation-ux-v3-delivery-plan.md': {
     title: 'Organisation UX v3 delivery plan',
     tags: ['domain', 'organization', 'plans'],
   },

@@ -27,6 +27,6 @@ Delivery plans relocated from `docs/experience-program/`.
 | Org mode navigation | Org nav shell | See snapshot | [.agents/plans/org-mode-navigation-acf1.md](/.agents/plans/org-mode-navigation-acf1.md) |
 | Public access gate | Public route gating | See snapshot | [.agents/plans/public-access-gate-a35f.md](/.agents/plans/public-access-gate-a35f.md) |
 
-Locked brief: [features/organisation-dashboard-brief.md](../features/organisation-dashboard-brief.md)
+Locked brief: [features/shelter-dashboard-brief.md](../features/shelter-dashboard-brief.md)
 
 Program decisions: [/docs/experience-program/decisions-log.md](/docs/experience-program/decisions-log.md)

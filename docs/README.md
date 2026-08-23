@@ -42,7 +42,7 @@ Each product area has a one-screen index under `docs/domains/<domain>/` with jou
 | Veterinarians | [/docs/domains/vet/README.md](/docs/domains/vet/README.md) | Vet contacts and pet links |
 | Sharing | [/docs/domains/sharing/README.md](/docs/domains/sharing/README.md) | Share links and collaborators |
 | Notifications | [/docs/domains/notifications/README.md](/docs/domains/notifications/README.md) | In-app notification feed |
-| Organization | [/docs/domains/organization/README.md](/docs/domains/organization/README.md) | Org identity, permissions, privacy, custody model |
+| Shelter | [/docs/domains/shelter/README.md](/docs/domains/shelter/README.md) | Shelter identity, permissions, privacy, custody model |
 | Fostering | [/docs/domains/fostering/README.md](/docs/domains/fostering/README.md) | Placements, adoption, custody transfers |
 | Subscription | [/docs/domains/subscription/README.md](/docs/domains/subscription/README.md) | Premium tiers (billing TBD) |
 | Help & about | [/docs/domains/help_about/README.md](/docs/domains/help_about/README.md) | FAQ and about screens |
@@ -111,7 +111,7 @@ The **active** program for navigation reversal, Guardian dashboard, and Organisa
 **Briefs** (Locked product-truth documents):
 - [/docs/experience-program/briefs/navigation-brief.md](/docs/experience-program/briefs/navigation-brief.md)
 - [/docs/experience-program/briefs/guardian-dashboard-brief.md](/docs/experience-program/briefs/guardian-dashboard-brief.md)
-- [/docs/experience-program/briefs/organisation-dashboard-brief.md](/docs/experience-program/briefs/organisation-dashboard-brief.md)
+- [/docs/experience-program/briefs/shelter-dashboard-brief.md](/docs/experience-program/briefs/shelter-dashboard-brief.md)
 - [/docs/experience-program/briefs/guardian-ui-wave2-issue-briefs.md](/docs/experience-program/briefs/guardian-ui-wave2-issue-briefs.md)
 
 ### Architecture
@@ -120,8 +120,8 @@ The **active** program for navigation reversal, Guardian dashboard, and Organisa
 |----------|---------|--------|
 | [/docs/architecture/index.md](/docs/architecture/index.md) | **Start here** - Domain to code mapping | Active |
 | [/docs/architecture/modularity.md](/docs/architecture/modularity.md) | Clean architecture principles | Active |
-| [/docs/architecture/org-custody-model.md](/docs/architecture/org-custody-model.md) | Pet custody and transfer model | Active |
-| [/docs/architecture/org-member-privacy.md](/docs/architecture/org-member-privacy.md) | Per-organization privacy rules | Active |
+| [/docs/domains/shelter/features/org-custody-model.md](/docs/domains/shelter/features/org-custody-model.md) | Pet custody and transfer model | Active |
+| [/docs/domains/shelter/features/org-member-privacy.md](/docs/domains/shelter/features/org-member-privacy.md) | Per-shelter privacy rules | Active |
 | [/docs/architecture/pet-activity-model.md](/docs/architecture/pet-activity-model.md) | Pet activity tracking and timeline | Active |
 
 ### Design
