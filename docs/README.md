@@ -68,24 +68,9 @@ Product behaviour → `docs/domains/<domain>/`. Platform, CI, agents, and debt �
 | **Navigation** | [/docs/domains/navigation/README.md](/docs/domains/navigation/README.md) | Shell and routing UX |
 | **Cross-domain** | [/docs/domains/cross-domain/README.md](/docs/domains/cross-domain/README.md) | Shared requirements, sprint execution plans |
 
-**Fostering:** canonical tree is [/docs/domains/fostering/](/docs/domains/fostering/README.md). `docs/fostering-platform/` is a legacy redirect only.
-
 ---
 
-## Domain-Specific Documentation (legacy paths)
-
-> **Migration in progress:** content is moving into `docs/domains/` above. Stubs remain at former paths until link pass completes.
-
-### Organization & Fostering (legacy index)
-
-| Document | Purpose | Status |
-|----------|---------|--------|
-| [/docs/fostering-platform/README.md](/docs/fostering-platform/README.md) | Redirect → [fostering domain](/docs/domains/fostering/README.md) | Superseded |
-| [/docs/org-fostering-strategy.md](/docs/org-fostering-strategy.md) | Redirect → [fostering/changes/org-fostering-strategy.md](/docs/domains/fostering/changes/org-fostering-strategy.md) | Superseded |
-
-Fostering feature docs (g0, j1, migration appendix, roadmap) live under [/docs/domains/fostering/](/docs/domains/fostering/README.md).
-
-### Navigation & cross-domain delivery
+## Navigation & cross-domain delivery
 
 Navigation shell reversal and phased delivery (formerly `docs/experience-program/`).
 
@@ -256,7 +241,7 @@ See [/docs/archived/README.md](/docs/archived/README.md) for the full list.
 | **Agent workflow?** | [Agent Guide](/AGENTS.md) |
 | **API changes?** | [API Reference](/API.md) |
 | **UAT deployment?** | [E2E README](/e2e/README.md) |
-| **Org/foster features?** | [Fostering Platform](/docs/fostering-platform/README.md) |
+| **Org/foster features?** | [Fostering domain](/docs/domains/fostering/README.md) |
 | **UI/UX changes?** | [Design Index](/docs/design/index.md) |
 
 ---
@@ -324,4 +309,4 @@ tags: [comma, separated, tags]
 
 ---
 
-*Last updated: 2026-08-22*
+*Last updated: 2026-08-23*

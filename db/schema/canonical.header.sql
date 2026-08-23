@@ -7,4 +7,4 @@
 -- Regenerate after schema changes:
 --   scripts/db/regenerate-canonical.sh
 --
--- See docs/db-schema-bootstrap-plan.md for the phased bootstrap model.
+-- See docs/pipelines/db-schema-bootstrap-plan.md for the phased bootstrap model.
