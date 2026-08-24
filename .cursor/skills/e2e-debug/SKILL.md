@@ -205,13 +205,34 @@ Validate each `target_shard` (high → low risk):
 
 Open/update remedial PR to `main`. PR body: baseline SHA, target shards, failing run URL, drift checklist hits.
 
-Release the preflight claim:
+**Release** the preflight claim when handing off (not when stopping):
 
 ```bash
 node scripts/e2e_debug_status.mjs --release --issue <control_issue> --json
 ```
 
-**Hand off to /babysit-uat** on remedial PR (Phase 4 remedial loop):
+---
+
+## Phase 8 — Mandatory handoff (same session — do not skip)
+
+`/e2e-debug` is **incomplete** until **`/babysit-uat` runs on the remedial PR in the same agent session** (or an explicit queued follow-up that will run it immediately).
+
+| Step | Action |
+|------|--------|
+| 1 | Mark remedial PR **ready for review** (`gh pr ready` or `ManagePullRequest update_pr` with `draft: false`) |
+| 2 | Post handoff comment: failing `merge_sha`, target shards, CI run URL, local shard evidence |
+| 3 | Release `e2e-debug` claim when one was taken (`--release`) |
+| 4 | **Immediately invoke `/babysit-uat`** on the remedial PR — merge + `babysit_uat_watch_preuat.sh` |
+
+**Do not** end the turn after opening a draft remedial PR. Saying "hand off to `/babysit-uat`" without running it leaves `main` red.
+
+| Anti-pattern | Result |
+|--------------|--------|
+| Open draft remedial PR and stop | Pre-UAT stays broken; no merge |
+| Standalone `/e2e-debug` with no follow-up | Process failure — always chain `/babysit-uat` |
+| Release claim before babysit-uat starts | OK only when babysit-uat is already running in same session |
+
+**Hand off to /babysit-uat** (Phase 4 remedial loop):
 
 - `/babysit-plus` merge remedial PR
 - `./scripts/babysit_uat_watch_preuat.sh <new_merge_sha>`
