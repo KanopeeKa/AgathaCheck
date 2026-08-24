@@ -607,6 +607,13 @@ export function petListCardWithOrgPattern(petName: string, orgName: string): Reg
   );
 }
 
+/** Org pets list index — `/o/orgs/:id/pets` only (not `/pets/:petId/...` sub-routes). */
+export const ORG_PETS_LIST_ROUTE = /^\/o\/orgs\/[^/]+\/pets$/;
+
+export function isOrgPetsListRoute(route: string): boolean {
+  return ORG_PETS_LIST_ROUTE.test(route);
+}
+
 /** Locator for a visible pet card (dashboard or list semantics). */
 export function petCardByName(page: Page, petName: string) {
   return semanticsByName(page, petCardNamePattern(petName));

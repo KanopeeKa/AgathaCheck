@@ -8,7 +8,9 @@ import {
   fillTextbox,
   flutterGotoUrl,
   flutterRoutePath,
+  isOrgPetsListRoute,
   navigateWithShellFallback,
+  ORG_PETS_LIST_ROUTE,
   refreshFlutterAccessibility,
   selectDropdownOption,
   waitForFlutterRoutePattern,
@@ -197,8 +199,7 @@ export class OrganizationDetailPage {
 
   /** Assert a pet row on the org pets screen (opens `/pets` when needed). */
   async expectPetVisibleOnPetsScreen(name: string): Promise<void> {
-    const petsRoute = /\/o\/orgs\/[^/]+\/pets/;
-    if (!petsRoute.test(flutterRoutePath(this.page.url()))) {
+    if (!isOrgPetsListRoute(flutterRoutePath(this.page.url()))) {
       await this.openPetsSection();
     } else {
       await refreshFlutterAccessibility(this.page);
@@ -372,7 +373,7 @@ export class OrganizationDetailPage {
 
   async openPetsSection(): Promise<void> {
     const orgId = this.orgIdFromUrl();
-    const petsRoute = /\/o\/orgs\/[^/]+\/pets/;
+    const petsRoute = ORG_PETS_LIST_ROUTE;
 
     let navigated = false;
     if (await this.tryActivateSectionCard(OrganizationDetailPage.petsSectionName)) {
