@@ -7,7 +7,10 @@ import {
   expectAppBarTitle,
   fillTextbox,
   flutterGotoUrl,
+  flutterRoutePath,
+  isOrgPetsListRoute,
   navigateWithShellFallback,
+  ORG_PETS_LIST_ROUTE,
   refreshFlutterAccessibility,
   selectDropdownOption,
   waitForFlutterRoutePattern,
@@ -191,6 +194,16 @@ export class OrganizationDetailPage {
 
   async expectPetVisible(name: string): Promise<void> {
     await this.openPetsSection();
+    await this.expectPetVisibleOnPetsScreen(name);
+  }
+
+  /** Assert a pet row on the org pets screen (opens `/pets` when needed). */
+  async expectPetVisibleOnPetsScreen(name: string): Promise<void> {
+    if (!isOrgPetsListRoute(flutterRoutePath(this.page.url()))) {
+      await this.openPetsSection();
+    } else {
+      await refreshFlutterAccessibility(this.page);
+    }
     // Fostered pets live on In foster / All — not the default Need attention tab.
     await this.selectOrgPetsTab(OrganizationDetailPage.allPetsTabName);
     const pattern = new RegExp(escapeRegExp(name), 'i');
@@ -360,7 +373,7 @@ export class OrganizationDetailPage {
 
   async openPetsSection(): Promise<void> {
     const orgId = this.orgIdFromUrl();
-    const petsRoute = /\/o\/orgs\/[^/]+\/pets/;
+    const petsRoute = ORG_PETS_LIST_ROUTE;
 
     let navigated = false;
     if (await this.tryActivateSectionCard(OrganizationDetailPage.petsSectionName)) {

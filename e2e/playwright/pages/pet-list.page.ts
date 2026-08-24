@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import { HealthDashboardPage } from './health-dashboard.page';
+import { OrganizationDetailPage } from './organization-detail.page';
 import { OrganizationListPage } from './organization-list.page';
 import {
   dashboardSectionGroup,
@@ -13,7 +14,6 @@ import {
   petCardByName,
   petCardHiddenLocator,
   petListCardLocator,
-  petListCardWithOrgPattern,
   postPetMutationShellLocator,
   refreshFlutterAccessibility,
   semanticsByName,
@@ -320,13 +320,9 @@ export class PetListPage {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       const route = flutterRoutePath(this.page.url());
-      if (route === '/o/home') {
-        // Org inventory groups pets under PetListSectionHeader semantics: "OrgName 3".
-        const orgSectionPattern = new RegExp(`${escapeRegExp(title)}(?:\\s+\\d+)?$`, 'i');
-        await expect(
-          semanticsByName(this.page, orgSectionPattern)
-            .or(this.page.getByRole('group', { name: orgSectionPattern })),
-        ).toBeVisible();
+      if (route === '/o/home' || route === '/o/orgs') {
+        // Org shell home is a workspace switcher — membership cards, not pet sections.
+        await new OrganizationListPage(this.page).expectOrgVisible(title);
         return;
       }
       // Group role only on guardian desk — getByText fallback matches pet cards whose aria-label
@@ -335,20 +331,33 @@ export class PetListPage {
     }).toPass({ timeout: 30_000 });
   }
 
-  /** Org inventory on `/o/home` uses PetCard — "Pet: Name, OrgName, …". */
-  async expectPetUnderOrganization(petName: string, orgName: string): Promise<void> {
-    const route = flutterRoutePath(this.page.url());
-    if (route !== '/o/home') {
-      await dismissConsentBannerIfPresent(this.page);
-      await this.page.goto(flutterGotoUrl('/o/home'));
-      await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, /^\/o\/home(?:\?|$)/, 30_000);
-      await skipOrgOnboardingIfPresent(this.page);
+  /**
+   * Org inventory lives on `/o/orgs/:id/pets` — the `/o/home` hub is a workspace switcher.
+   */
+  async expectPetUnderOrganization(
+    petName: string,
+    orgName: string,
+    orgId?: string,
+  ): Promise<void> {
+    const detail = new OrganizationDetailPage(this.page);
+    if (orgId) {
+      const petsPath = `/o/orgs/${orgId}/pets`;
+      const petsRoute = new RegExp(`^${escapeRegExp(petsPath)}(?:\\?|$)`);
+      if (!petsRoute.test(flutterRoutePath(this.page.url()))) {
+        await dismissConsentBannerIfPresent(this.page);
+        await this.page.goto(flutterGotoUrl(petsPath));
+        await refreshFlutterAccessibility(this.page);
+        await waitForFlutterRoutePattern(this.page, petsRoute, 30_000);
+      }
+      await detail.expectPetVisibleOnPetsScreen(petName);
+      return;
     }
-    await semanticsByName(
-      this.page,
-      petListCardWithOrgPattern(petName, orgName),
-    ).waitFor({ timeout: 30_000 });
+
+    await this.openOrganizations();
+    const orgList = new OrganizationListPage(this.page);
+    await orgList.openOrg(orgName);
+    await detail.expectLoaded(orgName);
+    await detail.expectPetVisible(petName);
   }
 
   async goHome(options: { experience?: 'guardian' | 'organization' } = {}): Promise<void> {
