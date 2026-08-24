@@ -71,20 +71,26 @@ export class VetListPage {
     await expect(this.page.getByText(/\b\d+ pets?\b/i)).toHaveCount(n, { timeout: 30_000 });
   }
 
+  private editVetButtonLocator(scope: Page | Locator = this.page) {
+    return scope
+      .getByRole('button', { name: /^Edit Vet$/i })
+      .or(scope.getByRole('button', { name: /^Edit$/i }));
+  }
+
   async clickEditVet(name: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const card = semanticsByName(
       this.page,
       new RegExp(`Veterinarian:\\s*${escapeRegExp(name)}`, 'i'),
     );
-    const inlineEdit = card.getByRole('button', { name: /^Edit$/i });
+    const inlineEdit = this.editVetButtonLocator(card);
     if (await inlineEdit.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await inlineEdit.click();
     } else {
       await this.vetRowLocator(name).click();
       await waitForFlutterRoutePattern(this.page, /\/(g|o)\/vets\/[^/]+$/, 30_000);
       await refreshFlutterAccessibility(this.page);
-      await this.page.getByRole('button', { name: /^Edit$/i }).click();
+      await this.editVetButtonLocator().click();
     }
     await this.page.getByRole('textbox', { name: 'Name *' }).waitFor({ timeout: 30_000 });
   }
