@@ -3,5 +3,8 @@ type ModuleMap = Record<string, () => Promise<Record<string, unknown>>>;
 export const modules: ModuleMap = {
   "./components/mockups/guardian-operations/GuardianOperationsEmptyState.tsx": () => import("../components/mockups/guardian-operations/GuardianOperationsEmptyState.tsx"),
   "./components/mockups/guardian-operations/GuardianOperationsExpandedPet.tsx": () => import("../components/mockups/guardian-operations/GuardianOperationsExpandedPet.tsx"),
-  "./components/mockups/guardian-operations/GuardianOperationsMobileState.tsx": () => import("../components/mockups/guardian-operations/GuardianOperationsMobileState.tsx")
+  "./components/mockups/guardian-operations/GuardianOperationsMobileMistedPlumState.tsx": () => import("../components/mockups/guardian-operations/GuardianOperationsMobileMistedPlumState.tsx"),
+  "./components/mockups/guardian-operations/GuardianOperationsMobilePaperPlum.tsx": () => import("../components/mockups/guardian-operations/GuardianOperationsMobilePaperPlum.tsx"),
+  "./components/mockups/guardian-operations/GuardianOperationsMobileState.tsx": () => import("../components/mockups/guardian-operations/GuardianOperationsMobileState.tsx"),
+  "./components/mockups/guardian-operations/GuardianOperationsPlumLineCare.tsx": () => import("../components/mockups/guardian-operations/GuardianOperationsPlumLineCare.tsx")
 };
