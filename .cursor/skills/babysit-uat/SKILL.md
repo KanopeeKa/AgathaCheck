@@ -18,9 +18,22 @@ description: Babysit+ through merge, then gate on pre-UAT E2E on main. On failur
 | Caller | Skill |
 |--------|-------|
 | Standalone PR → `main` needing pre-UAT confidence | `/babysit-uat` |
+| **Remedial PR from `/e2e-debug`** (standalone or delegated) | **`/babysit-uat` — mandatory follow-up; merge + watch** |
 | `/execute-plan` **intermediate** phase PR (integration parent) | `/babysit-plus` only |
 | `/execute-plan` **final** PR → `main` | `/babysit-uat` |
 | Narrow PR CI-only / docs | `/babysit-plus` (avoids pre-UAT queue pressure) |
+
+---
+
+## Phase 0 — Entry mode
+
+| You have | Start at |
+|----------|----------|
+| Feature/fix PR to merge (normal) | **Phase 1** → merge → Phase 2 watch |
+| **Open remedial PR from `/e2e-debug`** (main already red) | **Phase 4** — merge remedial PR, then watch pre-UAT |
+| Pre-UAT failed after your merge | Phase 3 (`/e2e-debug`) → **Phase 4** |
+
+**Gap to avoid:** `/e2e-debug` alone does not merge. If a remedial PR exists unmerged (e.g. draft #741), run `/babysit-uat` on that PR now — do not re-run `/e2e-debug` unless the remedial branch is stale or wrong.
 
 ---
 
@@ -91,16 +104,19 @@ Run **/e2e-debug** with:
 
 ---
 
-## Phase 4 — Babysit-UAT remedial (round 2+)
+## Phase 4 — Remedial PR merge + pre-UAT watch
+
+**Applies to every remedial PR from `/e2e-debug`** (first remedial round **and** round 2+). This is the step that was skipped when `/e2e-debug` ended without `/babysit-uat`.
 
 On the **remedial PR** from `/e2e-debug`:
 
-1. Full **Phase 1** (babysit+ merge remedial to `main`)
-2. **Phase 2** with `round >= 2`: **only** `./scripts/babysit_uat_watch_preuat.sh <merge_sha>` until failure or success
-3. On failure → **Phase 3** again (`/e2e-debug` with `round >= 2`, failed shards only)
-4. Repeat until watch exits 0
+1. Full **Phase 1** (babysit+ merge remedial to `main`) — mark draft **ready**, triage reviews, squash-merge when CI green
+2. Record `merge_sha` from the remedial merge
+3. `./scripts/babysit_uat_watch_preuat.sh <merge_sha> --json --timeout-min 90`
+4. On failure → **Phase 3** again (`/e2e-debug` with `round >= 2`, failed shards only) → return to step 1
+5. Repeat until watch exits 0
 
-**Success:** `pre-uat-e2e.yml` green for latest remedial `merge_sha`. **Stop** — do not poll promote/deploy.
+**Round 2+ note:** do not expand shard scope proactively — only CI-reported `failed_shards`.
 
 ---
 
