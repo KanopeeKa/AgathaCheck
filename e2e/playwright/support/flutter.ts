@@ -629,11 +629,21 @@ export function petCardHiddenLocator(page: Page, petName: string) {
     .or(page.getByRole('tab', { name: pattern }));
 }
 
-/** Any pet list tile on `/g/pets` (legacy Pet: prefix only). */
+/** Care-state tail on guardian full-list cards — `{name}, {ownership}, {care}`. */
+const GUARDIAN_PET_LIST_CARE_TAIL =
+  '(?:All clear|Overdue|Due today|Care coming up|Passed away|Tout est en ordre|En retard|Aujourd\'hui|Soin à venir|Décédé\\(e\\))';
+
+/** Any pet list tile on `/g/pets` (legacy `Pet:` prefix or guardian full-list semantics). */
 export function petListCardLocator(page: Page) {
+  const guardianFullList = new RegExp(
+    `^[^,]+,\\s*[^,]+,\\s*${GUARDIAN_PET_LIST_CARE_TAIL}$`,
+    'i',
+  );
   return page
     .getByRole('button', { name: /Pet:/i })
-    .or(page.getByRole('group', { name: /Pet:/i }));
+    .or(page.getByRole('group', { name: /Pet:/i }))
+    .or(page.getByRole('button', { name: guardianFullList }))
+    .or(page.getByRole('group', { name: guardianFullList }));
 }
 
 /** Home shell or a pet tile after save/create (dashboard or list). */
