@@ -302,14 +302,35 @@ export class PetListPage {
 
   async expectRainbowBridgeSection(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await this.page.getByText('Rainbow Bridge').first().waitFor({ timeout: 15_000 });
+    // Passed-away section may sit below the fold on `/g/pets`.
+    await this.page.mouse.wheel(0, 800);
+    await this.page.waitForTimeout(300);
+    await refreshFlutterAccessibility(this.page);
+    // Guardian `/g/pets` uses PetListSectionHeader "Passed away"; legacy list uses collapsible "Rainbow Bridge".
+    const sectionLabel = this.page
+      .getByText(/^(?:Passed away|Rainbow Bridge|Décédé\(e\))/i)
+      .or(this.page.getByText(/(?:Passed away|Rainbow Bridge|Décédé\(e\))\s+\d+/i));
+    await sectionLabel.first().waitFor({ timeout: 15_000 });
   }
 
   async expandRainbowBridgeSection(): Promise<void> {
     await this.expectRainbowBridgeSection();
-    await this.page.getByText('Rainbow Bridge').first().click();
-    await this.page.waitForTimeout(500);
+    const legacyTile = this.page.getByText('Rainbow Bridge').first();
+    if (await legacyTile.isVisible({ timeout: 1_000 }).catch(() => false)) {
+      await legacyTile.click();
+      await this.page.waitForTimeout(500);
+      await refreshFlutterAccessibility(this.page);
+    }
+    // Guardian shell: GuardianPassedAwaySection is always expanded — no-op.
+  }
+
+  async expectPassedAwayPetVisible(name: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    const pattern = new RegExp(
+      `^${escapeRegExp(name)},\\s*[^,]+,\\s*(?:Passed away|Décédé\\(e\\))$`,
+      'i',
+    );
+    await semanticsByName(this.page, pattern).waitFor({ timeout: 30_000 });
   }
 
   async expectNoPendingSharesSection(): Promise<void> {

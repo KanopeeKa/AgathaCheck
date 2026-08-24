@@ -241,20 +241,27 @@ test.describe('Pet profiles', () => {
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     await createPet(baseURL, testUser.accessToken, 'Max', 'Dog');
-    const buddy = await createPet(baseURL, testUser.accessToken, 'Buddy', 'Dog');
-    await updatePetFields(baseURL, testUser.accessToken, buddy.id, {
-      name: 'Buddy',
-      species: 'Dog',
-      passedAway: true,
-    });
+    await createPet(baseURL, testUser.accessToken, 'Buddy', 'Dog');
 
     const petList = await loginAs(page, testUser);
     await petList.openManagePets();
+    await petList.expectPetCount(2);
+    await petList.openPet('Buddy');
+
+    const detail = new PetDetailPage(page);
+    await detail.expectLoaded('Buddy');
+    await detail.openEdit();
+
+    const editForm = new PetFormPage(page);
+    await editForm.expectLoaded();
+    await editForm.clickPassedAway();
+    await editForm.confirmPassedAway();
+
+    await petList.expectLoaded();
+    await petList.openManagePets();
     await petList.expectPetVisible('Max');
-    await petList.expectRainbowBridgeSection();
+    await petList.expectPetCount(1);
     await petList.expectPetHidden('Buddy');
-    await petList.expandRainbowBridgeSection();
-    await petList.expectPetVisible('Buddy');
   });
 
   test('identification reminder shows for pet without chip ID', async ({ page, testUser }) => {
