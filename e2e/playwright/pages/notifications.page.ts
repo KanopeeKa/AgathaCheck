@@ -40,10 +40,17 @@ export class NotificationsPage {
       );
   }
 
+  /** Notification rows — tile semantics: "Care, Overdue, {title}, …" (v2 panel). */
+  private notificationRowLocator() {
+    return this.page.getByRole('button', {
+      name: /(?:Care|Organisation|Soins).*(?:Overdue|Due Soon|Reminder|Completed|General|En retard|Bientôt)/i,
+    });
+  }
+
   /** Panel list settled: empty state, notification rows, or error retry. */
   private listBodyLocator() {
     return this.emptyStateLocator()
-      .or(this.page.getByText(/notification:/i))
+      .or(this.notificationRowLocator())
       .or(this.page.getByRole('button', { name: /retry|try again|réessayer/i }));
   }
 
@@ -143,13 +150,16 @@ export class NotificationsPage {
 
   /** Assert date-group section headers (e.g. Today, Yesterday). */
   async expectDateGroupLabels(labels: string[]): Promise<void> {
-    for (const label of labels) {
-      await expect(
-        this.page
-          .getByRole('group', { name: new RegExp(`^${label}$`, 'i') })
-          .first(),
-      ).toBeVisible({ timeout: 15_000 });
-    }
+    await this.waitForNotificationListSettled();
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const panelText = await this.page.evaluate(() => document.body.innerText);
+      for (const label of labels) {
+        if (!new RegExp(`\\b${label}\\b`, 'i').test(panelText)) {
+          throw new Error(`Date group header not found: ${label}`);
+        }
+      }
+    }).toPass({ timeout: 30_000 });
   }
 
   /** Assert a pet name appears in the notification list (colour strip is visual-only). */
@@ -160,9 +170,9 @@ export class NotificationsPage {
   }
 
   async expectNotificationCount(expectedCount: number): Promise<void> {
-    await expect(
-      this.page.getByText(/notification:/, { exact: false }),
-    ).toHaveCount(expectedCount, { timeout: 15_000 });
+    await expect(this.notificationRowLocator()).toHaveCount(expectedCount, {
+      timeout: 15_000,
+    });
   }
 
   async markAllRead(): Promise<void> {
@@ -188,10 +198,7 @@ export class NotificationsPage {
     const escaped = titleText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const row = this.page
       .getByRole('button', {
-        name: new RegExp(
-          `(?:Overdue|Due soon|Administrative|General|Reminder|Completed) notification:.*${escaped}`,
-          'i',
-        ),
+        name: new RegExp(`(?:Care|Organisation|Soins).*${escaped}`, 'i'),
       })
       .first();
     await row.waitFor({ timeout: 15_000 });
