@@ -94,14 +94,14 @@ autonomy: active
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
-next_action: "start phase 2: checkout cursor/deps-batch-2026-08-25-6409"
+next_action: "continue phase 2 on branch cursor/deps-batch-2026-08-25-6409"
 artifact_ref:
-  branch: cursor/dependabot-batch-skill-6409
+  branch: cursor/deps-batch-2026-08-25-6409
   plan_path: .agents/plans/dependabot-batch-6409.md
-  plan_commit: 01b35d41f6bb96534eb61713bc63b8ca36fe05ea
+  plan_commit: feead2820227b686b1fe9a134eda1cdf479b9166
   snapshot_path: .agents/plans/dependabot-batch-6409.snapshot.json
-  snapshot_commit: 01b35d41f6bb96534eb61713bc63b8ca36fe05ea
-open_prs: []
-merge_commits: {}
+  snapshot_commit: feead2820227b686b1fe9a134eda1cdf479b9166
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/752"]
+merge_commits: {"1":"a8a916821523473aa9c17fc889f88324d7c50fce"}
 debt_issue_refs: []
 ```

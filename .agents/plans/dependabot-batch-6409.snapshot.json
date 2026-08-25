@@ -4,7 +4,7 @@
   "approved_at": "2026-08-25T09:00:00Z",
   "approved_by": "user chat — create skill + apply batch via /execute-plan",
   "approved_until": "2026-08-27T09:00:00Z",
-  "content_hash": "sha256:61a05c61e150a1c114b224bb8373227ef244ec2da6cd3303d8106ed18b1190d1",
+  "content_hash": "sha256:253355efe4378740869cb663559c8258987ffd0511425748a3896703414132a6",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -41,7 +41,8 @@
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/751",
-      "pr_head_sha": "01b35d41"
+      "pr_head_sha": "01b35d41f6bb96534eb61713bc63b8ca36fe05ea",
+      "merge_commit": "a8a916821523473aa9c17fc889f88324d7c50fce"
     },
     {
       "id": "2",
@@ -65,13 +66,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/752",
+      "pr_head_sha": "feead2820227b686b1fe9a134eda1cdf479b9166"
     }
   ]
 }
