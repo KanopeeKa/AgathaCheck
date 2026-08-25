@@ -83,25 +83,25 @@ server/package-lock.json
 
 **Exit criteria:**
 
-- [ ] Batch PR merged to `main`
-- [ ] Pre-UAT E2E green for merge SHA
-- [ ] #746, #747, #749 closed as superseded
+- [x] Batch PR merged to `main`
+- [x] Pre-UAT E2E green for merge SHA
+- [x] #746, #747, #749 closed as superseded
 
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: 2
-last_completed_phase: 1
+autonomy: completed
+current_phase: null
+last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/deps-batch-2026-08-25-6409"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/deps-batch-2026-08-25-6409
+  branch: main
   plan_path: .agents/plans/dependabot-batch-6409.md
-  plan_commit: feead2820227b686b1fe9a134eda1cdf479b9166
+  plan_commit: 1e6db47c90800df6e05e72866fd6a156bae7fb8f
   snapshot_path: .agents/plans/dependabot-batch-6409.snapshot.json
-  snapshot_commit: feead2820227b686b1fe9a134eda1cdf479b9166
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/752"]
-merge_commits: {"1":"a8a916821523473aa9c17fc889f88324d7c50fce"}
+  snapshot_commit: 1e6db47c90800df6e05e72866fd6a156bae7fb8f
+open_prs: []
+merge_commits: {"1":"a8a916821523473aa9c17fc889f88324d7c50fce","2":"1e6db47c90800df6e05e72866fd6a156bae7fb8f"}
 debt_issue_refs: []
 ```
