@@ -30,6 +30,8 @@ updates:
       - dependencies
       - flutter
     # go_router major bumps need a dedicated migration PR.
+    # intl is pinned by flutter_localizations from the Flutter SDK.
     ignore:
       - dependency-name: "go_router"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "intl"
