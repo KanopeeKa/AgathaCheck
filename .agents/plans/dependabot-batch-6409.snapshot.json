@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "plan_id": "dependabot-batch-6409",
+  "approved_at": "2026-08-25T09:00:00Z",
+  "approved_by": "user chat — create skill + apply batch via /execute-plan",
+  "approved_until": "2026-08-27T09:00:00Z",
+  "content_hash": "sha256:b24bcbaeb5a5f75629ef25d5a1554c69cc0512e70e6fd29c6be1eda3ab8df84c",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 750,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Skill + intl ignore",
+      "branch": "cursor/dependabot-batch-skill-6409",
+      "allowed_paths": [
+        ".cursor/skills/dependabot-batch/**",
+        ".cursor/rules/agent-core.mdc",
+        ".github/dependabot.yml",
+        ".agents/plans/dependabot-batch-6409.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**",
+        "server/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Weekly deps batch",
+      "branch": "cursor/deps-batch-2026-08-25-6409",
+      "allowed_paths": [
+        "flutter_app/pubspec.yaml",
+        "flutter_app/pubspec.lock",
+        "server/package.json",
+        "server/package-lock.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
