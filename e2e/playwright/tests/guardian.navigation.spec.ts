@@ -1,6 +1,8 @@
 /**
  * @bdd guardian_dashboard.feature
  * Scenario: Guardian compact bottom nav reaches Pets, Care, Fostering destinations
+ * Scenario: Guardian leading navigation rail reaches primary destinations at medium width
+ * Scenario: Guardian expanded sidebar reaches primary destinations at wide width
  * Scenario: Workspace toggle switches between Guardian and Shelter when available
  */
 import { test, expect } from '../fixtures/auth.fixture';
@@ -55,6 +57,58 @@ test.describe('Guardian navigation', () => {
 
     await dashboard.openFosteringViaBottomNav();
     await expect(page).toHaveURL(/#\/g\/fostering/);
+  });
+
+  test('Guardian leading navigation rail reaches primary destinations at medium width', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 720, height: 900 });
+    await prepareLiveApiAccess(page, baseURL());
+    const user = await signupUser(baseURL());
+    await createPet(baseURL(), user.accessToken, 'RailPet');
+    await loginGuardian(page, user.email, user.password);
+
+    const dashboard = new GuardianDashboardPage(page);
+    await dashboard.open();
+    await dashboard.expectLeadingNavRailVisible();
+
+    await dashboard.openLeadingNavDestination('Pets');
+    await waitForFlutterRoutePattern(page, /\/g\/pets(?:\?|$)/, 30_000);
+    await expect(page.getByText(/All Pets|Tous les animaux/i).first()).toBeVisible();
+
+    await dashboard.openLeadingNavDestination('Care');
+    await waitForFlutterRoutePattern(page, /\/g\/events(?:\?|$)/, 30_000);
+    await new HealthDashboardPage(page).expectLoaded();
+
+    await dashboard.openLeadingNavDestination('Fostering');
+    await waitForFlutterRoutePattern(page, /\/g\/fostering(?:\?|$)/, 30_000);
+    await expect(page.getByText(/Fostering Sessions|Sessions d'accueil/i).first()).toBeVisible();
+  });
+
+  test('Guardian expanded sidebar reaches primary destinations at wide width', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1024, height: 900 });
+    await prepareLiveApiAccess(page, baseURL());
+    const user = await signupUser(baseURL());
+    await createPet(baseURL(), user.accessToken, 'SidebarPet');
+    await loginGuardian(page, user.email, user.password);
+
+    const dashboard = new GuardianDashboardPage(page);
+    await dashboard.open();
+    await dashboard.expectLeadingNavSidebarVisible();
+
+    await dashboard.openLeadingNavDestination('Pets');
+    await waitForFlutterRoutePattern(page, /\/g\/pets(?:\?|$)/, 30_000);
+    await expect(page.getByText(/All Pets|Tous les animaux/i).first()).toBeVisible();
+
+    await dashboard.openLeadingNavDestination('Care');
+    await waitForFlutterRoutePattern(page, /\/g\/events(?:\?|$)/, 30_000);
+    await new HealthDashboardPage(page).expectLoaded();
+
+    await dashboard.openLeadingNavDestination('Fostering');
+    await waitForFlutterRoutePattern(page, /\/g\/fostering(?:\?|$)/, 30_000);
+    await expect(page.getByText(/Fostering Sessions|Sessions d'accueil/i).first()).toBeVisible();
   });
 
   test('Workspace toggle switches between Guardian and Shelter when available', async ({
