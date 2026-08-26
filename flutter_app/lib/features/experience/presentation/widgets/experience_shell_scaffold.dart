@@ -77,7 +77,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
     final isOrg = experience == AppExperience.organization;
     final usesGuardianPrimaryNavigation =
         experience == AppExperience.guardian &&
-        GuardianBottomNavigation.supports(currentLocation) &&
         GuardianBottomNavigation.isCompact(MediaQuery.sizeOf(context).width);
     final appBarColor = usesGuardianPrimaryNavigation
         ? AppColorTokens.guardianPrimary
