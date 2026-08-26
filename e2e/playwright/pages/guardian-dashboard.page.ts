@@ -159,6 +159,61 @@ export class GuardianDashboardPage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  /**
+   * Leading nav destination — rail (600–839px) or sidebar (≥840px).
+   * Falls back to bottom nav on compact widths.
+   */
+  async openLeadingNavDestination(label: string): Promise<void> {
+    const namePattern =
+      label === 'Care'
+        ? /^Care$|^Soins$/i
+        : label === 'Pets'
+          ? /^Pets$|^Animaux$/i
+          : label === 'Today'
+            ? /^Today$|^Aujourd'hui$/i
+            : label === 'Fostering'
+              ? /^Fostering$|^Accueil$/i
+              : label === 'Account'
+                ? /^Account$|^Compte$/i
+                : new RegExp(`^${escapeRegExp(label)}$`, 'i');
+
+    const sidebar = this.page.locator(
+      '[flt-semantics-identifier="guardian_navigation_sidebar"]',
+    );
+    const rail = this.page.locator('[flt-semantics-identifier="guardian_navigation_rail"]');
+    const bottomNav = this.page.locator(
+      '[flt-semantics-identifier="guardian_bottom_navigation"]',
+    );
+
+    if (await sidebar.isVisible().catch(() => false)) {
+      await sidebar.getByRole('button', { name: namePattern }).first().click();
+    } else if (await rail.isVisible().catch(() => false)) {
+      await rail.getByRole('button', { name: namePattern }).first().click();
+    } else if (await bottomNav.isVisible().catch(() => false)) {
+      await this.openBottomNavTab(label);
+      return;
+    } else {
+      await this.page.getByRole('button', { name: namePattern }).first().click();
+    }
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  leadingNavRail(): Locator {
+    return this.page.locator('[flt-semantics-identifier="guardian_navigation_rail"]');
+  }
+
+  leadingNavSidebar(): Locator {
+    return this.page.locator('[flt-semantics-identifier="guardian_navigation_sidebar"]');
+  }
+
+  async expectLeadingNavRailVisible(): Promise<void> {
+    await expect(this.leadingNavRail()).toBeVisible();
+  }
+
+  async expectLeadingNavSidebarVisible(): Promise<void> {
+    await expect(this.leadingNavSidebar()).toBeVisible();
+  }
+
   async openFosteringViaBottomNav(): Promise<void> {
     await this.openBottomNavTab('Fostering');
     await waitForFlutterRoutePattern(this.page, /\/g\/fostering(?:\?|$)/, 30_000);
