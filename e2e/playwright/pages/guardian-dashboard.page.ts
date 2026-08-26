@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
+  escapeRegExp,
   flutterGotoUrl,
   petCardByName,
   petCardHiddenLocator,
@@ -136,6 +137,53 @@ export class GuardianDashboardPage {
 
   async openNotifications(): Promise<void> {
     await this.page.getByRole('button', { name: /open notifications/i }).click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  /** Compact Guardian bottom bar tab (Today, Pets, Care, Fostering, Account). */
+  async openBottomNavTab(label: string): Promise<void> {
+    const pattern = new RegExp(`^${escapeRegExp(label)}$`, 'i');
+    const tab = this.page
+      .getByRole('button', { name: pattern })
+      .or(this.page.getByRole('tab', { name: pattern }))
+      .first();
+    await tab.click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async openFosteringViaBottomNav(): Promise<void> {
+    await this.openBottomNavTab('Fostering');
+    await waitForFlutterRoutePattern(this.page, /\/g\/fostering(?:\?|$)/, 30_000);
+    await expect(
+      this.page.getByText(/Fostering Sessions|Sessions d'accueil/i).first(),
+    ).toBeVisible();
+  }
+
+  workspaceToggle(): Locator {
+    return this.page
+      .getByRole('button', {
+        name: /Choose your workspace|Choisir votre espace de travail/i,
+      })
+      .or(this.page.getByRole('button', { name: /^My Pets$|^Mes animaux$/i }))
+      .or(this.page.getByRole('button', { name: /^Shelter$|^Refuge$/i }))
+      .first();
+  }
+
+  async expectWorkspaceToggleVisible(): Promise<void> {
+    await expect(this.workspaceToggle()).toBeVisible();
+  }
+
+  async openWorkspaceMenu(): Promise<void> {
+    await this.workspaceToggle().click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async selectWorkspaceMenuItem(label: RegExp): Promise<void> {
+    const item = this.page
+      .getByRole('menuitem', { name: label })
+      .or(this.page.getByRole('button', { name: label }))
+      .first();
+    await item.click();
     await refreshFlutterAccessibility(this.page);
   }
 }
