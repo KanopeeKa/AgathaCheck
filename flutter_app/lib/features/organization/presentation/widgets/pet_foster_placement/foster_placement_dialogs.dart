@@ -47,7 +47,7 @@ class FosterPlacementDialogs {
               Text(l.startFosterPlacementDescription(petName)),
               const SizedBox(height: 12),
               DropdownButtonFormField<FosterParent>(
-                value: selected,
+                initialValue: selected,
                 decoration: InputDecoration(labelText: l.fosterParents),
                 items: memberParents
                     .map(
@@ -146,7 +146,7 @@ class FosterPlacementDialogs {
               Text(l.directAdoptDescription(petName)),
               const SizedBox(height: 12),
               DropdownButtonFormField<FosterParent>(
-                value: selected,
+                initialValue: selected,
                 decoration: InputDecoration(labelText: l.fosterParents),
                 items: memberParents
                     .map(

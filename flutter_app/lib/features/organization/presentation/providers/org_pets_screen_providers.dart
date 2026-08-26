@@ -1,7 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../pet_profile/domain/entities/pet.dart';
-import '../../domain/entities/archived_pet.dart';
 import '../../domain/entities/foster_placement.dart';
 import '../models/org_pet_list_entry.dart';
 import '../utils/org_pets_care_utils.dart';

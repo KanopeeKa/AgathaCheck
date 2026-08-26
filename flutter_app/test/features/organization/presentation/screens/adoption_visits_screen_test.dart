@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/org_provider_pets.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/screens/adoption_screening/adoption_visits_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';

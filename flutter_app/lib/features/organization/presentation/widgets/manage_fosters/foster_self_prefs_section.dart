@@ -51,7 +51,7 @@ class _FosterSelfPrefsSectionState
         const SizedBox(height: 12),
         DropdownButtonFormField<FosterVisibleTo>(
           key: const Key('foster_visible_to'),
-          value: prefs.visibleTo,
+          initialValue: prefs.visibleTo,
           decoration: InputDecoration(
             labelText: l.fosterSelfPrefsVisibleToLabel,
             border: const OutlineInputBorder(),
@@ -73,7 +73,7 @@ class _FosterSelfPrefsSectionState
         const SizedBox(height: 12),
         DropdownButtonFormField<FosterAddressVisibility>(
           key: const Key('foster_address_visibility'),
-          value: prefs.addressVisibility,
+          initialValue: prefs.addressVisibility,
           decoration: InputDecoration(
             labelText: l.fosterSelfPrefsAddressVisibilityLabel,
             border: const OutlineInputBorder(),
@@ -95,7 +95,7 @@ class _FosterSelfPrefsSectionState
         const SizedBox(height: 12),
         DropdownButtonFormField<FosterContactVisibility>(
           key: const Key('foster_contact_visibility'),
-          value: prefs.contactVisibility,
+          initialValue: prefs.contactVisibility,
           decoration: InputDecoration(
             labelText: l.fosterSelfPrefsContactVisibilityLabel,
             border: const OutlineInputBorder(),
@@ -117,7 +117,7 @@ class _FosterSelfPrefsSectionState
         const SizedBox(height: 12),
         DropdownButtonFormField<FosterMessageNotificationChannel>(
           key: const Key('foster_message_channel'),
-          value: prefs.messageChannel,
+          initialValue: prefs.messageChannel,
           decoration: InputDecoration(
             labelText: l.fosterSelfPrefsMessageChannelLabel,
             border: const OutlineInputBorder(),

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/foster_request.dart';
 import '../../providers/foster_requests_providers.dart';
-import '../../providers/org_provider_pets.dart';
 import 'foster_requests_screen.dart';
 import '../../widgets/org_shell_app_bar_title.dart';
 import '../../widgets/org_shell_scaffold.dart';
@@ -26,7 +24,6 @@ class FosterRequestDetailScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final key = (orgId: orgId, requestId: requestId);
     final requestAsync = ref.watch(orgFosterRequestDetailProvider(key));
-    final isFoster = ref.watch(isOrgFosterProvider(orgId));
 
     return OrgShellScaffold(
       title: l.fosterRequestDetailTitle,

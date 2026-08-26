@@ -6,7 +6,6 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/org_person.dart';
 import '../../domain/services/foster_onboarding.dart';
 import '../../domain/services/foster_visibility.dart';
-import '../providers/org_provider_people.dart';
 import '../providers/organization_providers.dart';
 import '../widgets/org_shell_app_bar_title.dart';
 import '../widgets/org_shell_scaffold.dart';
@@ -370,7 +369,7 @@ class _OrganizationPersonDetailScreenState
         builder: (ctx, setState) => AlertDialog(
           title: Text(l.orgSelectNewRole),
           content: DropdownButtonFormField<String>(
-            value: selectedRole,
+            initialValue: selectedRole,
             decoration: InputDecoration(
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),

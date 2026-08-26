@@ -32,7 +32,7 @@ class HealthEntryHealthIssueDropdown extends ConsumerWidget {
           children: [
             DropdownButtonFormField<String?>(
               key: const Key('health_issue_dropdown'),
-              value: selectedHealthIssueId,
+              initialValue: selectedHealthIssueId,
               decoration: InputDecoration(labelText: l.healthIssueOptional),
               items: [
                 DropdownMenuItem<String?>(value: null, child: Text(l.none)),

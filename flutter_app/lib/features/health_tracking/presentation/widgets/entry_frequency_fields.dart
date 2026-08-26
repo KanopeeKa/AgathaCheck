@@ -32,7 +32,7 @@ class EntryFrequencyFields extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         DropdownButtonFormField<HealthFrequency>(
-          value: frequency,
+          initialValue: frequency,
           decoration: InputDecoration(labelText: l.frequency),
           items: HealthFrequency.values
               .where((f) => f != HealthFrequency.custom)
@@ -54,7 +54,7 @@ class EntryFrequencyFields extends StatelessWidget {
             children: [
               Expanded(
                 child: DropdownButtonFormField<int>(
-                  value: frequencyInterval.clamp(1, 12),
+                  initialValue: frequencyInterval.clamp(1, 12),
                   decoration: InputDecoration(labelText: l.every),
                   items: List.generate(12, (i) => i + 1)
                       .map((n) => DropdownMenuItem(value: n, child: Text('$n')))

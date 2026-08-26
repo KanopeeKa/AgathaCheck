@@ -6,7 +6,6 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/org_person.dart';
 import '../../../domain/services/admin_contacts.dart';
 import '../../providers/organization_providers.dart';
-import 'admin_contact_invite_dialog.dart';
 import '../org_person_tile.dart';
 import '../org_person_tile_grid.dart';
 
@@ -26,7 +25,6 @@ class AdminContactsList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final viewerRole = ref.watch(orgViewerRoleProvider(orgId));
-    final canManage = canManageAdminContacts(viewerRole, orgId);
     final canEditOthers = canEditOtherAdminContact(viewerRole, orgId);
     final sorted = sortAdminContacts(
       contacts: people,

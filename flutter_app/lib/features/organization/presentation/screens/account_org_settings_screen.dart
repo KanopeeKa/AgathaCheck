@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/widgets/dashboard_section.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../experience/domain/entities/app_experience.dart';
-import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../domain/entities/member_privacy_settings.dart';
 import '../../domain/entities/organization.dart';

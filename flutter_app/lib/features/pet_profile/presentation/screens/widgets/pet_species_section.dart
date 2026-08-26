@@ -42,7 +42,7 @@ class PetSpeciesSection extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     return DropdownButtonFormField<String>(
       key: const Key('pet_species_field'),
-      value: selectedSpecies.isEmpty ? null : selectedSpecies,
+      initialValue: selectedSpecies.isEmpty ? null : selectedSpecies,
       decoration: InputDecoration(
         labelText: l.species,
         helperText: 'Select the type of animal',

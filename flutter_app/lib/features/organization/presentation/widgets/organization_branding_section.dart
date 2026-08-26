@@ -276,7 +276,7 @@ class OrganizationBrandingSection extends ConsumerWidget {
                         const SizedBox(height: 8),
                         DropdownButtonFormField<OrganizationType>(
                           key: const Key('org_type_dropdown'),
-                          value: selectedType,
+                          initialValue: selectedType,
                           decoration: InputDecoration(
                             labelText: l.organizationType,
                             isDense: true,
