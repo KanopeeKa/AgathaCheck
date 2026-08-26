@@ -84,7 +84,6 @@ test.describe('Guardian dashboard', () => {
     await dashboard.open();
     await dashboard.expectTodayCareRegions();
     await dashboard.expectCareVisible('Urgent Care');
-    await page.getByRole('button', { name: /^Soon$|^Bientôt$/i }).click();
     await dashboard.expectCareVisible('Soon Care');
   });
 
@@ -120,7 +119,6 @@ test.describe('Guardian dashboard', () => {
     await dashboard.expectCareVisible('Overdue Care');
     await dashboard.expectCareVisible('Today Care');
     await dashboard.expectCarePriorityOrder(['Overdue Care', 'Today Care']);
-    await page.getByRole('button', { name: /^Soon$|^Bientôt$/i }).click();
     await dashboard.expectCareVisible('Upcoming Care');
     await dashboard.openEvents();
     await expect(page).toHaveURL(/#\/g\/events/);

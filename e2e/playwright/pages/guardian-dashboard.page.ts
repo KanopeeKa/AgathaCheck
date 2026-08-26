@@ -86,11 +86,14 @@ export class GuardianDashboardPage {
   }
 
   async openEvents(): Promise<void> {
-    const careTab = this.page
-      .getByRole('button', { name: /^Care$|^Soins$/i })
+    const careBottomNav = this.page
+      .getByRole('button', {
+        name: /^Care(?:\s+Tab\s+\d+\s+of\s+\d+)?$|^Soins(?:\s+Tab\s+\d+\s+of\s+\d+)?$/i,
+      })
+      .or(this.page.getByRole('tab', { name: /^Care$|^Soins$/i }))
       .first();
-    if (await careTab.isVisible().catch(() => false)) {
-      await careTab.click();
+    if (await careBottomNav.isVisible().catch(() => false)) {
+      await careBottomNav.click();
     } else {
       await this.careRegion()
         .getByRole('button', { name: /Events|View all|Voir tout|See all/i })
@@ -98,6 +101,7 @@ export class GuardianDashboardPage {
         .first()
         .click();
     }
+    await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/g\/events(?:\?|$)/, 30_000);
   }
 
@@ -143,7 +147,10 @@ export class GuardianDashboardPage {
 
   /** Compact Guardian bottom bar tab (Today, Pets, Care, Fostering, Account). */
   async openBottomNavTab(label: string): Promise<void> {
-    const pattern = new RegExp(`^${escapeRegExp(label)}$`, 'i');
+    const pattern = new RegExp(
+      `^${escapeRegExp(label)}(?:\\s+Tab\\s+\\d+\\s+of\\s+\\d+)?$`,
+      'i',
+    );
     const tab = this.page
       .getByRole('button', { name: pattern })
       .or(this.page.getByRole('tab', { name: pattern }))
