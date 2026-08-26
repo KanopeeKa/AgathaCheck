@@ -34,8 +34,16 @@ class GuardianTodayCarePriorities {
   final List<HealthEntry> dueToday;
   final List<HealthEntry> upcoming;
 
-  List<HealthEntry> get all =>
-      List<HealthEntry>.unmodifiable([...overdue, ...dueToday, ...upcoming]);
+  /// All visible care items, ordered by their due date regardless of urgency.
+  List<HealthEntry> get all {
+    final combined = [...overdue, ...dueToday, ...upcoming]
+      ..sort((a, b) {
+        final aDate = a.nextDueDate ?? DateTime(9999);
+        final bDate = b.nextDueDate ?? DateTime(9999);
+        return aDate.compareTo(bDate);
+      });
+    return List<HealthEntry>.unmodifiable(combined);
+  }
 
   List<HealthEntry> get preview =>
       List<HealthEntry>.unmodifiable(all.take(previewLimit));

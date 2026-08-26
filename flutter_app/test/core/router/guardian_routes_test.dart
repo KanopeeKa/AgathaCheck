@@ -4,7 +4,7 @@
 ///   • /g/pets, /g/events, /g/vets/:id deep-link resolution
 ///   • /g/vets/edit/:id deep-link resolution
 ///   • /g/events → add-event type picker route wiring
-///     (Health → /health/add, Weight → /pet/:id, Other → /pet/:id/other/add)
+///     (Events → /health/add, Weight entry → /pet/:id)
 ///   • Named route registration for all guardian routes
 ///   • Legacy /vets → /g/vets redirect logic
 ///
@@ -25,13 +25,11 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:pet_profile_app/core/providers/analytics_providers.dart';
-import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:pet_profile_app/core/router/experience_routes.dart'
     show buildExperienceRoutes;
 import 'package:pet_profile_app/core/router/vet_routes.dart'
     show buildVetExperienceRoutes, legacyVetRedirectForPath;
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
-import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
@@ -142,11 +140,6 @@ GoRouter _buildStubRouter({required String initialLocation}) {
         path: '/pet/:petId',
         builder: (_, state) =>
             Scaffold(body: Text('pet-${state.pathParameters['petId']}')),
-      ),
-      GoRoute(
-        path: '/pet/:petId/other/add',
-        builder: (_, state) =>
-            Scaffold(body: Text('other-add-${state.pathParameters['petId']}')),
       ),
       // Fallback stubs referenced by redirect/back logic.
       GoRoute(
@@ -305,16 +298,11 @@ void main() {
             name: 'petDetail',
             builder: (_, __) => const Scaffold(),
           ),
-          GoRoute(
-            path: '/pet/:petId/other/add',
-            name: 'addPetOtherEvent',
-            builder: (_, __) => const Scaffold(),
-          ),
         ],
       );
     });
 
-    test('/health/add registered (Health picker → addHealthEntry)', () {
+    test('/health/add registered (Events picker → addHealthEntry)', () {
       expect(router.namedLocation('addHealthEntry'), '/health/add');
     });
 
@@ -322,16 +310,6 @@ void main() {
       expect(
         router.namedLocation('petDetail', pathParameters: {'petId': 'p1'}),
         '/pet/p1',
-      );
-    });
-
-    test('/pet/:id/other/add registered (Other picker → addPetOtherEvent)', () {
-      expect(
-        router.namedLocation(
-          'addPetOtherEvent',
-          pathParameters: {'petId': 'p1'},
-        ),
-        '/pet/p1/other/add',
       );
     });
   });
@@ -462,7 +440,7 @@ void main() {
       prefs = await SharedPreferences.getInstance();
     });
 
-    testWidgets('Health tile navigates to /health/add', (tester) async {
+    testWidgets('Events tile navigates to /health/add', (tester) async {
       final router = _buildStubRouter(initialLocation: '/g/events');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
@@ -470,6 +448,9 @@ void main() {
       await tester.tap(find.byKey(const Key('global_events_add_app_bar')));
       await tester.pumpAndSettle();
 
+      expect(find.widgetWithText(ListTile, 'Events'), findsOneWidget);
+      expect(find.widgetWithText(ListTile, 'Weight entry'), findsOneWidget);
+      expect(find.byIcon(Icons.event_note_outlined), findsNothing);
       expect(find.byIcon(Icons.medical_services_outlined), findsOneWidget);
       await tester.tap(find.byIcon(Icons.medical_services_outlined));
       await _settle(tester);
@@ -509,37 +490,6 @@ void main() {
     });
 
     testWidgets(
-      'Other tile with single active pet navigates to /pet/:id/other/add',
-      (tester) async {
-        const pet = Pet(
-          id: 'pet-o1',
-          name: 'Buddy',
-          species: 'dog',
-          breed: '',
-          colorValue: 0xFF7E57C2,
-          passedAway: false,
-        );
-        final router = _buildStubRouter(initialLocation: '/g/events');
-        await tester.pumpWidget(
-          _app(router: router, prefs: prefs, pets: [pet]),
-        );
-        await _settle(tester);
-
-        await tester.tap(find.byKey(const Key('global_events_add_app_bar')));
-        await tester.pumpAndSettle();
-
-        expect(find.byIcon(Icons.event_note_outlined), findsOneWidget);
-        await tester.tap(find.byIcon(Icons.event_note_outlined));
-        await _settle(tester);
-
-        expect(
-          router.routerDelegate.currentConfiguration.uri.path,
-          '/pet/pet-o1/other/add',
-        );
-      },
-    );
-
-    testWidgets(
       'Weight tile with no active pets stays on /g/events (snackbar shown)',
       (tester) async {
         final router = _buildStubRouter(initialLocation: '/g/events');
@@ -550,26 +500,6 @@ void main() {
         await tester.pumpAndSettle();
 
         await tester.tap(find.byIcon(Icons.monitor_weight_outlined));
-        await _settle(tester);
-
-        expect(
-          router.routerDelegate.currentConfiguration.uri.path,
-          '/g/events',
-        );
-      },
-    );
-
-    testWidgets(
-      'Other tile with no active pets stays on /g/events (snackbar shown)',
-      (tester) async {
-        final router = _buildStubRouter(initialLocation: '/g/events');
-        await tester.pumpWidget(_app(router: router, prefs: prefs, pets: []));
-        await _settle(tester);
-
-        await tester.tap(find.byKey(const Key('global_events_add_app_bar')));
-        await tester.pumpAndSettle();
-
-        await tester.tap(find.byIcon(Icons.event_note_outlined));
         await _settle(tester);
 
         expect(

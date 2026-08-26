@@ -17,6 +17,7 @@ import '../../features/experience/presentation/widgets/experience_shell_scaffold
 import '../../features/experience/presentation/screens/guardian/guardian_all_pets_screen.dart';
 import '../../features/experience/presentation/screens/guardian/add_event_type_picker_sheet.dart';
 import '../../features/experience/presentation/screens/guardian/guardian_due_events_screen.dart';
+import '../../features/experience/presentation/screens/guardian/guardian_fostering_screen.dart';
 import '../../features/health_tracking/domain/health_events_scope.dart';
 import '../../features/health_tracking/presentation/screens/health_dashboard_screen.dart';
 import '../../features/pet_profile/domain/entities/pet.dart';
@@ -82,6 +83,11 @@ List<RouteBase> buildExperienceRoutes() {
           path: '/g/events',
           name: 'guardianEvents',
           builder: (context, state) => const _GuardianEventsScreen(),
+        ),
+        GoRoute(
+          path: '/g/fostering',
+          name: 'guardianFostering',
+          builder: (context, state) => const GuardianFosteringScreen(),
         ),
         GoRoute(
           path: '/g/invite',

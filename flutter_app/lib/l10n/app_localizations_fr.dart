@@ -340,6 +340,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myPets => 'Mes animaux';
 
   @override
+  String get workspaceShelter => 'Refuge';
+
+  @override
+  String get workspaceSwitcherLabel => 'Choisir votre espace de travail';
+
+  @override
   String get myFosteredPets => 'Mes animaux en famille d\'accueil';
 
   @override
@@ -415,6 +421,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noPetsYet => 'Aucun animal';
 
   @override
+  String get guardianEmptyPetsTitle => 'De qui prenons-nous soin ?';
+
+  @override
+  String get guardianEmptyPetsBody =>
+      'Ajoutez votre premier animal pour commencer à suivre ses soins.';
+
+  @override
   String get noPetsMatchFilter => 'Aucun animal ne correspond à ce filtre.';
 
   @override
@@ -460,6 +473,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addVetFirst => 'Ajouter un vétérinaire. Aucun vétérinaire trouvé.';
 
   @override
+  String get guardianEmptyVetTitle =>
+      'Gardez votre vétérinaire à portée de main';
+
+  @override
+  String get guardianEmptyVetBody =>
+      'Ajoutez votre clinique vétérinaire pour retrouver ses coordonnées lorsque vous en avez besoin.';
+
+  @override
   String get selectVeterinarian => 'Sélectionner un vétérinaire';
 
   @override
@@ -488,6 +509,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get addWeightEntry => 'Ajouter une entrée de poids';
+
+  @override
+  String get addEventEventsOption => 'Événements';
+
+  @override
+  String get addEventWeightEntryOption => 'Entrée de poids';
 
   @override
   String get selectDate => 'Sélectionner la date pour l\'entrée de poids';
@@ -616,6 +643,95 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careLoadError => 'Impossible de charger les soins pour le moment.';
+
+  @override
+  String get careEyebrow => 'SOINS';
+
+  @override
+  String get petsNavLabel => 'Animaux';
+
+  @override
+  String get careNavLabel => 'Soins';
+
+  @override
+  String careDueTab(int count) {
+    return 'À faire $count';
+  }
+
+  @override
+  String get careSoonTab => 'Bientôt';
+
+  @override
+  String get noCareDue => 'Aucun soin à faire aujourd\'hui.';
+
+  @override
+  String get noCareSoon =>
+      'Aucun soin à venir dans la fenêtre de rappel actuelle.';
+
+  @override
+  String get guardianEmptyCareTitle => 'Commencez leur routine de soins';
+
+  @override
+  String get guardianEmptyCareBody =>
+      'Ajoutez votre premier soin pour suivre les soins quotidiens, traitements et rendez-vous.';
+
+  @override
+  String get guardianEmptyCareClearTitle => 'Tout est en ordre';
+
+  @override
+  String get viewAll => 'Voir tout';
+
+  @override
+  String get fosteringSessions => 'Sessions d\'accueil';
+
+  @override
+  String get shelters => 'Refuges';
+
+  @override
+  String get fostering => 'Accueil';
+
+  @override
+  String get active => 'Actif';
+
+  @override
+  String get connected => 'Connecté';
+
+  @override
+  String get noFosteringSessions =>
+      'Aucune session d\'accueil active pour le moment.';
+
+  @override
+  String get guardianEmptyFosteringTitle =>
+      'Aucune session d\'accueil pour le moment';
+
+  @override
+  String get guardianEmptyFosteringBody =>
+      'Lorsqu\'une nouvelle session commencera, vous la trouverez ici.';
+
+  @override
+  String get guardianEmptyShelterTitle => 'Connectez-vous à un refuge';
+
+  @override
+  String get guardianEmptyShelterBody =>
+      'Vos relations avec les refuges, votre accueil et vos activités d\'accueil apparaîtront ici.';
+
+  @override
+  String get connectShelter => 'Se connecter à un refuge';
+
+  @override
+  String get sessionDetailsUnavailable =>
+      'Les détails de la session sont disponibles lorsqu\'une relation d\'accueil est active.';
+
+  @override
+  String activeFosteringCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count accueils actifs',
+      one: '1 accueil actif',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get tomorrow => 'Demain';
@@ -2407,7 +2523,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les personnes sélectionnées ont été invitées à l\'intégration famille d\'accueil';
 
   @override
-  String get orgEmailTemplatesSectionTitle => 'Email templates';
+  String get orgEmailTemplatesSectionTitle => 'Modèles d\'e-mails';
 
   @override
   String orgEmailTemplateEditorTitle(String key) {

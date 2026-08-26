@@ -88,7 +88,7 @@ void main() {
     await tester.pump();
 
     expect(find.byKey(const Key('guardian_vets_auth_waiting')), findsOneWidget);
-    expect(find.text('Add a veterinarian. No vets yet.'), findsNothing);
+    expect(find.text('Keep your vet close at hand'), findsNothing);
   });
 
   testWidgets('shows provider loading independently after authentication', (
@@ -115,13 +115,19 @@ void main() {
     expect(notifier.refreshCalls, 1);
   });
 
-  testWidgets('shows the existing empty state', (tester) async {
+  testWidgets('shows an illustrated empty state with an add-vet action', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       buildSection(vetNotifier: _FixedVetNotifier(const [])),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Add a veterinarian. No vets yet.'), findsOneWidget);
+    expect(find.text('Keep your vet close at hand'), findsOneWidget);
+    expect(
+      find.byKey(const Key('guardian_dashboard_empty_vets')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('shows linked-pet counts and navigates to vet details', (
@@ -191,20 +197,29 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 
-  testWidgets('uses the established add and management destinations', (
+  testWidgets('keeps add reachable from the empty-state action', (
     tester,
   ) async {
-    await tester.pumpWidget(buildSection(vetNotifier: _FixedVetNotifier(vets)));
+    await tester.pumpWidget(
+      buildSection(vetNotifier: _FixedVetNotifier(const [])),
+    );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Add Vet'));
+    await tester.tap(
+      find.byKey(const Key('guardian_dashboard_empty_vets_action')),
+    );
     await tester.pumpAndSettle();
+
     expect(find.text('add-vet-route'), findsOneWidget);
+  });
 
+  testWidgets('keeps management reachable without a top plus', (tester) async {
     await tester.pumpWidget(buildSection(vetNotifier: _FixedVetNotifier(vets)));
     await tester.pumpAndSettle();
+
     await tester.tap(find.text('Manage veterinarians'));
     await tester.pumpAndSettle();
+
     expect(find.text('manage-vets-route'), findsOneWidget);
   });
 }

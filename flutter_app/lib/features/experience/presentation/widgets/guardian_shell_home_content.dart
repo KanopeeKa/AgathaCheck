@@ -10,7 +10,7 @@ import '../screens/guardian/add_event_type_picker_sheet.dart';
 import '../screens/guardian/guardian_my_pets_section.dart';
 import '../screens/guardian/guardian_my_vets_section.dart';
 import '../screens/guardian/guardian_upcoming_events_section.dart';
-import 'guardian_today_orientation.dart';
+import 'guardian_fostering_section.dart';
 import 'guardian_operations_desk_layout.dart';
 
 /// Guardian dashboard body: My Pets, Upcoming Pet Events, My Vets (phase 2.1).
@@ -34,13 +34,6 @@ class GuardianShellHomeContent extends ConsumerWidget {
             entries: entriesAsync.valueOrNull!,
             pets: shellPets,
           );
-    final todayState = guardianTodayScreenState(
-      hasPets: shellPets.any((pet) => !pet.passedAway),
-      hasCareData: entriesAsync.hasValue,
-      isLoading: entriesAsync.isLoading,
-      hasError: entriesAsync.hasError,
-      hasAttention: careSummary?.hasAttention ?? false,
-    );
     final previewPets = careSummary == null
         ? shellPets
               .where((pet) => !pet.passedAway)
@@ -52,16 +45,16 @@ class GuardianShellHomeContent extends ConsumerWidget {
       colorScheme: baseTheme.colorScheme.copyWith(
         primary: AppColorTokens.guardianCarePrimary,
         onPrimary: AppColorTokens.inverse,
-        primaryContainer: AppColorTokens.operationsPaper,
+        primaryContainer: AppColorTokens.guardianLight,
         onPrimaryContainer: AppColorTokens.guardianCareActive,
-        surface: AppColorTokens.operationsSurface,
-        onSurface: AppColorTokens.operationsInk,
-        surfaceContainerHighest: AppColorTokens.operationsPaper,
-        outlineVariant: AppColorTokens.operationsOlive.withValues(alpha: 0.18),
+        surface: AppColorTokens.surface,
+        onSurface: AppColorTokens.heading,
+        surfaceContainerHighest: AppColorTokens.guardianLight,
+        outlineVariant: AppColorTokens.guardianSoft,
       ),
-      scaffoldBackgroundColor: AppColorTokens.operationsDeskCanvas,
+      scaffoldBackgroundColor: AppColorTokens.background,
       cardTheme: baseTheme.cardTheme.copyWith(
-        color: AppColorTokens.operationsSurface,
+        color: AppColorTokens.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
@@ -78,20 +71,13 @@ class GuardianShellHomeContent extends ConsumerWidget {
         return Theme(
           data: deskTheme,
           child: ColoredBox(
-            color: AppColorTokens.operationsDeskCanvas,
+            color: AppColorTokens.background,
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: GuardianOperationsDeskLayout(
                 useWideLayout:
                     constraints.maxWidth >=
                     GuardianOperationsDeskLayout.wideBreakpoint,
-                todayHeader: GuardianTodayOrientation(
-                  state: todayState,
-                  summary: careSummary,
-                  onRetry: () => ref
-                      .read(healthEntriesNotifierProvider.notifier)
-                      .refresh(),
-                ),
                 petsSection: GuardianMyPetsSection(
                   allPets: allPets,
                   controller: controller,
@@ -104,6 +90,7 @@ class GuardianShellHomeContent extends ConsumerWidget {
                       showAddEventTypePickerSheet(context, pets: shellPets),
                 ),
                 vetsSection: const GuardianMyVetsSection(),
+                fosteringSection: GuardianFosteringSection(pets: shellPets),
               ),
             ),
           ),

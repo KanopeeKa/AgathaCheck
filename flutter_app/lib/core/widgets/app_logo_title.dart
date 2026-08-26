@@ -38,18 +38,19 @@ class AppLogoTitle extends StatelessWidget {
     final assetPath = useShellLogo
         ? LogoAssets.pngForShell(resolved)
         : LogoAssets.pngFor(resolved);
+    final logoImage = Image.asset(
+      assetPath,
+      height: 32,
+      width: 32,
+      fit: BoxFit.cover,
+      semanticLabel: linkLogo
+          ? 'AgathaTrack logo – tap to go home'
+          : 'AgathaTrack logo',
+    );
 
     final logo = ClipRRect(
       borderRadius: BorderRadius.circular(6),
-      child: Image.asset(
-        assetPath,
-        height: 32,
-        width: 32,
-        fit: BoxFit.cover,
-        semanticLabel: linkLogo
-            ? 'AgathaTrack logo – tap to go home'
-            : 'AgathaTrack logo',
-      ),
+      child: logoImage,
     );
 
     return Row(

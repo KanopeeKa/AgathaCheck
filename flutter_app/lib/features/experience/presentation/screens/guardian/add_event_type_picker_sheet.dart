@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 
-/// Bottom sheet: Health / Weight / Other — routes to existing entry forms (D17).
+/// Bottom sheet: Events / Weight entry — routes to existing entry forms.
 Future<void> showAddEventTypePickerSheet(
   BuildContext context, {
   required List<Pet> pets,
@@ -31,7 +31,7 @@ Future<void> showAddEventTypePickerSheet(
             ),
             ListTile(
               leading: const Icon(Icons.medical_services_outlined),
-              title: Text(l.healthEvents),
+              title: Text(l.addEventEventsOption),
               subtitle: Text(l.addHealthEntry),
               onTap: () {
                 Navigator.pop(ctx);
@@ -40,20 +40,11 @@ Future<void> showAddEventTypePickerSheet(
             ),
             ListTile(
               leading: const Icon(Icons.monitor_weight_outlined),
-              title: Text(l.weight),
+              title: Text(l.addEventWeightEntryOption),
               subtitle: Text(l.addWeightEntry),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickPetForWeight(context, pets);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.event_note_outlined),
-              title: Text(l.other),
-              subtitle: Text(l.addOtherEvent),
-              onTap: () {
-                Navigator.pop(ctx);
-                _pickPetForOther(context, pets);
               },
             ),
             const SizedBox(height: 8),
@@ -80,26 +71,6 @@ void _pickPetForWeight(BuildContext context, List<Pet> pets) {
     context,
     pets: active,
     title: AppLocalizations.of(context)!.selectPetForWeight,
-  );
-}
-
-void _pickPetForOther(BuildContext context, List<Pet> pets) {
-  final active = pets.where((p) => !p.passedAway).toList();
-  if (active.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context)!.noPetsYet)),
-    );
-    return;
-  }
-  if (active.length == 1) {
-    context.go('/pet/${active.first.id}/other/add');
-    return;
-  }
-  _showPetPickerSheet(
-    context,
-    pets: active,
-    title: AppLocalizations.of(context)!.selectPetForEvent,
-    onSelected: (pet) => context.go('/pet/${pet.id}/other/add'),
   );
 }
 

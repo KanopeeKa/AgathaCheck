@@ -13,7 +13,7 @@ abstract final class PdfReportTokens {
   static const PdfColor primary = PdfColor.fromInt(0xFF755B68);
 
   /// Mirrors `AppColorTokens.guardianLight`.
-  static const PdfColor primaryLight = PdfColor.fromInt(0xFFF4EEF2);
+  static const PdfColor primaryLight = PdfColor.fromInt(0xFFE8E1E3);
 
   /// Mirrors `AppColorTokens.guardianSoft` — de-emphasized text/labels on
   /// top of [primary] banners.
