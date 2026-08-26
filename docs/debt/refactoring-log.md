@@ -21,11 +21,12 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 | Phase | Outcome | Branch | Status |
 |-------|---------|--------|--------|
-| 1 | Navigation decisions + design doc reconciliation | `cursor/guardian-ops-desk-decisions-b9bd` | In progress |
-| 2 | Flutter 3.44 API compatibility extract | `cursor/guardian-ops-desk-flutter344-b9bd` | Pending |
-| 3 | Guardian operations desk core UI | `cursor/guardian-ops-desk-core-b9bd` | Pending |
-| 4 | Shell hardening + modularity | `cursor/guardian-ops-desk-hardening-b9bd` | Pending |
-| 5 | BDD/E2E completeness | `cursor/guardian-ops-desk-e2e-b9bd` | Pending |
+| 1 | Navigation decisions + design doc reconciliation | `cursor/guardian-ops-desk-decisions-b9bd` | Merged (#756) |
+| 2 | Flutter 3.44 API compatibility extract | `cursor/guardian-ops-desk-flutter344-b9bd` | Merged (#757) |
+| 3 | Guardian operations desk core UI | `cursor/guardian-ops-desk-core-b9bd` | Merged (#758) |
+| 4 | Shell hardening + modularity | `cursor/guardian-ops-desk-hardening-b9bd` | Merged (#759) |
+| 5 | BDD/E2E completeness | `cursor/guardian-ops-desk-e2e-b9bd` | Merged (#760) |
+| Final | Integration → main | `cursor/guardian-ops-desk-754-b9bd-integration-b9bd` | In progress |
 
 ---
 
