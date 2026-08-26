@@ -18,6 +18,7 @@ import 'experience_workspace_toggle.dart';
 import '../config/guardian_primary_destinations.dart';
 import 'guardian_bottom_navigation.dart';
 import 'guardian_navigation_rail.dart';
+import 'guardian_navigation_sidebar.dart';
 import '../../../organization/presentation/utils/org_screen_theme.dart';
 
 /// Shell scaffold shared by guardian and organisation experience screens.
@@ -82,10 +83,15 @@ class ExperienceShellScaffold extends ConsumerWidget {
     final usesGuardianPrimaryNavigation =
         isGuardianExperience &&
         GuardianPrimaryDestinations.isCompact(viewportWidth);
+    final usesGuardianNavigationSidebar =
+        isGuardianExperience &&
+        GuardianPrimaryDestinations.isExpanded(viewportWidth);
     final usesGuardianNavigationRail =
         isGuardianExperience &&
         GuardianPrimaryDestinations.isMedium(viewportWidth);
-    final hideGuardianDrawer = usesGuardianNavigationRail;
+    final usesGuardianLeadingNav =
+        usesGuardianNavigationRail || usesGuardianNavigationSidebar;
+    final hideGuardianDrawer = usesGuardianLeadingNav;
     final appBarColor = usesGuardianPrimaryNavigation
         ? AppColorTokens.guardianPrimary
         : AppColorTokens.background;
@@ -93,7 +99,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
         ? AppColorTokens.inverse
         : null;
     final useOrgTitle = isOrg && screenTitle != null && orgNavVariant != null;
-    final showWorkspaceToggle = isRoot;
+    final showWorkspaceToggleInAppBar = isRoot && !usesGuardianNavigationSidebar;
     final showShelterWorkspace =
         isRoot &&
         (currentLocation.startsWith('/o/') ||
@@ -103,6 +109,8 @@ class ExperienceShellScaffold extends ConsumerWidget {
         isRoot &&
         MediaQuery.sizeOf(context).width < 360 &&
         MediaQuery.textScalerOf(context).scale(14) > 18;
+    final usesGuardianDesktopContentHeader =
+        isGuardianExperience && usesGuardianLeadingNav;
 
     return Theme(
       data: shellTheme,
@@ -115,13 +123,13 @@ class ExperienceShellScaffold extends ConsumerWidget {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           toolbarHeight: 64,
-          leadingWidth: showWorkspaceToggle ? workspaceToggleWidth : null,
+          leadingWidth: showWorkspaceToggleInAppBar ? workspaceToggleWidth : null,
           backgroundColor: appBarColor,
           foregroundColor: appBarForeground,
           surfaceTintColor: Colors.transparent,
           scrolledUnderElevation: 0,
           elevation: 0,
-          leading: isRoot
+          leading: showWorkspaceToggleInAppBar
               ? Padding(
                   padding: const EdgeInsets.only(left: 8),
                   child: ExperienceWorkspaceToggle(
@@ -130,13 +138,15 @@ class ExperienceShellScaffold extends ConsumerWidget {
                     showShelter: showShelterWorkspace,
                   ),
                 )
-              : IconButton(
+              : !isRoot
+              ? IconButton(
                   key: const Key('experience_back_button'),
                   icon: const Icon(Icons.arrow_back),
                   tooltip: l.goBack,
                   onPressed: () => _onBack(context),
-                ),
-          centerTitle: true,
+                )
+              : null,
+          centerTitle: !usesGuardianDesktopContentHeader,
           title: screenTitle == null || hideTitleForAccessibleCompactHeader
               ? const SizedBox.shrink()
               : useOrgTitle
@@ -144,6 +154,18 @@ class ExperienceShellScaffold extends ConsumerWidget {
                   title: screenTitle!,
                   variant: orgNavVariant!,
                   organization: organization,
+                )
+              : usesGuardianDesktopContentHeader
+              ? Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    screenTitle!,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: AppColorTokens.heading,
+                    ),
+                  ),
                 )
               : AppLogoTitle(
                   title: screenTitle!,
@@ -166,11 +188,14 @@ class ExperienceShellScaffold extends ConsumerWidget {
         ),
         drawer: hideGuardianDrawer ? null : const ExperienceSectionDrawer(),
         endDrawer: const NotificationPanel(),
-        body: usesGuardianNavigationRail
+        body: usesGuardianLeadingNav
             ? Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  GuardianNavigationRail(currentLocation: currentLocation),
+                  if (usesGuardianNavigationSidebar)
+                    GuardianNavigationSidebar(currentLocation: currentLocation)
+                  else
+                    GuardianNavigationRail(currentLocation: currentLocation),
                   Expanded(child: child),
                 ],
               )
