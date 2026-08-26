@@ -16,9 +16,7 @@ Widget _buildToggle({
   bool onDarkBackground = false,
 }) {
   return ProviderScope(
-    overrides: [
-      sharedPreferencesProvider.overrideWithValue(prefs),
-    ],
+    overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
     child: MaterialApp(
       theme: ThemeData(splashFactory: NoSplash.splashFactory),
       localizationsDelegates: const [
@@ -83,9 +81,7 @@ Widget _buildWorkspaceRouterApp({
   );
 
   return ProviderScope(
-    overrides: [
-      sharedPreferencesProvider.overrideWithValue(prefs),
-    ],
+    overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
     child: MaterialApp.router(
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -110,11 +106,7 @@ void main() {
 
   testWidgets('opens workspace menu on tap', (tester) async {
     await tester.pumpWidget(
-      _buildToggle(
-        prefs: prefs,
-        currentLocation: '/g/home',
-        showShelter: true,
-      ),
+      _buildToggle(prefs: prefs, currentLocation: '/g/home', showShelter: true),
     );
     await tester.pumpAndSettle();
 
@@ -169,7 +161,9 @@ void main() {
 
     await tester.tap(find.byKey(const Key('experience_workspace_toggle')));
     await tester.pumpAndSettle();
-    final shelterItem = find.byKey(const Key('experience_workspace_menu_shelter'));
+    final shelterItem = find.byKey(
+      const Key('experience_workspace_menu_shelter'),
+    );
     await tester.ensureVisible(shelterItem);
     await tester.tap(shelterItem);
     await tester.pumpAndSettle();
@@ -196,7 +190,9 @@ void main() {
 
     await tester.tap(find.byKey(const Key('experience_workspace_toggle')));
     await tester.pumpAndSettle();
-    final guardianItem = find.byKey(const Key('experience_workspace_menu_guardian'));
+    final guardianItem = find.byKey(
+      const Key('experience_workspace_menu_guardian'),
+    );
     await tester.ensureVisible(guardianItem);
     await tester.tap(guardianItem);
     await tester.pumpAndSettle();
@@ -209,15 +205,14 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _buildToggle(
-        prefs: prefs,
-        currentLocation: '/g/home',
-      ),
+      _buildToggle(prefs: prefs, currentLocation: '/g/home'),
     );
     await tester.pumpAndSettle();
 
     expect(
-      tester.getSize(find.byKey(const Key('experience_workspace_toggle'))).height,
+      tester
+          .getSize(find.byKey(const Key('experience_workspace_toggle')))
+          .height,
       48,
     );
     expect(

@@ -41,9 +41,7 @@ const _fosterPet = Pet(
   fosterPlacementStatus: 'active',
 );
 
-Widget _buildScreen({
-  required PetListNotifier Function() petListFactory,
-}) {
+Widget _buildScreen({required PetListNotifier Function() petListFactory}) {
   final router = GoRouter(
     initialLocation: '/g/fostering',
     routes: [
@@ -55,9 +53,7 @@ Widget _buildScreen({
   );
 
   return ProviderScope(
-    overrides: [
-      petListProvider.overrideWith(petListFactory),
-    ],
+    overrides: [petListProvider.overrideWith(petListFactory)],
     child: MaterialApp.router(
       theme: AppTheme.lightTheme.copyWith(
         splashFactory: NoSplash.splashFactory,

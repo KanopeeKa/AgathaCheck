@@ -53,9 +53,7 @@ List<GuardianCarePreviewItem> buildGuardianCareMobilePreview({
   final result = <GuardianCarePreviewItem?>[];
 
   for (final completion in completedItems) {
-    final index = completion.previewIndex
-        .clamp(0, previewLimit - 1)
-        .toInt();
+    final index = completion.previewIndex.clamp(0, previewLimit - 1).toInt();
     while (result.length <= index) {
       result.add(null);
     }

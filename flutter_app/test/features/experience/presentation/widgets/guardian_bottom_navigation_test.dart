@@ -155,10 +155,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(
-        find.byKey(const Key('guardian_bottom_navigation')),
-        findsNothing,
-      );
+      expect(find.byKey(const Key('guardian_bottom_navigation')), findsNothing);
     });
   });
 }

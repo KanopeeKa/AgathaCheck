@@ -38,23 +38,24 @@ void main() {
     );
   }
 
-  testWidgets('uses a compact landscape card with a circular photo and care line', (
-    tester,
-  ) async {
-    const pet = Pet(id: 'miso', name: 'Miso', species: 'Cat');
-    await tester.pumpWidget(
-      buildCard(pet, careState: GuardianTodayPetCareState.dueToday),
-    );
+  testWidgets(
+    'uses a compact landscape card with a circular photo and care line',
+    (tester) async {
+      const pet = Pet(id: 'miso', name: 'Miso', species: 'Cat');
+      await tester.pumpWidget(
+        buildCard(pet, careState: GuardianTodayPetCareState.dueToday),
+      );
 
-    expect(
-      tester.getSize(
-        find.byKey(const Key('guardian_dashboard_pet_photo_miso')),
-      ),
-      const Size(56, 56),
-    );
-    expect(find.text('Due today'), findsOneWidget);
-    expect(find.bySemanticsLabel('Miso, My Pets, Due today'), findsOneWidget);
-  });
+      expect(
+        tester.getSize(
+          find.byKey(const Key('guardian_dashboard_pet_photo_miso')),
+        ),
+        const Size(56, 56),
+      );
+      expect(find.text('Due today'), findsOneWidget);
+      expect(find.bySemanticsLabel('Miso, My Pets, Due today'), findsOneWidget);
+    },
+  );
 
   testWidgets('keeps foster and shared context in visible and semantic text', (
     tester,

@@ -182,7 +182,8 @@ class _ShelterRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: '$name, ${l.connected}, ${l.activeFosteringCount(fosteredPets.length)}',
+      label:
+          '$name, ${l.connected}, ${l.activeFosteringCount(fosteredPets.length)}',
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () => context.go('/o/orgs'),

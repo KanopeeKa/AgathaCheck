@@ -254,7 +254,9 @@ void main() {
     expect(find.text('My Pets'), findsOneWidget);
     expect(find.byIcon(Icons.keyboard_arrow_down), findsOneWidget);
     expect(
-      tester.getSize(find.byKey(const Key('experience_workspace_toggle'))).height,
+      tester
+          .getSize(find.byKey(const Key('experience_workspace_toggle')))
+          .height,
       48,
     );
     expect(
@@ -390,7 +392,9 @@ void main() {
 
     await tester.tap(find.byKey(const Key('experience_workspace_toggle')));
     await tester.pumpAndSettle();
-    final shelterItem = find.byKey(const Key('experience_workspace_menu_shelter'));
+    final shelterItem = find.byKey(
+      const Key('experience_workspace_menu_shelter'),
+    );
     await tester.ensureVisible(shelterItem);
     await tester.tap(shelterItem);
     await tester.pumpAndSettle();
@@ -412,7 +416,9 @@ void main() {
 
     await tester.tap(find.byKey(const Key('experience_workspace_toggle')));
     await tester.pumpAndSettle();
-    final guardianItem = find.byKey(const Key('experience_workspace_menu_guardian'));
+    final guardianItem = find.byKey(
+      const Key('experience_workspace_menu_guardian'),
+    );
     await tester.ensureVisible(guardianItem);
     await tester.tap(guardianItem);
     await tester.pumpAndSettle();
