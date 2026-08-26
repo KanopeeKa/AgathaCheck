@@ -3,7 +3,7 @@ title: Navigation decisions
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-23
+last_updated: 2026-08-26
 tags: [navigation, decisions]
 domain: navigation
 feature_id: navigation-decisions
@@ -33,6 +33,14 @@ Source: experience-program analysis + Q&A, 2026-07-25. Master brief: [navigation
 | ID | Decision | Status | Phase |
 |----|----------|--------|-------|
 | **D27** | Cross-org, personal settings (profile, cross-org notification defaults, help/FAQ/contact/legal/about, sign out) live under the global **Account** area (D1's navigation model), reached independently of any single organisation. | locked | Phase 1 |
+
+## B — Guardian mobile primary navigation (supersedes Phase 1 Account-only entry)
+
+| ID | Decision | Status | Phase |
+|----|----------|--------|-------|
+| **D-v4-1** | On compact Guardian widths (&lt;600px), a **five-tab bottom bar** exposes Today (`/g/home`), Pets (`/g/pets`), Care (`/g/events`), Fostering (`/g/fostering`), and Account (`/account`). This **supersedes** blueprint §15 anti-pattern “five-tab bottom navigation bar” and is the approved mobile primary nav for Guardian operational work. | locked | Guardian ops desk 2026-08 |
+| **D-v4-2** | **Account dual entry (transitional):** `/account` remains reachable from the drawer's bottom-pinned item **and** from the Guardian bottom bar while the drawer is still present. This **supersedes** phase-1-navigation rule 9 (“drawer only”) until the drawer is retired. Shelter workspace switching stays in the header workspace toggle / drawer — not in the bottom bar. | locked | Guardian ops desk 2026-08 |
+| **D-v4-3** | Section roots (`/g/home`, `/o/orgs`, `/account`) show the **workspace toggle** pill in the app bar leading slot instead of a back arrow. Guardian compact primary routes also use plum app bar + bottom bar chrome. | locked | Guardian ops desk 2026-08 |
 
 ---
 
