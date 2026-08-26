@@ -76,6 +76,10 @@ class GuardianIllustratedEmptyState extends StatelessWidget {
             const SizedBox(height: 6),
             TextButton.icon(
               key: actionKey,
+              style: TextButton.styleFrom(
+                minimumSize: const Size(48, 48),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
               onPressed: onAction,
               icon: Icon(actionIcon ?? Icons.add, size: 18),
               label: Text(actionLabel!),

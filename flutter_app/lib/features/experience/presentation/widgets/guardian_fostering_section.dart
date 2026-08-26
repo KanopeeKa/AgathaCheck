@@ -180,34 +180,42 @@ class _ShelterRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          const CircleAvatar(
-            radius: 16,
-            backgroundColor: AppColorTokens.surface,
-            foregroundColor: AppColorTokens.organizationActive,
-            child: Icon(Icons.home_work_outlined, size: 18),
+    return Semantics(
+      button: true,
+      label: '$name, ${l.connected}, ${l.activeFosteringCount(fosteredPets.length)}',
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => context.go('/o/orgs'),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              const CircleAvatar(
+                radius: 16,
+                backgroundColor: AppColorTokens.surface,
+                foregroundColor: AppColorTokens.organizationActive,
+                child: Icon(Icons.home_work_outlined, size: 18),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    _FosteringStatus(label: l.connected),
+                  ],
+                ),
+              ),
+              Text(
+                l.activeFosteringCount(fosteredPets.length),
+                textAlign: TextAlign.end,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(width: 4),
+              const Icon(Icons.chevron_right),
+            ],
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
-                _FosteringStatus(label: l.connected),
-              ],
-            ),
-          ),
-          Text(
-            l.activeFosteringCount(fosteredPets.length),
-            textAlign: TextAlign.end,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(width: 4),
-          const Icon(Icons.chevron_right),
-        ],
+        ),
       ),
     );
   }

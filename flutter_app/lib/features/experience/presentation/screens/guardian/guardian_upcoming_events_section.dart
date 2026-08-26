@@ -6,27 +6,11 @@ import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../../health_tracking/presentation/widgets/mobile_due_event_row.dart';
-import '../../../../pet_profile/presentation/widgets/pet_list/home_event_actions.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
+import '../../../../pet_profile/presentation/widgets/pet_list/home_event_actions.dart';
+import '../../widgets/guardian_care_preview/guardian_care_preview_optimistic.dart';
 import '../../widgets/guardian_illustrated_empty_state.dart';
 import 'guardian_dashboard_helpers.dart';
-
-/// A due entry that has been optimistically marked complete on the compact
-/// Care preview, retained at [previewIndex] through the real server refresh so
-/// its approved completed presentation stays visible in place.
-class _OptimisticCompletion {
-  const _OptimisticCompletion({
-    required this.entry,
-    required this.previewIndex,
-  });
-
-  /// The entry snapshot captured when the user confirmed completion.
-  final HealthEntry entry;
-
-  /// The index this item held in its Care preview at completion.
-  final int previewIndex;
-}
 
 /// Guardian Care dashboard preview with one combined, date-ordered list.
 ///
@@ -68,7 +52,7 @@ class GuardianUpcomingEventsSection extends ConsumerStatefulWidget {
 class _GuardianUpcomingEventsSectionState
     extends ConsumerState<GuardianUpcomingEventsSection> {
   /// Optimistically-completed entries, keyed by entry id, insertion-ordered.
-  final Map<String, _OptimisticCompletion> _completed = {};
+  final Map<String, GuardianCareOptimisticCompletion> _completed = {};
 
   /// The most recently received due-entry list from the Guardian Today
   /// presentation priorities.
@@ -85,10 +69,8 @@ class _GuardianUpcomingEventsSectionState
     final result = await HomeEventActions.showCompletionSheet(context);
     if (result == null || !mounted) return;
 
-    // Retain an optimistic completed version at its current preview index so it
-    // stays visible in place through the authoritative server refresh.
     setState(() {
-      _completed[entry.id] = _OptimisticCompletion(
+      _completed[entry.id] = GuardianCareOptimisticCompletion(
         entry: entry,
         previewIndex: previewIndex,
       );
@@ -96,8 +78,6 @@ class _GuardianUpcomingEventsSectionState
 
     try {
       await HomeEventActions.commitCompletion(context, ref, entry, result);
-      // Server refresh removes the entry from the due list; the merge in
-      // [build] keeps rendering it as completed until Undo.
     } catch (_) {
       if (!mounted) return;
       setState(() => _completed.remove(entry.id));
@@ -111,65 +91,7 @@ class _GuardianUpcomingEventsSectionState
   Future<void> _onUndo(HealthEntry entry) async {
     await HomeEventActions.undoCompletion(context, ref, entry);
     if (!mounted) return;
-    // Only drop the optimistic completed row once undoComplete has succeeded;
-    // the normal due row is restored by the subsequent server refresh.
     setState(() => _completed.remove(entry.id));
-  }
-
-  /// Builds the ordered Care preview by merging fresh entries
-  /// with retained optimistic-completed items at their original indices.
-  ///
-  /// Completed items keep their captured [previewIndex]; remaining entries
-  /// (excluding any still present that are already tracked as completed) fill
-  /// the other slots in order. Total is capped at [previewLimit].
-  List<_PreviewItem> _buildMobilePreview(List<HealthEntry> dueEntries) {
-    final completedItems = _completed.values.toList()
-      ..sort((a, b) => a.previewIndex.compareTo(b.previewIndex));
-    final completedIds = completedItems.map((item) => item.entry.id).toSet();
-
-    // Fresh entries that are not currently tracked as optimistically completed
-    // in this tab, in server order.
-    final freshDue = dueEntries
-        .where((e) => !completedIds.contains(e.id))
-        .toList();
-
-    final result = <_PreviewItem?>[];
-
-    // Place completed items at their captured indices first.
-    for (final c in completedItems) {
-      final index = c.previewIndex
-          .clamp(0, GuardianUpcomingEventsSection.previewLimit - 1)
-          .toInt();
-      while (result.length <= index) {
-        result.add(null);
-      }
-      // If the slot is already taken (two completions captured the same index
-      // as the list shifted), append at the next free slot instead.
-      if (result[index] == null) {
-        result[index] = _PreviewItem.completed(c.entry);
-      } else {
-        result.add(_PreviewItem.completed(c.entry));
-      }
-    }
-
-    // Fill remaining null slots (and then append) with fresh due entries.
-    final dueQueue = List<HealthEntry>.from(freshDue);
-    for (var i = 0; i < result.length && dueQueue.isNotEmpty; i++) {
-      if (result[i] == null) {
-        result[i] = _PreviewItem.due(dueQueue.removeAt(0));
-      }
-    }
-    while (dueQueue.isNotEmpty &&
-        result.length < GuardianUpcomingEventsSection.previewLimit) {
-      result.add(_PreviewItem.due(dueQueue.removeAt(0)));
-    }
-
-    // Compact out any residual nulls and cap at the preview limit.
-    final compacted = result.whereType<_PreviewItem>().toList();
-    if (compacted.length > GuardianUpcomingEventsSection.previewLimit) {
-      return compacted.sublist(0, GuardianUpcomingEventsSection.previewLimit);
-    }
-    return compacted;
   }
 
   Widget _buildMobileContent(
@@ -180,7 +102,11 @@ class _GuardianUpcomingEventsSectionState
     String emptyMessage,
     bool hasAnyCare,
   ) {
-    final items = _buildMobilePreview(dueEntries);
+    final items = buildGuardianCareMobilePreview(
+      dueEntries: dueEntries,
+      completed: _completed,
+      previewLimit: GuardianUpcomingEventsSection.previewLimit,
+    );
     if (items.isEmpty) {
       if (!hasAnyCare) {
         return GuardianIllustratedEmptyState(
@@ -202,7 +128,7 @@ class _GuardianUpcomingEventsSectionState
         onAction: () => context.go('/g/events'),
       );
     }
-    return _MobileDueEventList(
+    return GuardianCarePreviewEventList(
       items: items,
       petMap: petMap,
       onMarkDone: _onMarkDone,
@@ -338,56 +264,6 @@ class _GuardianUpcomingEventsSectionState
           icon: const Icon(Icons.refresh, size: 18),
           label: Text(l.retry),
         ),
-      ],
-    );
-  }
-}
-
-/// A single item in the merged mobile preview: either a due entry or an
-/// optimistically-completed entry.
-class _PreviewItem {
-  const _PreviewItem._(this.entry, this.isCompleted);
-
-  factory _PreviewItem.due(HealthEntry entry) => _PreviewItem._(entry, false);
-  factory _PreviewItem.completed(HealthEntry entry) =>
-      _PreviewItem._(entry, true);
-
-  final HealthEntry entry;
-  final bool isCompleted;
-}
-
-/// Internal widget: renders merged preview items as [MobileDueEventRow] items.
-class _MobileDueEventList extends StatelessWidget {
-  const _MobileDueEventList({
-    required this.items,
-    required this.petMap,
-    required this.onMarkDone,
-    required this.onUndo,
-    required this.onOpen,
-  });
-
-  final List<_PreviewItem> items;
-  final Map<String, Pet> petMap;
-  final void Function(HealthEntry entry, int previewIndex) onMarkDone;
-  final void Function(HealthEntry entry) onUndo;
-  final void Function(HealthEntry entry) onOpen;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      key: const Key('mobile_due_event_list'),
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i < items.length; i++)
-          MobileDueEventRow(
-            key: Key('mobile_due_row_${items[i].entry.id}'),
-            entry: items[i].entry,
-            pet: petMap[items[i].entry.petId],
-            isCompleted: items[i].isCompleted,
-            onMarkDone: () => onMarkDone(items[i].entry, i),
-            onUndo: () => onUndo(items[i].entry),
-            onOpen: () => onOpen(items[i].entry),
-          ),
       ],
     );
   }
