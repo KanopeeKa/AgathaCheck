@@ -4,7 +4,7 @@
   "approved_at": "2026-08-26T09:46:00Z",
   "approved_by": "user chat 2026-08-26 (decision gates + /execute-plan authorization)",
   "approved_until": "2026-08-28T09:46:00Z",
-  "content_hash": "sha256:90e0d4036f4b427dcdc222839da4d8beecf74088a247535beb0c59df19942e9d",
+  "content_hash": "sha256:2321eb6554d7f02acd43142d684f98327c84abee4dd3b329f6a03a0dbe0511d0",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/guardian-ops-desk-754-b9bd-integration-b9bd",
@@ -35,13 +35,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/756",
+      "pr_head_sha": "82f0ae59aeb8f4ff6c1e5f7128b02003a3197e3a"
     },
     {
       "id": "2",
