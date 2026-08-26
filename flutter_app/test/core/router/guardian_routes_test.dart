@@ -273,6 +273,10 @@ void main() {
     test('guardianAddVet resolves to /g/vets/add', () {
       expect(router.namedLocation('guardianAddVet'), '/g/vets/add');
     });
+
+    test('guardianFostering resolves to /g/fostering', () {
+      expect(router.namedLocation('guardianFostering'), '/g/fostering');
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -332,6 +336,26 @@ void main() {
 
       expect(find.textContaining('not-found:'), findsNothing);
       expect(router.routerDelegate.currentConfiguration.uri.path, '/g/pets');
+    });
+  });
+
+  group('/g/fostering deep-link', () {
+    late SharedPreferences prefs;
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      prefs = await SharedPreferences.getInstance();
+    });
+
+    testWidgets('resolves without error page', (tester) async {
+      final router = _buildStubRouter(initialLocation: '/g/fostering');
+      await tester.pumpWidget(_app(router: router, prefs: prefs));
+      await _settle(tester);
+
+      expect(find.textContaining('not-found:'), findsNothing);
+      expect(
+        router.routerDelegate.currentConfiguration.uri.path,
+        '/g/fostering',
+      );
     });
   });
 
