@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../config/guardian_primary_destinations.dart';
 
 /// Primary Guardian destinations on compact and touch-first screens.
 ///
@@ -13,69 +14,39 @@ class GuardianBottomNavigation extends StatelessWidget {
 
   final String currentLocation;
 
-  static const _destinations = [
-    '/g/home',
-    '/g/pets',
-    '/g/events',
-    '/g/fostering',
-    '/account',
-  ];
-  static const compactBreakpoint = 600.0;
+  static const compactBreakpoint =
+      GuardianPrimaryDestinations.compactBreakpoint;
 
-  static bool isCompact(double width) => width < compactBreakpoint;
+  static bool isCompact(double width) =>
+      GuardianPrimaryDestinations.isCompact(width);
 
-  static bool supports(String path) => _destinations.any(
-    (destination) => path == destination || path.startsWith('$destination/'),
-  );
+  static bool supports(String path) => GuardianPrimaryDestinations.supports(path);
 
-  static int indexFor(String path) {
-    if (path == '/g/pets' || path.startsWith('/g/pets/')) return 1;
-    if (path == '/g/events' || path.startsWith('/g/events/')) return 2;
-    if (path == '/g/fostering' || path.startsWith('/g/fostering/')) return 3;
-    if (path == '/account' || path.startsWith('/account/')) return 4;
-    return 0;
-  }
+  static int indexFor(String path) => GuardianPrimaryDestinations.indexFor(path);
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final destinations = GuardianPrimaryDestinations.destinations();
     return SafeArea(
       top: false,
       child: BottomNavigationBar(
         key: const Key('guardian_bottom_navigation'),
         type: BottomNavigationBarType.fixed,
-        currentIndex: indexFor(currentLocation),
+        currentIndex: GuardianPrimaryDestinations.indexFor(currentLocation),
         backgroundColor: AppColorTokens.guardianPrimary,
         selectedItemColor: AppColorTokens.inverse,
         unselectedItemColor: AppColorTokens.guardianLight,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
-        onTap: (index) => context.go(_destinations[index]),
+        onTap: (index) =>
+            context.go(GuardianPrimaryDestinations.routes[index]),
         items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.today_outlined),
-            activeIcon: const Icon(Icons.today),
-            label: l.today,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.pets_outlined),
-            activeIcon: const Icon(Icons.pets),
-            label: l.petsNavLabel,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.favorite_border),
-            activeIcon: const Icon(Icons.favorite),
-            label: l.careNavLabel,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home_work_outlined),
-            activeIcon: const Icon(Icons.home_work),
-            label: l.fostering,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.person_outline),
-            activeIcon: const Icon(Icons.person),
-            label: l.accountTitle,
-          ),
+          for (final destination in destinations)
+            BottomNavigationBarItem(
+              icon: Icon(destination.icon),
+              activeIcon: Icon(destination.selectedIcon),
+              label: destination.labelBuilder(l),
+            ),
         ],
       ),
     );

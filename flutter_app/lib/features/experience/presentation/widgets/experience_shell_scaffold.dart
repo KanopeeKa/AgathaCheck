@@ -15,7 +15,9 @@ import '../providers/experience_providers.dart';
 import '../utils/experience_theme.dart';
 import 'experience_section_drawer.dart';
 import 'experience_workspace_toggle.dart';
+import '../config/guardian_primary_destinations.dart';
 import 'guardian_bottom_navigation.dart';
+import 'guardian_navigation_rail.dart';
 import '../../../organization/presentation/utils/org_screen_theme.dart';
 
 /// Shell scaffold shared by guardian and organisation experience screens.
@@ -75,10 +77,15 @@ class ExperienceShellScaffold extends ConsumerWidget {
       ref.watch(organisationMembershipVisibilitySyncProvider);
     }
     final isOrg = experience == AppExperience.organization;
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    final isGuardianExperience = experience == AppExperience.guardian;
     final usesGuardianPrimaryNavigation =
-        experience == AppExperience.guardian &&
-        GuardianBottomNavigation.supports(currentLocation) &&
-        GuardianBottomNavigation.isCompact(MediaQuery.sizeOf(context).width);
+        isGuardianExperience &&
+        GuardianPrimaryDestinations.isCompact(viewportWidth);
+    final usesGuardianNavigationRail =
+        isGuardianExperience &&
+        GuardianPrimaryDestinations.isMedium(viewportWidth);
+    final hideGuardianDrawer = usesGuardianNavigationRail;
     final appBarColor = usesGuardianPrimaryNavigation
         ? AppColorTokens.guardianPrimary
         : AppColorTokens.background;
@@ -157,9 +164,17 @@ class ExperienceShellScaffold extends ConsumerWidget {
             Builder(builder: (ctx) => const ShellNotificationBell()),
           ],
         ),
-        drawer: const ExperienceSectionDrawer(),
+        drawer: hideGuardianDrawer ? null : const ExperienceSectionDrawer(),
         endDrawer: const NotificationPanel(),
-        body: child,
+        body: usesGuardianNavigationRail
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  GuardianNavigationRail(currentLocation: currentLocation),
+                  Expanded(child: child),
+                ],
+              )
+            : child,
         bottomNavigationBar: usesGuardianPrimaryNavigation
             ? GuardianBottomNavigation(currentLocation: currentLocation)
             : null,
