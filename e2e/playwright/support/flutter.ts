@@ -441,14 +441,54 @@ export async function reachAuthenticatedHome(
 
 /**
  * Top-nav controls for the experience shell (EN + FR).
- * Navigation reversal: persistent bell + section drawer hamburger; no Home button.
+ * Section roots: bell + workspace toggle (D-v4-3). Legacy hosts may still expose a hamburger.
  */
 export function experienceShellNavLocator(page: Page): Locator {
   return page
     .getByRole('button', { name: /open notifications/i })
+    .or(page.getByRole('button', { name: /Choose your workspace|Choisir votre espace/i }))
     .or(page.getByRole('button', { name: /open menu/i }))
     .or(page.getByRole('button', { name: /^(Home|Accueil)$/i }))
     .or(page.getByRole('button', { name: /^(Settings|Paramètres)/i }));
+}
+
+/** Workspace switcher on section roots (D-v4-3). */
+export function workspaceToggleLocator(page: Page): Locator {
+  return page
+    .getByRole('button', {
+      name: /Choose your workspace|Choisir votre espace de travail/i,
+    })
+    .or(page.getByRole('button', { name: /^My Pets$|^Mes animaux$/i }))
+    .or(page.getByRole('button', { name: /^Shelter$|^Refuge$/i }))
+    .first();
+}
+
+/** Guardian bottom nav Account tab when compact shell is active (D-v4-2). */
+export function guardianAccountTabLocator(page: Page): Locator {
+  return page
+    .getByRole('button', { name: /^Account$|^Compte$/i })
+    .or(page.getByRole('tab', { name: /^Account$|^Compte$/i }))
+    .first();
+}
+
+export async function isGuardianBottomNavVisible(page: Page): Promise<boolean> {
+  return page
+    .locator('[flt-semantics-identifier="guardian_bottom_navigation"]')
+    .or(page.getByRole('button', { name: /^Today$|^Aujourd'hui$/i }))
+    .first()
+    .isVisible({ timeout: 2_000 })
+    .catch(() => false);
+}
+
+async function openExperienceDrawerViaEdgeSwipe(page: Page): Promise<void> {
+  const viewport = page.viewportSize() ?? { width: 1280, height: 720 };
+  const y = Math.floor(viewport.height / 2);
+  await page.mouse.move(8, y);
+  await page.mouse.down();
+  await page.mouse.move(Math.min(viewport.width * 0.45, 240), y, { steps: 12 });
+  await page.mouse.up();
+  await page.waitForTimeout(500);
+  await refreshFlutterAccessibility(page);
 }
 
 /** True when the post-split experience shell (`/g/home` or `/o/home`) is visible. */
@@ -459,7 +499,7 @@ export async function isExperienceShellVisible(page: Page): Promise<boolean> {
     .catch(() => false);
 }
 
-/** Open the experience shell drawer (hamburger menu). */
+/** Open the experience shell drawer (hamburger or edge swipe when hamburger is hidden). */
 export async function openExperienceDrawer(page: Page): Promise<void> {
   await dismissConsentBannerIfPresent(page);
   await refreshFlutterAccessibility(page);
@@ -468,23 +508,58 @@ export async function openExperienceDrawer(page: Page): Promise<void> {
     .or(page.getByRole('button', { name: /^(Settings|Paramètres)/i }))
     .or(page.getByRole('button', { name: /menu/i }))
     .first();
-  await menuButton.click({ timeout: 10_000 });
+  if (await menuButton.isVisible({ timeout: 2_000 }).catch(() => false)) {
+    await menuButton.click({ timeout: 10_000 });
+  } else {
+    await openExperienceDrawerViaEdgeSwipe(page);
+  }
   await page.waitForTimeout(400);
   await refreshFlutterAccessibility(page);
 }
 
-/** Navigate to `/account` via the experience shell drawer (phase-1 navigation). */
-export async function openAccountFromDrawer(page: Page): Promise<void> {
+/** Navigate to `/account` via bottom nav (compact) or drawer (transitional D-v4-2). */
+export async function openAccountFromShell(page: Page): Promise<void> {
   await dismissConsentBannerIfPresent(page);
-  await openExperienceDrawer(page);
-  const accountEntry = page
-    .getByRole('button', { name: /^account$/i })
-    .or(page.getByText('Account', { exact: true }))
-    .or(page.getByText('Compte', { exact: true }))
-    .first();
-  await accountEntry.click({ timeout: 10_000 });
-  await waitForFlutterRoutePattern(page, /\/account(?:\?|$)/, 30_000);
   await refreshFlutterAccessibility(page);
+
+  const accountTab = guardianAccountTabLocator(page);
+  if (
+    (await isGuardianBottomNavVisible(page)) &&
+    (await accountTab.isVisible({ timeout: 2_000 }).catch(() => false))
+  ) {
+    await accountTab.click({ timeout: 10_000 });
+    await waitForFlutterRoutePattern(page, /\/account(?:\?|$)/, 30_000);
+    await refreshFlutterAccessibility(page);
+    return;
+  }
+
+  const menuButton = page.getByRole('button', { name: /open menu/i }).first();
+  if (await menuButton.isVisible({ timeout: 1_000 }).catch(() => false)) {
+    await openExperienceDrawer(page);
+    const accountEntry = page
+      .getByRole('button', { name: /^account$/i })
+      .or(page.locator('[flt-semantics-identifier="drawer_account"]'))
+      .or(page.getByText('Account', { exact: true }))
+      .or(page.getByText('Compte', { exact: true }))
+      .first();
+    await accountEntry.click({ timeout: 10_000 });
+    await waitForFlutterRoutePattern(page, /\/account(?:\?|$)/, 30_000);
+    await refreshFlutterAccessibility(page);
+    return;
+  }
+
+  await navigateWithShellFallback(
+    page,
+    /\/account(?:\?|$)/,
+    '/account',
+    async () => undefined,
+    { helper: 'openAccountFromShell', testTitle: null },
+  );
+}
+
+/** @deprecated Prefer `openAccountFromShell` — kept for legacy call sites. */
+export async function openAccountFromDrawer(page: Page): Promise<void> {
+  await openAccountFromShell(page);
 }
 
 /** Log out via legacy user menu or Account screen (experience shell). */

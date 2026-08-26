@@ -3,11 +3,13 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   flutterGotoUrl,
+  guardianAccountTabLocator,
   openExperienceDrawer,
   refreshFlutterAccessibility,
   welcomeAgathaTrackText,
   waitForFlutterRoute,
   waitForFlutterRoutePattern,
+  workspaceToggleLocator,
 } from '../support/flutter';
 
 /**
@@ -79,14 +81,28 @@ export class ExperiencePage {
     ).not.toBeVisible();
   }
 
-  /** Open the drawer and navigate to the Organisation section via the unified drawer. */
+  /** Open the organisation section via workspace toggle (preferred) or legacy drawer. */
   async openDrawerOrgView(): Promise<void> {
-    await openExperienceDrawer(this.page);
-    await this.page
-      .getByRole('button', { name: /^Shelters\b/i })
-      .or(this.page.locator('[flt-semantics-identifier="drawer_organisation"]'))
-      .first()
-      .click();
+    await dismissConsentBannerIfPresent(this.page);
+    await refreshFlutterAccessibility(this.page);
+
+    const toggle = workspaceToggleLocator(this.page);
+    if (await toggle.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await toggle.click();
+      await refreshFlutterAccessibility(this.page);
+      const shelterItem = this.page
+        .getByRole('menuitem', { name: /^Shelter$|^Refuge$|^Shelters$/i })
+        .or(this.page.getByRole('button', { name: /^Shelter$|^Refuge$|^Shelters$/i }))
+        .first();
+      await shelterItem.click({ timeout: 10_000 });
+    } else {
+      await openExperienceDrawer(this.page);
+      await this.page
+        .getByRole('button', { name: /^Shelters\b/i })
+        .or(this.page.locator('[flt-semantics-identifier="drawer_organisation"]'))
+        .first()
+        .click();
+    }
     await waitForFlutterRoutePattern(this.page, /\/(?:o\/orgs|organizations)(?:\?|$)/, 30_000);
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
@@ -105,15 +121,20 @@ export class ExperiencePage {
     await refreshFlutterAccessibility(this.page);
   }
 
-  /** Navigate to /account via the Account drawer item. */
+  /** Navigate to /account via bottom nav (compact) or drawer item (transitional). */
   async gotoAccountFromDrawer(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await openExperienceDrawer(this.page);
-    await this.page
-      .getByRole('button', { name: /^Account\b/i })
-      .or(this.page.locator('[flt-semantics-identifier="drawer_account"]'))
-      .first()
-      .click();
+    const accountTab = guardianAccountTabLocator(this.page);
+    if (await accountTab.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await accountTab.click({ timeout: 10_000 });
+    } else {
+      await openExperienceDrawer(this.page);
+      await this.page
+        .getByRole('button', { name: /^Account\b/i })
+        .or(this.page.locator('[flt-semantics-identifier="drawer_account"]'))
+        .first()
+        .click();
+    }
     await waitForFlutterRoutePattern(this.page, /\/account(?:\?|$)/, 30_000);
   }
 
@@ -173,6 +194,21 @@ export class ExperiencePage {
   }
 
   async expectDrawerWithoutOrganisation(): Promise<void> {
+    const toggle = workspaceToggleLocator(this.page);
+    if (await toggle.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await toggle.click();
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page.getByRole('menuitem', { name: /^Shelter$|^Refuge$/i }),
+      ).not.toBeVisible();
+      await expect(
+        this.page.getByRole('menuitem', { name: /^My Pets$|^Mes animaux$/i }),
+      ).toBeVisible();
+      await this.page.keyboard.press('Escape');
+      await expect(guardianAccountTabLocator(this.page)).toBeVisible();
+      return;
+    }
+
     await openExperienceDrawer(this.page);
     await refreshFlutterAccessibility(this.page);
     await expect(this.page.getByRole('button', { name: /^My Pets\b/i })).toBeVisible();
@@ -180,8 +216,23 @@ export class ExperiencePage {
     await expect(this.page.getByRole('button', { name: /^Account\b/i })).toBeVisible();
   }
 
-  /** Assert the drawer contains exactly the three section-switcher items. */
+  /** Assert workspace switcher (or legacy drawer) exposes the expected section entries. */
   async expectUnifiedDrawerItems(): Promise<void> {
+    const toggle = workspaceToggleLocator(this.page);
+    if (await toggle.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await toggle.click();
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page.getByRole('menuitem', { name: /^My Pets$|^Mes animaux$/i }),
+      ).toBeVisible();
+      await expect(
+        this.page.getByRole('menuitem', { name: /^Shelter$|^Refuge$/i }),
+      ).toBeVisible();
+      await this.page.keyboard.press('Escape');
+      await expect(guardianAccountTabLocator(this.page)).toBeVisible();
+      return;
+    }
+
     await openExperienceDrawer(this.page);
     await refreshFlutterAccessibility(this.page);
     // Flutter web exposes drawer rows as buttons (label may repeat in accessible name).
