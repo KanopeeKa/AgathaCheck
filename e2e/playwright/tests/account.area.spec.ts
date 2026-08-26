@@ -9,14 +9,15 @@ import { test, expect } from '../fixtures/auth.fixture';
 import { AccountPage } from '../pages/account.page';
 import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
+import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { seedDualRoleUser } from '../support/api';
 import {
   logOutFromApp,
-  openExperienceDrawer,
   refreshFlutterAccessibility,
   reachAuthenticatedHome,
   skipOrgOnboardingIfPresent,
   waitForFlutterRoutePattern,
+  workspaceToggleLocator,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
 
@@ -46,12 +47,13 @@ test.describe('Account area organisation visibility', () => {
     await experience.gotoAccountFromDrawer();
     await experience.enableShowOrganisationSection();
 
-    await openExperienceDrawer(page);
+    const dashboard = new GuardianDashboardPage(page);
+    await dashboard.openWorkspaceMenu();
     await refreshFlutterAccessibility(page);
     await expect(
       page
-        .getByRole('button', { name: /^Shelters\b/i })
-        .or(page.locator('[flt-semantics-identifier="drawer_organisation"]'))
+        .getByRole('menuitem', { name: /^Shelter$|^Refuge$/i })
+        .or(page.getByRole('button', { name: /^Shelter$|^Refuge$/i }))
         .first(),
     ).toBeVisible({ timeout: 15_000 });
   });
@@ -95,12 +97,9 @@ test.describe('Account area login section restore', () => {
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.openDrawerOrgView();
-    await openExperienceDrawer(page);
-    await page
-      .getByRole('button', { name: /^My Pets\b/i })
-      .or(page.locator('[flt-semantics-identifier="drawer_guardian"]'))
-      .first()
-      .click();
+    const dashboard = new GuardianDashboardPage(page);
+    await dashboard.openWorkspaceMenu();
+    await dashboard.selectWorkspaceMenuItem(/^My Pets$|^Mes animaux$/i);
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
 
     await logOutFromApp(page);

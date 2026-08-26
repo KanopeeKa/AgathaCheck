@@ -69,16 +69,26 @@ Selector order for tabs: `getByRole('button', { name })` → `getByRole('tab', {
 
 ## Workspace toggle (D-v4-3)
 
-Section roots (`/g/home`, `/o/orgs`, `/account`) show `ExperienceWorkspaceToggle` (`Key('experience_workspace_toggle')`) instead of a back arrow.
+Section roots (`/g/home`, `/o/orgs`, `/account`) show `ExperienceWorkspaceToggle` (`Key('experience_workspace_toggle')`) instead of a back arrow or hamburger.
 
 | Action | Locator | Post-action ready |
 |--------|---------|-------------------|
-| Assert visible | `GuardianDashboardPage.expectWorkspaceToggleVisible()` | Toggle pill or `Choose your workspace` semantics |
-| Open menu | `openWorkspaceMenu()` | Menu items `My Pets` / `Shelter` (`experience_workspace_menu_*` keys in widget tests) |
+| Assert visible | `workspaceToggleLocator()` or `GuardianDashboardPage.expectWorkspaceToggleVisible()` | Toggle pill or `Choose your workspace` semantics |
+| Open menu | `GuardianDashboardPage.openWorkspaceMenu()` | Menu items `My Pets` / `Shelter` (`experience_workspace_menu_*` keys in widget tests) |
 | Switch to Shelter | `selectWorkspaceMenuItem(/^Shelter$|^Refuge$/i)` | `/o/orgs` + `OrganizationListPage.expectLoaded()` |
 | Switch to Guardian | `selectWorkspaceMenuItem(/^My Pets$|^Mes animaux$/i)` | `/g/home` + dashboard care region |
 
-Shelter menu item appears only when org membership makes shelter access eligible (seed with `createOrganization` before login).
+Shelter menu item appears only when org membership makes shelter access eligible (seed with `createOrganization` before login) or when **Show shelters section** is enabled on Account.
+
+## Account entry (D-v4-2 transitional)
+
+| Path | When | Helper |
+|------|------|--------|
+| Bottom nav **Account** tab | Compact Guardian shell (`<600px`) | `guardianAccountTabLocator()` / `ExperiencePage.gotoAccountFromDrawer()` |
+| Drawer **Account** row | Legacy hamburger visible | `openExperienceDrawer()` + drawer row |
+| Hash fallback | Neither path available | `openAccountFromShell()` → `E2E_NAV_FALLBACK` |
+
+Organisation section switching in Playwright prefers the **workspace toggle** over the drawer (`ExperiencePage.openDrawerOrgView()`).
 
 ## TODO (next candidates)
 

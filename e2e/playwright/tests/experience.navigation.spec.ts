@@ -24,6 +24,7 @@ import {
   waitForFlutterRoutePattern,
   welcomeAgathaTrackText,
   flutterGotoUrl,
+  workspaceToggleLocator,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
 
@@ -162,17 +163,17 @@ test.describe('Experience navigation', () => {
     await notificationsPage.expectBadgeVisible(unreadCount);
   });
 
-  test('hamburger is visible on guardian home but not on sub-screens', async ({
+  test('workspace toggle is visible on guardian home but back on sub-screens', async ({
     page,
     testUser,
   }) => {
     await loginFromLanding(page, testUser.email, testUser.password);
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
-    await expect(page.getByRole('button', { name: /open menu/i })).toBeVisible();
+    await expect(workspaceToggleLocator(page)).toBeVisible();
 
     await page.goto(flutterGotoUrl('/g/pets'));
     await refreshFlutterAccessibility(page);
-    await expect(page.getByRole('button', { name: /open menu/i })).not.toBeVisible();
+    await expect(workspaceToggleLocator(page)).not.toBeVisible();
     await expect(page.getByRole('button', { name: /back/i })).toBeVisible();
   });
 
