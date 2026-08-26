@@ -269,38 +269,52 @@ export class PetListPage {
   /**
    * Simulate a left swipe on a shared-pet card to trigger the hide-pet
    * Dismissible action (DismissDirection.endToStart).
-   * Guardian dashboard (`/g/home`) tiles are not dismissible — use `/g/pets`.
+   *
+   * Shared pets on `/g/home` use [GuardianShellSharedPetCard] (compact, swipe-friendly).
+   * On `/g/pets`, full-list cards are constrained to tile strips where mouse-swipe is
+   * unreliable on Flutter web — prefer swiping on the dashboard when already there.
    */
   async swipeLeftPetCard(name: string): Promise<void> {
-    const route = flutterRoutePath(this.page.url());
-    if (route === '/g/home' || route === '/') {
-      await this.openManagePets();
-    }
     await this.expectPetVisible(name);
+
+    const route = flutterRoutePath(this.page.url());
+    if (route !== '/g/home' && route !== '/') {
+      if (!route.startsWith('/g/pets')) {
+        await this.openManagePets();
+      }
+      await this.expectPetVisible(name);
+    }
 
     const hideAffordance = this.page
       .getByText(new RegExp(`Hide\\s+${escapeRegExp(name)}`, 'i'))
       .or(this.page.getByText(/Hide Pet|Masquer l'animal/i))
-      .or(this.page.getByRole('dialog', { name: /Hide Pet|Masquer l'animal/i }));
+      .or(this.page.getByRole('dialog', { name: /Hide Pet|Masquer l'animal/i }))
+      .or(
+        this.page.getByText(
+          new RegExp(`Hide ${escapeRegExp(name)}\\?|Masquer ${escapeRegExp(name)}`, 'i'),
+        ),
+      );
 
     const card = petCardByName(this.page, name);
-    const box = await card.boundingBox();
-    if (!box) throw new Error(`Pet card "${name}" not found`);
-    const startX = box.x + box.width * 0.92;
-    const endX = box.x + box.width * 0.02;
-    const midY = box.y + box.height / 2;
-    await this.page.mouse.move(startX, midY);
-    await this.page.mouse.down();
-    for (let i = 1; i <= 24; i++) {
-      await this.page.mouse.move(startX + (endX - startX) * (i / 24), midY);
-      await this.page.waitForTimeout(15);
-    }
-    await this.page.waitForTimeout(300);
-    await this.page.mouse.up();
+    await card.scrollIntoViewIfNeeded();
+    await refreshFlutterAccessibility(this.page);
 
     await expect(async () => {
+      const box = await card.boundingBox();
+      if (!box) throw new Error(`Pet card "${name}" not found`);
+      const startX = box.x + box.width * 0.92;
+      const endX = box.x + box.width * 0.02;
+      const midY = box.y + box.height / 2;
+      await this.page.mouse.move(startX, midY);
+      await this.page.mouse.down();
+      for (let i = 1; i <= 32; i++) {
+        await this.page.mouse.move(startX + (endX - startX) * (i / 32), midY);
+        await this.page.waitForTimeout(12);
+      }
+      await this.page.waitForTimeout(400);
+      await this.page.mouse.up();
       await refreshFlutterAccessibility(this.page);
-      await hideAffordance.first().waitFor({ timeout: 3_000 });
+      await hideAffordance.first().waitFor({ timeout: 2_000 });
     }).toPass({ timeout: 30_000 });
   }
 
