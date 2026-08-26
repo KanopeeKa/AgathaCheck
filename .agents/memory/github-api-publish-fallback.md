@@ -12,3 +12,9 @@ When a normal `git push` fails due to unavailable shell credentials, use the aut
 Keep connector writes in small, independently verified steps: preflight the base/ref, create the derived tree and feature ref, create the PR, then read back the PR and changed-file list. Large all-in-one impure transactions can fail during durable-runtime replay before execution.
 
 When an impure Node helper needs the repository, pass the workspace root explicitly rather than relying on `process.cwd()`, which may not be callable in that sandbox. Parse Git index output inside the impure process; tool-output transport can strip tab delimiters.
+
+GitHub connector blob uploads can be blocked by the intermediary security layer for canvas/design HTML artifacts. When that happens, do not retry or alter the shipping application to work around it; publish a focused product PR that excludes the separate canvas artifacts and explicitly verify the resulting changed-file list.
+
+**Why:** Canvas artifacts are separately previewed design material, while the Flutter app is the product implementation. The connector may reject their HTML payloads even though authenticated GitHub API access is otherwise healthy.
+
+**How to apply:** Exclude `artifacts/` and screenshot-only files only when the user requested the product PR and the app source remains complete. State the reduced scope in the PR body, then read back the PR’s changed files to confirm application changes are present and artifacts are absent.
