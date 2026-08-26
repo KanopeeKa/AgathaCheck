@@ -86,6 +86,7 @@ void main() {
       expect(GuardianBottomNavigation.indexFor('/pet/pet-1/timeline'), 1);
       expect(GuardianBottomNavigation.indexFor('/pet/pet-1/weight'), 1);
       expect(GuardianBottomNavigation.indexFor('/pet/pet-1/health-issues'), 1);
+      expect(GuardianBottomNavigation.indexFor('/pet/pet-1/events'), 2);
       expect(
         GuardianBottomNavigation.indexFor('/pet/pet-1/events/entry-1'),
         2,
