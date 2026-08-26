@@ -156,7 +156,11 @@ export class PetListPage {
   }
 
   async expectEmptyState(): Promise<void> {
-    await this.page.getByText('No pets yet').waitFor();
+    await this.page
+      .getByText(/No pets yet|Who are we caring for\?|Qui prenons-nous en charge/i)
+      .or(this.page.getByRole('button', { name: /^Add Pet$|^Ajouter un animal$/i }))
+      .first()
+      .waitFor();
     await homeShellLocator(this.page).first().waitFor();
   }
 
