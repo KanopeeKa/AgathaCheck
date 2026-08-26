@@ -20,9 +20,11 @@ class GuardianBottomNavigation extends StatelessWidget {
   static bool isCompact(double width) =>
       GuardianPrimaryDestinations.isCompact(width);
 
-  static bool supports(String path) => GuardianPrimaryDestinations.supports(path);
+  static bool supports(String path) =>
+      GuardianPrimaryDestinations.supports(path);
 
-  static int indexFor(String path) => GuardianPrimaryDestinations.indexFor(path);
+  static int indexFor(String path) =>
+      GuardianPrimaryDestinations.indexFor(path);
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +40,7 @@ class GuardianBottomNavigation extends StatelessWidget {
         selectedItemColor: AppColorTokens.inverse,
         unselectedItemColor: AppColorTokens.guardianLight,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
-        onTap: (index) =>
-            context.go(GuardianPrimaryDestinations.routes[index]),
+        onTap: (index) => context.go(GuardianPrimaryDestinations.routes[index]),
         items: [
           for (final destination in destinations)
             BottomNavigationBarItem(

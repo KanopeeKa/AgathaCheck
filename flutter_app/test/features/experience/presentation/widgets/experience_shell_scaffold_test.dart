@@ -471,10 +471,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(
-        find.byKey(const Key('guardian_navigation_rail')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('guardian_navigation_rail')), findsOneWidget);
       expect(find.byKey(const Key('guardian_bottom_navigation')), findsNothing);
       expect(find.text('Today'), findsOneWidget);
     });
@@ -515,31 +512,35 @@ void main() {
       expect(scaffold.drawer, isNotNull);
     });
 
-    testWidgets('shows sidebar and hides drawer at expanded breakpoint (840px)', (
-      tester,
-    ) async {
-      await tester.binding.setSurfaceSize(const Size(840, 900));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets(
+      'shows sidebar and hides drawer at expanded breakpoint (840px)',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(840, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      await tester.pumpWidget(
-        _buildApp(
-          prefs: prefs,
-          experience: AppExperience.guardian,
-          currentLocation: '/g/home',
-          viewport: const Size(840, 900),
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          _buildApp(
+            prefs: prefs,
+            experience: AppExperience.guardian,
+            currentLocation: '/g/home',
+            viewport: const Size(840, 900),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(
-        find.byKey(const Key('guardian_navigation_sidebar')),
-        findsOneWidget,
-      );
-      expect(find.byKey(const Key('guardian_navigation_rail')), findsNothing);
-      expect(find.byKey(const Key('guardian_bottom_navigation')), findsNothing);
-      final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
-      expect(scaffold.drawer, isNull);
-    });
+        expect(
+          find.byKey(const Key('guardian_navigation_sidebar')),
+          findsOneWidget,
+        );
+        expect(find.byKey(const Key('guardian_navigation_rail')), findsNothing);
+        expect(
+          find.byKey(const Key('guardian_bottom_navigation')),
+          findsNothing,
+        );
+        final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+        expect(scaffold.drawer, isNull);
+      },
+    );
 
     testWidgets('uses Row layout with rail and content', (tester) async {
       await tester.binding.setSurfaceSize(const Size(720, 900));
@@ -593,34 +594,38 @@ void main() {
   });
 
   group('Guardian navigation sidebar (≥840px)', () {
-    testWidgets('shows sidebar with primary destinations and footer Account at 1024px', (
-      tester,
-    ) async {
-      await tester.binding.setSurfaceSize(const Size(1024, 900));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets(
+      'shows sidebar with primary destinations and footer Account at 1024px',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(1024, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      await tester.pumpWidget(
-        _buildApp(
-          prefs: prefs,
-          experience: AppExperience.guardian,
-          currentLocation: '/g/home',
-          viewport: const Size(1024, 900),
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          _buildApp(
+            prefs: prefs,
+            experience: AppExperience.guardian,
+            currentLocation: '/g/home',
+            viewport: const Size(1024, 900),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(
-        find.byKey(const Key('guardian_navigation_sidebar')),
-        findsOneWidget,
-      );
-      expect(find.byKey(const Key('guardian_navigation_rail')), findsNothing);
-      expect(find.byKey(const Key('guardian_bottom_navigation')), findsNothing);
-      expect(find.text('Today'), findsOneWidget);
-      expect(find.text('Pets'), findsOneWidget);
-      expect(find.text('Care'), findsOneWidget);
-      expect(find.text('Fostering'), findsOneWidget);
-      expect(find.text('Account'), findsOneWidget);
-    });
+        expect(
+          find.byKey(const Key('guardian_navigation_sidebar')),
+          findsOneWidget,
+        );
+        expect(find.byKey(const Key('guardian_navigation_rail')), findsNothing);
+        expect(
+          find.byKey(const Key('guardian_bottom_navigation')),
+          findsNothing,
+        );
+        expect(find.text('Today'), findsOneWidget);
+        expect(find.text('Pets'), findsOneWidget);
+        expect(find.text('Care'), findsOneWidget);
+        expect(find.text('Fostering'), findsOneWidget);
+        expect(find.text('Account'), findsOneWidget);
+      },
+    );
 
     testWidgets('sidebar width is ~240px at 1024px', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1024, 900));
@@ -660,114 +665,125 @@ void main() {
       expect(scaffold.drawer, isNull);
     });
 
-    testWidgets('relocates workspace toggle to sidebar header on section root', (
-      tester,
-    ) async {
-      await tester.binding.setSurfaceSize(const Size(1024, 900));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets(
+      'relocates workspace toggle to sidebar header on section root',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(1024, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      await tester.pumpWidget(
-        _buildApp(
-          prefs: prefs,
-          experience: AppExperience.guardian,
-          currentLocation: '/g/home',
-          viewport: const Size(1024, 900),
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          _buildApp(
+            prefs: prefs,
+            experience: AppExperience.guardian,
+            currentLocation: '/g/home',
+            viewport: const Size(1024, 900),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      final sidebar = find.byKey(const Key('guardian_navigation_sidebar'));
-      expect(
-        find.descendant(
-          of: sidebar,
-          matching: find.byKey(const Key('experience_workspace_toggle')),
-        ),
-        findsOneWidget,
-      );
-      expect(find.byKey(const Key('experience_workspace_toggle')), findsOneWidget);
-    });
+        final sidebar = find.byKey(const Key('guardian_navigation_sidebar'));
+        expect(
+          find.descendant(
+            of: sidebar,
+            matching: find.byKey(const Key('experience_workspace_toggle')),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('experience_workspace_toggle')),
+          findsOneWidget,
+        );
+      },
+    );
 
-    testWidgets('shows back button on non-root without workspace toggle in app bar', (
-      tester,
-    ) async {
-      await tester.binding.setSurfaceSize(const Size(1024, 900));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets(
+      'shows back button on non-root without workspace toggle in app bar',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(1024, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      await tester.pumpWidget(
-        _buildApp(
-          prefs: prefs,
-          experience: AppExperience.guardian,
-          currentLocation: '/g/events',
-          viewport: const Size(1024, 900),
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          _buildApp(
+            prefs: prefs,
+            experience: AppExperience.guardian,
+            currentLocation: '/g/events',
+            viewport: const Size(1024, 900),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
-      expect(find.byKey(const Key('experience_workspace_toggle')), findsNothing);
-    });
+        expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
+        expect(
+          find.byKey(const Key('experience_workspace_toggle')),
+          findsNothing,
+        );
+      },
+    );
 
-    testWidgets('uses left-aligned page title instead of AppLogoTitle at 1024px', (
-      tester,
-    ) async {
-      await tester.binding.setSurfaceSize(const Size(1024, 900));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets(
+      'uses left-aligned page title instead of AppLogoTitle at 1024px',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(1024, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            experienceEligibilityProvider.overrideWith(
-              (ref) => AsyncValue.data(
-                ExperienceEligibilityRules.compute(
-                  pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
-                  orgMembershipCount: 0,
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              experienceEligibilityProvider.overrideWith(
+                (ref) => AsyncValue.data(
+                  ExperienceEligibilityRules.compute(
+                    pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
+                    orgMembershipCount: 0,
+                  ),
+                ),
+              ),
+              showOrganisationSectionProvider.overrideWith((ref) => false),
+              combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+              guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+              orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+              authProvider.overrideWith((ref) => FakeAuthNotifier()),
+              organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+            ],
+            child: MaterialApp(
+              theme: ThemeData(splashFactory: NoSplash.splashFactory),
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: MediaQuery(
+                data: const MediaQueryData(size: Size(1024, 900)),
+                child: ExperienceShellScaffold(
+                  experience: AppExperience.guardian,
+                  currentLocation: '/g/pets',
+                  screenTitle: 'All Pets',
+                  child: const SizedBox.shrink(),
                 ),
               ),
             ),
-            showOrganisationSectionProvider.overrideWith((ref) => false),
-            combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
-            guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
-            orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
-            authProvider.overrideWith((ref) => FakeAuthNotifier()),
-            organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
-          ],
-          child: MaterialApp(
-            theme: ThemeData(splashFactory: NoSplash.splashFactory),
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(1024, 900)),
-              child: ExperienceShellScaffold(
-                experience: AppExperience.guardian,
-                currentLocation: '/g/pets',
-                screenTitle: 'All Pets',
-                child: const SizedBox.shrink(),
-              ),
-            ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('All Pets'), findsOneWidget);
-      final appBarFinder = find.byType(AppBar);
-      expect(
-        find.descendant(
-          of: appBarFinder,
-          matching: find.byType(AppLogoTitle),
-        ),
-        findsNothing,
-      );
-      final appBar = tester.widget<AppBar>(appBarFinder);
-      expect(appBar.centerTitle, isFalse);
-    });
+        expect(find.text('All Pets'), findsOneWidget);
+        final appBarFinder = find.byType(AppBar);
+        expect(
+          find.descendant(
+            of: appBarFinder,
+            matching: find.byType(AppLogoTitle),
+          ),
+          findsNothing,
+        );
+        final appBar = tester.widget<AppBar>(appBarFinder);
+        expect(appBar.centerTitle, isFalse);
+      },
+    );
 
-    testWidgets('uses Row layout with sidebar and content at 1024px', (tester) async {
+    testWidgets('uses Row layout with sidebar and content at 1024px', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(1024, 900));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 

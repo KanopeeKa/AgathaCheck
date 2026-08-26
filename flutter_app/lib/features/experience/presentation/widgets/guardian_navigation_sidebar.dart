@@ -145,7 +145,9 @@ class _SidebarDestinationTile extends StatelessWidget {
                       label,
                       style: TextStyle(
                         color: color,
-                        fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight: selected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
                         fontSize: 14,
                       ),
                       maxLines: 1,

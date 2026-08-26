@@ -65,10 +65,6 @@ class _RailDestinationIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 48,
-      height: 48,
-      child: Center(child: Icon(icon)),
-    );
+    return SizedBox(width: 48, height: 48, child: Center(child: Icon(icon)));
   }
 }
