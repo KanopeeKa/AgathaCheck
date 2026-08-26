@@ -28,56 +28,62 @@ class GuardianNavigationRail extends ConsumerWidget {
         (currentLocation.startsWith('/o/') ||
             ref.watch(showOrganisationSectionProvider));
 
-    return SizedBox(
-      width: width,
-      child: NavigationRail(
+    return Semantics(
+      identifier: 'guardian_navigation_rail',
+      container: true,
+      child: SizedBox(
         key: const Key('guardian_navigation_rail'),
-        selectedIndex: selectedIndex,
-        labelType: NavigationRailLabelType.all,
-        backgroundColor: AppColorTokens.background,
-        indicatorColor: AppColorTokens.guardianPrimary.withValues(alpha: 0.16),
-        selectedIconTheme: const IconThemeData(
-          color: AppColorTokens.guardianPrimary,
-          size: 24,
-        ),
-        unselectedIconTheme: IconThemeData(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-          size: 24,
-        ),
-        selectedLabelTextStyle: const TextStyle(
-          color: AppColorTokens.guardianPrimary,
-          fontWeight: FontWeight.w700,
-          fontSize: 11,
-        ),
-        unselectedLabelTextStyle: TextStyle(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-          fontSize: 11,
-        ),
-        minWidth: width,
-        minExtendedWidth: width,
-        useIndicator: true,
-        leading: isRoot
-            ? Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 4),
-                child: ExperienceWorkspaceToggle(
-                  currentLocation: currentLocation,
-                  onDarkBackground: false,
-                  showShelter: showShelterWorkspace,
+        width: width,
+        child: NavigationRail(
+          selectedIndex: selectedIndex,
+          labelType: NavigationRailLabelType.all,
+          backgroundColor: AppColorTokens.background,
+          indicatorColor: AppColorTokens.guardianPrimary.withValues(
+            alpha: 0.16,
+          ),
+          selectedIconTheme: const IconThemeData(
+            color: AppColorTokens.guardianPrimary,
+            size: 24,
+          ),
+          unselectedIconTheme: IconThemeData(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            size: 24,
+          ),
+          selectedLabelTextStyle: const TextStyle(
+            color: AppColorTokens.guardianPrimary,
+            fontWeight: FontWeight.w700,
+            fontSize: 11,
+          ),
+          unselectedLabelTextStyle: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontSize: 11,
+          ),
+          minWidth: width,
+          minExtendedWidth: width,
+          useIndicator: true,
+          leading: isRoot
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 8, bottom: 4),
+                  child: ExperienceWorkspaceToggle(
+                    currentLocation: currentLocation,
+                    onDarkBackground: false,
+                    showShelter: showShelterWorkspace,
+                  ),
+                )
+              : null,
+          onDestinationSelected: (index) =>
+              context.go(GuardianPrimaryDestinations.routes[index]),
+          destinations: [
+            for (final destination in destinations)
+              NavigationRailDestination(
+                icon: _RailDestinationIcon(icon: destination.icon),
+                selectedIcon: _RailDestinationIcon(
+                  icon: destination.selectedIcon,
                 ),
-              )
-            : null,
-        onDestinationSelected: (index) =>
-            context.go(GuardianPrimaryDestinations.routes[index]),
-        destinations: [
-          for (final destination in destinations)
-            NavigationRailDestination(
-              icon: _RailDestinationIcon(icon: destination.icon),
-              selectedIcon: _RailDestinationIcon(
-                icon: destination.selectedIcon,
+                label: Text(destination.labelBuilder(l)),
               ),
-              label: Text(destination.labelBuilder(l)),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
