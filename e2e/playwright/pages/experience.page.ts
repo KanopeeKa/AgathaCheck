@@ -4,6 +4,7 @@ import {
   dismissConsentBannerIfPresent,
   flutterGotoUrl,
   guardianAccountTabLocator,
+  openAccountFromShell,
   openExperienceDrawer,
   refreshFlutterAccessibility,
   welcomeAgathaTrackText,
@@ -123,19 +124,7 @@ export class ExperiencePage {
 
   /** Navigate to /account via bottom nav (compact) or drawer item (transitional). */
   async gotoAccountFromDrawer(): Promise<void> {
-    await dismissConsentBannerIfPresent(this.page);
-    const accountTab = guardianAccountTabLocator(this.page);
-    if (await accountTab.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await accountTab.click({ timeout: 10_000 });
-    } else {
-      await openExperienceDrawer(this.page);
-      await this.page
-        .getByRole('button', { name: /^Account\b/i })
-        .or(this.page.locator('[flt-semantics-identifier="drawer_account"]'))
-        .first()
-        .click();
-    }
-    await waitForFlutterRoutePattern(this.page, /\/account(?:\?|$)/, 30_000);
+    await openAccountFromShell(this.page);
   }
 
   async gotoGuardianSettings(): Promise<void> {
