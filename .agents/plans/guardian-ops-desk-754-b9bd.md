@@ -42,17 +42,17 @@ Land the Guardian operations desk redesign from PR #754 in reviewable atomic sli
 
 ```yaml
 autonomy: active
-current_phase: 4
-last_completed_phase: 3
+current_phase: null
+last_completed_phase: 5
 halt_reason: null
-next_action: "implement phase 4: navigation shell hardening on cursor/guardian-ops-desk-hardening-b9bd"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/guardian-ops-desk-hardening-b9bd
+  branch: cursor/guardian-ops-desk-754-b9bd-integration-b9bd
   plan_path: .agents/plans/guardian-ops-desk-754-b9bd.md
-  plan_commit: e479835423b533d4229fb6cd29843327f2be0826
+  plan_commit: 4d05b136848c87fb0f3170f5b6900bcb532a46b8
   snapshot_path: .agents/plans/guardian-ops-desk-754-b9bd.snapshot.json
-  snapshot_commit: e479835423b533d4229fb6cd29843327f2be0826
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/756"]
+  snapshot_commit: 4d05b136848c87fb0f3170f5b6900bcb532a46b8
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```

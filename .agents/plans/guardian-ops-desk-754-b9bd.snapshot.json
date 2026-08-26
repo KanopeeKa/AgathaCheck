@@ -4,7 +4,7 @@
   "approved_at": "2026-08-26T09:46:00Z",
   "approved_by": "user chat 2026-08-26 (decision gates + /execute-plan authorization)",
   "approved_until": "2026-08-28T09:46:00Z",
-  "content_hash": "sha256:3595504ece38bf6dcb8a8da823f6e31ff6b344994942904f66fbb3a76718c56d",
+  "content_hash": "sha256:72123f8241ab8d8240974ed6e0083534c7eb6b964f165c1baca6636034a0e878",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/guardian-ops-desk-754-b9bd-integration-b9bd",
@@ -35,12 +35,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/756",
-      "pr_head_sha": "82f0ae59aeb8f4ff6c1e5f7128b02003a3197e3a"
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/756"
     },
     {
       "id": "2",
@@ -69,12 +68,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/757",
       "debt_issue_refs": []
     },
     {
@@ -141,12 +138,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/759",
       "debt_issue_refs": []
     },
     {
@@ -174,12 +169,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/760",
       "debt_issue_refs": []
     }
   ]
