@@ -3,7 +3,7 @@ title: Refactoring log
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-08-26
 tags: [refactoring, sprint]
 ---
 # Refactoring log (by sprint)
@@ -14,7 +14,22 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 ---
 
-## guardian-ops-desk-754-b9bd — Guardian operations desk standards (2026-08-26)
+## guardian-adaptive-nav-7221 — Guardian adaptive navigation (2026-08-26)
+
+**Goal:** Adaptive Guardian shell — bottom bar (&lt;600px), navigation rail (600–839px), expanded sidebar (≥840px); record D-v4-4/5; resolve D-v4-2 drawer retirement.  
+**Plan:** `.agents/plans/guardian-adaptive-nav-7221.md` · **Integration:** `cursor/guardian-adaptive-nav-7221-integration-7221` · **Control issue:** #768 · **Prerequisite:** PR #767 (workspace-wide compact bottom nav)
+
+| Phase | Outcome | Branch | Status |
+|-------|---------|--------|--------|
+| 1 | Navigation decisions D-v4-4/5 + D-v4-2 resolution | `cursor/guardian-adaptive-nav-decisions-7221` | In progress |
+| 2 | Shared destination config + navigation rail | `cursor/guardian-adaptive-nav-rail-7221` | Pending |
+| 3 | Expanded sidebar + workspace switcher + drawer retired | `cursor/guardian-adaptive-nav-sidebar-7221` | Pending |
+| 4 | BDD/E2E adaptive navigation | `cursor/guardian-adaptive-nav-e2e-7221` | Pending |
+| Final | Integration → main | `cursor/guardian-adaptive-nav-7221-integration-7221` | Pending |
+
+**Deferred:** Shelter-specific sidebar IA; Care nav badge (debt issue).
+
+---
 
 **Goal:** Harden PR #754 Guardian operations desk to AgathaTrack standards — navigation decisions, atomic PR slices, a11y, modularity, BDD/E2E.  
 **Plan:** `.agents/plans/guardian-ops-desk-754-b9bd.md` · **Integration:** `cursor/guardian-ops-desk-754-b9bd-integration-b9bd` · **Control issue:** #755 · **Source PR:** #754

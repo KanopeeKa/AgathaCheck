@@ -54,7 +54,7 @@ After API seeding, the guardian home `DueEventsSection` does not refresh until t
 
 ## Guardian compact bottom nav (D-v4-1)
 
-Viewport **&lt;600px** exposes the five-tab `GuardianBottomNavigation` bar (`Key('guardian_bottom_navigation')`).
+Viewport **&lt;600px** exposes the five-tab `GuardianBottomNavigation` bar (`Key('guardian_bottom_navigation')`) on all Guardian workspace routes (see PR #767 for workspace-wide route detection).
 
 | Tab label (EN) | Route | Ready locator (after `waitForFlutterRoutePattern`) |
 |--------------|-------|-----------------------------------------------------|
@@ -67,6 +67,36 @@ Viewport **&lt;600px** exposes the five-tab `GuardianBottomNavigation` bar (`Key
 Page object: `GuardianDashboardPage.openBottomNavTab(label)`, `openFosteringViaBottomNav()`.
 
 Selector order for tabs: `getByRole('button', { name })` → `getByRole('tab', { name })` (Flutter 3.44 semantics).
+
+Nested routes highlight the closest tab (e.g. `/pet/pet-1` → Pets; `/pet/pet-1/events` → Care).
+
+## Guardian leading navigation rail (D-v4-4, medium)
+
+Viewport **600–839px** exposes `GuardianNavigationRail` (`Key('guardian_navigation_rail')`) with the same five destinations as compact bottom nav.
+
+| Destination (EN) | Route | Notes |
+|------------------|-------|-------|
+| Today | `/g/home` | Same ready locators as bottom nav |
+| Pets | `/g/pets` | |
+| Care | `/g/events` | |
+| Fostering | `/g/fostering` | |
+| Account | `/account` | Fifth rail destination |
+
+Page object: `GuardianDashboardPage.openLeadingNavDestination(label)` (viewport-aware: rail vs sidebar vs bottom nav).
+
+The hamburger drawer is **not** available at these widths.
+
+## Guardian expanded sidebar (D-v4-4, expanded)
+
+Viewport **≥840px** exposes `GuardianNavigationSidebar` (`Key('guardian_navigation_sidebar')`) at ~240px width.
+
+- Header: brand + workspace toggle (`experience_workspace_toggle`)
+- Body: Today, Pets, Care, Fostering (with optional trailing badge on Care — deferred)
+- Footer: Account (pinned, separated by divider)
+
+Page object: same `openLeadingNavDestination(label)` helper; Account via footer row.
+
+The hamburger drawer is **not** available at these widths.
 
 ## Workspace toggle (D-v4-3)
 
@@ -81,12 +111,13 @@ Section roots (`/g/home`, `/o/orgs`, `/account`) show `ExperienceWorkspaceToggle
 
 Shelter menu item appears only when org membership makes shelter access eligible (seed with `createOrganization` before login) or when **Show shelters section** is enabled on Account.
 
-## Account entry (D-v4-2 transitional)
+## Account entry (D-v4-2)
 
 | Path | When | Helper |
 |------|------|--------|
-| Bottom nav **Account** tab | Compact Guardian shell (`<600px`) | `guardianAccountTabLocator()` / `ExperiencePage.gotoAccountFromDrawer()` |
-| Drawer **Account** row | Legacy hamburger visible | `openExperienceDrawer()` + drawer row |
+| Bottom nav **Account** tab | Compact Guardian shell (`<600px`) | `guardianAccountTabLocator()` / `openBottomNavTab('Account')` |
+| Leading nav **Account** | Medium+ Guardian shell (`≥600px`) | `openLeadingNavDestination('Account')` |
+| Drawer **Account** row | Compact only (drawer retired ≥600px) | `openExperienceDrawer()` + drawer row |
 | Hash fallback | Neither path available | `openAccountFromShell()` → `E2E_NAV_FALLBACK` |
 
 Organisation section switching in Playwright prefers the **workspace toggle** over the drawer (`ExperiencePage.openDrawerOrgView()`).

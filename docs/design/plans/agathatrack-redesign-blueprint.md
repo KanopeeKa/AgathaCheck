@@ -44,8 +44,8 @@ This blueprint implements the decisions below; it does not reinterpret them.
 
 | Area | Locked direction | Design consequence |
 |---|---|---|
-| Global navigation | Hamburger is a sparse section switcher, not a sitemap. Guardian and Organisation are peers; Account is globally separate and pinned at the bottom. | Do not put Events, Vets, People, Fosters, Settings, or generic Home in the drawer. |
-| Header | Root surfaces use hamburger; sub-screens use back navigation; authenticated screens retain a global bell. | Avoid a persistent “Home” button, stacked tab bars, or duplicate navigation chrome. |
+| Global navigation | Hamburger is a sparse section switcher on compact widths only. Guardian and Organisation are peers; Account is globally separate. On medium+ Guardian widths, leading nav (D-v4-4) replaces the drawer for primary destinations. | Do not put Events, Vets, People, Fosters, Settings, or generic Home in the drawer. Do not duplicate the five Guardian destinations in drawer and leading nav. |
+| Header | Root surfaces use workspace toggle (compact: app bar; medium+: sidebar header). Sub-screens use back navigation. Authenticated screens retain a global bell. Medium+ content headers carry page title + contextual actions. | Avoid a persistent “Home” button, stacked tab bars, or duplicate navigation chrome. |
 | Guardian home | Exactly **My Pets**, **Due and Overdue**, and **My Vets** management sections. Today is a compact orientation layer above them. | Today cannot become a fourth section, a tab, a standalone feed, route, or backend event model. |
 | Guardian data semantics | Today is presentation over existing data; care completion and undo remain server-authoritative. | Do not invent client-only status or “completed” states that can disagree with the backend. |
 | Organisation root | A calm workspace selector, not a combined pet/event dashboard. | The root shows membership cards and the path into a selected organisation; it does not duplicate organisation operations. |
@@ -58,7 +58,7 @@ This blueprint implements the decisions below; it does not reinterpret them.
 | Landing/auth | One role-neutral entry path. Experience context resolves after authentication. | Do not ask users to choose Guardian/Shelter/Foster before sign-in. |
 | Branding | Organisations can personalise logo, name, and approved image surfaces only. | System colours, focus, danger, warning, success, and contrast remain product-controlled. |
 
-The governing decisions are D1–D11, D17–D18, D25–D37, D-v2-*, D-v3-*, D-v4-*, and D-v4-1–D-v4-3 in the domain decision docs indexed at `docs/domains/navigation/README.md`.
+The governing decisions are D1–D11, D17–D18, D25–D37, D-v2-*, D-v3-*, D-v4-*, and D-v4-1–D-v4-5 in the domain decision docs indexed at `docs/domains/navigation/README.md`.
 
 ---
 
@@ -66,13 +66,31 @@ The governing decisions are D1–D11, D17–D18, D25–D37, D-v2-*, D-v3-*, D-v4
 
 The Guardian home uses a content-first mobile treatment. This refinement **supersedes** the earlier three-section visual composition without changing the underlying care, ownership, notification, or Shelter permission contracts.
 
-- The Guardian mobile bar exposes **Today, Pets, Care, Fostering, and Account** (D-v4-1). The workspace toggle and drawer remain for Guardian/Shelter switching; the notification bell remains global.
+- The Guardian mobile bar exposes **Today, Pets, Care, Fostering, and Account** (D-v4-1). The workspace toggle remains for Guardian/Shelter switching on compact widths; the notification bell remains global.
 - The home begins with a horizontally scrollable, capped four-pet preview and a lightweight Add Pet control; visual section headings may be omitted where the region remains semantically labelled.
 - Care is a pale-plum contextual region with `CARE`, **Due** and **Soon** controls, a total due/overdue count, and no more than three rows per preview. Due is ordered oldest-overdue first, then due today; Soon is ordered soonest first.
 - Direct care completion, refresh, failure rollback, Undo, routing, and the full unified Care destination remain server-authoritative and unchanged.
 - Veterinary contacts remain a lightweight, display-first surface with Add Vet and existing routes.
 - Fostering and Shelters use a pale-teal context. Guardian home only shows details already visible through established fostered-pet relationships; pending placements remain notification-led and unavailable session detail is stated plainly.
 - View all appears only when a preview is truncated. Empty, loading, and error states must never assert that care or sessions are absent when data failed to load.
+
+### 2.2 Guardian adaptive leading navigation (tablet / desktop)
+
+On widths where the bottom bar is hidden, the same five destinations (D-v4-1) appear in **leading application chrome** (D-v4-4, D-v4-5):
+
+| Width | Chrome | Behaviour |
+|-------|--------|-----------|
+| &lt;600px | Bottom bar | Unchanged (D-v4-1); drawer available for workspace switch |
+| 600–839px | Navigation rail | Icon + label destinations; workspace toggle in rail header |
+| ≥840px | Expanded sidebar (~240px) | Full labels; workspace toggle + brand in sidebar header; Account pinned at bottom |
+
+**Rules:**
+
+- Preserve the **same routes and mental model** as compact — do not invent different destination names.
+- The hamburger drawer is **hidden** when leading nav is visible; it must not duplicate the five destinations.
+- The content header on medium+ becomes functional: page title, contextual actions, notification bell — not a centred logo reproduction of the mobile app bar.
+- Leading nav remains visible on nested Guardian workspace routes (pet detail, care forms, etc.) with tab highlighting derived from the closest primary destination (same semantics as PR #767 compact bottom nav).
+- Shelter-specific sidebar IA is a follow-on; this slice is Guardian-only.
 
 ---
 
@@ -890,6 +908,7 @@ Use this card before changing any significant screen:
 Do not introduce any of the following without a new recorded decision:
 
 - ~~a five-tab bottom navigation bar;~~ **Superseded by D-v4-1** — approved for compact Guardian primary nav only (Today, Pets, Care, Fostering, Account).
+- ~~a horizontal website-style top navbar for Guardian primary destinations;~~ Rejected — application shell uses leading nav (D-v4-4) on medium+.
 - a universal floating Add action;
 - a standalone Today route;
 - a generic Home destination;

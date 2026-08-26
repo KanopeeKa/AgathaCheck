@@ -34,13 +34,15 @@ Source: experience-program analysis + Q&A, 2026-07-25. Master brief: [navigation
 |----|----------|--------|-------|
 | **D27** | Cross-org, personal settings (profile, cross-org notification defaults, help/FAQ/contact/legal/about, sign out) live under the global **Account** area (D1's navigation model), reached independently of any single organisation. | locked | Phase 1 |
 
-## B — Guardian mobile primary navigation (supersedes Phase 1 Account-only entry)
+## B — Guardian primary navigation (compact + adaptive)
 
 | ID | Decision | Status | Phase |
 |----|----------|--------|-------|
 | **D-v4-1** | On compact Guardian widths (&lt;600px), a **five-tab bottom bar** exposes Today (`/g/home`), Pets (`/g/pets`), Care (`/g/events`), Fostering (`/g/fostering`), and Account (`/account`). This **supersedes** blueprint §15 anti-pattern “five-tab bottom navigation bar” and is the approved mobile primary nav for Guardian operational work. | locked | Guardian ops desk 2026-08 |
-| **D-v4-2** | **Account dual entry (transitional):** `/account` remains reachable from the drawer's bottom-pinned item **and** from the Guardian bottom bar while the drawer is still present. This **supersedes** phase-1-navigation rule 9 (“drawer only”) until the drawer is retired. Shelter workspace switching stays in the header workspace toggle / drawer — not in the bottom bar. | locked | Guardian ops desk 2026-08 |
-| **D-v4-3** | Section roots (`/g/home`, `/o/orgs`, `/account`) show the **workspace toggle** pill in the app bar leading slot instead of a back arrow. Guardian compact primary routes also use plum app bar + bottom bar chrome. | locked | Guardian ops desk 2026-08 |
+| **D-v4-2** | **Account entry:** On compact widths (&lt;600px), `/account` is reachable from the Guardian bottom bar **and** the drawer while the drawer remains available. On medium+ widths where leading nav is visible (D-v4-4), Account is reachable from the leading nav footer/rail and the drawer is **retired** — dual drawer entry ends. Shelter workspace switching stays in the shell workspace switcher — not in the bottom bar or leading nav destination list. | locked | Guardian adaptive nav 2026-08 |
+| **D-v4-3** | Section roots (`/g/home`, `/o/orgs`, `/account`) show the **workspace toggle** in the shell leading area instead of a back arrow. On compact Guardian routes the toggle sits in the app bar; on medium+ it moves to the leading nav shell header (D-v4-5). Compact Guardian primary routes also use plum app bar + bottom bar chrome. | locked | Guardian adaptive nav 2026-08 |
+| **D-v4-4** | On Guardian widths **≥600px**, the same five destinations as D-v4-1 appear in **leading application chrome** (navigation rail 600–839px; expanded sidebar ≥840px). This is primary shell navigation — **not** the hamburger drawer. The drawer must not duplicate these destinations. | locked | Guardian adaptive nav 2026-08 |
+| **D-v4-5** | When leading nav is visible (≥600px Guardian workspace), the hamburger **drawer is hidden**. Workspace switcher and brand live in the leading nav shell header; Account is pinned at the bottom of expanded sidebar (≥840px) or exposed as the fifth rail destination (600–839px). | locked | Guardian adaptive nav 2026-08 |
 
 ---
 
