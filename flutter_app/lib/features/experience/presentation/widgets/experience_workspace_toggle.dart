@@ -43,16 +43,17 @@ class ExperienceWorkspaceToggle extends ConsumerWidget {
         alignment: Alignment.centerLeft,
         child: SizedBox(
           width: 112,
-          height: 32,
+          height: 48,
           child: PopupMenuButton<AppExperience>(
             key: const Key('experience_workspace_toggle'),
             tooltip: l.workspaceSwitcherLabel,
             position: PopupMenuPosition.under,
             offset: const Offset(0, 4),
+            padding: EdgeInsets.zero,
             color: activeExperience == AppExperience.organization
                 ? AppColorTokens.organizationPrimary
                 : AppColorTokens.guardianPrimary,
-            constraints: const BoxConstraints.tightFor(width: 112),
+            constraints: const BoxConstraints.tightFor(width: 112, height: 48),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -76,31 +77,38 @@ class ExperienceWorkspaceToggle extends ConsumerWidget {
                   ),
                 ),
             ],
-            child: DecoratedBox(
-              key: const Key('experience_workspace_pill'),
-              decoration: ShapeDecoration(
-                shape: StadiumBorder(side: BorderSide(color: foreground)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Flexible(
-                    child: Text(
-                      activeLabel,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textScaler: MediaQuery.textScalerOf(
-                        context,
-                      ).clamp(maxScaleFactor: 1.15),
-                      style: TextStyle(
-                        color: foreground,
-                        fontWeight: FontWeight.w700,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: DecoratedBox(
+                key: const Key('experience_workspace_pill'),
+                decoration: ShapeDecoration(
+                  shape: StadiumBorder(side: BorderSide(color: foreground)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        activeLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textScaler: MediaQuery.textScalerOf(
+                          context,
+                        ).clamp(maxScaleFactor: 1.15),
+                        style: TextStyle(
+                          color: foreground,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(Icons.keyboard_arrow_down, size: 18, color: foreground),
-                ],
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 18,
+                      color: foreground,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
