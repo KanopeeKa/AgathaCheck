@@ -29,6 +29,7 @@ Flutter web 3.44 changed how some widgets surface in the accessibility tree:
 |----------------|--------|----------------|
 | MergeSemantics labels (pet cards, profile rows) | `button` | `checkbox`, `tab`, `group` — use `semanticsByName()` |
 | Dashboard sections (`DueEventsSection`) | `group` | `region`, `tabpanel` — use `dashboardSectionGroup()` |
+| Guardian illustrated empty states (`GuardianIllustratedEmptyState`) | `group` (merged title+body label) | `button` for action — use `semanticsByName()`, not `getByText()` |
 | Org pets filter tabs (`All` / `Tous`) | `tab` | `button`, `checkbox` |
 | Profile field values on My Details | `button` | `checkbox` |
 | Share sheet **Copy link** | `button` | `checkbox` |

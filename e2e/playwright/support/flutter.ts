@@ -708,6 +708,9 @@ export function petCardHiddenLocator(page: Page, petName: string) {
 const GUARDIAN_PET_LIST_CARE_TAIL =
   '(?:All clear|Overdue|Due today|Care coming up|Passed away|Tout est en ordre|En retard|Aujourd\'hui|Soin à venir|Décédé\\(e\\))';
 
+const GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL =
+  '(?:All clear|Overdue|Due today|Care coming up|Tout est en ordre|En retard|Aujourd\'hui|Soin à venir)';
+
 /** Any pet list tile on `/g/pets` (legacy `Pet:` prefix or guardian full-list semantics). */
 export function petListCardLocator(page: Page) {
   const guardianFullList = new RegExp(
@@ -719,6 +722,19 @@ export function petListCardLocator(page: Page) {
     .or(page.getByRole('group', { name: /Pet:/i }))
     .or(page.getByRole('button', { name: guardianFullList }))
     .or(page.getByRole('group', { name: guardianFullList }));
+}
+
+/** Active (non-passed-away) tiles on guardian `/g/pets` — excludes Passed away section cards. */
+export function activePetListCardLocator(page: Page) {
+  const guardianActiveList = new RegExp(
+    `^[^,]+,\\s*[^,]+,\\s*${GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL}$`,
+    'i',
+  );
+  return page
+    .getByRole('button', { name: /Pet:/i })
+    .or(page.getByRole('group', { name: /Pet:/i }))
+    .or(page.getByRole('button', { name: guardianActiveList }))
+    .or(page.getByRole('group', { name: guardianActiveList }));
 }
 
 /** Home shell or a pet tile after save/create (dashboard or list). */

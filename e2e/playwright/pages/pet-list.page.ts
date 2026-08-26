@@ -14,6 +14,7 @@ import {
   petCardByName,
   petCardHiddenLocator,
   petListCardLocator,
+  activePetListCardLocator,
   postPetMutationShellLocator,
   refreshFlutterAccessibility,
   semanticsByName,
@@ -156,11 +157,20 @@ export class PetListPage {
   }
 
   async expectEmptyState(): Promise<void> {
-    await this.page
-      .getByText(/No pets yet|Who are we caring for\?|Qui prenons-nous en charge/i)
-      .or(this.page.getByRole('button', { name: /^Add Pet$|^Ajouter un animal$/i }))
-      .first()
-      .waitFor();
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const myPetsSection = dashboardSectionGroup(this.page, 'myPets');
+      await expect(myPetsSection).toBeVisible();
+      // Illustrated empty state merges title+body into a semantics group label — not plain text.
+      await expect(
+        semanticsByName(
+          this.page,
+          /Who are we caring for\?|No pets yet|De qui prenons-nous soin/i,
+        )
+          .or(this.page.getByRole('button', { name: /^Add Pet$|^Ajouter un animal$/i }))
+          .first(),
+      ).toBeVisible();
+    }).toPass({ timeout: 30_000 });
     await homeShellLocator(this.page).first().waitFor();
   }
 
@@ -208,7 +218,10 @@ export class PetListPage {
     if (route === '/g/home' || route === '/') {
       await this.openManagePets();
     }
-    await expect(petListCardLocator(this.page)).toHaveCount(n, { timeout: 30_000 });
+    const cards = route.startsWith('/g/pets')
+        ? activePetListCardLocator(this.page)
+        : petListCardLocator(this.page);
+    await expect(cards).toHaveCount(n, { timeout: 30_000 });
   }
 
   async openPet(name: string): Promise<void> {

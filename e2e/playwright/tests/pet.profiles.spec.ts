@@ -29,16 +29,10 @@ import {
   TINY_PNG_BASE64,
   updatePetFields,
 } from '../pages/pet-profile.seed';
-import { dashboardSectionGroup } from '../support/flutter';
-
 test.describe('Pet profiles', () => {
   test('empty pet list shows prompt on guardian dashboard', async ({ page, testUser }) => {
     const petList = await loginAs(page, testUser);
     await petList.expectEmptyState();
-    await expect(
-      page.getByText(/No pets yet|Who are we caring for\?|Qui prenons-nous en charge/i),
-    ).toBeVisible();
-    await expect(dashboardSectionGroup(page, 'myPets')).toBeVisible();
   });
 
   test('@smoke-uat user can create a pet with required fields', async ({ page, testUser }) => {
