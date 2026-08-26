@@ -126,7 +126,6 @@ class _DocumentTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/theme/experience_colors.dart';
 import '../../domain/entities/organization_member.dart';
 

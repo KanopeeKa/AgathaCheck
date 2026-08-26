@@ -20,7 +20,7 @@ class PetVetSection extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     return DropdownButtonFormField<String?>(
       key: const Key('pet_vet_field'),
-      value: selectedVetId,
+      initialValue: selectedVetId,
       decoration: InputDecoration(
         labelText: l.veterinarians,
         helperText: 'Assign a veterinarian',

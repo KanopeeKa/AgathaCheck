@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/foster_parent.dart';
 import '../../domain/entities/foster_request.dart';
 import 'org_provider_deps.dart';
-import 'org_provider_people.dart';
-import 'org_provider_pets.dart';
 
 class OrgFosterRequestsNotifier
     extends FamilyAsyncNotifier<List<FosterRequest>, String> {

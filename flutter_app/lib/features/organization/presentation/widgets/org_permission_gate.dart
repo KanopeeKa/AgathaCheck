@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/services/org_permissions.dart';
 import '../providers/org_permissions_providers.dart';
 
 /// Shows [child] only when the viewer has [permissionKey] in this organisation.

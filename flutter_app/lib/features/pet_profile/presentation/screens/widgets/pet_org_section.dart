@@ -18,7 +18,7 @@ class PetOrgSection extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     return DropdownButtonFormField<String?>(
       key: const Key('pet_org_selector'),
-      value: selectedOrgId,
+      initialValue: selectedOrgId,
       decoration: InputDecoration(
         labelText: l.organizations,
         prefixIcon: const Icon(Icons.business),

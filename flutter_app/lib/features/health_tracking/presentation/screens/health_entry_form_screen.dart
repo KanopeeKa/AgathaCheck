@@ -164,7 +164,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<HealthEntryType>(
-                      value: form.type,
+                      initialValue: form.type,
                       decoration: InputDecoration(labelText: l.entryType),
                       items: form.selectableTypes.map((t) {
                         return DropdownMenuItem(

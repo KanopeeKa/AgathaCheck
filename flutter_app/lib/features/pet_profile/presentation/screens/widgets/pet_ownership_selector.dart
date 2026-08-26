@@ -52,46 +52,53 @@ class PetOwnershipSelector extends ConsumerWidget {
             ? _OwnershipMode.personal
             : _OwnershipMode.organization;
 
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  l.petOwnership,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+        return RadioGroup<_OwnershipMode>(
+          groupValue: mode,
+          onChanged: (value) {
+            if (value == _OwnershipMode.personal) {
+              onOrgIdChanged(null);
+            } else if (value == _OwnershipMode.organization &&
+                orgs.isNotEmpty) {
+              onOrgIdChanged(selectedOrgId ?? orgs.first.id);
+            }
+          },
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    l.petOwnership,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                RadioListTile<_OwnershipMode>(
-                  key: const Key('pet_ownership_personal'),
-                  title: Text(l.myPet),
-                  value: _OwnershipMode.personal,
-                  groupValue: mode,
-                  onChanged: (_) => onOrgIdChanged(null),
-                ),
-                RadioListTile<_OwnershipMode>(
-                  key: const Key('pet_ownership_org'),
-                  title: Text(l.orgPet),
-                  value: _OwnershipMode.organization,
-                  groupValue: mode,
-                  onChanged: orgs.isEmpty
-                      ? null
-                      : (_) => onOrgIdChanged(selectedOrgId ?? orgs.first.id),
-                ),
-                if (mode == _OwnershipMode.organization && orgs.isNotEmpty) ...[
                   const SizedBox(height: 8),
-                  PetOrgSection(
-                    selectedOrgId: selectedOrgId ?? orgs.first.id,
-                    orgs: orgs
-                        .map((o) => {'id': o.id, 'name': o.name})
-                        .toList(),
-                    onChanged: onOrgIdChanged,
+                  RadioListTile<_OwnershipMode>(
+                    key: const Key('pet_ownership_personal'),
+                    title: Text(l.myPet),
+                    value: _OwnershipMode.personal,
                   ),
+                  RadioListTile<_OwnershipMode>(
+                    key: const Key('pet_ownership_org'),
+                    title: Text(l.orgPet),
+                    value: _OwnershipMode.organization,
+                    enabled: orgs.isNotEmpty,
+                  ),
+                  if (mode == _OwnershipMode.organization &&
+                      orgs.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    PetOrgSection(
+                      selectedOrgId: selectedOrgId ?? orgs.first.id,
+                      orgs: orgs
+                          .map((o) => {'id': o.id, 'name': o.name})
+                          .toList(),
+                      onChanged: onOrgIdChanged,
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         );

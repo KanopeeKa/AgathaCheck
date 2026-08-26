@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../experience/domain/entities/app_experience.dart';
 import '../../../experience/domain/services/experience_eligibility.dart';
-import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../organization/domain/entities/organization.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../domain/entities/pet.dart';

@@ -15,7 +15,6 @@ import '../widgets/entry_document_section.dart';
 import '../widgets/entry_frequency_fields.dart';
 import '../widgets/entry_remind_before_field.dart';
 import '../widgets/health_entry_type_labels.dart';
-import '../controllers/health_entry_form_constants.dart';
 import '../widgets/other_event_form/other_event_form_actions.dart';
 import '../widgets/other_event_form/other_event_photo_handler.dart';
 
@@ -183,7 +182,7 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     DropdownButtonFormField<HealthEntryType>(
-                      value: _type,
+                      initialValue: _type,
                       decoration: InputDecoration(labelText: l.entryType),
                       items: _allowedTypes.map((type) {
                         return DropdownMenuItem(

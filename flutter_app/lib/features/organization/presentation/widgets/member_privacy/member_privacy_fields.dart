@@ -163,7 +163,7 @@ class MemberPrivacyFields extends StatelessWidget {
   }) {
     return DropdownButtonFormField<T>(
       key: key,
-      value: value,
+      initialValue: value,
       decoration: InputDecoration(
         labelText: label,
         border: const OutlineInputBorder(),

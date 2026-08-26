@@ -23,25 +23,19 @@ class PetRadioSection extends StatelessWidget {
       children: [
         if (title != null)
           Text(title!, style: Theme.of(context).textTheme.bodyLarge),
-        Row(
-          children: [
-            Expanded(
-              child: RadioListTile<bool>(
-                title: Text(yesLabel),
-                value: true,
-                groupValue: groupValue,
-                onChanged: onChanged,
+        RadioGroup<bool>(
+          groupValue: groupValue,
+          onChanged: onChanged,
+          child: Row(
+            children: [
+              Expanded(
+                child: RadioListTile<bool>(title: Text(yesLabel), value: true),
               ),
-            ),
-            Expanded(
-              child: RadioListTile<bool>(
-                title: Text(noLabel),
-                value: false,
-                groupValue: groupValue,
-                onChanged: onChanged,
+              Expanded(
+                child: RadioListTile<bool>(title: Text(noLabel), value: false),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );

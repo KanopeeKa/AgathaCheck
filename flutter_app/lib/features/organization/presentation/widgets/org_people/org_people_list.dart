@@ -8,7 +8,6 @@ import '../../../domain/services/admin_contacts.dart';
 import '../../../domain/services/org_people.dart';
 import '../../providers/organization_providers.dart';
 import '../../utils/org_people_route_params.dart';
-import '../admin_contacts/admin_contact_invite_dialog.dart';
 import '../org_person_tile.dart';
 import '../org_person_tile_grid.dart';
 
