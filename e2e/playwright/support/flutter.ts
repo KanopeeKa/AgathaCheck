@@ -618,7 +618,7 @@ export async function logOutFromApp(page: Page): Promise<void> {
 /** Guardian dashboard [DashboardSection] titles are semantics group labels, not plain text. */
 export const DASHBOARD_SECTION_NAMES = {
   myPets: /My Pets|Mes animaux/i,
-  dueAndOverdue: /Due and Overdue|À faire et en retard/i,
+  dueAndOverdue: /Due and Overdue|À faire et en retard|CARE|SOINS/i,
   myVets: /My [Vv]ets|Mes vétérinaires/i,
 } as const;
 

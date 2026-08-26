@@ -117,7 +117,7 @@ export class PetListPage {
     }
   }
 
-  /** Guardian `/g/home` Due and Overdue section — empty when nothing is due today. */
+  /** Guardian `/g/home` care section — empty when nothing is due today. */
   async expectNoDueEventsOnHome(): Promise<void> {
     await this.expectLoaded();
     await expect(async () => {
@@ -126,12 +126,18 @@ export class PetListPage {
       await expect(dueSection).toBeVisible();
       await expect(
         dueSection
-          .getByText(/You're all caught up|Tout est à jour/i)
+          .getByText(/You're all caught up|Tout est à jour|All caught up/i)
           .or(
             dueSection.getByText(
               /No events are overdue or due today|Aucun événement en retard ou prévu aujourd'hui/i,
             ),
           )
+          .or(
+            dueSection.getByText(
+              /Start their care routine|Commencez leur routine de soins|Nothing needs care today|Aucun soin à faire aujourd'hui/i,
+            ),
+          )
+          .or(dueSection.getByRole('button', { name: /Add an event|Ajouter un événement/i }))
           .first(),
       ).toBeVisible();
     }).toPass({ timeout: 30_000 });
