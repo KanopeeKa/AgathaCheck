@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../config/guardian_primary_destinations.dart';
 
 /// Primary Guardian destinations on compact and touch-first screens.
 ///
@@ -13,93 +14,40 @@ class GuardianBottomNavigation extends StatelessWidget {
 
   final String currentLocation;
 
-  static const _destinations = [
-    '/g/home',
-    '/g/pets',
-    '/g/events',
-    '/g/fostering',
-    '/account',
-  ];
-  static const compactBreakpoint = 600.0;
+  static const compactBreakpoint =
+      GuardianPrimaryDestinations.compactBreakpoint;
 
-  static bool isCompact(double width) => width < compactBreakpoint;
+  static bool isCompact(double width) =>
+      GuardianPrimaryDestinations.isCompact(width);
 
-  /// Whether [path] belongs to the Guardian (My Pets) workspace.
-  static bool supports(String path) {
-    if (path.startsWith('/o/')) return false;
-    if (path == '/g/onboarding' || path.startsWith('/g/onboarding/')) {
-      return false;
-    }
-    return path.startsWith('/g/') ||
-        path.startsWith('/pet/') ||
-        path == '/add' ||
-        path.startsWith('/edit/') ||
-        path == '/account' ||
-        path.startsWith('/account/') ||
-        path.startsWith('/health');
-  }
+  static bool supports(String path) =>
+      GuardianPrimaryDestinations.supports(path);
 
-  static int indexFor(String path) {
-    if (path == '/account' || path.startsWith('/account/')) return 4;
-    if (path == '/g/fostering' || path.startsWith('/g/fostering/')) return 3;
-    if (_isCarePath(path)) return 2;
-    if (_isPetsPath(path)) return 1;
-    return 0;
-  }
-
-  static bool _isCarePath(String path) {
-    if (path == '/g/events' || path.startsWith('/g/events/')) return true;
-    if (path.startsWith('/health')) return true;
-    return RegExp(r'^/pet/[^/]+/(events|health|other)(?:/|$)').hasMatch(path);
-  }
-
-  static bool _isPetsPath(String path) {
-    if (path == '/g/pets' || path.startsWith('/g/pets/')) return true;
-    if (path == '/add' || path.startsWith('/add')) return true;
-    if (RegExp(r'^/edit/').hasMatch(path)) return true;
-    return path.startsWith('/pet/');
-  }
+  static int indexFor(String path) =>
+      GuardianPrimaryDestinations.indexFor(path);
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final destinations = GuardianPrimaryDestinations.destinations();
     return SafeArea(
       top: false,
       child: BottomNavigationBar(
         key: const Key('guardian_bottom_navigation'),
         type: BottomNavigationBarType.fixed,
-        currentIndex: indexFor(currentLocation),
+        currentIndex: GuardianPrimaryDestinations.indexFor(currentLocation),
         backgroundColor: AppColorTokens.guardianPrimary,
         selectedItemColor: AppColorTokens.inverse,
         unselectedItemColor: AppColorTokens.guardianLight,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
-        onTap: (index) => context.go(_destinations[index]),
+        onTap: (index) => context.go(GuardianPrimaryDestinations.routes[index]),
         items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.today_outlined),
-            activeIcon: const Icon(Icons.today),
-            label: l.today,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.pets_outlined),
-            activeIcon: const Icon(Icons.pets),
-            label: l.petsNavLabel,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.favorite_border),
-            activeIcon: const Icon(Icons.favorite),
-            label: l.careNavLabel,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home_work_outlined),
-            activeIcon: const Icon(Icons.home_work),
-            label: l.fostering,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.person_outline),
-            activeIcon: const Icon(Icons.person),
-            label: l.accountTitle,
-          ),
+          for (final destination in destinations)
+            BottomNavigationBarItem(
+              icon: Icon(destination.icon),
+              activeIcon: Icon(destination.selectedIcon),
+              label: destination.labelBuilder(l),
+            ),
         ],
       ),
     );

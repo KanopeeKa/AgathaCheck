@@ -3,12 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pet_profile_app/core/widgets/app_logo_title.dart';
 import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/experience_shell_scaffold.dart';
+import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_navigation_rail.dart';
+import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_navigation_sidebar.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
@@ -30,10 +33,17 @@ Widget _buildApp({
   required String currentLocation,
   int combinedUnread = 0,
   bool showOrganisationSection = false,
+  Size? viewport,
 }) {
   if (showOrganisationSection) {
     prefs.setBool('show_organisation_section', true);
   }
+
+  final shell = ExperienceShellScaffold(
+    experience: experience,
+    currentLocation: currentLocation,
+    child: const SizedBox.shrink(),
+  );
 
   return ProviderScope(
     overrides: [
@@ -67,11 +77,12 @@ Widget _buildApp({
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: ExperienceShellScaffold(
-        experience: experience,
-        currentLocation: currentLocation,
-        child: const SizedBox.shrink(),
-      ),
+      home: viewport == null
+          ? shell
+          : MediaQuery(
+              data: MediaQueryData(size: viewport),
+              child: shell,
+            ),
     ),
   );
 }
@@ -441,5 +452,416 @@ void main() {
     expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
     expect(find.byKey(const Key('experience_workspace_toggle')), findsNothing);
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
+  });
+
+  group('Guardian navigation rail (600–839px)', () {
+    testWidgets('shows rail and hides bottom nav at 720px width', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(720, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.guardian,
+          currentLocation: '/g/home',
+          viewport: const Size(720, 900),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('guardian_navigation_rail')), findsOneWidget);
+      expect(find.byKey(const Key('guardian_bottom_navigation')), findsNothing);
+      expect(find.text('Today'), findsOneWidget);
+    });
+
+    testWidgets('hides drawer when rail is visible', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(720, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.guardian,
+          currentLocation: '/g/home',
+          viewport: const Size(720, 900),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+      expect(scaffold.drawer, isNull);
+    });
+
+    testWidgets(
+      'relocates workspace toggle to rail leading slot on section root',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(720, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(
+          _buildApp(
+            prefs: prefs,
+            experience: AppExperience.guardian,
+            currentLocation: '/g/home',
+            viewport: const Size(720, 900),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final rail = find.byKey(const Key('guardian_navigation_rail'));
+        expect(
+          find.descendant(
+            of: rail,
+            matching: find.byKey(const Key('experience_workspace_toggle')),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('experience_workspace_toggle')),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets('keeps drawer available below 600px width', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.guardian,
+          currentLocation: '/g/home',
+          viewport: const Size(390, 844),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+      expect(scaffold.drawer, isNotNull);
+    });
+
+    testWidgets(
+      'shows sidebar and hides drawer at expanded breakpoint (840px)',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(840, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(
+          _buildApp(
+            prefs: prefs,
+            experience: AppExperience.guardian,
+            currentLocation: '/g/home',
+            viewport: const Size(840, 900),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const Key('guardian_navigation_sidebar')),
+          findsOneWidget,
+        );
+        expect(find.byKey(const Key('guardian_navigation_rail')), findsNothing);
+        expect(
+          find.byKey(const Key('guardian_bottom_navigation')),
+          findsNothing,
+        );
+        final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+        expect(scaffold.drawer, isNull);
+      },
+    );
+
+    testWidgets('uses Row layout with rail and content', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(720, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            experienceEligibilityProvider.overrideWith(
+              (ref) => AsyncValue.data(
+                ExperienceEligibilityRules.compute(
+                  pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
+                  orgMembershipCount: 0,
+                ),
+              ),
+            ),
+            showOrganisationSectionProvider.overrideWith((ref) => false),
+            combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
+            organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+          ],
+          child: MaterialApp(
+            theme: ThemeData(splashFactory: NoSplash.splashFactory),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: MediaQuery(
+              data: const MediaQueryData(size: Size(720, 900)),
+              child: ExperienceShellScaffold(
+                experience: AppExperience.guardian,
+                currentLocation: '/g/home',
+                child: const Center(child: Text('Rail content')),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(Row), findsWidgets);
+      expect(find.text('Rail content'), findsOneWidget);
+      expect(find.byType(GuardianNavigationRail), findsOneWidget);
+    });
+  });
+
+  group('Guardian navigation sidebar (≥840px)', () {
+    testWidgets(
+      'shows sidebar with primary destinations and footer Account at 1024px',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(1024, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(
+          _buildApp(
+            prefs: prefs,
+            experience: AppExperience.guardian,
+            currentLocation: '/g/home',
+            viewport: const Size(1024, 900),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const Key('guardian_navigation_sidebar')),
+          findsOneWidget,
+        );
+        expect(find.byKey(const Key('guardian_navigation_rail')), findsNothing);
+        expect(
+          find.byKey(const Key('guardian_bottom_navigation')),
+          findsNothing,
+        );
+        expect(find.text('Today'), findsOneWidget);
+        expect(find.text('Pets'), findsOneWidget);
+        expect(find.text('Care'), findsOneWidget);
+        expect(find.text('Fostering'), findsOneWidget);
+        expect(find.text('Account'), findsOneWidget);
+      },
+    );
+
+    testWidgets('sidebar width is ~240px at 1024px', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.guardian,
+          currentLocation: '/g/home',
+          viewport: const Size(1024, 900),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final sidebarSize = tester.getSize(
+        find.byKey(const Key('guardian_navigation_sidebar')),
+      );
+      expect(sidebarSize.width, GuardianNavigationSidebar.width);
+    });
+
+    testWidgets('hides drawer when sidebar is visible', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.guardian,
+          currentLocation: '/g/home',
+          viewport: const Size(1024, 900),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+      expect(scaffold.drawer, isNull);
+    });
+
+    testWidgets(
+      'relocates workspace toggle to sidebar header on section root',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(1024, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(
+          _buildApp(
+            prefs: prefs,
+            experience: AppExperience.guardian,
+            currentLocation: '/g/home',
+            viewport: const Size(1024, 900),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final sidebar = find.byKey(const Key('guardian_navigation_sidebar'));
+        expect(
+          find.descendant(
+            of: sidebar,
+            matching: find.byKey(const Key('experience_workspace_toggle')),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('experience_workspace_toggle')),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'shows back button on non-root without workspace toggle in app bar',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(1024, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(
+          _buildApp(
+            prefs: prefs,
+            experience: AppExperience.guardian,
+            currentLocation: '/g/events',
+            viewport: const Size(1024, 900),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
+        expect(
+          find.byKey(const Key('experience_workspace_toggle')),
+          findsNothing,
+        );
+      },
+    );
+
+    testWidgets(
+      'uses left-aligned page title instead of AppLogoTitle at 1024px',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(1024, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              experienceEligibilityProvider.overrideWith(
+                (ref) => AsyncValue.data(
+                  ExperienceEligibilityRules.compute(
+                    pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
+                    orgMembershipCount: 0,
+                  ),
+                ),
+              ),
+              showOrganisationSectionProvider.overrideWith((ref) => false),
+              combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+              guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+              orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+              authProvider.overrideWith((ref) => FakeAuthNotifier()),
+              organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+            ],
+            child: MaterialApp(
+              theme: ThemeData(splashFactory: NoSplash.splashFactory),
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: MediaQuery(
+                data: const MediaQueryData(size: Size(1024, 900)),
+                child: ExperienceShellScaffold(
+                  experience: AppExperience.guardian,
+                  currentLocation: '/g/pets',
+                  screenTitle: 'All Pets',
+                  child: const SizedBox.shrink(),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('All Pets'), findsOneWidget);
+        final appBarFinder = find.byType(AppBar);
+        expect(
+          find.descendant(
+            of: appBarFinder,
+            matching: find.byType(AppLogoTitle),
+          ),
+          findsNothing,
+        );
+        final appBar = tester.widget<AppBar>(appBarFinder);
+        expect(appBar.centerTitle, isFalse);
+      },
+    );
+
+    testWidgets('uses Row layout with sidebar and content at 1024px', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            experienceEligibilityProvider.overrideWith(
+              (ref) => AsyncValue.data(
+                ExperienceEligibilityRules.compute(
+                  pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
+                  orgMembershipCount: 0,
+                ),
+              ),
+            ),
+            showOrganisationSectionProvider.overrideWith((ref) => false),
+            combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
+            organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+          ],
+          child: MaterialApp(
+            theme: ThemeData(splashFactory: NoSplash.splashFactory),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: MediaQuery(
+              data: const MediaQueryData(size: Size(1024, 900)),
+              child: ExperienceShellScaffold(
+                experience: AppExperience.guardian,
+                currentLocation: '/g/home',
+                child: const Center(child: Text('Sidebar content')),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(Row), findsWidgets);
+      expect(find.text('Sidebar content'), findsOneWidget);
+      expect(find.byType(GuardianNavigationSidebar), findsOneWidget);
+    });
   });
 }

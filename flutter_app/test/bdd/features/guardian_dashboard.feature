@@ -91,6 +91,20 @@ Feature: Guardian dashboard
 
   @implemented
   @P1
+  Scenario: Guardian leading navigation rail reaches primary destinations at medium width
+    Given I am signed in as a guardian with pets
+    When I use the leading navigation at medium width
+    Then I should reach the Pets, Care, and Fostering destinations via the navigation rail
+
+  @implemented
+  @P1
+  Scenario: Guardian expanded sidebar reaches primary destinations at wide width
+    Given I am signed in as a guardian with pets
+    When I use the leading navigation at wide width
+    Then I should reach the Pets, Care, and Fostering destinations via the navigation sidebar
+
+  @implemented
+  @P1
   Scenario: Workspace toggle switches between Guardian and Shelter when available
     Given I am signed in as a guardian with shelter access
     When I view the Guardian dashboard

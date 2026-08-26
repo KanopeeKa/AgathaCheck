@@ -647,8 +647,8 @@ no-pets guidance.
 | Range | Name | Layout rules |
 |---|---|---|
 | `0–599px` | Compact | one-column content; 16px page padding; sheets are full width; stacked form actions when labels wrap |
-| `600–839px` | Medium | 24px page padding; two-column layouts only when each column remains at least 280px |
-| `840–1199px` | Expanded | max content width 1120px; notification panel may slide over content; dashboard previews can use 2–3 columns |
+| `600–839px` | Medium | 24px page padding; Guardian navigation rail (D-v4-4); drawer hidden in Guardian workspace |
+| `840–1199px` | Expanded | max content width 1120px; Guardian expanded sidebar (D-v4-4); notification panel may slide over content; dashboard previews can use 2–3 columns |
 | `1200px+` | Large | preserve max content width; landing may use story/auth split at approximately 1.05fr / 0.95fr |
 
 The landing/auth experience collapses from its split story/form layout to one

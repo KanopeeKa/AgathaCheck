@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "plan_id": "guardian-adaptive-nav-7221",
+  "approved_at": "2026-08-26T22:12:00Z",
+  "approved_by": "user chat 2026-08-26 (/execute-plan + adaptive nav analysis authorization)",
+  "approved_until": "2026-08-28T22:12:00Z",
+  "content_hash": "sha256:f01a2cc40974597e812ff48e14402193642f37850a3425452ac5457313163d1b",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/guardian-adaptive-nav-7221-integration-7221",
+  "control_issue": 768,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Navigation decisions D-v4-4/5 and D-v4-2 resolution",
+      "branch": "cursor/guardian-adaptive-nav-decisions-7221",
+      "allowed_paths": [
+        "docs/domains/navigation/**",
+        "docs/design/**",
+        "docs/e2e/navigation-contract.md",
+        "docs/debt/refactoring-log.md",
+        ".agents/plans/guardian-adaptive-nav-7221.md",
+        ".agents/plans/guardian-adaptive-nav-7221.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Shared destination config and navigation rail (600-839px)",
+      "branch": "cursor/guardian-adaptive-nav-rail-7221",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/core/theme/app_color_tokens.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/experience/**",
+        ".agents/plans/guardian-adaptive-nav-7221.md",
+        ".agents/plans/guardian-adaptive-nav-7221.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Requires PR #767 merged — reuses workspace-wide supports/indexFor",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Expanded sidebar, workspace switcher, drawer retirement, desktop header",
+      "branch": "cursor/guardian-adaptive-nav-sidebar-7221",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/core/widgets/app_logo_title.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/experience/**",
+        ".agents/plans/guardian-adaptive-nav-7221.md",
+        ".agents/plans/guardian-adaptive-nav-7221.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "BDD E2E adaptive navigation and navigation contract",
+      "branch": "cursor/guardian-adaptive-nav-e2e-7221",
+      "allowed_paths": [
+        "flutter_app/test/bdd/features/guardian_dashboard.feature",
+        "flutter_app/test/features/experience/**",
+        "e2e/playwright/**",
+        "docs/e2e/navigation-contract.md",
+        "docs/quality/bdd-journey-matrix.md",
+        ".agents/plans/guardian-adaptive-nav-7221.md",
+        ".agents/plans/guardian-adaptive-nav-7221.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
