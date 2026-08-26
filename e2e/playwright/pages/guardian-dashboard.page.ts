@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
+  dashboardSectionGroup,
   escapeRegExp,
   flutterGotoUrl,
   petCardByName,
@@ -17,26 +18,26 @@ import {
 export class GuardianDashboardPage {
   constructor(private readonly page: Page) {}
 
-  private region(name: RegExp): Locator {
-    return this.page.getByRole('region', { name }).first();
+  private section(name: RegExp): Locator {
+    return dashboardSectionGroup(this.page, name);
   }
 
   async open(): Promise<void> {
     await this.page.goto(flutterGotoUrl('/g/home'));
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/g\/home(?:\?|$)/, 60_000);
-    await this.region(/My Pets|Mes animaux/i).waitFor({ state: 'visible', timeout: 60_000 });
+    await this.section(/My Pets|Mes animaux/i).waitFor({ state: 'visible', timeout: 60_000 });
   }
 
   async expectTodayCareRegions(): Promise<void> {
-    await expect(this.region(/My Pets|Mes animaux/i)).toBeVisible();
-    await expect(this.region(/CARE|SOINS/i)).toBeVisible();
-    await expect(this.region(/My Vets|Mes vétérinaires/i)).toBeVisible();
-    await expect(this.region(/Fostering Sessions|Sessions d'accueil/i)).toBeVisible();
+    await expect(this.section(/My Pets|Mes animaux/i)).toBeVisible();
+    await expect(this.section(/CARE|SOINS/i)).toBeVisible();
+    await expect(this.section(/My Vets|Mes vétérinaires/i)).toBeVisible();
+    await expect(this.section(/Fostering Sessions|Sessions d'accueil/i)).toBeVisible();
   }
 
   careRegion(): Locator {
-    return this.region(/CARE|SOINS/i);
+    return this.section(/CARE|SOINS/i);
   }
 
   async expectNoPendingDashboardBanner(): Promise<void> {
@@ -106,7 +107,7 @@ export class GuardianDashboardPage {
 
   async expectVetVisible(name: string): Promise<void> {
     await expect(
-      this.region(/My Vets|Mes vétérinaires/i)
+      this.section(/My Vets|Mes vétérinaires/i)
         .getByRole('button', { name: new RegExp(name, 'i') })
         .or(semanticsByName(this.page, new RegExp(name, 'i')))
         .first(),
@@ -114,7 +115,7 @@ export class GuardianDashboardPage {
   }
 
   async openVet(name: string): Promise<void> {
-    const vet = this.region(/My Vets|Mes vétérinaires/i)
+    const vet = this.section(/My Vets|Mes vétérinaires/i)
       .getByRole('button', { name: new RegExp(name, 'i') })
       .or(semanticsByName(this.page, new RegExp(name, 'i')))
       .first();
