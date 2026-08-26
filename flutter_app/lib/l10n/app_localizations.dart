@@ -704,6 +704,18 @@ abstract class AppLocalizations {
   /// **'My Pets'**
   String get myPets;
 
+  /// No description provided for @workspaceShelter.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelter'**
+  String get workspaceShelter;
+
+  /// No description provided for @workspaceSwitcherLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your workspace'**
+  String get workspaceSwitcherLabel;
+
   /// No description provided for @myFosteredPets.
   ///
   /// In en, this message translates to:
@@ -830,6 +842,18 @@ abstract class AppLocalizations {
   /// **'No pets yet'**
   String get noPetsYet;
 
+  /// No description provided for @guardianEmptyPetsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who are we caring for?'**
+  String get guardianEmptyPetsTitle;
+
+  /// No description provided for @guardianEmptyPetsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first pet to start keeping track of their care.'**
+  String get guardianEmptyPetsBody;
+
   /// No description provided for @noPetsMatchFilter.
   ///
   /// In en, this message translates to:
@@ -908,6 +932,18 @@ abstract class AppLocalizations {
   /// **'Add a veterinarian. No vets yet.'**
   String get addVetFirst;
 
+  /// No description provided for @guardianEmptyVetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your vet close at hand'**
+  String get guardianEmptyVetTitle;
+
+  /// No description provided for @guardianEmptyVetBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your veterinary clinic so their details are here when you need them.'**
+  String get guardianEmptyVetBody;
+
   /// No description provided for @selectVeterinarian.
   ///
   /// In en, this message translates to:
@@ -961,6 +997,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add weight entry'**
   String get addWeightEntry;
+
+  /// No description provided for @addEventEventsOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
+  String get addEventEventsOption;
+
+  /// No description provided for @addEventWeightEntryOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight entry'**
+  String get addEventWeightEntryOption;
 
   /// No description provided for @selectDate.
   ///
@@ -1159,6 +1207,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We couldn\'t load care right now.'**
   String get careLoadError;
+
+  /// No description provided for @careEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'CARE'**
+  String get careEyebrow;
+
+  /// No description provided for @petsNavLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets'**
+  String get petsNavLabel;
+
+  /// No description provided for @careNavLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Care'**
+  String get careNavLabel;
+
+  /// No description provided for @careDueTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {count}'**
+  String careDueTab(int count);
+
+  /// No description provided for @careSoonTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Soon'**
+  String get careSoonTab;
+
+  /// No description provided for @noCareDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing needs care today.'**
+  String get noCareDue;
+
+  /// No description provided for @noCareSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming care in the current reminder window.'**
+  String get noCareSoon;
+
+  /// No description provided for @guardianEmptyCareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start their care routine'**
+  String get guardianEmptyCareTitle;
+
+  /// No description provided for @guardianEmptyCareBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first care item to keep track of everyday care, treatments and appointments.'**
+  String get guardianEmptyCareBody;
+
+  /// No description provided for @guardianEmptyCareClearTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All caught up'**
+  String get guardianEmptyCareClearTitle;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get viewAll;
+
+  /// No description provided for @fosteringSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Fostering Sessions'**
+  String get fosteringSessions;
+
+  /// No description provided for @shelters.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelters'**
+  String get shelters;
+
+  /// No description provided for @fostering.
+  ///
+  /// In en, this message translates to:
+  /// **'Fostering'**
+  String get fostering;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
+
+  /// No description provided for @connected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get connected;
+
+  /// No description provided for @noFosteringSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'No active fostering sessions yet.'**
+  String get noFosteringSessions;
+
+  /// No description provided for @guardianEmptyFosteringTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No fostering sessions right now'**
+  String get guardianEmptyFosteringTitle;
+
+  /// No description provided for @guardianEmptyFosteringBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When a new session starts, you\'ll find it here.'**
+  String get guardianEmptyFosteringBody;
+
+  /// No description provided for @guardianEmptyShelterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect with a shelter'**
+  String get guardianEmptyShelterTitle;
+
+  /// No description provided for @guardianEmptyShelterBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shelter relationships, onboarding and fostering activity will live here.'**
+  String get guardianEmptyShelterBody;
+
+  /// No description provided for @connectShelter.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect with a shelter'**
+  String get connectShelter;
+
+  /// No description provided for @sessionDetailsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Session details are unavailable until a foster relationship is active.'**
+  String get sessionDetailsUnavailable;
+
+  /// No description provided for @activeFosteringCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 active fostering} other{{count} active fosterings}}'**
+  String activeFosteringCount(int count);
 
   /// No description provided for @tomorrow.
   ///

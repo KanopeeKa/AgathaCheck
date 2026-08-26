@@ -30,19 +30,23 @@ dependencies:
   url_launcher: ^6.3.2
   posthog_flutter: ^5.36.0
 
+  web: any
+  http_parser: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
   mockito: ^5.7.0
   build_runner: ^2.15.1
-  web: ^1.1.0
 
+  plugin_platform_interface: any
+  url_launcher_platform_interface: any
 flutter:
   generate: true
   uses-material-design: true
   assets:
     - assets/branding/
+    - assets/dashboard/
     - assets/landing/
     - assets/demo_pets/
     - assets/logo-plum.png

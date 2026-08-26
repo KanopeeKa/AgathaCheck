@@ -80,7 +80,7 @@ void main() {
     await tester.pumpWidget(buildSection(pets: []));
     await tester.pumpAndSettle();
 
-    expect(find.text('No pets yet'), findsOneWidget);
+    expect(find.text('Who are we caring for?'), findsOneWidget);
     expect(find.text('My Fostered Pets'), findsNothing);
     expect(find.text('Shared Pets'), findsNothing);
   });
@@ -103,7 +103,7 @@ void main() {
 
     expect(find.text('Shared Pets'), findsOneWidget);
     expect(find.text('Max'), findsOneWidget);
-    expect(find.text('No pets yet'), findsNothing);
+    expect(find.text('Who are we caring for?'), findsNothing);
   });
 
   testWidgets('compact preview handles zero, one, and exactly four pets', (
@@ -146,7 +146,7 @@ void main() {
     expect(find.text('All Pets'), findsOneWidget);
   });
 
-  testWidgets('compact preview keeps two columns at phone widths', (
+  testWidgets('compact preview remains a horizontal rail at phone widths', (
     tester,
   ) async {
     final pets = List.generate(
@@ -162,8 +162,8 @@ void main() {
 
       final cards = find.byType(GuardianDashboardPetCard);
       expect(
-        tester.getTopLeft(cards.at(0)).dy,
-        tester.getTopLeft(cards.at(1)).dy,
+        tester.getTopLeft(cards.at(1)).dx,
+        greaterThan(tester.getTopLeft(cards.at(0)).dx),
       );
       expect(tester.getSize(cards.first).width, lessThanOrEqualTo(168));
       expect(tester.takeException(), isNull);

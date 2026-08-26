@@ -111,21 +111,20 @@ void main() {
     expect(find.byKey(const Key('global_events_add_app_bar')), findsOneWidget);
   });
 
-  testWidgets(
-    'add app bar button opens Health/Weight/Other type picker sheet',
-    (tester) async {
-      await tester.pumpWidget(buildEventsScreen());
-      await tester.pumpAndSettle();
+  testWidgets('add app bar button opens Events and Weight entry picker sheet', (
+    tester,
+  ) async {
+    await tester.pumpWidget(buildEventsScreen());
+    await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const Key('global_events_add_app_bar')));
-      await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('global_events_add_app_bar')));
+    await tester.pumpAndSettle();
 
-      expect(find.text('Add an event'), findsOneWidget);
-      expect(find.byIcon(Icons.medical_services_outlined), findsOneWidget);
-      expect(find.text('Weight'), findsOneWidget);
-      expect(find.text('Other'), findsNWidgets(2));
-    },
-  );
+    expect(find.text('Add an event'), findsOneWidget);
+    expect(find.byIcon(Icons.medical_services_outlined), findsOneWidget);
+    expect(find.text('Events'), findsWidgets);
+    expect(find.text('Weight entry'), findsOneWidget);
+  });
 
   testWidgets('add picker: tapping Health routes to /health/add', (
     tester,

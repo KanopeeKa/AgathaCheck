@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/widgets/dashboard_section.dart';
+import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../../health_tracking/presentation/widgets/due_event_card.dart';
 import '../../../../health_tracking/presentation/widgets/mobile_due_event_row.dart';
 import '../../../../pet_profile/presentation/widgets/pet_list/home_event_actions.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
+import '../../widgets/guardian_illustrated_empty_state.dart';
 import 'guardian_dashboard_helpers.dart';
 
 /// A due entry that has been optimistically marked complete on the compact
-/// mobile list, retained at [previewIndex] through the real server refresh so
+/// Care preview, retained at [previewIndex] through the real server refresh so
 /// its approved completed presentation stays visible in place.
 class _OptimisticCompletion {
   const _OptimisticCompletion({
@@ -24,14 +24,14 @@ class _OptimisticCompletion {
   /// The entry snapshot captured when the user confirmed completion.
   final HealthEntry entry;
 
-  /// The index this item held in the five-item mobile preview at completion.
+  /// The index this item held in its Care preview at completion.
   final int previewIndex;
 }
 
-/// Due and Overdue events dashboard section — top 5 items within remind window.
+/// Guardian Care dashboard preview with one combined, date-ordered list.
 ///
-/// On compact phone widths (<[_mobileBreakpoint]dp) each due entry is rendered
-/// as a [MobileDueEventRow] with a calm, touch-safe completion affordance.
+/// Each preview entry is rendered as a [MobileDueEventRow] with a calm,
+/// touch-safe completion affordance.
 ///
 /// This widget owns list-level optimistic completion state: after the user
 /// confirms completion in the mark-complete sheet, the entry is retained in
@@ -48,8 +48,6 @@ class _OptimisticCompletion {
 /// A compact progress indicator keeps cached refresh visibly distinct from
 /// settled data.
 ///
-/// On tablet/desktop widths the existing [DueEventCard] is used unchanged, and
-/// the loading/error presentation from the provider is shown as before.
 class GuardianUpcomingEventsSection extends ConsumerStatefulWidget {
   const GuardianUpcomingEventsSection({
     super.key,
@@ -61,10 +59,6 @@ class GuardianUpcomingEventsSection extends ConsumerStatefulWidget {
   final VoidCallback? onAddEvent;
 
   static const previewLimit = 5;
-
-  /// Viewport width below which the compact mobile row layout is used.
-  /// Distinct from the 900dp desk breakpoint in [GuardianOperationsDeskLayout].
-  static const _mobileBreakpoint = 600.0;
 
   @override
   ConsumerState<GuardianUpcomingEventsSection> createState() =>
@@ -122,31 +116,30 @@ class _GuardianUpcomingEventsSectionState
     setState(() => _completed.remove(entry.id));
   }
 
-  /// Builds the ordered five-item mobile preview by merging fresh due entries
+  /// Builds the ordered Care preview by merging fresh entries
   /// with retained optimistic-completed items at their original indices.
   ///
-  /// Completed items keep their captured [previewIndex]; remaining due entries
+  /// Completed items keep their captured [previewIndex]; remaining entries
   /// (excluding any still present that are already tracked as completed) fill
   /// the other slots in order. Total is capped at [previewLimit].
   List<_PreviewItem> _buildMobilePreview(List<HealthEntry> dueEntries) {
-    // Fresh due entries that are not currently tracked as optimistically
-    // completed, in server order.
-    final freshDue = dueEntries
-        .where((e) => !_completed.containsKey(e.id))
-        .toList();
-
-    // Completed items sorted by their captured preview index.
     final completedItems = _completed.values.toList()
       ..sort((a, b) => a.previewIndex.compareTo(b.previewIndex));
+    final completedIds = completedItems.map((item) => item.entry.id).toSet();
+
+    // Fresh entries that are not currently tracked as optimistically completed
+    // in this tab, in server order.
+    final freshDue = dueEntries
+        .where((e) => !completedIds.contains(e.id))
+        .toList();
 
     final result = <_PreviewItem?>[];
 
     // Place completed items at their captured indices first.
     for (final c in completedItems) {
-      final index = c.previewIndex.clamp(
-        0,
-        GuardianUpcomingEventsSection.previewLimit - 1,
-      );
+      final index = c.previewIndex
+          .clamp(0, GuardianUpcomingEventsSection.previewLimit - 1)
+          .toInt();
       while (result.length <= index) {
         result.add(null);
       }
@@ -184,14 +177,29 @@ class _GuardianUpcomingEventsSectionState
     List<HealthEntry> dueEntries,
     Map<String, Pet> petMap,
     AppLocalizations l,
+    String emptyMessage,
+    bool hasAnyCare,
   ) {
     final items = _buildMobilePreview(dueEntries);
     if (items.isEmpty) {
-      return Text(
-        l.homeNoDueEvents,
-        style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-          color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-        ),
+      if (!hasAnyCare) {
+        return GuardianIllustratedEmptyState(
+          key: const Key('guardian_dashboard_empty_care'),
+          assetPath: 'assets/dashboard/guardian-empty-care.png',
+          title: l.guardianEmptyCareTitle,
+          body: l.guardianEmptyCareBody,
+          actionLabel: l.addAnEvent,
+          actionKey: const Key('guardian_dashboard_empty_care_action'),
+          onAction: widget.onAddEvent,
+        );
+      }
+      return GuardianIllustratedEmptyState(
+        key: const Key('guardian_dashboard_empty_care_clear'),
+        title: l.guardianEmptyCareClearTitle,
+        body: emptyMessage,
+        actionLabel: l.viewAll,
+        actionIcon: Icons.calendar_month_outlined,
+        onAction: () => context.go('/g/events'),
       );
     }
     return _MobileDueEventList(
@@ -209,136 +217,128 @@ class _GuardianUpcomingEventsSectionState
     final entriesAsync = ref.watch(healthEntriesNotifierProvider);
     final pets = widget.pets;
 
-    return DashboardSection(
-      title: l.dueAndOverdue,
-      headerAction: widget.onAddEvent == null
-          ? null
-          : TextButton.icon(
-              onPressed: widget.onAddEvent,
-              icon: const Icon(Icons.add, size: 18),
-              label: Text(l.addAnEvent),
-            ),
-      previewBuilder: (ctx) {
-        return LayoutBuilder(
-          builder: (ctx, constraints) {
-            final useMobileRows =
-                constraints.maxWidth <
-                GuardianUpcomingEventsSection._mobileBreakpoint;
-
-            // On AsyncData: update the snapshot and render normally.
-            if (entriesAsync is AsyncData<List<HealthEntry>>) {
-              final entries = entriesAsync.value;
-              final dueEntries = GuardianTodayCarePriorities.forPets(
-                entries: entries,
-                pets: pets,
-                now: DateTime.now(),
-              ).all;
-              final petMap = {for (final p in pets) p.id: p};
-
-              // Update the cached snapshot for future loading frames.
-              // This is a side-effect during build but is safe here: it only
-              // writes a List reference and never triggers a setState.
-              _lastDueEntriesSnapshot = dueEntries;
-
-              if (useMobileRows) {
-                return _buildMobileContent(ctx, dueEntries, petMap, l);
-              }
-
-              // Desktop / tablet path — unchanged.
-              if (dueEntries.isEmpty) {
-                return Text(
-                  l.homeNoDueEvents,
-                  style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-                  ),
-                );
-              }
-
-              final preview = dueEntries
-                  .take(GuardianUpcomingEventsSection.previewLimit)
-                  .toList();
-
-              return Column(
-                children: preview
-                    .map(
-                      (entry) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: DueEventCard(
-                          entry: entry,
-                          pet: petMap[entry.petId],
-                          showActions: true,
-                        ),
-                      ),
-                    )
-                    .toList(),
-              );
-            }
-
-            // On AsyncLoading: for mobile, render from the cached snapshot so
-            // the optimistic completed row stays visible during the server
-            // refresh. For desktop/tablet, show the spinner as before.
-            if (entriesAsync is AsyncLoading) {
-              if (useMobileRows &&
-                  (_lastDueEntriesSnapshot.isNotEmpty ||
-                      _completed.isNotEmpty)) {
-                final petMap = {for (final p in pets) p.id: p};
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildMobileContent(
-                      ctx,
-                      _lastDueEntriesSnapshot,
-                      petMap,
-                      l,
-                    ),
-                    const SizedBox(height: 8),
-                    Semantics(
-                      container: true,
-                      liveRegion: true,
-                      child: SizedBox(
-                        key: Key('guardian_due_events_refreshing'),
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
-                  ],
-                );
-              }
-              // Desktop/tablet loading, or mobile with no snapshot yet.
-              return const SizedBox(
-                height: 24,
-                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-              );
-            }
-
-            // AsyncError stays distinct from an empty due list and remains
-            // recoverable without changing the authoritative provider flow.
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  color: Theme.of(ctx).colorScheme.error,
+    return Semantics(
+      container: true,
+      label: l.careEyebrow,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Text(
+                l.careEyebrow,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: AppColorTokens.guardianActive,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
                 ),
-                const SizedBox(height: 8),
-                Text(l.careLoadError),
-                TextButton.icon(
-                  onPressed: () => ref
-                      .read(healthEntriesNotifierProvider.notifier)
-                      .refresh(),
-                  icon: const Icon(Icons.refresh, size: 18),
-                  label: Text(l.retry),
-                ),
-              ],
-            );
-          },
-        );
-      },
-      endLink: DashboardSectionLink(
-        label: l.allEvents,
-        onPressed: () => context.go('/g/events'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          if (entriesAsync is AsyncData<List<HealthEntry>>)
+            _careData(context, entriesAsync.value, pets, l)
+          else if (entriesAsync is AsyncLoading)
+            _careLoading(context, pets, l)
+          else
+            _careError(context, ref, l),
+        ],
       ),
+    );
+  }
+
+  Widget _careData(
+    BuildContext context,
+    List<HealthEntry> entries,
+    List<Pet> pets,
+    AppLocalizations l,
+  ) {
+    final priorities = GuardianTodayCarePriorities.forPets(
+      entries: entries,
+      pets: pets,
+      now: DateTime.now(),
+    );
+    _lastDueEntriesSnapshot = priorities.all;
+    return _careContent(context, priorities, pets, l);
+  }
+
+  Widget _careLoading(
+    BuildContext context,
+    List<Pet> pets,
+    AppLocalizations l,
+  ) {
+    if (_lastDueEntriesSnapshot.isEmpty && _completed.isEmpty) {
+      return const SizedBox(
+        height: 56,
+        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      );
+    }
+    final priorities = GuardianTodayCarePriorities.forPets(
+      entries: _lastDueEntriesSnapshot,
+      pets: pets,
+      now: DateTime.now(),
+    );
+    return Column(
+      children: [
+        _careContent(context, priorities, pets, l),
+        const SizedBox(height: 8),
+        const SizedBox(
+          key: Key('guardian_due_events_refreshing'),
+          height: 20,
+          width: 20,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      ],
+    );
+  }
+
+  Widget _careContent(
+    BuildContext context,
+    GuardianTodayCarePriorities priorities,
+    List<Pet> pets,
+    AppLocalizations l,
+  ) {
+    final careEntries = priorities.all;
+    final petMap = {for (final pet in pets) pet.id: pet};
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildMobileContent(
+          context,
+          careEntries,
+          petMap,
+          l,
+          l.noCareDue,
+          priorities.all.isNotEmpty,
+        ),
+        if (careEntries.length > GuardianUpcomingEventsSection.previewLimit)
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              key: const Key('guardian_dashboard_care_view_all'),
+              onPressed: () => context.go('/g/events'),
+              child: Text(l.viewAll),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _careError(BuildContext context, WidgetRef ref, AppLocalizations l) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Icon(Icons.error_outline, color: AppColorTokens.danger),
+        const SizedBox(height: 8),
+        Text(l.careLoadError),
+        TextButton.icon(
+          onPressed: () =>
+              ref.read(healthEntriesNotifierProvider.notifier).refresh(),
+          icon: const Icon(Icons.refresh, size: 18),
+          label: Text(l.retry),
+        ),
+      ],
     );
   }
 }

@@ -14,12 +14,14 @@ import '../config/drawer_menu_config.dart';
 import '../providers/experience_providers.dart';
 import '../utils/experience_theme.dart';
 import 'experience_section_drawer.dart';
+import 'experience_workspace_toggle.dart';
+import 'guardian_bottom_navigation.dart';
 import '../../../organization/presentation/utils/org_screen_theme.dart';
 
 /// Shell scaffold shared by guardian and organisation experience screens.
 ///
 /// Navigation reversal (phase-1-navigation.md):
-/// - Hamburger on section roots (`/g/home`, `/o/orgs`, `/account`).
+/// - Workspace toggle on section roots (`/g/home`, `/o/orgs`, `/account`).
 /// - Back arrow on all other screens (Navigator.canPop → pop; else → section root).
 /// - Persistent bell with combined unread badge opens notification panel (endDrawer).
 /// - No Home button.
@@ -65,32 +67,60 @@ class ExperienceShellScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(organisationMembershipVisibilitySyncProvider);
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final shellTheme = themeForAppExperience(theme, experience);
     final isRoot = _isRoot();
+    if (isRoot) {
+      ref.watch(organisationMembershipVisibilitySyncProvider);
+    }
     final isOrg = experience == AppExperience.organization;
+    final usesGuardianPrimaryNavigation =
+        experience == AppExperience.guardian &&
+        GuardianBottomNavigation.supports(currentLocation) &&
+        GuardianBottomNavigation.isCompact(MediaQuery.sizeOf(context).width);
+    final appBarColor = usesGuardianPrimaryNavigation
+        ? AppColorTokens.guardianPrimary
+        : AppColorTokens.background;
+    final appBarForeground = usesGuardianPrimaryNavigation
+        ? AppColorTokens.inverse
+        : null;
     final useOrgTitle = isOrg && screenTitle != null && orgNavVariant != null;
+    final showWorkspaceToggle = isRoot;
+    final showShelterWorkspace =
+        isRoot &&
+        (currentLocation.startsWith('/o/') ||
+            ref.watch(showOrganisationSectionProvider));
+    final workspaceToggleWidth = showShelterWorkspace ? 184.0 : 132.0;
+    final hideTitleForAccessibleCompactHeader =
+        isRoot &&
+        MediaQuery.sizeOf(context).width < 360 &&
+        MediaQuery.textScalerOf(context).scale(14) > 18;
 
     return Theme(
       data: shellTheme,
       child: Scaffold(
-        backgroundColor: isOrg ? orgListScaffoldBackground(context) : null,
+        backgroundColor: isOrg
+            ? orgListScaffoldBackground(context)
+            : experience == AppExperience.guardian
+            ? AppColorTokens.background
+            : null,
         appBar: AppBar(
           automaticallyImplyLeading: false,
           toolbarHeight: 64,
-          backgroundColor: AppColorTokens.background,
+          leadingWidth: showWorkspaceToggle ? workspaceToggleWidth : null,
+          backgroundColor: appBarColor,
+          foregroundColor: appBarForeground,
           surfaceTintColor: Colors.transparent,
           scrolledUnderElevation: 0,
           elevation: 0,
           leading: isRoot
-              ? Builder(
-                  builder: (ctx) => IconButton(
-                    key: const Key('experience_settings_menu'),
-                    icon: const Icon(Icons.menu),
-                    tooltip: l.sectionDrawerTooltip,
-                    onPressed: () => Scaffold.of(ctx).openDrawer(),
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: ExperienceWorkspaceToggle(
+                    currentLocation: currentLocation,
+                    onDarkBackground: usesGuardianPrimaryNavigation,
+                    showShelter: showShelterWorkspace,
                   ),
                 )
               : IconButton(
@@ -100,7 +130,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
                   onPressed: () => _onBack(context),
                 ),
           centerTitle: true,
-          title: screenTitle == null
+          title: screenTitle == null || hideTitleForAccessibleCompactHeader
               ? const SizedBox.shrink()
               : useOrgTitle
               ? OrgShellAppBarTitle(
@@ -111,7 +141,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
               : AppLogoTitle(
                   title: screenTitle!,
                   experience: experience,
-                  useShellLogo: experience == AppExperience.guardian,
+                  useShellLogo: usesGuardianPrimaryNavigation,
                 ),
           actions: [
             if (contextualActions.isNotEmpty) ...contextualActions,
@@ -120,7 +150,9 @@ class ExperienceShellScaffold extends ConsumerWidget {
                 width: 16,
                 indent: 18,
                 endIndent: 18,
-                color: theme.colorScheme.outlineVariant,
+                color: usesGuardianPrimaryNavigation
+                    ? AppColorTokens.guardianLight
+                    : theme.colorScheme.outlineVariant,
               ),
             Builder(builder: (ctx) => const ShellNotificationBell()),
           ],
@@ -128,6 +160,9 @@ class ExperienceShellScaffold extends ConsumerWidget {
         drawer: const ExperienceSectionDrawer(),
         endDrawer: const NotificationPanel(),
         body: child,
+        bottomNavigationBar: usesGuardianPrimaryNavigation
+            ? GuardianBottomNavigation(currentLocation: currentLocation)
+            : null,
       ),
     );
   }

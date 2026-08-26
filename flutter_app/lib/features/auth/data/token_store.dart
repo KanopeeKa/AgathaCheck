@@ -87,7 +87,7 @@ class SecureTokenStore implements TokenStore {
     if (_migrationAttempted || _legacyPrefs == null) return;
     _migrationAttempted = true;
     await migrateLegacyTokensFromPrefs(
-      prefs: _legacyPrefs!,
+      prefs: _legacyPrefs,
       readSecure: (key) => _storage.read(key: key),
       writeSecure: (key, value) => _storage.write(key: key, value: value),
     );
@@ -95,8 +95,8 @@ class SecureTokenStore implements TokenStore {
 
   Future<void> _clearLegacyPrefs() async {
     if (_legacyPrefs == null) return;
-    await _legacyPrefs!.remove(_accessTokenKey);
-    await _legacyPrefs!.remove(_refreshTokenKey);
+    await _legacyPrefs.remove(_accessTokenKey);
+    await _legacyPrefs.remove(_refreshTokenKey);
   }
 
   @override

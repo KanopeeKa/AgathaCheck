@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 /// See [docs/design/tokens.md]. Prefer [Theme.of] / [ExperienceColors] in UI code.
 abstract final class AppColorTokens {
   // Foundations
-  static const Color background = Color(0xFFF7F4EF);
+  static const Color background = Color(0xFFEAE8E8);
   static const Color surface = Color(0xFFFFFDFC);
   static const Color surfaceAlt = Color(0xFFF2ECE6);
   static const Color border = Color(0xFFE4DDD6);
@@ -23,7 +23,7 @@ abstract final class AppColorTokens {
   static const Color guardianPrimary = Color(0xFF755B68);
   static const Color guardianHover = Color(0xFF664C59);
   static const Color guardianActive = Color(0xFF573F4B);
-  static const Color guardianLight = Color(0xFFF4EEF2);
+  static const Color guardianLight = Color(0xFFE8E1E3);
   static const Color guardianSoft = Color(0xFFE7DCE2);
 
   // Guardian care uses the same plum family as the rest of the Guardian
@@ -33,7 +33,7 @@ abstract final class AppColorTokens {
   static const Color guardianCareLight = guardianLight;
 
   // Public landing: warm paper, Guardian plum, and Shelter teal.
-  static const Color landingCanvas = Color(0xFFF7F4EF);
+  static const Color landingCanvas = background;
   static const Color landingSurface = Color(0xFFFFFDFC);
   static const Color landingInk = heading;
   static const Color landingInkSoft = Color(0xFF52606D);

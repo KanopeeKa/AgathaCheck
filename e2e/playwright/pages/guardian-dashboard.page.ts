@@ -1,7 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
-  dashboardSectionGroup,
   flutterGotoUrl,
   petCardByName,
   petCardHiddenLocator,
@@ -17,39 +16,26 @@ import {
 export class GuardianDashboardPage {
   constructor(private readonly page: Page) {}
 
-  private section(name: 'myPets' | 'dueAndOverdue' | 'myVets'): Locator {
-    return dashboardSectionGroup(this.page, name);
+  private region(name: RegExp): Locator {
+    return this.page.getByRole('region', { name }).first();
   }
 
   async open(): Promise<void> {
     await this.page.goto(flutterGotoUrl('/g/home'));
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/g\/home(?:\?|$)/, 60_000);
-    await this.section('myPets').waitFor({ state: 'visible', timeout: 60_000 });
+    await this.region(/My Pets|Mes animaux/i).waitFor({ state: 'visible', timeout: 60_000 });
   }
 
-  async expectExactlyThreeManagementSections(): Promise<void> {
-    await expect(this.section('myPets')).toBeVisible();
-    await expect(this.section('dueAndOverdue')).toBeVisible();
-    await expect(this.section('myVets')).toBeVisible();
-    // Today is an orientation layer above the three management domains — not a fourth section.
-    await this.expectTodayOrientation();
+  async expectTodayCareRegions(): Promise<void> {
+    await expect(this.region(/My Pets|Mes animaux/i)).toBeVisible();
+    await expect(this.region(/CARE|SOINS/i)).toBeVisible();
+    await expect(this.region(/My Vets|Mes vétérinaires/i)).toBeVisible();
+    await expect(this.region(/Fostering Sessions|Sessions d'accueil/i)).toBeVisible();
   }
 
-  today(): Locator {
-    return this.page
-      .getByRole('region', { name: /Today|Aujourd'hui/i })
-      .or(this.page.getByText(/^Today$|^Aujourd'hui$/i))
-      .first();
-  }
-
-  async expectTodayOrientation(): Promise<void> {
-    await expect(
-      this.page
-        .getByRole('heading', { name: /Today|Aujourd'hui/i })
-        .or(this.today())
-        .first(),
-    ).toBeVisible();
+  careRegion(): Locator {
+    return this.region(/CARE|SOINS/i);
   }
 
   async expectNoPendingDashboardBanner(): Promise<void> {
@@ -98,11 +84,18 @@ export class GuardianDashboardPage {
   }
 
   async openEvents(): Promise<void> {
-    await this.section('dueAndOverdue')
-      .getByRole('button', { name: /Events|View all|See all/i })
-      .or(this.section('dueAndOverdue').getByText(/Events|View all|See all/i))
-      .first()
-      .click();
+    const careTab = this.page
+      .getByRole('button', { name: /^Care$|^Soins$/i })
+      .first();
+    if (await careTab.isVisible().catch(() => false)) {
+      await careTab.click();
+    } else {
+      await this.careRegion()
+        .getByRole('button', { name: /Events|View all|Voir tout|See all/i })
+        .or(this.careRegion().getByText(/Events|View all|Voir tout|See all/i))
+        .first()
+        .click();
+    }
     await waitForFlutterRoutePattern(this.page, /\/g\/events(?:\?|$)/, 30_000);
   }
 
@@ -112,7 +105,7 @@ export class GuardianDashboardPage {
 
   async expectVetVisible(name: string): Promise<void> {
     await expect(
-      this.section('myVets')
+      this.region(/My Vets|Mes vétérinaires/i)
         .getByRole('button', { name: new RegExp(name, 'i') })
         .or(semanticsByName(this.page, new RegExp(name, 'i')))
         .first(),
@@ -120,7 +113,7 @@ export class GuardianDashboardPage {
   }
 
   async openVet(name: string): Promise<void> {
-    const vet = this.section('myVets')
+    const vet = this.region(/My Vets|Mes vétérinaires/i)
       .getByRole('button', { name: new RegExp(name, 'i') })
       .or(semanticsByName(this.page, new RegExp(name, 'i')))
       .first();
