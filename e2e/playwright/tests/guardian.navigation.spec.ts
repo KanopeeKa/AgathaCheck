@@ -8,7 +8,11 @@ import { LandingPage } from '../pages/landing.page';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
-import { createOrganization, createPet, signupUser } from '../support/api';
+import {
+  createOrganization,
+  createPet,
+  signupUser,
+} from '../support/api';
 import {
   reachAuthenticatedHome,
   waitForFlutterRoutePattern,
@@ -60,6 +64,7 @@ test.describe('Guardian navigation', () => {
     await prepareLiveApiAccess(page, baseURL());
     const user = await signupUser(baseURL());
     await createOrganization(baseURL(), user.accessToken, { name: 'Harbour Shelter' });
+    await createPet(baseURL(), user.accessToken, 'TogglePet');
     await loginGuardian(page, user.email, user.password);
 
     const dashboard = new GuardianDashboardPage(page);

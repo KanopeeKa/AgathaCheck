@@ -171,7 +171,8 @@ test.describe('Guardian dashboard', () => {
     await expect(dueSection).toBeVisible();
     await expect(
       dueSection
-        .getByText(/Start their care routine|Commencez leur routine de soins/i)
+        .getByRole('button', { name: /Add an event|Ajouter un événement/i })
+        .or(semanticsByName(page, /Start their care routine|Commencez leur routine de soins/i))
         .first(),
     ).toBeVisible();
     await expect(
