@@ -79,13 +79,31 @@ void main() {
       expect(GuardianBottomNavigation.indexFor('/account'), 4);
     });
 
-    test('is only available on the five Guardian primary destinations', () {
+    test('maps nested Guardian workspace routes to the closest tab', () {
+      expect(GuardianBottomNavigation.indexFor('/g/vets'), 0);
+      expect(GuardianBottomNavigation.indexFor('/g/vets/vet-1'), 0);
+      expect(GuardianBottomNavigation.indexFor('/pet/pet-1'), 1);
+      expect(GuardianBottomNavigation.indexFor('/pet/pet-1/timeline'), 1);
+      expect(GuardianBottomNavigation.indexFor('/pet/pet-1/weight'), 1);
+      expect(GuardianBottomNavigation.indexFor('/pet/pet-1/health-issues'), 1);
+      expect(GuardianBottomNavigation.indexFor('/pet/pet-1/events'), 2);
+      expect(
+        GuardianBottomNavigation.indexFor('/pet/pet-1/events/entry-1'),
+        2,
+      );
+      expect(GuardianBottomNavigation.indexFor('/add'), 1);
+      expect(GuardianBottomNavigation.indexFor('/account/orgs/org-1'), 4);
+    });
+
+    test('recognises Guardian workspace routes', () {
       expect(GuardianBottomNavigation.supports('/g/home'), isTrue);
       expect(GuardianBottomNavigation.supports('/g/pets'), isTrue);
       expect(GuardianBottomNavigation.supports('/g/events'), isTrue);
       expect(GuardianBottomNavigation.supports('/g/fostering'), isTrue);
       expect(GuardianBottomNavigation.supports('/account'), isTrue);
-      expect(GuardianBottomNavigation.supports('/g/vets/vet-1'), isFalse);
+      expect(GuardianBottomNavigation.supports('/g/vets/vet-1'), isTrue);
+      expect(GuardianBottomNavigation.supports('/pet/pet-1'), isTrue);
+      expect(GuardianBottomNavigation.supports('/g/onboarding'), isFalse);
       expect(GuardianBottomNavigation.supports('/o/orgs'), isFalse);
     });
 
@@ -156,6 +174,28 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('guardian_bottom_navigation')), findsNothing);
+    });
+
+    testWidgets('appears on nested Guardian routes below 600px width', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildCompactShell(
+          prefs: prefs,
+          currentLocation: '/pet/pet-1',
+          viewport: const Size(390, 844),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('guardian_bottom_navigation')),
+        findsOneWidget,
+      );
+      expect(find.text('Pets'), findsOneWidget);
     });
   });
 }
