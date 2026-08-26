@@ -77,7 +77,7 @@ schema.
 8. Administrative notifications referencing an open object show an "Action needed" affordance
    until `resolvedAt` is set (D9) — resolved automatically when the underlying object transitions,
    never by a manual "mark resolved" tap from the recipient.
-9. `/account` is reachable only from the drawer's bottom-pinned item — no other entry point.
+9. `/account` is reachable from the drawer's bottom-pinned item. **Superseded (transitional):** D-v4-2 also allows `/account` from the Guardian compact bottom bar until the drawer is retired.
 10. Sign out lives inside `/account`, not as a separate global drawer row (matches the brief
     exactly — reverses nothing here since nav-v2 already had sign out in a utility block, just
     relocates it into Account specifically).

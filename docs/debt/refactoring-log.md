@@ -14,7 +14,20 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 ---
 
-## organisation-people-permissions-v4 — People, roles, foster (2026-08-06)
+## guardian-ops-desk-754-b9bd — Guardian operations desk standards (2026-08-26)
+
+**Goal:** Harden PR #754 Guardian operations desk to AgathaTrack standards — navigation decisions, atomic PR slices, a11y, modularity, BDD/E2E.  
+**Plan:** `.agents/plans/guardian-ops-desk-754-b9bd.md` · **Integration:** `cursor/guardian-ops-desk-754-b9bd-integration-b9bd` · **Control issue:** #755 · **Source PR:** #754
+
+| Phase | Outcome | Branch | Status |
+|-------|---------|--------|--------|
+| 1 | Navigation decisions + design doc reconciliation | `cursor/guardian-ops-desk-decisions-b9bd` | In progress |
+| 2 | Flutter 3.44 API compatibility extract | `cursor/guardian-ops-desk-flutter344-b9bd` | Pending |
+| 3 | Guardian operations desk core UI | `cursor/guardian-ops-desk-core-b9bd` | Pending |
+| 4 | Shell hardening + modularity | `cursor/guardian-ops-desk-hardening-b9bd` | Pending |
+| 5 | BDD/E2E completeness | `cursor/guardian-ops-desk-e2e-b9bd` | Pending |
+
+---
 
 **Goal:** Unified People directory, retire `foster` wire role (badge instead), staged permissions editor, org tier defaults, foster invite + onboarding timeline.  
 **Plan:** `docs/domains/shelter/changes/organisation-people-permissions-v4-delivery-plan.md` · **Decisions:** D-v4-* in `shelter-decisions.md`
