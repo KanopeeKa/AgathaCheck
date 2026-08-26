@@ -24,16 +24,40 @@ class GuardianBottomNavigation extends StatelessWidget {
 
   static bool isCompact(double width) => width < compactBreakpoint;
 
-  static bool supports(String path) => _destinations.any(
-    (destination) => path == destination || path.startsWith('$destination/'),
-  );
+  /// Whether [path] belongs to the Guardian (My Pets) workspace.
+  static bool supports(String path) {
+    if (path.startsWith('/o/')) return false;
+    if (path == '/g/onboarding' || path.startsWith('/g/onboarding/')) {
+      return false;
+    }
+    return path.startsWith('/g/') ||
+        path.startsWith('/pet/') ||
+        path == '/add' ||
+        path.startsWith('/edit/') ||
+        path == '/account' ||
+        path.startsWith('/account/') ||
+        path.startsWith('/health');
+  }
 
   static int indexFor(String path) {
-    if (path == '/g/pets' || path.startsWith('/g/pets/')) return 1;
-    if (path == '/g/events' || path.startsWith('/g/events/')) return 2;
-    if (path == '/g/fostering' || path.startsWith('/g/fostering/')) return 3;
     if (path == '/account' || path.startsWith('/account/')) return 4;
+    if (path == '/g/fostering' || path.startsWith('/g/fostering/')) return 3;
+    if (_isCarePath(path)) return 2;
+    if (_isPetsPath(path)) return 1;
     return 0;
+  }
+
+  static bool _isCarePath(String path) {
+    if (path == '/g/events' || path.startsWith('/g/events/')) return true;
+    if (path.startsWith('/health')) return true;
+    return RegExp(r'^/pet/[^/]+/(events|health|other)(?:/|$)').hasMatch(path);
+  }
+
+  static bool _isPetsPath(String path) {
+    if (path == '/g/pets' || path.startsWith('/g/pets/')) return true;
+    if (path == '/add' || path.startsWith('/add')) return true;
+    if (RegExp(r'^/edit/').hasMatch(path)) return true;
+    return path.startsWith('/pet/');
   }
 
   @override
