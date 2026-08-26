@@ -494,6 +494,37 @@ void main() {
       expect(scaffold.drawer, isNull);
     });
 
+    testWidgets(
+      'relocates workspace toggle to rail leading slot on section root',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(720, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(
+          _buildApp(
+            prefs: prefs,
+            experience: AppExperience.guardian,
+            currentLocation: '/g/home',
+            viewport: const Size(720, 900),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final rail = find.byKey(const Key('guardian_navigation_rail'));
+        expect(
+          find.descendant(
+            of: rail,
+            matching: find.byKey(const Key('experience_workspace_toggle')),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('experience_workspace_toggle')),
+          findsOneWidget,
+        );
+      },
+    );
+
     testWidgets('keeps drawer available below 600px width', (tester) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));

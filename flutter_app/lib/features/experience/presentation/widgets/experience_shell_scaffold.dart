@@ -99,8 +99,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
         ? AppColorTokens.inverse
         : null;
     final useOrgTitle = isOrg && screenTitle != null && orgNavVariant != null;
-    final showWorkspaceToggleInAppBar =
-        isRoot && !usesGuardianNavigationSidebar;
+    final showWorkspaceToggleInAppBar = isRoot && !usesGuardianLeadingNav;
     final showShelterWorkspace =
         isRoot &&
         (currentLocation.startsWith('/o/') ||

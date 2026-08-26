@@ -38,6 +38,7 @@ class GuardianNavigationSidebar extends ConsumerWidget {
       child: ColoredBox(
         color: AppColorTokens.background,
         child: SafeArea(
+          top: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
