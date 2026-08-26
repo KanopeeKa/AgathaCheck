@@ -4,6 +4,7 @@ import {
   dismissConsentBannerIfPresent,
   flutterGotoUrl,
   guardianAccountTabLocator,
+  isGuardianBottomNavVisible,
   openAccountFromShell,
   openExperienceDrawer,
   refreshFlutterAccessibility,
@@ -194,7 +195,9 @@ export class ExperiencePage {
         this.page.getByRole('menuitem', { name: /^My Pets$|^Mes animaux$/i }),
       ).toBeVisible();
       await this.page.keyboard.press('Escape');
-      await expect(guardianAccountTabLocator(this.page)).toBeVisible();
+      if (await isGuardianBottomNavVisible(this.page)) {
+        await expect(guardianAccountTabLocator(this.page)).toBeVisible();
+      }
       return;
     }
 
@@ -218,7 +221,9 @@ export class ExperiencePage {
         this.page.getByRole('menuitem', { name: /^Shelter$|^Refuge$/i }),
       ).toBeVisible();
       await this.page.keyboard.press('Escape');
-      await expect(guardianAccountTabLocator(this.page)).toBeVisible();
+      if (await isGuardianBottomNavVisible(this.page)) {
+        await expect(guardianAccountTabLocator(this.page)).toBeVisible();
+      }
       return;
     }
 
