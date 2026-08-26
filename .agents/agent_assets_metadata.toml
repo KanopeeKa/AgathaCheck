@@ -112,3 +112,17 @@ uri = "file://attached_assets/generated_images/agathatrack-landing-plum-new-teal
 type = "image"
 title = "AgathaTrack landing — Protective arch logo refinement"
 description = "Landing concept with a thicker rounded plum shelter arch and smaller plum dog / Shelter-teal cat silhouettes, giving the mark a clearer sense of protection."
+
+[[outputs]]
+id = "HVu80vbfcohkInKG0E-cG"
+uri = "file://screenshots/guardian-operations-mobile-snapshot.jpg"
+type = "image"
+title = "Guardian Today — mobile visual snapshot"
+description = "The final Guardian Operations Desk mobile state: warm cream canvas, compact pet tiles, care actions, Shelter context, and the selected plum-and-teal logo."
+
+[[outputs]]
+id = "g0x-4QMWdNzLhSUoIEAn0"
+uri = "file://screenshots/guardian-cockpit-sunlit-citrus.jpg"
+type = "image"
+title = "Guardian Cockpit — Sunlit Citrus"
+description = "Standalone export of the selected Sunlit Citrus Guardian Cockpit design-board frame."

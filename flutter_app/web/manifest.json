@@ -3,7 +3,7 @@
     "short_name": "AgathaTrack",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#F7F4EF",
+    "background_color": "#EAE8E8",
     "theme_color": "#1D7C84",
     "description": "Calm care coordination for pet guardians, shelters, and foster teams.",
     "orientation": "portrait-primary",

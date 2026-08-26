@@ -20,6 +20,7 @@ needs_web_build() {
   local changed_source
   changed_source="$(
     find flutter_app/lib flutter_app/web \
+      flutter_app/assets \
       flutter_app/pubspec.yaml flutter_app/pubspec.lock \
       -type f -newer "${WEB_BUILD_ENTRYPOINT}" -print -quit
   )"

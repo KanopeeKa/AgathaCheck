@@ -48,11 +48,6 @@ class AdminContactCard extends ConsumerWidget {
     if (await canLaunchUrl(uri)) await launchUrl(uri);
   }
 
-  Future<void> _launchMail(String email) async {
-    final uri = Uri(scheme: 'mailto', path: email);
-    if (await canLaunchUrl(uri)) await launchUrl(uri);
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -68,8 +63,6 @@ class AdminContactCard extends ConsumerWidget {
       phoneVisibility: phoneVisibility,
       phone: contactPhone,
     );
-    // D-v3-MSG-1: hide message affordance until DEF-MSG (#569).
-    const showMessage = false;
     final photoUrl = resolveStaticAssetUrl(
       person.photoUrl ?? '',
       apiBaseUrl: ref.read(apiBaseUrlProvider),
@@ -173,27 +166,16 @@ class AdminContactCard extends ConsumerWidget {
                         ),
                     ],
                   ),
-                  if (showCall || showMessage) ...[
+                  if (showCall) ...[
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        if (showCall)
-                          _ActionButton(
-                            key: Key('admin_contact_call_${person.recordId}'),
-                            icon: Icons.phone_outlined,
-                            label: l.adminContactsCall,
-                            onPressed: () => _launchTel(contactPhone),
-                          ),
-                        if (showCall && showMessage) const SizedBox(width: 8),
-                        if (showMessage)
-                          _ActionButton(
-                            key: Key(
-                              'admin_contact_message_${person.recordId}',
-                            ),
-                            icon: Icons.message_outlined,
-                            label: l.adminContactsMessage,
-                            onPressed: () => _launchMail(person.email!),
-                          ),
+                        _ActionButton(
+                          key: Key('admin_contact_call_${person.recordId}'),
+                          icon: Icons.phone_outlined,
+                          label: l.adminContactsCall,
+                          onPressed: () => _launchTel(contactPhone),
+                        ),
                       ],
                     ),
                   ],

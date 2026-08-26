@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../experience/domain/entities/app_experience.dart';
-import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../../organization/presentation/widgets/pet_foster_placement_section.dart';
 import '../../domain/services/pet_detail_actions.dart';

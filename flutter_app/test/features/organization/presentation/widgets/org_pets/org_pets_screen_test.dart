@@ -6,7 +6,6 @@ import 'package:pet_profile_app/features/auth/presentation/providers/auth_provid
 import 'package:pet_profile_app/features/organization/domain/entities/archived_pet.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/foster_placement.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/org_pets_screen_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/screens/organization_pets_screen.dart';
 import 'package:pet_profile_app/features/organization/presentation/utils/org_pets_care_utils.dart';

@@ -6,7 +6,6 @@ import '../../../../auth/presentation/providers/auth_providers.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/admin_contact_self_prefs.dart';
 import '../../../domain/services/admin_contacts.dart';
-import '../../providers/admin_contact_providers.dart';
 import '../../providers/organization_providers.dart';
 import '../admin_contacts/admin_contact_card.dart';
 

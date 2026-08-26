@@ -16,8 +16,6 @@ import 'package:pet_profile_app/features/vet/presentation/providers/vet_provider
 import 'package:pet_profile_app/features/vet/presentation/screens/vet_detail_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
-import '../../../../helpers/fakes.dart';
-
 // ---------------------------------------------------------------------------
 // Controllable fake notifiers
 // ---------------------------------------------------------------------------

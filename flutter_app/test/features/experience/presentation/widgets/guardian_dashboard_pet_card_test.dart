@@ -38,7 +38,7 @@ void main() {
     );
   }
 
-  testWidgets('uses compact photo-led proportions and a concise care line', (
+  testWidgets('uses a compact landscape card with a circular photo and care line', (
     tester,
   ) async {
     const pet = Pet(id: 'miso', name: 'Miso', species: 'Cat');
@@ -50,7 +50,7 @@ void main() {
       tester.getSize(
         find.byKey(const Key('guardian_dashboard_pet_photo_miso')),
       ),
-      const Size(160, 104),
+      const Size(56, 56),
     );
     expect(find.text('Due today'), findsOneWidget);
     expect(find.bySemanticsLabel('Miso, My Pets, Due today'), findsOneWidget);
@@ -104,7 +104,7 @@ void main() {
   ) async {
     const missing = Pet(id: 'missing', name: 'Missing', species: 'Dog');
     await tester.pumpWidget(buildCard(missing));
-    expect(find.byType(Icon), findsOneWidget);
+    expect(find.byIcon(Icons.pets), findsOneWidget);
 
     const malformed = Pet(
       id: 'malformed',
@@ -113,7 +113,7 @@ void main() {
       photoPath: 'not-base64',
     );
     await tester.pumpWidget(buildCard(malformed));
-    expect(find.byType(Icon), findsOneWidget);
+    expect(find.byIcon(Icons.pets), findsOneWidget);
   });
 
   testWidgets('keeps base64, local assets, and passed-away treatment supported', (

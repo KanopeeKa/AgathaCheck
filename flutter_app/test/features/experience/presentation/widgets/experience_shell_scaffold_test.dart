@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
@@ -45,6 +46,9 @@ Widget _buildApp({
           ),
         ),
       ),
+      showOrganisationSectionProvider.overrideWith(
+        (ref) => showOrganisationSection,
+      ),
       combinedUnreadNotificationCountProvider.overrideWith(
         (ref) => combinedUnread,
       ),
@@ -72,6 +76,55 @@ Widget _buildApp({
   );
 }
 
+Widget _buildWorkspaceRouterApp({
+  required SharedPreferences prefs,
+  required String initialLocation,
+}) {
+  final router = GoRouter(
+    initialLocation: initialLocation,
+    routes: [
+      GoRoute(
+        path: '/g/home',
+        builder: (context, state) => ExperienceShellScaffold(
+          experience: AppExperience.guardian,
+          currentLocation: state.uri.path,
+          child: const Center(child: Text('Guardian home')),
+        ),
+      ),
+      GoRoute(
+        path: '/o/orgs',
+        builder: (context, state) => ExperienceShellScaffold(
+          experience: AppExperience.organization,
+          currentLocation: state.uri.path,
+          child: const Center(child: Text('Shelter home')),
+        ),
+      ),
+    ],
+  );
+
+  return ProviderScope(
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(prefs),
+      showOrganisationSectionProvider.overrideWith((ref) => true),
+      combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+      guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+      orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+      authProvider.overrideWith((ref) => FakeAuthNotifier()),
+      organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+    ],
+    child: MaterialApp.router(
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      routerConfig: router,
+    ),
+  );
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late SharedPreferences prefs;
@@ -95,6 +148,7 @@ void main() {
               ),
             ),
           ),
+          showOrganisationSectionProvider.overrideWith((ref) => false),
           combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
           guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
           orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
@@ -138,6 +192,7 @@ void main() {
               ),
             ),
           ),
+          showOrganisationSectionProvider.overrideWith((ref) => false),
           combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
           guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
           orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
@@ -180,7 +235,7 @@ void main() {
     );
   });
 
-  testWidgets('baseline: section root shows hamburger, not back arrow', (
+  testWidgets('section root shows workspace toggle, not back arrow', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -192,11 +247,21 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('experience_settings_menu')), findsOneWidget);
+    expect(
+      find.byKey(const Key('experience_workspace_toggle')),
+      findsOneWidget,
+    );
+    expect(find.text('My Pets'), findsOneWidget);
+    expect(find.byIcon(Icons.keyboard_arrow_down), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const Key('experience_workspace_pill'))).height,
+      32,
+    );
+    expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
     expect(find.byKey(const Key('experience_back_button')), findsNothing);
   });
 
-  testWidgets('baseline: non-root path shows back arrow, not hamburger', (
+  testWidgets('non-root path shows back arrow, not workspace toggle', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -209,10 +274,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
+    expect(find.byKey(const Key('experience_workspace_toggle')), findsNothing);
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
 
-  testWidgets('baseline: org section root /o/orgs shows hamburger', (
+  testWidgets('org section root /o/orgs shows Shelter workspace button', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -225,7 +291,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('experience_settings_menu')), findsOneWidget);
+    expect(
+      find.byKey(const Key('experience_workspace_toggle')),
+      findsOneWidget,
+    );
+    expect(find.text('Shelter'), findsOneWidget);
+    expect(find.byIcon(Icons.keyboard_arrow_down), findsOneWidget);
+    expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
     expect(find.byKey(const Key('experience_back_button')), findsNothing);
   });
 
@@ -282,50 +354,7 @@ void main() {
     expect(find.byKey(const Key('experience_nav_home')), findsNothing);
   });
 
-  testWidgets(
-    'baseline: drawer hides Organisation by default for guardian-only users',
-    (tester) async {
-      await tester.pumpWidget(
-        _buildApp(
-          prefs: prefs,
-          experience: AppExperience.guardian,
-          currentLocation: '/g/home',
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byKey(const Key('experience_settings_menu')));
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('drawer_guardian')), findsOneWidget);
-      expect(find.byKey(const Key('drawer_organisation')), findsNothing);
-      expect(find.byKey(const Key('drawer_account')), findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    'baseline: drawer shows Organisation when show-org pref is enabled',
-    (tester) async {
-      await tester.pumpWidget(
-        _buildApp(
-          prefs: prefs,
-          experience: AppExperience.guardian,
-          currentLocation: '/g/home',
-          showOrganisationSection: true,
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byKey(const Key('experience_settings_menu')));
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('drawer_guardian')), findsOneWidget);
-      expect(find.byKey(const Key('drawer_organisation')), findsOneWidget);
-      expect(find.byKey(const Key('drawer_account')), findsOneWidget);
-    },
-  );
-
-  testWidgets('baseline: drawer does not contain deprecated items', (
+  testWidgets('guardian root reveals Shelter when it is available', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -338,19 +367,54 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('experience_settings_menu')));
+    await tester.tap(find.byKey(const Key('experience_workspace_toggle')));
     await tester.pumpAndSettle();
 
-    // These items must not exist in the new unified drawer
-    expect(find.byKey(const Key('drawer_my_pets')), findsNothing);
     expect(
-      find.byKey(const Key('drawer_guardian_notifications')),
-      findsNothing,
+      find.byKey(const Key('experience_workspace_menu_shelter')),
+      findsOneWidget,
     );
-    expect(find.byKey(const Key('drawer_org_notifications')), findsNothing);
-    expect(find.byKey(const Key('drawer_guardian_events')), findsNothing);
-    expect(find.byKey(const Key('drawer_settings')), findsNothing);
-    expect(find.byKey(const Key('drawer_logout')), findsNothing);
+  });
+
+  testWidgets('workspace toggle navigates to Shelter and remembers it', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _buildWorkspaceRouterApp(prefs: prefs, initialLocation: '/g/home'),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('experience_workspace_toggle')));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const Key('experience_workspace_menu_shelter')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Shelter home'), findsOneWidget);
+    expect(
+      prefs.getString('last_app_section'),
+      AppExperience.organization.wire,
+    );
+  });
+
+  testWidgets('workspace toggle navigates to My Pets and remembers it', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _buildWorkspaceRouterApp(prefs: prefs, initialLocation: '/o/orgs'),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('experience_workspace_toggle')));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const Key('experience_workspace_menu_guardian')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Guardian home'), findsOneWidget);
+    expect(prefs.getString('last_app_section'), AppExperience.guardian.wire);
   });
 
   testWidgets('baseline: org non-root path shows back button', (tester) async {
@@ -365,6 +429,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
+    expect(find.byKey(const Key('experience_workspace_toggle')), findsNothing);
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
 }

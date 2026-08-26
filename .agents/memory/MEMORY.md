@@ -36,6 +36,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Tool-output token scrambling](tool-output-token-scrambling.md) — grep/bash can mangle source tokens in file content (e.g. weight→ln); read tool shows truth, edits use real tokens.
 - [Health entry completion semantics](health-entry-completion.md) — UI derives overdue/completed from next_due_date only (no status field); mark-taken must advance/sentinel next_due_date in the backend.
 - [Guardian mobile completion](guardian-mobile-completion.md) — compact dashboard completion keeps a reversible list-level preview while the server remains authoritative.
+- [Guardian dashboard test contracts](guardian-dashboard-test-contracts.md) — route transitions retain stale finders; verify current keyed controls and structural dashboard state.
 - [Canonical product name](canonical-product-name.md) — use AgathaTrack in current product UI and copy; AgathaCheck is the legacy name.
 - [Shelter terminology and evolving design](shelter-terminology-and-evolving-design.md) — Shelter is the canonical teal mode; evolve prior references screen by screen.
 - [JWT secret dev/test fallback](jwt-secret-dev-fallback.md) — keep the prod-gated 'default_secret' fallback; CI/Jest sign tokens with it and workflows set no secret.
@@ -46,6 +47,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Replit Flutter preview compatibility](replit-flutter-preview-compatibility.md) — preview toolchain can lag the app’s Dart requirement; never treat an older CI bundle as current-source visual verification.
 - [GitHub API publishing fallback](github-api-publish-fallback.md) — when shell Git auth is unavailable but GitHub OAuth works, publish a verified branch through guarded Git data API calls.
 - [Mockup sandbox hygiene](mockup-sandbox-registration.md) — use managed sandboxes; keep nested installs artifact-scoped and prevent verification builds from dirtying tracked dist output.
+- [Canvas versus app preview](canvas-vs-app-preview.md) — canvas iframes and the main application preview are separate render targets; verify the selected component path before editing.
 - [Body-supplied organization_id validation](body-supplied-org-id-validation.md) — pet create/update must verify caller is in organization_users before persisting org_id; backend enforces 403 on non-member.
 - [UAT live E2E & deploy triage](uat-live-e2e-triage.md) — migrations/ownership, auth bypass, **`E2E=1` required on UAT Node**, API seed-before-login, 500/401/429 symptom map; full runbook `docs/e2e/uat-live-operations-runbook.md`.
 - [UAT deploy tiers (pre-E2E pipeline)](../../docs/e2e/uat-deploy-tiers.md) — pre-uat-e2e → promote → light deploy; nightly live WAF E2E advisory

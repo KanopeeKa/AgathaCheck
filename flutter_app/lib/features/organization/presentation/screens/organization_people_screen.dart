@@ -7,7 +7,6 @@ import '../../domain/services/admin_contacts.dart';
 import '../../domain/services/foster_visibility.dart';
 import '../../domain/services/org_people.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
-import '../providers/org_provider_people.dart';
 import '../providers/organization_providers.dart';
 import '../utils/org_people_route_params.dart';
 import '../widgets/admin_contacts/admin_contact_invite_dialog.dart';

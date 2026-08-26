@@ -89,13 +89,19 @@ void main() {
     );
   }
 
-  testWidgets('account screen uses shell hamburger and section rows', (
+  testWidgets('account screen uses shell workspace toggle and section rows', (
     tester,
   ) async {
     await tester.pumpWidget(buildApp());
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('experience_settings_menu')), findsOneWidget);
+    expect(
+      find.byKey(const Key('experience_workspace_toggle')),
+      findsOneWidget,
+    );
+    expect(find.text('My Pets'), findsOneWidget);
+    expect(find.byIcon(Icons.keyboard_arrow_down), findsOneWidget);
+    expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
     expect(find.byKey(const Key('account_hamburger')), findsNothing);
     expect(find.byKey(const Key('account_identity_summary')), findsOneWidget);
     expect(find.byKey(const Key('account_my_details')), findsOneWidget);

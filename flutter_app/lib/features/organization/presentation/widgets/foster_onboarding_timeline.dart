@@ -7,7 +7,6 @@ import '../../domain/entities/foster_onboarding_step.dart';
 import '../../domain/entities/org_person.dart';
 import '../../domain/entities/organization_member.dart';
 import '../../domain/services/org_permissions.dart';
-import '../providers/org_provider_deps.dart';
 import '../providers/org_provider_list.dart';
 import '../providers/org_provider_people.dart';
 
@@ -62,7 +61,7 @@ class _FosterOnboardingTimelineState
         .firstOrNull;
     if (org?.role == null) return false;
     return hasPermission(
-      OrgMemberRole.fromWire(org!.role!),
+      OrgMemberRole.fromWire(org!.role),
       widget.orgId,
       'review_foster_onboarding',
     );

@@ -14,3 +14,18 @@ When Flutter 3.44 runs `pub get` here, it temporarily resolves several SDK-pinne
 **Why:** A visual-preview command must not silently create dependency changes that look ready to commit, especially when they come from Flutter's SDK constraints rather than a deliberate package update.
 
 **How to apply:** Treat the lockfile as immutable in preview-only tooling. Refuse to run if it already has uncommitted edits, back it up before `pub get`, and restore it after the build.
+
+### Screenshot capture in CPU-only browsers
+
+The Replit screenshot browser can report a CPU-only rendering fallback and
+capture a blank Flutter web canvas even when the workflow is running, the app
+shell returns HTTP 200, and the browser console has no application errors.
+
+**Why:** A blank static capture in that environment is not sufficient evidence
+of a broken Flutter UI, and repeated captures do not wait for or restore the
+GPU rendering path.
+
+**How to apply:** Validate source changes with Flutter widget tests, analysis,
+workflow logs, and an HTTP response check. Use a dedicated HTML/React design
+artifact for an inspectable visual snapshot; do not describe the blank Flutter
+capture as a visual pass.

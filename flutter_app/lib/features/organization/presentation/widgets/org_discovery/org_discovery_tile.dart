@@ -6,7 +6,6 @@ import '../../../../../core/providers/api_base_url_provider.dart';
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../core/utils/resolve_static_asset_url.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_profile/presentation/widgets/pet_card.dart';
 import '../../../domain/entities/discoverable_organization.dart';
 import '../../../domain/entities/organization.dart';
 import '../../utils/org_screen_theme.dart';

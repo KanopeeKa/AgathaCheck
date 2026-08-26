@@ -37,7 +37,7 @@ class VetFilterBar extends ConsumerWidget {
             Expanded(
               child: DropdownButtonFormField<String?>(
                 key: const Key('vet_org_filter_dropdown'),
-                value: selectedFilter,
+                initialValue: selectedFilter,
                 decoration: InputDecoration(
                   labelText: l.all,
                   isDense: true,

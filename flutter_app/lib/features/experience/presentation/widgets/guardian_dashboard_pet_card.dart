@@ -44,52 +44,83 @@ class GuardianDashboardPetCard extends StatelessWidget {
         margin: EdgeInsets.zero,
         child: InkWell(
           onTap: onTap,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                key: Key('guardian_dashboard_pet_photo_${pet.id}'),
-                height: 104,
-                child: _photo(context),
-              ),
-              Container(height: 3, color: ownership.accentColor),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      pet.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                Container(
+                  key: Key('guardian_dashboard_pet_photo_${pet.id}'),
+                  width: 56,
+                  height: 56,
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: ownership.accentColor.withValues(alpha: 0.18),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: ownership.accentColor,
+                      width: 1.5,
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      careLabel,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    if (relationship != l.myPets) ...[
-                      const SizedBox(height: 2),
+                  ),
+                  child: ClipOval(child: _photo(context)),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        relationship,
+                        pet.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Icon(
+                            careState == GuardianTodayPetCareState.overdue
+                                ? Icons.priority_high_rounded
+                                : careState ==
+                                      GuardianTodayPetCareState.dueToday
+                                ? Icons.schedule_outlined
+                                : Icons.check_circle_outline,
+                            size: 14,
+                            color: _careColor(),
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              careLabel,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: _careColor(),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (relationship != l.myPets &&
+                          MediaQuery.textScalerOf(context).scale(12) <= 18) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          relationship,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -108,6 +139,15 @@ class GuardianDashboardPetCard extends StatelessWidget {
       GuardianTodayPetCareState.dueToday => l.urgencyDueToday,
       GuardianTodayPetCareState.upcoming => l.careStatusUpcoming,
       GuardianTodayPetCareState.clear => l.careStatusAllClear,
+    };
+  }
+
+  Color _careColor() {
+    return switch (careState) {
+      GuardianTodayPetCareState.overdue => AppColorTokens.danger,
+      GuardianTodayPetCareState.dueToday => AppColorTokens.guardianPrimary,
+      GuardianTodayPetCareState.upcoming => AppColorTokens.organizationActive,
+      GuardianTodayPetCareState.clear => AppColorTokens.success,
     };
   }
 

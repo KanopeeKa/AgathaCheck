@@ -40,7 +40,7 @@ echo "==> Flutter (codegen + analyze + test)"
 (
   cd flutter_app
   dart run build_runner build --delete-conflicting-outputs
-  flutter analyze --no-fatal-warnings --no-fatal-infos
+  flutter analyze
   flutter test --concurrency=1 --exclude-tags=integration
 )
 

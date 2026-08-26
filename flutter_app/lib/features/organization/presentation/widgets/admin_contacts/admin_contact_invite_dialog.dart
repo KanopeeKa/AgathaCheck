@@ -57,7 +57,7 @@ Future<void> showAdminContactInviteDialog({
                 Text(l.selectRole, style: Theme.of(ctx).textTheme.bodySmall),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  value: selectedRole,
+                  initialValue: selectedRole,
                   decoration: InputDecoration(
                     labelText: l.selectRole,
                     border: OutlineInputBorder(

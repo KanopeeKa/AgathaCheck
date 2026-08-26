@@ -8,3 +8,9 @@ The preview launcher refuses to build when `flutter_app/pubspec.lock` is dirty. 
 **Why:** A stale/incompatible Flutter test invocation rewrote the lockfile after validation. The preview launcher then correctly declined to overwrite a dirty lockfile before running its build.
 
 **How to apply:** Before restarting the preview after Flutter tooling work, confirm the lockfile is clean. If the managed preview resolver consistently writes a particular transitive resolution, commit that stable resolution rather than repeatedly restoring a conflicting local one. Avoid concurrent Flutter commands while launching the preview.
+
+Flutter asset updates must be included in the preview launcher's freshness check; otherwise a restart can serve a stale `build/web` asset even when the source asset is correct.
+
+**Why:** The launcher originally watched Dart, web, and pubspec files but not the asset directory, so an updated logo was silently omitted from the rebuilt preview.
+
+**How to apply:** Treat `flutter_app/assets` as build input alongside source files. If an asset looks stale after a restart, compare the source and `build/web` copies before debugging the UI.

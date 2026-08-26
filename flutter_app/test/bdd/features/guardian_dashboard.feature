@@ -5,18 +5,18 @@ Feature: Guardian dashboard
 
   @implemented
   @P0
-  Scenario: Dashboard shows exactly three sections
+  Scenario: Guardian Today prioritises pets and care
     Given I am signed in as a guardian with pets, due health entries, and vets
     When I view the Guardian dashboard
-    Then I should see "My Pets", "Due and Overdue", and "My Vets" sections only
+    Then I should see a horizontal pet preview, a CARE region, veterinary actions, and fostering context
 
   @implemented
   @P0
-  Scenario: Today orientation prioritises attention above the management sections
+  Scenario: Care preview separates Due and Soon
     Given I am signed in as a guardian with overdue and due-today care
     When I view the Guardian dashboard
-    Then I should see a Today orientation before the management sections
-    And I should see the most urgent care first
+    Then I should see the three most urgent Due care items first
+    And I should be able to open the Soon preview
 
   @implemented
   @P0
@@ -28,10 +28,10 @@ Feature: Guardian dashboard
 
   @implemented
   @P0
-  Scenario: Care preview orders overdue, due today, and upcoming items
+  Scenario: Care preview links to the full Care destination
     Given I am signed in as a guardian with overdue, due-today, and upcoming care
     When I view the Guardian dashboard
-    Then the Due and Overdue preview should show those priorities in urgency order
+    Then the Due preview should show overdue then due-today care in urgency order
     And I should be able to open the full Events screen
 
   @implemented
@@ -52,10 +52,10 @@ Feature: Guardian dashboard
 
   @implemented
   @P1
-  Scenario: Empty Guardian dashboard shows first-use guidance without false alerts
+  Scenario: Empty Guardian dashboard gives a truthful Care state without false alerts
     Given I am signed in as a guardian with no pets
     When I view the Guardian dashboard
-    Then I should see first-use Today guidance
+    Then I should see a clear Care empty state
     And I should not see an overdue care alert
 
   @implemented

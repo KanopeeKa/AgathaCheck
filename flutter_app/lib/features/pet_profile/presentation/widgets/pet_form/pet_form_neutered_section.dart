@@ -48,33 +48,33 @@ class PetFormNeuteredSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 4),
-        Row(
-          children: [
-            SizedBox(
-              width: 120,
-              child: RadioListTile<bool>(
-                key: const Key('pet_neutered_yes'),
-                title: const Text('Yes'),
-                value: true,
-                groupValue: isNeutered,
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                onChanged: (val) => onNeuteredChanged(val),
+        RadioGroup<bool>(
+          groupValue: isNeutered,
+          onChanged: onNeuteredChanged,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 120,
+                child: RadioListTile<bool>(
+                  key: const Key('pet_neutered_yes'),
+                  title: const Text('Yes'),
+                  value: true,
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                ),
               ),
-            ),
-            SizedBox(
-              width: 120,
-              child: RadioListTile<bool>(
-                key: const Key('pet_neutered_no'),
-                title: const Text('No'),
-                value: false,
-                groupValue: isNeutered,
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                onChanged: (val) => onNeuteredChanged(val),
+              SizedBox(
+                width: 120,
+                child: RadioListTile<bool>(
+                  key: const Key('pet_neutered_no'),
+                  title: const Text('No'),
+                  value: false,
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         if (isNeutered == true)
           InkWell(

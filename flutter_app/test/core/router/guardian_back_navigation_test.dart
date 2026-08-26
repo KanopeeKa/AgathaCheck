@@ -30,7 +30,6 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:pet_profile_app/core/providers/analytics_providers.dart';
-import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:pet_profile_app/core/router/vet_routes.dart'
     show buildVetExperienceRoutes;
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';

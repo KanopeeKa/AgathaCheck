@@ -67,7 +67,7 @@ Skill: `/pre-push-verify`. Full human checklist: `CONTRIBUTING.md`.
 
 ```bash
 cd flutter_app && dart run build_runner build --delete-conflicting-outputs   # when mocks change
-cd flutter_app && flutter analyze --no-fatal-warnings --no-fatal-infos
+cd flutter_app && flutter analyze
 cd flutter_app && flutter test --concurrency=1 --exclude-tags=integration
 ```
 

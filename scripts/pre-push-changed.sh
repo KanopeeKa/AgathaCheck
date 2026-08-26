@@ -188,7 +188,7 @@ run_flutter() {
     if $needs_codegen; then
       dart run build_runner build --delete-conflicting-outputs
     fi
-    flutter analyze --no-fatal-warnings --no-fatal-infos
+    flutter analyze
     # Target feature test dirs when possible
     local test_dirs=()
     while IFS= read -r f; do

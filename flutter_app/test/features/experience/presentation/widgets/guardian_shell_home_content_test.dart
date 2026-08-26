@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
-import 'package:pet_profile_app/core/widgets/dashboard_section.dart';
+import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_shell_home_content.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_operations_desk_layout.dart';
-import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_today_orientation.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_list_controller.dart';
@@ -70,22 +69,37 @@ void main() {
     );
   }
 
-  testWidgets('baseline: dashboard shows exactly three sections', (
+  testWidgets('dashboard presents pets, care, vets, and foster context', (
     tester,
   ) async {
     await tester.pumpWidget(buildDashboard());
     await tester.pumpAndSettle();
 
-    expect(find.text('My Pets'), findsOneWidget);
-    expect(find.text('Due and Overdue'), findsOneWidget);
-    expect(find.text('My vets'), findsOneWidget);
-    expect(find.text('All Events'), findsOneWidget);
+    expect(
+      find.byKey(const Key('guardian_dashboard_pet_preview')),
+      findsOneWidget,
+    );
+    expect(find.text('CARE'), findsOneWidget);
+    expect(find.text('Fostering Sessions'), findsOneWidget);
+    expect(find.text('Shelters'), findsOneWidget);
+    expect(find.byKey(const Key('guardian_dashboard_add_care')), findsNothing);
+    expect(find.byKey(const Key('guardian_dashboard_add_vet')), findsNothing);
+    expect(
+      find.byKey(const Key('guardian_dashboard_empty_care_action')),
+      findsOneWidget,
+    );
     expect(find.text('Manage veterinarians'), findsOneWidget);
+    expect(
+      tester
+          .widget<GuardianDeskSectionCard>(
+            find.byKey(const Key('guardian_dashboard_care_section')),
+          )
+          .tint,
+      AppColorTokens.guardianLight,
+    );
     expect(find.text('Pending foster placements'), findsNothing);
     expect(find.text('Pending Shares'), findsNothing);
-    expect(find.byKey(const Key('guardian_today_orientation')), findsOneWidget);
-    expect(find.byType(GuardianTodayOrientation), findsOneWidget);
-    expect(find.byType(DashboardSection), findsNWidgets(3));
+    expect(find.byKey(const Key('guardian_today_orientation')), findsNothing);
   });
 
   testWidgets(
@@ -102,19 +116,24 @@ void main() {
       expect(
         find.descendant(
           of: find.byType(GuardianMyPetsSection),
-          matching: find.byType(Wrap),
+          matching: find.byType(ListView),
         ),
         findsOneWidget,
       );
     },
   );
 
-  testWidgets('empty state when no pets', (tester) async {
+  testWidgets('keeps the add-pet action available when no pets exist', (
+    tester,
+  ) async {
     await tester.pumpWidget(buildDashboard(petList: []));
     await tester.pumpAndSettle();
 
-    expect(find.text('No pets yet'), findsOneWidget);
-    expect(find.text('My Pets'), findsOneWidget);
+    expect(
+      find.byKey(const Key('guardian_dashboard_pet_preview')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('guardian_dashboard_add_pet')), findsOneWidget);
   });
 
   testWidgets('uses a two-column desk layout on wide screens', (tester) async {
@@ -157,41 +176,19 @@ void main() {
     );
   });
 
-  testWidgets('maps home provider states into the orientation layer', (
-    tester,
-  ) async {
+  testWidgets('keeps loading and error states within Care', (tester) async {
     await tester.pumpWidget(
       buildDashboard(healthNotifier: _LoadingHealthEntriesNotifier()),
     );
     await tester.pump();
-    expect(
-      find.byKey(const Key('guardian_today_orientation_loading')),
-      findsOneWidget,
-    );
-
-    await tester.pumpWidget(buildDashboard(petList: []));
-    await tester.pump();
-    await tester.pump();
-    expect(
-      find.byKey(const Key('guardian_today_orientation_firstUse')),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('guardian_dashboard_add_care')), findsNothing);
 
     final errorNotifier = _RetryingErrorHealthEntriesNotifier();
     await tester.pumpWidget(buildDashboard(healthNotifier: errorNotifier));
     await tester.pump();
     await tester.pump();
-    final orientation = find.byKey(const Key('guardian_today_orientation'));
-    expect(
-      find.descendant(
-        of: orientation,
-        matching: find.byKey(const Key('guardian_today_orientation_error')),
-      ),
-      findsOneWidget,
-    );
-    await tester.tap(
-      find.descendant(of: orientation, matching: find.text('Retry')),
-    );
+    expect(find.text('We couldn\'t load care right now.'), findsOneWidget);
+    await tester.tap(find.text('Retry'));
     expect(errorNotifier.refreshCalls, 1);
   });
 
@@ -259,12 +256,16 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Gérer les vétérinaires'),
         120,
-        scrollable: find.byType(Scrollable),
+        scrollable: find.byWidgetPredicate(
+          (widget) =>
+              widget is Scrollable &&
+              widget.axisDirection == AxisDirection.down,
+        ),
       );
 
       expect(
-        find.byKey(const Key('guardian_today_orientation')),
-        findsOneWidget,
+        find.byKey(const Key('guardian_dashboard_add_care')),
+        findsNothing,
       );
       expect(find.text('Gérer les vétérinaires'), findsOneWidget);
       expect(tester.takeException(), isNull);

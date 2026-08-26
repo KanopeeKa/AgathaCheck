@@ -334,6 +334,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myPets => 'My Pets';
 
   @override
+  String get workspaceShelter => 'Shelter';
+
+  @override
+  String get workspaceSwitcherLabel => 'Choose your workspace';
+
+  @override
   String get myFosteredPets => 'My Fostered Pets';
 
   @override
@@ -408,6 +414,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noPetsYet => 'No pets yet';
 
   @override
+  String get guardianEmptyPetsTitle => 'Who are we caring for?';
+
+  @override
+  String get guardianEmptyPetsBody =>
+      'Add your first pet to start keeping track of their care.';
+
+  @override
   String get noPetsMatchFilter => 'No pets match this filter.';
 
   @override
@@ -453,6 +466,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addVetFirst => 'Add a veterinarian. No vets yet.';
 
   @override
+  String get guardianEmptyVetTitle => 'Keep your vet close at hand';
+
+  @override
+  String get guardianEmptyVetBody =>
+      'Add your veterinary clinic so their details are here when you need them.';
+
+  @override
   String get selectVeterinarian => 'Select veterinarian';
 
   @override
@@ -480,6 +500,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addWeightEntry => 'Add weight entry';
+
+  @override
+  String get addEventEventsOption => 'Events';
+
+  @override
+  String get addEventWeightEntryOption => 'Weight entry';
 
   @override
   String get selectDate => 'Select date for weight entry';
@@ -607,6 +633,92 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careLoadError => 'We couldn\'t load care right now.';
+
+  @override
+  String get careEyebrow => 'CARE';
+
+  @override
+  String get petsNavLabel => 'Pets';
+
+  @override
+  String get careNavLabel => 'Care';
+
+  @override
+  String careDueTab(int count) {
+    return 'Due $count';
+  }
+
+  @override
+  String get careSoonTab => 'Soon';
+
+  @override
+  String get noCareDue => 'Nothing needs care today.';
+
+  @override
+  String get noCareSoon => 'No upcoming care in the current reminder window.';
+
+  @override
+  String get guardianEmptyCareTitle => 'Start their care routine';
+
+  @override
+  String get guardianEmptyCareBody =>
+      'Add your first care item to keep track of everyday care, treatments and appointments.';
+
+  @override
+  String get guardianEmptyCareClearTitle => 'All caught up';
+
+  @override
+  String get viewAll => 'View all';
+
+  @override
+  String get fosteringSessions => 'Fostering Sessions';
+
+  @override
+  String get shelters => 'Shelters';
+
+  @override
+  String get fostering => 'Fostering';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get connected => 'Connected';
+
+  @override
+  String get noFosteringSessions => 'No active fostering sessions yet.';
+
+  @override
+  String get guardianEmptyFosteringTitle => 'No fostering sessions right now';
+
+  @override
+  String get guardianEmptyFosteringBody =>
+      'When a new session starts, you\'ll find it here.';
+
+  @override
+  String get guardianEmptyShelterTitle => 'Connect with a shelter';
+
+  @override
+  String get guardianEmptyShelterBody =>
+      'Your shelter relationships, onboarding and fostering activity will live here.';
+
+  @override
+  String get connectShelter => 'Connect with a shelter';
+
+  @override
+  String get sessionDetailsUnavailable =>
+      'Session details are unavailable until a foster relationship is active.';
+
+  @override
+  String activeFosteringCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count active fosterings',
+      one: '1 active fostering',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get tomorrow => 'Tomorrow';

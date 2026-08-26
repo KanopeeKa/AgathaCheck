@@ -37,7 +37,7 @@ class AdminContactSelfPrefsSection extends ConsumerWidget {
         const SizedBox(height: 12),
         DropdownButtonFormField<AdminPhoneVisibility>(
           key: const Key('admin_contact_phone_visibility'),
-          value: prefs.phoneVisibility,
+          initialValue: prefs.phoneVisibility,
           decoration: InputDecoration(
             labelText: l.adminContactsPhoneVisibilityLabel,
             border: const OutlineInputBorder(),
@@ -57,7 +57,7 @@ class AdminContactSelfPrefsSection extends ConsumerWidget {
         const SizedBox(height: 12),
         DropdownButtonFormField<AdminMessageNotificationChannel>(
           key: const Key('admin_contact_message_channel'),
-          value: prefs.messageChannel,
+          initialValue: prefs.messageChannel,
           decoration: InputDecoration(
             labelText: l.adminContactsMessageChannelLabel,
             border: const OutlineInputBorder(),
