@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/theme/experience_colors.dart';
@@ -340,7 +339,7 @@ class _OrgStep extends StatelessWidget {
         const SizedBox(height: 16),
         DropdownButtonFormField<OrganizationType>(
           key: const Key('onboarding_org_type_field'),
-          value: orgType,
+          initialValue: orgType,
           decoration: InputDecoration(
             labelText: l.organizationType,
             border: const OutlineInputBorder(),
@@ -401,7 +400,7 @@ class _PetStep extends StatelessWidget {
         const SizedBox(height: 16),
         DropdownButtonFormField<String>(
           key: const Key('onboarding_org_pet_species_field'),
-          value: species,
+          initialValue: species,
           decoration: InputDecoration(
             labelText: l.species,
             border: const OutlineInputBorder(),

@@ -51,6 +51,35 @@ For **due events on home** after API seed, call `refreshByRemount()` — the sec
 
 After API seeding, the guardian home `DueEventsSection` does not refresh until the screen remounts. Use `PetListPage.refreshByRemount()` before asserting due entries on `/g/home`. The events-screen assertion in #216 was a temporary workaround.
 
+## Guardian compact bottom nav (D-v4-1)
+
+Viewport **&lt;600px** exposes the five-tab `GuardianBottomNavigation` bar (`Key('guardian_bottom_navigation')`).
+
+| Tab label (EN) | Route | Ready locator (after `waitForFlutterRoutePattern`) |
+|--------------|-------|-----------------------------------------------------|
+| Today | `/g/home` | `GuardianDashboardPage.careRegion()` or My Pets region |
+| Pets | `/g/pets` | `All Pets` / `Tous les animaux` footer or pet list section |
+| Care | `/g/events` | `HealthDashboardPage.expectLoaded()` |
+| Fostering | `/g/fostering` | `Fostering Sessions` / `Sessions d'accueil` heading |
+| Account | `/account` | Account section rows (see account screen tests) |
+
+Page object: `GuardianDashboardPage.openBottomNavTab(label)`, `openFosteringViaBottomNav()`.
+
+Selector order for tabs: `getByRole('button', { name })` → `getByRole('tab', { name })` (Flutter 3.44 semantics).
+
+## Workspace toggle (D-v4-3)
+
+Section roots (`/g/home`, `/o/orgs`, `/account`) show `ExperienceWorkspaceToggle` (`Key('experience_workspace_toggle')`) instead of a back arrow.
+
+| Action | Locator | Post-action ready |
+|--------|---------|-------------------|
+| Assert visible | `GuardianDashboardPage.expectWorkspaceToggleVisible()` | Toggle pill or `Choose your workspace` semantics |
+| Open menu | `openWorkspaceMenu()` | Menu items `My Pets` / `Shelter` (`experience_workspace_menu_*` keys in widget tests) |
+| Switch to Shelter | `selectWorkspaceMenuItem(/^Shelter$|^Refuge$/i)` | `/o/orgs` + `OrganizationListPage.expectLoaded()` |
+| Switch to Guardian | `selectWorkspaceMenuItem(/^My Pets$|^Mes animaux$/i)` | `/g/home` + dashboard care region |
+
+Shelter menu item appears only when org membership makes shelter access eligible (seed with `createOrganization` before login).
+
 ## TODO (next candidates)
 
 - `pet-list.openVets`, `help.goBack`, `notifications.expectBadgeVisible` throw paths

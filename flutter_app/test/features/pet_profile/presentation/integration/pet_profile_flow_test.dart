@@ -3,7 +3,6 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
@@ -42,6 +41,11 @@ final petsOverride = getAllPetsUseCaseProvider.overrideWith(
 );
 final authOverride = authProvider.overrideWith((ref) => FakeAuthNotifier());
 
+class _EmptyPendingOrgInvitesNotifier extends PendingOrgInvitesNotifier {
+  @override
+  Future<List<PendingOrgInvite>> build() async => const [];
+}
+
 void main() {
   group('Pet Profile Integration Flow', () {
     late SharedPreferences prefs;
@@ -62,6 +66,9 @@ void main() {
       fakePetRepositoryOverride,
       vetListProvider.overrideWith(FakeVetListNotifier.new),
       organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
+      pendingOrgInvitesProvider.overrideWith(
+        _EmptyPendingOrgInvitesNotifier.new,
+      ),
       allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
       healthEntriesNotifierProvider.overrideWith(
         () => FakeHealthEntriesNotifier(),
@@ -76,24 +83,37 @@ void main() {
 
     Future<void> pumpGuardianHome(WidgetTester tester) async {
       await pumpApp(tester, frames: 5);
+      await tester.pumpAndSettle();
+      var trackPetsTapped = false;
       for (var i = 0; i < 30; i++) {
         await tester.pump(const Duration(milliseconds: 50));
         final ftueTrackPets = find.byKey(const Key('ftue_action_track_pets'));
-        if (ftueTrackPets.evaluate().isNotEmpty) {
-          await tester.tap(ftueTrackPets);
+        final isTrackPetsRouteActive =
+            ftueTrackPets.evaluate().isNotEmpty &&
+            ModalRoute.of(tester.element(ftueTrackPets))?.isCurrent == true;
+        if (!trackPetsTapped && isTrackPetsRouteActive) {
+          await tester.ensureVisible(ftueTrackPets);
+          await tester.tapAt(tester.getCenter(ftueTrackPets));
           await pumpApp(tester, frames: 5);
+          trackPetsTapped = true;
         }
-        if (find.text('My Pets').evaluate().isNotEmpty &&
-            find.text('No pets yet').evaluate().isNotEmpty) {
+        if (find
+                .byKey(const Key('guardian_dashboard_pet_preview'))
+                .evaluate()
+                .isNotEmpty &&
+            find
+                .byKey(const Key('guardian_dashboard_add_pet'))
+                .evaluate()
+                .isNotEmpty) {
           return;
         }
       }
     }
 
     Future<void> navigateToAddPetForm(WidgetTester tester) async {
-      final l10n = l10nFromTester(tester);
-      final context = tester.element(find.text(l10n.myPets).first);
-      GoRouter.of(context).go('/add');
+      final addPet = find.byKey(const Key('guardian_dashboard_add_pet'));
+      await tester.ensureVisible(addPet);
+      await tester.tapAt(tester.getCenter(addPet));
       await pumpApp(tester, frames: 5);
     }
 
@@ -110,17 +130,15 @@ void main() {
       );
       await pumpGuardianHome(tester);
 
-      final l10n = l10nFromTester(tester);
-
       expect(
-        find.text(l10n.noPetsYet),
+        find.byKey(const Key('guardian_dashboard_pet_preview')),
         findsOneWidget,
-        reason: 'Should show empty state text',
+        reason: 'Should show the empty pet preview rail',
       );
       expect(
-        find.text(l10n.myPets),
-        findsWidgets,
-        reason: 'Should show My pets section on guardian dashboard',
+        find.byKey(const Key('guardian_dashboard_add_pet')),
+        findsOneWidget,
+        reason: 'Should offer an add-pet action on the empty dashboard',
       );
     });
 

@@ -264,7 +264,9 @@
     "Empty Guardian dashboard shows first-use guidance without false alerts": "P1",
     "Pending foster placement surfaces as a notification, not a dashboard banner": "P1",
     "Global events screen shows unified list without tabs": "P1",
-    "Global events screen supports pet and cohort filters": "P1"
+    "Global events screen supports pet and cohort filters": "P1",
+    "Guardian compact bottom nav reaches Pets, Care, Fostering destinations": "P1",
+    "Workspace toggle switches between Guardian and Shelter when available": "P1"
   },
   "organisation_discovery.feature": {
     "Discover Organisations is visible without signing in": "P1",

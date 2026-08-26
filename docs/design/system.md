@@ -3,7 +3,7 @@ title: AgathaTrack design system
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-23
+last_updated: 2026-08-26
 tags: [design, tokens, system]
 ---
 
@@ -52,7 +52,7 @@ component variant. Product UI should consume semantic tokens.
 | Token | Hex | Purpose |
 |---|---:|---|
 | `neutral-50` | `#FFFDFC` | brightest raised surface |
-| `neutral-100` | `#F7F4EF` | warm page background |
+| `neutral-100` | `#EAE8E8` | warm page background |
 | `neutral-200` | `#F2ECE6` | grouped surface |
 | `neutral-300` | `#E4DDD6` | standard border |
 | `neutral-400` | `#D6CBC3` | strong border / drag handle |
@@ -76,7 +76,7 @@ component variant. Product UI should consume semantic tokens.
 | Token | Hex | Purpose |
 |---|---:|---|
 | `plum-50` | `#FBF8FA` | faint guardian tint |
-| `plum-100` | `#F4EEF2` | guardian contextual surface |
+| `plum-100` | `#E8E1E3` | guardian contextual surface |
 | `plum-200` | `#E7DCE2` | guardian soft surface |
 | `plum-300` | `#CDB9C3` | guardian subtle border |
 | `plum-400` | `#A78294` | guardian icon support |
@@ -124,7 +124,7 @@ component variant. Product UI should consume semantic tokens.
 
 ```css
 :root {
-  --color-bg-primary: #F7F4EF;       /* Main app canvas */
+  --color-bg-primary: #EAE8E8;       /* Main app canvas */
   --color-bg-secondary: #FFFDFC;     /* Cards, sheets, menus */
   --color-bg-tertiary: #F2ECE6;      /* Grouped sections, quiet input areas */
   --color-bg-overlay: #1F2937;       /* Dark overlay / snackbar background */
@@ -143,7 +143,7 @@ component variant. Product UI should consume semantic tokens.
   --color-primary-hover: #664C59;    /* Guardian hover */
   --color-primary-active: #573F4B;   /* Guardian pressed */
   --color-primary-disabled: #CDB9C3; /* Disabled Guardian primary */
-  --color-primary-subtle: #F4EEF2;   /* Guardian selected surface */
+  --color-primary-subtle: #E8E1E3;   /* Guardian selected surface */
 
   --color-success: #2B7A2E;          /* Completed / saved state */
   --color-success-subtle: #E8F5E9;   /* Success background */
@@ -159,7 +159,7 @@ component variant. Product UI should consume semantic tokens.
 
 | Context | Primary | Hover | Active | Subtle surface |
 |---|---:|---:|---:|---:|
-| Guardian (default) | `#755B68` | `#664C59` | `#573F4B` | `#F4EEF2` |
+| Guardian (default) | `#755B68` | `#664C59` | `#573F4B` | `#E8E1E3` |
 | Shelter | `#1D7C84` | `#176972` | `#125860` | `#EAF5F5` |
 | Landing/auth | `#755B68` | `#664C59` | `#573F4B` | `#E6F2F2` |
 
@@ -187,7 +187,7 @@ component variant. Product UI should consume semantic tokens.
 
 | Token | Hex | Usage |
 |---|---:|---|
-| `landing-paper` | `#F7F4EF` | warm public canvas |
+| `landing-paper` | `#EAE8E8` | warm public canvas |
 | `landing-panel` | `#FFFDFC` | authentication and care-preview surface |
 | `landing-ink` | `#1F2937` | auth heading / dark text |
 | `landing-ink-soft` | `#52606D` | supporting auth text |

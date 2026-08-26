@@ -11,7 +11,7 @@ class DrawerMenuConfig {
 
   static const contactEmail = 'contact@agathatrack.com';
 
-  /// The three section-root paths where the hamburger is shown.
+  /// The three section-root paths where the workspace toggle is shown.
   static const sectionRootPaths = {'/g/home', '/o/orgs', '/account'};
 
   /// Unified drawer entries: Guardian + Organisation (top), Account (bottom-pinned).

@@ -3,7 +3,7 @@ title: AgathaTrack redesign blueprint
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-08-26
 tags: [design,ui,ux]
 ---
 # AgathaTrack redesign blueprint
@@ -58,7 +58,21 @@ This blueprint implements the decisions below; it does not reinterpret them.
 | Landing/auth | One role-neutral entry path. Experience context resolves after authentication. | Do not ask users to choose Guardian/Shelter/Foster before sign-in. |
 | Branding | Organisations can personalise logo, name, and approved image surfaces only. | System colours, focus, danger, warning, success, and contrast remain product-controlled. |
 
-The governing decisions are D1–D11, D17–D18, D25–D37, D-v2-*, D-v3-*, and D-v4-* in the domain decision docs indexed at `docs/domains/navigation/README.md`.
+The governing decisions are D1–D11, D17–D18, D25–D37, D-v2-*, D-v3-*, D-v4-*, and D-v4-1–D-v4-3 in the domain decision docs indexed at `docs/domains/navigation/README.md`.
+
+---
+
+### 2.1 Guardian Today mobile refinement
+
+The Guardian home uses a content-first mobile treatment. This refinement **supersedes** the earlier three-section visual composition without changing the underlying care, ownership, notification, or Shelter permission contracts.
+
+- The Guardian mobile bar exposes **Today, Pets, Care, Fostering, and Account** (D-v4-1). The workspace toggle and drawer remain for Guardian/Shelter switching; the notification bell remains global.
+- The home begins with a horizontally scrollable, capped four-pet preview and a lightweight Add Pet control; visual section headings may be omitted where the region remains semantically labelled.
+- Care is a pale-plum contextual region with `CARE`, **Due** and **Soon** controls, a total due/overdue count, and no more than three rows per preview. Due is ordered oldest-overdue first, then due today; Soon is ordered soonest first.
+- Direct care completion, refresh, failure rollback, Undo, routing, and the full unified Care destination remain server-authoritative and unchanged.
+- Veterinary contacts remain a lightweight, display-first surface with Add Vet and existing routes.
+- Fostering and Shelters use a pale-teal context. Guardian home only shows details already visible through established fostered-pet relationships; pending placements remain notification-led and unavailable session detail is stated plainly.
+- View all appears only when a preview is truncated. Empty, loading, and error states must never assert that care or sessions are absent when data failed to load.
 
 ---
 
@@ -875,7 +889,7 @@ Use this card before changing any significant screen:
 
 Do not introduce any of the following without a new recorded decision:
 
-- a five-tab bottom navigation bar;
+- ~~a five-tab bottom navigation bar;~~ **Superseded by D-v4-1** — approved for compact Guardian primary nav only (Today, Pets, Care, Fostering, Account).
 - a universal floating Add action;
 - a standalone Today route;
 - a generic Home destination;

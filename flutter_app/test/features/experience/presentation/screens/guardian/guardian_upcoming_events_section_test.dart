@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
-import 'package:pet_profile_app/core/widgets/dashboard_section.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/guardian/guardian_upcoming_events_section.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/due_event_card.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/mobile_due_event_row.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -225,12 +223,15 @@ Widget _buildSection({
 // ---------------------------------------------------------------------------
 
 void main() {
-  testWidgets('baseline: upcoming care section renders title', (tester) async {
+  testWidgets('Care preview renders one combined list without tabs', (
+    tester,
+  ) async {
     await tester.pumpWidget(_buildSection());
     await tester.pumpAndSettle();
 
-    expect(find.text('Due and Overdue'), findsOneWidget);
-    expect(find.byType(DashboardSection), findsOneWidget);
+    expect(find.text('CARE'), findsOneWidget);
+    expect(find.textContaining('Due'), findsNothing);
+    expect(find.text('Soon'), findsNothing);
   });
 
   testWidgets('retains the existing Add an event handoff', (tester) async {
@@ -238,7 +239,9 @@ void main() {
 
     await tester.pumpWidget(_buildSection(onAddEvent: () => addEventCalls++));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Add an event'));
+    await tester.tap(
+      find.byKey(const Key('guardian_dashboard_empty_care_action')),
+    );
     await tester.pumpAndSettle();
 
     expect(addEventCalls, 1);
@@ -267,9 +270,7 @@ void main() {
       expect(find.byType(MobileDueEventRow), findsOneWidget);
     });
 
-    testWidgets('does NOT use MobileDueEventRow at 600px desktop width', (
-      tester,
-    ) async {
+    testWidgets('uses list rows at a 600px desktop width', (tester) async {
       await tester.binding.setSurfaceSize(const Size(600, 900));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -281,11 +282,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(MobileDueEventRow), findsNothing);
-      expect(find.byType(DueEventCard), findsOneWidget);
+      expect(find.byType(MobileDueEventRow), findsOneWidget);
     });
 
-    testWidgets('uses DueEventCard at a 900px desktop width', (tester) async {
+    testWidgets('uses list rows at a 900px desktop width', (tester) async {
       await tester.binding.setSurfaceSize(const Size(900, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -297,8 +297,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(MobileDueEventRow), findsNothing);
-      expect(find.byType(DueEventCard), findsOneWidget);
+      expect(find.byType(MobileDueEventRow), findsOneWidget);
     });
 
     testWidgets('shows no-events text when due list is empty', (tester) async {
@@ -309,67 +308,70 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('mobile_due_event_list')), findsNothing);
-      expect(find.text('No events are overdue or due today.'), findsOneWidget);
+      expect(find.text('Start their care routine'), findsOneWidget);
+      expect(
+        find.byKey(const Key('guardian_dashboard_empty_care')),
+        findsOneWidget,
+      );
     });
 
-    testWidgets(
-      'prioritizes overdue, due-today, then reminder-window entries and caps at five',
-      (tester) async {
-        await tester.binding.setSurfaceSize(const Size(390, 844));
-        addTearDown(() => tester.binding.setSurfaceSize(null));
-        final today = DateTime.now();
-        final entries = [
-          _entryAt(
-            'upcoming-later',
-            'Upcoming later',
-            today.add(const Duration(days: 2)),
-            remindDaysBefore: 3,
-          ),
-          _entryAt('due-today', 'Due today', today),
-          _entryAt(
-            'overdue-recent',
-            'Overdue recent',
-            today.subtract(const Duration(days: 1)),
-          ),
-          _entryAt(
-            'upcoming-soon',
-            'Upcoming soon',
-            today.add(const Duration(days: 1)),
-            remindDaysBefore: 3,
-          ),
-          _entryAt(
-            'overdue-oldest',
-            'Overdue oldest',
-            today.subtract(const Duration(days: 4)),
-          ),
-          _entryAt(
-            'outside-window',
-            'Outside window',
-            today.add(const Duration(days: 7)),
-          ),
-        ];
-
-        await tester.pumpWidget(
-          _buildSection(
-            pets: const [_pet],
-            notifierFactory: () => _FixedHealthEntriesNotifier(entries),
-          ),
-        );
-        await tester.pumpAndSettle();
-
-        final rows = tester.widgetList<MobileDueEventRow>(
-          find.byType(MobileDueEventRow),
-        );
-        expect(rows, hasLength(5));
-        expect(rows.map((row) => row.entry.id), [
-          'overdue-oldest',
-          'overdue-recent',
-          'due-today',
-          'upcoming-soon',
+    testWidgets('shows five combined care rows in due-date order', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final today = DateTime.now();
+      final entries = [
+        _entryAt(
           'upcoming-later',
-        ]);
-      },
-    );
+          'Upcoming later',
+          today.add(const Duration(days: 2)),
+          remindDaysBefore: 3,
+        ),
+        _entryAt('due-today', 'Due today', today),
+        _entryAt(
+          'overdue-recent',
+          'Overdue recent',
+          today.subtract(const Duration(days: 1)),
+        ),
+        _entryAt(
+          'upcoming-soon',
+          'Upcoming soon',
+          today.add(const Duration(days: 1)),
+          remindDaysBefore: 3,
+        ),
+        _entryAt(
+          'overdue-oldest',
+          'Overdue oldest',
+          today.subtract(const Duration(days: 4)),
+        ),
+        _entryAt(
+          'outside-window',
+          'Outside window',
+          today.add(const Duration(days: 7)),
+        ),
+      ];
+
+      await tester.pumpWidget(
+        _buildSection(
+          pets: const [_pet],
+          notifierFactory: () => _FixedHealthEntriesNotifier(entries),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final rows = tester.widgetList<MobileDueEventRow>(
+        find.byType(MobileDueEventRow),
+      );
+      expect(rows, hasLength(5));
+      expect(rows.map((row) => row.entry.id), [
+        'overdue-oldest',
+        'overdue-recent',
+        'due-today',
+        'upcoming-soon',
+        'upcoming-later',
+      ]);
+    });
   });
 
   testWidgets('error state is retryable and not shown as the empty state', (
@@ -385,7 +387,7 @@ void main() {
 
     expect(find.text('We couldn\'t load care right now.'), findsOneWidget);
     expect(find.text('Retry'), findsOneWidget);
-    expect(find.text('No events are overdue or due today.'), findsNothing);
+    expect(find.text('Nothing needs care today.'), findsNothing);
   });
 
   testWidgets(
@@ -410,7 +412,7 @@ void main() {
       expect(find.text('We couldn\'t load care right now.'), findsOneWidget);
       expect(find.text('Retry'), findsOneWidget);
       expect(find.byKey(const Key('mobile_due_row_due-entry-1')), findsNothing);
-      expect(find.text('No events are overdue or due today.'), findsNothing);
+      expect(find.text('Nothing needs care today.'), findsNothing);
     },
   );
 
@@ -421,21 +423,27 @@ void main() {
         await tester.binding.setSurfaceSize(const Size(390, 844));
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
+        final soonEntry = _entryAt(
+          'soon-entry-1',
+          'Soon care',
+          DateTime.now().add(const Duration(days: 1)),
+          remindDaysBefore: 1,
+        );
         await tester.pumpWidget(
           _buildSection(
             pets: const [_pet],
             notifierFactory: () =>
-                _ServerLikeHealthEntriesNotifier([_dueEntry]),
+                _ServerLikeHealthEntriesNotifier([_dueEntry, soonEntry]),
           ),
         );
         await tester.pumpAndSettle();
 
-        // Initially the due row is shown with the mark-done check.
-        expect(find.byIcon(Icons.check), findsOneWidget);
+        // The combined list exposes one completion action per open item.
+        expect(find.byIcon(Icons.check), findsNWidgets(2));
         expect(find.byIcon(Icons.check_circle), findsNothing);
 
         // Tap mark-done to open the completion sheet, then confirm.
-        await tester.tap(find.byIcon(Icons.check));
+        await tester.tap(find.byIcon(Icons.check).first);
         await tester.pumpAndSettle();
         expect(find.text('Mark Completed'), findsOneWidget);
         await tester.tap(find.text('Mark Completed'));
@@ -449,6 +457,11 @@ void main() {
         );
         expect(find.byIcon(Icons.check_circle), findsOneWidget);
         expect(find.text('Undo Complete'), findsOneWidget);
+
+        expect(
+          find.byKey(const Key('mobile_due_row_soon-entry-1')),
+          findsOneWidget,
+        );
       },
     );
 

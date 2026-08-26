@@ -7,7 +7,6 @@ import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../../../core/branding/logo_assets.dart';
 import '../../../experience/domain/entities/app_experience.dart';
-import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../organization/domain/entities/family_event.dart';
 import '../../../organization/domain/entities/foster_placement.dart';
 import '../../../organization/presentation/providers/foster_placements_providers.dart';

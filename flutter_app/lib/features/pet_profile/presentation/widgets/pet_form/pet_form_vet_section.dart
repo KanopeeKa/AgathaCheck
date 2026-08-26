@@ -36,7 +36,9 @@ class PetFormVetSection extends ConsumerWidget {
       ),
       data: (vets) {
         return DropdownButtonFormField<String?>(
-          value: vets.any((v) => v.id == selectedVetId) ? selectedVetId : null,
+          initialValue: vets.any((v) => v.id == selectedVetId)
+              ? selectedVetId
+              : null,
           decoration: InputDecoration(
             labelText: l.veterinarians,
             suffixIcon: selectedVetId != null

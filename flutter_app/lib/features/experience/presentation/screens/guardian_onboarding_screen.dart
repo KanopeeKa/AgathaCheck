@@ -244,7 +244,7 @@ class _PetStep extends StatelessWidget {
         const SizedBox(height: 16),
         DropdownButtonFormField<String>(
           key: const Key('onboarding_pet_species_field'),
-          value: species,
+          initialValue: species,
           decoration: InputDecoration(
             labelText: l.species,
             border: const OutlineInputBorder(),

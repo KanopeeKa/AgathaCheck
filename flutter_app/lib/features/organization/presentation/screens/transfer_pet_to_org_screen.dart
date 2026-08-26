@@ -88,39 +88,43 @@ class _TransferPetToOrgScreenState
           if (connections.isEmpty) {
             return Center(child: Text(l.orgConnectionsEmpty));
           }
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              Text(l.transferConfirmMessage(petName)),
-              const SizedBox(height: 16),
-              Text(l.selectConnectedOrg),
-              ...connections.map(
-                (c) => RadioListTile<OrgConnection>(
-                  value: c,
-                  groupValue: _selected,
-                  title: Text(c.peerOrgName),
-                  onChanged: (value) => setState(() => _selected = value),
+          return RadioGroup<OrgConnection>(
+            groupValue: _selected,
+            onChanged: (value) => setState(() => _selected = value),
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Text(l.transferConfirmMessage(petName)),
+                const SizedBox(height: 16),
+                Text(l.selectConnectedOrg),
+                ...connections.map(
+                  (c) => RadioListTile<OrgConnection>(
+                    value: c,
+                    title: Text(c.peerOrgName),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _notesController,
-                decoration: InputDecoration(labelText: l.orgToOrgTransferNotes),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 24),
-              FilledButton(
-                key: const Key('confirm_org_transfer'),
-                onPressed: _selected == null || _submitting ? null : _submit,
-                child: _submitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(l.confirmTransfer),
-              ),
-            ],
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _notesController,
+                  decoration: InputDecoration(
+                    labelText: l.orgToOrgTransferNotes,
+                  ),
+                  maxLines: 3,
+                ),
+                const SizedBox(height: 24),
+                FilledButton(
+                  key: const Key('confirm_org_transfer'),
+                  onPressed: _selected == null || _submitting ? null : _submit,
+                  child: _submitting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(l.confirmTransfer),
+                ),
+              ],
+            ),
           );
         },
       ),

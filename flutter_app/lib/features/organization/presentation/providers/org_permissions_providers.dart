@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../domain/services/org_permissions.dart';
 import 'org_provider_deps.dart';
 

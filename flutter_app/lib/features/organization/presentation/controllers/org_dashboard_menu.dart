@@ -6,7 +6,6 @@ import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
 import '../../domain/services/org_permissions.dart';
-import '../providers/admin_contact_providers.dart';
 import '../providers/organization_providers.dart';
 import '../widgets/organization_invite_by_email_dialog.dart';
 

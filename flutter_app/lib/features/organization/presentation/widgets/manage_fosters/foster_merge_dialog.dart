@@ -41,21 +41,23 @@ Future<void> showFosterMergeDialog({
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l.manageFostersMergeSelectAccount),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: suggestions.length,
-            itemBuilder: (context, index) {
-              final suggestion = suggestions[index];
-              return RadioListTile<FosterMergeSuggestion>(
-                value: suggestion,
-                groupValue: selected,
-                onChanged: (value) => Navigator.pop(ctx, value),
-                title: Text(suggestion.displayName),
-                subtitle: Text(suggestion.email),
-              );
-            },
+        content: RadioGroup<FosterMergeSuggestion>(
+          groupValue: selected,
+          onChanged: (value) => Navigator.pop(ctx, value),
+          child: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: suggestions.length,
+              itemBuilder: (context, index) {
+                final suggestion = suggestions[index];
+                return RadioListTile<FosterMergeSuggestion>(
+                  value: suggestion,
+                  title: Text(suggestion.displayName),
+                  subtitle: Text(suggestion.email),
+                );
+              },
+            ),
           ),
         ),
       ),

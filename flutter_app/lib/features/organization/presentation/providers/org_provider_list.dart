@@ -6,7 +6,6 @@ import '../../data/models/organization_model.dart';
 import '../../domain/entities/organization.dart';
 import 'org_provider_deps.dart';
 import 'org_provider_profile.dart';
-import 'org_provider_people.dart';
 
 class OrganizationListNotifier extends AsyncNotifier<List<Organization>> {
   @override

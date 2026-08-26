@@ -16,7 +16,7 @@ class PetGenderSection extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     return DropdownButtonFormField<String?>(
       key: const Key('pet_gender_field'),
-      value: selectedGender,
+      initialValue: selectedGender,
       decoration: InputDecoration(
         labelText: l.gender,
         helperText: 'Useful for health and behaviour tracking',

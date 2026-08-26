@@ -81,3 +81,18 @@ Feature: Guardian dashboard
     When I open the global events screen
     Then I should see cohort filters for my pets and foster pets
     And I should be able to filter events by pet
+
+  @implemented
+  @P1
+  Scenario: Guardian compact bottom nav reaches Pets, Care, Fostering destinations
+    Given I am signed in as a guardian with pets
+    When I use the compact bottom navigation
+    Then I should reach the Pets, Care, and Fostering destinations
+
+  @implemented
+  @P1
+  Scenario: Workspace toggle switches between Guardian and Shelter when available
+    Given I am signed in as a guardian with shelter access
+    When I view the Guardian dashboard
+    Then I should see the workspace toggle
+    And I should be able to switch to Shelter and back to Guardian

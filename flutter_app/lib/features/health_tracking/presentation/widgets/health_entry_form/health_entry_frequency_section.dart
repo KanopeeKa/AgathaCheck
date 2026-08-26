@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../core/utils/calendar_date_picker.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../controllers/health_entry_form_controller.dart';
@@ -34,7 +33,7 @@ class HealthEntryFrequencySection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         DropdownButtonFormField<HealthFrequency>(
-          value: frequency,
+          initialValue: frequency,
           decoration: InputDecoration(labelText: l.frequency),
           items: HealthFrequency.values
               .where((f) => f != HealthFrequency.custom)
@@ -56,7 +55,7 @@ class HealthEntryFrequencySection extends StatelessWidget {
             children: [
               Expanded(
                 child: DropdownButtonFormField<int>(
-                  value: frequencyInterval.clamp(1, 12),
+                  initialValue: frequencyInterval.clamp(1, 12),
                   decoration: InputDecoration(labelText: l.every),
                   items: List.generate(12, (i) => i + 1)
                       .map((n) => DropdownMenuItem(value: n, child: Text('$n')))

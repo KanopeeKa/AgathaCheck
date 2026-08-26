@@ -61,7 +61,7 @@ class _GuardianHomeScreenState extends ConsumerState<GuardianHomeScreen> {
     return ExperienceShellScaffold(
       experience: AppExperience.guardian,
       currentLocation: GoRouterState.of(context).uri.path,
-      screenTitle: AppLocalizations.of(context)!.guardianDashboardTitle,
+      screenTitle: AppLocalizations.of(context)!.appTitle,
       child: petListAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('$e')),

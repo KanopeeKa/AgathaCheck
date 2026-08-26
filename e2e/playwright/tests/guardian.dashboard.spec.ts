@@ -1,7 +1,7 @@
 /**
  * @bdd guardian_dashboard.feature
- * Scenario: Dashboard shows exactly three sections
- * Scenario: Today orientation prioritises attention above the management sections
+ * Scenario: Guardian Today prioritises pets and care
+ * Scenario: Care preview separates Due and Soon
  * Scenario: My Pets preview is capped at four with an All Pets destination
  * Scenario: Care preview orders overdue, due today, and upcoming items
  * Scenario: Care preview supports completion and undo
@@ -59,27 +59,33 @@ async function seededGuardian(page: import('@playwright/test').Page) {
 }
 
 test.describe('Guardian dashboard', () => {
-  test('dashboard shows exactly three sections', async ({ page, testUser }) => {
+  test('Guardian Today prioritises pets and care', async ({ page, testUser }) => {
     await loginGuardian(page, testUser.email, testUser.password);
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.open();
-    await dashboard.expectExactlyThreeManagementSections();
+    await dashboard.expectTodayCareRegions();
     await dashboard.expectNoPendingDashboardBanner();
   });
 
-  test('Today orientation prioritises attention above the management sections', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
+  test('Care preview separates Due and Soon', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
     const user = await seededGuardian(page);
     const pet = await createPet(baseURL(), user.accessToken, 'TodayPet');
     await createHealthEntry(baseURL(), user.accessToken, pet.id, {
       name: 'Urgent Care',
       nextDueDate: dateOffset(-2),
     });
+    await createHealthEntry(baseURL(), user.accessToken, pet.id, {
+      name: 'Soon Care',
+      nextDueDate: dateOffset(1),
+    });
     await loginGuardian(page, user.email, user.password);
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.open();
-    await dashboard.expectTodayOrientation();
+    await dashboard.expectTodayCareRegions();
     await dashboard.expectCareVisible('Urgent Care');
+    await page.getByRole('button', { name: /^Soon$|^Bientôt$/i }).click();
+    await dashboard.expectCareVisible('Soon Care');
   });
 
   test('My Pets preview is capped at four with an All Pets destination', async ({ page }) => {
@@ -100,8 +106,8 @@ test.describe('Guardian dashboard', () => {
     await dashboard.goBackToDashboard();
   });
 
-  test('Care preview orders overdue, due today, and upcoming items', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
+  test('Care preview links to the full Care destination', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
     const user = await seededGuardian(page);
     const pet = await createPet(baseURL(), user.accessToken, 'PriorityPet');
     await createHealthEntry(baseURL(), user.accessToken, pet.id, { name: 'Overdue Care', nextDueDate: dateOffset(-1) });
@@ -113,8 +119,9 @@ test.describe('Guardian dashboard', () => {
     await dashboard.open();
     await dashboard.expectCareVisible('Overdue Care');
     await dashboard.expectCareVisible('Today Care');
+    await dashboard.expectCarePriorityOrder(['Overdue Care', 'Today Care']);
+    await page.getByRole('button', { name: /^Soon$|^Bientôt$/i }).click();
     await dashboard.expectCareVisible('Upcoming Care');
-    await dashboard.expectCarePriorityOrder(['Overdue Care', 'Today Care', 'Upcoming Care']);
     await dashboard.openEvents();
     await expect(page).toHaveURL(/#\/g\/events/);
     await dashboard.goBackToDashboard();
@@ -157,19 +164,21 @@ test.describe('Guardian dashboard', () => {
     await dashboard.goBackToDashboard();
   });
 
-  test('Empty Guardian dashboard shows first-use guidance without false alerts', async ({ page, testUser }) => {
+  test('Empty Guardian dashboard gives a truthful Care state without false alerts', async ({ page, testUser }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await loginGuardian(page, testUser.email, testUser.password);
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.open();
-    await dashboard.expectTodayOrientation();
-    const dueSection = dashboardSectionGroup(page, 'dueAndOverdue');
+    const dueSection = dashboard.careRegion();
     await expect(dueSection).toBeVisible();
     await expect(
       dueSection
-        .getByText(/You're all caught up|No events are overdue or due today/i)
+        .getByText(/Start their care routine|Commencez leur routine de soins/i)
         .first(),
     ).toBeVisible();
+    await expect(
+      dueSection.getByRole('button', { name: /mark .*done/i }),
+    ).toHaveCount(0);
   });
 
   test('Pending foster placement surfaces as a notification, not a dashboard banner', async ({ page, testUser }) => {

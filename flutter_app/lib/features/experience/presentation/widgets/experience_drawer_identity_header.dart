@@ -26,7 +26,7 @@ class ExperienceDrawerBrandHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final assetPath = LogoAssets.pngForShell(experience);
+    final assetPath = LogoAssets.pngFor(experience);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),

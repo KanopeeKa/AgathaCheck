@@ -67,6 +67,7 @@ export const SHARDS = [
     'playwright/tests/fostering.platform.spec.ts',
     'playwright/tests/foster.onboarding.spec.ts',
     'playwright/tests/guardian.dashboard.spec.ts',
+    'playwright/tests/guardian.navigation.spec.ts',
     'playwright/tests/experience.navigation.spec.ts',
   ],
 ];

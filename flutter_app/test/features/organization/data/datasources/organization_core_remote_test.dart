@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:pet_profile_app/features/organization/data/datasources/organization_remote/organization_core_remote.dart';
 import 'package:pet_profile_app/features/organization/data/datasources/organization_remote/organization_remote_context.dart';
 import 'package:pet_profile_app/features/organization/data/models/organization_model.dart';
@@ -80,8 +79,8 @@ void main() {
         token,
       );
 
-      expect(client.capturedFile?.contentType?.type, 'image');
-      expect(client.capturedFile?.contentType?.subtype, 'jpeg');
+      expect(client.capturedFile?.contentType.type, 'image');
+      expect(client.capturedFile?.contentType.subtype, 'jpeg');
     });
 
     test('surfaces API error message from upload failure', () async {

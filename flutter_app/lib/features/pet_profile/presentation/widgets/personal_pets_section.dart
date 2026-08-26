@@ -45,28 +45,27 @@ class PersonalPetsSection extends StatelessWidget {
     final sorted = [...personalActive];
     sortPetsByCreatedAt(sorted);
 
-    // When a custom cardBuilder is provided and not in bulk-share mode,
-    // render a vertical list of custom cards (preserving the hide-wrapper
-    // for shared pets).
+    // The embedded Guardian shell uses a custom card presentation, but it
+    // should still use the responsive tile layout used by the Pets surface.
+    // Preserve the hide wrapper for shared pets around each tile.
     if (cardBuilder != null && !bulkShareMode) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (final pet in sorted)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: pet.isShared
-                  ? _SharedDismissible(
-                      pet: pet,
-                      l: l,
-                      theme: theme,
-                      ref: ref,
-                      parentContext: parentContext,
-                      child: cardBuilder!(pet),
-                    )
-                  : cardBuilder!(pet),
-            ),
-        ],
+      return PetTileStrip(
+        useWrap: true,
+        pets: sorted,
+        onPetTap: (pet) => context.go('/pet/${pet.id}'),
+        tileBuilder: (pet, _) {
+          final card = cardBuilder!(pet);
+          return pet.isShared
+              ? _SharedDismissible(
+                  pet: pet,
+                  l: l,
+                  theme: theme,
+                  ref: ref,
+                  parentContext: parentContext,
+                  child: card,
+                )
+              : card;
+        },
       );
     }
 

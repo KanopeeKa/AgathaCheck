@@ -3,7 +3,7 @@ title: Design tokens
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-23
+last_updated: 2026-08-26
 tags: [design,ui,ux]
 ---
 # Design tokens
@@ -16,7 +16,7 @@ Canonical **colour tables** for AgathaTrack. Full component and layout spec: [`s
 
 | Token | Hex | Flutter role |
 |-------|-----|--------------|
-| background | `#F7F4EF` | `scaffoldBackgroundColor` |
+| background | `#EAE8E8` | `scaffoldBackgroundColor` |
 | surface | `#FFFDFC` | cards, sheets |
 | surfaceAlt | `#F2ECE6` | grouped sections |
 | border | `#E4DDD6` | dividers, outlines |
@@ -31,7 +31,7 @@ third, one-off palette.
 
 | Token | Hex | Use |
 |-------|-----|-----|
-| landingPaper | `#F7F4EF` | warm public canvas |
+| landingPaper | `#EAE8E8` | warm public canvas |
 | landingPanel | `#FFFDFC` | auth and care-preview cards |
 | landingInk | `#1F2937` | landing text |
 | landingInkSoft | `#52606D` | secondary landing text |
@@ -133,7 +133,7 @@ forms. Do not replace it with paws, paw prints, or a generic pet icon.
 | primary | `#755B68` |
 | hover | `#664C59` |
 | active | `#573F4B` |
-| light | `#F4EEF2` |
+| light | `#E8E1E3` |
 | soft | `#E7DCE2` |
 
 Full primary on all guardian CTAs (option A).
