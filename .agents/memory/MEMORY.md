@@ -50,6 +50,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Health entry completion semantics](health-entry-completion.md) — UI derives overdue/completed from next_due_date only (no status field); mark-taken must advance/sentinel next_due_date in the backend.
 - [Pet Care mobile completion](guardian-mobile-completion.md) — compact dashboard completion keeps a reversible list-level preview while the server remains authoritative (legacy filename).
 - [Canonical product name](canonical-product-name.md) — use AgathaTrack in current product UI and copy; AgathaCheck is the legacy name.
+- [Approved AgathaTrack care mark](approved-agathatrack-care-mark.md) — Model 1 enclosed circle; pet silhouettes merge into the lower ring; cat muzzle is subtly rounded.
 - [Shelter terminology and evolving design](shelter-terminology-and-evolving-design.md) — Shelter is the canonical teal mode; evolve prior references screen by screen.
 - [JWT secret dev/test fallback](jwt-secret-dev-fallback.md) — keep the prod-gated 'default_secret' fallback; CI/Jest sign tokens with it and workflows set no secret.
 - [Error-leak redaction patterns](error-leak-redaction-patterns.md) — grep err.message + e.toString() + $e + details on the backend; one pattern misses sites. Also: `/security-error-audit` skill.
