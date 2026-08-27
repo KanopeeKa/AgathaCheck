@@ -114,4 +114,22 @@ class GuardianPrimaryDestinations {
   static String _careLabel(AppLocalizations l) => l.careNavLabel;
   static String _fosteringLabel(AppLocalizations l) => l.fostering;
   static String _accountLabel(AppLocalizations l) => l.accountTitle;
+
+  /// Stable semantics identifier for E2E (`flt-semantics-identifier` on web).
+  static String semanticsIdentifier(String route) {
+    switch (route) {
+      case '/g/home':
+        return 'guardian_nav_today';
+      case '/g/pets':
+        return 'guardian_nav_pets';
+      case '/g/events':
+        return 'guardian_nav_care';
+      case '/g/fostering':
+        return 'guardian_nav_fostering';
+      case '/account':
+        return 'guardian_nav_account';
+      default:
+        return 'guardian_nav_unknown';
+    }
+  }
 }

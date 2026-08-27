@@ -194,6 +194,35 @@ export class GuardianDashboardPage {
       .first();
   }
 
+  private destinationSemanticsId(label: string): string {
+    switch (label) {
+      case 'Today':
+        return 'guardian_nav_today';
+      case 'Pets':
+        return 'guardian_nav_pets';
+      case 'Care':
+        return 'guardian_nav_care';
+      case 'Fostering':
+        return 'guardian_nav_fostering';
+      case 'Account':
+        return 'guardian_nav_account';
+      default:
+        return `guardian_nav_${label.toLowerCase()}`;
+    }
+  }
+
+  private async clickLeadingNavItem(container: Locator, label: string): Promise<void> {
+    const semanticsId = this.destinationSemanticsId(label);
+    const byIdentifier = container.locator(
+      `[flt-semantics-identifier="${semanticsId}"]`,
+    );
+    if ((await byIdentifier.count()) > 0) {
+      await byIdentifier.first().click();
+      return;
+    }
+    await this.leadingNavItem(container, label).click();
+  }
+
   /**
    * Leading nav destination — rail (600–839px) or sidebar (≥840px).
    * Falls back to bottom nav on compact widths.
@@ -208,14 +237,14 @@ export class GuardianDashboardPage {
     );
 
     if (await sidebar.isVisible().catch(() => false)) {
-      await this.leadingNavItem(sidebar, label).click();
+      await this.clickLeadingNavItem(sidebar, label);
     } else if (await rail.isVisible().catch(() => false)) {
-      await this.leadingNavItem(rail, label).click();
+      await this.clickLeadingNavItem(rail, label);
     } else if (await bottomNav.isVisible().catch(() => false)) {
       await this.openBottomNavTab(label);
       return;
     } else {
-      await this.leadingNavItem(this.page.locator('body'), label).click();
+      await this.clickLeadingNavItem(this.page.locator('body'), label);
     }
     await refreshFlutterAccessibility(this.page);
   }
