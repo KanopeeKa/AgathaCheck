@@ -48,17 +48,17 @@ Deliver adaptive Guardian navigation for tablet and desktop: preserve the five-d
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 4
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/guardian-adaptive-nav-decisions-7221"
+next_action: "plan complete"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/guardian-adaptive-nav-7221.md
-  plan_commit: cc5740915158859f1552df4cb2d75904971a0cfd
+  plan_commit: 8f39cdf5cfc54728e0f4e67d566086cbca2b9e7d
   snapshot_path: .agents/plans/guardian-adaptive-nav-7221.snapshot.json
-  snapshot_commit: cc5740915158859f1552df4cb2d75904971a0cfd
+  snapshot_commit: 8f39cdf5cfc54728e0f4e67d566086cbca2b9e7d
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
