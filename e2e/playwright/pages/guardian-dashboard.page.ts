@@ -147,10 +147,7 @@ export class GuardianDashboardPage {
 
   /** Compact Guardian bottom bar tab (Today, Pets, Care, Fostering, Account). */
   async openBottomNavTab(label: string): Promise<void> {
-    const pattern = new RegExp(
-      `^${escapeRegExp(label)}(?:\\s+Tab\\s+\\d+\\s+of\\s+\\d+)?$`,
-      'i',
-    );
+    const pattern = this.bottomNavTabPattern(label);
     const tab = this.page
       .getByRole('button', { name: pattern })
       .or(this.page.getByRole('tab', { name: pattern }))
@@ -159,24 +156,49 @@ export class GuardianDashboardPage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  private destinationNamePattern(label: string): RegExp {
+    return label === 'Care'
+      ? /^Care$|^Soins$/i
+      : label === 'Pets'
+        ? /^Pets$|^Animaux$/i
+        : label === 'Today'
+          ? /^Today$|^Aujourd'hui$/i
+          : label === 'Fostering'
+            ? /^Fostering$|^Accueil$/i
+            : label === 'Account'
+              ? /^Account$|^Compte$/i
+              : new RegExp(`^${escapeRegExp(label)}$`, 'i');
+  }
+
+  private bottomNavTabPattern(label: string): RegExp {
+    return new RegExp(
+      `^${escapeRegExp(label)}(?:\\s+Tab\\s+\\d+\\s+of\\s+\\d+)?$`,
+      'i',
+    );
+  }
+
+  /**
+   * Flutter 3.44 web may expose rail/sidebar items as button, tab, or group —
+   * mirror semanticsByName and bottom-nav tab suffix handling.
+   */
+  private leadingNavItem(container: Locator, label: string): Locator {
+    const namePattern = this.destinationNamePattern(label);
+    const withTabSuffix = new RegExp(
+      `${namePattern.source.slice(1, -1)}(?:\\s+Tab\\s+\\d+\\s+of\\s+\\d+)?`,
+      namePattern.flags,
+    );
+    return container
+      .getByRole('button', { name: withTabSuffix })
+      .or(container.getByRole('tab', { name: namePattern }))
+      .or(container.getByRole('group', { name: namePattern }))
+      .first();
+  }
+
   /**
    * Leading nav destination — rail (600–839px) or sidebar (≥840px).
    * Falls back to bottom nav on compact widths.
    */
   async openLeadingNavDestination(label: string): Promise<void> {
-    const namePattern =
-      label === 'Care'
-        ? /^Care$|^Soins$/i
-        : label === 'Pets'
-          ? /^Pets$|^Animaux$/i
-          : label === 'Today'
-            ? /^Today$|^Aujourd'hui$/i
-            : label === 'Fostering'
-              ? /^Fostering$|^Accueil$/i
-              : label === 'Account'
-                ? /^Account$|^Compte$/i
-                : new RegExp(`^${escapeRegExp(label)}$`, 'i');
-
     const sidebar = this.page.locator(
       '[flt-semantics-identifier="guardian_navigation_sidebar"]',
     );
@@ -186,14 +208,14 @@ export class GuardianDashboardPage {
     );
 
     if (await sidebar.isVisible().catch(() => false)) {
-      await sidebar.getByRole('button', { name: namePattern }).first().click();
+      await this.leadingNavItem(sidebar, label).click();
     } else if (await rail.isVisible().catch(() => false)) {
-      await rail.getByRole('button', { name: namePattern }).first().click();
+      await this.leadingNavItem(rail, label).click();
     } else if (await bottomNav.isVisible().catch(() => false)) {
       await this.openBottomNavTab(label);
       return;
     } else {
-      await this.page.getByRole('button', { name: namePattern }).first().click();
+      await this.leadingNavItem(this.page.locator('body'), label).click();
     }
     await refreshFlutterAccessibility(this.page);
   }
