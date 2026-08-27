@@ -32,58 +32,62 @@ class GuardianNavigationSidebar extends ConsumerWidget {
         (currentLocation.startsWith('/o/') ||
             ref.watch(showOrganisationSectionProvider));
 
-    return SizedBox(
-      key: const Key('guardian_navigation_sidebar'),
-      width: width,
-      child: ColoredBox(
-        color: AppColorTokens.background,
-        child: SafeArea(
-          top: false,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppLogoTitle(
-                      title: l.appTitle,
-                      experience: AppExperience.guardian,
-                      linkLogo: false,
-                    ),
-                    if (isRoot) ...[
-                      const SizedBox(height: 8),
-                      ExperienceWorkspaceToggle(
-                        currentLocation: currentLocation,
-                        onDarkBackground: false,
-                        showShelter: showShelterWorkspace,
+    return Semantics(
+      identifier: 'guardian_navigation_sidebar',
+      container: true,
+      child: SizedBox(
+        key: const Key('guardian_navigation_sidebar'),
+        width: width,
+        child: ColoredBox(
+          color: AppColorTokens.background,
+          child: SafeArea(
+            top: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppLogoTitle(
+                        title: l.appTitle,
+                        experience: AppExperience.guardian,
+                        linkLogo: false,
                       ),
+                      if (isRoot) ...[
+                        const SizedBox(height: 8),
+                        ExperienceWorkspaceToggle(
+                          currentLocation: currentLocation,
+                          onDarkBackground: false,
+                          showShelter: showShelterWorkspace,
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-              const Divider(height: 1),
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  children: [
-                    for (var i = 0; i < primaryDestinations.length; i++)
-                      _SidebarDestinationTile(
-                        destination: primaryDestinations[i],
-                        selected: selectedIndex == i,
-                        onTap: () => context.go(primaryDestinations[i].route),
-                      ),
-                  ],
+                const Divider(height: 1),
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    children: [
+                      for (var i = 0; i < primaryDestinations.length; i++)
+                        _SidebarDestinationTile(
+                          destination: primaryDestinations[i],
+                          selected: selectedIndex == i,
+                          onTap: () => context.go(primaryDestinations[i].route),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              const Divider(height: 1),
-              _SidebarDestinationTile(
-                destination: accountDestination,
-                selected: selectedIndex == 4,
-                onTap: () => context.go(accountDestination.route),
-              ),
-            ],
+                const Divider(height: 1),
+                _SidebarDestinationTile(
+                  destination: accountDestination,
+                  selected: selectedIndex == 4,
+                  onTap: () => context.go(accountDestination.route),
+                ),
+              ],
+            ),
           ),
         ),
       ),
