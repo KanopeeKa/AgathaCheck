@@ -76,8 +76,14 @@ class GuardianNavigationRail extends ConsumerWidget {
           destinations: [
             for (final destination in destinations)
               NavigationRailDestination(
-                icon: _RailDestinationIcon(icon: destination.icon),
-                selectedIcon: _RailDestinationIcon(
+                icon: _RailDestinationSemantics(
+                  destination: destination,
+                  label: destination.labelBuilder(l),
+                  icon: destination.icon,
+                ),
+                selectedIcon: _RailDestinationSemantics(
+                  destination: destination,
+                  label: destination.labelBuilder(l),
                   icon: destination.selectedIcon,
                 ),
                 label: Text(destination.labelBuilder(l)),
@@ -85,6 +91,31 @@ class GuardianNavigationRail extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Semantics + touch target for each rail destination (E2E + a11y).
+class _RailDestinationSemantics extends StatelessWidget {
+  const _RailDestinationSemantics({
+    required this.destination,
+    required this.label,
+    required this.icon,
+  });
+
+  final GuardianPrimaryDestination destination;
+  final String label;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      identifier: GuardianPrimaryDestinations.semanticsIdentifier(
+        destination.route,
+      ),
+      button: true,
+      label: label,
+      child: _RailDestinationIcon(icon: icon),
     );
   }
 }

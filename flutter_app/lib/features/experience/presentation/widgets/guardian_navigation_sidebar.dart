@@ -116,6 +116,9 @@ class _SidebarDestinationTile extends StatelessWidget {
         : Theme.of(context).colorScheme.onSurfaceVariant;
 
     return Semantics(
+      identifier: GuardianPrimaryDestinations.semanticsIdentifier(
+        destination.route,
+      ),
       button: true,
       selected: selected,
       label: label,
