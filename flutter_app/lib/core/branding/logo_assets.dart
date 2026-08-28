@@ -4,35 +4,51 @@ import 'package:go_router/go_router.dart';
 import '../../features/experience/domain/entities/app_experience.dart';
 
 /// Experience-compatible paths for the canonical AgathaTrack logo mark.
+///
+/// Naming convention (authoritative):
+/// - `*-dark` care-mark files: **dark-coloured** mark for **light** backgrounds.
+/// - `*-light` logo/care-mark files: **light-coloured** mark for **dark** backgrounds.
+/// - `logo-plum` / `logo-teal`: dark-coloured monochrome marks for light surfaces.
 class LogoAssets {
   LogoAssets._();
 
+  /// Dark plum mark on transparent — light backgrounds.
   static const plumPng = 'assets/logo-plum.png';
-  static const plumDarkPng = 'assets/logo-plum-dark.png';
-  static const guardianLightTealPng = 'assets/logo-guardian-light-teal.png';
+
+  /// Light plum mark on transparent — dark backgrounds (e.g. plum app bar).
+  static const plumLightPng = 'assets/logo-plum-light.png';
+
+  /// Dark teal mark on transparent — light backgrounds.
   static const tealPng = 'assets/logo-teal.png';
+
+  /// Light teal mark on transparent — dark backgrounds.
+  static const tealLightPng = 'assets/logo-teal-light.png';
+
   static const plumJpg = 'assets/logo-plum.jpg';
   static const tealJpg = 'assets/logo-teal.jpg';
 
-  static const careMarkLightPng =
-      'assets/branding/agathatrack-care-mark-light.png';
-  static const careMarkDarkPng =
+  /// Dual-colour mark (plum + teal) for light backgrounds.
+  static const careMarkOnLightPng =
       'assets/branding/agathatrack-care-mark-dark.png';
 
-  /// Standard mark for light surfaces; light monochrome marks on dark surfaces.
+  /// Dual-colour mark tuned for dark backgrounds.
+  static const careMarkOnDarkPng =
+      'assets/branding/agathatrack-care-mark-light.png';
+
+  /// [onDarkBackground] when the logo sits on a dark-coloured surface.
   static String pngFor(
     AppExperience experience, {
     bool onDarkBackground = false,
   }) {
     if (onDarkBackground) {
       return experience == AppExperience.organization
-          ? guardianLightTealPng
-          : plumDarkPng;
+          ? tealLightPng
+          : plumLightPng;
     }
     return experience == AppExperience.organization ? tealPng : plumPng;
   }
 
-  /// Guardian compact chrome uses the plum app bar (dark); org shell stays light.
+  /// Guardian compact chrome uses the plum app bar (dark surface).
   static String pngForShell(AppExperience experience) => pngFor(
     experience,
     onDarkBackground: experience == AppExperience.guardian,
@@ -41,8 +57,9 @@ class LogoAssets {
   static String jpgFor(AppExperience experience) =>
       experience == AppExperience.organization ? tealJpg : plumJpg;
 
+  /// Care mark for landing and public surfaces.
   static String careMarkPng({bool onDarkBackground = false}) =>
-      onDarkBackground ? careMarkDarkPng : careMarkLightPng;
+      onDarkBackground ? careMarkOnDarkPng : careMarkOnLightPng;
 
   /// Org routes use teal; everything else defaults to guardian plum.
   static AppExperience experienceForRoute(String location) {

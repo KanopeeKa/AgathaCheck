@@ -20,18 +20,21 @@ void main() {
     test('uses light monochrome marks on dark surfaces', () {
       expect(
         LogoAssets.pngFor(AppExperience.guardian, onDarkBackground: true),
-        'assets/logo-plum-dark.png',
+        'assets/logo-plum-light.png',
       );
       expect(
         LogoAssets.pngFor(AppExperience.organization, onDarkBackground: true),
-        'assets/logo-guardian-light-teal.png',
+        'assets/logo-teal-light.png',
       );
+    });
+
+    test('care mark naming: dark file for light surfaces and vice versa', () {
       expect(
-        LogoAssets.careMarkPng(onDarkBackground: true),
+        LogoAssets.careMarkPng(),
         'assets/branding/agathatrack-care-mark-dark.png',
       );
       expect(
-        LogoAssets.careMarkPng(),
+        LogoAssets.careMarkPng(onDarkBackground: true),
         'assets/branding/agathatrack-care-mark-light.png',
       );
     });
@@ -39,7 +42,7 @@ void main() {
     test('guardian shell chrome uses the light plum mark on the plum app bar', () {
       expect(
         LogoAssets.pngForShell(AppExperience.guardian),
-        'assets/logo-plum-dark.png',
+        'assets/logo-plum-light.png',
       );
       expect(
         LogoAssets.pngForShell(AppExperience.organization),
