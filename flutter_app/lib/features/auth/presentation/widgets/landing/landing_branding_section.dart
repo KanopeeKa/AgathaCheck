@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/branding/logo_assets.dart';
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
 
@@ -115,7 +116,7 @@ class _BrandLockup extends StatelessWidget {
             border: Border.all(color: AppColorTokens.landingLine),
           ),
           child: Image.asset(
-            'assets/branding/agathatrack-care-mark.png',
+            LogoAssets.careMarkPng(),
             excludeFromSemantics: true,
           ),
         ),
@@ -182,7 +183,7 @@ class _CareDeskPreview extends StatelessWidget {
             Row(
               children: [
                 Image.asset(
-                  'assets/branding/agathatrack-care-mark.png',
+                  LogoAssets.careMarkPng(),
                   width: 25,
                   height: 25,
                   excludeFromSemantics: true,
