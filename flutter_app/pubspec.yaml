@@ -50,10 +50,11 @@ flutter:
     - assets/landing/
     - assets/demo_pets/
     - assets/logo-plum.png
+    - assets/logo-plum-dark.png
     - assets/logo-plum.jpg
     - assets/logo-teal.png
     - assets/logo-teal.jpg
-    - assets/logo-guardian-light-arch.png
+    - assets/logo-guardian-light-teal.png
     - assets/rainbow_wings.png
     - assets/legal/en/
     - assets/legal/fr/

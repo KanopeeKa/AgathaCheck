@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/branding/logo_assets.dart';
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/web/native_login.dart';
@@ -382,7 +383,7 @@ class LandingAuthCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Image.asset(
-                    'assets/branding/agathatrack-care-mark.png',
+                    LogoAssets.careMarkPng(),
                     excludeFromSemantics: true,
                   ),
                 ),
