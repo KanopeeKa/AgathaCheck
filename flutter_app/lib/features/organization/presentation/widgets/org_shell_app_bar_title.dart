@@ -35,13 +35,12 @@ class OrgShellAppBarTitle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final titleWidget = Flexible(child: OrgAdaptiveNavTitle(title: title));
-
     switch (variant) {
       case OrgNavTitleVariant.dashboard:
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [_agathaLogo(), const SizedBox(width: 8), titleWidget],
+        return _logoTitleRow(
+          context: context,
+          leadingWidth: 32,
+          leading: _agathaLogo(),
         );
       case OrgNavTitleVariant.withOrgLogo:
         final org = organization;
@@ -54,22 +53,46 @@ class OrgShellAppBarTitle extends ConsumerWidget {
                 imageUrl,
                 apiBaseUrl: ref.read(apiBaseUrlProvider),
               );
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            OrgImageAvatar(
-              imageUrl: imageUrl,
-              type: org?.type ?? OrganizationType.professional,
-              radius: 16,
-              resolvedUrl: resolvedUrl,
-            ),
-            const SizedBox(width: 8),
-            titleWidget,
-          ],
+        return _logoTitleRow(
+          context: context,
+          leadingWidth: 32,
+          leading: OrgImageAvatar(
+            imageUrl: imageUrl,
+            type: org?.type ?? OrganizationType.professional,
+            radius: 16,
+            resolvedUrl: resolvedUrl,
+          ),
         );
       case OrgNavTitleVariant.textOnly:
         return OrgAdaptiveNavTitle(title: title);
     }
+  }
+
+  Widget _logoTitleRow({
+    required BuildContext context,
+    required double leadingWidth,
+    required Widget leading,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxTitleWidth = constraints.hasBoundedWidth
+            ? (constraints.maxWidth - leadingWidth - 8)
+                .clamp(0.0, double.infinity)
+            : MediaQuery.sizeOf(context).width * 0.55;
+
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            leading,
+            const SizedBox(width: 8),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxTitleWidth),
+              child: OrgAdaptiveNavTitle(title: title),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _agathaLogo() {

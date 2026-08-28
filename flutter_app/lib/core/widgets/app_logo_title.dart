@@ -53,21 +53,35 @@ class AppLogoTitle extends StatelessWidget {
       child: logoImage,
     );
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (linkLogo)
-          GestureDetector(
-            onTap: () => context.go('/'),
-            child: Tooltip(message: 'Go to home', child: logo),
-          )
-        else
-          logo,
-        if (showTitle) ...[
-          const SizedBox(width: 8),
-          Flexible(child: Text(title, overflow: TextOverflow.ellipsis)),
-        ],
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Keep logo + title as one compact unit for centered AppBar titles.
+        // `Flexible` would expand the row to the full title slot width and leave
+        // the logo visually centered with the text lopsided to the right.
+        final maxTextWidth = constraints.hasBoundedWidth
+            ? (constraints.maxWidth - 40).clamp(0.0, double.infinity)
+            : MediaQuery.sizeOf(context).width * 0.55;
+
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (linkLogo)
+              GestureDetector(
+                onTap: () => context.go('/'),
+                child: Tooltip(message: 'Go to home', child: logo),
+              )
+            else
+              logo,
+            if (showTitle) ...[
+              const SizedBox(width: 8),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxTextWidth),
+                child: Text(title, overflow: TextOverflow.ellipsis),
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 }
