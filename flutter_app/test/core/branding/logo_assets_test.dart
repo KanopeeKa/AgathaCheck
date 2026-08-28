@@ -4,18 +4,27 @@ import 'package:pet_profile_app/features/experience/domain/entities/app_experien
 
 void main() {
   group('LogoAssets', () {
-    test('maps guardian to plum and organisation to teal on light surfaces', () {
-      expect(LogoAssets.pngFor(AppExperience.guardian), 'assets/logo-plum.png');
-      expect(
-        LogoAssets.pngFor(AppExperience.organization),
-        'assets/logo-teal.png',
-      );
-      expect(LogoAssets.jpgFor(AppExperience.guardian), 'assets/logo-plum.jpg');
-      expect(
-        LogoAssets.jpgFor(AppExperience.organization),
-        'assets/logo-teal.jpg',
-      );
-    });
+    test(
+      'maps guardian to plum and organisation to teal on light surfaces',
+      () {
+        expect(
+          LogoAssets.pngFor(AppExperience.guardian),
+          'assets/logo-plum.png',
+        );
+        expect(
+          LogoAssets.pngFor(AppExperience.organization),
+          'assets/logo-teal.png',
+        );
+        expect(
+          LogoAssets.jpgFor(AppExperience.guardian),
+          'assets/logo-plum.jpg',
+        );
+        expect(
+          LogoAssets.jpgFor(AppExperience.organization),
+          'assets/logo-teal.jpg',
+        );
+      },
+    );
 
     test('uses light monochrome marks on dark surfaces', () {
       expect(
@@ -39,16 +48,19 @@ void main() {
       );
     });
 
-    test('guardian shell chrome uses the light plum mark on the plum app bar', () {
-      expect(
-        LogoAssets.pngForShell(AppExperience.guardian),
-        'assets/logo-plum-light.png',
-      );
-      expect(
-        LogoAssets.pngForShell(AppExperience.organization),
-        'assets/logo-teal.png',
-      );
-    });
+    test(
+      'guardian shell chrome uses the light plum mark on the plum app bar',
+      () {
+        expect(
+          LogoAssets.pngForShell(AppExperience.guardian),
+          'assets/logo-plum-light.png',
+        );
+        expect(
+          LogoAssets.pngForShell(AppExperience.organization),
+          'assets/logo-teal.png',
+        );
+      },
+    );
 
     test('detects organisation routes', () {
       expect(
