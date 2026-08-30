@@ -22,6 +22,8 @@ enum OrgNavTitleVariant {
 }
 
 class OrgShellAppBarTitle extends ConsumerWidget {
+  static const double _titleGap = 8;
+
   const OrgShellAppBarTitle({
     super.key,
     required this.title,
@@ -74,9 +76,9 @@ class OrgShellAppBarTitle extends ConsumerWidget {
     required Widget leading,
   }) {
     return LayoutBuilder(
-      builder: (context, constraints) {
+      builder: (_, constraints) {
         final maxTitleWidth = constraints.hasBoundedWidth
-            ? (constraints.maxWidth - leadingWidth - 8)
+            ? (constraints.maxWidth - leadingWidth - _titleGap)
                 .clamp(0.0, double.infinity)
             : MediaQuery.sizeOf(context).width * 0.55;
 
@@ -84,7 +86,7 @@ class OrgShellAppBarTitle extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             leading,
-            const SizedBox(width: 8),
+            const SizedBox(width: _titleGap),
             ConstrainedBox(
               constraints: BoxConstraints(maxWidth: maxTitleWidth),
               child: OrgAdaptiveNavTitle(title: title),
