@@ -13,6 +13,9 @@ class AppLogoTitle extends StatelessWidget {
   /// The title text displayed next to the logo.
   final String title;
 
+  static const double _logoSize = 32;
+  static const double _titleGap = 8;
+
   /// Optional experience override; otherwise resolved from the current route.
   final AppExperience? experience;
 
@@ -40,8 +43,8 @@ class AppLogoTitle extends StatelessWidget {
         : LogoAssets.pngFor(resolved);
     final logoImage = Image.asset(
       assetPath,
-      height: 32,
-      width: 32,
+      height: _logoSize,
+      width: _logoSize,
       fit: BoxFit.cover,
       semanticLabel: linkLogo
           ? 'AgathaTrack logo – tap to go home'
@@ -53,21 +56,38 @@ class AppLogoTitle extends StatelessWidget {
       child: logoImage,
     );
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (linkLogo)
-          GestureDetector(
-            onTap: () => context.go('/'),
-            child: Tooltip(message: 'Go to home', child: logo),
-          )
-        else
-          logo,
-        if (showTitle) ...[
-          const SizedBox(width: 8),
-          Flexible(child: Text(title, overflow: TextOverflow.ellipsis)),
-        ],
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Keep logo + title as one compact unit for centered AppBar titles.
+        // `Flexible` would expand the row to the full title slot width and leave
+        // the logo visually centered with the text lopsided to the right.
+        final maxTextWidth = constraints.hasBoundedWidth
+            ? (constraints.maxWidth - _logoSize - _titleGap).clamp(
+                0.0,
+                double.infinity,
+              )
+            : MediaQuery.sizeOf(context).width * 0.55;
+
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (linkLogo)
+              GestureDetector(
+                onTap: () => context.go('/'),
+                child: Tooltip(message: 'Go to home', child: logo),
+              )
+            else
+              logo,
+            if (showTitle) ...[
+              const SizedBox(width: _titleGap),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxTextWidth),
+                child: Text(title, overflow: TextOverflow.ellipsis),
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 }
