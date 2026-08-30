@@ -62,8 +62,10 @@ class AppLogoTitle extends StatelessWidget {
         // `Flexible` would expand the row to the full title slot width and leave
         // the logo visually centered with the text lopsided to the right.
         final maxTextWidth = constraints.hasBoundedWidth
-            ? (constraints.maxWidth - _logoSize - _titleGap)
-                .clamp(0.0, double.infinity)
+            ? (constraints.maxWidth - _logoSize - _titleGap).clamp(
+                0.0,
+                double.infinity,
+              )
             : MediaQuery.sizeOf(context).width * 0.55;
 
         return Row(

@@ -78,8 +78,10 @@ class OrgShellAppBarTitle extends ConsumerWidget {
     return LayoutBuilder(
       builder: (_, constraints) {
         final maxTitleWidth = constraints.hasBoundedWidth
-            ? (constraints.maxWidth - leadingWidth - _titleGap)
-                .clamp(0.0, double.infinity)
+            ? (constraints.maxWidth - leadingWidth - _titleGap).clamp(
+                0.0,
+                double.infinity,
+              )
             : MediaQuery.sizeOf(context).width * 0.55;
 
         return Row(
