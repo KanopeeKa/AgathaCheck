@@ -46,6 +46,8 @@ function makePlacementRow(status, adoptionConditions = '') {
     organization_name: 'Test Org',
     foster_name: 'Jane Foster',
     foster_email: 'foster@example.com',
+    session_checklist_items: {},
+    flagged_for_admin_review: false,
   };
 }
 
@@ -277,6 +279,12 @@ export function buildFosterPlacementMockPool() {
     if (sql.includes('WHERE fp.id = $1')) {
       if (!placementStatus) return { rows: [] };
       return { rows: [rowForStatus(placementStatus)] };
+    }
+    if (sql.includes('FROM document_templates')) {
+      return { rows: [] };
+    }
+    if (sql.includes('FROM organization_role_permission_defaults')) {
+      return { rows: [] };
     }
     return { rows: [] };
   };

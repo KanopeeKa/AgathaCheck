@@ -5,6 +5,7 @@ import {
 } from '../../../lib/fosterPlacements.js';
 import { extractUserId, requirePermission } from '../shared.js';
 import { publicError } from '../../../config/security.js';
+import { loadSessionAggregateForUser } from '../../../lib/sessionDetail.js';
 import { PLACEMENT_DETAIL_SELECT, queryPlacementDetailById, queryPlacementRows } from './shared.js';
 import {
   applyDerivedStatusFilter,
@@ -18,7 +19,6 @@ export function registerPlacementQueryRoutes(router, pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { orgId, id: placementId } = req.params;
     try {
-      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
       const placementResult = await pool.query(
         'SELECT id FROM foster_placements WHERE id = $1 AND organization_id = $2',
         [placementId, orgId],
@@ -26,8 +26,12 @@ export function registerPlacementQueryRoutes(router, pool) {
       if (!placementResult.rows.length) {
         return res.status(404).json({ error: 'Placement not found' });
       }
-      const detail = await queryPlacementDetailById(pool, placementId);
-      res.json(detail);
+
+      const result = await loadSessionAggregateForUser(pool, placementId, userId);
+      if (result.error) {
+        return res.status(result.status).json({ error: result.error });
+      }
+      res.json(result.body);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
