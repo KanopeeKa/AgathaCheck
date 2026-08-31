@@ -88,10 +88,9 @@ class CareEventRow extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Semantics(
+                identifier: 'care_event_row_view_${entry.id}',
                 button: true,
                 label: viewLabel,
-                excludeSemantics: true,
-                onTap: onView,
                 child: InkWell(
                   onTap: onView,
                   borderRadius: BorderRadius.circular(8),
@@ -301,10 +300,9 @@ class _CompletedCareEventRow extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Semantics(
+                identifier: 'care_event_row_view_${entry.id}',
                 button: true,
                 label: viewLabel,
-                excludeSemantics: true,
-                onTap: onView,
                 child: InkWell(
                   onTap: onView,
                   borderRadius: BorderRadius.circular(8),
