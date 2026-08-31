@@ -149,7 +149,7 @@ test.describe('Guardian dashboard', () => {
   test('Care preview supports completion and undo', async ({ page, testUser }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     const pet = await createPet(baseURL(), testUser.accessToken, 'ActionPet');
-    await createHealthEntry(baseURL(), testUser.accessToken, pet.id, {
+    const entry = await createHealthEntry(baseURL(), testUser.accessToken, pet.id, {
       name: 'Actionable Care',
       nextDueDate: today,
     });
@@ -157,11 +157,16 @@ test.describe('Guardian dashboard', () => {
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.open();
     await dashboard.expectCareVisible('Actionable Care');
-    await page.getByRole('button', { name: /mark .*done/i }).first().click();
+    await page.locator(`[flt-semantics-identifier="care_event_row_done_${entry.id}"]`).click();
     await page.getByRole('button', { name: /Mark Completed/i }).click();
-    await expect(page.getByRole('button', { name: /undo.*Actionable Care/i })).toBeVisible();
-    await page.getByRole('button', { name: /undo.*Actionable Care/i }).click();
-    await expect(page.getByRole('button', { name: /mark .*Actionable Care.*done/i })).toBeVisible();
+    await refreshFlutterAccessibility(page);
+    const undo = page.locator(`[flt-semantics-identifier="care_event_row_undo_${entry.id}"]`);
+    await expect(undo).toBeVisible();
+    await undo.click();
+    await refreshFlutterAccessibility(page);
+    await expect(
+      page.locator(`[flt-semantics-identifier="care_event_row_done_${entry.id}"]`),
+    ).toBeVisible();
   });
 
   test('Care team preview reaches linked vet details', async ({ page, testUser }) => {

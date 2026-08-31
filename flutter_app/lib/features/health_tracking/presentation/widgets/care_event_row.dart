@@ -350,6 +350,7 @@ class _CompletedCareEventRow extends StatelessWidget {
             const SizedBox(width: 8),
             Semantics(
               button: true,
+              identifier: 'care_event_row_undo_${entry.id}',
               label: l.dueEventRowUndoLabel(entry.name),
               excludeSemantics: true,
               onTap: onUndo,
