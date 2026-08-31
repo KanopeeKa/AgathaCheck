@@ -139,7 +139,7 @@ test.describe('Guardian dashboard', () => {
     await dashboard.expectCareVisible('Viewable Care');
     const careRegion = dashboard.careRegion();
     await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
-    await careRegion.getByText('Viewable Care').click();
+    await careRegion.getByRole('button', { name: /View Viewable Care/i }).click();
     await expect(page).toHaveURL(/#\/pet\/.*\/events\/[^/]+$/);
     await expect(page.getByRole('button', { name: /snooze/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /mark .*done/i })).toBeVisible();
