@@ -129,7 +129,7 @@ test.describe('Guardian dashboard', () => {
   test('Care preview row opens event view with snooze on view only', async ({ page, testUser }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     const pet = await createPet(baseURL(), testUser.accessToken, 'ViewPet');
-    await createHealthEntry(baseURL(), testUser.accessToken, pet.id, {
+    const entry = await createHealthEntry(baseURL(), testUser.accessToken, pet.id, {
       name: 'Viewable Care',
       nextDueDate: today,
     });
@@ -139,8 +139,9 @@ test.describe('Guardian dashboard', () => {
     await dashboard.expectCareVisible('Viewable Care');
     const careRegion = dashboard.careRegion();
     await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
-    await careRegion.getByRole('button', { name: /View Viewable Care/i }).click();
-    await expect(page).toHaveURL(/#\/pet\/.*\/events\/[^/]+$/);
+    await page.locator(`[flt-semantics-identifier="care_event_row_view_${entry.id}"]`).click();
+    await waitForFlutterRoutePattern(page, /\/pet\/[^/]+\/events\/[^/?#]+/, 45_000);
+    await refreshFlutterAccessibility(page);
     await expect(page.getByRole('button', { name: /snooze/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /mark .*done/i })).toBeVisible();
   });
