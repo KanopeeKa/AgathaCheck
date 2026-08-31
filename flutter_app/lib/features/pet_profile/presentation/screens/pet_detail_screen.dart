@@ -7,6 +7,8 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../experience/domain/entities/app_experience.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../../organization/presentation/widgets/pet_foster_placement_section.dart';
+import '../../../fostering_session/presentation/widgets/pet_fostering_session_summary_card.dart';
+import '../../domain/entities/pet_viewer_role.dart';
 import '../../domain/services/pet_detail_actions.dart';
 import '../controllers/download_report_controller.dart';
 import '../providers/pet_detail_viewer_context_provider.dart';
@@ -99,6 +101,10 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                 SliverToBoxAdapter(child: NeuterReminderCard(pet: pet)),
               if (pet.chipId.isEmpty && !pet.chipDismissed)
                 SliverToBoxAdapter(child: ChipReminderCard(pet: pet)),
+              if (viewerContext.role == PetViewerRole.fosterCarer && pet.isFoster)
+                SliverToBoxAdapter(
+                  child: PetFosteringSessionSummaryCard(petId: widget.petId),
+                ),
               if (viewerContext.can(PetDetailAction.fosterPlacement))
                 SliverToBoxAdapter(
                   child: PetFosterPlacementSection(

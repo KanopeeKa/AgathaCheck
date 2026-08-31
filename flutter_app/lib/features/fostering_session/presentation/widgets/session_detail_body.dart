@@ -34,8 +34,10 @@ class SessionDetailBody extends ConsumerStatefulWidget {
 class _SessionDetailBodyState extends ConsumerState<SessionDetailBody> {
   var _busy = false;
 
-  FosteringSessionDetailKey get _key =>
-      (orgId: widget.orgId, placementId: widget.placementId);
+  FosteringSessionDetailKey get _key => (
+    placementId: widget.placementId,
+    orgId: widget.orgId,
+  );
 
   FosteringSessionDetail get _detail => widget.detail;
 
@@ -280,6 +282,30 @@ class _SessionDetailBodyState extends ConsumerState<SessionDetailBody> {
         if (_busy)
           const Center(child: CircularProgressIndicator())
         else ...[
+          if (detail.can(SessionAction.acceptInvite))
+            FilledButton.icon(
+              key: const Key('session_action_accept_invite'),
+              onPressed: () => _runAction(
+                () => ref
+                    .read(fosteringSessionDetailProvider(_key).notifier)
+                    .acceptInvite(),
+                successMessage: l.fosterPlacementAccepted,
+              ),
+              icon: const Icon(Icons.check_circle_outline),
+              label: Text(l.acceptInvite),
+            ),
+          if (detail.can(SessionAction.declineInvite))
+            OutlinedButton.icon(
+              key: const Key('session_action_decline_invite'),
+              onPressed: () => _runAction(
+                () => ref
+                    .read(fosteringSessionDetailProvider(_key).notifier)
+                    .declineInvite(),
+                successMessage: l.fosterPlacementDeclined,
+              ),
+              icon: const Icon(Icons.cancel_outlined),
+              label: Text(l.declineInvite),
+            ),
           if (detail.can(SessionAction.transitionPreparation))
             FilledButton.icon(
               key: const Key('fostering_session_start_preparation'),

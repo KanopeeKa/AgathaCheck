@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../organization/domain/entities/foster_placement.dart';
@@ -85,9 +86,13 @@ class PendingFosterPlacementCard extends ConsumerWidget {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
+      child: InkWell(
+        onTap: () => context.push(
+          '/pet/${placement.petId}/fostering-session?placementId=${placement.id}',
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -153,6 +158,7 @@ class PendingFosterPlacementCard extends ConsumerWidget {
               ],
             ),
           ],
+        ),
         ),
       ),
     );

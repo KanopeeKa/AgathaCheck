@@ -225,13 +225,13 @@ autonomy: active
 current_phase: 4
 last_completed_phase: 3
 halt_reason: null
-next_action: "start phase 4: checkout cursor/session-detail-foster-entry-eec3"
+next_action: "continue phase 4 on branch cursor/session-detail-foster-entry-eec3"
 artifact_ref:
-  branch: cursor/session-detail-view-eec3-integration
+  branch: cursor/session-detail-foster-entry-eec3
   plan_path: .agents/plans/session-detail-view-eec3.md
-  plan_commit: be5a3276f0cbb0883315885a0537855bf65619b3
+  plan_commit: e817e59d27c6a182baa8d8475dac8bfb25e3cedd
   snapshot_path: .agents/plans/session-detail-view-eec3.snapshot.json
-  snapshot_commit: be5a3276f0cbb0883315885a0537855bf65619b3
+  snapshot_commit: e817e59d27c6a182baa8d8475dac8bfb25e3cedd
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
