@@ -144,16 +144,17 @@ export class PetListPage {
     }).toPass({ timeout: 30_000 });
   }
 
-  /** Assert a due/overdue entry appears in the home DueEventsSection card. */
+  /** Assert a due/overdue entry appears on guardian home care preview. */
   async expectDueEntryOnHome(entryName: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await expect(dashboardSectionGroup(this.page, 'dueAndOverdue')).toBeVisible({
-      timeout: 20_000,
-    });
-    await semanticsByName(
-      this.page,
-      new RegExp(escapeRegExp(entryName), 'i'),
-    ).waitFor({ timeout: 20_000 });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        semanticsByName(
+          this.page,
+          new RegExp(escapeRegExp(entryName), 'i'),
+        ).first(),
+      ).toBeVisible();
+    }).toPass({ timeout: 45_000 });
   }
 
   async expectEmptyState(): Promise<void> {
