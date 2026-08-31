@@ -360,9 +360,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final rows = tester.widgetList<CareEventRow>(
-        find.byType(CareEventRow),
-      );
+      final rows = tester.widgetList<CareEventRow>(find.byType(CareEventRow));
       expect(rows, hasLength(5));
       expect(rows.map((row) => row.entry.id), [
         'overdue-oldest',
@@ -455,7 +453,10 @@ void main() {
           find.byKey(const Key('care_event_row_due-entry-1')),
           findsOneWidget,
         );
-        expect(find.byKey(const Key('care_event_row_undo_due-entry-1')), findsOneWidget);
+        expect(
+          find.byKey(const Key('care_event_row_undo_due-entry-1')),
+          findsOneWidget,
+        );
         expect(find.text('Undo Complete'), findsOneWidget);
 
         expect(
@@ -547,9 +548,7 @@ void main() {
         expect(find.byKey(const Key('care_event_row_undo_e1')), findsOneWidget);
 
         // The completed Alpha row is the first row in the list.
-        final rows = tester.widgetList<CareEventRow>(
-          find.byType(CareEventRow),
-        );
+        final rows = tester.widgetList<CareEventRow>(find.byType(CareEventRow));
         expect(rows.first.entry.id, 'e1');
         expect(rows.first.isCompleted, isTrue);
       },
@@ -621,7 +620,10 @@ void main() {
           findsOneWidget,
           reason: 'completed row must stay visible after AsyncData',
         );
-        expect(find.byKey(const Key('care_event_row_undo_due-entry-1')), findsOneWidget);
+        expect(
+          find.byKey(const Key('care_event_row_undo_due-entry-1')),
+          findsOneWidget,
+        );
         expect(find.text('Undo Complete'), findsOneWidget);
       },
     );

@@ -270,10 +270,7 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
     return _buildEventList(items, petMap);
   }
 
-  Widget _buildEventList(
-    List<_CareItem> items,
-    Map<String, Pet> petMap,
-  ) {
+  Widget _buildEventList(List<_CareItem> items, Map<String, Pet> petMap) {
     return Column(
       key: const Key('global_events_list'),
       mainAxisSize: MainAxisSize.min,

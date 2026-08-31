@@ -185,11 +185,11 @@ void main() {
       await tester.pumpAndSettle();
 
       // Desktop key present.
+      expect(find.byKey(const Key('global_events_list')), findsOneWidget);
       expect(
-        find.byKey(const Key('global_events_list')),
+        find.byKey(Key('care_event_row_done_${_entry.id}')),
         findsOneWidget,
       );
-      expect(find.byKey(Key('care_event_row_done_${_entry.id}')), findsOneWidget);
 
       // Tap mark-done.
       await tester.tap(find.byKey(Key('care_event_row_done_${_entry.id}')));
@@ -199,7 +199,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // Completed state.
-      expect(find.byKey(Key('care_event_row_undo_${_entry.id}')), findsOneWidget);
+      expect(
+        find.byKey(Key('care_event_row_undo_${_entry.id}')),
+        findsOneWidget,
+      );
       expect(find.byKey(Key('care_event_row_done_${_entry.id}')), findsNothing);
     });
 
@@ -226,7 +229,10 @@ void main() {
       expect(notifier.undoCalls, 1);
       expect(notifier.lastUndoId, 'entry-due');
       // Due row restored.
-      expect(find.byKey(Key('care_event_row_done_${_entry.id}')), findsOneWidget);
+      expect(
+        find.byKey(Key('care_event_row_done_${_entry.id}')),
+        findsOneWidget,
+      );
       expect(find.byKey(Key('care_event_row_undo_${_entry.id}')), findsNothing);
     });
 
@@ -254,7 +260,10 @@ void main() {
           find.byKey(Key('care_event_row_done_${_entry.id}')),
           findsOneWidget,
         );
-        expect(find.byKey(Key('care_event_row_undo_${_entry.id}')), findsNothing);
+        expect(
+          find.byKey(Key('care_event_row_undo_${_entry.id}')),
+          findsNothing,
+        );
         // Error snackbar.
         expect(
           find.text('Could not mark this care item as done. Try again.'),
@@ -284,14 +293,20 @@ void main() {
       await tester.pumpAndSettle();
 
       // Completed state is shown.
-      expect(find.byKey(Key('care_event_row_undo_${_entry.id}')), findsOneWidget);
+      expect(
+        find.byKey(Key('care_event_row_undo_${_entry.id}')),
+        findsOneWidget,
+      );
 
       // Tap Undo — server rejects it.
       await tester.tap(find.byKey(Key('care_event_row_undo_${_entry.id}')));
       await tester.pumpAndSettle();
 
       // Completed row must remain visible (not rolled back).
-      expect(find.byKey(Key('care_event_row_undo_${_entry.id}')), findsOneWidget);
+      expect(
+        find.byKey(Key('care_event_row_undo_${_entry.id}')),
+        findsOneWidget,
+      );
       expect(find.byKey(Key('care_event_row_done_${_entry.id}')), findsNothing);
       // Error snackbar.
       expect(

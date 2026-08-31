@@ -260,6 +260,7 @@
     "My Pets preview is capped at four with an All Pets destination": "P0",
     "Care preview orders overdue, due today, and upcoming items": "P0",
     "Care preview supports completion and undo": "P0",
+    "Care preview row opens the event view screen": "P1",
     "My Vets preview reaches linked vet details": "P1",
     "Empty Guardian dashboard shows first-use guidance without false alerts": "P1",
     "Pending foster placement surfaces as a notification, not a dashboard banner": "P1",

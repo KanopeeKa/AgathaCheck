@@ -71,7 +71,8 @@ class PetEventsPreviewSection extends ConsumerWidget {
                         onMarkDone: () =>
                             HomeEventActions.markDone(context, ref, entry),
                         onUndo: () {},
-                        onView: () => HomeEventActions.viewEntry(context, entry),
+                        onView: () =>
+                            HomeEventActions.viewEntry(context, entry),
                       ),
                     )
                     .toList(),

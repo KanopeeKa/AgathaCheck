@@ -31,11 +31,7 @@ class CareEventRowPetAvatar extends StatelessWidget {
     final petColor = _petColor;
 
     return ExcludeSemantics(
-      child: SizedBox(
-        width: size,
-        height: size,
-        child: _buildAvatar(petColor),
-      ),
+      child: SizedBox(width: size, height: size, child: _buildAvatar(petColor)),
     );
   }
 
@@ -53,7 +49,12 @@ class CareEventRowPetAvatar extends StatelessWidget {
             border: Border.all(color: petColor, width: 1.5),
           ),
           child: ClipOval(
-            child: Image.memory(bytes, width: size, height: size, fit: BoxFit.cover),
+            child: Image.memory(
+              bytes,
+              width: size,
+              height: size,
+              fit: BoxFit.cover,
+            ),
           ),
         );
       } catch (_) {}
@@ -70,7 +71,11 @@ class CareEventRowPetAvatar extends StatelessWidget {
   }
 }
 
-String careEventRowDisplayPetName(Pet? pet, HealthEntry entry, AppLocalizations l) {
+String careEventRowDisplayPetName(
+  Pet? pet,
+  HealthEntry entry,
+  AppLocalizations l,
+) {
   final fromPet = pet?.name;
   if (fromPet != null && fromPet.isNotEmpty) return fromPet;
   final fromEntry = entry.petName;

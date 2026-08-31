@@ -96,11 +96,7 @@ class PetEventViewBody extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          _IterationSummary(
-            entry: entry,
-            history: history,
-            isClosed: isClosed,
-          ),
+          _IterationSummary(entry: entry, history: history, isClosed: isClosed),
           if (entry.healthIssueId != null &&
               (entry.healthIssueName?.isNotEmpty ?? false)) ...[
             const SizedBox(height: 16),
@@ -239,10 +235,8 @@ class _OccurrenceActions extends StatelessWidget {
         ),
         OutlinedButton.icon(
           key: Key('pet_event_snooze_${entry.id}'),
-          onPressed: () => showHealthEntrySnoozeDialog(
-            context,
-            onSnooze: onSnooze,
-          ),
+          onPressed: () =>
+              showHealthEntrySnoozeDialog(context, onSnooze: onSnooze),
           icon: const Icon(Icons.snooze),
           label: Text(l.snooze),
         ),
@@ -446,4 +440,3 @@ Future<void> showPetEventHistory(
     ).showSnackBar(SnackBar(content: Text(l.failedToLoadHistory('$error'))));
   }
 }
-

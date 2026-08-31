@@ -152,7 +152,10 @@ void main() {
       final viewNode = tester.getSemantics(
         find.bySemanticsLabel(RegExp(r'View Parasite prevention for Miso')),
       );
-      expect(viewNode.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+      expect(
+        viewNode.getSemanticsData().hasAction(SemanticsAction.tap),
+        isTrue,
+      );
 
       tester.semantics.tap(
         find.semantics.byLabel(RegExp(r'View Parasite prevention for Miso')),

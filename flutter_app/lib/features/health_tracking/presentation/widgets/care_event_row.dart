@@ -80,7 +80,11 @@ class CareEventRow extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CareEventRowPetAvatar(pet: pet, petName: entry.petName, colorScheme: colorScheme),
+            CareEventRowPetAvatar(
+              pet: pet,
+              petName: entry.petName,
+              colorScheme: colorScheme,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Semantics(
@@ -113,7 +117,11 @@ class CareEventRow extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
-                      _StatusLineText(status: status, theme: theme, colorScheme: colorScheme),
+                      _StatusLineText(
+                        status: status,
+                        theme: theme,
+                        colorScheme: colorScheme,
+                      ),
                     ],
                   ),
                 ),
@@ -285,7 +293,11 @@ class _CompletedCareEventRow extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CareEventRowPetAvatar(pet: pet, petName: entry.petName, colorScheme: colorScheme),
+            CareEventRowPetAvatar(
+              pet: pet,
+              petName: entry.petName,
+              colorScheme: colorScheme,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Semantics(

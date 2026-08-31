@@ -169,8 +169,14 @@ void main() {
     expect(find.text('Close event'), findsOneWidget);
     expect(find.byKey(const Key('pet_event_edit_button')), findsNothing);
     expect(find.byKey(const Key('pet_event_edit_app_bar')), findsOneWidget);
-    expect(find.byKey(const Key('pet_event_occurrence_summary_entry-1')), findsOneWidget);
-    expect(find.byKey(const Key('pet_event_mark_done_entry-1')), findsOneWidget);
+    expect(
+      find.byKey(const Key('pet_event_occurrence_summary_entry-1')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('pet_event_mark_done_entry-1')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('pet_event_snooze_entry-1')), findsOneWidget);
     expect(find.text('Give with food'), findsOneWidget);
     expect(find.text('Skin allergy'), findsOneWidget);
@@ -190,7 +196,10 @@ void main() {
     expect(find.text('Closed'), findsOneWidget);
     expect(find.text('Reopen event'), findsOneWidget);
     expect(find.text('Close event'), findsNothing);
-    expect(find.byKey(const Key('pet_event_occurrence_summary_entry-2')), findsNothing);
+    expect(
+      find.byKey(const Key('pet_event_occurrence_summary_entry-2')),
+      findsNothing,
+    );
     expect(find.text('Mark as done'), findsNothing);
     expect(find.text('Series ended'), findsOneWidget);
   });
