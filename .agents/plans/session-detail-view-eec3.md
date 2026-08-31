@@ -222,16 +222,16 @@ db/**
 
 ```yaml
 autonomy: active
-current_phase: 3
-last_completed_phase: 2
+current_phase: 4
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 3 on branch cursor/session-detail-flutter-shelter-eec3"
+next_action: "start phase 4: checkout cursor/session-detail-foster-entry-eec3"
 artifact_ref:
-  branch: cursor/session-detail-flutter-shelter-eec3
+  branch: cursor/session-detail-view-eec3-integration
   plan_path: .agents/plans/session-detail-view-eec3.md
-  plan_commit: 4e98ceb89b0d9082ed0d456765e2cef45d042823
+  plan_commit: be5a3276f0cbb0883315885a0537855bf65619b3
   snapshot_path: .agents/plans/session-detail-view-eec3.snapshot.json
-  snapshot_commit: 4e98ceb89b0d9082ed0d456765e2cef45d042823
+  snapshot_commit: be5a3276f0cbb0883315885a0537855bf65619b3
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
