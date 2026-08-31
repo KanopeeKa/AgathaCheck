@@ -95,12 +95,15 @@ class GuardianMyVetsSection extends ConsumerWidget {
                           );
                         }
                         final pets = petsAsync.valueOrNull;
+                        final linkedPetsByVetId = pets == null
+                            ? null
+                            : _linkedPetsByVetId(pets);
                         return Column(
                           children: [
                             ...vets.map((vet) {
-                              final linkedPets = pets == null
-                                  ? const <Pet>[]
-                                  : _linkedPets(vet.id, pets);
+                              final linkedPets =
+                                  linkedPetsByVetId?[vet.id] ??
+                                  const <Pet>[];
                               return CareTeamCard(
                                 vet: vet,
                                 linkedPets: linkedPets,
@@ -131,7 +134,13 @@ class GuardianMyVetsSection extends ConsumerWidget {
     );
   }
 
-  List<Pet> _linkedPets(String vetId, List<Pet> pets) {
-    return pets.where((p) => p.vetId == vetId).toList(growable: false);
+  Map<String, List<Pet>> _linkedPetsByVetId(List<Pet> pets) {
+    final grouped = <String, List<Pet>>{};
+    for (final pet in pets) {
+      final vetId = pet.vetId;
+      if (vetId == null || vetId.isEmpty) continue;
+      grouped.putIfAbsent(vetId, () => <Pet>[]).add(pet);
+    }
+    return grouped;
   }
 }

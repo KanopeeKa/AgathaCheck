@@ -1,5 +1,8 @@
 bool _isVowel(String character) {
-  return 'aeiouy'.contains(character.toLowerCase());
+  return RegExp(
+    r'[aeiouyàâäáãåæèéêëìíîïòóôöõùúûüýÿ]',
+    caseSensitive: false,
+  ).hasMatch(character);
 }
 
 const _trailingNoiseWords = {

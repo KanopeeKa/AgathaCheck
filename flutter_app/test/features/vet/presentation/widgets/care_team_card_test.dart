@@ -126,9 +126,9 @@ void main() {
       'Sevetys, Veterinary clinic · Bergerac, Caring for 4 pets',
     );
     expect(card, findsOneWidget);
-    semantics.dispose();
 
     await tester.tap(card);
     expect(taps, 1);
+    semantics.dispose();
   });
 }
