@@ -122,6 +122,24 @@ Shelter menu item appears only when org membership makes shelter access eligible
 
 Organisation section switching in Playwright prefers the **workspace toggle** over the drawer (`ExperiencePage.openDrawerOrgView()`).
 
+## Fostering session detail (session-detail-view-eec3)
+
+Canonical spec: [session-detail-view.md](/docs/domains/fostering/features/session-detail-view.md).
+
+| Lens | Route | Ready locator (after `waitForFlutterRoutePattern`) |
+|------|-------|-----------------------------------------------------|
+| Shelter operator / observer | `/o/orgs/:orgId/sessions/:placementId` | `Key('fostering_session_detail_body')` visible |
+| Foster participant | `/pet/:petId/fostering-session` | `Key('fostering_session_detail_body')` visible |
+| Legacy redirect | `/o/orgs/:orgId/placements/:placementId/session` | Redirects to shelter route |
+
+Entry helpers:
+
+- Org pet profile → `Key('open_fostering_session_button')` or `Key('view_fostering_session_button')`
+- Foster pet profile → `Key('view_fostering_session_button')`
+- Pending invite card → tap row → foster session route
+
+Action buttons use `Key('session_action_<action_key>')` (e.g. `session_action_confirm_foster_start`).
+
 ## TODO (next candidates)
 
 - `pet-list.openVets`, `help.goBack`, `notifications.expectBadgeVisible` throw paths
