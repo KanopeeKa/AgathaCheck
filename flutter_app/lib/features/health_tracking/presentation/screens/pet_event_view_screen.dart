@@ -113,7 +113,6 @@ class PetEventViewScreen extends ConsumerWidget {
                   pet: pet,
                   history: history,
                   isClosed: isClosed,
-                  onEdit: onEdit,
                   onSeeHistory: onSeeHistory,
                   onClose: onClose,
                   onReopen: onReopen,

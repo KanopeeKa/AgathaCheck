@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../../core/widgets/dashboard_section.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../../health_tracking/presentation/widgets/due_event_card.dart';
+import '../../../../health_tracking/presentation/widgets/care_event_row.dart';
+import '../../../../health_tracking/presentation/widgets/care_event_row_context.dart';
 import '../../../domain/entities/pet.dart';
+import '../../widgets/pet_list/home_event_actions.dart';
 
 /// Pet profile due/overdue preview with link to manage events.
 class PetEventsPreviewSection extends ConsumerWidget {
@@ -60,13 +62,17 @@ class PetEventsPreviewSection extends ConsumerWidget {
               return Column(
                 children: dueEntries
                     .map(
-                      (entry) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: DueEventCard(
-                          entry: entry,
-                          pet: pet,
-                          showActions: true,
-                        ),
+                      (entry) => CareEventRow(
+                        key: Key('pet_preview_care_row_${entry.id}'),
+                        entry: entry,
+                        pet: pet,
+                        rowContext: CareEventRowContext.pet,
+                        isCompleted: false,
+                        onMarkDone: () =>
+                            HomeEventActions.markDone(context, ref, entry),
+                        onUndo: () {},
+                        onView: () =>
+                            HomeEventActions.viewEntry(context, entry),
                       ),
                     )
                     .toList(),

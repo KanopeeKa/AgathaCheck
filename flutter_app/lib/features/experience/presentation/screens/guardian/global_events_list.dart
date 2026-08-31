@@ -7,11 +7,11 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../health_tracking/domain/entities/health_history_entry.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../../health_tracking/presentation/widgets/mobile_due_event_row.dart';
+import '../../../../health_tracking/presentation/widgets/care_event_row.dart';
+import '../../../../health_tracking/presentation/widgets/care_event_row_context.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/screens/widgets/pet_event_entry_list.dart';
 import '../../../../pet_profile/presentation/widgets/pet_list/home_event_actions.dart';
-import 'desktop_care_row.dart';
 import 'guardian_due_events_screen.dart';
 
 // ---------------------------------------------------------------------------
@@ -66,16 +66,12 @@ class _CareItem {
 
 /// Unified global events list with manage-events filters plus pet/cohort filters.
 ///
-/// Both compact (<[_mobileBreakpoint]dp) and wide layouts expose the same
-/// optimistic completion/undo flow so care actions are available on every
-/// device. Server ordering authority is preserved — no second ordering model
-/// is introduced.
+/// All viewport widths use the same [CareEventRow] presentation with optimistic
+/// completion/undo. Server ordering authority is preserved.
 class GlobalEventsList extends ConsumerStatefulWidget {
   const GlobalEventsList({super.key, required this.shellPets});
 
   final List<Pet> shellPets;
-
-  static const _mobileBreakpoint = 600.0;
 
   @override
   ConsumerState<GlobalEventsList> createState() => _GlobalEventsListState();
@@ -269,79 +265,33 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
     final items = _buildMergedList(visible, scopedPets, _filters, histories);
     final petMap = {for (final p in widget.shellPets) p.id: p};
 
-    return LayoutBuilder(
-      builder: (ctx, constraints) {
-        if (items.isEmpty) return _EmptyState(label: l.noEntriesYet);
-        final useMobile =
-            constraints.maxWidth < GlobalEventsList._mobileBreakpoint;
-        return useMobile
-            ? _buildMobileList(ctx, items, petMap)
-            : _buildDesktopList(ctx, items, petMap);
-      },
+    if (items.isEmpty) return _EmptyState(label: l.noEntriesYet);
+
+    return _buildEventList(items, petMap);
+  }
+
+  Widget _buildEventList(List<_CareItem> items, Map<String, Pet> petMap) {
+    return Column(
+      key: const Key('global_events_list'),
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < items.length; i++)
+          CareEventRow(
+            key: Key('global_events_row_${items[i].entry.id}'),
+            entry: items[i].entry,
+            pet: petMap[items[i].entry.petId],
+            rowContext: CareEventRowContext.dashboard,
+            isCompleted: items[i].isCompleted,
+            onMarkDone: () => _onMarkDone(items[i].entry, i),
+            onUndo: () => _onUndo(items[i].entry),
+            onView: () => _viewEntry(items[i].entry),
+          ),
+      ],
     );
   }
 
-  // ---- mobile --------------------------------------------------------------
-
-  Widget _buildMobileList(
-    BuildContext ctx,
-    List<_CareItem> items,
-    Map<String, Pet> petMap,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        key: const Key('global_events_mobile_list'),
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var i = 0; i < items.length; i++)
-            MobileDueEventRow(
-              key: Key('global_events_mobile_row_${items[i].entry.id}'),
-              entry: items[i].entry,
-              pet: petMap[items[i].entry.petId],
-              isCompleted: items[i].isCompleted,
-              onMarkDone: () => _onMarkDone(items[i].entry, i),
-              onUndo: () => _onUndo(items[i].entry),
-              onOpen: () => _openEntry(ctx, items[i].entry),
-            ),
-        ],
-      ),
-    );
-  }
-
-  // ---- desktop -------------------------------------------------------------
-
-  Widget _buildDesktopList(
-    BuildContext ctx,
-    List<_CareItem> items,
-    Map<String, Pet> petMap,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Column(
-        key: const Key('global_events_desktop_list'),
-        children: [
-          for (var i = 0; i < items.length; i++)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: DesktopCareRow(
-                key: Key('global_events_desktop_row_${items[i].entry.id}'),
-                entry: items[i].entry,
-                pet: petMap[items[i].entry.petId],
-                isCompleted: items[i].isCompleted,
-                onMarkDone: () => _onMarkDone(items[i].entry, i),
-                onUndo: () => _onUndo(items[i].entry),
-                onOpen: () => _openEntry(ctx, items[i].entry),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  void _openEntry(BuildContext context, HealthEntry entry) {
-    if (entry.petId.isEmpty) return;
-    context.go('/pet/${entry.petId}/events/${entry.id}');
+  void _viewEntry(HealthEntry entry) {
+    HomeEventActions.viewEntry(context, entry);
   }
 }
 

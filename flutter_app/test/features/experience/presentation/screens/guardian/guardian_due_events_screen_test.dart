@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/mobile_due_event_row.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row.dart';
 
 import 'guardian_events_test_helpers.dart';
 
@@ -248,7 +248,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('global_events_mobile_row_entry-owned')),
+      find.byKey(const Key('global_events_row_entry-owned')),
       findsOneWidget,
     );
 
@@ -258,7 +258,7 @@ void main() {
     expect(find.byIcon(Icons.error_outline), findsOneWidget);
     expect(find.byKey(const Key('global_events_retry')), findsOneWidget);
     expect(
-      find.byKey(const Key('global_events_mobile_row_entry-owned')),
+      find.byKey(const Key('global_events_row_entry-owned')),
       findsNothing,
     );
     expect(find.text('No entries yet'), findsNothing);
@@ -268,23 +268,7 @@ void main() {
   // Layout breakpoint tests
   // ---------------------------------------------------------------------------
 
-  testWidgets('uses MobileDueEventRow at 390px phone width', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(390, 844));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-
-    await tester.pumpWidget(
-      buildListScreen(
-        pets: const [_ownedPet],
-        notifierFactory: () => TestFixedEntriesNotifier([_ownedEntry]),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('global_events_mobile_list')), findsOneWidget);
-    expect(find.byType(MobileDueEventRow), findsOneWidget);
-  });
-
-  testWidgets('uses desktop list at >=600px width', (tester) async {
+  testWidgets('uses CareEventRow at all viewport widths', (tester) async {
     await tester.binding.setSurfaceSize(const Size(800, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -296,7 +280,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('global_events_desktop_list')), findsOneWidget);
-    expect(find.byType(MobileDueEventRow), findsNothing);
+    expect(find.byKey(const Key('global_events_list')), findsOneWidget);
+    expect(find.byType(CareEventRow), findsOneWidget);
   });
 }

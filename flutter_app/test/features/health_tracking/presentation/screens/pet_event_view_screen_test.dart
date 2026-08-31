@@ -157,18 +157,27 @@ void main() {
     );
   }
 
-  testWidgets('open entry shows status, actions, and due card', (tester) async {
+  testWidgets('open entry shows status, occurrence actions, and summary', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       buildApp(entry: openEntry, historyFn: _openHistory),
     );
     await tester.pumpAndSettle();
 
     expect(find.text('View Heartworm'), findsOneWidget);
-    expect(find.text('Open'), findsWidgets);
     expect(find.text('Close event'), findsOneWidget);
-    expect(find.byKey(const Key('pet_event_edit_button')), findsOneWidget);
-    expect(find.byKey(const Key('pet_event_due_card_entry-1')), findsOneWidget);
-    expect(find.text('Mark as done'), findsOneWidget);
+    expect(find.byKey(const Key('pet_event_edit_button')), findsNothing);
+    expect(find.byKey(const Key('pet_event_edit_app_bar')), findsOneWidget);
+    expect(
+      find.byKey(const Key('pet_event_occurrence_summary_entry-1')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('pet_event_mark_done_entry-1')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('pet_event_snooze_entry-1')), findsOneWidget);
     expect(find.text('Give with food'), findsOneWidget);
     expect(find.text('Skin allergy'), findsOneWidget);
     expect(
@@ -187,7 +196,10 @@ void main() {
     expect(find.text('Closed'), findsOneWidget);
     expect(find.text('Reopen event'), findsOneWidget);
     expect(find.text('Close event'), findsNothing);
-    expect(find.byKey(const Key('pet_event_due_card_entry-2')), findsNothing);
+    expect(
+      find.byKey(const Key('pet_event_occurrence_summary_entry-2')),
+      findsNothing,
+    );
     expect(find.text('Mark as done'), findsNothing);
     expect(find.text('Series ended'), findsOneWidget);
   });

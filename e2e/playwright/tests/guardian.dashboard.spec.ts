@@ -4,6 +4,7 @@
  * Scenario: Care preview separates Due and Soon
  * Scenario: My Pets preview is capped at four with an All Pets destination
  * Scenario: Care preview orders overdue, due today, and upcoming items
+ * Scenario: Care preview row opens the event view screen
  * Scenario: Care preview supports completion and undo
  * Scenario: My Vets preview reaches linked vet details
  * Scenario: Empty Guardian dashboard shows first-use guidance without false alerts
@@ -123,6 +124,25 @@ test.describe('Guardian dashboard', () => {
     await dashboard.openEvents();
     await expect(page).toHaveURL(/#\/g\/events/);
     await dashboard.goBackToDashboard();
+  });
+
+  test('Care preview row opens event view with snooze on view only', async ({ page, testUser }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    const pet = await createPet(baseURL(), testUser.accessToken, 'ViewPet');
+    await createHealthEntry(baseURL(), testUser.accessToken, pet.id, {
+      name: 'Viewable Care',
+      nextDueDate: today,
+    });
+    await loginGuardian(page, testUser.email, testUser.password);
+    const dashboard = new GuardianDashboardPage(page);
+    await dashboard.open();
+    await dashboard.expectCareVisible('Viewable Care');
+    const careRegion = dashboard.careRegion();
+    await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
+    await careRegion.getByText('Viewable Care').click();
+    await expect(page).toHaveURL(/#\/pet\/.*\/events\/[^/]+$/);
+    await expect(page.getByRole('button', { name: /snooze/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /mark .*done/i })).toBeVisible();
   });
 
   test('Care preview supports completion and undo', async ({ page, testUser }) => {

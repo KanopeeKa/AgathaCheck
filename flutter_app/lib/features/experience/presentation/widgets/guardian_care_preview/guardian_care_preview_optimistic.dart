@@ -1,25 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../../health_tracking/presentation/widgets/mobile_due_event_row.dart';
+import '../../../../health_tracking/presentation/widgets/care_event_row.dart';
+import '../../../../health_tracking/presentation/widgets/care_event_row_context.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
-
-/// A due entry optimistically marked complete on the compact Care preview.
-///
-/// Retained at [previewIndex] through the real server refresh so its approved
-/// completed presentation stays visible in place.
-class GuardianCareOptimisticCompletion {
-  const GuardianCareOptimisticCompletion({
-    required this.entry,
-    required this.previewIndex,
-  });
-
-  /// The entry snapshot captured when the user confirmed completion.
-  final HealthEntry entry;
-
-  /// The index this item held in its Care preview at completion.
-  final int previewIndex;
-}
 
 /// A single item in the merged mobile preview: due or optimistically completed.
 class GuardianCarePreviewItem {
@@ -33,6 +17,17 @@ class GuardianCarePreviewItem {
 
   final HealthEntry entry;
   final bool isCompleted;
+}
+
+/// A due entry optimistically marked complete on the compact Care preview.
+class GuardianCareOptimisticCompletion {
+  const GuardianCareOptimisticCompletion({
+    required this.entry,
+    required this.previewIndex,
+  });
+
+  final HealthEntry entry;
+  final int previewIndex;
 }
 
 /// Builds the ordered Care preview by merging fresh entries with retained
@@ -81,7 +76,7 @@ List<GuardianCarePreviewItem> buildGuardianCareMobilePreview({
   return compacted;
 }
 
-/// Renders merged preview items as [MobileDueEventRow] items.
+/// Renders merged preview items as [CareEventRow] items.
 class GuardianCarePreviewEventList extends StatelessWidget {
   const GuardianCarePreviewEventList({
     super.key,
@@ -89,30 +84,31 @@ class GuardianCarePreviewEventList extends StatelessWidget {
     required this.petMap,
     required this.onMarkDone,
     required this.onUndo,
-    required this.onOpen,
+    required this.onView,
   });
 
   final List<GuardianCarePreviewItem> items;
   final Map<String, Pet> petMap;
   final void Function(HealthEntry entry, int previewIndex) onMarkDone;
   final void Function(HealthEntry entry) onUndo;
-  final void Function(HealthEntry entry) onOpen;
+  final void Function(HealthEntry entry) onView;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      key: const Key('mobile_due_event_list'),
+      key: const Key('care_event_row_list'),
       mainAxisSize: MainAxisSize.min,
       children: [
         for (var i = 0; i < items.length; i++)
-          MobileDueEventRow(
-            key: Key('mobile_due_row_${items[i].entry.id}'),
+          CareEventRow(
+            key: Key('care_event_row_${items[i].entry.id}'),
             entry: items[i].entry,
             pet: petMap[items[i].entry.petId],
+            rowContext: CareEventRowContext.dashboard,
             isCompleted: items[i].isCompleted,
             onMarkDone: () => onMarkDone(items[i].entry, i),
             onUndo: () => onUndo(items[i].entry),
-            onOpen: () => onOpen(items[i].entry),
+            onView: () => onView(items[i].entry),
           ),
       ],
     );

@@ -14,7 +14,20 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 ---
 
-## guardian-adaptive-nav-7221 — Guardian adaptive navigation (2026-08-26)
+## care-event-row-7bee — Unified CareEventRow (2026-08-31)
+
+**Goal:** One scannable due/overdue row on dashboard, pet preview, and `/g/events`; row tap → view screen; snooze/edit on view only.  
+**Plan:** `.agents/plans/care-event-row-7bee.md` · **Branch:** `cursor/care-event-row-unification-7bee`
+
+| Outcome | Status |
+|---------|--------|
+| `CareEventRow` replaces `DueEventCard` / `MobileDueEventRow` / `DesktopCareRow` on list surfaces | Done |
+| `PetEventViewScreen` occurrence actions (mark done + snooze) | Done |
+| W07/W08 briefs superseded | Done |
+
+**Deferred:** `HealthEntryCard` on health dashboard tabs still exposes inline snooze (follow-up).
+
+---
 
 **Goal:** Adaptive Guardian shell — bottom bar (&lt;600px), navigation rail (600–839px), expanded sidebar (≥840px); record D-v4-4/5; resolve D-v4-2 drawer retirement.  
 **Plan:** `.agents/plans/guardian-adaptive-nav-7221.md` · **Integration:** `cursor/guardian-adaptive-nav-7221-integration-7221` · **Control issue:** #768 · **Prerequisite:** PR #767 (workspace-wide compact bottom nav)

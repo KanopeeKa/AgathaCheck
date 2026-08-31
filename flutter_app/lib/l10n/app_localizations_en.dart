@@ -5215,7 +5215,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String dueEventRowOpenLabel(String name, String petName) {
-    return 'Open $name for $petName';
+    return 'View $name for $petName';
+  }
+
+  @override
+  String dueEventRowViewLabel(String name, String petName) {
+    return 'View $name for $petName';
+  }
+
+  @override
+  String dueEventRowViewPetContextLabel(String name) {
+    return 'View $name';
   }
 
   @override

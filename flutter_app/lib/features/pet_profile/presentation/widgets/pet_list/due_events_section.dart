@@ -4,13 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/theme/experience_colors.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
+import '../../../../health_tracking/presentation/widgets/care_event_row.dart';
+import '../../../../health_tracking/presentation/widgets/care_event_row_context.dart';
+import 'home_event_actions.dart';
 import '../../../domain/entities/pet.dart';
-import 'due_event_row.dart';
 
 class DueEventsSection extends ConsumerWidget {
   const DueEventsSection({required this.pets, this.showInlineActions = false});
 
   final List<Pet> pets;
+
+  /// Legacy flag — actions are always row-level Done; snooze lives on view.
   final bool showInlineActions;
 
   @override
@@ -118,10 +122,17 @@ class DueEventsSection extends ConsumerWidget {
                   if (dueEntries.isNotEmpty) ...[
                     const SizedBox(height: 10),
                     ...dueEntries.map(
-                      (entry) => DueEventRow(
+                      (entry) => CareEventRow(
+                        key: Key('pet_list_care_row_${entry.id}'),
                         entry: entry,
                         pet: petMap[entry.petId],
-                        showInlineActions: showInlineActions,
+                        rowContext: CareEventRowContext.dashboard,
+                        isCompleted: false,
+                        onMarkDone: () =>
+                            HomeEventActions.markDone(context, ref, entry),
+                        onUndo: () {},
+                        onView: () =>
+                            HomeEventActions.viewEntry(context, entry),
                       ),
                     ),
                   ],

@@ -151,7 +151,7 @@ class HealthEntrySnoozeButton extends StatelessWidget {
       child: Material(
         color: AppColorTokens.warmAccentLight,
         child: InkWell(
-          onTap: () => _showSnoozePicker(context),
+          onTap: () => showHealthEntrySnoozeDialog(context, onSnooze: onSnooze),
           splashColor: AppColorTokens.warmAccentLight,
           child: Center(
             child: Column(
@@ -174,88 +174,92 @@ class HealthEntrySnoozeButton extends StatelessWidget {
       ),
     );
   }
+}
 
-  void _showSnoozePicker(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    int selectedDays = 1;
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (ctx, setDialogState) {
-            return AlertDialog(
-              title: Row(
+/// Day-picker dialog for postponing a health entry occurrence.
+Future<void> showHealthEntrySnoozeDialog(
+  BuildContext context, {
+  void Function(int days)? onSnooze,
+}) async {
+  final l = AppLocalizations.of(context)!;
+  var selectedDays = 1;
+  await showDialog<void>(
+    context: context,
+    builder: (ctx) {
+      return StatefulBuilder(
+        builder: (ctx, setDialogState) {
+          return AlertDialog(
+            title: Row(
+              children: [
+                Icon(Icons.snooze, color: AppColorTokens.warning, size: 22),
+                const SizedBox(width: 8),
+                Text('${l.snooze} Event'),
+              ],
+            ),
+            content: SizedBox(
+              height: 160,
+              child: Column(
                 children: [
-                  Icon(Icons.snooze, color: AppColorTokens.warning, size: 22),
-                  const SizedBox(width: 8),
-                  Text('${l.snooze} Event'),
-                ],
-              ),
-              content: SizedBox(
-                height: 160,
-                child: Column(
-                  children: [
-                    Text(
-                      'Postpone for how many days?',
-                      style: Theme.of(ctx).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: ListWheelScrollView.useDelegate(
-                        itemExtent: 40,
-                        diameterRatio: 1.5,
-                        physics: const FixedExtentScrollPhysics(),
-                        onSelectedItemChanged: (index) {
-                          setDialogState(() => selectedDays = index + 1);
-                        },
-                        childDelegate: ListWheelChildBuilderDelegate(
-                          childCount: 90,
-                          builder: (context, index) {
-                            final day = index + 1;
-                            final isSelected = day == selectedDays;
-                            return Center(
-                              child: Text(
-                                day == 1 ? '1 ${l.day}' : '$day ${l.days}',
-                                style: TextStyle(
-                                  fontSize: isSelected ? 20 : 15,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                  color: isSelected
-                                      ? AppColorTokens.warning
-                                      : AppColorTokens.muted,
-                                ),
+                  Text(
+                    'Postpone for how many days?',
+                    style: Theme.of(ctx).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: ListWheelScrollView.useDelegate(
+                      itemExtent: 40,
+                      diameterRatio: 1.5,
+                      physics: const FixedExtentScrollPhysics(),
+                      onSelectedItemChanged: (index) {
+                        setDialogState(() => selectedDays = index + 1);
+                      },
+                      childDelegate: ListWheelChildBuilderDelegate(
+                        childCount: 90,
+                        builder: (context, index) {
+                          final day = index + 1;
+                          final isSelected = day == selectedDays;
+                          return Center(
+                            child: Text(
+                              day == 1 ? '1 ${l.day}' : '$day ${l.days}',
+                              style: TextStyle(
+                                fontSize: isSelected ? 20 : 15,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                color: isSelected
+                                    ? AppColorTokens.warning
+                                    : AppColorTokens.muted,
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                          );
+                        },
                       ),
                     ),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(l.cancel),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColorTokens.warning,
+                ),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  onSnooze?.call(selectedDays);
+                },
+                child: Text(
+                  '${l.snooze} $selectedDays ${selectedDays == 1 ? l.day : l.days}',
                 ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: Text(l.cancel),
-                ),
-                FilledButton(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColorTokens.warning,
-                  ),
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                    onSnooze?.call(selectedDays);
-                  },
-                  child: Text(
-                    '${l.snooze} $selectedDays ${selectedDays == 1 ? l.day : l.days}',
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
+            ],
+          );
+        },
+      );
+    },
+  );
 }

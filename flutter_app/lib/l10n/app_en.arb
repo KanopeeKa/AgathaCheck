@@ -1842,11 +1842,24 @@
   "orgRoleDefaultsDiscard": "Discard",
   "orgRoleDefaultsOtherPermissions": "Other permissions",
 
-  "dueEventRowOpenLabel": "Open {name} for {petName}",
+  "dueEventRowOpenLabel": "View {name} for {petName}",
   "@dueEventRowOpenLabel": {
     "placeholders": {
       "name": { "type": "String" },
       "petName": { "type": "String" }
+    }
+  },
+  "dueEventRowViewLabel": "View {name} for {petName}",
+  "@dueEventRowViewLabel": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "petName": { "type": "String" }
+    }
+  },
+  "dueEventRowViewPetContextLabel": "View {name}",
+  "@dueEventRowViewPetContextLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
     }
   },
   "dueEventRowMarkDoneLabel": "Mark {name} as done",
