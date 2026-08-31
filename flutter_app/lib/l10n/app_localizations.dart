@@ -8010,8 +8010,26 @@ abstract class AppLocalizations {
   /// No description provided for @myVets.
   ///
   /// In en, this message translates to:
-  /// **'My vets'**
+  /// **'Care team'**
   String get myVets;
+
+  /// No description provided for @careTeamEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'CARE TEAM'**
+  String get careTeamEyebrow;
+
+  /// No description provided for @careTeamClinicSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Veterinary clinic'**
+  String get careTeamClinicSubtitle;
+
+  /// No description provided for @allCareTeams.
+  ///
+  /// In en, this message translates to:
+  /// **'All care teams'**
+  String get allCareTeams;
 
   /// No description provided for @guardianDashboardTitle.
   ///
@@ -8066,6 +8084,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 pet} other{{count} pets}}'**
   String vetLinkedPetCount(int count);
+
+  /// No description provided for @careTeamCaringForPets.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Caring for 1 pet} other{Caring for {count} pets}}'**
+  String careTeamCaringForPets(int count);
 
   /// No description provided for @vetLinkedPets.
   ///

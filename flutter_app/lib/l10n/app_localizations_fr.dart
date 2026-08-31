@@ -4529,7 +4529,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get guardianNotificationsDrawer => 'Notifications gardien';
 
   @override
-  String get myVets => 'Mes vétérinaires';
+  String get myVets => 'Équipe de soins';
+
+  @override
+  String get careTeamEyebrow => 'ÉQUIPE DE SOINS';
+
+  @override
+  String get careTeamClinicSubtitle => 'Clinique vétérinaire';
+
+  @override
+  String get allCareTeams => 'Toutes les équipes de soins';
 
   @override
   String get guardianDashboardTitle => 'Tableau de bord Mes animaux';
@@ -4562,6 +4571,17 @@ class AppLocalizationsFr extends AppLocalizations {
       locale: localeName,
       other: '$count animaux',
       one: '1 animal',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careTeamCaringForPets(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Soigne $count animaux',
+      one: 'Soigne 1 animal',
     );
     return '$_temp0';
   }

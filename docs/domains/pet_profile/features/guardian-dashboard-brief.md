@@ -140,21 +140,22 @@ The dashboard version should:
 
 The existing Events screen already exists and does not need a major redesign as part of this brief. The immediate goal is consistency with the dashboard preview and the addition of a clear create action.
 
-## My Vets
+## Care team
 
 ### Purpose
 
-This section should provide quick access to veterinary contacts associated with the guardian’s pets. It should function as a practical relationship list rather than a dense admin table.
+This section provides quick access to veterinary clinics and care teams associated with the guardian’s pets. It should feel relational and calm — a practical care-team preview rather than a dense admin table.
 
 ### List format
 
-Display vets in a simple list showing:
+Display care teams as warm, tappable cards showing:
 
-- Vet name
-- City, if available
-- Number of associated pets
+- Clinic initials avatar (monogram from the clinic name)
+- Clinic / care team name
+- “Veterinary clinic · {town}” when location is available
+- Up to three linked-pet avatars with “+N” overflow and “Caring for N pets” when pet data is loaded
 
-This section should be easy to scan and more text-based than the pet section.
+The section uses a **CARE TEAM** eyebrow label and an **All care teams** footer link to the full vet list.
 
 ### Detail model
 

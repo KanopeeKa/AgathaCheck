@@ -88,7 +88,7 @@ void main() {
       find.byKey(const Key('guardian_dashboard_empty_care_action')),
       findsOneWidget,
     );
-    expect(find.text('Manage veterinarians'), findsOneWidget);
+    expect(find.text('All care teams'), findsOneWidget);
     expect(
       tester
           .widget<GuardianDeskSectionCard>(
@@ -254,7 +254,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
-        find.text('Gérer les vétérinaires'),
+        find.text('Toutes les équipes de soins'),
         120,
         scrollable: find.byWidgetPredicate(
           (widget) =>
@@ -267,7 +267,7 @@ void main() {
         find.byKey(const Key('guardian_dashboard_add_care')),
         findsNothing,
       );
-      expect(find.text('Gérer les vétérinaires'), findsOneWidget);
+      expect(find.text('Toutes les équipes de soins'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

@@ -18,7 +18,7 @@ Guardians add a vet from the veterinarian list (app bar icon or navigation). Min
 
 ## View and link pets
 
-The vet list shows cards with linked pet names. Detail view surfaces contact fields and which pets use this vet.
+The full vet list uses compact rows with linked-pet counts. The guardian dashboard **Care team** section shows warmer clinic cards with initials avatars, linked-pet previews, and a caring-for count. Detail view surfaces contact fields and which pets use this vet.
 
 ## Edit and delete
 
