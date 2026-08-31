@@ -22,6 +22,8 @@ Full flow: [j1-foster-onboarding.md](../changes/j1-foster-onboarding.md)
 
 Active fosterers view and update day-to-day care for placed pets (experience program Phase 4).
 
+**Session detail:** foster participants open [session detail view](session-detail-view.md) from the foster pet profile or pending invite — accept/decline, confirm start, checklist items, adoption confirm when eligible.
+
 ## Adoption and return
 
 Placements move through the [foster placement lifecycle](foster-placement-lifecycle.md) — adoption confirmation, conditions, and return-to-org paths.

@@ -48,3 +48,7 @@ flowchart TB
 ## Contracts
 
 Full API/workflow contracts: [g0-contract-pack.md](g0-contract-pack.md) · Onboarding: [j1-foster-onboarding.md](../changes/j1-foster-onboarding.md)
+
+**Session detail UI (foster + shelter lenses):** [session-detail-view.md](session-detail-view.md) — viewer contexts, routes, actions matrix, pet profile entry points.
+
+> **Note:** J3 target statuses (`pending_acceptance`, `preparation`, `ready_to_start`, `active`, …) extend this legacy diagram. See G0 §6.2 and [session-detail-view.md](session-detail-view.md) for the canonical session lifecycle UI.
