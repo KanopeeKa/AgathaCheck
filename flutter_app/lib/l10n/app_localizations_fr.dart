@@ -4590,6 +4590,25 @@ class AppLocalizationsFr extends AppLocalizations {
   String get vetLinkedPets => 'Animaux associés';
 
   @override
+  String get careTeam => 'Équipe de soins';
+
+  @override
+  String get careTeamPetsCaredFor => 'Animaux pris en charge';
+
+  @override
+  String get careTeamNoLinkedPets =>
+      'Aucun animal n\'est actuellement associé à cette équipe de soins.';
+
+  @override
+  String get careTeamClinicType => 'Clinique vétérinaire';
+
+  @override
+  String get careTeamOptions => 'Options de l\'équipe de soins';
+
+  @override
+  String get editCareTeam => 'Modifier l\'équipe de soins';
+
+  @override
   String get vetNotFound => 'Vétérinaire introuvable';
 
   @override

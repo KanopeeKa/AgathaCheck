@@ -4515,6 +4515,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vetLinkedPets => 'Linked pets';
 
   @override
+  String get careTeam => 'Care Team';
+
+  @override
+  String get careTeamPetsCaredFor => 'Pets cared for';
+
+  @override
+  String get careTeamNoLinkedPets =>
+      'No pets are currently linked to this care team.';
+
+  @override
+  String get careTeamClinicType => 'Veterinary clinic';
+
+  @override
+  String get careTeamOptions => 'Care team options';
+
+  @override
+  String get editCareTeam => 'Edit care team';
+
+  @override
   String get vetNotFound => 'Veterinarian not found';
 
   @override

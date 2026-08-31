@@ -16,12 +16,6 @@ import 'package:pet_profile_app/features/vet/presentation/providers/vet_provider
 import 'package:pet_profile_app/features/vet/presentation/screens/vet_detail_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
-import '../../../../helpers/fakes.dart';
-
-// ---------------------------------------------------------------------------
-// Controllable fake notifiers
-// ---------------------------------------------------------------------------
-
 class _TestVetListNotifier extends VetListNotifier {
   _TestVetListNotifier(this._vets);
   final List<Vet> _vets;
@@ -38,12 +32,6 @@ class _TestPetListNotifier extends PetListNotifier {
   Future<List<Pet>> build() async => List<Pet>.from(_pets);
 }
 
-// ---------------------------------------------------------------------------
-// URL launcher mock
-// ---------------------------------------------------------------------------
-
-/// Minimal [UrlLauncherPlatform] mock.  Uses [MockPlatformInterfaceMixin] to
-/// bypass the platform token verification while still being a valid singleton.
 class _MockUrlLauncherPlatform extends Fake
     with MockPlatformInterfaceMixin
     implements UrlLauncherPlatform {
@@ -98,18 +86,13 @@ class _MockUrlLauncherPlatform extends Fake
   }
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
 Widget _buildApp({
   required String vetId,
   required List<Vet> vets,
   List<Pet> pets = const [],
-  String? initialLocation,
 }) {
   final router = GoRouter(
-    initialLocation: initialLocation ?? '/g/vets/$vetId',
+    initialLocation: '/g/vets/$vetId',
     routes: [
       GoRoute(
         path: '/g/vets/:id',
@@ -147,20 +130,14 @@ Widget _buildApp({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
-
 void main() {
-  // ── Display ───────────────────────────────────────────────────────────────
-
   group('VetDetailScreen – display', () {
-    testWidgets('shows vet name and all available contact fields', (
+    testWidgets('shows care team identity and contact lines without labels', (
       tester,
     ) async {
       const vet = Vet(
         id: 'vet-1',
-        name: 'Dr. Paws',
+        name: 'Sevetys',
         phone: '+44 20 1234 5678',
         email: 'paws@example.com',
         address: '1 High St, London',
@@ -171,12 +148,16 @@ void main() {
       await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
       await tester.pumpAndSettle();
 
-      expect(find.text('Dr. Paws'), findsOneWidget);
+      expect(find.text('Sevetys'), findsOneWidget);
+      expect(find.text('SV'), findsOneWidget);
+      expect(find.text('Veterinary clinic'), findsOneWidget);
       expect(find.text('+44 20 1234 5678'), findsOneWidget);
       expect(find.text('paws@example.com'), findsOneWidget);
       expect(find.text('1 High St, London'), findsOneWidget);
       expect(find.text('https://drpaws.example.com'), findsOneWidget);
       expect(find.text('Specialises in exotic birds.'), findsOneWidget);
+      expect(find.text('Address'), findsNothing);
+      expect(find.text('Phone'), findsNothing);
     });
 
     testWidgets('shows vetNotFound message when vet id is missing', (
@@ -188,24 +169,7 @@ void main() {
       expect(find.text('Veterinarian not found'), findsOneWidget);
     });
 
-    testWidgets('omits phone row when phone is empty', (tester) async {
-      const vet = Vet(id: 'vet-1', name: 'Silent Vet', phone: '');
-      await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
-      await tester.pumpAndSettle();
-
-      // No phone row text
-      expect(find.text('Phone'), findsNothing);
-    });
-
-    testWidgets('omits email row when email is empty', (tester) async {
-      const vet = Vet(id: 'vet-1', name: 'No Email Vet', email: '');
-      await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Email'), findsNothing);
-    });
-
-    testWidgets('shows linked-pets section when pet is linked to vet', (
+    testWidgets('shows pets cared for section when pet is linked', (
       tester,
     ) async {
       const vet = Vet(id: 'vet-1', name: 'Dr. Paws');
@@ -221,27 +185,24 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Linked pets'), findsOneWidget);
+      expect(find.text('Pets cared for'), findsOneWidget);
       expect(find.text('Whiskers'), findsOneWidget);
+      expect(find.byKey(const Key('care_team_pet_row_pet-1')), findsOneWidget);
     });
 
-    testWidgets('omits linked-pets section when no pets are linked', (
+    testWidgets('shows empty pets message when no pets are linked', (
       tester,
     ) async {
       const vet = Vet(id: 'vet-1', name: 'Dr. Paws');
       await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
       await tester.pumpAndSettle();
 
-      expect(find.text('Linked pets'), findsNothing);
-    });
-
-    testWidgets('shows Edit Vet button', (tester) async {
-      const vet = Vet(id: 'vet-1', name: 'Dr. Paws');
-      await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('vet_detail_edit_button')), findsOneWidget);
-      expect(find.text('Edit Vet'), findsOneWidget);
+      expect(find.text('Pets cared for'), findsOneWidget);
+      expect(
+        find.text('No pets are currently linked to this care team.'),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('care_team_link_pets_button')), findsOneWidget);
     });
 
     testWidgets('does not overflow at 320 px width', (tester) async {
@@ -263,85 +224,8 @@ void main() {
     });
   });
 
-  // ── Call / Email actions ──────────────────────────────────────────────────
-
-  group('VetDetailScreen – call and email actions', () {
-    testWidgets('shows Call and Email buttons when both are provided', (
-      tester,
-    ) async {
-      const vet = Vet(
-        id: 'vet-1',
-        name: 'Dr. Paws',
-        phone: '+44 20 1234 5678',
-        email: 'paws@example.com',
-      );
-
-      await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('vet_call_button')), findsOneWidget);
-      expect(find.byKey(const Key('vet_email_button')), findsOneWidget);
-    });
-
-    testWidgets('shows only Call button when email is absent', (tester) async {
-      const vet = Vet(id: 'vet-1', name: 'Dr. Paws', phone: '+44 20 1234 5678');
-
-      await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('vet_call_button')), findsOneWidget);
-      expect(find.byKey(const Key('vet_email_button')), findsNothing);
-    });
-
-    testWidgets('shows only Email button when phone is absent', (tester) async {
-      const vet = Vet(id: 'vet-1', name: 'Dr. Paws', email: 'a@b.com');
-
-      await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('vet_call_button')), findsNothing);
-      expect(find.byKey(const Key('vet_email_button')), findsOneWidget);
-    });
-
-    testWidgets('shows no contact action buttons when both are absent', (
-      tester,
-    ) async {
-      const vet = Vet(id: 'vet-1', name: 'Dr. Paws');
-
-      await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('vet_call_button')), findsNothing);
-      expect(find.byKey(const Key('vet_email_button')), findsNothing);
-    });
-
-    testWidgets('Call button has at least 48 logical pixels height', (
-      tester,
-    ) async {
-      const vet = Vet(id: 'vet-1', name: 'Dr. Paws', phone: '+44 20 1234 5678');
-
-      await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
-      await tester.pumpAndSettle();
-
-      final buttonFinder = find.byKey(const Key('vet_call_button'));
-      final size = tester.getSize(buttonFinder);
-      expect(size.height, greaterThanOrEqualTo(48));
-    });
-
-    testWidgets('Email button has at least 48 logical pixels height', (
-      tester,
-    ) async {
-      const vet = Vet(id: 'vet-1', name: 'Dr. Paws', email: 'a@b.com');
-
-      await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
-      await tester.pumpAndSettle();
-
-      final buttonFinder = find.byKey(const Key('vet_email_button'));
-      final size = tester.getSize(buttonFinder);
-      expect(size.height, greaterThanOrEqualTo(48));
-    });
-
-    testWidgets('Call button launches tel URI when launcher can open it', (
+  group('VetDetailScreen – contact actions', () {
+    testWidgets('phone line launches tel URI when launcher can open it', (
       tester,
     ) async {
       final mock = _MockUrlLauncherPlatform(
@@ -360,14 +244,14 @@ void main() {
       await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const Key('vet_call_button')));
+      await tester.tap(find.byKey(const Key('vet_call_link')));
       await tester.pumpAndSettle();
 
       expect(mock.canLaunchCalls, contains('tel:+44201234567'));
       expect(mock.launchCalls, contains('tel:+44201234567'));
     });
 
-    testWidgets('Email button launches mailto URI when launcher can open it', (
+    testWidgets('email line launches mailto URI when launcher can open it', (
       tester,
     ) async {
       final mock = _MockUrlLauncherPlatform(
@@ -386,89 +270,78 @@ void main() {
       await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const Key('vet_email_button')));
+      await tester.tap(find.byKey(const Key('vet_email_link')));
       await tester.pumpAndSettle();
 
       expect(mock.canLaunchCalls, contains('mailto:paws@example.com'));
       expect(mock.launchCalls, contains('mailto:paws@example.com'));
     });
 
-    testWidgets(
-      'Call button shows SnackBar when launcher cannot open tel URI',
-      (tester) async {
-        final mock = _MockUrlLauncherPlatform(canLaunchResult: false);
-        UrlLauncherPlatform.instance = mock;
-        addTearDown(
-          () => UrlLauncherPlatform.instance = _MockUrlLauncherPlatform(
-            canLaunchResult: false,
-          ),
-        );
+    testWidgets('phone line shows SnackBar when launcher cannot open tel URI', (
+      tester,
+    ) async {
+      final mock = _MockUrlLauncherPlatform(canLaunchResult: false);
+      UrlLauncherPlatform.instance = mock;
+      addTearDown(
+        () => UrlLauncherPlatform.instance = _MockUrlLauncherPlatform(
+          canLaunchResult: false,
+        ),
+      );
 
-        const vet = Vet(id: 'vet-1', name: 'Dr. Paws', phone: '+44201234567');
-
-        await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
-        await tester.pumpAndSettle();
-
-        await tester.tap(find.byKey(const Key('vet_call_button')));
-        await tester.pumpAndSettle();
-
-        // A SnackBar should appear; no URL was launched.
-        expect(find.byType(SnackBar), findsOneWidget);
-        expect(mock.launchCalls, isEmpty);
-      },
-    );
-
-    testWidgets(
-      'Email button shows SnackBar when launcher cannot open mailto URI',
-      (tester) async {
-        final mock = _MockUrlLauncherPlatform(canLaunchResult: false);
-        UrlLauncherPlatform.instance = mock;
-        addTearDown(
-          () => UrlLauncherPlatform.instance = _MockUrlLauncherPlatform(
-            canLaunchResult: false,
-          ),
-        );
-
-        const vet = Vet(id: 'vet-1', name: 'Dr. Paws', email: 'a@b.com');
-
-        await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
-        await tester.pumpAndSettle();
-
-        await tester.tap(find.byKey(const Key('vet_email_button')));
-        await tester.pumpAndSettle();
-
-        expect(find.byType(SnackBar), findsOneWidget);
-        expect(mock.launchCalls, isEmpty);
-      },
-    );
-  });
-
-  // ── Edit navigation ───────────────────────────────────────────────────────
-
-  group('VetDetailScreen – edit navigation', () {
-    testWidgets('Edit Vet button routes to edit screen', (tester) async {
-      const vet = Vet(id: 'vet-1', name: 'Dr. Paws');
+      const vet = Vet(id: 'vet-1', name: 'Dr. Paws', phone: '+44201234567');
 
       await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const Key('vet_detail_edit_button')));
+      await tester.tap(find.byKey(const Key('vet_call_link')));
       await tester.pumpAndSettle();
 
-      // The stub edit screen renders "Edit vet-1"
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(mock.launchCalls, isEmpty);
+    });
+  });
+
+  group('VetDetailScreen – edit navigation', () {
+    testWidgets('overflow edit action routes to edit screen', (tester) async {
+      const vet = Vet(id: 'vet-1', name: 'Dr. Paws');
+      const pet = Pet(
+        id: 'pet-1',
+        name: 'Whiskers',
+        species: 'Cat',
+        vetId: 'vet-1',
+      );
+
+      await tester.pumpWidget(
+        _buildApp(vetId: 'vet-1', vets: [vet], pets: [pet]),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('care_team_options_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('care_team_edit_menu_item')));
+      await tester.pumpAndSettle();
+
       expect(find.text('Edit vet-1'), findsOneWidget);
     });
 
-    testWidgets('Edit Vet button is labelled with editVet l10n key', (
-      tester,
-    ) async {
+    testWidgets('pet row opens pet detail', (tester) async {
       const vet = Vet(id: 'vet-1', name: 'Dr. Paws');
+      const pet = Pet(
+        id: 'pet-1',
+        name: 'Whiskers',
+        species: 'Cat',
+        vetId: 'vet-1',
+      );
 
-      await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
+      await tester.pumpWidget(
+        _buildApp(vetId: 'vet-1', vets: [vet], pets: [pet]),
+      );
       await tester.pumpAndSettle();
 
-      // Uses l.editVet → "Edit Vet" in English
-      expect(find.text('Edit Vet'), findsOneWidget);
+      await tester.tap(find.text('Whiskers'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Pet pet-1'), findsOneWidget);
     });
   });
 }
