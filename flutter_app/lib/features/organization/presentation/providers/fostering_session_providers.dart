@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../fostering_session/domain/entities/fostering_session_detail.dart';
+import '../../../fostering_session/presentation/providers/fostering_session_repository_provider.dart';
 import '../../domain/entities/foster_placement.dart';
 import 'foster_placements_providers.dart';
 import 'org_provider_deps.dart';
@@ -7,15 +9,15 @@ import 'org_provider_deps.dart';
 typedef FosteringSessionDetailKey = ({String orgId, String placementId});
 
 class FosteringSessionDetailNotifier
-    extends FamilyAsyncNotifier<FosterPlacement, FosteringSessionDetailKey> {
+    extends FamilyAsyncNotifier<FosteringSessionDetail, FosteringSessionDetailKey> {
   @override
-  Future<FosterPlacement> build(FosteringSessionDetailKey key) async {
+  Future<FosteringSessionDetail> build(FosteringSessionDetailKey key) async {
     final token = ref.watch(orgTokenProvider);
     if (token == null) {
       throw StateError('Not authenticated');
     }
-    final repo = ref.read(organizationRepositoryProvider);
-    return repo.getPlacementDetail(key.orgId, key.placementId, token);
+    final repo = ref.read(fosteringSessionRepositoryProvider);
+    return repo.getSessionDetail(key.orgId, key.placementId, token);
   }
 
   Future<FosterPlacement> transitionSession(String sessionStatus) async {
@@ -93,6 +95,6 @@ class FosteringSessionDetailNotifier
 final fosteringSessionDetailProvider =
     AsyncNotifierProvider.family<
       FosteringSessionDetailNotifier,
-      FosterPlacement,
+      FosteringSessionDetail,
       FosteringSessionDetailKey
     >(FosteringSessionDetailNotifier.new);

@@ -225,13 +225,13 @@ autonomy: active
 current_phase: 3
 last_completed_phase: 2
 halt_reason: null
-next_action: "start phase 3: checkout cursor/session-detail-flutter-shelter-eec3"
+next_action: "continue phase 3 on branch cursor/session-detail-flutter-shelter-eec3"
 artifact_ref:
-  branch: cursor/session-detail-view-eec3-integration
+  branch: cursor/session-detail-flutter-shelter-eec3
   plan_path: .agents/plans/session-detail-view-eec3.md
-  plan_commit: 5cbc919da76cc7e7bbb2735b1642b0dc365e14fc
+  plan_commit: 4e98ceb89b0d9082ed0d456765e2cef45d042823
   snapshot_path: .agents/plans/session-detail-view-eec3.snapshot.json
-  snapshot_commit: 5cbc919da76cc7e7bbb2735b1642b0dc365e14fc
+  snapshot_commit: 4e98ceb89b0d9082ed0d456765e2cef45d042823
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
