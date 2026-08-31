@@ -8097,6 +8097,42 @@ abstract class AppLocalizations {
   /// **'Linked pets'**
   String get vetLinkedPets;
 
+  /// No description provided for @careTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Care Team'**
+  String get careTeam;
+
+  /// No description provided for @careTeamPetsCaredFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets cared for'**
+  String get careTeamPetsCaredFor;
+
+  /// No description provided for @careTeamNoLinkedPets.
+  ///
+  /// In en, this message translates to:
+  /// **'No pets are currently linked to this care team.'**
+  String get careTeamNoLinkedPets;
+
+  /// No description provided for @careTeamClinicType.
+  ///
+  /// In en, this message translates to:
+  /// **'Veterinary clinic'**
+  String get careTeamClinicType;
+
+  /// No description provided for @careTeamOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Care team options'**
+  String get careTeamOptions;
+
+  /// No description provided for @editCareTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit care team'**
+  String get editCareTeam;
+
   /// No description provided for @vetNotFound.
   ///
   /// In en, this message translates to:

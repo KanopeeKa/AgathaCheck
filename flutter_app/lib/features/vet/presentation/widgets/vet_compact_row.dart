@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/vet.dart';
 import '../utils/vet_accent.dart';
+import 'care_team_identity_avatar.dart';
 
 /// Compact, text-first vet row for dashboard and list previews.
 class VetCompactRow extends StatelessWidget {
@@ -27,6 +28,10 @@ class VetCompactRow extends StatelessWidget {
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
     final town = vetTownLabel(vet.address);
+    final accent = resolveVetAccent(
+      context,
+      organizationId: vet.organizationId,
+    );
     final linkedPetLabel = linkedPetCount == null
         ? null
         : l.vetLinkedPetCount(linkedPetCount!);
@@ -55,16 +60,10 @@ class VetCompactRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ExcludeSemantics(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 2),
-                      child: Icon(
-                        Icons.local_hospital_outlined,
-                        size: 18,
-                        color: resolveVetAccent(
-                          context,
-                          organizationId: vet.organizationId,
-                        ).primary,
-                      ),
+                    child: CareTeamIdentityAvatar(
+                      name: vet.name,
+                      accent: accent,
+                      radius: 18,
                     ),
                   ),
                   const SizedBox(width: 10),

@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../../features/experience/domain/entities/app_experience.dart';
+import '../../l10n/app_localizations.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../features/vet/presentation/screens/vet_detail_screen.dart';
 import '../../features/vet/presentation/screens/vet_form_screen.dart';
@@ -60,11 +61,13 @@ List<RouteBase> _vetFormRoutes({required String listPath}) {
       name: '${listPath == '/g/vets' ? 'guardian' : 'org'}VetDetail',
       builder: (context, state) {
         final vetId = state.pathParameters['id']!;
+        final l = AppLocalizations.of(context)!;
         return ExperienceShellScaffold(
           experience: listPath == '/g/vets'
               ? AppExperience.guardian
               : AppExperience.organization,
           currentLocation: state.uri.path,
+          screenTitle: l.careTeam,
           child: VetDetailScreen(vetId: vetId, listPath: listPath),
         );
       },
