@@ -139,9 +139,9 @@ test.describe('Guardian dashboard', () => {
     await dashboard.expectCareVisible('Viewable Care');
     const careRegion = dashboard.careRegion();
     await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
-    await page.locator(`[flt-semantics-identifier="care_event_row_view_${entry.id}"]`).click();
-    await waitForFlutterRoutePattern(page, /\/pet\/[^/]+\/events\/[^/?#]+/, 45_000);
+    await semanticsByName(page, /View Viewable Care for ViewPet/i).click();
     await refreshFlutterAccessibility(page);
+    await expect(page.getByRole('button', { name: /go back/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /snooze/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /mark .*done/i })).toBeVisible();
   });

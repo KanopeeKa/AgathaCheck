@@ -130,6 +130,7 @@ class CareEventRow extends StatelessWidget {
             const SizedBox(width: 8),
             Semantics(
               button: true,
+              identifier: 'care_event_row_done_${entry.id}',
               label: l.dueEventRowMarkDoneLabel(entry.name),
               excludeSemantics: true,
               onTap: isMarkDoneEnabled ? onMarkDone : null,
