@@ -4,7 +4,7 @@
   "approved_at": "2026-08-31T22:58:00Z",
   "approved_by": "user chat standing grant (/execute-plan + /ui-design-deep)",
   "approved_until": "2026-09-02T22:58:00Z",
-  "content_hash": "sha256:916bb9049adee0300a20c432c087f460b2ba837a726655e8113afb57d8dc9d65",
+  "content_hash": "sha256:649e5ca003cdf1e39bfa9f1b208b105ba6fa118a95b45c820df99e9bce32743a",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/session-detail-view-eec3-integration",
@@ -150,10 +150,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/808",
+      "pr_head_sha": "810d47fb17c4bbb206287c8dd158acd67bb0b142"
     }
   ]
 }
