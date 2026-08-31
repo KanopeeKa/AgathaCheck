@@ -1650,6 +1650,27 @@ export async function getPendingFosterPlacements(
   return res.json<TestFosterPlacement[]>();
 }
 
+export type FosterSessionAggregate = TestFosterPlacement & {
+  viewer?: { role?: string; allowed_actions?: string[] };
+  pet?: { id?: string; name?: string };
+  organization?: { id?: string; name?: string };
+};
+
+export async function getFosterPlacementDetail(
+  baseURL: string,
+  token: string,
+  placementId: string,
+): Promise<FosterSessionAggregate> {
+  const res = await apiFetch(apiUrl(`/foster-placements/${placementId}`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`getFosterPlacementDetail failed (${res.status}): ${text}`);
+  }
+  return res.json<FosterSessionAggregate>();
+}
+
 export async function endFosterPlacement(
   baseURL: string,
   token: string,

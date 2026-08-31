@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/fostering_session/data/fostering_session_repository.dart';
+import 'package:pet_profile_app/features/fostering_session/presentation/providers/fostering_session_repository_provider.dart';
 import 'package:pet_profile_app/features/fostering_session/domain/entities/session_viewer_context.dart';
 import 'package:pet_profile_app/features/fostering_session/presentation/providers/fostering_session_repository_provider.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/foster_placement.dart';
@@ -24,9 +25,9 @@ void main() {
         ProviderScope(
           overrides: [
             authProvider.overrideWith((ref) => FakeAuthNotifier()),
-            fosteringSessionRepositoryProvider.overrideWith(
+            shelterFosteringSessionRepositoryProvider.overrideWith(
               (ref) => FosteringSessionRepository(
-                (_, __, ___) async => _preparationDetailJson(),
+                loadShelterRow: (_, __, ___) async => _preparationDetailJson(),
               ),
             ),
             organizationRepositoryProvider.overrideWithValue(
@@ -80,9 +81,9 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          fosteringSessionRepositoryProvider.overrideWith(
+          shelterFosteringSessionRepositoryProvider.overrideWith(
             (ref) => FosteringSessionRepository(
-              (_, __, ___) async => _preparationDetailJson(),
+              loadShelterRow: (_, __, ___) async => _preparationDetailJson(),
             ),
           ),
           organizationRepositoryProvider.overrideWithValue(repo),
@@ -163,7 +164,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Foster placement'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('open_fostering_session_button')));
+    await tester.tap(find.byKey(const Key('view_fostering_session_button')));
     await tester.pumpAndSettle();
 
     expect(find.text('Session detail route'), findsOneWidget);
@@ -175,9 +176,9 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          fosteringSessionRepositoryProvider.overrideWith(
+          shelterFosteringSessionRepositoryProvider.overrideWith(
             (ref) => FosteringSessionRepository(
-              (_, __, ___) async => _viewToAdoptDetailJson(),
+              loadShelterRow: (_, __, ___) async => _viewToAdoptDetailJson(),
             ),
           ),
           organizationRepositoryProvider.overrideWithValue(

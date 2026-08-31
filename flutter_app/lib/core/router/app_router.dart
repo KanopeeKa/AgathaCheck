@@ -12,6 +12,7 @@ import '../../features/health_tracking/presentation/screens/pet_event_view_scree
 import '../../features/notifications/presentation/screens/notification_settings_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/notifications/presentation/screens/pending_actions_screen.dart';
+import '../../features/fostering_session/presentation/screens/foster_fostering_session_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_health_issues_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_manage_events_screen.dart';
@@ -199,6 +200,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final petId = state.pathParameters['petId']!;
           return PetDetailScreen(petId: petId);
+        },
+      ),
+      GoRoute(
+        path: '/pet/:petId/fostering-session',
+        name: 'fosterFosteringSessionDetail',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          final placementId = state.uri.queryParameters['placementId'] ?? '';
+          return FosterFosteringSessionDetailScreen(
+            petId: petId,
+            placementId: placementId,
+          );
         },
       ),
       GoRoute(

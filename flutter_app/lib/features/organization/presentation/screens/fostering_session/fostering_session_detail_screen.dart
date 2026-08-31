@@ -20,7 +20,7 @@ class FosteringSessionDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final key = (orgId: orgId, placementId: placementId);
+    final key = (placementId: placementId, orgId: orgId);
     final sessionAsync = ref.watch(fosteringSessionDetailProvider(key));
 
     return OrgShellScaffold(
