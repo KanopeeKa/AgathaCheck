@@ -14,7 +14,7 @@ import 'guardian_dashboard_helpers.dart';
 
 /// Guardian Care dashboard preview with one combined, date-ordered list.
 ///
-/// Each preview entry is rendered as a [MobileDueEventRow] with a calm,
+/// Each preview entry is rendered as a [CareEventRow] with a calm,
 /// touch-safe completion affordance.
 ///
 /// This widget owns list-level optimistic completion state: after the user
@@ -133,7 +133,7 @@ class _GuardianUpcomingEventsSectionState
       petMap: petMap,
       onMarkDone: _onMarkDone,
       onUndo: _onUndo,
-      onOpen: (entry) => HomeEventActions.openEntry(context, entry),
+      onView: (entry) => HomeEventActions.viewEntry(context, entry),
     );
   }
 

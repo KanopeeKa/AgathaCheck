@@ -4,19 +4,21 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_history_entry.dart';
 import '../providers/health_providers.dart';
-import 'due_event_card.dart';
+import 'care_event_status_line.dart';
+import 'health_entry_card_actions.dart';
 import 'health_entry_type_labels.dart';
 import 'pet_event_administration_history_dialog.dart';
 import 'pet_event_documents_strip.dart';
 import 'pet_event_lifecycle.dart';
 import 'pet_event_past_iterations_section.dart';
 import 'pet_event_pet_card.dart';
+import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/presentation/widgets/pet_list/home_event_actions.dart';
 
-/// Read-only body for [PetEventViewScreen].
+/// Read-only body for [PetEventViewScreen] with occurrence actions on view.
 class PetEventViewBody extends ConsumerWidget {
   const PetEventViewBody({
     super.key,
@@ -25,7 +27,6 @@ class PetEventViewBody extends ConsumerWidget {
     required this.pet,
     required this.history,
     required this.isClosed,
-    required this.onEdit,
     required this.onSeeHistory,
     required this.onClose,
     required this.onReopen,
@@ -36,7 +37,6 @@ class PetEventViewBody extends ConsumerWidget {
   final Pet pet;
   final List<HealthHistoryEntry> history;
   final bool isClosed;
-  final VoidCallback onEdit;
   final VoidCallback onSeeHistory;
   final VoidCallback onClose;
   final VoidCallback onReopen;
@@ -48,6 +48,7 @@ class PetEventViewBody extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final muted = isClosed;
     final textColor = muted ? colorScheme.onSurfaceVariant : null;
+    final showOccurrenceActions = !isClosed && !entry.isCompleted;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -59,10 +60,18 @@ class PetEventViewBody extends ConsumerWidget {
           _TypeDosageRow(entry: entry, muted: muted),
           const SizedBox(height: 12),
           _StatusRow(isClosed: isClosed),
+          if (showOccurrenceActions) ...[
+            const SizedBox(height: 12),
+            _OccurrenceActions(
+              entry: entry,
+              onMarkDone: () => HomeEventActions.markDone(context, ref, entry),
+              onSnooze: (days) =>
+                  HomeEventActions.snoozeDays(context, ref, entry, days),
+            ),
+          ],
           const SizedBox(height: 12),
-          _ActionButtons(
+          _LifecycleActions(
             isClosed: isClosed,
-            onEdit: onEdit,
             onClose: onClose,
             onReopen: onReopen,
           ),
@@ -87,9 +96,8 @@ class PetEventViewBody extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          _IterationCard(
+          _IterationSummary(
             entry: entry,
-            pet: pet,
             history: history,
             isClosed: isClosed,
           ),
@@ -204,18 +212,16 @@ class _StatusRow extends StatelessWidget {
   }
 }
 
-class _ActionButtons extends StatelessWidget {
-  const _ActionButtons({
-    required this.isClosed,
-    required this.onEdit,
-    required this.onClose,
-    required this.onReopen,
+class _OccurrenceActions extends StatelessWidget {
+  const _OccurrenceActions({
+    required this.entry,
+    required this.onMarkDone,
+    required this.onSnooze,
   });
 
-  final bool isClosed;
-  final VoidCallback onEdit;
-  final VoidCallback onClose;
-  final VoidCallback onReopen;
+  final HealthEntry entry;
+  final VoidCallback onMarkDone;
+  final void Function(int days) onSnooze;
 
   @override
   Widget build(BuildContext context) {
@@ -225,61 +231,106 @@ class _ActionButtons extends StatelessWidget {
       spacing: 8,
       runSpacing: 8,
       children: [
-        FilledButton(
-          key: const Key('pet_event_edit_button'),
-          onPressed: onEdit,
-          child: Text(l.edit),
+        FilledButton.icon(
+          key: Key('pet_event_mark_done_${entry.id}'),
+          onPressed: onMarkDone,
+          icon: const Icon(Icons.check),
+          label: Text(l.markAsDone),
         ),
-        if (isClosed)
-          OutlinedButton(
-            key: const Key('pet_event_reopen_button'),
-            onPressed: onReopen,
-            child: Text(l.reopenEventAction),
-          )
-        else
-          OutlinedButton(
-            key: const Key('pet_event_close_button'),
-            onPressed: onClose,
-            child: Text(l.closeEventAction),
+        OutlinedButton.icon(
+          key: Key('pet_event_snooze_${entry.id}'),
+          onPressed: () => showHealthEntrySnoozeDialog(
+            context,
+            onSnooze: onSnooze,
           ),
+          icon: const Icon(Icons.snooze),
+          label: Text(l.snooze),
+        ),
       ],
     );
   }
 }
 
-class _IterationCard extends StatelessWidget {
-  const _IterationCard({
+class _LifecycleActions extends StatelessWidget {
+  const _LifecycleActions({
+    required this.isClosed,
+    required this.onClose,
+    required this.onReopen,
+  });
+
+  final bool isClosed;
+  final VoidCallback onClose;
+  final VoidCallback onReopen;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: isClosed
+          ? OutlinedButton(
+              key: const Key('pet_event_reopen_button'),
+              onPressed: onReopen,
+              child: Text(l.reopenEventAction),
+            )
+          : OutlinedButton(
+              key: const Key('pet_event_close_button'),
+              onPressed: onClose,
+              child: Text(l.closeEventAction),
+            ),
+    );
+  }
+}
+
+class _IterationSummary extends StatelessWidget {
+  const _IterationSummary({
     required this.entry,
-    required this.pet,
     required this.history,
     required this.isClosed,
   });
 
   final HealthEntry entry;
-  final Pet pet;
   final List<HealthHistoryEntry> history;
   final bool isClosed;
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     if (isClosed) {
       final last = sortedHistoryDesc(history).firstOrNull;
       if (last == null) {
         return Text(
-          AppLocalizations.of(context)!.noHistoryYet,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          l.noHistoryYet,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
           ),
         );
       }
       return _ClosedIterationCard(historyEntry: last);
     }
 
-    return DueEventCard(
-      key: Key('pet_event_due_card_${entry.id}'),
-      entry: entry,
-      pet: pet,
-      showActions: true,
+    final status = formatCareEventStatusLine(entry, l, colorScheme);
+
+    return Container(
+      key: Key('pet_event_occurrence_summary_${entry.id}'),
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outlineVariant),
+      ),
+      child: Text(
+        status.text,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: status.statusColor ?? colorScheme.onSurfaceVariant,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 }
@@ -304,16 +355,16 @@ class _ClosedIterationCard extends StatelessWidget {
         ? dateFormat.format(historyEntry.dueDate!)
         : l.notSet;
 
-    return Card(
-      elevation: 0,
-      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Text(
-          label,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        label,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: colorScheme.onSurfaceVariant,
         ),
       ),
     );
@@ -395,3 +446,4 @@ Future<void> showPetEventHistory(
     ).showSnackBar(SnackBar(content: Text(l.failedToLoadHistory('$error'))));
   }
 }
+

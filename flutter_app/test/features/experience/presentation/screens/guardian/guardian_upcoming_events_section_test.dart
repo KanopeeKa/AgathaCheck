@@ -7,7 +7,7 @@ import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/guardian/guardian_upcoming_events_section.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/mobile_due_event_row.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -262,12 +262,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('mobile_due_event_list')), findsOneWidget);
+      expect(find.byKey(const Key('care_event_row_list')), findsOneWidget);
       expect(
-        find.byKey(const Key('mobile_due_row_due-entry-1')),
+        find.byKey(const Key('care_event_row_due-entry-1')),
         findsOneWidget,
       );
-      expect(find.byType(MobileDueEventRow), findsOneWidget);
+      expect(find.byType(CareEventRow), findsOneWidget);
     });
 
     testWidgets('uses list rows at a 600px desktop width', (tester) async {
@@ -282,7 +282,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(MobileDueEventRow), findsOneWidget);
+      expect(find.byType(CareEventRow), findsOneWidget);
     });
 
     testWidgets('uses list rows at a 900px desktop width', (tester) async {
@@ -297,7 +297,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(MobileDueEventRow), findsOneWidget);
+      expect(find.byType(CareEventRow), findsOneWidget);
     });
 
     testWidgets('shows no-events text when due list is empty', (tester) async {
@@ -307,7 +307,7 @@ void main() {
       await tester.pumpWidget(_buildSection(pets: const [_pet]));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('mobile_due_event_list')), findsNothing);
+      expect(find.byKey(const Key('care_event_row_list')), findsNothing);
       expect(find.text('Start their care routine'), findsOneWidget);
       expect(
         find.byKey(const Key('guardian_dashboard_empty_care')),
@@ -360,8 +360,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final rows = tester.widgetList<MobileDueEventRow>(
-        find.byType(MobileDueEventRow),
+      final rows = tester.widgetList<CareEventRow>(
+        find.byType(CareEventRow),
       );
       expect(rows, hasLength(5));
       expect(rows.map((row) => row.entry.id), [
@@ -402,7 +402,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(
-        find.byKey(const Key('mobile_due_row_due-entry-1')),
+        find.byKey(const Key('care_event_row_due-entry-1')),
         findsOneWidget,
       );
 
@@ -411,7 +411,7 @@ void main() {
 
       expect(find.text('We couldn\'t load care right now.'), findsOneWidget);
       expect(find.text('Retry'), findsOneWidget);
-      expect(find.byKey(const Key('mobile_due_row_due-entry-1')), findsNothing);
+      expect(find.byKey(const Key('care_event_row_due-entry-1')), findsNothing);
       expect(find.text('Nothing needs care today.'), findsNothing);
     },
   );
@@ -440,7 +440,7 @@ void main() {
 
         // The combined list exposes one completion action per open item.
         expect(find.byIcon(Icons.check), findsNWidgets(2));
-        expect(find.byIcon(Icons.check_circle), findsNothing);
+        expect(find.textContaining("Completed"), findsNothing);
 
         // Tap mark-done to open the completion sheet, then confirm.
         await tester.tap(find.byIcon(Icons.check).first);
@@ -452,14 +452,14 @@ void main() {
         // markTaken has removed the entry from the server list, but the
         // list-level optimistic state keeps the completed row visible in place.
         expect(
-          find.byKey(const Key('mobile_due_row_due-entry-1')),
+          find.byKey(const Key('care_event_row_due-entry-1')),
           findsOneWidget,
         );
-        expect(find.byIcon(Icons.check_circle), findsOneWidget);
+        expect(find.byKey(const Key('care_event_row_undo_due-entry-1')), findsOneWidget);
         expect(find.text('Undo Complete'), findsOneWidget);
 
         expect(
-          find.byKey(const Key('mobile_due_row_soon-entry-1')),
+          find.byKey(const Key('care_event_row_soon-entry-1')),
           findsOneWidget,
         );
       },
@@ -494,11 +494,11 @@ void main() {
       expect(notifier.lastUndoId, 'due-entry-1');
 
       // The normal due row is restored (mark-done check present again).
-      expect(find.byIcon(Icons.check_circle), findsNothing);
+      expect(find.textContaining("Completed"), findsNothing);
       expect(find.text('Undo Complete'), findsNothing);
       expect(find.byIcon(Icons.check), findsOneWidget);
       expect(
-        find.byKey(const Key('mobile_due_row_due-entry-1')),
+        find.byKey(const Key('care_event_row_due-entry-1')),
         findsOneWidget,
       );
     });
@@ -529,8 +529,8 @@ void main() {
         await tester.pumpAndSettle();
 
         // Preview shows exactly five rows (e1..e5).
-        expect(find.byType(MobileDueEventRow), findsNWidgets(5));
-        expect(find.byKey(const Key('mobile_due_row_e6')), findsNothing);
+        expect(find.byType(CareEventRow), findsNWidgets(5));
+        expect(find.byKey(const Key('care_event_row_e6')), findsNothing);
 
         // Complete the first row (Alpha) via its check button.
         final firstCheck = find.byIcon(Icons.check).first;
@@ -541,14 +541,14 @@ void main() {
 
         // Still exactly five rows. Alpha remains as completed at index 0; the
         // sixth entry (Foxtrot) is NOT added as an extra row.
-        expect(find.byType(MobileDueEventRow), findsNWidgets(5));
-        expect(find.byKey(const Key('mobile_due_row_e1')), findsOneWidget);
-        expect(find.byKey(const Key('mobile_due_row_e6')), findsNothing);
-        expect(find.byIcon(Icons.check_circle), findsOneWidget);
+        expect(find.byType(CareEventRow), findsNWidgets(5));
+        expect(find.byKey(const Key('care_event_row_e1')), findsOneWidget);
+        expect(find.byKey(const Key('care_event_row_e6')), findsNothing);
+        expect(find.byKey(const Key('care_event_row_undo_e1')), findsOneWidget);
 
         // The completed Alpha row is the first row in the list.
-        final rows = tester.widgetList<MobileDueEventRow>(
-          find.byType(MobileDueEventRow),
+        final rows = tester.widgetList<CareEventRow>(
+          find.byType(CareEventRow),
         );
         expect(rows.first.entry.id, 'e1');
         expect(rows.first.isCompleted, isTrue);
@@ -576,7 +576,7 @@ void main() {
 
         // Initially the due row is shown.
         expect(
-          find.byKey(const Key('mobile_due_row_due-entry-1')),
+          find.byKey(const Key('care_event_row_due-entry-1')),
           findsOneWidget,
         );
         expect(find.byIcon(Icons.check), findsOneWidget);
@@ -594,14 +594,14 @@ void main() {
         // During AsyncLoading the mobile list must render from the snapshot —
         // the completed row must be visible, not replaced by a spinner.
         expect(
-          find.byKey(const Key('mobile_due_row_due-entry-1')),
+          find.byKey(const Key('care_event_row_due-entry-1')),
           findsOneWidget,
           reason: 'completed row must stay visible during AsyncLoading',
         );
         expect(
-          find.byIcon(Icons.check_circle),
+          find.byKey(const Key('care_event_row_undo_due-entry-1')),
           findsOneWidget,
-          reason: 'completed icon must be present during AsyncLoading',
+          reason: 'undo affordance must be present during AsyncLoading',
         );
         expect(
           find.byKey(const Key('guardian_due_events_refreshing')),
@@ -617,11 +617,11 @@ void main() {
         // After AsyncData: the optimistic completed row is still present
         // because the list-level _completed state was not cleared.
         expect(
-          find.byKey(const Key('mobile_due_row_due-entry-1')),
+          find.byKey(const Key('care_event_row_due-entry-1')),
           findsOneWidget,
           reason: 'completed row must stay visible after AsyncData',
         );
-        expect(find.byIcon(Icons.check_circle), findsOneWidget);
+        expect(find.byKey(const Key('care_event_row_undo_due-entry-1')), findsOneWidget);
         expect(find.text('Undo Complete'), findsOneWidget);
       },
     );
@@ -645,7 +645,7 @@ void main() {
         await tester.tap(find.text('Mark Completed'));
         await tester.pumpAndSettle();
 
-        expect(find.byIcon(Icons.check_circle), findsNothing);
+        expect(find.textContaining("Completed"), findsNothing);
         expect(find.byIcon(Icons.check), findsOneWidget);
         expect(
           find.text('Could not mark this care item as done. Try again.'),
@@ -679,7 +679,7 @@ void main() {
 
       expect(notifier.undoCompleteCalls, 1);
       expect(find.text('Undo Complete'), findsOneWidget);
-      expect(find.byIcon(Icons.check_circle), findsOneWidget);
+      expect(find.textContaining("Completed"), findsOneWidget);
 
       undoCompleter.complete();
       await tester.pumpAndSettle();

@@ -131,7 +131,8 @@ Feature: Health Tracking
   @P1
   Scenario: Snoozing a health entry
     Given "Bella" has a due health entry "Flea Treatment"
-    When the user snoozes "Flea Treatment" for 3 days
+    When the user opens the view screen for "Flea Treatment"
+    And the user snoozes "Flea Treatment" for 3 days
     Then the due date of "Flea Treatment" should be pushed forward by 3 days
     And a snackbar should confirm the snooze
 

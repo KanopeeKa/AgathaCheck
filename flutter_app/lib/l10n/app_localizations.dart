@@ -9348,8 +9348,20 @@ abstract class AppLocalizations {
   /// No description provided for @dueEventRowOpenLabel.
   ///
   /// In en, this message translates to:
-  /// **'Open {name} for {petName}'**
+  /// **'View {name} for {petName}'**
   String dueEventRowOpenLabel(String name, String petName);
+
+  /// No description provided for @dueEventRowViewLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'View {name} for {petName}'**
+  String dueEventRowViewLabel(String name, String petName);
+
+  /// No description provided for @dueEventRowViewPetContextLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'View {name}'**
+  String dueEventRowViewPetContextLabel(String name);
 
   /// No description provided for @dueEventRowMarkDoneLabel.
   ///

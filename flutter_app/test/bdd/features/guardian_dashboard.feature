@@ -44,6 +44,14 @@ Feature: Guardian dashboard
 
   @implemented
   @P1
+  Scenario: Care preview row opens the event view screen
+    Given I am signed in as a guardian with due care
+    When I open a care preview item from the Guardian dashboard
+    Then I should see the event view screen for that item
+    And snooze should be available on the event view screen only
+
+  @implemented
+  @P1
   Scenario: My Vets preview reaches linked vet details
     Given I am signed in as a guardian with a linked veterinarian
     When I view the Guardian dashboard

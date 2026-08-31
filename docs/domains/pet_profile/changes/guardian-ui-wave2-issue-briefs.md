@@ -290,6 +290,8 @@ Full-stack (DB migration + API + Flutter)
 
 ## W07 — Unified DueEventCard (health-screen skin + Open action)
 
+> **Superseded (2026-08-31):** Replaced by unified [`CareEventRow`](../../../flutter_app/lib/features/health_tracking/presentation/widgets/care_event_row.dart). List rows show avatar + three metadata lines + Done only; row tap opens [`PetEventViewScreen`](../../../flutter_app/lib/features/health_tracking/presentation/screens/pet_event_view_screen.dart) (`/pet/:petId/events/:entryId`); snooze and edit live on view. See plan `care-event-row-7bee`.
+
 ### Problem
 Due/overdue UI uses compact `DueEventRow` without coloured action columns. Legacy `HealthEntryCard` lacks explicit Open and uses tap-to-open. Product wants one skin everywhere.
 
@@ -331,6 +333,8 @@ Card layout (left → right):
 ---
 
 ## W08 — Due and overdue sections use DueEventCard (dashboard + pet profile)
+
+> **Superseded (2026-08-31):** Dashboard Care preview, pet Due/overdue preview, and `/g/events` all use `CareEventRow` (same component, context-aware metadata). Snooze removed from list rows; view screen is the action hub.
 
 ### Problem
 Guardian dashboard preview hides inline actions; pet profile shows event count summary instead of due cards.

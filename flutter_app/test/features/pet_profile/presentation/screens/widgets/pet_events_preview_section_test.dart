@@ -79,6 +79,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Rabies vaccine'), findsOneWidget);
-    expect(find.text('Bella'), findsOneWidget);
+    expect(find.text('Preventive'), findsOneWidget);
+    expect(find.text('Snooze'), findsNothing);
   });
 }

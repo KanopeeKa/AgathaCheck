@@ -39,11 +39,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.byKey(const Key('global_events_mobile_row_entry-due')),
+        find.byKey(const Key('global_events_row_entry-due')),
         findsOneWidget,
       );
       expect(find.byIcon(Icons.check), findsOneWidget);
-      expect(find.byIcon(Icons.check_circle), findsNothing);
+      expect(find.textContaining("Completed"), findsNothing);
 
       // Tap mark-done and confirm.
       await tester.tap(find.byIcon(Icons.check));
@@ -54,10 +54,10 @@ void main() {
 
       // Server removed it, optimistic state keeps the row visible.
       expect(
-        find.byKey(const Key('global_events_mobile_row_entry-due')),
+        find.byKey(const Key('global_events_row_entry-due')),
         findsOneWidget,
       );
-      expect(find.byIcon(Icons.check_circle), findsOneWidget);
+      expect(find.textContaining("Completed"), findsOneWidget);
       expect(find.text('Undo Complete'), findsOneWidget);
     });
 
@@ -86,11 +86,11 @@ void main() {
 
       expect(notifier.undoCalls, 1);
       expect(notifier.lastUndoId, 'entry-due');
-      expect(find.byIcon(Icons.check_circle), findsNothing);
+      expect(find.textContaining("Completed"), findsNothing);
       expect(find.text('Undo Complete'), findsNothing);
       expect(find.byIcon(Icons.check), findsOneWidget);
       expect(
-        find.byKey(const Key('global_events_mobile_row_entry-due')),
+        find.byKey(const Key('global_events_row_entry-due')),
         findsOneWidget,
       );
     });
@@ -115,7 +115,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Rolled back.
-      expect(find.byIcon(Icons.check_circle), findsNothing);
+      expect(find.textContaining("Completed"), findsNothing);
       expect(find.byIcon(Icons.check), findsOneWidget);
       // Error snackbar.
       expect(
@@ -146,7 +146,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Completed state is shown.
-      expect(find.byIcon(Icons.check_circle), findsOneWidget);
+      expect(find.textContaining("Completed"), findsOneWidget);
       expect(find.text('Undo Complete'), findsOneWidget);
 
       // Tap Undo — server rejects it.
@@ -154,7 +154,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Completed row must remain visible (not rolled back).
-      expect(find.byIcon(Icons.check_circle), findsOneWidget);
+      expect(find.textContaining("Completed"), findsOneWidget);
       expect(find.text('Undo Complete'), findsOneWidget);
       expect(find.byIcon(Icons.check), findsNothing);
       // Error snackbar.
@@ -186,21 +186,21 @@ void main() {
 
       // Desktop key present.
       expect(
-        find.byKey(const Key('global_events_desktop_list')),
+        find.byKey(const Key('global_events_list')),
         findsOneWidget,
       );
-      expect(find.byKey(Key('desktop_care_done_${_entry.id}')), findsOneWidget);
+      expect(find.byKey(Key('care_event_row_done_${_entry.id}')), findsOneWidget);
 
       // Tap mark-done.
-      await tester.tap(find.byKey(Key('desktop_care_done_${_entry.id}')));
+      await tester.tap(find.byKey(Key('care_event_row_done_${_entry.id}')));
       await tester.pumpAndSettle();
       expect(find.text('Mark Completed'), findsOneWidget);
       await tester.tap(find.text('Mark Completed'));
       await tester.pumpAndSettle();
 
       // Completed state.
-      expect(find.byKey(Key('desktop_care_undo_${_entry.id}')), findsOneWidget);
-      expect(find.byKey(Key('desktop_care_done_${_entry.id}')), findsNothing);
+      expect(find.byKey(Key('care_event_row_undo_${_entry.id}')), findsOneWidget);
+      expect(find.byKey(Key('care_event_row_done_${_entry.id}')), findsNothing);
     });
 
     testWidgets('Undo on desktop restores the due row', (tester) async {
@@ -214,20 +214,20 @@ void main() {
       await tester.pumpAndSettle();
 
       // Complete.
-      await tester.tap(find.byKey(Key('desktop_care_done_${_entry.id}')));
+      await tester.tap(find.byKey(Key('care_event_row_done_${_entry.id}')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Mark Completed'));
       await tester.pumpAndSettle();
 
       // Undo.
-      await tester.tap(find.byKey(Key('desktop_care_undo_${_entry.id}')));
+      await tester.tap(find.byKey(Key('care_event_row_undo_${_entry.id}')));
       await tester.pumpAndSettle();
 
       expect(notifier.undoCalls, 1);
       expect(notifier.lastUndoId, 'entry-due');
       // Due row restored.
-      expect(find.byKey(Key('desktop_care_done_${_entry.id}')), findsOneWidget);
-      expect(find.byKey(Key('desktop_care_undo_${_entry.id}')), findsNothing);
+      expect(find.byKey(Key('care_event_row_done_${_entry.id}')), findsOneWidget);
+      expect(find.byKey(Key('care_event_row_undo_${_entry.id}')), findsNothing);
     });
 
     testWidgets(
@@ -244,17 +244,17 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        await tester.tap(find.byKey(Key('desktop_care_done_${_entry.id}')));
+        await tester.tap(find.byKey(Key('care_event_row_done_${_entry.id}')));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Mark Completed'));
         await tester.pumpAndSettle();
 
         // Rolled back.
         expect(
-          find.byKey(Key('desktop_care_done_${_entry.id}')),
+          find.byKey(Key('care_event_row_done_${_entry.id}')),
           findsOneWidget,
         );
-        expect(find.byKey(Key('desktop_care_undo_${_entry.id}')), findsNothing);
+        expect(find.byKey(Key('care_event_row_undo_${_entry.id}')), findsNothing);
         // Error snackbar.
         expect(
           find.text('Could not mark this care item as done. Try again.'),
@@ -278,21 +278,21 @@ void main() {
       await tester.pumpAndSettle();
 
       // Complete the entry (markTaken succeeds).
-      await tester.tap(find.byKey(Key('desktop_care_done_${_entry.id}')));
+      await tester.tap(find.byKey(Key('care_event_row_done_${_entry.id}')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Mark Completed'));
       await tester.pumpAndSettle();
 
       // Completed state is shown.
-      expect(find.byKey(Key('desktop_care_undo_${_entry.id}')), findsOneWidget);
+      expect(find.byKey(Key('care_event_row_undo_${_entry.id}')), findsOneWidget);
 
       // Tap Undo — server rejects it.
-      await tester.tap(find.byKey(Key('desktop_care_undo_${_entry.id}')));
+      await tester.tap(find.byKey(Key('care_event_row_undo_${_entry.id}')));
       await tester.pumpAndSettle();
 
       // Completed row must remain visible (not rolled back).
-      expect(find.byKey(Key('desktop_care_undo_${_entry.id}')), findsOneWidget);
-      expect(find.byKey(Key('desktop_care_done_${_entry.id}')), findsNothing);
+      expect(find.byKey(Key('care_event_row_undo_${_entry.id}')), findsOneWidget);
+      expect(find.byKey(Key('care_event_row_done_${_entry.id}')), findsNothing);
       // Error snackbar.
       expect(
         find.text('Could not undo completion. Try again.'),
@@ -338,7 +338,7 @@ void main() {
 
         // Optimistic row is visible while no filter is active.
         expect(
-          find.byKey(const Key('global_events_mobile_row_filter-entry')),
+          find.byKey(const Key('global_events_row_filter-entry')),
           findsOneWidget,
         );
 
@@ -352,7 +352,7 @@ void main() {
 
         // Completed owned-pet row must not appear under the foster filter.
         expect(
-          find.byKey(const Key('global_events_mobile_row_filter-entry')),
+          find.byKey(const Key('global_events_row_filter-entry')),
           findsNothing,
         );
       },
@@ -374,7 +374,7 @@ void main() {
 
         // Complete via desktop mark-done button.
         await tester.tap(
-          find.byKey(const Key('desktop_care_done_filter-entry')),
+          find.byKey(const Key('care_event_row_done_filter-entry')),
         );
         await tester.pumpAndSettle();
         await tester.tap(find.text('Mark Completed'));
@@ -382,7 +382,7 @@ void main() {
 
         // Undo button visible — optimistic row present.
         expect(
-          find.byKey(const Key('desktop_care_undo_filter-entry')),
+          find.byKey(const Key('care_event_row_undo_filter-entry')),
           findsOneWidget,
         );
 
@@ -392,7 +392,7 @@ void main() {
 
         // Completed owned-pet row must not appear under the foster-pet filter.
         expect(
-          find.byKey(const Key('desktop_care_undo_filter-entry')),
+          find.byKey(const Key('care_event_row_undo_filter-entry')),
           findsNothing,
         );
       },
@@ -432,7 +432,7 @@ void main() {
 
         // Optimistic row present before filtering.
         expect(
-          find.byKey(const Key('global_events_mobile_row_filter-med')),
+          find.byKey(const Key('global_events_row_filter-med')),
           findsOneWidget,
         );
 
@@ -446,7 +446,7 @@ void main() {
 
         // Completed medication row must not appear under the preventive filter.
         expect(
-          find.byKey(const Key('global_events_mobile_row_filter-med')),
+          find.byKey(const Key('global_events_row_filter-med')),
           findsNothing,
         );
       },
@@ -494,7 +494,7 @@ void main() {
 
         // One-time completed entry is closed — must remain visible.
         expect(
-          find.byKey(const Key('global_events_mobile_row_status-once')),
+          find.byKey(const Key('global_events_row_status-once')),
           findsOneWidget,
         );
       },
@@ -527,7 +527,7 @@ void main() {
 
         // Complete the recurring entry.
         await tester.tap(
-          find.byKey(const Key('desktop_care_done_status-recur')),
+          find.byKey(const Key('care_event_row_done_status-recur')),
         );
         await tester.pumpAndSettle();
         await tester.tap(find.text('Mark Completed'));
@@ -539,7 +539,7 @@ void main() {
 
         // Recurring completed entry — series still open — must remain visible.
         expect(
-          find.byKey(const Key('desktop_care_undo_status-recur')),
+          find.byKey(const Key('care_event_row_undo_status-recur')),
           findsOneWidget,
         );
       },

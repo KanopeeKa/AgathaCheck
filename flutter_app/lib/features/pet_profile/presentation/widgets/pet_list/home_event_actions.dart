@@ -80,9 +80,14 @@ class HomeEventActions {
     );
   }
 
-  static void openEntry(BuildContext context, HealthEntry entry) {
+  static void viewEntry(BuildContext context, HealthEntry entry) {
     final petId = entry.petId;
     if (petId.isEmpty) return;
-    context.push('/pet/$petId/events/${entry.id}/edit');
+    context.push('/pet/$petId/events/${entry.id}');
   }
+
+  /// Opens the read-only event view screen (not edit).
+  @Deprecated('Use viewEntry')
+  static void openEntry(BuildContext context, HealthEntry entry) =>
+      viewEntry(context, entry);
 }
