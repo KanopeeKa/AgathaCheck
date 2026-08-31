@@ -129,6 +129,7 @@ class CareEventRow extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Semantics(
+              identifier: 'care_event_row_done_${entry.id}',
               button: true,
               label: l.dueEventRowMarkDoneLabel(entry.name),
               excludeSemantics: true,
@@ -348,6 +349,7 @@ class _CompletedCareEventRow extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Semantics(
+              identifier: 'care_event_row_undo_${entry.id}',
               button: true,
               label: l.dueEventRowUndoLabel(entry.name),
               excludeSemantics: true,

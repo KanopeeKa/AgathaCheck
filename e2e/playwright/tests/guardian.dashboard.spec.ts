@@ -140,16 +140,16 @@ test.describe('Guardian dashboard', () => {
     const careRegion = dashboard.careRegion();
     await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
     await page.locator(`[flt-semantics-identifier="care_event_row_view_${entry.id}"]`).click();
-    await waitForFlutterRoutePattern(page, /\/pet\/[^/]+\/events\/[^/?#]+/, 45_000);
     await refreshFlutterAccessibility(page);
-    await expect(page.getByRole('button', { name: /snooze/i })).toBeVisible();
+    // Row tap opens PetEventViewScreen; Flutter web may keep #/g/home in the hash while the view is shown.
+    await expect(page.getByRole('button', { name: /snooze/i })).toBeVisible({ timeout: 45_000 });
     await expect(page.getByRole('button', { name: /mark .*done/i })).toBeVisible();
   });
 
   test('Care preview supports completion and undo', async ({ page, testUser }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     const pet = await createPet(baseURL(), testUser.accessToken, 'ActionPet');
-    await createHealthEntry(baseURL(), testUser.accessToken, pet.id, {
+    const entry = await createHealthEntry(baseURL(), testUser.accessToken, pet.id, {
       name: 'Actionable Care',
       nextDueDate: today,
     });
@@ -157,11 +157,15 @@ test.describe('Guardian dashboard', () => {
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.open();
     await dashboard.expectCareVisible('Actionable Care');
-    await page.getByRole('button', { name: /mark .*done/i }).first().click();
+    await page.locator(`[flt-semantics-identifier="care_event_row_done_${entry.id}"]`).click();
     await page.getByRole('button', { name: /Mark Completed/i }).click();
-    await expect(page.getByRole('button', { name: /undo.*Actionable Care/i })).toBeVisible();
-    await page.getByRole('button', { name: /undo.*Actionable Care/i }).click();
-    await expect(page.getByRole('button', { name: /mark .*Actionable Care.*done/i })).toBeVisible();
+    await expect(
+      page.locator(`[flt-semantics-identifier="care_event_row_undo_${entry.id}"]`),
+    ).toBeVisible();
+    await page.locator(`[flt-semantics-identifier="care_event_row_undo_${entry.id}"]`).click();
+    await expect(
+      page.locator(`[flt-semantics-identifier="care_event_row_done_${entry.id}"]`),
+    ).toBeVisible();
   });
 
   test('Care team preview reaches linked vet details', async ({ page, testUser }) => {
