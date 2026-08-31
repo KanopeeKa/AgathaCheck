@@ -338,6 +338,8 @@ Permissions are additive to org roles (`super_admin`, `admin`, `foster`). Defaul
 
 Foster role defaults: view own sessions, respond to requests, participant comments on own visits — detailed in journey specs, not expanded here.
 
+**Session detail UI:** viewer lenses (`foster_participant`, `shelter_operator`, `shelter_observer`) and `allowed_actions` — [session-detail-view.md](session-detail-view.md).
+
 ---
 
 ## 8. Audit event catalog
