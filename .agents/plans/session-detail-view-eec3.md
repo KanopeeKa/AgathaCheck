@@ -222,16 +222,16 @@ db/**
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/session-detail-docs-eec3"
+next_action: "continue phase 2 on branch cursor/session-detail-api-eec3"
 artifact_ref:
-  branch: cursor/session-detail-docs-eec3
+  branch: cursor/session-detail-api-eec3
   plan_path: .agents/plans/session-detail-view-eec3.md
-  plan_commit: 74ae6e8d3792cb796590499e7fcbc61834a42656
+  plan_commit: 8e3a1e96da541f8239cf4184aa0cf1194593264f
   snapshot_path: .agents/plans/session-detail-view-eec3.snapshot.json
-  snapshot_commit: 74ae6e8d3792cb796590499e7fcbc61834a42656
+  snapshot_commit: 8e3a1e96da541f8239cf4184aa0cf1194593264f
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

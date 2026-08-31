@@ -56,6 +56,8 @@ function makePlacementRow(overrides = {}) {
     organization_name: 'Test Org',
     foster_name: 'Jane Foster',
     foster_email: 'foster@example.com',
+    session_checklist_items: {},
+    flagged_for_admin_review: false,
     ...overrides,
   };
 }
@@ -190,6 +192,12 @@ function buildSessionMockPool() {
     if (sql.includes('SELECT first_name, last_name, email FROM users')) {
       return { rows: [{ first_name: 'Test', last_name: 'User', email: 'test@example.com' }] };
     }
+    if (sql.includes('FROM document_templates')) {
+      return { rows: [] };
+    }
+    if (sql.includes('FROM adoption_journeys') && sql.includes('fostering_session_id')) {
+      return { rows: [] };
+    }
     return { rows: [] };
   };
 
@@ -219,6 +227,16 @@ describe('J3 session lifecycle API', () => {
       session_status: SESSION_STATUS_PREPARATION,
       session_type: 'standard_foster',
       shelter_foster_relationship_id: relationshipId,
+      viewer: {
+        role: 'shelter_operator',
+        allowed_actions: expect.arrayContaining([
+          'transition_ready_to_start',
+          'update_checklist_item',
+          'register_export',
+        ]),
+      },
+      pet: { id: petId, name: 'Buddy', species: 'dog' },
+      organization: { id: orgId, name: 'Test Org' },
     });
   });
 

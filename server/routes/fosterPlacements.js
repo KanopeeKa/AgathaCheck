@@ -26,6 +26,7 @@ import {
   SESSION_STATUS_CANCELLED,
 } from '../lib/fosterPlacements.js';
 import { setFosterCare } from '../lib/petCustody.js';
+import { loadSessionAggregateForUser } from '../lib/sessionDetail.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -93,6 +94,21 @@ export default function fosterPlacementsRoutes(pool) {
         [userId, PLACEMENT_STATUS_WAITING_ADOPTION, SESSION_STATUS_ADOPTION_IN_PROGRESS],
       );
       res.json(result.rows.map((row) => placementToMap(row)));
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.get('/:id', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const placementId = req.params.id;
+    try {
+      const result = await loadSessionAggregateForUser(pool, placementId, userId);
+      if (result.error) {
+        return res.status(result.status).json({ error: result.error });
+      }
+      res.json(result.body);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
