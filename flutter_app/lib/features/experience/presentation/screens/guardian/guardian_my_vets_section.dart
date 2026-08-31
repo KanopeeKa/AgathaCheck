@@ -7,8 +7,10 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../../auth/presentation/providers/auth_providers.dart';
+import '../../../../vet/domain/entities/vet.dart';
 import '../../../../vet/presentation/providers/vet_providers.dart';
 import '../../../../vet/presentation/widgets/care_team_card.dart';
+import '../../widgets/guardian_dashboard_section_header.dart';
 import '../../widgets/guardian_illustrated_empty_state.dart';
 
 /// Care team dashboard section — warm clinic cards with linked-pet previews.
@@ -18,10 +20,11 @@ class GuardianMyVetsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
     final auth = ref.watch(authProvider);
     final vetListAsync = ref.watch(vetListProvider);
     final petsAsync = ref.watch(petListProvider);
+    final vets = vetListAsync.valueOrNull ?? const <Vet>[];
+    final showAllAction = auth.accessToken != null && vets.isNotEmpty;
 
     return Semantics(
       container: true,
@@ -29,35 +32,31 @@ class GuardianMyVetsSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            l.careTeamEyebrow,
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: AppColorTokens.guardianActive,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1.2,
-            ),
+          GuardianDashboardSectionHeader(
+            title: l.careTeamEyebrow,
+            actionLabel: showAllAction ? l.allCareTeams : null,
+            onAction: showAllAction ? () => context.go('/g/vets') : null,
+            actionKey: showAllAction
+                ? const Key('guardian_dashboard_all_care_teams')
+                : null,
           ),
           const SizedBox(height: 10),
           DecoratedBox(
             decoration: BoxDecoration(
               color: AppColorTokens.surface,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (auth.accessToken == null)
-                    const SizedBox(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+              child: auth.accessToken == null
+                  ? const SizedBox(
                       key: Key('guardian_vets_auth_waiting'),
                       height: 24,
                       child: Center(
                         child: CircularProgressIndicator(strokeWidth: 2),
                       ),
                     )
-                  else
-                    vetListAsync.when(
+                  : vetListAsync.when(
                       loading: () => const SizedBox(
                         key: Key('guardian_vets_loading'),
                         height: 24,
@@ -79,8 +78,8 @@ class GuardianMyVetsSection extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      data: (vets) {
-                        if (vets.isEmpty) {
+                      data: (resolvedVets) {
+                        if (resolvedVets.isEmpty) {
                           return GuardianIllustratedEmptyState(
                             key: const Key('guardian_dashboard_empty_vets'),
                             assetPath:
@@ -100,34 +99,20 @@ class GuardianMyVetsSection extends ConsumerWidget {
                             : _linkedPetsByVetId(pets);
                         return Column(
                           children: [
-                            ...vets.map((vet) {
-                              final linkedPets =
-                                  linkedPetsByVetId?[vet.id] ?? const <Pet>[];
-                              return CareTeamCard(
+                            for (final vet in resolvedVets)
+                              CareTeamCard(
                                 vet: vet,
-                                linkedPets: linkedPets,
+                                linkedPets:
+                                    linkedPetsByVetId?[vet.id] ?? const <Pet>[],
                                 linkedPetCount: pets == null
                                     ? null
-                                    : linkedPets.length,
+                                    : linkedPetsByVetId?[vet.id]?.length,
                                 onTap: () => context.go('/g/vets/${vet.id}'),
-                              );
-                            }),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                key: const Key(
-                                  'guardian_dashboard_all_care_teams',
-                                ),
-                                onPressed: () => context.go('/g/vets'),
-                                child: Text(l.allCareTeams),
                               ),
-                            ),
                           ],
                         );
                       },
                     ),
-                ],
-              ),
             ),
           ),
         ],

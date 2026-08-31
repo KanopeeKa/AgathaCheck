@@ -241,7 +241,7 @@ test.describe('Guardian dashboard', () => {
     await page.goto(flutterGotoUrl('/g/events'));
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, /^\/g\/events(?:\?|$)/, 60_000);
-    for (const label of ['My Pets', 'My Fostered Pets', 'All Pets', 'OwnedPet', 'FosterPet']) {
+    for (const label of ['My Pets', 'My Fostered Pets', 'All pets', 'OwnedPet', 'FosterPet']) {
       await expect(page.getByRole('checkbox', { name: label, exact: true })).toBeVisible();
     }
   });

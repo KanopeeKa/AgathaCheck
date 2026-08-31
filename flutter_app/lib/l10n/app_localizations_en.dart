@@ -346,7 +346,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noFosteredPets => 'You are not fostering any pets yet.';
 
   @override
-  String get allPets => 'All Pets';
+  String get allPets => 'All pets';
 
   @override
   String get managePets => 'Manage pets';
@@ -638,7 +638,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careEyebrow => 'CARE';
 
   @override
+  String get petsEyebrow => 'PETS';
+
+  @override
   String get petsNavLabel => 'Pets';
+
+  @override
+  String get allCare => 'All care';
 
   @override
   String get careNavLabel => 'Care';
@@ -672,6 +678,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fosteringSessions => 'Fostering Sessions';
+
+  @override
+  String get fosteringSessionsEyebrow => 'FOSTERING SESSIONS';
+
+  @override
+  String get allFosteringSessions => 'All fostering sessions';
 
   @override
   String get shelters => 'Shelters';

@@ -119,7 +119,7 @@ void main() {
       );
 
       expect(find.byType(GuardianDashboardPetCard), findsNWidgets(count));
-      expect(find.text('All Pets'), findsNothing);
+      expect(find.text('All pets'), findsNothing);
       expect(find.text('Add Pet'), findsOneWidget);
       expect(tester.takeException(), isNull);
     }
@@ -143,7 +143,7 @@ void main() {
 
     expect(find.byType(GuardianDashboardPetCard), findsNWidgets(4));
     expect(find.text('Pet 4'), findsNothing);
-    expect(find.text('All Pets'), findsOneWidget);
+    expect(find.text('All pets'), findsOneWidget);
   });
 
   testWidgets('compact preview remains a horizontal rail at phone widths', (

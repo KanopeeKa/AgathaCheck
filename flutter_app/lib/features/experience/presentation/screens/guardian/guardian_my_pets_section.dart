@@ -8,6 +8,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../../pet_profile/presentation/widgets/pet_card.dart';
+import '../../widgets/guardian_dashboard_section_header.dart';
 import '../../widgets/guardian_dashboard_pet_card.dart';
 import '../../widgets/guardian_illustrated_empty_state.dart';
 import '../../widgets/guardian_shell_shared_pet_card.dart';
@@ -190,6 +191,9 @@ class _GuardianPetRail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final usesLargeText = MediaQuery.textScalerOf(context).scale(14) > 18;
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    final cardWidth = guardianDashboardPetCardWidth(viewportWidth);
+    final addTileWidth = guardianDashboardAddPetTileWidth(viewportWidth);
 
     return SizedBox(
       key: const Key('guardian_dashboard_pet_preview'),
@@ -216,10 +220,15 @@ class _GuardianPetRail extends StatelessWidget {
               itemCount: pets.length + 1,
               separatorBuilder: (_, __) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
-                if (index == pets.length)
-                  return _AddPetTile(onPressed: onAddPet, l: l);
+                if (index == pets.length) {
+                  return _AddPetTile(
+                    onPressed: onAddPet,
+                    l: l,
+                    width: addTileWidth,
+                  );
+                }
                 return SizedBox(
-                  width: 142,
+                  width: cardWidth,
                   child: _cardFor(context, pets[index]),
                 );
               },
@@ -248,15 +257,20 @@ class _GuardianPetRail extends StatelessWidget {
 }
 
 class _AddPetTile extends StatelessWidget {
-  const _AddPetTile({required this.onPressed, required this.l});
+  const _AddPetTile({
+    required this.onPressed,
+    required this.l,
+    required this.width,
+  });
 
   final VoidCallback onPressed;
   final AppLocalizations l;
+  final double width;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 72,
+      width: width,
       child: Semantics(
         button: true,
         label: l.addPet,

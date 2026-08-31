@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
+import 'guardian_dashboard_section_header.dart';
 import 'guardian_illustrated_empty_state.dart';
+import 'guardian_operations_desk_layout.dart';
 
 /// Guardian-facing summary of established foster relationships.
 ///
@@ -35,6 +37,9 @@ class GuardianFosteringSection extends StatelessWidget {
       if (shelter == null || shelter.isEmpty) continue;
       shelters.putIfAbsent(shelter, () => []).add(pet);
     }
+    final hasOverflow =
+        !showAll &&
+        (fostered.length > _previewLimit || shelters.length > _previewLimit);
 
     return Semantics(
       container: true,
@@ -42,66 +47,60 @@ class GuardianFosteringSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            l.fosteringSessions,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AppColorTokens.organizationActive,
-              fontWeight: FontWeight.w700,
-            ),
+          GuardianDashboardSectionHeader(
+            title: l.fosteringSessionsEyebrow,
+            actionLabel: hasOverflow ? l.allFosteringSessions : null,
+            onAction: hasOverflow ? () => context.go('/g/fostering') : null,
           ),
-          const SizedBox(height: 12),
-          if (fostered.isEmpty)
-            GuardianIllustratedEmptyState(
-              key: const Key('guardian_dashboard_empty_fostering'),
-              title: l.guardianEmptyFosteringTitle,
-              body: l.guardianEmptyFosteringBody,
-            )
-          else ...[
-            for (final pet in fostered.take(
-              showAll ? fostered.length : _previewLimit,
-            ))
-              _FosteringPetRow(pet: pet, l: l),
-            if (!showAll && fostered.length > _previewLimit)
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () => context.go('/g/fostering'),
-                  child: Text(l.viewAll),
+          const SizedBox(height: 10),
+          GuardianDeskSectionCard(
+            tint: AppColorTokens.organizationLight,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (fostered.isEmpty)
+                  GuardianIllustratedEmptyState(
+                    key: const Key('guardian_dashboard_empty_fostering'),
+                    title: l.guardianEmptyFosteringTitle,
+                    body: l.guardianEmptyFosteringBody,
+                  )
+                else ...[
+                  for (final pet in fostered.take(
+                    showAll ? fostered.length : _previewLimit,
+                  ))
+                    _FosteringPetRow(pet: pet, l: l),
+                ],
+                const SizedBox(height: 16),
+                Text(
+                  l.shelters,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
-              ),
-          ],
-          const SizedBox(height: 16),
-          Text(
-            l.shelters,
-            style: Theme.of(
-              context,
-            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 6),
-          if (shelters.isEmpty)
-            GuardianIllustratedEmptyState(
-              key: const Key('guardian_dashboard_empty_shelters'),
-              assetPath: 'assets/dashboard/guardian-empty-fostering.png',
-              title: l.guardianEmptyShelterTitle,
-              body: l.guardianEmptyShelterBody,
-              actionLabel: l.connectShelter,
-              actionIcon: Icons.business_outlined,
-              actionKey: const Key('guardian_dashboard_empty_shelters_action'),
-              onAction: () => context.go('/o/orgs'),
-            )
-          else
-            for (final entry in shelters.entries.take(
-              showAll ? shelters.length : _previewLimit,
-            ))
-              _ShelterRow(name: entry.key, fosteredPets: entry.value, l: l),
-          if (!showAll && shelters.length > _previewLimit)
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () => context.go('/g/fostering'),
-                child: Text(l.viewAll),
-              ),
+                const SizedBox(height: 6),
+                if (shelters.isEmpty)
+                  GuardianIllustratedEmptyState(
+                    key: const Key('guardian_dashboard_empty_shelters'),
+                    assetPath: 'assets/dashboard/guardian-empty-fostering.png',
+                    title: l.guardianEmptyShelterTitle,
+                    body: l.guardianEmptyShelterBody,
+                    actionLabel: l.connectShelter,
+                    actionIcon: Icons.business_outlined,
+                    actionKey: const Key('guardian_dashboard_empty_shelters_action'),
+                    onAction: () => context.go('/o/orgs'),
+                  )
+                else
+                  for (final entry in shelters.entries.take(
+                    showAll ? shelters.length : _previewLimit,
+                  ))
+                    _ShelterRow(
+                      name: entry.key,
+                      fosteredPets: entry.value,
+                      l: l,
+                    ),
+              ],
             ),
+          ),
         ],
       ),
     );
