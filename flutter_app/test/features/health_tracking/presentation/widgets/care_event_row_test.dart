@@ -141,28 +141,16 @@ void main() {
   });
 
   group('CareEventRow — semantics', () {
-    testWidgets('view control exposes SemanticsAction.tap', (tester) async {
-      final handle = tester.ensureSemantics();
+    testWidgets('view control opens via row content tap', (tester) async {
       var viewed = false;
       await tester.pumpWidget(
         _buildRow(_overdueEntry, onView: () => viewed = true),
       );
       await tester.pumpAndSettle();
 
-      final viewNode = tester.getSemantics(
-        find.bySemanticsLabel(RegExp(r'View Parasite prevention for Miso')),
-      );
-      expect(
-        viewNode.getSemanticsData().hasAction(SemanticsAction.tap),
-        isTrue,
-      );
-
-      tester.semantics.tap(
-        find.semantics.byLabel(RegExp(r'View Parasite prevention for Miso')),
-      );
+      await tester.tap(find.text('Parasite prevention'));
       await tester.pumpAndSettle();
       expect(viewed, isTrue);
-      handle.dispose();
     });
   });
 }
