@@ -77,6 +77,16 @@ export class VetListPage {
       .or(scope.getByRole('button', { name: /^Edit$/i }));
   }
 
+  private async openCareTeamEditFromDetail(): Promise<void> {
+    const optionsButton = this.page.getByRole('button', {
+      name: /care team options/i,
+    });
+    await optionsButton.click();
+    await this.page
+      .getByRole('menuitem', { name: /edit care team/i })
+      .click();
+  }
+
   async clickEditVet(name: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const card = semanticsByName(
@@ -90,7 +100,12 @@ export class VetListPage {
       await this.vetRowLocator(name).click();
       await waitForFlutterRoutePattern(this.page, /\/(g|o)\/vets\/[^/]+$/, 30_000);
       await refreshFlutterAccessibility(this.page);
-      await this.editVetButtonLocator().click();
+      const detailEdit = this.editVetButtonLocator();
+      if (await detailEdit.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await detailEdit.click();
+      } else {
+        await this.openCareTeamEditFromDetail();
+      }
     }
     await this.page.getByRole('textbox', { name: 'Name *' }).waitFor({ timeout: 30_000 });
   }
