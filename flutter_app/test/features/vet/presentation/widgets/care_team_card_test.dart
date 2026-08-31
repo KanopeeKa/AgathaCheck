@@ -82,7 +82,11 @@ void main() {
 
   testWidgets('uses localized caring copy', (tester) async {
     await tester.pumpWidget(
-      buildCard(linkedPetCount: 1, pets: linkedPets.take(1).toList(), locale: const Locale('fr')),
+      buildCard(
+        linkedPetCount: 1,
+        pets: linkedPets.take(1).toList(),
+        locale: const Locale('fr'),
+      ),
     );
     await tester.pumpAndSettle();
 

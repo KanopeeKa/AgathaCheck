@@ -45,7 +45,9 @@ class CareTeamCard extends StatelessWidget {
       if (caringLabel != null) caringLabel,
     ].join(', ');
 
-    final previewPets = linkedPets.take(LinkedPetAvatarStack.maxVisible).toList();
+    final previewPets = linkedPets
+        .take(LinkedPetAvatarStack.maxVisible)
+        .toList();
     final total = linkedPetCount ?? 0;
     final overflowCount = total > LinkedPetAvatarStack.maxVisible
         ? total - LinkedPetAvatarStack.maxVisible
@@ -66,7 +68,9 @@ class CareTeamCard extends StatelessWidget {
         child: Material(
           color: theme.colorScheme.surface,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
@@ -111,8 +115,7 @@ class CareTeamCard extends StatelessWidget {
                                   pets: previewPets,
                                   overflowCount: overflowCount,
                                 ),
-                                if (previewPets.isNotEmpty ||
-                                    overflowCount > 0)
+                                if (previewPets.isNotEmpty || overflowCount > 0)
                                   const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(

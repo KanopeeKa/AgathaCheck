@@ -31,7 +31,8 @@ class LinkedPetAvatarStack extends StatelessWidget {
     final visible = pets.take(maxVisible).toList(growable: false);
     final stackWidth = visible.isEmpty
         ? avatarSize
-        : avatarSize + (visible.length - 1) * (avatarSize - overlap) +
+        : avatarSize +
+              (visible.length - 1) * (avatarSize - overlap) +
               (overflowCount > 0 ? (avatarSize - overlap) : 0);
 
     return ExcludeSemantics(

@@ -15,17 +15,7 @@ const _trailingNoiseWords = {
 
 const _leadingNoiseWords = {'dr', 'the'};
 
-const _fillerWords = {
-  'and',
-  'de',
-  'des',
-  'du',
-  'la',
-  'le',
-  'les',
-  'of',
-  'the',
-};
+const _fillerWords = {'and', 'de', 'des', 'du', 'la', 'le', 'les', 'of', 'the'};
 
 /// Generates a two-character monogram for a veterinary clinic / care team name.
 ///
@@ -45,7 +35,8 @@ String careTeamInitialsFromName(String name) {
     parts.removeLast();
   }
 
-  if (parts.isNotEmpty && _leadingNoiseWords.contains(parts.first.toLowerCase())) {
+  if (parts.isNotEmpty &&
+      _leadingNoiseWords.contains(parts.first.toLowerCase())) {
     parts.removeAt(0);
   }
 

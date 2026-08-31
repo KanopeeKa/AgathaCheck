@@ -102,8 +102,7 @@ class GuardianMyVetsSection extends ConsumerWidget {
                           children: [
                             ...vets.map((vet) {
                               final linkedPets =
-                                  linkedPetsByVetId?[vet.id] ??
-                                  const <Pet>[];
+                                  linkedPetsByVetId?[vet.id] ?? const <Pet>[];
                               return CareTeamCard(
                                 vet: vet,
                                 linkedPets: linkedPets,
@@ -116,7 +115,9 @@ class GuardianMyVetsSection extends ConsumerWidget {
                             Align(
                               alignment: Alignment.centerRight,
                               child: TextButton(
-                                key: const Key('guardian_dashboard_all_care_teams'),
+                                key: const Key(
+                                  'guardian_dashboard_all_care_teams',
+                                ),
                                 onPressed: () => context.go('/g/vets'),
                                 child: Text(l.allCareTeams),
                               ),
