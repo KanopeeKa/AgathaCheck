@@ -35,3 +35,6 @@ updates:
       - dependency-name: "go_router"
         update-types: ["version-update:semver-major"]
       - dependency-name: "intl"
+      # file_picker 12.1.2 breaks web/android builds (darwinOptions API mismatch).
+      - dependency-name: "file_picker"
+        versions: ["12.1.2"]
