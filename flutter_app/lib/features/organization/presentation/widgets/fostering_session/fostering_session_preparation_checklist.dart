@@ -3,17 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../providers/org_provider_deps.dart';
-import '../../providers/org_provider_pets.dart';
 
 class FosteringSessionPreparationChecklist extends ConsumerStatefulWidget {
   const FosteringSessionPreparationChecklist({
     super.key,
     required this.orgId,
     required this.placementId,
+    this.initialChecklist,
+    this.canUpdate = true,
   });
 
   final String orgId;
   final String placementId;
+  final Map<String, dynamic>? initialChecklist;
+  final bool canUpdate;
 
   @override
   ConsumerState<FosteringSessionPreparationChecklist> createState() =>
@@ -32,6 +35,9 @@ class _FosteringSessionPreparationChecklistState
   }
 
   Future<Map<String, dynamic>> _loadChecklist() {
+    if (widget.initialChecklist != null) {
+      return Future.value(widget.initialChecklist);
+    }
     final token = ref.read(orgTokenProvider);
     if (token == null) {
       return Future.error(StateError('Not authenticated'));
@@ -74,7 +80,7 @@ class _FosteringSessionPreparationChecklistState
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isAdmin = ref.watch(isOrgAdminProvider(widget.orgId));
+    final canUpdate = widget.canUpdate;
 
     return Card(
       key: const Key('fostering_session_preparation_checklist'),
@@ -145,7 +151,7 @@ class _FosteringSessionPreparationChecklistState
                       contentPadding: EdgeInsets.zero,
                       controlAffinity: ListTileControlAffinity.leading,
                       value: completed,
-                      onChanged: isAdmin && !busy
+                      onChanged: canUpdate && !busy
                           ? (value) => _toggleItem(key, value == true)
                           : null,
                       title: Text(label),
