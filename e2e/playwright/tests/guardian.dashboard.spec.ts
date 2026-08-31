@@ -6,7 +6,7 @@
  * Scenario: Care preview orders overdue, due today, and upcoming items
  * Scenario: Care preview row opens the event view screen
  * Scenario: Care preview supports completion and undo
- * Scenario: My Vets preview reaches linked vet details
+ * Scenario: Care team preview reaches linked vet details
  * Scenario: Empty Guardian dashboard shows first-use guidance without false alerts
  * Scenario: Pending foster placement surfaces as a notification, not a dashboard banner
  * Scenario: Global events screen shows unified list without tabs
@@ -164,7 +164,7 @@ test.describe('Guardian dashboard', () => {
     await expect(page.getByRole('button', { name: /mark .*Actionable Care.*done/i })).toBeVisible();
   });
 
-  test('My Vets preview reaches linked vet details', async ({ page, testUser }) => {
+  test('Care team preview reaches linked vet details', async ({ page, testUser }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     const vet = await createVetFull(baseURL(), testUser.accessToken, { name: 'Dr. Desk' });
     const pet = await createPet(baseURL(), testUser.accessToken, 'VetLinkedPet');
@@ -177,7 +177,7 @@ test.describe('Guardian dashboard', () => {
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.open();
     await dashboard.expectVetVisible('Dr. Desk');
-    await expect(semanticsByName(page, /Dr\. Desk.*1 pet/i).first()).toBeVisible();
+    await expect(semanticsByName(page, /Dr\. Desk.*Caring for 1 pet/i).first()).toBeVisible();
     await dashboard.openVet('Dr. Desk');
     await expect(page).toHaveURL(/#\/g\/vets\//);
     await dashboard.goBackToDashboard();

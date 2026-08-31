@@ -32,7 +32,7 @@ export class GuardianDashboardPage {
   async expectTodayCareRegions(): Promise<void> {
     await expect(this.section(/My Pets|Mes animaux/i)).toBeVisible();
     await expect(this.section(/CARE|SOINS/i)).toBeVisible();
-    await expect(this.section(/My Vets|Mes vétérinaires/i)).toBeVisible();
+    await expect(this.section(/Care team|CARE TEAM|Équipe de soins|ÉQUIPE DE SOINS/i)).toBeVisible();
     await expect(this.section(/Fostering Sessions|Sessions d'accueil/i)).toBeVisible();
   }
 
@@ -111,7 +111,7 @@ export class GuardianDashboardPage {
 
   async expectVetVisible(name: string): Promise<void> {
     await expect(
-      this.section(/My Vets|Mes vétérinaires/i)
+      this.section(/Care team|CARE TEAM|Équipe de soins|ÉQUIPE DE SOINS/i)
         .getByRole('button', { name: new RegExp(name, 'i') })
         .or(semanticsByName(this.page, new RegExp(name, 'i')))
         .first(),

@@ -14,7 +14,7 @@ User-facing flows for guardians managing pets in AgathaTrack.
 
 ## Guardian dashboard (landing)
 
-The Guardian dashboard (`/g/home`) is a section landing page with three symmetric previews: **My Pets**, **Due and Overdue**, and **My Vets**. Each section shows a compact subset and links to the full management screen.
+The Guardian dashboard (`/g/home`) is a section landing page with three symmetric previews: **My Pets**, **Due and Overdue**, and **Care team**. Each section shows a compact subset and links to the full management screen.
 
 Full locked brief: [guardian-dashboard-brief.md](guardian-dashboard-brief.md) (relocated from experience program).
 

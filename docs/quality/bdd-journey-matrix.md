@@ -135,7 +135,7 @@ existing full pet, event, vet, and notification workflows.
 | P0 | Today orientation | Today orientation prioritises attention above the management sections | `guardian.dashboard.spec.ts` | ✅ |
 | P0 | Bounded pet preview | My Pets preview is capped at four with an All Pets destination | `guardian.dashboard.spec.ts` | ✅ |
 | P0 | Care priority and action | Care preview orders overdue, due today, and upcoming items; Care preview supports completion and undo | `guardian.dashboard.spec.ts` | ✅ |
-| P1 | Vet hand-off | My Vets preview reaches linked vet details | `guardian.dashboard.spec.ts` | ✅ |
+| P1 | Vet hand-off | Care team preview reaches linked vet details | `guardian.dashboard.spec.ts` | ✅ |
 | P1 | Truthful first use | Empty Guardian dashboard shows first-use guidance without false alerts | `guardian.dashboard.spec.ts` | ✅ |
 | P1 | Global notification hand-off | Pending foster placement surfaces as a notification, not a dashboard banner | `guardian.dashboard.spec.ts` | ✅ |
 | P1 | Full Events continuity | Global events screen shows unified list without tabs; Global events screen supports pet and cohort filters | `guardian.dashboard.spec.ts` | ✅ |

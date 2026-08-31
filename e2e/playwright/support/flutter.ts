@@ -619,7 +619,7 @@ export async function logOutFromApp(page: Page): Promise<void> {
 export const DASHBOARD_SECTION_NAMES = {
   myPets: /My Pets|Mes animaux/i,
   dueAndOverdue: /Due and Overdue|À faire et en retard|CARE|SOINS/i,
-  myVets: /My [Vv]ets|Mes vétérinaires/i,
+  myVets: /Care team|CARE TEAM|Équipe de soins|ÉQUIPE DE SOINS/i,
 } as const;
 
 export function dashboardSectionGroup(

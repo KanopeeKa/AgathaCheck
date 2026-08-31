@@ -8,7 +8,7 @@ Feature: Guardian dashboard
   Scenario: Dashboard shows exactly three sections
     Given I am signed in as a guardian with pets, due health entries, and vets
     When I view the Guardian dashboard
-    Then I should see "My Pets", "Due and Overdue", and "My Vets" sections only
+    Then I should see "My Pets", "Due and Overdue", and "Care team" sections only
 
   @implemented
   @P0
@@ -52,7 +52,7 @@ Feature: Guardian dashboard
 
   @implemented
   @P1
-  Scenario: My Vets preview reaches linked vet details
+  Scenario: Care team preview reaches linked vet details
     Given I am signed in as a guardian with a linked veterinarian
     When I view the Guardian dashboard
     Then I should see the veterinarian and linked-pet count

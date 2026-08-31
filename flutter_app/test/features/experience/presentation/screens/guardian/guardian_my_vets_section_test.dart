@@ -11,7 +11,7 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
-import 'package:pet_profile_app/features/vet/presentation/widgets/vet_compact_row.dart';
+import 'package:pet_profile_app/features/vet/presentation/widgets/care_team_card.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../../helpers/fakes.dart';
@@ -76,6 +76,13 @@ void main() {
     );
   }
 
+  testWidgets('shows the care team eyebrow label', (tester) async {
+    await tester.pumpWidget(buildSection(vetNotifier: _FixedVetNotifier(vets)));
+    await tester.pumpAndSettle();
+
+    expect(find.text('CARE TEAM'), findsOneWidget);
+  });
+
   testWidgets('waits for authentication without showing a false empty state', (
     tester,
   ) async {
@@ -130,9 +137,7 @@ void main() {
     );
   });
 
-  testWidgets('shows linked-pet counts and navigates to vet details', (
-    tester,
-  ) async {
+  testWidgets('shows caring copy and navigates to vet details', (tester) async {
     await tester.pumpWidget(
       buildSection(
         vetNotifier: _FixedVetNotifier(vets),
@@ -145,11 +150,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Paris'), findsOneWidget);
-    expect(find.text('2 pets'), findsOneWidget);
-    expect(find.text('1 pet'), findsOneWidget);
+    expect(find.text('Veterinary clinic · Paris'), findsOneWidget);
+    expect(find.text('Caring for 2 pets'), findsOneWidget);
+    expect(find.text('Caring for 1 pet'), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('vet_compact_row_vet-1')));
+    await tester.tap(find.byKey(const Key('care_team_card_vet-1')));
     await tester.pumpAndSettle();
     expect(find.text('vet-detail-vet-1'), findsOneWidget);
   });
@@ -166,11 +171,11 @@ void main() {
     await tester.pump();
 
     expect(find.text('Clinique du Parc'), findsOneWidget);
-    expect(find.text('Paris'), findsOneWidget);
-    expect(find.text('0 pets'), findsNothing);
+    expect(find.text('Veterinary clinic · Paris'), findsOneWidget);
+    expect(find.textContaining('Caring for'), findsNothing);
   });
 
-  testWidgets('keeps the uncapped vet list reachable at phone widths', (
+  testWidgets('keeps the uncapped care team list reachable at phone widths', (
     tester,
   ) async {
     const widths = [320.0, 375.0, 414.0];
@@ -184,13 +189,13 @@ void main() {
     );
 
     for (final width in widths) {
-      await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.binding.setSurfaceSize(Size(width, 2400));
       await tester.pumpWidget(
         buildSection(vetNotifier: _FixedVetNotifier(manyVets)),
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(VetCompactRow), findsNWidgets(manyVets.length));
+      expect(find.byType(CareTeamCard), findsNWidgets(manyVets.length));
       expect(find.byType(ListView), findsNothing);
       expect(tester.takeException(), isNull);
     }
@@ -213,11 +218,13 @@ void main() {
     expect(find.text('add-vet-route'), findsOneWidget);
   });
 
-  testWidgets('keeps management reachable without a top plus', (tester) async {
+  testWidgets('keeps the full care team list reachable without a top plus', (
+    tester,
+  ) async {
     await tester.pumpWidget(buildSection(vetNotifier: _FixedVetNotifier(vets)));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Manage veterinarians'));
+    await tester.tap(find.text('All care teams'));
     await tester.pumpAndSettle();
 
     expect(find.text('manage-vets-route'), findsOneWidget);
