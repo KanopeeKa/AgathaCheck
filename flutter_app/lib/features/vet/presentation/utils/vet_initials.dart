@@ -1,8 +1,8 @@
 /// Derives up to two uppercase initials for a care team / clinic display name.
 ///
 /// Multi-word names use the first character of the first and last word
-/// (e.g. "Dr. Smith" → "DS"). Single-word names use the first two characters
-/// when available (e.g. "Sevetys" → "SV").
+/// (e.g. "Dr. Smith" → "DS"). Single-word names with three or more characters
+/// use the first and third letters (e.g. "Sevetys" → "SV").
 String vetInitialsFromName(String name) {
   final parts = name
       .trim()

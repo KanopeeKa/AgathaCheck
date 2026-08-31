@@ -252,12 +252,18 @@ class _ContactLine extends StatelessWidget {
       button: true,
       label: semanticsLabel,
       onTap: onTap,
+      excludeSemantics: true,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: content,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minHeight: kMinInteractiveDimension,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Align(alignment: Alignment.centerLeft, child: content),
+          ),
         ),
       ),
     );

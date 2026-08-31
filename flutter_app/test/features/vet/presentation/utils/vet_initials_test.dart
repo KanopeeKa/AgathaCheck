@@ -3,7 +3,7 @@ import 'package:pet_profile_app/features/vet/presentation/utils/vet_initials.dar
 
 void main() {
   group('vetInitialsFromName', () {
-    test('uses first two letters for a single-word clinic name', () {
+    test('uses first and third letters for a single-word clinic name', () {
       expect(vetInitialsFromName('Sevetys'), 'SV');
     });
 

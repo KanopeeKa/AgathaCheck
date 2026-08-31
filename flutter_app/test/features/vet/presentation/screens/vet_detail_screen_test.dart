@@ -202,7 +202,10 @@ void main() {
         find.text('No pets are currently linked to this care team.'),
         findsOneWidget,
       );
-      expect(find.byKey(const Key('care_team_link_pets_button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('care_team_link_pets_button')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('does not overflow at 320 px width', (tester) async {
@@ -299,6 +302,30 @@ void main() {
       expect(find.byType(SnackBar), findsOneWidget);
       expect(mock.launchCalls, isEmpty);
     });
+
+    testWidgets(
+      'email line shows SnackBar when launcher cannot open mailto URI',
+      (tester) async {
+        final mock = _MockUrlLauncherPlatform(canLaunchResult: false);
+        UrlLauncherPlatform.instance = mock;
+        addTearDown(
+          () => UrlLauncherPlatform.instance = _MockUrlLauncherPlatform(
+            canLaunchResult: false,
+          ),
+        );
+
+        const vet = Vet(id: 'vet-1', name: 'Dr. Paws', email: 'a@b.com');
+
+        await tester.pumpWidget(_buildApp(vetId: 'vet-1', vets: [vet]));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const Key('vet_email_link')));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(SnackBar), findsOneWidget);
+        expect(mock.launchCalls, isEmpty);
+      },
+    );
   });
 
   group('VetDetailScreen – edit navigation', () {

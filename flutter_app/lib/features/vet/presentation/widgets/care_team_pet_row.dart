@@ -9,11 +9,7 @@ import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
 
 /// Flat, tappable pet row for the care team detail screen.
 class CareTeamPetRow extends StatelessWidget {
-  const CareTeamPetRow({
-    super.key,
-    required this.pet,
-    this.showDivider = true,
-  });
+  const CareTeamPetRow({super.key, required this.pet, this.showDivider = true});
 
   final Pet pet;
   final bool showDivider;
