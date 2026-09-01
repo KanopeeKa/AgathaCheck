@@ -93,72 +93,72 @@ class PendingFosterPlacementCard extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              placement.petName,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              l.fosterPlacementInviteFrom(orgLabel),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () async {
-                    try {
-                      await ref
-                          .read(pendingFosterPlacementsProvider.notifier)
-                          .decline(placement.id);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l.fosterPlacementDeclined)),
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text('$e')));
-                      }
-                    }
-                  },
-                  child: Text(l.declineInvite),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                placement.petName,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(width: 8),
-                FilledButton(
-                  onPressed: () async {
-                    try {
-                      await ref
-                          .read(pendingFosterPlacementsProvider.notifier)
-                          .accept(placement.id);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l.fosterPlacementAccepted)),
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text('$e')));
-                      }
-                    }
-                  },
-                  child: Text(l.acceptInvite),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l.fosterPlacementInviteFrom(orgLabel),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () async {
+                      try {
+                        await ref
+                            .read(pendingFosterPlacementsProvider.notifier)
+                            .decline(placement.id);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l.fosterPlacementDeclined)),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text('$e')));
+                        }
+                      }
+                    },
+                    child: Text(l.declineInvite),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton(
+                    onPressed: () async {
+                      try {
+                        await ref
+                            .read(pendingFosterPlacementsProvider.notifier)
+                            .accept(placement.id);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l.fosterPlacementAccepted)),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text('$e')));
+                        }
+                      }
+                    },
+                    child: Text(l.acceptInvite),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

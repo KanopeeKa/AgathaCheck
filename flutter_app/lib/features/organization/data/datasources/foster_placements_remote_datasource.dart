@@ -42,7 +42,9 @@ class FosterPlacementsRemoteDataSource {
     final data = json.decode(response.body);
     if (response.statusCode >= 400) {
       throw Exception(
-        data is Map ? (data['error'] ?? 'Failed to load foster placement') : 'Failed to load foster placement',
+        data is Map
+            ? (data['error'] ?? 'Failed to load foster placement')
+            : 'Failed to load foster placement',
       );
     }
     return data as Map<String, dynamic>;
