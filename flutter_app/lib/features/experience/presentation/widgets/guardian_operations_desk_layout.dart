@@ -49,15 +49,9 @@ class GuardianOperationsDeskLayout extends StatelessWidget {
                     key: const Key('guardian_desk_secondary_sections_wide'),
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        flex: 3,
-                        child: eventsSection,
-                      ),
+                      Expanded(flex: 3, child: eventsSection),
                       const SizedBox(width: 20),
-                      Expanded(
-                        flex: 2,
-                        child: vetsSection,
-                      ),
+                      Expanded(flex: 2, child: vetsSection),
                     ],
                   )
                 else

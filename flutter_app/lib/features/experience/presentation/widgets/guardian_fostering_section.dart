@@ -86,7 +86,9 @@ class GuardianFosteringSection extends StatelessWidget {
                     body: l.guardianEmptyShelterBody,
                     actionLabel: l.connectShelter,
                     actionIcon: Icons.business_outlined,
-                    actionKey: const Key('guardian_dashboard_empty_shelters_action'),
+                    actionKey: const Key(
+                      'guardian_dashboard_empty_shelters_action',
+                    ),
                     onAction: () => context.go('/o/orgs'),
                   )
                 else
