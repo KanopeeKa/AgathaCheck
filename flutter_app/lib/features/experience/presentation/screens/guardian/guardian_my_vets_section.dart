@@ -106,7 +106,9 @@ class GuardianMyVetsSection extends ConsumerWidget {
                                     linkedPetsByVetId?[vet.id] ?? const <Pet>[],
                                 linkedPetCount: pets == null
                                     ? null
-                                    : linkedPetsByVetId?[vet.id]?.length,
+                                    : (linkedPetsByVetId?[vet.id] ??
+                                              const <Pet>[])
+                                          .length,
                                 onTap: () => context.go('/g/vets/${vet.id}'),
                               ),
                           ],

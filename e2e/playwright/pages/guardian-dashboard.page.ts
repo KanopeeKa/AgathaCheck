@@ -96,8 +96,8 @@ export class GuardianDashboardPage {
       await careBottomNav.click();
     } else {
       await this.careRegion()
-        .getByRole('button', { name: /All care|All pets|Tous les animaux|Tous les soins/i })
-        .or(this.careRegion().getByText(/All care|All pets|Tous les animaux|Tous les soins/i))
+        .getByRole('button', { name: /All care|Tous les soins|View all|Voir tout/i })
+        .or(this.careRegion().getByText(/All care|Tous les soins|View all|Voir tout/i))
         .first()
         .click();
     }

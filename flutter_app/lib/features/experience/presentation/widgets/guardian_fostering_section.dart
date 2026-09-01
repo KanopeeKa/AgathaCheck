@@ -49,6 +49,7 @@ class GuardianFosteringSection extends StatelessWidget {
         children: [
           GuardianDashboardSectionHeader(
             title: l.fosteringSessionsEyebrow,
+            titleColor: AppColorTokens.organizationActive,
             actionLabel: hasOverflow ? l.allFosteringSessions : null,
             onAction: hasOverflow ? () => context.go('/g/fostering') : null,
           ),

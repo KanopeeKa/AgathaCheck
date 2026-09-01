@@ -7,12 +7,14 @@ class GuardianDashboardSectionHeader extends StatelessWidget {
   const GuardianDashboardSectionHeader({
     super.key,
     required this.title,
+    this.titleColor = AppColorTokens.guardianActive,
     this.actionLabel,
     this.onAction,
     this.actionKey,
   });
 
   final String title;
+  final Color titleColor;
   final String? actionLabel;
   final VoidCallback? onAction;
   final Key? actionKey;
@@ -29,7 +31,7 @@ class GuardianDashboardSectionHeader extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.labelLarge?.copyWith(
-              color: AppColorTokens.guardianActive,
+              color: titleColor,
               fontWeight: FontWeight.w800,
               letterSpacing: 1.2,
             ),
