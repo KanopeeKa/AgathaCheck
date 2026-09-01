@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "plan_id": "guardian-org-profile-link-3e55",
+  "approved_at": "2026-09-01T08:24:00Z",
+  "approved_by": "user chat 2026-09-01 (/execute-plan guardian org link fix)",
+  "approved_until": "2026-09-03T08:24:00Z",
+  "content_hash": "sha256:pending",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 0,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Shelter link and origin-aware back",
+      "branch": "cursor/guardian-org-profile-link-3e55",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_fostering_section.dart",
+        "flutter_app/lib/features/organization/presentation/screens/organisation_profile_screen.dart",
+        "flutter_app/lib/features/organization/presentation/utils/org_profile_return.dart",
+        "flutter_app/lib/core/router/organization_routes.dart",
+        "flutter_app/test/features/experience/presentation/widgets/guardian_fostering_section_test.dart",
+        "flutter_app/test/features/organization/presentation/screens/organisation_profile_screen_test.dart",
+        "flutter_app/test/features/organization/presentation/utils/org_profile_return_test.dart",
+        ".agents/plans/guardian-org-profile-link-3e55.md",
+        ".agents/plans/guardian-org-profile-link-3e55.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    }
+  ]
+}
