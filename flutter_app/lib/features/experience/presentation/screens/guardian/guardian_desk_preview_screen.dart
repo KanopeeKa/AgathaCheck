@@ -87,6 +87,8 @@ class GuardianDeskPreviewScreen extends StatelessWidget {
                   petsSection: GuardianMyPetsSection(
                     allPets: _previewPets,
                     controller: PetListController(),
+                    previewPets: _previewPets,
+                    previewOverflowCount: 0,
                   ),
                   eventsSection: _PreviewDeskSection(
                     title: l10n.dueAndOverdue,

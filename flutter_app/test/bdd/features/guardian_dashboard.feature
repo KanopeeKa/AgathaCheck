@@ -24,7 +24,7 @@ Feature: Guardian dashboard
     Given I have 6 pets
     When I view the Guardian dashboard
     Then I should see at most 4 pet cards
-    And I should see an "All Pets" link
+    And I should see an "All pets" link
 
   @implemented
   @P0

@@ -41,7 +41,7 @@ void main() {
       onAction: () {},
     );
 
-    expect(find.text('All Pets'), findsOneWidget);
+    expect(find.text('All pets'), findsOneWidget);
     expect(find.text('Bulk share'), findsOneWidget);
     expect(find.byKey(const Key('bulk_share_action')), findsNothing);
 

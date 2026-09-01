@@ -80,7 +80,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('CARE'), findsOneWidget);
-    expect(find.text('Fostering Sessions'), findsOneWidget);
+    expect(find.text('FOSTERING SESSIONS'), findsOneWidget);
     expect(find.text('Shelters'), findsOneWidget);
     expect(find.byKey(const Key('guardian_dashboard_add_care')), findsNothing);
     expect(find.byKey(const Key('guardian_dashboard_add_vet')), findsNothing);
@@ -103,12 +103,12 @@ void main() {
   });
 
   testWidgets(
-    'My Pets preview caps at four and keeps the All Pets destination',
+    'My Pets preview caps at four and keeps the All pets destination',
     (tester) async {
       await tester.pumpWidget(buildDashboard());
       await tester.pumpAndSettle();
 
-      expect(find.text('All Pets'), findsOneWidget);
+      expect(find.text('All pets'), findsOneWidget);
       expect(find.text('Pet 0'), findsOneWidget);
       expect(find.text('Pet 3'), findsOneWidget);
       expect(find.text('Pet 4'), findsNothing);

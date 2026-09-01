@@ -731,7 +731,7 @@ abstract class AppLocalizations {
   /// No description provided for @allPets.
   ///
   /// In en, this message translates to:
-  /// **'All Pets'**
+  /// **'All pets'**
   String get allPets;
 
   /// No description provided for @managePets.
@@ -1214,11 +1214,23 @@ abstract class AppLocalizations {
   /// **'CARE'**
   String get careEyebrow;
 
+  /// No description provided for @petsEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'PETS'**
+  String get petsEyebrow;
+
   /// No description provided for @petsNavLabel.
   ///
   /// In en, this message translates to:
   /// **'Pets'**
   String get petsNavLabel;
+
+  /// No description provided for @allCare.
+  ///
+  /// In en, this message translates to:
+  /// **'All care'**
+  String get allCare;
 
   /// No description provided for @careNavLabel.
   ///
@@ -1279,6 +1291,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fostering Sessions'**
   String get fosteringSessions;
+
+  /// No description provided for @fosteringSessionsEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'FOSTERING SESSIONS'**
+  String get fosteringSessionsEyebrow;
+
+  /// No description provided for @allFosteringSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'All fostering sessions'**
+  String get allFosteringSessions;
 
   /// No description provided for @shelters.
   ///

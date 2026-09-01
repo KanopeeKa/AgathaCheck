@@ -49,20 +49,9 @@ class GuardianOperationsDeskLayout extends StatelessWidget {
                     key: const Key('guardian_desk_secondary_sections_wide'),
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: GuardianDeskSectionCard(
-                          key: const Key('guardian_dashboard_care_section'),
-                          tint: AppColorTokens.guardianLight,
-                          child: eventsSection,
-                        ),
-                      ),
+                      Expanded(flex: 3, child: eventsSection),
                       const SizedBox(width: 20),
-                      Expanded(
-                        child: GuardianDeskSectionCard(
-                          showSurface: false,
-                          child: vetsSection,
-                        ),
-                      ),
+                      Expanded(flex: 2, child: vetsSection),
                     ],
                   )
                 else
@@ -70,24 +59,14 @@ class GuardianOperationsDeskLayout extends StatelessWidget {
                     key: const Key('guardian_desk_secondary_sections_narrow'),
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      GuardianDeskSectionCard(
-                        key: const Key('guardian_dashboard_care_section'),
-                        tint: AppColorTokens.guardianLight,
-                        child: eventsSection,
-                      ),
+                      eventsSection,
                       const SizedBox(height: 28),
-                      GuardianDeskSectionCard(
-                        showSurface: false,
-                        child: vetsSection,
-                      ),
+                      vetsSection,
                     ],
                   ),
                 if (fosteringSection != null) ...[
                   const SizedBox(height: 28),
-                  GuardianDeskSectionCard(
-                    tint: AppColorTokens.organizationLight,
-                    child: fosteringSection!,
-                  ),
+                  fosteringSection!,
                 ],
               ],
             ),

@@ -49,7 +49,7 @@ test.describe('Guardian navigation', () => {
 
     await dashboard.openBottomNavTab('Pets');
     await waitForFlutterRoutePattern(page, /\/g\/pets(?:\?|$)/, 30_000);
-    await expect(page.getByText(/All Pets|Tous les animaux/i).first()).toBeVisible();
+    await expect(page.getByText(/All pets|Tous les animaux/i).first()).toBeVisible();
 
     await dashboard.openBottomNavTab('Care');
     await waitForFlutterRoutePattern(page, /\/g\/events(?:\?|$)/, 30_000);
@@ -74,7 +74,7 @@ test.describe('Guardian navigation', () => {
 
     await dashboard.openLeadingNavDestination('Pets');
     await waitForFlutterRoutePattern(page, /\/g\/pets(?:\?|$)/, 30_000);
-    await expect(page.getByText(/All Pets|Tous les animaux/i).first()).toBeVisible();
+    await expect(page.getByText(/All pets|Tous les animaux/i).first()).toBeVisible();
 
     await dashboard.openLeadingNavDestination('Care');
     await waitForFlutterRoutePattern(page, /\/g\/events(?:\?|$)/, 30_000);
@@ -100,7 +100,7 @@ test.describe('Guardian navigation', () => {
 
     await dashboard.openLeadingNavDestination('Pets');
     await waitForFlutterRoutePattern(page, /\/g\/pets(?:\?|$)/, 30_000);
-    await expect(page.getByText(/All Pets|Tous les animaux/i).first()).toBeVisible();
+    await expect(page.getByText(/All pets|Tous les animaux/i).first()).toBeVisible();
 
     await dashboard.openLeadingNavDestination('Care');
     await waitForFlutterRoutePattern(page, /\/g\/events(?:\?|$)/, 30_000);

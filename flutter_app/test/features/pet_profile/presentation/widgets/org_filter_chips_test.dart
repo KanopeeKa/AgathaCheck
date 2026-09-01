@@ -28,7 +28,7 @@ void main() {
     await tester.pumpWidget(buildWidget(orgNames: ['Shelter A']));
     await tester.pumpAndSettle();
 
-    expect(find.text('All Pets'), findsOneWidget);
+    expect(find.text('All pets'), findsOneWidget);
     expect(find.text('My Pets'), findsOneWidget);
     expect(find.text('Shelter A'), findsOneWidget);
   });

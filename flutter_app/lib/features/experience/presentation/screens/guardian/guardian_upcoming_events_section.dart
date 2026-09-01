@@ -9,7 +9,9 @@ import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/widgets/pet_list/home_event_actions.dart';
 import '../../widgets/guardian_care_preview/guardian_care_preview_optimistic.dart';
+import '../../widgets/guardian_dashboard_section_header.dart';
 import '../../widgets/guardian_illustrated_empty_state.dart';
+import '../../widgets/guardian_operations_desk_layout.dart';
 import 'guardian_dashboard_helpers.dart';
 
 /// Guardian Care dashboard preview with one combined, date-ordered list.
@@ -123,7 +125,7 @@ class _GuardianUpcomingEventsSectionState
         key: const Key('guardian_dashboard_empty_care_clear'),
         title: l.guardianEmptyCareClearTitle,
         body: emptyMessage,
-        actionLabel: l.viewAll,
+        actionLabel: l.allCare,
         actionIcon: Icons.calendar_month_outlined,
         onAction: () => context.go('/g/events'),
       );
@@ -149,19 +151,6 @@ class _GuardianUpcomingEventsSectionState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              Text(
-                l.careEyebrow,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColorTokens.guardianActive,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
           if (entriesAsync is AsyncData<List<HealthEntry>>)
             _careData(context, entriesAsync.value, pets, l)
           else if (entriesAsync is AsyncLoading)
@@ -194,9 +183,16 @@ class _GuardianUpcomingEventsSectionState
     AppLocalizations l,
   ) {
     if (_lastDueEntriesSnapshot.isEmpty && _completed.isEmpty) {
-      return const SizedBox(
-        height: 56,
-        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          GuardianDashboardSectionHeader(title: l.careEyebrow),
+          const SizedBox(height: 10),
+          const SizedBox(
+            height: 56,
+            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          ),
+        ],
       );
     }
     final priorities = GuardianTodayCarePriorities.forPets(
@@ -226,43 +222,59 @@ class _GuardianUpcomingEventsSectionState
   ) {
     final careEntries = priorities.all;
     final petMap = {for (final pet in pets) pet.id: pet};
+    final showAllCare =
+        careEntries.length > GuardianUpcomingEventsSection.previewLimit;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildMobileContent(
-          context,
-          careEntries,
-          petMap,
-          l,
-          l.noCareDue,
-          priorities.all.isNotEmpty,
+        GuardianDashboardSectionHeader(
+          title: l.careEyebrow,
+          actionLabel: showAllCare ? l.allCare : null,
+          onAction: showAllCare ? () => context.go('/g/events') : null,
+          actionKey: showAllCare
+              ? const Key('guardian_dashboard_care_view_all')
+              : null,
         ),
-        if (careEntries.length > GuardianUpcomingEventsSection.previewLimit)
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              key: const Key('guardian_dashboard_care_view_all'),
-              onPressed: () => context.go('/g/events'),
-              child: Text(l.viewAll),
-            ),
+        const SizedBox(height: 10),
+        GuardianDeskSectionCard(
+          key: const Key('guardian_dashboard_care_section'),
+          tint: AppColorTokens.guardianLight,
+          child: _buildMobileContent(
+            context,
+            careEntries,
+            petMap,
+            l,
+            l.noCareDue,
+            priorities.all.isNotEmpty,
           ),
+        ),
       ],
     );
   }
 
   Widget _careError(BuildContext context, WidgetRef ref, AppLocalizations l) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Icon(Icons.error_outline, color: AppColorTokens.danger),
-        const SizedBox(height: 8),
-        Text(l.careLoadError),
-        TextButton.icon(
-          onPressed: () =>
-              ref.read(healthEntriesNotifierProvider.notifier).refresh(),
-          icon: const Icon(Icons.refresh, size: 18),
-          label: Text(l.retry),
+        GuardianDashboardSectionHeader(title: l.careEyebrow),
+        const SizedBox(height: 10),
+        GuardianDeskSectionCard(
+          tint: AppColorTokens.guardianLight,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(Icons.error_outline, color: AppColorTokens.danger),
+              const SizedBox(height: 8),
+              Text(l.careLoadError),
+              TextButton.icon(
+                onPressed: () =>
+                    ref.read(healthEntriesNotifierProvider.notifier).refresh(),
+                icon: const Icon(Icons.refresh, size: 18),
+                label: Text(l.retry),
+              ),
+            ],
+          ),
         ),
       ],
     );

@@ -222,7 +222,7 @@ void main() {
           home: ExperienceShellScaffold(
             experience: AppExperience.guardian,
             currentLocation: '/g/pets',
-            screenTitle: 'All Pets',
+            screenTitle: 'All pets',
             contextualActions: [
               IconButton(
                 key: const Key('contextual_test_action'),
@@ -789,7 +789,7 @@ void main() {
                 child: ExperienceShellScaffold(
                   experience: AppExperience.guardian,
                   currentLocation: '/g/pets',
-                  screenTitle: 'All Pets',
+                  screenTitle: 'All pets',
                   child: const SizedBox.shrink(),
                 ),
               ),
@@ -798,7 +798,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('All Pets'), findsOneWidget);
+        expect(find.text('All pets'), findsOneWidget);
         final appBarFinder = find.byType(AppBar);
         expect(
           find.descendant(

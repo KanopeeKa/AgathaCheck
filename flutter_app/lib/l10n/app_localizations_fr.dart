@@ -648,7 +648,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careEyebrow => 'SOINS';
 
   @override
+  String get petsEyebrow => 'ANIMAUX';
+
+  @override
   String get petsNavLabel => 'Animaux';
+
+  @override
+  String get allCare => 'Tous les soins';
 
   @override
   String get careNavLabel => 'Soins';
@@ -683,6 +689,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get fosteringSessions => 'Sessions d\'accueil';
+
+  @override
+  String get fosteringSessionsEyebrow => 'SESSIONS D\'ACCUEIL';
+
+  @override
+  String get allFosteringSessions => 'Toutes les sessions d\'accueil';
 
   @override
   String get shelters => 'Refuges';
