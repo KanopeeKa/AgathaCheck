@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/fostering_session/data/fostering_session_repository.dart';
-import 'package:pet_profile_app/features/fostering_session/presentation/providers/fostering_session_repository_provider.dart';
 import 'package:pet_profile_app/features/fostering_session/domain/entities/session_viewer_context.dart';
 import 'package:pet_profile_app/features/fostering_session/presentation/providers/fostering_session_repository_provider.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/foster_placement.dart';

@@ -39,7 +39,9 @@ class SessionViewerContext {
 
   factory SessionViewerContext.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
-      return const SessionViewerContext(role: SessionViewerRole.shelterOperator);
+      return const SessionViewerContext(
+        role: SessionViewerRole.shelterOperator,
+      );
     }
     final actions = json['allowed_actions'];
     return SessionViewerContext(

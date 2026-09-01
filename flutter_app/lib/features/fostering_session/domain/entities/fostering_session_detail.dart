@@ -48,10 +48,7 @@ class SessionPetSummary {
 }
 
 class SessionOrganizationSummary {
-  const SessionOrganizationSummary({
-    required this.id,
-    this.name = '',
-  });
+  const SessionOrganizationSummary({required this.id, this.name = ''});
 
   final String id;
   final String name;
@@ -107,7 +104,9 @@ class FosteringSessionDetail {
         json['checklist'] as Map<String, dynamic>?,
       ),
       adoption: json['adoption'] as Map<String, dynamic>?,
-      documents: json['documents'] is List ? json['documents'] as List : const [],
+      documents: json['documents'] is List
+          ? json['documents'] as List
+          : const [],
       flaggedForAdminReview: json['flagged_for_admin_review'] == true,
     );
   }
@@ -119,7 +118,8 @@ class FosteringSessionDetail {
   }) {
     return FosteringSessionDetail(
       placement: placement,
-      viewer: viewer ??
+      viewer:
+          viewer ??
           const SessionViewerContext(
             role: SessionViewerRole.shelterOperator,
             allowedActions: [

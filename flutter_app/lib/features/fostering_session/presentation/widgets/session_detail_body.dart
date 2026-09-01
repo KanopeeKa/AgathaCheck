@@ -34,10 +34,8 @@ class SessionDetailBody extends ConsumerStatefulWidget {
 class _SessionDetailBodyState extends ConsumerState<SessionDetailBody> {
   var _busy = false;
 
-  FosteringSessionDetailKey get _key => (
-    placementId: widget.placementId,
-    orgId: widget.orgId,
-  );
+  FosteringSessionDetailKey get _key =>
+      (placementId: widget.placementId, orgId: widget.orgId);
 
   FosteringSessionDetail get _detail => widget.detail;
 

@@ -11,14 +11,18 @@ final openFosterPlacementForPetProvider =
       final pendingMatch = pending.where((p) => p.petId == petId).toList();
       if (pendingMatch.isNotEmpty) return pendingMatch.first.id;
 
-      final adoptions = await ref.watch(pendingAdoptionPlacementsProvider.future);
+      final adoptions = await ref.watch(
+        pendingAdoptionPlacementsProvider.future,
+      );
       final adoptionMatch = adoptions.where((p) => p.petId == petId).toList();
       if (adoptionMatch.isNotEmpty) return adoptionMatch.first.id;
 
       final segments = await ref.watch(petTimelineProvider(petId).future);
       final openSessions = segments
           .where(
-            (s) => s.isFosteringSession && (s.endDate == null || s.endDate!.isEmpty),
+            (s) =>
+                s.isFosteringSession &&
+                (s.endDate == null || s.endDate!.isEmpty),
           )
           .toList();
       if (openSessions.isEmpty) return null;
@@ -27,14 +31,18 @@ final openFosterPlacementForPetProvider =
 
 final openFosterPlacementForPetStateProvider =
     FutureProvider.family<FosterPlacement?, String>((ref, petId) async {
-      final placementId = await ref.watch(openFosterPlacementForPetProvider(petId).future);
+      final placementId = await ref.watch(
+        openFosterPlacementForPetProvider(petId).future,
+      );
       if (placementId == null) return null;
 
       final pending = await ref.watch(pendingFosterPlacementsProvider.future);
       final pendingMatch = pending.where((p) => p.id == placementId);
       if (pendingMatch.isNotEmpty) return pendingMatch.first;
 
-      final adoptions = await ref.watch(pendingAdoptionPlacementsProvider.future);
+      final adoptions = await ref.watch(
+        pendingAdoptionPlacementsProvider.future,
+      );
       final adoptionMatch = adoptions.where((p) => p.id == placementId);
       if (adoptionMatch.isNotEmpty) return adoptionMatch.first;
 

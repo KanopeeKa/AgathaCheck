@@ -9,7 +9,8 @@ import 'org_provider_deps.dart';
 typedef FosteringSessionDetailKey = ({String placementId, String? orgId});
 
 class FosteringSessionDetailNotifier
-    extends FamilyAsyncNotifier<FosteringSessionDetail, FosteringSessionDetailKey> {
+    extends
+        FamilyAsyncNotifier<FosteringSessionDetail, FosteringSessionDetailKey> {
   @override
   Future<FosteringSessionDetail> build(FosteringSessionDetailKey key) async {
     final token = ref.watch(orgTokenProvider);

@@ -20,7 +20,9 @@ class PetFosteringSessionSummaryCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final placementAsync = ref.watch(openFosterPlacementForPetStateProvider(petId));
+    final placementAsync = ref.watch(
+      openFosterPlacementForPetStateProvider(petId),
+    );
 
     return placementAsync.when(
       loading: () => const SizedBox.shrink(),

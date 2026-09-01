@@ -101,7 +101,8 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                 SliverToBoxAdapter(child: NeuterReminderCard(pet: pet)),
               if (pet.chipId.isEmpty && !pet.chipDismissed)
                 SliverToBoxAdapter(child: ChipReminderCard(pet: pet)),
-              if (viewerContext.role == PetViewerRole.fosterCarer && pet.isFoster)
+              if (viewerContext.role == PetViewerRole.fosterCarer &&
+                  pet.isFoster)
                 SliverToBoxAdapter(
                   child: PetFosteringSessionSummaryCard(petId: widget.petId),
                 ),
