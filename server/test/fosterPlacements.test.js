@@ -1,4 +1,5 @@
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
 import { createApp } from '../bin/server.js';
 import {
   PLACEMENT_STATUS_ADOPTED,
@@ -29,6 +30,8 @@ import {
   petId,
   placementId,
 } from './helpers/fosterPlacementMockPool.js';
+
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 
 const buildMockPool = buildFosterPlacementMockPool;
 
@@ -125,6 +128,11 @@ describe('Foster placements API', () => {
       expect(res.statusCode).toBe(401);
     });
 
+    it('GET /:id returns 401 without token', async () => {
+      const res = await request(app).get(`/api/foster-placements/${placementId}`);
+      expect(res.statusCode).toBe(401);
+    });
+
     it('POST /:id/accept returns 401 without token', async () => {
       const res = await request(app).post(`/api/foster-placements/${placementId}/accept`);
       expect(res.statusCode).toBe(401);
@@ -163,6 +171,37 @@ describe('Foster placements API', () => {
         status: PLACEMENT_STATUS_PENDING,
         session_status: SESSION_STATUS_PENDING_ACCEPTANCE,
       });
+    });
+
+    it('GET /:id returns session aggregate for foster participant', async () => {
+      const pool = buildMockPool();
+      pool.setPlacementPendingAcceptance();
+      const app = createApp(pool);
+      const res = await request(app)
+        .get(`/api/foster-placements/${placementId}`)
+        .set('Authorization', `Bearer ${fosterToken}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toMatchObject({
+        id: placementId,
+        session_status: SESSION_STATUS_PENDING_ACCEPTANCE,
+        viewer: {
+          role: 'foster_participant',
+          allowed_actions: expect.arrayContaining(['accept_invite', 'decline_invite']),
+        },
+        pet: { id: petId, name: 'Buddy' },
+        organization: { id: orgId, name: 'Test Org' },
+      });
+    });
+
+    it('GET /:id returns 403 for non-participant non-member', async () => {
+      const pool = buildMockPool();
+      pool.setPlacementPendingAcceptance();
+      const app = createApp(pool);
+      const strangerToken = jwt.sign({ id: 'stranger-id', email: 's@example.com' }, JWT_SECRET, { expiresIn: '1h' });
+      const res = await request(app)
+        .get(`/api/foster-placements/${placementId}`)
+        .set('Authorization', `Bearer ${strangerToken}`);
+      expect(res.statusCode).toBe(403);
     });
 
     it('accepts a pending_acceptance placement and grants foster access', async () => {

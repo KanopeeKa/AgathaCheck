@@ -309,8 +309,8 @@ List<RouteBase> _orgManagementChildRoutes() {
           },
         ),
         GoRoute(
-          path: 'placements/:placementId/session',
-          name: 'fosteringSessionDetail',
+          path: 'sessions/:placementId',
+          name: 'fosteringSessionDetailCanonical',
           builder: (context, state) {
             final id = state.pathParameters['id']!;
             final placementId = state.pathParameters['placementId']!;
@@ -318,6 +318,15 @@ List<RouteBase> _orgManagementChildRoutes() {
               orgId: id,
               placementId: placementId,
             );
+          },
+        ),
+        GoRoute(
+          path: 'placements/:placementId/session',
+          name: 'fosteringSessionDetail',
+          redirect: (context, state) {
+            final id = state.pathParameters['id']!;
+            final placementId = state.pathParameters['placementId']!;
+            return '/o/orgs/$id/sessions/$placementId';
           },
         ),
         GoRoute(

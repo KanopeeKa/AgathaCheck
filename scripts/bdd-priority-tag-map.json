@@ -314,6 +314,9 @@
     "Sessions list highlights nearly finished placements": "P1",
     "Admin can message a foster from the sessions list": "P1"
   },
+  "fostering_session_detail.feature": {
+    "Foster carer opens session detail from pending invite": "P1"
+  },
   "organisation_edit.feature": {
     "Super admin can update structured address and postcode": "P1",
     "Super admin can upload hero and logo images": "P1",

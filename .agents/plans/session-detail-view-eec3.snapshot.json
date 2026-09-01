@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "plan_id": "session-detail-view-eec3",
+  "approved_at": "2026-08-31T22:58:00Z",
+  "approved_by": "user chat standing grant (/execute-plan + /ui-design-deep)",
+  "approved_until": "2026-09-02T22:58:00Z",
+  "content_hash": "sha256:649e5ca003cdf1e39bfa9f1b208b105ba6fa118a95b45c820df99e9bce32743a",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/session-detail-view-eec3-integration",
+  "control_issue": 804,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Design spec + domain documentation",
+      "branch": "cursor/session-detail-docs-eec3",
+      "allowed_paths": [
+        "docs/domains/fostering/**",
+        "docs/design/**",
+        "docs/e2e/navigation-contract.md",
+        "docs/architecture/index.md",
+        ".agents/plans/session-detail-view-eec3.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        "e2e/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Backend viewer-scoped session API",
+      "branch": "cursor/session-detail-api-eec3",
+      "allowed_paths": [
+        "server/lib/sessionDetail.js",
+        "server/lib/fosterSessions.js",
+        "server/lib/fosterPlacements.js",
+        "server/routes/fosterPlacements.js",
+        "server/routes/organizations/placements/**",
+        "server/test/sessionDetail.test.js",
+        "server/test/fosterPlacements.test.js",
+        "server/test/organizations/sessions/**",
+        "docs/domains/fostering/features/session-detail-view.md",
+        ".agents/plans/session-detail-view-eec3.*"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "e2e/**",
+        ".github/workflows/**",
+        "db/migrations/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/806",
+      "pr_head_sha": "5cbc919da76cc7e7bbb2735b1642b0dc365e14fc"
+    },
+    {
+      "id": "3",
+      "title": "Flutter shared session detail + shelter refactor",
+      "branch": "cursor/session-detail-flutter-shelter-eec3",
+      "allowed_paths": [
+        "flutter_app/lib/features/fostering_session/**",
+        "flutter_app/lib/features/organization/presentation/screens/fostering_session/**",
+        "flutter_app/lib/features/organization/presentation/widgets/fostering_session/**",
+        "flutter_app/lib/features/organization/presentation/providers/fostering_session_providers.dart",
+        "flutter_app/lib/features/organization/data/**",
+        "flutter_app/lib/features/organization/domain/**",
+        "flutter_app/lib/core/router/organization_routes.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/features/fostering_session/**",
+        "docs/domains/fostering/features/session-detail-view.md",
+        ".agents/plans/session-detail-view-eec3.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "e2e/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/807",
+      "pr_head_sha": "be5a3276f0cbb0883315885a0537855bf65619b3"
+    },
+    {
+      "id": "4",
+      "title": "Foster lens + pet dashboard entry + BDD",
+      "branch": "cursor/session-detail-foster-entry-eec3",
+      "allowed_paths": [
+        "flutter_app/lib/features/fostering_session/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**",
+        "e2e/playwright/tests/fostering.session*.ts",
+        "e2e/playwright/pages/**",
+        "e2e/playwright/support/api.ts",
+        "scripts/bdd-priority-tag-map.json",
+        "docs/e2e/navigation-contract.md",
+        "docs/domains/fostering/**",
+        "docs/quality/bdd-journey-matrix.md",
+        ".agents/plans/session-detail-view-eec3.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/808",
+      "pr_head_sha": "810d47fb17c4bbb206287c8dd158acd67bb0b142"
+    }
+  ]
+}

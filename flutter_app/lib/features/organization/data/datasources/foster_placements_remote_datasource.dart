@@ -31,6 +31,25 @@ class FosterPlacementsRemoteDataSource {
     return list.cast<Map<String, dynamic>>();
   }
 
+  Future<Map<String, dynamic>> getPlacementDetail(
+    String placementId,
+    String token,
+  ) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/foster-placements/$placementId'),
+      headers: _headers(token),
+    );
+    final data = json.decode(response.body);
+    if (response.statusCode >= 400) {
+      throw Exception(
+        data is Map
+            ? (data['error'] ?? 'Failed to load foster placement')
+            : 'Failed to load foster placement',
+      );
+    }
+    return data as Map<String, dynamic>;
+  }
+
   Future<Map<String, dynamic>> acceptPlacement(
     String placementId,
     String token,
