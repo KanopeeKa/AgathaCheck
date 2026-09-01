@@ -12,7 +12,6 @@ import {
   TEMPLATE_TYPE_SESSION_CHECKLIST,
 } from './documentTemplates.js';
 import {
-  isPendingFosterAcceptance,
   loadPlacementDetail,
   normalizePlacementStatus,
   placementToMap,
