@@ -267,16 +267,16 @@ docs/domains/health_tracking/**
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/health-occurrences-backend-ec83"
+next_action: "start phase 2: checkout cursor/health-occurrences-data-form-ec83"
 artifact_ref:
   branch: cursor/health-occurrences-backend-ec83
   plan_path: .agents/plans/health-occurrences-ec83.md
-  plan_commit: 16893c5b52b07163ad65cb4e59db96ebe508f97a
+  plan_commit: b19a65aa8facd052e877d0ee7d15edf3c4ef519f
   snapshot_path: .agents/plans/health-occurrences-ec83.snapshot.json
-  snapshot_commit: 16893c5b52b07163ad65cb4e59db96ebe508f97a
+  snapshot_commit: b19a65aa8facd052e877d0ee7d15edf3c4ef519f
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
