@@ -241,7 +241,12 @@ export class PetListPage {
   async openPet(name: string, petId?: string): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     if (petId) {
-      await this.page.goto(flutterGotoUrl(`/pet/${petId}`));
+      const route = flutterRoutePath(this.page.url());
+      const returnTo =
+        route && route !== '/' && route !== '/landing'
+          ? `?returnTo=${encodeURIComponent(route)}`
+          : '';
+      await this.page.goto(flutterGotoUrl(`/pet/${petId}${returnTo}`));
       await waitForFlutterRoutePattern(this.page, /\/pet\/[^/?]+/, 30_000);
       await refreshFlutterAccessibility(this.page);
       return;
