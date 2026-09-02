@@ -727,7 +727,7 @@ export function petListCardLocator(page: Page) {
 /** Active (non-passed-away) tiles on guardian `/pc/pets` — excludes Passed away section cards. */
 export function activePetListCardLocator(page: Page) {
   const guardianActiveList = new RegExp(
-    `^[^,]+,\\s*[^,]+,\\s*${GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL}$`,
+    `^(?!Passed [Aa]way|Rainbow Bridge|Décédé)[^,]+,\\s*[^,]+,\\s*${GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL}$`,
     'i',
   );
   return page
