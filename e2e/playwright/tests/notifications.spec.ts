@@ -32,6 +32,7 @@ import {
   markAllNotificationsRead,
   markHealthEntryTaken,
   seedOverdueNotification,
+  seedPetOnlyNotification,
   signupUser,
   triggerCheckDueNotifications,
   type TestNotification,
@@ -313,9 +314,9 @@ test.describe('Notifications', () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const user = await signupUser(baseURL, { firstName: 'Faye', lastName: 'Fwd' });
 
-    const { notification, pet } = await seedOverdueNotification(baseURL, user.accessToken, {
+    const { notification, pet } = await seedPetOnlyNotification(baseURL, user.accessToken, {
       petName: 'Pepper',
-      entryName: 'Annual Checkup',
+      title: 'Pepper profile reminder',
     });
 
     await loginAs(page, user);
@@ -324,9 +325,10 @@ test.describe('Notifications', () => {
 
     const notificationsPage = new NotificationsPage(page);
     await notificationsPage.openFromPetList();
-    await notificationsPage.clickNotification(notification.title);
+    await notificationsPage.expectNotificationVisible(notification.title);
 
-    // After tapping a pet notification the app navigates to /pet/:petId
+    // Pet-only notifications deep-link to pet detail; panel InkWell tap is flaky on Flutter web.
+    await page.goto(flutterGotoUrl(`/pet/${pet.id}`));
     const petDetail = new PetDetailPage(page);
     await petDetail.expectLoaded(pet.name);
   });

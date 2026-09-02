@@ -8,6 +8,8 @@
  * the browser WAF session instead of raw Node fetch (blocked with 503).
  */
 
+import { execSync } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
 import { apiFetch } from './api-fetch';
 
 const API_PREFIX = process.env.E2E_API_PREFIX ?? '/backend/api';
@@ -1379,6 +1381,36 @@ export async function seedOverdueNotification(
     throw new Error(`No overdue notification generated for entry: ${entryName}`);
   }
   return { notification, pet, entry };
+}
+
+/** Insert a pet-scoped notification with no health entry (navigates to pet detail). */
+export async function seedPetOnlyNotification(
+  baseURL: string,
+  token: string,
+  options: { petName?: string; title?: string } = {},
+): Promise<{ notification: TestNotification; pet: TestPet }> {
+  const petName = options.petName ?? 'Bella';
+  const title = options.title ?? `${petName} reminder`;
+  const pet = await createPet(baseURL, token, petName);
+  const user = await getCurrentUser(baseURL, token);
+  const id = randomUUID();
+  const message = `Reminder for ${petName}`;
+  const host = process.env.PGHOST ?? 'localhost';
+  const port = process.env.PGPORT ?? '5432';
+  const pgUser = process.env.PGUSER ?? 'user';
+  const password = process.env.PGPASSWORD ?? 'password';
+  const database = process.env.PGDATABASE ?? 'agatha_db';
+  const esc = (s: string) => s.replace(/'/g, "''");
+  execSync(
+    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${pgUser}' -d '${database}' -c "INSERT INTO notifications (id, user_id, pet_id, pet_name, title, message, type, kind, priority, is_read, read) VALUES ('${id}', '${user.id}', '${pet.id}', '${esc(petName)}', '${esc(title)}', '${esc(message)}', 'general', 'care', 'normal', false, false)"`,
+    { stdio: 'pipe' },
+  );
+  const notifications = await getNotifications(baseURL, token);
+  const notification = notifications.find((n: TestNotification) => n.id === id);
+  if (!notification) {
+    throw new Error(`Pet-only notification not found after insert: ${title}`);
+  }
+  return { notification, pet };
 }
 
 // ── Weight entry helpers ──────────────────────────────────────────────────────
