@@ -154,6 +154,24 @@ void main() {
       await tester.pumpAndSettle();
       expect(viewed, isTrue);
     });
+
+    testWidgets('view semantics onTap opens event view', (tester) async {
+      var viewed = false;
+      await tester.pumpWidget(
+        _buildRow(_overdueEntry, onView: () => viewed = true),
+      );
+      await tester.pumpAndSettle();
+
+      final semantics = tester.getSemantics(
+        find.bySemanticsLabel('View Parasite prevention for Miso'),
+      );
+      tester.binding.pipelineOwner.semanticsOwner!.performAction(
+        semantics.id,
+        SemanticsAction.tap,
+      );
+      await tester.pumpAndSettle();
+      expect(viewed, isTrue);
+    });
   });
 
   group('CareEventRow — occurrence summary', () {
