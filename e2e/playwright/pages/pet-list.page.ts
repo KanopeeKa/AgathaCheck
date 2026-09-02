@@ -240,6 +240,11 @@ export class PetListPage {
 
   async openPet(name: string): Promise<void> {
     await this.expectPetVisible(name);
+    let route = flutterRoutePath(this.page.url());
+    if (route === '/g/home' || route === '/') {
+      await this.openManagePets();
+      route = flutterRoutePath(this.page.url());
+    }
     await petCardByName(this.page, name).click();
     await waitForFlutterRoutePattern(this.page, /\/pet\/[^/?]+/, 30_000);
     await refreshFlutterAccessibility(this.page);
