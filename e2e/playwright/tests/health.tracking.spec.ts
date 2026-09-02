@@ -368,7 +368,8 @@ test.describe('Health tracking', () => {
     const entry = await seedMultiDoseHealthEntry(baseURL, testUser.accessToken, pet.id, {
       name: entryName,
       nextDueDate: today,
-      scheduleTimes: ['08:00', '18:00'],
+      // Late times so doses stay in "Due today" (not "Missed") regardless of CI run hour.
+      scheduleTimes: ['23:58', '23:59'],
     });
 
     const occurrencesBefore = await getHealthEntryOccurrences(
