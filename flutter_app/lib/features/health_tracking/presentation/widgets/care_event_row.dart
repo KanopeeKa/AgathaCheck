@@ -105,6 +105,7 @@ class CareEventRow extends StatelessWidget {
                 button: true,
                 label: viewLabel,
                 excludeSemantics: true,
+                onTap: onView,
                 child: InkWell(
                   onTap: onView,
                   borderRadius: BorderRadius.circular(8),
@@ -319,6 +320,7 @@ class _CompletedCareEventRow extends StatelessWidget {
                 button: true,
                 label: viewLabel,
                 excludeSemantics: true,
+                onTap: onView,
                 child: InkWell(
                   onTap: onView,
                   borderRadius: BorderRadius.circular(8),
