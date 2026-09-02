@@ -25,6 +25,7 @@ import {
 } from '../support/api';
 import {
   dashboardSectionGroup,
+  expectAppBarTitle,
   flutterGotoUrl,
   reachAuthenticatedHome,
   refreshFlutterAccessibility,
@@ -144,9 +145,10 @@ test.describe('Guardian dashboard', () => {
     await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
     await semanticsByName(page, /View Viewable Care for ViewPet/i).click();
     await refreshFlutterAccessibility(page);
+    await waitForFlutterRoutePattern(page, /\/pet\/[^/]+\/events\/[^/?]+/, 30_000);
     await expect(page.getByRole('button', { name: /go back/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /snooze/i })).toHaveCount(0);
-    await expect(page.getByText('Viewable Care')).toBeVisible();
+    await expectAppBarTitle(page, 'Viewable Care');
     await expect(page.getByText('Due today')).toBeVisible();
   });
 
