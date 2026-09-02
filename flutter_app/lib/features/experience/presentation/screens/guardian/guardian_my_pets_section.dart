@@ -75,13 +75,10 @@ class GuardianMyPetsSection extends ConsumerWidget {
               onAddPet: () => context.push('/add'),
             ),
             if (hasPreviewOverflow)
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  key: const Key('dashboard_manage_pets_link'),
-                  onPressed: () => context.go('/g/pets'),
-                  child: Text(l.allPets),
-                ),
+              GuardianDashboardSectionLink(
+                linkKey: const Key('dashboard_manage_pets_link'),
+                label: l.allPets,
+                onPressed: () => context.go('/g/pets'),
               ),
           ],
         ),
@@ -156,13 +153,10 @@ class GuardianMyPetsSection extends ConsumerWidget {
           },
         ),
         if (hasAny)
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              key: const Key('dashboard_manage_pets_link'),
-              onPressed: () => context.go('/g/pets'),
-              child: Text(l.allPets),
-            ),
+          GuardianDashboardSectionLink(
+            linkKey: const Key('dashboard_manage_pets_link'),
+            label: l.allPets,
+            onPressed: () => context.go('/g/pets'),
           ),
       ],
     );

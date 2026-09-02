@@ -80,7 +80,7 @@ class DashboardSection extends StatelessWidget {
                 if (endLink != null) ...[
                   const SizedBox(height: 8),
                   Align(
-                    alignment: Alignment.centerRight,
+                    alignment: Alignment.centerLeft,
                     child: TextButton(
                       onPressed: endLink!.onPressed,
                       child: Text(endLink!.label),

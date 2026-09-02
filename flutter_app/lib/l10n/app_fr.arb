@@ -211,6 +211,7 @@
   "petsEyebrow": "ANIMAUX",
   "petsNavLabel": "Animaux",
   "allCare": "Tous les soins",
+  "dashboardNavLabel": "Tableau de bord",
   "careNavLabel": "Soins",
   "careDueTab": "À faire {count}",
   "@careDueTab": { "placeholders": { "count": { "type": "int" } } },

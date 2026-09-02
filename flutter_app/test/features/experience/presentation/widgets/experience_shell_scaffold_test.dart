@@ -473,7 +473,7 @@ void main() {
 
       expect(find.byKey(const Key('guardian_navigation_rail')), findsOneWidget);
       expect(find.byKey(const Key('guardian_bottom_navigation')), findsNothing);
-      expect(find.text('Today'), findsOneWidget);
+      expect(find.text('Dashboard'), findsOneWidget);
     });
 
     testWidgets('hides drawer when rail is visible', (tester) async {
@@ -650,7 +650,7 @@ void main() {
           find.byKey(const Key('guardian_bottom_navigation')),
           findsNothing,
         );
-        expect(find.text('Today'), findsOneWidget);
+        expect(find.text('Dashboard'), findsOneWidget);
         expect(find.text('Pets'), findsOneWidget);
         expect(find.text('Care'), findsOneWidget);
         expect(find.text('Fostering'), findsOneWidget);

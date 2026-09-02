@@ -2,61 +2,65 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
 
-/// Eyebrow title + optional section-level "All …" action for dashboard sections.
+/// Eyebrow title for dashboard sections.
 class GuardianDashboardSectionHeader extends StatelessWidget {
   const GuardianDashboardSectionHeader({
     super.key,
     required this.title,
     this.titleColor = AppColorTokens.guardianActive,
-    this.actionLabel,
-    this.onAction,
-    this.actionKey,
   });
 
   final String title;
   final Color titleColor;
-  final String? actionLabel;
-  final VoidCallback? onAction;
-  final Key? actionKey;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: titleColor,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1.2,
-            ),
-          ),
+    return Text(
+      title,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: theme.textTheme.labelLarge?.copyWith(
+        color: titleColor,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 1.2,
+      ),
+    );
+  }
+}
+
+/// Left-aligned "All …" link shown below dashboard section content.
+class GuardianDashboardSectionLink extends StatelessWidget {
+  const GuardianDashboardSectionLink({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.linkKey,
+  });
+
+  final String label;
+  final VoidCallback onPressed;
+  final Key? linkKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: TextButton(
+        key: linkKey,
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          minimumSize: const Size(48, 48),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
-        if (actionLabel != null && onAction != null)
-          Flexible(
-            fit: FlexFit.loose,
-            child: TextButton(
-              key: actionKey,
-              onPressed: onAction,
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                minimumSize: const Size(48, 48),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: Text(
-                actionLabel!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                softWrap: false,
-              ),
-            ),
-          ),
-      ],
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          softWrap: false,
+        ),
+      ),
     );
   }
 }

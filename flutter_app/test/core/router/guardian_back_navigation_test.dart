@@ -45,6 +45,7 @@ import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_
 import 'package:pet_profile_app/features/subscription/data/services/revenuecat_service.dart';
 import 'package:pet_profile_app/features/subscription/domain/entities/subscription_status.dart';
 import 'package:pet_profile_app/features/subscription/presentation/providers/subscription_providers.dart';
+import 'package:pet_profile_app/features/experience/presentation/screens/guardian/guardian_my_vets_section.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -131,7 +132,7 @@ GoRouter _router({required String initialLocation}) {
       ...buildVetExperienceRoutes(),
       GoRoute(
         path: '/g/home',
-        builder: (_, __) => const Scaffold(body: Text('guardian-home')),
+        builder: (_, __) => const Scaffold(body: GuardianMyVetsSection()),
       ),
     ],
     errorBuilder: (_, state) => Scaffold(body: Text('not-found:${state.uri}')),
@@ -313,6 +314,42 @@ void main() {
       await _settle(tester);
 
       expect(router.routerDelegate.currentConfiguration.uri.path, '/g/vets');
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Journey C: dashboard → (tap vet card) → detail → (tap shell back) → home
+  // -------------------------------------------------------------------------
+  group('Journey C: /g/home → /g/vets/:id → back → /g/home', () {
+    testWidgets('shell back from dashboard-opened vet detail returns home', (
+      tester,
+    ) async {
+      final router = _router(initialLocation: '/g/home');
+      await tester.pumpWidget(_app(router: router, prefs: prefs));
+      await _settle(tester);
+
+      await tester.tap(find.byKey(const Key('care_team_card_vet-back-1')));
+      await _settle(tester);
+
+      expect(
+        router.routerDelegate.currentConfiguration.uri.path,
+        '/g/vets/vet-back-1',
+      );
+      expect(
+        router
+            .routerDelegate
+            .currentConfiguration
+            .uri
+            .queryParameters['returnTo'],
+        '/g/home',
+      );
+
+      final backButtons = find.byKey(const Key('experience_back_button'));
+      expect(backButtons, findsOneWidget);
+      await tester.tap(backButtons);
+      await _settle(tester);
+
+      expect(router.routerDelegate.currentConfiguration.uri.path, '/g/home');
     });
   });
 }
