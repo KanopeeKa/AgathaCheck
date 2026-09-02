@@ -20,8 +20,8 @@ export class PetDetailPage {
     await dismissConsentBannerIfPresent(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pet\/[^/?]+/, 30_000);
     await refreshFlutterAccessibility(this.page);
-    // Pet detail UX (pet-detail-ux-c2ce): name is in AppBar title, profile-card
-    // heading, or Edit Pet icon — not "Edit Pet {name}".
+    // Pet detail UX (pet-detail-ux-c2ce): name is in AppBar title or profile-card
+    // heading — use shared banner → heading → text fallbacks.
     await expectAppBarTitle(this.page, petName);
   }
 

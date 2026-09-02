@@ -7,10 +7,7 @@ import {
   flutterGotoUrl,
   isExperienceShellVisible,
   refreshFlutterAccessibility,
-  waitForFlutterRoutePattern,
 } from '../support/flutter';
-
-const NOTIFICATIONS_ROUTE_PATTERN = /\/(pc|g|o)\/notifications(?:\?|$)/;
 
 /**
  * Notifications panel and screen.
