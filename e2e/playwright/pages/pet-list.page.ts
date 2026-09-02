@@ -215,9 +215,10 @@ export class PetListPage {
   }
 
   async expectPetCount(n: number): Promise<void> {
-    const route = flutterRoutePath(this.page.url());
+    let route = flutterRoutePath(this.page.url());
     if (route === '/g/home' || route === '/') {
       await this.openManagePets();
+      route = flutterRoutePath(this.page.url());
     }
     const cards = route.startsWith('/g/pets')
         ? activePetListCardLocator(this.page)
