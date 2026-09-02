@@ -124,6 +124,37 @@ Anchor: `materialisation_anchor = max(start_date, today_local)` — no backfill 
 
 Legacy `mark-taken` on entry delegates to oldest pending occurrence during transition.
 
+### E2E seeding (Playwright `api.ts`)
+
+Create a twice-daily series and list open occurrences:
+
+```json
+POST /api/health-entries
+{
+  "pet_id": "<petId>",
+  "name": "Twice Daily Meds",
+  "type": "medication",
+  "frequency": "daily",
+  "next_due_date": "2026-09-02",
+  "schedule_times": ["08:00", "18:00"]
+}
+```
+
+```http
+GET /api/health-entries/<entryId>/occurrences
+```
+
+Returns two pending rows for the anchor day when `schedule_times` has two slots.
+
+> **Note:** Node `pg` requires `JSON.stringify` for JSONB bind parameters; until the create route normalises `schedule_times`, Playwright seeds multi-dose rows via `seedMultiDoseHealthEntry()` in `e2e/playwright/support/api.ts` (SQL patch after a plain create).
+
+Complete one dose:
+
+```json
+POST /api/health-entries/<entryId>/occurrences/<occId>/complete
+{ "completed_on": "2026-09-02" }
+```
+
 ## Removed
 
 - Entry-level **snooze** (UI and new occurrence flows).
