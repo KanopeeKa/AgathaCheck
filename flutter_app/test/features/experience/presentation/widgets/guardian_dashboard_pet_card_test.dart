@@ -149,6 +149,21 @@ void main() {
     expect(find.byType(ColorFiltered), findsOneWidget);
   });
 
+  testWidgets('passed-away pets expose Passed away in semantics label', (
+    tester,
+  ) async {
+    const memorial = Pet(
+      id: 'memorial',
+      name: 'Buddy',
+      species: 'Dog',
+      passedAway: true,
+    );
+    await tester.pumpWidget(buildCard(memorial));
+
+    final semantics = tester.getSemantics(find.byType(GuardianDashboardPetCard));
+    expect(semantics.label, 'Buddy, My Pets, Passed Away');
+  });
+
   testWidgets('preserves the pet-detail tap callback', (tester) async {
     var taps = 0;
     await tester.pumpWidget(
