@@ -110,14 +110,19 @@ void main() {
     await tester.tap(find.byKey(const Key('pet_detail_overflow_menu')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('pet_detail_sharing_menu_item')), findsOneWidget);
+    expect(
+      find.byKey(const Key('pet_detail_sharing_menu_item')),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const Key('pet_detail_export_report_menu_item')),
       findsOneWidget,
     );
   });
 
-  testWidgets('shared pet shows sharing and export in overflow menu', (tester) async {
+  testWidgets('shared pet shows sharing and export in overflow menu', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       buildApp(pet: sharedPet, initialLocation: '/pet/pet-2'),
     );
@@ -126,7 +131,10 @@ void main() {
     await tester.tap(find.byKey(const Key('pet_detail_overflow_menu')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('pet_detail_sharing_menu_item')), findsOneWidget);
+    expect(
+      find.byKey(const Key('pet_detail_sharing_menu_item')),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const Key('pet_detail_export_report_menu_item')),
       findsOneWidget,
@@ -155,7 +163,9 @@ void main() {
 
     await tester.tap(find.byKey(const Key('pet_detail_overflow_menu')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('pet_detail_export_report_menu_item')));
+    await tester.tap(
+      find.byKey(const Key('pet_detail_export_report_menu_item')),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Download Pet Report'), findsWidgets);

@@ -4,10 +4,7 @@ import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
 void main() {
   group('parseShellReturnTo', () {
     test('accepts encoded in-app paths', () {
-      expect(
-        parseShellReturnTo(Uri.encodeComponent('/g/pets')),
-        '/g/pets',
-      );
+      expect(parseShellReturnTo(Uri.encodeComponent('/g/pets')), '/g/pets');
     });
 
     test('rejects external URLs', () {
@@ -52,19 +49,13 @@ void main() {
 
     test('uses returnTo when backPath absent', () {
       expect(
-        shellFallbackReturnPath(
-          returnTo: '/g/pets',
-          defaultPath: '/g/home',
-        ),
+        shellFallbackReturnPath(returnTo: '/g/pets', defaultPath: '/g/home'),
         '/g/pets',
       );
     });
 
     test('falls back to defaultPath', () {
-      expect(
-        shellFallbackReturnPath(defaultPath: '/g/home'),
-        '/g/home',
-      );
+      expect(shellFallbackReturnPath(defaultPath: '/g/home'), '/g/home');
     });
   });
 }

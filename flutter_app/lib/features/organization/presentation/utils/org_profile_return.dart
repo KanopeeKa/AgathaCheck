@@ -16,11 +16,7 @@ String orgProfileFallbackReturnPath({String? returnTo}) {
 
 /// Returns to the caller route when possible, otherwise [returnTo] or `/o/orgs`.
 void handleOrgProfileBack(BuildContext context, {String? returnTo}) {
-  handleShellBack(
-    context,
-    returnTo: returnTo,
-    defaultPath: '/o/orgs',
-  );
+  handleShellBack(context, returnTo: returnTo, defaultPath: '/o/orgs');
 }
 
 String? orgProfileReturnToFromState(GoRouterState state) {
