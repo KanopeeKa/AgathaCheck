@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 import { dateToIsoDate, todayCalendarIso } from '../../lib/calendarDate.js';
 import {
   insertOccurrencesForDay,
