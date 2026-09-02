@@ -85,6 +85,8 @@ export class SharedPetPage {
 
   async expectInvalidLink(): Promise<void> {
     await this.page.getByText('Pet not found or share link expired').waitFor();
-    await this.page.getByRole('button', { name: 'Go to My Pets' }).waitFor();
+    await this.page
+      .getByRole('button', { name: /Go to Pet Care|Accéder au Suivi/i })
+      .waitFor();
   }
 }
