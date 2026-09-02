@@ -90,6 +90,53 @@ void main() {
     },
   );
 
+  testWidgets('tapping foster pet row opens fostering session view', (
+    tester,
+  ) async {
+    late String currentLocation;
+    final router = GoRouter(
+      initialLocation: '/g/home',
+      routes: [
+        GoRoute(
+          path: '/g/home',
+          builder: (context, state) {
+            currentLocation = state.uri.toString();
+            return Scaffold(
+              body: GuardianFosteringSection(
+                pets: const [
+                  Pet(
+                    id: 'foster-1',
+                    name: 'Miso',
+                    species: 'Cat',
+                    isFoster: true,
+                    organizationId: 'org-harbour',
+                    organizationName: 'Harbour Shelter',
+                    fosterPlacementStatus: 'active',
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/pet/:petId/fostering-session',
+          builder: (context, state) => Scaffold(
+            body: Text('session:${state.pathParameters['petId']}'),
+          ),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(buildSection(router));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Miso'));
+    await tester.pumpAndSettle();
+
+    expect(currentLocation, '/g/home');
+    expect(find.text('session:foster-1'), findsOneWidget);
+  });
+
   testWidgets('tapping shelter row opens organisation profile with returnTo', (
     tester,
   ) async {

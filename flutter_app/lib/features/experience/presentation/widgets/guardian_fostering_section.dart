@@ -145,7 +145,7 @@ class _FosteringPetRow extends StatelessWidget {
       label: '${pet.name}, ${hasActiveStatus ? l.active : l.fostering}',
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.go('/pet/${pet.id}'),
+        onTap: () => context.push('/pet/${pet.id}/fostering-session'),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: Row(
