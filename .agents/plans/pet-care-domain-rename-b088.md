@@ -45,17 +45,17 @@ Custody model: `guardianship`, `individual_guardianship` transfer kinds stay; wo
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/pet-care-vocabulary-b088"
+next_action: "start phase 2: checkout cursor/pet-care-db-api-b088"
 artifact_ref:
-  branch: cursor/pet-care-vocabulary-b088
+  branch: cursor/pet-care-domain-rename-b088-integration-b088
   plan_path: .agents/plans/pet-care-domain-rename-b088.md
-  plan_commit: 92927cc3eda40f8b86388ecc8800544371c32d95
+  plan_commit: 56c2f06aa57e88e6b02c11fc09df15d044b7ac64
   snapshot_path: .agents/plans/pet-care-domain-rename-b088.snapshot.json
-  snapshot_commit: 92927cc3eda40f8b86388ecc8800544371c32d95
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/830"]
+  snapshot_commit: 56c2f06aa57e88e6b02c11fc09df15d044b7ac64
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
