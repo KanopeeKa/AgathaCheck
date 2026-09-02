@@ -98,7 +98,7 @@ export class VetListPage {
       await inlineEdit.click();
     } else {
       await this.vetRowLocator(name).click();
-      await waitForFlutterRoutePattern(this.page, /\/(g|o)\/vets\/[^/]+$/, 30_000);
+      await waitForFlutterRoutePattern(this.page, /\/(pc|g|o)\/vets\/[^/]+$/, 30_000);
       await refreshFlutterAccessibility(this.page);
       const detailEdit = this.editVetButtonLocator();
       if (await detailEdit.isVisible({ timeout: 2_000 }).catch(() => false)) {
@@ -155,7 +155,7 @@ export class VetListPage {
   async openVetDetail(vetName: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await this.vetRowLocator(vetName).click();
-    await waitForFlutterRoutePattern(this.page, /\/(g|o)\/vets\/[^/]+$/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/(pc|g|o)\/vets\/[^/]+$/, 30_000);
     await refreshFlutterAccessibility(this.page);
   }
 
@@ -198,8 +198,8 @@ export class VetListPage {
       }
 
       const route = flutterRoutePath(this.page.url());
-      const onDetail = /\/(g|o)\/vets\/[^/]+$/.test(route);
-      const onList = /\/(g|o)\/vets(?:\?|$)/.test(route);
+      const onDetail = /\/(pc|g|o)\/vets\/[^/]+$/.test(route);
+      const onList = /\/(pc|g|o)\/vets(?:\?|$)/.test(route);
       const phoneVisible = await phoneLocator.first().isVisible().catch(() => false);
 
       if (!onDetail || !phoneVisible) {
@@ -210,7 +210,7 @@ export class VetListPage {
         await this.expectLoaded();
         await this.expectVetVisible(vetName);
         await this.openVetDetail(vetName);
-        await waitForFlutterRoutePattern(this.page, /\/(g|o)\/vets\/[^/]+$/, 30_000);
+        await waitForFlutterRoutePattern(this.page, /\/(pc|g|o)\/vets\/[^/]+$/, 30_000);
         await refreshFlutterAccessibility(this.page);
       }
 
