@@ -61,7 +61,8 @@ class PetTimelineSegment {
       endDate: json['end_date']?.toString(),
       title: json['title']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
-      primaryHolderName: json['primary_holder_name']?.toString() ??
+      primaryHolderName:
+          json['primary_holder_name']?.toString() ??
           json['guardian_name']?.toString(),
       fosterName: json['foster_name']?.toString(),
       fillable: json['fillable'] == true,

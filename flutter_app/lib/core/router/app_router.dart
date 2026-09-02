@@ -360,7 +360,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/vets',
-        redirect: (context, state) => redirectLegacyVetPath(state) ?? '/pc/vets',
+        redirect: (context, state) =>
+            redirectLegacyVetPath(state) ?? '/pc/vets',
       ),
       GoRoute(
         path: '/vets/add',

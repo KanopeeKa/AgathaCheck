@@ -84,11 +84,7 @@ void main() {
     test('identifies user on login when consented', () async {
       await service.applyConsent(hasResponded: true, analyticsConsent: true);
       await service.onLogin(
-        AuthUser(
-          id: 'user-1',
-          email: 'a@example.com',
-          category: 'pet_carer',
-        ),
+        AuthUser(id: 'user-1', email: 'a@example.com', category: 'pet_carer'),
       );
       expect(client.identifiedUserId, 'user-1');
     });

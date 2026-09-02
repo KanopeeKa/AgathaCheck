@@ -28,10 +28,7 @@ List<RouteBase> buildVetExperienceRoutes() {
       name: 'guardianVets',
       redirect: (context, state) => _legacyPetCareVetRedirect(state.uri.path),
     ),
-    GoRoute(
-      path: '/g/vets/add',
-      redirect: (context, state) => '/pc/vets/add',
-    ),
+    GoRoute(path: '/g/vets/add', redirect: (context, state) => '/pc/vets/add'),
     GoRoute(
       path: '/g/vets/edit/:id',
       redirect: (context, state) =>

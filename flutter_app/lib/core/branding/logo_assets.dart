@@ -49,10 +49,8 @@ class LogoAssets {
   }
 
   /// Guardian compact chrome uses the plum app bar (dark surface).
-  static String pngForShell(AppExperience experience) => pngFor(
-    experience,
-    onDarkBackground: experience == AppExperience.petCare,
-  );
+  static String pngForShell(AppExperience experience) =>
+      pngFor(experience, onDarkBackground: experience == AppExperience.petCare);
 
   static String jpgFor(AppExperience experience) =>
       experience == AppExperience.organization ? tealJpg : plumJpg;

@@ -38,9 +38,7 @@ class GuardianNavigationRail extends ConsumerWidget {
           selectedIndex: selectedIndex,
           labelType: NavigationRailLabelType.all,
           backgroundColor: AppColorTokens.background,
-          indicatorColor: AppColorTokens.petCarePrimary.withValues(
-            alpha: 0.16,
-          ),
+          indicatorColor: AppColorTokens.petCarePrimary.withValues(alpha: 0.16),
           selectedIconTheme: const IconThemeData(
             color: AppColorTokens.petCarePrimary,
             size: 24,

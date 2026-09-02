@@ -99,10 +99,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
             children: [
               Icon(Icons.link_off, size: 64, color: colorScheme.outline),
               const SizedBox(height: 16),
-              Text(
-                errorMessage,
-                style: theme.textTheme.titleMedium,
-              ),
+              Text(errorMessage, style: theme.textTheme.titleMedium),
               const SizedBox(height: 24),
               FilledButton.icon(
                 onPressed: () => context.go('/'),

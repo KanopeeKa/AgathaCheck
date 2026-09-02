@@ -65,7 +65,8 @@ class PetModel {
       organizationName: json['organization_name'] as String?,
       fosterPlacementStatus: json['foster_placement_status'] as String?,
       fosterName: json['foster_name'] as String?,
-      primaryHolderName: json['primary_holder_name'] as String? ??
+      primaryHolderName:
+          json['primary_holder_name'] as String? ??
           json['guardian_name'] as String?,
       createdAt: _parseTimestamp(json['createdAt'] ?? json['created_at']),
     );

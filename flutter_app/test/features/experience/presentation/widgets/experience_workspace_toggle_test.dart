@@ -106,7 +106,11 @@ void main() {
 
   testWidgets('opens workspace menu on tap', (tester) async {
     await tester.pumpWidget(
-      _buildToggle(prefs: prefs, currentLocation: '/pc/home', showShelter: true),
+      _buildToggle(
+        prefs: prefs,
+        currentLocation: '/pc/home',
+        showShelter: true,
+      ),
     );
     await tester.pumpAndSettle();
 
