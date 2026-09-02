@@ -7,18 +7,17 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_history_entry.dart';
 import '../providers/health_providers.dart';
-import 'care_event_status_line.dart';
-import 'health_entry_card_actions.dart';
-import 'health_entry_type_labels.dart';
 import 'pet_event_administration_history_dialog.dart';
 import 'pet_event_documents_strip.dart';
 import 'pet_event_lifecycle.dart';
+import 'pet_event_open_occurrences_section.dart';
+import 'pet_event_past_occurrences_section.dart';
 import 'pet_event_past_iterations_section.dart';
 import 'pet_event_pet_card.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/presentation/widgets/pet_list/home_event_actions.dart';
+import 'health_entry_type_labels.dart';
 
-/// Read-only body for [PetEventViewScreen] with occurrence actions on view.
+/// Read-only body for [PetEventViewScreen] with occurrence workbench actions.
 class PetEventViewBody extends ConsumerWidget {
   const PetEventViewBody({
     super.key,
@@ -48,7 +47,7 @@ class PetEventViewBody extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final muted = isClosed;
     final textColor = muted ? colorScheme.onSurfaceVariant : null;
-    final showOccurrenceActions = !isClosed && !entry.isCompleted;
+    final showOccurrenceWorkbench = !isClosed && !entry.isCompleted;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -60,15 +59,6 @@ class PetEventViewBody extends ConsumerWidget {
           _TypeDosageRow(entry: entry, muted: muted),
           const SizedBox(height: 12),
           _StatusRow(isClosed: isClosed),
-          if (showOccurrenceActions) ...[
-            const SizedBox(height: 12),
-            _OccurrenceActions(
-              entry: entry,
-              onMarkDone: () => HomeEventActions.markDone(context, ref, entry),
-              onSnooze: (days) =>
-                  HomeEventActions.snoozeDays(context, ref, entry, days),
-            ),
-          ],
           const SizedBox(height: 12),
           _LifecycleActions(
             isClosed: isClosed,
@@ -88,15 +78,10 @@ class PetEventViewBody extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-            l.nextOccurrence,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: textColor,
-            ),
-          ),
-          const SizedBox(height: 8),
-          _IterationSummary(entry: entry, history: history, isClosed: isClosed),
+          if (showOccurrenceWorkbench)
+            PetEventOpenOccurrencesSection(entry: entry, muted: muted)
+          else
+            _ClosedOccurrenceSummary(history: history, muted: muted),
           if (entry.healthIssueId != null &&
               (entry.healthIssueName?.isNotEmpty ?? false)) ...[
             const SizedBox(height: 16),
@@ -122,6 +107,7 @@ class PetEventViewBody extends ConsumerWidget {
           const SizedBox(height: 16),
           PetEventDocumentsStrip(entryId: entry.id),
           const SizedBox(height: 16),
+          PetEventPastOccurrencesSection(entryId: entry.id, muted: muted),
           PetEventPastIterationsSection(
             entry: entry,
             history: history,
@@ -208,43 +194,6 @@ class _StatusRow extends StatelessWidget {
   }
 }
 
-class _OccurrenceActions extends StatelessWidget {
-  const _OccurrenceActions({
-    required this.entry,
-    required this.onMarkDone,
-    required this.onSnooze,
-  });
-
-  final HealthEntry entry;
-  final VoidCallback onMarkDone;
-  final void Function(int days) onSnooze;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        FilledButton.icon(
-          key: Key('pet_event_mark_done_${entry.id}'),
-          onPressed: onMarkDone,
-          icon: const Icon(Icons.check),
-          label: Text(l.markAsDone),
-        ),
-        OutlinedButton.icon(
-          key: Key('pet_event_snooze_${entry.id}'),
-          onPressed: () =>
-              showHealthEntrySnoozeDialog(context, onSnooze: onSnooze),
-          icon: const Icon(Icons.snooze),
-          label: Text(l.snooze),
-        ),
-      ],
-    );
-  }
-}
-
 class _LifecycleActions extends StatelessWidget {
   const _LifecycleActions({
     required this.isClosed,
@@ -277,54 +226,43 @@ class _LifecycleActions extends StatelessWidget {
   }
 }
 
-class _IterationSummary extends StatelessWidget {
-  const _IterationSummary({
-    required this.entry,
+class _ClosedOccurrenceSummary extends StatelessWidget {
+  const _ClosedOccurrenceSummary({
     required this.history,
-    required this.isClosed,
+    required this.muted,
   });
 
-  final HealthEntry entry;
   final List<HealthHistoryEntry> history;
-  final bool isClosed;
+  final bool muted;
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final last = sortedHistoryDesc(history).firstOrNull;
 
-    if (isClosed) {
-      final last = sortedHistoryDesc(history).firstOrNull;
-      if (last == null) {
-        return Text(
-          l.noHistoryYet,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l.nextOccurrence,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: muted ? colorScheme.onSurfaceVariant : null,
           ),
-        );
-      }
-      return _ClosedIterationCard(historyEntry: last);
-    }
-
-    final status = formatCareEventStatusLine(entry, l, colorScheme);
-
-    return Container(
-      key: Key('pet_event_occurrence_summary_${entry.id}'),
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
-      child: Text(
-        status.text,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: status.statusColor ?? colorScheme.onSurfaceVariant,
-          fontWeight: FontWeight.w600,
         ),
-      ),
+        const SizedBox(height: 8),
+        if (last == null)
+          Text(
+            l.noHistoryYet,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          )
+        else
+          _ClosedIterationCard(historyEntry: last),
+      ],
     );
   }
 }
