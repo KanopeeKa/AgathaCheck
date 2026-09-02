@@ -160,7 +160,9 @@ void main() {
     );
     await tester.pumpWidget(buildCard(memorial));
 
-    final semantics = tester.getSemantics(find.byType(GuardianDashboardPetCard));
+    final semantics = tester.getSemantics(
+      find.byType(GuardianDashboardPetCard),
+    );
     expect(semantics.label, 'Buddy, My Pets, Passed Away');
   });
 
