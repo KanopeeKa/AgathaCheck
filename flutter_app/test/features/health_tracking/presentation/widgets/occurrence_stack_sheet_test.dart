@@ -63,7 +63,7 @@ void main() {
         _buildSheet(
           occurrences: [
             _occ(id: 'missed', date: yesterday, time: '08:00'),
-            _occ(id: 'today', date: today, time: '12:00'),
+            _occ(id: 'today', date: today),
             _occ(id: 'later', date: tomorrow, time: '08:00'),
           ],
         ),

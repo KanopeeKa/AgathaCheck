@@ -94,7 +94,7 @@ Future<List<HealthOccurrence>> _openOccurrences(Ref ref, String entryId) async {
   final tomorrow = today.add(const Duration(days: 1));
   return [
     _occ(id: 'occ-missed', date: yesterday, time: '08:00'),
-    _occ(id: 'occ-today', date: today, time: '12:00'),
+    _occ(id: 'occ-today', date: today),
     _occ(id: 'occ-later', date: tomorrow, time: '08:00'),
   ];
 }
