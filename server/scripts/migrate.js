@@ -120,6 +120,8 @@ const CODE_MIGRATIONS = {
 async function applyMigration(client, name, sql) {
   const codeRunner = CODE_MIGRATIONS[name];
   if (codeRunner) {
+    // Some migrations ship DDL in SQL plus app backfill in JS (e.g. 047).
+    await client.query(sql);
     await codeRunner(client);
     return;
   }
