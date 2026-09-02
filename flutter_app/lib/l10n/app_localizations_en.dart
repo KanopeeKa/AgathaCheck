@@ -281,7 +281,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get petGuardian => 'Pet Guardian';
+  String get petGuardian => 'Pet carer';
 
   @override
   String get professionalMultiPet => 'Professional Multi Pet';
@@ -635,7 +635,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careLoadError => 'We couldn\'t load care right now.';
 
   @override
-  String get careEyebrow => 'CARE';
+  String get careEyebrow => 'CARE ACTIONS';
 
   @override
   String get petsEyebrow => 'PETS';
@@ -644,7 +644,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petsNavLabel => 'Pets';
 
   @override
-  String get allCare => 'All care';
+  String get allCare => 'All Actions';
 
   @override
   String careForPet(String petName) {
@@ -655,7 +655,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardNavLabel => 'Dashboard';
 
   @override
-  String get careNavLabel => 'Care';
+  String get careNavLabel => 'Actions';
 
   @override
   String careDueTab(int count) {
@@ -3445,6 +3445,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sharedPets => 'Shared Pets';
 
   @override
+  String get sharedPetTitle => 'Shared Pet';
+
+  @override
+  String get sharedPetNotFound => 'Pet not found or share link expired';
+
+  @override
+  String get sharedPetLoadFailed => 'Failed to load shared pet';
+
+  @override
+  String get goToPetCare => 'Go to Pet Care';
+
+  @override
+  String get sharedPetAcceptPrompt => 'Want to add this pet to your account?';
+
+  @override
+  String get sharedPetAdding => 'Adding...';
+
+  @override
   String get invited => 'Invited';
 
   @override
@@ -4465,7 +4483,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get remindChipOneWeek => '1 week';
 
   @override
-  String get experienceGuardianTitle => 'Individual Pet Guardian';
+  String get experienceGuardianTitle => 'Pet Care';
 
   @override
   String get experienceGuardianSubtitle =>
@@ -4501,7 +4519,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgNotificationsDrawer => 'Organisation notifications';
 
   @override
-  String get guardianNotificationsDrawer => 'Guardian notifications';
+  String get guardianNotificationsDrawer => 'Pet Care notifications';
 
   @override
   String get myVets => 'Care team';
@@ -4516,7 +4534,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allCareTeams => 'All care teams';
 
   @override
-  String get guardianDashboardTitle => 'My Pets dashboard';
+  String get guardianDashboardTitle => 'Pet Care dashboard';
 
   @override
   String get upcomingPetEvents => 'Upcoming Pet Events';
@@ -4599,7 +4617,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myOrganisation => 'My Organisation';
 
   @override
-  String get experienceGuardianView => 'My Pets view';
+  String get experienceGuardianView => 'Pet Care view';
 
   @override
   String get experienceDefaultSettingTitle => 'Default experience';
@@ -4785,7 +4803,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adoptionJourneyStatusUnknown => 'Unknown';
 
   @override
-  String get drawerGuardian => 'My Pets';
+  String get drawerGuardian => 'Pet Care';
 
   @override
   String get drawerOrganisation => 'Shelters';

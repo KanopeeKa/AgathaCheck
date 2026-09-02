@@ -262,7 +262,7 @@ void main() {
       find.byKey(const Key('experience_workspace_toggle')),
       findsOneWidget,
     );
-    expect(find.text('My Pets'), findsOneWidget);
+    expect(find.text('Pet Care'), findsOneWidget);
     expect(find.byIcon(Icons.keyboard_arrow_down), findsOneWidget);
     expect(
       tester
@@ -652,7 +652,7 @@ void main() {
         );
         expect(find.text('Dashboard'), findsOneWidget);
         expect(find.text('Pets'), findsOneWidget);
-        expect(find.text('Care'), findsOneWidget);
+        expect(find.text('Actions'), findsOneWidget);
         expect(find.text('Fostering'), findsOneWidget);
         expect(find.text('Account'), findsOneWidget);
       },

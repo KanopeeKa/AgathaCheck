@@ -287,7 +287,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get petGuardian => 'Gardien d\'animal';
+  String get petGuardian => 'Soignant d\'animal';
 
   @override
   String get professionalMultiPet => 'Professionnel Multi-Animaux';
@@ -3507,6 +3507,26 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sharedPets => 'Animaux partagés';
 
   @override
+  String get sharedPetTitle => 'Animal partagé';
+
+  @override
+  String get sharedPetNotFound =>
+      'Animal introuvable ou lien de partage expiré';
+
+  @override
+  String get sharedPetLoadFailed => 'Impossible de charger l\'animal partagé';
+
+  @override
+  String get goToPetCare => 'Accéder au Suivi';
+
+  @override
+  String get sharedPetAcceptPrompt =>
+      'Souhaitez-vous ajouter cet animal à votre compte ?';
+
+  @override
+  String get sharedPetAdding => 'Ajout en cours…';
+
+  @override
   String get invited => 'Invité(e)';
 
   @override
@@ -4539,7 +4559,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get remindChipOneWeek => '1 semaine';
 
   @override
-  String get experienceGuardianTitle => 'Gardien d\'animal individuel';
+  String get experienceGuardianTitle => 'Suivi';
 
   @override
   String get experienceGuardianSubtitle =>
@@ -4576,7 +4596,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgNotificationsDrawer => 'Notifications organisation';
 
   @override
-  String get guardianNotificationsDrawer => 'Notifications gardien';
+  String get guardianNotificationsDrawer => 'Notifications Suivi';
 
   @override
   String get myVets => 'Équipe de soins';
@@ -4591,7 +4611,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get allCareTeams => 'Toutes les équipes de soins';
 
   @override
-  String get guardianDashboardTitle => 'Tableau de bord Mes animaux';
+  String get guardianDashboardTitle => 'Tableau de bord Suivi';
 
   @override
   String get upcomingPetEvents => 'Événements à venir';
@@ -4674,7 +4694,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myOrganisation => 'Mon organisation';
 
   @override
-  String get experienceGuardianView => 'Vue Mes animaux';
+  String get experienceGuardianView => 'Vue Suivi';
 
   @override
   String get experienceDefaultSettingTitle => 'Expérience par défaut';
@@ -4865,7 +4885,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get adoptionJourneyStatusUnknown => 'Inconnu';
 
   @override
-  String get drawerGuardian => 'Mes animaux';
+  String get drawerGuardian => 'Suivi';
 
   @override
   String get drawerOrganisation => 'Refuges';

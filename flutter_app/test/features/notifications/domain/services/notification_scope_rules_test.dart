@@ -40,7 +40,7 @@ void main() {
     name: 'Max',
     species: 'Cat',
     isShared: true,
-    guardianName: 'Alice',
+    primaryHolderName: 'Alice',
   );
 
   final pets = [owned, foster, inventory, shared];

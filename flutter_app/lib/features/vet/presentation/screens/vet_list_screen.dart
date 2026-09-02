@@ -16,7 +16,7 @@ class VetListScreen extends ConsumerWidget {
     super.key,
     this.embeddedInShell = false,
     this.experience = AppExperience.guardian,
-    this.backPath = '/g/home',
+    this.backPath = '/pc/home',
   });
 
   final bool embeddedInShell;
@@ -24,7 +24,7 @@ class VetListScreen extends ConsumerWidget {
   final String backPath;
 
   String get _listPath =>
-      experience == AppExperience.guardian ? '/g/vets' : '/o/vets';
+      experience == AppExperience.petCare ? '/pc/vets' : '/o/vets';
 
   String? _defaultOrganizationIdForCreate(String? filter) {
     if (filter == null || filter == '_personal') return null;

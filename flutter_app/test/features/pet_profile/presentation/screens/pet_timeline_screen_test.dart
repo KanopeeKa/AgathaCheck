@@ -40,7 +40,7 @@ void main() {
     species: 'Dog',
     dateOfBirth: DateTime(2020, 3, 15),
     createdAt: DateTime(2024, 1, 10),
-    guardianName: 'Jane Doe',
+    primaryHolderName: 'Jane Doe',
   );
 
   Widget buildApp({
@@ -169,7 +169,7 @@ void main() {
             kind: 'custody',
             id: 'custody-1',
             startDate: '2024-06-01',
-            guardianName: 'Bob',
+            primaryHolderName: 'Bob',
           ),
         ],
       ),

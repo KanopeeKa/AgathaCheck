@@ -31,7 +31,7 @@ class PendingShare {
   final String petBreed;
   final String? petPhotoPath;
   final int? petColorValue;
-  final String guardianName;
+  final String primaryHolderName;
   final String? invitedBy;
   final DateTime? createdAt;
 
@@ -43,7 +43,7 @@ class PendingShare {
     required this.petBreed,
     this.petPhotoPath,
     this.petColorValue,
-    required this.guardianName,
+    required this.primaryHolderName,
     this.invitedBy,
     this.createdAt,
   });
@@ -59,7 +59,9 @@ class PendingShare {
       petColorValue: json['pet_color_value'] is int
           ? json['pet_color_value'] as int
           : int.tryParse(json['pet_color_value']?.toString() ?? ''),
-      guardianName: (json['guardian_name'] ?? '').toString(),
+      primaryHolderName:
+          (json['primary_holder_name'] ?? json['guardian_name'] ?? '')
+              .toString(),
       invitedBy: json['invited_by']?.toString(),
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
     );

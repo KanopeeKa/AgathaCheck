@@ -99,7 +99,7 @@ void main() {
       find.byKey(const Key('experience_workspace_toggle')),
       findsOneWidget,
     );
-    expect(find.text('My Pets'), findsOneWidget);
+    expect(find.text('Pet Care'), findsOneWidget);
     expect(find.byIcon(Icons.keyboard_arrow_down), findsOneWidget);
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
     expect(find.byKey(const Key('account_hamburger')), findsNothing);
