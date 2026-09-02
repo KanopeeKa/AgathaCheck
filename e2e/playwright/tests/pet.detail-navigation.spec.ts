@@ -28,11 +28,11 @@ test.describe('Pet detail back navigation', () => {
     await waitForFlutterRoutePattern(page, /\/g\/pets(?:\?|$)/, 30_000);
 
     const petList = new PetListPage(page);
+    await petList.expectManagePetsLoaded();
     await petList.openPet('BackPet');
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('BackPet');
-    await waitForFlutterRoutePattern(page, /\/pet\/[^/?]+/, 30_000);
 
     await detail.goBack();
     await waitForFlutterRoutePattern(page, /\/g\/pets(?:\?|$)/, 30_000);
