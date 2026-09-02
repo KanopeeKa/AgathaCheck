@@ -29,7 +29,8 @@ test.describe('Pet detail back navigation', () => {
 
     const petList = new PetListPage(page);
     await petList.expectManagePetsLoaded();
-    await petList.openPet('BackPet', pet.id);
+    // Open via list click (not direct /pet/:id) so back returns to /pc/pets.
+    await petList.openPet('BackPet');
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('BackPet');
