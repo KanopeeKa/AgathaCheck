@@ -59,7 +59,7 @@ class _GuardianHomeScreenState extends ConsumerState<GuardianHomeScreen> {
     });
 
     return ExperienceShellScaffold(
-      experience: AppExperience.guardian,
+      experience: AppExperience.petCare,
       currentLocation: GoRouterState.of(context).uri.path,
       screenTitle: AppLocalizations.of(context)!.appTitle,
       child: petListAsync.when(

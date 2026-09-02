@@ -168,10 +168,10 @@ AppExperience _resolvePostLoginExperience({
     return lastAppSection;
   }
   if (pets.isNotEmpty) {
-    return AppExperience.guardian;
+    return AppExperience.petCare;
   }
   if (pets.isEmpty && orgs.isNotEmpty && eligibility.canUseOrganization) {
     return AppExperience.organization;
   }
-  return AppExperience.guardian;
+  return AppExperience.petCare;
 }

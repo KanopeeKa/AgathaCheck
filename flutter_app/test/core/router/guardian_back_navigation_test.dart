@@ -12,7 +12,7 @@
 ///
 ///   Journey B (detail → edit → back):
 ///     1. Deep-link to /g/vets/:id (detail, already on-screen).
-///     2. Tap 'Edit vet' button → context.go('/g/vets/edit/:id').
+///     2. Tap 'Edit vet' button → context.go('/pc/vets/edit/:id').
 ///     3. Tap the VetFormScreen back arrow.
 ///     4. VetFormScreen.back always calls context.go(listPath) → /g/vets.
 ///
@@ -131,7 +131,7 @@ GoRouter _router({required String initialLocation}) {
     routes: [
       ...buildVetExperienceRoutes(),
       GoRoute(
-        path: '/g/home',
+        path: '/pc/home',
         builder: (_, __) => const Scaffold(body: GuardianMyVetsSection()),
       ),
     ],
@@ -180,26 +180,26 @@ void main() {
     testWidgets('tapping vet row navigates to detail (nested child push)', (
       tester,
     ) async {
-      final router = _router(initialLocation: '/g/vets');
+      final router = _router(initialLocation: '/pc/vets');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
       // List is rendered; vet row for 'Dr Back' must be present.
       expect(find.text('Dr Back'), findsOneWidget);
 
-      // Tap the vet row — VetListScreen calls context.go('/g/vets/vet-back-1').
+      // Tap the vet row — VetListScreen calls context.go('/pc/vets/vet-back-1').
       await tester.tap(find.text('Dr Back'));
       await _settle(tester);
 
       // Router is now at the child route /g/vets/vet-back-1.
       expect(
         router.routerDelegate.currentConfiguration.uri.path,
-        '/g/vets/vet-back-1',
+        '/pc/vets/vet-back-1',
       );
     });
 
     testWidgets('shell back button on detail pops to /g/vets', (tester) async {
-      final router = _router(initialLocation: '/g/vets');
+      final router = _router(initialLocation: '/pc/vets');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
@@ -210,7 +210,7 @@ void main() {
       // Confirm we're on detail.
       expect(
         router.routerDelegate.currentConfiguration.uri.path,
-        '/g/vets/vet-back-1',
+        '/pc/vets/vet-back-1',
       );
 
       // The shell scaffold shows the back button (non-root path).
@@ -225,7 +225,7 @@ void main() {
       await tester.tap(backButtons.last);
       await _settle(tester);
 
-      expect(router.routerDelegate.currentConfiguration.uri.path, '/g/vets');
+      expect(router.routerDelegate.currentConfiguration.uri.path, '/pc/vets');
     });
   });
 
@@ -237,7 +237,7 @@ void main() {
       tester,
     ) async {
       // Deep-link straight to detail (simulates browser/push deep link).
-      final router = _router(initialLocation: '/g/vets/vet-back-1');
+      final router = _router(initialLocation: '/pc/vets/vet-back-1');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
@@ -245,19 +245,18 @@ void main() {
       expect(find.textContaining('not-found:'), findsNothing);
       expect(
         router.routerDelegate.currentConfiguration.uri.path,
-        '/g/vets/vet-back-1',
+        '/pc/vets/vet-back-1',
       );
 
-      // Tap 'Edit vet' button — VetDetailScreen calls
-      // context.go('$listPath/edit/$vetId').
-      final editButton = find.byKey(const Key('vet_detail_edit_button'));
-      expect(editButton, findsOneWidget);
-      await tester.tap(editButton);
+      // Tap 'Edit care team' from the options menu.
+      await tester.tap(find.byKey(const Key('care_team_options_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('care_team_edit_menu_item')));
       await _settle(tester);
 
       expect(
         router.routerDelegate.currentConfiguration.uri.path,
-        '/g/vets/edit/vet-back-1',
+        '/pc/vets/edit/vet-back-1',
       );
     });
 
@@ -265,22 +264,24 @@ void main() {
       tester,
     ) async {
       // Start on detail, navigate to edit, then tap back.
-      final router = _router(initialLocation: '/g/vets/vet-back-1');
+      final router = _router(initialLocation: '/pc/vets/vet-back-1');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
-      // Go to edit.
-      await tester.tap(find.byKey(const Key('vet_detail_edit_button')));
+      // Go to edit via care team options menu.
+      await tester.tap(find.byKey(const Key('care_team_options_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('care_team_edit_menu_item')));
       await _settle(tester);
 
       expect(
         router.routerDelegate.currentConfiguration.uri.path,
-        '/g/vets/edit/vet-back-1',
+        '/pc/vets/edit/vet-back-1',
       );
 
       // VetFormScreen renders its own AppBar with an arrow_back icon whose
       // tooltip is 'Back to veterinarians' and whose onPressed calls
-      // context.go(widget.listPath) = '/g/vets'.
+      // context.go(widget.listPath) = '/pc/vets'.
       // The shell scaffold on the detail screen also has an arrow_back, so
       // we locate by tooltip to disambiguate.
       final backArrow = find.byWidgetPredicate(
@@ -290,14 +291,14 @@ void main() {
       await tester.tap(backArrow);
       await _settle(tester);
 
-      expect(router.routerDelegate.currentConfiguration.uri.path, '/g/vets');
+      expect(router.routerDelegate.currentConfiguration.uri.path, '/pc/vets');
     });
 
     testWidgets('deep-linked edit page back arrow also navigates to /g/vets', (
       tester,
     ) async {
       // Deep-link directly to edit (e.g. from a notification or bookmark).
-      final router = _router(initialLocation: '/g/vets/edit/vet-back-1');
+      final router = _router(initialLocation: '/pc/vets/edit/vet-back-1');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
@@ -313,7 +314,7 @@ void main() {
       await tester.tap(backArrow);
       await _settle(tester);
 
-      expect(router.routerDelegate.currentConfiguration.uri.path, '/g/vets');
+      expect(router.routerDelegate.currentConfiguration.uri.path, '/pc/vets');
     });
   });
 
@@ -324,7 +325,7 @@ void main() {
     testWidgets('shell back from dashboard-opened vet detail returns home', (
       tester,
     ) async {
-      final router = _router(initialLocation: '/g/home');
+      final router = _router(initialLocation: '/pc/home');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
@@ -333,7 +334,7 @@ void main() {
 
       expect(
         router.routerDelegate.currentConfiguration.uri.path,
-        '/g/vets/vet-back-1',
+        '/pc/vets/vet-back-1',
       );
       expect(
         router
@@ -341,7 +342,7 @@ void main() {
             .currentConfiguration
             .uri
             .queryParameters['returnTo'],
-        '/g/home',
+        '/pc/home',
       );
 
       final backButtons = find.byKey(const Key('experience_back_button'));
@@ -349,7 +350,7 @@ void main() {
       await tester.tap(backButtons);
       await _settle(tester);
 
-      expect(router.routerDelegate.currentConfiguration.uri.path, '/g/home');
+      expect(router.routerDelegate.currentConfiguration.uri.path, '/pc/home');
     });
   });
 }

@@ -317,7 +317,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/health',
         name: 'healthDashboard',
-        redirect: (context, state) => '/g/events',
+        redirect: (context, state) => '/pc/events',
       ),
       GoRoute(
         path: '/health/add',
@@ -360,18 +360,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/vets',
-        redirect: (context, state) => redirectLegacyVetPath(state) ?? '/g/vets',
+        redirect: (context, state) => redirectLegacyVetPath(state) ?? '/pc/vets',
       ),
       GoRoute(
         path: '/vets/add',
         redirect: (context, state) =>
-            redirectLegacyVetPath(state) ?? '/g/vets/add',
+            redirectLegacyVetPath(state) ?? '/pc/vets/add',
       ),
       GoRoute(
         path: '/vets/edit/:id',
         redirect: (context, state) =>
             redirectLegacyVetPath(state) ??
-            '/g/vets/edit/${state.pathParameters['id']}',
+            '/pc/vets/edit/${state.pathParameters['id']}',
       ),
       GoRoute(
         path: '/subscription',

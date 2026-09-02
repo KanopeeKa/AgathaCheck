@@ -10,7 +10,7 @@ import '../../domain/entities/drawer_menu_item.dart';
 Color drawerGroupAccent(BuildContext context, DrawerMenuGroup group) {
   final xp = context.experienceColors;
   return switch (group) {
-    DrawerMenuGroup.guardianPlum => xp.guardianPrimary,
+    DrawerMenuGroup.guardianPlum => xp.petCarePrimary,
     DrawerMenuGroup.organizationGreen => xp.organizationPrimary,
     DrawerMenuGroup.utility => Theme.of(context).colorScheme.onSurfaceVariant,
   };

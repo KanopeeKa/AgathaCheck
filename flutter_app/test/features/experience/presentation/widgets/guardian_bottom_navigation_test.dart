@@ -52,7 +52,7 @@ Widget _buildCompactShell({
       home: MediaQuery(
         data: MediaQueryData(size: viewport),
         child: ExperienceShellScaffold(
-          experience: AppExperience.guardian,
+          experience: AppExperience.petCare,
           currentLocation: currentLocation,
           child: const Center(child: Text('Today content')),
         ),
@@ -72,16 +72,16 @@ void main() {
 
   group('GuardianBottomNavigation', () {
     test('maps each primary destination to its selected tab', () {
-      expect(GuardianBottomNavigation.indexFor('/g/home'), 0);
-      expect(GuardianBottomNavigation.indexFor('/g/pets'), 1);
-      expect(GuardianBottomNavigation.indexFor('/g/events'), 2);
-      expect(GuardianBottomNavigation.indexFor('/g/fostering'), 3);
+      expect(GuardianBottomNavigation.indexFor('/pc/home'), 0);
+      expect(GuardianBottomNavigation.indexFor('/pc/pets'), 1);
+      expect(GuardianBottomNavigation.indexFor('/pc/events'), 2);
+      expect(GuardianBottomNavigation.indexFor('/pc/fostering'), 3);
       expect(GuardianBottomNavigation.indexFor('/account'), 4);
     });
 
     test('maps nested Guardian workspace routes to the closest tab', () {
-      expect(GuardianBottomNavigation.indexFor('/g/vets'), 0);
-      expect(GuardianBottomNavigation.indexFor('/g/vets/vet-1'), 0);
+      expect(GuardianBottomNavigation.indexFor('/pc/vets'), 0);
+      expect(GuardianBottomNavigation.indexFor('/pc/vets/vet-1'), 0);
       expect(GuardianBottomNavigation.indexFor('/pet/pet-1'), 1);
       expect(GuardianBottomNavigation.indexFor('/pet/pet-1/timeline'), 1);
       expect(GuardianBottomNavigation.indexFor('/pet/pet-1/weight'), 1);
@@ -93,14 +93,14 @@ void main() {
     });
 
     test('recognises Guardian workspace routes', () {
-      expect(GuardianBottomNavigation.supports('/g/home'), isTrue);
-      expect(GuardianBottomNavigation.supports('/g/pets'), isTrue);
-      expect(GuardianBottomNavigation.supports('/g/events'), isTrue);
-      expect(GuardianBottomNavigation.supports('/g/fostering'), isTrue);
+      expect(GuardianBottomNavigation.supports('/pc/home'), isTrue);
+      expect(GuardianBottomNavigation.supports('/pc/pets'), isTrue);
+      expect(GuardianBottomNavigation.supports('/pc/events'), isTrue);
+      expect(GuardianBottomNavigation.supports('/pc/fostering'), isTrue);
       expect(GuardianBottomNavigation.supports('/account'), isTrue);
-      expect(GuardianBottomNavigation.supports('/g/vets/vet-1'), isTrue);
+      expect(GuardianBottomNavigation.supports('/pc/vets/vet-1'), isTrue);
       expect(GuardianBottomNavigation.supports('/pet/pet-1'), isTrue);
-      expect(GuardianBottomNavigation.supports('/g/onboarding'), isFalse);
+      expect(GuardianBottomNavigation.supports('/pc/onboarding'), isFalse);
       expect(GuardianBottomNavigation.supports('/o/orgs'), isFalse);
     });
 
@@ -119,7 +119,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             bottomNavigationBar: const GuardianBottomNavigation(
-              currentLocation: '/g/home',
+              currentLocation: '/pc/home',
             ),
           ),
         ),
@@ -144,7 +144,7 @@ void main() {
       await tester.pumpWidget(
         _buildCompactShell(
           prefs: prefs,
-          currentLocation: '/g/home',
+          currentLocation: '/pc/home',
           viewport: const Size(390, 844),
         ),
       );
@@ -164,7 +164,7 @@ void main() {
       await tester.pumpWidget(
         _buildCompactShell(
           prefs: prefs,
-          currentLocation: '/g/home',
+          currentLocation: '/pc/home',
           viewport: const Size(800, 900),
         ),
       );

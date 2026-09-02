@@ -19,20 +19,37 @@ abstract final class AppColorTokens {
   static const Color inverse = Color(0xFFFFFFFF);
   static const Color shadow = Color(0x141F2937);
 
-  // Guardian
-  static const Color guardianPrimary = Color(0xFF755B68);
-  static const Color guardianHover = Color(0xFF664C59);
-  static const Color guardianActive = Color(0xFF573F4B);
-  static const Color guardianLight = Color(0xFFE8E1E3);
-  static const Color guardianSoft = Color(0xFFE7DCE2);
+  // Pet Care (formerly Guardian plum)
+  static const Color petCarePrimary = Color(0xFF755B68);
+  static const Color petCareHover = Color(0xFF664C59);
+  static const Color petCareActive = Color(0xFF573F4B);
+  static const Color petCareLight = Color(0xFFE8E1E3);
+  static const Color petCareSoft = Color(0xFFE7DCE2);
 
-  // Guardian care uses the same plum family as the rest of the Guardian
-  // experience. Keep these aliases while older home widgets migrate.
-  static const Color guardianCarePrimary = guardianPrimary;
-  static const Color guardianCareActive = guardianActive;
-  static const Color guardianCareLight = guardianLight;
+  @Deprecated('Use petCarePrimary')
+  static const Color guardianPrimary = petCarePrimary;
+  @Deprecated('Use petCareHover')
+  static const Color guardianHover = petCareHover;
+  @Deprecated('Use petCareActive')
+  static const Color guardianActive = petCareActive;
+  @Deprecated('Use petCareLight')
+  static const Color guardianLight = petCareLight;
+  @Deprecated('Use petCareSoft')
+  static const Color guardianSoft = petCareSoft;
 
-  // Public landing: warm paper, Guardian plum, and Shelter teal.
+  // Pet care workspace aliases for home widgets migrating from guardianCare*.
+  static const Color petCareCarePrimary = petCarePrimary;
+  static const Color petCareCareActive = petCareActive;
+  static const Color petCareCareLight = petCareLight;
+
+  @Deprecated('Use petCareCarePrimary')
+  static const Color guardianCarePrimary = petCareCarePrimary;
+  @Deprecated('Use petCareCareActive')
+  static const Color guardianCareActive = petCareCareActive;
+  @Deprecated('Use petCareCareLight')
+  static const Color guardianCareLight = petCareCareLight;
+
+  // Public landing: warm paper, Pet Care plum, and Shelter teal.
   static const Color landingCanvas = background;
   static const Color landingSurface = Color(0xFFFFFDFC);
   static const Color landingInk = heading;
@@ -51,7 +68,7 @@ abstract final class AppColorTokens {
   static const Color operationsPaper = landingCanvas;
   static const Color operationsSurface = landingSurface;
   static const Color operationsInk = landingInk;
-  static const Color operationsGold = guardianPrimary;
+  static const Color operationsGold = petCarePrimary;
   static const Color operationsDeskCanvas = landingCanvas;
 
   // Organisation context — distinct from warning and error semantics.

@@ -44,7 +44,7 @@ void main() {
           pets: const [Pet(id: '1', name: 'Mine', species: 'Cat')],
           guardianOnboardingCompleted: true,
         ),
-        '/g/home',
+        '/pc/home',
       );
     });
 
@@ -67,7 +67,7 @@ void main() {
           guardianOnboardingCompleted: false,
           hasPendingOrgInvites: true,
         ),
-        '/g/onboarding',
+        '/pc/onboarding',
       );
     });
 
@@ -107,7 +107,7 @@ void main() {
             ],
             guardianOnboardingCompleted: false,
           ),
-          '/g/home',
+          '/pc/home',
         );
       },
     );
@@ -203,7 +203,7 @@ void main() {
             ),
           ],
         ),
-        '/g/home',
+        '/pc/home',
       );
     });
 
@@ -246,9 +246,9 @@ void main() {
               type: OrganizationType.charity,
             ),
           ],
-          lastAppSection: AppExperience.guardian,
+          lastAppSection: AppExperience.petCare,
         ),
-        '/g/home',
+        '/pc/home',
       );
     });
 

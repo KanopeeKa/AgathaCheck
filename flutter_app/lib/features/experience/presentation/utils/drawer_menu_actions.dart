@@ -20,8 +20,8 @@ Future<void> handleExperienceDrawerItemTap(
   switch (item.semanticKey) {
     // Phase 1 unified section switcher entries
     case 'drawer_guardian':
-      await store.writeLastAppSection(AppExperience.guardian);
-      context.go(AppExperience.guardian.homePath());
+      await store.writeLastAppSection(AppExperience.petCare);
+      context.go(AppExperience.petCare.homePath());
       return;
     case 'drawer_organisation':
       await store.writeLastAppSection(AppExperience.organization);
@@ -51,7 +51,7 @@ Future<void> handleExperienceDrawerItemTap(
 }
 
 bool _useGoNavigation(String route) {
-  return route == AppExperience.guardian.homePath() ||
+  return route == AppExperience.petCare.homePath() ||
       route == AppExperience.organization.homePath() ||
       route == '/o/orgs' ||
       route == '/account' ||

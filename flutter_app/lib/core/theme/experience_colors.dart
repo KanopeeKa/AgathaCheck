@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 
 import 'app_color_tokens.dart';
 
-/// Experience-aware colors (guardian plum vs organisation teal).
+/// Experience-aware colors (pet care plum vs organisation teal).
 ///
 /// Registered on [ThemeData.extensions]. Default [ColorScheme.primary] is
-/// guardian plum for pet-guardian-first landing; use [primaryFor] in routed UI.
+/// pet care plum for pet-care-first landing; use [primaryFor] in routed UI.
 @immutable
 class ExperienceColors extends ThemeExtension<ExperienceColors> {
   const ExperienceColors({
-    required this.guardianPrimary,
-    required this.guardianOnPrimary,
-    required this.guardianHover,
-    required this.guardianActive,
-    required this.guardianLight,
-    required this.guardianSoft,
+    required this.petCarePrimary,
+    required this.petCareOnPrimary,
+    required this.petCareHover,
+    required this.petCareActive,
+    required this.petCareLight,
+    required this.petCareSoft,
     required this.organizationPrimary,
     required this.organizationOnPrimary,
     required this.organizationHover,
@@ -30,12 +30,12 @@ class ExperienceColors extends ThemeExtension<ExperienceColors> {
     required this.info,
   });
 
-  final Color guardianPrimary;
-  final Color guardianOnPrimary;
-  final Color guardianHover;
-  final Color guardianActive;
-  final Color guardianLight;
-  final Color guardianSoft;
+  final Color petCarePrimary;
+  final Color petCareOnPrimary;
+  final Color petCareHover;
+  final Color petCareActive;
+  final Color petCareLight;
+  final Color petCareSoft;
 
   final Color organizationPrimary;
   final Color organizationOnPrimary;
@@ -53,13 +53,26 @@ class ExperienceColors extends ThemeExtension<ExperienceColors> {
   final Color danger;
   final Color info;
 
+  @Deprecated('Use petCarePrimary')
+  Color get guardianPrimary => petCarePrimary;
+  @Deprecated('Use petCareOnPrimary')
+  Color get guardianOnPrimary => petCareOnPrimary;
+  @Deprecated('Use petCareHover')
+  Color get guardianHover => petCareHover;
+  @Deprecated('Use petCareActive')
+  Color get guardianActive => petCareActive;
+  @Deprecated('Use petCareLight')
+  Color get guardianLight => petCareLight;
+  @Deprecated('Use petCareSoft')
+  Color get guardianSoft => petCareSoft;
+
   static const ExperienceColors light = ExperienceColors(
-    guardianPrimary: AppColorTokens.guardianPrimary,
-    guardianOnPrimary: AppColorTokens.inverse,
-    guardianHover: AppColorTokens.guardianHover,
-    guardianActive: AppColorTokens.guardianActive,
-    guardianLight: AppColorTokens.guardianLight,
-    guardianSoft: AppColorTokens.guardianSoft,
+    petCarePrimary: AppColorTokens.petCarePrimary,
+    petCareOnPrimary: AppColorTokens.inverse,
+    petCareHover: AppColorTokens.petCareHover,
+    petCareActive: AppColorTokens.petCareActive,
+    petCareLight: AppColorTokens.petCareLight,
+    petCareSoft: AppColorTokens.petCareSoft,
     organizationPrimary: AppColorTokens.organizationPrimary,
     organizationOnPrimary: AppColorTokens.inverse,
     organizationHover: AppColorTokens.organizationHover,
@@ -76,19 +89,19 @@ class ExperienceColors extends ThemeExtension<ExperienceColors> {
   );
 
   Color primaryFor({required bool organization}) =>
-      organization ? organizationPrimary : guardianPrimary;
+      organization ? organizationPrimary : petCarePrimary;
 
   Color onPrimaryFor({required bool organization}) =>
-      organization ? organizationOnPrimary : guardianOnPrimary;
+      organization ? organizationOnPrimary : petCareOnPrimary;
 
   @override
   ExperienceColors copyWith({
-    Color? guardianPrimary,
-    Color? guardianOnPrimary,
-    Color? guardianHover,
-    Color? guardianActive,
-    Color? guardianLight,
-    Color? guardianSoft,
+    Color? petCarePrimary,
+    Color? petCareOnPrimary,
+    Color? petCareHover,
+    Color? petCareActive,
+    Color? petCareLight,
+    Color? petCareSoft,
     Color? organizationPrimary,
     Color? organizationOnPrimary,
     Color? organizationHover,
@@ -104,12 +117,12 @@ class ExperienceColors extends ThemeExtension<ExperienceColors> {
     Color? info,
   }) {
     return ExperienceColors(
-      guardianPrimary: guardianPrimary ?? this.guardianPrimary,
-      guardianOnPrimary: guardianOnPrimary ?? this.guardianOnPrimary,
-      guardianHover: guardianHover ?? this.guardianHover,
-      guardianActive: guardianActive ?? this.guardianActive,
-      guardianLight: guardianLight ?? this.guardianLight,
-      guardianSoft: guardianSoft ?? this.guardianSoft,
+      petCarePrimary: petCarePrimary ?? this.petCarePrimary,
+      petCareOnPrimary: petCareOnPrimary ?? this.petCareOnPrimary,
+      petCareHover: petCareHover ?? this.petCareHover,
+      petCareActive: petCareActive ?? this.petCareActive,
+      petCareLight: petCareLight ?? this.petCareLight,
+      petCareSoft: petCareSoft ?? this.petCareSoft,
       organizationPrimary: organizationPrimary ?? this.organizationPrimary,
       organizationOnPrimary:
           organizationOnPrimary ?? this.organizationOnPrimary,
@@ -132,12 +145,12 @@ class ExperienceColors extends ThemeExtension<ExperienceColors> {
     if (other is! ExperienceColors) return this;
     Color lerpColor(Color a, Color b) => Color.lerp(a, b, t)!;
     return ExperienceColors(
-      guardianPrimary: lerpColor(guardianPrimary, other.guardianPrimary),
-      guardianOnPrimary: lerpColor(guardianOnPrimary, other.guardianOnPrimary),
-      guardianHover: lerpColor(guardianHover, other.guardianHover),
-      guardianActive: lerpColor(guardianActive, other.guardianActive),
-      guardianLight: lerpColor(guardianLight, other.guardianLight),
-      guardianSoft: lerpColor(guardianSoft, other.guardianSoft),
+      petCarePrimary: lerpColor(petCarePrimary, other.petCarePrimary),
+      petCareOnPrimary: lerpColor(petCareOnPrimary, other.petCareOnPrimary),
+      petCareHover: lerpColor(petCareHover, other.petCareHover),
+      petCareActive: lerpColor(petCareActive, other.petCareActive),
+      petCareLight: lerpColor(petCareLight, other.petCareLight),
+      petCareSoft: lerpColor(petCareSoft, other.petCareSoft),
       organizationPrimary: lerpColor(
         organizationPrimary,
         other.organizationPrimary,

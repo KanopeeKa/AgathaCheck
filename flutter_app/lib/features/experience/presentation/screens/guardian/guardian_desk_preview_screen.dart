@@ -132,10 +132,10 @@ class GuardianDeskPreviewScreen extends StatelessWidget {
   ThemeData _previewDeskTheme(ThemeData theme) {
     return theme.copyWith(
       colorScheme: theme.colorScheme.copyWith(
-        primary: AppColorTokens.guardianCarePrimary,
+        primary: AppColorTokens.petCareCarePrimary,
         onPrimary: AppColorTokens.inverse,
         primaryContainer: AppColorTokens.operationsPaper,
-        onPrimaryContainer: AppColorTokens.guardianCareActive,
+        onPrimaryContainer: AppColorTokens.petCareCareActive,
         surface: AppColorTokens.operationsSurface,
         onSurface: AppColorTokens.operationsInk,
         surfaceContainerHighest: AppColorTokens.operationsPaper,
@@ -148,7 +148,7 @@ class GuardianDeskPreviewScreen extends StatelessWidget {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColorTokens.guardianCarePrimary,
+          foregroundColor: AppColorTokens.petCareCarePrimary,
           minimumSize: const Size(48, 48),
         ),
       ),
@@ -174,7 +174,7 @@ class _PreviewDeskSection extends StatelessWidget {
                   contentPadding: EdgeInsets.zero,
                   leading: Icon(
                     row.icon,
-                    color: AppColorTokens.guardianCarePrimary,
+                    color: AppColorTokens.petCareCarePrimary,
                   ),
                   title: Text(row.label),
                   subtitle: Text(row.detail),

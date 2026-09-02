@@ -46,7 +46,7 @@ Widget _buildWorkspaceRouterApp({
     initialLocation: initialLocation,
     routes: [
       GoRoute(
-        path: '/g/home',
+        path: '/pc/home',
         builder: (context, state) => Scaffold(
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +106,7 @@ void main() {
 
   testWidgets('opens workspace menu on tap', (tester) async {
     await tester.pumpWidget(
-      _buildToggle(prefs: prefs, currentLocation: '/g/home', showShelter: true),
+      _buildToggle(prefs: prefs, currentLocation: '/pc/home', showShelter: true),
     );
     await tester.pumpAndSettle();
 
@@ -127,7 +127,7 @@ void main() {
     await tester.pumpWidget(
       _buildToggle(
         prefs: prefs,
-        currentLocation: '/g/home',
+        currentLocation: '/pc/home',
         showShelter: false,
       ),
     );
@@ -153,7 +153,7 @@ void main() {
     await tester.pumpWidget(
       _buildWorkspaceRouterApp(
         prefs: prefs,
-        initialLocation: '/g/home',
+        initialLocation: '/pc/home',
         showShelter: true,
       ),
     );
@@ -198,14 +198,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Guardian home'), findsOneWidget);
-    expect(prefs.getString('last_app_section'), AppExperience.guardian.wire);
+    expect(prefs.getString('last_app_section'), AppExperience.petCare.wire);
   });
 
   testWidgets('keeps visual pill near 32px while hit target is at least 48px', (
     tester,
   ) async {
     await tester.pumpWidget(
-      _buildToggle(prefs: prefs, currentLocation: '/g/home'),
+      _buildToggle(prefs: prefs, currentLocation: '/pc/home'),
     );
     await tester.pumpAndSettle();
 

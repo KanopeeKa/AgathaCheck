@@ -2,7 +2,7 @@ import '../../../pet_profile/domain/entities/pet.dart';
 import '../entities/app_notification.dart';
 import '../entities/notification_scope.dart';
 
-/// Pure rules for splitting notifications between guardian and org experiences.
+/// Pure rules for splitting notifications between pet care and org experiences.
 class NotificationScopeRules {
   const NotificationScopeRules._();
 
@@ -39,7 +39,7 @@ class NotificationScopeRules {
 
   static bool _includesPet(Pet pet, NotificationScope scope) {
     switch (scope) {
-      case NotificationScope.guardian:
+      case NotificationScope.petCare:
         return isPersonallyOwnedPet(pet) || pet.isFoster || pet.isShared;
       case NotificationScope.organization:
         return pet.isFoster || isOrgInventoryPet(pet);
@@ -65,7 +65,7 @@ class NotificationScopeRules {
       return scope == NotificationScope.organization;
     }
 
-    return scope == NotificationScope.guardian;
+    return scope == NotificationScope.petCare;
   }
 
   static List<AppNotification> filter(

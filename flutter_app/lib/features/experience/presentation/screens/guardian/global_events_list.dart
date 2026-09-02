@@ -322,10 +322,10 @@ class _OperationsDeskTheme extends StatelessWidget {
     final base = Theme.of(context);
     final desk = base.copyWith(
       colorScheme: base.colorScheme.copyWith(
-        primary: AppColorTokens.guardianCarePrimary,
+        primary: AppColorTokens.petCareCarePrimary,
         onPrimary: AppColorTokens.inverse,
         primaryContainer: AppColorTokens.operationsPaper,
-        onPrimaryContainer: AppColorTokens.guardianCareActive,
+        onPrimaryContainer: AppColorTokens.petCareCareActive,
         surface: AppColorTokens.operationsSurface,
         onSurface: AppColorTokens.operationsInk,
         surfaceContainerHighest: AppColorTokens.operationsPaper,
@@ -339,7 +339,7 @@ class _OperationsDeskTheme extends StatelessWidget {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColorTokens.guardianCarePrimary,
+          foregroundColor: AppColorTokens.petCareCarePrimary,
           minimumSize: const Size(48, 48),
         ),
       ),

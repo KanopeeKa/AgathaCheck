@@ -108,12 +108,12 @@ void main() {
     test('leaves guardian home unchanged', () {
       expect(
         OrgOnboardingRules.resolveOrgDestination(
-          targetPath: '/g/home',
+          targetPath: '/pc/home',
           pets: const [],
           orgs: const [org],
           onboardingCompleted: false,
         ),
-        '/g/home',
+        '/pc/home',
       );
     });
   });

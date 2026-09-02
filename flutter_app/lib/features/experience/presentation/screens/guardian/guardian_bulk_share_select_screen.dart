@@ -74,10 +74,10 @@ class _GuardianBulkShareSelectScreenState
     final theme = Theme.of(context);
 
     return ExperienceShellScaffold(
-      experience: AppExperience.guardian,
+      experience: AppExperience.petCare,
       currentLocation: GoRouterState.of(context).uri.path,
       screenTitle: l.bulkShare,
-      backPath: '/g/pets',
+      backPath: '/pc/pets',
       child: petListAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(child: Text(l.failedToLoadPets('$error'))),

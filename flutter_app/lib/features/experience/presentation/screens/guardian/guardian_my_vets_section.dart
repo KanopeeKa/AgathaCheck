@@ -83,7 +83,7 @@ class GuardianMyVetsSection extends ConsumerWidget {
                             actionKey: const Key(
                               'guardian_dashboard_empty_vets_action',
                             ),
-                            onAction: () => context.go('/g/vets/add'),
+                            onAction: () => context.go('/pc/vets/add'),
                           );
                         }
                         final pets = petsAsync.valueOrNull;
@@ -104,10 +104,10 @@ class GuardianMyVetsSection extends ConsumerWidget {
                                           .length,
                                 onTap: () {
                                   final returnTo = Uri.encodeComponent(
-                                    '/g/home',
+                                    '/pc/home',
                                   );
                                   context.go(
-                                    '/g/vets/${vet.id}?returnTo=$returnTo',
+                                    '/pc/vets/${vet.id}?returnTo=$returnTo',
                                   );
                                 },
                               ),
@@ -121,7 +121,7 @@ class GuardianMyVetsSection extends ConsumerWidget {
             GuardianDashboardSectionLink(
               linkKey: const Key('guardian_dashboard_all_care_teams'),
               label: l.allCareTeams,
-              onPressed: () => context.go('/g/vets'),
+              onPressed: () => context.go('/pc/vets'),
             ),
         ],
       ),

@@ -19,7 +19,7 @@ class ExperienceEligibility {
 
   List<AppExperience> get availableExperiences {
     final list = <AppExperience>[];
-    if (canUseGuardian) list.add(AppExperience.guardian);
+    if (canUseGuardian) list.add(AppExperience.petCare);
     if (canUseOrganization) list.add(AppExperience.organization);
     return list;
   }
@@ -34,7 +34,7 @@ class ExperienceEligibility {
     if (canUseOrganization && !canUseGuardian) {
       return AppExperience.organization;
     }
-    return AppExperience.guardian;
+    return AppExperience.petCare;
   }
 }
 

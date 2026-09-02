@@ -30,10 +30,10 @@ void main() {
       Pet(id: 'owned-1', name: 'Biscuit', species: 'Dog'),
     ];
     final router = GoRouter(
-      initialLocation: '/g/home',
+      initialLocation: '/pc/home',
       routes: [
         GoRoute(
-          path: '/g/home',
+          path: '/pc/home',
           builder: (context, state) =>
               Scaffold(body: GuardianFosteringSection(pets: pets)),
         ),
@@ -53,10 +53,10 @@ void main() {
     'uses a truthful empty state when no foster relationship exists',
     (tester) async {
       final router = GoRouter(
-        initialLocation: '/g/home',
+        initialLocation: '/pc/home',
         routes: [
           GoRoute(
-            path: '/g/home',
+            path: '/pc/home',
             builder: (context, state) => const Scaffold(
               body: GuardianFosteringSection(
                 pets: [Pet(id: 'owned-1', name: 'Biscuit', species: 'Dog')],
@@ -95,10 +95,10 @@ void main() {
   ) async {
     late String currentLocation;
     final router = GoRouter(
-      initialLocation: '/g/home',
+      initialLocation: '/pc/home',
       routes: [
         GoRoute(
-          path: '/g/home',
+          path: '/pc/home',
           builder: (context, state) {
             currentLocation = state.uri.toString();
             return Scaffold(
@@ -135,9 +135,9 @@ void main() {
     await tester.tap(find.text('Harbour Shelter').last);
     await tester.pumpAndSettle();
 
-    expect(currentLocation, '/g/home');
+    expect(currentLocation, '/pc/home');
     expect(
-      find.text('profile:org-harbour:returnTo=%2Fg%2Fhome'),
+      find.text('profile:org-harbour:returnTo=%2Fpc%2Fhome'),
       findsOneWidget,
     );
   });

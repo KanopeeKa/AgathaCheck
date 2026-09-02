@@ -151,7 +151,7 @@ GoRouter _buildStubRouter({required String initialLocation}) {
         builder: (_, __) => const Scaffold(body: Text('resolve')),
       ),
       GoRoute(
-        path: '/g/home',
+        path: '/pc/home',
         builder: (_, __) => const Scaffold(body: Text('guardian-home')),
       ),
     ],
@@ -202,29 +202,29 @@ void main() {
   // -------------------------------------------------------------------------
   group('legacy vet path redirects', () {
     test('/vets → /g/vets', () {
-      expect(legacyVetRedirectForPath('/vets'), '/g/vets');
+      expect(legacyVetRedirectForPath('/vets'), '/pc/vets');
     });
 
     test('/vets/add → /g/vets/add', () {
-      expect(legacyVetRedirectForPath('/vets/add'), '/g/vets/add');
+      expect(legacyVetRedirectForPath('/vets/add'), '/pc/vets/add');
     });
 
     test('/vets/edit/vet-42 → /g/vets/edit/vet-42', () {
       expect(
         legacyVetRedirectForPath('/vets/edit/vet-42'),
-        '/g/vets/edit/vet-42',
+        '/pc/vets/edit/vet-42',
       );
     });
 
-    test('/g/vets returns null (no redirect loop)', () {
-      expect(legacyVetRedirectForPath('/g/vets'), isNull);
+    test('/pc/vets returns null (no redirect loop)', () {
+      expect(legacyVetRedirectForPath('/pc/vets'), isNull);
     });
   });
 
   // -------------------------------------------------------------------------
   // 2. Named route registration (pure GoRouter, no widget pumping)
   // -------------------------------------------------------------------------
-  group('guardian named route registration', () {
+  group('pet care named route registration', () {
     late GoRouter router;
 
     setUpAll(() {
@@ -238,50 +238,88 @@ void main() {
       );
     });
 
-    test('guardianAllPets resolves to /g/pets', () {
+    test('petCareAllPets resolves to /pc/pets', () {
+      expect(router.namedLocation('petCareAllPets'), '/pc/pets');
+    });
+
+    test('petCareBulkSharePets resolves to /pc/pets/bulk-share', () {
+      expect(
+        router.namedLocation('petCareBulkSharePets'),
+        '/pc/pets/bulk-share',
+      );
+    });
+
+    test('petCareEvents resolves to /pc/events', () {
+      expect(router.namedLocation('petCareEvents'), '/pc/events');
+    });
+
+    test('petCareVets resolves to /pc/vets', () {
+      expect(router.namedLocation('petCareVets'), '/pc/vets');
+    });
+
+    test('petCareVetDetail resolves to /pc/vets/:id', () {
+      expect(
+        router.namedLocation(
+          'petCareVetDetail',
+          pathParameters: {'id': 'vet-1'},
+        ),
+        '/pc/vets/vet-1',
+      );
+    });
+
+    test('petCareEditVet resolves to /pc/vets/edit/:id', () {
+      expect(
+        router.namedLocation(
+          'petCareEditVet',
+          pathParameters: {'id': 'vet-99'},
+        ),
+        '/pc/vets/edit/vet-99',
+      );
+    });
+
+    test('petCareAddVet resolves to /pc/vets/add', () {
+      expect(router.namedLocation('petCareAddVet'), '/pc/vets/add');
+    });
+
+    test('petCareFostering resolves to /pc/fostering', () {
+      expect(router.namedLocation('petCareFostering'), '/pc/fostering');
+    });
+  });
+
+  group('legacy guardian named route registration', () {
+    late GoRouter router;
+
+    setUpAll(() {
+      router = GoRouter(
+        initialLocation: '/landing',
+        routes: [
+          ...buildExperienceRoutes(),
+          ...buildVetExperienceRoutes(),
+          GoRoute(path: '/landing', builder: (_, __) => const Scaffold()),
+        ],
+      );
+    });
+
+    test('guardianAllPets resolves to legacy /g/pets redirect path', () {
       expect(router.namedLocation('guardianAllPets'), '/g/pets');
     });
 
-    test('guardianBulkSharePets resolves to /g/pets/bulk-share', () {
+    test('guardianBulkSharePets resolves to legacy /g/pets/bulk-share', () {
       expect(
         router.namedLocation('guardianBulkSharePets'),
         '/g/pets/bulk-share',
       );
     });
 
-    test('guardianEvents resolves to /g/events', () {
+    test('guardianEvents resolves to legacy /g/events redirect path', () {
       expect(router.namedLocation('guardianEvents'), '/g/events');
     });
 
-    test('guardianVets resolves to /g/vets', () {
+    test('guardianVets resolves to legacy /g/vets redirect path', () {
       expect(router.namedLocation('guardianVets'), '/g/vets');
     });
 
-    test('guardianVetDetail resolves to /g/vets/:id', () {
-      expect(
-        router.namedLocation(
-          'guardianVetDetail',
-          pathParameters: {'id': 'vet-1'},
-        ),
-        '/g/vets/vet-1',
-      );
-    });
-
-    test('guardianEditVet resolves to /g/vets/edit/:id', () {
-      expect(
-        router.namedLocation(
-          'guardianEditVet',
-          pathParameters: {'id': 'vet-99'},
-        ),
-        '/g/vets/edit/vet-99',
-      );
-    });
-
-    test('guardianAddVet resolves to /g/vets/add', () {
-      expect(router.namedLocation('guardianAddVet'), '/g/vets/add');
-    });
-
-    test('guardianFostering resolves to /g/fostering', () {
+    test('guardianFostering resolves to legacy /g/fostering redirect path', () {
       expect(router.namedLocation('guardianFostering'), '/g/fostering');
     });
   });
@@ -329,7 +367,7 @@ void main() {
   // 4. Deep-link resolution widget tests
   // =========================================================================
 
-  group('/g/pets deep-link', () {
+  group('/pc/pets deep-link', () {
     late SharedPreferences prefs;
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
@@ -337,16 +375,16 @@ void main() {
     });
 
     testWidgets('resolves without error page', (tester) async {
-      final router = _buildStubRouter(initialLocation: '/g/pets');
+      final router = _buildStubRouter(initialLocation: '/pc/pets');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
       expect(find.textContaining('not-found:'), findsNothing);
-      expect(router.routerDelegate.currentConfiguration.uri.path, '/g/pets');
+      expect(router.routerDelegate.currentConfiguration.uri.path, '/pc/pets');
     });
   });
 
-  group('/g/fostering deep-link', () {
+  group('/pc/fostering deep-link', () {
     late SharedPreferences prefs;
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
@@ -354,19 +392,19 @@ void main() {
     });
 
     testWidgets('resolves without error page', (tester) async {
-      final router = _buildStubRouter(initialLocation: '/g/fostering');
+      final router = _buildStubRouter(initialLocation: '/pc/fostering');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
       expect(find.textContaining('not-found:'), findsNothing);
       expect(
         router.routerDelegate.currentConfiguration.uri.path,
-        '/g/fostering',
+        '/pc/fostering',
       );
     });
   });
 
-  group('/g/events deep-link', () {
+  group('/pc/events deep-link', () {
     late SharedPreferences prefs;
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
@@ -374,16 +412,16 @@ void main() {
     });
 
     testWidgets('resolves without error page', (tester) async {
-      final router = _buildStubRouter(initialLocation: '/g/events');
+      final router = _buildStubRouter(initialLocation: '/pc/events');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
       expect(find.textContaining('not-found:'), findsNothing);
-      expect(router.routerDelegate.currentConfiguration.uri.path, '/g/events');
+      expect(router.routerDelegate.currentConfiguration.uri.path, '/pc/events');
     });
 
     testWidgets('add button is present in app bar', (tester) async {
-      final router = _buildStubRouter(initialLocation: '/g/events');
+      final router = _buildStubRouter(initialLocation: '/pc/events');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
@@ -396,7 +434,7 @@ void main() {
     testWidgets('add button is disabled while pets are loading', (
       tester,
     ) async {
-      final router = _buildStubRouter(initialLocation: '/g/events');
+      final router = _buildStubRouter(initialLocation: '/pc/events');
       await tester.pumpWidget(
         _app(router: router, prefs: prefs, petsLoading: true),
       );
@@ -410,7 +448,7 @@ void main() {
     });
   });
 
-  group('/g/vets/:id deep-link', () {
+  group('/pc/vets/:id deep-link', () {
     late SharedPreferences prefs;
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
@@ -418,19 +456,19 @@ void main() {
     });
 
     testWidgets('resolves vet detail without error page', (tester) async {
-      final router = _buildStubRouter(initialLocation: '/g/vets/vet-1');
+      final router = _buildStubRouter(initialLocation: '/pc/vets/vet-1');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
       expect(find.textContaining('not-found:'), findsNothing);
       expect(
         router.routerDelegate.currentConfiguration.uri.path,
-        '/g/vets/vet-1',
+        '/pc/vets/vet-1',
       );
     });
   });
 
-  group('/g/vets/edit/:id deep-link', () {
+  group('/pc/vets/edit/:id deep-link', () {
     late SharedPreferences prefs;
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
@@ -438,25 +476,25 @@ void main() {
     });
 
     testWidgets('resolves vet edit without error page', (tester) async {
-      final router = _buildStubRouter(initialLocation: '/g/vets/edit/vet-99');
+      final router = _buildStubRouter(initialLocation: '/pc/vets/edit/vet-99');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
       expect(find.textContaining('not-found:'), findsNothing);
       expect(
         router.routerDelegate.currentConfiguration.uri.path,
-        '/g/vets/edit/vet-99',
+        '/pc/vets/edit/vet-99',
       );
     });
 
     testWidgets('preserves vet id in path', (tester) async {
-      final router = _buildStubRouter(initialLocation: '/g/vets/edit/vet-42');
+      final router = _buildStubRouter(initialLocation: '/pc/vets/edit/vet-42');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
       expect(
         router.routerDelegate.currentConfiguration.uri.path,
-        '/g/vets/edit/vet-42',
+        '/pc/vets/edit/vet-42',
       );
     });
   });
@@ -464,7 +502,7 @@ void main() {
   // =========================================================================
   // 5. /g/events add-event picker wiring (widget navigation)
   // =========================================================================
-  group('/g/events add-event picker wiring', () {
+  group('/pc/events add-event picker wiring', () {
     late SharedPreferences prefs;
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
@@ -472,7 +510,7 @@ void main() {
     });
 
     testWidgets('Events tile navigates to /health/add', (tester) async {
-      final router = _buildStubRouter(initialLocation: '/g/events');
+      final router = _buildStubRouter(initialLocation: '/pc/events');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
@@ -503,7 +541,7 @@ void main() {
         colorValue: 0xFF7E57C2,
         passedAway: false,
       );
-      final router = _buildStubRouter(initialLocation: '/g/events');
+      final router = _buildStubRouter(initialLocation: '/pc/events');
       await tester.pumpWidget(_app(router: router, prefs: prefs, pets: [pet]));
       await _settle(tester);
 
@@ -523,7 +561,7 @@ void main() {
     testWidgets(
       'Weight tile with no active pets stays on /g/events (snackbar shown)',
       (tester) async {
-        final router = _buildStubRouter(initialLocation: '/g/events');
+        final router = _buildStubRouter(initialLocation: '/pc/events');
         await tester.pumpWidget(_app(router: router, prefs: prefs, pets: []));
         await _settle(tester);
 
@@ -535,7 +573,7 @@ void main() {
 
         expect(
           router.routerDelegate.currentConfiguration.uri.path,
-          '/g/events',
+          '/pc/events',
         );
       },
     );

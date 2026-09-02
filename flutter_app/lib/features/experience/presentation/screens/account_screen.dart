@@ -25,7 +25,7 @@ class AccountScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final experience =
-        AppExperience.guardian; // Default fallback for account screen
+        AppExperience.petCare; // Default fallback for account screen
 
     return ExperienceShellScaffold(
       experience: experience,

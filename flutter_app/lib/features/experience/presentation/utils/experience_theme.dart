@@ -12,8 +12,8 @@ ThemeData themeForAppExperience(ThemeData base, AppExperience experience) {
     colorScheme: base.colorScheme.copyWith(
       primary: xp.primaryFor(organization: isOrg),
       onPrimary: xp.onPrimaryFor(organization: isOrg),
-      primaryContainer: isOrg ? xp.organizationLight : xp.guardianLight,
-      onPrimaryContainer: isOrg ? xp.organizationPrimary : xp.guardianActive,
+      primaryContainer: isOrg ? xp.organizationLight : xp.petCareLight,
+      onPrimaryContainer: isOrg ? xp.organizationPrimary : xp.petCareActive,
     ),
   );
 }
