@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "plan_id": "health-occurrences-ec83",
+  "approved_at": "2026-09-02T10:00:00Z",
+  "approved_by": "user-chat-2026-09-02",
+  "approved_until": "2026-09-04T10:00:00Z",
+  "content_hash": "sha256:471679bda6fd7d08650bc392520ee2f92e86cb014f6f3200eb670232a8edf729",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/health-occurrences-integration-ec83",
+  "control_issue": 811,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Domain spec, DB, backend API",
+      "branch": "cursor/health-occurrences-backend-ec83",
+      "allowed_paths": [
+        "docs/domains/health_tracking/changes/occurrence-scheduling.md",
+        "db/migrations/**",
+        "server/lib/occurrence*",
+        "server/lib/recurrenceHelper.js",
+        "server/routes/healthEntries/**",
+        "server/test/healthEntries/**",
+        "server/test/occurrence*",
+        "scripts/migrations/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Flutter data layer + schedule form",
+      "branch": "cursor/health-occurrences-data-form-ec83",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/domain/**",
+        "flutter_app/lib/features/health_tracking/data/**",
+        "flutter_app/lib/features/health_tracking/presentation/providers/**",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_form/**",
+        "flutter_app/lib/features/health_tracking/presentation/screens/health_entry_form_screen.dart",
+        "flutter_app/lib/features/health_tracking/presentation/controllers/**",
+        "flutter_app/lib/core/utils/calendar_date.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/health_tracking/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "List triage: CareEventRow + stack sheet",
+      "branch": "cursor/health-occurrences-list-stack-ec83",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/widgets/care_event_*",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/occurrence_*",
+        "flutter_app/lib/features/experience/presentation/**",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/**",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_events_preview_section.dart",
+        "flutter_app/test/features/health_tracking/presentation/widgets/**",
+        "flutter_app/test/features/experience/**",
+        "docs/design/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Event view workbench",
+      "branch": "cursor/health-occurrences-event-view-ec83",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_*",
+        "flutter_app/lib/features/health_tracking/presentation/screens/pet_event_view_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/home_event_actions.dart",
+        "flutter_app/test/features/health_tracking/presentation/screens/pet_event_view_screen_test.dart",
+        "docs/design/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "BDD, E2E, integration to main",
+      "branch": "cursor/health-occurrences-e2e-ec83",
+      "allowed_paths": [
+        "e2e/playwright/tests/health.tracking.spec.ts",
+        "e2e/playwright/pages/**",
+        "e2e/playwright/support/api.ts",
+        "flutter_app/test/bdd/features/health_tracking.feature",
+        "docs/domains/health_tracking/**",
+        ".agents/plans/health-occurrences-ec83.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
