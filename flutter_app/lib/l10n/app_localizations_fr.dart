@@ -657,6 +657,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get allCare => 'Tous les soins';
 
   @override
+  String get dashboardNavLabel => 'Tableau de bord';
+
+  @override
   String get careNavLabel => 'Soins';
 
   @override

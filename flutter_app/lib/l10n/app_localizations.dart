@@ -1232,6 +1232,12 @@ abstract class AppLocalizations {
   /// **'All care'**
   String get allCare;
 
+  /// No description provided for @dashboardNavLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashboardNavLabel;
+
   /// No description provided for @careNavLabel.
   ///
   /// In en, this message translates to:

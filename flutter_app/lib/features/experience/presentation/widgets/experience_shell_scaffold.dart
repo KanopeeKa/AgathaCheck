@@ -37,6 +37,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
     this.screenTitle,
     this.contextualActions = const [],
     this.backPath,
+    this.forceBackPath = false,
     this.orgNavVariant,
     this.organization,
   });
@@ -53,6 +54,9 @@ class ExperienceShellScaffold extends ConsumerWidget {
 
   /// When [Navigator.canPop] is false, navigate here instead of the section root.
   final String? backPath;
+
+  /// When true, [backPath] is used even when [Navigator.canPop] is true.
+  final bool forceBackPath;
 
   /// Organisation nav title variant (D-v3-NAV-1). When set with [screenTitle],
   /// replaces [AppLogoTitle] for organisation experience screens.
@@ -210,6 +214,10 @@ class ExperienceShellScaffold extends ConsumerWidget {
   }
 
   void _onBack(BuildContext context) {
+    if (backPath != null && forceBackPath) {
+      context.go(backPath!);
+      return;
+    }
     if (Navigator.canPop(context)) {
       Navigator.pop(context);
     } else {

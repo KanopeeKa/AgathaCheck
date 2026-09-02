@@ -126,7 +126,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Today'), findsOneWidget);
+      expect(find.text('Dashboard'), findsOneWidget);
       expect(find.text('Pets'), findsOneWidget);
       expect(find.text('Care'), findsOneWidget);
       expect(find.text('Fostering'), findsOneWidget);
@@ -154,7 +154,7 @@ void main() {
         find.byKey(const Key('guardian_bottom_navigation')),
         findsOneWidget,
       );
-      expect(find.text('Today'), findsOneWidget);
+      expect(find.text('Dashboard'), findsOneWidget);
     });
 
     testWidgets('is hidden in shell at 600px width', (tester) async {

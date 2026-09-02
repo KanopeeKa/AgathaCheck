@@ -81,7 +81,7 @@ class GuardianPrimaryDestinations {
       route: '/g/home',
       icon: Icons.today_outlined,
       selectedIcon: Icons.today,
-      labelBuilder: _todayLabel,
+      labelBuilder: _dashboardLabel,
     ),
     GuardianPrimaryDestination(
       route: '/g/pets',
@@ -109,7 +109,7 @@ class GuardianPrimaryDestinations {
     ),
   ];
 
-  static String _todayLabel(AppLocalizations l) => l.today;
+  static String _dashboardLabel(AppLocalizations l) => l.dashboardNavLabel;
   static String _petsLabel(AppLocalizations l) => l.petsNavLabel;
   static String _careLabel(AppLocalizations l) => l.careNavLabel;
   static String _fosteringLabel(AppLocalizations l) => l.fostering;
@@ -119,7 +119,7 @@ class GuardianPrimaryDestinations {
   static String semanticsIdentifier(String route) {
     switch (route) {
       case '/g/home':
-        return 'guardian_nav_today';
+        return 'guardian_nav_dashboard';
       case '/g/pets':
         return 'guardian_nav_pets';
       case '/g/events':

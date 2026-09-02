@@ -647,6 +647,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allCare => 'All care';
 
   @override
+  String get dashboardNavLabel => 'Dashboard';
+
+  @override
   String get careNavLabel => 'Care';
 
   @override

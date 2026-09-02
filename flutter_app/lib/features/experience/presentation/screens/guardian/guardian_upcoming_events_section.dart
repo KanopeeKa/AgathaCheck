@@ -228,14 +228,7 @@ class _GuardianUpcomingEventsSectionState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GuardianDashboardSectionHeader(
-          title: l.careEyebrow,
-          actionLabel: showAllCare ? l.allCare : null,
-          onAction: showAllCare ? () => context.go('/g/events') : null,
-          actionKey: showAllCare
-              ? const Key('guardian_dashboard_care_view_all')
-              : null,
-        ),
+        GuardianDashboardSectionHeader(title: l.careEyebrow),
         const SizedBox(height: 10),
         GuardianDeskSectionCard(
           key: const Key('guardian_dashboard_care_section'),
@@ -249,6 +242,12 @@ class _GuardianUpcomingEventsSectionState
             priorities.all.isNotEmpty,
           ),
         ),
+        if (showAllCare)
+          GuardianDashboardSectionLink(
+            linkKey: const Key('guardian_dashboard_care_view_all'),
+            label: l.allCare,
+            onPressed: () => context.go('/g/events'),
+          ),
       ],
     );
   }

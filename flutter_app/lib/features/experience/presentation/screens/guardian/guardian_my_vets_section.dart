@@ -32,14 +32,7 @@ class GuardianMyVetsSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          GuardianDashboardSectionHeader(
-            title: l.careTeamEyebrow,
-            actionLabel: showAllAction ? l.allCareTeams : null,
-            onAction: showAllAction ? () => context.go('/g/vets') : null,
-            actionKey: showAllAction
-                ? const Key('guardian_dashboard_all_care_teams')
-                : null,
-          ),
+          GuardianDashboardSectionHeader(title: l.careTeamEyebrow),
           const SizedBox(height: 10),
           DecoratedBox(
             decoration: BoxDecoration(
@@ -109,7 +102,14 @@ class GuardianMyVetsSection extends ConsumerWidget {
                                     : (linkedPetsByVetId?[vet.id] ??
                                               const <Pet>[])
                                           .length,
-                                onTap: () => context.go('/g/vets/${vet.id}'),
+                                onTap: () {
+                                  final returnTo = Uri.encodeComponent(
+                                    '/g/home',
+                                  );
+                                  context.go(
+                                    '/g/vets/${vet.id}?returnTo=$returnTo',
+                                  );
+                                },
                               ),
                           ],
                         );
@@ -117,6 +117,12 @@ class GuardianMyVetsSection extends ConsumerWidget {
                     ),
             ),
           ),
+          if (showAllAction)
+            GuardianDashboardSectionLink(
+              linkKey: const Key('guardian_dashboard_all_care_teams'),
+              label: l.allCareTeams,
+              onPressed: () => context.go('/g/vets'),
+            ),
         ],
       ),
     );

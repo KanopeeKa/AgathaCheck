@@ -145,7 +145,7 @@ export class GuardianDashboardPage {
     await refreshFlutterAccessibility(this.page);
   }
 
-  /** Compact Guardian bottom bar tab (Today, Pets, Care, Fostering, Account). */
+  /** Compact Guardian bottom bar tab (Dashboard, Pets, Care, Fostering, Account). */
   async openBottomNavTab(label: string): Promise<void> {
     const pattern = this.bottomNavTabPattern(label);
     const tab = this.page
@@ -161,8 +161,8 @@ export class GuardianDashboardPage {
       ? /^Care$|^Soins$/i
       : label === 'Pets'
         ? /^Pets$|^Animaux$/i
-        : label === 'Today'
-          ? /^Today$|^Aujourd'hui$/i
+        : label === 'Dashboard'
+          ? /^Dashboard$|^Tableau de bord$/i
           : label === 'Fostering'
             ? /^Fostering$|^Accueil$/i
             : label === 'Account'
@@ -196,8 +196,8 @@ export class GuardianDashboardPage {
 
   private destinationSemanticsId(label: string): string {
     switch (label) {
-      case 'Today':
-        return 'guardian_nav_today';
+      case 'Dashboard':
+        return 'guardian_nav_dashboard';
       case 'Pets':
         return 'guardian_nav_pets';
       case 'Care':
