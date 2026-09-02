@@ -9537,6 +9537,78 @@ abstract class AppLocalizations {
   /// **'Due {date}'**
   String urgencyDueDate(String date);
 
+  /// No description provided for @occurrenceDateAtTime.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} at {time}'**
+  String occurrenceDateAtTime(String date, String time);
+
+  /// No description provided for @occurrenceOpenCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} open'**
+  String occurrenceOpenCount(int count);
+
+  /// No description provided for @occurrenceMissedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} missed'**
+  String occurrenceMissedCount(int count);
+
+  /// No description provided for @occurrenceStackSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record doses for {name}'**
+  String occurrenceStackSheetTitle(String name);
+
+  /// No description provided for @occurrenceZoneMissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed'**
+  String get occurrenceZoneMissed;
+
+  /// No description provided for @occurrenceZoneDueToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Due today'**
+  String get occurrenceZoneDueToday;
+
+  /// No description provided for @occurrenceZoneComingUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming up'**
+  String get occurrenceZoneComingUp;
+
+  /// No description provided for @occurrenceRecordHead.
+  ///
+  /// In en, this message translates to:
+  /// **'Record latest dose'**
+  String get occurrenceRecordHead;
+
+  /// No description provided for @occurrenceSkipEarlierMissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip earlier missed doses when recording'**
+  String get occurrenceSkipEarlierMissed;
+
+  /// No description provided for @occurrenceReviewEach.
+  ///
+  /// In en, this message translates to:
+  /// **'Review in event view'**
+  String get occurrenceReviewEach;
+
+  /// No description provided for @occurrenceSkipAllMissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip all missed'**
+  String get occurrenceSkipAllMissed;
+
+  /// No description provided for @occurrenceNotNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get occurrenceNotNow;
+
   /// No description provided for @completedEventSemanticLabel.
   ///
   /// In en, this message translates to:

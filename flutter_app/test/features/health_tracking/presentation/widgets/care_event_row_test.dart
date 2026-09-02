@@ -3,6 +3,8 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/entities/health_occurrence.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/occurrence_scheduling.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row_context.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
@@ -151,6 +153,57 @@ void main() {
       await tester.tap(find.text('Parasite prevention'));
       await tester.pumpAndSettle();
       expect(viewed, isTrue);
+    });
+  });
+
+  group('CareEventRow — occurrence summary', () {
+    testWidgets('shows occurrence-aware overdue status line', (tester) async {
+      final yesterday = DateTime.now().subtract(const Duration(days: 1));
+      final summary = OccurrenceSummary(
+        openCount: 2,
+        missedCount: 1,
+        missedHead: HealthOccurrence(
+          id: 'occ-1',
+          entryId: 'entry-1',
+          scheduledDate: yesterday,
+          scheduledTime: '08:00',
+          status: 'pending',
+          missed: true,
+        ),
+        nextHead: HealthOccurrence(
+          id: 'occ-2',
+          entryId: 'entry-1',
+          scheduledDate: DateTime.now(),
+          scheduledTime: '20:00',
+          status: 'pending',
+        ),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme.copyWith(
+            splashFactory: NoSplash.splashFactory,
+          ),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: CareEventRow(
+              entry: _overdueEntry,
+              pet: _pet,
+              rowContext: CareEventRowContext.dashboard,
+              isCompleted: false,
+              occurrenceSummary: summary,
+              onMarkDone: () {},
+              onUndo: () {},
+              onView: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Overdue'), findsOneWidget);
+      expect(find.textContaining('2 open'), findsOneWidget);
     });
   });
 }

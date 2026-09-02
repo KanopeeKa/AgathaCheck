@@ -1908,6 +1908,39 @@
       "date": { "type": "String" }
     }
   },
+  "occurrenceDateAtTime": "{date} at {time}",
+  "@occurrenceDateAtTime": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "occurrenceOpenCount": "{count} open",
+  "@occurrenceOpenCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "occurrenceMissedCount": "{count} missed",
+  "@occurrenceMissedCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "occurrenceStackSheetTitle": "Record doses for {name}",
+  "@occurrenceStackSheetTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "occurrenceZoneMissed": "Missed",
+  "occurrenceZoneDueToday": "Due today",
+  "occurrenceZoneComingUp": "Coming up",
+  "occurrenceRecordHead": "Record latest dose",
+  "occurrenceSkipEarlierMissed": "Skip earlier missed doses when recording",
+  "occurrenceReviewEach": "Review in event view",
+  "occurrenceSkipAllMissed": "Skip all missed",
+  "occurrenceNotNow": "Not now",
   "completedEventSemanticLabel": "{name}, completed, for {petName}",
   "@completedEventSemanticLabel": {
     "placeholders": {

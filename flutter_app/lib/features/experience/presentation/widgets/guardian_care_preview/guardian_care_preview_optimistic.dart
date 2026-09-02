@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../../health_tracking/presentation/widgets/care_event_row.dart';
 import '../../../../health_tracking/presentation/widgets/care_event_row_context.dart';
+import '../../../../health_tracking/presentation/widgets/care_event_row_host.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 
 /// A single item in the merged mobile preview: due or optimistically completed.
@@ -76,8 +77,8 @@ List<GuardianCarePreviewItem> buildGuardianCareMobilePreview({
   return compacted;
 }
 
-/// Renders merged preview items as [CareEventRow] items.
-class GuardianCarePreviewEventList extends StatelessWidget {
+/// Renders merged preview items as [CareEventRowHost] items.
+class GuardianCarePreviewEventList extends ConsumerWidget {
   const GuardianCarePreviewEventList({
     super.key,
     required this.items,
@@ -94,19 +95,19 @@ class GuardianCarePreviewEventList extends StatelessWidget {
   final void Function(HealthEntry entry) onView;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       key: const Key('care_event_row_list'),
       mainAxisSize: MainAxisSize.min,
       children: [
         for (var i = 0; i < items.length; i++)
-          CareEventRow(
+          CareEventRowHost(
             key: Key('care_event_row_${items[i].entry.id}'),
             entry: items[i].entry,
             pet: petMap[items[i].entry.petId],
             rowContext: CareEventRowContext.dashboard,
             isCompleted: items[i].isCompleted,
-            onMarkDone: () => onMarkDone(items[i].entry, i),
+            onMarkDone: () async => onMarkDone(items[i].entry, i),
             onUndo: () => onUndo(items[i].entry),
             onView: () => onView(items[i].entry),
           ),
