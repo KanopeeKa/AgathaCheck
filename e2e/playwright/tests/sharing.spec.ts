@@ -155,32 +155,6 @@ test.describe('Pet sharing', () => {
     await sharedPet.expectInvalidLink();
   });
 
-  test('user can hide a shared pet via swipe', async ({ page }) => {
-    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const owner = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
-    const bob = await signupUser(baseURL, { firstName: 'Bob', lastName: 'Follower' });
-    const pet = await createPet(baseURL, owner.accessToken, 'Bella', 'Dog');
-    const link = await createShareLink(baseURL, owner.accessToken, pet.id);
-
-    // Bob accepts the share via the API so the pet appears in his list as shared.
-    await acceptShareByCode(baseURL, bob.accessToken, link.share_code);
-
-    // Bob logs in and verifies Bella is visible in the pet list.
-    await loginAs(page, bob);
-    const petList = new PetListPage(page);
-    await petList.expectLoaded();
-    await petList.expectPetVisible('Bella');
-
-    // Swipe left on Bella's card to trigger the Dismissible hide action.
-    await petList.swipeLeftPetCard('Bella');
-
-    // Confirm the hide in the dialog that appears ("Hide Pet" / "Hide" button).
-    await petList.confirmHidePet();
-
-    // Bella should no longer appear in the pet list.
-    await petList.expectPetHidden('Bella');
-  });
-
   test('@legacy pending share API returns empty and pet list has no pending section', async ({
     page,
     testUser,

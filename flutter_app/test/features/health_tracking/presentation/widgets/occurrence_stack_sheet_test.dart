@@ -55,15 +55,18 @@ Widget _buildSheet({
 void main() {
   group('OccurrenceStackSheet', () {
     testWidgets('shows missed, due today, and coming up zones', (tester) async {
-      final today = calendarDateOnly(DateTime.now());
+      final now = DateTime.now();
+      final today = calendarDateOnly(now);
       final yesterday = today.subtract(const Duration(days: 1));
       final tomorrow = today.add(const Duration(days: 1));
+      // Use a late time today so the occurrence stays in "Due today" after noon.
+      const todayTime = '23:59';
 
       await tester.pumpWidget(
         _buildSheet(
           occurrences: [
             _occ(id: 'missed', date: yesterday, time: '08:00'),
-            _occ(id: 'today', date: today, time: '12:00'),
+            _occ(id: 'today', date: today, time: todayTime),
             _occ(id: 'later', date: tomorrow, time: '08:00'),
           ],
         ),
