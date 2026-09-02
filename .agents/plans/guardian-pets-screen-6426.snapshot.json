@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "plan_id": "guardian-pets-screen-6426",
+  "approved_at": "2026-09-02T10:36:00Z",
+  "approved_by": "user chat 2026-09-02 (/execute-plan + ui-design-deep decisions A-F)",
+  "approved_until": "2026-09-04T10:36:00Z",
+  "content_hash": "sha256:6d2c787edcf84ae81cf826828bb27b6219af39400a9f7d316b7524a857984278",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/guardian-pets-screen-integration-6426",
+  "control_issue": 816,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "List clarity and tile harmonisation",
+      "branch": "cursor/guardian-pets-list-clarity-6426",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_dashboard_pet_card.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_shell_shared_pet_card.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_my_pets_section.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_dashboard_helpers.dart",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/guardian-pets-screen-6426.md",
+        ".agents/plans/guardian-pets-screen-6426.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Bottom bar and bulk share selection screen",
+      "branch": "cursor/guardian-pets-bulk-nav-6426",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/core/router/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/guardian-pets-screen-6426.md",
+        ".agents/plans/guardian-pets-screen-6426.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    }
+  ]
+}

@@ -79,3 +79,10 @@ double guardianDashboardAddPetTileWidth(double viewportWidth) {
   if (viewportWidth < 900) return 76;
   return 80;
 }
+
+/// Minimum card width for the guardian full pets list grid (slightly wider than dashboard rail).
+double guardianPetsListCardMinWidth(double viewportWidth) {
+  if (viewportWidth < 600) return 156;
+  if (viewportWidth < 900) return 180;
+  return 200;
+}

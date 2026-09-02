@@ -7,7 +7,6 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../experience/presentation/screens/guardian/guardian_dashboard_helpers.dart';
-import '../../../experience/presentation/widgets/guardian_full_list_pet_card.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/events_nav_icon_button.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
@@ -26,7 +25,7 @@ import '../widgets/pet_list/pending_foster_placements_section.dart';
 import '../widgets/pet_list/pending_shares_section.dart';
 import '../widgets/pet_list/pet_list_bulk_share_bar.dart';
 import '../../../experience/presentation/screens/guardian/guardian_bulk_share.dart';
-import '../widgets/pet_list/guardian_passed_away_section.dart';
+import '../widgets/pet_list/guardian_embedded_pets_list.dart';
 import '../widgets/pet_list/pet_list_section_header.dart';
 
 /// Screen that displays the list of all pets owned by the user.
@@ -104,13 +103,6 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
             pets: _controller.guardianShellPets(petListAsync.valueOrNull ?? []),
           )
         : null;
-    Widget guardianListCard(Pet pet) => GuardianFullListPetCard(
-      pet: pet,
-      careState: careSummary != null
-          ? guardianTodayPetCareState(pet, careSummary)
-          : GuardianTodayPetCareState.clear,
-      onTap: () => context.go('/pet/${pet.id}'),
-    );
     final scaffoldBody = petListAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(
@@ -155,14 +147,20 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
           );
         }
 
-        final orgNames = widget.embeddedInShell
-            ? <String>[]
-            : _controller.getOrgNames(allPets);
+        if (widget.embeddedInShell) {
+          return GuardianEmbeddedPetsList(
+            allPets: allPets,
+            controller: _controller,
+            careSummary: careSummary,
+            l: l,
+            theme: theme,
+          );
+        }
+
+        final orgNames = _controller.getOrgNames(allPets);
         final hasFosteredPets = _controller.hasFosteredPets(allPets);
         _controller.syncOrgFilter(orgNames);
-        final filteredPets = widget.embeddedInShell
-            ? _controller.guardianShellPets(allPets)
-            : _controller.filterPets(allPets);
+        final filteredPets = _controller.filterPets(allPets);
 
         if (filteredPets.isEmpty) {
           return Center(
@@ -250,7 +248,6 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                     }
                   });
                 },
-                cardBuilder: widget.embeddedInShell ? guardianListCard : null,
               ),
             ],
             if (_controller.orgFilter == null ||
@@ -267,11 +264,9 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                 orgFilter: _controller.orgFilter,
                 l: l,
                 theme: theme,
-                tileBuilder: widget.embeddedInShell ? guardianListCard : null,
               ),
             ],
-            if (!widget.embeddedInShell &&
-                (_controller.orgFilter == null ||
+            if (_controller.orgFilter == null ||
                     (_controller.orgFilter != '_personal' &&
                         _controller.orgFilter != '_fostered')))
               OrganizationPetsSection(
@@ -281,14 +276,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                 ref: ref,
                 parentContext: context,
               ),
-            if (widget.embeddedInShell)
-              GuardianPassedAwaySection(
-                pets: allPassedAway,
-                header: l.passedAway,
-                cardBuilder: guardianListCard,
-              )
-            else
-              PassedAwayPetsSection(allPassedAway: allPassedAway, theme: theme),
+            PassedAwayPetsSection(allPassedAway: allPassedAway, theme: theme),
           ],
         );
       },
