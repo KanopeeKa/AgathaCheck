@@ -336,8 +336,11 @@ void main() {
         '/g/vets/vet-back-1',
       );
       expect(
-        router.routerDelegate.currentConfiguration.uri.queryParameters[
-            'returnTo'],
+        router
+            .routerDelegate
+            .currentConfiguration
+            .uri
+            .queryParameters['returnTo'],
         '/g/home',
       );
 
