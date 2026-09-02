@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/shell_return_navigation.dart';
+
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../core/widgets/shell_notification_bell.dart';
 import '../../../../core/theme/app_color_tokens.dart';
@@ -214,14 +216,13 @@ class ExperienceShellScaffold extends ConsumerWidget {
   }
 
   void _onBack(BuildContext context) {
-    if (backPath != null && forceBackPath) {
-      context.go(backPath!);
-      return;
-    }
-    if (Navigator.canPop(context)) {
-      Navigator.pop(context);
-    } else {
-      context.go(backPath ?? _sectionRoot());
-    }
+    final returnTo = shellReturnToFromState(GoRouterState.of(context));
+    handleShellBack(
+      context,
+      backPath: backPath,
+      returnTo: returnTo,
+      defaultPath: backPath ?? _sectionRoot(),
+      forceBackPath: forceBackPath,
+    );
   }
 }

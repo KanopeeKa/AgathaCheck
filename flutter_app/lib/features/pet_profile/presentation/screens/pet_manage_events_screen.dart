@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
@@ -36,7 +37,7 @@ class PetManageEventsScreen extends ConsumerWidget {
           experience: experience,
           currentLocation: GoRouterState.of(context).uri.path,
           screenTitle: l.manageEvents,
-          backPath: '/pet/$petId',
+          backPath: petDetailBackPath(context, petId),
           contextualActions: [
             IconButton(
               key: const Key('manage_events_add_app_bar'),

@@ -7,6 +7,7 @@
  * approximate weight (spec line count). Rebalance when adding large spec files.
  *
  * Shard 10 isolates org.onboarding (historically flaky after Nav v2 / theme work).
+ * Shard 6 groups pet profile + guardian primary nav journeys (pet-detail-ux-c2ce).
  * Shard 12–13 split org v2 (ci-test-depth-abc9) from experience/foster flows (Aug 2026).
  *
  * Usage:
@@ -37,7 +38,9 @@ export const SHARDS = [
   ['playwright/tests/notifications.spec.ts'],
   [
     'playwright/tests/pet.profiles.spec.ts',
+    'playwright/tests/pet.detail-navigation.spec.ts',
     'playwright/tests/pet.timeline.spec.ts',
+    'playwright/tests/guardian.navigation.spec.ts',
     'playwright/tests/organisation.pet-filters.spec.ts',
   ],
   ['playwright/tests/veterinarian.spec.ts'],
@@ -68,7 +71,6 @@ export const SHARDS = [
     'playwright/tests/fostering.session-detail.spec.ts',
     'playwright/tests/foster.onboarding.spec.ts',
     'playwright/tests/guardian.dashboard.spec.ts',
-    'playwright/tests/guardian.navigation.spec.ts',
     'playwright/tests/experience.navigation.spec.ts',
   ],
 ];

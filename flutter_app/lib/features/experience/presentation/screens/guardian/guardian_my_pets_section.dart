@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../core/widgets/dashboard_section.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -118,7 +119,7 @@ class GuardianMyPetsSection extends ConsumerWidget {
                     PetTileStrip(
                       useWrap: true,
                       pets: personalPets,
-                      onPetTap: (pet) => context.go('/pet/${pet.id}'),
+                      onPetTap: (pet) => openPetDetail(context, pet.id),
                     ),
                   if (fosterPets.isNotEmpty) ...[
                     const SizedBox(height: 16),
@@ -127,7 +128,7 @@ class GuardianMyPetsSection extends ConsumerWidget {
                     PetTileStrip(
                       useWrap: true,
                       pets: fosterPets,
-                      onPetTap: (pet) => context.go('/pet/${pet.id}'),
+                      onPetTap: (pet) => openPetDetail(context, pet.id),
                     ),
                   ],
                   if (sharedPets.isNotEmpty) ...[
@@ -137,7 +138,7 @@ class GuardianMyPetsSection extends ConsumerWidget {
                     PetTileStrip(
                       useWrap: true,
                       pets: sharedPets,
-                      onPetTap: (pet) => context.go('/pet/${pet.id}'),
+                      onPetTap: (pet) => openPetDetail(context, pet.id),
                       tileBuilder: (pet, tile) =>
                           GuardianShellSharedPetCard(pet: pet, child: tile),
                     ),
@@ -231,7 +232,7 @@ class _GuardianPetRail extends StatelessWidget {
       careState: careSummary == null
           ? GuardianTodayPetCareState.clear
           : guardianTodayPetCareState(pet, careSummary!),
-      onTap: () => context.go('/pet/${pet.id}'),
+      onTap: () => openPetDetail(context, pet.id),
     );
     if (!pet.isShared) return card;
     return GuardianShellSharedPetCard(pet: pet, child: card);

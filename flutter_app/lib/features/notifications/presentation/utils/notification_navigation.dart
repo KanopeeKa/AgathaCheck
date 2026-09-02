@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/shell_return_navigation.dart';
 import '../../domain/entities/app_notification.dart';
 import '../../domain/entities/notification_kind.dart';
 
@@ -52,10 +53,12 @@ void navigateFromNotification(
     if (entryId != null &&
         entryId.isNotEmpty &&
         notification.kind != NotificationKind.administrative) {
-      context.go('/pet/$petId/events/$entryId');
+      context.go(
+        '/pet/$petId/events/$entryId?returnTo=${encodeShellReturnTo('/notifications')}',
+      );
       return;
     }
-    context.go('/pet/$petId');
+    context.go(petDetailLocation(petId, returnTo: '/notifications'));
     return;
   }
 

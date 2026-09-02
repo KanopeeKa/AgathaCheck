@@ -657,6 +657,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get allCare => 'Tous les soins';
 
   @override
+  String careForPet(String petName) {
+    return 'Soins pour $petName';
+  }
+
+  @override
   String get dashboardNavLabel => 'Tableau de bord';
 
   @override

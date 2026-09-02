@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import 'widgets/weight_tracking_section.dart';
@@ -24,6 +25,7 @@ class PetWeightTrackingScreen extends ConsumerWidget {
       experience: experience,
       currentLocation: GoRouterState.of(context).uri.path,
       screenTitle: l.weightTracking,
+      backPath: petDetailBackPath(context, petId),
       contextualActions: [
         IconButton(
           key: const Key('weight_tracking_add_app_bar'),

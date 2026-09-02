@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/health_entry.dart';
@@ -220,7 +221,7 @@ class OtherEventFormActions {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(isEdit ? l.entryUpdated : l.entryCreated)),
         );
-        context.go('/pet/$petId');
+        goToPetDetail(context, petId);
       }
     } catch (e) {
       if (isMounted()) {

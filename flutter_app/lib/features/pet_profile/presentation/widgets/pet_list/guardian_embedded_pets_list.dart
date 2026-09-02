@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
+import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../experience/presentation/screens/guardian/guardian_dashboard_helpers.dart';
 import '../../../../experience/presentation/widgets/guardian_dashboard_pet_card.dart';
@@ -43,7 +43,7 @@ class GuardianEmbeddedPetsList extends StatelessWidget {
             ),
           );
 
-    void openPet(Pet pet) => context.go('/pet/${pet.id}');
+    void openPet(Pet pet) => openPetDetail(context, pet.id);
 
     GuardianTodayPetCareState careFor(Pet pet) {
       if (careSummary == null) return GuardianTodayPetCareState.clear;

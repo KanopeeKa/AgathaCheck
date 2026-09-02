@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
@@ -154,7 +155,7 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
 
   Future<void> _confirmDelete() => _actions.confirmDelete(
     entryName: _nameController.text,
-    onDeleted: () => context.go('/pet/${widget.petId}'),
+    onDeleted: () => goToPetDetail(context, widget.petId),
   );
 
   @override
@@ -169,7 +170,7 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,
-          onPressed: () => context.go('/pet/${widget.petId}'),
+          onPressed: () => goToPetDetail(context, widget.petId),
         ),
       ),
       body: _isLoading

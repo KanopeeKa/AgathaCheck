@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../../core/router/shell_return_navigation.dart';
 import '../../domain/entities/pet.dart';
 import 'pet_card.dart';
 
@@ -35,7 +36,7 @@ class PersonalPetsSection extends StatelessWidget {
     return PetTileStrip(
       useWrap: true,
       pets: sorted,
-      onPetTap: (pet) => context.go('/pet/${pet.id}'),
+      onPetTap: (pet) => openPetDetail(context, pet.id),
     );
   }
 }
