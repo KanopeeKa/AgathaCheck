@@ -5314,6 +5314,51 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String occurrenceDateAtTime(String date, String time) {
+    return '$date at $time';
+  }
+
+  @override
+  String occurrenceOpenCount(int count) {
+    return '$count open';
+  }
+
+  @override
+  String occurrenceMissedCount(int count) {
+    return '$count missed';
+  }
+
+  @override
+  String occurrenceStackSheetTitle(String name) {
+    return 'Record doses for $name';
+  }
+
+  @override
+  String get occurrenceZoneMissed => 'Missed';
+
+  @override
+  String get occurrenceZoneDueToday => 'Due today';
+
+  @override
+  String get occurrenceZoneComingUp => 'Coming up';
+
+  @override
+  String get occurrenceRecordHead => 'Record latest dose';
+
+  @override
+  String get occurrenceSkipEarlierMissed =>
+      'Skip earlier missed doses when recording';
+
+  @override
+  String get occurrenceReviewEach => 'Review in event view';
+
+  @override
+  String get occurrenceSkipAllMissed => 'Skip all missed';
+
+  @override
+  String get occurrenceNotNow => 'Not now';
+
+  @override
   String completedEventSemanticLabel(String name, String petName) {
     return '$name, completed, for $petName';
   }

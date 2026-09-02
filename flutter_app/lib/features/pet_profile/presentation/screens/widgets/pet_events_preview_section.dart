@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../../core/widgets/dashboard_section.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../../health_tracking/presentation/widgets/care_event_row.dart';
 import '../../../../health_tracking/presentation/widgets/care_event_row_context.dart';
+import '../../../../health_tracking/presentation/widgets/care_event_row_host.dart';
 import '../../../domain/entities/pet.dart';
 import '../../widgets/pet_list/home_event_actions.dart';
 
@@ -62,14 +62,12 @@ class PetEventsPreviewSection extends ConsumerWidget {
               return Column(
                 children: dueEntries
                     .map(
-                      (entry) => CareEventRow(
+                      (entry) => CareEventRowHost(
                         key: Key('pet_preview_care_row_${entry.id}'),
                         entry: entry,
                         pet: pet,
                         rowContext: CareEventRowContext.pet,
                         isCompleted: false,
-                        onMarkDone: () =>
-                            HomeEventActions.markDone(context, ref, entry),
                         onUndo: () {},
                         onView: () =>
                             HomeEventActions.viewEntry(context, entry),

@@ -1835,6 +1835,39 @@
       "date": { "type": "String" }
     }
   },
+  "occurrenceDateAtTime": "{date} à {time}",
+  "@occurrenceDateAtTime": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "occurrenceOpenCount": "{count} en attente",
+  "@occurrenceOpenCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "occurrenceMissedCount": "{count} manqués",
+  "@occurrenceMissedCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "occurrenceStackSheetTitle": "Enregistrer les doses pour {name}",
+  "@occurrenceStackSheetTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "occurrenceZoneMissed": "Manqués",
+  "occurrenceZoneDueToday": "Aujourd'hui",
+  "occurrenceZoneComingUp": "À venir",
+  "occurrenceRecordHead": "Enregistrer la dose la plus récente",
+  "occurrenceSkipEarlierMissed": "Ignorer les doses manquées antérieures lors de l'enregistrement",
+  "occurrenceReviewEach": "Voir dans l'événement",
+  "occurrenceSkipAllMissed": "Ignorer tous les manqués",
+  "occurrenceNotNow": "Pas maintenant",
   "completedEventSemanticLabel": "{name}, terminé, pour {petName}",
   "@completedEventSemanticLabel": {
     "placeholders": {

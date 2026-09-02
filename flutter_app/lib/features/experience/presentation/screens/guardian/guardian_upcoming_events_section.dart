@@ -8,6 +8,7 @@ import '../../../../health_tracking/presentation/providers/health_providers.dart
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/widgets/pet_list/home_event_actions.dart';
+import '../../../../health_tracking/presentation/widgets/occurrence_care_actions.dart';
 import '../../widgets/guardian_care_preview/guardian_care_preview_optimistic.dart';
 import '../../widgets/guardian_dashboard_section_header.dart';
 import '../../widgets/guardian_illustrated_empty_state.dart';
@@ -68,8 +69,14 @@ class _GuardianUpcomingEventsSectionState
   List<HealthEntry> _lastDueEntriesSnapshot = const [];
 
   Future<void> _onMarkDone(HealthEntry entry, int previewIndex) async {
-    final result = await HomeEventActions.showCompletionSheet(context);
+    final result = await OccurrenceCareActions.showMarkDoneFlow(
+      context,
+      ref,
+      entry,
+    );
     if (result == null || !mounted) return;
+
+    if (result.alreadyPersisted) return;
 
     setState(() {
       _completed[entry.id] = GuardianCareOptimisticCompletion(
@@ -79,7 +86,13 @@ class _GuardianUpcomingEventsSectionState
     });
 
     try {
-      await HomeEventActions.commitCompletion(context, ref, entry, result);
+      await OccurrenceCareActions.persistCompletion(
+        ref,
+        entry,
+        result.completedOn,
+        occurrenceId: result.occurrenceId,
+        skipEarlierMissed: result.skipEarlierMissed,
+      );
     } catch (_) {
       if (!mounted) return;
       setState(() => _completed.remove(entry.id));
