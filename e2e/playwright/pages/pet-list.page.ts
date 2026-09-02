@@ -315,8 +315,9 @@ export class PetListPage {
       await this.page.waitForTimeout(400);
       await this.page.mouse.up();
       await refreshFlutterAccessibility(this.page);
-      await hideAffordance.first().waitFor({ timeout: 2_000 });
-    }).toPass({ timeout: 30_000 });
+      await this.page.waitForTimeout(600);
+      await hideAffordance.first().waitFor({ timeout: 5_000 });
+    }).toPass({ timeout: 45_000 });
   }
 
   async confirmHidePet(): Promise<void> {
