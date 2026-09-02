@@ -93,6 +93,22 @@ void main() {
       expect(model.frequency, HealthFrequency.once);
     });
 
+    test('fromJson parses schedule_times', () {
+      final model = HealthEntryModel.fromJson({
+        ...fullJson,
+        'schedule_times': ['08:00', '20:00'],
+      });
+      expect(model.scheduleTimes, ['08:00', '20:00']);
+    });
+
+    test('toJson includes schedule_times when set', () {
+      final model = HealthEntryModel.fromJson(fullJson).copyWith(
+        scheduleTimes: ['09:30', '21:00'],
+      );
+      final json = HealthEntryModel.fromEntity(model).toJson();
+      expect(json['schedule_times'], ['09:30', '21:00']);
+    });
+
     test('fromJson parses all entry types', () {
       final expected = {
         'medication': HealthEntryType.medication,

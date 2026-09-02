@@ -64,6 +64,8 @@ class HealthEntryFormState {
     this.selectedHealthIssueId,
     this.selectedPetIds = const {},
     this.allowedTypes,
+    this.scheduleAtSpecificTimes = false,
+    this.scheduleTimes = const ['08:00'],
   }) : startDate = startDate ?? DateTime.now();
 
   final String name;
@@ -86,6 +88,8 @@ class HealthEntryFormState {
   final String? selectedHealthIssueId;
   final Set<String> selectedPetIds;
   final List<HealthEntryType>? allowedTypes;
+  final bool scheduleAtSpecificTimes;
+  final List<String> scheduleTimes;
 
   int get totalPhotoCount => photos.length + pendingPhotos.length;
 
@@ -117,6 +121,8 @@ class HealthEntryFormState {
     String? selectedHealthIssueId,
     Set<String>? selectedPetIds,
     List<HealthEntryType>? allowedTypes,
+    bool? scheduleAtSpecificTimes,
+    List<String>? scheduleTimes,
     bool clearDueDate = false,
     bool clearCompletedOn = false,
     bool clearRepeatEndDate = false,
@@ -147,6 +153,9 @@ class HealthEntryFormState {
           : (selectedHealthIssueId ?? this.selectedHealthIssueId),
       selectedPetIds: selectedPetIds ?? this.selectedPetIds,
       allowedTypes: allowedTypes ?? this.allowedTypes,
+      scheduleAtSpecificTimes:
+          scheduleAtSpecificTimes ?? this.scheduleAtSpecificTimes,
+      scheduleTimes: scheduleTimes ?? this.scheduleTimes,
     );
   }
 }
@@ -289,6 +298,11 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
         remindDaysBefore: entry.remindDaysBefore,
         selectedHealthIssueId: entry.healthIssueId,
         selectedPetIds: {entry.petId},
+        scheduleAtSpecificTimes:
+            entry.scheduleTimes != null && entry.scheduleTimes!.isNotEmpty,
+        scheduleTimes: entry.scheduleTimes?.isNotEmpty == true
+            ? List<String>.from(entry.scheduleTimes!)
+            : const ['08:00'],
       );
 
       return true;
@@ -335,6 +349,44 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
 
   void setSelectedPetIds(Set<String> ids) =>
       state = state.copyWith(selectedPetIds: ids, clearHealthIssueId: true);
+
+  void setScheduleAtSpecificTimes(bool value) {
+    state = state.copyWith(
+      scheduleAtSpecificTimes: value,
+      scheduleTimes: value && state.scheduleTimes.isEmpty
+          ? const ['08:00']
+          : state.scheduleTimes,
+    );
+  }
+
+  void setScheduleTime(int index, String time) {
+    final updated = List<String>.from(state.scheduleTimes);
+    if (index < 0 || index >= updated.length) return;
+    updated[index] = time;
+    state = state.copyWith(scheduleTimes: _sortedScheduleTimes(updated));
+  }
+
+  void addScheduleTime() {
+    final updated = List<String>.from(state.scheduleTimes)..add('12:00');
+    state = state.copyWith(scheduleTimes: _sortedScheduleTimes(updated));
+  }
+
+  void removeScheduleTime(int index) {
+    if (state.scheduleTimes.length <= 1) return;
+    final updated = List<String>.from(state.scheduleTimes)..removeAt(index);
+    state = state.copyWith(scheduleTimes: updated);
+  }
+
+  List<String>? _effectiveScheduleTimes() {
+    if (!state.scheduleAtSpecificTimes) return null;
+    return _sortedScheduleTimes(state.scheduleTimes);
+  }
+
+  List<String> _sortedScheduleTimes(List<String> times) {
+    final copy = List<String>.from(times);
+    copy.sort();
+    return copy;
+  }
 
   HealthEntryMarkCompletedPrompt? markCompletedPromptIfNeeded() {
     if (state.isEdit ||
@@ -427,6 +479,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
           notes: state.notes.trim(),
           healthIssueId: state.selectedHealthIssueId,
           remindDaysBefore: state.remindDaysBefore,
+          scheduleTimes: _effectiveScheduleTimes(),
         );
         await notifier.updateEntry(entry);
       } else {
@@ -455,6 +508,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
             notes: state.notes.trim(),
             healthIssueId: state.selectedHealthIssueId,
             remindDaysBefore: state.remindDaysBefore,
+            scheduleTimes: _effectiveScheduleTimes(),
           );
           final created = await createUseCase.call(entry);
           createdEntryIds.add(created.id);

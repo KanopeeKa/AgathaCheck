@@ -23,6 +23,7 @@ class HealthEntryModel extends HealthEntry {
     super.healthIssueName,
     super.petName,
     super.remindDaysBefore,
+    super.scheduleTimes,
     super.createdAt,
     super.updatedAt,
   });
@@ -54,6 +55,7 @@ class HealthEntryModel extends HealthEntry {
       healthIssueName: json['health_issue_title'] as String?,
       petName: json['pet_name'] as String?,
       remindDaysBefore: json['remind_days_before'] as int? ?? 1,
+      scheduleTimes: _parseScheduleTimes(json['schedule_times']),
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
           : null,
@@ -83,6 +85,7 @@ class HealthEntryModel extends HealthEntry {
       healthIssueName: entry.healthIssueName,
       petName: entry.petName,
       remindDaysBefore: entry.remindDaysBefore,
+      scheduleTimes: entry.scheduleTimes,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     );
@@ -108,7 +111,15 @@ class HealthEntryModel extends HealthEntry {
       'notes': notes,
       if (healthIssueId != null) 'health_issue_id': healthIssueId,
       'remind_days_before': remindDaysBefore,
+      if (scheduleTimes != null) 'schedule_times': scheduleTimes,
     };
+  }
+
+  static List<String>? _parseScheduleTimes(dynamic raw) {
+    if (raw == null) return null;
+    if (raw is! List) return null;
+    if (raw.isEmpty) return null;
+    return raw.map((e) => e.toString()).toList();
   }
 
   static String typeToApi(HealthEntryType type) {

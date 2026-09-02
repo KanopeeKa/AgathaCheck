@@ -4276,6 +4276,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get repeatEndsBy => 'Répétition jusqu\'au';
 
   @override
+  String get scheduleAtSpecificTimes => 'Planifier à des heures précises';
+
+  @override
+  String get scheduleAtSpecificTimesHint =>
+      'Si désactivé, les doses sont suivies comme événements toute la journée.';
+
+  @override
+  String get addAnotherScheduleTime => 'Ajouter une autre heure par jour';
+
+  @override
+  String get removeScheduleTime => 'Supprimer l\'heure';
+
+  @override
   String get never => 'Jamais';
 
   @override

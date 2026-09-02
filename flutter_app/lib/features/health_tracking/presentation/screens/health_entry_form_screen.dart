@@ -13,6 +13,7 @@ import '../widgets/health_entry_type_labels.dart';
 import '../widgets/entry_due_completed_row.dart';
 import '../widgets/health_entry_form/health_entry_document_handler.dart';
 import '../widgets/health_entry_form/health_entry_frequency_section.dart';
+import '../widgets/health_entry_form/health_entry_schedule_times_section.dart';
 import '../widgets/health_entry_form/health_entry_health_issue_dropdown.dart';
 import '../widgets/health_entry_form/health_entry_pet_selector.dart';
 import '../widgets/health_entry_form/health_entry_photos_section.dart';
@@ -194,6 +195,14 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       recurrenceAnchor: form.recurrenceAnchor,
                       controller: _controller,
                     ),
+                    if (form.frequency != HealthFrequency.once) ...[
+                      const SizedBox(height: 16),
+                      HealthEntryScheduleTimesSection(
+                        scheduleAtSpecificTimes: form.scheduleAtSpecificTimes,
+                        scheduleTimes: form.scheduleTimes,
+                        controller: _controller,
+                      ),
+                    ],
                     const SizedBox(height: 16),
                     EntryDueCompletedRow(
                       dueDate: form.dueDate,

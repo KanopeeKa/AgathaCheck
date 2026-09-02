@@ -7569,6 +7569,30 @@ abstract class AppLocalizations {
   /// **'Repeat ends by'**
   String get repeatEndsBy;
 
+  /// No description provided for @scheduleAtSpecificTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule at specific times'**
+  String get scheduleAtSpecificTimes;
+
+  /// No description provided for @scheduleAtSpecificTimesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'When off, doses are tracked as all-day events.'**
+  String get scheduleAtSpecificTimesHint;
+
+  /// No description provided for @addAnotherScheduleTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Add another time per day'**
+  String get addAnotherScheduleTime;
+
+  /// No description provided for @removeScheduleTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove time'**
+  String get removeScheduleTime;
+
   /// No description provided for @never.
   ///
   /// In en, this message translates to:
