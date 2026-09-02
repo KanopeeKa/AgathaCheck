@@ -176,7 +176,7 @@ export class HelpPage {
       const homeNav = this.page.getByRole('button', { name: /^(Home|Accueil)$/i });
       if (await homeNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
         await homeNav.click({ force: true });
-        await waitForFlutterRoutePattern(this.page, /\/(g|o)\/home/, 30_000);
+        await waitForFlutterRoutePattern(this.page, /\/(pc|g|o)\/home/, 30_000);
       } else {
         await this.page.goto(flutterGotoUrl('/pc/home'));
         await refreshFlutterAccessibility(this.page);
