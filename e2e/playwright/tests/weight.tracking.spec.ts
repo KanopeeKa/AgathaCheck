@@ -37,7 +37,7 @@ test.describe('Weight tracking', () => {
 
     const petList = await loginAs(page, testUser, { experience: 'guardian' });
     await petList.expectPetVisible(pet.name);
-    await petList.openPet(pet.name);
+    await petList.openPet(pet.name, pet.id);
 
     const petDetail = new PetDetailPage(page);
     await petDetail.expectLoaded(pet.name);
@@ -54,7 +54,7 @@ test.describe('Weight tracking', () => {
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
-    await petList.openPet(pet.name);
+    await petList.openPet(pet.name, pet.id);
 
     const petDetail = new PetDetailPage(page);
     await petDetail.expectLoaded(pet.name);
@@ -93,7 +93,7 @@ test.describe('Weight tracking', () => {
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
-    await petList.openPet(pet.name);
+    await petList.openPet(pet.name, pet.id);
 
     const petDetail = new PetDetailPage(page);
     await petDetail.expectLoaded(pet.name);
@@ -125,7 +125,7 @@ test.describe('Weight tracking', () => {
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
-    await petList.openPet(pet.name);
+    await petList.openPet(pet.name, pet.id);
 
     const petDetail = new PetDetailPage(page);
     await petDetail.expectLoaded(pet.name);
@@ -157,7 +157,7 @@ test.describe('Weight tracking', () => {
     // Navigate to pet detail to confirm weight section loads.
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
-    await petList.openPet(pet.name);
+    await petList.openPet(pet.name, pet.id);
 
     const petDetail = new PetDetailPage(page);
     await petDetail.expectLoaded(pet.name);
@@ -217,7 +217,7 @@ test.describe('Weight tracking', () => {
     // Confirm the UI shows the updated weight.
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
-    await petList.openPet(pet.name);
+    await petList.openPet(pet.name, pet.id);
 
     const petDetail = new PetDetailPage(page);
     await petDetail.expectLoaded(pet.name);
@@ -245,7 +245,7 @@ test.describe('Weight tracking', () => {
     // Navigate so the UI shows the empty state.
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
-    await petList.openPet(pet.name);
+    await petList.openPet(pet.name, pet.id);
 
     const petDetail = new PetDetailPage(page);
     await petDetail.expectLoaded(pet.name);
@@ -262,7 +262,7 @@ test.describe('Weight tracking', () => {
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
-    await petList.openPet(pet.name);
+    await petList.openPet(pet.name, pet.id);
 
     const petDetail = new PetDetailPage(page);
     await petDetail.expectLoaded(pet.name);
@@ -289,7 +289,7 @@ test.describe('Weight tracking', () => {
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
-    await petList.openPet(pet.name);
+    await petList.openPet(pet.name, pet.id);
 
     const petDetail = new PetDetailPage(page);
     await petDetail.expectLoaded(pet.name);
