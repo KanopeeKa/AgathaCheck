@@ -10,7 +10,6 @@ import '../../../experience/presentation/screens/guardian/guardian_dashboard_hel
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/events_nav_icon_button.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
-import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 import '../controllers/pet_list_controller.dart';
 import '../widgets/org_filter_chips.dart';
