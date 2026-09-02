@@ -110,7 +110,7 @@ export function registerAccessRoutes(router, pool) {
         user: {
           first_name: row.first_name || '',
           last_name: row.last_name || '',
-          category: row.category || 'pet_guardian',
+          category: row.category || 'pet_carer',
           bio: row.bio || '',
           photo_url: row.photo_url || '',
         },

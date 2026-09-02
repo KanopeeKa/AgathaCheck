@@ -86,7 +86,7 @@ describe('Auth Routes — Password', () => {
       const pool = buildMockPool({
         selectUserByEmail: async (sql, params) => {
           if (sql.includes('SELECT id')) return { rows: [{ id: userId, locale: 'en' }] };
-          return { rows: [{ id: userId, email: userEmail, password_hash: '$2b$10$validhashfortestpassword', first_name: 'Test', last_name: 'User', category: 'pet_guardian', bio: 'A test bio', photo_url: 'http://example.com/photo.png', locale: 'en', created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' }] };
+          return { rows: [{ id: userId, email: userEmail, password_hash: '$2b$10$validhashfortestpassword', first_name: 'Test', last_name: 'User', category: 'pet_carer', bio: 'A test bio', photo_url: 'http://example.com/photo.png', locale: 'en', created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' }] };
         },
       });
       const forgotApp = createApp(pool, mockComparePassword);

@@ -17,7 +17,7 @@ import {
 export function registerSessionRoutes(router, pool, { comparePassword, authLimiter }) {
   router.post('/signup', authLimiter, async (req, res) => {
     try {
-      const { email, password, first_name = '', last_name = '', category = 'pet_guardian', bio = '', photo_url = '', locale = 'en' } = req.body;
+      const { email, password, first_name = '', last_name = '', category = 'pet_carer', bio = '', photo_url = '', locale = 'en' } = req.body;
       if (!email || !password) {
         return res.status(400).json({ error: 'Email and password are required.' });
       }

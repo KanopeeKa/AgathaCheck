@@ -127,7 +127,7 @@ export const DEMO_USERS = {
     email: 'alice@demo.agathatrack.test',
     first_name: 'Alice',
     last_name: 'Super',
-    category: 'pet_guardian',
+    category: 'pet_carer',
     bio: 'Demo guardian and clinic super admin',
   },
   bob: {
@@ -135,7 +135,7 @@ export const DEMO_USERS = {
     email: 'bob@demo.agathatrack.test',
     first_name: 'Bob',
     last_name: 'Member',
-    category: 'pet_guardian',
+    category: 'pet_carer',
     bio: 'Demo clinic admin',
   },
   carol: {
@@ -143,7 +143,7 @@ export const DEMO_USERS = {
     email: 'carol@demo.agathatrack.test',
     first_name: 'Carol',
     last_name: 'Guardian',
-    category: 'pet_guardian',
+    category: 'pet_carer',
     bio: 'Demo guardian with shared pet access',
   },
   eve: {
@@ -151,7 +151,7 @@ export const DEMO_USERS = {
     email: 'eve@demo.agathatrack.test',
     first_name: 'Eve',
     last_name: 'Foster',
-    category: 'pet_guardian',
+    category: 'pet_carer',
     bio: 'Demo foster parent at Rescue Hearts',
   },
   dave: {
@@ -159,7 +159,7 @@ export const DEMO_USERS = {
     email: 'dave@demo.agathatrack.test',
     first_name: 'Dave',
     last_name: 'Dual',
-    category: 'pet_guardian',
+    category: 'pet_carer',
     bio: 'Demo dual-role user — personal pet plus org member',
   },
   grace: {
@@ -167,7 +167,7 @@ export const DEMO_USERS = {
     email: 'grace@demo.agathatrack.test',
     first_name: 'Grace',
     last_name: 'Prospect',
-    category: 'pet_guardian',
+    category: 'pet_carer',
     bio: 'Demo adopter prospect',
   },
 };

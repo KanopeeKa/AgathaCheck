@@ -15,9 +15,9 @@ function dateOnlyMs(value) {
   return iso ? Date.parse(`${iso}T00:00:00Z`) : null;
 }
 
-async function viewerCanSeeGuardianName(pool, petId, viewerId, guardianUserId) {
-  if (!guardianUserId) return false;
-  if (String(guardianUserId) === String(viewerId)) return true;
+async function viewerCanSeePrimaryHolderName(pool, petId, viewerId, holderUserId) {
+  if (!holderUserId) return false;
+  if (String(holderUserId) === String(viewerId)) return true;
   if (await userOwnsPet(pool, petId, viewerId)) return true;
   const orgAdmin = await pool.query(
     `SELECT 1 FROM pets p
@@ -46,7 +46,7 @@ async function loadCustodySegments(pool, petId, viewerId) {
   for (const row of result.rows) {
     const start = isoDate(row.responded_at || row.created_at);
     const showName = row.to_user_id
-      ? await viewerCanSeeGuardianName(pool, petId, viewerId, row.to_user_id)
+      ? await viewerCanSeePrimaryHolderName(pool, petId, viewerId, row.to_user_id)
       : false;
     segments.push({
       kind: 'custody',
@@ -55,7 +55,7 @@ async function loadCustodySegments(pool, petId, viewerId) {
       end_date: null,
       title: 'Custody transfer',
       description: (row.notes || '').trim(),
-      guardian_name: showName
+      primary_holder_name: showName
         ? (row.to_user_name?.trim() || userDisplayName({ email: row.to_user_email }))
         : null,
       foster_name: null,
@@ -88,7 +88,7 @@ async function loadFosteringSessions(pool, petId) {
     end_date: isoDate(row.end_date),
     title: 'Fostering session',
     description: (row.notes || '').trim(),
-    guardian_name: null,
+    primary_holder_name: null,
     foster_name: row.foster_name?.trim() || userDisplayName({ email: row.foster_email }),
     fillable: false,
   }));
@@ -110,7 +110,7 @@ async function loadManualEntries(pool, petId) {
     end_date: isoDate(row.end_date),
     title: row.title || '',
     description: (row.description || '').trim(),
-    guardian_name: null,
+    primary_holder_name: null,
     foster_name: null,
     fillable: false,
   }));
@@ -157,7 +157,7 @@ function buildGapSegments(coveredRanges, timelineStartMs, timelineEndMs) {
         end_date: dateToIsoDate(new Date(block.start - 86400000)),
         title: '',
         description: '',
-        guardian_name: null,
+        primary_holder_name: null,
         foster_name: null,
         fillable: true,
       });
@@ -173,7 +173,7 @@ function buildGapSegments(coveredRanges, timelineStartMs, timelineEndMs) {
       end_date: dateToIsoDate(new Date(timelineEndMs)),
       title: '',
       description: '',
-      guardian_name: null,
+      primary_holder_name: null,
       foster_name: null,
       fillable: true,
     });
@@ -223,7 +223,7 @@ export async function buildPetTimeline(pool, petId, viewerId) {
         end_date: dateToIsoDate(new Date(timelineEndMs)),
         title: '',
         description: '',
-        guardian_name: null,
+        primary_holder_name: null,
         foster_name: null,
         fillable: true,
       }]
