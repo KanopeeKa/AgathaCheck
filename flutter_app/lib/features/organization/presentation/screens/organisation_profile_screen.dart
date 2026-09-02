@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
 import '../providers/org_provider_profile.dart';
+import '../utils/org_profile_return.dart';
 import '../widgets/org_permission_gate.dart';
 import '../widgets/org_presentation/org_presentation_contact_block.dart';
 import '../widgets/org_presentation/org_presentation_hero.dart';
@@ -14,9 +15,14 @@ import '../widgets/org_shell_app_bar_title.dart';
 import '../widgets/org_shell_scaffold.dart';
 
 class OrganisationProfileScreen extends ConsumerWidget {
-  const OrganisationProfileScreen({super.key, required this.orgId});
+  const OrganisationProfileScreen({
+    super.key,
+    required this.orgId,
+    this.returnTo,
+  });
 
   final String orgId;
+  final String? returnTo;
 
   String _localizedTypeLabel(AppLocalizations l, OrganizationType type) {
     switch (type) {
@@ -25,6 +31,10 @@ class OrganisationProfileScreen extends ConsumerWidget {
       case OrganizationType.charity:
         return l.orgTypeCharity;
     }
+  }
+
+  void _handleBack(BuildContext context) {
+    handleOrgProfileBack(context, returnTo: returnTo);
   }
 
   @override
@@ -36,13 +46,13 @@ class OrganisationProfileScreen extends ConsumerWidget {
       loading: () => OrgShellScaffold(
         title: l.orgPresentationTitle,
         navVariant: OrgNavTitleVariant.textOnly,
-        onBack: () => context.go('/o/orgs'),
+        onBack: () => _handleBack(context),
         child: const Center(child: CircularProgressIndicator()),
       ),
       error: (e, _) => OrgShellScaffold(
         title: l.orgPresentationTitle,
         navVariant: OrgNavTitleVariant.textOnly,
-        onBack: () => context.go('/o/orgs'),
+        onBack: () => _handleBack(context),
         child: Center(child: Text('$e')),
       ),
       data: (profile) {
@@ -54,7 +64,7 @@ class OrganisationProfileScreen extends ConsumerWidget {
           title: org.name,
           navVariant: OrgNavTitleVariant.textOnly,
           leadingKey: const Key('org_profile_back'),
-          onBack: () => context.go('/o/orgs'),
+          onBack: () => _handleBack(context),
           trailingActions: [
             OrgPermissionGate(
               orgId: orgId,

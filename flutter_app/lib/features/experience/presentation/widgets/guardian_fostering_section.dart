@@ -31,11 +31,23 @@ class GuardianFosteringSection extends StatelessWidget {
     final fostered = pets
         .where((pet) => pet.isFoster && !pet.passedAway)
         .toList(growable: false);
-    final shelters = <String, List<Pet>>{};
+    final shelters = <String, _ShelterGroup>{};
     for (final pet in fostered) {
       final shelter = pet.organizationName?.trim();
       if (shelter == null || shelter.isEmpty) continue;
-      shelters.putIfAbsent(shelter, () => []).add(pet);
+      final key = pet.organizationId?.trim().isNotEmpty == true
+          ? pet.organizationId!.trim()
+          : shelter;
+      shelters
+          .putIfAbsent(
+            key,
+            () => _ShelterGroup(
+              name: shelter,
+              organizationId: pet.organizationId,
+            ),
+          )
+          .pets
+          .add(pet);
     }
     final hasOverflow =
         !showAll &&
@@ -96,11 +108,7 @@ class GuardianFosteringSection extends StatelessWidget {
                   for (final entry in shelters.entries.take(
                     showAll ? shelters.length : _previewLimit,
                   ))
-                    _ShelterRow(
-                      name: entry.key,
-                      fosteredPets: entry.value,
-                      l: l,
-                    ),
+                    _ShelterRow(group: entry.value, l: l),
               ],
             ),
           ),
@@ -108,6 +116,14 @@ class GuardianFosteringSection extends StatelessWidget {
       ),
     );
   }
+}
+
+class _ShelterGroup {
+  _ShelterGroup({required this.name, required this.organizationId});
+
+  final String name;
+  final String? organizationId;
+  final List<Pet> pets = [];
 }
 
 class _FosteringPetRow extends StatelessWidget {
@@ -170,14 +186,9 @@ class _FosteringPetRow extends StatelessWidget {
 }
 
 class _ShelterRow extends StatelessWidget {
-  const _ShelterRow({
-    required this.name,
-    required this.fosteredPets,
-    required this.l,
-  });
+  const _ShelterRow({required this.group, required this.l});
 
-  final String name;
-  final List<Pet> fosteredPets;
+  final _ShelterGroup group;
   final AppLocalizations l;
 
   @override
@@ -185,10 +196,10 @@ class _ShelterRow extends StatelessWidget {
     return Semantics(
       button: true,
       label:
-          '$name, ${l.connected}, ${l.activeFosteringCount(fosteredPets.length)}',
+          '${group.name}, ${l.connected}, ${l.activeFosteringCount(group.pets.length)}',
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.go('/o/orgs'),
+        onTap: () => _openOrganizationProfile(context),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
@@ -204,13 +215,17 @@ class _ShelterRow extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(
+                      group.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     _FosteringStatus(label: l.connected),
                   ],
                 ),
               ),
               Text(
-                l.activeFosteringCount(fosteredPets.length),
+                l.activeFosteringCount(group.pets.length),
                 textAlign: TextAlign.end,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
@@ -221,6 +236,16 @@ class _ShelterRow extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _openOrganizationProfile(BuildContext context) {
+    final orgId = group.organizationId?.trim();
+    if (orgId == null || orgId.isEmpty) {
+      context.go('/o/orgs');
+      return;
+    }
+    final returnTo = Uri.encodeComponent(GoRouterState.of(context).uri.path);
+    context.push('/o/orgs/$orgId?returnTo=$returnTo');
   }
 }
 

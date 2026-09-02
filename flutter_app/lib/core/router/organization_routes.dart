@@ -14,6 +14,7 @@ import '../../features/organization/presentation/screens/organization_discover_s
 import '../../features/organization/presentation/utils/org_discover_entry_context.dart';
 import '../../features/organization/presentation/screens/organization_customisations_screen.dart';
 import '../../features/organization/presentation/screens/organisation_profile_screen.dart';
+import '../../features/organization/presentation/utils/org_profile_return.dart';
 import '../../features/organization/presentation/screens/organisation_redacted_pet_screen.dart';
 import '../../features/organization/presentation/screens/organization_document_templates_screen.dart';
 import '../../features/organization/presentation/screens/organization_form_screen.dart';
@@ -102,7 +103,10 @@ List<RouteBase> _orgManagementChildRoutes() {
       name: 'organizationDetail',
       builder: (context, state) {
         final id = state.pathParameters['id']!;
-        return OrganisationProfileScreen(orgId: id);
+        return OrganisationProfileScreen(
+          orgId: id,
+          returnTo: orgProfileReturnToFromState(state),
+        );
       },
       routes: [
         GoRoute(

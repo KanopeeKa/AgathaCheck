@@ -117,4 +117,58 @@ void main() {
 
     expect(find.text('edit screen'), findsOneWidget);
   });
+
+  testWidgets('back returns to returnTo when stack cannot pop', (tester) async {
+    final router = GoRouter(
+      initialLocation: '/o/orgs/org-1?returnTo=%2Fg%2Fhome',
+      routes: [
+        GoRoute(
+          path: '/g/home',
+          builder: (context, state) =>
+              const Scaffold(body: Text('guardian home')),
+        ),
+        GoRoute(
+          path: '/o/orgs',
+          builder: (context, state) => const Scaffold(body: Text('org list')),
+        ),
+        GoRoute(
+          path: '/o/orgs/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            final returnTo = state.uri.queryParameters['returnTo'];
+            return OrganisationProfileScreen(
+              orgId: id,
+              returnTo: returnTo == null ? null : Uri.decodeComponent(returnTo),
+            );
+          },
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          organizationListProvider.overrideWith(_MemberOrgsNotifier.new),
+          organizationRepositoryProvider.overrideWithValue(
+            _PublicProfileRepo(),
+          ),
+          orgEffectivePermissionsProvider(
+            'org-1',
+          ).overrideWith((ref) async => const {'manage_permissions'}),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('org_profile_back')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('guardian home'), findsOneWidget);
+  });
 }
