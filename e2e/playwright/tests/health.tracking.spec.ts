@@ -355,7 +355,7 @@ test.describe('Health tracking', () => {
 
   // ── Wave C: CSV export ────────────────────────────────────────────────────
 
-  // ── Wave D: Multi-dose occurrences ────────────────────────────────────────
+  // ── Wave D: Multi-dose occurrences (late schedule times for CI timezone stability) ──
 
   test('multi-dose daily medication shows stack sheet and records one dose', async ({
     page,
@@ -368,7 +368,8 @@ test.describe('Health tracking', () => {
     const entry = await seedMultiDoseHealthEntry(baseURL, testUser.accessToken, pet.id, {
       name: entryName,
       nextDueDate: today,
-      scheduleTimes: ['08:00', '18:00'],
+      // Late times so both doses stay in "Due today" during CI (UTC afternoon/evening).
+      scheduleTimes: ['23:58', '23:59'],
     });
 
     const occurrencesBefore = await getHealthEntryOccurrences(
