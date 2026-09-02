@@ -50,11 +50,9 @@ For **due events on home** after API seed, call `refreshByRemount()` — the sec
 
 ## Due events on home (PR C)
 
-After API seeding, the guardian home `DueEventsSection` does not refresh until the screen remounts. Use `PetListPage.refreshByRemount()` before asserting due entries on `/g/home`. The events-screen assertion in #216 was a temporary workaround.
+After API seeding, the Pet Care home `DueEventsSection` does not refresh until the screen remounts. Use `PetListPage.refreshByRemount()` before asserting due entries on `/pc/home`. The events-screen assertion in #216 was a temporary workaround.
 
-## Pet Care workspace naming (D38 — target)
-
-Migration from `/g/*` to `/pc/*` is in progress. Until code lands, legacy `/g/*` routes and Guardian locators may still apply in production.
+## Pet Care workspace naming (D38)
 
 | Surface | EN | FR |
 |---------|----|----|
@@ -66,60 +64,46 @@ Migration from `/g/*` to `/pc/*` is in progress. Until code lands, legacy `/g/*`
 
 Full map: [pet_care domain rename plan](/docs/domains/pet_care/changes/domain-rename-plan.md).
 
-## Pet Care compact bottom nav (D-v4-1, target)
+## Pet Care compact bottom nav (D-v4-1)
 
 Viewport **&lt;600px** exposes the five-tab bottom bar (`Key('guardian_bottom_navigation')` until renamed) on all Pet Care workspace routes.
 
-| Tab label (EN) | Tab label (FR) | Route (target) | Ready locator |
-|--------------|----------------|----------------|---------------|
-| Today | (unchanged) | `/pc/home` | Pet Care home care region or **My Pets** section |
-| Pets | (unchanged) | `/pc/pets` | `All Pets` / `Tous les animaux` |
+| Tab label (EN) | Tab label (FR) | Route | Ready locator |
+|--------------|----------------|-------|---------------|
+| Dashboard | Tableau de bord | `/pc/home` | Pet Care home care region or **My Pets** section |
+| Pets | Animaux | `/pc/pets` | `All Pets` / `Tous les animaux` |
 | Actions | Soins | `/pc/events` | `HealthDashboardPage.expectLoaded()` |
-| Fostering | (unchanged) | `/pc/fostering` | `Fostering Sessions` / `Sessions d'accueil` |
-| Account | (unchanged) | `/account` | Account section rows |
-
-**Legacy (pre-migration):** tab label **Care** / FR **Soins**, routes `/g/*` — see table below if tests run on older builds.
-
-## Guardian compact bottom nav (D-v4-1, legacy routes)
-
-Viewport **&lt;600px** exposes the five-tab `GuardianBottomNavigation` bar (`Key('guardian_bottom_navigation')`) on all Guardian workspace routes (see PR #767 for workspace-wide route detection).
-
-| Tab label (EN) | Route | Ready locator (after `waitForFlutterRoutePattern`) |
-|--------------|-------|-----------------------------------------------------|
-| Today | `/g/home` | `GuardianDashboardPage.careRegion()` or My Pets region |
-| Pets | `/g/pets` | `All Pets` / `Tous les animaux` footer or pet list section |
-| Care | `/g/events` | `HealthDashboardPage.expectLoaded()` |
-| Fostering | `/g/fostering` | `Fostering Sessions` / `Sessions d'accueil` heading |
-| Account | `/account` | Account section rows (see account screen tests) |
+| Fostering | Accueil | `/pc/fostering` | `Fostering Sessions` / `Sessions d'accueil` |
+| Account | Compte | `/account` | Account section rows |
 
 Page object: `GuardianDashboardPage.openBottomNavTab(label)`, `openFosteringViaBottomNav()`.
 
 Selector order for tabs: `getByRole('button', { name })` → `getByRole('tab', { name })` (Flutter 3.44 semantics).
 
-Nested routes highlight the closest tab (e.g. `/pet/pet-1` → Pets; `/pet/pet-1/events` → Care).
+Nested routes highlight the closest tab (e.g. `/pet/pet-1` → Pets; `/pet/pet-1/events` → Actions).
 
-## Guardian leading navigation rail (D-v4-4, medium)
+## Pet Care leading navigation rail (D-v4-4, medium)
 
 Viewport **600–839px** exposes `GuardianNavigationRail` (`Key('guardian_navigation_rail')`) with the same five destinations as compact bottom nav.
 
 | Destination (EN) | Route | Notes |
 |------------------|-------|-------|
-| Today | `/g/home` | Same ready locators as bottom nav |
-| Pets | `/g/pets` | |
-| Care | `/g/events` | |
-| Fostering | `/g/fostering` | |
+| Dashboard | `/pc/home` | Same ready locators as bottom nav |
+| Pets | `/pc/pets` | |
+| Actions | `/pc/events` | |
+| Fostering | `/pc/fostering` | |
 | Account | `/account` | Fifth rail destination |
 
 Page object: `GuardianDashboardPage.openLeadingNavDestination(label)` (viewport-aware: rail vs sidebar vs bottom nav).
 
 The hamburger drawer is **not** available at these widths.
 
-## Guardian expanded sidebar (D-v4-4, expanded)
+## Pet Care expanded sidebar (D-v4-4, expanded)
 
 Viewport **≥840px** exposes `GuardianNavigationSidebar` (`Key('guardian_navigation_sidebar')`) at ~240px width.
 
 - Header: brand + workspace toggle (`experience_workspace_toggle`)
-- Body: Today, Pets, Care, Fostering (with optional trailing badge on Care — deferred)
+- Body: Dashboard, Pets, Actions, Fostering (with optional trailing badge on Actions — deferred)
 - Footer: Account (pinned, separated by divider)
 
 Page object: same `openLeadingNavDestination(label)` helper; Account via footer row.
@@ -128,14 +112,14 @@ The hamburger drawer is **not** available at these widths.
 
 ## Workspace toggle (D-v4-3)
 
-Section roots (`/g/home`, `/o/orgs`, `/account`) show `ExperienceWorkspaceToggle` (`Key('experience_workspace_toggle')`) instead of a back arrow or hamburger.
+Section roots (`/pc/home`, `/o/orgs`, `/account`) show `ExperienceWorkspaceToggle` (`Key('experience_workspace_toggle')`) instead of a back arrow or hamburger.
 
 | Action | Locator | Post-action ready |
 |--------|---------|-------------------|
 | Assert visible | `workspaceToggleLocator()` or `GuardianDashboardPage.expectWorkspaceToggleVisible()` | Toggle pill or `Choose your workspace` semantics |
 | Open menu | `GuardianDashboardPage.openWorkspaceMenu()` | Menu items **Pet Care** / **Suivi** and **Shelter** / **Refuges** |
 | Switch to Shelter | `selectWorkspaceMenuItem(/^Shelter$|^Refuge$/i)` | `/o/orgs` + `OrganizationListPage.expectLoaded()` |
-| Switch to Pet Care | `selectWorkspaceMenuItem(/^Pet Care$|^Suivi$/i)` | `/pc/home` (legacy: `/g/home`) + dashboard care region |
+| Switch to Pet Care | `selectWorkspaceMenuItem(/^Pet Care$|^Suivi$/i)` | `/pc/home` + dashboard care region |
 | My Pets section (not workspace) | `dashboardSectionGroup(page, 'myPets')` or `/My Pets\|Mes animaux/i` | Pet-rail preview on home — unchanged label |
 
 Shelter menu item appears only when org membership makes shelter access eligible (seed with `createOrganization` before login) or when **Show shelters section** is enabled on Account.

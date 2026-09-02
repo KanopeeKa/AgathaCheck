@@ -1,7 +1,7 @@
 /**
  * @bdd pet_profiles.feature
  * Scenario: Pet detail back navigation returns to All Pets
- * Scenario: Pet detail back navigation returns to Guardian dashboard
+ * Scenario: Pet detail back navigation returns to Pet Care dashboard
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { createPet } from '../support/api';
@@ -15,7 +15,7 @@ import {
 } from '../support/flutter';
 
 test.describe('Pet detail back navigation', () => {
-  test('back from pet detail returns to All Pets when opened from /g/pets', async ({
+  test('back from pet detail returns to All Pets when opened from /pc/pets', async ({
     page,
     testUser,
   }) => {
@@ -23,9 +23,9 @@ test.describe('Pet detail back navigation', () => {
     await createPet(baseURL, testUser.accessToken, 'BackPet', 'Dog');
 
     await loginAs(page, testUser);
-    await page.goto(flutterGotoUrl('/g/pets'));
+    await page.goto(flutterGotoUrl('/pc/pets'));
     await refreshFlutterAccessibility(page);
-    await waitForFlutterRoutePattern(page, /\/g\/pets(?:\?|$)/, 30_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/pets(?:\?|$)/, 30_000);
 
     const petList = new PetListPage(page);
     await petList.openPet('BackPet');
@@ -35,7 +35,7 @@ test.describe('Pet detail back navigation', () => {
     await waitForFlutterRoutePattern(page, /\/pet\/[^/?]+/, 30_000);
 
     await detail.goBack();
-    await waitForFlutterRoutePattern(page, /\/g\/pets(?:\?|$)/, 30_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/pets(?:\?|$)/, 30_000);
     await petList.expectManagePetsLoaded();
   });
 
@@ -57,7 +57,7 @@ test.describe('Pet detail back navigation', () => {
     await detail.expectLoaded('DashPet');
     await detail.goBack();
 
-    await waitForFlutterRoutePattern(page, /\/g\/home(?:\?|$)/, 30_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/home(?:\?|$)/, 30_000);
     await dashboard.expectTodayCareRegions();
   });
 });

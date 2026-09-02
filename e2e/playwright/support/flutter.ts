@@ -141,7 +141,7 @@ export function escapeRegExp(value: string): string {
  * Post-login shell indicators: experience bell + section drawer, guardian dashboard sections,
  * empty-state, or legacy nav chrome (Home / Settings / To Do).
  * Navigation reversal (phase-1-navigation.md): Home removed; hamburger tooltip is "Open menu".
- * Add Pet FAB moved to `/g/pets` (guardian UI rework #407).
+ * Add Pet FAB moved to `/pc/pets` (guardian UI rework #407).
  */
 export function homeShellLocator(page: Page): Locator {
   return page
@@ -167,7 +167,7 @@ export async function expectHomeShellVisible(
 
 /**
  * Wait for home after mutations that `context.go('/')` (delete pet, mark passed away).
- * Flutter redirects `/` → `/app/resolve` → `/g/home`, `/o/home`, or `/app/choose` when
+ * Flutter redirects `/` → `/app/resolve` → `/pc/home`, `/o/home`, or `/app/choose` when
  * the account has no pets left.
  */
 export async function waitForHomeAfterMutation(
@@ -177,14 +177,14 @@ export async function waitForHomeAfterMutation(
   const effectiveTimeout = timeout ?? postLoginTimeout(30_000);
   await waitForFlutterRoutePattern(
     page,
-    /\/(g|o)\/(home|onboarding)|\/app\/(resolve|choose)/,
+    /\/(pc|o)\/(home|onboarding)|\/app\/(resolve|choose)/,
     effectiveTimeout,
   );
   await completeExperienceChooserIfPresent(page, 'guardian', effectiveTimeout);
-  await waitForFlutterRoutePattern(page, /\/(g|o)\/(home|onboarding)/, effectiveTimeout);
+  await waitForFlutterRoutePattern(page, /\/(pc|o)\/(home|onboarding)/, effectiveTimeout);
   await skipGuardianOnboardingIfPresent(page, effectiveTimeout);
   await skipOrgOnboardingIfPresent(page, effectiveTimeout);
-  await waitForFlutterRoutePattern(page, /\/(g|o)\/home/, effectiveTimeout);
+  await waitForFlutterRoutePattern(page, /\/(pc|o)\/home/, effectiveTimeout);
   await expectHomeShellVisible(page, effectiveTimeout);
 }
 
@@ -221,7 +221,7 @@ export async function completeExperienceChooserIfPresent(
 
   const path = flutterRoutePath(page.url());
   // Onboarding wizards reuse the FTUE welcome title — not the experience chooser.
-  if (path === '/g/onboarding' || path === '/o/onboarding') return;
+  if (path === '/pc/onboarding' || path === '/o/onboarding') return;
 
   const ftueTrackPets = page
     .locator('[flt-semantics-identifier="ftue_action_track_pets"]')
@@ -268,11 +268,11 @@ export async function completeExperienceChooserIfPresent(
   }
   const homePattern =
     choice === 'guardian'
-      ? /\/g\/(home|onboarding)/
+      ? /\/pc\/(home|onboarding)/
       : /\/o\/(home|onboarding)/;
   await waitForFlutterRoutePattern(page, homePattern, effectiveTimeout);
   const route = flutterRoutePath(page.url());
-  if (choice === 'guardian' && route === '/g/onboarding' && skipGuardianOnboarding) {
+  if (choice === 'guardian' && route === '/pc/onboarding' && skipGuardianOnboarding) {
     await skipGuardianOnboardingIfPresent(page, effectiveTimeout);
   }
   if (choice === 'organization' && route === '/o/onboarding') {
@@ -292,9 +292,9 @@ export async function waitForPostLoginRoute(page: Page, timeout?: number): Promi
 
     const path = flutterRoutePath(page.url());
     if (
-      /\/(g|o)\/home/.test(path) ||
+      /\/(pc|o)\/home/.test(path) ||
       path === '/app/choose' ||
-      path === '/g/onboarding' ||
+      path === '/pc/onboarding' ||
       path === '/o/onboarding'
     ) {
       return;
@@ -392,13 +392,13 @@ export async function skipGuardianOnboardingIfPresent(
   await dismissConsentBannerIfPresent(page);
   await refreshFlutterAccessibility(page);
 
-  if (flutterRoutePath(page.url()) !== '/g/onboarding') return;
+  if (flutterRoutePath(page.url()) !== '/pc/onboarding') return;
 
   const skipButton = page.getByRole('button', { name: /skip for now/i });
   if (!(await skipButton.isVisible({ timeout: 3_000 }).catch(() => false))) return;
 
   await skipButton.click();
-  await waitForFlutterRoutePattern(page, /\/g\/home/, effectiveTimeout);
+  await waitForFlutterRoutePattern(page, /\/pc\/home/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 }
 
@@ -409,7 +409,7 @@ export async function completeGuardianOnboarding(
   timeout?: number,
 ): Promise<void> {
   const effectiveTimeout = timeout ?? postLoginTimeout(60_000);
-  await waitForFlutterRoutePattern(page, /\/g\/onboarding/, effectiveTimeout);
+  await waitForFlutterRoutePattern(page, /\/pc\/onboarding/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 
   await page.getByRole('button', { name: /get started|commencer/i }).click();
@@ -422,7 +422,7 @@ export async function completeGuardianOnboarding(
   await page
     .getByRole('button', { name: /finish setup|terminer la configuration/i })
     .click();
-  await waitForFlutterRoutePattern(page, /\/g\/home/, effectiveTimeout);
+  await waitForFlutterRoutePattern(page, /\/pc\/home/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 }
 
@@ -458,7 +458,7 @@ export function workspaceToggleLocator(page: Page): Locator {
     .getByRole('button', {
       name: /Choose your workspace|Choisir votre espace de travail/i,
     })
-    .or(page.getByRole('button', { name: /^My Pets$|^Mes animaux$/i }))
+    .or(page.getByRole('button', { name: /^Pet Care$|^Suivi$/i }))
     .or(page.getByRole('button', { name: /^Shelter$|^Refuge$/i }))
     .first();
 }
@@ -491,7 +491,7 @@ async function openExperienceDrawerViaEdgeSwipe(page: Page): Promise<void> {
   await refreshFlutterAccessibility(page);
 }
 
-/** True when the post-split experience shell (`/g/home` or `/o/home`) is visible. */
+/** True when the post-split experience shell (`/pc/home` or `/o/home`) is visible. */
 export async function isExperienceShellVisible(page: Page): Promise<boolean> {
   return experienceShellNavLocator(page)
     .first()
@@ -618,7 +618,7 @@ export async function logOutFromApp(page: Page): Promise<void> {
 /** Guardian dashboard [DashboardSection] titles are semantics group labels, not plain text. */
 export const DASHBOARD_SECTION_NAMES = {
   myPets: /My Pets|Mes animaux/i,
-  dueAndOverdue: /Due and Overdue|À faire et en retard|CARE|SOINS/i,
+  dueAndOverdue: /CARE ACTIONS|SOINS/i,
   myVets: /Care team|CARE TEAM|Équipe de soins|ÉQUIPE DE SOINS/i,
 } as const;
 
@@ -653,7 +653,7 @@ export function filterChipByName(page: Page, pattern: string | RegExp): Locator 
 }
 
 /**
- * Accessible name for [PetCard] on full lists (`/g/pets`, org home): "Pet: Bella, dog".
+ * Accessible name for [PetCard] on full lists (`/pc/pets`, org home): "Pet: Bella, dog".
  * Guardian Today dashboard cards use {@link guardianDashboardPetNamePattern} instead.
  */
 export function petListCardNamePattern(petName: string): RegExp {
@@ -711,7 +711,7 @@ const GUARDIAN_PET_LIST_CARE_TAIL =
 const GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL =
   '(?:All clear|Overdue|Due today|Care coming up|Tout est en ordre|En retard|Aujourd\'hui|Soin à venir)';
 
-/** Any pet list tile on `/g/pets` (legacy `Pet:` prefix or guardian full-list semantics). */
+/** Any pet list tile on `/pc/pets` (legacy `Pet:` prefix or guardian full-list semantics). */
 export function petListCardLocator(page: Page) {
   const guardianFullList = new RegExp(
     `^[^,]+,\\s*[^,]+,\\s*${GUARDIAN_PET_LIST_CARE_TAIL}$`,
@@ -724,7 +724,7 @@ export function petListCardLocator(page: Page) {
     .or(page.getByRole('group', { name: guardianFullList }));
 }
 
-/** Active (non-passed-away) tiles on guardian `/g/pets` — excludes Passed away section cards. */
+/** Active (non-passed-away) tiles on guardian `/pc/pets` — excludes Passed away section cards. */
 export function activePetListCardLocator(page: Page) {
   const guardianActiveList = new RegExp(
     `^[^,]+,\\s*[^,]+,\\s*${GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL}$`,

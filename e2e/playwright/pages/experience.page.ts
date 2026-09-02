@@ -37,7 +37,7 @@ export class ExperiencePage {
 
   async chooseGuardian(_remember = false): Promise<void> {
     await this.selectGuardianCard();
-    await waitForFlutterRoutePattern(this.page, /\/g\/(home|onboarding)/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/(home|onboarding)/, 30_000);
   }
 
   /** @deprecated FTUE actions navigate directly — no pre-selected continue step. */
@@ -192,7 +192,7 @@ export class ExperiencePage {
         this.page.getByRole('menuitem', { name: /^Shelter$|^Refuge$/i }),
       ).not.toBeVisible();
       await expect(
-        this.page.getByRole('menuitem', { name: /^My Pets$|^Mes animaux$/i }),
+        this.page.getByRole('menuitem', { name: /^Pet Care$|^Suivi$/i }),
       ).toBeVisible();
       await this.page.keyboard.press('Escape');
       if (await isGuardianBottomNavVisible(this.page)) {
@@ -203,7 +203,7 @@ export class ExperiencePage {
 
     await openExperienceDrawer(this.page);
     await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByRole('button', { name: /^My Pets\b/i })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^Pet Care\b/i })).toBeVisible();
     await expect(this.page.getByRole('button', { name: /^Shelters\b/i })).not.toBeVisible();
     await expect(this.page.getByRole('button', { name: /^Account\b/i })).toBeVisible();
   }
@@ -215,7 +215,7 @@ export class ExperiencePage {
       await toggle.click();
       await refreshFlutterAccessibility(this.page);
       await expect(
-        this.page.getByRole('menuitem', { name: /^My Pets$|^Mes animaux$/i }),
+        this.page.getByRole('menuitem', { name: /^Pet Care$|^Suivi$/i }),
       ).toBeVisible();
       await expect(
         this.page.getByRole('menuitem', { name: /^Shelter$|^Refuge$/i }),
@@ -230,7 +230,7 @@ export class ExperiencePage {
     await openExperienceDrawer(this.page);
     await refreshFlutterAccessibility(this.page);
     // Flutter web exposes drawer rows as buttons (label may repeat in accessible name).
-    await expect(this.page.getByRole('button', { name: /^My Pets\b/i })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^Pet Care\b/i })).toBeVisible();
     await expect(this.page.getByRole('button', { name: /^Shelters\b/i })).toBeVisible();
     await expect(this.page.getByRole('button', { name: /^Account\b/i })).toBeVisible();
     // Deprecated items must not appear

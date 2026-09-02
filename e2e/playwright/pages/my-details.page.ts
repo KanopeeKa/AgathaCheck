@@ -165,9 +165,9 @@ export class MyDetailsPage {
         await homeNav.click({ force: true });
         await waitForFlutterRoutePattern(this.page, /\/(g|o)\/home/, 30_000);
       } else {
-        await this.page.goto(flutterGotoUrl('/g/home'));
+        await this.page.goto(flutterGotoUrl('/pc/home'));
         await refreshFlutterAccessibility(this.page);
-        await waitForFlutterRoutePattern(this.page, /^\/g\/home$/, 30_000);
+        await waitForFlutterRoutePattern(this.page, /^\/pc\/home$/, 30_000);
       }
     }
     await this.page.waitForTimeout(500);

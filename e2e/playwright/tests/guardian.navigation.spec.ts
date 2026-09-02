@@ -1,9 +1,9 @@
 /**
  * @bdd guardian_dashboard.feature
- * Scenario: Guardian compact bottom nav reaches Pets, Care, Fostering destinations
- * Scenario: Guardian leading navigation rail reaches primary destinations at medium width
- * Scenario: Guardian expanded sidebar reaches primary destinations at wide width
- * Scenario: Workspace toggle switches between Guardian and Shelter when available
+ * Scenario: Pet Care compact bottom nav reaches Pets, Actions, and Fostering destinations
+ * Scenario: Pet Care leading navigation rail reaches primary destinations at medium width
+ * Scenario: Pet Care expanded sidebar reaches primary destinations at wide width
+ * Scenario: Workspace toggle switches between Pet Care and Shelter when available
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
@@ -36,7 +36,7 @@ async function loginGuardian(
 }
 
 test.describe('Guardian navigation', () => {
-  test('Guardian compact bottom nav reaches Pets, Care, Fostering destinations', async ({
+  test('Pet Care compact bottom nav reaches Pets, Actions, and Fostering destinations', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 375, height: 812 });
@@ -53,12 +53,12 @@ test.describe('Guardian navigation', () => {
     await petList.expectManagePetsLoaded();
     await petList.expectPetVisible('NavPet');
 
-    await dashboard.openBottomNavTab('Care');
-    await waitForFlutterRoutePattern(page, /\/g\/events(?:\?|$)/, 30_000);
+    await dashboard.openBottomNavTab('Actions');
+    await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 30_000);
     await new HealthDashboardPage(page).expectLoaded();
 
     await dashboard.openFosteringViaBottomNav();
-    await expect(page).toHaveURL(/#\/g\/fostering/);
+    await expect(page).toHaveURL(/#\/pc\/fostering/);
   });
 
   test('Guardian leading navigation rail reaches primary destinations at medium width', async ({
@@ -79,12 +79,12 @@ test.describe('Guardian navigation', () => {
     await petList.expectManagePetsLoaded();
     await petList.expectPetVisible('RailPet');
 
-    await dashboard.openLeadingNavDestination('Care');
-    await waitForFlutterRoutePattern(page, /\/g\/events(?:\?|$)/, 30_000);
+    await dashboard.openLeadingNavDestination('Actions');
+    await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 30_000);
     await new HealthDashboardPage(page).expectLoaded();
 
     await dashboard.openLeadingNavDestination('Fostering');
-    await waitForFlutterRoutePattern(page, /\/g\/fostering(?:\?|$)/, 30_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/fostering(?:\?|$)/, 30_000);
     await expect(page.getByText(/Fostering Sessions|Sessions d'accueil/i).first()).toBeVisible();
   });
 
@@ -106,16 +106,16 @@ test.describe('Guardian navigation', () => {
     await petList.expectManagePetsLoaded();
     await petList.expectPetVisible('SidebarPet');
 
-    await dashboard.openLeadingNavDestination('Care');
-    await waitForFlutterRoutePattern(page, /\/g\/events(?:\?|$)/, 30_000);
+    await dashboard.openLeadingNavDestination('Actions');
+    await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 30_000);
     await new HealthDashboardPage(page).expectLoaded();
 
     await dashboard.openLeadingNavDestination('Fostering');
-    await waitForFlutterRoutePattern(page, /\/g\/fostering(?:\?|$)/, 30_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/fostering(?:\?|$)/, 30_000);
     await expect(page.getByText(/Fostering Sessions|Sessions d'accueil/i).first()).toBeVisible();
   });
 
-  test('Workspace toggle switches between Guardian and Shelter when available', async ({
+  test('Workspace toggle switches between Pet Care and Shelter when available', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 375, height: 812 });
@@ -135,8 +135,8 @@ test.describe('Guardian navigation', () => {
     await new OrganizationListPage(page).expectLoaded();
 
     await dashboard.openWorkspaceMenu();
-    await dashboard.selectWorkspaceMenuItem(/^My Pets$|^Mes animaux$/i);
-    await waitForFlutterRoutePattern(page, /\/g\/home(?:\?|$)/, 30_000);
+    await dashboard.selectWorkspaceMenuItem(/^Pet Care$|^Suivi$/i);
+    await waitForFlutterRoutePattern(page, /\/pc\/home(?:\?|$)/, 30_000);
     await expect(dashboard.careRegion()).toBeVisible();
   });
 });

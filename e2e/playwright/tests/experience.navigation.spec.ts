@@ -49,7 +49,7 @@ test.describe('Experience navigation', () => {
     testUser,
   }) => {
     await loginFromLanding(page, testUser.email, testUser.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.expectGuardianShell();
   });
@@ -72,7 +72,7 @@ test.describe('Experience navigation', () => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
     await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.expectGuardianShell();
     await expect(page.getByText(welcomeAgathaTrackText)).not.toBeVisible();
@@ -83,7 +83,7 @@ test.describe('Experience navigation', () => {
     testUser,
   }) => {
     await loginFromLanding(page, testUser.email, testUser.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.expectDrawerWithoutOrganisation();
   });
@@ -94,7 +94,7 @@ test.describe('Experience navigation', () => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
     await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.expectUnifiedDrawerItems();
   });
@@ -105,7 +105,7 @@ test.describe('Experience navigation', () => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
     await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.expectGuardianShell();
     await expect(page.getByText(welcomeAgathaTrackText)).not.toBeVisible();
@@ -117,7 +117,7 @@ test.describe('Experience navigation', () => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
     await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.openDrawerOrgView();
     await expect(
@@ -158,7 +158,7 @@ test.describe('Experience navigation', () => {
     expect(unreadCount).toBeGreaterThanOrEqual(3);
 
     await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const notificationsPage = new NotificationsPage(page);
     await notificationsPage.expectBadgeVisible(unreadCount);
   });
@@ -168,10 +168,10 @@ test.describe('Experience navigation', () => {
     testUser,
   }) => {
     await loginFromLanding(page, testUser.email, testUser.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     await expect(workspaceToggleLocator(page)).toBeVisible();
 
-    await page.goto(flutterGotoUrl('/g/pets'));
+    await page.goto(flutterGotoUrl('/pc/pets'));
     await refreshFlutterAccessibility(page);
     await expect(workspaceToggleLocator(page)).not.toBeVisible();
     await expect(page.getByRole('button', { name: /back/i })).toBeVisible();

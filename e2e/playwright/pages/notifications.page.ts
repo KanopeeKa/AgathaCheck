@@ -82,7 +82,7 @@ export class NotificationsPage {
       return;
     }
     // Last resort: guardian home + bell (deprecated /g/notifications redirects away)
-    await this.page.goto(flutterGotoUrl('/g/home'));
+    await this.page.goto(flutterGotoUrl('/pc/home'));
     await refreshFlutterAccessibility(this.page);
     await this.openPanelViaBell();
   }

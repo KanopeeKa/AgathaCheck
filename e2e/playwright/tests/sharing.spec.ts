@@ -221,7 +221,7 @@ test.describe('Pet sharing', () => {
     await hideFosteredPet(baseURL, bob.accessToken, pet.id, false);
 
     await loginAs(page, bob);
-    await page.goto(flutterGotoUrl('/g/pets'));
+    await page.goto(flutterGotoUrl('/pc/pets'));
     await refreshFlutterAccessibility(page);
     const petList = new PetListPage(page);
     await petList.expectLoaded();

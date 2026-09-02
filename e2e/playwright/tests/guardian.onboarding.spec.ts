@@ -40,7 +40,7 @@ test.describe('Guardian onboarding', () => {
       skipGuardianOnboarding: false,
     });
 
-    await waitForFlutterRoutePattern(page, /\/g\/onboarding/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/onboarding/, 60_000);
     const onboarding = new OnboardingPage(page);
     await onboarding.expectGuardianVisible();
   });

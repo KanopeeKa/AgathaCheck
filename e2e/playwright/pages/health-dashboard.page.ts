@@ -14,7 +14,7 @@ import {
 export class HealthDashboardPage {
   constructor(private readonly page: Page) {}
 
-  /** Guardian `/g/events` due-events inbox (D17) — distinct from org tabbed dashboard. */
+  /** Pet Care `/pc/events` due-events inbox (D17) — distinct from org tabbed dashboard. */
   private guardianDueEventsEmptyLocator() {
     return this.page
       .getByText(/You're all caught up|Tout est à jour/i)
@@ -25,7 +25,7 @@ export class HealthDashboardPage {
       );
   }
 
-  /** Guardian `/g/events` global list (phase 14+) — filter bar + EventListCard rows. */
+  /** Pet Care `/pc/events` global list (phase 14+) — filter bar + EventListCard rows. */
   private guardianGlobalEventsLoadedLocator() {
     return this.page
       .getByRole('button', { name: /Add an event|Ajouter un événement/i })
@@ -171,14 +171,14 @@ export class HealthDashboardPage {
       .first();
     if (!(await tab.isVisible({ timeout: 3_000 }).catch(() => false))) {
       throw new Error(
-        `Health dashboard tab "${tabName}" not found — guardian /g/events uses the due-events inbox without tabs`,
+        `Health dashboard tab "${tabName}" not found — Pet Care /pc/events uses the due-events inbox without tabs`,
       );
     }
     await tab.click();
     await this.page.waitForTimeout(500);
   }
 
-  /** Guardian `/g/events` global list — status filter chip (manage-events filter bar). */
+  /** Pet Care `/pc/events` global list — status filter chip (manage-events filter bar). */
   async selectDueOverdueFilter(): Promise<void> {
     const chip = filterChipByName(
       this.page,
@@ -186,7 +186,7 @@ export class HealthDashboardPage {
     );
     if (!(await chip.isVisible({ timeout: 3_000 }).catch(() => false))) {
       throw new Error(
-        'Due and Overdue filter chip not found — guardian /g/events may not have loaded manage-events filters',
+        'Due and Overdue filter chip not found — Pet Care /pc/events may not have loaded manage-events filters',
       );
     }
     await chip.click();
