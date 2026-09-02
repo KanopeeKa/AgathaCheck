@@ -285,7 +285,7 @@ test.describe('Health tracking', () => {
 
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
-    // Global /g/events list shows all entries; snoozed +3 days is still in the unfiltered list.
+    // Global /pc/events list shows all entries; snoozed +3 days is still in the unfiltered list.
     await dashboard.expectEntryVisible(entry.name);
     // Due and Overdue filter: +3 days with default remind_days_before=1 is outside the window.
     await dashboard.selectDueOverdueFilter();
@@ -311,7 +311,7 @@ test.describe('Health tracking', () => {
 
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
-    // Guardian /g/events is a due-events inbox (no type tabs); due medication rows surface directly.
+    // Guardian /pc/events is a due-events inbox (no type tabs); due medication rows surface directly.
     await dashboard.expectEntryVisible('Heartworm');
   });
 

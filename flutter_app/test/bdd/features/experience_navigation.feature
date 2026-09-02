@@ -118,7 +118,7 @@ Feature: Experience navigation
     And the user has no organisation memberships
     And the user is on the guardian home screen
     When the user opens the hamburger drawer
-    Then the drawer should contain "Guardian" as a section item
+    Then the drawer should contain "Pet Care" as a section item
     And the drawer should not contain "Organisation" as a section item
     And the drawer should contain "Account" as the bottom-pinned item
 
@@ -129,7 +129,7 @@ Feature: Experience navigation
     And the user has personal guardian pets
     And the user is on the guardian home screen
     When the user opens the hamburger drawer
-    Then the drawer should contain "Guardian" as a section item
+    Then the drawer should contain "Pet Care" as a section item
     And the drawer should contain "Organisation" as a section item
     And the drawer should contain "Account" as the bottom-pinned item
     And the drawer should not contain "Events" as a drawer item

@@ -7,7 +7,7 @@
  * Scenario: Care preview row opens the event view screen
  * Scenario: Care preview supports completion and undo
  * Scenario: Care team preview reaches linked vet details
- * Scenario: Empty Guardian dashboard shows first-use guidance without false alerts
+ * Scenario: Empty Pet Care dashboard shows first-use guidance without false alerts
  * Scenario: Pending foster placement surfaces as a notification, not a dashboard banner
  * Scenario: Global events screen shows unified list without tabs
  * Scenario: Global events screen supports pet and cohort filters
@@ -102,7 +102,7 @@ test.describe('Guardian dashboard', () => {
     await dashboard.expectNoHorizontalOverflow();
     await dashboard.expectAllPetsDestination();
     await dashboard.openAllPets();
-    await expect(page).toHaveURL(/#\/g\/pets/);
+    await expect(page).toHaveURL(/#\/pc\/pets/);
     await dashboard.goBackToDashboard();
   });
 
@@ -122,7 +122,7 @@ test.describe('Guardian dashboard', () => {
     await dashboard.expectCarePriorityOrder(['Overdue Care', 'Today Care']);
     await dashboard.expectCareVisible('Upcoming Care');
     await dashboard.openEvents();
-    await expect(page).toHaveURL(/#\/g\/events/);
+    await expect(page).toHaveURL(/#\/pc\/events/);
     await dashboard.goBackToDashboard();
   });
 
@@ -188,11 +188,11 @@ test.describe('Guardian dashboard', () => {
     await dashboard.expectVetVisible('Dr. Desk');
     await expect(semanticsByName(page, /Dr\. Desk.*Caring for 1 pet/i).first()).toBeVisible();
     await dashboard.openVet('Dr. Desk');
-    await expect(page).toHaveURL(/#\/g\/vets\//);
+    await expect(page).toHaveURL(/#\/pc\/vets\//);
     await dashboard.goBackToDashboard();
   });
 
-  test('Empty Guardian dashboard gives a truthful Care state without false alerts', async ({ page, testUser }) => {
+  test('Empty Pet Care dashboard gives a truthful Care state without false alerts', async ({ page, testUser }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await loginGuardian(page, testUser.email, testUser.password);
     const dashboard = new GuardianDashboardPage(page);
@@ -226,9 +226,9 @@ test.describe('Guardian dashboard', () => {
       nextDueDate: today,
     });
     await loginGuardian(page, testUser.email, testUser.password);
-    await page.goto(flutterGotoUrl('/g/events'));
+    await page.goto(flutterGotoUrl('/pc/events'));
     await refreshFlutterAccessibility(page);
-    await waitForFlutterRoutePattern(page, /^\/g\/events(?:\?|$)/, 60_000);
+    await waitForFlutterRoutePattern(page, /^\/pc\/events(?:\?|$)/, 60_000);
     await expect(page.getByText('Events', { exact: true }).first()).toBeVisible();
     await expect(page.getByRole('tab')).toHaveCount(0);
     await expect(page.getByRole('button', { name: /Add an event/i })).toBeVisible();
@@ -242,9 +242,9 @@ test.describe('Guardian dashboard', () => {
     await createHealthEntry(baseURL(), user.accessToken, owned.id, { name: 'Owned Entry', nextDueDate: today });
     await createHealthEntry(baseURL(), user.accessToken, foster.id, { name: 'Foster Entry', nextDueDate: today });
     await loginGuardian(page, user.email, user.password);
-    await page.goto(flutterGotoUrl('/g/events'));
+    await page.goto(flutterGotoUrl('/pc/events'));
     await refreshFlutterAccessibility(page);
-    await waitForFlutterRoutePattern(page, /^\/g\/events(?:\?|$)/, 60_000);
+    await waitForFlutterRoutePattern(page, /^\/pc\/events(?:\?|$)/, 60_000);
     for (const label of ['My Pets', 'My Fostered Pets', 'All pets', 'OwnedPet', 'FosterPet']) {
       await expect(page.getByRole('checkbox', { name: label, exact: true })).toBeVisible();
     }

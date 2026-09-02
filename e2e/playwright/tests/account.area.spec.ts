@@ -41,7 +41,7 @@ test.describe('Account area organisation visibility', () => {
     testUser,
   }) => {
     await loginFromLanding(page, testUser.email, testUser.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
 
     const experience = new ExperiencePage(page);
     await experience.gotoAccountFromDrawer();
@@ -64,7 +64,7 @@ test.describe('Account area organisation visibility', () => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
     await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
 
     const experience = new ExperiencePage(page);
     await experience.gotoAccountFromDrawer();
@@ -78,7 +78,7 @@ test.describe('Account area login section restore', () => {
     const { user } = await seedDualRoleUser(baseURL());
 
     await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.openDrawerOrgView();
 
@@ -94,13 +94,13 @@ test.describe('Account area login section restore', () => {
     const { user } = await seedDualRoleUser(baseURL());
 
     await loginFromLanding(page, user.email, user.password);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.openDrawerOrgView();
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.openWorkspaceMenu();
-    await dashboard.selectWorkspaceMenuItem(/^My Pets$|^Mes animaux$/i);
-    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
+    await dashboard.selectWorkspaceMenuItem(/^Pet Care$|^Suivi$/i);
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
 
     await logOutFromApp(page);
     await loginFromLanding(page, user.email, user.password);

@@ -49,11 +49,11 @@ export class PetListPage {
       options.experience === 'organization' ||
       (options.experience !== 'guardian' &&
         (route.startsWith('/o/') || route.startsWith('/organizations')));
-    // Guardian /g/events is the due-events inbox (D17).
-    const dashboardPath = useOrgHome ? '/o/events' : '/g/events';
+    // Pet Care /pc/events is the due-events inbox (D17).
+    const dashboardPath = useOrgHome ? '/o/events' : '/pc/events';
     const dashboardRoutePattern = useOrgHome
       ? /\/o\/events(?:\?|$)/
-      : /^\/g\/events(?:\?|$)/;
+      : /^\/pc\/events(?:\?|$)/;
     if (await isExperienceShellVisible(this.page)) {
       await this.page.goto(flutterGotoUrl(dashboardPath));
       await refreshFlutterAccessibility(this.page);
@@ -95,7 +95,7 @@ export class PetListPage {
       options.experience === 'organization' ||
       (options.experience !== 'guardian' &&
         (route.startsWith('/o/') || route.startsWith('/organizations')));
-    const homePath = useOrgHome ? '/o/home' : '/g/home';
+    const homePath = useOrgHome ? '/o/home' : '/pc/home';
 
     try {
       await dismissConsentBannerIfPresent(this.page);
@@ -118,7 +118,7 @@ export class PetListPage {
     }
   }
 
-  /** Guardian `/g/home` care section — empty when nothing is due today. */
+  /** Pet Care `/pc/home` care section — empty when nothing is due today. */
   async expectNoDueEventsOnHome(): Promise<void> {
     await this.expectLoaded();
     await expect(async () => {
@@ -175,11 +175,11 @@ export class PetListPage {
     await homeShellLocator(this.page).first().waitFor();
   }
 
-  /** Guardian dashboard (`/g/home`) no longer shows Add Pet — FAB lives on `/g/pets`. */
-  /** Guardian `/g/pets` shell — route plus sticky Add Pet action (title is not always plain text). */
+  /** Pet Care dashboard (`/pc/home`) no longer shows Add Pet — FAB lives on `/pc/pets`. */
+  /** Pet Care `/pc/pets` shell — route plus sticky Add Pet action (title is not always plain text). */
   async expectManagePetsLoaded(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /^\/g\/pets(?:\?|$)/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /^\/pc\/pets(?:\?|$)/, 30_000);
     await expect(
       this.page
         .getByRole('button', { name: /^Add Pet$|^Ajouter un animal$/i })
@@ -191,16 +191,16 @@ export class PetListPage {
   async openManagePets(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     const route = flutterRoutePath(this.page.url());
-    if (!route.startsWith('/g/pets')) {
-      await this.page.goto(flutterGotoUrl('/g/pets'));
+    if (!route.startsWith('/pc/pets')) {
+      await this.page.goto(flutterGotoUrl('/pc/pets'));
       await refreshFlutterAccessibility(this.page);
       try {
-        await waitForFlutterRoutePattern(this.page, /^\/g\/pets(?:\?|$)/, 12_000);
+        await waitForFlutterRoutePattern(this.page, /^\/pc\/pets(?:\?|$)/, 12_000);
       } catch {
         await this.page.evaluate(() => {
-          window.location.hash = '#/g/pets';
+          window.location.hash = '#/pc/pets';
         });
-        await waitForFlutterRoutePattern(this.page, /^\/g\/pets(?:\?|$)/, 20_000);
+        await waitForFlutterRoutePattern(this.page, /^\/pc\/pets(?:\?|$)/, 20_000);
       }
     }
   }
@@ -228,11 +228,11 @@ export class PetListPage {
 
   async expectPetCount(n: number): Promise<void> {
     let route = flutterRoutePath(this.page.url());
-    if (route === '/g/home' || route === '/') {
+    if (route === '/pc/home' || route === '/') {
       await this.openManagePets();
       route = flutterRoutePath(this.page.url());
     }
-    const cards = route.startsWith('/g/pets')
+    const cards = route.startsWith('/pc/pets')
         ? activePetListCardLocator(this.page)
         : petListCardLocator(this.page);
     await expect(cards).toHaveCount(n, { timeout: 30_000 });
@@ -271,11 +271,11 @@ export class PetListPage {
     if (await vetsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await vetsNav.click();
     } else if (await isExperienceShellVisible(this.page)) {
-      await this.page.goto(flutterGotoUrl('/g/vets'));
+      await this.page.goto(flutterGotoUrl('/pc/vets'));
       await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, /\/g\/vets$/, 30_000);
+      await waitForFlutterRoutePattern(this.page, /\/pc\/vets$/, 30_000);
     } else {
-      await waitForFlutterRoute(this.page, '/g/vets');
+      await waitForFlutterRoute(this.page, '/pc/vets');
     }
     await this.page.getByText(/^Veterinarians$/i).first().waitFor({ timeout: 30_000 });
   }
@@ -284,16 +284,16 @@ export class PetListPage {
    * Simulate a left swipe on a shared-pet card to trigger the hide-pet
    * Dismissible action (DismissDirection.endToStart).
    *
-   * Shared pets on `/g/home` use [GuardianShellSharedPetCard] (compact, swipe-friendly).
-   * On `/g/pets`, full-list cards are constrained to tile strips where mouse-swipe is
+   * Shared pets on `/pc/home` use [GuardianShellSharedPetCard] (compact, swipe-friendly).
+   * On `/pc/pets`, full-list cards are constrained to tile strips where mouse-swipe is
    * unreliable on Flutter web — prefer swiping on the dashboard when already there.
    */
   async swipeLeftPetCard(name: string): Promise<void> {
     await this.expectPetVisible(name);
 
     const route = flutterRoutePath(this.page.url());
-    if (route !== '/g/home' && route !== '/') {
-      if (!route.startsWith('/g/pets')) {
+    if (route !== '/pc/home' && route !== '/') {
+      if (!route.startsWith('/pc/pets')) {
         await this.openManagePets();
       }
       await this.expectPetVisible(name);
@@ -353,11 +353,11 @@ export class PetListPage {
 
   async expectRainbowBridgeSection(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    // Passed-away section may sit below the fold on `/g/pets`.
+    // Passed-away section may sit below the fold on `/pc/pets`.
     await this.page.mouse.wheel(0, 800);
     await this.page.waitForTimeout(300);
     await refreshFlutterAccessibility(this.page);
-    // Guardian `/g/pets` uses PetListSectionHeader "Passed away"; legacy list uses collapsible "Rainbow Bridge".
+    // Pet Care `/pc/pets` uses PetListSectionHeader "Passed away"; legacy list uses collapsible "Rainbow Bridge".
     const sectionLabel = this.page
       .getByText(/^(?:Passed away|Rainbow Bridge|Décédé\(e\))/i)
       .or(this.page.getByText(/(?:Passed away|Rainbow Bridge|Décédé\(e\))\s+\d+/i));
@@ -438,8 +438,8 @@ export class PetListPage {
       options.experience === 'organization' ||
       (options.experience !== 'guardian' &&
         (route.startsWith('/o/') || route.startsWith('/organizations')));
-    const home = useOrgHome ? '/o/home' : '/g/home';
-    // Match only the home route — not other /o/* or /g/* shells (e.g. /o/orgs/:id/pets).
+    const home = useOrgHome ? '/o/home' : '/pc/home';
+    // Match only the home route — not other /o/* or /pc/* shells (e.g. /o/orgs/:id/pets).
     const onHome = route === home;
 
     await dismissConsentBannerIfPresent(this.page);
@@ -448,7 +448,7 @@ export class PetListPage {
         options.experience === 'organization'
           ? !route.startsWith('/o/')
           : options.experience === 'guardian'
-            ? !route.startsWith('/g/')
+            ? !route.startsWith('/pc/')
             : false;
       if (switchingExperience) {
         await this.page.goto(flutterGotoUrl(home));
