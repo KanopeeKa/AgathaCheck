@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
@@ -63,7 +64,10 @@ class HomeEventActions {
   static void viewEntry(BuildContext context, HealthEntry entry) {
     final petId = entry.petId;
     if (petId.isEmpty) return;
-    context.push('/pet/$petId/events/${entry.id}');
+    final returnTo = currentShellLocation(context);
+    context.go(
+      '/pet/$petId/events/${entry.id}?returnTo=${encodeShellReturnTo(returnTo)}',
+    );
   }
 
   /// Opens the read-only event view screen (not edit).
