@@ -48,11 +48,11 @@ test.describe('Pet profiles', () => {
 
   test('user can view pet details from the list', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
 
     const petList = await loginAs(page, testUser);
     await petList.expectPetVisible('Bella');
-    await petList.openPet('Bella');
+    await petList.openPet('Bella', pet.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Bella');
@@ -75,10 +75,10 @@ test.describe('Pet profiles', () => {
 
   test('user can edit a pet name', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
 
     const petList = await loginAs(page, testUser);
-    await petList.openPet('Bella');
+    await petList.openPet('Bella', pet.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Bella');
@@ -119,7 +119,7 @@ test.describe('Pet profiles', () => {
     const pet = await createPet(baseURL, testUser.accessToken, 'Max', 'Dog');
 
     const petList = await loginAs(page, testUser);
-    await petList.openPet('Max');
+    await petList.openPet('Max', pet.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Max');
@@ -136,10 +136,10 @@ test.describe('Pet profiles', () => {
 
   test('user can delete a pet and it is removed from the list', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    await createPet(baseURL, testUser.accessToken, 'Luna', 'Cat');
+    const pet = await createPet(baseURL, testUser.accessToken, 'Luna', 'Cat');
 
     const petList = await loginAs(page, testUser);
-    await petList.openPet('Luna');
+    await petList.openPet('Luna', pet.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Luna');
@@ -159,10 +159,10 @@ test.describe('Pet profiles', () => {
     testUser,
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    await createPet(baseURL, testUser.accessToken, 'Charlie', 'Dog');
+    const pet = await createPet(baseURL, testUser.accessToken, 'Charlie', 'Dog');
 
     const petList = await loginAs(page, testUser);
-    await petList.openPet('Charlie');
+    await petList.openPet('Charlie', pet.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Charlie');
@@ -182,10 +182,10 @@ test.describe('Pet profiles', () => {
 
   test('user can mark a pet as passed away', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    await createPet(baseURL, testUser.accessToken, 'Shadow', 'Dog');
+    const pet = await createPet(baseURL, testUser.accessToken, 'Shadow', 'Dog');
 
     const petList = await loginAs(page, testUser);
-    await petList.openPet('Shadow');
+    await petList.openPet('Shadow', pet.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Shadow');
@@ -224,7 +224,7 @@ test.describe('Pet profiles', () => {
     expect(seeded.dateOfBirth).toBe('2022-01-01');
 
     const petList = await loginAs(page, testUser);
-    await petList.openPet('Milo');
+    await petList.openPet('Milo', pet.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Milo');
@@ -237,12 +237,12 @@ test.describe('Pet profiles', () => {
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     await createPet(baseURL, testUser.accessToken, 'Max', 'Dog');
-    await createPet(baseURL, testUser.accessToken, 'Buddy', 'Dog');
+    const buddy = await createPet(baseURL, testUser.accessToken, 'Buddy', 'Dog');
 
     const petList = await loginAs(page, testUser);
     await petList.openManagePets();
     await petList.expectPetCount(2);
-    await petList.openPet('Buddy');
+    await petList.openPet('Buddy', buddy.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Buddy');
@@ -265,7 +265,7 @@ test.describe('Pet profiles', () => {
     const pet = await createPet(baseURL, testUser.accessToken, 'Luna', 'Fish');
 
     const petList = await loginAs(page, testUser);
-    await petList.openPet(pet.name);
+    await petList.openPet(pet.name, pet.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Luna');
@@ -282,7 +282,7 @@ test.describe('Pet profiles', () => {
     });
 
     const petList = await loginAs(page, testUser);
-    await petList.openPet('Luna');
+    await petList.openPet('Luna', pet.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Luna');
@@ -299,7 +299,7 @@ test.describe('Pet profiles', () => {
     });
 
     const petList = await loginAs(page, testUser);
-    await petList.openPet('Bella');
+    await petList.openPet('Bella', pet.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Bella');
@@ -312,7 +312,7 @@ test.describe('Pet profiles', () => {
     await createVet(baseURL, testUser.accessToken, 'Dr. Jones');
 
     const petList = await loginAs(page, testUser);
-    await petList.openPet('Bella');
+    await petList.openPet('Bella', pet.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Bella');
