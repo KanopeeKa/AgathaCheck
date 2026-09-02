@@ -1,5 +1,6 @@
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_history_entry.dart';
+import '../../domain/entities/health_occurrence.dart';
 import '../../domain/repositories/health_repository.dart';
 import '../datasources/health_remote_datasource.dart';
 import '../models/health_entry_model.dart';
@@ -92,5 +93,58 @@ class HealthRepositoryImpl implements HealthRepository {
   @override
   Future<String> exportCsv({String? petId}) {
     return dataSource.exportCsv(petId: petId);
+  }
+
+  @override
+  Future<List<HealthOccurrence>> getOpenOccurrences(String entryId) {
+    return dataSource.getOpenOccurrences(entryId);
+  }
+
+  @override
+  Future<List<HealthOccurrence>> getPastOccurrences(String entryId) {
+    return dataSource.getPastOccurrences(entryId);
+  }
+
+  @override
+  Future<HealthOccurrence> completeOccurrence(
+    String entryId,
+    String occurrenceId, {
+    String notes = '',
+    DateTime? completedOn,
+    bool skipEarlierMissed = false,
+  }) {
+    return dataSource.completeOccurrence(
+      entryId,
+      occurrenceId,
+      notes: notes,
+      completedOn: completedOn,
+      skipEarlierMissed: skipEarlierMissed,
+    );
+  }
+
+  @override
+  Future<HealthOccurrence> skipOccurrence(
+    String entryId,
+    String occurrenceId, {
+    String notes = '',
+  }) {
+    return dataSource.skipOccurrence(
+      entryId,
+      occurrenceId,
+      notes: notes,
+    );
+  }
+
+  @override
+  Future<int> skipMissedOccurrences(String entryId) {
+    return dataSource.skipMissedOccurrences(entryId);
+  }
+
+  @override
+  Future<HealthOccurrence> undoOccurrence(
+    String entryId,
+    String occurrenceId,
+  ) {
+    return dataSource.undoOccurrence(entryId, occurrenceId);
   }
 }

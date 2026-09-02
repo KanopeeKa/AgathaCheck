@@ -161,5 +161,38 @@ void main() {
       expect(state.dosage, '1 chew');
       expect(state.notes, 'With food');
     });
+
+    test('schedule times toggle and sorting', () {
+      final c = controller();
+      expect(readState().scheduleAtSpecificTimes, isFalse);
+
+      c.setScheduleAtSpecificTimes(true);
+      c.setScheduleTime(0, '20:00');
+      c.addScheduleTime();
+      c.setScheduleTime(0, '08:00');
+
+      final state = readState();
+      expect(state.scheduleAtSpecificTimes, isTrue);
+      expect(state.scheduleTimes, ['08:00', '20:00']);
+    });
+
+    test('loadEntry restores schedule times', () async {
+      repository.entryToReturn = HealthEntry(
+        id: 'entry-1',
+        petId: 'pet-9',
+        name: 'Meds',
+        type: HealthEntryType.medication,
+        frequency: HealthFrequency.daily,
+        startDate: DateTime(2026, 1, 1),
+        nextDueDate: DateTime(2026, 7, 1),
+        scheduleTimes: ['08:00', '20:00'],
+      );
+
+      final c = controller();
+      await c.loadEntry('entry-1');
+      final state = readState();
+      expect(state.scheduleAtSpecificTimes, isTrue);
+      expect(state.scheduleTimes, ['08:00', '20:00']);
+    });
   });
 }

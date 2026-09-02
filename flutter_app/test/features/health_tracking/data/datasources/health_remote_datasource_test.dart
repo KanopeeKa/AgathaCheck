@@ -179,5 +179,28 @@ void main() {
       });
       await makeDatasource(client, authToken: '').getEntries();
     });
+
+    test('getOpenOccurrences fetches pending occurrences', () async {
+      final occJson = {
+        'id': 'occ-1',
+        'health_entry_id': 'he-1',
+        'scheduled_date': '2026-09-02',
+        'scheduled_time': '08:00',
+        'status': 'pending',
+        'missed': false,
+      };
+      final client = MockClient((request) async {
+        expect(
+          request.url.toString(),
+          '$baseUrl/api/health-entries/he-1/occurrences?status=open',
+        );
+        expect(request.headers['Authorization'], 'Bearer $token');
+        return http.Response(json.encode([occJson]), 200);
+      });
+      final list = await makeDatasource(client).getOpenOccurrences('he-1');
+      expect(list, hasLength(1));
+      expect(list.first.id, 'occ-1');
+      expect(list.first.scheduledTime, '08:00');
+    });
   });
 }

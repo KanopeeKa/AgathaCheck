@@ -4183,6 +4183,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repeatEndsBy => 'Repeat ends by';
 
   @override
+  String get scheduleAtSpecificTimes => 'Schedule at specific times';
+
+  @override
+  String get scheduleAtSpecificTimesHint =>
+      'When off, doses are tracked as all-day events.';
+
+  @override
+  String get addAnotherScheduleTime => 'Add another time per day';
+
+  @override
+  String get removeScheduleTime => 'Remove time';
+
+  @override
   String get never => 'Never';
 
   @override
