@@ -10,6 +10,7 @@ import { LandingPage } from '../pages/landing.page';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
+import { PetListPage } from '../pages/pet-list.page';
 import {
   createOrganization,
   createPet,
@@ -48,8 +49,9 @@ test.describe('Guardian navigation', () => {
     await dashboard.open();
 
     await dashboard.openBottomNavTab('Pets');
-    await waitForFlutterRoutePattern(page, /\/g\/pets(?:\?|$)/, 30_000);
-    await expect(page.getByText(/All pets|Tous les animaux/i).first()).toBeVisible();
+    const petList = new PetListPage(page);
+    await petList.expectManagePetsLoaded();
+    await petList.expectPetVisible('NavPet');
 
     await dashboard.openBottomNavTab('Care');
     await waitForFlutterRoutePattern(page, /\/g\/events(?:\?|$)/, 30_000);
@@ -73,8 +75,9 @@ test.describe('Guardian navigation', () => {
     await dashboard.expectLeadingNavRailVisible();
 
     await dashboard.openLeadingNavDestination('Pets');
-    await waitForFlutterRoutePattern(page, /\/g\/pets(?:\?|$)/, 30_000);
-    await expect(page.getByText(/All pets|Tous les animaux/i).first()).toBeVisible();
+    const petList = new PetListPage(page);
+    await petList.expectManagePetsLoaded();
+    await petList.expectPetVisible('RailPet');
 
     await dashboard.openLeadingNavDestination('Care');
     await waitForFlutterRoutePattern(page, /\/g\/events(?:\?|$)/, 30_000);
@@ -99,8 +102,9 @@ test.describe('Guardian navigation', () => {
     await dashboard.expectLeadingNavSidebarVisible();
 
     await dashboard.openLeadingNavDestination('Pets');
-    await waitForFlutterRoutePattern(page, /\/g\/pets(?:\?|$)/, 30_000);
-    await expect(page.getByText(/All pets|Tous les animaux/i).first()).toBeVisible();
+    const petList = new PetListPage(page);
+    await petList.expectManagePetsLoaded();
+    await petList.expectPetVisible('SidebarPet');
 
     await dashboard.openLeadingNavDestination('Care');
     await waitForFlutterRoutePattern(page, /\/g\/events(?:\?|$)/, 30_000);
