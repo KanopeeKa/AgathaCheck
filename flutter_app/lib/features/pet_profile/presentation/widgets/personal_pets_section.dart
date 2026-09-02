@@ -11,9 +11,6 @@ class PersonalPetsSection extends StatelessWidget {
   final ThemeData theme;
   final WidgetRef ref;
   final BuildContext parentContext;
-  final bool bulkShareMode;
-  final Set<String> selectedPetIds;
-  final ValueChanged<String>? onPetSelectionToggle;
 
   const PersonalPetsSection({
     super.key,
@@ -23,9 +20,6 @@ class PersonalPetsSection extends StatelessWidget {
     required this.theme,
     required this.ref,
     required this.parentContext,
-    this.bulkShareMode = false,
-    this.selectedPetIds = const {},
-    this.onPetSelectionToggle,
   });
 
   @override
@@ -41,40 +35,7 @@ class PersonalPetsSection extends StatelessWidget {
     return PetTileStrip(
       useWrap: true,
       pets: sorted,
-      onPetTap: (pet) {
-        final selectable =
-            bulkShareMode &&
-            !pet.isShared &&
-            !pet.isFoster &&
-            pet.organizationId == null;
-        if (selectable) {
-          onPetSelectionToggle?.call(pet.id);
-        } else {
-          context.go('/pet/${pet.id}');
-        }
-      },
-      tileBuilder: (pet, tile) {
-        final selectable =
-            bulkShareMode &&
-            !pet.isShared &&
-            !pet.isFoster &&
-            pet.organizationId == null;
-        if (!selectable) return tile;
-
-        return Stack(
-          children: [
-            tile,
-            Positioned(
-              left: 8,
-              top: 8,
-              child: Checkbox(
-                value: selectedPetIds.contains(pet.id),
-                onChanged: (_) => onPetSelectionToggle?.call(pet.id),
-              ),
-            ),
-          ],
-        );
-      },
+      onPetTap: (pet) => context.go('/pet/${pet.id}'),
     );
   }
 }

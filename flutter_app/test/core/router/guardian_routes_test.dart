@@ -242,6 +242,13 @@ void main() {
       expect(router.namedLocation('guardianAllPets'), '/g/pets');
     });
 
+    test('guardianBulkSharePets resolves to /g/pets/bulk-share', () {
+      expect(
+        router.namedLocation('guardianBulkSharePets'),
+        '/g/pets/bulk-share',
+      );
+    });
+
     test('guardianEvents resolves to /g/events', () {
       expect(router.namedLocation('guardianEvents'), '/g/events');
     });

@@ -15,6 +15,7 @@ import '../../features/experience/presentation/screens/org_onboarding_screen.dar
 import '../../features/experience/presentation/widgets/foster_portal_route_guard.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../features/experience/presentation/screens/guardian/guardian_all_pets_screen.dart';
+import '../../features/experience/presentation/screens/guardian/guardian_bulk_share_select_screen.dart';
 import '../../features/experience/presentation/screens/guardian/add_event_type_picker_sheet.dart';
 import '../../features/experience/presentation/screens/guardian/guardian_due_events_screen.dart';
 import '../../features/experience/presentation/screens/guardian/guardian_fostering_screen.dart';
@@ -78,6 +79,14 @@ List<RouteBase> buildExperienceRoutes() {
           path: '/g/pets',
           name: 'guardianAllPets',
           builder: (context, state) => const GuardianAllPetsScreen(),
+          routes: [
+            GoRoute(
+              path: 'bulk-share',
+              name: 'guardianBulkSharePets',
+              builder: (context, state) =>
+                  const GuardianBulkShareSelectScreen(),
+            ),
+          ],
         ),
         GoRoute(
           path: '/g/events',
