@@ -84,10 +84,10 @@ test.describe('Pet sharing', () => {
 
   test('owner can create a share link from the pet detail screen', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
 
     const petList = await loginAs(page, testUser);
-    await petList.openPet('Bella');
+    await petList.openPet(pet.name, pet.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Bella');
