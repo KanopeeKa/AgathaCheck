@@ -49,7 +49,7 @@ test.describe('Guardian navigation', () => {
 
     await dashboard.openBottomNavTab('Pets');
     await waitForFlutterRoutePattern(page, /\/g\/pets(?:\?|$)/, 30_000);
-    await expect(page.getByText(/All pets|Tous les animaux/i).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: /Add Pet|Ajouter un animal/i })).toBeVisible();
 
     await dashboard.openBottomNavTab('Care');
     await waitForFlutterRoutePattern(page, /\/g\/events(?:\?|$)/, 30_000);
