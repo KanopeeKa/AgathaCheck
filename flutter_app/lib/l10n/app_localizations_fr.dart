@@ -3455,6 +3455,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String get bulkShareNoneSelected => 'Sélectionnez au moins un animal';
 
   @override
+  String get sharePetsMenu => 'Partager des animaux…';
+
+  @override
+  String shareSelectedPetsCount(int count) {
+    return 'Partager $count animaux';
+  }
+
+  @override
+  String get selectAllPets => 'Tout sélectionner';
+
+  @override
+  String get deselectAllPets => 'Tout désélectionner';
+
+  @override
+  String get moreActions => 'Plus d\'actions';
+
+  @override
   String get pendingShares => 'Partages en attente';
 
   @override

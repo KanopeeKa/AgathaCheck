@@ -1219,6 +1219,12 @@
   "bulkShareAction": "Share selected",
   "bulkShareDone": "Share links created for selected pets",
   "bulkShareNoneSelected": "Select at least one pet",
+  "sharePetsMenu": "Share pets…",
+  "shareSelectedPetsCount": "Share {count} pets",
+  "@shareSelectedPetsCount": { "placeholders": { "count": { "type": "int" } } },
+  "selectAllPets": "Select all",
+  "deselectAllPets": "Deselect all",
+  "moreActions": "More actions",
 
   "pendingShares": "Pending Shares",
   "petSharedWithYou": "{guardianName} wants to share {petName} with you",

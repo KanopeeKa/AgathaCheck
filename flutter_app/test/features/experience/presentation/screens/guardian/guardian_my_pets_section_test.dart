@@ -171,7 +171,9 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 
-  testWidgets('shared compact cards retain their hide wrapper', (tester) async {
+  testWidgets('shared compact cards use shared wrapper without swipe hide', (
+    tester,
+  ) async {
     const shared = Pet(
       id: 'shared-1',
       name: 'Shared pet',
@@ -187,6 +189,6 @@ void main() {
     );
 
     expect(find.byType(GuardianShellSharedPetCard), findsOneWidget);
-    expect(find.byKey(const Key('hide_shell_shared_shared-1')), findsOneWidget);
+    expect(find.byKey(const Key('hide_shell_shared_shared-1')), findsNothing);
   });
 }

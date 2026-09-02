@@ -138,13 +138,8 @@ class GuardianMyPetsSection extends ConsumerWidget {
                       useWrap: true,
                       pets: sharedPets,
                       onPetTap: (pet) => context.go('/pet/${pet.id}'),
-                      tileBuilder: (pet, tile) => GuardianShellSharedPetCard(
-                        pet: pet,
-                        l: l,
-                        theme: theme,
-                        ref: ref,
-                        parentContext: context,
-                      ),
+                      tileBuilder: (pet, tile) =>
+                          GuardianShellSharedPetCard(pet: pet, child: tile),
                     ),
                   ],
                 ],
@@ -239,14 +234,7 @@ class _GuardianPetRail extends StatelessWidget {
       onTap: () => context.go('/pet/${pet.id}'),
     );
     if (!pet.isShared) return card;
-    return GuardianShellSharedPetCard(
-      pet: pet,
-      l: l,
-      theme: theme,
-      ref: ref,
-      parentContext: parentContext,
-      child: card,
-    );
+    return GuardianShellSharedPetCard(pet: pet, child: card);
   }
 }
 

@@ -7,11 +7,9 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../experience/presentation/screens/guardian/guardian_dashboard_helpers.dart';
-import '../../../experience/presentation/widgets/guardian_full_list_pet_card.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/events_nav_icon_button.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
-import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 import '../controllers/pet_list_controller.dart';
 import '../widgets/org_filter_chips.dart';
@@ -24,24 +22,15 @@ import '../widgets/pet_list/pending_custody_transfers_section.dart';
 import '../widgets/pet_list/pending_adoption_placements_section.dart';
 import '../widgets/pet_list/pending_foster_placements_section.dart';
 import '../widgets/pet_list/pending_shares_section.dart';
-import '../widgets/pet_list/pet_list_bulk_share_bar.dart';
-import '../../../experience/presentation/screens/guardian/guardian_bulk_share.dart';
-import '../widgets/pet_list/guardian_passed_away_section.dart';
+import '../widgets/pet_list/guardian_embedded_pets_list.dart';
 import '../widgets/pet_list/pet_list_section_header.dart';
 
 /// Screen that displays the list of all pets owned by the user.
 class PetListScreen extends ConsumerStatefulWidget {
-  const PetListScreen({
-    super.key,
-    this.embeddedInShell = false,
-    this.enableBulkShare = false,
-  });
+  const PetListScreen({super.key, this.embeddedInShell = false});
 
   /// When true, renders list body only (guardian shell provides top nav).
   final bool embeddedInShell;
-
-  /// When true (with [embeddedInShell]), shows bulk-share multi-select for owned pets.
-  final bool enableBulkShare;
 
   @override
   ConsumerState<PetListScreen> createState() => _PetListScreenState();
@@ -49,8 +38,6 @@ class PetListScreen extends ConsumerStatefulWidget {
 
 class _PetListScreenState extends ConsumerState<PetListScreen> {
   late final PetListController _controller;
-  bool _bulkShareMode = false;
-  final Set<String> _selectedPetIds = {};
 
   @override
   void initState() {
@@ -59,32 +46,6 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
     Future.microtask(() {
       ref.read(notificationsProvider.notifier).checkDueEntries();
     });
-  }
-
-  Future<void> _executeBulkShare(BuildContext context, dynamic l) async {
-    final pets = ref.read(petListProvider).valueOrNull ?? [];
-    final owned = _controller
-        .getPersonalActive(_controller.guardianShellPets(pets))
-        .where((p) => !p.isShared && !p.isFoster && p.organizationId == null)
-        .where((p) => _selectedPetIds.contains(p.id))
-        .map((p) => (id: p.id, name: p.name))
-        .toList();
-    if (owned.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l.bulkShareNoneSelected)));
-      return;
-    }
-    await runBulkShareForPets(context, ref, owned);
-    if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l.bulkShareDone)));
-      setState(() {
-        _bulkShareMode = false;
-        _selectedPetIds.clear();
-      });
-    }
   }
 
   @override
@@ -104,13 +65,6 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
             pets: _controller.guardianShellPets(petListAsync.valueOrNull ?? []),
           )
         : null;
-    Widget guardianListCard(Pet pet) => GuardianFullListPetCard(
-      pet: pet,
-      careState: careSummary != null
-          ? guardianTodayPetCareState(pet, careSummary)
-          : GuardianTodayPetCareState.clear,
-      onTap: () => context.go('/pet/${pet.id}'),
-    );
     final scaffoldBody = petListAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(
@@ -155,14 +109,20 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
           );
         }
 
-        final orgNames = widget.embeddedInShell
-            ? <String>[]
-            : _controller.getOrgNames(allPets);
+        if (widget.embeddedInShell) {
+          return GuardianEmbeddedPetsList(
+            allPets: allPets,
+            controller: _controller,
+            careSummary: careSummary,
+            l: l,
+            theme: theme,
+          );
+        }
+
+        final orgNames = _controller.getOrgNames(allPets);
         final hasFosteredPets = _controller.hasFosteredPets(allPets);
         _controller.syncOrgFilter(orgNames);
-        final filteredPets = widget.embeddedInShell
-            ? _controller.guardianShellPets(allPets)
-            : _controller.filterPets(allPets);
+        final filteredPets = _controller.filterPets(allPets);
 
         if (filteredPets.isEmpty) {
           return Center(
@@ -239,18 +199,6 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                 theme: theme,
                 ref: ref,
                 parentContext: context,
-                bulkShareMode: widget.enableBulkShare && _bulkShareMode,
-                selectedPetIds: _selectedPetIds,
-                onPetSelectionToggle: (petId) {
-                  setState(() {
-                    if (_selectedPetIds.contains(petId)) {
-                      _selectedPetIds.remove(petId);
-                    } else {
-                      _selectedPetIds.add(petId);
-                    }
-                  });
-                },
-                cardBuilder: widget.embeddedInShell ? guardianListCard : null,
               ),
             ],
             if (_controller.orgFilter == null ||
@@ -267,13 +215,11 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                 orgFilter: _controller.orgFilter,
                 l: l,
                 theme: theme,
-                tileBuilder: widget.embeddedInShell ? guardianListCard : null,
               ),
             ],
-            if (!widget.embeddedInShell &&
-                (_controller.orgFilter == null ||
-                    (_controller.orgFilter != '_personal' &&
-                        _controller.orgFilter != '_fostered')))
+            if (_controller.orgFilter == null ||
+                (_controller.orgFilter != '_personal' &&
+                    _controller.orgFilter != '_fostered'))
               OrganizationPetsSection(
                 orgGroups: orgGroups,
                 l: l,
@@ -281,55 +227,14 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                 ref: ref,
                 parentContext: context,
               ),
-            if (widget.embeddedInShell)
-              GuardianPassedAwaySection(
-                pets: allPassedAway,
-                header: l.passedAway,
-                cardBuilder: guardianListCard,
-              )
-            else
-              PassedAwayPetsSection(allPassedAway: allPassedAway, theme: theme),
+            PassedAwayPetsSection(allPassedAway: allPassedAway, theme: theme),
           ],
         );
       },
     );
 
     if (widget.embeddedInShell) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (widget.enableBulkShare)
-            PetListBulkShareBar(
-              bulkShareMode: _bulkShareMode,
-              l: l,
-              onToggle: () {
-                setState(() {
-                  _bulkShareMode = !_bulkShareMode;
-                  if (!_bulkShareMode) _selectedPetIds.clear();
-                });
-              },
-              onAction: () => _executeBulkShare(context, l),
-            ),
-          Expanded(
-            child: Stack(
-              children: [
-                Positioned.fill(child: scaffoldBody),
-                Positioned(
-                  right: 16,
-                  bottom: 16,
-                  child: FloatingActionButton.extended(
-                    key: const Key('add_pet_button'),
-                    onPressed: () => context.push('/add'),
-                    tooltip: l.addNewPet,
-                    icon: const Icon(Icons.add),
-                    label: Text(l.addPet),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
+      return scaffoldBody;
     }
 
     return Scaffold(

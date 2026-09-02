@@ -18,11 +18,15 @@ class GuardianDashboardPetCard extends StatelessWidget {
     required this.pet,
     required this.careState,
     required this.onTap,
+    this.selected = false,
+    this.showSelection = false,
   });
 
   final Pet pet;
   final GuardianTodayPetCareState careState;
   final VoidCallback onTap;
+  final bool selected;
+  final bool showSelection;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +39,7 @@ class GuardianDashboardPetCard extends StatelessWidget {
     return Semantics(
       key: Key('guardian_dashboard_pet_card_${pet.id}'),
       button: true,
+      selected: showSelection && selected,
       onTap: onTap,
       label: '${pet.name}, $relationship, $careLabel',
       excludeSemantics: true,
@@ -42,85 +47,114 @@ class GuardianDashboardPetCard extends StatelessWidget {
         key: Key('guardian_dashboard_pet_card_visual_${pet.id}'),
         clipBehavior: Clip.antiAlias,
         margin: EdgeInsets.zero,
+        shape: showSelection && selected
+            ? RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: theme.colorScheme.primary, width: 2),
+              )
+            : null,
         child: InkWell(
           onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              children: [
-                Container(
-                  key: Key('guardian_dashboard_pet_photo_${pet.id}'),
-                  width: 56,
-                  height: 56,
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: ownership.accentColor.withValues(alpha: 0.18),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: ownership.accentColor,
-                      width: 1.5,
-                    ),
-                  ),
-                  child: ClipOval(child: _photo(context)),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        pet.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    Container(
+                      key: Key('guardian_dashboard_pet_photo_${pet.id}'),
+                      width: 56,
+                      height: 56,
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: ownership.accentColor.withValues(alpha: 0.18),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: ownership.accentColor,
+                          width: 1.5,
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      Row(
+                      child: ClipOval(child: _photo(context)),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
-                            careState == GuardianTodayPetCareState.overdue
-                                ? Icons.priority_high_rounded
-                                : careState ==
-                                      GuardianTodayPetCareState.dueToday
-                                ? Icons.schedule_outlined
-                                : Icons.check_circle_outline,
-                            size: 14,
-                            color: _careColor(),
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              careLabel,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: _careColor(),
-                                fontWeight: FontWeight.w600,
-                              ),
+                          Text(
+                            pet.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Icon(
+                                careState == GuardianTodayPetCareState.overdue
+                                    ? Icons.priority_high_rounded
+                                    : careState ==
+                                          GuardianTodayPetCareState.dueToday
+                                    ? Icons.schedule_outlined
+                                    : Icons.check_circle_outline,
+                                size: 14,
+                                color: _careColor(),
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  careLabel,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: _careColor(),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (relationship != l.myPets &&
+                              MediaQuery.textScalerOf(context).scale(12) <=
+                                  18) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              relationship,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
                         ],
                       ),
-                      if (relationship != l.myPets &&
-                          MediaQuery.textScalerOf(context).scale(12) <= 18) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          relationship,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+              if (showSelection)
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: CircleAvatar(
+                    radius: 12,
+                    backgroundColor: selected
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.surface.withValues(alpha: 0.92),
+                    foregroundColor: selected
+                        ? theme.colorScheme.onPrimary
+                        : theme.colorScheme.onSurfaceVariant,
+                    child: Icon(
+                      selected ? Icons.check : Icons.circle_outlined,
+                      size: 16,
+                    ),
                   ),
                 ),
-              ],
-            ),
+            ],
           ),
         ),
       ),
