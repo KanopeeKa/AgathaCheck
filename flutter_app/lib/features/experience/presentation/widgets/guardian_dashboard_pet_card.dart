@@ -168,6 +168,7 @@ class GuardianDashboardPetCard extends StatelessWidget {
   }
 
   String _careLabel(AppLocalizations l) {
+    if (pet.passedAway) return l.passedAway;
     return switch (careState) {
       GuardianTodayPetCareState.overdue => l.overdue,
       GuardianTodayPetCareState.dueToday => l.urgencyDueToday,
