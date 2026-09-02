@@ -36,7 +36,7 @@ test.describe('Pet detail back navigation', () => {
 
     await detail.goBack();
     await waitForFlutterRoutePattern(page, /\/g\/pets(?:\?|$)/, 30_000);
-    await expect(page.getByText(/All pets|Tous les animaux/i).first()).toBeVisible();
+    await petList.expectManagePetsLoaded();
   });
 
   test('back from pet detail returns to dashboard when opened from home preview', async ({

@@ -176,6 +176,18 @@ export class PetListPage {
   }
 
   /** Guardian dashboard (`/g/home`) no longer shows Add Pet — FAB lives on `/g/pets`. */
+  /** Guardian `/g/pets` shell — route plus sticky Add Pet action (title is not always plain text). */
+  async expectManagePetsLoaded(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /^\/g\/pets(?:\?|$)/, 30_000);
+    await expect(
+      this.page
+        .getByRole('button', { name: /^Add Pet$|^Ajouter un animal$/i })
+        .filter({ visible: true })
+        .first(),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
   async openManagePets(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     const route = flutterRoutePath(this.page.url());
