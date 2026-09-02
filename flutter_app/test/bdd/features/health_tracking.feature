@@ -121,6 +121,15 @@ Feature: Health Tracking
     And a success message "Marked as done" should appear
 
   @P1
+  Scenario: Multi-dose daily medication shows stack sheet for recording doses
+    Given "Bella" has a daily medication "Twice Daily Meds" scheduled at "08:00" and "18:00"
+    When the user navigates to the health dashboard
+    And the user taps "Mark as done" for "Twice Daily Meds"
+    Then the occurrence stack sheet should show 2 doses due today
+    When the user records the latest dose
+    Then 1 open dose should remain for "Twice Daily Meds"
+
+  @P1
   Scenario: Undoing a completed entry
     Given "Bella" has a completed health entry "Heartworm"
     When the user undoes the completion of "Heartworm"

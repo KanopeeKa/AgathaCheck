@@ -4,6 +4,7 @@ import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../domain/entities/health_entry.dart';
+import '../../domain/occurrence_scheduling.dart';
 import 'care_event_row_context.dart';
 import 'care_event_row_pet_avatar.dart';
 import 'care_event_status_line.dart';
@@ -24,6 +25,7 @@ class CareEventRow extends StatelessWidget {
     required this.onMarkDone,
     required this.onUndo,
     required this.onView,
+    this.occurrenceSummary,
     this.showTopDivider = true,
     this.isMarkDoneEnabled = true,
   });
@@ -35,6 +37,9 @@ class CareEventRow extends StatelessWidget {
   final VoidCallback onMarkDone;
   final VoidCallback onUndo;
   final VoidCallback onView;
+
+  /// When set and [openCount] > 0, drives the occurrence-aware status line.
+  final OccurrenceSummary? occurrenceSummary;
   final bool showTopDivider;
   final bool isMarkDoneEnabled;
 
@@ -58,7 +63,15 @@ class CareEventRow extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final displayName = careEventRowDisplayPetName(pet, entry, l);
     final typeLabel = healthEntryTypeLabel(l, entry.type);
-    final status = formatCareEventStatusLine(entry, l, colorScheme);
+    final status = occurrenceSummary != null && occurrenceSummary!.openCount > 0
+        ? formatOccurrenceCareEventStatusLine(
+            entry,
+            occurrenceSummary!,
+            l,
+            colorScheme,
+            context: context,
+          )
+        : formatCareEventStatusLine(entry, l, colorScheme);
 
     final metadataLine = switch (rowContext) {
       CareEventRowContext.dashboard => '$displayName · $typeLabel',

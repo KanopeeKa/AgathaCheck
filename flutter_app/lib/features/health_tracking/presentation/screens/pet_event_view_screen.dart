@@ -7,6 +7,7 @@ import '../../../experience/presentation/widgets/experience_shell_scaffold.dart'
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../providers/health_providers.dart';
 import '../widgets/pet_event_lifecycle.dart';
+import '../widgets/pet_event_occurrence_actions.dart';
 import '../widgets/pet_event_view_body.dart';
 import '../widgets/pet_event_view_providers.dart';
 import '../../../experience/domain/entities/app_experience.dart';
@@ -75,14 +76,14 @@ class PetEventViewScreen extends ConsumerWidget {
               await ref
                   .read(healthEntriesNotifierProvider.notifier)
                   .closeEvent(entryId);
-              ref.invalidate(entryHistoryProvider(entryId));
+              PetEventOccurrenceActions.invalidateOccurrenceData(ref, entryId);
             }
 
             Future<void> onReopen() async {
               await ref
                   .read(healthEntriesNotifierProvider.notifier)
                   .reopenEvent(entryId);
-              ref.invalidate(entryHistoryProvider(entryId));
+              PetEventOccurrenceActions.invalidateOccurrenceData(ref, entryId);
             }
 
             return ExperienceShellScaffold(

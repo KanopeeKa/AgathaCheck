@@ -62,7 +62,8 @@
     "Exporting health entries as CSV": "P2",
     "Exporting health entries as PDF": "P2",
     "Filtering health entries by organisation": "P2",
-    "Unified event edit route redirects legacy paths": "P1"
+    "Unified event edit route redirects legacy paths": "P1",
+    "Multi-dose daily medication shows stack sheet for recording doses": "P1"
   },
   "notifications.feature": {
     "Notification generated for overdue health entry": "P1",

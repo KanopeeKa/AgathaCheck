@@ -15,6 +15,7 @@ import {
   validateHealthEntryTypeForWrite,
 } from './shared.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
+import { materialiseInitialOccurrences, parseScheduleTimesInput } from '../../lib/occurrenceScheduling.js';
 
 export function registerCrudRoutes(router, pool) {
   router.get('/', async (req, res) => {
@@ -120,9 +121,10 @@ export function registerCrudRoutes(router, pool) {
       if (!typeValidation.ok) {
         return res.status(400).json({ error: typeValidation.error });
       }
+      const scheduleTimes = parseScheduleTimesInput(data);
       const result = await pool.query(
-        `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, status)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING *`,
+        `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, schedule_times, status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19) RETURNING *`,
         [
           id, petId, userId,
           data.name || '',
@@ -136,10 +138,16 @@ export function registerCrudRoutes(router, pool) {
           data.notes || '',
           healthIssueId,
           data.remind_days_before || data.remindDaysBefore || 1,
+          scheduleTimes !== undefined ? scheduleTimes : null,
           completedOn ? 'completed' : (data.status || 'active'),
         ]
       );
       const entry = result.rows[0];
+      if (!completedOn) {
+        await materialiseInitialOccurrences(pool, entry);
+        const synced = await pool.query('SELECT * FROM health_entries WHERE id = $1', [id]);
+        Object.assign(entry, synced.rows[0]);
+      }
       entry.pet_name = null;
       recordPetActivityForPet(pool, {
         petId: petId,

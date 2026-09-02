@@ -1,5 +1,6 @@
 import '../entities/health_entry.dart';
 import '../entities/health_history_entry.dart';
+import '../entities/health_occurrence.dart';
 
 /// Abstract repository for health tracking operations.
 ///
@@ -54,4 +55,26 @@ abstract class HealthRepository {
 
   /// Exports all health entries as CSV data.
   Future<String> exportCsv({String? petId});
+
+  Future<List<HealthOccurrence>> getOpenOccurrences(String entryId);
+
+  Future<List<HealthOccurrence>> getPastOccurrences(String entryId);
+
+  Future<HealthOccurrence> completeOccurrence(
+    String entryId,
+    String occurrenceId, {
+    String notes = '',
+    DateTime? completedOn,
+    bool skipEarlierMissed = false,
+  });
+
+  Future<HealthOccurrence> skipOccurrence(
+    String entryId,
+    String occurrenceId, {
+    String notes = '',
+  });
+
+  Future<int> skipMissedOccurrences(String entryId);
+
+  Future<HealthOccurrence> undoOccurrence(String entryId, String occurrenceId);
 }

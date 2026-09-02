@@ -4203,6 +4203,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repeatEndsBy => 'Repeat ends by';
 
   @override
+  String get scheduleAtSpecificTimes => 'Schedule at specific times';
+
+  @override
+  String get scheduleAtSpecificTimesHint =>
+      'When off, doses are tracked as all-day events.';
+
+  @override
+  String get addAnotherScheduleTime => 'Add another time per day';
+
+  @override
+  String get removeScheduleTime => 'Remove time';
+
+  @override
   String get never => 'Never';
 
   @override
@@ -5319,6 +5332,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String urgencyDueDate(String date) {
     return 'Due $date';
   }
+
+  @override
+  String occurrenceDateAtTime(String date, String time) {
+    return '$date at $time';
+  }
+
+  @override
+  String occurrenceOpenCount(int count) {
+    return '$count open';
+  }
+
+  @override
+  String occurrenceMissedCount(int count) {
+    return '$count missed';
+  }
+
+  @override
+  String occurrenceStackSheetTitle(String name) {
+    return 'Record doses for $name';
+  }
+
+  @override
+  String get occurrenceZoneMissed => 'Missed';
+
+  @override
+  String get occurrenceZoneDueToday => 'Due today';
+
+  @override
+  String get occurrenceZoneComingUp => 'Coming up';
+
+  @override
+  String get occurrenceRecordHead => 'Record latest dose';
+
+  @override
+  String get occurrenceSkipEarlierMissed =>
+      'Skip earlier missed doses when recording';
+
+  @override
+  String get occurrenceReviewEach => 'Review in event view';
+
+  @override
+  String get occurrenceSkipAllMissed => 'Skip all missed';
+
+  @override
+  String get occurrenceNotNow => 'Not now';
 
   @override
   String completedEventSemanticLabel(String name, String petName) {

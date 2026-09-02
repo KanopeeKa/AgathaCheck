@@ -4276,6 +4276,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get repeatEndsBy => 'Répétition jusqu\'au';
 
   @override
+  String get scheduleAtSpecificTimes => 'Planifier à des heures précises';
+
+  @override
+  String get scheduleAtSpecificTimesHint =>
+      'Si désactivé, les doses sont suivies comme événements toute la journée.';
+
+  @override
+  String get addAnotherScheduleTime => 'Ajouter une autre heure par jour';
+
+  @override
+  String get removeScheduleTime => 'Supprimer l\'heure';
+
+  @override
   String get never => 'Jamais';
 
   @override
@@ -5415,6 +5428,51 @@ class AppLocalizationsFr extends AppLocalizations {
   String urgencyDueDate(String date) {
     return 'Échéance $date';
   }
+
+  @override
+  String occurrenceDateAtTime(String date, String time) {
+    return '$date à $time';
+  }
+
+  @override
+  String occurrenceOpenCount(int count) {
+    return '$count en attente';
+  }
+
+  @override
+  String occurrenceMissedCount(int count) {
+    return '$count manqués';
+  }
+
+  @override
+  String occurrenceStackSheetTitle(String name) {
+    return 'Enregistrer les doses pour $name';
+  }
+
+  @override
+  String get occurrenceZoneMissed => 'Manqués';
+
+  @override
+  String get occurrenceZoneDueToday => 'Aujourd\'hui';
+
+  @override
+  String get occurrenceZoneComingUp => 'À venir';
+
+  @override
+  String get occurrenceRecordHead => 'Enregistrer la dose la plus récente';
+
+  @override
+  String get occurrenceSkipEarlierMissed =>
+      'Ignorer les doses manquées antérieures lors de l\'enregistrement';
+
+  @override
+  String get occurrenceReviewEach => 'Voir dans l\'événement';
+
+  @override
+  String get occurrenceSkipAllMissed => 'Ignorer tous les manqués';
+
+  @override
+  String get occurrenceNotNow => 'Pas maintenant';
 
   @override
   String completedEventSemanticLabel(String name, String petName) {

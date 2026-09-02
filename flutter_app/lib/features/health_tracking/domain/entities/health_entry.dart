@@ -39,6 +39,7 @@ class HealthEntry {
     this.healthIssueName,
     this.petName,
     this.remindDaysBefore = 1,
+    this.scheduleTimes,
     this.createdAt,
     this.updatedAt,
   });
@@ -96,6 +97,9 @@ class HealthEntry {
 
   /// How many days before the due date to send a reminder notification.
   final int remindDaysBefore;
+
+  /// Ordered local wall-clock times (`HH:mm`). Null or empty = all-day doses.
+  final List<String>? scheduleTimes;
 
   /// When this entry was created.
   final DateTime? createdAt;
@@ -165,6 +169,8 @@ class HealthEntry {
     String? petName,
     bool clearHealthIssueId = false,
     int? remindDaysBefore,
+    List<String>? scheduleTimes,
+    bool clearScheduleTimes = false,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -193,6 +199,9 @@ class HealthEntry {
           : (healthIssueName ?? this.healthIssueName),
       petName: petName ?? this.petName,
       remindDaysBefore: remindDaysBefore ?? this.remindDaysBefore,
+      scheduleTimes: clearScheduleTimes
+          ? null
+          : (scheduleTimes ?? this.scheduleTimes),
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

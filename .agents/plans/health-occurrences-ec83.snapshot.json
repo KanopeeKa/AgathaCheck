@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "plan_id": "health-occurrences-ec83",
+  "approved_at": "2026-09-02T10:00:00Z",
+  "approved_by": "user-chat-2026-09-02",
+  "approved_until": "2026-09-04T10:00:00Z",
+  "content_hash": "sha256:fe7622655252b940729de3b423833b104357d5b339f6b512082946134406de9c",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/health-occurrences-integration-ec83",
+  "control_issue": 811,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Domain spec, DB, backend API",
+      "branch": "cursor/health-occurrences-backend-ec83",
+      "allowed_paths": [
+        "docs/domains/health_tracking/changes/occurrence-scheduling.md",
+        "db/migrations/**",
+        "server/lib/occurrence*",
+        "server/lib/recurrenceHelper.js",
+        "server/routes/healthEntries/**",
+        "server/test/healthEntries/**",
+        "server/test/occurrence*",
+        "scripts/migrations/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/812",
+      "pr_head_sha": "dd4d1b068e7d48976924476ad004e800bdc098c9"
+    },
+    {
+      "id": "2",
+      "title": "Flutter data layer + schedule form",
+      "branch": "cursor/health-occurrences-data-form-ec83",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/domain/**",
+        "flutter_app/lib/features/health_tracking/data/**",
+        "flutter_app/lib/features/health_tracking/presentation/providers/**",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_form/**",
+        "flutter_app/lib/features/health_tracking/presentation/screens/health_entry_form_screen.dart",
+        "flutter_app/lib/features/health_tracking/presentation/controllers/**",
+        "flutter_app/lib/core/utils/calendar_date.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/health_tracking/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_head_sha": "07f544cb",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/814"
+    },
+    {
+      "id": "3",
+      "title": "List triage: CareEventRow + stack sheet",
+      "branch": "cursor/health-occurrences-list-stack-ec83",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/widgets/care_event_*",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/occurrence_*",
+        "flutter_app/lib/features/experience/presentation/**",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/**",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_events_preview_section.dart",
+        "flutter_app/test/features/health_tracking/presentation/widgets/**",
+        "flutter_app/test/features/experience/**",
+        "docs/design/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_head_sha": "f64169e1",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/815"
+    },
+    {
+      "id": "4",
+      "title": "Event view workbench",
+      "branch": "cursor/health-occurrences-event-view-ec83",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_*",
+        "flutter_app/lib/features/health_tracking/presentation/screens/pet_event_view_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/home_event_actions.dart",
+        "flutter_app/test/features/health_tracking/presentation/screens/pet_event_view_screen_test.dart",
+        "docs/design/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_head_sha": "2b0af1c4"
+    },
+    {
+      "id": "5",
+      "title": "BDD, E2E, integration to main",
+      "branch": "cursor/health-occurrences-e2e-ec83",
+      "allowed_paths": [
+        "e2e/playwright/tests/health.tracking.spec.ts",
+        "e2e/playwright/pages/**",
+        "e2e/playwright/support/api.ts",
+        "flutter_app/test/bdd/features/health_tracking.feature",
+        "docs/domains/health_tracking/**",
+        ".agents/plans/health-occurrences-ec83.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

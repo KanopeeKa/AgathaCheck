@@ -60,26 +60,6 @@ class HomeEventActions {
         .undoComplete(entry.id);
   }
 
-  static Future<void> snoozeDays(
-    BuildContext context,
-    WidgetRef ref,
-    HealthEntry entry,
-    int days,
-  ) async {
-    await ref
-        .read(healthEntriesNotifierProvider.notifier)
-        .snooze(entry.id, days);
-    if (!context.mounted) return;
-    final l = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          l.snoozedForDays(entry.name, days, days == 1 ? l.day : l.days),
-        ),
-      ),
-    );
-  }
-
   static void viewEntry(BuildContext context, HealthEntry entry) {
     final petId = entry.petId;
     if (petId.isEmpty) return;

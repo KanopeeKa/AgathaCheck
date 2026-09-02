@@ -30,6 +30,7 @@ import { backfillWeightEntriesFromPets } from './migrations/040_backfill_weight_
 import { migrateOrgMemberPrivacy } from './migrations/042_org_member_privacy.js';
 import { migrateRetireFosterWireRole } from './migrations/044_org_retire_foster_wire_role.js';
 import { migrateOrganizationRolePermissionDefaults } from './migrations/045_organization_role_permission_defaults.js';
+import { backfillHealthOccurrences } from './migrations/047_health_occurrences_backfill.js';
 import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 
 const { Pool } = pg;
@@ -113,11 +114,14 @@ const CODE_MIGRATIONS = {
   '042_org_member_privacy.sql': migrateOrgMemberPrivacy,
   '044_org_retire_foster_wire_role.sql': migrateRetireFosterWireRole,
   '045_organization_role_permission_defaults.sql': migrateOrganizationRolePermissionDefaults,
+  '047_health_occurrences.sql': backfillHealthOccurrences,
 };
 
 async function applyMigration(client, name, sql) {
   const codeRunner = CODE_MIGRATIONS[name];
   if (codeRunner) {
+    // Some migrations ship DDL in SQL plus app backfill in JS (e.g. 047).
+    await client.query(sql);
     await codeRunner(client);
     return;
   }

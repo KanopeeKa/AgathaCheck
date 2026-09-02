@@ -141,6 +141,14 @@ export class HealthDashboardPage {
     await this.openEntryForEdit(name);
   }
 
+  /** Tap the list-row Done control (opens stack sheet for multi-dose entries). */
+  async clickMarkDoneForEntry(entryId: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await this.page
+      .locator(`[flt-semantics-identifier="care_event_row_done_${entryId}"]`)
+      .click();
+  }
+
   async expectEntryMarkedComplete(name: string): Promise<void> {
     await semanticsByName(this.page, new RegExp(escapeRegExp(name), 'i')).waitFor({
       timeout: 15_000,
