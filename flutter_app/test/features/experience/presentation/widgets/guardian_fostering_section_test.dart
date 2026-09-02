@@ -120,9 +120,8 @@ void main() {
         ),
         GoRoute(
           path: '/pet/:petId/fostering-session',
-          builder: (context, state) => Scaffold(
-            body: Text('session:${state.pathParameters['petId']}'),
-          ),
+          builder: (context, state) =>
+              Scaffold(body: Text('session:${state.pathParameters['petId']}')),
         ),
       ],
     );
