@@ -7,6 +7,7 @@ import { userCanManageHealthEntry } from '../../lib/petAccess.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { extractUserId, healthEntryToMap, historyToMap } from './shared.js';
+import { completeOldestPendingOccurrence } from './occurrencesRouter.js';
 
 export function registerCompletionRoutes(router, pool) {
   router.post('/:id/mark-taken', async (req, res) => {
@@ -24,6 +25,17 @@ export function registerCompletionRoutes(router, pool) {
       );
       if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
       const row = existing.rows[0];
+      const occPending = await pool.query(
+        `SELECT id FROM health_occurrences WHERE health_entry_id = $1 AND status = 'pending' LIMIT 1`,
+        [entryId]
+      );
+      if (occPending.rows.length > 0) {
+        await completeOldestPendingOccurrence(pool, entryId, userId, body, req);
+        const updated = await pool.query('SELECT * FROM health_entries WHERE id = $1', [entryId]);
+        const entry = updated.rows[0];
+        entry.pet_name = null;
+        return res.json(healthEntryToMap(entry));
+      }
       const dueDateIso = dateToIsoDate(row.next_due_date);
       const completedOnIso = normalizeCalendarDateInput(body.completed_on || body.completedOn)
         || todayCalendarIso();
