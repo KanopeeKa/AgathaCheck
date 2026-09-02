@@ -3,7 +3,7 @@ title: Pet profile decisions
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-23
+last_updated: 2026-09-02
 tags: [pet_profile, decisions]
 domain: pet_profile
 feature_id: pet-profile-decisions
@@ -38,8 +38,9 @@ Product decisions for Guardian dashboard, pet timeline, events, and vet UX (D17�
 | **D35** | The dashboard preview is capped at **4 pets** and **5 care items**. Pet previews use bounded rectangular cards with an approximately **96–112 px** photo region, accessible placeholders, and ownership/status text or icon support. **Care team** uses uncapped warm clinic cards with initials avatars and optional linked-pet previews. | locked | Phase 2 |
 | **D36** | Guardian Today is presentation-only over existing providers and helpers. Ownership/relationship semantics, due ordering, server-authoritative completion/undo, retryable error states, existing routes, and global notifications remain unchanged. "Events" continues to mean computed health/weight/other care entries under D17, never a new generic event entity. | locked | Phase 2 |
 | **D37** | A five-tab bottom bar, universal Add action, and new Today route are deferred from this branch. They require a separate decision covering shared Guardian/Organisation shell semantics, root/back/deep-link behavior, Add scope and permissions, accessibility, and native portability. | deferred | Future navigation decision |
+| **D38** | **Pet Care** is the canonical product name for the individual-carer workspace (peer to **Shelter**). **My Pets** names only the dashboard pet-rail section (owned/fostered/shared preview), not the workspace. Dashboard due-items block: eyebrow **CARE ACTIONS** (FR **SOINS**), link **All Actions** (FR **Tous les soins**). Bottom nav tab **Actions** (FR **Soins**). Workspace routes migrate `/g/*` → `/pc/*`; wire `pet_care` replaces `guardian` for experience scope. Custody **guardianship** legal terms in [org-custody-model.md](/docs/domains/shelter/features/org-custody-model.md) are unchanged. Full map: [pet_care domain rename plan](/docs/domains/pet_care/changes/domain-rename-plan.md). | locked | Pet Care rename |
 
----
+**D34 note:** Section titles in D34 used "Due and Overdue" for the care block; **D38** supersedes that label with **Care Actions** / **Actions** nav. **My Pets** and **Care team** unchanged.
 
 ## How to use
 

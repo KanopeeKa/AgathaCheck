@@ -3,7 +3,7 @@ title: Experience program contract
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-09-02
 tags: [experience, contract]
 ---
 # Experience program — platform contract
@@ -37,17 +37,20 @@ discipline as `g0-contract-pack.md` so the two programs read consistently.
 
 | Term | Definition |
 |---|---|
-| **Journey** | A user-facing area of the roadmap (Guardian navigation, Organisation management, Pet management, Foster management, Notifications) — the top layer of the three-layer implementation shape |
+| **Journey** | A user-facing area of the roadmap (Pet Care navigation, Shelter management, Pet management, Foster management, Notifications) — the top layer of the three-layer implementation shape |
 | **Feature** | An implementable slice of a journey with its own acceptance criteria, UI rules, permissions, and BDD scenarios |
 | **Sprint** | A vertically-sliced increment delivering one feature (or a safe sub-slice of one) with tests, UX review, and a release gate — the unit of actual delivery |
 | **Notification kind** | `care` \| `administrative` — content-type axis (D7). Orthogonal to scope |
-| **Notification scope** | `guardian` \| `organization` — existing enum, now a grouping/label only, not a routing split (D7, D8) |
+| **Notification scope** | `pet_care` \| `organization` — grouping/label for notification lists and badges (wire migrating from legacy `guardian`) |
 | **Event** (this program) | Health/weight/other-entry due item only (D17). Not the legacy "family event" |
 | **Pet timeline** | Composite per-pet history: guardian custody segments + fostering sessions + manual entries (D18). Replaces "family events" |
 | **Role** | Coarse org-membership category: `associate \| foster \| admin \| super_admin` (D13) |
 | **Permission key** | Atomic capability, G0 §7 catalog + this program's additions (§6 below) |
 | **Bundle preset** | A named, UI-level grouping of permission keys (Foster Admin, Pet Admin, Team Admin) applied to `admin`-role members — **not** a wire role |
 | **Permission override** | An individually granted/revoked permission key on a specific org member, audited (D16) |
+| **Pet Care workspace** | Individual-carer shell at `/pc/*` (plum). Product term replaces legacy **Guardian** and drawer **My Pets**. See [pet_care README](/docs/domains/pet_care/README.md). |
+| **My Pets** (section) | Dashboard pet-rail preview only — not the workspace name (D38). |
+| **Care Actions** | Dashboard due-items block eyebrow + **Actions** bottom-nav destination for `/pc/events` (D38). Not notification kind `care`. |
 
 ### Forbidden synonyms (this program)
 
@@ -55,7 +58,10 @@ discipline as `g0-contract-pack.md` so the two programs read consistently.
 |---|---|
 | "Family event" (new work) | Pet timeline entry (guardian custody segment / session / manual entry) |
 | "Settings" (as a global nav item) | Account (global) vs organisation edit/customisations (org-scoped) vs self-card preferences (per-person, per-org) |
-| "Home" (as a route/button) | Guardian dashboard (`/g/home`) or Organisation entry (`/o/orgs`) — there is no generic Home |
+| "Home" (as a route/button) | Pet Care home (`/pc/home`) or Shelter entry (`/o/orgs`) — there is no generic Home |
+| "Guardian" / "My Pets" (as workspace label) | **Pet Care** (EN) / **Suivi** (FR) — D38 |
+| "Due and Overdue" (dashboard section title) | **Care Actions** (eyebrow **CARE ACTIONS** / FR **SOINS**) — D38 supersedes D34 label for this block |
+| "Care" (bottom nav tab) | **Actions** (EN) / **Soins** (FR) — D38 |
 | Foster Admin / Pet Admin / Team Admin as if they were wire roles | Bundle presets over permission keys on the `admin` wire role |
 
 ---

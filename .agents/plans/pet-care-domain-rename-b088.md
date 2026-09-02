@@ -45,10 +45,19 @@ Custody model: `guardianship`, `individual_guardianship` transfer kinds stay; wo
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: null
+next_action: "continue phase 1 on branch cursor/pet-care-vocabulary-b088"
+artifact_ref:
+  branch: cursor/pet-care-vocabulary-b088
+  plan_path: .agents/plans/pet-care-domain-rename-b088.md
+  plan_commit: 866d7903c91056f97c968f846798950c55d5e63d
+  snapshot_path: .agents/plans/pet-care-domain-rename-b088.snapshot.json
+  snapshot_commit: 866d7903c91056f97c968f846798950c55d5e63d
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
 ```
 
 ---

@@ -3,7 +3,7 @@ title: Architecture index
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-23
+last_updated: 2026-09-02
 tags: [architecture, index]
 ---
 # Architecture index (agent quick-reference)
@@ -58,6 +58,18 @@ Product domains are documented under [/docs/domains/](/docs/domains/). Each row 
 | Jest | `server/test/pets/` |
 | BDD | `pet_profiles.feature` |
 | E2E | `pet.profiles.spec.ts` |
+
+### Pet Care (individual-carer workspace)
+
+| | Path |
+|---|------|
+| **Docs** | [/docs/domains/pet_care/README.md](/docs/domains/pet_care/README.md) |
+| Flutter shell | `flutter_app/lib/features/experience/` |
+| Routes (target) | `/pc/home`, `/pc/pets`, `/pc/events`, `/pc/fostering` |
+| Wire | `AppExperience.petCare`, `pet_care` |
+| BDD | `guardian_dashboard.feature` (renaming in progress) |
+| E2E | `guardian.*.spec.ts` (renaming in progress) |
+| E2E contract | [navigation-contract.md](/docs/e2e/navigation-contract.md) § Pet Care |
 
 ### Health tracking
 
