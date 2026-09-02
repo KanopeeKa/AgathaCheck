@@ -10,6 +10,7 @@ import { PetListPage } from '../pages/pet-list.page';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import {
   flutterGotoUrl,
+  petCardByName,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
@@ -51,7 +52,7 @@ test.describe('Pet detail back navigation', () => {
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.open();
 
-    await page.getByRole('button', { name: /DashPet/i }).first().click();
+    await petCardByName(page, 'DashPet').first().click();
     await waitForFlutterRoutePattern(page, /\/pet\/[^/?]+/, 30_000);
 
     const detail = new PetDetailPage(page);
