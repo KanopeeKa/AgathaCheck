@@ -26,7 +26,7 @@ untouched by a re-skin — see `principles.md` for those.
 |------|-------------------|
 | `flutter_app/lib/core/theme/app_color_tokens.dart` | Every named color constant (`guardianPrimary`, `organizationPrimary`, `success`, `danger`, borders, text, etc.) |
 | `flutter_app/lib/core/theme/app_theme.dart` | Wires those tokens into Flutter's `ColorScheme` / `ThemeData` — radii, elevation, component themes. Only touch if you're changing *shape*, not color. |
-| `flutter_app/lib/core/theme/experience_colors.dart` | Guardian (plum) vs organisation (teal) mode switch — reads the same tokens. |
+| `flutter_app/lib/core/theme/experience_colors.dart` | Pet Care (plum) vs Shelter (teal) mode switch — reads the same tokens. |
 | `docs/design/tokens.md` | Human-readable palette reference + accessibility/contrast notes. Update alongside the token file. |
 
 Changing a hex value in `app_color_tokens.dart` propagates through
@@ -65,7 +65,7 @@ organisation) via `flutter_app/lib/core/branding/logo_assets.dart`
 
 | Asset | Used by |
 |-------|---------|
-| `flutter_app/assets/logo-plum.png` / `.jpg` | Guardian experience — `BrandedLogo`, `AppLogoTitle`, landing hero, PDF report header |
+| `flutter_app/assets/logo-plum.png` / `.jpg` | Pet Care experience — `BrandedLogo`, `AppLogoTitle`, landing hero, PDF report header |
 | `flutter_app/assets/logo-teal.png` / `.jpg` | Organisation experience — same call sites, org routes |
 | `server/assets/logo-plum.png` / `.jpg`, `server/assets/logo-teal.png` / `.jpg` | Identical copies embedded in transactional emails (`server/lib/email/`) |
 

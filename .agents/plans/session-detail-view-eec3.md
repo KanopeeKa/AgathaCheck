@@ -204,7 +204,7 @@ db/**
 
 **Scope:**
 
-- Guardian route `/pet/:petId/fostering-session` (or `/g/pets/:petId/session`)
+- Guardian route `/pet/:petId/fostering-session` (or `/pc/pets/:petId/session`)
 - Foster lens on shared session detail; pending invite → detail
 - Slim `PetFosterPlacementSection` to summary + View session (shelter); foster card on pet detail
 - BDD `fostering_session_detail.feature` + Playwright `@P1` scenarios

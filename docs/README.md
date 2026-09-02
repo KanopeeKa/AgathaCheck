@@ -97,7 +97,7 @@ Navigation shell reversal and phased delivery (formerly `docs/experience-program
 
 | Domain | Plans index |
 |--------|-------------|
-| Pet profile / Guardian | [/docs/domains/pet_profile/changes/plans.md](/docs/domains/pet_profile/changes/plans.md) |
+| Pet profile / Pet Care | [/docs/domains/pet_profile/changes/plans.md](/docs/domains/pet_profile/changes/plans.md) |
 | Shelter | [/docs/domains/shelter/changes/plans.md](/docs/domains/shelter/changes/plans.md) |
 | Fostering | [/docs/domains/fostering/changes/plans.md](/docs/domains/fostering/changes/plans.md) |
 

@@ -1,4 +1,4 @@
-# Guardian adaptive navigation — execute plan
+# Pet Care adaptive navigation — execute plan
 
 > **plan_id:** `guardian-adaptive-nav-7221`
 
@@ -7,7 +7,7 @@
 | Field | Value |
 |-------|-------|
 | **plan_id** | `guardian-adaptive-nav-7221` |
-| **title** | Guardian adaptive navigation — rail, sidebar, decisions |
+| **title** | Pet Care adaptive navigation — rail, sidebar, decisions |
 | **base_branch** | `cursor/guardian-adaptive-nav-7221-integration-7221` |
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
@@ -18,17 +18,17 @@ Deliver adaptive Guardian navigation for tablet and desktop: preserve the five-d
 
 ## Prerequisite — PR #767
 
-**Must merge before Phase 2 implementation.** PR #767 expands compact bottom nav to all Guardian workspace screens (`/pet/*`, `/health`, `/g/vets`, etc.) with workspace-wide `supports()` / `indexFor()` mapping. Adaptive leading nav reuses the same destination config and route-detection semantics — not the old five-route-only model.
+**Must merge before Phase 2 implementation.** PR #767 expands compact bottom nav to all Pet Care workspace screens (`/pet/*`, `/health`, `/pc/vets`, etc.) with workspace-wide `supports()` / `indexFor()` mapping. Adaptive leading nav reuses the same destination config and route-detection semantics — not the old five-route-only model.
 
 ## Locked product decisions (this plan)
 
 | Topic | Decision |
 |-------|----------|
 | Breakpoints | &lt;600 bottom bar; 600–839 icon rail; ≥840 expanded sidebar (aligns with `docs/design/system.md` Medium/Expanded) |
-| IA | Same five Guardian destinations; presentation changes only |
+| IA | Same five Pet Care destinations; presentation changes only |
 | Drawer | Retired on widths where leading nav is visible; workspace switcher moves to shell header |
 | D-v4-2 | Resolved: Account in leading nav footer on medium+; drawer dual-entry ends when rail/sidebar ships |
-| Shelter sidebar | Deferred — Guardian-only in this plan |
+| Shelter sidebar | Deferred — Pet Care-only in this plan |
 | Care badge | Deferred to follow-up debt issue |
 
 ## Autonomy

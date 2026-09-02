@@ -29,7 +29,7 @@ Replace purple-seed Material theme with locked AgathaTrack tokens: plum guardian
 
 ## Locked design decisions
 
-- Guardian full primary: plum `#755B68` on `/g/*`
+- Guardian full primary: plum `#755B68` on `/pc/*`
 - Organisation full primary: teal `#218B6C` on `/o/*`
 - Landing pre-login: plum; first teal in org/shelter educational CTA (Phase 2)
 - Foster: guardian side; org-guardianship pet photo border teal (Phase 3)

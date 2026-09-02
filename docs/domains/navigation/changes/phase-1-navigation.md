@@ -18,20 +18,20 @@ end to end, before any dashboard content changes.
 
 ## In scope
 
-- Drawer rework: Guardian / Organisation (top, always both, mode-independent) + Account
+- Drawer rework: Pet Care / Shelter (top, always both, mode-independent) + Account
   (bottom-pinned)
 - Header rework: hamburger (dashboard roots) / back arrow (sub-screens), persistent bell, no Home
   button
 - Bell + unified notification slide-over (program-contract §3.2)
 - New `/account` route and Account dashboard
-- Retirement of `/g/notifications`, `/o/notifications`, and the two per-mode Settings screens
+- Retirement of `/pc/notifications`, `/o/notifications`, and the two per-mode Settings screens
   (content redistributed per the Phase 0.1 audit)
 - `@legacy`-tag and replace the one superseded scenario in `experience_navigation.feature`;
   extend `notifications.feature` with new scenarios (program-contract §6.1)
 
 ## Out of scope / forbidden ownership
 
-- Guardian/Organisation dashboard **content** (Phase 2/3) — Phase 1 only needs each dashboard
+- Pet Care/Organisation dashboard **content** (Phase 2/3) — Phase 1 only needs each dashboard
   route to exist and render *something* correct today (even the old mixed feed temporarily) behind
   the new chrome; content rework is a separate phase so this phase's diff stays reviewable
 - Org-scoped settings destination screens themselves (Phase 3/5) — Phase 1 only needs to route
@@ -46,7 +46,7 @@ schema is — this phase is where they're first surfaced in UI).
 ## Exposes to
 
 Phase 2/3 build their dashboard content inside the routes this phase establishes
-(`/g/home`, `/o/orgs`, `/account`).
+(`/pc/home`, `/o/orgs`, `/account`).
 
 ## Domain objects and states
 
@@ -55,13 +55,13 @@ schema.
 
 ## Business rules
 
-1. Drawer content is **identical regardless of current mode** — always exactly: Guardian item,
+1. Drawer content is **identical regardless of current mode** — always exactly: Pet Care item,
    Organisation item, separator, Account item (bottom-pinned, visually separated). No
    asymmetric per-mode variants (reverses nav-v2's `guardianEntries()` / `organizationEntries()`
    split in `drawer_menu_config.dart`).
 2. No drawer item routes to Events, Vets, or either legacy Settings screen (D3).
 3. Header shows hamburger **only** on the three section-root screens
-   (`/g/home`, `/o/orgs`, `/account`); every other authenticated screen shows a back arrow
+   (`/pc/home`, `/o/orgs`, `/account`); every other authenticated screen shows a back arrow
    instead. If ambiguity is possible (e.g. a screen reachable both as a root and as a pushed
    sub-screen), the leading control always reflects *how the user arrived*, not a static
    per-route table — verify this against `go_router`'s navigation stack, not just the route path.
@@ -77,7 +77,7 @@ schema.
 8. Administrative notifications referencing an open object show an "Action needed" affordance
    until `resolvedAt` is set (D9) — resolved automatically when the underlying object transitions,
    never by a manual "mark resolved" tap from the recipient.
-9. `/account` is reachable from the drawer's bottom-pinned item. **Superseded (transitional):** D-v4-2 also allows `/account` from the Guardian compact bottom bar until the drawer is retired.
+9. `/account` is reachable from the drawer's bottom-pinned item. **Superseded (transitional):** D-v4-2 also allows `/account` from the Pet Care compact bottom bar until the drawer is retired.
 10. Sign out lives inside `/account`, not as a separate global drawer row (matches the brief
     exactly — reverses nothing here since nav-v2 already had sign out in a utility block, just
     relocates it into Account specifically).
@@ -88,11 +88,11 @@ schema.
 |---|---|
 | `/account` | New — Account dashboard root |
 | `/notifications` | New — unified inbox, reachable only via bell |
-| `/g/home` | Existing route, same path, new chrome only in this phase (content in Phase 2) |
+| `/pc/home` | Existing route, same path, new chrome only in this phase (content in Phase 2) |
 | `/o/orgs` | Existing route, same path, new chrome only in this phase (content in Phase 3) |
-| `/g/notifications`, `/o/notifications` | **Removed** |
+| `/pc/notifications`, `/o/notifications` | **Removed** |
 | `/g/settings`, `/o/settings` | **Removed** — content redistributed per Phase 0.1 audit |
-| `/g/events`, `/g/vets`, `/o/events`, `/o/vets` | Kept as routes (still needed by Phase 2/3
+| `/pc/events`, `/pc/vets`, `/o/events`, `/o/vets` | Kept as routes (still needed by Phase 2/3
   full-screen destinations) but **removed from the drawer** — reachable only from dashboard
   preview "All X" links |
 
@@ -118,8 +118,8 @@ Sprints 1.1–1.6 (see `roadmap-delivery-plan.md`).
 
 **Exit criteria:**
 
-- No drawer item's route matches `/g/events`, `/g/vets`, `/o/events`, `/o/vets`, `/g/settings`,
-  `/o/settings`, `/g/notifications`, `/o/notifications`
+- No drawer item's route matches `/pc/events`, `/pc/vets`, `/o/events`, `/o/vets`, `/g/settings`,
+  `/o/settings`, `/pc/notifications`, `/o/notifications`
 - Bell + badge render on every authenticated screen (integration test asserts this, not just a
   spot check)
 - `/account` renders all content items resolved by the Phase 0.1 audit
@@ -148,14 +148,14 @@ None.
 ```gherkin
 Feature: Section switcher drawer
   As an authenticated user
-  I want the hamburger menu to show only Guardian, Organisation, and Account
+  I want the hamburger menu to show only Pet Care, Shelter, and Account
   So that I always have a simple, predictable way to switch sections
 
   Scenario: Drawer shows exactly three destinations regardless of current mode
     Given I am signed in as a guardian who is also a foster
-    And I am on the Guardian dashboard
+    And I am on the Pet Care dashboard
     When I open the hamburger drawer
-    Then I should see exactly "Guardian", "Organisation", and "Account"
+    Then I should see exactly "Pet Care", "Shelter", and "Account"
     And I should not see "Events" or "My vets" as drawer items
 
   Scenario: Bell shows a single combined unread count

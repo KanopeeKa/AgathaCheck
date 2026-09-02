@@ -31,7 +31,7 @@ flowchart TD
   R[Phase R — Reconciliation]
   P0[Phase 0 — Foundation]
   P1[Phase 1 — Shell & navigation reversal]
-  P2[Phase 2 — Guardian journey]
+  P2[Phase 2 — Pet Care journey]
   P3[Phase 3 — Organisation presentation & access]
   P4[Phase 4 — Foster & pet operations]
   P5[Phase 5 — Organisation customisations]
@@ -45,7 +45,7 @@ flowchart TD
   P4 -.optional overlap.-> P5
 ```
 
-Phase 2 (Guardian) and Phase 3 (Organisation) both depend only on Phase 1's shell, not on each
+Phase 2 (Pet Care) and Phase 3 (Organisation) both depend only on Phase 1's shell, not on each
 other — they could run in either order or, if desired later, in parallel on disjoint paths
 (`flutter_app/lib/features/experience/` guardian-home widgets vs
 `flutter_app/lib/features/organization/` screens). Default plan still sequences them (Guardian
@@ -101,7 +101,7 @@ changes beyond doc headers and BDD tags.
 | 0.1 | `experience_settings_screen.dart` content audit (Q3) — mapping doc of every existing row → {Account / org edit / self-card} |
 | 0.2 | Notification schema migration: `kind`, `priority`, `resolved_at` columns + backfill existing rows `kind='care'` |
 | 0.3 | `NotificationKind` enum + `notification.type` → default `kind` mapping table (Flutter + Node) |
-| 0.4 | Shared "dashboard section" widget (title, optional header action, preview slot, end link) — one component reused by all three Guardian sections and the Organisation section cards |
+| 0.4 | Shared "dashboard section" widget (title, optional header action, preview slot, end link) — one component reused by all three Pet Care sections and the Shelter section cards |
 | 0.5 | Permission-key helper scaffolding (`hasPermission()`, bundle preset constants) wired to existing G0 defaults only — no new table yet (table lands in Phase 3) |
 
 **Exit criteria:** shared widget has a widget test + Storybook-style preview screen (or existing
@@ -114,15 +114,15 @@ screen.
 
 **Doc:** [phase-1-navigation.md](../../navigation/changes/phase-1-navigation.md)  
 **Goal:** Ship the reversed navigation model end-to-end. This is the highest-risk phase (touches
-every authenticated screen's chrome) — do it in full before Guardian/Organisation content changes.
+every authenticated screen's chrome) — do it in full before Pet Care/Shelter content changes.
 
 | Sprint | Deliverable |
 |---|---|
-| 1.1 | New drawer: Guardian / Organisation (top), Account (bottom-pinned), light theme, plum/green/neutral accents |
+| 1.1 | New drawer: Pet Care / Shelter (top), Account (bottom-pinned), light theme, plum/green/neutral accents |
 | 1.2 | Header rework: hamburger (dashboards) / back arrow (sub-screens) + persistent bell; remove nav-v2's Home button |
 | 1.3 | Bell + unified notification slide-over (kind chips, combined badge) — implements program-contract §3 |
 | 1.4 | New `/account` route + Account dashboard (profile, help/FAQ, contact, legal, about, sign out, cross-org personal prefs) |
-| 1.5 | Retire `/g/notifications`, `/o/notifications`, per-mode Settings screens; route content per the Phase 0.1 audit |
+| 1.5 | Retire `/pc/notifications`, `/o/notifications`, per-mode Settings screens; route content per the Phase 0.1 audit |
 | 1.6 | `@legacy`-tag and replace the one drawer-switch scenario in `experience_navigation.feature`; extend `notifications.feature` with kind-chip/unified-badge/resolved-state scenarios (no deletions there); new Playwright specs |
 
 **Exit criteria:** no drawer item routes to Events/Vets; single bell badge visible on every
@@ -131,16 +131,16 @@ authenticated screen; `/account` reachable and content-complete per the audit; B
 
 ---
 
-## Phase 2 — Guardian journey
+## Phase 2 — Pet Care journey
 
 **Doc:** [phase-2-guardian-journey.md](../../pet_profile/changes/phase-2-guardian-journey.md)
 
 | Sprint | Deliverable |
 |---|---|
-| 2.1 | `/g/home` rebuilt as 3 sections (My Pets, Upcoming Pet Events, My Vets) using the Phase 0.4 shared section widget |
+| 2.1 | `/pc/home` rebuilt as 3 sections (My Pets, Upcoming Pet Events, My Vets) using the Phase 0.4 shared section widget |
 | 2.2 | Pending inboxes migrated to administrative notifications (D10); dashboard banners removed only after 2.3 lands |
 | 2.3 | New pet card visual (rounded rect, status bar, responsive 2/3-column) — shared `pet_card.dart` update, verified on all 3 call sites (guardian dashboard, org dashboard, org pets screen) |
-| 2.4 | `/g/events` reframed as health/weight/other due-item list (D17); "Add an event" quick-add sheet |
+| 2.4 | `/pc/events` reframed as health/weight/other due-item list (D17); "Add an event" quick-add sheet |
 | 2.5 | Vet display-first detail screen + separate edit screen (D24) |
 | 2.6 | Bulk share wrapper on All Pets screen (D23) |
 | 2.7 | Pet timeline (D18): custody-segment + session + manual-entry composite on pet detail; `family_events` data migration + retirement (D19) |
@@ -221,7 +221,7 @@ every grant/revoke with actor + timestamp.
 ## Recommended delivery order
 
 1. **Sequential:** R → 0 → 1 (shell must be right before any content phase starts)
-2. **Sequential (default):** 2 → 3 (Guardian first — smaller, proves notification model)
+2. **Sequential (default):** 2 → 3 (Pet Care first — smaller, proves notification model)
 3. **Sequential:** 3 → 4 → 5 (each depends on the prior phase's schema/permission work)
 
 **Never parallelize within a phase without an explicit ownership map** (`agent-coordination.mdc`)

@@ -5,7 +5,7 @@
 | Field | Value |
 |-------|-------|
 | **plan_id** | `guardian-semantics-preuat-2600` |
-| **title** | Batch E2E remedial for #670 Guardian Today semantics drift |
+| **title** | Batch E2E remedial for #670 Pet Care Today semantics drift |
 | **author** | cloud-agent |
 | **created** | 2026-08-21 |
 | **base_branch** | `main` |
@@ -14,7 +14,7 @@
 
 ## Goal
 
-Close the pre-UAT gate for `main` after #670 Guardian Operations Desk semantics changes. Replace the serial one-shard-at-a-time remedial loop (#681–#687) with one batch PR, parallel **static** shard audits, sequential **local** tier-A shard runs on a single stack, merge, then `/babysit-uat` on that merge SHA.
+Close the pre-UAT gate for `main` after #670 Pet Care Operations Desk semantics changes. Replace the serial one-shard-at-a-time remedial loop (#681–#687) with one batch PR, parallel **static** shard audits, sequential **local** tier-A shard runs on a single stack, merge, then `/babysit-uat` on that merge SHA.
 
 **Supersedes** ad-hoc remedial strategy from the #679 chain (not `uat-pre-e2e-pipeline-5641` workflow infra).
 

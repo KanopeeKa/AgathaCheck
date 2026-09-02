@@ -37,10 +37,10 @@ Resolved **server-side** and echoed in the aggregate response.
 
 | `viewer.role` | Who | Typical entry |
 |---------------|-----|---------------|
-| `foster_participant` | `foster_user_id` on the session | Foster pet profile, pending invite, `/g/fostering` |
+| `foster_participant` | `foster_user_id` on the session | Foster pet profile, pending invite, `/pc/fostering` |
 | `shelter_operator` | Org member with `manage_fostering_sessions` | Org pet profile, sessions list, placement section |
 | `shelter_observer` | Org member with `view_fostering_sessions` only | Sessions list → read-only detail |
-| `read_only_history` | Guardian/timeline on **terminal** sessions | Timeline card tap (ended sessions) |
+| `read_only_history` | Pet Care/timeline on **terminal** sessions | Timeline card tap (ended sessions) |
 
 Forbidden: inferring foster vs shelter capabilities from Flutter `AppExperience` alone.
 
@@ -49,7 +49,7 @@ Forbidden: inferring foster vs shelter capabilities from Flutter `AppExperience`
 | Lens | Route | Shell |
 |------|-------|-------|
 | Shelter operator / observer | `/o/orgs/:orgId/sessions/:placementId` | Org (`OrgShellScaffold`) |
-| Foster participant | `/pet/:petId/fostering-session` | Guardian (`ExperienceShellScaffold`) |
+| Foster participant | `/pet/:petId/fostering-session` | Pet Care (`ExperienceShellScaffold`) |
 | Legacy alias (redirect) | `/o/orgs/:orgId/placements/:placementId/session` | → canonical org route |
 
 Query param `?placementId=` optional on foster route when pet has multiple historical sessions (v2); v1 assumes at most one **open** session per pet (G0 I4).

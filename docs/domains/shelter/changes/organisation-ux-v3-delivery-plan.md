@@ -87,7 +87,7 @@ One screen per org membership. Confirm dialog for Leave.
 ```mermaid
 flowchart TD
   Login[Login] --> LastSec{Last section}
-  LastSec -->|guardian| GHome["/g/home"]
+  LastSec -->|guardian| GHome["/pc/home"]
   LastSec -->|organization| ODash["/o/orgs"]
   Acc[Account Preferences] --> ShowOrg[Show organisation toggle]
   ShowOrg -->|off and not member| HideDrawer[Hide Organisations in drawer]
@@ -532,7 +532,7 @@ Playwright specs mirror under `e2e/playwright/tests/organisation*.spec.ts` + `ac
 
 | Seed | Purpose |
 |------|---------|
-| Guardian-only user | Toggle off by default; enable → create org |
+| Pet Care-only user | Toggle off by default; enable → create org |
 | Dual-role user | Locked toggle; last-section login |
 | Orgs with/without photo & logo | Tile fallbacks |
 | Named discover orgs | Search `q=` hits beyond page 1 |

@@ -1,12 +1,12 @@
 ---
-title: Guardian UI wave 2 issue briefs
+title: Pet Care UI wave 2 issue briefs
 owner: Documentation Team
 audience: both
 status: active
 last_updated: 2026-08-22
 tags: [domain, pet_profile, plans]
 ---
-# Guardian UI wave 2 — feature issue briefs
+# Pet Care UI wave 2 — feature issue briefs
 
 **Status:** Planning snapshot (2026-07-27). One brief = one atomic PR = one sprint outcome.  
 **Parent context:** Post–guardian UI rework (`main` after #407/#408).  
@@ -34,7 +34,7 @@ flowchart TD
   W16[W16 View entry screen]
   W17[W17 Manage events list]
   W18[W18 Unified event edit form]
-  W19[W19 Global /g/events]
+  W19[W19 Global /pc/events]
   W20[W20 Notification deep links]
 
   W06 --> W07
@@ -192,19 +192,19 @@ UI + l10n
 
 ### Desired behavior
 - Remove `headerAction` Add vet from dashboard section.
-- Footer link label → **Manage veterinarians** → still routes to `/g/vets`.
+- Footer link label → **Manage veterinarians** → still routes to `/pc/vets`.
 - Empty state copy unchanged (still guides user to add first vet from manage screen).
 
 ### Acceptance criteria
 - [ ] No Add vet button on dashboard vet section.
 - [ ] Footer link text updated EN + FR.
-- [ ] `/g/vets/add` still reachable from manage veterinarians screen.
+- [ ] `/pc/vets/add` still reachable from manage veterinarians screen.
 
 ### Deferred work
 - None.
 
 ### Critical checks before commit
-- [ ] Guardian dashboard tests updated.
+- [ ] Pet Care dashboard tests updated.
 - [ ] l10n codegen run.
 
 ---
@@ -334,24 +334,24 @@ Card layout (left → right):
 
 ## W08 — Due and overdue sections use DueEventCard (dashboard + pet profile)
 
-> **Superseded (2026-08-31):** Dashboard Care preview, pet Due/overdue preview, and `/g/events` all use `CareEventRow` (same component, context-aware metadata). Snooze removed from list rows; view screen is the action hub.
+> **Superseded (2026-08-31):** Dashboard Care preview, pet Due/overdue preview, and `/pc/events` all use `CareEventRow` (same component, context-aware metadata). Snooze removed from list rows; view screen is the action hub.
 
 ### Problem
-Guardian dashboard preview hides inline actions; pet profile shows event count summary instead of due cards.
+Pet Care dashboard preview hides inline actions; pet profile shows event count summary instead of due cards.
 
 ### Type
 UI
 
 ### Affected screens
 - `GuardianUpcomingEventsSection`
-- `GuardianDueEventsScreen` (`/g/events` due list portion — or defer full rework to W19)
+- `GuardianDueEventsScreen` (`/pc/events` due list portion — or defer full rework to W19)
 - `PetEventsPreviewSection` → renamed **Due and overdue** with inline cards
 
 ### Desired behavior
 - **Dashboard** due preview: up to 5 items (existing limit) with **inline actions** via `DueEventCard`.
 - **Pet profile** section title **Due and overdue**; show **all** due/overdue entries for that pet (filter `guardianDueEntries` / `isEntryDueOrOverdue` scoped to `petId`).
 - Keep **Manage events** footer link → `/pet/:petId/events`.
-- End link on dashboard section **All events** → `/g/events` unchanged.
+- End link on dashboard section **All events** → `/pc/events` unchanged.
 
 ### Acceptance criteria
 - [ ] Dashboard cards have Open / Snooze / Mark done.
@@ -360,7 +360,7 @@ UI
 - [ ] Open navigates to event edit.
 
 ### Deferred work
-- Full `/g/events` rework (W19).
+- Full `/pc/events` rework (W19).
 
 ### Critical checks before commit
 - [ ] `guardian_upcoming_events` tests.
@@ -758,10 +758,10 @@ UI + routing
 
 ---
 
-## W19 — Global events screen `/g/events` (all pets, filters, view entry)
+## W19 — Global events screen `/pc/events` (all pets, filters, view entry)
 
 ### Problem
-`/g/events` uses legacy tabbed `HealthDashboardScreen`. Should match manage-events UX for all guardian pets.
+`/pc/events` uses legacy tabbed `HealthDashboardScreen`. Should match manage-events UX for all guardian pets.
 
 ### Type
 UI

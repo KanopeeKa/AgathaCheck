@@ -76,7 +76,7 @@
     },
     {
       "id": "3",
-      "title": "Guardian operations desk core UI",
+      "title": "Pet Care operations desk core UI",
       "branch": "cursor/guardian-ops-desk-core-b9bd",
       "allowed_paths": [
         "flutter_app/lib/features/experience/**",

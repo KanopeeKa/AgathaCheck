@@ -541,7 +541,7 @@ Journey agents run `./scripts/pre-push-changed.sh` during iteration; full `./scr
 | Surface | Route context | Primary journeys |
 |---------|---------------|------------------|
 | Shelter operations | `/o/*` org experience | J1–J5 (admin flows) |
-| Foster portal | `/g/*` or tokenised deep links | J2 responses, J3 session actions |
+| Foster portal | `/pc/*` or tokenised deep links | J2 responses, J3 session actions |
 | Adopter / prospect | Account or magic-link only | J4 visit outcome, J5 where applicable |
 
 Q1 (§20) blocks final UX for non-member fosters — J1 must resolve before J2 email CTAs ship.

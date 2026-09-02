@@ -1,23 +1,23 @@
 ---
-title: Phase 2 — Guardian journey
+title: Phase 2 — Pet Care journey
 owner: Experience Program Team
 audience: both
 status: active
 last_updated: 2026-08-21
 tags: [experience,guardian,organisation]
 ---
-# Phase 2 — Guardian journey
+# Phase 2 — Pet Care journey
 
 **Parent:** [../../cross-domain/changes/roadmap-delivery-plan.md](../../cross-domain/changes/roadmap-delivery-plan.md) · [../../cross-domain/changes/program-contract.md](../../cross-domain/changes/program-contract.md)  
 **Brief:** [`briefs/guardian-dashboard-brief.md`](briefs/guardian-dashboard-brief.md)
 
 ## Purpose
 
-Replace the mixed-feed Guardian dashboard with the brief's three symmetric preview sections, and
+Replace the mixed-feed Pet Care dashboard with the brief's three symmetric preview sections, and
 resolve the two concepts the brief's own vocabulary needed redefining for this codebase: "Event"
 (D17) and "family events" → pet timeline (D18).
 
-## Guardian Today execution contract
+## Pet Care Today execution contract
 
 The dashboard implementation uses **Today** as a compact presentation and
 prioritisation layer above exactly three management sections: **My Pets**, **Due
@@ -27,22 +27,22 @@ behind the existing dashboard links and routes.
 
 The implementation-safe details, stable data authorities, action destinations,
 accessibility requirements, and file ownership boundaries are documented in the
-[Guardian Today dashboard contract](guardian-today-contract.md). That handoff
+[Pet Care Today dashboard contract](guardian-today-contract.md). That handoff
 must be read alongside this phase document and the locked master brief.
 
 This branch is presentation-only at the data boundary: it must not add a backend
 API, schema, generic event entity, permission rule, notification kind, or
 alternative navigation shell. Pending inboxes remain governed by D10 and must
-not return as dashboard banners. The existing Guardian/Organisation/Account
+not return as dashboard banners. The existing Pet Care/Shelter/Account
 drawer, root/sub-screen header behavior, and global bell remain unchanged.
 
 ## In scope
 
-- `/g/home` rebuilt as Today orientation plus My Pets / Due and Overdue / My Vets, using Phase 0's shared
+- `/pc/home` rebuilt as Today orientation plus My Pets / Due and Overdue / My Vets, using Phase 0's shared
   dashboard-section widget
 - Pending-inbox → administrative-notification migration (D10)
 - Pet card visual redesign (shared `pet_card.dart`, verified on all 3 existing call sites)
-- `/g/events` reframed as a due-item list over health/weight/other entries (D17)
+- `/pc/events` reframed as a due-item list over health/weight/other entries (D17)
 - Vet display-first detail screen (D24)
 - Bulk share wrapper (D23)
 - Pet timeline feature (D18) + `family_events` retirement (D19)
@@ -113,9 +113,9 @@ timeline widget on the org-side pet detail screen.
 
 | Route | Change |
 |---|---|
-| `/g/home` | Rebuilt: 3 sections |
-| `/g/events` | Reframed: due health/weight/other items, "Add an event" sheet |
-| `/g/vets` (list), new vet detail route | Display-first detail screen added; existing form screen becomes edit-only |
+| `/pc/home` | Rebuilt: 3 sections |
+| `/pc/events` | Reframed: due health/weight/other items, "Add an event" sheet |
+| `/pc/vets` (list), new vet detail route | Display-first detail screen added; existing form screen becomes edit-only |
 | Pet detail screen | + Pet timeline section |
 | All Pets screen | + Bulk share entry point |
 
@@ -173,25 +173,25 @@ None.
 ## Canonical BDD scenarios
 
 ```gherkin
-Feature: Guardian dashboard
+Feature: Pet Care dashboard
   As a guardian
   I want a dashboard that previews my pets, upcoming events, and vets
   So that I can act quickly without wading through a mixed feed
 
   Scenario: Dashboard shows exactly three sections
     Given I am signed in as a guardian with pets, due health entries, and vets
-    When I view the Guardian dashboard
+    When I view the Pet Care dashboard
     Then I should see "My Pets", "Upcoming Pet Events", and "My Vets" sections only
 
   Scenario: My Pets preview is capped at four
     Given I have 6 pets
-    When I view the Guardian dashboard
+    When I view the Pet Care dashboard
     Then I should see at most 4 pet cards
     And I should see an "All Pets" link
 
   Scenario: Pending foster placement surfaces as a notification, not a dashboard banner
     Given an organisation has sent me a pending foster placement
-    When I view the Guardian dashboard
+    When I view the Pet Care dashboard
     Then I should not see a pending-placement banner on the dashboard
     And I should see an unresolved administrative notification in the bell panel
 

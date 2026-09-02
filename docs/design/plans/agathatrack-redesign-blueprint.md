@@ -25,7 +25,7 @@ This is **not** a social pet app, a generic admin dashboard, or a dense data con
 1. **Orientation before action** — make the current place, current pet/organisation, and next important item immediately clear.
 2. **Progressive disclosure** — show a useful summary first; put detailed management on its own destination.
 3. **Calm, high-contrast hierarchy** — use colour and emphasis to communicate meaning, never decoration alone.
-4. **Continuity across roles** — the product stays recognisably AgathaTrack whether a user is in Guardian, Organisation, foster, or Account context.
+4. **Continuity across roles** — the product stays recognisably AgathaTrack whether a user is in Pet Care, Shelter, foster, or Account context.
 5. **Safety in high-stakes actions** — destructive actions, care completion, role changes, privacy changes, and foster workflow transitions must be explicit, reversible where possible, and clearly explained.
 
 ### Success measures
@@ -44,10 +44,10 @@ This blueprint implements the decisions below; it does not reinterpret them.
 
 | Area | Locked direction | Design consequence |
 |---|---|---|
-| Global navigation | Hamburger is a sparse section switcher on compact widths only. Guardian and Organisation are peers; Account is globally separate. On medium+ Guardian widths, leading nav (D-v4-4) replaces the drawer for primary destinations. | Do not put Events, Vets, People, Fosters, Settings, or generic Home in the drawer. Do not duplicate the five Guardian destinations in drawer and leading nav. |
+| Global navigation | Hamburger is a sparse section switcher on compact widths only. Pet Care and Shelter are peers; Account is globally separate. On medium+ Pet Care widths, leading nav (D-v4-4) replaces the drawer for primary destinations. | Do not put Events, Vets, People, Fosters, Settings, or generic Home in the drawer. Do not duplicate the five Pet Care destinations in drawer and leading nav. |
 | Header | Root surfaces use workspace toggle (compact: app bar; medium+: sidebar header). Sub-screens use back navigation. Authenticated screens retain a global bell. Medium+ content headers carry page title + contextual actions. | Avoid a persistent “Home” button, stacked tab bars, or duplicate navigation chrome. |
-| Guardian home | Exactly **My Pets**, **Due and Overdue**, and **My Vets** management sections. Today is a compact orientation layer above them. | Today cannot become a fourth section, a tab, a standalone feed, route, or backend event model. |
-| Guardian data semantics | Today is presentation over existing data; care completion and undo remain server-authoritative. | Do not invent client-only status or “completed” states that can disagree with the backend. |
+| Pet Care home | Exactly **My Pets**, **Due and Overdue**, and **My Vets** management sections. Today is a compact orientation layer above them. | Today cannot become a fourth section, a tab, a standalone feed, route, or backend event model. |
+| Pet Care data semantics | Today is presentation over existing data; care completion and undo remain server-authoritative. | Do not invent client-only status or “completed” states that can disagree with the backend. |
 | Organisation root | A calm workspace selector, not a combined pet/event dashboard. | The root shows membership cards and the path into a selected organisation; it does not duplicate organisation operations. |
 | Organisation profile | `/o/orgs/:id` is the profile composer and local navigation surface. | Keep it as a profile/header plus rows; no second primary presentation destination. |
 | Organisation navigation order | Admin contacts → People → Foster parents → Fostering sessions → Pets → Connected organisations → Organisation Administration. | Preserve this sequence whenever permissions make a row visible. |
@@ -55,26 +55,26 @@ This blueprint implements the decisions below; it does not reinterpret them.
 | Organisation administration | One Super Admin-only local destination. | Keep roles, permissions, templates, and organisation-level settings grouped there. |
 | Notifications | One global bell and unified slide-over; Care and Organisation are filters, not separate apps. | Do not create an Organisation notification centre or a second bell. |
 | Account | Global, personal, and visually distinct from operational work. | Keep profile, cross-org preferences, help/legal, sign-out, and per-org personal settings under Account. |
-| Landing/auth | One role-neutral entry path. Experience context resolves after authentication. | Do not ask users to choose Guardian/Shelter/Foster before sign-in. |
+| Landing/auth | One role-neutral entry path. Experience context resolves after authentication. | Do not ask users to choose Pet Care/Shelter/Foster before sign-in. |
 | Branding | Organisations can personalise logo, name, and approved image surfaces only. | System colours, focus, danger, warning, success, and contrast remain product-controlled. |
 
 The governing decisions are D1–D11, D17–D18, D25–D37, D-v2-*, D-v3-*, D-v4-*, and D-v4-1–D-v4-5 in the domain decision docs indexed at `docs/domains/navigation/README.md`.
 
 ---
 
-### 2.1 Guardian Today mobile refinement
+### 2.1 Pet Care Today mobile refinement
 
-The Guardian home uses a content-first mobile treatment. This refinement **supersedes** the earlier three-section visual composition without changing the underlying care, ownership, notification, or Shelter permission contracts.
+The Pet Care home uses a content-first mobile treatment. This refinement **supersedes** the earlier three-section visual composition without changing the underlying care, ownership, notification, or Shelter permission contracts.
 
-- The Guardian mobile bar exposes **Today, Pets, Care, Fostering, and Account** (D-v4-1). The workspace toggle remains for Guardian/Shelter switching on compact widths; the notification bell remains global.
+- The Pet Care mobile bar exposes **Today, Pets, Care, Fostering, and Account** (D-v4-1). The workspace toggle remains for Pet Care/Shelter switching on compact widths; the notification bell remains global.
 - The home begins with a horizontally scrollable, capped four-pet preview and a lightweight Add Pet control; visual section headings may be omitted where the region remains semantically labelled.
 - Care is a pale-plum contextual region with `CARE`, **Due** and **Soon** controls, a total due/overdue count, and no more than three rows per preview. Due is ordered oldest-overdue first, then due today; Soon is ordered soonest first.
 - Direct care completion, refresh, failure rollback, Undo, routing, and the full unified Care destination remain server-authoritative and unchanged.
 - Veterinary contacts remain a lightweight, display-first surface with Add Vet and existing routes.
-- Fostering and Shelters use a pale-teal context. Guardian home only shows details already visible through established fostered-pet relationships; pending placements remain notification-led and unavailable session detail is stated plainly.
+- Fostering and Shelters use a pale-teal context. Pet Care home only shows details already visible through established fostered-pet relationships; pending placements remain notification-led and unavailable session detail is stated plainly.
 - View all appears only when a preview is truncated. Empty, loading, and error states must never assert that care or sessions are absent when data failed to load.
 
-### 2.2 Guardian adaptive leading navigation (tablet / desktop)
+### 2.2 Pet Care adaptive leading navigation (tablet / desktop)
 
 On widths where the bottom bar is hidden, the same five destinations (D-v4-1) appear in **leading application chrome** (D-v4-4, D-v4-5):
 
@@ -89,8 +89,8 @@ On widths where the bottom bar is hidden, the same five destinations (D-v4-1) ap
 - Preserve the **same routes and mental model** as compact — do not invent different destination names.
 - The hamburger drawer is **hidden** when leading nav is visible; it must not duplicate the five destinations.
 - The content header on medium+ becomes functional: page title, contextual actions, notification bell — not a centred logo reproduction of the mobile app bar.
-- Leading nav remains visible on nested Guardian workspace routes (pet detail, care forms, etc.) with tab highlighting derived from the closest primary destination (same semantics as PR #767 compact bottom nav).
-- Shelter-specific sidebar IA is a follow-on; this slice is Guardian-only.
+- Leading nav remains visible on nested Pet Care workspace routes (pet detail, care forms, etc.) with tab highlighting derived from the closest primary destination (same semantics as PR #767 compact bottom nav).
+- Shelter-specific sidebar IA is a follow-on; this slice is Pet Care-only.
 
 ---
 
@@ -115,7 +115,7 @@ Every screen may contain many links, but it should have one visually dominant ac
 **Examples:**
 
 - Auth: Sign in or Create account, depending on the selected state.
-- Guardian Today: complete the most urgent care action only when that action is clearly safe.
+- Pet Care Today: complete the most urgent care action only when that action is clearly safe.
 - Organisation root: enter an organisation workspace; Create organisation is secondary to existing memberships.
 - People: Add or invite only when the user has permission.
 - Forms: Save/Create; Delete is separated and never visually adjacent as an equal peer.
@@ -133,7 +133,7 @@ Use clear page titles, ownership/status labels, back navigation, descriptive con
 
 ### P4 — Colour carries meaning, not identity alone
 
-Use the locked Guardian plum and Organisation teal as contextual primaries. Use warm coral only as an accent. Reserve success, warning, danger, and priority tokens for their semantic meanings.
+Use the locked Pet Care plum and Organisation teal as contextual primaries. Use warm coral only as an accent. Reserve success, warning, danger, and priority tokens for their semantic meanings.
 
 Every coloured state needs a text label, icon, shape, or position cue in addition to colour.
 
@@ -170,7 +170,7 @@ All interactive surfaces require meaningful semantics, stable labels, visible ke
 
 Use the existing semantic token system rather than scattered literal values.
 
-| Role | Guardian | Organisation | Usage |
+| Role | Pet Care | Shelter | Usage |
 |---|---|---|---|
 | Context primary | Plum | Teal | primary buttons, active contextual controls, selected local state |
 | App canvas | Warm paper / neutral | Warm paper / neutral | broad page background |
@@ -186,7 +186,7 @@ Use the existing semantic token system rather than scattered literal values.
 - use coral for destructive actions or warning states;
 - use red as a normal count badge;
 - use a different colour family for each screen;
-- rely on the Guardian/Organisation primary colour to communicate access rights.
+- rely on the Pet Care/Shelter primary colour to communicate access rights.
 
 ### 4.2 Surface and elevation rules
 
@@ -246,7 +246,7 @@ Motion should confirm hierarchy, not entertain:
 
 ```text
 Authenticated app
-├── Guardian root (/g/home)
+├── Pet Care root (/pc/home)
 │   ├── My Pets
 │   ├── Due and Overdue
 │   └── My Vets
@@ -272,7 +272,7 @@ Authenticated app
 
 **Content:**
 
-1. Guardian
+1. Pet Care
 2. Organisation
 3. Divider / breathing space
 4. Account pinned to the bottom
@@ -367,7 +367,7 @@ Authenticated app
 
 - Returning users resume their established/last-active experience according to the locked route rules.
 - New accounts may see the role-neutral chooser only when it is required.
-- Guardian and Organisation options are peers, not an identity test.
+- Pet Care and Shelter options are peers, not an identity test.
 - Organisation onboarding redirection behaviour remains intact.
 
 ---
@@ -376,7 +376,7 @@ Authenticated app
 
 ### Card D — Root app bar
 
-**Applies to:** Guardian root and Organisation root.
+**Applies to:** Pet Care root and Organisation root.
 
 **Anatomy:**
 
@@ -386,7 +386,7 @@ Authenticated app
 - no generic Home action;
 - no top-level tab strip.
 
-**Guardian context:** quiet AgathaTrack identity plus Guardian-primary accents.
+**Pet Care context:** quiet AgathaTrack identity plus Pet Care-primary accents.
 
 **Organisation root context:** quiet AgathaTrack identity plus Organisation-primary accents.
 
@@ -422,13 +422,13 @@ Every high-level surface needs all four states designed before implementation.
 
 ---
 
-## 8. Design cards: Guardian experience
+## 8. Design cards: Pet Care experience
 
-### Card G — Guardian Today orientation layer
+### Card G — Pet Care Today orientation layer
 
 **Job:** Answer “what matters now?” without becoming a fourth dashboard section.
 
-**Position:** directly under the Guardian root header, before My Pets.
+**Position:** directly under the Pet Care root header, before My Pets.
 
 **Content, in priority order:**
 
@@ -443,7 +443,7 @@ Every high-level surface needs all four states designed before implementation.
 - Due: clear but restrained attention treatment.
 - Overdue: warning/danger semantics plus plain “Overdue” label.
 - Completed: server-confirmed change with temporary undo where the established care flow supports it.
-- Loading/error: do not make the rest of the Guardian dashboard unusable.
+- Loading/error: do not make the rest of the Pet Care dashboard unusable.
 
 ### Card H — My Pets
 
@@ -477,7 +477,7 @@ Optional concise status
 - Limit the dashboard preview to 5 care items.
 - Each item identifies pet, care type, due state, due date/time where applicable, and a direct safe action.
 - Completion cannot be represented as a local-only UI toggle.
-- The full destination remains `/g/events`.
+- The full destination remains `/pc/events`.
 
 ### Card J — My Vets
 
@@ -503,7 +503,7 @@ Optional concise status
 
 **Rules:**
 
-- Timeline is not a Guardian dashboard feature.
+- Timeline is not a Pet Care dashboard feature.
 - Redacted organisation-pet views show only permitted information and do not leak timelines, sessions, health, or documents.
 - Share and custody actions state their impact and recipient/context before confirmation.
 
@@ -785,7 +785,7 @@ Each stage should be reviewed as a coherent visual slice. Do not merge visual ch
 **Goal:** Confirm the reusable visual language before screen work spreads it.
 
 1. Reconcile semantic tokens, typography, spacing, radius, elevation, focus, state, and motion roles.
-2. Confirm Guardian and Organisation contextual primaries without creating separate component systems.
+2. Confirm Pet Care and Shelter contextual primaries without creating separate component systems.
 3. Document standard cards, rows, banners, chips, input fields, dialogs, empty states, error states, and loading states.
 4. Define a contrast and text-scaling review checklist.
 5. Create lightweight component specimens for the shared patterns.
@@ -816,7 +816,7 @@ Each stage should be reviewed as a coherent visual slice. Do not merge visual ch
 
 **Exit criteria:** users can reliably distinguish switching section, going back, opening notifications, and entering Account.
 
-### Stage 3 — Guardian home and care journeys
+### Stage 3 — Pet Care home and care journeys
 
 **Goal:** Make daily care work faster without changing existing authority or routing.
 
@@ -827,7 +827,7 @@ Each stage should be reviewed as a coherent visual slice. Do not merge visual ch
 5. Extend the same patterns through pets, care details, care forms, vets, and weight.
 6. Validate shared/foster/ownership context and undo behavior.
 
-**Exit criteria:** Guardian home contains exactly the locked three management sections and Today remains compact orientation only.
+**Exit criteria:** Pet Care home contains exactly the locked three management sections and Today remains compact orientation only.
 
 ### Stage 4 — Organisation root and profile composer
 
@@ -907,13 +907,13 @@ Use this card before changing any significant screen:
 
 Do not introduce any of the following without a new recorded decision:
 
-- ~~a five-tab bottom navigation bar;~~ **Superseded by D-v4-1** — approved for compact Guardian primary nav only (Today, Pets, Care, Fostering, Account).
-- ~~a horizontal website-style top navbar for Guardian primary destinations;~~ Rejected — application shell uses leading nav (D-v4-4) on medium+.
+- ~~a five-tab bottom navigation bar;~~ **Superseded by D-v4-1** — approved for compact Pet Care primary nav only (Today, Pets, Care, Fostering, Account).
+- ~~a horizontal website-style top navbar for Pet Care primary destinations;~~ Rejected — application shell uses leading nav (D-v4-4) on medium+.
 - a universal floating Add action;
 - a standalone Today route;
 - a generic Home destination;
 - a global sitemap drawer;
-- separate Guardian and Organisation notification systems;
+- separate Pet Care and Shelter notification systems;
 - an inline Organisation root pet/event feed;
 - a second Admin Contacts directory;
 - a separate Organisation presentation primary destination;

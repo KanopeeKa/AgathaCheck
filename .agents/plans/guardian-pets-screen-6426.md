@@ -23,7 +23,7 @@ tags: [design, guardian, pets]
 
 ## Goal
 
-Rework the guardian `/g/pets` screen per ui-design-deep review and user decisions (A–F): remove ownership filter chips while keeping section splits; add Shared pets subsection; fix foster grouping via dashboard helpers + API audit; harmonise tiles with dashboard cards; remove swipe-to-hide; replace top `+` and FAB with a 2:1 bottom action bar; add dedicated multi-select screen for bulk share.
+Rework the guardian `/pc/pets` screen per ui-design-deep review and user decisions (A–F): remove ownership filter chips while keeping section splits; add Shared pets subsection; fix foster grouping via dashboard helpers + API audit; harmonise tiles with dashboard cards; remove swipe-to-hide; replace top `+` and FAB with a 2:1 bottom action bar; add dedicated multi-select screen for bulk share.
 
 ## Autonomy
 
@@ -40,7 +40,7 @@ Rework the guardian `/g/pets` screen per ui-design-deep review and user decision
 
 | ID | Decision |
 |----|----------|
-| A | Remove All/My/Fostered chips on `/g/pets`; defer org-name chips on legacy list |
+| A | Remove All/My/Fostered chips on `/pc/pets`; defer org-name chips on legacy list |
 | B | Add **Shared pets** subsection matching dashboard |
 | C | Group with dashboard helpers; audit `is_foster` API mapping |
 | D | Bottom action bar on all breakpoints; align to content column on desktop |
@@ -63,7 +63,7 @@ Rework the guardian `/g/pets` screen per ui-design-deep review and user decision
 
 **Exit criteria:**
 
-- [ ] No All/My/Fostered chips on `/g/pets`
+- [ ] No All/My/Fostered chips on `/pc/pets`
 - [ ] Foster pets only under Fostered section
 - [ ] Shared pets in own section
 - [ ] Tiles match dashboard look; no swipe-to-hide
@@ -75,9 +75,9 @@ Rework the guardian `/g/pets` screen per ui-design-deep review and user decision
 
 **Scope:**
 
-- Remove app-bar `+` on `/g/pets`
+- Remove app-bar `+` on `/pc/pets`
 - Sticky bottom bar: Add pet (⅔) + `…` menu (⅓) with Share pets…
-- New `/g/pets/bulk-share` selection screen (tap to select, select all toggle, Share *n* pets CTA)
+- New `/pc/pets/bulk-share` selection screen (tap to select, select all toggle, Share *n* pets CTA)
 - Remove inline `PetListBulkShareBar` from browse screen
 
 **Exit criteria:**
