@@ -231,7 +231,7 @@ void main() {
     await tester.pumpWidget(_buildSection());
     await tester.pumpAndSettle();
 
-    expect(find.text('CARE'), findsOneWidget);
+    expect(find.text('CARE ACTIONS'), findsOneWidget);
     expect(find.textContaining('Due'), findsNothing);
     expect(find.text('Soon'), findsNothing);
   });

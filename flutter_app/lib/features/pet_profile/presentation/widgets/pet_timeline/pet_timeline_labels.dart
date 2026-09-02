@@ -26,7 +26,7 @@ String petTimelineHeadline(PetTimelineSegment segment, AppLocalizations l) {
     );
   }
   if (segment.isCustody) {
-    final guardian = segment.guardianName?.trim();
+    final guardian = segment.primaryHolderName?.trim();
     if (guardian == null || guardian.isEmpty) {
       return l.petTimelineCustodySegmentHidden;
     }
@@ -38,7 +38,7 @@ String petTimelineHeadline(PetTimelineSegment segment, AppLocalizations l) {
 
 String? petTimelineSubtitle(PetTimelineSegment segment, AppLocalizations l) {
   if (segment.isJoinedAgatha) {
-    final guardian = segment.guardianName?.trim();
+    final guardian = segment.primaryHolderName?.trim();
     if (guardian == null || guardian.isEmpty) return null;
     return l.petTimelineCustodySegment(guardian);
   }

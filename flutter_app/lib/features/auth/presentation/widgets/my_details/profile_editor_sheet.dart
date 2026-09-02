@@ -51,7 +51,7 @@ class _ProfileEditorSheetState extends State<ProfileEditorSheet> {
       text: widget.user.lastName ?? '',
     );
     _bioController = TextEditingController(text: widget.user.bio ?? '');
-    _category = widget.user.category ?? 'pet_guardian';
+    _category = widget.user.category ?? 'pet_carer';
   }
 
   @override

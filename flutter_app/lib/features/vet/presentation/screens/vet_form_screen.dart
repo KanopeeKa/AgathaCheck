@@ -13,7 +13,7 @@ class VetFormScreen extends ConsumerStatefulWidget {
   const VetFormScreen({
     super.key,
     this.vetId,
-    this.listPath = '/g/vets',
+    this.listPath = '/pc/vets',
     this.defaultOrganizationId,
   });
 

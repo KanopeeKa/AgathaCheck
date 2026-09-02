@@ -87,7 +87,7 @@ void main() {
         AuthUser(
           id: 'user-1',
           email: 'a@example.com',
-          category: 'pet_guardian',
+          category: 'pet_carer',
         ),
       );
       expect(client.identifiedUserId, 'user-1');

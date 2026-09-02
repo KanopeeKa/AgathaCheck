@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/shell_return_navigation.dart';
+
 import '../../domain/services/pet_detail_actions.dart';
 import '../providers/pet_detail_viewer_context_provider.dart';
 import '../providers/pet_providers.dart';
@@ -31,7 +33,7 @@ class PetEditPermissionGuard extends ConsumerWidget {
     if (!viewerContext.isPolicyResolved ||
         !viewerContext.can(PetDetailAction.editProfile)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) context.go('/pet/$petId');
+        if (context.mounted) goToPetDetail(context, petId);
       });
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }

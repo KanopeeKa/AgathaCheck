@@ -91,7 +91,7 @@ void main() {
       name: 'Rex',
       species: 'Dog',
       isShared: true,
-      guardianName: 'Alex',
+      primaryHolderName: 'Alex',
     );
     final ctx = PetDetailActions.resolveContext(
       pet: pet,
@@ -253,7 +253,7 @@ void main() {
       name: 'Mia',
       species: 'Cat',
       isShared: true,
-      guardianName: 'Jordan',
+      primaryHolderName: 'Jordan',
     );
     final ctx = PetDetailActions.resolveContext(
       pet: pet,

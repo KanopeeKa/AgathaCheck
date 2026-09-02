@@ -32,7 +32,8 @@ describe('occurrenceScheduling helpers', () => {
   it('initialMaterialisationAnchor preserves overdue next_due_date', () => {
     expect(initialMaterialisationAnchor(null, '2026-08-26', '2026-09-02')).toBe('2026-08-26');
     expect(initialMaterialisationAnchor('2026-08-01', '2026-08-26', '2026-09-02')).toBe('2026-08-26');
-    expect(initialMaterialisationAnchor(null, '2026-09-05', '2026-09-02')).toBe('2026-09-02');
+    expect(initialMaterialisationAnchor(null, '2026-09-05', '2026-09-02')).toBeNull();
+    expect(initialMaterialisationAnchor(null, '2026-09-03', '2026-09-02')).toBe('2026-09-03');
     expect(initialMaterialisationAnchor(null, null, '2026-09-02')).toBe('2026-09-02');
   });
 

@@ -10,7 +10,7 @@ class PetAccessUser {
   const PetAccessUser({
     this.firstName = '',
     this.lastName = '',
-    this.category = 'pet_guardian',
+    this.category = 'pet_carer',
     this.bio = '',
     this.photoUrl = '',
   });

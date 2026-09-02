@@ -64,14 +64,14 @@ void main() {
         name: 'A',
         species: 'Cat',
         isShared: true,
-        guardianName: 'Alex',
+        primaryHolderName: 'Alex',
       ),
       const Pet(
         id: '2',
         name: 'B',
         species: 'Dog',
         isShared: true,
-        guardianName: 'Alex',
+        primaryHolderName: 'Alex',
       ),
       const Pet(
         id: '3',

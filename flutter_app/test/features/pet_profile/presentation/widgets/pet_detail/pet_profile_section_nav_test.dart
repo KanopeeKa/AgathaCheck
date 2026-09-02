@@ -50,7 +50,7 @@ void main() {
     expect(find.text('Weight Tracking'), findsOneWidget);
     expect(find.text('Health Issues'), findsOneWidget);
     expect(find.byIcon(Icons.chevron_right), findsNWidgets(3));
-    expect(find.byType(Divider), findsNWidgets(3));
+    expect(find.byType(Divider), findsNWidgets(2));
   });
 
   testWidgets('timeline row navigates to dedicated route', (tester) async {

@@ -128,7 +128,7 @@ void main() {
 
       expect(find.text('Dashboard'), findsOneWidget);
       expect(find.text('Pets'), findsOneWidget);
-      expect(find.text('Care'), findsOneWidget);
+      expect(find.text('Actions'), findsOneWidget);
       expect(find.text('Fostering'), findsOneWidget);
       expect(find.text('Account'), findsOneWidget);
       expect(

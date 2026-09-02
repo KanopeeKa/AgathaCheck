@@ -28,7 +28,7 @@ class PetModel {
     this.organizationName,
     this.fosterPlacementStatus,
     this.fosterName,
-    this.guardianName,
+    this.primaryHolderName,
     this.createdAt,
   });
 
@@ -65,7 +65,8 @@ class PetModel {
       organizationName: json['organization_name'] as String?,
       fosterPlacementStatus: json['foster_placement_status'] as String?,
       fosterName: json['foster_name'] as String?,
-      guardianName: json['guardian_name'] as String?,
+      primaryHolderName: json['primary_holder_name'] as String? ??
+          json['guardian_name'] as String?,
       createdAt: _parseTimestamp(json['createdAt'] ?? json['created_at']),
     );
   }
@@ -95,7 +96,7 @@ class PetModel {
       organizationName: pet.organizationName,
       fosterPlacementStatus: pet.fosterPlacementStatus,
       fosterName: pet.fosterName,
-      guardianName: pet.guardianName,
+      primaryHolderName: pet.primaryHolderName,
       createdAt: pet.createdAt,
     );
   }
@@ -127,7 +128,7 @@ class PetModel {
   final String? organizationName;
   final String? fosterPlacementStatus;
   final String? fosterName;
-  final String? guardianName;
+  final String? primaryHolderName;
   final DateTime? createdAt;
 
   Map<String, dynamic> toJson({bool includeWeightEntryDate = false}) {
@@ -185,7 +186,7 @@ class PetModel {
       organizationName: organizationName,
       fosterPlacementStatus: fosterPlacementStatus,
       fosterName: fosterName,
-      guardianName: guardianName,
+      primaryHolderName: primaryHolderName,
       createdAt: createdAt,
     );
   }

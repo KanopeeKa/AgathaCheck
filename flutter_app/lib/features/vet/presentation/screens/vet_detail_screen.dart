@@ -14,7 +14,7 @@ class VetDetailScreen extends ConsumerWidget {
   const VetDetailScreen({
     super.key,
     required this.vetId,
-    this.listPath = '/g/vets',
+    this.listPath = '/pc/vets',
   });
 
   final String vetId;

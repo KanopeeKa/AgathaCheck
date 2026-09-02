@@ -175,7 +175,7 @@ void main() {
     );
   });
 
-  testWidgets('selecting My Pets navigates to /g/home', (tester) async {
+  testWidgets('selecting Pet Care navigates to /pc/home', (tester) async {
     await tester.binding.setSurfaceSize(const Size(800, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 

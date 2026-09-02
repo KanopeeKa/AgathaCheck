@@ -605,7 +605,7 @@ abstract class AppLocalizations {
   /// No description provided for @petGuardian.
   ///
   /// In en, this message translates to:
-  /// **'Pet Guardian'**
+  /// **'Pet carer'**
   String get petGuardian;
 
   /// No description provided for @professionalMultiPet.
@@ -1211,7 +1211,7 @@ abstract class AppLocalizations {
   /// No description provided for @careEyebrow.
   ///
   /// In en, this message translates to:
-  /// **'CARE'**
+  /// **'CARE ACTIONS'**
   String get careEyebrow;
 
   /// No description provided for @petsEyebrow.
@@ -1229,8 +1229,14 @@ abstract class AppLocalizations {
   /// No description provided for @allCare.
   ///
   /// In en, this message translates to:
-  /// **'All care'**
+  /// **'All Actions'**
   String get allCare;
+
+  /// No description provided for @careForPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Care for {petName}'**
+  String careForPet(String petName);
 
   /// No description provided for @dashboardNavLabel.
   ///
@@ -1241,7 +1247,7 @@ abstract class AppLocalizations {
   /// No description provided for @careNavLabel.
   ///
   /// In en, this message translates to:
-  /// **'Care'**
+  /// **'Actions'**
   String get careNavLabel;
 
   /// No description provided for @careDueTab.
@@ -6261,6 +6267,42 @@ abstract class AppLocalizations {
   /// **'Shared Pets'**
   String get sharedPets;
 
+  /// No description provided for @sharedPetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared Pet'**
+  String get sharedPetTitle;
+
+  /// No description provided for @sharedPetNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet not found or share link expired'**
+  String get sharedPetNotFound;
+
+  /// No description provided for @sharedPetLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load shared pet'**
+  String get sharedPetLoadFailed;
+
+  /// No description provided for @goToPetCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Pet Care'**
+  String get goToPetCare;
+
+  /// No description provided for @sharedPetAcceptPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Want to add this pet to your account?'**
+  String get sharedPetAcceptPrompt;
+
+  /// No description provided for @sharedPetAdding.
+  ///
+  /// In en, this message translates to:
+  /// **'Adding...'**
+  String get sharedPetAdding;
+
   /// No description provided for @invited.
   ///
   /// In en, this message translates to:
@@ -8022,7 +8064,7 @@ abstract class AppLocalizations {
   /// No description provided for @experienceGuardianTitle.
   ///
   /// In en, this message translates to:
-  /// **'Individual Pet Guardian'**
+  /// **'Pet Care'**
   String get experienceGuardianTitle;
 
   /// No description provided for @experienceGuardianSubtitle.
@@ -8088,7 +8130,7 @@ abstract class AppLocalizations {
   /// No description provided for @guardianNotificationsDrawer.
   ///
   /// In en, this message translates to:
-  /// **'Guardian notifications'**
+  /// **'Pet Care notifications'**
   String get guardianNotificationsDrawer;
 
   /// No description provided for @myVets.
@@ -8118,7 +8160,7 @@ abstract class AppLocalizations {
   /// No description provided for @guardianDashboardTitle.
   ///
   /// In en, this message translates to:
-  /// **'My Pets dashboard'**
+  /// **'Pet Care dashboard'**
   String get guardianDashboardTitle;
 
   /// No description provided for @upcomingPetEvents.
@@ -8250,7 +8292,7 @@ abstract class AppLocalizations {
   /// No description provided for @experienceGuardianView.
   ///
   /// In en, this message translates to:
-  /// **'My Pets view'**
+  /// **'Pet Care view'**
   String get experienceGuardianView;
 
   /// No description provided for @experienceDefaultSettingTitle.
@@ -8580,7 +8622,7 @@ abstract class AppLocalizations {
   /// No description provided for @drawerGuardian.
   ///
   /// In en, this message translates to:
-  /// **'My Pets'**
+  /// **'Pet Care'**
   String get drawerGuardian;
 
   /// No description provided for @drawerOrganisation.

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
-import 'package:pet_profile_app/core/widgets/dashboard_section.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
@@ -23,7 +22,7 @@ class _FakeHealthEntriesNotifier extends HealthEntriesNotifier {
 void main() {
   const pet = Pet(id: 'pet-1', name: 'Bella', species: 'Dog');
 
-  testWidgets('pet events preview shows due and overdue title', (tester) async {
+  testWidgets('pet events preview shows care-for-pet title', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -43,9 +42,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Due and Overdue'), findsOneWidget);
-    expect(find.byType(DashboardSection), findsOneWidget);
-    expect(find.text('Manage events'), findsOneWidget);
+    expect(find.text('Care for Bella'), findsOneWidget);
+    expect(find.byKey(const Key('pet_detail_care_section')), findsOneWidget);
+    expect(find.text('All caught up'), findsOneWidget);
   });
 
   testWidgets('pet events preview lists due entries for pet', (tester) async {

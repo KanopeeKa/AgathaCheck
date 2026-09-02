@@ -88,7 +88,7 @@
   "profileUpdated": "Profil mis à jour",
   "failedToPickPhoto": "Échec de la sélection de photo : {error}",
   "failedToSave": "Échec de la sauvegarde : {error}",
-  "petGuardian": "Gardien d'animal",
+  "petGuardian": "Soignant d'animal",
   "professionalMultiPet": "Professionnel Multi-Animaux",
   "categoryLabel": "Catégorie : {category}",
   "firstName": "Prénom",
@@ -211,6 +211,14 @@
   "petsEyebrow": "ANIMAUX",
   "petsNavLabel": "Animaux",
   "allCare": "Tous les soins",
+  "careForPet": "Soins pour {petName}",
+  "@careForPet": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "dashboardNavLabel": "Tableau de bord",
   "careNavLabel": "Soins",
   "careDueTab": "À faire {count}",
@@ -1171,6 +1179,12 @@
   "acceptShareToHint": "Choisissez où cet animal partagé doit apparaître.",
   "shareDeclined": "Partage refusé",
   "sharedPets": "Animaux partagés",
+  "sharedPetTitle": "Animal partagé",
+  "sharedPetNotFound": "Animal introuvable ou lien de partage expiré",
+  "sharedPetLoadFailed": "Impossible de charger l'animal partagé",
+  "goToPetCare": "Accéder au Suivi",
+  "sharedPetAcceptPrompt": "Souhaitez-vous ajouter cet animal à votre compte ?",
+  "sharedPetAdding": "Ajout en cours…",
 
   "invited": "Invité(e)",
   "pendingInvite": "En attente",
@@ -1515,7 +1529,7 @@
   "remindChipOneDay": "1 jour",
   "remindChipThreeDays": "3 jours",
   "remindChipOneWeek": "1 semaine",
-  "experienceGuardianTitle": "Gardien d'animal individuel",
+  "experienceGuardianTitle": "Suivi",
   "experienceGuardianSubtitle": "Suivez les soins, rappels et garde partagée de vos animaux.",
   "experienceOrganizationTitle": "Refuge / Organisation",
   "experienceOrganizationSubtitle": "Gérez les animaux, familles d'accueil, adoptions et votre équipe.",
@@ -1526,12 +1540,12 @@
   "experienceOrgView": "Vue refuges",
   "drawerCreateOrg": "Créer une organisation",
   "orgNotificationsDrawer": "Notifications organisation",
-  "guardianNotificationsDrawer": "Notifications gardien",
+  "guardianNotificationsDrawer": "Notifications Suivi",
   "myVets": "Équipe de soins",
   "careTeamEyebrow": "ÉQUIPE DE SOINS",
   "careTeamClinicSubtitle": "Clinique vétérinaire",
   "allCareTeams": "Toutes les équipes de soins",
-  "guardianDashboardTitle": "Tableau de bord Mes animaux",
+  "guardianDashboardTitle": "Tableau de bord Suivi",
   "upcomingPetEvents": "Événements à venir",
   "dueAndOverdue": "À faire et en retard",
   "allEvents": "Tous les événements",
@@ -1555,7 +1569,7 @@
   "selectPetForEvent": "Choisir un animal pour cet événement",
   "orgVets": "Vétérinaires de l'organisation",
   "myOrganisation": "Mon organisation",
-  "experienceGuardianView": "Vue Mes animaux",
+  "experienceGuardianView": "Vue Suivi",
   "experienceDefaultSettingTitle": "Expérience par défaut",
   "experienceDefaultSettingSubtitle": "Utilisée à la connexion. Vous pouvez toujours changer via le menu.",
   "experienceShowOrganisationSectionTitle": "Afficher la section Refuges",
@@ -1615,7 +1629,7 @@
   "adoptionJourneyMilestonesEmpty": "Aucun jalon configuré pour le moment.",
   "adoptionJourneyStatusUnknown": "Inconnu",
 
-  "drawerGuardian": "Mes animaux",
+  "drawerGuardian": "Suivi",
   "drawerOrganisation": "Refuges",
   "drawerAccount": "Compte",
   "drawerItemUnreadSemantics": "{label}, {count} non lus",

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
@@ -26,10 +27,10 @@ class CareTeamPetRow extends StatelessWidget {
         Semantics(
           button: true,
           label: pet.name,
-          onTap: () => context.go('/pet/${pet.id}'),
+          onTap: () => openPetDetail(context, pet.id),
           excludeSemantics: true,
           child: InkWell(
-            onTap: () => context.go('/pet/${pet.id}'),
+            onTap: () => openPetDetail(context, pet.id),
             child: ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 56),
               child: Padding(

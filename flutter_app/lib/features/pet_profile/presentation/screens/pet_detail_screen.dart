@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../../core/widgets/screen_overflow_actions.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../experience/domain/entities/app_experience.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
@@ -62,30 +63,42 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
             pet.isFoster;
         final showExport = viewerContext.can(PetDetailAction.downloadReport);
 
-        final contextualActions = <Widget>[
+        final overflowActions = <ScreenOverflowAction>[
           if (showSharing)
-            IconButton(
+            ScreenOverflowAction(
               key: const Key('pet_detail_sharing_action'),
-              tooltip: l.sharingSection,
-              icon: const Icon(Icons.people_outline),
+              menuItemKey: const Key('pet_detail_sharing_menu_item'),
+              semanticsIdentifier: 'pet_detail_sharing_menu_item',
+              label: l.sharingSection,
+              icon: Icons.people_outline,
               onPressed: () =>
                   showSharingSheet(context, ref, petId: widget.petId, pet: pet),
             ),
           if (showExport)
-            IconButton(
+            ScreenOverflowAction(
               key: const Key('pet_detail_export_report_action'),
-              tooltip: l.downloadPetReport,
-              icon: const Icon(Icons.picture_as_pdf_outlined),
+              menuItemKey: const Key('pet_detail_export_report_menu_item'),
+              semanticsIdentifier: 'pet_detail_export_report_menu_item',
+              label: l.downloadPetReport,
+              icon: Icons.picture_as_pdf_outlined,
               onPressed: () =>
                   DownloadReportController(ref).onDownloadReport(context, pet),
             ),
+        ];
+
+        final contextualActions = <Widget>[
+          ScreenOverflowActions(
+            menuKey: const Key('pet_detail_overflow_menu'),
+            menuSemanticsIdentifier: 'pet_detail_overflow_menu',
+            tooltip: l.moreActions,
+            actions: overflowActions,
+          ),
         ];
 
         Widget body = ExperienceShellScaffold(
           experience: experience,
           currentLocation: GoRouterState.of(context).uri.path,
           screenTitle: pet.name,
-          backPath: '/g/home',
           contextualActions: contextualActions,
           child: CustomScrollView(
             slivers: [
