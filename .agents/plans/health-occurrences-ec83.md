@@ -266,17 +266,17 @@ docs/domains/health_tracking/**
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: 5
-last_completed_phase: 3
+autonomy: completed
+current_phase: null
+last_completed_phase: 5
 halt_reason: null
-next_action: "continue phase 5 on branch cursor/health-occurrences-e2e-ec83"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/health-occurrences-e2e-ec83
+  branch: main
   plan_path: .agents/plans/health-occurrences-ec83.md
-  plan_commit: a39538076b5121e39854ff94c94e5b3d92e154c5
+  plan_commit: 25bc56a476b8a619c913ff9799159cde9a9b58fb
   snapshot_path: .agents/plans/health-occurrences-ec83.snapshot.json
-  snapshot_commit: a39538076b5121e39854ff94c94e5b3d92e154c5
+  snapshot_commit: 25bc56a476b8a619c913ff9799159cde9a9b58fb
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
