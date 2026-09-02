@@ -86,7 +86,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
       return;
     }
     if (_isEditing && widget.petId != null) {
-      goToPetDetail(context, widget.petId);
+      goToPetDetail(context, widget.petId!);
       return;
     }
     if (_selectedOrgId != null) {
