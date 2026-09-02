@@ -45,17 +45,17 @@ test.describe('Pet detail back navigation', () => {
     testUser,
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    await createPet(baseURL, testUser.accessToken, 'DashPet', 'Cat');
+    const pet = await createPet(baseURL, testUser.accessToken, 'DashPet', 'Cat');
 
     await loginAs(page, testUser);
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.open();
 
-    await page.getByRole('button', { name: /DashPet/i }).first().click();
-    await waitForFlutterRoutePattern(page, /\/pet\/[^/?]+/, 30_000);
+    const petList = new PetListPage(page);
+    await petList.openPet(pet.name, pet.id);
 
     const detail = new PetDetailPage(page);
-    await detail.expectLoaded('DashPet');
+    await detail.expectLoaded(pet.name);
     await detail.goBack();
 
     await waitForFlutterRoutePattern(page, /\/pc\/home(?:\?|$)/, 30_000);
