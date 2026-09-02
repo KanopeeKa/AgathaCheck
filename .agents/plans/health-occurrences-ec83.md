@@ -274,10 +274,10 @@ next_action: "continue phase 2 on branch cursor/health-occurrences-data-form-ec8
 artifact_ref:
   branch: cursor/health-occurrences-data-form-ec83
   plan_path: .agents/plans/health-occurrences-ec83.md
-  plan_commit: dd4d1b068e7d48976924476ad004e800bdc098c9
+  plan_commit: c318be6708a7c07b3cf7955cf8c5df2c79cc5e37
   snapshot_path: .agents/plans/health-occurrences-ec83.snapshot.json
-  snapshot_commit: dd4d1b068e7d48976924476ad004e800bdc098c9
-open_prs: []
+  snapshot_commit: c318be6708a7c07b3cf7955cf8c5df2c79cc5e37
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/814"]
 merge_commits: {}
 debt_issue_refs: []
 ```
