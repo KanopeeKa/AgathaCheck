@@ -86,6 +86,7 @@ class GuardianCarePreviewEventList extends ConsumerWidget {
     required this.onMarkDone,
     required this.onUndo,
     required this.onView,
+    this.rowContext = CareEventRowContext.dashboard,
   });
 
   final List<GuardianCarePreviewItem> items;
@@ -93,6 +94,7 @@ class GuardianCarePreviewEventList extends ConsumerWidget {
   final void Function(HealthEntry entry, int previewIndex) onMarkDone;
   final void Function(HealthEntry entry) onUndo;
   final void Function(HealthEntry entry) onView;
+  final CareEventRowContext rowContext;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -105,7 +107,7 @@ class GuardianCarePreviewEventList extends ConsumerWidget {
             key: Key('care_event_row_${items[i].entry.id}'),
             entry: items[i].entry,
             pet: petMap[items[i].entry.petId],
-            rowContext: CareEventRowContext.dashboard,
+            rowContext: rowContext,
             isCompleted: items[i].isCompleted,
             onMarkDone: () async => onMarkDone(items[i].entry, i),
             onUndo: () => onUndo(items[i].entry),

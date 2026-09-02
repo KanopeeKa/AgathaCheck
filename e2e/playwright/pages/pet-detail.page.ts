@@ -36,20 +36,35 @@ export class PetDetailPage {
       .waitFor({ timeout: 15_000 });
   }
 
+  async openOverflowMenu(): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    const menu = this.page
+      .locator('[flt-semantics-identifier="pet_detail_overflow_menu"]')
+      .or(this.page.getByRole('button', { name: /More actions|Plus d'actions/i }));
+    await menu.first().click();
+  }
+
+  async goBack(): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    await this.page
+      .locator('[flt-semantics-identifier="experience_back_button"]')
+      .or(this.page.getByRole('button', { name: /Back|Retour/i }))
+      .first()
+      .click();
+  }
+
   async openEdit(): Promise<void> {
     await this.page.getByRole('button', { name: /edit pet/i }).first().click();
     await this.page.getByRole('button', { name: 'Update Pet' }).waitFor({ timeout: 30_000 });
   }
 
   async openSharingSection(): Promise<void> {
-    const sharing = this.page.getByRole('button', { name: /^Sharing\b/i });
-    await sharing.scrollIntoViewIfNeeded();
-    const shareLink = this.page.getByRole('button', { name: 'Share Link' });
-    if (await shareLink.isVisible().catch(() => false)) {
-      return;
-    }
-    await sharing.click();
-    await shareLink.waitFor({ timeout: 15_000 });
+    await this.openOverflowMenu();
+    const sharingItem = this.page
+      .locator('[flt-semantics-identifier="pet_detail_sharing_menu_item"]')
+      .or(this.page.getByRole('menuitem', { name: /^(?:Sharing\b|Partage)/i }));
+    await sharingItem.first().click();
+    await this.page.getByRole('button', { name: 'Share Link' }).waitFor({ timeout: 15_000 });
   }
 
   async createShareLink(): Promise<void> {
@@ -125,10 +140,11 @@ export class PetDetailPage {
 
   async downloadProfileReport(): Promise<void> {
     await enableFlutterAccessibility(this.page);
-    const exportBtn = this.page
-      .locator('[flt-semantics-identifier="pet_detail_export_report_action"]')
-      .or(this.page.getByRole('button', { name: /Download Pet Report|Download Report/i }));
-    await exportBtn.first().click();
+    await this.openOverflowMenu();
+    const exportItem = this.page
+      .locator('[flt-semantics-identifier="pet_detail_export_report_menu_item"]')
+      .or(this.page.getByRole('menuitem', { name: /Download Pet Report|Télécharger le rapport/i }));
+    await exportItem.first().click();
     await this.page.getByText(/^Download Pet Report$/i).first().waitFor({ timeout: 15_000 });
     await this.page.getByRole('button', { name: /Download Pet Report|Download Report/i }).last().click();
   }
