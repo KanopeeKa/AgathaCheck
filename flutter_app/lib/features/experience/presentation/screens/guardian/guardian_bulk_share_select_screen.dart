@@ -33,7 +33,8 @@ class _GuardianBulkShareSelectScreenState
 
   void _toggleSelectAll(List<Pet> eligible) {
     setState(() {
-      final allSelected = eligible.isNotEmpty &&
+      final allSelected =
+          eligible.isNotEmpty &&
           eligible.every((pet) => _selectedPetIds.contains(pet.id));
       if (allSelected) {
         _selectedPetIds.clear();
@@ -89,7 +90,8 @@ class _GuardianBulkShareSelectScreenState
                   pets: eligible,
                 )
               : null;
-          final allSelected = eligible.isNotEmpty &&
+          final allSelected =
+              eligible.isNotEmpty &&
               eligible.every((pet) => _selectedPetIds.contains(pet.id));
 
           return Column(

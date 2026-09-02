@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/presentation/widgets/pet_card.dart' show sortPetsByCreatedAt;
+import '../../../pet_profile/presentation/widgets/pet_card.dart'
+    show sortPetsByCreatedAt;
 import '../screens/guardian/guardian_dashboard_helpers.dart';
 import 'guardian_dashboard_pet_card.dart';
 import 'guardian_dashboard_section_header.dart';
