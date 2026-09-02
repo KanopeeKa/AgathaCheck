@@ -4,7 +4,7 @@
   "approved_at": "2026-09-02T11:02:00Z",
   "approved_by": "user-chat-standing-grant-2026-09-02",
   "approved_until": "2026-09-04T11:02:00Z",
-  "content_hash": "sha256:26288c25fbc5b2b7df11e8efb723960163fbe830195f42e1ba48dbb3557f9899",
+  "content_hash": "sha256:06272e4b5847794b9ed41e97eca2be287e7c4994429a5aa8c4520bb68d8195dd",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/pet-detail-ux-c2ce-integration",
@@ -33,9 +33,11 @@
       "spawn_allowed": false,
       "spawn_config": null,
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/824",
+      "pr_head_sha": "01e904618f2a5411e5f2cd47728f72e15099f007"
     },
     {
       "id": "2",
@@ -61,12 +63,11 @@
       "spawn_allowed": false,
       "spawn_config": null,
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/824",
+      "pr_head_sha": "01e904618f2a5411e5f2cd47728f72e15099f007"
     },
     {
       "id": "3",
@@ -89,12 +90,11 @@
       "spawn_allowed": false,
       "spawn_config": null,
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/824",
+      "pr_head_sha": "01e904618f2a5411e5f2cd47728f72e15099f007"
     }
   ]
 }

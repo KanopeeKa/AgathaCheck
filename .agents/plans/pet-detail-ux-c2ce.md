@@ -87,16 +87,16 @@ Deliver pet-detail screen UX fixes (care preview parity, photo accent removal, o
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: null
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/back-navigation-canonical-c2ce"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/back-navigation-canonical-c2ce
+  branch: cursor/pet-detail-ux-c2ce
   plan_path: .agents/plans/pet-detail-ux-c2ce.md
-  plan_commit: e63aa9d506f76cc37aaf1d1d2f78385d0580883f
+  plan_commit: 01e904618f2a5411e5f2cd47728f72e15099f007
   snapshot_path: .agents/plans/pet-detail-ux-c2ce.snapshot.json
-  snapshot_commit: e63aa9d506f76cc37aaf1d1d2f78385d0580883f
+  snapshot_commit: 01e904618f2a5411e5f2cd47728f72e15099f007
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

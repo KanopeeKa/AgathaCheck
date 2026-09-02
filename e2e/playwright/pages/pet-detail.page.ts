@@ -62,7 +62,7 @@ export class PetDetailPage {
     await this.openOverflowMenu();
     const sharingItem = this.page
       .locator('[flt-semantics-identifier="pet_detail_sharing_menu_item"]')
-      .or(this.page.getByRole('menuitem', { name: /^Sharing\b|Partage/i }));
+      .or(this.page.getByRole('menuitem', { name: /^(?:Sharing\b|Partage)/i }));
     await sharingItem.first().click();
     await this.page.getByRole('button', { name: 'Share Link' }).waitFor({ timeout: 15_000 });
   }

@@ -117,7 +117,7 @@ void main() {
     );
   });
 
-  testWidgets('shared pet shows sharing in overflow menu', (tester) async {
+  testWidgets('shared pet shows sharing and export in overflow menu', (tester) async {
     await tester.pumpWidget(
       buildApp(pet: sharedPet, initialLocation: '/pet/pet-2'),
     );
