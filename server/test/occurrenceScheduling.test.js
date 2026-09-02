@@ -2,6 +2,7 @@ import { describe, expect, it } from '@jest/globals';
 
 import { addCalendarDaysIso } from '../lib/calendarDate.js';
 import {
+  initialMaterialisationAnchor,
   isOccurrenceMissed,
   isWithinMaterialisationWindow,
   materialisationAnchor,
@@ -26,6 +27,13 @@ describe('occurrenceScheduling helpers', () => {
   it('materialisationAnchor uses max(start, today)', () => {
     expect(materialisationAnchor('2026-08-01', '2026-09-02')).toBe('2026-09-02');
     expect(materialisationAnchor('2026-10-01', '2026-09-02')).toBe('2026-10-01');
+  });
+
+  it('initialMaterialisationAnchor preserves overdue next_due_date', () => {
+    expect(initialMaterialisationAnchor(null, '2026-08-26', '2026-09-02')).toBe('2026-08-26');
+    expect(initialMaterialisationAnchor('2026-08-01', '2026-08-26', '2026-09-02')).toBe('2026-08-26');
+    expect(initialMaterialisationAnchor(null, '2026-09-05', '2026-09-02')).toBe('2026-09-02');
+    expect(initialMaterialisationAnchor(null, null, '2026-09-02')).toBe('2026-09-02');
   });
 
   it('isWithinMaterialisationWindow is calendar T-1', () => {

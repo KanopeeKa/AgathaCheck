@@ -53,6 +53,23 @@ export function materialisationAnchor(startDateIso, todayIso) {
 }
 
 /**
+ * Anchor for first occurrence materialisation at entry create.
+ * Preserves an explicit overdue next_due_date so notifications and missed
+ * predicates still see the intended calendar day.
+ *
+ * @param {string|null} startDateIso
+ * @param {string|null} nextDueIso
+ * @param {string} todayIso
+ * @returns {string}
+ */
+export function initialMaterialisationAnchor(startDateIso, nextDueIso, todayIso) {
+  if (nextDueIso && nextDueIso < todayIso) {
+    return nextDueIso;
+  }
+  return materialisationAnchor(startDateIso, todayIso);
+}
+
+/**
  * @param {object} row health_entries row
  * @returns {boolean}
  */
@@ -181,14 +198,15 @@ export async function insertOccurrencesForDay(pool, entry, dateIso) {
  */
 export async function materialiseInitialOccurrences(pool, entry, todayIso = todayCalendarIso()) {
   const startIso = dateToIsoDate(entry.start_date);
+  const nextDueIso = dateToIsoDate(entry.next_due_date);
   if (isOnceEntry(entry)) {
-    const dateIso = startIso || todayIso;
+    const dateIso = startIso || nextDueIso || todayIso;
     await insertOccurrencesForDay(pool, entry, dateIso);
     await syncNextDueDateFromOccurrences(pool, entry.id);
     return;
   }
 
-  const anchor = materialisationAnchor(startIso, todayIso);
+  const anchor = initialMaterialisationAnchor(startIso, nextDueIso, todayIso);
   await insertOccurrencesForDay(pool, entry, anchor);
 
   if (isMultiPerDayEntry(entry)) {
