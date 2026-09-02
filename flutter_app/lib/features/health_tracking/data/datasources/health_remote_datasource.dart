@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import '../../../../core/utils/calendar_date.dart';
 import '../models/health_entry_model.dart';
 import '../models/health_history_model.dart';
+import '../models/health_occurrence_model.dart';
 
 class EventPhoto {
   final String id;
@@ -64,6 +65,25 @@ abstract class HealthRemoteDataSource {
     String caption,
   });
   Future<void> deletePhoto(String entryId, String photoId);
+  Future<List<HealthOccurrenceModel>> getOpenOccurrences(String entryId);
+  Future<List<HealthOccurrenceModel>> getPastOccurrences(String entryId);
+  Future<HealthOccurrenceModel> completeOccurrence(
+    String entryId,
+    String occurrenceId, {
+    String notes = '',
+    DateTime? completedOn,
+    bool skipEarlierMissed = false,
+  });
+  Future<HealthOccurrenceModel> skipOccurrence(
+    String entryId,
+    String occurrenceId, {
+    String notes = '',
+  });
+  Future<int> skipMissedOccurrences(String entryId);
+  Future<HealthOccurrenceModel> undoOccurrence(
+    String entryId,
+    String occurrenceId,
+  );
 }
 
 /// Implementation of [HealthRemoteDataSource] using HTTP.
@@ -324,6 +344,111 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       headers: _authHeaders(),
     );
     _checkResponse(response);
+  }
+
+  @override
+  Future<List<HealthOccurrenceModel>> getOpenOccurrences(String entryId) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/health-entries/$entryId/occurrences')
+          .replace(queryParameters: const {'status': 'open'}),
+      headers: _authHeaders(),
+    );
+    _checkResponse(response);
+    final list = json.decode(response.body) as List<dynamic>;
+    return list
+        .map((e) => HealthOccurrenceModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
+  Future<List<HealthOccurrenceModel>> getPastOccurrences(String entryId) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/health-entries/$entryId/occurrences')
+          .replace(queryParameters: const {'status': 'past'}),
+      headers: _authHeaders(),
+    );
+    _checkResponse(response);
+    final list = json.decode(response.body) as List<dynamic>;
+    return list
+        .map((e) => HealthOccurrenceModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
+  Future<HealthOccurrenceModel> completeOccurrence(
+    String entryId,
+    String occurrenceId, {
+    String notes = '',
+    DateTime? completedOn,
+    bool skipEarlierMissed = false,
+  }) async {
+    final body = <String, dynamic>{
+      'notes': notes,
+      'skip_earlier_missed': skipEarlierMissed,
+    };
+    if (completedOn != null) {
+      body['completed_on'] = toCalendarDateString(completedOn);
+    }
+    final response = await _client.post(
+      Uri.parse(
+        '$baseUrl/api/health-entries/$entryId/occurrences/$occurrenceId/complete',
+      ),
+      headers: _authHeaders(jsonBody: true),
+      body: json.encode(body),
+    );
+    _checkResponse(response);
+    final decoded = json.decode(response.body) as Map<String, dynamic>;
+    final occurrence = decoded['occurrence'] as Map<String, dynamic>? ?? decoded;
+    return HealthOccurrenceModel.fromJson(occurrence);
+  }
+
+  @override
+  Future<HealthOccurrenceModel> skipOccurrence(
+    String entryId,
+    String occurrenceId, {
+    String notes = '',
+  }) async {
+    final response = await _client.post(
+      Uri.parse(
+        '$baseUrl/api/health-entries/$entryId/occurrences/$occurrenceId/skip',
+      ),
+      headers: _authHeaders(jsonBody: true),
+      body: json.encode({'notes': notes}),
+    );
+    _checkResponse(response);
+    return HealthOccurrenceModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<int> skipMissedOccurrences(String entryId) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/health-entries/$entryId/occurrences/skip-missed'),
+      headers: _authHeaders(jsonBody: true),
+      body: json.encode({}),
+    );
+    _checkResponse(response);
+    final decoded = json.decode(response.body) as Map<String, dynamic>;
+    return decoded['count'] as int? ?? 0;
+  }
+
+  @override
+  Future<HealthOccurrenceModel> undoOccurrence(
+    String entryId,
+    String occurrenceId,
+  ) async {
+    final response = await _client.post(
+      Uri.parse(
+        '$baseUrl/api/health-entries/$entryId/occurrences/$occurrenceId/undo',
+      ),
+      headers: _authHeaders(jsonBody: true),
+      body: json.encode({}),
+    );
+    _checkResponse(response);
+    return HealthOccurrenceModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   void _checkResponse(http.Response response) {
