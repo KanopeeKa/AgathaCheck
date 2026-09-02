@@ -40,6 +40,7 @@ import { checkA11y } from '../support/axe';
 import { refreshFlutterAccessibility, waitForFlutterRoutePattern, flutterGotoUrl } from '../support/flutter';
 import { NotificationsPage } from '../pages/notifications.page';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
+import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
 
 /** Backdate a notification row for date-grouping E2E (no REST field for created_at). */
@@ -326,12 +327,8 @@ test.describe('Notifications', () => {
     await notificationsPage.clickNotification(notification.title);
 
     // After tapping a pet notification the app navigates to /pet/:petId
-    await page
-      .getByRole('banner', { name: new RegExp(pet.name, 'i') })
-      .or(page.getByRole('button', { name: new RegExp(`Edit Pet.*${pet.name}`, 'i') }))
-      .or(page.getByText(pet.name, { exact: false }))
-      .first()
-      .waitFor({ timeout: 30_000 });
+    const petDetail = new PetDetailPage(page);
+    await petDetail.expectLoaded(pet.name);
   });
 
   test('tapping an organisation notification navigates to org detail', async ({ page }) => {

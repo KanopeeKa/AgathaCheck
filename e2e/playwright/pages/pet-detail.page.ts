@@ -1,6 +1,13 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { dismissConsentBannerIfPresent, enableFlutterAccessibility, escapeRegExp, refreshFlutterAccessibility, waitForFlutterRoutePattern } from '../support/flutter';
+import {
+  dismissConsentBannerIfPresent,
+  enableFlutterAccessibility,
+  escapeRegExp,
+  expectAppBarTitle,
+  refreshFlutterAccessibility,
+  waitForFlutterRoutePattern,
+} from '../support/flutter';
 
 /**
  * Pet detail screen (`/pet/:petId`).
@@ -13,11 +20,9 @@ export class PetDetailPage {
     await dismissConsentBannerIfPresent(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pet\/[^/?]+/, 30_000);
     await refreshFlutterAccessibility(this.page);
-    await this.page
-      .getByRole('banner', { name: new RegExp(petName, 'i') })
-      .or(this.page.getByRole('button', { name: new RegExp(`Edit Pet.*${petName}`, 'i') }))
-      .first()
-      .waitFor({ timeout: 30_000 });
+    // Pet detail UX (pet-detail-ux-c2ce): name is in AppBar title, profile-card
+    // heading, or Edit Pet icon — not "Edit Pet {name}".
+    await expectAppBarTitle(this.page, petName);
   }
 
   async expectSpecies(species: string): Promise<void> {
