@@ -1154,6 +1154,12 @@
   "bulkShareAction": "Partager la sélection",
   "bulkShareDone": "Liens de partage créés pour les animaux sélectionnés",
   "bulkShareNoneSelected": "Sélectionnez au moins un animal",
+  "sharePetsMenu": "Partager des animaux…",
+  "shareSelectedPetsCount": "Partager {count} animaux",
+  "@shareSelectedPetsCount": { "placeholders": { "count": { "type": "int" } } },
+  "selectAllPets": "Tout sélectionner",
+  "deselectAllPets": "Tout désélectionner",
+  "moreActions": "Plus d'actions",
 
   "pendingShares": "Partages en attente",
   "petSharedWithYou": "{guardianName} souhaite partager {petName} avec vous",

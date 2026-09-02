@@ -18,11 +18,15 @@ class GuardianDashboardPetCard extends StatelessWidget {
     required this.pet,
     required this.careState,
     required this.onTap,
+    this.selected = false,
+    this.showSelection = false,
   });
 
   final Pet pet;
   final GuardianTodayPetCareState careState;
   final VoidCallback onTap;
+  final bool selected;
+  final bool showSelection;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +39,7 @@ class GuardianDashboardPetCard extends StatelessWidget {
     return Semantics(
       key: Key('guardian_dashboard_pet_card_${pet.id}'),
       button: true,
+      selected: showSelection && selected,
       onTap: onTap,
       label: '${pet.name}, $relationship, $careLabel',
       excludeSemantics: true,
@@ -42,13 +47,21 @@ class GuardianDashboardPetCard extends StatelessWidget {
         key: Key('guardian_dashboard_pet_card_visual_${pet.id}'),
         clipBehavior: Clip.antiAlias,
         margin: EdgeInsets.zero,
+        shape: showSelection && selected
+            ? RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: theme.colorScheme.primary, width: 2),
+              )
+            : null,
         child: InkWell(
           onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              children: [
-                Container(
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    Container(
                   key: Key('guardian_dashboard_pet_photo_${pet.id}'),
                   width: 56,
                   height: 56,
@@ -119,8 +132,28 @@ class GuardianDashboardPetCard extends StatelessWidget {
                     ],
                   ),
                 ),
-              ],
-            ),
+                  ],
+                ),
+              ),
+              if (showSelection)
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: CircleAvatar(
+                    radius: 12,
+                    backgroundColor: selected
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.surface.withValues(alpha: 0.92),
+                    foregroundColor: selected
+                        ? theme.colorScheme.onPrimary
+                        : theme.colorScheme.onSurfaceVariant,
+                    child: Icon(
+                      selected ? Icons.check : Icons.circle_outlined,
+                      size: 16,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),

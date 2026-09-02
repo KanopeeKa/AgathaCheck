@@ -6177,6 +6177,36 @@ abstract class AppLocalizations {
   /// **'Select at least one pet'**
   String get bulkShareNoneSelected;
 
+  /// No description provided for @sharePetsMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Share pets…'**
+  String get sharePetsMenu;
+
+  /// No description provided for @shareSelectedPetsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Share {count} pets'**
+  String shareSelectedPetsCount(int count);
+
+  /// No description provided for @selectAllPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get selectAllPets;
+
+  /// No description provided for @deselectAllPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect all'**
+  String get deselectAllPets;
+
+  /// No description provided for @moreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get moreActions;
+
   /// No description provided for @pendingShares.
   ///
   /// In en, this message translates to:

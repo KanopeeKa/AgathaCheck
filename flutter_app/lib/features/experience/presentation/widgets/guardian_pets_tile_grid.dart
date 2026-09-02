@@ -13,11 +13,17 @@ class GuardianPetsTileGrid extends StatelessWidget {
     required this.pets,
     required this.careSummary,
     required this.onPetTap,
+    this.selectionMode = false,
+    this.selectedPetIds = const {},
+    this.onToggleSelection,
   });
 
   final List<Pet> pets;
   final GuardianTodayCareSummary? careSummary;
   final ValueChanged<Pet> onPetTap;
+  final bool selectionMode;
+  final Set<String> selectedPetIds;
+  final ValueChanged<Pet>? onToggleSelection;
 
   static const double _spacing = 12;
 
@@ -55,7 +61,15 @@ class GuardianPetsTileGrid extends StatelessWidget {
                   careState: careSummary == null
                       ? GuardianTodayPetCareState.clear
                       : guardianTodayPetCareState(pet, careSummary!),
-                  onTap: () => onPetTap(pet),
+                  showSelection: selectionMode,
+                  selected: selectedPetIds.contains(pet.id),
+                  onTap: () {
+                    if (selectionMode) {
+                      onToggleSelection?.call(pet);
+                    } else {
+                      onPetTap(pet);
+                    }
+                  },
                 ),
               ),
           ],
