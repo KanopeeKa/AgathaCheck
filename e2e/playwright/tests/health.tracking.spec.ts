@@ -15,15 +15,19 @@
  * Scenario: Due events appear on the pet list screen
  * Scenario: No due events shows all caught up
  * Scenario: Exporting health entries as CSV
+ * Scenario: Multi-dose daily medication shows stack sheet for recording doses
  */
 import { test, expect, loginAs, seedPetWithDueHealthEntry } from '../fixtures/auth.fixture';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
+import { OccurrenceStackSheetPage } from '../pages/occurrence-stack-sheet.page';
 import { PetListPage } from '../pages/pet-list.page';
 import { isLiveHostingTarget } from '../support/hosting';
 import {
   createPet,
   createHealthEntry,
   getHealthEntry,
+  getHealthEntryOccurrences,
+  seedMultiDoseHealthEntry,
   markHealthEntryTaken,
   updateHealthEntry,
   deleteHealthEntry,
@@ -350,6 +354,59 @@ test.describe('Health tracking', () => {
   });
 
   // ── Wave C: CSV export ────────────────────────────────────────────────────
+
+  // ── Wave D: Multi-dose occurrences ────────────────────────────────────────
+
+  test('multi-dose daily medication shows stack sheet and records one dose', async ({
+    page,
+    testUser,
+  }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+    const today = new Date().toISOString().slice(0, 10);
+    const entryName = 'Twice Daily Meds';
+    const entry = await seedMultiDoseHealthEntry(baseURL, testUser.accessToken, pet.id, {
+      name: entryName,
+      nextDueDate: today,
+      scheduleTimes: ['08:00', '18:00'],
+    });
+
+    const occurrencesBefore = await getHealthEntryOccurrences(
+      baseURL,
+      testUser.accessToken,
+      entry.id,
+    );
+    expect(occurrencesBefore).toHaveLength(2);
+    expect(occurrencesBefore.every((row) => row.status === 'pending')).toBe(true);
+
+    await loginAs(page, testUser);
+    const petList = new PetListPage(page);
+    await petList.openHealthDashboard();
+
+    const dashboard = new HealthDashboardPage(page);
+    await dashboard.expectLoaded();
+    await dashboard.expectEntryVisible(entryName);
+    await dashboard.clickMarkDoneForEntry(entry.id);
+
+    const stackSheet = new OccurrenceStackSheetPage(page);
+    await stackSheet.expectLoaded(entryName);
+    await stackSheet.expectDueTodayDoseCount(2);
+    await stackSheet.recordLatestDose();
+
+    const occurrencesAfter = await getHealthEntryOccurrences(
+      baseURL,
+      testUser.accessToken,
+      entry.id,
+    );
+    const pastOccurrences = await getHealthEntryOccurrences(
+      baseURL,
+      testUser.accessToken,
+      entry.id,
+      { status: 'past' },
+    );
+    expect(occurrencesAfter.filter((row) => row.status === 'pending')).toHaveLength(1);
+    expect(pastOccurrences.filter((row) => row.status === 'completed')).toHaveLength(1);
+  });
 
   test('CSV export returns health entries as CSV data', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';

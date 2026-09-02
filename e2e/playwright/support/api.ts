@@ -31,6 +31,15 @@ export interface TestHealthEntry {
   name: string;
 }
 
+export interface TestHealthOccurrence {
+  id: string;
+  health_entry_id: string;
+  scheduled_date: string;
+  scheduled_time: string | null;
+  status: string;
+  missed?: boolean;
+}
+
 export interface ShareLink {
   share_code: string;
   link_id: string;
@@ -1011,25 +1020,30 @@ export async function createHealthEntry(
     dosage?: string;
     frequency?: string;
     frequencyDays?: number;
+    scheduleTimes?: string[];
   },
 ): Promise<TestHealthEntry> {
   const frequency = options.frequency ?? 'monthly';
+  const body: Record<string, unknown> = {
+    pet_id: petId,
+    name: options.name,
+    type: options.type ?? 'medication',
+    dosage: options.dosage ?? '1 tablet',
+    frequency,
+    frequency_days: frequency === 'once' ? null : (options.frequencyDays ?? 30),
+    next_due_date: options.nextDueDate,
+    status: 'active',
+  };
+  if (options.scheduleTimes != null) {
+    body.schedule_times = options.scheduleTimes;
+  }
   const res = await apiFetch(apiUrl('/health-entries', baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({
-      pet_id: petId,
-      name: options.name,
-      type: options.type ?? 'medication',
-      dosage: options.dosage ?? '1 tablet',
-      frequency,
-      frequency_days: frequency === 'once' ? null : (options.frequencyDays ?? 30),
-      next_due_date: options.nextDueDate,
-      status: 'active',
-    }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
@@ -1138,6 +1152,100 @@ export async function exportHealthEntriesCsv(
     throw new Error(`exportHealthEntriesCsv failed (${res.status}): ${body}`);
   }
   return res.text();
+}
+
+export async function seedMultiDoseHealthEntry(
+  baseURL: string,
+  token: string,
+  petId: string,
+  options: {
+    name: string;
+    nextDueDate: string;
+    scheduleTimes: string[];
+  },
+): Promise<TestHealthEntry> {
+  const entry = await createHealthEntry(baseURL, token, petId, {
+    name: options.name,
+    type: 'medication',
+    nextDueDate: options.nextDueDate,
+    frequency: 'daily',
+  });
+
+  const { execSync } = await import('node:child_process');
+  const { randomUUID } = await import('node:crypto');
+  const host = process.env.PGHOST ?? 'localhost';
+  const port = process.env.PGPORT ?? '5432';
+  const user = process.env.PGUSER ?? 'user';
+  const password = process.env.PGPASSWORD ?? 'password';
+  const database = process.env.PGDATABASE ?? 'agatha_db';
+  const timesArraySql = options.scheduleTimes
+    .map((time) => `'${time.replace(/'/g, "''")}'`)
+    .join(', ');
+  const occValues = options.scheduleTimes
+    .map((time) => {
+      const occId = randomUUID();
+      return `('${occId}', '${entry.id}', '${options.nextDueDate}', '${time}', 'pending')`;
+    })
+    .join(',\n      ');
+
+  execSync(
+    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${user}' -d '${database}' -v ON_ERROR_STOP=1 -c "
+      UPDATE health_entries
+      SET schedule_times = jsonb_build_array(${timesArraySql})
+      WHERE id = '${entry.id}';
+      DELETE FROM health_occurrences WHERE health_entry_id = '${entry.id}';
+      INSERT INTO health_occurrences (id, health_entry_id, scheduled_date, scheduled_time, status)
+      VALUES
+      ${occValues};
+    "`,
+    { stdio: 'pipe' },
+  );
+
+  return entry;
+}
+
+export async function getHealthEntryOccurrences(
+  baseURL: string,
+  token: string,
+  entryId: string,
+  options: { status?: 'open' | 'past' } = {},
+): Promise<TestHealthOccurrence[]> {
+  const qs = options.status ? `?status=${encodeURIComponent(options.status)}` : '';
+  const res = await apiFetch(apiUrl(`/health-entries/${entryId}/occurrences${qs}`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getHealthEntryOccurrences failed (${res.status}): ${body}`);
+  }
+  return res.json<TestHealthOccurrence[]>();
+}
+
+export async function completeHealthOccurrence(
+  baseURL: string,
+  token: string,
+  entryId: string,
+  occurrenceId: string,
+  options: { completedOn?: string; skipEarlierMissed?: boolean } = {},
+): Promise<void> {
+  const res = await apiFetch(
+    apiUrl(`/health-entries/${entryId}/occurrences/${occurrenceId}/complete`, baseURL),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        completed_on: options.completedOn ?? new Date().toISOString().slice(0, 10),
+        skip_earlier_missed: options.skipEarlierMissed ?? false,
+      }),
+    },
+  );
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`completeHealthOccurrence failed (${res.status}): ${body}`);
+  }
 }
 
 export async function getHealthEntryHistory(
