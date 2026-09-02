@@ -64,9 +64,9 @@ class _PetEventsPreviewSectionState
     } catch (_) {
       if (!mounted) return;
       final l = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.undoCompleteFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.undoCompleteFailed)));
       return;
     }
     if (!mounted) return;
