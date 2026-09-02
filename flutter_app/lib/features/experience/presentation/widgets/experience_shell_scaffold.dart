@@ -68,7 +68,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
   bool _isRoot() => DrawerMenuConfig.sectionRootPaths.contains(currentLocation);
 
   String _sectionRoot() => switch (experience) {
-    AppExperience.guardian => '/g/home',
+    AppExperience.petCare => '/pc/home',
     AppExperience.organization => '/o/orgs',
   };
 
@@ -83,7 +83,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
     }
     final isOrg = experience == AppExperience.organization;
     final viewportWidth = MediaQuery.sizeOf(context).width;
-    final isGuardianExperience = experience == AppExperience.guardian;
+    final isGuardianExperience = experience == AppExperience.petCare;
     final usesGuardianPrimaryNavigation =
         isGuardianExperience &&
         GuardianPrimaryDestinations.isCompact(viewportWidth);
@@ -97,7 +97,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
         usesGuardianNavigationRail || usesGuardianNavigationSidebar;
     final hideGuardianDrawer = usesGuardianLeadingNav;
     final appBarColor = usesGuardianPrimaryNavigation
-        ? AppColorTokens.guardianPrimary
+        ? AppColorTokens.petCarePrimary
         : AppColorTokens.background;
     final appBarForeground = usesGuardianPrimaryNavigation
         ? AppColorTokens.inverse
@@ -121,7 +121,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
       child: Scaffold(
         backgroundColor: isOrg
             ? orgListScaffoldBackground(context)
-            : experience == AppExperience.guardian
+            : experience == AppExperience.petCare
             ? AppColorTokens.background
             : null,
         appBar: AppBar(
@@ -186,7 +186,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
                 indent: 18,
                 endIndent: 18,
                 color: usesGuardianPrimaryNavigation
-                    ? AppColorTokens.guardianLight
+                    ? AppColorTokens.petCareLight
                     : theme.colorScheme.outlineVariant,
               ),
             Builder(builder: (ctx) => const ShellNotificationBell()),

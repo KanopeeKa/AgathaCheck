@@ -4,8 +4,8 @@ import '../../../pet_profile/domain/entities/pet.dart';
 class GuardianOnboardingRules {
   const GuardianOnboardingRules._();
 
-  static const guardianHomePath = '/g/home';
-  static const onboardingPath = '/g/onboarding';
+  static const guardianHomePath = '/pc/home';
+  static const onboardingPath = '/pc/onboarding';
 
   /// True when [pet] is an owned personal guardian pet (not shared/foster/org).
   static bool isOwnedGuardianPet(Pet pet) {

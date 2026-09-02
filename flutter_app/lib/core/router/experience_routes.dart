@@ -25,6 +25,14 @@ import '../../features/pet_profile/domain/entities/pet.dart';
 import '../../features/pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../features/pet_profile/presentation/providers/pet_providers.dart';
 
+/// Maps legacy `/g/*` paths to `/pc/*` equivalents.
+String? legacyPetCareRedirectForPath(String path) {
+  if (path == '/g' || path.startsWith('/g/')) {
+    return '/pc${path.substring(2)}';
+  }
+  return null;
+}
+
 List<RouteBase> buildExperienceRoutes() {
   return [
     GoRoute(
@@ -38,9 +46,15 @@ List<RouteBase> buildExperienceRoutes() {
       builder: (context, state) => const ExperienceChooserScreen(),
     ),
     GoRoute(
+      path: '/pc/onboarding',
+      name: 'petCareOnboarding',
+      builder: (context, state) => const GuardianOnboardingScreen(),
+    ),
+    GoRoute(
       path: '/g/onboarding',
       name: 'guardianOnboarding',
-      builder: (context, state) => const GuardianOnboardingScreen(),
+      redirect: (context, state) =>
+          legacyPetCareRedirectForPath(state.uri.path),
     ),
     GoRoute(
       path: '/o/onboarding',
@@ -71,50 +85,97 @@ List<RouteBase> buildExperienceRoutes() {
       builder: (context, state, child) => child,
       routes: [
         GoRoute(
-          path: '/g/home',
-          name: 'guardianHome',
+          path: '/pc/home',
+          name: 'petCareHome',
           builder: (context, state) => const GuardianHomeScreen(),
         ),
         GoRoute(
-          path: '/g/pets',
-          name: 'guardianAllPets',
+          path: '/pc/pets',
+          name: 'petCareAllPets',
           builder: (context, state) => const GuardianAllPetsScreen(),
           routes: [
             GoRoute(
               path: 'bulk-share',
-              name: 'guardianBulkSharePets',
+              name: 'petCareBulkSharePets',
               builder: (context, state) =>
                   const GuardianBulkShareSelectScreen(),
             ),
           ],
         ),
         GoRoute(
+          path: '/pc/events',
+          name: 'petCareEvents',
+          builder: (context, state) => const _PetCareEventsScreen(),
+        ),
+        GoRoute(
+          path: '/pc/fostering',
+          name: 'petCareFostering',
+          builder: (context, state) => const GuardianFosteringScreen(),
+        ),
+        GoRoute(
+          path: '/pc/invite',
+          name: 'petCareInvite',
+          builder: (context, state) =>
+              const ExperienceInviteScreen(experience: AppExperience.petCare),
+        ),
+        // Deprecated: /pc/settings → /account
+        GoRoute(
+          path: '/pc/settings',
+          name: 'petCareSettings',
+          redirect: (context, state) => '/account',
+        ),
+        // Deprecated: /pc/notifications → bell-only (slide-over panel)
+        GoRoute(
+          path: '/pc/notifications',
+          name: 'petCareNotifications',
+          redirect: (context, state) => '/pc/home',
+        ),
+        // Legacy /g/* redirects
+        GoRoute(
+          path: '/g/home',
+          name: 'guardianHome',
+          redirect: (context, state) =>
+              legacyPetCareRedirectForPath(state.uri.path),
+        ),
+        GoRoute(
+          path: '/g/pets',
+          name: 'guardianAllPets',
+          redirect: (context, state) =>
+              legacyPetCareRedirectForPath(state.uri.path),
+        ),
+        GoRoute(
+          path: '/g/pets/bulk-share',
+          name: 'guardianBulkSharePets',
+          redirect: (context, state) =>
+              legacyPetCareRedirectForPath(state.uri.path),
+        ),
+        GoRoute(
           path: '/g/events',
           name: 'guardianEvents',
-          builder: (context, state) => const _GuardianEventsScreen(),
+          redirect: (context, state) =>
+              legacyPetCareRedirectForPath(state.uri.path),
         ),
         GoRoute(
           path: '/g/fostering',
           name: 'guardianFostering',
-          builder: (context, state) => const GuardianFosteringScreen(),
+          redirect: (context, state) =>
+              legacyPetCareRedirectForPath(state.uri.path),
         ),
         GoRoute(
           path: '/g/invite',
           name: 'guardianInvite',
-          builder: (context, state) =>
-              const ExperienceInviteScreen(experience: AppExperience.guardian),
+          redirect: (context, state) =>
+              legacyPetCareRedirectForPath(state.uri.path),
         ),
-        // Deprecated: /g/settings → /account
         GoRoute(
           path: '/g/settings',
           name: 'guardianSettings',
           redirect: (context, state) => '/account',
         ),
-        // Deprecated: /g/notifications → bell-only (slide-over panel)
         GoRoute(
           path: '/g/notifications',
           name: 'guardianNotifications',
-          redirect: (context, state) => '/g/home',
+          redirect: (context, state) => '/pc/home',
         ),
       ],
     ),
@@ -161,8 +222,8 @@ List<RouteBase> buildExperienceRoutes() {
   ];
 }
 
-class _GuardianEventsScreen extends ConsumerWidget {
-  const _GuardianEventsScreen();
+class _PetCareEventsScreen extends ConsumerWidget {
+  const _PetCareEventsScreen();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -171,10 +232,10 @@ class _GuardianEventsScreen extends ConsumerWidget {
     final allPets = petsAsync.valueOrNull ?? const <Pet>[];
     final shellPets = PetListController().guardianShellPets(allPets);
     return ExperienceShellScaffold(
-      experience: AppExperience.guardian,
+      experience: AppExperience.petCare,
       currentLocation: GoRouterState.of(context).uri.path,
       screenTitle: l.eventsNavLabel,
-      backPath: '/g/home',
+      backPath: '/pc/home',
       contextualActions: [
         IconButton(
           key: const Key('global_events_add_app_bar'),

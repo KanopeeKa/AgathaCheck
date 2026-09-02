@@ -33,22 +33,22 @@ void main() {
   }) {
     final resolvedAuthState = authState ?? loggedInAuthState;
     final router = GoRouter(
-      initialLocation: '/g/home',
+      initialLocation: '/pc/home',
       routes: [
         GoRoute(
-          path: '/g/home',
+          path: '/pc/home',
           builder: (_, __) => const Scaffold(body: GuardianMyVetsSection()),
         ),
         GoRoute(
-          path: '/g/vets/add',
+          path: '/pc/vets/add',
           builder: (_, __) => const Scaffold(body: Text('add-vet-route')),
         ),
         GoRoute(
-          path: '/g/vets',
+          path: '/pc/vets',
           builder: (_, __) => const Scaffold(body: Text('manage-vets-route')),
         ),
         GoRoute(
-          path: '/g/vets/:id',
+          path: '/pc/vets/:id',
           builder: (_, state) =>
               Scaffold(body: Text('vet-detail-${state.pathParameters['id']}')),
         ),

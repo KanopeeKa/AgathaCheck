@@ -140,7 +140,7 @@ class _GuardianUpcomingEventsSectionState
         body: emptyMessage,
         actionLabel: l.allCare,
         actionIcon: Icons.calendar_month_outlined,
-        onAction: () => context.go('/g/events'),
+        onAction: () => context.go('/pc/events'),
       );
     }
     return GuardianCarePreviewEventList(
@@ -245,7 +245,7 @@ class _GuardianUpcomingEventsSectionState
         const SizedBox(height: 10),
         GuardianDeskSectionCard(
           key: const Key('guardian_dashboard_care_section'),
-          tint: AppColorTokens.guardianLight,
+          tint: AppColorTokens.petCareLight,
           child: _buildMobileContent(
             context,
             careEntries,
@@ -259,7 +259,7 @@ class _GuardianUpcomingEventsSectionState
           GuardianDashboardSectionLink(
             linkKey: const Key('guardian_dashboard_care_view_all'),
             label: l.allCare,
-            onPressed: () => context.go('/g/events'),
+            onPressed: () => context.go('/pc/events'),
           ),
       ],
     );
@@ -272,7 +272,7 @@ class _GuardianUpcomingEventsSectionState
         GuardianDashboardSectionHeader(title: l.careEyebrow),
         const SizedBox(height: 10),
         GuardianDeskSectionCard(
-          tint: AppColorTokens.guardianLight,
+          tint: AppColorTokens.petCareLight,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

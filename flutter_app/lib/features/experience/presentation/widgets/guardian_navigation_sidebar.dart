@@ -52,7 +52,7 @@ class GuardianNavigationSidebar extends ConsumerWidget {
                     children: [
                       AppLogoTitle(
                         title: l.appTitle,
-                        experience: AppExperience.guardian,
+                        experience: AppExperience.petCare,
                         linkLogo: false,
                       ),
                       if (isRoot) ...[
@@ -112,7 +112,7 @@ class _SidebarDestinationTile extends StatelessWidget {
     final label = destination.labelBuilder(l);
     final icon = selected ? destination.selectedIcon : destination.icon;
     final color = selected
-        ? AppColorTokens.guardianPrimary
+        ? AppColorTokens.petCarePrimary
         : Theme.of(context).colorScheme.onSurfaceVariant;
 
     return Semantics(
@@ -124,7 +124,7 @@ class _SidebarDestinationTile extends StatelessWidget {
       label: label,
       child: Material(
         color: selected
-            ? AppColorTokens.guardianPrimary.withValues(alpha: 0.08)
+            ? AppColorTokens.petCarePrimary.withValues(alpha: 0.08)
             : Colors.transparent,
         child: InkWell(
           onTap: onTap,
@@ -140,7 +140,7 @@ class _SidebarDestinationTile extends StatelessWidget {
                       height: 40,
                       margin: const EdgeInsets.only(right: 9),
                       decoration: BoxDecoration(
-                        color: AppColorTokens.guardianPrimary,
+                        color: AppColorTokens.petCarePrimary,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     )

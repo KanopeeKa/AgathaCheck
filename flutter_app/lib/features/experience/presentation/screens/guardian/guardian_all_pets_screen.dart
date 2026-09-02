@@ -16,7 +16,7 @@ class GuardianAllPetsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     return ExperienceShellScaffold(
-      experience: AppExperience.guardian,
+      experience: AppExperience.petCare,
       currentLocation: GoRouterState.of(context).uri.path,
       screenTitle: l.allPets,
       child: Column(
@@ -25,7 +25,7 @@ class GuardianAllPetsScreen extends ConsumerWidget {
           const Expanded(child: PetListScreen(embeddedInShell: true)),
           GuardianBottomActionBar(
             onAddPet: () => context.push('/add'),
-            onSharePets: () => context.push('/g/pets/bulk-share'),
+            onSharePets: () => context.push('/pc/pets/bulk-share'),
           ),
         ],
       ),

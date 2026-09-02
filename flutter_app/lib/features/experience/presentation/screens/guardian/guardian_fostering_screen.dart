@@ -17,7 +17,7 @@ class GuardianFosteringScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final petsAsync = ref.watch(petListProvider);
     return ExperienceShellScaffold(
-      experience: AppExperience.guardian,
+      experience: AppExperience.petCare,
       currentLocation: GoRouterState.of(context).uri.path,
       screenTitle: l.fosteringSessions,
       child: petsAsync.when(

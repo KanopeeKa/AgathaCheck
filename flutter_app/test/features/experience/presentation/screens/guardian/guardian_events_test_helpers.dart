@@ -208,15 +208,15 @@ Widget buildEventsScreen({
 }) {
   final pets = shellPets ?? testAllShellPets;
   final router = GoRouter(
-    initialLocation: '/g/events',
+    initialLocation: '/pc/events',
     routes: [
       GoRoute(
-        path: '/g/events',
+        path: '/pc/events',
         builder: (context, state) => ExperienceShellScaffold(
-          experience: AppExperience.guardian,
+          experience: AppExperience.petCare,
           currentLocation: state.uri.path,
           screenTitle: 'Events',
-          backPath: '/g/home',
+          backPath: '/pc/home',
           contextualActions: [
             Builder(
               builder: (ctx) => IconButton(

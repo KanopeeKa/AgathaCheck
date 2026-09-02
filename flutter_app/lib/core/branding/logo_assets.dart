@@ -51,7 +51,7 @@ class LogoAssets {
   /// Guardian compact chrome uses the plum app bar (dark surface).
   static String pngForShell(AppExperience experience) => pngFor(
     experience,
-    onDarkBackground: experience == AppExperience.guardian,
+    onDarkBackground: experience == AppExperience.petCare,
   );
 
   static String jpgFor(AppExperience experience) =>
@@ -69,12 +69,18 @@ class LogoAssets {
     if (location == '/o' || location.startsWith('/o/')) {
       return AppExperience.organization;
     }
-    return AppExperience.guardian;
+    if (location == '/pc' || location.startsWith('/pc/')) {
+      return AppExperience.petCare;
+    }
+    if (location == '/pc' || location.startsWith('/pc/')) {
+      return AppExperience.petCare;
+    }
+    return AppExperience.petCare;
   }
 
   static AppExperience experienceForContext(BuildContext context) {
     final router = GoRouter.maybeOf(context);
-    if (router == null) return AppExperience.guardian;
+    if (router == null) return AppExperience.petCare;
     final path = router.routerDelegate.currentConfiguration.uri.path;
     return experienceForRoute(path);
   }

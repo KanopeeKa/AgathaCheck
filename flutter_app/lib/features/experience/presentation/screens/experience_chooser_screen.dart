@@ -60,14 +60,14 @@ class ExperienceChooserScreen extends ConsumerWidget {
       context.go('/shared/$code');
       return;
     }
-    context.go('/g/home');
+    context.go('/pc/home');
   }
 
   void _goGuardianOnboarding(BuildContext context, WidgetRef ref) {
     final pets = ref.read(petListProvider).valueOrNull ?? [];
     final completed = ref.read(guardianOnboardingCompletedProvider);
     final path = GuardianOnboardingRules.resolveGuardianDestination(
-      targetPath: AppExperience.guardian.homePath(),
+      targetPath: AppExperience.petCare.homePath(),
       pets: pets,
       onboardingCompleted: completed,
     );
@@ -105,9 +105,9 @@ class ExperienceChooserScreen extends ConsumerWidget {
             title: l.ftueActionTrackPetsTitle,
             subtitle: l.ftueActionTrackPetsSubtitle,
             icon: Icons.pets,
-            accentColor: colors.guardianPrimary,
-            onAccentColor: colors.guardianOnPrimary,
-            accentContainer: colors.guardianLight,
+            accentColor: colors.petCarePrimary,
+            onAccentColor: colors.petCareOnPrimary,
+            accentContainer: colors.petCareLight,
             onTap: () => _goGuardianOnboarding(context, ref),
           ),
           const SizedBox(height: 12),

@@ -28,7 +28,7 @@ class ExperienceWorkspaceToggle extends ConsumerWidget {
     final isShelterRoute = currentLocation.startsWith('/o/');
     final activeExperience = isShelterRoute
         ? AppExperience.organization
-        : AppExperience.guardian;
+        : AppExperience.petCare;
     final foreground = onDarkBackground
         ? AppColorTokens.inverse
         : AppColorTokens.body;
@@ -52,7 +52,7 @@ class ExperienceWorkspaceToggle extends ConsumerWidget {
             padding: EdgeInsets.zero,
             color: activeExperience == AppExperience.organization
                 ? AppColorTokens.organizationPrimary
-                : AppColorTokens.guardianPrimary,
+                : AppColorTokens.petCarePrimary,
             constraints: const BoxConstraints.tightFor(width: 112, height: 48),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -61,7 +61,7 @@ class ExperienceWorkspaceToggle extends ConsumerWidget {
             itemBuilder: (context) => [
               PopupMenuItem<AppExperience>(
                 key: const Key('experience_workspace_menu_guardian'),
-                value: AppExperience.guardian,
+                value: AppExperience.petCare,
                 child: Text(
                   l.myPets,
                   style: const TextStyle(color: AppColorTokens.inverse),
@@ -124,7 +124,7 @@ class ExperienceWorkspaceToggle extends ConsumerWidget {
   ) async {
     final activeExperience = currentLocation.startsWith('/o/')
         ? AppExperience.organization
-        : AppExperience.guardian;
+        : AppExperience.petCare;
     if (selected == activeExperience) return;
 
     await ref
@@ -132,6 +132,6 @@ class ExperienceWorkspaceToggle extends ConsumerWidget {
         .writeLastAppSection(selected);
     if (!context.mounted) return;
 
-    context.go(selected == AppExperience.guardian ? '/g/home' : '/o/orgs');
+    context.go(selected == AppExperience.petCare ? '/pc/home' : '/o/orgs');
   }
 }

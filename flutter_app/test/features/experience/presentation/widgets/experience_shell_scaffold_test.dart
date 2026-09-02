@@ -95,9 +95,9 @@ Widget _buildWorkspaceRouterApp({
     initialLocation: initialLocation,
     routes: [
       GoRoute(
-        path: '/g/home',
+        path: '/pc/home',
         builder: (context, state) => ExperienceShellScaffold(
-          experience: AppExperience.guardian,
+          experience: AppExperience.petCare,
           currentLocation: state.uri.path,
           child: const Center(child: Text('Guardian home')),
         ),
@@ -176,8 +176,8 @@ void main() {
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           home: ExperienceShellScaffold(
-            experience: AppExperience.guardian,
-            currentLocation: '/g/home',
+            experience: AppExperience.petCare,
+            currentLocation: '/pc/home',
             screenTitle: 'My Pets dashboard',
             child: const SizedBox.shrink(),
           ),
@@ -220,8 +220,8 @@ void main() {
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           home: ExperienceShellScaffold(
-            experience: AppExperience.guardian,
-            currentLocation: '/g/pets',
+            experience: AppExperience.petCare,
+            currentLocation: '/pc/pets',
             screenTitle: 'All pets',
             contextualActions: [
               IconButton(
@@ -252,8 +252,8 @@ void main() {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
-        experience: AppExperience.guardian,
-        currentLocation: '/g/home',
+        experience: AppExperience.petCare,
+        currentLocation: '/pc/home',
       ),
     );
     await tester.pumpAndSettle();
@@ -284,8 +284,8 @@ void main() {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
-        experience: AppExperience.guardian,
-        currentLocation: '/g/events',
+        experience: AppExperience.petCare,
+        currentLocation: '/pc/events',
       ),
     );
     await tester.pumpAndSettle();
@@ -324,8 +324,8 @@ void main() {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
-        experience: AppExperience.guardian,
-        currentLocation: '/g/home',
+        experience: AppExperience.petCare,
+        currentLocation: '/pc/home',
       ),
     );
     await tester.pumpAndSettle();
@@ -342,8 +342,8 @@ void main() {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
-        experience: AppExperience.guardian,
-        currentLocation: '/g/home',
+        experience: AppExperience.petCare,
+        currentLocation: '/pc/home',
         combinedUnread: 5,
       ),
     );
@@ -362,8 +362,8 @@ void main() {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
-        experience: AppExperience.guardian,
-        currentLocation: '/g/home',
+        experience: AppExperience.petCare,
+        currentLocation: '/pc/home',
       ),
     );
     await tester.pumpAndSettle();
@@ -377,8 +377,8 @@ void main() {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
-        experience: AppExperience.guardian,
-        currentLocation: '/g/home',
+        experience: AppExperience.petCare,
+        currentLocation: '/pc/home',
         showOrganisationSection: true,
       ),
     );
@@ -397,7 +397,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _buildWorkspaceRouterApp(prefs: prefs, initialLocation: '/g/home'),
+      _buildWorkspaceRouterApp(prefs: prefs, initialLocation: '/pc/home'),
     );
     await tester.pumpAndSettle();
 
@@ -435,7 +435,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Guardian home'), findsOneWidget);
-    expect(prefs.getString('last_app_section'), AppExperience.guardian.wire);
+    expect(prefs.getString('last_app_section'), AppExperience.petCare.wire);
   });
 
   testWidgets('baseline: org non-root path shows back button', (tester) async {
@@ -464,8 +464,8 @@ void main() {
       await tester.pumpWidget(
         _buildApp(
           prefs: prefs,
-          experience: AppExperience.guardian,
-          currentLocation: '/g/home',
+          experience: AppExperience.petCare,
+          currentLocation: '/pc/home',
           viewport: const Size(720, 900),
         ),
       );
@@ -483,8 +483,8 @@ void main() {
       await tester.pumpWidget(
         _buildApp(
           prefs: prefs,
-          experience: AppExperience.guardian,
-          currentLocation: '/g/home',
+          experience: AppExperience.petCare,
+          currentLocation: '/pc/home',
           viewport: const Size(720, 900),
         ),
       );
@@ -503,8 +503,8 @@ void main() {
         await tester.pumpWidget(
           _buildApp(
             prefs: prefs,
-            experience: AppExperience.guardian,
-            currentLocation: '/g/home',
+            experience: AppExperience.petCare,
+            currentLocation: '/pc/home',
             viewport: const Size(720, 900),
           ),
         );
@@ -532,8 +532,8 @@ void main() {
       await tester.pumpWidget(
         _buildApp(
           prefs: prefs,
-          experience: AppExperience.guardian,
-          currentLocation: '/g/home',
+          experience: AppExperience.petCare,
+          currentLocation: '/pc/home',
           viewport: const Size(390, 844),
         ),
       );
@@ -552,8 +552,8 @@ void main() {
         await tester.pumpWidget(
           _buildApp(
             prefs: prefs,
-            experience: AppExperience.guardian,
-            currentLocation: '/g/home',
+            experience: AppExperience.petCare,
+            currentLocation: '/pc/home',
             viewport: const Size(840, 900),
           ),
         );
@@ -608,8 +608,8 @@ void main() {
             home: MediaQuery(
               data: const MediaQueryData(size: Size(720, 900)),
               child: ExperienceShellScaffold(
-                experience: AppExperience.guardian,
-                currentLocation: '/g/home',
+                experience: AppExperience.petCare,
+                currentLocation: '/pc/home',
                 child: const Center(child: Text('Rail content')),
               ),
             ),
@@ -634,8 +634,8 @@ void main() {
         await tester.pumpWidget(
           _buildApp(
             prefs: prefs,
-            experience: AppExperience.guardian,
-            currentLocation: '/g/home',
+            experience: AppExperience.petCare,
+            currentLocation: '/pc/home',
             viewport: const Size(1024, 900),
           ),
         );
@@ -665,8 +665,8 @@ void main() {
       await tester.pumpWidget(
         _buildApp(
           prefs: prefs,
-          experience: AppExperience.guardian,
-          currentLocation: '/g/home',
+          experience: AppExperience.petCare,
+          currentLocation: '/pc/home',
           viewport: const Size(1024, 900),
         ),
       );
@@ -685,8 +685,8 @@ void main() {
       await tester.pumpWidget(
         _buildApp(
           prefs: prefs,
-          experience: AppExperience.guardian,
-          currentLocation: '/g/home',
+          experience: AppExperience.petCare,
+          currentLocation: '/pc/home',
           viewport: const Size(1024, 900),
         ),
       );
@@ -705,8 +705,8 @@ void main() {
         await tester.pumpWidget(
           _buildApp(
             prefs: prefs,
-            experience: AppExperience.guardian,
-            currentLocation: '/g/home',
+            experience: AppExperience.petCare,
+            currentLocation: '/pc/home',
             viewport: const Size(1024, 900),
           ),
         );
@@ -736,8 +736,8 @@ void main() {
         await tester.pumpWidget(
           _buildApp(
             prefs: prefs,
-            experience: AppExperience.guardian,
-            currentLocation: '/g/events',
+            experience: AppExperience.petCare,
+            currentLocation: '/pc/events',
             viewport: const Size(1024, 900),
           ),
         );
@@ -787,8 +787,8 @@ void main() {
               home: MediaQuery(
                 data: const MediaQueryData(size: Size(1024, 900)),
                 child: ExperienceShellScaffold(
-                  experience: AppExperience.guardian,
-                  currentLocation: '/g/pets',
+                  experience: AppExperience.petCare,
+                  currentLocation: '/pc/pets',
                   screenTitle: 'All pets',
                   child: const SizedBox.shrink(),
                 ),
@@ -849,8 +849,8 @@ void main() {
             home: MediaQuery(
               data: const MediaQueryData(size: Size(1024, 900)),
               child: ExperienceShellScaffold(
-                experience: AppExperience.guardian,
-                currentLocation: '/g/home',
+                experience: AppExperience.petCare,
+                currentLocation: '/pc/home',
                 child: const Center(child: Text('Sidebar content')),
               ),
             ),

@@ -43,14 +43,14 @@ class GuardianShellHomeContent extends ConsumerWidget {
     final baseTheme = Theme.of(context);
     final deskTheme = baseTheme.copyWith(
       colorScheme: baseTheme.colorScheme.copyWith(
-        primary: AppColorTokens.guardianCarePrimary,
+        primary: AppColorTokens.petCareCarePrimary,
         onPrimary: AppColorTokens.inverse,
-        primaryContainer: AppColorTokens.guardianLight,
-        onPrimaryContainer: AppColorTokens.guardianCareActive,
+        primaryContainer: AppColorTokens.petCareLight,
+        onPrimaryContainer: AppColorTokens.petCareCareActive,
         surface: AppColorTokens.surface,
         onSurface: AppColorTokens.heading,
-        surfaceContainerHighest: AppColorTokens.guardianLight,
-        outlineVariant: AppColorTokens.guardianSoft,
+        surfaceContainerHighest: AppColorTokens.petCareLight,
+        outlineVariant: AppColorTokens.petCareSoft,
       ),
       scaffoldBackgroundColor: AppColorTokens.background,
       cardTheme: baseTheme.cardTheme.copyWith(
@@ -60,7 +60,7 @@ class GuardianShellHomeContent extends ConsumerWidget {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColorTokens.guardianCarePrimary,
+          foregroundColor: AppColorTokens.petCareCarePrimary,
           minimumSize: const Size(48, 48),
         ),
       ),

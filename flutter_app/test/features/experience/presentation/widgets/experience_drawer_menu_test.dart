@@ -14,7 +14,7 @@ void main() {
         semanticKey: 'drawer_my_pets',
         label: 'My Pets',
         group: DrawerMenuGroup.guardianPlum,
-        route: '/g/home',
+        route: '/pc/home',
       ),
     ),
     const DrawerMenuEntry.separator(),
@@ -32,7 +32,7 @@ void main() {
         semanticKey: 'drawer_settings',
         label: 'Settings',
         group: DrawerMenuGroup.utility,
-        route: '/g/settings',
+        route: '/pc/settings',
       ),
     ),
   ];

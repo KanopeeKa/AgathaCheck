@@ -78,7 +78,7 @@ class GuardianMyPetsSection extends ConsumerWidget {
               GuardianDashboardSectionLink(
                 linkKey: const Key('dashboard_manage_pets_link'),
                 label: l.allPets,
-                onPressed: () => context.go('/g/pets'),
+                onPressed: () => context.go('/pc/pets'),
               ),
           ],
         ),
@@ -151,7 +151,7 @@ class GuardianMyPetsSection extends ConsumerWidget {
           GuardianDashboardSectionLink(
             linkKey: const Key('dashboard_manage_pets_link'),
             label: l.allPets,
-            onPressed: () => context.go('/g/pets'),
+            onPressed: () => context.go('/pc/pets'),
           ),
       ],
     );
@@ -270,7 +270,7 @@ class _AddPetTile extends StatelessWidget {
                 children: [
                   const CircleAvatar(
                     radius: 18,
-                    backgroundColor: AppColorTokens.guardianPrimary,
+                    backgroundColor: AppColorTokens.petCarePrimary,
                     foregroundColor: AppColorTokens.inverse,
                     child: Icon(Icons.add),
                   ),

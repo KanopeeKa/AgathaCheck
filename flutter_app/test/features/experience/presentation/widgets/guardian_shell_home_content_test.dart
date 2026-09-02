@@ -95,7 +95,7 @@ void main() {
             find.byKey(const Key('guardian_dashboard_care_section')),
           )
           .tint,
-      AppColorTokens.guardianLight,
+      AppColorTokens.petCareLight,
     );
     expect(find.text('Pending foster placements'), findsNothing);
     expect(find.text('Pending Shares'), findsNothing);

@@ -100,7 +100,7 @@ class GuardianTodayOrientation extends StatelessWidget {
         return _statusLine(
           icon: Icons.check_circle_outline,
           message: l.todayAllClear,
-          color: AppColorTokens.guardianCareActive,
+          color: AppColorTokens.petCareCareActive,
         );
       case GuardianTodayScreenState.firstUse:
         return _statusLine(
@@ -191,7 +191,7 @@ class GuardianTodayOrientation extends StatelessWidget {
               maxWidth: constraints.maxWidth,
               icon: Icons.schedule_outlined,
               label: '${values.upcomingCount} ${l.careStatusUpcoming}',
-              color: AppColorTokens.guardianCareActive,
+              color: AppColorTokens.petCareCareActive,
             ),
           ],
         ),
