@@ -48,6 +48,7 @@ describe('Health Entries API', () => {
   let lastQuery;
   let queryLog;
   let uploadDir;
+  let lastInsertedEntry;
 
   beforeAll(() => {
     uploadDir = fs.mkdtempSync(path.join(os.tmpdir(), 'health-documents-'));
@@ -86,33 +87,58 @@ describe('Health Entries API', () => {
 
         if (sql.includes('SELECT * FROM health_entries WHERE id')) {
           if (params && params[0] === 'nonexistent') return { rows: [] };
+          if (lastInsertedEntry && lastInsertedEntry.id === params[0]) {
+            return { rows: [lastInsertedEntry] };
+          }
           return { rows: [makeHealthRow({ id: params[0] })] };
         }
 
         if (sql.includes('INSERT INTO health_entries')) {
-          return {
-            rows: [makeHealthRow({
-              id: params[0],
-              pet_id: params[1],
-              user_id: params[2],
-              name: params[3],
-              type: params[4],
-              dosage: params[5],
-              frequency: params[6],
-              frequency_days: params[7],
-              frequency_interval: params[8],
-              start_date: params[9],
-              next_due_date: params[10],
-              completed_on: params[11],
-              recurrence_anchor: params[12],
-              repeat_end_date: params[13],
-              notes: params[14],
-              health_issue_id: params[15],
-              remind_days_before: params[16],
-              status: params[17],
-              completed_at: null,
-            })],
-          };
+          lastInsertedEntry = makeHealthRow({
+            id: params[0],
+            pet_id: params[1],
+            user_id: params[2],
+            name: params[3],
+            type: params[4],
+            dosage: params[5],
+            frequency: params[6],
+            frequency_days: params[7],
+            frequency_interval: params[8],
+            start_date: params[9],
+            next_due_date: params[10],
+            completed_on: params[11],
+            recurrence_anchor: params[12],
+            repeat_end_date: params[13],
+            notes: params[14],
+            health_issue_id: params[15],
+            remind_days_before: params[16],
+            schedule_times: params[17],
+            status: params[18],
+            completed_at: null,
+          });
+          return { rows: [lastInsertedEntry] };
+        }
+
+        if (sql.includes('INSERT INTO health_occurrences')) {
+          return { rows: [{ id: params[0] }] };
+        }
+
+        if (sql.includes('UPDATE health_entries SET next_due_date')) {
+          if (lastInsertedEntry && lastInsertedEntry.id === params[1]) {
+            lastInsertedEntry = {
+              ...lastInsertedEntry,
+              next_due_date: params[0] ? new Date(params[0]) : null,
+            };
+          }
+          return { rows: [makeHealthRow({ id: params[1], next_due_date: params[0] ? new Date(params[0]) : null })] };
+        }
+
+        if (sql.includes('SELECT id FROM health_occurrences') && sql.includes('status = \'pending\'')) {
+          return { rows: [] };
+        }
+
+        if (sql.includes('SELECT scheduled_date, scheduled_time FROM health_occurrences')) {
+          return { rows: [{ scheduled_date: new Date('2026-06-30'), scheduled_time: null }] };
         }
 
         if (sql.includes("UPDATE health_entries SET status = 'completed', completed_on")) {
@@ -300,6 +326,7 @@ describe('Health Entries API', () => {
 
   beforeEach(() => {
     queryLog = [];
+    lastInsertedEntry = null;
   });
 
   describe('Auth guard', () => {
