@@ -20,7 +20,7 @@ test.describe('Pet detail back navigation', () => {
     testUser,
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    await createPet(baseURL, testUser.accessToken, 'BackPet', 'Dog');
+    const pet = await createPet(baseURL, testUser.accessToken, 'BackPet', 'Dog');
 
     await loginAs(page, testUser);
     await page.goto(flutterGotoUrl('/g/pets'));
@@ -29,7 +29,7 @@ test.describe('Pet detail back navigation', () => {
 
     const petList = new PetListPage(page);
     await petList.expectManagePetsLoaded();
-    await petList.openPet('BackPet');
+    await petList.openPet('BackPet', pet.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('BackPet');
