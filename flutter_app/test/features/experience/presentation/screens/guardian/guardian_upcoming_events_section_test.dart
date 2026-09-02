@@ -12,6 +12,7 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../../helpers/fakes.dart';
+import 'guardian_events_test_helpers.dart';
 
 // ---------------------------------------------------------------------------
 // Test data
@@ -204,6 +205,7 @@ Widget _buildSection({
       healthEntriesNotifierProvider.overrideWith(
         notifierFactory ?? FakeHealthEntriesNotifier.new,
       ),
+      ...guardianEventsTestOverrides,
     ],
     child: MaterialApp(
       theme: AppTheme.lightTheme.copyWith(

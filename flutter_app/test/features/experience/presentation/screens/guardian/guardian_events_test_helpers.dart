@@ -15,7 +15,9 @@ import 'package:pet_profile_app/features/experience/presentation/screens/guardia
 import 'package:pet_profile_app/features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_history_entry.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/entities/health_occurrence.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/providers/occurrence_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -184,6 +186,14 @@ HealthEntry makeDueEntry({
 Future<List<HealthHistoryEntry>> stubHistory(Ref ref, String entryId) async =>
     [];
 
+Future<List<HealthOccurrence>> stubOpenOccurrences(Ref ref, String entryId) async =>
+    [];
+
+List<Override> get guardianEventsTestOverrides => [
+  entryOccurrencesProvider.overrideWith(stubOpenOccurrences),
+  entryHistoryProvider.overrideWith(stubHistory),
+];
+
 // ---------------------------------------------------------------------------
 // Widget builders
 // ---------------------------------------------------------------------------
@@ -237,7 +247,7 @@ Widget buildEventsScreen({
         notifierFactory ??
             () => TestFixedEntriesNotifier(entries ?? _defaultEntries),
       ),
-      entryHistoryProvider.overrideWith(stubHistory),
+      ...guardianEventsTestOverrides,
     ],
     child: MaterialApp.router(
       theme: AppTheme.lightTheme.copyWith(
@@ -259,7 +269,7 @@ Widget buildListScreen({
     overrides: [
       petListProvider.overrideWith(() => TestPetListNotifier(pets)),
       healthEntriesNotifierProvider.overrideWith(notifierFactory),
-      entryHistoryProvider.overrideWith(stubHistory),
+      ...guardianEventsTestOverrides,
     ],
     child: MaterialApp(
       theme: AppTheme.lightTheme.copyWith(
@@ -279,7 +289,7 @@ Widget buildScreenWithPetError() {
     overrides: [
       petListProvider.overrideWith(TestErrorPetListNotifier.new),
       healthEntriesNotifierProvider.overrideWith(TestErrorEntriesNotifier.new),
-      entryHistoryProvider.overrideWith(stubHistory),
+      ...guardianEventsTestOverrides,
     ],
     child: MaterialApp(
       theme: AppTheme.lightTheme.copyWith(

@@ -52,7 +52,8 @@
     "043_remove_org_primary_contact.sql",
     "044_org_retire_foster_wire_role.sql",
     "045_organization_role_permission_defaults.sql",
-    "046_email_templates.sql"
+    "046_email_templates.sql",
+    "047_health_occurrences.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
@@ -62,6 +63,7 @@
     "036_organization_permissions.sql",
     "040_backfill_weight_entries_from_pets.sql",
     "041_pet_activity_events.sql",
-    "042_org_member_privacy.sql"
+    "042_org_member_privacy.sql",
+    "047_health_occurrences.sql"
   ]
 }
