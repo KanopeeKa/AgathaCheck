@@ -238,15 +238,30 @@ export class PetListPage {
     await expect(cards).toHaveCount(n, { timeout: 30_000 });
   }
 
-  async openPet(name: string): Promise<void> {
+  async openPet(name: string, petId?: string): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    if (petId) {
+      await this.page.goto(flutterGotoUrl(`/pet/${petId}`));
+      await waitForFlutterRoutePattern(this.page, /\/pet\/[^/?]+/, 30_000);
+      await refreshFlutterAccessibility(this.page);
+      return;
+    }
+
     await this.expectPetVisible(name);
     let route = flutterRoutePath(this.page.url());
     if (route === '/g/home' || route === '/') {
       await this.openManagePets();
-      route = flutterRoutePath(this.page.url());
     }
-    await petCardByName(this.page, name).click();
-    await waitForFlutterRoutePattern(this.page, /\/pet\/[^/?]+/, 30_000);
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const card = petCardByName(this.page, name).first();
+      await card.scrollIntoViewIfNeeded();
+      await card.click();
+      const current = flutterRoutePath(this.page.url());
+      if (!/^\/pet\/[^/?]+/.test(current)) {
+        throw new Error(`Still on ${current} after opening pet ${name}`);
+      }
+    }).toPass({ timeout: 45_000 });
     await refreshFlutterAccessibility(this.page);
   }
 
