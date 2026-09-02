@@ -76,8 +76,5 @@ abstract class HealthRepository {
 
   Future<int> skipMissedOccurrences(String entryId);
 
-  Future<HealthOccurrence> undoOccurrence(
-    String entryId,
-    String occurrenceId,
-  );
+  Future<HealthOccurrence> undoOccurrence(String entryId, String occurrenceId);
 }

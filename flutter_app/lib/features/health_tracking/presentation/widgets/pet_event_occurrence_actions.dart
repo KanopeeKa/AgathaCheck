@@ -40,17 +40,17 @@ class PetEventOccurrenceActions {
     } catch (_) {
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careCompletionFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careCompletionFailed)));
       return;
     }
 
     if (!context.mounted) return;
     final l = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l.markCompletedAction)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l.markCompletedAction)));
   }
 
   static Future<void> skip(
@@ -68,17 +68,17 @@ class PetEventOccurrenceActions {
     } catch (_) {
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careCompletionFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careCompletionFailed)));
       return;
     }
 
     if (!context.mounted) return;
     final l = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l.occurrenceSkipped)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l.occurrenceSkipped)));
   }
 
   static Future<void> skipAllMissed(
@@ -92,16 +92,16 @@ class PetEventOccurrenceActions {
     } catch (_) {
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careCompletionFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careCompletionFailed)));
       return;
     }
 
     if (!context.mounted) return;
     final l = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l.occurrenceSkipped)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l.occurrenceSkipped)));
   }
 }

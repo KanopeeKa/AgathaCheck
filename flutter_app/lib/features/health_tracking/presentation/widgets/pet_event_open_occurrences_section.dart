@@ -92,8 +92,11 @@ class PetEventOpenOccurrencesSection extends ConsumerWidget {
               const SizedBox(height: 8),
               OutlinedButton(
                 key: const Key('pet_event_skip_all_missed'),
-                onPressed: () =>
-                    PetEventOccurrenceActions.skipAllMissed(context, ref, entry),
+                onPressed: () => PetEventOccurrenceActions.skipAllMissed(
+                  context,
+                  ref,
+                  entry,
+                ),
                 child: Text(l.occurrenceSkipAllMissed),
               ),
             ],
@@ -137,11 +140,7 @@ class _OccurrenceZoneBlock extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           for (final occ in occurrences)
-            _OccurrenceRow(
-              occurrence: occ,
-              entry: entry,
-              muted: muted,
-            ),
+            _OccurrenceRow(occurrence: occ, entry: entry, muted: muted),
         ],
       ),
     );

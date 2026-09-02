@@ -45,9 +45,7 @@ Widget _buildSheet({
       body: OccurrenceStackSheet(
         entry: _entry,
         occurrences: occurrences,
-        onRecordHead:
-            onRecordHead ??
-            (_, __, ___) async {},
+        onRecordHead: onRecordHead ?? (_, __, ___) async {},
         onSkipAllMissed: onSkipAllMissed ?? () async {},
       ),
     ),
@@ -96,7 +94,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('occurrence_skip_earlier_missed')), findsOneWidget);
+      expect(
+        find.byKey(const Key('occurrence_skip_earlier_missed')),
+        findsOneWidget,
+      );
 
       await tester.pumpWidget(
         _buildSheet(
@@ -105,7 +106,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('occurrence_skip_earlier_missed')), findsNothing);
+      expect(
+        find.byKey(const Key('occurrence_skip_earlier_missed')),
+        findsNothing,
+      );
     });
 
     testWidgets('not now dismisses without persisting', (tester) async {

@@ -199,13 +199,16 @@ class _OccurrenceStackSheetState extends State<OccurrenceStackSheet> {
               value: _skipEarlierMissed,
               onChanged: _busy
                   ? null
-                  : (value) => setState(() => _skipEarlierMissed = value ?? false),
+                  : (value) =>
+                        setState(() => _skipEarlierMissed = value ?? false),
               controlAffinity: ListTileControlAffinity.leading,
             ),
           const SizedBox(height: 8),
           FilledButton(
             key: const Key('occurrence_record_head'),
-            onPressed: _busy || _headOccurrence == null ? null : _handleRecordHead,
+            onPressed: _busy || _headOccurrence == null
+                ? null
+                : _handleRecordHead,
             child: Text(l.occurrenceRecordHead),
           ),
           const SizedBox(height: 8),

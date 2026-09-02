@@ -47,7 +47,9 @@ class _PetEventPastOccurrencesSectionState
               ListTile(
                 key: const Key('pet_event_past_occurrences_header'),
                 title: Text(l.pastIterations),
-                trailing: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
+                trailing: Icon(
+                  _expanded ? Icons.expand_less : Icons.expand_more,
+                ),
                 onTap: () => setState(() => _expanded = !_expanded),
               ),
               if (_expanded)
@@ -72,10 +74,7 @@ class _PetEventPastOccurrencesSectionState
 }
 
 class _PastOccurrenceCard extends StatelessWidget {
-  const _PastOccurrenceCard({
-    required this.occurrence,
-    required this.muted,
-  });
+  const _PastOccurrenceCard({required this.occurrence, required this.muted});
 
   final HealthOccurrence occurrence;
   final bool muted;

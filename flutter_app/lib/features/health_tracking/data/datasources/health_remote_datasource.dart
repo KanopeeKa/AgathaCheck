@@ -349,8 +349,9 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
   @override
   Future<List<HealthOccurrenceModel>> getOpenOccurrences(String entryId) async {
     final response = await _client.get(
-      Uri.parse('$baseUrl/api/health-entries/$entryId/occurrences')
-          .replace(queryParameters: const {'status': 'open'}),
+      Uri.parse(
+        '$baseUrl/api/health-entries/$entryId/occurrences',
+      ).replace(queryParameters: const {'status': 'open'}),
       headers: _authHeaders(),
     );
     _checkResponse(response);
@@ -363,8 +364,9 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
   @override
   Future<List<HealthOccurrenceModel>> getPastOccurrences(String entryId) async {
     final response = await _client.get(
-      Uri.parse('$baseUrl/api/health-entries/$entryId/occurrences')
-          .replace(queryParameters: const {'status': 'past'}),
+      Uri.parse(
+        '$baseUrl/api/health-entries/$entryId/occurrences',
+      ).replace(queryParameters: const {'status': 'past'}),
       headers: _authHeaders(),
     );
     _checkResponse(response);
@@ -398,7 +400,8 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
     );
     _checkResponse(response);
     final decoded = json.decode(response.body) as Map<String, dynamic>;
-    final occurrence = decoded['occurrence'] as Map<String, dynamic>? ?? decoded;
+    final occurrence =
+        decoded['occurrence'] as Map<String, dynamic>? ?? decoded;
     return HealthOccurrenceModel.fromJson(occurrence);
   }
 

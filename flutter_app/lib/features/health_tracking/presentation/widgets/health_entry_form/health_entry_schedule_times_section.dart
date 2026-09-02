@@ -81,7 +81,11 @@ class HealthEntryScheduleTimesSection extends StatelessWidget {
     );
   }
 
-  Future<void> _pickTime(BuildContext context, int index, String current) async {
+  Future<void> _pickTime(
+    BuildContext context,
+    int index,
+    String current,
+  ) async {
     final parts = current.split(':');
     final initial = TimeOfDay(
       hour: int.tryParse(parts.first) ?? 8,
@@ -100,8 +104,8 @@ class HealthEntryScheduleTimesSection extends StatelessWidget {
     final hour = int.tryParse(parts[0]) ?? 0;
     final minute = int.tryParse(parts[1]) ?? 0;
     final dt = DateTime(2000, 1, 1, hour, minute);
-    return MaterialLocalizations.of(context).formatTimeOfDay(
-      TimeOfDay.fromDateTime(dt),
-    );
+    return MaterialLocalizations.of(
+      context,
+    ).formatTimeOfDay(TimeOfDay.fromDateTime(dt));
   }
 }

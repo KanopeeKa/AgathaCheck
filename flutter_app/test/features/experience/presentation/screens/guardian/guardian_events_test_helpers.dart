@@ -186,8 +186,10 @@ HealthEntry makeDueEntry({
 Future<List<HealthHistoryEntry>> stubHistory(Ref ref, String entryId) async =>
     [];
 
-Future<List<HealthOccurrence>> stubOpenOccurrences(Ref ref, String entryId) async =>
-    [];
+Future<List<HealthOccurrence>> stubOpenOccurrences(
+  Ref ref,
+  String entryId,
+) async => [];
 
 List<Override> get guardianEventsTestOverrides => [
   entryOccurrencesProvider.overrideWith(stubOpenOccurrences),

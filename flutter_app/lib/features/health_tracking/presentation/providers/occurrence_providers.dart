@@ -11,12 +11,14 @@ final entryOccurrencesProvider =
     });
 
 /// Zone counts and list-row heads derived from open occurrences.
-final occurrenceSummaryProvider =
-    Provider.family<OccurrenceSummary, String>((ref, entryId) {
-      final async = ref.watch(entryOccurrencesProvider(entryId));
-      return async.when(
-        data: (list) => summarizeOpenOccurrences(list, DateTime.now()),
-        loading: () => const OccurrenceSummary(openCount: 0, missedCount: 0),
-        error: (_, __) => const OccurrenceSummary(openCount: 0, missedCount: 0),
-      );
-    });
+final occurrenceSummaryProvider = Provider.family<OccurrenceSummary, String>((
+  ref,
+  entryId,
+) {
+  final async = ref.watch(entryOccurrencesProvider(entryId));
+  return async.when(
+    data: (list) => summarizeOpenOccurrences(list, DateTime.now()),
+    loading: () => const OccurrenceSummary(openCount: 0, missedCount: 0),
+    error: (_, __) => const OccurrenceSummary(openCount: 0, missedCount: 0),
+  );
+});

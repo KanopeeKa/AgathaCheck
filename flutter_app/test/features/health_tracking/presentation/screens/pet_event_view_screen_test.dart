@@ -99,18 +99,22 @@ Future<List<HealthOccurrence>> _openOccurrences(Ref ref, String entryId) async {
   ];
 }
 
-Future<List<HealthOccurrence>> _emptyOccurrences(Ref ref, String entryId) async =>
-    [];
+Future<List<HealthOccurrence>> _emptyOccurrences(
+  Ref ref,
+  String entryId,
+) async => [];
 
-Future<List<HealthOccurrence>> _pastOccurrences(Ref ref, String entryId) async =>
-    [
-      _occ(
-        id: 'past-1',
-        date: DateTime(2025, 4, 1),
-        status: 'completed',
-        completedOn: DateTime(2025, 4, 1),
-      ),
-    ];
+Future<List<HealthOccurrence>> _pastOccurrences(
+  Ref ref,
+  String entryId,
+) async => [
+  _occ(
+    id: 'past-1',
+    date: DateTime(2025, 4, 1),
+    status: 'completed',
+    completedOn: DateTime(2025, 4, 1),
+  ),
+];
 
 void main() {
   setUp(() {

@@ -76,12 +76,14 @@ class OccurrenceCareActions {
     bool skipEarlierMissed = false,
   }) async {
     if (occurrenceId != null) {
-      await ref.read(healthRepositoryProvider).completeOccurrence(
-        entry.id,
-        occurrenceId,
-        completedOn: completedOn,
-        skipEarlierMissed: skipEarlierMissed,
-      );
+      await ref
+          .read(healthRepositoryProvider)
+          .completeOccurrence(
+            entry.id,
+            occurrenceId,
+            completedOn: completedOn,
+            skipEarlierMissed: skipEarlierMissed,
+          );
       ref.invalidate(entryOccurrencesProvider(entry.id));
       await ref.read(healthEntriesNotifierProvider.notifier).refresh();
       return;
@@ -120,17 +122,17 @@ class OccurrenceCareActions {
       } catch (_) {
         if (!context.mounted) return;
         final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.careCompletionFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.careCompletionFailed)));
         return;
       }
     }
 
     if (!context.mounted) return;
     final l = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l.markCompletedAction)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l.markCompletedAction)));
   }
 }

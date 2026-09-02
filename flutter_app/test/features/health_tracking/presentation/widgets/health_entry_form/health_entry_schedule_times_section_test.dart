@@ -13,7 +13,9 @@ void main() {
     setUp(() {
       container = ProviderContainer();
       controller = container.read(
-        healthEntryFormControllerProvider(const HealthEntryFormParams()).notifier,
+        healthEntryFormControllerProvider(
+          const HealthEntryFormParams(),
+        ).notifier,
       );
     });
 

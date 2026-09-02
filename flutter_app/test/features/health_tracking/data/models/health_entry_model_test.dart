@@ -102,9 +102,9 @@ void main() {
     });
 
     test('toJson includes schedule_times when set', () {
-      final model = HealthEntryModel.fromJson(fullJson).copyWith(
-        scheduleTimes: ['09:30', '21:00'],
-      );
+      final model = HealthEntryModel.fromJson(
+        fullJson,
+      ).copyWith(scheduleTimes: ['09:30', '21:00']);
       final json = HealthEntryModel.fromEntity(model).toJson();
       expect(json['schedule_times'], ['09:30', '21:00']);
     });

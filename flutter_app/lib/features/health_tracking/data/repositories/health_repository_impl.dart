@@ -128,11 +128,7 @@ class HealthRepositoryImpl implements HealthRepository {
     String occurrenceId, {
     String notes = '',
   }) {
-    return dataSource.skipOccurrence(
-      entryId,
-      occurrenceId,
-      notes: notes,
-    );
+    return dataSource.skipOccurrence(entryId, occurrenceId, notes: notes);
   }
 
   @override
@@ -141,10 +137,7 @@ class HealthRepositoryImpl implements HealthRepository {
   }
 
   @override
-  Future<HealthOccurrence> undoOccurrence(
-    String entryId,
-    String occurrenceId,
-  ) {
+  Future<HealthOccurrence> undoOccurrence(String entryId, String occurrenceId) {
     return dataSource.undoOccurrence(entryId, occurrenceId);
   }
 }

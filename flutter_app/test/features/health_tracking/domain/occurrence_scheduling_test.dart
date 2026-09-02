@@ -45,7 +45,10 @@ void main() {
     test('future timed dose today is not missed', () {
       final today = calendarDateOnly(DateTime.now());
       expect(
-        isOccurrenceMissed(occ(id: 'a', date: today, time: '23:59'), DateTime.now()),
+        isOccurrenceMissed(
+          occ(id: 'a', date: today, time: '23:59'),
+          DateTime.now(),
+        ),
         isFalse,
       );
     });

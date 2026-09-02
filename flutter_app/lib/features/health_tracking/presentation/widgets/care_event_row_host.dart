@@ -38,7 +38,9 @@ class CareEventRowHost extends ConsumerWidget {
     final summary = ref.watch(occurrenceSummaryProvider(entry.id));
     final occurrencesAsync = ref.watch(entryOccurrencesProvider(entry.id));
     final isMarkDoneEnabled =
-        !isCompleted && !occurrencesAsync.isLoading && !occurrencesAsync.hasError;
+        !isCompleted &&
+        !occurrencesAsync.isLoading &&
+        !occurrencesAsync.hasError;
 
     return CareEventRow(
       entry: entry,

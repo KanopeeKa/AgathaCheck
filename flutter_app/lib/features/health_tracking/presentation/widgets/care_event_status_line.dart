@@ -80,9 +80,9 @@ String _formatOccurrenceTimeLabel(BuildContext context, String time) {
   if (parts.length < 2) return time;
   final hour = int.tryParse(parts[0]) ?? 0;
   final minute = int.tryParse(parts[1]) ?? 0;
-  return MaterialLocalizations.of(context).formatTimeOfDay(
-    TimeOfDay(hour: hour, minute: minute),
-  );
+  return MaterialLocalizations.of(
+    context,
+  ).formatTimeOfDay(TimeOfDay(hour: hour, minute: minute));
 }
 
 /// Occurrence-aware third line for [CareEventRow] when open doses exist.
@@ -98,8 +98,9 @@ CareEventStatusLine formatOccurrenceCareEventStatusLine(
   }
 
   final now = DateTime.now();
-  final headline =
-      summary.missedCount > 0 ? summary.missedHead : summary.nextHead;
+  final headline = summary.missedCount > 0
+      ? summary.missedHead
+      : summary.nextHead;
   if (headline == null) {
     return formatCareEventStatusLine(entry, l, colorScheme);
   }
@@ -122,7 +123,8 @@ CareEventStatusLine formatOccurrenceCareEventStatusLine(
         statusColor: colorScheme.error,
       );
     case OccurrenceZone.dueToday:
-      if (headline.scheduledTime != null && headline.scheduledTime!.isNotEmpty) {
+      if (headline.scheduledTime != null &&
+          headline.scheduledTime!.isNotEmpty) {
         final instant = formatOccurrenceInstant(headline, l, context: context);
         final suffix = l.urgencyDueToday;
         return CareEventStatusLine(

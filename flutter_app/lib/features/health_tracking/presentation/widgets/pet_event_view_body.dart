@@ -227,10 +227,7 @@ class _LifecycleActions extends StatelessWidget {
 }
 
 class _ClosedOccurrenceSummary extends StatelessWidget {
-  const _ClosedOccurrenceSummary({
-    required this.history,
-    required this.muted,
-  });
+  const _ClosedOccurrenceSummary({required this.history, required this.muted});
 
   final List<HealthHistoryEntry> history;
   final bool muted;
