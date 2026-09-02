@@ -130,6 +130,7 @@ export function healthEntryToMap(row) {
     notes: row.notes || '',
     health_issue_id: row.health_issue_id || null,
     remind_days_before: row.remind_days_before ?? 1,
+    schedule_times: row.schedule_times ?? null,
     status: row.status || 'active',
     completed_at: row.completed_at ? row.completed_at.toISOString?.() || String(row.completed_at) : null,
     created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,

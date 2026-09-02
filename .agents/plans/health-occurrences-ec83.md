@@ -29,7 +29,7 @@ Introduce first-class `health_occurrences` so carers can track multiple doses pe
 |-------|-------|
 | **approved_at** | 2026-09-02T10:00:00Z |
 | **approved_until** | 2026-09-04T10:00:00Z |
-| **control_issue** | TBD |
+| **control_issue** | #811 |
 | **content_hash** | from snapshot |
 | **autonomy** | `active` |
 
