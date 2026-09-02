@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -351,7 +352,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
             widget.petId!.isNotEmpty) {
           context.go('/pet/${widget.petId}/events/${widget.entryId}');
         } else if (widget.petId != null && widget.petId!.isNotEmpty) {
-          context.go('/pet/${widget.petId}');
+          goToPetDetail(context, widget.petId);
         } else {
           context.go('/g/events');
         }
@@ -367,7 +368,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
         widget.petId!.isNotEmpty) {
       context.go('/pet/${widget.petId}/events/${widget.entryId}');
     } else if (widget.petId != null && widget.petId!.isNotEmpty) {
-      context.go('/pet/${widget.petId}');
+      goToPetDetail(context, widget.petId);
     } else {
       context.go('/g/events');
     }
@@ -412,7 +413,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
           SnackBar(content: Text(AppLocalizations.of(context)!.entryDeleted)),
         );
         if (widget.petId != null && widget.petId!.isNotEmpty) {
-          context.go('/pet/${widget.petId}');
+          goToPetDetail(context, widget.petId);
         } else {
           context.go('/g/events');
         }

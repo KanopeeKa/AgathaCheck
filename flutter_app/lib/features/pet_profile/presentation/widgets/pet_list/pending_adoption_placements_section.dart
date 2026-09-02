@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../organization/domain/entities/foster_placement.dart';
 import '../../../../organization/presentation/providers/foster_placements_providers.dart';
@@ -125,7 +126,7 @@ class PendingAdoptionPlacementCard extends ConsumerWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(l.adoptionConfirmed)),
                         );
-                        context.go('/pet/${placement.petId}');
+                        openPetDetail(context, placement.petId);
                       }
                     } catch (e) {
                       if (context.mounted) {

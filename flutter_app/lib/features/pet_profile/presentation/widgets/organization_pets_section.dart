@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/router/shell_return_navigation.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../organization/presentation/utils/pet_custody_helpers.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
@@ -54,7 +55,7 @@ class OrganizationPetsSection extends StatelessWidget {
     final sized = PetCard.sizedTile(
       context,
       pet: pet,
-      onTap: () => context.go('/pet/${pet.id}'),
+      onTap: () => openPetDetail(context, pet.id),
     );
     if (pet.isShared) {
       return _buildDismissible(

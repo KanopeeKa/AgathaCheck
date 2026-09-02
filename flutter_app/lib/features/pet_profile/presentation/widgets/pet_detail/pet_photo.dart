@@ -24,15 +24,10 @@ class PetPhoto extends StatelessWidget {
     if (pet.photoPath != null && pet.photoPath!.isNotEmpty) {
       try {
         final bytes = base64Decode(pet.photoPath!);
-        photoContent = Container(
-          decoration: BoxDecoration(
-            border: Border(left: BorderSide(color: petColor, width: 5)),
-          ),
-          child: Image.memory(
-            bytes,
-            fit: BoxFit.cover,
-            semanticLabel: 'Photo of ${pet.name}',
-          ),
+        photoContent = Image.memory(
+          bytes,
+          fit: BoxFit.cover,
+          semanticLabel: 'Photo of ${pet.name}',
         );
       } catch (_) {
         photoContent = _buildPlaceholder(petColor);
@@ -74,10 +69,7 @@ class PetPhoto extends StatelessWidget {
 
   Widget _buildPlaceholder(Color petColor) {
     return Container(
-      decoration: BoxDecoration(
-        color: petColor.withValues(alpha: 0.12),
-        border: Border(left: BorderSide(color: petColor, width: 5)),
-      ),
+      color: petColor.withValues(alpha: 0.12),
       child: Center(
         child: AppConstants.speciesIconWidget(
           pet.species,

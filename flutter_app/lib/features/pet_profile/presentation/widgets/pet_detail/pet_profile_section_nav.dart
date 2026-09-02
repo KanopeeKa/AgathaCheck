@@ -42,7 +42,6 @@ class PetProfileSectionNav extends StatelessWidget {
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push('/pet/$petId/health-issues'),
             ),
-            const Divider(height: 1),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/router/shell_return_navigation.dart';
 import '../../domain/entities/pet.dart';
 import '../widgets/pet_card.dart';
 
@@ -72,7 +73,7 @@ class PassedAwayPetsSection extends StatelessWidget {
                   sortPetsByCreatedAt(sorted);
                   return sorted;
                 }(),
-                onPetTap: (pet) => context.go('/pet/${pet.id}'),
+                onPetTap: (pet) => openPetDetail(context, pet.id),
               ),
             ),
           ],

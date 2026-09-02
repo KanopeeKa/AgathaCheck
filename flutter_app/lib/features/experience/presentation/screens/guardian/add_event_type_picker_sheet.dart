@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 
@@ -64,7 +65,7 @@ void _pickPetForWeight(BuildContext context, List<Pet> pets) {
     return;
   }
   if (active.length == 1) {
-    context.go('/pet/${active.first.id}');
+    openPetDetail(context, active.first.id);
     return;
   }
   _showPetPickerSheet(
@@ -106,7 +107,7 @@ Future<void> _showPetPickerSheet(
                   if (onSelected != null) {
                     onSelected(pet);
                   } else {
-                    context.go('/pet/${pet.id}');
+                    openPetDetail(context, pet.id);
                   }
                 },
               ),

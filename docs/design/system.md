@@ -530,7 +530,34 @@ what can be tapped.
 Root surfaces use a hamburger. Sub-screens use a back control. Do not add a
 generic Home control, top-level tab strip, or duplicate notification centre.
 
-#### Drawer
+#### Sub-screen back navigation (`returnTo`)
+
+Shell back behaviour is implemented in
+`flutter_app/lib/core/router/shell_return_navigation.dart`:
+
+1. **Pop first** — when `Navigator.canPop` is true, pop the stack.
+2. **Fallback** — otherwise `context.go` to, in order: explicit `backPath` on
+   the screen, safe `returnTo` query param on the current route, then the
+   experience section root (`/g/home` guardian, `/o/orgs` shelter).
+
+Entry points that should return to the caller (pet cards, vet pet rows, all
+pets list) must use `openPetDetail` (`context.push` + encoded `returnTo`) or
+pass `returnTo` on deep links. Default when neither pop nor `returnTo` applies:
+**Guardian dashboard** (`/g/home`).
+
+Reject external URLs and protocol-relative paths in `returnTo` parsing.
+
+#### Sub-screen contextual actions
+
+| Count | Pattern |
+|---|---|
+| 0 | No extra app-bar control before the bell |
+| 1 primary | Single `IconButton` with tooltip (e.g. add on timeline) |
+| 2+ secondary | `ScreenOverflowActions` — `more_vert` menu with **icon + label** rows |
+
+Share, export, and other object-level utilities belong in the overflow menu.
+Do not crowd the app bar with multiple icon-only secondary actions.
+
 
 The drawer is a sparse section switcher:
 

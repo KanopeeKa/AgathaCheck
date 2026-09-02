@@ -211,6 +211,15 @@
   "petsEyebrow": "ANIMAUX",
   "petsNavLabel": "Animaux",
   "allCare": "Tous les soins",
+  "careForPet": "Soins pour {petName}",
+  "@careForPet": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
+  "moreActions": "Plus d'actions",
   "dashboardNavLabel": "Tableau de bord",
   "careNavLabel": "Soins",
   "careDueTab": "À faire {count}",

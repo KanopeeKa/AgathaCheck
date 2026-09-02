@@ -223,6 +223,15 @@
   "petsEyebrow": "PETS",
   "petsNavLabel": "Pets",
   "allCare": "All care",
+  "careForPet": "Care for {petName}",
+  "@careForPet": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
+  "moreActions": "More actions",
   "dashboardNavLabel": "Dashboard",
   "careNavLabel": "Care",
   "careDueTab": "Due {count}",

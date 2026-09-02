@@ -1232,6 +1232,18 @@ abstract class AppLocalizations {
   /// **'All care'**
   String get allCare;
 
+  /// No description provided for @careForPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Care for {petName}'**
+  String careForPet(String petName);
+
+  /// No description provided for @moreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get moreActions;
+
   /// No description provided for @dashboardNavLabel.
   ///
   /// In en, this message translates to:

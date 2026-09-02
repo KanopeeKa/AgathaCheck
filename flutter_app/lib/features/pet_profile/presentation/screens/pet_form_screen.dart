@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/shell_return_navigation.dart';
 import '../controllers/pet_form_controller.dart';
 import '../controllers/pet_form_outcomes.dart';
 
@@ -85,7 +86,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
       return;
     }
     if (_isEditing && widget.petId != null) {
-      context.go('/pet/${widget.petId}');
+      goToPetDetail(context, widget.petId);
       return;
     }
     if (_selectedOrgId != null) {

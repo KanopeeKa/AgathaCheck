@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-detail-ux-c2ce",
+  "approved_at": "2026-09-02T11:02:00Z",
+  "approved_by": "user-chat-standing-grant-2026-09-02",
+  "approved_until": "2026-09-04T11:02:00Z",
+  "content_hash": "sha256:26288c25fbc5b2b7df11e8efb723960163fbe830195f42e1ba48dbb3557f9899",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/pet-detail-ux-c2ce-integration",
+  "control_issue": 823,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Canonical back navigation foundation",
+      "branch": "cursor/back-navigation-canonical-c2ce",
+      "allowed_paths": [
+        "flutter_app/lib/core/**",
+        "flutter_app/lib/features/**/presentation/**",
+        "flutter_app/test/**",
+        "docs/design/**",
+        "docs/architecture/**"
+      ],
+      "forbidden_paths": [
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null
+    },
+    {
+      "id": "2",
+      "title": "Pet detail UX care photo overflow",
+      "branch": "cursor/pet-detail-ux-c2ce",
+      "allowed_paths": [
+        "flutter_app/lib/core/widgets/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_care_preview/**",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/care_event_row*.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/core/widgets/**"
+      ],
+      "forbidden_paths": [
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "3",
+      "title": "E2E journeys and shard rebalance",
+      "branch": "cursor/pet-detail-e2e-c2ce",
+      "allowed_paths": [
+        "e2e/**",
+        "flutter_app/test/bdd/**",
+        ".github/workflows/_reusable-e2e-local.yml",
+        ".github/workflows/pre-uat-e2e.yml",
+        ".github/workflows/e2e.yml"
+      ],
+      "forbidden_paths": [
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    }
+  ]
+}
