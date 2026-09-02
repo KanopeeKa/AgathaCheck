@@ -231,7 +231,6 @@
       }
     }
   },
-  "moreActions": "More actions",
   "dashboardNavLabel": "Dashboard",
   "careNavLabel": "Care",
   "careDueTab": "Due {count}",

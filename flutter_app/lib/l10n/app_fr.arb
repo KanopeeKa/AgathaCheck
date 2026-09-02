@@ -219,7 +219,6 @@
       }
     }
   },
-  "moreActions": "Plus d'actions",
   "dashboardNavLabel": "Tableau de bord",
   "careNavLabel": "Soins",
   "careDueTab": "À faire {count}",

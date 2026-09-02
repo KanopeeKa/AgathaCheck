@@ -1238,12 +1238,6 @@ abstract class AppLocalizations {
   /// **'Care for {petName}'**
   String careForPet(String petName);
 
-  /// No description provided for @moreActions.
-  ///
-  /// In en, this message translates to:
-  /// **'More actions'**
-  String get moreActions;
-
   /// No description provided for @dashboardNavLabel.
   ///
   /// In en, this message translates to:

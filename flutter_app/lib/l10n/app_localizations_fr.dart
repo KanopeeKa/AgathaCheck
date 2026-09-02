@@ -662,9 +662,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get moreActions => 'Plus d\'actions';
-
-  @override
   String get dashboardNavLabel => 'Tableau de bord';
 
   @override
