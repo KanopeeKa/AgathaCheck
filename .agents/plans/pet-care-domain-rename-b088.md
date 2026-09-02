@@ -45,16 +45,16 @@ Custody model: `guardianship`, `individual_guardianship` transfer kinds stay; wo
 
 ```yaml
 autonomy: active
-current_phase: 4
-last_completed_phase: 3
+current_phase: 6
+last_completed_phase: 6
 halt_reason: null
-next_action: "continue phase 4 on branch cursor/pet-care-l10n-ui-b088"
+next_action: "integration PR to main + /babysit-uat"
 artifact_ref:
-  branch: cursor/pet-care-l10n-ui-b088
+  branch: cursor/pet-care-docs-sweep-b088
   plan_path: .agents/plans/pet-care-domain-rename-b088.md
-  plan_commit: 5277247ed857fe5e8bde460aa05b1439e6882e58
+  plan_commit: (pending push)
   snapshot_path: .agents/plans/pet-care-domain-rename-b088.snapshot.json
-  snapshot_commit: 5277247ed857fe5e8bde460aa05b1439e6882e58
+  snapshot_commit: (pending push)
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
@@ -112,7 +112,7 @@ debt_issue_refs: []
 
 **allowed_paths:** `flutter_app/lib/features/experience/**`, `flutter_app/lib/core/router/**`, `flutter_app/lib/core/theme/experience_colors.dart`, `flutter_app/lib/core/theme/app_color_tokens.dart`, `flutter_app/lib/core/branding/**`, `flutter_app/lib/features/notifications/domain/**`, `flutter_app/test/features/experience/**`, `flutter_app/test/core/router/**`, plan artifacts
 
-**Scope:** `AppExperience.petCare`, wire `pet_care`, `/g/*`→`/pc/*`, rename `guardian_*` files/classes to `pet_care_*` where workspace-scoped; `NotificationScope.petCare`; prefs `last_app_section`.
+**Scope:** `AppExperience.petCare`, wire `pet_care`, `/pc/*`→`/pc/*`, rename `guardian_*` files/classes to `pet_care_*` where workspace-scoped; `NotificationScope.petCare`; prefs `last_app_section`.
 
 **Exit criteria:**
 
@@ -173,7 +173,7 @@ debt_issue_refs: []
 
 **forbidden_paths:** `flutter_app/**`, `server/**`, `db/**`
 
-**Scope:** Sweep active docs for Guardian workspace references; update UAT personas; supersede ux-overhaul-recovery drawer items; memory file.
+**Scope:** Sweep active docs for Pet Care workspace references; update UAT personas; supersede ux-overhaul-recovery drawer items; memory file.
 
 **Exit criteria:**
 

@@ -13,7 +13,7 @@ tags: [experience, contract]
 **Related:** [navigation README](/docs/domains/navigation/README.md#decision-index-split-from-experience-program-decisions-log) · [roadmap-delivery-plan.md](roadmap-delivery-plan.md) · [navigation-brief.md](/docs/domains/navigation/features/navigation-brief.md) ·
 [/docs/domains/fostering/features/g0-contract-pack.md](/docs/domains/fostering/features/g0-contract-pack.md) (this contract does not restate G0 — it extends it for the navigation/guardian/organisation-presentation surfaces G0 does not cover)
 
-This is the platform contract layer for the **Experience program** (navigation reversal + Guardian
+This is the platform contract layer for the **Experience program** (navigation reversal + Pet Care
 dashboard + Organisation presentation/access-control rework). Phase docs reference this file
 instead of redefining vocabulary or cross-cutting rules. Follows the same "mandatory sections"
 discipline as `g0-contract-pack.md` so the two programs read consistently.
@@ -103,7 +103,7 @@ Extend `AppNotification` (`flutter_app/lib/features/notifications/domain/entitie
 - Bell badge = single combined unread count across both kinds (never a dual badge — keeps the bell globally understandable per the brief).
 - Chips filter the **already date-grouped** list; they do not introduce a second grouping axis.
 - Every row keeps the existing read/unread visual treatment (`notification_tile.dart`); administrative rows referencing an open object additionally show an "Action needed" affordance until `resolvedAt` is set.
-- Retire `/g/notifications` and `/o/notifications` as separate screens/providers; one `/notifications` route reachable only from the bell (not the drawer, not Account).
+- Retire `/pc/notifications` and `/o/notifications` as separate screens/providers; one `/notifications` route reachable only from the bell (not the drawer, not Account).
 - `NotificationScopeRules` (existing pure-function class) is repurposed: keep the guardian/organization split logic for the "Organisation" chip's grouping, drop its use as a screen-level filter.
 
 ### 3.3 Pending-inbox migration (D10)

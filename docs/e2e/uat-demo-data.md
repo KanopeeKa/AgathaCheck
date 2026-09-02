@@ -3,7 +3,7 @@ title: UAT demo data
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-09-02
 tags: [e2e, uat, demo]
 ---
 # UAT demo data
@@ -52,9 +52,9 @@ All demo users share the same password:
 
 | User | Email | Role |
 |------|-------|------|
-| Alice | `alice@demo.agathatrack.test` | Guardian + super admin (Happy Paws Clinic & Rescue Hearts) |
+| Alice | `alice@demo.agathatrack.test` | Pet Care + super admin (Happy Paws Clinic & Rescue Hearts) |
 | Bob | `bob@demo.agathatrack.test` | Admin at Happy Paws Clinic |
-| Carol | `carol@demo.agathatrack.test` | Guardian with shared access to Buddy |
+| Carol | `carol@demo.agathatrack.test` | Pet carer with shared access to Buddy |
 | Eve | `eve@demo.agathatrack.test` | Foster parent at Rescue Hearts |
 | Dave | `dave@demo.agathatrack.test` | Dual-role user (personal pet + Rescue Hearts foster) |
 | Grace | `grace@demo.agathatrack.test` | Adoption prospect for Luna |
@@ -67,7 +67,7 @@ Password is intentionally weak and documented — acceptable only on isolated no
 
 | Domain | Demo content |
 |--------|----------------|
-| **Guardian pets** | Buddy (dog) and Whiskers (cat) — Alice; Pip (dog) — Dave |
+| **Owned pets** | Buddy (dog) and Whiskers (cat) — Alice; Pip (dog) — Dave |
 | **Org pets** | Clinic Cat (Happy Paws); Max, Luna, Rocky, Mittens (Rescue Hearts) |
 | **Health** | Vaccinations, medications, overdue preventives, vet visits, active health issue |
 | **Weight** | Weight history for Buddy and Whiskers |

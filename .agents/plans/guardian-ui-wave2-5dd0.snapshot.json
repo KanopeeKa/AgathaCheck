@@ -477,7 +477,7 @@
     },
     {
       "id": "14",
-      "title": "Global /g/events rework",
+      "title": "Global /pc/events rework",
       "branch": "cursor/guardian-wave2-global-events-5dd0",
       "allowed_paths": [
         "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_due_events_screen.dart",

@@ -13,7 +13,7 @@ Execute-plan: `pet-care-domain-rename-b088` · Control issue #829.
 
 ## Goal
 
-Full-stack rename of the Guardian workspace to **Pet Care**, including wire values, routes, API, DB, tests, and docs — without renaming the dashboard **My Pets** pet-rail section or custody **guardianship** legal terms.
+Full-stack rename of the Pet Care workspace to **Pet Care**, including wire values, routes, API, DB, tests, and docs — without renaming the dashboard **My Pets** pet-rail section or custody **guardianship** legal terms.
 
 ## Naming layers
 
@@ -31,7 +31,7 @@ Full-stack rename of the Guardian workspace to **Pet Care**, including wire valu
 |---------|--------|
 | `AppExperience.guardian` | `AppExperience.petCare` |
 | wire `'guardian'` | `'pet_care'` |
-| `/g/*` routes | `/pc/*` |
+| `/pc/*` routes | `/pc/*` |
 | `users.category = 'pet_guardian'` | `pet_carer` |
 | `NotificationScope.guardian` | `pet_care` |
 | `guardian_name` (API) | `primary_holder_name` |

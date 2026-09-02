@@ -1,4 +1,4 @@
-# Guardian UI rework — execute plan
+# Pet Care UI rework — execute plan
 
 > **plan_id:** `guardian-ui-rework-5dd0`
 
@@ -7,7 +7,7 @@
 | Field | Value |
 |-------|-------|
 | **plan_id** | `guardian-ui-rework-5dd0` |
-| **title** | Guardian UI rework — landing, dashboard, events, pet screen, shell |
+| **title** | Pet Care UI rework — landing, dashboard, events, pet screen, shell |
 | **base_branch** | `cursor/guardian-ui-rework-integration-5dd0` |
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
@@ -27,7 +27,7 @@ Deliver the guardian-facing UI rework from the 2026-07-26 brief: global navigati
 | Pet preview cap | None — fixed-width tiles fill screen |
 | Events label | **Due and Overdue** — within `remindDaysBefore` window |
 | Weight in events | No — scrap D17 |
-| Route | Rename `/health` → `/g/events`; redirect old URLs |
+| Route | Rename `/health` → `/pc/events`; redirect old URLs |
 | Vets row | Name · city; pet count right-aligned |
 | Pet share | Copy link (existing flow); richer share sheet deferred |
 | Foster sessions in manage list | Read-only for now |

@@ -1,9 +1,9 @@
 ---
-name: Guardian mobile completion
-description: Approved behavior for reversible mobile completion in the Guardian due-events preview.
+name: Pet Care mobile completion
+description: Approved behavior for reversible mobile completion in the Pet Care due-events preview.
 ---
 
-On Guardian phone-width due-event rows, retain a completed item in its original
+On Pet Care phone-width due-event rows, retain a completed item in its original
 five-item preview position with an inline Undo action after the user confirms
 the existing completion-date sheet. The temporary completed presentation belongs
 to the list, not an individual row, so it survives the provider refresh.
@@ -18,3 +18,5 @@ the last server-derived due preview solely while an in-flight refresh is loading
 do not write cached or optimistic records back on ordinary reads. Remove the
 temporary completed item only after a successful Undo, and leave desktop/tablet
 due-event cards unchanged.
+
+**Legacy filename:** `guardian-mobile-completion.md` — workspace renamed to Pet Care (D38).

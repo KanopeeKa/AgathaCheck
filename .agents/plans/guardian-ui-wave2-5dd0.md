@@ -1,4 +1,4 @@
-# Guardian UI wave 2 — execute plan
+# Pet Care UI wave 2 — execute plan
 
 > **plan_id:** `guardian-ui-wave2-5dd0`  
 > **Briefs:** `docs/experience-program/briefs/guardian-ui-wave2-issue-briefs.md`
@@ -8,14 +8,14 @@
 | Field | Value |
 |-------|-------|
 | **plan_id** | `guardian-ui-wave2-5dd0` |
-| **title** | Guardian UI wave 2 — pets, events overhaul, profile screens, drawer |
+| **title** | Pet Care UI wave 2 — pets, events overhaul, profile screens, drawer |
 | **base_branch** | `cursor/guardian-ui-wave2-integration-5dd0` |
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
 
 ## Goal
 
-Deliver wave-2 guardian UX: vertical pet tiles, drawer identity, unified due-event cards, pet profile navigation to dedicated screens (timeline, weight, health issues), four-type event model with view-entry flow, manage-events list, global `/g/events`, notification deep links, and health-issue documents API.
+Deliver wave-2 guardian UX: vertical pet tiles, drawer identity, unified due-event cards, pet profile navigation to dedicated screens (timeline, weight, health issues), four-type event model with view-entry flow, manage-events list, global `/pc/events`, notification deep links, and health-issue documents API.
 
 Phases merge to integration branch `cursor/guardian-ui-wave2-integration-5dd0`; one final PR integration → `main`.
 
@@ -88,7 +88,7 @@ debt_issue_refs: []
 | 11 | View entry screen | W16 |
 | 12 | Manage events unified list | W17 |
 | 13 | Unified event edit form | W18 |
-| 14 | Global `/g/events` rework | W19 |
+| 14 | Global `/pc/events` rework | W19 |
 | 15 | Notification deep links to view entry | W20 |
 
 ## Spawn phase 8 ownership

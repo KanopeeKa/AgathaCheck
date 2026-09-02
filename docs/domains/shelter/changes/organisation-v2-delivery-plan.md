@@ -108,7 +108,7 @@ Each section: own widget (≤80 lines target), own provider, own widget tests. D
 |-------|-----------|---------|
 | **Product activity** | `pet_activity_events` + `pets.last_activity_at` | Last-activity sort; future activity UI |
 | **Compliance** | `audit_events` (extend coverage) | Permission changes, admin actions |
-| **User timeline** | `pet_timeline_entries` + composite read | Guardian history — **not** used for org sort |
+| **User timeline** | `pet_timeline_entries` + composite read | Pet Care history — **not** used for org sort |
 
 **Write path:** single `recordPetActivity()` updates both event row and `pets.last_activity_at` in one transaction.
 
@@ -341,7 +341,7 @@ e2e/playwright/tests/
 #### PR-7a: Pets screen polish
 - Top-nav Add pet (keep FAB).
 - Filter algebra + table-driven unit tests.
-- Guardian Manage Pets top-nav Add parity.
+- Pet Care Manage Pets top-nav Add parity.
 - Need-attention info-icon regression test.
 
 **BDD:** extend `pet_screen_filters.feature` (+4 scenarios).

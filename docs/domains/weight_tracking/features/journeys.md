@@ -18,7 +18,7 @@ From a pet's weight section, guardians enter weight in kilograms, pick a calenda
 
 ## View weight history and chart
 
-Guardians open the weight tracking section to see entries in chronological order and a line chart when at least two points exist. Editing weight from the pet profile form can create a same-day entry without notes.
+Pet carers open the weight tracking section to see entries in chronological order and a line chart when at least two points exist. Editing weight from the pet profile form can create a same-day entry without notes.
 
 ## Edit and delete entries
 

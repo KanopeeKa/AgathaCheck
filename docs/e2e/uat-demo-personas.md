@@ -3,7 +3,7 @@ title: UAT demo personas
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-21
+last_updated: 2026-09-02
 tags: [testing,e2e,playwright]
 ---
 # UAT demo personas
@@ -16,9 +16,9 @@ Stable identities for **manual UAT and shared demo environments only**.
 
 | User | Email | Password | Role |
 |------|-------|----------|------|
-| Alice | `alice@demo.agathatrack.test` | `UatDemoPass1!` | Guardian + org super admin |
+| Alice | `alice@demo.agathatrack.test` | `UatDemoPass1!` | Pet Care + org super admin |
 | Bob | `bob@demo.agathatrack.test` | `UatDemoPass1!` | Org admin (Happy Paws Clinic) |
-| Carol | `carol@demo.agathatrack.test` | `UatDemoPass1!` | Guardian (shared access to Buddy) |
+| Carol | `carol@demo.agathatrack.test` | `UatDemoPass1!` | Pet carer (shared access to Buddy) |
 | Eve | `eve@demo.agathatrack.test` | `UatDemoPass1!` | Foster parent (Rescue Hearts) |
 | Dave | `dave@demo.agathatrack.test` | `UatDemoPass1!` | Dual-role user |
 | Grace | `grace@demo.agathatrack.test` | `UatDemoPass1!` | Adoption prospect |
@@ -29,7 +29,7 @@ Password is intentionally weak and documented — acceptable only on isolated no
 
 | Scenario | Contents |
 |----------|----------|
-| `guardian` | Alice, Carol, Buddy, Whiskers |
+| `guardian` | Alice, Carol, Buddy, Whiskers (seed scenario key — wire value migrating to `pet_care`) |
 | `org-clinic` | Happy Paws Clinic (discoverable, org UX v3 fields) |
 | `org-v3-demo` | `org-clinic` + Rescue Hearts shell + org connection |
 | `rescue-hearts` | Full charity dataset (fostering, adoption, pets) |

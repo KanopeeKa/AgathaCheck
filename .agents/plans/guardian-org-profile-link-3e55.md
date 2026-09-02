@@ -14,7 +14,7 @@ tags: [guardian, navigation, organisation]
 | Field | Value |
 |-------|-------|
 | **plan_id** | `guardian-org-profile-link-3e55` |
-| **title** | Guardian dashboard shelter link → org presentation |
+| **title** | Pet Care dashboard shelter link → org presentation |
 | **base_branch** | `main` |
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |

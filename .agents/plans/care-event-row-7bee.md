@@ -5,7 +5,7 @@
 
 ## Goal
 
-Unify dashboard Care preview, pet Due/overdue preview, and `/g/events` on one scannable `CareEventRow`. Row tap opens the existing event view screen; snooze and edit move off list rows onto view. Mark done stays on the row with the existing completion sheet.
+Unify dashboard Care preview, pet Due/overdue preview, and `/pc/events` on one scannable `CareEventRow`. Row tap opens the existing event view screen; snooze and edit move off list rows onto view. Mark done stays on the row with the existing completion sheet.
 
 ## Locked decisions
 
@@ -26,7 +26,7 @@ Unify dashboard Care preview, pet Due/overdue preview, and `/g/events` on one sc
 **Deliverables:**
 
 - `CareEventRow`, `CareEventRowPetAvatar`, `care_event_status_line.dart`
-- Wire dashboard, pet preview, `/g/events`
+- Wire dashboard, pet preview, `/pc/events`
 - Refactor `PetEventViewBody` occurrence actions (mark done + snooze)
 - Remove `DueEventCard`, `MobileDueEventRow`, `DesktopCareRow`
 - Update unit, BDD, Playwright tests

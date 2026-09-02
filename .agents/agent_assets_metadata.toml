@@ -40,49 +40,49 @@ description = "Comprehensive mobile-first UI and skin specification derived from
 id = "T1d9UTYvwMS13UIhu8QOz"
 uri = "file://attached_assets/generated_images/agathatrack-guardian-style-concept.png"
 type = "image"
-title = "Guardian Operations Desk style concept"
+title = "Pet Care Operations Desk style concept"
 description = "A mobile-first visual concept for AgathaTrack's Guardian care experience: warm paper surfaces, plum contextual actions, pet identity, and clear care priorities."
 
 [[outputs]]
 id = "y3QlcGerpBoCi9_H1XgaP"
 uri = "file://attached_assets/generated_images/agathatrack-guardian-style-concept-olive.png"
 type = "image"
-title = "Guardian Operations Desk — Olive theme"
-description = "Olive-theme restyle of the Guardian Operations Desk concept using the AgathaTrack operations olive palette."
+title = "Pet Care Operations Desk — Olive theme"
+description = "Olive-theme restyle of the Pet Care Operations Desk concept using the AgathaTrack operations olive palette."
 
 [[outputs]]
 id = "wfR3O_JJujMW7EX9TA8oI"
 uri = "file://attached_assets/generated_images/agathatrack-guardian-style-concept-gold.png"
 type = "image"
-title = "Guardian Operations Desk — Yellow-gold theme"
-description = "Muted yellow-gold restyle of the Guardian Operations Desk concept using the AgathaTrack landing gold palette."
+title = "Pet Care Operations Desk — Yellow-gold theme"
+description = "Muted yellow-gold restyle of the Pet Care Operations Desk concept using the AgathaTrack landing gold palette."
 
 [[outputs]]
 id = "D9iQEk0pLUNPYo5VSyawA"
 uri = "file://attached_assets/generated_images/agathatrack-guardian-style-concept-teal.png"
 type = "image"
-title = "Guardian Operations Desk — Teal theme"
-description = "Teal-theme restyle of the Guardian Operations Desk concept using the AgathaTrack Organisation teal palette."
+title = "Pet Care Operations Desk — Teal theme"
+description = "Teal-theme restyle of the Pet Care Operations Desk concept using the AgathaTrack Organisation teal palette."
 
 [[outputs]]
 id = "VaDccPcSmCRbN4ICCPtee"
 uri = "file://attached_assets/generated_images/agathatrack-guardian-style-concept-teal-unified.png"
 type = "image"
-title = "Guardian Operations Desk — Unified teal theme"
+title = "Pet Care Operations Desk — Unified teal theme"
 description = "A more cohesive monochromatic teal variant with a continuous teal background, one dominant teal action color, warm-white cards, and restrained coral urgency accents."
 
 [[outputs]]
 id = "Dpl_5e8uECP8ECdgVX_wK"
 uri = "file://attached_assets/generated_images/agathatrack-guardian-style-concept-blue-teal.png"
 type = "image"
-title = "Guardian Operations Desk — Blue-teal theme"
+title = "Pet Care Operations Desk — Blue-teal theme"
 description = "A cooler blue-teal direction with a dark immersive background, a tight blue-teal palette, warm-white content cards, and restrained coral urgency accents."
 
 [[outputs]]
 id = "YtLfRNn692tGIhiaFIGB3"
 uri = "file://attached_assets/generated_images/agathatrack-guardian-style-concept-blue-teal-pale.png"
 type = "image"
-title = "Guardian Operations Desk — Pale blue-teal theme"
+title = "Pet Care Operations Desk — Pale blue-teal theme"
 description = "A light-background version of the cool blue-teal direction, using a unified blue-teal palette and replacing coral urgency accents with deep teal icon and text treatment."
 
 [[outputs]]
@@ -90,14 +90,14 @@ id = "2vxdqz-HHNolqyDxmvaa_"
 uri = "file://attached_assets/generated_images/agathatrack-landing-plum-teal-concept.png"
 type = "image"
 title = "AgathaTrack landing — Plum and teal concept"
-description = "Role-neutral landing and sign-in concept using the new Guardian plum and Shelter teal direction, with warm paper surfaces and photo-led care imagery. Illustrative generated copy is not production copy."
+description = "Role-neutral landing and sign-in concept using the new Pet Care plum and Shelter teal direction, with warm paper surfaces and photo-led care imagery. Illustrative generated copy is not production copy."
 
 [[outputs]]
 id = "p0NGSUdhgwf0458Nshztc"
 uri = "file://attached_assets/generated_images/agathatrack-landing-plum-new-teal-concept.png"
 type = "image"
 title = "AgathaTrack landing — Plum and new Shelter teal"
-description = "Refreshed role-neutral landing concept using the cooler Shelter teal from the updated logo direction, paired with Guardian plum and the protective pet-arch mark. Generated text is illustrative only."
+description = "Refreshed role-neutral landing concept using the cooler Shelter teal from the updated logo direction, paired with Pet Care plum and the protective pet-arch mark. Generated text is illustrative only."
 
 [[outputs]]
 id = "OLYruwCObphDumnIy14PJ"

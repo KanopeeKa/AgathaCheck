@@ -41,7 +41,7 @@ Eyebrow labels use **ALL CAPS** in EN (`CARE ACTIONS`, `PETS` where used). FR ey
 | Layer | Path | Notes |
 |-------|------|-------|
 | Flutter shell | `flutter_app/lib/features/experience/` | Renaming from `guardian_*` → `pet_care_*` |
-| Routes | `/pc/home`, `/pc/pets`, `/pc/events`, `/pc/fostering` | Replaces `/g/*` |
+| Routes | `/pc/home`, `/pc/pets`, `/pc/events`, `/pc/fostering` | Replaces `/pc/*` |
 | Experience enum | `AppExperience.petCare`, wire `pet_care` | Replaces `guardian` |
 | Theme | `petCarePrimary`, `petCareLight` | Replaces `guardianPrimary` |
 | User category (wire) | `pet_carer` | Replaces `pet_guardian` |

@@ -1,4 +1,4 @@
-# Guardian operations desk standards — execute plan
+# Pet Care operations desk standards — execute plan
 
 > **plan_id:** `guardian-ops-desk-754-b9bd`
 
@@ -7,14 +7,14 @@
 | Field | Value |
 |-------|-------|
 | **plan_id** | `guardian-ops-desk-754-b9bd` |
-| **title** | Harden PR #754 Guardian operations desk to AgathaTrack standards |
+| **title** | Harden PR #754 Pet Care operations desk to AgathaTrack standards |
 | **base_branch** | `cursor/guardian-ops-desk-754-b9bd-integration-b9bd` |
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
 
 ## Goal
 
-Land the Guardian operations desk redesign from PR #754 in reviewable atomic slices: record superseding navigation decisions, isolate Flutter 3.44 compatibility churn, deliver the desk UI with accessibility and modularity fixes, then complete BDD/E2E coverage before one integration → `main` merge.
+Land the Pet Care operations desk redesign from PR #754 in reviewable atomic slices: record superseding navigation decisions, isolate Flutter 3.44 compatibility churn, deliver the desk UI with accessibility and modularity fixes, then complete BDD/E2E coverage before one integration → `main` merge.
 
 ## Locked product decisions (2026-08-26)
 

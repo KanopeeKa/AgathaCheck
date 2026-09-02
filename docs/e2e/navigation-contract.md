@@ -29,7 +29,7 @@ Flutter web 3.44 changed how some widgets surface in the accessibility tree:
 |----------------|--------|----------------|
 | MergeSemantics labels (pet cards, profile rows) | `button` | `checkbox`, `tab`, `group` — use `semanticsByName()` |
 | Dashboard sections (`DueEventsSection`) | `group` | `region`, `tabpanel` — use `dashboardSectionGroup()` |
-| Guardian illustrated empty states (`GuardianIllustratedEmptyState`) | `group` (merged title+body label) | `button` for action — use `semanticsByName()`, not `getByText()` |
+| Pet Care illustrated empty states (`GuardianIllustratedEmptyState` until renamed) | `group` (merged title+body label) | `button` for action — use `semanticsByName()`, not `getByText()` |
 | Org pets filter tabs (`All` / `Tous`) | `tab` | `button`, `checkbox` |
 | Profile field values on My Details | `button` | `checkbox` |
 | Share sheet **Copy link** | `button` | `checkbox` |
@@ -53,6 +53,8 @@ For **due events on home** after API seed, call `refreshByRemount()` — the sec
 After API seeding, the Pet Care home `DueEventsSection` does not refresh until the screen remounts. Use `PetListPage.refreshByRemount()` before asserting due entries on `/pc/home`. The events-screen assertion in #216 was a temporary workaround.
 
 ## Pet Care workspace naming (D38)
+
+Routes use `/pc/*`. Wire value `pet_care` replaces legacy `guardian` for experience scope. Some Flutter/E2E identifiers still use `guardian_*` prefixes until a follow-up rename lands.
 
 | Surface | EN | FR |
 |---------|----|----|
@@ -128,8 +130,8 @@ Shelter menu item appears only when org membership makes shelter access eligible
 
 | Path | When | Helper |
 |------|------|--------|
-| Bottom nav **Account** tab | Compact Guardian shell (`<600px`) | `guardianAccountTabLocator()` / `openBottomNavTab('Account')` |
-| Leading nav **Account** | Medium+ Guardian shell (`≥600px`) | `openLeadingNavDestination('Account')` |
+| Bottom nav **Account** tab | Compact Pet Care shell (`<600px`) | `guardianAccountTabLocator()` / `openBottomNavTab('Account')` |
+| Leading nav **Account** | Medium+ Pet Care shell (`≥600px`) | `openLeadingNavDestination('Account')` |
 | Drawer **Account** row | Compact only (drawer retired ≥600px) | `openExperienceDrawer()` + drawer row |
 | Hash fallback | Neither path available | `openAccountFromShell()` → `E2E_NAV_FALLBACK` |
 

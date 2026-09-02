@@ -9,7 +9,7 @@ tags: [navigation, ux]
 
 # Navigation
 
-Shell navigation, routing UX, and experience switching (`/g/*`, `/o/*`).
+Shell navigation, routing UX, and experience switching (`/pc/*`, `/o/*`).
 
 | Folder | Contents |
 |--------|----------|

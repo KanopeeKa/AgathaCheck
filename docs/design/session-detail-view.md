@@ -15,7 +15,7 @@ Tier-2 design reference for the fostering **View Session** screen. Domain rules 
 
 One shared composition, two primary lenses:
 
-- **Foster participant** — calm, “your role in this placement”; guardian shell (`/g/*`)
+- **Foster participant** — calm, “your role in this placement”; guardian shell (`/pc/*`)
 - **Shelter operator** — operational, “manage this session”; org shell (`/o/*`)
 
 Same section order; copy, density, and actions differ.
@@ -56,7 +56,7 @@ Extract from existing `FosteringSessionDetailScreen`; do not fork a second scree
 | Primary CTA: one per screen state | Clear next action |
 | Touch targets ≥ 48×48 logical px | `design.mdc` |
 | Focus rings preserved on web | `accessibility.mdc` |
-| Foster lens: Guardian accent on primary CTA; Shelter lens: org teal on primary | Experience context |
+| Foster lens: Pet Care accent on primary CTA; Shelter lens: org teal on primary | Experience context |
 
 ## Copy tone (requirement)
 
@@ -117,7 +117,7 @@ See [navigation-contract.md](/docs/e2e/navigation-contract.md) for routes and re
 - [ ] Focus visible; touch ≥48dp
 - [ ] l10n for all new strings (EN + FR)
 - [ ] Empty, loading, error considered
-- [ ] `/g/*` vs `/o/*` shells correct
+- [ ] `/pc/*` vs `/o/*` shells correct
 - [ ] Widget tests for foster vs shelter action visibility
 - [ ] E2E `@P1` for open session from pet profile (phase 4)
 

@@ -108,7 +108,7 @@
     },
     {
       "id": "3",
-      "title": "Guardian shell and pet flows",
+      "title": "Pet Care shell and pet flows",
       "branch": "cursor/ui-theme-phase3-guardian-4bed",
       "allowed_paths": [
         "flutter_app/lib/features/experience/**",

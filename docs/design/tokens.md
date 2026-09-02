@@ -25,7 +25,7 @@ Canonical **colour tables** for AgathaTrack. Full component and layout spec: [`s
 
 ## Approved landing direction
 
-The public landing uses the same Guardian plum, Shelter teal, and warm-neutral
+The public landing uses the same Pet Care plum, Shelter teal, and warm-neutral
 system as the app. Its composition is distinct, but it must not introduce a
 third, one-off palette.
 
@@ -126,7 +126,7 @@ forms. Do not replace it with paws, paw prints, or a generic pet icon.
 | disabled | `#98A2B3` | disabled controls only |
 | inverse | `#FFFFFF` | on primary buttons |
 
-## Guardian mode (default primary — landing + `/g/*`)
+## Pet Care mode (default primary — landing + `/pc/*`)
 
 | Token | Hex |
 |-------|-----|
@@ -173,13 +173,13 @@ Empty states, onboarding, welcome — not main action buttons.
 
 Semantic **background fill only** — no borders on menu rows.
 
-| Code | Token | Guardian menu | Organisation menu |
+| Code | Token | Pet Care menu | Organisation menu |
 |------|-------|---------------|-------------------|
-| **p** | `guardianLight` | My Pets, Notifications, Events, My vets | Guardian view (switch) |
+| **p** | `guardianLight` | My Pets, Notifications, Events, My vets | Pet Care view (switch) |
 | **g** | `organizationLight` | Organisation view (switch) | My Organisation, Notifications, Events, Org vets |
 | **w** | `surfaceAlt` | Settings, Help, About, Contact, Legal, Invite, Log out | same utility block |
 
-Shell top bar uses experience primary (plum on `/g/*`, green on `/o/*`). Utility group never uses mode primary as row background.
+Shell top bar uses experience primary (plum on `/pc/*`, green on `/o/*`). Utility group never uses mode primary as row background.
 
 **Ownership accents** (pets, vets, notifications): plum = guardian/personal; green = fostered/org-linked. Pair with text + icon (`docs/archived/navigation-v2.md`).
 
@@ -211,11 +211,11 @@ Use foundation **body** / **muted** text on **w** group backgrounds — not guar
 
 ## Dashboard sections (guardian shell)
 
-Dashboard preview blocks on `/g/home` use **top-border accents only** — no filled card surface:
+Dashboard preview blocks on `/pc/home` use **top-border accents only** — no filled card surface:
 
 - Border: 2px top edge in section theme colour (`ColorScheme.primary` or experience accent)
 - Background: transparent (scaffold `background` shows through)
-- Guardian dashboard sections: plum top border; org sections: teal when on org routes
+- Pet Care dashboard sections: plum top border; org sections: teal when on org routes
 
 ## Implementation
 

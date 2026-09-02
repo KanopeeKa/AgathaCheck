@@ -1,30 +1,30 @@
 ---
-title: Guardian Today dashboard contract
+title: Pet Care Today dashboard contract
 owner: Experience Program Team
 audience: both
 status: active
 last_updated: 2026-08-21
 tags: [experience,guardian,organisation]
 ---
-# Guardian Today dashboard contract
+# Pet Care Today dashboard contract
 
 **Status:** Locked implementation handoff
 **Parent:** [`phase-2-guardian-journey.md`](phase-2-guardian-journey.md)
 **Master brief:** [`briefs/guardian-dashboard-brief.md`](briefs/guardian-dashboard-brief.md) (locked; do not edit)
 
-This document is the executable contract for the Guardian Today dashboard slice. It
+This document is the executable contract for the Pet Care Today dashboard slice. It
 clarifies how the approved dashboard direction fits the current AgathaTrack
 application. It does not create a new domain model, provider, route, permission,
 notification kind, or shell.
 
 ## Product boundary
 
-`/g/home` remains a Guardian section landing page with exactly three management
+`/pc/home` remains a Pet Care section landing page with exactly three management
 domains:
 
-1. **My Pets**
-2. **Due and Overdue**
-3. **My Vets**
+1. **My Pets** (pet-rail section — not the workspace label)
+2. **Care Actions** (eyebrow CARE ACTIONS; legacy label Due and Overdue)
+3. **Care team** (user-facing; vet routes unchanged)
 
 **Today** is a compact orientation and prioritisation layer above those three
 domains. It is not a fourth section, a replacement route, or a second management
@@ -41,12 +41,12 @@ Downstream work must derive presentation from the existing authorities:
 | Dashboard concern | Stable source/authority | Constraint |
 |---|---|---|
 | Owned, fostered, and shared pets | `PetListController` and `guardian_dashboard_helpers.dart` | Do not infer ownership or eligibility from visual state. |
-| Pet card relationship/status | Existing `Pet` fields and `ownership_accent.dart` conventions | Plum/Guardian and green/foster accents require text or icon support; never colour alone. |
+| Pet card relationship/status | Existing `Pet` fields and `ownership_accent.dart` conventions | Plum/Pet Care and green/foster accents require text or icon support; never colour alone. |
 | Due/overdue care items | `healthEntriesNotifierProvider`, `guardianDueEntries`, and existing health entry entities | “Events” means computed health, weight, and other care entries per D17; no generic event entity. |
 | Completion and undo | Existing `HealthEntriesNotifier.markTaken` / `undoComplete` flow | The server remains authoritative; preserve the current optimistic preview and rollback/error semantics. |
 | Veterinary contacts | `vetListProvider` and existing vet entities | Keep compact rows and existing display/detail destinations. |
 | Global updates | Existing unified notification provider and header bell | Notifications remain global and outside the dashboard section list. |
-| Section shell/navigation | `ExperienceShellScaffold` and drawer configuration | Keep Guardian, Organisation, and Account as the top-level shell model. |
+| Section shell/navigation | `ExperienceShellScaffold` and drawer configuration | Keep Pet Care, Shelter, and Account as the top-level shell model. |
 
 No new backend API, schema, event type, permission rule, notification system,
 or local ownership heuristic is permitted in this dashboard branch.
@@ -62,7 +62,7 @@ or local ownership heuristic is permitted in this dashboard branch.
 - Target a photo region of approximately **96–112 px** on the dashboard card.
 - Preserve a useful image placeholder and accessible name/status when no photo exists.
 - Keep status visible through the existing ownership accent plus text or icon.
-- The complete collection remains behind **All Pets / Manage pets** at `/g/pets`.
+- The complete collection remains behind **All Pets / Manage pets** at `/pc/pets`.
 - A pet card continues to open `/pet/:id`.
 
 ### Care preview
@@ -76,7 +76,7 @@ or local ownership heuristic is permitted in this dashboard branch.
   must not silently present as “nothing is due.”
 - “Add an event” remains the existing type picker for Health, Weight, and Other,
   routing to existing forms. It must not create a generic event record.
-- The full care collection remains `/g/events`.
+- The full care collection remains `/pc/events`.
 
 ### Vet preview
 
@@ -84,8 +84,8 @@ or local ownership heuristic is permitted in this dashboard branch.
   and linked-pet count.
 - Keep the list uncapped unless a later decision explicitly changes the current
   contract; it must remain scannable and not become a dense admin table.
-- Vet rows continue to open `/g/vets/:id` in the existing flow.
-- The full collection remains `/g/vets`.
+- Vet rows continue to open `/pc/vets/:id` in the existing flow.
+- The full collection remains `/pc/vets`.
 
 ### Responsive and accessibility requirements
 
@@ -106,7 +106,7 @@ or local ownership heuristic is permitted in this dashboard branch.
 
 The existing shell remains unchanged:
 
-- The drawer is the top-level section switcher for **Guardian**, **Organisation**,
+- The drawer is the top-level section switcher for **Pet Care**, **Shelter**,
   and **Account**.
 - The authenticated header keeps the hamburger on section roots, back navigation
   on sub-screens, and the persistent global notification bell.
@@ -118,7 +118,7 @@ The existing shell remains unchanged:
 ### Deferred navigation decisions
 
 This branch does **not** introduce a five-tab bottom bar, a universal Add action,
-or a new Today route. A bottom bar would change shared Guardian/Organisation shell
+or a new Today route. A bottom bar would change shared Pet Care/Shelter shell
 semantics, root/sub-screen header behavior, deep-link/back behavior, and future
 native portability. A universal Add action would also need a cross-domain
 destination and permission model rather than simply reusing the existing
@@ -128,7 +128,7 @@ Those ideas can be reconsidered only after a separate product decision defines:
 
 - the canonical tabs and their relationship to the existing drawer;
 - root and sub-screen back/deep-link behavior;
-- Guardian/Organisation switching and Account placement;
+- Pet Care/Shelter switching and Account placement;
 - Add-action scope, object types, permissions, and notification effects; and
 - mobile accessibility and native-portability requirements.
 
@@ -137,14 +137,14 @@ Those ideas can be reconsidered only after a separate product decision defines:
 | User action | Existing destination/behavior |
 |---|---|
 | Open a pet card | `/pet/:id` |
-| Open the full pet collection | `/g/pets` |
+| Open the full pet collection | `/pc/pets` |
 | Open a care item | Existing health-entry detail/workflow |
-| Open all care items | `/g/events` |
+| Open all care items | `/pc/events` |
 | Complete or undo a care item | Existing `markTaken` / `undoComplete` flow |
-| Open a vet row | `/g/vets/:id` |
-| Open all vets | `/g/vets` |
+| Open a vet row | `/pc/vets/:id` |
+| Open all vets | `/pc/vets` |
 | Review global updates | Existing header notification bell/panel |
-| Switch top-level experience | Existing Guardian/Organisation/Account drawer |
+| Switch top-level experience | Existing Pet Care/Shelter/Account drawer |
 
 Dashboard cards and Today summaries may improve discoverability, but must not
 change these action meanings.

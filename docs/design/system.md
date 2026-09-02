@@ -27,7 +27,7 @@ AgathaTrack feels like a calm, trustworthy care desk, not a social pet app or
 a generic administration console.
 
 - **Warm paper and quiet white surfaces** provide a focused, humane workspace.
-- **Guardian plum** and **Shelter teal** show experience context, never
+- **Pet Care plum** and **Shelter teal** show experience context, never
   permission or severity by themselves.
 - **Warm paper, plum, cooler Shelter teal, and the protective arch mark** form
   the role-neutral landing and auth experience.
@@ -69,9 +69,9 @@ component variant. Product UI should consume semantic tokens.
 |---|---:|---|
 | `operationsOlive` | `#14656C` | compatibility alias; use Shelter teal in new UI |
 | `operationsOliveLight` | `#1D7C84` | compatibility alias; use Shelter teal in new UI |
-| `operationsGold` | `#755B68` | compatibility alias; use Guardian plum in new UI |
+| `operationsGold` | `#755B68` | compatibility alias; use Pet Care plum in new UI |
 
-#### Guardian plum
+#### Pet Care plum
 
 | Token | Hex | Purpose |
 |---|---:|---|
@@ -80,10 +80,10 @@ component variant. Product UI should consume semantic tokens.
 | `plum-200` | `#E7DCE2` | guardian soft surface |
 | `plum-300` | `#CDB9C3` | guardian subtle border |
 | `plum-400` | `#A78294` | guardian icon support |
-| `plum-500` | `#755B68` | Guardian primary |
-| `plum-600` | `#664C59` | Guardian hover |
-| `plum-700` | `#573F4B` | Guardian pressed / active |
-| `plum-800` | `#422F39` | Guardian dark text on tint |
+| `plum-500` | `#755B68` | Pet Care primary |
+| `plum-600` | `#664C59` | Pet Care hover |
+| `plum-700` | `#573F4B` | Pet Care pressed / active |
+| `plum-800` | `#422F39` | Pet Care dark text on tint |
 | `plum-900` | `#301F29` | high-emphasis plum |
 | `plum-950` | `#21141C` | dark overlay only |
 
@@ -139,11 +139,11 @@ component variant. Product UI should consume semantic tokens.
   --color-border-strong: #D6CBC3;    /* Emphasis border / drag handle */
   --color-focus-ring: #1D7C84;       /* Visible 3px focus halo */
 
-  --color-primary: #755B68;          /* Guardian primary by default */
-  --color-primary-hover: #664C59;    /* Guardian hover */
-  --color-primary-active: #573F4B;   /* Guardian pressed */
-  --color-primary-disabled: #CDB9C3; /* Disabled Guardian primary */
-  --color-primary-subtle: #E8E1E3;   /* Guardian selected surface */
+  --color-primary: #755B68;          /* Pet Care primary by default */
+  --color-primary-hover: #664C59;    /* Pet Care hover */
+  --color-primary-active: #573F4B;   /* Pet Care pressed */
+  --color-primary-disabled: #CDB9C3; /* Disabled Pet Care primary */
+  --color-primary-subtle: #E8E1E3;   /* Pet Care selected surface */
 
   --color-success: #2B7A2E;          /* Completed / saved state */
   --color-success-subtle: #E8F5E9;   /* Success background */
@@ -159,7 +159,7 @@ component variant. Product UI should consume semantic tokens.
 
 | Context | Primary | Hover | Active | Subtle surface |
 |---|---:|---:|---:|---:|
-| Guardian (default) | `#755B68` | `#664C59` | `#573F4B` | `#E8E1E3` |
+| Pet Care (default) | `#755B68` | `#664C59` | `#573F4B` | `#E8E1E3` |
 | Shelter | `#1D7C84` | `#176972` | `#125860` | `#EAF5F5` |
 | Landing/auth | `#755B68` | `#664C59` | `#573F4B` | `#E6F2F2` |
 
@@ -538,12 +538,12 @@ Shell back behaviour is implemented in
 1. **Pop first** — when `Navigator.canPop` is true, pop the stack.
 2. **Fallback** — otherwise `context.go` to, in order: explicit `backPath` on
    the screen, safe `returnTo` query param on the current route, then the
-   experience section root (`/g/home` guardian, `/o/orgs` shelter).
+   experience section root (`/pc/home` guardian, `/o/orgs` shelter).
 
 Entry points that should return to the caller (pet cards, vet pet rows, all
 pets list) must use `openPetDetail` (`context.push` + encoded `returnTo`) or
 pass `returnTo` on deep links. Default when neither pop nor `returnTo` applies:
-**Guardian dashboard** (`/g/home`).
+**Pet Care dashboard** (`/pc/home`).
 
 Reject external URLs and protocol-relative paths in `returnTo` parsing.
 
@@ -561,7 +561,7 @@ Do not crowd the app bar with multiple icon-only secondary actions.
 
 The drawer is a sparse section switcher:
 
-1. Guardian
+1. Pet Care
 2. Organisation
 3. breathing-space divider
 4. Account pinned at the bottom
@@ -609,7 +609,7 @@ return it to the bell on close.
 | Due / warning | `warning-100` | `warning-500` | “Due” / “Needs attention” text |
 | Overdue / error | `error-100` | `error-500` | “Overdue” text and urgency icon |
 | Info | `#EDF3FA` | `info-500` | concise explanatory text |
-| Guardian context | `plum-100` | `plum-700` | Guardian label where needed |
+| Pet Care context | `plum-100` | `plum-700` | Pet Care label where needed |
 | Organisation context | `teal-100` | `teal-700` | Organisation label where needed |
 
 Badges use `font-size-xs`, weight 700, `radius-full`, 6px horizontal and 4px
@@ -674,8 +674,8 @@ no-pets guidance.
 | Range | Name | Layout rules |
 |---|---|---|
 | `0–599px` | Compact | one-column content; 16px page padding; sheets are full width; stacked form actions when labels wrap |
-| `600–839px` | Medium | 24px page padding; Guardian navigation rail (D-v4-4); drawer hidden in Guardian workspace |
-| `840–1199px` | Expanded | max content width 1120px; Guardian expanded sidebar (D-v4-4); notification panel may slide over content; dashboard previews can use 2–3 columns |
+| `600–839px` | Medium | 24px page padding; Pet Care navigation rail (D-v4-4); drawer hidden in Pet Care workspace |
+| `840–1199px` | Expanded | max content width 1120px; Pet Care expanded sidebar (D-v4-4); notification panel may slide over content; dashboard previews can use 2–3 columns |
 | `1200px+` | Large | preserve max content width; landing may use story/auth split at approximately 1.05fr / 0.95fr |
 
 The landing/auth experience collapses from its split story/form layout to one
@@ -733,9 +733,9 @@ looping animation beyond a loading affordance.
 |---|---|
 | Runtime color constants | `flutter_app/lib/core/theme/app_color_tokens.dart` |
 | Material component themes | `flutter_app/lib/core/theme/app_theme.dart` |
-| Guardian / Organisation context overrides | `flutter_app/lib/core/theme/experience_colors.dart` |
+| Pet Care / Shelter context overrides | `flutter_app/lib/core/theme/experience_colors.dart` |
 | Product decisions and screen behavior | `docs/design/plans/agathatrack-redesign-blueprint.md` |
-| Landing reference | approved Guardian Operations Desk landing mockup |
+| Landing reference | approved Pet Care Operations Desk landing mockup |
 
 When implementation needs a value not defined here, add a named token first.
 Do not add a literal colour, arbitrary radius, or ad hoc spacing value directly

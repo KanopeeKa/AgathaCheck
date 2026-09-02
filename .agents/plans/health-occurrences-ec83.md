@@ -169,7 +169,7 @@ server/**
 - Occurrence-aware `CareEventRow` status lines
 - `OccurrenceStackSheet` with Missed LIFO / Coming up FIFO zones
 - Opt-in checkbox skip earlier missed; Skip all missed; Review → event view route
-- Wire dashboard preview, `/g/events`, pet due section
+- Wire dashboard preview, `/pc/events`, pet due section
 - Remove snooze from list-adjacent flows touched in this phase
 
 **Exit criteria:**

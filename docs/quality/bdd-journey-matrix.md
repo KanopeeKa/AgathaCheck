@@ -140,7 +140,7 @@ existing full pet, event, vet, and notification workflows.
 | P1 | Global notification hand-off | Pending foster placement surfaces as a notification, not a dashboard banner | `guardian.dashboard.spec.ts` | ✅ |
 | P1 | Full Events continuity | Global events screen shows unified list without tabs; Global events screen supports pet and cohort filters | `guardian.dashboard.spec.ts` | ✅ |
 
-**Verified responsive contract:** the suite enters `/g/home` directly, checks
+**Verified responsive contract:** the suite enters `/pc/home` directly, checks
 the 320px narrow layout for no horizontal overflow, proves completion/undo at
 375×812, and exercises the wide 1280×800 hierarchy. It also verifies
 destination navigation, browser back, the shell notification panel, and an axe

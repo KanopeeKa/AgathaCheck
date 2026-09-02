@@ -14,7 +14,7 @@ User-facing auth and profile flows in AgathaTrack (see `authentication.feature`)
 
 ## Sign up
 
-Guardians register with email and password (minimum six characters). Validation covers mismatched passwords, missing email, invalid email format, duplicate email, and password rules.
+Pet carers register with email and password (minimum six characters). Validation covers mismatched passwords, missing email, invalid email format, duplicate email, and password rules.
 
 ## Log in
 
