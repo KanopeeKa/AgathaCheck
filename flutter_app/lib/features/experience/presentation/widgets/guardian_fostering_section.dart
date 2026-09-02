@@ -38,10 +38,16 @@ class GuardianFosteringSection extends StatelessWidget {
       final key = pet.organizationId?.trim().isNotEmpty == true
           ? pet.organizationId!.trim()
           : shelter;
-      shelters.putIfAbsent(
-        key,
-        () => _ShelterGroup(name: shelter, organizationId: pet.organizationId),
-      ).pets.add(pet);
+      shelters
+          .putIfAbsent(
+            key,
+            () => _ShelterGroup(
+              name: shelter,
+              organizationId: pet.organizationId,
+            ),
+          )
+          .pets
+          .add(pet);
     }
     final hasOverflow =
         !showAll &&
@@ -238,9 +244,7 @@ class _ShelterRow extends StatelessWidget {
       context.go('/o/orgs');
       return;
     }
-    final returnTo = Uri.encodeComponent(
-      GoRouterState.of(context).uri.path,
-    );
+    final returnTo = Uri.encodeComponent(GoRouterState.of(context).uri.path);
     context.push('/o/orgs/$orgId?returnTo=$returnTo');
   }
 }

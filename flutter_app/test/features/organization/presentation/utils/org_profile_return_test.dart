@@ -19,6 +19,12 @@ void main() {
       expect(parseOrgProfileReturnTo(''), isNull);
       expect(parseOrgProfileReturnTo('//evil.example'), isNull);
       expect(parseOrgProfileReturnTo('https://evil.example'), isNull);
+      expect(parseOrgProfileReturnTo('%25'), isNull);
+      expect(parseOrgProfileReturnTo('%'), isNull);
+    });
+
+    test('trims decoded paths', () {
+      expect(parseOrgProfileReturnTo('%2Fg%2Fhome%20'), '/g/home');
     });
   });
 

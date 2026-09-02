@@ -124,7 +124,8 @@ void main() {
       routes: [
         GoRoute(
           path: '/g/home',
-          builder: (context, state) => const Scaffold(body: Text('guardian home')),
+          builder: (context, state) =>
+              const Scaffold(body: Text('guardian home')),
         ),
         GoRoute(
           path: '/o/orgs',
@@ -137,9 +138,7 @@ void main() {
             final returnTo = state.uri.queryParameters['returnTo'];
             return OrganisationProfileScreen(
               orgId: id,
-              returnTo: returnTo == null
-                  ? null
-                  : Uri.decodeComponent(returnTo),
+              returnTo: returnTo == null ? null : Uri.decodeComponent(returnTo),
             );
           },
         ),

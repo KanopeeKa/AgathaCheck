@@ -6,7 +6,7 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
-  Widget buildSection(List<Pet> pets, GoRouter router) {
+  Widget buildSection(GoRouter router) {
     return MaterialApp.router(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
@@ -40,7 +40,7 @@ void main() {
       ],
     );
 
-    await tester.pumpWidget(buildSection(pets, router));
+    await tester.pumpWidget(buildSection(router));
     await tester.pumpAndSettle();
 
     expect(find.text('Miso'), findsOneWidget);
@@ -66,7 +66,7 @@ void main() {
         ],
       );
 
-      await tester.pumpWidget(buildSection(const [], router));
+      await tester.pumpWidget(buildSection(router));
       await tester.pumpAndSettle();
 
       expect(find.text('No fostering sessions right now'), findsOneWidget);
@@ -127,7 +127,7 @@ void main() {
       ],
     );
 
-    await tester.pumpWidget(buildSection(const [], router));
+    await tester.pumpWidget(buildSection(router));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Harbour Shelter').last);

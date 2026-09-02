@@ -3,10 +3,22 @@ import 'package:go_router/go_router.dart';
 
 /// Parses a safe in-app return path from an org profile deep link.
 ///
-/// Rejects empty values, protocol-relative paths, and external URLs.
+/// Rejects empty values, protocol-relative paths, external URLs, malformed
+/// encodings, and trailing whitespace.
 String? parseOrgProfileReturnTo(String? raw) {
   if (raw == null || raw.isEmpty) return null;
-  final decoded = Uri.decodeComponent(raw.trim());
+  final trimmed = raw.trim();
+  if (trimmed.isEmpty) return null;
+
+  String decoded;
+  try {
+    decoded = Uri.decodeComponent(trimmed);
+  } on Object {
+    return null;
+  }
+
+  decoded = decoded.trim();
+  if (decoded.isEmpty) return null;
   if (!decoded.startsWith('/') || decoded.startsWith('//')) return null;
   if (decoded.contains('://')) return null;
   return decoded;
