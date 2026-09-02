@@ -52,10 +52,10 @@ next_action: "continue phase 1 on branch cursor/pet-care-vocabulary-b088"
 artifact_ref:
   branch: cursor/pet-care-vocabulary-b088
   plan_path: .agents/plans/pet-care-domain-rename-b088.md
-  plan_commit: 866d7903c91056f97c968f846798950c55d5e63d
+  plan_commit: 92927cc3eda40f8b86388ecc8800544371c32d95
   snapshot_path: .agents/plans/pet-care-domain-rename-b088.snapshot.json
-  snapshot_commit: 866d7903c91056f97c968f846798950c55d5e63d
-open_prs: []
+  snapshot_commit: 92927cc3eda40f8b86388ecc8800544371c32d95
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/830"]
 merge_commits: {}
 debt_issue_refs: []
 ```

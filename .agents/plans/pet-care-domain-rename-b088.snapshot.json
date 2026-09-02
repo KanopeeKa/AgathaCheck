@@ -4,7 +4,7 @@
   "approved_at": "2026-09-02T12:15:00Z",
   "approved_by": "user chat 2026-09-02 (/execute-plan after pet-care-domain-rename analysis + FR Suivi/Soins table)",
   "approved_until": "2026-09-04T12:15:00Z",
-  "content_hash": "sha256:c206ba6b5bece0fd8fb61f2bdf059eccf72992dbce03843aeefcb85d3382a0aa",
+  "content_hash": "sha256:abf1a638d2d60f70c5bea2fc9b5d7f7e493f68727055d94e4004aa41283eeb15",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/pet-care-domain-rename-b088-integration-b088",
@@ -42,7 +42,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/830",
+      "pr_head_sha": "92927cc3eda40f8b86388ecc8800544371c32d95"
     },
     {
       "id": "2",
