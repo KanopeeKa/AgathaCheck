@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../health_tracking/domain/entities/health_history_entry.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../../health_tracking/presentation/widgets/care_event_row.dart';
 import '../../../../health_tracking/presentation/widgets/care_event_row_context.dart';
+import '../../../../health_tracking/presentation/widgets/care_event_row_host.dart';
+import '../../../../health_tracking/presentation/widgets/occurrence_care_actions.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/screens/widgets/pet_event_entry_list.dart';
 import '../../../../pet_profile/presentation/widgets/pet_list/home_event_actions.dart';
@@ -84,8 +84,14 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
   // ---- completion callbacks ------------------------------------------------
 
   Future<void> _onMarkDone(HealthEntry entry, int index) async {
-    final result = await HomeEventActions.showCompletionSheet(context);
+    final result = await OccurrenceCareActions.showMarkDoneFlow(
+      context,
+      ref,
+      entry,
+    );
     if (result == null || !mounted) return;
+
+    if (result.alreadyPersisted) return;
 
     setState(() {
       _completed[entry.id] = _OptimisticCompletion(
@@ -95,7 +101,13 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
     });
 
     try {
-      await HomeEventActions.commitCompletion(context, ref, entry, result);
+      await OccurrenceCareActions.persistCompletion(
+        ref,
+        entry,
+        result.completedOn,
+        occurrenceId: result.occurrenceId,
+        skipEarlierMissed: result.skipEarlierMissed,
+      );
     } catch (_) {
       if (!mounted) return;
       setState(() => _completed.remove(entry.id));
@@ -276,13 +288,13 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
       mainAxisSize: MainAxisSize.min,
       children: [
         for (var i = 0; i < items.length; i++)
-          CareEventRow(
+          CareEventRowHost(
             key: Key('global_events_row_${items[i].entry.id}'),
             entry: items[i].entry,
             pet: petMap[items[i].entry.petId],
             rowContext: CareEventRowContext.dashboard,
             isCompleted: items[i].isCompleted,
-            onMarkDone: () => _onMarkDone(items[i].entry, i),
+            onMarkDone: () async => _onMarkDone(items[i].entry, i),
             onUndo: () => _onUndo(items[i].entry),
             onView: () => _viewEntry(items[i].entry),
           ),

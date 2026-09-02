@@ -4,7 +4,7 @@
   "approved_at": "2026-09-02T10:00:00Z",
   "approved_by": "user-chat-2026-09-02",
   "approved_until": "2026-09-04T10:00:00Z",
-  "content_hash": "sha256:802ebf1b999d0ae4250d9d206e887d84ae86a7d3ff8d6644999ef85ce153df0d",
+  "content_hash": "sha256:7dce92719b0b3d717170d242fb276b1c28dfeb98a0782e5e56400e46f99fe239",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/health-occurrences-integration-ec83",
@@ -72,11 +72,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_head_sha": "c318be6708a7c07b3cf7955cf8c5df2c79cc5e37",
+      "pr_head_sha": "07f544cb",
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/814"
     },
     {
@@ -106,13 +106,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_head_sha": "ffa7a49866c7efc6014fe88f20f3ded9a6e7be2b"
     },
     {
       "id": "4",
