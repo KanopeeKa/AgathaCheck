@@ -8,10 +8,7 @@ void main() {
         parseOrgProfileReturnTo(Uri.encodeComponent('/g/home')),
         '/g/home',
       );
-      expect(
-        parseOrgProfileReturnTo('/g/fostering'),
-        '/g/fostering',
-      );
+      expect(parseOrgProfileReturnTo('/g/fostering'), '/g/fostering');
     });
 
     test('rejects unsafe values', () {
@@ -34,10 +31,7 @@ void main() {
     });
 
     test('uses provided return path', () {
-      expect(
-        orgProfileFallbackReturnPath(returnTo: '/g/home'),
-        '/g/home',
-      );
+      expect(orgProfileFallbackReturnPath(returnTo: '/g/home'), '/g/home');
     });
   });
 }

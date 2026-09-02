@@ -121,7 +121,9 @@ void main() {
         GoRoute(
           path: '/o/orgs/:id',
           builder: (context, state) => Scaffold(
-            body: Text('profile:${state.pathParameters['id']}:${state.uri.query}'),
+            body: Text(
+              'profile:${state.pathParameters['id']}:${state.uri.query}',
+            ),
           ),
         ),
       ],
@@ -135,9 +137,7 @@ void main() {
 
     expect(currentLocation, '/g/home');
     expect(
-      find.text(
-        'profile:org-harbour:returnTo=%2Fg%2Fhome',
-      ),
+      find.text('profile:org-harbour:returnTo=%2Fg%2Fhome'),
       findsOneWidget,
     );
   });
