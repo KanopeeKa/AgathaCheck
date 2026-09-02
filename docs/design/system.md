@@ -538,7 +538,7 @@ Shell back behaviour is implemented in
 1. **Pop first** — when `Navigator.canPop` is true, pop the stack.
 2. **Fallback** — otherwise `context.go` to, in order: explicit `backPath` on
    the screen, safe `returnTo` query param on the current route, then the
-   experience section root (`/pc/home` guardian, `/o/orgs` shelter).
+   experience section root (`/pc/home` Pet Care, `/o/orgs` shelter).
 
 Entry points that should return to the caller (pet cards, vet pet rows, all
 pets list) must use `openPetDetail` (`context.push` + encoded `returnTo`) or

@@ -95,10 +95,10 @@ void main() {
   ) async {
     late String currentLocation;
     final router = GoRouter(
-      initialLocation: '/g/home',
+      initialLocation: '/pc/home',
       routes: [
         GoRoute(
-          path: '/g/home',
+          path: '/pc/home',
           builder: (context, state) {
             currentLocation = state.uri.toString();
             return Scaffold(
@@ -132,7 +132,7 @@ void main() {
     await tester.tap(find.text('Miso'));
     await tester.pumpAndSettle();
 
-    expect(currentLocation, '/g/home');
+    expect(currentLocation, '/pc/home');
     expect(find.text('session:foster-1'), findsOneWidget);
   });
 

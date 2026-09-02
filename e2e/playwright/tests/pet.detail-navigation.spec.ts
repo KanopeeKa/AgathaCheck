@@ -28,6 +28,7 @@ test.describe('Pet detail back navigation', () => {
     await waitForFlutterRoutePattern(page, /\/pc\/pets(?:\?|$)/, 30_000);
 
     const petList = new PetListPage(page);
+    await petList.expectManagePetsLoaded();
     await petList.openPet('BackPet');
 
     const detail = new PetDetailPage(page);
