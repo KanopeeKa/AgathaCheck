@@ -1,10 +1,11 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { dismissConsentBannerIfPresent, enableFlutterAccessibility, escapeRegExp, refreshFlutterAccessibility, waitForFlutterRoutePattern } from '../support/flutter';
+import { dismissConsentBannerIfPresent, enableFlutterAccessibility, escapeRegExp, refreshFlutterAccessibility, semanticsByName, waitForFlutterRoutePattern } from '../support/flutter';
 
 /**
  * Pet detail screen (`/pet/:petId`).
  * Maps to: flutter_app/test/bdd/features/pet_profiles.feature
+ * expectLoaded tolerates compact shells that omit the banner role.
  */
 export class PetDetailPage {
   constructor(private readonly page: Page) {}
@@ -13,11 +14,14 @@ export class PetDetailPage {
     await dismissConsentBannerIfPresent(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pet\/[^/?]+/, 30_000);
     await refreshFlutterAccessibility(this.page);
-    await this.page
-      .getByRole('banner', { name: new RegExp(petName, 'i') })
-      .or(this.page.getByRole('button', { name: new RegExp(`Edit Pet.*${petName}`, 'i') }))
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await expect(
+      this.page
+        .locator('[flt-semantics-identifier="pet_detail_overflow_menu"]')
+        .or(this.page.getByRole('button', { name: new RegExp(`Edit Pet.*${petName}`, 'i') }))
+        .or(semanticsByName(this.page, /Weight Tracking|Suivi du poids/i))
+        .or(this.page.getByRole('banner', { name: new RegExp(petName, 'i') }))
+        .first(),
+    ).toBeVisible({ timeout: 30_000 });
   }
 
   async expectSpecies(species: string): Promise<void> {

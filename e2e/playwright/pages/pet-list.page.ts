@@ -249,7 +249,7 @@ export class PetListPage {
 
     await this.expectPetVisible(name);
     let route = flutterRoutePath(this.page.url());
-    if (route === '/g/home' || route === '/') {
+    if (route === '/pc/home' || route === '/') {
       await this.openManagePets();
     }
     await expect(async () => {
