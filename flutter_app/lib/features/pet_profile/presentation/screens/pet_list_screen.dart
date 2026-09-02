@@ -28,10 +28,7 @@ import '../widgets/pet_list/pet_list_section_header.dart';
 
 /// Screen that displays the list of all pets owned by the user.
 class PetListScreen extends ConsumerStatefulWidget {
-  const PetListScreen({
-    super.key,
-    this.embeddedInShell = false,
-  });
+  const PetListScreen({super.key, this.embeddedInShell = false});
 
   /// When true, renders list body only (guardian shell provides top nav).
   final bool embeddedInShell;

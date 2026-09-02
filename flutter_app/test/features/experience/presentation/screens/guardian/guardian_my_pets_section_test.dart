@@ -171,7 +171,9 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 
-  testWidgets('shared compact cards use shared wrapper without swipe hide', (tester) async {
+  testWidgets('shared compact cards use shared wrapper without swipe hide', (
+    tester,
+  ) async {
     const shared = Pet(
       id: 'shared-1',
       name: 'Shared pet',

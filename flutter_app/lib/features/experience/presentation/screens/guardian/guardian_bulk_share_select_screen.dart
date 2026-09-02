@@ -88,8 +88,7 @@ class _GuardianBulkShareSelectScreenState
                 )
               : null;
           final allSelected =
-              eligible.isNotEmpty &&
-              _selectedPetIds.length == eligible.length;
+              eligible.isNotEmpty && _selectedPetIds.length == eligible.length;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -109,7 +108,9 @@ class _GuardianBulkShareSelectScreenState
                       onPressed: eligible.isEmpty
                           ? null
                           : () => _toggleSelectAll(eligible),
-                      child: Text(allSelected ? l.deselectAllPets : l.selectAllPets),
+                      child: Text(
+                        allSelected ? l.deselectAllPets : l.selectAllPets,
+                      ),
                     ),
                   ],
                 ),

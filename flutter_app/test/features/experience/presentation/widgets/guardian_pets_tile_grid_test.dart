@@ -26,11 +26,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          GuardianPetsTileGrid(
-            pets: pets,
-            careSummary: null,
-            onPetTap: (_) {},
-          ),
+          GuardianPetsTileGrid(pets: pets, careSummary: null, onPetTap: (_) {}),
         ),
       );
       await tester.pumpAndSettle();

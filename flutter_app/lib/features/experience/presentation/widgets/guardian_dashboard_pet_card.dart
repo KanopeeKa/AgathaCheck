@@ -62,76 +62,77 @@ class GuardianDashboardPetCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Container(
-                  key: Key('guardian_dashboard_pet_photo_${pet.id}'),
-                  width: 56,
-                  height: 56,
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: ownership.accentColor.withValues(alpha: 0.18),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: ownership.accentColor,
-                      width: 1.5,
-                    ),
-                  ),
-                  child: ClipOval(child: _photo(context)),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        pet.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
+                      key: Key('guardian_dashboard_pet_photo_${pet.id}'),
+                      width: 56,
+                      height: 56,
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: ownership.accentColor.withValues(alpha: 0.18),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: ownership.accentColor,
+                          width: 1.5,
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      Row(
+                      child: ClipOval(child: _photo(context)),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
-                            careState == GuardianTodayPetCareState.overdue
-                                ? Icons.priority_high_rounded
-                                : careState ==
-                                      GuardianTodayPetCareState.dueToday
-                                ? Icons.schedule_outlined
-                                : Icons.check_circle_outline,
-                            size: 14,
-                            color: _careColor(),
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              careLabel,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: _careColor(),
-                                fontWeight: FontWeight.w600,
-                              ),
+                          Text(
+                            pet.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Icon(
+                                careState == GuardianTodayPetCareState.overdue
+                                    ? Icons.priority_high_rounded
+                                    : careState ==
+                                          GuardianTodayPetCareState.dueToday
+                                    ? Icons.schedule_outlined
+                                    : Icons.check_circle_outline,
+                                size: 14,
+                                color: _careColor(),
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  careLabel,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: _careColor(),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (relationship != l.myPets &&
+                              MediaQuery.textScalerOf(context).scale(12) <=
+                                  18) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              relationship,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
                         ],
                       ),
-                      if (relationship != l.myPets &&
-                          MediaQuery.textScalerOf(context).scale(12) <= 18) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          relationship,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
+                    ),
                   ],
                 ),
               ),

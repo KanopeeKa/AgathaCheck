@@ -32,15 +32,16 @@ class GuardianEmbeddedPetsList extends StatelessWidget {
     final owned = guardianDashboardPersonalPets(allPets, controller);
     final shared = guardianDashboardSharedPets(allPets, controller);
     final fostered = guardianDashboardFosterPets(allPets, controller);
-    final passedAway = controller
-        .guardianShellPets(allPets)
-        .where((pet) => pet.passedAway)
-        .toList()
-      ..sort(
-        (a, b) => (a.createdAt ?? DateTime(2100)).compareTo(
-          b.createdAt ?? DateTime(2100),
-        ),
-      );
+    final passedAway =
+        controller
+            .guardianShellPets(allPets)
+            .where((pet) => pet.passedAway)
+            .toList()
+          ..sort(
+            (a, b) => (a.createdAt ?? DateTime(2100)).compareTo(
+              b.createdAt ?? DateTime(2100),
+            ),
+          );
 
     void openPet(Pet pet) => context.go('/pet/${pet.id}');
 

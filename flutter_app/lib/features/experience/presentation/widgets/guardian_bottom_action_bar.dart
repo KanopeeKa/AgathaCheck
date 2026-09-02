@@ -49,18 +49,18 @@ class GuardianBottomActionBar extends StatelessWidget {
                       message: l.moreActions,
                       child: OutlinedButton(
                         key: const Key('pets_more_actions_button'),
-                      onPressed: () {
-                        if (controller.isOpen) {
-                          controller.close();
-                        } else {
-                          controller.open();
-                        }
-                      },
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(48),
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                      ),
-                      child: const Icon(Icons.more_horiz),
+                        onPressed: () {
+                          if (controller.isOpen) {
+                            controller.close();
+                          } else {
+                            controller.open();
+                          }
+                        },
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(48),
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                        ),
+                        child: const Icon(Icons.more_horiz),
                       ),
                     );
                   },
