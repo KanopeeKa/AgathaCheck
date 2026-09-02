@@ -14,7 +14,7 @@ User-facing flows for the global bell and in-app notification feed (D7–D11 in 
 
 ## Open notification panel from header bell
 
-On every authenticated screen, the header shows a persistent bell. Tapping opens a full-height right slide-over panel (not a separate `/g/notifications` route).
+On every authenticated screen, the header shows a persistent bell. Tapping opens a full-height right slide-over panel (not a separate `/pc/notifications` route).
 
 ## Filter by kind (Care / Organisation)
 

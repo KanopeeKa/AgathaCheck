@@ -35,7 +35,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Flutter web password-manager autofill](flutter-web-password-managers.md) — CanvasKit paints fields on canvas so extensions (Proton Pass) can't autofill; fix is a native HTML form in index.html bridged to Dart.
 - [Tool-output token scrambling](tool-output-token-scrambling.md) — grep/bash can mangle source tokens in file content (e.g. weight→ln); read tool shows truth, edits use real tokens.
 - [Health entry completion semantics](health-entry-completion.md) — UI derives overdue/completed from next_due_date only (no status field); mark-taken must advance/sentinel next_due_date in the backend.
-- [Guardian mobile completion](guardian-mobile-completion.md) — compact dashboard completion keeps a reversible list-level preview while the server remains authoritative.
+- [Pet Care mobile completion](guardian-mobile-completion.md) — compact dashboard completion keeps a reversible list-level preview while the server remains authoritative (legacy filename).
 - [Canonical product name](canonical-product-name.md) — use AgathaTrack in current product UI and copy; AgathaCheck is the legacy name.
 - [Shelter terminology and evolving design](shelter-terminology-and-evolving-design.md) — Shelter is the canonical teal mode; evolve prior references screen by screen.
 - [JWT secret dev/test fallback](jwt-secret-dev-fallback.md) — keep the prod-gated 'default_secret' fallback; CI/Jest sign tokens with it and workflows set no secret.
@@ -53,7 +53,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 
 ## Quick references
 
-- **Experience program:** earlier references and file names using “Organisation” are legacy; interpret them through the current Shelter terminology and evolve screens deliberately.
+- **Experience program:** earlier references and file names using “Organisation” or “Guardian” (workspace) are legacy; interpret through **Pet Care** / **Shelter** (D38) and evolve screens deliberately. See [pet_care README](/docs/domains/pet_care/README.md).
 - **Execute-plan autonomy:** `.agents/memory/execute-plan-autonomy.md` — gate `0` = proceed; no permission prompts; per-phase workers; integration branch for 2+ phases
 - Domain map: `docs/architecture/index.md`
 - Efficiency plan: `docs/agent-efficiency/plans/agent-efficiency-plan.md`

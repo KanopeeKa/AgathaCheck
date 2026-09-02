@@ -1,5 +1,5 @@
 ---
-title: Guardian dashboard redesign brief
+title: Pet Care dashboard redesign brief
 owner: Experience Program Team
 audience: both
 status: active
@@ -13,18 +13,20 @@ feature_id: guardian-dashboard-brief
 > [`/docs/domains/pet_profile/changes/phase-2-guardian-journey.md`](/docs/domains/pet_profile/changes/phase-2-guardian-journey.md). Imported verbatim 2026-07-25.
 > Note: "Events" and "family events" terminology in this brief is **redefined** by decisions
 > D17 and D18 — see the decisions log before implementing.
+>
+> **D38 supersession (2026-09-02):** Workspace is **Pet Care** / **Suivi**; **My Pets** names only the dashboard pet-rail section. Historical “Guardian” wording below is legacy product language.
 
-# Guardian dashboard redesign brief
+# Pet Care dashboard redesign brief
 
 ## Purpose
 
-Redesign the Guardian dashboard so it becomes a clear, useful landing page for guardian workflows rather than a generic mixed home feed. The dashboard should help users quickly orient themselves around their pets, upcoming care actions, veterinary contacts, and important updates while remaining light, readable, and mobile-first [file:33][web:46][web:48].
+Redesign the Pet Care dashboard so it becomes a clear, useful landing page for guardian workflows rather than a generic mixed home feed. The dashboard should help users quickly orient themselves around their pets, upcoming care actions, veterinary contacts, and important updates while remaining light, readable, and mobile-first [file:33][web:46][web:48].
 
 This brief is written to be readable by both humans and AI implementation tools. It defines the structure, behavior, and UX intent while leaving room for the implementing system to apply its own visual system, spacing rules, and component logic.
 
 ## Role of the dashboard
 
-The Guardian dashboard should act as a section landing page, not as a full management screen. Each section should preview a limited subset of information and provide a clear path to the dedicated screen where the full list and related actions live [file:33].
+The Pet Care dashboard should act as a section landing page, not as a full management screen. Each section should preview a limited subset of information and provide a clear path to the dedicated screen where the full list and related actions live [file:33].
 
 The dashboard should include the following primary sections:
 
@@ -32,7 +34,7 @@ The dashboard should include the following primary sections:
 - Upcoming Pet Events
 - My Vets
 
-Notifications should be treated as a global cross-domain layer accessed from the header, not as a core content block inside the Guardian dashboard [web:50][web:52][web:60][web:76].
+Notifications should be treated as a global cross-domain layer accessed from the header, not as a core content block inside the Pet Care dashboard [web:50][web:52][web:60][web:76].
 
 ## Structural pattern
 
@@ -47,7 +49,7 @@ This creates a symmetrical and predictable dashboard model. The dashboard shows 
 
 ## Section rules
 
-The Guardian dashboard should use this navigation logic:
+The Pet Care dashboard should use this navigation logic:
 
 | Section | Dashboard role | Dedicated full screen | Primary screen-level action |
 |---|---|---|---|
@@ -77,7 +79,7 @@ This pattern is recommended over circular image-only tiles because it scales bet
 
 The pet status should be communicated by the thin separator bar between image and name:
 
-- Use the agreed Guardian theme for the user’s own pets
+- Use the agreed Pet Care theme for the user’s own pets
 - Use the agreed Organisation theme for foster pets
 
 Do not rely only on text labels when the status can be communicated with a clear but restrained visual code. The implementation may still add a small text label or badge if needed for accessibility or clarity.
@@ -191,7 +193,7 @@ This keeps the dashboard focused while still making every area feel complete and
 
 ### Recommendation
 
-Notifications should be a global cross-domain feature, not split between Guardian and Organisation. Users should have one place to review all important updates, while the notification content itself can indicate whether the item belongs to Guardian or Organisation [web:50][web:52][web:60][web:76].
+Notifications should be a global cross-domain feature, not split between Pet Care and Shelter. Users should have one place to review all important updates, while the notification content itself can indicate whether the item belongs to Pet Care or Shelter [web:50][web:52][web:60][web:76].
 
 ### Placement
 
@@ -205,7 +207,7 @@ Tapping the bell should open a full-height slide-over panel from the right. This
 
 The notification panel should:
 
-- Show notifications from both Guardian and Organisation in one unified inbox
+- Show notifications from both Pet Care and Shelter in one unified inbox
 - Use visual labeling, grouping, or filtering to distinguish notification sources
 - Support unread state clearly
 - Deep-link each notification to the relevant destination screen
@@ -231,7 +233,7 @@ The dashboard should avoid becoming visually dense. Hierarchy, spacing, and prev
 
 The implementation should avoid the following pitfalls:
 
-- Turning the Guardian dashboard into another generic home feed
+- Turning the Pet Care dashboard into another generic home feed
 - Showing too many pets, events, or vets in the preview sections
 - Mixing full management workflows directly into dashboard preview blocks
 - Using inconsistent section structures across pets, events, and vets

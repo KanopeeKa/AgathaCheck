@@ -30,7 +30,7 @@ void main() {
       expect(e.canUseGuardian, isTrue);
       expect(e.canUseOrganization, isFalse);
       expect(e.showChooser, isFalse);
-      expect(e.resolveAutoExperience(), AppExperience.guardian);
+      expect(e.resolveAutoExperience(), AppExperience.petCare);
     });
 
     test('org-only admin without guardian pets auto-opens org', () {
@@ -55,8 +55,8 @@ void main() {
       expect(e.showChooser, isTrue);
       expect(e.resolveAutoExperience(), isNull);
       expect(
-        e.resolveAutoExperience(savedDefault: AppExperience.guardian),
-        AppExperience.guardian,
+        e.resolveAutoExperience(savedDefault: AppExperience.petCare),
+        AppExperience.petCare,
       );
     });
 
@@ -103,13 +103,13 @@ void main() {
 
     test('dual user availableExperiences lists guardian and organization', () {
       expect(dual.availableExperiences, [
-        AppExperience.guardian,
+        AppExperience.petCare,
         AppExperience.organization,
       ]);
     });
 
     test('guardian-only availableExperiences excludes organization', () {
-      expect(guardianOnly.availableExperiences, [AppExperience.guardian]);
+      expect(guardianOnly.availableExperiences, [AppExperience.petCare]);
       expect(guardianOnly.canUseOrganization, isFalse);
     });
 
@@ -125,7 +125,7 @@ void main() {
 
     test('org-only ignores guardian saved default', () {
       expect(
-        orgOnly.resolveAutoExperience(savedDefault: AppExperience.guardian),
+        orgOnly.resolveAutoExperience(savedDefault: AppExperience.petCare),
         AppExperience.organization,
       );
     });

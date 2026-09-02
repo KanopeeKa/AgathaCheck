@@ -3,14 +3,18 @@ import 'package:pet_profile_app/features/experience/domain/entities/app_experien
 
 void main() {
   group('AppExperienceWire', () {
-    test('wire values round-trip for guardian and organization', () {
-      expect(AppExperience.guardian.wire, 'guardian');
+    test('wire values round-trip for petCare and organization', () {
+      expect(AppExperience.petCare.wire, 'pet_care');
       expect(AppExperience.organization.wire, 'organization');
-      expect(AppExperienceWire.fromWire('guardian'), AppExperience.guardian);
+      expect(AppExperienceWire.fromWire('pet_care'), AppExperience.petCare);
       expect(
         AppExperienceWire.fromWire('organization'),
         AppExperience.organization,
       );
+    });
+
+    test('fromWire dual-reads legacy guardian wire', () {
+      expect(AppExperienceWire.fromWire('guardian'), AppExperience.petCare);
     });
 
     test('fromWire returns null for unknown or missing wire', () {
@@ -19,8 +23,8 @@ void main() {
       expect(AppExperienceWire.fromWire(null), isNull);
     });
 
-    test('homePath returns guardian and organization routes', () {
-      expect(AppExperience.guardian.homePath(), '/g/home');
+    test('homePath returns pet care and organization routes', () {
+      expect(AppExperience.petCare.homePath(), '/pc/home');
       expect(AppExperience.organization.homePath(), '/o/home');
       expect(
         AppExperience.organization.homePath(orgId: 'org-abc'),
@@ -30,10 +34,14 @@ void main() {
     });
 
     test('eventsPath and settingsPath are namespaced per experience', () {
-      expect(AppExperience.guardian.eventsPath, '/g/events');
+      expect(AppExperience.petCare.eventsPath, '/pc/events');
       expect(AppExperience.organization.eventsPath, '/o/events');
-      expect(AppExperience.guardian.settingsPath, '/g/settings');
+      expect(AppExperience.petCare.settingsPath, '/pc/settings');
       expect(AppExperience.organization.settingsPath, '/o/settings');
+    });
+
+    test('deprecated guardian alias points to petCare', () {
+      expect(AppExperience.guardian, AppExperience.petCare);
     });
   });
 }

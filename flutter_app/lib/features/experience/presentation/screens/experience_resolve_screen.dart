@@ -76,7 +76,7 @@ class ExperienceResolveScreen extends ConsumerWidget {
       },
       error: (_, __) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (context.mounted) context.go('/g/home');
+          if (context.mounted) context.go('/pc/home');
         });
       },
     );

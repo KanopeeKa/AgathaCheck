@@ -3,7 +3,7 @@ title: Experience program contract
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-09-02
 tags: [experience, contract]
 ---
 # Experience program — platform contract
@@ -13,7 +13,7 @@ tags: [experience, contract]
 **Related:** [navigation README](/docs/domains/navigation/README.md#decision-index-split-from-experience-program-decisions-log) · [roadmap-delivery-plan.md](roadmap-delivery-plan.md) · [navigation-brief.md](/docs/domains/navigation/features/navigation-brief.md) ·
 [/docs/domains/fostering/features/g0-contract-pack.md](/docs/domains/fostering/features/g0-contract-pack.md) (this contract does not restate G0 — it extends it for the navigation/guardian/organisation-presentation surfaces G0 does not cover)
 
-This is the platform contract layer for the **Experience program** (navigation reversal + Guardian
+This is the platform contract layer for the **Experience program** (navigation reversal + Pet Care
 dashboard + Organisation presentation/access-control rework). Phase docs reference this file
 instead of redefining vocabulary or cross-cutting rules. Follows the same "mandatory sections"
 discipline as `g0-contract-pack.md` so the two programs read consistently.
@@ -37,17 +37,20 @@ discipline as `g0-contract-pack.md` so the two programs read consistently.
 
 | Term | Definition |
 |---|---|
-| **Journey** | A user-facing area of the roadmap (Guardian navigation, Organisation management, Pet management, Foster management, Notifications) — the top layer of the three-layer implementation shape |
+| **Journey** | A user-facing area of the roadmap (Pet Care navigation, Shelter management, Pet management, Foster management, Notifications) — the top layer of the three-layer implementation shape |
 | **Feature** | An implementable slice of a journey with its own acceptance criteria, UI rules, permissions, and BDD scenarios |
 | **Sprint** | A vertically-sliced increment delivering one feature (or a safe sub-slice of one) with tests, UX review, and a release gate — the unit of actual delivery |
 | **Notification kind** | `care` \| `administrative` — content-type axis (D7). Orthogonal to scope |
-| **Notification scope** | `guardian` \| `organization` — existing enum, now a grouping/label only, not a routing split (D7, D8) |
+| **Notification scope** | `pet_care` \| `organization` — grouping/label for notification lists and badges (wire migrating from legacy `guardian`) |
 | **Event** (this program) | Health/weight/other-entry due item only (D17). Not the legacy "family event" |
 | **Pet timeline** | Composite per-pet history: guardian custody segments + fostering sessions + manual entries (D18). Replaces "family events" |
 | **Role** | Coarse org-membership category: `associate \| foster \| admin \| super_admin` (D13) |
 | **Permission key** | Atomic capability, G0 §7 catalog + this program's additions (§6 below) |
 | **Bundle preset** | A named, UI-level grouping of permission keys (Foster Admin, Pet Admin, Team Admin) applied to `admin`-role members — **not** a wire role |
 | **Permission override** | An individually granted/revoked permission key on a specific org member, audited (D16) |
+| **Pet Care workspace** | Individual-carer shell at `/pc/*` (plum). Product term replaces legacy **Guardian** and drawer **My Pets**. See [pet_care README](/docs/domains/pet_care/README.md). |
+| **My Pets** (section) | Dashboard pet-rail preview only — not the workspace name (D38). |
+| **Care Actions** | Dashboard due-items block eyebrow + **Actions** bottom-nav destination for `/pc/events` (D38). Not notification kind `care`. |
 
 ### Forbidden synonyms (this program)
 
@@ -55,7 +58,10 @@ discipline as `g0-contract-pack.md` so the two programs read consistently.
 |---|---|
 | "Family event" (new work) | Pet timeline entry (guardian custody segment / session / manual entry) |
 | "Settings" (as a global nav item) | Account (global) vs organisation edit/customisations (org-scoped) vs self-card preferences (per-person, per-org) |
-| "Home" (as a route/button) | Guardian dashboard (`/g/home`) or Organisation entry (`/o/orgs`) — there is no generic Home |
+| "Home" (as a route/button) | Pet Care home (`/pc/home`) or Shelter entry (`/o/orgs`) — there is no generic Home |
+| "Guardian" / "My Pets" (as workspace label) | **Pet Care** (EN) / **Suivi** (FR) — D38 |
+| "Due and Overdue" (dashboard section title) | **Care Actions** (eyebrow **CARE ACTIONS** / FR **SOINS**) — D38 supersedes D34 label for this block |
+| "Care" (bottom nav tab) | **Actions** (EN) / **Soins** (FR) — D38 |
 | Foster Admin / Pet Admin / Team Admin as if they were wire roles | Bundle presets over permission keys on the `admin` wire role |
 
 ---
@@ -97,7 +103,7 @@ Extend `AppNotification` (`flutter_app/lib/features/notifications/domain/entitie
 - Bell badge = single combined unread count across both kinds (never a dual badge — keeps the bell globally understandable per the brief).
 - Chips filter the **already date-grouped** list; they do not introduce a second grouping axis.
 - Every row keeps the existing read/unread visual treatment (`notification_tile.dart`); administrative rows referencing an open object additionally show an "Action needed" affordance until `resolvedAt` is set.
-- Retire `/g/notifications` and `/o/notifications` as separate screens/providers; one `/notifications` route reachable only from the bell (not the drawer, not Account).
+- Retire `/pc/notifications` and `/o/notifications` as separate screens/providers; one `/notifications` route reachable only from the bell (not the drawer, not Account).
 - `NotificationScopeRules` (existing pure-function class) is repurposed: keep the guardian/organization split logic for the "Organisation" chip's grouping, drop its use as a screen-level filter.
 
 ### 3.3 Pending-inbox migration (D10)

@@ -9,7 +9,7 @@ class PetTimelineSegment {
     this.endDate,
     this.title = '',
     this.description = '',
-    this.guardianName,
+    this.primaryHolderName,
     this.fosterName,
     this.fillable = false,
   });
@@ -20,7 +20,7 @@ class PetTimelineSegment {
   final String? endDate;
   final String title;
   final String description;
-  final String? guardianName;
+  final String? primaryHolderName;
   final String? fosterName;
   final bool fillable;
 
@@ -43,13 +43,13 @@ class PetTimelineSegment {
   /// Read-only marker for when the pet joined Agatha Track.
   factory PetTimelineSegment.joinedAgatha({
     required DateTime createdAt,
-    String? guardianName,
+    String? primaryHolderName,
   }) {
     return PetTimelineSegment(
       kind: 'joined_agatha',
       id: 'joined_agatha',
       startDate: toCalendarDateString(createdAt)!,
-      guardianName: guardianName,
+      primaryHolderName: primaryHolderName,
     );
   }
 
@@ -61,7 +61,9 @@ class PetTimelineSegment {
       endDate: json['end_date']?.toString(),
       title: json['title']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
-      guardianName: json['guardian_name']?.toString(),
+      primaryHolderName:
+          json['primary_holder_name']?.toString() ??
+          json['guardian_name']?.toString(),
       fosterName: json['foster_name']?.toString(),
       fillable: json['fillable'] == true,
     );

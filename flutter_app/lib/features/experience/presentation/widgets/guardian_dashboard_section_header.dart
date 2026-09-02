@@ -7,7 +7,7 @@ class GuardianDashboardSectionHeader extends StatelessWidget {
   const GuardianDashboardSectionHeader({
     super.key,
     required this.title,
-    this.titleColor = AppColorTokens.guardianActive,
+    this.titleColor = AppColorTokens.petCareActive,
   });
 
   final String title;

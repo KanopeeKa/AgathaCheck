@@ -33,7 +33,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
   Map<String, dynamic>? _vetData;
   Map<String, dynamic>? _ownerData;
   bool _loading = true;
-  String? _error;
+  String? _errorKey;
   bool _accepting = false;
 
   // Use the shared base URL ('/backend' on web) for consistency with the rest
@@ -65,13 +65,13 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
         });
       } else {
         setState(() {
-          _error = 'Pet not found or share link expired';
+          _errorKey = 'not_found';
           _loading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Failed to load shared pet';
+        _errorKey = 'load_failed';
         _loading = false;
       });
     }
@@ -87,24 +87,24 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    if (_error != null || _petData == null) {
+    if (_errorKey != null || _petData == null) {
+      final errorMessage = _errorKey == 'load_failed'
+          ? l.sharedPetLoadFailed
+          : l.sharedPetNotFound;
       return Scaffold(
-        appBar: AppBar(title: const AppLogoTitle(title: 'Shared Pet')),
+        appBar: AppBar(title: AppLogoTitle(title: l.sharedPetTitle)),
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.link_off, size: 64, color: colorScheme.outline),
               const SizedBox(height: 16),
-              Text(
-                _error ?? 'Something went wrong',
-                style: theme.textTheme.titleMedium,
-              ),
+              Text(errorMessage, style: theme.textTheme.titleMedium),
               const SizedBox(height: 24),
               FilledButton.icon(
                 onPressed: () => context.go('/'),
                 icon: const Icon(Icons.home),
-                label: const Text('Go to My Pets'),
+                label: Text(l.goToPetCare),
               ),
             ],
           ),
@@ -137,7 +137,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
         title: AppLogoTitle(title: name),
         leading: IconButton(
           icon: const Icon(Icons.home),
-          tooltip: 'Go to My Pets',
+          tooltip: l.goToPetCare,
           onPressed: () => context.go('/'),
         ),
         actions: [
@@ -219,8 +219,8 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
             },
             theme: theme,
             colorScheme: colorScheme,
-            promptText: 'Want to add this pet to your account?',
-            buttonText: _accepting ? 'Adding...' : l.acceptAndAdd,
+            promptText: l.sharedPetAcceptPrompt,
+            buttonText: _accepting ? l.sharedPetAdding : l.acceptAndAdd,
           ),
 
           if (_ownerData != null) ...[

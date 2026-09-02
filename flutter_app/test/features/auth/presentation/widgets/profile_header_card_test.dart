@@ -15,7 +15,7 @@ void main() {
       email: 'jane@example.com',
       firstName: 'Jane',
       lastName: 'Doe',
-      category: 'pet_guardian',
+      category: 'pet_carer',
       bio: 'Loves pets',
       photoUrl: '',
     );

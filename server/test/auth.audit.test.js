@@ -11,7 +11,7 @@ describe('Auth audit events', () => {
       password_hash: '$2b$10$validhashfortestpassword',
       first_name: 'Audit',
       last_name: 'User',
-      category: 'pet_guardian',
+      category: 'pet_carer',
       bio: '',
       photo_url: '',
       locale: 'en',

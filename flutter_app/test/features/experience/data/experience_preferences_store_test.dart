@@ -16,8 +16,8 @@ void main() {
 
     test('persists default experience when remember is set', () async {
       final store = ExperiencePreferencesStore(prefs);
-      await store.writeDefaultExperience(AppExperience.guardian);
-      expect(store.readDefaultExperience(), AppExperience.guardian);
+      await store.writeDefaultExperience(AppExperience.petCare);
+      expect(store.readDefaultExperience(), AppExperience.petCare);
       expect(store.readRememberChoice(), isTrue);
     });
 
@@ -49,8 +49,18 @@ void main() {
       final store = ExperiencePreferencesStore(prefs);
       await store.writeLastAppSection(AppExperience.organization);
       expect(store.readLastAppSection(), AppExperience.organization);
-      await store.writeLastAppSection(AppExperience.guardian);
-      expect(store.readLastAppSection(), AppExperience.guardian);
+      await store.writeLastAppSection(AppExperience.petCare);
+      expect(store.readLastAppSection(), AppExperience.petCare);
+      expect(store.readDefaultExperience(), isNull);
+    });
+
+    test('dual-reads legacy guardian wire for last app section', () async {
+      final store = ExperiencePreferencesStore(prefs);
+      await prefs.setString(
+        ExperiencePreferencesStore.lastAppSectionKey,
+        'guardian',
+      );
+      expect(store.readLastAppSection(), AppExperience.petCare);
     });
   });
 }

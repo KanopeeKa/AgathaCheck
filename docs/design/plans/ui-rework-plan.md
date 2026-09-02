@@ -35,7 +35,7 @@ Product goal: calm, trustworthy care coordination — warm neutrals, sage operat
 
 | # | Decision | Proposal |
 |---|----------|----------|
-| D1 | Guardian primary | Guardian plum (`plum-500` / `guardianPrimary` in [tokens.md](../tokens.md)) — full primary on `/g/*` |
+| D1 | Pet Care primary | Pet Care plum (`plum-500` / `guardianPrimary` in [tokens.md](../tokens.md)) — full primary on `/pc/*` |
 | D2 | Organisation primary | Shelter teal (`teal-500` / `organizationPrimary` in [tokens.md](../tokens.md)) — full primary on `/o/*` |
 | D3 | Warm accent | Coral (`coral-500` in [tokens.md](../tokens.md)) — never primary CTA |
 | D4 | Success | `success-500` in [tokens.md](../tokens.md) (S2) |
@@ -154,7 +154,7 @@ cd flutter_app && flutter test --concurrency=1 --exclude-tags=integration
 
 ---
 
-## Phase 3 — Guardian shell and core pet flows
+## Phase 3 — Pet Care shell and core pet flows
 
 **Outcome:** Daily guardian use paths feel coherent under the new system.
 
@@ -259,7 +259,7 @@ cd flutter_app && flutter test --concurrency=1 --exclude-tags=integration
 - [ ] Update `docs/design/principles.md` — remove transitional purple note
 - [ ] Log completion in `docs/debt/refactoring-log.md`
 - [ ] Optional: add `@smoke-a11y` to any high-traffic journey not yet covered
-- [ ] Run `/ui-design-deep` pass on one screen per experience (`/g/*`, `/o/*`) for consistency audit
+- [ ] Run `/ui-design-deep` pass on one screen per experience (`/pc/*`, `/o/*`) for consistency audit
 
 ### Verify
 

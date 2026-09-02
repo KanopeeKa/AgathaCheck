@@ -123,8 +123,8 @@ class PendingShareCard extends ConsumerWidget {
                         const SizedBox(height: 2),
                         Text(
                           l.petSharedWithYou(
-                            share.guardianName.isNotEmpty
-                                ? share.guardianName
+                            share.primaryHolderName.isNotEmpty
+                                ? share.primaryHolderName
                                 : 'Someone',
                             share.petName,
                           ),

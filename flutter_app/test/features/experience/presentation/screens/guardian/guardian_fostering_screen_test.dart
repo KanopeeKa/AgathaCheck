@@ -43,10 +43,10 @@ const _fosterPet = Pet(
 
 Widget _buildScreen({required PetListNotifier Function() petListFactory}) {
   final router = GoRouter(
-    initialLocation: '/g/fostering',
+    initialLocation: '/pc/fostering',
     routes: [
       GoRoute(
-        path: '/g/fostering',
+        path: '/pc/fostering',
         builder: (context, state) => const GuardianFosteringScreen(),
       ),
     ],

@@ -69,13 +69,13 @@ class ExperienceInviteScreen extends ConsumerWidget {
               Text(l.invite, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 8),
               Text(
-                experience == AppExperience.guardian
+                experience == AppExperience.petCare
                     ? l.experienceGuardianInviteHint
                     : l.experienceOrganizationInviteHint,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
-              if (experience == AppExperience.guardian)
+              if (experience == AppExperience.petCare)
                 FilledButton(
                   onPressed: () => context.push('/add'),
                   child: Text(l.addPet),

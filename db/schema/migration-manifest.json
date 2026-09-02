@@ -53,7 +53,8 @@
     "044_org_retire_foster_wire_role.sql",
     "045_organization_role_permission_defaults.sql",
     "046_email_templates.sql",
-    "047_health_occurrences.sql"
+    "047_health_occurrences.sql",
+    "048_pet_care_domain_rename.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

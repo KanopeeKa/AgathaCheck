@@ -13,7 +13,7 @@ class PetAccessUserModel extends PetAccessUser {
     return PetAccessUserModel(
       firstName: json['first_name']?.toString() ?? '',
       lastName: json['last_name']?.toString() ?? '',
-      category: json['category']?.toString() ?? 'pet_guardian',
+      category: json['category']?.toString() ?? 'pet_carer',
       bio: json['bio']?.toString() ?? '',
       photoUrl: json['photo_url']?.toString() ?? '',
     );

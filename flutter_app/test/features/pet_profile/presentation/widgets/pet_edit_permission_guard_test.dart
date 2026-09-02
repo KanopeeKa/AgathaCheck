@@ -60,7 +60,7 @@ void main() {
                 name: 'Rex',
                 species: 'Dog',
                 isShared: true,
-                guardianName: 'Alex',
+                primaryHolderName: 'Alex',
               ),
             ],
           ),

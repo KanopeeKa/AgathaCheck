@@ -113,7 +113,7 @@ class GuardianFosteringSection extends StatelessWidget {
           if (hasOverflow)
             GuardianDashboardSectionLink(
               label: l.allFosteringSessions,
-              onPressed: () => context.go('/g/fostering'),
+              onPressed: () => context.go('/pc/fostering'),
             ),
         ],
       ),

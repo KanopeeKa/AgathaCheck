@@ -92,19 +92,19 @@ Widget _buildApp({
   List<Pet> pets = const [],
 }) {
   final router = GoRouter(
-    initialLocation: '/g/vets/$vetId',
+    initialLocation: '/pc/vets/$vetId',
     routes: [
       GoRoute(
-        path: '/g/vets/:id',
+        path: '/pc/vets/:id',
         builder: (context, state) => Scaffold(
           body: VetDetailScreen(
             vetId: state.pathParameters['id']!,
-            listPath: '/g/vets',
+            listPath: '/pc/vets',
           ),
         ),
       ),
       GoRoute(
-        path: '/g/vets/edit/:id',
+        path: '/pc/vets/edit/:id',
         builder: (context, state) =>
             Scaffold(body: Text('Edit ${state.pathParameters['id']}')),
       ),

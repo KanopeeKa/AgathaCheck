@@ -11,6 +11,8 @@ feature_id: navigation-brief
 > **Status:** Locked master brief (source of truth). Do not edit inline — track deviations in
 > [navigation-decisions.md](navigation-decisions.md) and feature-level detail in
 > [phase-1-navigation.md](../changes/phase-1-navigation.md). Imported verbatim 2026-07-25.
+>
+> **D38 supersession (2026-09-02):** Workspace drawer labels are **Pet Care** / **Suivi** and **Shelter** / **Refuges** — not Guardian / Organisation / My Pets. Historical bullets below retain original wording; interpret through [pet_care README](/docs/domains/pet_care/README.md).
 
 # Navigation redesign brief
 
@@ -30,7 +32,7 @@ The new structure should center the product around three top-level areas:
 - Organisation
 - Account
 
-Guardian and Organisation are the two primary top-level destinations in the upper portion of the hamburger menu. Account is pinned at the bottom of the full-height menu and acts as the global personal/app-level area rather than a peer destination used as often as the other two [file:32][web:34][web:37].
+Pet Care and Shelter are the two primary top-level destinations in the upper portion of the hamburger menu. Account is pinned at the bottom of the full-height menu and acts as the global personal/app-level area rather than a peer destination used as often as the other two [file:32][web:34][web:37].
 
 ## Naming rules
 
@@ -42,7 +44,7 @@ The term “organisation settings” should continue to exist only within the Or
 
 The redesign scope should include the following dashboard work:
 
-- Reviewed Guardian dashboard
+- Reviewed Pet Care dashboard
 - Reviewed Organisation dashboard
 - New Account dashboard
 
@@ -55,7 +57,7 @@ The top-level navigation architecture should follow this model:
 | Level | Area | Role |
 |---|---|---|
 | Global | Hamburger menu | Section switcher |
-| Section | Guardian dashboard | Landing page for guardian workflows |
+| Section | Pet Care dashboard | Landing page for guardian workflows |
 | Section | Organisation dashboard | Landing page for organisation workflows |
 | Section | Account dashboard | Landing page for personal/app-level utilities |
 | Local | Sub-screens inside each section | Task and detail flows |
@@ -69,7 +71,7 @@ The menu should be a full-height side drawer. It should feel calm, sparse, and s
 Expected drawer structure:
 
 - Top area: close control, optional brand/app label if useful
-- Main section list: Guardian, Organisation
+- Main section list: Pet Care, Shelter
 - Bottom-pinned area: Account
 - Account should be visually separated from the main section list
 
@@ -81,7 +83,7 @@ Use a light color scheme for the drawer and shell. The visual language should fe
 
 Apply section theming lightly:
 
-- Guardian uses the agreed Guardian theme color
+- Guardian uses the agreed Pet Care theme color
 - Organisation uses the agreed Organisation theme color
 - Account uses a neutral treatment
 
@@ -107,7 +109,7 @@ The navigation model should follow these rules:
 
 - No generic Home destination
 - Hamburger remains the global section switcher
-- Guardian dashboard is the root for guardian-related flows
+- Pet Care dashboard is the root for guardian-related flows
 - Organisation dashboard is the root for organisation-related flows
 - Account dashboard is the root for personal/app-level flows
 - Sub-screens should use a clear return path back to their parent dashboard

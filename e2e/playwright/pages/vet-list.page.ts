@@ -1,5 +1,5 @@
 /**
- * Veterinarian list screen (`/g/vets`, `/o/vets`).
+ * Veterinarian list screen (`/pc/vets`, `/o/vets`).
  * Maps to: flutter_app/test/bdd/features/veterinarian_management.feature
  */
 import type { Locator, Page } from '@playwright/test';
@@ -204,8 +204,8 @@ export class VetListPage {
 
       if (!onDetail || !phoneVisible) {
         if (!onList) {
-          await this.page.goto(flutterGotoUrl('/g/vets'));
-          await waitForFlutterRoutePattern(this.page, /\/g\/vets(?:\?|$)/, 30_000);
+          await this.page.goto(flutterGotoUrl('/pc/vets'));
+          await waitForFlutterRoutePattern(this.page, /\/pc\/vets(?:\?|$)/, 30_000);
         }
         await this.expectLoaded();
         await this.expectVetVisible(vetName);

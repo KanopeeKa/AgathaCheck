@@ -14,7 +14,7 @@ User-facing flows for medication, treatments, and health issues (`health_trackin
 
 ## Add health entry
 
-Guardians create entries with name, dosage, frequency/recurrence, and optional notes. One-time and recurring series are supported.
+Pet carers create entries with name, dosage, frequency/recurrence, and optional notes. One-time and recurring series are supported.
 
 ## Mark taken / complete
 
@@ -22,7 +22,7 @@ For due entries, guardians confirm completion (optional completion date). Recurr
 
 ## View due and overdue
 
-Due and overdue items appear on the Guardian dashboard Due section and dedicated due-events list (`/g/events` per experience program D17).
+Due and overdue items appear on the Pet Care dashboard Due section and dedicated due-events list (`/pc/events` per experience program D17).
 
 ## Edit and delete
 

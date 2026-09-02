@@ -26,10 +26,10 @@ class GuardianPrimaryDestinations {
   static const expandedBreakpoint = 840.0;
 
   static const routes = [
-    '/g/home',
-    '/g/pets',
-    '/g/events',
-    '/g/fostering',
+    '/pc/home',
+    '/pc/pets',
+    '/pc/events',
+    '/pc/fostering',
     '/account',
   ];
 
@@ -43,10 +43,10 @@ class GuardianPrimaryDestinations {
   /// Whether [path] belongs to the Guardian (My Pets) workspace.
   static bool supports(String path) {
     if (path.startsWith('/o/')) return false;
-    if (path == '/g/onboarding' || path.startsWith('/g/onboarding/')) {
+    if (path == '/pc/onboarding' || path.startsWith('/pc/onboarding/')) {
       return false;
     }
-    return path.startsWith('/g/') ||
+    return path.startsWith('/pc/') ||
         path.startsWith('/pet/') ||
         path == '/add' ||
         path.startsWith('/edit/') ||
@@ -57,20 +57,20 @@ class GuardianPrimaryDestinations {
 
   static int indexFor(String path) {
     if (path == '/account' || path.startsWith('/account/')) return 4;
-    if (path == '/g/fostering' || path.startsWith('/g/fostering/')) return 3;
+    if (path == '/pc/fostering' || path.startsWith('/pc/fostering/')) return 3;
     if (_isCarePath(path)) return 2;
     if (_isPetsPath(path)) return 1;
     return 0;
   }
 
   static bool _isCarePath(String path) {
-    if (path == '/g/events' || path.startsWith('/g/events/')) return true;
+    if (path == '/pc/events' || path.startsWith('/pc/events/')) return true;
     if (path.startsWith('/health')) return true;
     return RegExp(r'^/pet/[^/]+/(events|health|other)(?:/|$)').hasMatch(path);
   }
 
   static bool _isPetsPath(String path) {
-    if (path == '/g/pets' || path.startsWith('/g/pets/')) return true;
+    if (path == '/pc/pets' || path.startsWith('/pc/pets/')) return true;
     if (path == '/add' || path.startsWith('/add')) return true;
     if (RegExp(r'^/edit/').hasMatch(path)) return true;
     return path.startsWith('/pet/');
@@ -78,25 +78,25 @@ class GuardianPrimaryDestinations {
 
   static List<GuardianPrimaryDestination> destinations() => const [
     GuardianPrimaryDestination(
-      route: '/g/home',
+      route: '/pc/home',
       icon: Icons.today_outlined,
       selectedIcon: Icons.today,
       labelBuilder: _dashboardLabel,
     ),
     GuardianPrimaryDestination(
-      route: '/g/pets',
+      route: '/pc/pets',
       icon: Icons.pets_outlined,
       selectedIcon: Icons.pets,
       labelBuilder: _petsLabel,
     ),
     GuardianPrimaryDestination(
-      route: '/g/events',
+      route: '/pc/events',
       icon: Icons.favorite_border,
       selectedIcon: Icons.favorite,
       labelBuilder: _careLabel,
     ),
     GuardianPrimaryDestination(
-      route: '/g/fostering',
+      route: '/pc/fostering',
       icon: Icons.home_work_outlined,
       selectedIcon: Icons.home_work,
       labelBuilder: _fosteringLabel,
@@ -118,13 +118,13 @@ class GuardianPrimaryDestinations {
   /// Stable semantics identifier for E2E (`flt-semantics-identifier` on web).
   static String semanticsIdentifier(String route) {
     switch (route) {
-      case '/g/home':
+      case '/pc/home':
         return 'guardian_nav_dashboard';
-      case '/g/pets':
+      case '/pc/pets':
         return 'guardian_nav_pets';
-      case '/g/events':
+      case '/pc/events':
         return 'guardian_nav_care';
-      case '/g/fostering':
+      case '/pc/fostering':
         return 'guardian_nav_fostering';
       case '/account':
         return 'guardian_nav_account';

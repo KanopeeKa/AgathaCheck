@@ -354,7 +354,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
         } else if (widget.petId != null && widget.petId!.isNotEmpty) {
           goToPetDetail(context, widget.petId!);
         } else {
-          context.go('/g/events');
+          context.go('/pc/events');
         }
       case HealthEntrySubmitNeedsMarkCompleted():
         break;
@@ -370,7 +370,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     } else if (widget.petId != null && widget.petId!.isNotEmpty) {
       goToPetDetail(context, widget.petId!);
     } else {
-      context.go('/g/events');
+      context.go('/pc/events');
     }
   }
 
@@ -415,7 +415,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
         if (widget.petId != null && widget.petId!.isNotEmpty) {
           goToPetDetail(context, widget.petId!);
         } else {
-          context.go('/g/events');
+          context.go('/pc/events');
         }
       }
     } catch (e) {

@@ -43,7 +43,7 @@ export class AccountPage {
   async expectGuardianHomeScreen(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/g\/home/, 60_000);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/home/, 60_000);
     await expect(
       this.page.getByRole('button', { name: /open notifications/i }),
     ).toBeVisible({ timeout: 15_000 });

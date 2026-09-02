@@ -11,17 +11,32 @@ import '../../features/vet/presentation/screens/vet_list_screen.dart';
 List<RouteBase> buildVetExperienceRoutes() {
   return [
     GoRoute(
-      path: '/g/vets',
-      name: 'guardianVets',
+      path: '/pc/vets',
+      name: 'petCareVets',
       builder: (context, state) => ExperienceShellScaffold(
-        experience: AppExperience.guardian,
+        experience: AppExperience.petCare,
         currentLocation: state.uri.path,
         child: const VetListScreen(
           embeddedInShell: true,
-          experience: AppExperience.guardian,
+          experience: AppExperience.petCare,
         ),
       ),
-      routes: _vetFormRoutes(listPath: '/g/vets'),
+      routes: _vetFormRoutes(listPath: '/pc/vets'),
+    ),
+    GoRoute(
+      path: '/g/vets',
+      name: 'guardianVets',
+      redirect: (context, state) => _legacyPetCareVetRedirect(state.uri.path),
+    ),
+    GoRoute(path: '/g/vets/add', redirect: (context, state) => '/pc/vets/add'),
+    GoRoute(
+      path: '/g/vets/edit/:id',
+      redirect: (context, state) =>
+          '/pc/vets/edit/${state.pathParameters['id']}',
+    ),
+    GoRoute(
+      path: '/g/vets/:id',
+      redirect: (context, state) => '/pc/vets/${state.pathParameters['id']}',
     ),
     GoRoute(
       path: '/o/vets',
@@ -40,10 +55,11 @@ List<RouteBase> buildVetExperienceRoutes() {
 }
 
 List<RouteBase> _vetFormRoutes({required String listPath}) {
+  final isPetCare = listPath == '/pc/vets';
   return [
     GoRoute(
       path: 'add',
-      name: '${listPath == '/g/vets' ? 'guardian' : 'org'}AddVet',
+      name: '${isPetCare ? 'petCare' : 'org'}AddVet',
       builder: (context, state) {
         final orgId = state.uri.queryParameters['org'];
         return VetFormScreen(listPath: listPath, defaultOrganizationId: orgId);
@@ -51,7 +67,7 @@ List<RouteBase> _vetFormRoutes({required String listPath}) {
     ),
     GoRoute(
       path: 'edit/:id',
-      name: '${listPath == '/g/vets' ? 'guardian' : 'org'}EditVet',
+      name: '${isPetCare ? 'petCare' : 'org'}EditVet',
       builder: (context, state) {
         final vetId = state.pathParameters['id']!;
         return VetFormScreen(vetId: vetId, listPath: listPath);
@@ -59,14 +75,14 @@ List<RouteBase> _vetFormRoutes({required String listPath}) {
     ),
     GoRoute(
       path: ':id',
-      name: '${listPath == '/g/vets' ? 'guardian' : 'org'}VetDetail',
+      name: '${isPetCare ? 'petCare' : 'org'}VetDetail',
       builder: (context, state) {
         final vetId = state.pathParameters['id']!;
         final l = AppLocalizations.of(context)!;
         final returnTo = orgProfileReturnToFromState(state);
         return ExperienceShellScaffold(
-          experience: listPath == '/g/vets'
-              ? AppExperience.guardian
+          experience: isPetCare
+              ? AppExperience.petCare
               : AppExperience.organization,
           currentLocation: state.uri.path,
           screenTitle: l.careTeam,
@@ -83,11 +99,19 @@ String? redirectLegacyVetPath(GoRouterState state) =>
     legacyVetRedirectForPath(state.uri.path);
 
 String? legacyVetRedirectForPath(String path) {
-  if (path == '/vets') return '/g/vets';
-  if (path == '/vets/add') return '/g/vets/add';
+  if (path == '/vets') return '/pc/vets';
+  if (path == '/vets/add') return '/pc/vets/add';
   final editMatch = RegExp(r'^/vets/edit/([^/]+)$').firstMatch(path);
   if (editMatch != null) {
-    return '/g/vets/edit/${editMatch.group(1)}';
+    return '/pc/vets/edit/${editMatch.group(1)}';
   }
   return null;
+}
+
+String _legacyPetCareVetRedirect(String path) {
+  if (path == '/g/vets') return '/pc/vets';
+  if (path.startsWith('/g/vets/')) {
+    return '/pc${path.substring(2)}';
+  }
+  return '/pc/vets';
 }

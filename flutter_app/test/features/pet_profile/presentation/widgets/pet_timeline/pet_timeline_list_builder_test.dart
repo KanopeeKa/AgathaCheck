@@ -13,7 +13,7 @@ void main() {
       species: 'Dog',
       dateOfBirth: DateTime(2020, 1, 1),
       createdAt: DateTime(2024, 6, 1),
-      guardianName: 'Jane',
+      primaryHolderName: 'Jane',
     );
 
     test('includes DOB and joined markers plus API segments', () {
@@ -42,7 +42,7 @@ void main() {
             kind: 'custody',
             id: 'c-1',
             startDate: '2022-01-01',
-            guardianName: 'Bob',
+            primaryHolderName: 'Bob',
           ),
         ],
       );
@@ -92,7 +92,7 @@ void main() {
             kind: 'custody',
             id: 'c-1',
             startDate: '2022-01-01',
-            guardianName: 'Bob',
+            primaryHolderName: 'Bob',
           ),
         ],
         options: const PetTimelineDisplayOptions(

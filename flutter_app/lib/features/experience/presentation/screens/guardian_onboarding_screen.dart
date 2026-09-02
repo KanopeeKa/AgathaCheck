@@ -43,7 +43,7 @@ class _GuardianOnboardingScreenState
   Future<void> _skip() async {
     await _persistOnboardingComplete();
     if (!mounted) return;
-    context.go('/g/home');
+    context.go('/pc/home');
   }
 
   Future<void> _finish() async {
@@ -58,7 +58,7 @@ class _GuardianOnboardingScreenState
           .addPet(name: petName, species: _species);
       await _persistOnboardingComplete();
       if (!mounted) return;
-      context.go('/g/home');
+      context.go('/pc/home');
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -88,10 +88,10 @@ class _GuardianOnboardingScreenState
     final xp = context.experienceColors;
     final guardianTheme = Theme.of(context).copyWith(
       colorScheme: Theme.of(context).colorScheme.copyWith(
-        primary: xp.guardianPrimary,
-        onPrimary: xp.guardianOnPrimary,
-        primaryContainer: xp.guardianLight,
-        onPrimaryContainer: xp.guardianPrimary,
+        primary: xp.petCarePrimary,
+        onPrimary: xp.petCareOnPrimary,
+        primaryContainer: xp.petCareLight,
+        onPrimaryContainer: xp.petCarePrimary,
       ),
     );
 
@@ -114,8 +114,8 @@ class _GuardianOnboardingScreenState
             LinearProgressIndicator(
               value: (_step + 1) / _stepCount,
               minHeight: 4,
-              color: xp.guardianPrimary,
-              backgroundColor: xp.guardianSoft,
+              color: xp.petCarePrimary,
+              backgroundColor: xp.petCareSoft,
             ),
             Expanded(
               child: PageView(
@@ -126,7 +126,7 @@ class _GuardianOnboardingScreenState
                     key: const Key('guardian_onboarding_welcome'),
                     title: l.guardianOnboardingWelcomeTitle,
                     body: l.guardianOnboardingWelcomeBody,
-                    iconColor: xp.guardianPrimary,
+                    iconColor: xp.petCarePrimary,
                   ),
                   _PetStep(
                     nameController: _petNameController,

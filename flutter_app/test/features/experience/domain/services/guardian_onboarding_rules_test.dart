@@ -62,11 +62,11 @@ void main() {
     test('redirects guardian home to onboarding when needed', () {
       expect(
         GuardianOnboardingRules.resolveGuardianDestination(
-          targetPath: '/g/home',
+          targetPath: '/pc/home',
           pets: const [],
           onboardingCompleted: false,
         ),
-        '/g/onboarding',
+        '/pc/onboarding',
       );
     });
 

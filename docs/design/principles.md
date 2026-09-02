@@ -18,7 +18,7 @@ Calm, dependable, emotionally intelligent, low-stress. Users feel oriented and i
 
 ## Audience
 
-One design system; subtle context via `AppExperience` (`/g/*` Guardian, `/o/*` Shelter), copy, and selective accent — not two brands. Shelter (teal) product copy rules: `copy-tone.md`.
+One design system; subtle context via `AppExperience` (`/pc/*` Pet Care, `/o/*` Shelter), copy, and selective accent — not two brands. Shelter (teal) product copy rules: `copy-tone.md`.
 
 The landing/auth surface is intentionally **role-neutral**. It introduces
 AgathaTrack as a shared care-coordination desk; guardian, shelter, foster, and
@@ -31,7 +31,7 @@ pre-login chooser.
 - **Guardian** and **Shelter** each have a primary accent for CTAs in their experience context — never use colour alone for permission or severity
 - **Coral** is decorative only — never a primary action, error, or warning colour
 - Semantic colours stay functional and shared across modes
-- **Landing / auth** uses the Operations Desk direction: warm paper, Guardian plum primary, Shelter teal story surface, protective arch mark — see [`system.md`](./system.md) and [`tokens.md`](./tokens.md) for exact values (Replit-approved canonical)
+- **Landing / auth** uses the Operations Desk direction: warm paper, Pet Care plum primary, Shelter teal story surface, protective arch mark — see [`system.md`](./system.md) and [`tokens.md`](./tokens.md) for exact values (Replit-approved canonical)
 
 **Colour values:** [`tokens.md`](./tokens.md) only. **Components and layout:** [`system.md`](./system.md). **Implementation:** `flutter_app/lib/core/theme/`
 

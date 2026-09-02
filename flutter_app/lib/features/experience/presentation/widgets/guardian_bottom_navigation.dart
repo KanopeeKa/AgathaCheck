@@ -36,9 +36,9 @@ class GuardianBottomNavigation extends StatelessWidget {
         key: const Key('guardian_bottom_navigation'),
         type: BottomNavigationBarType.fixed,
         currentIndex: GuardianPrimaryDestinations.indexFor(currentLocation),
-        backgroundColor: AppColorTokens.guardianPrimary,
+        backgroundColor: AppColorTokens.petCarePrimary,
         selectedItemColor: AppColorTokens.inverse,
-        unselectedItemColor: AppColorTokens.guardianLight,
+        unselectedItemColor: AppColorTokens.petCareLight,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
         onTap: (index) => context.go(GuardianPrimaryDestinations.routes[index]),
         items: [

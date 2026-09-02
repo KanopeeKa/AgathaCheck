@@ -28,7 +28,7 @@ describe('Auth Routes — Session', () => {
           password: 'Password123',
           first_name: 'New',
           last_name: 'User',
-          category: 'pet_guardian',
+          category: 'pet_carer',
           bio: 'My bio',
           photo_url: 'http://example.com/pic.png',
           locale: 'fr',
@@ -41,7 +41,7 @@ describe('Auth Routes — Session', () => {
       expect(res.body.user).toHaveProperty('email', 'new@example.com');
       expect(res.body.user).toHaveProperty('first_name', 'New');
       expect(res.body.user).toHaveProperty('last_name', 'User');
-      expect(res.body.user).toHaveProperty('category', 'pet_guardian');
+      expect(res.body.user).toHaveProperty('category', 'pet_carer');
       expect(res.body.user).toHaveProperty('bio', 'My bio');
       expect(res.body.user).toHaveProperty('photo_url', 'http://example.com/pic.png');
       expect(res.body.user).toHaveProperty('locale', 'fr');
@@ -79,7 +79,7 @@ describe('Auth Routes — Session', () => {
       expect(res.statusCode).toBe(201);
       expect(res.body.user.first_name).toBe('');
       expect(res.body.user.last_name).toBe('');
-      expect(res.body.user.category).toBe('pet_guardian');
+      expect(res.body.user.category).toBe('pet_carer');
       expect(res.body.user.bio).toBe('');
       expect(res.body.user.photo_url).toBe('');
       expect(res.body.user.locale).toBe('en');
@@ -163,7 +163,7 @@ describe('Auth Routes — Session', () => {
       expect(res.body.user).toHaveProperty('email', userEmail);
       expect(res.body.user).toHaveProperty('first_name', 'Test');
       expect(res.body.user).toHaveProperty('last_name', 'User');
-      expect(res.body.user).toHaveProperty('category', 'pet_guardian');
+      expect(res.body.user).toHaveProperty('category', 'pet_carer');
       expect(res.body.user).toHaveProperty('bio', 'A test bio');
       expect(res.body.user).toHaveProperty('photo_url', 'http://example.com/photo.png');
       expect(res.body.user).toHaveProperty('locale', 'en');

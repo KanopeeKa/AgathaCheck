@@ -83,7 +83,7 @@ Organisation v2 introduces a **product** activity layer for last-activity sortin
 | --- | --- | --- |
 | Product activity | `pet_activity_events`, `pets.last_activity_at` | `recordPetActivity()` in `server/lib/petActivity.js` |
 | Compliance audit | `audit_events` | `logAuditEventSafe()` |
-| Guardian timeline | `pet_timeline_entries` | Timeline routes |
+| Pet Care timeline | `pet_timeline_entries` | Timeline routes |
 
 - Activity events store **event type + safe metadata only** (no health/foster payloads).
 - `last_activity_at` is updated in the **same transaction** as the event insert.

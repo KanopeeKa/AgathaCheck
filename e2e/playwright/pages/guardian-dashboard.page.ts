@@ -12,7 +12,7 @@ import {
 } from '../support/flutter';
 
 /**
- * Focused vocabulary for the Guardian operations desk.
+ * Focused vocabulary for the Pet Care operations desk.
  * The page object deliberately uses accessible names and public routes only.
  */
 export class GuardianDashboardPage {
@@ -23,21 +23,21 @@ export class GuardianDashboardPage {
   }
 
   async open(): Promise<void> {
-    await this.page.goto(flutterGotoUrl('/g/home'));
+    await this.page.goto(flutterGotoUrl('/pc/home'));
     await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/g\/home(?:\?|$)/, 60_000);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/home(?:\?|$)/, 60_000);
     await this.section(/My Pets|Mes animaux/i).waitFor({ state: 'visible', timeout: 60_000 });
   }
 
   async expectTodayCareRegions(): Promise<void> {
     await expect(this.section(/My Pets|Mes animaux/i)).toBeVisible();
-    await expect(this.section(/CARE|SOINS/i)).toBeVisible();
+    await expect(this.section(/CARE ACTIONS|SOINS/i)).toBeVisible();
     await expect(this.section(/Care team|CARE TEAM|Équipe de soins|ÉQUIPE DE SOINS/i)).toBeVisible();
     await expect(this.section(/Fostering Sessions|Sessions d'accueil/i)).toBeVisible();
   }
 
   careRegion(): Locator {
-    return this.section(/CARE|SOINS/i);
+    return this.section(/CARE ACTIONS|SOINS/i);
   }
 
   async expectNoPendingDashboardBanner(): Promise<void> {
@@ -82,27 +82,27 @@ export class GuardianDashboardPage {
       .or(this.page.getByText(/^All pets$|^Tous les animaux$/i))
       .first()
       .click();
-    await waitForFlutterRoutePattern(this.page, /\/g\/pets(?:\?|$)/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/pets(?:\?|$)/, 30_000);
   }
 
   async openEvents(): Promise<void> {
-    const careBottomNav = this.page
+    const actionsBottomNav = this.page
       .getByRole('button', {
-        name: /^Care(?:\s+Tab\s+\d+\s+of\s+\d+)?$|^Soins(?:\s+Tab\s+\d+\s+of\s+\d+)?$/i,
+        name: /^Actions(?:\s+Tab\s+\d+\s+of\s+\d+)?$|^Soins(?:\s+Tab\s+\d+\s+of\s+\d+)?$/i,
       })
-      .or(this.page.getByRole('tab', { name: /^Care$|^Soins$/i }))
+      .or(this.page.getByRole('tab', { name: /^Actions$|^Soins$/i }))
       .first();
-    if (await careBottomNav.isVisible().catch(() => false)) {
-      await careBottomNav.click();
+    if (await actionsBottomNav.isVisible().catch(() => false)) {
+      await actionsBottomNav.click();
     } else {
       await this.careRegion()
-        .getByRole('button', { name: /All care|Tous les soins|View all|Voir tout/i })
-        .or(this.careRegion().getByText(/All care|Tous les soins|View all|Voir tout/i))
+        .getByRole('button', { name: /All Actions|Tous les soins|View all|Voir tout/i })
+        .or(this.careRegion().getByText(/All Actions|Tous les soins|View all|Voir tout/i))
         .first()
         .click();
     }
     await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/g\/events(?:\?|$)/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/events(?:\?|$)/, 30_000);
   }
 
   async expectCareVisible(name: string): Promise<void> {
@@ -124,7 +124,7 @@ export class GuardianDashboardPage {
       .or(semanticsByName(this.page, new RegExp(name, 'i')))
       .first();
     await vet.click();
-    await waitForFlutterRoutePattern(this.page, /\/g\/vets\/[^/]+$/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/vets\/[^/]+$/, 30_000);
   }
 
   async expectNoHorizontalOverflow(): Promise<void> {
@@ -137,7 +137,7 @@ export class GuardianDashboardPage {
   async goBackToDashboard(): Promise<void> {
     await this.page.goBack();
     await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/g\/home(?:\?|$)/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/home(?:\?|$)/, 30_000);
   }
 
   async openNotifications(): Promise<void> {
@@ -145,7 +145,7 @@ export class GuardianDashboardPage {
     await refreshFlutterAccessibility(this.page);
   }
 
-  /** Compact Guardian bottom bar tab (Dashboard, Pets, Care, Fostering, Account). */
+  /** Compact Pet Care bottom bar tab (Dashboard, Pets, Actions, Fostering, Account). */
   async openBottomNavTab(label: string): Promise<void> {
     const pattern = this.bottomNavTabPattern(label);
     const tab = this.page
@@ -157,8 +157,8 @@ export class GuardianDashboardPage {
   }
 
   private destinationNamePattern(label: string): RegExp {
-    return label === 'Care'
-      ? /^Care$|^Soins$/i
+    return label === 'Actions' || label === 'Care'
+      ? /^Actions$|^Soins$/i
       : label === 'Pets'
         ? /^Pets$|^Animaux$/i
         : label === 'Dashboard'
@@ -171,8 +171,9 @@ export class GuardianDashboardPage {
   }
 
   private bottomNavTabPattern(label: string): RegExp {
+    const normalized = label === 'Care' ? 'Actions' : label;
     return new RegExp(
-      `^${escapeRegExp(label)}(?:\\s+Tab\\s+\\d+\\s+of\\s+\\d+)?$`,
+      `^${escapeRegExp(normalized)}(?:\\s+Tab\\s+\\d+\\s+of\\s+\\d+)?$`,
       'i',
     );
   }
@@ -200,6 +201,7 @@ export class GuardianDashboardPage {
         return 'guardian_nav_dashboard';
       case 'Pets':
         return 'guardian_nav_pets';
+      case 'Actions':
       case 'Care':
         return 'guardian_nav_care';
       case 'Fostering':
@@ -267,7 +269,7 @@ export class GuardianDashboardPage {
 
   async openFosteringViaBottomNav(): Promise<void> {
     await this.openBottomNavTab('Fostering');
-    await waitForFlutterRoutePattern(this.page, /\/g\/fostering(?:\?|$)/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/fostering(?:\?|$)/, 30_000);
     await expect(
       this.page.getByText(/Fostering Sessions|Sessions d'accueil/i).first(),
     ).toBeVisible();
@@ -278,7 +280,7 @@ export class GuardianDashboardPage {
       .getByRole('button', {
         name: /Choose your workspace|Choisir votre espace de travail/i,
       })
-      .or(this.page.getByRole('button', { name: /^My Pets$|^Mes animaux$/i }))
+      .or(this.page.getByRole('button', { name: /^Pet Care$|^Suivi$/i }))
       .or(this.page.getByRole('button', { name: /^Shelter$|^Refuge$/i }))
       .first();
   }

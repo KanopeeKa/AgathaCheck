@@ -33,7 +33,7 @@ Shared components: `DashboardSection`, `OrgCard`, `ExperienceShellScaffold`, `or
 - **Problem:** `organization_detail_screen.dart` mixes branding, people, pets, connections, and admin actions on one scroll — weak hierarchy and hard to permission-gate. **Requirement**
 - **Problem:** Discover Organisations missing — users cannot browse shelters without membership. **Requirement**
 - **Recommendation:** Reuse Phase 2 `DashboardSection` for My Organisations preview on `/o/orgs` if list grows; full list remains primary for now.
-- **Recommendation:** Internal org dashboard uses same card grid rhythm as Guardian `/g/home` (section title → preview → end link) for cross-experience consistency.
+- **Recommendation:** Internal org dashboard uses same card grid rhythm as Pet Care `/pc/home` (section title → preview → end link) for cross-experience consistency.
 
 ### A11y
 
@@ -47,7 +47,7 @@ Shared components: `DashboardSection`, `OrgCard`, `ExperienceShellScaffold`, `or
 - **Requirement:** Organisation accent Shelter teal via `ExperienceColors.organizationPrimary` / `org_screen_theme.dart` (see [tokens.md](/docs/design/tokens.md) `organization.primary`) — no scattered greens.
 - **Requirement:** Discover tiles show logo, name, town/admin area, description snippet only — never legal identifiers or admin phone numbers.
 - **Recommendation:** Presentation hero uses cover + logo overlap (brief) — max height ~180dp mobile, avoid full-bleed that pushes actions below fold.
-- **Preference:** Section cards on org dashboard use `Card` + `outlineVariant` border (match Guardian `DashboardSection`).
+- **Preference:** Section cards on org dashboard use `Card` + `outlineVariant` border (match Pet Care `DashboardSection`).
 
 ## 3. System-first proposals
 

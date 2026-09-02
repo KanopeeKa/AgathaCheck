@@ -12,9 +12,9 @@ void main() {
     const DrawerMenuEntry.item(
       DrawerMenuItem(
         semanticKey: 'drawer_my_pets',
-        label: 'My Pets',
+        label: 'Pet Care',
         group: DrawerMenuGroup.guardianPlum,
-        route: '/g/home',
+        route: '/pc/home',
       ),
     ),
     const DrawerMenuEntry.separator(),
@@ -32,7 +32,7 @@ void main() {
         semanticKey: 'drawer_settings',
         label: 'Settings',
         group: DrawerMenuGroup.utility,
-        route: '/g/settings',
+        route: '/pc/settings',
       ),
     ),
   ];
@@ -62,7 +62,7 @@ void main() {
     await tester.pumpWidget(buildApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('My Pets'), findsOneWidget);
+    expect(find.text('Pet Care'), findsOneWidget);
     expect(find.text('Organisation view'), findsOneWidget);
     expect(find.text('Settings'), findsOneWidget);
   });
@@ -98,7 +98,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('My Pets'));
+    await tester.tap(find.text('Pet Care'));
     expect(tapped?.semanticKey, 'drawer_my_pets');
   });
 }

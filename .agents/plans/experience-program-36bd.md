@@ -15,7 +15,7 @@
 ## Goal
 
 Deliver the locked Experience program (Phase R + 0–5): reverse Navigation v2, unified notifications,
-Guardian dashboard redesign, Organisation presentation/access-control rework, foster/pet ops
+Pet Care dashboard redesign, Organisation presentation/access-control rework, foster/pet ops
 extensions, and org customisations — sequential direct-to-`main` per D33 unless Phase 3 spawns
 parallel agents.
 
@@ -67,7 +67,7 @@ See snapshot JSON for `allowed_paths`, branches, and spawn config. Phase 3 may i
 | R | Reconciliation | `cursor/experience-program-plan-36bd` (merged #377) |
 | 0 | Foundation | `cursor/experience-foundation-36bd` |
 | 1 | Shell & navigation reversal | `cursor/experience-nav-shell-36bd` |
-| 2 | Guardian journey | `cursor/experience-guardian-journey-36bd` |
+| 2 | Pet Care journey | `cursor/experience-guardian-journey-36bd` |
 | 3 | Organisation presentation | `cursor/experience-org-presentation-36bd` |
 | 4 | Foster & pet ops | `cursor/experience-foster-pet-ops-36bd` |
 | 5 | Org customisations | `cursor/experience-org-customisations-36bd` |

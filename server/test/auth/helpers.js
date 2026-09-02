@@ -11,7 +11,7 @@ export const userRow = {
   password_hash: userPasswordHash,
   first_name: 'Test',
   last_name: 'User',
-  category: 'pet_guardian',
+  category: 'pet_carer',
   bio: 'A test bio',
   photo_url: 'http://example.com/photo.png',
   locale: 'en',

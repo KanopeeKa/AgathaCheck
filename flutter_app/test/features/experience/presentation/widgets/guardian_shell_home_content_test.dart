@@ -79,7 +79,7 @@ void main() {
       find.byKey(const Key('guardian_dashboard_pet_preview')),
       findsOneWidget,
     );
-    expect(find.text('CARE'), findsOneWidget);
+    expect(find.text('CARE ACTIONS'), findsOneWidget);
     expect(find.text('FOSTERING SESSIONS'), findsOneWidget);
     expect(find.text('Shelters'), findsOneWidget);
     expect(find.byKey(const Key('guardian_dashboard_add_care')), findsNothing);
@@ -95,7 +95,7 @@ void main() {
             find.byKey(const Key('guardian_dashboard_care_section')),
           )
           .tint,
-      AppColorTokens.guardianLight,
+      AppColorTokens.petCareLight,
     );
     expect(find.text('Pending foster placements'), findsNothing);
     expect(find.text('Pending Shares'), findsNothing);

@@ -1,15 +1,15 @@
 ---
-title: Guardian Today orientation handoff
+title: Pet Care Today orientation handoff
 owner: Experience Program Team
 audience: both
 status: active
 last_updated: 2026-08-21
 tags: [experience,guardian,organisation]
 ---
-# Guardian Today orientation handoff
+# Pet Care Today orientation handoff
 
 `GuardianTodayOrientation` is the compact, provider-free orientation layer for
-the Guardian home. It is not a dashboard section, route, care list, or
+the Pet Care home. It is not a dashboard section, route, care list, or
 management surface.
 
 ## Constructor contract
@@ -22,7 +22,7 @@ GuardianTodayOrientation(
 )
 ```
 
-- Pass the state and summary already derived by the Guardian Today presentation
+- Pass the state and summary already derived by the Pet Care Today presentation
   foundation; do not watch providers or rebuild care priority rules inside the
   widget.
 - `summary` is required for `attention` and `allClear`. Missing summary data
@@ -33,7 +33,7 @@ GuardianTodayOrientation(
 
 ## Integration rules
 
-- Compose it once above the three Guardian management sections.
+- Compose it once above the three Pet Care management sections.
 - Keep it compact; it surfaces grouped overdue, due-today, and upcoming counts
   but never renders individual care rows.
 - Its root exposes one grouped semantic summary. Decorative icons and visual

@@ -16,7 +16,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 ## care-event-row-7bee — Unified CareEventRow (2026-08-31)
 
-**Goal:** One scannable due/overdue row on dashboard, pet preview, and `/g/events`; row tap → view screen; snooze/edit on view only.  
+**Goal:** One scannable due/overdue row on dashboard, pet preview, and `/pc/events`; row tap → view screen; snooze/edit on view only.  
 **Plan:** `.agents/plans/care-event-row-7bee.md` · **Branch:** `cursor/care-event-row-unification-7bee`
 
 | Outcome | Status |
@@ -29,7 +29,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 ---
 
-**Goal:** Adaptive Guardian shell — bottom bar (&lt;600px), navigation rail (600–839px), expanded sidebar (≥840px); record D-v4-4/5; resolve D-v4-2 drawer retirement.  
+**Goal:** Adaptive Pet Care shell — bottom bar (&lt;600px), navigation rail (600–839px), expanded sidebar (≥840px); record D-v4-4/5; resolve D-v4-2 drawer retirement.  
 **Plan:** `.agents/plans/guardian-adaptive-nav-7221.md` · **Integration:** `cursor/guardian-adaptive-nav-7221-integration-7221` · **Control issue:** #768 · **Prerequisite:** PR #767 (workspace-wide compact bottom nav)
 
 | Phase | Outcome | Branch | Status |
@@ -44,14 +44,14 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 ---
 
-**Goal:** Harden PR #754 Guardian operations desk to AgathaTrack standards — navigation decisions, atomic PR slices, a11y, modularity, BDD/E2E.  
+**Goal:** Harden PR #754 Pet Care operations desk to AgathaTrack standards — navigation decisions, atomic PR slices, a11y, modularity, BDD/E2E.  
 **Plan:** `.agents/plans/guardian-ops-desk-754-b9bd.md` · **Integration:** `cursor/guardian-ops-desk-754-b9bd-integration-b9bd` · **Control issue:** #755 · **Source PR:** #754
 
 | Phase | Outcome | Branch | Status |
 |-------|---------|--------|--------|
 | 1 | Navigation decisions + design doc reconciliation | `cursor/guardian-ops-desk-decisions-b9bd` | Merged (#756) |
 | 2 | Flutter 3.44 API compatibility extract | `cursor/guardian-ops-desk-flutter344-b9bd` | Merged (#757) |
-| 3 | Guardian operations desk core UI | `cursor/guardian-ops-desk-core-b9bd` | Merged (#758) |
+| 3 | Pet Care operations desk core UI | `cursor/guardian-ops-desk-core-b9bd` | Merged (#758) |
 | 4 | Shell hardening + modularity | `cursor/guardian-ops-desk-hardening-b9bd` | Merged (#759) |
 | 5 | BDD/E2E completeness | `cursor/guardian-ops-desk-e2e-b9bd` | Merged (#760) |
 | Final | Integration → main | `cursor/guardian-ops-desk-754-b9bd-integration-b9bd` | In progress |
@@ -199,8 +199,8 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 | # | Deliverable | Status |
 |---|-------------|--------|
 | XP-1 | Experience chooser + eligibility + remember choice | **Done** |
-| XP-2 | Guardian shell `/g/*` + org shell `/o/*` + top nav drawer | **Done** |
-| XP-3 | Guardian home excludes org inventory (`guardianShellPets`) | **Done** |
+| XP-2 | Pet Care shell `/pc/*` + org shell `/o/*` + top nav drawer | **Done** |
+| XP-3 | Pet Care home excludes org inventory (`guardianShellPets`) | **Done** |
 | XP-4 | BDD `experience_navigation.feature` + Playwright spec | **Done** (6/6 scenarios E2E) |
 | XP-5 | Settings default experience | **Done** |
 | XP-6 | Phase 2 home grouping + inline event actions + scoped events | **Done** |
@@ -401,7 +401,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 | 0 | `tokens.md` + `app_theme.dart` + `ExperienceColors` | In progress |
 | 1 | Shared components + `AppTheme.org*` → tokens | Planned |
 | 2 | Auth, landing, onboarding | Planned |
-| 3 | Guardian shell, pet list/detail, notifications | Planned |
+| 3 | Pet Care shell, pet list/detail, notifications | Planned |
 | 4 | Health, vet, weight forms | Planned |
 | 5 | Organisation + foster portal | Planned |
 | 6 | Sharing, help, about, paywall, stragglers | Planned |

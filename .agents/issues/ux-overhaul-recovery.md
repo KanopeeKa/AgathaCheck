@@ -1,8 +1,12 @@
+## Superseded by D38 (pet-care-domain-rename-b088)
+
+The ux-overhaul-plan proposed `drawerGuardian` → **My Pets**. **D38** locks workspace drawer copy to **Pet Care** / **Suivi**; **My Pets** names only the dashboard pet-rail section. Treat checklist item 24 above as satisfied by the Pet Care rename program when phases 1–4 merge — do not re-implement the My Pets drawer label.
+
 ## Problem
 
 PR #649 (UX Overhaul integration) merged to `main` and deployed to UAT, but **most planned work from phases 1–3 never landed in Flutter**. Phase PRs #647–#648 closed with only root-level Python helper scripts (`fix_*.py`, `replace_strings.py`) that were never executed against source files.
 
-UAT correctly reflects `main`: drawer still shows **Guardian / Organisation**, chooser FTUE unchanged, form polish missing, etc.
+UAT correctly reflects `main`: drawer still shows **Pet Care / Shelter**, chooser FTUE unchanged, form polish missing, etc.
 
 ## Root cause (audit 2026-08-19)
 
@@ -21,8 +25,8 @@ Reference plan: `.agents/plans/ux-overhaul-plan.md`
 
 ## Checklist — Phase 1 (Routing, Navigation & Form Polish)
 
-- [ ] Navigation l10n: `drawerGuardian` → **My Pets**, `drawerOrganisation` → **Shelters** (+ related dashboard/account toggle copy; EN+FR; avoid blind global replace)
-- [ ] Deterministic landing rules in `experience_resolve_screen.dart` (pets >0 → `/g/home`; 0 pets + orgs → `/o/home`; else `/g/home`)
+- [ ] Navigation l10n: `drawerGuardian` → **Pet Care** / **Suivi** (D38 supersedes ux-overhaul-plan My Pets drawer label), `drawerOrganisation` → **Shelters** (+ related dashboard/account toggle copy; EN+FR; avoid blind global replace)
+- [ ] Deterministic landing rules in `experience_resolve_screen.dart` (pets >0 → `/pc/home`; 0 pets + orgs → `/o/home`; else `/pc/home`)
 - [ ] Notification bell deep-links into Shelter views (`notification_navigation.dart`, panel/screen)
 - [ ] Remove redundant validation Snackbars from form screens (inline borders instead)
 - [ ] `HealthEntryRemindField` → ChoiceChips
@@ -49,7 +53,7 @@ Reference plan: `.agents/plans/ux-overhaul-plan.md`
 
 - [ ] `./scripts/pre-push-changed.sh` during iteration; `./scripts/pre-push.sh` before merge
 - [ ] `flutter test` for touched areas
-- [ ] Manual: hamburger drawer shows **My Pets** / **Shelters**; landing rules; FTUE; delete-pet dialog shows name
+- [ ] Manual: workspace toggle / drawer shows **Pet Care** / **Suivi** and **Shelter** / **Refuges**; landing rules; FTUE; delete-pet dialog shows name
 - [ ] UAT deploy shows changes after merge
 
 ## References

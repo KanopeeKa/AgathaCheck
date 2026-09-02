@@ -139,7 +139,7 @@ Pet access management on `/api/pets/:id/...` (owner unless noted):
 - `DELETE /:id/follow` — shared user stops following (self-remove access)
 - `POST /:id/transfer` — transfer ownership to another user (owner only); body `{ recipient_email, confirmation_name }` (pet name must match, case-insensitive); former owner receives `shared` access automatically; writes `archived_pets` audit row (`transfer_type: user_to_user`)
 
-Shared pets appear in `GET /api/pets/all` with `is_shared: true`. Fostered pets use `is_foster: true` (and `is_shared: false`).
+Shared pets appear in `GET /api/pets/all` with `is_shared: true`. Fostered pets use `is_foster: true` (and `is_shared: false`). Shared and org-visible pets may include `primary_holder_name` (display name of the pet's primary holder) when the viewer is permitted to see it.
 
 Share links are **single-use**: once accepted, the same link cannot be used by another user (`410`).
 
@@ -247,7 +247,7 @@ On successful signup, the backend generates and returns both an `access_token` a
   "password": "yourPassword",
   "first_name": "First",         // optional
   "last_name": "Last",           // optional
-  "category": "pet_guardian",    // optional, default: pet_guardian
+  "category": "pet_carer",    // optional, default: pet_carer
   "bio": "About me",             // optional
   "photo_url": "http://...",     // optional
   "locale": "en"                 // optional, default: en
@@ -264,7 +264,7 @@ On successful signup, the backend generates and returns both an `access_token` a
     "email": "user@example.com",
     "first_name": "First",
     "last_name": "Last",
-    "category": "pet_guardian",
+    "category": "pet_carer",
     "bio": "About me",
     "photo_url": "http://...",
     "locale": "en"
@@ -337,7 +337,7 @@ POST /backend/api/auth/login
     "email": "user@example.com",
     "first_name": "First",
     "last_name": "Last",
-    "category": "pet_guardian",
+    "category": "pet_carer",
     "bio": "About me",
     "photo_url": "http://...",
     "locale": "en"

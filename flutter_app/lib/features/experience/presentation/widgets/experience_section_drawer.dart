@@ -21,7 +21,9 @@ class ExperienceSectionDrawer extends ConsumerWidget {
 
   String? _activeSemanticKey({required String location}) {
     if (location == '/account') return 'drawer_account';
-    if (location.startsWith('/g/')) return 'drawer_guardian';
+    if (location.startsWith('/pc/') || location.startsWith('/g/')) {
+      return 'drawer_guardian';
+    }
     if (location.startsWith('/o/')) return 'drawer_organisation';
     return null;
   }
@@ -33,7 +35,7 @@ class ExperienceSectionDrawer extends ConsumerWidget {
     final location = GoRouter.maybeOf(context)?.state.uri.path ?? '/';
     final activeExperience = location.startsWith('/o/')
         ? AppExperience.organization
-        : AppExperience.guardian;
+        : AppExperience.petCare;
     final activeKey = _activeSemanticKey(location: location);
     final showOrganisationSection = ref.watch(showOrganisationSectionProvider);
     final topEntries = DrawerMenuConfig.sectionSwitcherEntries(

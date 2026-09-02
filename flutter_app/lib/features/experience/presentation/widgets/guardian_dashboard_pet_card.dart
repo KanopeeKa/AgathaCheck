@@ -179,7 +179,7 @@ class GuardianDashboardPetCard extends StatelessWidget {
   Color _careColor() {
     return switch (careState) {
       GuardianTodayPetCareState.overdue => AppColorTokens.danger,
-      GuardianTodayPetCareState.dueToday => AppColorTokens.guardianPrimary,
+      GuardianTodayPetCareState.dueToday => AppColorTokens.petCarePrimary,
       GuardianTodayPetCareState.upcoming => AppColorTokens.organizationActive,
       GuardianTodayPetCareState.clear => AppColorTokens.success,
     };

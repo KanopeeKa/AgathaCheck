@@ -25,7 +25,7 @@ Maps every settings row today to its **Phase 1+ destination** per decisions D25�
 
 | Row / section | Current location | Destination | Notes |
 |---------------|------------------|-------------|-------|
-| Default experience (Guardian / Organisation radio) | `ExperienceSettingsSection` | **Account** | Cross-org personal preference (D25) |
+| Default experience (Pet Care / Shelter radio) | `ExperienceSettingsSection` | **Account** | Cross-org personal preference (D25) |
 | My Details → `/my-details` | `ListTile` on settings screen | **Account** | Profile entry; screen content audited below |
 
 ## `/my-details` — `MyDetailsScreen`

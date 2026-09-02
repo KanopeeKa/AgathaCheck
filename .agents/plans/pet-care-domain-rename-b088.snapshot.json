@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-care-domain-rename-b088",
+  "approved_at": "2026-09-02T12:15:00Z",
+  "approved_by": "user chat 2026-09-02 (/execute-plan after pet-care-domain-rename analysis + FR Suivi/Soins table)",
+  "approved_until": "2026-09-04T12:15:00Z",
+  "content_hash": "sha256:0b924e122a8c2529c13e5c134170c5007b850db62967565922ec280e3c42bffc",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/pet-care-domain-rename-b088-integration-b088",
+  "control_issue": 829,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Vocabulary and decision lock",
+      "branch": "cursor/pet-care-vocabulary-b088",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        "docs/domains/pet_profile/features/pet-profile-decisions.md",
+        "docs/domains/cross-domain/changes/program-contract.md",
+        "docs/e2e/navigation-contract.md",
+        "docs/design/copy-tone.md",
+        "docs/architecture/index.md",
+        ".agents/memory/shelter-terminology-and-evolving-design.md",
+        ".agents/plans/pet-care-domain-rename-b088.md",
+        ".agents/plans/pet-care-domain-rename-b088.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        "db/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/830",
+      "pr_head_sha": "50b1079ced3950e731c74f8646ad32c56d650d08"
+    },
+    {
+      "id": "2",
+      "title": "Database and API migration",
+      "branch": "cursor/pet-care-db-api-b088",
+      "allowed_paths": [
+        "db/migrations/**",
+        "db/schema/canonical.sql",
+        "server/**",
+        "docs/architecture/api-reference.md",
+        ".agents/plans/pet-care-domain-rename-b088.md",
+        ".agents/plans/pet-care-domain-rename-b088.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Flutter wire, routes, and experience rename",
+      "branch": "cursor/pet-care-flutter-wire-b088",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/core/theme/experience_colors.dart",
+        "flutter_app/lib/core/theme/app_color_tokens.dart",
+        "flutter_app/lib/core/branding/**",
+        "flutter_app/lib/features/notifications/domain/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/core/router/**",
+        ".agents/plans/pet-care-domain-rename-b088.md",
+        ".agents/plans/pet-care-domain-rename-b088.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/841",
+      "pr_head_sha": "2c8a43a2"
+    },
+    {
+      "id": "4",
+      "title": "l10n and UI copy",
+      "branch": "cursor/pet-care-l10n-ui-b088",
+      "allowed_paths": [
+        "flutter_app/lib/l10n/**",
+        "flutter_app/lib/features/**",
+        "flutter_app/test/**",
+        "flutter_app/web/**",
+        ".agents/plans/pet-care-domain-rename-b088.md",
+        ".agents/plans/pet-care-domain-rename-b088.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "BDD and Playwright E2E",
+      "branch": "cursor/pet-care-e2e-b088",
+      "allowed_paths": [
+        "flutter_app/test/bdd/**",
+        "e2e/**",
+        "scripts/bdd-priority-tag-map.json",
+        "docs/quality/bdd-journey-matrix.md",
+        "docs/e2e/**",
+        ".agents/plans/pet-care-domain-rename-b088.md",
+        ".agents/plans/pet-care-domain-rename-b088.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "6",
+      "title": "Documentation sweep and agent memory",
+      "branch": "cursor/pet-care-docs-sweep-b088",
+      "allowed_paths": [
+        "docs/**",
+        ".agents/**",
+        ".agents/plans/pet-care-domain-rename-b088.md",
+        ".agents/plans/pet-care-domain-rename-b088.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        "db/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/847"
+    }
+  ]
+}

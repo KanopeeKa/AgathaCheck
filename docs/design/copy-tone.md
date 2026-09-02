@@ -3,7 +3,7 @@ title: Copy tone and Shelter branding
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-21
+last_updated: 2026-09-02
 tags: [design,ui,ux]
 ---
 # Copy tone and org branding
@@ -61,3 +61,17 @@ Shelters may customize **logo, name, and photo** via
 **Accent:** org-specific tints may appear on avatars, chips, or headers only where the feature already supports it. If an org color fails WCAG AA contrast on its surface, fall back to `colorScheme` tokens.
 
 **Rule:** one product — Shelter branding personalizes identity, not the interaction system.
+
+## Pet Care workspace naming (D38)
+
+Three labels must stay distinct in copy and l10n:
+
+| Surface | EN | FR | ARB keys (target) |
+|---------|----|----|-------------------|
+| Workspace | Pet Care | Suivi | `drawerPetCare`, `experiencePetCareView`, … |
+| Dashboard pet rail | My Pets | Mes animaux | `myPets` — **do not repurpose for workspace** |
+| Due-items block | CARE ACTIONS (eyebrow) | SOINS | `careActionsEyebrow` or `careEyebrow` |
+| Full due list link | All Actions | Tous les soins | `allActions` |
+| Bottom nav | Actions | Soins | `actionsNavLabel` |
+
+Custody **guardianship** in legal/org docs is not the Pet Care workspace. See [pet_care README](/docs/domains/pet_care/README.md).

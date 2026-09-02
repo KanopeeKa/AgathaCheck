@@ -14,7 +14,7 @@ User-facing flows for managing vet contacts in AgathaTrack.
 
 ## Create veterinarian
 
-Guardians add a vet from the veterinarian list (app bar icon or navigation). Minimum required field is name; phone, email, address, and notes are optional.
+Pet carers add a vet from the veterinarian list (app bar icon or navigation). Minimum required field is name; phone, email, address, and notes are optional.
 
 ## View and link pets
 
