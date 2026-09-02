@@ -95,17 +95,17 @@ Rework the guardian `/pc/pets` screen per ui-design-deep review and user decisio
 | 2 | pending | |
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 2
 halt_reason: null
-next_action: "implement phase 1 on cursor/guardian-pets-list-clarity-6426"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/guardian-pets-list-clarity-6426
+  branch: main
   plan_path: .agents/plans/guardian-pets-screen-6426.md
-  plan_commit: null
+  plan_commit: 5ae0e7c1ed5959fd3afa0cdddfb0870c501be03f
   snapshot_path: .agents/plans/guardian-pets-screen-6426.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 5ae0e7c1ed5959fd3afa0cdddfb0870c501be03f
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
