@@ -60,11 +60,17 @@ export function materialisationAnchor(startDateIso, todayIso) {
  * @param {string|null} startDateIso
  * @param {string|null} nextDueIso
  * @param {string} todayIso
- * @returns {string}
+ * @returns {string|null} null when materialisation should be deferred
  */
 export function initialMaterialisationAnchor(startDateIso, nextDueIso, todayIso) {
   if (nextDueIso && nextDueIso < todayIso) {
     return nextDueIso;
+  }
+  if (nextDueIso && nextDueIso >= todayIso) {
+    if (isWithinMaterialisationWindow(nextDueIso, todayIso)) {
+      return nextDueIso;
+    }
+    return null;
   }
   return materialisationAnchor(startDateIso, todayIso);
 }
@@ -207,6 +213,9 @@ export async function materialiseInitialOccurrences(pool, entry, todayIso = toda
   }
 
   const anchor = initialMaterialisationAnchor(startIso, nextDueIso, todayIso);
+  if (anchor == null) {
+    return;
+  }
   await insertOccurrencesForDay(pool, entry, anchor);
 
   if (isMultiPerDayEntry(entry)) {
