@@ -571,7 +571,7 @@ CREATE TABLE public.users (
     password_hash character varying(255) NOT NULL,
     first_name character varying(100) DEFAULT ''::character varying,
     last_name character varying(100) DEFAULT ''::character varying,
-    category character varying(50) DEFAULT 'pet_guardian'::character varying,
+    category character varying(50) DEFAULT 'pet_carer'::character varying,
     bio text DEFAULT ''::text,
     photo_url text DEFAULT ''::text,
     locale character varying(10) DEFAULT 'en'::character varying,

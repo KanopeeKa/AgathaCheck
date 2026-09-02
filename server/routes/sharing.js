@@ -287,7 +287,7 @@ export default function sharingRoutes(pool) {
           email: owner.email || '',
           photo_url: owner.photo_url || '',
           bio: owner.bio || '',
-          category: owner.category || 'pet_guardian',
+          category: owner.category || 'pet_carer',
         },
         vet,
         health_entries: healthResult.rows.map(healthEntryToMap),

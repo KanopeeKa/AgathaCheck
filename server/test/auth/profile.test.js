@@ -30,7 +30,7 @@ describe('Auth Routes — Profile', () => {
       expect(res.body).toHaveProperty('email', userEmail);
       expect(res.body).toHaveProperty('first_name', 'Test');
       expect(res.body).toHaveProperty('last_name', 'User');
-      expect(res.body).toHaveProperty('category', 'pet_guardian');
+      expect(res.body).toHaveProperty('category', 'pet_carer');
       expect(res.body).toHaveProperty('bio', 'A test bio');
       expect(res.body).toHaveProperty('photo_url', 'http://example.com/photo.png');
       expect(res.body).toHaveProperty('locale', 'en');

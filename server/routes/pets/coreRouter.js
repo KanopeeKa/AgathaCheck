@@ -24,7 +24,7 @@ import {
   FOSTER_PLACEMENT_SELECT_SQL,
   petRowToMap,
   userInOrg,
-  GUARDIAN_NAME_SELECT_SQL,
+  PRIMARY_HOLDER_NAME_SELECT_SQL,
 } from './shared.js';
 
 export function registerCoreRoutes(router, pool) {
@@ -35,7 +35,7 @@ export function registerCoreRoutes(router, pool) {
       const result = await pool.query(
         `SELECT p.*, false AS is_shared, false AS is_foster, o.name AS organization_name,
                 ${FOSTER_PLACEMENT_SELECT_SQL},
-                ${GUARDIAN_NAME_SELECT_SQL}
+                ${PRIMARY_HOLDER_NAME_SELECT_SQL}
          FROM pets p
          LEFT JOIN organizations o ON o.id = p.organization_id
          WHERE p.user_id = $1
@@ -46,7 +46,7 @@ export function registerCoreRoutes(router, pool) {
          UNION ALL
          SELECT p.*, true AS is_shared, false AS is_foster, o.name AS organization_name,
                 ${FOSTER_PLACEMENT_SELECT_SQL},
-                ${GUARDIAN_NAME_SELECT_SQL}
+                ${PRIMARY_HOLDER_NAME_SELECT_SQL}
          FROM pets p
          JOIN pet_access pa ON pa.pet_id = p.id
          LEFT JOIN organizations o ON o.id = p.organization_id
@@ -54,7 +54,7 @@ export function registerCoreRoutes(router, pool) {
          UNION ALL
          SELECT p.*, false AS is_shared, true AS is_foster, o.name AS organization_name,
                 ${FOSTER_PLACEMENT_SELECT_SQL},
-                ${GUARDIAN_NAME_SELECT_SQL}
+                ${PRIMARY_HOLDER_NAME_SELECT_SQL}
          FROM pets p
          JOIN pet_access pa ON pa.pet_id = p.id
          LEFT JOIN organizations o ON o.id = p.organization_id
@@ -62,7 +62,7 @@ export function registerCoreRoutes(router, pool) {
          UNION ALL
          SELECT p.*, false AS is_shared, false AS is_foster, o.name AS organization_name,
                 ${FOSTER_PLACEMENT_SELECT_SQL},
-                ${GUARDIAN_NAME_SELECT_SQL}
+                ${PRIMARY_HOLDER_NAME_SELECT_SQL}
          FROM pets p
          JOIN organization_users ou ON ou.organization_id = p.organization_id
          LEFT JOIN organizations o ON o.id = p.organization_id

@@ -4,7 +4,7 @@
   "approved_at": "2026-09-02T12:15:00Z",
   "approved_by": "user chat 2026-09-02 (/execute-plan after pet-care-domain-rename analysis + FR Suivi/Soins table)",
   "approved_until": "2026-09-04T12:15:00Z",
-  "content_hash": "sha256:53ae5bcebdd8c33550a8c1927a1ce01d4a18977a04be082f15f952a2c10bf899",
+  "content_hash": "sha256:31e33bdffeb8be506d8a03c44c4b7562724fd5dd63531d58d168440803d7679e",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/pet-care-domain-rename-b088-integration-b088",
@@ -70,13 +70,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "debt_issue_refs": []
     },
     {
       "id": "3",
