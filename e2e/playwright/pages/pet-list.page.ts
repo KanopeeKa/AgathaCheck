@@ -241,7 +241,8 @@ export class PetListPage {
   async openPet(name: string): Promise<void> {
     await this.expectPetVisible(name);
     await petCardByName(this.page, name).click();
-    await this.page.waitForTimeout(1000);
+    await waitForFlutterRoutePattern(this.page, /\/pet\/[^/?]+/, 30_000);
+    await refreshFlutterAccessibility(this.page);
   }
 
   async openOrganizations(): Promise<void> {
