@@ -126,7 +126,10 @@ test.describe('Guardian dashboard', () => {
     await dashboard.goBackToDashboard();
   });
 
-  test('Care preview row opens event view without snooze (occurrence-aware)', async ({ page, testUser }) => {
+  test('Care preview row opens event view with occurrence workbench', async ({
+    page,
+    testUser,
+  }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     const pet = await createPet(baseURL(), testUser.accessToken, 'ViewPet');
     await createHealthEntry(baseURL(), testUser.accessToken, pet.id, {
@@ -143,7 +146,8 @@ test.describe('Guardian dashboard', () => {
     await refreshFlutterAccessibility(page);
     await expect(page.getByRole('button', { name: /go back/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /snooze/i })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: /mark .*done/i })).toBeVisible();
+    await expect(page.getByText('Viewable Care')).toBeVisible();
+    await expect(page.getByText('Due today')).toBeVisible();
   });
 
   test('Care preview supports completion and undo', async ({ page, testUser }) => {
