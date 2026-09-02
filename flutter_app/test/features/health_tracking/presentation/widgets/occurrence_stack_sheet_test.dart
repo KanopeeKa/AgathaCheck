@@ -66,7 +66,11 @@ void main() {
         _buildSheet(
           occurrences: [
             _occ(id: 'missed', date: yesterday, time: '08:00'),
+<<<<<<< HEAD
             _occ(id: 'today', date: today, time: todayTime),
+=======
+            _occ(id: 'today', date: today, time: '23:59'),
+>>>>>>> 47fe03db (test(pr-824): avoid afternoon UTC flake in occurrence zone tests)
             _occ(id: 'later', date: tomorrow, time: '08:00'),
           ],
         ),
