@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/presentation/widgets/pet_card.dart';
+import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/presentation/utils/pet_tile_dimensions.dart';
+import '../../../pet_profile/presentation/widgets/unified_pet_tile.dart';
+import 'org_pets/org_unified_pet_tile_helpers.dart';
 
 class OrganizationPetsSection extends StatelessWidget {
   final AsyncValue petsAsync;
@@ -119,9 +122,9 @@ class OrganizationPetsSection extends StatelessWidget {
                         ...pets.map(
                           (pet) => Padding(
                             padding: const EdgeInsets.only(bottom: 8),
-                            child: PetCard.sizedTile(
-                              context,
-                              pet: pet,
+                            child: _OrgPetTile(
+                              pet: pet as Pet,
+                              l: l,
                               onTap: () => context.push('/pet/${pet.id}'),
                             ),
                           ),
@@ -143,6 +146,36 @@ class OrganizationPetsSection extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _OrgPetTile extends StatelessWidget {
+  const _OrgPetTile({
+    required this.pet,
+    required this.l,
+    required this.onTap,
+  });
+
+  final Pet pet;
+  final AppLocalizations l;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final statusLine = resolveOrgPetTileStatusLine(l: l, pet: pet);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tileWidth = PetTileDimensions.widthFor(constraints.maxWidth);
+        final tileHeight = PetTileDimensions.heightFor(context);
+        return UnifiedPetTile(
+          pet: pet,
+          width: tileWidth,
+          height: tileHeight,
+          statusLine: statusLine,
+          onTap: onTap,
+        );
+      },
     );
   }
 }

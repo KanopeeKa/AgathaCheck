@@ -9,6 +9,7 @@ import 'package:pet_profile_app/features/organization/domain/entities/organizati
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/screens/organization_pets_screen.dart';
 import 'package:pet_profile_app/features/organization/presentation/utils/org_pets_care_utils.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/unified_pet_tile.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../../helpers/fakes.dart';
@@ -81,6 +82,8 @@ void main() {
     expect(find.text('Need attention'), findsOneWidget);
     expect(find.text('Max'), findsOneWidget);
     expect(find.text('Not in foster'), findsOneWidget);
+    expect(find.byKey(const Key('org_pet_attention_Max')), findsNothing);
+    expect(find.byType(UnifiedPetTile), findsOneWidget);
   });
 
   testWidgets('Need attention info icon exposes tooltip message', (
