@@ -395,12 +395,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final blockY = tester.getTopLeft(
-        find.byKey(const Key('guardian_dashboard_care_block')),
-      ).dy;
-      final linkY = tester.getTopLeft(
-        find.byKey(const Key('guardian_dashboard_care_view_all')),
-      ).dy;
+      final blockY = tester
+          .getTopLeft(find.byKey(const Key('guardian_dashboard_care_block')))
+          .dy;
+      final linkY = tester
+          .getTopLeft(find.byKey(const Key('guardian_dashboard_care_view_all')))
+          .dy;
       expect(linkY, greaterThan(blockY));
     });
   });
