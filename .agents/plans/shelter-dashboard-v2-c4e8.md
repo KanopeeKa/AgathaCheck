@@ -141,17 +141,17 @@ Widget tests for tasks, pin, shelter nav. Update `docs/e2e/navigation-contract.m
 
 ```yaml
 autonomy: active
-current_phase: 7
-last_completed_phase: 6
+current_phase: 6
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 7 on branch cursor/shelter-teal-token-audit-c4e8"
+next_action: "continue phase 6 on branch cursor/shelter-tasks-preview-c4e8"
 artifact_ref:
   branch: cursor/shelter-tasks-preview-c4e8
   plan_path: .agents/plans/shelter-dashboard-v2-c4e8.md
-  plan_commit: 2e6037d24568e69ff783f4b5475726b1ed617910
+  plan_commit: fb8a850ec20b11e8665d3097e53ed247105aa4fc
   snapshot_path: .agents/plans/shelter-dashboard-v2-c4e8.snapshot.json
-  snapshot_commit: 2e6037d24568e69ff783f4b5475726b1ed617910
-open_prs: []
+  snapshot_commit: fb8a850ec20b11e8665d3097e53ed247105aa4fc
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/962"]
 merge_commits: {}
 debt_issue_refs: []
 ```
