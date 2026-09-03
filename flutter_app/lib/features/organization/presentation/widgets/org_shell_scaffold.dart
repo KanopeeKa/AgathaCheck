@@ -64,7 +64,8 @@ class OrgShellScaffold extends ConsumerWidget {
     final theme = Theme.of(context);
     final shellTheme = themeForAppExperience(theme, AppExperience.organization);
     final resolvedOrg = _resolveOrganization(ref);
-    final location = currentLocation ??
+    final location =
+        currentLocation ??
         GoRouter.maybeOf(context)?.state.uri.path ??
         '/o/orgs';
     final leadingWidth = showBackButton
