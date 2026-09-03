@@ -17,7 +17,7 @@ node scripts/execute_plan_runtime.js current-phase <plan_id>
 
 ## Rules
 
-1. **Autonomy contract** — gate exit `0` → proceed; never ask "shall I continue?" in user chat (control issue for blockers only)
+1. **Autonomy contract** — gate exit `0` → proceed; never ask "shall I continue?" in user chat for routine work. **Blockers:** control issue (detail) + short chat alert (issue link).
 2. **Babysit-plus** on intermediate phase PRs; **babysit-uat** on final PR to `main` — never plain `/babysit`
 3. **Always merge** when gates pass (no manual/labeled modes)
 4. **Phase gate = merge-done** — PR merged into base before next phase (final main PR also needs pre-UAT green)

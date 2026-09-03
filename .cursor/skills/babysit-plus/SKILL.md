@@ -98,7 +98,7 @@ Post a **triage comment** on the PR summarizing every active unresolved thread:
 | **Nits** | Fix if local + low-risk; else debt issue |
 | **Ignore** | No code; debt issue if valid concern deferred |
 
-Rules: see autonomous-pr-policy §Review triage. **Never ignore** blocker / critical / high / must signals. Low confidence → debt issue + continue during active execute-plan (`gate` exit `0`); otherwise halt with `**Needs you:**` on the control issue — never ask in user chat.
+Rules: see autonomous-pr-policy §Review triage. **Never ignore** blocker / critical / high / must signals. Low confidence → debt issue + continue during active execute-plan (`gate` exit `0`); otherwise halt with `**Needs you:**` on control issue + short chat alert.
 
 Template:
 

@@ -27,9 +27,11 @@ When session preflight **gate** exits `0`, autonomy is **active**. You have upfr
 
 **Anti-pattern (soft-stop):** phrases like "I can spin up the next plan on request," "whenever you want to keep going," or "say which wave and I'll bootstrap it" are permission-seeking even though they don't look like a question. If the human's chat authorization already names the remaining scope (multiple journeys/waves, "all phases," "the entire plan/roadmap"), treat that as the standing grant for every plan it covers — do not re-ask per slice.
 
-**User chat (status only):** brief progress + what's next. Non-blocking follow-up questions may be **bundled at the end of a turn** — never as a flow break. See §Scope follow-ups.
+**User chat (status + blocker alerts):** brief progress + what's next on routine turns. When you **need the human** (halt, `**Needs you:**`, escalation, `session_limit`), post full detail on the **control issue** first, then a **short chat alert** with the issue link and the one action that unblocks you — chat is where they'll see it first; the issue is the canonical record. Non-blocking follow-ups may be bundled at end of turn — never as a flow break. See §Scope follow-ups and §Issue hygiene.
 
-**Human checkpoint (no manual merge):** use `halt` on the control issue + `resume-plan <plan_id>` after human action — agents always merge when gates pass.
+**Handoff (chat → autonomous):** Discuss and shape the plan in chat; freeze snapshot + control issue; human grants once (`approve-autonomous <plan_id>` or standing grant in `approved_by`). After `/execute-plan` gate exit `0`, **full handover** — no permission prompts for implement, PR, babysit+, merge, or next phase.
+
+**Human checkpoint (no manual merge):** use `halt` on the control issue + chat alert; human acts on the issue (`resume-plan`, `approve-autonomous`, etc.) — agents always merge when gates pass.
 
 **Conflicting rules:** execute-plan snapshot wins over generic "stop and ask" guidance. Only halt when the **goal is unclear**, or §Escalation applies. Minor policy wording conflicts with clear intent → proceed. See autonomous-pr-policy §Execute-plan overrides.
 
@@ -125,7 +127,7 @@ Run when drafting a plan, **before** `approve-autonomous`:
 
    **Do not** attempt GitHub Project board status updates — Cloud Agents cannot write Projects. Comments + `busy` are the agent-visible signal; you move board columns manually if needed.
 
-8. **Session limit check** — if this plan has run continuously for **~24 hours** (or the pod is near timeout), finish the current safe atomic step, then `halt --reason session_limit` with `next_action` recorded. Human comments `resume-plan <plan_id>` on the control issue (no re-approve while `approved_until` is still valid). Do **not** ask in user chat.
+8. **Session limit check** — if this plan has run continuously for **~24 hours** (or the pod is near timeout), finish the current safe atomic step, then `halt --reason session_limit` with `next_action` recorded. Post on control issue + short chat alert (issue link, `resume-plan <plan_id>`). Do **not** ask for permission in chat.
 
 ---
 
@@ -142,7 +144,7 @@ Cloud agents end each **turn** when you respond. That is normal — it is **not*
 
 **Standing grant:** If the human authorized the full plan/roadmap once (`approve-autonomous`, or chat grant recorded in `approved_by`), you do **not** need a new approval per phase, per turn, or per PR.
 
-**Gate exit `2`:** Halt via control issue (`halt --write --post-comment`) with resume steps — not a user-chat question. Common codes: `expired` (`approved_until` past — re-approve on control issue), `revoked`, `not_approved`.
+**Gate exit `2`:** Halt via control issue (`halt --write --post-comment`) with resume steps, plus a short chat alert (issue #, reason, unblock action). Common codes: `expired` (`approved_until` past — re-approve on control issue), `revoked`, `not_approved`.
 
 ---
 
@@ -225,16 +227,20 @@ Low-confidence **review triage** (must-fix vs ignore) is rare with tight phase s
 
 ## Issue hygiene (mandatory)
 
-The **control issue** is the human dashboard for plan status. Keep it current.
+The **control issue** is the canonical plan dashboard. **User chat** gets a short alert when you need the human (they see chat first).
 
-| When | Action |
-|------|--------|
-| Work starts (session preflight) | `start-work` comment + `busy` label on control issue |
-| Phase milestone (PR opened, CI green, merged) | Short comment on control issue |
-| **Pause** (UAT remedial, waiting on you) | `pause --write --post-comment` — state checkpoint + what you need |
-| **Halt** (revoke, escalation, CI exhausted) | `halt --write --post-comment` — state reason + resume steps |
-| **Question for human** (blocks work) | Comment on control issue with `**Needs you:**` + halt if execute-plan cannot continue |
-| All phases merged | `complete-plan <plan_id> --write` → close control issue with summary comment |
+| When | Control issue | User chat |
+|------|---------------|-----------|
+| Work starts (session preflight) | `start-work` comment + `busy` | Optional one-line "session start, phase N" |
+| Phase milestone (PR opened, CI green, merged) | Short comment | Brief status + what's next (routine) |
+| **Pause** (UAT remedial, waiting on you) | `pause --write --post-comment` — checkpoint + what you need | Short alert: issue link + what you need |
+| **Halt** (revoke, escalation, CI exhausted, `session_limit`) | `halt --write --post-comment` — reason + resume steps | Short alert: issue link + unblock action (e.g. `resume-plan <plan_id>`) |
+| **Question for human** (blocks work) | `**Needs you:**` comment; halt if cannot continue | Short alert: issue link + the decision or action required |
+| All phases merged | `complete-plan <plan_id> --write` → close with summary | Brief "plan complete" + integration→main PR if any |
+
+**Chat alert format (blockers only):** one short paragraph — plan id, control issue link (`#N`), reason, single unblock action. Full detail stays on the issue.
+
+Debt issues created during babysit+ are deferred until picked up. When you **start work** on any issue, comment and add `busy`:
 
 Debt issues created during babysit+ are deferred until picked up. When you **start work** on any issue, comment and add `busy`:
 
