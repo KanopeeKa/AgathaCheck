@@ -30,9 +30,7 @@ void main() {
     testWidgets('omits link when no destination', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: GuardianDashboardSectionChrome(title: 'CARE'),
-          ),
+          home: Scaffold(body: GuardianDashboardSectionChrome(title: 'CARE')),
         ),
       );
 

@@ -81,7 +81,8 @@ class GuardianDashboardSectionChrome extends StatelessWidget {
           children: [
             if (showTitle) titleWidget,
             if (showTitle && showLink) const SizedBox(height: 4),
-            if (showLink) Align(alignment: Alignment.centerLeft, child: linkWidget),
+            if (showLink)
+              Align(alignment: Alignment.centerLeft, child: linkWidget),
           ],
         );
       },

@@ -67,7 +67,9 @@ class GuardianFosteringSection extends StatelessWidget {
             title: l.fosteringSessionsEyebrow,
             titleColor: AppColorTokens.organizationActive,
             linkLabel: hasOverflow ? l.allFosteringSessions : null,
-            onLinkPressed: hasOverflow ? () => context.go('/pc/fostering') : null,
+            onLinkPressed: hasOverflow
+                ? () => context.go('/pc/fostering')
+                : null,
           ),
           const SizedBox(height: 10),
           GuardianDeskSectionCard(
