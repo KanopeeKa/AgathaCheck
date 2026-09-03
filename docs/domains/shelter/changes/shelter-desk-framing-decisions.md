@@ -20,18 +20,20 @@ Apply Care **operations-desk patterns** (section chrome, tile geometry, touch ta
 | ID | Decision | Status |
 |----|----------|--------|
 | **D-desk-S1** | Shelter hub (`/o/orgs`) stays **membership + pending invites + discover entry** only. No workspace-level operational previews (need-attention queues, session feeds). | locked |
-| **D-desk-S2** | Shelter visual parity uses **shared section chrome + pet-grid tile geometry** on the **teal canvas** (`organizationLight` `#EAF5F5`, `organizationPrimary` `#1D7C84`). Do not adopt Care `background` or plum primary for org chrome. | locked |
+| **D-desk-S2** | Shelter visual parity uses **shared section chrome + pet-grid tile geometry** on the **teal canvas** (`organizationLight`, `organizationPrimary`). Do not adopt Care `background` or plum primary for org chrome. | locked |
 | **D-desk-S3** | Optional **summary counts on profile nav rows** only (not section previews). Pending-work badge counts remain DEF-NOTIF-COUNTS. | locked |
 | **D-desk-S4** | `ExperienceWorkspaceToggle` is required on **all** org chrome including `OrgShellScaffold` (implements D-v5-WORKSPACE-4 for deep routes). | locked |
 | **D-desk-S5** | Shelter does **not** get Care-style bottom/rail primary nav unless a future decision supersedes D-v4-2. | locked |
 
 ## Palette (Shelter tokens)
 
-| Role | Token | Hex |
-|------|-------|-----|
-| Org canvas | `organizationLight` | `#EAF5F5` |
-| Org primary / compact chrome | `organizationPrimary` | `#1D7C84` |
-| Cards on canvas | `surface` | `#FFFDFC` |
+Canonical hex values: [tokens.md](/docs/design/tokens.md).
+
+| Role | Token |
+|------|-------|
+| Org canvas | `organizationLight` |
+| Org primary / compact chrome | `organizationPrimary` |
+| Cards on canvas | `surface` |
 
 ## Section chrome (hub)
 
