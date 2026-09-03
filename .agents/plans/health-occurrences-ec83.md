@@ -274,9 +274,9 @@ next_action: "plan complete"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/health-occurrences-ec83.md
-  plan_commit: 25bc56a476b8a619c913ff9799159cde9a9b58fb
+  plan_commit: 5ae0e7c1ed5959fd3afa0cdddfb0870c501be03f
   snapshot_path: .agents/plans/health-occurrences-ec83.snapshot.json
-  snapshot_commit: 25bc56a476b8a619c913ff9799159cde9a9b58fb
+  snapshot_commit: 5ae0e7c1ed5959fd3afa0cdddfb0870c501be03f
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
