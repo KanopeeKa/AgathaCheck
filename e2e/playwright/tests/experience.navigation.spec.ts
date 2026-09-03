@@ -165,7 +165,7 @@ test.describe('Experience navigation', () => {
     await notificationsPage.expectBadgeVisible(unreadCount);
   });
 
-  test('workspace toggle is visible on guardian home but back on sub-screens', async ({
+  test('workspace toggle is visible on guardian home and sub-screens', async ({
     page,
     testUser,
   }) => {
@@ -175,7 +175,8 @@ test.describe('Experience navigation', () => {
 
     await page.goto(flutterGotoUrl('/pc/pets'));
     await refreshFlutterAccessibility(page);
-    await expect(workspaceToggleLocator(page)).not.toBeVisible();
+    // D-v5-WORKSPACE-4: toggle stays visible on non-root routes (alongside back).
+    await expect(workspaceToggleLocator(page)).toBeVisible();
     await expect(page.getByRole('button', { name: /back/i })).toBeVisible();
   });
 
