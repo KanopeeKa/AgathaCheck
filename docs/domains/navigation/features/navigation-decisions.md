@@ -55,6 +55,18 @@ Source: experience-program analysis + Q&A, 2026-07-25. Master brief: [navigation
 
 Full detail: [shell-hierarchy-decisions.md](../changes/shell-hierarchy-decisions.md).
 
+## I — Workspace navigation simplify (2026-09)
+
+| ID | Decision | Status | Phase |
+|----|----------|--------|-------|
+| **D-v5-WORKSPACE-1** | Shelter workspace always visible; remove Account org-section toggle (**supersedes D-v3-VIS-1**). | locked | workspace-nav-simplify |
+| **D-v5-WORKSPACE-2** | Everyone lands on `/pc/home` after login; no `last_app_section` or `/app/choose`. | locked | workspace-nav-simplify |
+| **D-v5-WORKSPACE-3** | Canonical shelter root `/o/orgs`; `/o/home` redirects. | locked | workspace-nav-simplify |
+| **D-v5-WORKSPACE-4** | Workspace toggle on every authenticated screen (extends D-v4-3). | locked | workspace-nav-simplify |
+| **D-v5-WORKSPACE-5** | Fostering dashboard invite/thank-you copy + illustrations. | locked | workspace-nav-simplify |
+
+Full detail: [workspace-nav-simplify-decisions.md](../changes/workspace-nav-simplify-decisions.md).
+
 ---
 
 ## How to use

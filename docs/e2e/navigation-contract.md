@@ -118,9 +118,17 @@ Page object: same `openLeadingNavDestination(label)` helper; Account via footer 
 
 The hamburger drawer is **not** available at these widths.
 
-## Workspace toggle (D-v4-3)
+## Workspace toggle (D-v4-3, D-v5-WORKSPACE-4)
 
-Section roots (`/pc/home`, `/o/orgs`, `/account`) show `ExperienceWorkspaceToggle` (`Key('experience_workspace_toggle')`) instead of a back arrow or hamburger.
+`ExperienceWorkspaceToggle` (`Key('experience_workspace_toggle')`) is available on **every authenticated experience screen** (not only section roots).
+
+| Width | Placement |
+|-------|-----------|
+| **&lt;600px** | App bar: toggle on all routes; back + toggle on non-root |
+| **600–839px** | Rail header: toggle always; content chrome: back on non-root |
+| **≥840px** | Sidebar header: toggle always; content chrome: back on non-root |
+
+Section roots (`/pc/home`, `/o/orgs`, `/account`) show toggle without back arrow.
 
 | Action | Locator | Post-action ready |
 |--------|---------|-------------------|
@@ -130,7 +138,7 @@ Section roots (`/pc/home`, `/o/orgs`, `/account`) show `ExperienceWorkspaceToggl
 | Switch to Pet Care | `selectWorkspaceMenuItem(/^Pet Care$|^Suivi$/i)` | `/pc/home` + dashboard care region |
 | My Pets section (not workspace) | `dashboardSectionGroup(page, 'myPets')` or `/My Pets\|Mes animaux/i` | Pet-rail preview on home — unchanged label |
 
-Shelter menu item appears only when org membership makes shelter access eligible (seed with `createOrganization` before login) or when **Show shelters section** is enabled on Account.
+Shelter menu item is **always** visible (D-v5-WORKSPACE-1). Non-members land on `/o/orgs` empty state.
 
 ## Account entry (D-v4-2)
 
