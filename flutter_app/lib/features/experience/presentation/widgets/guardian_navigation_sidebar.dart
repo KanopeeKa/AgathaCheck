@@ -114,9 +114,7 @@ class _SidebarDestinationTile extends StatelessWidget {
       selected: selected,
       label: label,
       child: Material(
-        color: selected
-            ? AppColorTokens.petCarePrimary.withValues(alpha: 0.08)
-            : Colors.transparent,
+        color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
           child: ConstrainedBox(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -39,22 +38,15 @@ class GuardianMyVetsSection extends ConsumerWidget {
             onLinkPressed: showAllAction ? () => context.go('/pc/vets') : null,
           ),
           const SizedBox(height: 10),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: AppColorTokens.surface,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-              child: auth.accessToken == null
-                  ? const SizedBox(
-                      key: Key('guardian_vets_auth_waiting'),
-                      height: 24,
-                      child: Center(
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    )
-                  : vetListAsync.when(
+          auth.accessToken == null
+              ? const SizedBox(
+                  key: Key('guardian_vets_auth_waiting'),
+                  height: 24,
+                  child: Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              : vetListAsync.when(
                       loading: () => const SizedBox(
                         key: Key('guardian_vets_loading'),
                         height: 24,
@@ -120,8 +112,6 @@ class GuardianMyVetsSection extends ConsumerWidget {
                         );
                       },
                     ),
-            ),
-          ),
         ],
       ),
     );
