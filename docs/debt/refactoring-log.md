@@ -14,6 +14,24 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 ---
 
+## shelter-desk-parity-dd8e — Shelter desk visual parity (2026-09-03)
+
+**Goal:** Teal Shelter desk patterns (section chrome, membership tiles, workspace toggle on org deep shell) without Care primary nav.  
+**Plan:** `.agents/plans/shelter-desk-parity-dd8e.md` · **Integration:** `cursor/shelter-desk-parity-dd8e-integration-dd8e` · **Control issue:** #942
+
+| Phase | Outcome | Branch | Status |
+|-------|---------|--------|--------|
+| 0 | Framing decisions | `cursor/shelter-desk-framing-decisions-dd8e` | in progress |
+| 1 | Org deep shell workspace toggle | `cursor/shelter-org-shell-toggle-dd8e` | pending |
+| 2 | Org pets grid touch targets | `cursor/shelter-org-pets-touch-dd8e` | pending |
+| 3 | Hub compact teal chrome | `cursor/shelter-hub-teal-chrome-dd8e` | pending |
+| 4 | Membership pet-grid tiles | `cursor/shelter-membership-tiles-dd8e` | pending |
+| 5 | Hub section chrome | `cursor/shelter-hub-section-chrome-dd8e` | pending |
+| 6 | Dead legacy cleanup | `cursor/shelter-dead-code-cleanup-dd8e` | pending |
+| 7 | Tests + nav contract | `cursor/shelter-desk-tests-dd8e` | pending |
+
+---
+
 ## care-event-row-7bee — Unified CareEventRow (2026-08-31)
 
 **Goal:** One scannable due/overdue row on dashboard, pet preview, and `/pc/events`; row tap → view screen; snooze/edit on view only.  
