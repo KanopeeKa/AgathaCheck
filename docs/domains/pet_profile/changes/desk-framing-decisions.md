@@ -19,7 +19,7 @@ Refine visual hierarchy between app shell navigation, main workspace canvas, and
 
 | ID | Decision | Status |
 |----|----------|--------|
-| **D-desk-1** | **Navigation surface vs workspace canvas.** Persistent leading nav (rail/sidebar) uses semantic token `surface` (`#FFFDFC`). Main content column uses `background` (`#EAE8E8`). No vertical dividers, shadows, or card-wrapped sidebar. | locked |
+| **D-desk-1** | **Navigation surface vs workspace canvas.** Persistent leading nav (rail/sidebar) uses semantic token `surface`. Main content column uses `background`. No vertical dividers, shadows, or card-wrapped sidebar. | locked |
 | **D-desk-2** | **Mobile unchanged.** Compact plum app bar + bottom nav; no desktop sidebar framing on &lt;600px. | locked |
 | **D-desk-3** | **Section chrome row.** Dashboard preview sections use one header row: eyebrow title (left) + optional “All …” text action (right) when a real full-screen destination exists. Section content sits below. | locked |
 | **D-desk-4** | **No phantom “All …” links.** Show trailing section navigation only when overflow or non-empty list warrants a destination (same gating as today). | locked |
