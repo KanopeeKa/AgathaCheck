@@ -10,7 +10,6 @@ import '../../data/org_onboarding_store.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../domain/services/experience_eligibility.dart';
 import '../../domain/services/guardian_onboarding_rules.dart';
-import '../../domain/services/org_onboarding_rules.dart';
 
 final experiencePreferencesStoreProvider = Provider<ExperiencePreferencesStore>(
   (ref) {
@@ -85,56 +84,13 @@ String resolvePostLoginPath({
   bool guardianOnboardingCompleted = true,
   bool orgOnboardingCompleted = true,
   bool hasPendingOrgInvites = false,
-  AppExperience? lastAppSection,
 }) {
-  if (needsFirstTimeExperience(
-    pets: pets,
-    orgs: orgs,
-    hasPendingOrgInvites: hasPendingOrgInvites,
-  )) {
-    return '/app/choose';
-  }
-
-  final target = _resolvePostLoginExperience(
-    eligibility: eligibility,
-    pets: pets,
-    orgs: orgs,
-    lastAppSection: lastAppSection,
-  );
-
-  var path = target.homePath();
+  // D-v5-WORKSPACE-2: everyone lands on Pet Care home (empty state when no pets).
+  var path = AppExperience.petCare.homePath();
   path = GuardianOnboardingRules.resolveGuardianDestination(
     targetPath: path,
     pets: pets,
     onboardingCompleted: guardianOnboardingCompleted,
   );
-  return OrgOnboardingRules.resolveOrgDestination(
-    targetPath: path,
-    pets: pets,
-    orgs: orgs,
-    onboardingCompleted: orgOnboardingCompleted,
-  );
-}
-
-AppExperience _resolvePostLoginExperience({
-  required ExperienceEligibility eligibility,
-  List<Pet> pets = const [],
-  List<Organization> orgs = const [],
-  AppExperience? lastAppSection,
-}) {
-  if (!eligibility.canUseGuardian && eligibility.canUseOrganization) {
-    return AppExperience.organization;
-  }
-  if (eligibility.showChooser &&
-      lastAppSection != null &&
-      eligibility.availableExperiences.contains(lastAppSection)) {
-    return lastAppSection;
-  }
-  if (pets.isNotEmpty) {
-    return AppExperience.petCare;
-  }
-  if (pets.isEmpty && orgs.isNotEmpty && eligibility.canUseOrganization) {
-    return AppExperience.organization;
-  }
-  return AppExperience.petCare;
+  return path;
 }

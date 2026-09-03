@@ -389,7 +389,7 @@ void main() {
     );
   });
 
-  testWidgets('workspace toggle navigates to Shelter and remembers it', (
+  testWidgets('workspace toggle navigates to Shelter', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -407,13 +407,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Shelter home'), findsOneWidget);
-    expect(
-      prefs.getString('last_app_section'),
-      AppExperience.organization.wire,
-    );
   });
 
-  testWidgets('workspace toggle navigates to My Pets and remembers it', (
+  testWidgets('workspace toggle navigates to Pet Care', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -431,7 +427,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Guardian home'), findsOneWidget);
-    expect(prefs.getString('last_app_section'), AppExperience.petCare.wire);
   });
 
   testWidgets('baseline: org non-root path shows back button', (tester) async {

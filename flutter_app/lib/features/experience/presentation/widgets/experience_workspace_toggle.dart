@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_experience.dart';
-import '../providers/experience_providers.dart';
 
 /// Shelter workspace is always available in the shell (D-v5-WORKSPACE-1).
 class ExperienceWorkspaceToggle extends ConsumerWidget {
@@ -125,9 +124,6 @@ class ExperienceWorkspaceToggle extends ConsumerWidget {
         : AppExperience.petCare;
     if (selected == activeExperience) return;
 
-    await ref
-        .read(experiencePreferencesStoreProvider)
-        .writeLastAppSection(selected);
     if (!context.mounted) return;
 
     context.go(selected == AppExperience.petCare ? '/pc/home' : '/o/orgs');
