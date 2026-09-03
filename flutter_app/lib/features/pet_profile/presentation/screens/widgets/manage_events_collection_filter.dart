@@ -14,6 +14,7 @@ abstract final class ManageEventsCollectionFilterIds {
   static const recurring = 'recurring';
   static const skipped = 'skipped';
   static const cohort = 'cohort';
+  static const organization = 'organization';
 
   static const all = 'all';
   static const hideSkipped = 'hide';
@@ -24,17 +25,26 @@ abstract final class ManageEventsCollectionFilterIds {
 
   static const primary = [pet, type, status];
   static const more = [recurring, skipped, cohort];
+  static const perPetPrimary = [type, status];
+  static const perPetMore = [recurring, skipped];
+  static const orgMore = [recurring, skipped, organization];
 }
 
-/// Builds canonical filter dimensions for the global events list.
-List<CollectionFilterDimension> buildGlobalEventsFilterDimensions({
-  required AppLocalizations l,
-  required List<Pet> shellPets,
-}) {
-  final sortedPets = [...shellPets]
-    ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+List<CollectionFilterDimension> manageEventsCoreDimensions(AppLocalizations l) =>
+    _manageEventsCoreDimensions(l);
 
-  final dimensions = <CollectionFilterDimension>[
+CollectionFilterSelections coreSelectionsFromManageEventsFilters(
+  ManageEventsFilters filters,
+) =>
+    _coreSelectionsFromManageEventsFilters(filters);
+
+ManageEventsFilters manageEventsFiltersFromCoreSelections(
+  CollectionFilterSelections selections,
+) =>
+    _manageEventsFiltersFromCoreSelections(selections);
+
+List<CollectionFilterDimension> _manageEventsCoreDimensions(AppLocalizations l) {
+  return [
     CollectionFilterDimension(
       id: ManageEventsCollectionFilterIds.type,
       label: l.eventFilterTypeLabel,
@@ -120,6 +130,91 @@ List<CollectionFilterDimension> buildGlobalEventsFilterDimensions({
       ],
       multiSelect: false,
     ),
+  ];
+}
+
+CollectionFilterSelections _skippedSelectionsFromShowSkipped(bool showSkipped) {
+  if (!showSkipped) {
+    return {
+      ManageEventsCollectionFilterIds.skipped: {
+        ManageEventsCollectionFilterIds.hideSkipped,
+      },
+    };
+  }
+  return {ManageEventsCollectionFilterIds.skipped: {}};
+}
+
+ManageEventsFilters _manageEventsFiltersFromCoreSelections(
+  CollectionFilterSelections selections,
+) {
+  Set<T> parseEnumSet<T>(
+    String dimensionId,
+    Iterable<T> values,
+    T Function(String name) byName,
+  ) {
+    final ids = selections[dimensionId] ?? const {};
+    return ids.map((id) => byName(id)).toSet();
+  }
+
+  final skippedSelected =
+      selections[ManageEventsCollectionFilterIds.skipped] ?? const {};
+  final showSkipped = !skippedSelected.contains(
+    ManageEventsCollectionFilterIds.hideSkipped,
+  );
+
+  return ManageEventsFilters(
+    types: parseEnumSet(
+      ManageEventsCollectionFilterIds.type,
+      ManageEventsTypeFilter.values.where(
+        (value) => value != ManageEventsTypeFilter.all,
+      ),
+      (name) => ManageEventsTypeFilter.values.byName(name),
+    ),
+    statuses: parseEnumSet(
+      ManageEventsCollectionFilterIds.status,
+      ManageEventsStatusFilter.values.where(
+        (value) => value != ManageEventsStatusFilter.all,
+      ),
+      (name) => ManageEventsStatusFilter.values.byName(name),
+    ),
+    recurring: parseEnumSet(
+      ManageEventsCollectionFilterIds.recurring,
+      ManageEventsRecurringFilter.values.where(
+        (value) => value != ManageEventsRecurringFilter.all,
+      ),
+      (name) => ManageEventsRecurringFilter.values.byName(name),
+    ),
+    showSkipped: showSkipped,
+  );
+}
+
+CollectionFilterSelections _coreSelectionsFromManageEventsFilters(
+  ManageEventsFilters filters,
+) {
+  return {
+    ManageEventsCollectionFilterIds.type: filters.types
+        .map((value) => value.name)
+        .toSet(),
+    ManageEventsCollectionFilterIds.status: filters.statuses
+        .map((value) => value.name)
+        .toSet(),
+    ManageEventsCollectionFilterIds.recurring: filters.recurring
+        .map((value) => value.name)
+        .toSet(),
+    ..._skippedSelectionsFromShowSkipped(filters.showSkipped),
+  };
+}
+
+/// Builds canonical filter dimensions for the global events list.
+List<CollectionFilterDimension> buildGlobalEventsFilterDimensions({
+  required AppLocalizations l,
+  required List<Pet> shellPets,
+}) {
+  final sortedPets = [...shellPets]
+    ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+
+  final dimensions = <CollectionFilterDimension>[
+    ..._manageEventsCoreDimensions(l),
     CollectionFilterDimension(
       id: ManageEventsCollectionFilterIds.cohort,
       label: l.eventFilterCohortLabel,
@@ -161,6 +256,13 @@ List<CollectionFilterDimension> buildGlobalEventsFilterDimensions({
   return dimensions;
 }
 
+/// Per-pet manage events — Type, Status, Recurrence, Skipped (no pet row).
+List<CollectionFilterDimension> buildPerPetManageEventsFilterDimensions(
+  AppLocalizations l,
+) {
+  return _manageEventsCoreDimensions(l);
+}
+
 List<String> primaryGlobalEventsFilterDimensionIds(List<Pet> shellPets) {
   if (shellPets.length > 1) {
     return ManageEventsCollectionFilterIds.primary;
@@ -168,19 +270,23 @@ List<String> primaryGlobalEventsFilterDimensionIds(List<Pet> shellPets) {
   return [ManageEventsCollectionFilterIds.type, ManageEventsCollectionFilterIds.status];
 }
 
+CollectionFilterSelections selectionsFromManageEventsFilters(
+  ManageEventsFilters filters,
+) {
+  return _coreSelectionsFromManageEventsFilters(filters);
+}
+
+ManageEventsFilters manageEventsFiltersFromSelections(
+  CollectionFilterSelections selections,
+) {
+  return _manageEventsFiltersFromCoreSelections(selections);
+}
+
 CollectionFilterSelections selectionsFromGuardianGlobalEventsFilters(
   GuardianGlobalEventsFilters filters,
 ) {
-  final selections = <String, Set<String>>{
-    ManageEventsCollectionFilterIds.type: filters.eventFilters.types
-        .map((value) => value.name)
-        .toSet(),
-    ManageEventsCollectionFilterIds.status: filters.eventFilters.statuses
-        .map((value) => value.name)
-        .toSet(),
-    ManageEventsCollectionFilterIds.recurring: filters.eventFilters.recurring
-        .map((value) => value.name)
-        .toSet(),
+  return {
+    ..._coreSelectionsFromManageEventsFilters(filters.eventFilters),
     ManageEventsCollectionFilterIds.pet: filters.petIds
         .map(ManageEventsCollectionFilterIds.petChoice)
         .toSet(),
@@ -191,36 +297,11 @@ CollectionFilterSelections selectionsFromGuardianGlobalEventsFilters(
         ManageEventsCollectionFilterIds.fosterPets,
     },
   };
-
-  if (!filters.eventFilters.showSkipped) {
-    selections[ManageEventsCollectionFilterIds.skipped] = {
-      ManageEventsCollectionFilterIds.hideSkipped,
-    };
-  } else {
-    selections[ManageEventsCollectionFilterIds.skipped] = {};
-  }
-
-  return selections;
 }
 
 GuardianGlobalEventsFilters guardianGlobalEventsFiltersFromSelections(
   CollectionFilterSelections selections,
 ) {
-  Set<T> parseEnumSet<T>(
-    String dimensionId,
-    Iterable<T> values,
-    T Function(String name) byName,
-  ) {
-    final ids = selections[dimensionId] ?? const {};
-    return ids.map((id) => byName(id)).toSet();
-  }
-
-  final skippedSelected =
-      selections[ManageEventsCollectionFilterIds.skipped] ?? const {};
-  final showSkipped = !skippedSelected.contains(
-    ManageEventsCollectionFilterIds.hideSkipped,
-  );
-
   final cohortSelected =
       selections[ManageEventsCollectionFilterIds.cohort] ?? const {};
   final cohorts = <GuardianEventsCohortFilter>{
@@ -237,30 +318,7 @@ GuardianGlobalEventsFilters guardianGlobalEventsFiltersFromSelections(
       .toSet();
 
   return GuardianGlobalEventsFilters(
-    eventFilters: ManageEventsFilters(
-      types: parseEnumSet(
-        ManageEventsCollectionFilterIds.type,
-        ManageEventsTypeFilter.values.where(
-          (value) => value != ManageEventsTypeFilter.all,
-        ),
-        (name) => ManageEventsTypeFilter.values.byName(name),
-      ),
-      statuses: parseEnumSet(
-        ManageEventsCollectionFilterIds.status,
-        ManageEventsStatusFilter.values.where(
-          (value) => value != ManageEventsStatusFilter.all,
-        ),
-        (name) => ManageEventsStatusFilter.values.byName(name),
-      ),
-      recurring: parseEnumSet(
-        ManageEventsCollectionFilterIds.recurring,
-        ManageEventsRecurringFilter.values.where(
-          (value) => value != ManageEventsRecurringFilter.all,
-        ),
-        (name) => ManageEventsRecurringFilter.values.byName(name),
-      ),
-      showSkipped: showSkipped,
-    ),
+    eventFilters: _manageEventsFiltersFromCoreSelections(selections),
     cohorts: cohorts,
     petIds: petIds,
   );
@@ -296,6 +354,35 @@ class GuardianGlobalEventsCollectionFilterBar extends StatelessWidget {
           onChanged(guardianGlobalEventsFiltersFromSelections(next)),
       primaryDimensionIds: primaryGlobalEventsFilterDimensionIds(shellPets),
       moreDimensionIds: ManageEventsCollectionFilterIds.more,
+    );
+  }
+}
+
+/// Canonical collection filter bar for per-pet manage events.
+class PetManageEventsCollectionFilterBar extends StatelessWidget {
+  const PetManageEventsCollectionFilterBar({
+    super.key,
+    required this.filters,
+    required this.onChanged,
+  });
+
+  final ManageEventsFilters filters;
+  final ValueChanged<ManageEventsFilters> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final dimensions = buildPerPetManageEventsFilterDimensions(l);
+    final selections = selectionsFromManageEventsFilters(filters);
+
+    return CollectionFilterBar(
+      key: const Key('pet_manage_events_collection_filter_bar'),
+      dimensions: dimensions,
+      selections: selections,
+      onSelectionsChanged: (next) =>
+          onChanged(manageEventsFiltersFromSelections(next)),
+      primaryDimensionIds: ManageEventsCollectionFilterIds.perPetPrimary,
+      moreDimensionIds: ManageEventsCollectionFilterIds.perPetMore,
     );
   }
 }

@@ -337,14 +337,14 @@ autonomy: active
 current_phase: 3
 last_completed_phase: 2
 halt_reason: null
-next_action: "start phase 3: checkout cursor/collection-filter-events-org-f8a2"
+next_action: "continue phase 3 on branch cursor/collection-filter-events-org-f8a2"
 artifact_ref:
-  branch: cursor/collection-filter-pc-events-f8a2
+  branch: cursor/collection-filter-events-org-f8a2
   plan_path: .agents/plans/collection-filter-canonical-f8a2.md
-  plan_commit: 918fd7d875a2b975e87d06a0bd69514c8b3c4764
+  plan_commit: 7582e61eae12d3e314db2f5861650827f188ffe9
   snapshot_path: .agents/plans/collection-filter-canonical-f8a2.snapshot.json
-  snapshot_commit: 918fd7d875a2b975e87d06a0bd69514c8b3c4764
-open_prs: []
+  snapshot_commit: 7582e61eae12d3e314db2f5861650827f188ffe9
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/891"]
 merge_commits: {}
 debt_issue_refs: []
 ```

@@ -219,12 +219,34 @@ export class HealthDashboardPage {
   }
 
   async selectOrgFilter(orgName: string): Promise<void> {
-    await this.page
-      .getByRole('button', { name: orgName, exact: true })
-      .or(this.page.getByRole('checkbox', { name: orgName, exact: true }))
-      .or(this.page.getByText(orgName, { exact: true }))
-      .first()
-      .click();
+    const mobileFilters = this.page.getByRole('button', {
+      name: /Filters(\s+\d+)?|Filtres(\s+\d+)?/i,
+    });
+    if (await mobileFilters.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await mobileFilters.click();
+      await refreshFlutterAccessibility(this.page);
+      await this.page
+        .getByRole('checkbox', { name: orgName, exact: true })
+        .click();
+    } else {
+      const moreTrigger = this.page.getByRole('button', {
+        name: /More filters|Plus de filtres/i,
+      });
+      if (await moreTrigger.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        await moreTrigger.click();
+        await refreshFlutterAccessibility(this.page);
+        await this.page
+          .getByRole('checkbox', { name: orgName, exact: true })
+          .click();
+      } else {
+        await this.page
+          .getByRole('button', { name: orgName, exact: true })
+          .or(this.page.getByRole('checkbox', { name: orgName, exact: true }))
+          .or(this.page.getByText(orgName, { exact: true }))
+          .first()
+          .click();
+      }
+    }
     await refreshFlutterAccessibility(this.page);
     await this.page.waitForTimeout(500);
   }

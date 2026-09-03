@@ -19,8 +19,6 @@ import '../../features/experience/presentation/screens/guardian/guardian_bulk_sh
 import '../../features/experience/presentation/screens/guardian/add_event_type_picker_sheet.dart';
 import '../../features/experience/presentation/screens/guardian/guardian_due_events_screen.dart';
 import '../../features/experience/presentation/screens/guardian/guardian_fostering_screen.dart';
-import '../../features/health_tracking/domain/health_events_scope.dart';
-import '../../features/health_tracking/presentation/screens/health_dashboard_screen.dart';
 import '../../features/pet_profile/domain/entities/pet.dart';
 import '../../features/pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../features/pet_profile/presentation/providers/pet_providers.dart';
@@ -251,19 +249,31 @@ class _PetCareEventsScreen extends ConsumerWidget {
   }
 }
 
-class _OrgEventsScreen extends StatelessWidget {
+class _OrgEventsScreen extends ConsumerWidget {
   const _OrgEventsScreen();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final petsAsync = ref.watch(petListProvider);
+    final allPets = petsAsync.valueOrNull ?? const <Pet>[];
+    final shellPets = PetListController().orgShellPets(allPets);
     return ExperienceShellScaffold(
       experience: AppExperience.organization,
       currentLocation: GoRouterState.of(context).uri.path,
-      child: const HealthDashboardScreen(
-        embeddedInShell: true,
-        scope: HealthEventsScope.organization,
-        backPath: '/o/home',
-      ),
+      screenTitle: l.eventsNavLabel,
+      backPath: '/o/home',
+      contextualActions: [
+        IconButton(
+          key: const Key('org_events_add_app_bar'),
+          tooltip: l.addAnEvent,
+          icon: const Icon(Icons.add),
+          onPressed: petsAsync.hasValue && shellPets.isNotEmpty
+              ? () => showAddEventTypePickerSheet(context, pets: shellPets)
+              : null,
+        ),
+      ],
+      child: const OrgDueEventsScreen(),
     );
   }
 }

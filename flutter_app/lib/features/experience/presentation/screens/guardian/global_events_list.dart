@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/theme/app_color_tokens.dart';
-import '../../../../../core/widgets/collection_filter/collection_filter.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../health_tracking/domain/entities/health_history_entry.dart';
@@ -11,10 +10,16 @@ import '../../../../health_tracking/presentation/widgets/care_event_row_context.
 import '../../../../health_tracking/presentation/widgets/care_event_row_host.dart';
 import '../../../../health_tracking/presentation/widgets/occurrence_care_actions.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
-import '../../../../pet_profile/presentation/screens/widgets/pet_event_entry_list.dart';
 import '../../../../pet_profile/presentation/widgets/pet_list/home_event_actions.dart';
 import '../../../../pet_profile/presentation/screens/widgets/manage_events_collection_filter.dart';
+import '../../../../pet_profile/presentation/screens/widgets/org_events_collection_filter.dart';
 import 'guardian_due_events_screen.dart';
+
+// ---------------------------------------------------------------------------
+// Scope
+// ---------------------------------------------------------------------------
+
+enum GlobalEventsListScope { guardian, organization }
 
 // ---------------------------------------------------------------------------
 // Optimistic-completion model
@@ -71,17 +76,26 @@ class _CareItem {
 /// All viewport widths use the same [CareEventRow] presentation with optimistic
 /// completion/undo. Server ordering authority is preserved.
 class GlobalEventsList extends ConsumerStatefulWidget {
-  const GlobalEventsList({super.key, required this.shellPets});
+  const GlobalEventsList({
+    super.key,
+    required this.shellPets,
+    this.scope = GlobalEventsListScope.guardian,
+  });
 
   final List<Pet> shellPets;
+  final GlobalEventsListScope scope;
 
   @override
   ConsumerState<GlobalEventsList> createState() => _GlobalEventsListState();
 }
 
 class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
-  GuardianGlobalEventsFilters _filters = const GuardianGlobalEventsFilters();
+  GuardianGlobalEventsFilters _guardianFilters =
+      const GuardianGlobalEventsFilters();
+  OrgGlobalEventsFilters _orgFilters = const OrgGlobalEventsFilters();
   final Map<String, _OptimisticCompletion> _completed = {};
+
+  bool get _isOrg => widget.scope == GlobalEventsListScope.organization;
 
   // ---- completion callbacks ------------------------------------------------
 
@@ -146,24 +160,26 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
   List<_CareItem> _buildMergedList(
     List<HealthEntry> freshEntries,
     List<Pet> scopedPets,
-    GuardianGlobalEventsFilters filters,
     Map<String, List<HealthHistoryEntry>> histories,
   ) {
     final fresh = freshEntries
         .where((e) => !_completed.containsKey(e.id))
         .toList();
 
-    // Only retain completed items that pass the current filters.
-    // filterEntry is a synthetic post-completion copy so status filters
-    // (Open / Closed / Due+Overdue) evaluate the correct completed state
-    // rather than the original pre-completion data.
     final visibleCompleted = _completed.values.where((c) {
-      final passes = filterGuardianGlobalEvents(
-        [c.filterEntry],
-        scopedPets,
-        filters,
-        histories,
-      );
+      final passes = _isOrg
+          ? filterOrgGlobalEvents(
+              [c.filterEntry],
+              scopedPets,
+              _orgFilters,
+              histories,
+            )
+          : filterGuardianGlobalEvents(
+              [c.filterEntry],
+              scopedPets,
+              _guardianFilters,
+              histories,
+            );
       return passes.isNotEmpty;
     }).toList()..sort((a, b) => a.originalIndex.compareTo(b.originalIndex));
 
@@ -194,7 +210,11 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
 
   void _invalidateBoth() {
     ref.invalidate(healthEntriesNotifierProvider);
-    ref.invalidate(guardianGlobalEventHistoriesProvider);
+    if (_isOrg) {
+      ref.invalidate(orgGlobalEventHistoriesProvider);
+    } else {
+      ref.invalidate(guardianGlobalEventHistoriesProvider);
+    }
   }
 
   // ---- build ---------------------------------------------------------------
@@ -204,8 +224,12 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final entriesAsync = ref.watch(healthEntriesNotifierProvider);
-    final historiesAsync = ref.watch(guardianGlobalEventHistoriesProvider);
-    final scopedPets = guardianGlobalEventsPets(widget.shellPets, _filters);
+    final historiesAsync = _isOrg
+        ? ref.watch(orgGlobalEventHistoriesProvider)
+        : ref.watch(guardianGlobalEventHistoriesProvider);
+    final scopedPets = _isOrg
+        ? orgGlobalEventsPets(widget.shellPets, _orgFilters)
+        : guardianGlobalEventsPets(widget.shellPets, _guardianFilters);
 
     return _OperationsDeskTheme(
       child: ColoredBox(
@@ -228,11 +252,18 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
                     ),
                   ),
                 ),
-                GuardianGlobalEventsCollectionFilterBar(
-                  shellPets: widget.shellPets,
-                  filters: _filters,
-                  onChanged: (f) => setState(() => _filters = f),
-                ),
+                if (!_isOrg)
+                  GuardianGlobalEventsCollectionFilterBar(
+                    shellPets: widget.shellPets,
+                    filters: _guardianFilters,
+                    onChanged: (f) => setState(() => _guardianFilters = f),
+                  )
+                else
+                  OrgGlobalEventsCollectionFilterBar(
+                    shellPets: widget.shellPets,
+                    filters: _orgFilters,
+                    onChanged: (f) => setState(() => _orgFilters = f),
+                  ),
                 _buildBody(l, entriesAsync, historiesAsync, scopedPets),
               ],
             ),
@@ -264,13 +295,20 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
 
     final entries = entriesAsync.valueOrNull ?? [];
     final histories = historiesAsync.valueOrNull ?? {};
-    final visible = filterGuardianGlobalEvents(
-      entries,
-      scopedPets,
-      _filters,
-      histories,
-    );
-    final items = _buildMergedList(visible, scopedPets, _filters, histories);
+    final visible = _isOrg
+        ? filterOrgGlobalEvents(
+            entries,
+            scopedPets,
+            _orgFilters,
+            histories,
+          )
+        : filterGuardianGlobalEvents(
+            entries,
+            scopedPets,
+            _guardianFilters,
+            histories,
+          );
+    final items = _buildMergedList(visible, scopedPets, histories);
     final petMap = {for (final p in widget.shellPets) p.id: p};
 
     if (items.isEmpty) return _EmptyState(label: l.noEntriesYet);
