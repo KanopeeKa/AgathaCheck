@@ -14,7 +14,9 @@ import {
 } from './e2e_debug_status.mjs';
 
 assert.equal(isRemedialBranch('cursor/preuat-fix-abc12345-6bba'), true);
-assert.equal(isRemedialBranch('cursor/preuat-fix-14c6c5b6-2600'), false);
+assert.equal(isRemedialBranch('cursor/preuat-fix-e959f6d6-49c7'), true);
+assert.equal(isRemedialBranch('cursor/preuat-fix-14c6c5b6-2600'), true);
+assert.equal(isRemedialBranch('cursor/preuat-fix-ab-2600'), false);
 assert.equal(isRemedialBranch('cursor/other-branch-6bba'), false);
 
 assert.equal(prTouchesE2eFiles([{ path: 'e2e/playwright/tests/foo.spec.ts' }]), true);
