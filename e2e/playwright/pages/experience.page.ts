@@ -85,6 +85,22 @@ export class ExperiencePage {
 
   /** Open the organisation section via workspace toggle (preferred) or legacy drawer. */
   async openDrawerOrgView(): Promise<void> {
+    await this.switchToShelterWorkspace();
+    await waitForFlutterRoutePattern(this.page, /\/(?:o\/orgs|organizations)(?:\?|$)/, 30_000);
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page
+          .getByText(
+            /Shelters dashboard|Tableau de bord des refuges|My Organisations|Mes organisations/i,
+          )
+          .first(),
+      ).toBeVisible({ timeout: 3_000 });
+    }).toPass({ timeout: 30_000 });
+  }
+
+  /** Switch workspace to Shelter without asserting the org list hub loaded. */
+  async switchToShelterWorkspace(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await refreshFlutterAccessibility(this.page);
 
@@ -97,25 +113,15 @@ export class ExperiencePage {
         .or(this.page.getByRole('button', { name: /^Shelter$|^Refuge$|^Shelters$/i }))
         .first();
       await shelterItem.click({ timeout: 10_000 });
-    } else {
-      await openExperienceDrawer(this.page);
-      await this.page
-        .getByRole('button', { name: /^Shelters\b/i })
-        .or(this.page.locator('[flt-semantics-identifier="drawer_organisation"]'))
-        .first()
-        .click();
+      return;
     }
-    await waitForFlutterRoutePattern(this.page, /\/(?:o\/orgs|organizations)(?:\?|$)/, 30_000);
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      await expect(
-        this.page
-          .getByText(
-            /Shelters dashboard|Tableau de bord des refuges|My Organisations|Mes organisations/i,
-          )
-          .first(),
-      ).toBeVisible({ timeout: 3_000 });
-    }).toPass({ timeout: 30_000 });
+
+    await openExperienceDrawer(this.page);
+    await this.page
+      .getByRole('button', { name: /^Shelters\b/i })
+      .or(this.page.locator('[flt-semantics-identifier="drawer_organisation"]'))
+      .first()
+      .click();
   }
 
   async gotoChooser(): Promise<void> {

@@ -14,6 +14,7 @@ import {
   dismissConsentBannerIfPresent,
   flutterGotoUrl,
   refreshFlutterAccessibility,
+  skipGuardianOnboardingIfPresent,
   waitForPostLoginRoute,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
@@ -33,6 +34,10 @@ test.describe('Organisation onboarding', () => {
     await landing.login(alice.email, alice.password);
     await dismissConsentBannerIfPresent(page);
     await waitForPostLoginRoute(page);
+    await skipGuardianOnboardingIfPresent(page);
+
+    const experience = new ExperiencePage(page);
+    await experience.switchToShelterWorkspace();
 
     // D-v5-WORKSPACE-2: login lands on guardian onboarding when the account has no owned pets.
     await waitForFlutterRoutePattern(page, /\/pc\/onboarding/, 60_000);
@@ -51,10 +56,13 @@ test.describe('Organisation onboarding', () => {
     await landing.login(alice.email, alice.password);
     await dismissConsentBannerIfPresent(page);
     await waitForPostLoginRoute(page);
+    await skipGuardianOnboardingIfPresent(page);
+
+    const experience = new ExperiencePage(page);
+    await experience.switchToShelterWorkspace();
 
     await completeOrgOnboarding(page, 'Max', 'Vaccine booster');
 
-    const experience = new ExperiencePage(page);
     await experience.expectOrgShell();
 
     // Organization home is intentionally a shelter switcher. The inventory

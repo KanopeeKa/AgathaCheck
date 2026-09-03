@@ -350,7 +350,7 @@ export async function skipOrgOnboardingIfPresent(
   if (!(await skipButton.isVisible({ timeout: 3_000 }).catch(() => false))) return;
 
   await skipButton.click();
-  await waitForFlutterRoutePattern(page, /\/o\/(orgs|home)/, effectiveTimeout);
+  await waitForFlutterRoutePattern(page, /\/o\/orgs/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 }
 
@@ -385,7 +385,7 @@ export async function completeOrgOnboarding(
   await page.getByRole('textbox', { name: /reminder name/i }).waitFor({ timeout: effectiveTimeout });
   await fillLabelledField(page, 'Reminder name', reminderName);
   await page.getByRole('button', { name: /finish setup/i }).click();
-  await waitForFlutterRoutePattern(page, /\/o\/(orgs|home)/, effectiveTimeout);
+  await waitForFlutterRoutePattern(page, /\/o\/orgs/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 }
 

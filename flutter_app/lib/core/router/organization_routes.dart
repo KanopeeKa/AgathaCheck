@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/experience/domain/entities/app_experience.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
+import '../../features/experience/presentation/widgets/org_onboarding_route_guard.dart';
 import '../../features/organization/presentation/widgets/org_shell_app_bar_title.dart';
 import '../../l10n/app_localizations.dart';
 import '../../features/organization/presentation/screens/organization_people_screen.dart';
@@ -46,20 +47,22 @@ List<RouteBase> buildOrgManagementRoutes() {
       name: 'orgOrganizations',
       builder: (context, state) {
         final l = AppLocalizations.of(context)!;
-        return ExperienceShellScaffold(
-          experience: AppExperience.organization,
-          currentLocation: state.uri.path,
-          screenTitle: l.organisationsDashboardTitle,
-          orgNavVariant: OrgNavTitleVariant.dashboard,
-          contextualActions: [
-            IconButton(
-              key: const Key('org_nav_create'),
-              icon: const Icon(Icons.add),
-              tooltip: l.createOrganization,
-              onPressed: () => context.push('/o/orgs/new'),
-            ),
-          ],
-          child: const OrganizationListScreen(embeddedInShell: true),
+        return OrgOnboardingRouteGuard(
+          child: ExperienceShellScaffold(
+            experience: AppExperience.organization,
+            currentLocation: state.uri.path,
+            screenTitle: l.organisationsDashboardTitle,
+            orgNavVariant: OrgNavTitleVariant.dashboard,
+            contextualActions: [
+              IconButton(
+                key: const Key('org_nav_create'),
+                icon: const Icon(Icons.add),
+                tooltip: l.createOrganization,
+                onPressed: () => context.push('/o/orgs/new'),
+              ),
+            ],
+            child: const OrganizationListScreen(embeddedInShell: true),
+          ),
         );
       },
       routes: _orgManagementChildRoutes(),

@@ -38,7 +38,7 @@ class OrgOnboardingRules {
   }) {
     if (onboardingCompleted) return false;
     if (isFosterOnlyMembership(orgs)) return false;
-    if (orgs.isEmpty) return true;
+    if (orgs.isEmpty) return false;
     return !hasOrgInventoryPets(pets);
   }
 
