@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T22:18:00Z",
   "approved_by": "user chat 2026-09-03 — approve-autonomous unified-pet-tile-c4e8 (full 5-phase plan)",
   "approved_until": "2026-09-05T22:18:00Z",
-  "content_hash": "sha256:976c7b81df56fa15b10f3ae139312255cc791cd9e957737fdebb2584a06174b6",
+  "content_hash": "sha256:9078c9465ab72745a8c41e12d2d01da8089b33e280f67f84fa8101342ec197ba",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/unified-pet-tile-integration-c4e8",
@@ -78,12 +78,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "merged",
+      "status": "pending",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/954",
-      "pr_head_sha": "a8f938ac"
+      "pr_head_sha": "febb585c01147bcd4dfa168f155723737cc1cc32"
     },
     {
       "id": "3",
@@ -116,12 +116,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/956",
-      "pr_head_sha": "6e1f6d32"
+      "pr_head_sha": "79c8b1d3"
     },
     {
       "id": "4",
@@ -154,13 +154,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "debt_issue_refs": []
     },
     {
       "id": "5",

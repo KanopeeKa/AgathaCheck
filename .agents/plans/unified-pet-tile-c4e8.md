@@ -367,17 +367,17 @@ After phase 5 merges to `cursor/unified-pet-tile-integration-c4e8`:
 
 ```yaml
 autonomy: active
-current_phase: 3
-last_completed_phase: 2
+current_phase: 4
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 3 on branch cursor/care-all-pets-unified-tile-c4e8"
+next_action: "continue phase 4 on branch cursor/shelter-unified-pet-tile-c4e8"
 artifact_ref:
-  branch: cursor/care-all-pets-unified-tile-c4e8
+  branch: cursor/shelter-unified-pet-tile-c4e8
   plan_path: .agents/plans/unified-pet-tile-c4e8.md
-  plan_commit: 6e1f6d3250ef41bed4ec449460e17d89c34087b9
+  plan_commit: 07af8ff1c724cf2782956ecc2c53e96ad917bf08
   snapshot_path: .agents/plans/unified-pet-tile-c4e8.snapshot.json
-  snapshot_commit: 6e1f6d3250ef41bed4ec449460e17d89c34087b9
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/956"]
+  snapshot_commit: 07af8ff1c724cf2782956ecc2c53e96ad917bf08
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/954"]
 merge_commits: {}
 debt_issue_refs: []
 ```
