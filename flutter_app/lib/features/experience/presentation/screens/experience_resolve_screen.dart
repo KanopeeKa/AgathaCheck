@@ -7,25 +7,32 @@ import '../../domain/services/experience_eligibility.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../providers/experience_providers.dart';
 
-/// Loads eligibility after login and routes to FTUE or the correct home.
-class ExperienceResolveScreen extends ConsumerWidget {
+/// Loads eligibility after login and routes to the Pet Care home (D-v5-WORKSPACE-2).
+class ExperienceResolveScreen extends ConsumerStatefulWidget {
   const ExperienceResolveScreen({super.key});
 
-  void _navigate(
-    BuildContext context,
-    WidgetRef ref,
-    ExperienceEligibility eligibility, {
-    required bool hasPendingOrgInvites,
-  }) {
+  @override
+  ConsumerState<ExperienceResolveScreen> createState() =>
+      _ExperienceResolveScreenState();
+}
+
+class _ExperienceResolveScreenState extends ConsumerState<ExperienceResolveScreen> {
+  bool _navigated = false;
+
+  void _navigate(ExperienceEligibility eligibility) {
+    if (_navigated || !mounted) return;
+    _navigated = true;
+
     final pets = ref.read(petListProvider).valueOrNull ?? [];
     final orgs = ref.read(organizationListProvider).valueOrNull ?? [];
     final guardianOnboardingCompleted = ref.read(
       guardianOnboardingCompletedProvider,
     );
     final orgOnboardingCompleted = ref.read(orgOnboardingCompletedProvider);
-    final lastAppSection = ref
-        .read(experiencePreferencesStoreProvider)
-        .readLastAppSection();
+    final hasPendingOrgInvites = ref.read(pendingOrgInvitesProvider).maybeWhen(
+      data: (invites) => invites.isNotEmpty,
+      orElse: () => false,
+    );
     final path = resolvePostLoginPath(
       eligibility: eligibility,
       pets: pets,
@@ -33,50 +40,26 @@ class ExperienceResolveScreen extends ConsumerWidget {
       guardianOnboardingCompleted: guardianOnboardingCompleted,
       orgOnboardingCompleted: orgOnboardingCompleted,
       hasPendingOrgInvites: hasPendingOrgInvites,
-      lastAppSection: lastAppSection,
     );
     context.go(path);
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final pendingInvites = ref.watch(pendingOrgInvitesProvider);
-    final hasPendingOrgInvites = pendingInvites.maybeWhen(
-      data: (invites) => invites.isNotEmpty,
-      orElse: () => false,
-    );
-
+  Widget build(BuildContext context) {
     ref.listen<AsyncValue<ExperienceEligibility>>(
       experienceEligibilityProvider,
       (_, next) {
-        next.whenData(
-          (eligibility) => _navigate(
-            context,
-            ref,
-            eligibility,
-            hasPendingOrgInvites: hasPendingOrgInvites,
-          ),
-        );
+        next.whenData(_navigate);
       },
     );
 
     final eligibility = ref.watch(experienceEligibilityProvider);
     eligibility.whenOrNull(
-      data: (e) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!context.mounted) return;
-          _navigate(
-            context,
-            ref,
-            e,
-            hasPendingOrgInvites: hasPendingOrgInvites,
-          );
-        });
-      },
+      data: _navigate,
       error: (_, __) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (context.mounted) context.go('/pc/home');
-        });
+        if (_navigated || !mounted) return;
+        _navigated = true;
+        context.go('/pc/home');
       },
     );
 
