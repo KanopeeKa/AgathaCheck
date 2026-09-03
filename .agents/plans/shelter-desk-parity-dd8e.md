@@ -57,17 +57,17 @@ Widget tests + `docs/e2e/navigation-contract.md` shelter hub notes.
 
 ```yaml
 autonomy: active
-current_phase: 0
-last_completed_phase: null
+current_phase: 1
+last_completed_phase: 0
 halt_reason: null
-next_action: "continue phase 0 on branch cursor/shelter-desk-framing-decisions-dd8e"
+next_action: "start phase 1: checkout cursor/shelter-org-shell-toggle-dd8e"
 artifact_ref:
   branch: cursor/shelter-desk-framing-decisions-dd8e
   plan_path: .agents/plans/shelter-desk-parity-dd8e.md
-  plan_commit: 8f4dcaeb46b4223ea229053b9db08c817915f21c
+  plan_commit: b08a228e1bb6f4adc027de79b04c5eaf25300281
   snapshot_path: .agents/plans/shelter-desk-parity-dd8e.snapshot.json
-  snapshot_commit: 8f4dcaeb46b4223ea229053b9db08c817915f21c
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/943"]
+  snapshot_commit: b08a228e1bb6f4adc027de79b04c5eaf25300281
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
