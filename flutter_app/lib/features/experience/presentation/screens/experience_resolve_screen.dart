@@ -55,11 +55,17 @@ class _ExperienceResolveScreenState
 
     final eligibility = ref.watch(experienceEligibilityProvider);
     eligibility.whenOrNull(
-      data: _navigate,
+      data: (data) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _navigate(data);
+        });
+      },
       error: (_, __) {
-        if (_navigated || !mounted) return;
-        _navigated = true;
-        context.go('/pc/home');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_navigated || !mounted) return;
+          _navigated = true;
+          context.go('/pc/home');
+        });
       },
     );
 
