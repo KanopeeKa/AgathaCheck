@@ -8,6 +8,7 @@ import {
   openAccountFromShell,
   openExperienceDrawer,
   refreshFlutterAccessibility,
+  skipOrgOnboardingIfPresent,
   welcomeAgathaTrackText,
   waitForFlutterRoute,
   waitForFlutterRoutePattern,
@@ -86,6 +87,7 @@ export class ExperiencePage {
   /** Open the organisation section via workspace toggle (preferred) or legacy drawer. */
   async openDrawerOrgView(): Promise<void> {
     await this.switchToShelterWorkspace();
+    await skipOrgOnboardingIfPresent(this.page);
     await waitForFlutterRoutePattern(this.page, /\/(?:o\/orgs|organizations)(?:\?|$)/, 30_000);
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
