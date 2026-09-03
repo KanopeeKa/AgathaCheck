@@ -13,9 +13,8 @@ import '../../domain/services/org_onboarding_rules.dart';
 import '../providers/experience_providers.dart';
 import '../widgets/experience_shell_scaffold.dart';
 import '../widgets/guardian_shell_home_content.dart';
-import '../widgets/org_shell_home_content.dart';
 
-/// Guardian experience home (`/g/home`).
+/// Guardian experience home (`/pc/home`).
 class GuardianHomeScreen extends ConsumerStatefulWidget {
   const GuardianHomeScreen({super.key});
 
@@ -68,55 +67,6 @@ class _GuardianHomeScreenState extends ConsumerState<GuardianHomeScreen> {
         data: (pets) =>
             GuardianShellHomeContent(allPets: pets, controller: _controller),
       ),
-    );
-  }
-}
-
-/// Organisation experience home (`/o/home`).
-class OrgHomeScreen extends ConsumerStatefulWidget {
-  const OrgHomeScreen({super.key});
-
-  @override
-  ConsumerState<OrgHomeScreen> createState() => _OrgHomeScreenState();
-}
-
-class _OrgHomeScreenState extends ConsumerState<OrgHomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => _redirectIfOnboardingNeeded(),
-    );
-  }
-
-  void _redirectIfOnboardingNeeded() {
-    if (!mounted) return;
-    final pets = ref.read(petListProvider).valueOrNull;
-    final orgs = ref.read(organizationListProvider).valueOrNull;
-    if (pets == null || orgs == null) return;
-    final completed = ref.read(orgOnboardingCompletedProvider);
-    if (OrgOnboardingRules.needsOnboarding(
-      pets: pets,
-      orgs: orgs,
-      onboardingCompleted: completed,
-    )) {
-      context.go(OrgOnboardingRules.onboardingPath);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    ref.listen(petListProvider, (_, next) {
-      next.whenData((_) => _redirectIfOnboardingNeeded());
-    });
-    ref.listen(organizationListProvider, (_, next) {
-      next.whenData((_) => _redirectIfOnboardingNeeded());
-    });
-
-    return ExperienceShellScaffold(
-      experience: AppExperience.organization,
-      currentLocation: GoRouterState.of(context).uri.path,
-      child: const OrgShellHomeContent(),
     );
   }
 }

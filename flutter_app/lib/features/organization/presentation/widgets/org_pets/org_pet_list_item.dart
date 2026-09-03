@@ -11,14 +11,12 @@ class OrgPetListItem extends StatelessWidget {
     super.key,
     required this.entry,
     required this.orgId,
-    required this.isOrgAdmin,
     required this.showAttentionReason,
     required this.tileWidth,
   });
 
   final OrgPetListEntry entry;
   final String orgId;
-  final bool isOrgAdmin;
   final bool showAttentionReason;
   final double tileWidth;
 
@@ -73,39 +71,6 @@ class OrgPetListItem extends StatelessWidget {
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          if (isOrgAdmin)
-            Padding(
-              padding: const EdgeInsets.only(top: 4, bottom: 8),
-              child: Wrap(
-                spacing: 4,
-                runSpacing: 0,
-                children: [
-                  TextButton.icon(
-                    key: Key('org_transfer_pet_${pet.id}'),
-                    onPressed: () =>
-                        context.push('/o/orgs/$orgId/transfer/${pet.id}'),
-                    icon: const Icon(Icons.swap_horiz, size: 16),
-                    label: Text(l.transferPet),
-                    style: TextButton.styleFrom(
-                      visualDensity: VisualDensity.compact,
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                    ),
-                  ),
-                  TextButton.icon(
-                    key: Key('org_transfer_org_${pet.id}'),
-                    onPressed: () => context.push(
-                      '/o/orgs/$orgId/transfer/${pet.id}/to-org',
-                    ),
-                    icon: const Icon(Icons.hub_outlined, size: 16),
-                    label: Text(l.transferToOrganisation),
-                    style: TextButton.styleFrom(
-                      visualDensity: VisualDensity.compact,
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                    ),
-                  ),
-                ],
               ),
             ),
         ],
