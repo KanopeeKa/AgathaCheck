@@ -144,14 +144,14 @@ autonomy: active
 current_phase: 3
 last_completed_phase: 2
 halt_reason: null
-next_action: "start phase 3: checkout cursor/shelter-shell-primary-nav-c4e8"
+next_action: "continue phase 3 on branch cursor/shelter-shell-primary-nav-c4e8"
 artifact_ref:
-  branch: cursor/shelter-dashboard-v2-c4e8-integration-c4e8
+  branch: cursor/shelter-shell-primary-nav-c4e8
   plan_path: .agents/plans/shelter-dashboard-v2-c4e8.md
-  plan_commit: 7b4c2b9abd227a936276bbf8572e1d3a549225f0
+  plan_commit: 00dc2c24621cf40af7aac01e11ccec7c82a5fe90
   snapshot_path: .agents/plans/shelter-dashboard-v2-c4e8.snapshot.json
-  snapshot_commit: 7b4c2b9abd227a936276bbf8572e1d3a549225f0
-open_prs: []
+  snapshot_commit: 00dc2c24621cf40af7aac01e11ccec7c82a5fe90
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/961"]
 merge_commits: {}
 debt_issue_refs: []
 ```
@@ -161,7 +161,7 @@ debt_issue_refs: []
 | 0 | done | cursor/shelter-dashboard-v2-framing-c4e8 |
 | 1 | done | cursor/shelter-pinned-org-api-c4e8 |
 | 2 | done | cursor/shelter-primary-nav-config-c4e8 |
-| 3 | pending | cursor/shelter-shell-primary-nav-c4e8 |
+| 3 | done | cursor/shelter-shell-primary-nav-c4e8 |
 | 4 | pending | cursor/shelter-tile-pin-c4e8 |
 | 5 | pending | cursor/shelter-dashboard-body-c4e8 |
 | 6 | pending | cursor/shelter-tasks-preview-c4e8 |

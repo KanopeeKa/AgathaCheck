@@ -13,6 +13,8 @@ import 'package:pet_profile_app/features/experience/presentation/providers/exper
 import 'package:pet_profile_app/features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_navigation_rail.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_navigation_sidebar.dart';
+import 'package:pet_profile_app/features/experience/presentation/widgets/shelter_pinned_org_provider.dart';
+import 'package:pet_profile_app/features/experience/presentation/config/shelter_primary_destinations.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
@@ -1006,6 +1008,212 @@ void main() {
       expect(find.byType(Row), findsWidgets);
       expect(find.text('Sidebar content'), findsOneWidget);
       expect(find.byType(GuardianNavigationSidebar), findsOneWidget);
+    });
+  });
+
+  group('Shelter navigation (organization experience)', () {
+    testWidgets('compact /o/orgs shows teal bottom nav and bell', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.organization,
+          currentLocation: '/o/orgs',
+          viewport: const Size(390, 844),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('shelter_bottom_navigation')), findsOneWidget);
+      expect(
+        find.byKey(const Key('experience_notification_bell')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('experience_workspace_toggle')),
+        findsOneWidget,
+      );
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.backgroundColor, AppColorTokens.organizationPrimary);
+      expect(appBar.foregroundColor, AppColorTokens.inverse);
+    });
+
+    testWidgets('org deep route keeps bottom nav visible at compact width', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.organization,
+          currentLocation: '/o/orgs/org-1/pets',
+          viewport: const Size(390, 844),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('shelter_bottom_navigation')), findsOneWidget);
+      expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('experience_workspace_toggle')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('shows rail and hides bottom nav at 720px', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(720, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.organization,
+          currentLocation: '/o/orgs',
+          viewport: const Size(720, 900),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('shelter_navigation_rail')), findsOneWidget);
+      expect(find.byKey(const Key('shelter_bottom_navigation')), findsNothing);
+      expect(find.text('Dashboard'), findsOneWidget);
+      expect(
+        find.byKey(const Key('experience_notification_bell')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('shows sidebar at 1024px with workspace toggle in header', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.organization,
+          currentLocation: '/o/orgs',
+          viewport: const Size(1024, 900),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('shelter_navigation_sidebar')),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('shelter_navigation_rail')), findsNothing);
+      expect(find.byKey(const Key('shelter_bottom_navigation')), findsNothing);
+      final sidebar = find.byKey(const Key('shelter_navigation_sidebar'));
+      expect(
+        find.descendant(
+          of: sidebar,
+          matching: find.byKey(const Key('experience_workspace_toggle')),
+        ),
+        findsOneWidget,
+      );
+      final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+      expect(scaffold.drawer, isNull);
+    });
+
+    testWidgets('org deep route keeps sidebar visible at 1024px', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.organization,
+          currentLocation: '/o/orgs/org-1',
+          viewport: const Size(1024, 900),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('shelter_navigation_sidebar')),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
+    });
+
+    testWidgets('pinned org appears in bottom nav when provider supplies pin', (
+      tester,
+    ) async {
+      const pinnedOrg = ShelterPinnedOrganization(
+        id: 'org-pin',
+        name: 'Pinned Shelter',
+      );
+
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            experienceEligibilityProvider.overrideWith(
+              (ref) => AsyncValue.data(
+                ExperienceEligibilityRules.compute(
+                  pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
+                  orgMembershipCount: 1,
+                ),
+              ),
+            ),
+            combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
+            organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+            shelterPinnedOrganizationProvider.overrideWithValue(pinnedOrg),
+          ],
+          child: MaterialApp(
+            theme: ThemeData(splashFactory: NoSplash.splashFactory),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: MediaQuery(
+              data: const MediaQueryData(size: Size(390, 844)),
+              child: ExperienceShellScaffold(
+                experience: AppExperience.organization,
+                currentLocation: '/o/orgs/org-pin',
+                child: const SizedBox.shrink(),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Pinned Shelter'), findsOneWidget);
+      expect(find.byKey(const Key('shelter_bottom_navigation')), findsOneWidget);
+    });
+
+    testWidgets('onboarding route does not show shelter primary nav', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.organization,
+          currentLocation: '/o/onboarding',
+          viewport: const Size(390, 844),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('shelter_bottom_navigation')), findsNothing);
+      final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+      expect(scaffold.drawer, isNotNull);
     });
   });
 }
