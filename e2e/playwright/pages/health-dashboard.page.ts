@@ -1,8 +1,9 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
+  collectionFilterDimensionTrigger,
+  collectionFilterMobileTrigger,
   escapeRegExp,
-  filterChipByName,
   refreshFlutterAccessibility,
   semanticsByName,
 } from '../support/flutter';
@@ -180,9 +181,7 @@ export class HealthDashboardPage {
 
   /** Pet Care `/pc/events` global list — status filter via collection filter toolbar. */
   async selectDueOverdueFilter(): Promise<void> {
-    const mobileFilters = this.page.getByRole('button', {
-      name: /Filters(\s+\d+)?|Filtres(\s+\d+)?/i,
-    });
+    const mobileFilters = collectionFilterMobileTrigger(this.page);
     if (await mobileFilters.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await mobileFilters.click();
       await refreshFlutterAccessibility(this.page);
@@ -190,14 +189,11 @@ export class HealthDashboardPage {
         .getByRole('checkbox', { name: /Due and Overdue|À faire et en retard/i })
         .click();
     } else {
-      const statusTrigger = this.page.getByRole('button', {
-        name: /^Status( \(\d+\))?$/i,
-      });
-      if (!(await statusTrigger.isVisible({ timeout: 3_000 }).catch(() => false))) {
-        throw new Error(
-          'Status filter trigger not found — Pet Care /pc/events may not have loaded collection filters',
-        );
-      }
+      const statusTrigger = collectionFilterDimensionTrigger(
+        this.page,
+        /^Status( \(\d+\))?$/i,
+      );
+      await expect(statusTrigger).toBeVisible({ timeout: 10_000 });
       await statusTrigger.click();
       await refreshFlutterAccessibility(this.page);
       await this.page
@@ -219,9 +215,7 @@ export class HealthDashboardPage {
   }
 
   async selectOrgFilter(orgName: string): Promise<void> {
-    const mobileFilters = this.page.getByRole('button', {
-      name: /Filters(\s+\d+)?|Filtres(\s+\d+)?/i,
-    });
+    const mobileFilters = collectionFilterMobileTrigger(this.page);
     if (await mobileFilters.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await mobileFilters.click();
       await refreshFlutterAccessibility(this.page);
@@ -229,9 +223,10 @@ export class HealthDashboardPage {
         .getByRole('checkbox', { name: orgName, exact: true })
         .click();
     } else {
-      const moreTrigger = this.page.getByRole('button', {
-        name: /More filters|Plus de filtres/i,
-      });
+      const moreTrigger = collectionFilterDimensionTrigger(
+        this.page,
+        /^More filters$|^Plus de filtres$/i,
+      );
       if (await moreTrigger.isVisible({ timeout: 3_000 }).catch(() => false)) {
         await moreTrigger.click();
         await refreshFlutterAccessibility(this.page);

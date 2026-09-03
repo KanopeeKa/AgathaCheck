@@ -653,6 +653,27 @@ export function filterChipByName(page: Page, pattern: string | RegExp): Locator 
 }
 
 /**
+ * CollectionFilterBar dimension trigger (MenuAnchor nests outer + inner buttons on Flutter web).
+ * Prefer the inner, visible control — the outer wrapper often fails `isVisible()`.
+ */
+export function collectionFilterDimensionTrigger(
+  page: Page,
+  pattern: string | RegExp,
+): Locator {
+  const name =
+    typeof pattern === 'string' ? new RegExp(escapeRegExp(pattern), 'i') : pattern;
+  return page.getByRole('button', { name }).last();
+}
+
+/** Mobile CollectionFilterBar sheet trigger (`Filters` / `Filters 2`). */
+export function collectionFilterMobileTrigger(page: Page): Locator {
+  return collectionFilterDimensionTrigger(
+    page,
+    /^Filters(\s+\d+)?$|^Filtres(\s+\d+)?$/i,
+  );
+}
+
+/**
  * Accessible name for [PetCard] on full lists (`/pc/pets`, org home): "Pet: Bella, dog".
  * Guardian Today dashboard cards use {@link guardianDashboardPetNamePattern} instead.
  */
