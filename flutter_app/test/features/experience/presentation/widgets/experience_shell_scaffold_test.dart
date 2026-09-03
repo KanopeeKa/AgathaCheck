@@ -148,6 +148,9 @@ void main() {
   testWidgets('section root shows centered logo title when provided', (
     tester,
   ) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -175,11 +178,14 @@ void main() {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
-          home: ExperienceShellScaffold(
-            experience: AppExperience.petCare,
-            currentLocation: '/pc/home',
-            screenTitle: 'My Pets dashboard',
-            child: const SizedBox.shrink(),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(390, 844)),
+            child: ExperienceShellScaffold(
+              experience: AppExperience.petCare,
+              currentLocation: '/pc/home',
+              screenTitle: 'My Pets dashboard',
+              child: const SizedBox.shrink(),
+            ),
           ),
         ),
       ),
@@ -657,6 +663,60 @@ void main() {
         expect(find.text('Account'), findsOneWidget);
       },
     );
+
+    testWidgets('shows AgathaTrack once on section root at 1024px', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            experienceEligibilityProvider.overrideWith(
+              (ref) => AsyncValue.data(
+                ExperienceEligibilityRules.compute(
+                  pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
+                  orgMembershipCount: 0,
+                ),
+              ),
+            ),
+            showOrganisationSectionProvider.overrideWith((ref) => false),
+            combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
+            organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+          ],
+          child: MaterialApp(
+            theme: ThemeData(splashFactory: NoSplash.splashFactory),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: MediaQuery(
+              data: const MediaQueryData(size: Size(1024, 900)),
+              child: ExperienceShellScaffold(
+                experience: AppExperience.petCare,
+                currentLocation: '/pc/home',
+                screenTitle: 'AgathaTrack',
+                child: const SizedBox.shrink(),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('AgathaTrack'), findsOneWidget);
+      expect(
+        find.byKey(const Key('experience_notification_bell')),
+        findsOneWidget,
+      );
+    });
 
     testWidgets('sidebar width is ~240px at 1024px', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1024, 900));

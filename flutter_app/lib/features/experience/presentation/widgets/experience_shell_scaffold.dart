@@ -115,8 +115,12 @@ class ExperienceShellScaffold extends ConsumerWidget {
         isRoot &&
         MediaQuery.sizeOf(context).width < 360 &&
         MediaQuery.textScalerOf(context).scale(14) > 18;
+    final suppressGuardianSectionRootAppBarTitle =
+        isGuardianExperience && usesGuardianLeadingNav && isRoot;
     final usesGuardianDesktopContentHeader =
-        isGuardianExperience && usesGuardianLeadingNav;
+        isGuardianExperience &&
+        usesGuardianLeadingNav &&
+        !suppressGuardianSectionRootAppBarTitle;
 
     return Theme(
       data: shellTheme,
@@ -155,7 +159,9 @@ class ExperienceShellScaffold extends ConsumerWidget {
                 )
               : null,
           centerTitle: !usesGuardianDesktopContentHeader,
-          title: screenTitle == null || hideTitleForAccessibleCompactHeader
+          title: screenTitle == null ||
+              hideTitleForAccessibleCompactHeader ||
+              suppressGuardianSectionRootAppBarTitle
               ? const SizedBox.shrink()
               : useOrgTitle
               ? OrgShellAppBarTitle(
