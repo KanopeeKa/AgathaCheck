@@ -99,16 +99,15 @@ void main() {
   });
 
   testWidgets(
-    'My Pets preview caps at four and keeps the All pets destination',
+    'My Pets rail shows all active pets with eyebrow and All pets link',
     (tester) async {
       await tester.pumpWidget(buildDashboard());
       await tester.pumpAndSettle();
 
+      expect(find.text('My Pets'), findsOneWidget);
       expect(find.text('All pets'), findsOneWidget);
       expect(find.text('Pet 0'), findsOneWidget);
-      expect(find.text('Pet 3'), findsOneWidget);
-      expect(find.text('Pet 4'), findsNothing);
-      expect(find.text('Pet 5'), findsNothing);
+      expect(find.text('Pet 5'), findsOneWidget);
       expect(
         find.descendant(
           of: find.byType(GuardianMyPetsSection),

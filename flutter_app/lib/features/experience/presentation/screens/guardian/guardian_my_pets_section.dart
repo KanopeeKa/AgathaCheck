@@ -9,9 +9,12 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../../pet_profile/presentation/widgets/pet_card.dart';
+import '../../../../pet_profile/presentation/utils/pet_tile_dimensions.dart';
+import '../../../../pet_profile/presentation/widgets/pet_tile_status_line.dart';
+import '../../../../pet_profile/presentation/widgets/unified_pet_tile.dart';
 import '../../widgets/guardian_dashboard_ambient_deco.dart';
 import '../../widgets/guardian_dashboard_section_header.dart';
-import '../../widgets/guardian_dashboard_pet_card.dart';
+import '../../widgets/horizontal_carousel_controls.dart';
 import '../../widgets/guardian_illustrated_empty_state.dart';
 import '../../widgets/guardian_shell_shared_pet_card.dart';
 import 'guardian_dashboard_helpers.dart';
@@ -44,17 +47,11 @@ class GuardianMyPetsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final shellPets = controller.guardianShellPets(allPets);
     final personalPets = guardianDashboardPersonalPets(allPets, controller);
     final fosterPets = guardianDashboardFosterPets(allPets, controller);
     final sharedPets = guardianDashboardSharedPets(allPets, controller);
     final hasAny = guardianDashboardHasAnyPets(allPets, controller);
     final showUnifiedPreview = previewPets != null;
-    final inferredPreviewOverflow = showUnifiedPreview
-        ? shellPets.where((pet) => !pet.passedAway).length - previewPets!.length
-        : 0;
-    final hasPreviewOverflow =
-        (previewOverflowCount ?? inferredPreviewOverflow) > 0;
     final showPersonalSubgroupTitle =
         !showUnifiedPreview &&
         personalPets.isNotEmpty &&
@@ -67,13 +64,13 @@ class GuardianMyPetsSection extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (hasPreviewOverflow)
-              GuardianDashboardSectionChrome(
-                linkLabel: l.allPets,
-                linkKey: const Key('dashboard_manage_pets_link'),
-                onLinkPressed: () => context.go('/pc/pets'),
-              ),
-            if (hasPreviewOverflow) const SizedBox(height: 10),
+            GuardianDashboardSectionChrome(
+              title: l.myPets,
+              linkLabel: l.allPets,
+              linkKey: const Key('dashboard_manage_pets_link'),
+              onLinkPressed: () => context.go('/pc/pets'),
+            ),
+            const SizedBox(height: 10),
             _GuardianPetRail(
               pets: previewPets!,
               careSummary: careSummary,
@@ -182,18 +179,12 @@ class _GuardianPetRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final usesLargeText = MediaQuery.textScalerOf(context).scale(14) > 18;
     final viewportWidth = MediaQuery.sizeOf(context).width;
-    final cardWidth = guardianDashboardPetCardWidth(viewportWidth);
-    final addTileWidth = guardianDashboardAddPetTileWidth(viewportWidth);
-
+    final tileWidth = PetTileDimensions.widthFor(viewportWidth);
     final railHeight = pets.isEmpty
-        ? usesLargeText
-              ? 168.0
-              : 132.0
-        : usesLargeText
-        ? 128.0
-        : 96.0;
+        ? 168.0
+        : PetTileDimensions.heightFor(context);
+    final addTileWidth = guardianDashboardAddPetTileWidth(viewportWidth);
 
     return SizedBox(
       key: const Key('guardian_dashboard_pet_preview'),
@@ -212,7 +203,7 @@ class _GuardianPetRail extends StatelessWidget {
               builder: (context, constraints) {
                 final contentWidth = guardianPetRailContentWidth(
                   petCount: pets.length,
-                  cardWidth: cardWidth,
+                  cardWidth: tileWidth,
                   addTileWidth: addTileWidth,
                 );
                 final railScrolls = contentWidth > constraints.maxWidth;
@@ -229,24 +220,32 @@ class _GuardianPetRail extends StatelessWidget {
                 return Stack(
                   clipBehavior: Clip.hardEdge,
                   children: [
-                    ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.only(bottom: 4),
-                      itemCount: pets.length + 1,
-                      separatorBuilder: (_, __) => const SizedBox(width: 12),
-                      itemBuilder: (context, index) {
-                        if (index == pets.length) {
-                          return _AddPetTile(
-                            onPressed: onAddPet,
-                            l: l,
-                            width: addTileWidth,
+                    HorizontalCarouselControls(
+                      height: railHeight,
+                      scrollStep: tileWidth + 12,
+                      builder: (scrollController) => ListView.separated(
+                        controller: scrollController,
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(bottom: 4),
+                        itemCount: pets.length + 1,
+                        separatorBuilder: (_, __) => const SizedBox(width: 12),
+                        itemBuilder: (context, index) {
+                          if (index == pets.length) {
+                            return _AddPetTile(
+                              onPressed: onAddPet,
+                              l: l,
+                              width: addTileWidth,
+                              height: railHeight,
+                            );
+                          }
+                          return _cardFor(
+                            context,
+                            pets[index],
+                            tileWidth: tileWidth,
+                            tileHeight: railHeight,
                           );
-                        }
-                        return SizedBox(
-                          width: cardWidth,
-                          child: _cardFor(context, pets[index]),
-                        );
-                      },
+                        },
+                      ),
                     ),
                     if (decoMode != null)
                       Positioned(
@@ -267,16 +266,28 @@ class _GuardianPetRail extends StatelessWidget {
     );
   }
 
-  Widget _cardFor(BuildContext context, Pet pet) {
-    final card = GuardianDashboardPetCard(
+  Widget _cardFor(
+    BuildContext context,
+    Pet pet, {
+    required double tileWidth,
+    required double tileHeight,
+  }) {
+    final careState = careSummary == null
+        ? GuardianTodayPetCareState.clear
+        : guardianTodayPetCareState(pet, careSummary!);
+    final statusLine = resolvePetTileStatusLine(
+      l: l,
       pet: pet,
-      careState: careSummary == null
-          ? GuardianTodayPetCareState.clear
-          : guardianTodayPetCareState(pet, careSummary!),
+      context: PetTileContext.petCare,
+      careUrgency: petTileCareUrgencyFor(careState),
+    );
+    return UnifiedPetTile(
+      pet: pet,
+      width: tileWidth,
+      height: tileHeight,
+      statusLine: statusLine,
       onTap: () => openPetDetail(context, pet.id),
     );
-    if (!pet.isShared) return card;
-    return GuardianShellSharedPetCard(pet: pet, child: card);
   }
 }
 
@@ -285,16 +296,19 @@ class _AddPetTile extends StatelessWidget {
     required this.onPressed,
     required this.l,
     required this.width,
+    required this.height,
   });
 
   final VoidCallback onPressed;
   final AppLocalizations l;
   final double width;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: width,
+      height: height,
       child: Semantics(
         button: true,
         label: l.addPet,
@@ -306,10 +320,13 @@ class _AddPetTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             onTap: onPressed,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                   const CircleAvatar(
                     radius: 18,
                     backgroundColor: AppColorTokens.petCarePrimary,
@@ -324,7 +341,8 @@ class _AddPetTile extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.labelSmall,
                   ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

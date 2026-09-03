@@ -24,11 +24,19 @@ class PetTileDimensions {
 
   /// Tile height grows with text scale for accessibility.
   static double heightFor(BuildContext context) {
-    final scale = MediaQuery.textScalerOf(context).scale(14);
-    if (scale > 20) return baseHeight + 32;
-    if (scale > 18) return baseHeight + 24;
-    if (scale > 15) return baseHeight + 12;
-    return baseHeight;
+    final scaled14 = MediaQuery.textScalerOf(context).scale(14);
+    final ratio = scaled14 / 14;
+    final extra = ((scaled14 - 14).clamp(0.0, 20.0)) * 3.5;
+    final largeTextBump = ratio >= 1.75 ? 16.0 : 0.0;
+    return baseHeight + extra + largeTextBump;
+  }
+
+  /// Photo vs text flex weights — give text more room when scaled up.
+  static ({int photo, int text}) flexFor(BuildContext context) {
+    final ratio = MediaQuery.textScalerOf(context).scale(14) / 14;
+    if (ratio >= 1.75) return (photo: 3, text: 2);
+    if (ratio >= 1.3) return (photo: 5, text: 3);
+    return (photo: 3, text: 2);
   }
 
   static PetTileDimensions resolve(BuildContext context, double viewportWidth) {

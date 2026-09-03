@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T22:18:00Z",
   "approved_by": "user chat 2026-09-03 — approve-autonomous unified-pet-tile-c4e8 (full 5-phase plan)",
   "approved_until": "2026-09-05T22:18:00Z",
-  "content_hash": "sha256:3613cb70aa6ffe58c6bc36f48588296829b232d780328d950161ed9c6334bb08",
+  "content_hash": "sha256:9087c286a56c53da4500c696b44514e6fd6ad3216a711cb3a7e8fb903e5002b7",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/unified-pet-tile-integration-c4e8",
@@ -39,7 +39,7 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
@@ -78,13 +78,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "debt_issue_refs": []
     },
     {
       "id": "3",
