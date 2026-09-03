@@ -112,8 +112,6 @@ class CollectionFilterController {
   static CollectionFilterSelections clearAll(
     CollectionFilterSelections selections,
   ) {
-    return {
-      for (final entry in selections.entries) entry.key: <String>{},
-    };
+    return {for (final entry in selections.entries) entry.key: <String>{}};
   }
 }

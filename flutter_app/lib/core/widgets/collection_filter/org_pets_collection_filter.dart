@@ -56,9 +56,7 @@ Set<OrgPetsActiveFilter> orgPetsActiveFiltersFromSelections(
 ) {
   final selected =
       selections[OrgPetsCollectionFilterIds.refinements] ?? const {};
-  return {
-    for (final id in selected) OrgPetsActiveFilter.values.byName(id),
-  };
+  return {for (final id in selected) OrgPetsActiveFilter.values.byName(id)};
 }
 
 class OrgPetsRefinementCollectionFilterBar extends StatelessWidget {

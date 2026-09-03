@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/widgets/collection_filter/org_context_collection_filter.dart';
-import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/health_events_scope.dart';
 import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';

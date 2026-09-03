@@ -183,7 +183,9 @@ void main() {
     expect(find.byKey(const Key('org_pets_name_search')), findsNothing);
 
     await tester.binding.setSurfaceSize(const Size(1024, 900));
-    await tester.tap(find.byKey(const Key('filter_dimension_trigger_refinements')));
+    await tester.tap(
+      find.byKey(const Key('filter_dimension_trigger_refinements')),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('filter_choice_refinements_name')));
     await tester.pumpAndSettle();

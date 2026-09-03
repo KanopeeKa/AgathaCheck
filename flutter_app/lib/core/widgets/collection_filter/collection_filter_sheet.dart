@@ -43,7 +43,9 @@ class CollectionFilterSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final activeCount = CollectionFilterController.activeChoiceCount(selections);
+    final activeCount = CollectionFilterController.activeChoiceCount(
+      selections,
+    );
 
     return SafeArea(
       child: Padding(

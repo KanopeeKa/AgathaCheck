@@ -16,9 +16,7 @@ void main() {
     CollectionFilterDimension(
       id: 'status',
       label: 'Status',
-      choices: [
-        CollectionFilterChoice(id: 'open', label: 'Open'),
-      ],
+      choices: [CollectionFilterChoice(id: 'open', label: 'Open')],
     ),
   ];
 
@@ -49,9 +47,18 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('filter_dimension_trigger_type')), findsOneWidget);
-    expect(find.byKey(const Key('collection_filter_more_trigger')), findsOneWidget);
-    expect(find.byKey(const Key('collection_filter_mobile_trigger')), findsNothing);
+    expect(
+      find.byKey(const Key('filter_dimension_trigger_type')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('collection_filter_more_trigger')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('collection_filter_mobile_trigger')),
+      findsNothing,
+    );
   });
 
   testWidgets('mobile layout uses filter sheet trigger', (tester) async {
@@ -69,8 +76,14 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('collection_filter_mobile_trigger')), findsOneWidget);
-    expect(find.byKey(const Key('filter_dimension_trigger_type')), findsNothing);
+    expect(
+      find.byKey(const Key('collection_filter_mobile_trigger')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('filter_dimension_trigger_type')),
+      findsNothing,
+    );
   });
 
   testWidgets('active chips render for non-default selections', (tester) async {

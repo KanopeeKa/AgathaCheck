@@ -30,20 +30,21 @@ abstract final class ManageEventsCollectionFilterIds {
   static const orgMore = [recurring, skipped, organization];
 }
 
-List<CollectionFilterDimension> manageEventsCoreDimensions(AppLocalizations l) =>
-    _manageEventsCoreDimensions(l);
+List<CollectionFilterDimension> manageEventsCoreDimensions(
+  AppLocalizations l,
+) => _manageEventsCoreDimensions(l);
 
 CollectionFilterSelections coreSelectionsFromManageEventsFilters(
   ManageEventsFilters filters,
-) =>
-    _coreSelectionsFromManageEventsFilters(filters);
+) => _coreSelectionsFromManageEventsFilters(filters);
 
 ManageEventsFilters manageEventsFiltersFromCoreSelections(
   CollectionFilterSelections selections,
-) =>
-    _manageEventsFiltersFromCoreSelections(selections);
+) => _manageEventsFiltersFromCoreSelections(selections);
 
-List<CollectionFilterDimension> _manageEventsCoreDimensions(AppLocalizations l) {
+List<CollectionFilterDimension> _manageEventsCoreDimensions(
+  AppLocalizations l,
+) {
   return [
     CollectionFilterDimension(
       id: ManageEventsCollectionFilterIds.type,
@@ -267,7 +268,10 @@ List<String> primaryGlobalEventsFilterDimensionIds(List<Pet> shellPets) {
   if (shellPets.length > 1) {
     return ManageEventsCollectionFilterIds.primary;
   }
-  return [ManageEventsCollectionFilterIds.type, ManageEventsCollectionFilterIds.status];
+  return [
+    ManageEventsCollectionFilterIds.type,
+    ManageEventsCollectionFilterIds.status,
+  ];
 }
 
 CollectionFilterSelections selectionsFromManageEventsFilters(
@@ -311,7 +315,8 @@ GuardianGlobalEventsFilters guardianGlobalEventsFiltersFromSelections(
       GuardianEventsCohortFilter.fosterPets,
   };
 
-  final petSelected = selections[ManageEventsCollectionFilterIds.pet] ?? const {};
+  final petSelected =
+      selections[ManageEventsCollectionFilterIds.pet] ?? const {};
   final petIds = petSelected
       .where((id) => id.startsWith('pet:'))
       .map((id) => id.substring(4))

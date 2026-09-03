@@ -45,7 +45,9 @@ class CollectionFilterBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final width = MediaQuery.sizeOf(context).width;
-    final activeCount = CollectionFilterController.activeChoiceCount(selections);
+    final activeCount = CollectionFilterController.activeChoiceCount(
+      selections,
+    );
     final activeChips = CollectionFilterController.activeChips(
       dimensions: dimensions,
       selections: selections,

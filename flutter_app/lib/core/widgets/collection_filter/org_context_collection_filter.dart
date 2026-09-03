@@ -137,8 +137,11 @@ CollectionFilterSelections orgContextSelectionsFromNameFilter(String? filter) {
   };
 }
 
-String? orgContextNameFilterFromSelections(CollectionFilterSelections selections) {
-  final selected = selections[OrgContextCollectionFilterIds.context] ?? const {};
+String? orgContextNameFilterFromSelections(
+  CollectionFilterSelections selections,
+) {
+  final selected =
+      selections[OrgContextCollectionFilterIds.context] ?? const {};
   if (selected.isEmpty) return null;
   if (selected.contains(OrgContextCollectionFilterIds.personal)) {
     return '_personal';
@@ -170,8 +173,11 @@ CollectionFilterSelections orgContextSelectionsFromIdFilter(String? filter) {
   };
 }
 
-String? orgContextIdFilterFromSelections(CollectionFilterSelections selections) {
-  final selected = selections[OrgContextCollectionFilterIds.context] ?? const {};
+String? orgContextIdFilterFromSelections(
+  CollectionFilterSelections selections,
+) {
+  final selected =
+      selections[OrgContextCollectionFilterIds.context] ?? const {};
   if (selected.isEmpty) return null;
   if (selected.contains(OrgContextCollectionFilterIds.personal)) {
     return '_personal';

@@ -296,12 +296,7 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
     final entries = entriesAsync.valueOrNull ?? [];
     final histories = historiesAsync.valueOrNull ?? {};
     final visible = _isOrg
-        ? filterOrgGlobalEvents(
-            entries,
-            scopedPets,
-            _orgFilters,
-            histories,
-          )
+        ? filterOrgGlobalEvents(entries, scopedPets, _orgFilters, histories)
         : filterGuardianGlobalEvents(
             entries,
             scopedPets,

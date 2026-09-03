@@ -4,10 +4,7 @@ import 'package:pet_profile_app/features/organization/presentation/utils/org_pet
 
 void main() {
   test('org pets refinement round-trip preserves active filters', () {
-    const filters = {
-      OrgPetsActiveFilter.name,
-      OrgPetsActiveFilter.fosteredBy,
-    };
+    const filters = {OrgPetsActiveFilter.name, OrgPetsActiveFilter.fosteredBy};
     final roundTrip = orgPetsActiveFiltersFromSelections(
       selectionsFromOrgPetsActiveFilters(filters),
     );

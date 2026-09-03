@@ -7,7 +7,12 @@ void main() {
   final l = lookupAppLocalizations(const Locale('en'));
 
   test('pet list org context round-trip preserves filter values', () {
-    for (final filter in <String?>[null, '_personal', '_fostered', 'Shelter A']) {
+    for (final filter in <String?>[
+      null,
+      '_personal',
+      '_fostered',
+      'Shelter A',
+    ]) {
       final roundTrip = orgContextNameFilterFromSelections(
         orgContextSelectionsFromNameFilter(filter),
       );
@@ -30,6 +35,9 @@ void main() {
       orgNames: const ['Shelter A'],
       showFosteredChoice: true,
     );
-    expect(dimensions.single.choices.map((c) => c.label), contains(l.myFosteredPets));
+    expect(
+      dimensions.single.choices.map((c) => c.label),
+      contains(l.myFosteredPets),
+    );
   });
 }

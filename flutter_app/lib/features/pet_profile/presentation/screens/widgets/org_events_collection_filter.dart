@@ -85,7 +85,8 @@ CollectionFilterSelections selectionsFromOrgGlobalEventsFilters(
 OrgGlobalEventsFilters orgGlobalEventsFiltersFromSelections(
   CollectionFilterSelections selections,
 ) {
-  final petSelected = selections[ManageEventsCollectionFilterIds.pet] ?? const {};
+  final petSelected =
+      selections[ManageEventsCollectionFilterIds.pet] ?? const {};
   final petIds = petSelected
       .where((id) => id.startsWith('pet:'))
       .map((id) => id.substring(4))
@@ -94,8 +95,8 @@ OrgGlobalEventsFilters orgGlobalEventsFiltersFromSelections(
   return OrgGlobalEventsFilters(
     eventFilters: manageEventsFiltersFromCoreSelections(selections),
     petIds: petIds,
-    orgNames: selections[ManageEventsCollectionFilterIds.organization] ??
-        const {},
+    orgNames:
+        selections[ManageEventsCollectionFilterIds.organization] ?? const {},
   );
 }
 

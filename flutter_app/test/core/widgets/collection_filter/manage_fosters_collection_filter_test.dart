@@ -10,9 +10,6 @@ void main() {
       );
       expect(roundTrip, filter);
     }
-    expect(
-      manageFostersApprovalFilterFromSelections(const {}),
-      isNull,
-    );
+    expect(manageFostersApprovalFilterFromSelections(const {}), isNull);
   });
 }

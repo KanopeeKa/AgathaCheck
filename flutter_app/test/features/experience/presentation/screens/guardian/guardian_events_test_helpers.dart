@@ -378,7 +378,9 @@ Future<void> tapCollectionFilterChoice(
   } else {
     final choiceKey = Key('filter_choice_${dimensionId}_$choiceId');
     if (find.byKey(choiceKey).evaluate().isEmpty) {
-      await tester.tap(find.byKey(Key('filter_dimension_trigger_$dimensionId')));
+      await tester.tap(
+        find.byKey(Key('filter_dimension_trigger_$dimensionId')),
+      );
       await tester.pumpAndSettle();
     }
     await tester.tap(find.byKey(choiceKey));

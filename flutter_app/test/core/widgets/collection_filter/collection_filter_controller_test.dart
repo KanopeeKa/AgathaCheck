@@ -39,16 +39,15 @@ void main() {
     );
 
     expect(selections['type'], {'med', 'prev'});
-    expect(
-      CollectionFilterController.activeChoiceCount(selections),
-      2,
-    );
+    expect(CollectionFilterController.activeChoiceCount(selections), 2);
   });
 
   test('selecting default clears dimension', () {
     final selections = CollectionFilterController.toggleChoice(
       dimension: typeDimension,
-      selections: const {'type': {'med'}},
+      selections: const {
+        'type': {'med'},
+      },
       choiceId: 'all',
       selected: true,
     );
@@ -57,7 +56,9 @@ void main() {
   });
 
   test('active chips skip default choices', () {
-    final selections = const {'type': {'med', 'prev'}};
+    final selections = const {
+      'type': {'med', 'prev'},
+    };
     final chips = CollectionFilterController.activeChips(
       dimensions: [typeDimension],
       selections: selections,
@@ -68,7 +69,9 @@ void main() {
   });
 
   test('removeActiveChip removes one choice', () {
-    const selections = {'type': {'med', 'prev'}};
+    const selections = {
+      'type': {'med', 'prev'},
+    };
     final chips = CollectionFilterController.activeChips(
       dimensions: [typeDimension],
       selections: selections,
