@@ -98,7 +98,8 @@ One shared widget set for Pet Care Events, org Events, vet list, org filters, an
 - [ ] Empty active state: toolbar only, no chip row
 - [ ] Live filter updates list immediately
 - [ ] Multi-select OR semantics preserved
-- [ ] Org `/o/events` uses same bar as `/pc/events` (Phase 3)
+- [x] Org `/o/events` uses same bar as `/pc/events` (Phase 3)
+- [x] Legacy pet list, health dashboard, vet list, org pets, manage-fosters approval migrated (Phase 4)
 - [ ] `pre-push-changed.sh` / widget tests green
 
 ---

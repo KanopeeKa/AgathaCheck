@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:pet_profile_app/core/widgets/collection_filter/org_context_collection_filter.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
 
-import '../../../../l10n/app_localizations.dart';
+export 'package:pet_profile_app/core/widgets/collection_filter/org_context_collection_filter.dart'
+    show PetListOrgCollectionFilterBar;
 
+/// Legacy chip row for pet list org filtering.
+@Deprecated('Use PetListOrgCollectionFilterBar')
 class OrgFilterChips extends StatelessWidget {
   final List<String> orgNames;
   final bool showFosteredChip;
@@ -20,38 +25,11 @@ class OrgFilterChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          ChoiceChip(
-            label: Text(l.allPets),
-            selected: selected == null,
-            onSelected: (_) => onSelected(null),
-          ),
-          ChoiceChip(
-            label: Text(l.myPets),
-            selected: selected == '_personal',
-            onSelected: (_) => onSelected('_personal'),
-          ),
-          if (showFosteredChip)
-            ChoiceChip(
-              label: Text(l.myFosteredPets),
-              selected: selected == '_fostered',
-              onSelected: (_) => onSelected('_fostered'),
-            ),
-          ...orgNames.map(
-            (org) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: ChoiceChip(
-                label: Text(org),
-                selected: selected == org,
-                onSelected: (_) => onSelected(org),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return PetListOrgCollectionFilterBar(
+      orgNames: orgNames,
+      showFosteredChoice: showFosteredChip,
+      selectedFilter: selected,
+      onFilterChanged: onSelected,
     );
   }
 }

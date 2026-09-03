@@ -334,17 +334,17 @@ After phase 4 merges into `cursor/collection-filter-canonical-integration-f8a2`:
 
 ```yaml
 autonomy: active
-current_phase: 3
-last_completed_phase: 2
+current_phase: 4
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 3 on branch cursor/collection-filter-events-org-f8a2"
+next_action: "continue phase 4 on branch cursor/collection-filter-rollout-f8a2"
 artifact_ref:
-  branch: cursor/collection-filter-events-org-f8a2
+  branch: cursor/collection-filter-rollout-f8a2
   plan_path: .agents/plans/collection-filter-canonical-f8a2.md
-  plan_commit: 7582e61eae12d3e314db2f5861650827f188ffe9
+  plan_commit: 62b10ef6583050abae02681cd254f7b59d64b1b4
   snapshot_path: .agents/plans/collection-filter-canonical-f8a2.snapshot.json
-  snapshot_commit: 7582e61eae12d3e314db2f5861650827f188ffe9
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/891"]
+  snapshot_commit: 62b10ef6583050abae02681cd254f7b59d64b1b4
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/893"]
 merge_commits: {}
 debt_issue_refs: []
 ```
