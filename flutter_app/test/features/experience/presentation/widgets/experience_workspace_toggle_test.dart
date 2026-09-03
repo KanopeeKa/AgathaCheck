@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
-import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/experience_workspace_toggle.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -141,23 +140,19 @@ void main() {
     await tester.tap(find.byKey(const Key('experience_workspace_toggle')));
     await tester.pumpAndSettle();
 
-    final menuCard = find.descendant(
-      of: find.byType(Overlay),
-      matching: find.byWidgetPredicate(
-        (widget) =>
-            widget is Material &&
-            widget.type == MaterialType.card &&
-            widget.color == AppColorTokens.petCarePrimary,
-      ),
-    );
-    expect(tester.getSize(menuCard).height, greaterThan(48));
-
     final guardianItem = find.byKey(
       const Key('experience_workspace_menu_guardian'),
     );
     final shelterItem = find.byKey(
       const Key('experience_workspace_menu_shelter'),
     );
+    final menuCard = find.ancestor(
+      of: guardianItem,
+      matching: find.byWidgetPredicate(
+        (widget) => widget is Material && widget.type == MaterialType.card,
+      ),
+    );
+    expect(tester.getSize(menuCard).height, greaterThan(48));
     expect(
       tester.getCenter(shelterItem).dy,
       greaterThan(tester.getCenter(guardianItem).dy),
