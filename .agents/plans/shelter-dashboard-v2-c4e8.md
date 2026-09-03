@@ -141,17 +141,17 @@ Widget tests for tasks, pin, shelter nav. Update `docs/e2e/navigation-contract.m
 
 ```yaml
 autonomy: active
-current_phase: 4
+current_phase: 6
 last_completed_phase: 3
 halt_reason: null
-next_action: "start phase 4: checkout cursor/shelter-tile-pin-c4e8"
+next_action: "continue phase 6 on branch cursor/shelter-tasks-preview-c4e8"
 artifact_ref:
-  branch: cursor/shelter-dashboard-v2-c4e8-integration-c4e8
+  branch: cursor/shelter-tasks-preview-c4e8
   plan_path: .agents/plans/shelter-dashboard-v2-c4e8.md
-  plan_commit: 883abc88e139a6f6df23ece71b77766359c5c661
+  plan_commit: fb8a850ec20b11e8665d3097e53ed247105aa4fc
   snapshot_path: .agents/plans/shelter-dashboard-v2-c4e8.snapshot.json
-  snapshot_commit: 883abc88e139a6f6df23ece71b77766359c5c661
-open_prs: []
+  snapshot_commit: fb8a850ec20b11e8665d3097e53ed247105aa4fc
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/962"]
 merge_commits: {}
 debt_issue_refs: []
 ```
@@ -164,6 +164,6 @@ debt_issue_refs: []
 | 3 | done | cursor/shelter-shell-primary-nav-c4e8 |
 | 4 | pending | cursor/shelter-tile-pin-c4e8 |
 | 5 | pending | cursor/shelter-dashboard-body-c4e8 |
-| 6 | pending | cursor/shelter-tasks-preview-c4e8 |
+| 6 | done | cursor/shelter-tasks-preview-c4e8 |
 | 7 | pending | cursor/shelter-teal-token-audit-c4e8 |
 | 8 | pending | cursor/shelter-dashboard-v2-tests-c4e8 |
