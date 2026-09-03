@@ -347,3 +347,43 @@ final _defaultEntries = [
   _fosterDefaultEntry,
   _sharedDefaultEntry,
 ];
+
+/// Opens a collection-filter control and toggles a choice.
+Future<void> tapCollectionFilterChoice(
+  WidgetTester tester, {
+  required String dimensionId,
+  required String choiceId,
+  bool inMore = false,
+}) async {
+  final mobileTrigger = find.byKey(
+    const Key('collection_filter_mobile_trigger'),
+  );
+  if (mobileTrigger.evaluate().isNotEmpty) {
+    await tester.tap(mobileTrigger);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(Key('filter_sheet_${dimensionId}_$choiceId')));
+    await tester.pumpAndSettle();
+    return;
+  }
+
+  await tester.binding.setSurfaceSize(const Size(1024, 900));
+
+  if (inMore) {
+    final choiceKey = Key('filter_more_${dimensionId}_$choiceId');
+    if (find.byKey(choiceKey).evaluate().isEmpty) {
+      await tester.tap(find.byKey(const Key('collection_filter_more_trigger')));
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.byKey(choiceKey));
+  } else {
+    final choiceKey = Key('filter_choice_${dimensionId}_$choiceId');
+    if (find.byKey(choiceKey).evaluate().isEmpty) {
+      await tester.tap(
+        find.byKey(Key('filter_dimension_trigger_$dimensionId')),
+      );
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.byKey(choiceKey));
+  }
+  await tester.pumpAndSettle();
+}

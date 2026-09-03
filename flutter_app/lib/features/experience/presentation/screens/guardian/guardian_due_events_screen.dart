@@ -66,6 +66,29 @@ class GuardianGlobalEventsFilters {
       petId == null ? petIds.isEmpty : petIds.contains(petId);
 }
 
+/// Extended filters for org `/o/events` — manage-events filters plus pet/org scoping.
+class OrgGlobalEventsFilters {
+  const OrgGlobalEventsFilters({
+    this.eventFilters = const ManageEventsFilters(),
+    this.petIds = const {},
+    this.orgNames = const {},
+  });
+
+  final ManageEventsFilters eventFilters;
+  final Set<String> petIds;
+  final Set<String> orgNames;
+
+  OrgGlobalEventsFilters copyWith({
+    ManageEventsFilters? eventFilters,
+    Set<String>? petIds,
+    Set<String>? orgNames,
+  }) => OrgGlobalEventsFilters(
+    eventFilters: eventFilters ?? this.eventFilters,
+    petIds: petIds ?? this.petIds,
+    orgNames: orgNames ?? this.orgNames,
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Provider
 // ---------------------------------------------------------------------------
@@ -78,6 +101,28 @@ final guardianGlobalEventHistoriesProvider =
       final pets = ref.watch(petListProvider).valueOrNull ?? [];
       final shellPetIds = PetListController()
           .guardianShellPets(pets)
+          .map((pet) => pet.id)
+          .toSet();
+      final scoped = entries.where((e) => shellPetIds.contains(e.petId));
+      final histories = <String, List<HealthHistoryEntry>>{};
+      await Future.wait(
+        scoped.map((entry) async {
+          histories[entry.id] = await ref.read(
+            entryHistoryProvider(entry.id).future,
+          );
+        }),
+      );
+      return histories;
+    });
+
+/// Histories for org shell-pet entries (org events list).
+final orgGlobalEventHistoriesProvider =
+    FutureProvider<Map<String, List<HealthHistoryEntry>>>((ref) async {
+      final entries =
+          ref.watch(healthEntriesNotifierProvider).valueOrNull ?? [];
+      final pets = ref.watch(petListProvider).valueOrNull ?? [];
+      final shellPetIds = PetListController()
+          .orgShellPets(pets)
           .map((pet) => pet.id)
           .toSet();
       final scoped = entries.where((e) => shellPetIds.contains(e.petId));
@@ -120,6 +165,50 @@ List<Pet> guardianGlobalEventsPets(
   }
 
   return pets;
+}
+
+/// Returns the subset of [shellPets] that match pet-id and org-name filters.
+List<Pet> orgGlobalEventsPets(
+  List<Pet> shellPets,
+  OrgGlobalEventsFilters filters,
+) {
+  var pets = shellPets;
+
+  if (filters.orgNames.isNotEmpty) {
+    pets = pets
+        .where(
+          (pet) =>
+              pet.organizationName != null &&
+              filters.orgNames.contains(pet.organizationName),
+        )
+        .toList();
+  }
+
+  if (filters.petIds.isNotEmpty) {
+    pets = pets.where((pet) => filters.petIds.contains(pet.id)).toList();
+  }
+
+  return pets;
+}
+
+/// Filters [entries] to the scoped org pets and applied event filters.
+List<HealthEntry> filterOrgGlobalEvents(
+  List<HealthEntry> entries,
+  List<Pet> scopedPets,
+  OrgGlobalEventsFilters filters,
+  Map<String, List<HealthHistoryEntry>> histories,
+) {
+  final petIds = scopedPets.map((pet) => pet.id).toSet();
+  return entries
+      .where((entry) => petIds.contains(entry.petId))
+      .where(
+        (entry) => matchesManageEventsFilters(
+          entry,
+          filters.eventFilters,
+          histories[entry.id] ?? const [],
+        ),
+      )
+      .toList();
 }
 
 /// Filters and sorts [entries] to the scoped pets and applied event filters.
@@ -173,6 +262,32 @@ class GuardianDueEventsScreen extends ConsumerWidget {
   }
 }
 
+/// Org events screen (`/o/events`) — unified list for org inventory pets.
+class OrgDueEventsScreen extends ConsumerWidget {
+  const OrgDueEventsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final petsAsync = ref.watch(petListProvider);
+
+    return petsAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, __) => _PetLoadErrorView(
+        message: l.careLoadError,
+        onRetry: () => ref.invalidate(petListProvider),
+      ),
+      data: (allPets) {
+        final shellPets = PetListController().orgShellPets(allPets);
+        return GlobalEventsList(
+          shellPets: shellPets,
+          scope: GlobalEventsListScope.organization,
+        );
+      },
+    );
+  }
+}
+
 /// Localized, retryable pet-load error shown in [GuardianDueEventsScreen].
 class _PetLoadErrorView extends StatelessWidget {
   const _PetLoadErrorView({required this.message, required this.onRetry});
@@ -215,6 +330,7 @@ class _PetLoadErrorView extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 /// Pet and cohort filter chips for the global guardian events list.
+@Deprecated('Use GuardianGlobalEventsCollectionFilterBar')
 class GuardianGlobalEventsFilterBar extends StatelessWidget {
   const GuardianGlobalEventsFilterBar({
     super.key,

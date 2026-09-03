@@ -1951,6 +1951,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgPetsFiltersLabel => 'Filters';
 
   @override
+  String get collectionFilterMore => 'More filters';
+
+  @override
+  String get collectionFilterClearAll => 'Clear all filters';
+
+  @override
+  String collectionFiltersWithCount(int count) {
+    return 'Filters $count';
+  }
+
+  @override
+  String get collectionFilterSkippedHidden => 'Skipped hidden';
+
+  @override
+  String get eventFilterTypeLabel => 'Type';
+
+  @override
+  String get eventFilterStatusLabel => 'Status';
+
+  @override
+  String get eventFilterRecurrenceLabel => 'Recurrence';
+
+  @override
+  String get eventFilterSkippedLabel => 'Skipped';
+
+  @override
+  String get eventFilterCohortLabel => 'Ownership';
+
+  @override
   String get orgPetsFilterName => 'Name';
 
   @override

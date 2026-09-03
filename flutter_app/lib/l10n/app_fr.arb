@@ -664,6 +664,20 @@
   "orgPetsTabAdopted": "Adoptés",
   "orgPetsTabAll": "Tous",
   "orgPetsFiltersLabel": "Filtres",
+  "collectionFilterMore": "Plus de filtres",
+  "collectionFilterClearAll": "Effacer tous les filtres",
+  "collectionFiltersWithCount": "Filtres {count}",
+  "@collectionFiltersWithCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "collectionFilterSkippedHidden": "Ignorés masqués",
+  "eventFilterTypeLabel": "Type",
+  "eventFilterStatusLabel": "Statut",
+  "eventFilterRecurrenceLabel": "Récurrence",
+  "eventFilterSkippedLabel": "Ignorés",
+  "eventFilterCohortLabel": "Contexte",
   "orgPetsFilterName": "Nom",
   "orgPetsFilterFosteredBy": "Accueilli par",
   "orgPetsFilterShadow": "Ombre",

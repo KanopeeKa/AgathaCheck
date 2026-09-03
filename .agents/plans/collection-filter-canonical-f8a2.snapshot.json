@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "plan_id": "collection-filter-canonical-f8a2",
+  "approved_at": "2026-09-03T07:36:00Z",
+  "approved_by": "user chat 2026-09-03 (locked filter UX decisions + execute-plan authorization)",
+  "approved_until": "2026-09-05T07:36:00Z",
+  "content_hash": "sha256:b38c7acbcda2375c06aec2f9fedeb7e9800be119c472d374f94f8919144ef887",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/collection-filter-canonical-integration-f8a2",
+  "control_issue": 884,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Design spec + canonical widgets",
+      "branch": "cursor/collection-filter-foundation-f8a2",
+      "allowed_paths": [
+        "flutter_app/lib/core/widgets/collection_filter/**",
+        "flutter_app/test/core/widgets/collection_filter/**",
+        "docs/design/collection-filter.md",
+        "docs/design/system.md",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/collection-filter-canonical-f8a2.md",
+        ".agents/plans/collection-filter-canonical-f8a2.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/888",
+      "pr_head_sha": "fa49aecff58c885f4b991226b1ddd75937394432"
+    },
+    {
+      "id": "2",
+      "title": "Pet Care global Events",
+      "branch": "cursor/collection-filter-pc-events-f8a2",
+      "allowed_paths": [
+        "flutter_app/lib/core/widgets/collection_filter/**",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/global_events_list.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_due_events_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_filters.dart",
+        "flutter_app/test/features/experience/presentation/screens/guardian/**",
+        "flutter_app/test/bdd/features/guardian_dashboard.feature",
+        "e2e/playwright/pages/health-dashboard.page.ts",
+        "e2e/playwright/tests/health.tracking.spec.ts",
+        "e2e/playwright/support/flutter.ts",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/collection-filter-canonical-f8a2.md",
+        ".agents/plans/collection-filter-canonical-f8a2.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/890",
+      "pr_head_sha": "918fd7d875a2b975e87d06a0bd69514c8b3c4764"
+    },
+    {
+      "id": "3",
+      "title": "Per-pet Events + org Events",
+      "branch": "cursor/collection-filter-events-org-f8a2",
+      "allowed_paths": [
+        "flutter_app/lib/core/widgets/collection_filter/**",
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_manage_events_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_filter_bar.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_event_entry_list.dart",
+        "flutter_app/lib/core/router/experience_routes.dart",
+        "flutter_app/lib/features/health_tracking/presentation/screens/health_dashboard_screen.dart",
+        "flutter_app/lib/features/health_tracking/domain/health_events_scope.dart",
+        "flutter_app/test/features/pet_profile/presentation/screens/pet_manage_events_screen_test.dart",
+        "flutter_app/test/core/router/**",
+        "e2e/playwright/pages/health-dashboard.page.ts",
+        "e2e/playwright/tests/organisation.pet.management.spec.ts",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/collection-filter-canonical-f8a2.md",
+        ".agents/plans/collection-filter-canonical-f8a2.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/891",
+      "pr_head_sha": "ddf38ec9"
+    },
+    {
+      "id": "4",
+      "title": "Secondary screens + deprecation cleanup",
+      "branch": "cursor/collection-filter-rollout-f8a2",
+      "allowed_paths": [
+        "flutter_app/lib/core/widgets/collection_filter/**",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/org_filter_chips.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/health_dashboard/health_dashboard_org_filter.dart",
+        "flutter_app/lib/features/vet/presentation/widgets/vet_filter_bar.dart",
+        "flutter_app/lib/features/vet/presentation/screens/vet_list_screen.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/org_pets/org_pets_filter_row.dart",
+        "flutter_app/lib/features/organization/presentation/screens/manage_fosters/manage_fosters_screen.dart",
+        "flutter_app/test/features/pet_profile/presentation/widgets/org_filter_chips_test.dart",
+        "flutter_app/test/features/health_tracking/presentation/widgets/health_dashboard/health_dashboard_org_filter_test.dart",
+        "flutter_app/test/bdd/features/pet_screen_filters.feature",
+        "e2e/playwright/tests/organisation.pet-filters.spec.ts",
+        "e2e/playwright/tests/health.tracking.spec.ts",
+        "docs/design/collection-filter.md",
+        "docs/design/system.md",
+        ".agents/plans/collection-filter-canonical-f8a2.md",
+        ".agents/plans/collection-filter-canonical-f8a2.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/893",
+      "pr_head_sha": "d0c52c19"
+    }
+  ]
+}

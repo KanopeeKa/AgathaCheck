@@ -4,6 +4,7 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'manage_events_filters.dart';
 
 /// Filter chips for the manage-events unified list.
+@Deprecated('Use CollectionFilterBar via manage_events_collection_filter.dart')
 class ManageEventsFilterBar extends StatelessWidget {
   const ManageEventsFilterBar({
     super.key,

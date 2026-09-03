@@ -29,11 +29,17 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(FilterChip), findsNothing);
+    expect(
+      find.byKey(const Key('health_dashboard_org_collection_filter_bar')),
+      findsNothing,
+    );
   });
 
-  testWidgets('renders chips and reports selection changes', (tester) async {
+  testWidgets('renders filter bar and reports selection changes', (
+    tester,
+  ) async {
     String? selected;
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
     await tester.pumpWidget(
       _wrap(
         HealthDashboardOrgFilter(
@@ -54,11 +60,18 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(FilterChip), findsNWidgets(3));
-    expect(find.text('Shelter A'), findsOneWidget);
-    expect(find.byIcon(Icons.business), findsOneWidget);
+    expect(
+      find.byKey(const Key('health_dashboard_org_collection_filter_bar')),
+      findsOneWidget,
+    );
 
-    await tester.tap(find.text('Shelter A'));
+    await tester.tap(find.byKey(const Key('filter_dimension_trigger_context')));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const Key('filter_choice_context_orgName:Shelter A')),
+    );
+    await tester.pumpAndSettle();
+
     expect(selected, 'Shelter A');
   });
 }

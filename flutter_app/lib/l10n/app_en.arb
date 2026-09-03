@@ -711,6 +711,20 @@
   "orgPetsTabAdopted": "Adopted",
   "orgPetsTabAll": "All",
   "orgPetsFiltersLabel": "Filters",
+  "collectionFilterMore": "More filters",
+  "collectionFilterClearAll": "Clear all filters",
+  "collectionFiltersWithCount": "Filters {count}",
+  "@collectionFiltersWithCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "collectionFilterSkippedHidden": "Skipped hidden",
+  "eventFilterTypeLabel": "Type",
+  "eventFilterStatusLabel": "Status",
+  "eventFilterRecurrenceLabel": "Recurrence",
+  "eventFilterSkippedLabel": "Skipped",
+  "eventFilterCohortLabel": "Ownership",
   "orgPetsFilterName": "Name",
   "orgPetsFilterFosteredBy": "Fostered by",
   "orgPetsFilterShadow": "Shadow",
