@@ -1,6 +1,7 @@
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
-import '../../../../pet_profile/presentation/widgets/pet_card.dart';
+import '../../../../pet_profile/presentation/widgets/pet_card.dart' show sortPetsByCreatedAt;
+import '../../../../pet_profile/presentation/widgets/pet_tile_status_line.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 
 /// Relationship wording is intentionally a presentation concern. Eligibility
@@ -180,6 +181,20 @@ GuardianTodayScreenState guardianTodayScreenState({
       : GuardianTodayScreenState.allClear;
 }
 
+/// Selects all active shell pets for the dashboard rail, attention-first when
+/// [careSummary] is available.
+List<Pet> guardianTodayRailPets(
+  List<Pet> allPets,
+  PetListController controller,
+  GuardianTodayCareSummary? careSummary,
+) {
+  return _guardianDashboardShellPetsSorted(
+    allPets,
+    controller,
+    careSummary,
+  );
+}
+
 /// Selects a stable, attention-first dashboard preview without changing any
 /// ownership or visibility decisions made by [PetListController].
 List<Pet> guardianTodayPreviewPets(
@@ -187,18 +202,24 @@ List<Pet> guardianTodayPreviewPets(
   PetListController controller,
   GuardianTodayCareSummary careSummary,
 ) {
-  return guardianTodayPetPreview(allPets, controller, careSummary).visiblePets;
+  return guardianTodayRailPets(allPets, controller, careSummary);
 }
 
-GuardianTodayPetPreview guardianTodayPetPreview(
+List<Pet> _guardianDashboardShellPetsSorted(
   List<Pet> allPets,
   PetListController controller,
-  GuardianTodayCareSummary careSummary,
+  GuardianTodayCareSummary? careSummary,
 ) {
   final shellPets = controller
       .guardianShellPets(allPets)
       .where((pet) => !pet.passedAway)
       .toList(growable: false);
+
+  if (careSummary == null) {
+    sortPetsByCreatedAt(shellPets);
+    return List<Pet>.unmodifiable(shellPets);
+  }
+
   final priorityByPetId = <String, int>{};
   for (final entry in careSummary.dueEntries) {
     final priority = switch (_urgencyForEntry(entry, careSummary)) {
@@ -221,14 +242,24 @@ GuardianTodayPetPreview guardianTodayPetPreview(
       return priorityOrder != 0 ? priorityOrder : a.$1.compareTo(b.$1);
     });
 
+  return List<Pet>.unmodifiable(indexed.map((item) => item.$2));
+}
+
+GuardianTodayPetPreview guardianTodayPetPreview(
+  List<Pet> allPets,
+  PetListController controller,
+  GuardianTodayCareSummary careSummary,
+) {
+  final sorted = _guardianDashboardShellPetsSorted(
+    allPets,
+    controller,
+    careSummary,
+  );
+  final visible = sorted.take(GuardianTodayPetPreview.visibleLimit).toList();
   return GuardianTodayPetPreview._(
-    visiblePets: List<Pet>.unmodifiable(
-      indexed
-          .take(GuardianTodayPetPreview.visibleLimit)
-          .map((indexedPet) => indexedPet.$2),
-    ),
-    overflowCount: (indexed.length - GuardianTodayPetPreview.visibleLimit)
-        .clamp(0, indexed.length)
+    visiblePets: List<Pet>.unmodifiable(visible),
+    overflowCount: (sorted.length - GuardianTodayPetPreview.visibleLimit)
+        .clamp(0, sorted.length)
         .toInt(),
   );
 }
@@ -252,6 +283,15 @@ GuardianTodayPetCareState guardianTodayPetCareState(
 }
 
 enum GuardianTodayPetCareState { overdue, dueToday, upcoming, clear }
+
+PetTileCareUrgency petTileCareUrgencyFor(GuardianTodayPetCareState state) {
+  return switch (state) {
+    GuardianTodayPetCareState.overdue => PetTileCareUrgency.overdue,
+    GuardianTodayPetCareState.dueToday => PetTileCareUrgency.dueToday,
+    GuardianTodayPetCareState.upcoming => PetTileCareUrgency.upcoming,
+    GuardianTodayPetCareState.clear => PetTileCareUrgency.clear,
+  };
+}
 
 GuardianTodayCareUrgency? _urgencyForEntry(
   HealthEntry entry,

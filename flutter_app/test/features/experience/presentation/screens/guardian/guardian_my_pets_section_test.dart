@@ -4,8 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/guardian/guardian_dashboard_helpers.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/guardian/guardian_my_pets_section.dart';
-import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_dashboard_pet_card.dart';
-import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_shell_shared_pet_card.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/unified_pet_tile.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_list_controller.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -118,14 +117,15 @@ void main() {
         buildSection(pets: pets, previewPets: pets, previewOverflowCount: 0),
       );
 
-      expect(find.byType(GuardianDashboardPetCard), findsNWidgets(count));
-      expect(find.text('All pets'), findsNothing);
+      expect(find.byType(UnifiedPetTile), findsNWidgets(count));
+      expect(find.text('My Pets'), findsOneWidget);
+      expect(find.text('All pets'), findsOneWidget);
       expect(find.text('Add Pet'), findsOneWidget);
       expect(tester.takeException(), isNull);
     }
   });
 
-  testWidgets('compact preview caps at four and exposes All Pets on overflow', (
+  testWidgets('compact rail shows all preview pets and always exposes All pets', (
     tester,
   ) async {
     final allPets = List.generate(
@@ -136,13 +136,13 @@ void main() {
     await tester.pumpWidget(
       buildSection(
         pets: allPets,
-        previewPets: allPets.take(4).toList(),
-        previewOverflowCount: 1,
+        previewPets: allPets,
+        previewOverflowCount: 0,
       ),
     );
 
-    expect(find.byType(GuardianDashboardPetCard), findsNWidgets(4));
-    expect(find.text('Pet 4'), findsNothing);
+    expect(find.byType(UnifiedPetTile), findsNWidgets(5));
+    expect(find.text('Pet 4'), findsOneWidget);
     expect(find.text('All pets'), findsOneWidget);
   });
 
@@ -160,18 +160,18 @@ void main() {
         buildSection(pets: pets, previewPets: pets, previewOverflowCount: 0),
       );
 
-      final cards = find.byType(GuardianDashboardPetCard);
+      final cards = find.byType(UnifiedPetTile);
       expect(
         tester.getTopLeft(cards.at(1)).dx,
         greaterThan(tester.getTopLeft(cards.at(0)).dx),
       );
-      expect(tester.getSize(cards.first).width, lessThanOrEqualTo(168));
+      expect(tester.getSize(cards.first).width, lessThanOrEqualTo(172));
       expect(tester.takeException(), isNull);
     }
     addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 
-  testWidgets('shared compact cards use shared wrapper without swipe hide', (
+  testWidgets('shared pets render as unified tiles without swipe hide', (
     tester,
   ) async {
     const shared = Pet(
@@ -188,7 +188,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(GuardianShellSharedPetCard), findsOneWidget);
+    expect(find.byType(UnifiedPetTile), findsOneWidget);
     expect(find.byKey(const Key('hide_shell_shared_shared-1')), findsNothing);
   });
 }

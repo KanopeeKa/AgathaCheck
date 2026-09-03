@@ -60,6 +60,7 @@ class UnifiedPetTile extends StatelessWidget {
                   )
                 : PetTileDimensions.widthFor(MediaQuery.sizeOf(context).width));
         final tileHeight = height ?? PetTileDimensions.heightFor(context);
+        final flex = PetTileDimensions.flexFor(context);
 
         return SizedBox(
           width: tileWidth,
@@ -90,23 +91,27 @@ class UnifiedPetTile extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Expanded(
-                              flex: 2,
+                              flex: flex.photo,
                               child: _PhotoArea(pet: pet),
                             ),
                             Expanded(
-                              flex: 1,
+                              flex: flex.text,
                               child: Padding(
-                                padding: const EdgeInsets.fromLTRB(8, 2, 8, 6),
+                                padding:
+                                    const EdgeInsets.fromLTRB(8, 2, 8, 4),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
                                       pet.name,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: theme.textTheme.titleSmall
-                                          ?.copyWith(fontWeight: FontWeight.w700),
+                                          ?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
                                     if (resolvedStatus.label.isNotEmpty) ...[
                                       const SizedBox(height: 2),

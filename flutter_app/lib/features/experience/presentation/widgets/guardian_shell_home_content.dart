@@ -34,12 +34,7 @@ class GuardianShellHomeContent extends ConsumerWidget {
             entries: entriesAsync.valueOrNull!,
             pets: shellPets,
           );
-    final previewPets = careSummary == null
-        ? shellPets
-              .where((pet) => !pet.passedAway)
-              .take(4)
-              .toList(growable: false)
-        : guardianTodayPreviewPets(allPets, controller, careSummary);
+    final previewPets = guardianTodayRailPets(allPets, controller, careSummary);
     final baseTheme = Theme.of(context);
     final deskTheme = baseTheme.copyWith(
       colorScheme: baseTheme.colorScheme.copyWith(
