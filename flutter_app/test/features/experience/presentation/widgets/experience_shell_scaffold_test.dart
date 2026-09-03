@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/widgets/app_logo_title.dart';
+import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
@@ -894,16 +895,15 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('All pets'), findsOneWidget);
-        final appBarFinder = find.byType(AppBar);
         expect(
-          find.descendant(
-            of: appBarFinder,
-            matching: find.byType(AppLogoTitle),
-          ),
-          findsNothing,
+          find.byKey(const Key('experience_content_chrome')),
+          findsOneWidget,
         );
-        final appBar = tester.widget<AppBar>(appBarFinder);
-        expect(appBar.centerTitle, isFalse);
+        expect(find.byType(AppBar), findsNothing);
+        final chrome = tester.widget<Material>(
+          find.byKey(const Key('experience_content_chrome')),
+        );
+        expect(chrome.color, AppColorTokens.background);
       },
     );
 

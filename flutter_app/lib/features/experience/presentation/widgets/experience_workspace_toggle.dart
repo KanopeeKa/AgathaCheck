@@ -97,7 +97,7 @@ class ExperienceWorkspaceToggle extends ConsumerWidget {
                         ).clamp(maxScaleFactor: 1.15),
                         style: TextStyle(
                           color: foreground,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
