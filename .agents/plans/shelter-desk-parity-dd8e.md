@@ -55,6 +55,23 @@ Widget tests + `docs/e2e/navigation-contract.md` shelter hub notes.
 
 ## Runtime state
 
+```yaml
+autonomy: active
+current_phase: 0
+last_completed_phase: null
+halt_reason: null
+next_action: "babysit+ merge phase 0 PR to integration"
+artifact_ref:
+  branch: cursor/shelter-desk-framing-decisions-dd8e
+  plan_path: .agents/plans/shelter-desk-parity-dd8e.md
+  plan_commit: pending
+  snapshot_path: .agents/plans/shelter-desk-parity-dd8e.snapshot.json
+  snapshot_commit: pending
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```
+
 | Phase | Status | Branch |
 |-------|--------|--------|
 | 0 | pending | cursor/shelter-desk-framing-decisions-dd8e |

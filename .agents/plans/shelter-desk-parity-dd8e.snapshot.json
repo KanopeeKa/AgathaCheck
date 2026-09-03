@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T19:48:00Z",
   "approved_by": "user chat 2026-09-03 (/execute-plan shelter desk parity phases, teal #EAF5F5/#1D7C84)",
   "approved_until": "2026-09-05T19:48:00Z",
-  "content_hash": "sha256:2b3e119623767090a2d85452a38bb58b704e46090d1dd2d4bf64ea58456d30a6",
+  "content_hash": "sha256:e30dbaa60af6134119d58d4a671d4062c9e68d6e20912c3c25576caefa787b12",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/shelter-desk-parity-dd8e-integration-dd8e",
@@ -35,7 +35,7 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
