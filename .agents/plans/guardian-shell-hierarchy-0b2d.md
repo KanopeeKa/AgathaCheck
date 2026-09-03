@@ -119,17 +119,17 @@ Repeated product labels compete with workspace scope and navigation, making desk
 
 ```yaml
 autonomy: active
-current_phase: 5
-last_completed_phase: 4
+current_phase: null
+last_completed_phase: 5
 halt_reason: null
-next_action: "continue phase 5 on branch cursor/shell-hierarchy-e2e-0b2d"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/shell-hierarchy-e2e-0b2d
+  branch: cursor/guardian-shell-hierarchy-0b2d-integration-0b2d
   plan_path: .agents/plans/guardian-shell-hierarchy-0b2d.md
-  plan_commit: 01aba426226c8464de1fd410c4cfd69423bd3780
+  plan_commit: 0f524d0a0d1d0185502b82b30bd3e0f4a0733773
   snapshot_path: .agents/plans/guardian-shell-hierarchy-0b2d.snapshot.json
-  snapshot_commit: 01aba426226c8464de1fd410c4cfd69423bd3780
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/887"]
+  snapshot_commit: 0f524d0a0d1d0185502b82b30bd3e0f4a0733773
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
