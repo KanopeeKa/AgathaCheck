@@ -37,7 +37,7 @@ ExperienceEligibility _orgOnly() => ExperienceEligibilityRules.compute(
 
 void main() {
   group('resolvePostLoginPath', () {
-    test('guardian-only user lands on guardian home when onboarding done', () {
+    test('guardian user with pets lands on /pc/home when onboarding done', () {
       expect(
         resolvePostLoginPath(
           eligibility: _guardianOnly(),
@@ -48,166 +48,48 @@ void main() {
       );
     });
 
-    test('guardian-only user with no pets goes to FTUE', () {
+    test('empty account lands on /pc/home when guardian onboarding done', () {
       expect(
         resolvePostLoginPath(
           eligibility: _guardianOnly(),
           pets: const [],
-          guardianOnboardingCompleted: false,
-        ),
-        '/app/choose',
-      );
-    });
-
-    test('guardian-only user with no pets and pending invites skips FTUE', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _guardianOnly(),
-          pets: const [],
-          guardianOnboardingCompleted: false,
-          hasPendingOrgInvites: true,
-        ),
-        '/pc/onboarding',
-      );
-    });
-
-    test('org-only user with no pets lands on shelter home', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _orgOnly(),
-          pets: const [],
-          orgs: const [
-            Organization(
-              id: 'o1',
-              name: 'Rescue',
-              type: OrganizationType.charity,
-            ),
-          ],
-          orgOnboardingCompleted: true,
-        ),
-        '/o/home',
-      );
-    });
-
-    test(
-      'dual-role user with owned pets goes to guardian home not onboarding',
-      () {
-        expect(
-          resolvePostLoginPath(
-            eligibility: _dual(),
-            pets: const [
-              Pet(id: '1', name: 'Mine', species: 'Cat'),
-              Pet(
-                id: '2',
-                name: 'Shelter',
-                species: 'Dog',
-                organizationId: 'o1',
-                organizationName: 'Rescue',
-              ),
-            ],
-            guardianOnboardingCompleted: false,
-          ),
-          '/pc/home',
-        );
-      },
-    );
-
-    test('org-only user with inventory pet lands on organisation home', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _orgOnly(),
-          pets: const [
-            Pet(
-              id: '2',
-              name: 'Shelter',
-              species: 'Dog',
-              organizationId: 'o1',
-              organizationName: 'Rescue',
-            ),
-          ],
-          orgs: const [
-            Organization(
-              id: 'o1',
-              name: 'Rescue',
-              type: OrganizationType.charity,
-            ),
-          ],
-          orgOnboardingCompleted: true,
-        ),
-        '/o/home',
-      );
-    });
-
-    test('org-only user with no inventory pets goes to onboarding', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _orgOnly(),
-          pets: const [],
-          orgs: const [
-            Organization(
-              id: 'o1',
-              name: 'Rescue',
-              type: OrganizationType.charity,
-            ),
-          ],
-          orgOnboardingCompleted: false,
-        ),
-        '/o/onboarding',
-      );
-    });
-
-    test('org-only user lands on organisation home', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _orgOnly(),
-          pets: const [
-            Pet(
-              id: '2',
-              name: 'Shelter',
-              species: 'Dog',
-              organizationId: 'o1',
-              organizationName: 'Rescue',
-            ),
-          ],
-          orgs: const [
-            Organization(
-              id: 'o1',
-              name: 'Rescue',
-              type: OrganizationType.charity,
-            ),
-          ],
-        ),
-        '/o/home',
-      );
-    });
-
-    test('dual-role user falls back to guardian when pets exist', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _dual(),
-          pets: const [
-            Pet(id: '1', name: 'Mine', species: 'Cat'),
-            Pet(
-              id: '2',
-              name: 'Shelter',
-              species: 'Dog',
-              organizationId: 'o1',
-              organizationName: 'Rescue',
-            ),
-          ],
-          orgs: const [
-            Organization(
-              id: 'o1',
-              name: 'Rescue',
-              type: OrganizationType.charity,
-            ),
-          ],
+          guardianOnboardingCompleted: true,
         ),
         '/pc/home',
       );
     });
 
-    test('dual-role user restores last organisation section when set', () {
+    test('empty account goes to guardian onboarding when not completed', () {
+      expect(
+        resolvePostLoginPath(
+          eligibility: _guardianOnly(),
+          pets: const [],
+          guardianOnboardingCompleted: false,
+        ),
+        '/pc/onboarding',
+      );
+    });
+
+    test('org-only user lands on /pc/home when guardian onboarding done', () {
+      expect(
+        resolvePostLoginPath(
+          eligibility: _orgOnly(),
+          pets: const [],
+          orgs: const [
+            Organization(
+              id: 'o1',
+              name: 'Rescue',
+              type: OrganizationType.charity,
+            ),
+          ],
+          guardianOnboardingCompleted: true,
+          orgOnboardingCompleted: true,
+        ),
+        '/pc/home',
+      );
+    });
+
+    test('dual-role user always lands on /pc/home when onboarding done', () {
       expect(
         resolvePostLoginPath(
           eligibility: _dual(),
@@ -228,13 +110,13 @@ void main() {
               type: OrganizationType.charity,
             ),
           ],
-          lastAppSection: AppExperience.organization,
+          guardianOnboardingCompleted: true,
         ),
-        '/o/home',
+        '/pc/home',
       );
     });
 
-    test('dual-role user restores last guardian section when set', () {
+    test('does not restore last organisation section', () {
       expect(
         resolvePostLoginPath(
           eligibility: _dual(),
@@ -246,14 +128,10 @@ void main() {
               type: OrganizationType.charity,
             ),
           ],
-          lastAppSection: AppExperience.petCare,
+          guardianOnboardingCompleted: true,
         ),
         '/pc/home',
       );
-    });
-
-    test('guardian-only empty account goes to FTUE', () {
-      expect(resolvePostLoginPath(eligibility: _guardianOnly()), '/app/choose');
     });
   });
 }

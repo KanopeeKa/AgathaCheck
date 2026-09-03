@@ -38,13 +38,17 @@ void main() {
       initialLocation: '/o/invite',
       routes: [
         GoRoute(
+          path: '/o/orgs',
+          builder: (context, state) => const Scaffold(body: Text('org orgs')),
+        ),
+        GoRoute(
           path: '/o/home',
           builder: (context, state) => const Scaffold(body: Text('org home')),
         ),
         GoRoute(
           path: '/o/invite',
           builder: (context, state) => const FosterPortalRouteGuard(
-            fallbackPath: '/o/home',
+            fallbackPath: '/o/orgs',
             child: Scaffold(body: Text('invite screen')),
           ),
         ),
@@ -65,7 +69,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.text('invite screen'), findsNothing);
-    expect(find.text('org home'), findsOneWidget);
+    expect(find.text('org orgs'), findsOneWidget);
   });
 
   testWidgets('allows org admin through blocked route', (tester) async {
@@ -73,13 +77,17 @@ void main() {
       initialLocation: '/o/invite',
       routes: [
         GoRoute(
+          path: '/o/orgs',
+          builder: (context, state) => const Scaffold(body: Text('org orgs')),
+        ),
+        GoRoute(
           path: '/o/home',
           builder: (context, state) => const Scaffold(body: Text('org home')),
         ),
         GoRoute(
           path: '/o/invite',
           builder: (context, state) => const FosterPortalRouteGuard(
-            fallbackPath: '/o/home',
+            fallbackPath: '/o/orgs',
             child: Scaffold(body: Text('invite screen')),
           ),
         ),

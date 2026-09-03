@@ -55,7 +55,7 @@ export class ExperiencePage {
 
   async chooseOrganization(_remember = false): Promise<void> {
     await this.selectOrganizationCard();
-    await waitForFlutterRoutePattern(this.page, /\/o\/(home|onboarding)/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/o\/(orgs|onboarding)/, 30_000);
   }
 
   /** After navigation reversal: no Home button; hamburger on root, bell always present. */
@@ -131,46 +131,37 @@ export class ExperiencePage {
   async gotoGuardianSettings(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await waitForFlutterRoute(this.page, '/account');
-    await this.expectShowOrganisationSectionVisible();
+    await this.expectAccountPreferencesVisible();
   }
 
   async openGuardianSettingsFromDrawer(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await this.gotoAccountFromDrawer();
-    await this.expectShowOrganisationSectionVisible();
+    await this.expectAccountPreferencesVisible();
   }
 
-  async expectShowOrganisationSectionVisible(): Promise<void> {
+  async expectAccountPreferencesVisible(): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const toggle = this.page
-        .locator('[flt-semantics-identifier="show_organisation_section_toggle"]')
-        .or(this.page.getByText('Show shelters section', { exact: true }));
-      await expect(toggle.first()).toBeVisible();
+      await expect(
+        this.page.getByText(/Preferences|Préférences/i).first(),
+      ).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
 
-  async enableShowOrganisationSection(): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    const toggle = this.page
-      .locator('[flt-semantics-identifier="show_organisation_section_toggle"]')
-      .or(this.page.getByRole('switch', { name: /Show shelters section/i }));
-    await toggle.first().click();
-    await refreshFlutterAccessibility(this.page);
-    await this.page.waitForTimeout(400);
+  /** @deprecated D-v5-WORKSPACE-1 — shelter section is always visible; toggle removed. */
+  async expectShowOrganisationSectionVisible(): Promise<void> {
+    await this.expectAccountPreferencesVisible();
   }
 
+  /** @deprecated D-v5-WORKSPACE-1 — no Account toggle. */
+  async enableShowOrganisationSection(): Promise<void> {
+    // no-op: shelter workspace is always available
+  }
+
+  /** @deprecated D-v5-WORKSPACE-1 — toggle removed. */
   async expectShowOrganisationToggleLockedOn(): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await expect(
-      this.page.getByText(
-        'Shelters stay visible because you belong to at least one shelter.',
-      ),
-    ).toBeVisible({ timeout: 15_000 });
-    const toggle = this.page.getByRole('switch', { name: /Show shelters section/i });
-    await expect(toggle).toBeVisible();
-    await expect(toggle).toBeChecked();
-    await expect(toggle).toBeDisabled();
+    await this.expectAccountPreferencesVisible();
   }
 
   /** @deprecated Default-experience radios removed — use last-section routing instead. */
@@ -184,28 +175,7 @@ export class ExperiencePage {
   }
 
   async expectDrawerWithoutOrganisation(): Promise<void> {
-    const toggle = workspaceToggleLocator(this.page);
-    if (await toggle.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      await toggle.click();
-      await refreshFlutterAccessibility(this.page);
-      await expect(
-        this.page.getByRole('menuitem', { name: /^Shelter$|^Refuge$/i }),
-      ).not.toBeVisible();
-      await expect(
-        this.page.getByRole('menuitem', { name: /^Pet Care$|^Suivi$/i }),
-      ).toBeVisible();
-      await this.page.keyboard.press('Escape');
-      if (await isGuardianBottomNavVisible(this.page)) {
-        await expect(guardianAccountTabLocator(this.page)).toBeVisible();
-      }
-      return;
-    }
-
-    await openExperienceDrawer(this.page);
-    await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByRole('button', { name: /^Pet Care\b/i })).toBeVisible();
-    await expect(this.page.getByRole('button', { name: /^Shelters\b/i })).not.toBeVisible();
-    await expect(this.page.getByRole('button', { name: /^Account\b/i })).toBeVisible();
+    await this.expectUnifiedDrawerItems();
   }
 
   /** Assert workspace switcher (or legacy drawer) exposes the expected section entries. */

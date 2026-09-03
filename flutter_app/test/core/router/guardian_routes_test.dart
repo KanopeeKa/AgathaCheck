@@ -550,12 +550,9 @@ void main() {
 
       expect(find.byIcon(Icons.monitor_weight_outlined), findsOneWidget);
       await tester.tap(find.byIcon(Icons.monitor_weight_outlined));
-      await _settle(tester);
+      await tester.pumpAndSettle();
 
-      expect(
-        router.routerDelegate.currentConfiguration.uri.path,
-        '/pet/pet-w1',
-      );
+      expect(find.text('pet-pet-w1'), findsOneWidget);
     });
 
     testWidgets(

@@ -168,7 +168,7 @@ export async function expectHomeShellVisible(
 
 /**
  * Wait for home after mutations that `context.go('/')` (delete pet, mark passed away).
- * Flutter redirects `/` → `/app/resolve` → `/pc/home`, `/o/home`, or `/app/choose` when
+ * Flutter redirects `/` → `/app/resolve` → `/pc/home` (D-v5-WORKSPACE-2).
  * the account has no pets left.
  */
 export async function waitForHomeAfterMutation(
@@ -492,7 +492,7 @@ async function openExperienceDrawerViaEdgeSwipe(page: Page): Promise<void> {
   await refreshFlutterAccessibility(page);
 }
 
-/** True when the post-split experience shell (`/pc/home` or `/o/home`) is visible. */
+/** True when the post-split experience shell (`/pc/home` or `/o/orgs`) is visible. */
 export async function isExperienceShellVisible(page: Page): Promise<boolean> {
   return experienceShellNavLocator(page)
     .first()
@@ -717,7 +717,7 @@ export function petCardNamePattern(petName: string): RegExp {
   return new RegExp(`(?:Pet:\\s*${name}|^${name},)`, 'i');
 }
 
-/** Org inventory on `/o/home` — "Pet: Max, Rescue Hearts, dog". */
+/** Org inventory on `/o/orgs` — "Pet: Max, Rescue Hearts, dog". */
 export function petListCardWithOrgPattern(petName: string, orgName: string): RegExp {
   return new RegExp(
     `Pet:\\s*${escapeRegExp(petName)}.*${escapeRegExp(orgName)}`,

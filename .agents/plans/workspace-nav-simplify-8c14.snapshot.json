@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "plan_id": "workspace-nav-simplify-8c14",
+  "approved_at": "2026-09-03T10:50:00Z",
+  "approved_by": "user chat 2026-09-03 (Option A, /execute-plan + /ui-design-deep, full roadmap)",
+  "approved_until": "2026-09-05T10:50:00Z",
+  "content_hash": "sha256:b8c41219de47f191cd594dbdcf1456a435df153bce9e449e7df8864e01a2dbe6",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/workspace-nav-simplify-8c14-integration-8c14",
+  "control_issue": 897,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Always-visible Shelter workspace",
+      "branch": "cursor/workspace-nav-always-shelter-8c14",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/test/features/experience/**",
+        ".agents/plans/workspace-nav-simplify-8c14.md",
+        ".agents/plans/workspace-nav-simplify-8c14.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/898",
+      "pr_head_sha": "48ae80a4604fb2e82c124fb88a0c0665e1ff0b93"
+    },
+    {
+      "id": "2",
+      "title": "Route canon and fostering dashboard copy",
+      "branch": "cursor/workspace-nav-routes-copy-8c14",
+      "allowed_paths": [
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/assets/dashboard/**",
+        "flutter_app/test/**",
+        ".agents/plans/workspace-nav-simplify-8c14.md",
+        ".agents/plans/workspace-nav-simplify-8c14.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/899",
+      "pr_head_sha": "ea48a25e906cd358b32eb064c08a75dcf142397a"
+    },
+    {
+      "id": "3",
+      "title": "Single login landing on /pc/home",
+      "branch": "cursor/workspace-nav-resolve-8c14",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/test/features/experience/**",
+        ".agents/plans/workspace-nav-simplify-8c14.md",
+        ".agents/plans/workspace-nav-simplify-8c14.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/904",
+      "pr_head_sha": "6a2e58d98ea7c0043dd91fc4164a973f796fb734"
+    },
+    {
+      "id": "4",
+      "title": "Global workspace switcher",
+      "branch": "cursor/workspace-nav-global-toggle-8c14",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/test/features/experience/**",
+        ".agents/plans/workspace-nav-simplify-8c14.md",
+        ".agents/plans/workspace-nav-simplify-8c14.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/901",
+      "pr_head_sha": "8dea43ac622d32e89a5568df3f1d875a8f28ca81"
+    },
+    {
+      "id": "5",
+      "title": "Docs and navigation E2E",
+      "branch": "cursor/workspace-nav-docs-e2e-8c14",
+      "allowed_paths": [
+        "docs/domains/navigation/**",
+        "docs/e2e/**",
+        "e2e/**",
+        "flutter_app/test/bdd/**",
+        ".agents/plans/workspace-nav-simplify-8c14.md",
+        ".agents/plans/workspace-nav-simplify-8c14.snapshot.json",
+        "docs/debt/refactoring-log.md"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/902",
+      "pr_head_sha": "d27ef4137f100887b3dcf2d65c30231f019b7362"
+    }
+  ]
+}

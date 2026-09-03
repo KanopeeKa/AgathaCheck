@@ -111,7 +111,7 @@ void main() {
   });
 
   testWidgets(
-    'account shows show-organisation toggle for guardian-only users',
+    'account omits show-organisation toggle for guardian-only users',
     (tester) async {
       final guardianOnly = ExperienceEligibilityRules.compute(
         pets: const [],
@@ -123,9 +123,8 @@ void main() {
 
       expect(
         find.byKey(const Key('show_organisation_section_toggle')),
-        findsOneWidget,
+        findsNothing,
       );
-      expect(find.text('Preferences'), findsOneWidget);
     },
   );
 

@@ -6,9 +6,7 @@ import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_experience.dart';
-import '../config/drawer_menu_config.dart';
 import '../config/guardian_primary_destinations.dart';
-import '../providers/experience_providers.dart';
 import 'experience_workspace_toggle.dart';
 
 /// Expanded leading sidebar for Guardian workspace on wide screens (≥840px).
@@ -26,11 +24,6 @@ class GuardianNavigationSidebar extends ConsumerWidget {
     final primaryDestinations = destinations.take(4).toList();
     final accountDestination = destinations[4];
     final selectedIndex = GuardianPrimaryDestinations.indexFor(currentLocation);
-    final isRoot = DrawerMenuConfig.sectionRootPaths.contains(currentLocation);
-    final showShelterWorkspace =
-        isRoot &&
-        (currentLocation.startsWith('/o/') ||
-            ref.watch(showOrganisationSectionProvider));
 
     return Semantics(
       identifier: 'guardian_navigation_sidebar',
@@ -55,14 +48,12 @@ class GuardianNavigationSidebar extends ConsumerWidget {
                         experience: AppExperience.petCare,
                         linkLogo: false,
                       ),
-                      if (isRoot) ...[
-                        const SizedBox(height: 12),
-                        ExperienceWorkspaceToggle(
-                          currentLocation: currentLocation,
-                          onDarkBackground: false,
-                          showShelter: showShelterWorkspace,
-                        ),
-                      ],
+                      const SizedBox(height: 12),
+                      ExperienceWorkspaceToggle(
+                        currentLocation: currentLocation,
+                        onDarkBackground: false,
+                        showShelter: true,
+                      ),
                     ],
                   ),
                 ),

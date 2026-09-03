@@ -81,7 +81,7 @@ void main() {
     );
     expect(find.text('CARE ACTIONS'), findsOneWidget);
     expect(find.text('FOSTERING SESSIONS'), findsOneWidget);
-    expect(find.text('Shelters'), findsOneWidget);
+    expect(find.text('Make room for one more'), findsOneWidget);
     expect(find.byKey(const Key('guardian_dashboard_add_care')), findsNothing);
     expect(find.byKey(const Key('guardian_dashboard_add_vet')), findsNothing);
     expect(

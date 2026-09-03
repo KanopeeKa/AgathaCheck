@@ -13,7 +13,6 @@ import '../../../organization/domain/entities/organization.dart';
 import '../../../organization/presentation/widgets/org_shell_app_bar_title.dart';
 import '../../domain/entities/app_experience.dart';
 import '../config/drawer_menu_config.dart';
-import '../providers/experience_providers.dart';
 import '../utils/experience_theme.dart';
 import 'experience_section_drawer.dart';
 import 'experience_workspace_toggle.dart';
@@ -82,9 +81,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
     final theme = Theme.of(context);
     final shellTheme = themeForAppExperience(theme, experience);
     final isRoot = _isRoot();
-    if (isRoot) {
-      ref.watch(organisationMembershipVisibilitySyncProvider);
-    }
     final isOrg = experience == AppExperience.organization;
     final viewportWidth = MediaQuery.sizeOf(context).width;
     final isGuardianExperience = experience == AppExperience.petCare;
@@ -107,12 +103,11 @@ class ExperienceShellScaffold extends ConsumerWidget {
         ? AppColorTokens.inverse
         : null;
     final useOrgTitle = isOrg && screenTitle != null && orgNavVariant != null;
-    final showWorkspaceToggleInAppBar = isRoot && !usesGuardianLeadingNav;
-    final showShelterWorkspace =
-        isRoot &&
-        (currentLocation.startsWith('/o/') ||
-            ref.watch(showOrganisationSectionProvider));
-    final workspaceToggleWidth = showShelterWorkspace ? 184.0 : 132.0;
+    const showShelterWorkspace = true;
+    const workspaceToggleWidth = 184.0;
+    final leadingWidth = usesGuardianLeadingNav
+        ? (isRoot ? null : 56.0)
+        : (isRoot ? workspaceToggleWidth : workspaceToggleWidth + 48);
     final hideTitleForAccessibleCompactHeader =
         isRoot &&
         MediaQuery.sizeOf(context).width < 360 &&
@@ -156,23 +151,23 @@ class ExperienceShellScaffold extends ConsumerWidget {
       theme: theme,
       usesGuardianPrimaryNavigation: usesGuardianPrimaryNavigation,
     );
-    final leadingWidget = showWorkspaceToggleInAppBar
-        ? Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: ExperienceWorkspaceToggle(
-              currentLocation: currentLocation,
-              onDarkBackground: usesGuardianPrimaryNavigation,
-              showShelter: showShelterWorkspace,
-            ),
-          )
-        : !isRoot
-        ? IconButton(
-            key: const Key('experience_back_button'),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: l.goBack,
-            onPressed: () => _onBack(context),
-          )
-        : null;
+    final leadingWidget = usesGuardianLeadingNav
+        ? (!isRoot
+              ? IconButton(
+                  key: const Key('experience_back_button'),
+                  icon: const Icon(Icons.arrow_back),
+                  tooltip: l.goBack,
+                  onPressed: () => _onBack(context),
+                )
+              : null)
+        : _buildCompactShellLeading(
+            context: context,
+            l: l,
+            isRoot: isRoot,
+            usesGuardianPrimaryNavigation: usesGuardianPrimaryNavigation,
+            currentLocation: currentLocation,
+            showShelterWorkspace: showShelterWorkspace,
+          );
 
     return Theme(
       data: shellTheme,
@@ -187,9 +182,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
             : AppBar(
                 automaticallyImplyLeading: false,
                 toolbarHeight: _toolbarHeight,
-                leadingWidth: showWorkspaceToggleInAppBar
-                    ? workspaceToggleWidth
-                    : null,
+                leadingWidth: leadingWidth,
                 backgroundColor: appBarColor,
                 foregroundColor: appBarForeground,
                 surfaceTintColor: Colors.transparent,
@@ -218,9 +211,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
                           backgroundColor: appBarColor,
                           foregroundColor: appBarForeground,
                           leading: leadingWidget,
-                          leadingWidth: showWorkspaceToggleInAppBar
-                              ? workspaceToggleWidth
-                              : 56,
+                          leadingWidth: leadingWidth ?? 56,
                           title: titleWidget,
                           centerTitle: !usesGuardianDesktopContentHeader,
                           actions: trailingActions,
@@ -266,6 +257,39 @@ class ExperienceShellScaffold extends ConsumerWidget {
       returnTo: returnTo,
       defaultPath: backPath ?? _sectionRoot(),
       forceBackPath: forceBackPath,
+    );
+  }
+
+  Widget _buildCompactShellLeading({
+    required BuildContext context,
+    required AppLocalizations l,
+    required bool isRoot,
+    required bool usesGuardianPrimaryNavigation,
+    required String currentLocation,
+    required bool showShelterWorkspace,
+  }) {
+    final toggle = Padding(
+      padding: EdgeInsets.only(left: isRoot ? 8 : 0),
+      child: ExperienceWorkspaceToggle(
+        currentLocation: currentLocation,
+        onDarkBackground: usesGuardianPrimaryNavigation,
+        showShelter: showShelterWorkspace,
+      ),
+    );
+
+    if (isRoot) return toggle;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          key: const Key('experience_back_button'),
+          icon: const Icon(Icons.arrow_back),
+          tooltip: l.goBack,
+          onPressed: () => _onBack(context),
+        ),
+        toggle,
+      ],
     );
   }
 }

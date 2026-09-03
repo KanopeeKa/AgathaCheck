@@ -33,14 +33,9 @@ Widget _buildApp({
   required AppExperience experience,
   required String currentLocation,
   int combinedUnread = 0,
-  bool showOrganisationSection = false,
   Size? viewport,
   String? screenTitle,
 }) {
-  if (showOrganisationSection) {
-    prefs.setBool('show_organisation_section', true);
-  }
-
   final shell = ExperienceShellScaffold(
     experience: experience,
     currentLocation: currentLocation,
@@ -58,9 +53,6 @@ Widget _buildApp({
             orgMembershipCount: 0,
           ),
         ),
-      ),
-      showOrganisationSectionProvider.overrideWith(
-        (ref) => showOrganisationSection,
       ),
       combinedUnreadNotificationCountProvider.overrideWith(
         (ref) => combinedUnread,
@@ -119,7 +111,6 @@ Widget _buildWorkspaceRouterApp({
   return ProviderScope(
     overrides: [
       sharedPreferencesProvider.overrideWithValue(prefs),
-      showOrganisationSectionProvider.overrideWith((ref) => true),
       combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
       guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
       orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
@@ -165,7 +156,6 @@ void main() {
               ),
             ),
           ),
-          showOrganisationSectionProvider.overrideWith((ref) => false),
           combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
           guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
           orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
@@ -212,7 +202,6 @@ void main() {
               ),
             ),
           ),
-          showOrganisationSectionProvider.overrideWith((ref) => false),
           combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
           guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
           orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
@@ -287,7 +276,7 @@ void main() {
     expect(find.byKey(const Key('experience_back_button')), findsNothing);
   });
 
-  testWidgets('non-root path shows back arrow, not workspace toggle', (
+  testWidgets('non-root path shows back arrow and workspace toggle', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -300,7 +289,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
-    expect(find.byKey(const Key('experience_workspace_toggle')), findsNothing);
+    expect(
+      find.byKey(const Key('experience_workspace_toggle')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
 
@@ -312,7 +304,6 @@ void main() {
         prefs: prefs,
         experience: AppExperience.organization,
         currentLocation: '/o/orgs',
-        showOrganisationSection: true,
       ),
     );
     await tester.pumpAndSettle();
@@ -380,7 +371,7 @@ void main() {
     expect(find.byKey(const Key('experience_nav_home')), findsNothing);
   });
 
-  testWidgets('guardian root reveals Shelter when it is available', (
+  testWidgets('guardian root always reveals Shelter in workspace menu', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -388,7 +379,6 @@ void main() {
         prefs: prefs,
         experience: AppExperience.petCare,
         currentLocation: '/pc/home',
-        showOrganisationSection: true,
       ),
     );
     await tester.pumpAndSettle();
@@ -402,9 +392,7 @@ void main() {
     );
   });
 
-  testWidgets('workspace toggle navigates to Shelter and remembers it', (
-    tester,
-  ) async {
+  testWidgets('workspace toggle navigates to Shelter', (tester) async {
     await tester.pumpWidget(
       _buildWorkspaceRouterApp(prefs: prefs, initialLocation: '/pc/home'),
     );
@@ -420,15 +408,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Shelter home'), findsOneWidget);
-    expect(
-      prefs.getString('last_app_section'),
-      AppExperience.organization.wire,
-    );
   });
 
-  testWidgets('workspace toggle navigates to My Pets and remembers it', (
-    tester,
-  ) async {
+  testWidgets('workspace toggle navigates to Pet Care', (tester) async {
     await tester.pumpWidget(
       _buildWorkspaceRouterApp(prefs: prefs, initialLocation: '/o/orgs'),
     );
@@ -444,7 +426,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Guardian home'), findsOneWidget);
-    expect(prefs.getString('last_app_section'), AppExperience.petCare.wire);
   });
 
   testWidgets('baseline: org non-root path shows back button', (tester) async {
@@ -453,13 +434,15 @@ void main() {
         prefs: prefs,
         experience: AppExperience.organization,
         currentLocation: '/o/events',
-        showOrganisationSection: true,
       ),
     );
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
-    expect(find.byKey(const Key('experience_workspace_toggle')), findsNothing);
+    expect(
+      find.byKey(const Key('experience_workspace_toggle')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
 
@@ -634,7 +617,6 @@ void main() {
                 ),
               ),
             ),
-            showOrganisationSectionProvider.overrideWith((ref) => false),
             combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
             guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
             orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
@@ -720,7 +702,6 @@ void main() {
                 ),
               ),
             ),
-            showOrganisationSectionProvider.overrideWith((ref) => false),
             combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
             guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
             orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
@@ -827,7 +808,7 @@ void main() {
     );
 
     testWidgets(
-      'shows back button on non-root without workspace toggle in app bar',
+      'shows back button on non-root with workspace toggle in sidebar',
       (tester) async {
         await tester.binding.setSurfaceSize(const Size(1024, 900));
         addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -845,7 +826,7 @@ void main() {
         expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
         expect(
           find.byKey(const Key('experience_workspace_toggle')),
-          findsNothing,
+          findsOneWidget,
         );
       },
     );
@@ -867,7 +848,6 @@ void main() {
                   ),
                 ),
               ),
-              showOrganisationSectionProvider.overrideWith((ref) => false),
               combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
               guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
               orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
@@ -928,7 +908,6 @@ void main() {
                 ),
               ),
             ),
-            showOrganisationSectionProvider.overrideWith((ref) => false),
             combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
             guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
             orgUnreadNotificationCountProvider.overrideWith((ref) => 0),

@@ -24,6 +24,10 @@ class GuardianFosteringSection extends StatelessWidget {
   final bool showAll;
 
   static const _previewLimit = 2;
+  static const _fosterInviteAsset =
+      'assets/dashboard/guardian-foster-invite.png';
+  static const _fosterThanksAsset =
+      'assets/dashboard/guardian-foster-thanks.png';
 
   @override
   Widget build(BuildContext context) {
@@ -82,31 +86,52 @@ class GuardianFosteringSection extends StatelessWidget {
                     _FosteringPetRow(pet: pet, l: l),
                 ],
                 const SizedBox(height: 16),
-                Text(
-                  l.shelters,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 6),
                 if (shelters.isEmpty)
                   GuardianIllustratedEmptyState(
                     key: const Key('guardian_dashboard_empty_shelters'),
-                    assetPath: 'assets/dashboard/guardian-empty-fostering.png',
-                    title: l.guardianEmptyShelterTitle,
-                    body: l.guardianEmptyShelterBody,
-                    actionLabel: l.connectShelter,
+                    assetPath: _fosterInviteAsset,
+                    title: l.guardianFosterInviteTitle,
+                    body: l.guardianFosterInviteBody,
+                    actionLabel: l.findAShelter,
                     actionIcon: Icons.business_outlined,
                     actionKey: const Key(
                       'guardian_dashboard_empty_shelters_action',
                     ),
                     onAction: () => context.go('/o/orgs'),
                   )
-                else
+                else ...[
+                  GuardianIllustratedEmptyState(
+                    key: const Key('guardian_dashboard_linked_shelters'),
+                    assetPath: _fosterThanksAsset,
+                    title: l.guardianLinkedShelterTitle,
+                    body: l.guardianLinkedShelterBody,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    l.yourShelters,
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
                   for (final entry in shelters.entries.take(
                     showAll ? shelters.length : _previewLimit,
                   ))
                     _ShelterRow(group: entry.value, l: l),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      key: const Key('guardian_dashboard_find_another_shelter'),
+                      style: TextButton.styleFrom(
+                        minimumSize: const Size(48, 48),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      onPressed: () => context.go('/o/orgs'),
+                      icon: const Icon(Icons.add_business_outlined, size: 18),
+                      label: Text(l.findAnotherShelter),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

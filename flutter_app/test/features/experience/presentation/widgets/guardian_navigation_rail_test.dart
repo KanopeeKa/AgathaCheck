@@ -17,10 +17,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          showOrganisationSectionProvider.overrideWith((ref) => false),
-          authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        ],
+        overrides: [authProvider.overrideWith((ref) => FakeAuthNotifier())],
         child: MaterialApp(
           localizationsDelegates: const [
             AppLocalizations.delegate,

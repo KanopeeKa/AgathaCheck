@@ -173,10 +173,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Shelter orgs'), findsOneWidget);
-    expect(
-      prefs.getString('last_app_section'),
-      AppExperience.organization.wire,
-    );
   });
 
   testWidgets('selecting Pet Care navigates to /pc/home', (tester) async {
@@ -202,7 +198,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Guardian home'), findsOneWidget);
-    expect(prefs.getString('last_app_section'), AppExperience.petCare.wire);
   });
 
   testWidgets('keeps visual pill near 32px while hit target is at least 48px', (
