@@ -34,6 +34,7 @@ describe('Auth Routes — Profile', () => {
       expect(res.body).toHaveProperty('bio', 'A test bio');
       expect(res.body).toHaveProperty('photo_url', 'http://example.com/photo.png');
       expect(res.body).toHaveProperty('locale', 'en');
+      expect(res.body).toHaveProperty('pinned_organization_id', null);
     });
 
     it('should return 401 without token', async () => {

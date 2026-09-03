@@ -54,7 +54,8 @@
     "045_organization_role_permission_defaults.sql",
     "046_email_templates.sql",
     "047_health_occurrences.sql",
-    "048_pet_care_domain_rename.sql"
+    "048_pet_care_domain_rename.sql",
+    "049_pinned_organization_id.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
@@ -65,6 +66,7 @@
     "040_backfill_weight_entries_from_pets.sql",
     "041_pet_activity_events.sql",
     "042_org_member_privacy.sql",
-    "047_health_occurrences.sql"
+    "047_health_occurrences.sql",
+    "049_pinned_organization_id.sql"
   ]
 }
