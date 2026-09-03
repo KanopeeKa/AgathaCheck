@@ -1,9 +1,8 @@
 /**
  * @bdd account_area.feature
- * Scenario: Guardian-only user can enable show organisation section
- * Scenario: Org member cannot disable show organisation section
- * Scenario: Login restores last active organisation section
- * Scenario: Login restores last active guardian section
+ * Scenario: Guardian-only user always sees Shelter in workspace menu (D-v5-WORKSPACE-1)
+ * Scenario: Org member always sees Shelter in workspace menu
+ * Scenario: Login always lands on Pet Care home (D-v5-WORKSPACE-2)
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import { AccountPage } from '../pages/account.page';
@@ -17,7 +16,6 @@ import {
   reachAuthenticatedHome,
   skipOrgOnboardingIfPresent,
   waitForFlutterRoutePattern,
-  workspaceToggleLocator,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
 
@@ -36,16 +34,12 @@ async function loginFromLanding(
 }
 
 test.describe('Account area organisation visibility', () => {
-  test('guardian-only user can enable show organisation section', async ({
+  test('guardian-only user always sees Shelter in workspace menu', async ({
     page,
     testUser,
   }) => {
     await loginFromLanding(page, testUser.email, testUser.password);
     await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
-
-    const experience = new ExperiencePage(page);
-    await experience.gotoAccountFromDrawer();
-    await experience.enableShowOrganisationSection();
 
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.openWorkspaceMenu();
@@ -58,22 +52,28 @@ test.describe('Account area organisation visibility', () => {
     ).toBeVisible({ timeout: 15_000 });
   });
 
-  test('org member sees show organisation toggle locked on', async ({
-    page,
-  }) => {
+  test('org member always sees Shelter in workspace menu', async ({ page }) => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
 
-    const experience = new ExperiencePage(page);
-    await experience.gotoAccountFromDrawer();
-    await experience.expectShowOrganisationToggleLockedOn();
+    const dashboard = new GuardianDashboardPage(page);
+    await dashboard.openWorkspaceMenu();
+    await refreshFlutterAccessibility(page);
+    await expect(
+      page
+        .getByRole('menuitem', { name: /^Shelter$|^Refuge$/i })
+        .or(page.getByRole('button', { name: /^Shelter$|^Refuge$/i }))
+        .first(),
+    ).toBeVisible({ timeout: 15_000 });
   });
 });
 
-test.describe('Account area login section restore', () => {
-  test('login restores last active organisation section', async ({ page }) => {
+test.describe('Account area login landing', () => {
+  test('dual-role user always lands on Pet Care home after login', async ({
+    page,
+  }) => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
 
@@ -86,10 +86,12 @@ test.describe('Account area login section restore', () => {
     await loginFromLanding(page, user.email, user.password);
 
     const account = new AccountPage(page);
-    await account.expectOrganisationHomeScreen();
+    await account.expectGuardianHomeScreen();
   });
 
-  test('login restores last active guardian section', async ({ page }) => {
+  test('dual-role user lands on Pet Care home even after visiting Shelter', async ({
+    page,
+  }) => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
 

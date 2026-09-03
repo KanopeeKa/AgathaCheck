@@ -79,8 +79,8 @@ Record D-v5-WORKSPACE-* decisions; supersede D-v3-VIS-1; update BDD/Playwright n
 
 | Phase | Status | PR |
 |-------|--------|-----|
-| 1 | pending | |
-| 2 | pending | |
-| 3 | pending | |
-| 4 | pending | |
-| 5 | pending | |
+| 1 | pending | #898 |
+| 2 | pending | #899 |
+| 3 | pending | #900 |
+| 4 | pending | #901 |
+| 5 | in_progress | |

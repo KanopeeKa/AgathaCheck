@@ -95,7 +95,7 @@ export class PetListPage {
       options.experience === 'organization' ||
       (options.experience !== 'guardian' &&
         (route.startsWith('/o/') || route.startsWith('/organizations')));
-    const homePath = useOrgHome ? '/o/home' : '/pc/home';
+    const homePath = useOrgHome ? '/o/orgs' : '/pc/home';
 
     try {
       await dismissConsentBannerIfPresent(this.page);
@@ -464,7 +464,7 @@ export class PetListPage {
       options.experience === 'organization' ||
       (options.experience !== 'guardian' &&
         (route.startsWith('/o/') || route.startsWith('/organizations')));
-    const home = useOrgHome ? '/o/home' : '/pc/home';
+    const home = useOrgHome ? '/o/orgs' : '/pc/home';
     // Match only the home route — not other /o/* or /pc/* shells (e.g. /o/orgs/:id/pets).
     const onHome = route === home;
 

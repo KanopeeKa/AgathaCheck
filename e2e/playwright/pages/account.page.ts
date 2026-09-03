@@ -29,14 +29,9 @@ export class AccountPage {
     );
   }
 
-  /** BDD Then: the user should be navigated to the organisation home screen. */
+  /** @deprecated D-v5-WORKSPACE-2 — login always lands on `/pc/home`. */
   async expectOrganisationHomeScreen(): Promise<void> {
-    await dismissConsentBannerIfPresent(this.page);
-    await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/o\/home/, 60_000);
-    await expect(
-      this.page.getByRole('button', { name: /open notifications/i }),
-    ).toBeVisible({ timeout: 15_000 });
+    await this.expectGuardianHomeScreen();
   }
 
   /** BDD Then: the user should be navigated to the guardian home screen. */
