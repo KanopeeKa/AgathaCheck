@@ -15,6 +15,7 @@ export const userRow = {
   bio: 'A test bio',
   photo_url: 'http://example.com/photo.png',
   locale: 'en',
+  pinned_organization_id: null,
   created_at: '2024-01-01T00:00:00Z',
   updated_at: '2024-01-01T00:00:00Z',
 };
@@ -47,6 +48,8 @@ export function buildMockPool(overrides = {}) {
     selectUserExists: async (sql, params) => ({ rows: [{ id: userId }] }),
     selectPasswordHash: async (sql, params) => ({ rows: [{ password_hash: userPasswordHash }] }),
     updateUser: async (sql, params) => ({ rows: [{ ...userRow, ...overrides.updatedFields }] }),
+    clearPinnedOrg: async (sql, params) => ({ rows: [] }),
+    selectOrgMembership: async (sql, params) => ({ rows: [] }),
     deleteUser: async (sql, params) => ({ rows: [] }),
     selectPets: async (sql, params) => ({ rows: [{ id: 'pet-1', name: 'Buddy' }] }),
     selectVets: async (sql, params) => ({ rows: [{ id: 'vet-1', name: 'Dr. Smith' }] }),
@@ -68,6 +71,10 @@ export function buildMockPool(overrides = {}) {
       if (sql.includes('SELECT id FROM users WHERE id')) return handlers.selectUserExists(sql, params);
       if (sql.includes('SELECT * FROM users WHERE id')) return handlers.selectUserById(sql, params);
       if (sql.includes('SELECT password_hash FROM users WHERE id')) return handlers.selectPasswordHash(sql, params);
+      if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+        return handlers.selectOrgMembership(sql, params);
+      }
+      if (sql.includes('UPDATE users SET pinned_organization_id = NULL')) return handlers.clearPinnedOrg(sql, params);
       if (sql.includes('UPDATE users SET password_hash')) return handlers.updatePasswordHash(sql, params);
       if (sql.includes('UPDATE users SET') && !sql.includes('password_hash')) return handlers.updateUser(sql, params);
       if (sql.includes('DELETE FROM users')) return handlers.deleteUser(sql, params);

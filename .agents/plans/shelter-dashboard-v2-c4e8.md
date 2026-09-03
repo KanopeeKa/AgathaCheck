@@ -141,12 +141,12 @@ Widget tests for tasks, pin, shelter nav. Update `docs/e2e/navigation-contract.m
 
 ```yaml
 autonomy: active
-current_phase: 0
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 0 on branch cursor/shelter-dashboard-v2-framing-c4e8"
+next_action: "start phase 2: checkout cursor/shelter-primary-nav-config-c4e8"
 artifact_ref:
-  branch: cursor/shelter-dashboard-v2-framing-c4e8
+  branch: cursor/shelter-pinned-org-api-c4e8
   plan_path: .agents/plans/shelter-dashboard-v2-c4e8.md
   plan_commit: 6a835097bf7d1ae6f1d8362f7b7d25cda01b44e5
   snapshot_path: .agents/plans/shelter-dashboard-v2-c4e8.snapshot.json
@@ -158,8 +158,8 @@ debt_issue_refs: []
 
 | Phase | Status | Branch |
 |-------|--------|--------|
-| 0 | pending | cursor/shelter-dashboard-v2-framing-c4e8 |
-| 1 | pending | cursor/shelter-pinned-org-api-c4e8 |
+| 0 | done | cursor/shelter-dashboard-v2-framing-c4e8 |
+| 1 | done | cursor/shelter-pinned-org-api-c4e8 |
 | 2 | pending | cursor/shelter-primary-nav-config-c4e8 |
 | 3 | pending | cursor/shelter-shell-primary-nav-c4e8 |
 | 4 | pending | cursor/shelter-tile-pin-c4e8 |

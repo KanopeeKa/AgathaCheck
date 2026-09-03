@@ -67,9 +67,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "done",
       "status_reason": null,
-      "status_detail": null,
+      "status_detail": "pinned_organization_id on users; GET/PUT /auth/me; migration 049",
       "debt_issue_refs": []
     },
     {
