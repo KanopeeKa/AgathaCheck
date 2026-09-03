@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T16:30:00Z",
   "approved_by": "user chat 2026-09-03 (/execute-plan after ui-design-deep analysis)",
   "approved_until": "2026-09-05T16:30:00Z",
-  "content_hash": "sha256:4565c97d1d2ab97d6dfccfe12ecdef16a300f9b45d9b6edb30b11f829c6406cf",
+  "content_hash": "sha256:8f48a7903261e6668bb6f5a0c8f0747472d3387bcffb9c9c62a628ca52c5d7af",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/guardian-desk-framing-6e46-integration-6e46",
@@ -104,7 +104,7 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
@@ -136,7 +136,7 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
@@ -167,7 +167,7 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
