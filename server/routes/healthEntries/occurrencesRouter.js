@@ -53,7 +53,7 @@ export function registerOccurrenceRoutes(router, pool) {
       const entry = await loadEntry(pool, req.params.id, userId);
       if (!entry) return res.status(404).json({ error: 'Entry not found' });
       const asOf = asOfFromRequest(req);
-      await tryAutoCloseRecurringWithEndDate(pool, entry, asOf);
+      await tryAutoCloseRecurringWithEndDate(pool, entry, todayCalendarIso());
       const status = req.query.status || 'open';
       if (status === 'open') {
         const rows = await listOpenOccurrences(pool, entry.id, asOf);

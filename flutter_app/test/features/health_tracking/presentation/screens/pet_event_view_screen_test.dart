@@ -274,7 +274,10 @@ void main() {
       find.textContaining('Closing this event will also close'),
       findsOneWidget,
     );
-    expect(find.byKey(const Key('pet_event_close_confirm_button')), findsOneWidget);
+    expect(
+      find.byKey(const Key('pet_event_close_confirm_button')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('closed entry greys status and shows reopen', (tester) async {

@@ -38,11 +38,12 @@ function makePool(state) {
         return { rows: [{ max_date: state.maxScheduled }] };
       }
       if (sql.includes("UPDATE health_entries SET status = 'completed'")) {
+        const isOnceClose = sql.includes('repeat_end_date = NULL');
         state.entry = {
           ...state.entry,
           status: 'completed',
-          repeat_end_date: params[0] ? new Date(params[0]) : state.entry.repeat_end_date,
-          completed_on: params[0] && state.entry.frequency === 'once'
+          repeat_end_date: isOnceClose ? null : new Date(params[0]),
+          completed_on: isOnceClose
             ? new Date(params[0])
             : state.entry.completed_on,
           next_due_date: null,
@@ -61,6 +62,7 @@ describe('occurrence lifecycle', () => {
     expect(isEntrySeriesClosed(makeEntry({ status: 'completed' }), today)).toBe(true);
     expect(isEntrySeriesClosed(makeEntry({ frequency: 'once', completed_on: new Date(today) }), today)).toBe(true);
     expect(isEntrySeriesClosed(makeEntry({ repeat_end_date: new Date(yesterday) }), today)).toBe(true);
+    expect(isEntrySeriesClosed(makeEntry({ repeat_end_date: new Date(today) }), today)).toBe(false);
     expect(isEntrySeriesClosed(makeEntry({ repeat_end_date: new Date(addCalendarDaysIso(today, 7)) }), today)).toBe(false);
   });
 
@@ -118,6 +120,21 @@ describe('occurrence lifecycle', () => {
     const row = await tryAutoCloseRecurringWithEndDate(pool, state.entry, today);
     expect(row.status).toBe('completed');
     expect(state.skippedPending).toBe(1);
+  });
+
+  it('tryAutoCloseRecurringWithEndDate does not close on the end date itself', async () => {
+    const today = todayCalendarIso();
+    const state = {
+      queries: [],
+      pending: [{ id: 'occ-1' }],
+      maxScheduled: new Date(today),
+      entry: makeEntry({ repeat_end_date: new Date(today) }),
+      skippedPending: 0,
+    };
+    const pool = makePool(state);
+    const row = await tryAutoCloseRecurringWithEndDate(pool, state.entry, today);
+    expect(row.status).toBe('active');
+    expect(state.skippedPending).toBe(0);
   });
 
   it('tryAutoCloseRecurringWithEndDate closes when all occurrences through end are closed', async () => {

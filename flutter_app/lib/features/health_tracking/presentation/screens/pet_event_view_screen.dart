@@ -72,8 +72,10 @@ class PetEventViewScreen extends ConsumerWidget {
             final openOccurrencesAsync = ref.watch(
               entryOccurrencesProvider(entryId),
             );
-            final openOccurrenceCount =
-                openOccurrencesAsync.valueOrNull?.length ?? 0;
+            final openOccurrenceCount = openOccurrencesAsync.maybeWhen(
+              data: (list) => list.length,
+              orElse: () => null,
+            );
 
             void onEdit() => context.push(healthEntryEditRoute(entry, petId));
 
@@ -83,7 +85,7 @@ class PetEventViewScreen extends ConsumerWidget {
               if (closeEventWillCloseOccurrences(entry, openOccurrenceCount)) {
                 final confirmed = await showCloseEventConfirmDialog(
                   context,
-                  openOccurrenceCount: openOccurrenceCount,
+                  openOccurrenceCount: openOccurrenceCount ?? 0,
                 );
                 if (confirmed != true || !context.mounted) return;
               }

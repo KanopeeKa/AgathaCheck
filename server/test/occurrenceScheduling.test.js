@@ -68,6 +68,10 @@ describe('occurrenceScheduling helpers', () => {
       frequency: 'daily',
       repeat_end_date: new Date('2026-09-01'),
     }, '2026-09-02')).toBe(true);
+    expect(isEntrySeriesClosed({
+      frequency: 'daily',
+      repeat_end_date: new Date('2026-09-02'),
+    }, '2026-09-02')).toBe(false);
     expect(isOccurrenceDateWithinSeries({
       repeat_end_date: new Date('2026-09-30'),
     }, '2026-10-01')).toBe(false);

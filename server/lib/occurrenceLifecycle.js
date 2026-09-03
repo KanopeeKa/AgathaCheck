@@ -34,7 +34,7 @@ export function isEntrySeriesClosed(row, todayIso = todayCalendarIso()) {
   }
   const endIso = repeatEndDateIso(row);
   if (!endIso) return false;
-  return endIso <= todayIso;
+  return endIso < todayIso;
 }
 
 /**
@@ -157,7 +157,7 @@ export async function tryAutoCloseRecurringWithEndDate(pool, entry, todayIso = t
     [entry.id]
   );
 
-  if (endIso <= todayIso) {
+  if (endIso < todayIso) {
     return closeHealthEntrySeries(pool, entry, null, todayIso);
   }
 

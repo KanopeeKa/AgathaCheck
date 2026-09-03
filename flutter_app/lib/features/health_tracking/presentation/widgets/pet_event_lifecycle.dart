@@ -15,12 +15,18 @@ bool isHealthEntrySeriesClosed(HealthEntry entry) {
   if (entry.repeatEndDate == null) return false;
   final today = calendarDateOnly(DateTime.now());
   final end = calendarDateOnly(entry.repeatEndDate!);
-  return end.isBefore(today) || end.isAtSameMomentAs(today);
+  return end.isBefore(today);
 }
 
 /// Whether closing the event will also close associated occurrences.
-bool closeEventWillCloseOccurrences(HealthEntry entry, int openOccurrenceCount) {
+///
+/// [openOccurrenceCount] is null while open occurrences are still loading.
+bool closeEventWillCloseOccurrences(
+  HealthEntry entry,
+  int? openOccurrenceCount,
+) {
   if (isHealthEntrySeriesClosed(entry)) return false;
+  if (openOccurrenceCount == null) return true;
   if (openOccurrenceCount > 0) return true;
   return entry.frequency != HealthFrequency.once;
 }
