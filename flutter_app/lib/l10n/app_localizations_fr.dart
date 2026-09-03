@@ -490,6 +490,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get passedAway => 'Décédé(e)';
 
   @override
+  String get rainbowBridge => 'Au-delà des nuages';
+
+  @override
   String get weightTracking => 'Suivi du poids';
 
   @override
@@ -729,28 +732,28 @@ class AppLocalizationsFr extends AppLocalizations {
       'Lorsqu\'une nouvelle session commencera, vous la trouverez ici.';
 
   @override
-  String get guardianFosterInviteTitle => 'Make room for one more';
+  String get guardianFosterInviteTitle => 'Faire place à un de plus';
 
   @override
   String get guardianFosterInviteBody =>
-      'Fostering gives a shelter pet a safe place to land while they wait for their next chapter. It can be a small commitment with a huge impact — and a wonderfully rewarding way to help.';
+      'L\'accueil offre à un animal de refuge un lieu sûr en attendant la suite de son histoire. Un petit engagement peut avoir un impact immense — et c\'est une façon merveilleuse d\'aider.';
 
   @override
-  String get findAShelter => 'Find a shelter';
+  String get findAShelter => 'Trouver un refuge';
 
   @override
   String get guardianLinkedShelterTitle =>
-      'Thank you for being part of their journey';
+      'Merci de faire partie de leur parcours';
 
   @override
   String get guardianLinkedShelterBody =>
-      'By opening your home to a foster pet, you\'re giving shelters more room to help and animals more time, comfort, and care. Your support makes a real difference.';
+      'En ouvrant votre foyer à un animal en accueil, vous libérez de la place pour les refuges et offrez plus de temps, de confort et de soins aux animaux. Votre soutien fait vraiment la différence.';
 
   @override
-  String get yourShelters => 'Your shelters';
+  String get yourShelters => 'Vos refuges';
 
   @override
-  String get findAnotherShelter => 'Find another shelter';
+  String get findAnotherShelter => 'Trouver un autre refuge';
 
   @override
   String get sessionDetailsUnavailable =>

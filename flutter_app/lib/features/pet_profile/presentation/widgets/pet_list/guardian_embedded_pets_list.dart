@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../experience/presentation/screens/guardian/guardian_dashboard_helpers.dart';
-import '../../../../experience/presentation/widgets/guardian_dashboard_pet_card.dart';
 import '../../../../experience/presentation/widgets/guardian_pets_tile_grid.dart';
 import '../../../domain/entities/pet.dart';
 import '../../controllers/pet_list_controller.dart';
@@ -32,23 +31,12 @@ class GuardianEmbeddedPetsList extends StatelessWidget {
     final owned = guardianDashboardPersonalPets(allPets, controller);
     final shared = guardianDashboardSharedPets(allPets, controller);
     final fostered = guardianDashboardFosterPets(allPets, controller);
-    final passedAway =
-        controller
-            .guardianShellPets(allPets)
-            .where((pet) => pet.passedAway)
-            .toList()
-          ..sort(
-            (a, b) => (a.createdAt ?? DateTime(2100)).compareTo(
-              b.createdAt ?? DateTime(2100),
-            ),
-          );
+    final passedAway = controller
+        .guardianShellPets(allPets)
+        .where((pet) => pet.passedAway)
+        .toList();
 
     void openPet(Pet pet) => openPetDetail(context, pet.id);
-
-    GuardianTodayPetCareState careFor(Pet pet) {
-      if (careSummary == null) return GuardianTodayPetCareState.clear;
-      return guardianTodayPetCareState(pet, careSummary!);
-    }
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
@@ -95,12 +83,9 @@ class GuardianEmbeddedPetsList extends StatelessWidget {
         if (passedAway.isNotEmpty)
           GuardianPassedAwaySection(
             pets: passedAway,
-            header: l.passedAway,
-            cardBuilder: (pet) => GuardianDashboardPetCard(
-              pet: pet,
-              careState: careFor(pet),
-              onTap: () => openPet(pet),
-            ),
+            title: l.rainbowBridge,
+            careSummary: careSummary,
+            onPetTap: openPet,
           ),
       ],
     );

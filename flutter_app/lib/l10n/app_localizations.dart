@@ -962,6 +962,12 @@ abstract class AppLocalizations {
   /// **'Passed Away'**
   String get passedAway;
 
+  /// No description provided for @rainbowBridge.
+  ///
+  /// In en, this message translates to:
+  /// **'Rainbow bridge'**
+  String get rainbowBridge;
+
   /// No description provided for @weightTracking.
   ///
   /// In en, this message translates to:

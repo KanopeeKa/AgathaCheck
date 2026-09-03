@@ -482,6 +482,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passedAway => 'Passed Away';
 
   @override
+  String get rainbowBridge => 'Rainbow bridge';
+
+  @override
   String get weightTracking => 'Weight Tracking';
 
   @override
