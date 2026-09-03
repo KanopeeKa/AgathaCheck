@@ -119,16 +119,16 @@ Repeated product labels compete with workspace scope and navigation, making desk
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "start phase 1: cursor/shell-hierarchy-decisions-0b2d"
+next_action: "continue phase 1 on branch cursor/shell-hierarchy-decisions-0b2d"
 artifact_ref:
-  branch: null
+  branch: cursor/shell-hierarchy-decisions-0b2d
   plan_path: .agents/plans/guardian-shell-hierarchy-0b2d.md
-  plan_commit: null
+  plan_commit: 434d2b117c394aef5bb5c60dc7383ebe82069150
   snapshot_path: .agents/plans/guardian-shell-hierarchy-0b2d.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 434d2b117c394aef5bb5c60dc7383ebe82069150
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

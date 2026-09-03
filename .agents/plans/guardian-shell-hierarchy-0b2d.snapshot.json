@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T07:22:00Z",
   "approved_by": "user chat 2026-09-03 (/execute-plan phases 1-4 authorization)",
   "approved_until": "2026-09-05T07:22:00Z",
-  "content_hash": "sha256:c59aa79f5176e37e8cd8a6a2a470ace61b7dd7fda71559b5b45e32ee342ac594",
+  "content_hash": "sha256:5cc34f10cd93155e71257a52e5579663d13691f1eb38cf7d85bfd92b8a17e30d",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/guardian-shell-hierarchy-0b2d-integration-0b2d",
@@ -36,12 +36,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
