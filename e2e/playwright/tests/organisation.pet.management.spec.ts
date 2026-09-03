@@ -143,6 +143,7 @@ test.describe('Organisation pet management', () => {
 
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
+    await dashboard.selectOrgFilter(ORG_NAME);
     await dashboard.expectEntryVisible('Annual Vaccination');
   });
 
