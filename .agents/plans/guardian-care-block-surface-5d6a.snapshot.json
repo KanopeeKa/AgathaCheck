@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "plan_id": "guardian-care-block-surface-5d6a",
+  "approved_at": "2026-09-03T19:15:00Z",
+  "approved_by": "user chat 2026-09-03 (Go with option A /execute-plan)",
+  "approved_until": "2026-09-05T19:15:00Z",
+  "content_hash": "sha256:f6dda83427e0271b9a778fa0ded3c67d0f5b537cb49aa1ac178838456021bdc4",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 940,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Care block surface + docs",
+      "branch": "cursor/guardian-care-block-surface-5d6a",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_upcoming_events_section.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_care_preview/guardian_care_preview_optimistic.dart",
+        "flutter_app/test/features/experience/presentation/screens/guardian/guardian_upcoming_events_section_test.dart",
+        "docs/design/tokens.md",
+        "docs/domains/pet_profile/changes/desk-framing-decisions.md",
+        ".agents/plans/guardian-care-block-surface-5d6a.md",
+        ".agents/plans/guardian-care-block-surface-5d6a.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/941",
+      "pr_head_sha": "5d701252"
+    }
+  ]
+}

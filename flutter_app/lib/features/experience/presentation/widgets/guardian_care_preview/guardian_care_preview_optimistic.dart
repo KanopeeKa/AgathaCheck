@@ -109,6 +109,7 @@ class GuardianCarePreviewEventList extends ConsumerWidget {
             pet: petMap[items[i].entry.petId],
             rowContext: rowContext,
             isCompleted: items[i].isCompleted,
+            showTopDivider: i > 0,
             onMarkDone: () async => onMarkDone(items[i].entry, i),
             onUndo: () => onUndo(items[i].entry),
             onView: () => onView(items[i].entry),

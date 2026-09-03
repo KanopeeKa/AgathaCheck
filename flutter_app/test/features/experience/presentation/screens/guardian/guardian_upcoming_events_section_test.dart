@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/guardian/guardian_upcoming_events_section.dart';
+import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_operations_desk_layout.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row.dart';
@@ -232,6 +233,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('CARE ACTIONS'), findsOneWidget);
+    expect(
+      find.byKey(const Key('guardian_dashboard_care_block')),
+      findsOneWidget,
+    );
+    expect(find.byType(GuardianDeskSectionCard), findsOneWidget);
     expect(find.textContaining('Due'), findsNothing);
     expect(find.text('Soon'), findsNothing);
   });

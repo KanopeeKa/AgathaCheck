@@ -215,7 +215,8 @@ Dashboard preview blocks on `/pc/home` use an **open canvas** on `background` �
 
 - Section chrome: eyebrow title + optional “All …” on one header row (D-desk-3)
 - Optional: 2px top-border accent in section theme colour for legacy `DashboardSection` paths
-- Avoid filled tinted section cards around entire preview blocks (Care/Care Team); fostering org tint is the documented exception
+- **Care preview exception:** `GuardianDeskSectionCard` with `petCareLight` wraps the CARE ACTIONS list (same token as pet-detail care preview); Care Team stays open canvas with per-row `CareTeamCard` surfaces
+- Fostering org tint (`organizationLight`) remains the cross-experience exception
 - Pet Care dashboard accents: plum; org/fostering cross-context: teal/org tokens when applicable
 
 ## Implementation
