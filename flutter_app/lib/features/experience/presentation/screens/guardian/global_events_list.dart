@@ -12,6 +12,7 @@ import '../../../../health_tracking/presentation/widgets/occurrence_care_actions
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/widgets/pet_list/home_event_actions.dart';
 import '../../../../pet_profile/presentation/screens/widgets/manage_events_collection_filter.dart';
+import '../../../../pet_profile/presentation/screens/widgets/org_events_collection_filter.dart';
 import 'guardian_due_events_screen.dart';
 
 // ---------------------------------------------------------------------------

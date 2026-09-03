@@ -30,6 +30,19 @@ abstract final class ManageEventsCollectionFilterIds {
   static const orgMore = [recurring, skipped, organization];
 }
 
+List<CollectionFilterDimension> manageEventsCoreDimensions(AppLocalizations l) =>
+    _manageEventsCoreDimensions(l);
+
+CollectionFilterSelections coreSelectionsFromManageEventsFilters(
+  ManageEventsFilters filters,
+) =>
+    _coreSelectionsFromManageEventsFilters(filters);
+
+ManageEventsFilters manageEventsFiltersFromCoreSelections(
+  CollectionFilterSelections selections,
+) =>
+    _manageEventsFiltersFromCoreSelections(selections);
+
 List<CollectionFilterDimension> _manageEventsCoreDimensions(AppLocalizations l) {
   return [
     CollectionFilterDimension(
@@ -250,68 +263,6 @@ List<CollectionFilterDimension> buildPerPetManageEventsFilterDimensions(
   return _manageEventsCoreDimensions(l);
 }
 
-List<String> primaryOrgEventsFilterDimensionIds(List<Pet> shellPets) {
-  if (shellPets.length > 1) {
-    return ManageEventsCollectionFilterIds.primary;
-  }
-  return ManageEventsCollectionFilterIds.perPetPrimary;
-}
-
-/// Org shell events — pet row when multiple pets; org names in More filters.
-List<CollectionFilterDimension> buildOrgEventsFilterDimensions({
-  required AppLocalizations l,
-  required List<Pet> shellPets,
-}) {
-  final sortedPets = [...shellPets]
-    ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
-
-  final orgNames =
-      sortedPets
-          .map((pet) => pet.organizationName)
-          .whereType<String>()
-          .where((name) => name.isNotEmpty)
-          .toSet()
-          .toList()
-        ..sort();
-
-  final dimensions = <CollectionFilterDimension>[
-    ..._manageEventsCoreDimensions(l),
-    if (orgNames.isNotEmpty)
-      CollectionFilterDimension(
-        id: ManageEventsCollectionFilterIds.organization,
-        label: l.organizations,
-        choices: [
-          for (final name in orgNames)
-            CollectionFilterChoice(id: name, label: name),
-        ],
-      ),
-  ];
-
-  if (sortedPets.length > 1) {
-    dimensions.insert(
-      0,
-      CollectionFilterDimension(
-        id: ManageEventsCollectionFilterIds.pet,
-        label: l.petsNavLabel,
-        choices: [
-          CollectionFilterChoice(
-            id: ManageEventsCollectionFilterIds.all,
-            label: l.allPets,
-            isDefault: true,
-          ),
-          for (final pet in sortedPets)
-            CollectionFilterChoice(
-              id: ManageEventsCollectionFilterIds.petChoice(pet.id),
-              label: pet.name,
-            ),
-        ],
-      ),
-    );
-  }
-
-  return dimensions;
-}
-
 List<String> primaryGlobalEventsFilterDimensionIds(List<Pet> shellPets) {
   if (shellPets.length > 1) {
     return ManageEventsCollectionFilterIds.primary;
@@ -348,20 +299,6 @@ CollectionFilterSelections selectionsFromGuardianGlobalEventsFilters(
   };
 }
 
-CollectionFilterSelections selectionsFromOrgGlobalEventsFilters(
-  OrgGlobalEventsFilters filters,
-) {
-  return {
-    ..._coreSelectionsFromManageEventsFilters(filters.eventFilters),
-    ManageEventsCollectionFilterIds.pet: filters.petIds
-        .map(ManageEventsCollectionFilterIds.petChoice)
-        .toSet(),
-    ManageEventsCollectionFilterIds.organization: Set<String>.from(
-      filters.orgNames,
-    ),
-  };
-}
-
 GuardianGlobalEventsFilters guardianGlobalEventsFiltersFromSelections(
   CollectionFilterSelections selections,
 ) {
@@ -384,23 +321,6 @@ GuardianGlobalEventsFilters guardianGlobalEventsFiltersFromSelections(
     eventFilters: _manageEventsFiltersFromCoreSelections(selections),
     cohorts: cohorts,
     petIds: petIds,
-  );
-}
-
-OrgGlobalEventsFilters orgGlobalEventsFiltersFromSelections(
-  CollectionFilterSelections selections,
-) {
-  final petSelected = selections[ManageEventsCollectionFilterIds.pet] ?? const {};
-  final petIds = petSelected
-      .where((id) => id.startsWith('pet:'))
-      .map((id) => id.substring(4))
-      .toSet();
-
-  return OrgGlobalEventsFilters(
-    eventFilters: _manageEventsFiltersFromCoreSelections(selections),
-    petIds: petIds,
-    orgNames: selections[ManageEventsCollectionFilterIds.organization] ??
-        const {},
   );
 }
 
@@ -463,40 +383,6 @@ class PetManageEventsCollectionFilterBar extends StatelessWidget {
           onChanged(manageEventsFiltersFromSelections(next)),
       primaryDimensionIds: ManageEventsCollectionFilterIds.perPetPrimary,
       moreDimensionIds: ManageEventsCollectionFilterIds.perPetMore,
-    );
-  }
-}
-
-/// Canonical collection filter bar for org shell events.
-class OrgGlobalEventsCollectionFilterBar extends StatelessWidget {
-  const OrgGlobalEventsCollectionFilterBar({
-    super.key,
-    required this.shellPets,
-    required this.filters,
-    required this.onChanged,
-  });
-
-  final List<Pet> shellPets;
-  final OrgGlobalEventsFilters filters;
-  final ValueChanged<OrgGlobalEventsFilters> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final dimensions = buildOrgEventsFilterDimensions(
-      l: l,
-      shellPets: shellPets,
-    );
-    final selections = selectionsFromOrgGlobalEventsFilters(filters);
-
-    return CollectionFilterBar(
-      key: const Key('org_events_collection_filter_bar'),
-      dimensions: dimensions,
-      selections: selections,
-      onSelectionsChanged: (next) =>
-          onChanged(orgGlobalEventsFiltersFromSelections(next)),
-      primaryDimensionIds: primaryOrgEventsFilterDimensionIds(shellPets),
-      moreDimensionIds: ManageEventsCollectionFilterIds.orgMore,
     );
   }
 }
