@@ -39,10 +39,10 @@ test.describe('Organisation onboarding', () => {
     const experience = new ExperiencePage(page);
     await experience.switchToShelterWorkspace();
 
-    // D-v5-WORKSPACE-2: login lands on guardian onboarding when the account has no owned pets.
-    await waitForFlutterRoutePattern(page, /\/pc\/onboarding/, 60_000);
+    // Org onboarding guard redirects super-admins entering the shelter workspace.
+    await waitForFlutterRoutePattern(page, /\/o\/onboarding/, 60_000);
     const onboarding = new OnboardingPage(page);
-    await onboarding.expectGuardianVisible();
+    await onboarding.expectOrgVisible();
   });
 
   test('org super-admin completes onboarding with inventory pet and reminder', async ({
