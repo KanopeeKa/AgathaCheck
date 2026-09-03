@@ -673,6 +673,22 @@ export function collectionFilterMobileTrigger(page: Page): Locator {
   );
 }
 
+/** Toggle an org pets refinement filter (Name, Shadow, …) on the All tab. */
+export async function toggleOrgPetsRefinementFilter(
+  page: Page,
+  choiceLabel: string | RegExp,
+): Promise<void> {
+  await refreshFlutterAccessibility(page);
+  const trigger = collectionFilterDimensionTrigger(
+    page,
+    /^Filters(\s+\d+)?$|^Filtres(\s+\d+)?$/i,
+  );
+  await trigger.click();
+  await refreshFlutterAccessibility(page);
+  await page.getByRole('checkbox', { name: choiceLabel }).click();
+  await refreshFlutterAccessibility(page);
+}
+
 /**
  * Accessible name for [PetCard] on full lists (`/pc/pets`, org home): "Pet: Bella, dog".
  * Guardian Today dashboard cards use {@link guardianDashboardPetNamePattern} instead.
