@@ -34,9 +34,10 @@ test.describe('Organisation onboarding', () => {
     await dismissConsentBannerIfPresent(page);
     await waitForPostLoginRoute(page);
 
-    await waitForFlutterRoutePattern(page, /\/o\/onboarding/, 60_000);
+    // D-v5-WORKSPACE-2: login lands on guardian onboarding when the account has no owned pets.
+    await waitForFlutterRoutePattern(page, /\/pc\/onboarding/, 60_000);
     const onboarding = new OnboardingPage(page);
-    await onboarding.expectOrgVisible();
+    await onboarding.expectGuardianVisible();
   });
 
   test('org super-admin completes onboarding with inventory pet and reminder', async ({
