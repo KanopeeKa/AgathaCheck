@@ -54,14 +54,16 @@ test.describe('Experience navigation', () => {
     await experience.expectGuardianShell();
   });
 
-  test('organisation-only user lands on organisation home after login', async ({
+  test('organisation-only user reaches shelter hub from Pet Care home after login', async ({
     page,
   }) => {
     await prepareLiveApiAccess(page, baseURL());
     const { alice } = await seedRescueHearts(baseURL());
     await loginFromLanding(page, alice.email, alice.password);
-    await waitForFlutterRoutePattern(page, /\/o\/home/, 60_000);
+    // D-v5-WORKSPACE-2: login always lands on Pet Care first.
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const experience = new ExperiencePage(page);
+    await experience.openDrawerOrgView();
     await experience.expectOrgShell();
     await expect(page.getByText(welcomeAgathaTrackText)).not.toBeVisible();
   });
