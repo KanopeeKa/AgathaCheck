@@ -38,16 +38,16 @@ Fix UAT navigation confusion for dual-role users: always show Shelter workspace,
 
 ```yaml
 autonomy: active
-current_phase: "1"
-last_completed_phase: null
+current_phase: null
+last_completed_phase: 5
 halt_reason: null
-next_action: implement phase 1
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/workspace-nav-always-shelter-8c14
+  branch: cursor/workspace-nav-simplify-8c14-integration-8c14
   plan_path: .agents/plans/workspace-nav-simplify-8c14.md
-  plan_commit: null
+  plan_commit: 8d8a18c590011d026411e789dc0b9e9178e2780e
   snapshot_path: .agents/plans/workspace-nav-simplify-8c14.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 8d8a18c590011d026411e789dc0b9e9178e2780e
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
