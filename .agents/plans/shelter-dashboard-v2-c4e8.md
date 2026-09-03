@@ -148,10 +148,10 @@ next_action: "continue phase 0 on branch cursor/shelter-dashboard-v2-framing-c4e
 artifact_ref:
   branch: cursor/shelter-dashboard-v2-framing-c4e8
   plan_path: .agents/plans/shelter-dashboard-v2-c4e8.md
-  plan_commit: e8034ffe3a6de20430bcf10d02bd25864292b149
+  plan_commit: 6a835097bf7d1ae6f1d8362f7b7d25cda01b44e5
   snapshot_path: .agents/plans/shelter-dashboard-v2-c4e8.snapshot.json
-  snapshot_commit: e8034ffe3a6de20430bcf10d02bd25864292b149
-open_prs: []
+  snapshot_commit: 6a835097bf7d1ae6f1d8362f7b7d25cda01b44e5
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/953"]
 merge_commits: {}
 debt_issue_refs: []
 ```
