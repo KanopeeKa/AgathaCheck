@@ -562,7 +562,10 @@ void main() {
       expect(find.text('AgathaTrack'), findsNothing);
       final rail = find.byKey(const Key('guardian_navigation_rail'));
       expect(
-        find.descendant(of: rail, matching: find.bySemanticsLabel('AgathaTrack')),
+        find.descendant(
+          of: rail,
+          matching: find.bySemanticsLabel('AgathaTrack'),
+        ),
         findsOneWidget,
       );
     });
