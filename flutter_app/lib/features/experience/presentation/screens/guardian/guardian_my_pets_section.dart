@@ -9,6 +9,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../../pet_profile/presentation/widgets/pet_card.dart';
+import '../../widgets/guardian_dashboard_ambient_deco.dart';
 import '../../widgets/guardian_dashboard_section_header.dart';
 import '../../widgets/guardian_dashboard_pet_card.dart';
 import '../../widgets/guardian_illustrated_empty_state.dart';
@@ -186,15 +187,17 @@ class _GuardianPetRail extends StatelessWidget {
     final cardWidth = guardianDashboardPetCardWidth(viewportWidth);
     final addTileWidth = guardianDashboardAddPetTileWidth(viewportWidth);
 
+    final railHeight = pets.isEmpty
+        ? usesLargeText
+              ? 168.0
+              : 132.0
+        : usesLargeText
+        ? 128.0
+        : 96.0;
+
     return SizedBox(
       key: const Key('guardian_dashboard_pet_preview'),
-      height: pets.isEmpty
-          ? usesLargeText
-                ? 168
-                : 132
-          : usesLargeText
-          ? 128
-          : 96,
+      height: railHeight,
       child: pets.isEmpty
           ? GuardianIllustratedEmptyState(
               key: const Key('guardian_dashboard_empty_pets'),
@@ -205,22 +208,59 @@ class _GuardianPetRail extends StatelessWidget {
               actionKey: const Key('guardian_dashboard_add_pet'),
               onAction: onAddPet,
             )
-          : ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.only(bottom: 4),
-              itemCount: pets.length + 1,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (context, index) {
-                if (index == pets.length) {
-                  return _AddPetTile(
-                    onPressed: onAddPet,
-                    l: l,
-                    width: addTileWidth,
-                  );
-                }
-                return SizedBox(
-                  width: cardWidth,
-                  child: _cardFor(context, pets[index]),
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final contentWidth = guardianPetRailContentWidth(
+                  petCount: pets.length,
+                  cardWidth: cardWidth,
+                  addTileWidth: addTileWidth,
+                );
+                final railScrolls = contentWidth > constraints.maxWidth;
+                final leftover = constraints.maxWidth - contentWidth;
+                const decoGap = 8.0;
+                final usableLeftover = leftover - decoGap;
+                final decoMode =
+                    !railScrolls &&
+                        usableLeftover > 0 &&
+                        guardianDashboardDecoAllowedForWidth(viewportWidth)
+                    ? guardianPetRailDecoModeForLeftover(usableLeftover)
+                    : null;
+
+                return Stack(
+                  clipBehavior: Clip.hardEdge,
+                  children: [
+                    ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.only(bottom: 4),
+                      itemCount: pets.length + 1,
+                      separatorBuilder: (_, __) => const SizedBox(width: 12),
+                      itemBuilder: (context, index) {
+                        if (index == pets.length) {
+                          return _AddPetTile(
+                            onPressed: onAddPet,
+                            l: l,
+                            width: addTileWidth,
+                          );
+                        }
+                        return SizedBox(
+                          width: cardWidth,
+                          child: _cardFor(context, pets[index]),
+                        );
+                      },
+                    ),
+                    if (decoMode != null)
+                      Positioned(
+                        left: contentWidth + decoGap,
+                        top: 0,
+                        bottom: 4,
+                        right: 0,
+                        child: GuardianPetRailYarnDeco(
+                          mode: decoMode,
+                          width: usableLeftover,
+                          height: railHeight - 4,
+                        ),
+                      ),
+                  ],
                 );
               },
             ),

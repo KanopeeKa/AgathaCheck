@@ -219,6 +219,23 @@ Dashboard preview blocks on `/pc/home` use an **open canvas** on `background` �
 - Fostering org tint (`organizationLight`) remains the cross-experience exception
 - Pet Care dashboard accents: plum; org/fostering cross-context: teal/org tokens when applicable
 
+## Dashboard ambient decorations (guardian home, wide web)
+
+Optional non-interactive sketch overlays gated by **measured leftover space** (not viewport alone):
+
+| Asset | Role |
+|-------|------|
+| `dashboard-deco-cat.png` | Pet rail — cat end cap |
+| `dashboard-deco-yarn-segment.png` | Pet rail — horizontal connector (X-fit only) |
+| `dashboard-deco-yarn-ball.png` | Pet rail — yarn ball end cap |
+| `dashboard-deco-puppy-bowl.png` | Care Team column watermark |
+
+- Opacity: **0.13** (`GuardianDashboardDecoThresholds.opacity`)
+- Mobile (`<600px`): hidden
+- Pet rail: overlay in horizontal slack beside cards; hidden when rail scrolls
+- Care Team puppy: wide (`≥900px`) + non-empty list; lower-right of stretched column
+- `ExcludeSemantics` + `IgnorePointer`; real content always wins
+
 ## Implementation
 
 | File | Role |
