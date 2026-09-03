@@ -54,16 +54,16 @@ Refine the Guardian Pet Care dashboard shell and content framing on web/tablet s
 
 ```yaml
 autonomy: active
-current_phase: 2
-last_completed_phase: 1
+current_phase: 3
+last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/guardian-desk-framing-shell-6e46"
+next_action: "continue phase 3 on branch cursor/guardian-desk-framing-headers-6e46"
 artifact_ref:
   branch: cursor/guardian-desk-framing-6e46-integration-6e46
   plan_path: .agents/plans/guardian-desk-framing-6e46.md
-  plan_commit: 42c380180fef22843c178d55cf1cb817ef1ada61
+  plan_commit: d43266a755351459781d3d25cadf470c0cbc8acf
   snapshot_path: .agents/plans/guardian-desk-framing-6e46.snapshot.json
-  snapshot_commit: 42c380180fef22843c178d55cf1cb817ef1ada61
+  snapshot_commit: d43266a755351459781d3d25cadf470c0cbc8acf
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

@@ -29,7 +29,67 @@ class GuardianDashboardSectionHeader extends StatelessWidget {
   }
 }
 
-/// Left-aligned "All …" link shown below dashboard section content.
+/// Section header row: eyebrow title (optional) + optional trailing "All …" action.
+class GuardianDashboardSectionChrome extends StatelessWidget {
+  const GuardianDashboardSectionChrome({
+    super.key,
+    this.title,
+    this.titleColor = AppColorTokens.petCareActive,
+    this.linkLabel,
+    this.onLinkPressed,
+    this.linkKey,
+  });
+
+  final String? title;
+  final Color titleColor;
+  final String? linkLabel;
+  final VoidCallback? onLinkPressed;
+  final Key? linkKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final showTitle = title != null && title!.isNotEmpty;
+    final showLink = linkLabel != null && onLinkPressed != null;
+
+    if (!showTitle && !showLink) return const SizedBox.shrink();
+
+    final titleWidget = showTitle
+        ? GuardianDashboardSectionHeader(title: title!, titleColor: titleColor)
+        : const SizedBox.shrink();
+    final linkWidget = showLink
+        ? GuardianDashboardSectionLink(
+            linkKey: linkKey,
+            label: linkLabel!,
+            onPressed: onLinkPressed!,
+          )
+        : const SizedBox.shrink();
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (showTitle && showLink && constraints.maxWidth >= 360) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(child: titleWidget),
+              linkWidget,
+            ],
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (showTitle) titleWidget,
+            if (showTitle && showLink) const SizedBox(height: 4),
+            if (showLink) Align(alignment: Alignment.centerLeft, child: linkWidget),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Trailing "All …" link for dashboard section chrome.
 class GuardianDashboardSectionLink extends StatelessWidget {
   const GuardianDashboardSectionLink({
     super.key,
