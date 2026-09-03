@@ -5,7 +5,9 @@ import {
   enableFlutterAccessibility,
   fillSemanticsField,
   fillTextbox,
+  refreshFlutterAccessibility,
   selectDropdownOption,
+  skipOrgOnboardingIfPresent,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { OrganizationListPage } from './organization-list.page';
@@ -65,11 +67,19 @@ export class OrganizationFormPage {
       .or(this.page.getByRole('button', { name: 'Save' }))
       .first()
       .waitFor({ timeout: 30_000 });
+    await waitForFlutterRoutePattern(
+      this.page,
+      /\/o\/(?:orgs\/[^/?#]+|onboarding|orgs)(?:\?|$)/,
+      30_000,
+    );
+    await skipOrgOnboardingIfPresent(this.page);
+    await refreshFlutterAccessibility(this.page);
     try {
       await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 8_000);
     } catch {
-      // Flutter web sometimes stays on /o/orgs after create; list card + hash fallback.
+      // Flutter web sometimes lands on /o/orgs after create; list card + hash fallback.
       const list = new OrganizationListPage(this.page);
+      await list.openOrganizations();
       await list.openOrg(name);
     }
   }
