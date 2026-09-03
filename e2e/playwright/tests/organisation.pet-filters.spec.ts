@@ -18,7 +18,7 @@ import {
   seedRescueHearts,
   type TestUser,
 } from '../support/api';
-import { enableFlutterAccessibility, refreshFlutterAccessibility, waitForFlutterRoutePattern, escapeRegExp, semanticsByName } from '../support/flutter';
+import { enableFlutterAccessibility, refreshFlutterAccessibility, toggleCollectionFilterChoice, waitForFlutterRoutePattern, escapeRegExp, semanticsByName } from '../support/flutter';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
 
@@ -170,8 +170,7 @@ test.describe('Organisation pet filters', () => {
     await openOrgPetsScreen(page, baseURL, alice, org, ORG_NAME);
     await selectOrgPetsTab(page, 'All');
 
-    await page.getByRole('checkbox', { name: 'Name' }).click();
-    await refreshFlutterAccessibility(page);
+    await toggleCollectionFilterChoice(page, /^Filters(\s+\d+)?$|^Filtres(\s+\d+)?$/i, 'Name');
     await page.getByLabel('Search by pet name').fill('Max');
     await refreshFlutterAccessibility(page);
 
@@ -197,8 +196,7 @@ test.describe('Organisation pet filters', () => {
 
     await openOrgPetsScreen(page, baseURL, alice, org, 'Rescue Hearts');
     await selectOrgPetsTab(page, 'All');
-    await page.getByRole('checkbox', { name: 'Shadow' }).click();
-    await refreshFlutterAccessibility(page);
+    await toggleCollectionFilterChoice(page, /^Filters(\s+\d+)?$|^Filtres(\s+\d+)?$/i, 'Shadow');
 
     await expectOrgPetVisible(page, 'Shadow');
   });
