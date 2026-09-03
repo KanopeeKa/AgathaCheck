@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T07:22:00Z",
   "approved_by": "user chat 2026-09-03 (/execute-plan phases 1-4 authorization)",
   "approved_until": "2026-09-05T07:22:00Z",
-  "content_hash": "sha256:5cc34f10cd93155e71257a52e5579663d13691f1eb38cf7d85bfd92b8a17e30d",
+  "content_hash": "sha256:8feda33fb17c1642feb76a7e13fd256a648bd4d5f9cf57d35d547ec71f87e4a6",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/guardian-shell-hierarchy-0b2d-integration-0b2d",
@@ -36,7 +36,7 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
@@ -69,12 +69,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
@@ -104,12 +101,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
@@ -139,12 +133,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
