@@ -233,7 +233,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('CARE ACTIONS'), findsOneWidget);
-    expect(find.byKey(const Key('guardian_dashboard_care_block')), findsOneWidget);
+    expect(
+      find.byKey(const Key('guardian_dashboard_care_block')),
+      findsOneWidget,
+    );
     expect(find.byType(GuardianDeskSectionCard), findsOneWidget);
     expect(find.textContaining('Due'), findsNothing);
     expect(find.text('Soon'), findsNothing);
