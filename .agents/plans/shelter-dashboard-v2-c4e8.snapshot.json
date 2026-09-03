@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T22:45:00Z",
   "approved_by": "user chat 2026-09-03 (/execute-plan shelter-dashboard-v2-c4e8, approve-autonomous on control issue #952)",
   "approved_until": "2026-09-05T22:45:00Z",
-  "content_hash": "sha256:25623892a4a2e3a128b6fa0788d5cc31462537b0e64c0d96d72939b837c7c3fe",
+  "content_hash": "sha256:9ebe2cdad9ab7dd3c9c47cfcec002e5f37884e386653dacf36393ef26f31a21c",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/shelter-dashboard-v2-c4e8-integration-c4e8",
@@ -98,12 +98,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/960",
-      "pr_head_sha": "e4ab1ebd8f4dcb84344c9edeedbbe64c76d6772c"
+      "pr_head_sha": "5d041cc9"
     },
     {
       "id": "3",
