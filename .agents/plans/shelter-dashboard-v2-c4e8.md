@@ -141,10 +141,10 @@ Widget tests for tasks, pin, shelter nav. Update `docs/e2e/navigation-contract.m
 
 ```yaml
 autonomy: active
-current_phase: 6
-last_completed_phase: 3
+current_phase: 7
+last_completed_phase: 6
 halt_reason: null
-next_action: "continue phase 6 on branch cursor/shelter-tasks-preview-c4e8"
+next_action: "continue phase 7 on branch cursor/shelter-teal-token-audit-c4e8"
 artifact_ref:
   branch: cursor/shelter-tasks-preview-c4e8
   plan_path: .agents/plans/shelter-dashboard-v2-c4e8.md
@@ -164,6 +164,6 @@ debt_issue_refs: []
 | 3 | done | cursor/shelter-shell-primary-nav-c4e8 |
 | 4 | pending | cursor/shelter-tile-pin-c4e8 |
 | 5 | pending | cursor/shelter-dashboard-body-c4e8 |
-| 6 | pending | cursor/shelter-tasks-preview-c4e8 |
+| 6 | done | cursor/shelter-tasks-preview-c4e8 |
 | 7 | pending | cursor/shelter-teal-token-audit-c4e8 |
 | 8 | pending | cursor/shelter-dashboard-v2-tests-c4e8 |

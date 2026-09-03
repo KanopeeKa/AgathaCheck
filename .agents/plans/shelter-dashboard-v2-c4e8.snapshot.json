@@ -220,7 +220,7 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "done",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
