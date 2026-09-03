@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/app_experience.dart';
 import '../config/drawer_menu_config.dart';
 import '../config/guardian_primary_destinations.dart';
 import '../providers/experience_providers.dart';
@@ -59,16 +61,32 @@ class GuardianNavigationRail extends ConsumerWidget {
           minWidth: width,
           minExtendedWidth: width,
           useIndicator: true,
-          leading: isRoot
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 8, bottom: 4),
-                  child: ExperienceWorkspaceToggle(
+          leading: Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 4),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Semantics(
+                  identifier: 'guardian_navigation_rail_brand',
+                  label: l.appTitle,
+                  child: AppLogoTitle(
+                    title: l.appTitle,
+                    experience: AppExperience.petCare,
+                    linkLogo: false,
+                    showTitle: false,
+                  ),
+                ),
+                if (isRoot) ...[
+                  const SizedBox(height: 8),
+                  ExperienceWorkspaceToggle(
                     currentLocation: currentLocation,
                     onDarkBackground: false,
                     showShelter: showShelterWorkspace,
                   ),
-                )
-              : null,
+                ],
+              ],
+            ),
+          ),
           onDestinationSelected: (index) =>
               context.go(GuardianPrimaryDestinations.routes[index]),
           destinations: [
