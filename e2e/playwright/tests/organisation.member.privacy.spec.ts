@@ -6,6 +6,7 @@
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { ExperiencePage } from '../pages/experience.page';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
+import { OrganizationListPage } from '../pages/organization-list.page';
 import { seedDualRoleUser } from '../support/api';
 import {
   flutterGotoUrl,
@@ -59,16 +60,11 @@ test.describe('Organisation member privacy', () => {
     const { user, org } = await seedDualRoleUser(baseURL());
     await loginAs(page, user);
 
-    await page.goto(flutterGotoUrl(`/o/orgs/${org.id}`));
-    try {
-      await waitForFlutterRoutePattern(page, new RegExp(`/o/orgs/${org.id}(?:/|$)`), 12_000);
-    } catch {
-      await page.evaluate((id) => {
-        window.location.hash = `#/o/orgs/${id}`;
-      }, org.id);
-      await waitForFlutterRoutePattern(page, new RegExp(`/o/orgs/${org.id}(?:/|$)`), 20_000);
-    }
-    await refreshFlutterAccessibility(page);
+    const experience = new ExperiencePage(page);
+    await experience.openDrawerOrgView();
+
+    const list = new OrganizationListPage(page);
+    await list.openOrg(org.name, org.id);
 
     const detail = new OrganizationDetailPage(page);
     await detail.expectLoaded(org.name);
