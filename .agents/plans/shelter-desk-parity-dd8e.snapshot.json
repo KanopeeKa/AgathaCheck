@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "plan_id": "shelter-desk-parity-dd8e",
+  "approved_at": "2026-09-03T19:48:00Z",
+  "approved_by": "user chat 2026-09-03 (/execute-plan shelter desk parity phases, teal #EAF5F5/#1D7C84)",
+  "approved_until": "2026-09-05T19:48:00Z",
+  "content_hash": "sha256:bb365b9904270dfd7d6af4e866adf7138151166230b0fc6b35f59eafc8103eff",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/shelter-desk-parity-dd8e-integration-dd8e",
+  "control_issue": 942,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "0",
+      "title": "Shelter desk framing decisions",
+      "branch": "cursor/shelter-desk-framing-decisions-dd8e",
+      "allowed_paths": [
+        "docs/domains/shelter/changes/shelter-desk-framing-decisions.md",
+        "docs/design/tokens.md",
+        "docs/debt/refactoring-log.md",
+        ".agents/plans/shelter-desk-parity-dd8e.md",
+        ".agents/plans/shelter-desk-parity-dd8e.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/943",
+      "pr_head_sha": "8f4dcaeb46b4223ea229053b9db08c817915f21c"
+    },
+    {
+      "id": "1",
+      "title": "Workspace toggle on org deep shell",
+      "branch": "cursor/shelter-org-shell-toggle-dd8e",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/widgets/org_shell_scaffold.dart",
+        "flutter_app/test/features/organization/presentation/widgets/org_shell_scaffold_test.dart",
+        ".agents/plans/shelter-desk-parity-dd8e.md",
+        ".agents/plans/shelter-desk-parity-dd8e.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Org pets grid touch targets",
+      "branch": "cursor/shelter-org-pets-touch-dd8e",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/screens/organization_pets_screen.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/org_pets/**",
+        "flutter_app/test/features/organization/presentation/screens/organization_pets_screen_test.dart",
+        ".agents/plans/shelter-desk-parity-dd8e.md",
+        ".agents/plans/shelter-desk-parity-dd8e.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Shelter hub compact teal chrome",
+      "branch": "cursor/shelter-hub-teal-chrome-dd8e",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
+        "flutter_app/test/features/experience/presentation/widgets/experience_shell_scaffold_test.dart",
+        ".agents/plans/shelter-desk-parity-dd8e.md",
+        ".agents/plans/shelter-desk-parity-dd8e.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Org membership pet-grid tiles",
+      "branch": "cursor/shelter-membership-tiles-dd8e",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/widgets/org_card.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/org_membership_tile.dart",
+        "flutter_app/lib/features/organization/presentation/screens/organization_list_screen.dart",
+        "flutter_app/test/features/organization/presentation/widgets/org_card_test.dart",
+        "flutter_app/test/features/organization/presentation/widgets/org_membership_tile_test.dart",
+        ".agents/plans/shelter-desk-parity-dd8e.md",
+        ".agents/plans/shelter-desk-parity-dd8e.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "Hub section chrome on teal canvas",
+      "branch": "cursor/shelter-hub-section-chrome-dd8e",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/screens/organization_list_screen.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/org_hub_section_header.dart",
+        "flutter_app/test/features/organization/presentation/screens/organization_list_screen_test.dart",
+        ".agents/plans/shelter-desk-parity-dd8e.md",
+        ".agents/plans/shelter-desk-parity-dd8e.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "6",
+      "title": "Dead legacy cleanup",
+      "branch": "cursor/shelter-dead-code-cleanup-dd8e",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/screens/organization_dashboard_screen.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/org_dashboard/**",
+        "flutter_app/lib/features/experience/presentation/widgets/org_shell_home_content.dart",
+        "flutter_app/lib/features/experience/presentation/screens/experience_home_screens.dart",
+        "flutter_app/test/**",
+        ".agents/plans/shelter-desk-parity-dd8e.md",
+        ".agents/plans/shelter-desk-parity-dd8e.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "7",
+      "title": "Tests and navigation contract",
+      "branch": "cursor/shelter-desk-tests-dd8e",
+      "allowed_paths": [
+        "docs/e2e/navigation-contract.md",
+        "docs/domains/shelter/changes/shelter-desk-framing-decisions.md",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/features/experience/**",
+        "docs/debt/refactoring-log.md",
+        ".agents/plans/shelter-desk-parity-dd8e.md",
+        ".agents/plans/shelter-desk-parity-dd8e.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
