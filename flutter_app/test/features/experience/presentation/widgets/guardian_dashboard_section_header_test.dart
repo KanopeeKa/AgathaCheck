@@ -1,7 +1,46 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_dashboard_section_header.dart';
 
 void main() {
+  group('GuardianDashboardSectionChrome', () {
+    testWidgets('places title and link on one row when wide enough', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 500,
+              child: GuardianDashboardSectionChrome(
+                title: 'CARE',
+                linkLabel: 'All care',
+                onLinkPressed: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('CARE'), findsOneWidget);
+      expect(find.text('All care'), findsOneWidget);
+      expect(find.byType(Row), findsOneWidget);
+    });
+
+    testWidgets('omits link when no destination', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: GuardianDashboardSectionChrome(title: 'CARE'),
+          ),
+        ),
+      );
+
+      expect(find.text('CARE'), findsOneWidget);
+      expect(find.byType(TextButton), findsNothing);
+    });
+  });
+
   group('guardianDashboardPetCardWidth', () {
     test('keeps mobile cards compact', () {
       expect(guardianDashboardPetCardWidth(320), 142);
