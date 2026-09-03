@@ -5,6 +5,7 @@ import {
   filterChipByName,
   refreshFlutterAccessibility,
   semanticsByName,
+  tapCollectionFilterChoice,
 } from '../support/flutter';
 
 /**
@@ -180,32 +181,11 @@ export class HealthDashboardPage {
 
   /** Pet Care `/pc/events` global list — status filter via collection filter toolbar. */
   async selectDueOverdueFilter(): Promise<void> {
-    const mobileFilters = this.page.getByRole('button', {
-      name: /Filters(\s+\d+)?|Filtres(\s+\d+)?/i,
+    await tapCollectionFilterChoice(this.page, {
+      dimensionId: 'status',
+      choiceId: 'dueOverdue',
+      choiceLabel: /Due and Overdue|À faire et en retard/i,
     });
-    if (await mobileFilters.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await mobileFilters.click();
-      await refreshFlutterAccessibility(this.page);
-      await this.page
-        .getByRole('checkbox', { name: /Due and Overdue|À faire et en retard/i })
-        .click();
-    } else {
-      const statusTrigger = this.page.getByRole('button', {
-        name: /^Status( \(\d+\))?$/i,
-      });
-      if (!(await statusTrigger.isVisible({ timeout: 3_000 }).catch(() => false))) {
-        throw new Error(
-          'Status filter trigger not found — Pet Care /pc/events may not have loaded collection filters',
-        );
-      }
-      await statusTrigger.click();
-      await refreshFlutterAccessibility(this.page);
-      await this.page
-        .getByRole('checkbox', { name: /Due and Overdue|À faire et en retard/i })
-        .click();
-    }
-    await refreshFlutterAccessibility(this.page);
-    await this.page.waitForTimeout(500);
   }
 
   async expectEntryNotVisible(name: string): Promise<void> {

@@ -921,3 +921,79 @@ export async function selectDropdownOption(
 
   throw new Error(`Could not find dropdown for label: ${fieldLabel}`);
 }
+
+/** Toggle a canonical [CollectionFilterBar] choice (mobile sheet or desktop menu). */
+export async function tapCollectionFilterChoice(
+  page: Page,
+  options: {
+    dimensionId: string;
+    choiceId: string;
+    choiceLabel: string | RegExp;
+    inMore?: boolean;
+  },
+): Promise<void> {
+  const { dimensionId, choiceId, choiceLabel, inMore = false } = options;
+  await refreshFlutterAccessibility(page);
+
+  const clickChoice = async () => {
+    const keyedChoice = page.locator(
+      `[flt-semantics-identifier="filter_choice_${dimensionId}_${choiceId}"], [flt-semantics-identifier="filter_sheet_${dimensionId}_${choiceId}"], [flt-semantics-identifier="filter_more_${dimensionId}_${choiceId}"]`,
+    );
+    if (await keyedChoice.first().isVisible({ timeout: 1_000 }).catch(() => false)) {
+      await keyedChoice.first().click();
+      return;
+    }
+    await page.getByRole('checkbox', { name: choiceLabel }).click();
+  };
+
+  const mobileTrigger = page.locator(
+    '[flt-semantics-identifier="collection_filter_mobile_trigger"]',
+  );
+  if (await mobileTrigger.isVisible({ timeout: 2_000 }).catch(() => false)) {
+    await mobileTrigger.click();
+    await refreshFlutterAccessibility(page);
+    await clickChoice();
+    const done = page.locator('[flt-semantics-identifier="collection_filter_sheet_done"]');
+    if (await done.isVisible({ timeout: 1_000 }).catch(() => false)) {
+      await done.click();
+    }
+    await refreshFlutterAccessibility(page);
+    return;
+  }
+
+  if (inMore) {
+    const choiceLocator = page.locator(
+      `[flt-semantics-identifier="filter_more_${dimensionId}_${choiceId}"]`,
+    );
+    if (!(await choiceLocator.isVisible({ timeout: 500 }).catch(() => false))) {
+      await page.locator('[flt-semantics-identifier="collection_filter_more_trigger"]').click();
+      await refreshFlutterAccessibility(page);
+    }
+    await clickChoice();
+  } else {
+    const choiceLocator = page.locator(
+      `[flt-semantics-identifier="filter_choice_${dimensionId}_${choiceId}"]`,
+    );
+    if (!(await choiceLocator.isVisible({ timeout: 500 }).catch(() => false))) {
+      const dimensionTrigger = page.locator(
+        `[flt-semantics-identifier="filter_dimension_trigger_${dimensionId}"]`,
+      );
+      if (await dimensionTrigger.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        await dimensionTrigger.click();
+      } else {
+        const labelPattern =
+          dimensionId === 'status'
+            ? /^Status( \(\d+\))?$/i
+            : dimensionId === 'type'
+              ? /^Type( \(\d+\))?$/i
+              : new RegExp(`^${escapeRegExp(dimensionId)}( \\(\\d+\\))?$`, 'i');
+        await page.getByRole('button', { name: labelPattern }).first().click();
+      }
+      await refreshFlutterAccessibility(page);
+    }
+    await clickChoice();
+  }
+
+  await refreshFlutterAccessibility(page);
+  await page.waitForTimeout(300);
+}
