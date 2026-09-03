@@ -758,6 +758,56 @@ void main() {
       expect(sidebarSize.width, GuardianNavigationSidebar.width);
     });
 
+    testWidgets('sidebar uses surface token and canvas uses background at 1024px', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.petCare,
+          currentLocation: '/pc/home',
+          viewport: const Size(1024, 900),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final sidebarSurface = tester.widget<ColoredBox>(
+        find.descendant(
+          of: find.byKey(const Key('guardian_navigation_sidebar')),
+          matching: find.byType(ColoredBox),
+        ),
+      );
+      expect(sidebarSurface.color, AppColorTokens.surface);
+
+      final canvas = tester.widget<ColoredBox>(
+        find.byKey(const Key('experience_workspace_canvas')),
+      );
+      expect(canvas.color, AppColorTokens.background);
+    });
+
+    testWidgets('rail uses surface token at 720px', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(720, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.petCare,
+          currentLocation: '/pc/home',
+          viewport: const Size(720, 900),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final rail = tester.widget<NavigationRail>(
+        find.byType(NavigationRail),
+      );
+      expect(rail.backgroundColor, AppColorTokens.surface);
+    });
+
     testWidgets('hides drawer when sidebar is visible', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1024, 900));
       addTearDown(() => tester.binding.setSurfaceSize(null));
