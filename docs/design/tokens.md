@@ -211,11 +211,12 @@ Use foundation **body** / **muted** text on **w** group backgrounds — not guar
 
 ## Dashboard sections (guardian shell)
 
-Dashboard preview blocks on `/pc/home` use **top-border accents only** — no filled card surface:
+Dashboard preview blocks on `/pc/home` use an **open canvas** on `background` — section grouping via eyebrow headers and local row/card surfaces, not large tinted section wrappers:
 
-- Border: 2px top edge in section theme colour (`ColorScheme.primary` or experience accent)
-- Background: transparent (scaffold `background` shows through)
-- Pet Care dashboard sections: plum top border; org sections: teal when on org routes
+- Section chrome: eyebrow title + optional “All …” on one header row (D-desk-3)
+- Optional: 2px top-border accent in section theme colour for legacy `DashboardSection` paths
+- Avoid filled tinted section cards around entire preview blocks (Care/Care Team); fostering org tint is the documented exception
+- Pet Care dashboard accents: plum; org/fostering cross-context: teal/org tokens when applicable
 
 ## Implementation
 

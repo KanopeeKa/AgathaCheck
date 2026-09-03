@@ -63,9 +63,13 @@ class GuardianFosteringSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          GuardianDashboardSectionHeader(
+          GuardianDashboardSectionChrome(
             title: l.fosteringSessionsEyebrow,
             titleColor: AppColorTokens.organizationActive,
+            linkLabel: hasOverflow ? l.allFosteringSessions : null,
+            onLinkPressed: hasOverflow
+                ? () => context.go('/pc/fostering')
+                : null,
           ),
           const SizedBox(height: 10),
           GuardianDeskSectionCard(
@@ -135,11 +139,6 @@ class GuardianFosteringSection extends StatelessWidget {
               ],
             ),
           ),
-          if (hasOverflow)
-            GuardianDashboardSectionLink(
-              label: l.allFosteringSessions,
-              onPressed: () => context.go('/pc/fostering'),
-            ),
         ],
       ),
     );

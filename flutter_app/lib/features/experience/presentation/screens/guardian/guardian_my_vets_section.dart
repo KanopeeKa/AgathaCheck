@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -32,97 +31,83 @@ class GuardianMyVetsSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          GuardianDashboardSectionHeader(title: l.careTeamEyebrow),
-          const SizedBox(height: 10),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: AppColorTokens.surface,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-              child: auth.accessToken == null
-                  ? const SizedBox(
-                      key: Key('guardian_vets_auth_waiting'),
-                      height: 24,
-                      child: Center(
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    )
-                  : vetListAsync.when(
-                      loading: () => const SizedBox(
-                        key: Key('guardian_vets_loading'),
-                        height: 24,
-                        child: Center(
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      ),
-                      error: (_, __) => Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Icon(Icons.error_outline),
-                          const SizedBox(height: 4),
-                          Text(l.error),
-                          TextButton.icon(
-                            onPressed: () =>
-                                ref.read(vetListProvider.notifier).refresh(),
-                            icon: const Icon(Icons.refresh, size: 18),
-                            label: Text(l.retry),
-                          ),
-                        ],
-                      ),
-                      data: (resolvedVets) {
-                        if (resolvedVets.isEmpty) {
-                          return GuardianIllustratedEmptyState(
-                            key: const Key('guardian_dashboard_empty_vets'),
-                            assetPath:
-                                'assets/dashboard/guardian-empty-vets.png',
-                            title: l.guardianEmptyVetTitle,
-                            body: l.guardianEmptyVetBody,
-                            actionLabel: l.addVet,
-                            actionKey: const Key(
-                              'guardian_dashboard_empty_vets_action',
-                            ),
-                            onAction: () => context.go('/pc/vets/add'),
-                          );
-                        }
-                        final pets = petsAsync.valueOrNull;
-                        final linkedPetsByVetId = pets == null
-                            ? null
-                            : _linkedPetsByVetId(pets);
-                        return Column(
-                          children: [
-                            for (final vet in resolvedVets)
-                              CareTeamCard(
-                                vet: vet,
-                                linkedPets:
-                                    linkedPetsByVetId?[vet.id] ?? const <Pet>[],
-                                linkedPetCount: pets == null
-                                    ? null
-                                    : (linkedPetsByVetId?[vet.id] ??
-                                              const <Pet>[])
-                                          .length,
-                                onTap: () {
-                                  final returnTo = Uri.encodeComponent(
-                                    '/pc/home',
-                                  );
-                                  context.go(
-                                    '/pc/vets/${vet.id}?returnTo=$returnTo',
-                                  );
-                                },
-                              ),
-                          ],
-                        );
-                      },
-                    ),
-            ),
+          GuardianDashboardSectionChrome(
+            title: l.careTeamEyebrow,
+            linkLabel: showAllAction ? l.allCareTeams : null,
+            linkKey: const Key('guardian_dashboard_all_care_teams'),
+            onLinkPressed: showAllAction ? () => context.go('/pc/vets') : null,
           ),
-          if (showAllAction)
-            GuardianDashboardSectionLink(
-              linkKey: const Key('guardian_dashboard_all_care_teams'),
-              label: l.allCareTeams,
-              onPressed: () => context.go('/pc/vets'),
-            ),
+          const SizedBox(height: 10),
+          auth.accessToken == null
+              ? const SizedBox(
+                  key: Key('guardian_vets_auth_waiting'),
+                  height: 24,
+                  child: Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              : vetListAsync.when(
+                  loading: () => const SizedBox(
+                    key: Key('guardian_vets_loading'),
+                    height: 24,
+                    child: Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                  error: (_, __) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.error_outline),
+                      const SizedBox(height: 4),
+                      Text(l.error),
+                      TextButton.icon(
+                        onPressed: () =>
+                            ref.read(vetListProvider.notifier).refresh(),
+                        icon: const Icon(Icons.refresh, size: 18),
+                        label: Text(l.retry),
+                      ),
+                    ],
+                  ),
+                  data: (resolvedVets) {
+                    if (resolvedVets.isEmpty) {
+                      return GuardianIllustratedEmptyState(
+                        key: const Key('guardian_dashboard_empty_vets'),
+                        assetPath: 'assets/dashboard/guardian-empty-vets.png',
+                        title: l.guardianEmptyVetTitle,
+                        body: l.guardianEmptyVetBody,
+                        actionLabel: l.addVet,
+                        actionKey: const Key(
+                          'guardian_dashboard_empty_vets_action',
+                        ),
+                        onAction: () => context.go('/pc/vets/add'),
+                      );
+                    }
+                    final pets = petsAsync.valueOrNull;
+                    final linkedPetsByVetId = pets == null
+                        ? null
+                        : _linkedPetsByVetId(pets);
+                    return Column(
+                      children: [
+                        for (final vet in resolvedVets)
+                          CareTeamCard(
+                            vet: vet,
+                            linkedPets:
+                                linkedPetsByVetId?[vet.id] ?? const <Pet>[],
+                            linkedPetCount: pets == null
+                                ? null
+                                : (linkedPetsByVetId?[vet.id] ?? const <Pet>[])
+                                      .length,
+                            onTap: () {
+                              final returnTo = Uri.encodeComponent('/pc/home');
+                              context.go(
+                                '/pc/vets/${vet.id}?returnTo=$returnTo',
+                              );
+                            },
+                          ),
+                      ],
+                    );
+                  },
+                ),
         ],
       ),
     );

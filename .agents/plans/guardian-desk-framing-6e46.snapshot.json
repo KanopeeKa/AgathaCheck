@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "plan_id": "guardian-desk-framing-6e46",
+  "approved_at": "2026-09-03T16:30:00Z",
+  "approved_by": "user chat 2026-09-03 (/execute-plan after ui-design-deep analysis)",
+  "approved_until": "2026-09-05T16:30:00Z",
+  "content_hash": "sha256:8f48a7903261e6668bb6f5a0c8f0747472d3387bcffb9c9c62a628ca52c5d7af",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/guardian-desk-framing-6e46-integration-6e46",
+  "control_issue": 928,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Framing decisions and brief amendment",
+      "branch": "cursor/guardian-desk-framing-decisions-6e46",
+      "allowed_paths": [
+        "docs/domains/pet_profile/changes/desk-framing-decisions.md",
+        "docs/domains/pet_profile/features/guardian-dashboard-brief.md",
+        "docs/design/tokens.md",
+        "docs/debt/refactoring-log.md",
+        ".agents/plans/guardian-desk-framing-6e46.md",
+        ".agents/plans/guardian-desk-framing-6e46.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/930",
+      "pr_head_sha": "b9460d37"
+    },
+    {
+      "id": "2",
+      "title": "Shell surfaces (nav vs workspace canvas)",
+      "branch": "cursor/guardian-desk-framing-shell-6e46",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_navigation_sidebar.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_navigation_rail.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_shell_home_content.dart",
+        "flutter_app/test/features/experience/presentation/widgets/experience_shell_scaffold_test.dart",
+        "flutter_app/test/features/experience/presentation/widgets/guardian_navigation_rail_test.dart",
+        ".agents/plans/guardian-desk-framing-6e46.md",
+        ".agents/plans/guardian-desk-framing-6e46.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/931",
+      "pr_head_sha": "f5354a3b"
+    },
+    {
+      "id": "3",
+      "title": "Section chrome (title + All row)",
+      "branch": "cursor/guardian-desk-framing-headers-6e46",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_dashboard_section_header.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_my_pets_section.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_upcoming_events_section.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_my_vets_section.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_fostering_section.dart",
+        "flutter_app/test/features/experience/presentation/widgets/guardian_dashboard_section_header_test.dart",
+        ".agents/plans/guardian-desk-framing-6e46.md",
+        ".agents/plans/guardian-desk-framing-6e46.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Section surfaces and nav active polish",
+      "branch": "cursor/guardian-desk-framing-surfaces-6e46",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_operations_desk_layout.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_upcoming_events_section.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_my_vets_section.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_fostering_section.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_navigation_sidebar.dart",
+        "flutter_app/test/features/experience/presentation/widgets/guardian_shell_home_content_test.dart",
+        ".agents/plans/guardian-desk-framing-6e46.md",
+        ".agents/plans/guardian-desk-framing-6e46.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "Canvas width alignment and verification",
+      "branch": "cursor/guardian-desk-framing-canvas-6e46",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_operations_desk_layout.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_shell_home_content.dart",
+        "flutter_app/test/features/experience/presentation/widgets/guardian_shell_home_content_test.dart",
+        "flutter_app/test/features/experience/presentation/widgets/experience_shell_scaffold_test.dart",
+        "docs/design/system.md",
+        ".agents/plans/guardian-desk-framing-6e46.md",
+        ".agents/plans/guardian-desk-framing-6e46.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

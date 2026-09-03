@@ -29,6 +29,25 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 ---
 
+---
+
+## guardian-desk-framing-6e46 — Dashboard shell framing (2026-09-03)
+
+**Goal:** Differentiate nav surface from workspace canvas; harmonize section header chrome; open-canvas section previews; align dashboard max width to 1120px.  
+**Plan:** `.agents/plans/guardian-desk-framing-6e46.md` · **Integration:** `cursor/guardian-desk-framing-6e46-integration-6e46` · **Control issue:** #928
+
+| Phase | Outcome | Branch | Status |
+|-------|---------|--------|--------|
+| 1 | Framing decisions + brief amendment | `cursor/guardian-desk-framing-decisions-6e46` | In progress |
+| 2 | Shell surfaces (nav vs canvas) | `cursor/guardian-desk-framing-shell-6e46` | Pending |
+| 3 | Section chrome (title + All row) | `cursor/guardian-desk-framing-headers-6e46` | Pending |
+| 4 | Section surfaces + nav active polish | `cursor/guardian-desk-framing-surfaces-6e46` | Pending |
+| 5 | Canvas width alignment | `cursor/guardian-desk-framing-canvas-6e46` | Pending |
+
+Decisions: [desk-framing-decisions.md](/docs/domains/pet_profile/changes/desk-framing-decisions.md).
+
+---
+
 ## guardian-shell-hierarchy-0b2d — Responsive shell hierarchy (2026-09-03)
 
 **Goal:** AgathaTrack once per navigation context — remove duplicate product title in app bar when leading nav carries brand; add tablet rail brand; polish workspace toggle weight and notification association.  

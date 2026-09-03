@@ -32,7 +32,7 @@ class GuardianNavigationSidebar extends ConsumerWidget {
         key: const Key('guardian_navigation_sidebar'),
         width: width,
         child: ColoredBox(
-          color: AppColorTokens.background,
+          color: AppColorTokens.surface,
           child: SafeArea(
             top: false,
             child: Column(
@@ -114,9 +114,7 @@ class _SidebarDestinationTile extends StatelessWidget {
       selected: selected,
       label: label,
       child: Material(
-        color: selected
-            ? AppColorTokens.petCarePrimary.withValues(alpha: 0.08)
-            : Colors.transparent,
+        color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
           child: ConstrainedBox(
