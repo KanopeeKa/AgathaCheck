@@ -32,7 +32,7 @@ class GuardianNavigationSidebar extends ConsumerWidget {
         key: const Key('guardian_navigation_sidebar'),
         width: width,
         child: ColoredBox(
-          color: AppColorTokens.background,
+          color: AppColorTokens.surface,
           child: SafeArea(
             top: false,
             child: Column(
