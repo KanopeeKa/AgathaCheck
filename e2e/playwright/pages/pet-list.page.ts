@@ -273,6 +273,9 @@ export class PetListPage {
   async openOrganizations(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     const route = flutterRoutePath(this.page.url());
+    if (route === '/o/onboarding') {
+      await skipOrgOnboardingIfPresent(this.page);
+    }
     if (route === '/o/orgs' || route === '/organizations') {
       await new OrganizationListPage(this.page).expectLoaded();
       return;
@@ -284,10 +287,21 @@ export class PetListPage {
     } else if (await isExperienceShellVisible(this.page)) {
       await this.page.goto(flutterGotoUrl('/o/orgs'));
       await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
     } else {
       await waitForFlutterRoute(this.page, '/organizations');
     }
+    // Org onboarding guard may redirect super-admins before the hub loads.
+    await waitForFlutterRoutePattern(
+      this.page,
+      /\/o\/(?:orgs|onboarding)(?:\?|$)|\/organizations/,
+      30_000,
+    );
+    await skipOrgOnboardingIfPresent(this.page);
+    await waitForFlutterRoutePattern(
+      this.page,
+      /\/o\/orgs(?:\?|$)|\/organizations/,
+      30_000,
+    );
     await new OrganizationListPage(this.page).expectLoaded();
   }
 
@@ -479,11 +493,19 @@ export class PetListPage {
       if (switchingExperience) {
         await this.page.goto(flutterGotoUrl(home));
         await refreshFlutterAccessibility(this.page);
-        await waitForFlutterRoutePattern(
-          this.page,
-          new RegExp(`^${escapeRegExp(home)}(?:\\?|$)`),
-          30_000,
-        );
+        if (useOrgHome) {
+          await waitForFlutterRoutePattern(
+            this.page,
+            /\/o\/(?:orgs|onboarding)(?:\?|$)/,
+            30_000,
+          );
+        } else {
+          await waitForFlutterRoutePattern(
+            this.page,
+            new RegExp(`^${escapeRegExp(home)}(?:\\?|$)`),
+            30_000,
+          );
+        }
       } else {
         const homeNav = this.page.getByRole('button', { name: 'Home' });
         if (await homeNav.isVisible({ timeout: 2_000 }).catch(() => false)) {

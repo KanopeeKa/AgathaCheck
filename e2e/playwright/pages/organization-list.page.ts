@@ -9,6 +9,7 @@ import {
   isExperienceShellVisible,
   navigateWithShellFallback,
   refreshFlutterAccessibility,
+  skipOrgOnboardingIfPresent,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 
@@ -97,6 +98,13 @@ export class OrganizationListPage {
     }
     await this.page.goto(flutterGotoUrl('/o/orgs'));
     await refreshFlutterAccessibility(this.page);
+    // Org onboarding guard may redirect super-admins before the hub loads.
+    await waitForFlutterRoutePattern(
+      this.page,
+      /\/o\/(?:orgs|onboarding)(?:\?|$)/,
+      30_000,
+    );
+    await skipOrgOnboardingIfPresent(this.page);
     await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
     await this.expectLoaded();
   }
