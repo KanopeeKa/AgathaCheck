@@ -210,7 +210,6 @@ class GuardianCareTeamPuppyDeco extends StatelessWidget {
 /// Computes the horizontal width occupied by the pet preview rail content.
 double guardianPetRailContentWidth({
   required int petCount,
-  required double viewportWidth,
   required double cardWidth,
   required double addTileWidth,
   double separatorWidth = 12,

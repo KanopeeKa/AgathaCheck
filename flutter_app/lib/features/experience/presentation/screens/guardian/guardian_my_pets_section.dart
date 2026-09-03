@@ -212,16 +212,18 @@ class _GuardianPetRail extends StatelessWidget {
               builder: (context, constraints) {
                 final contentWidth = guardianPetRailContentWidth(
                   petCount: pets.length,
-                  viewportWidth: viewportWidth,
                   cardWidth: cardWidth,
                   addTileWidth: addTileWidth,
                 );
                 final railScrolls = contentWidth > constraints.maxWidth;
                 final leftover = constraints.maxWidth - contentWidth;
+                const decoGap = 8.0;
+                final usableLeftover = leftover - decoGap;
                 final decoMode =
                     !railScrolls &&
+                        usableLeftover > 0 &&
                         guardianDashboardDecoAllowedForWidth(viewportWidth)
-                    ? guardianPetRailDecoModeForLeftover(leftover)
+                    ? guardianPetRailDecoModeForLeftover(usableLeftover)
                     : null;
 
                 return Stack(
@@ -248,13 +250,13 @@ class _GuardianPetRail extends StatelessWidget {
                     ),
                     if (decoMode != null)
                       Positioned(
-                        left: contentWidth + 8,
+                        left: contentWidth + decoGap,
                         top: 0,
                         bottom: 4,
                         right: 0,
                         child: GuardianPetRailYarnDeco(
                           mode: decoMode,
-                          width: leftover - 8,
+                          width: usableLeftover,
                           height: railHeight - 4,
                         ),
                       ),

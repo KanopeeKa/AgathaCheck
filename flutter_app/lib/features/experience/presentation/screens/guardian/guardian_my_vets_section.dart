@@ -117,6 +117,8 @@ class GuardianMyVetsSection extends ConsumerWidget {
       label: l.myVets,
       child: showPuppyDeco
           ? Stack(
+              // Fill IntrinsicHeight stretch so the puppy anchors to the
+              // column bottom, not just the content height.
               fit: StackFit.expand,
               clipBehavior: Clip.none,
               children: [

@@ -36,7 +36,6 @@ void main() {
       expect(
         guardianPetRailContentWidth(
           petCount: 4,
-          viewportWidth: 1200,
           cardWidth: 172,
           addTileWidth: 80,
         ),
@@ -75,7 +74,7 @@ void main() {
   });
 
   group('GuardianCareTeamPuppyDeco', () {
-    testWidgets('renders puppy asset on wide layouts', (tester) async {
+    testWidgets('renders puppy asset', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(home: Scaffold(body: GuardianCareTeamPuppyDeco())),
       );
