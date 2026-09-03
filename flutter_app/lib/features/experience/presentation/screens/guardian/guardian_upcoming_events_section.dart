@@ -12,7 +12,6 @@ import '../../../../health_tracking/presentation/widgets/occurrence_care_actions
 import '../../widgets/guardian_care_preview/guardian_care_preview_optimistic.dart';
 import '../../widgets/guardian_dashboard_section_header.dart';
 import '../../widgets/guardian_illustrated_empty_state.dart';
-import '../../widgets/guardian_operations_desk_layout.dart';
 import 'guardian_dashboard_helpers.dart';
 
 /// Guardian Care dashboard preview with one combined, date-ordered list.
@@ -248,9 +247,8 @@ class _GuardianUpcomingEventsSectionState
           onLinkPressed: showAllCare ? () => context.go('/pc/events') : null,
         ),
         const SizedBox(height: 10),
-        GuardianDeskSectionCard(
+        KeyedSubtree(
           key: const Key('guardian_dashboard_care_section'),
-          tint: AppColorTokens.petCareLight,
           child: _buildMobileContent(
             context,
             careEntries,
@@ -270,22 +268,19 @@ class _GuardianUpcomingEventsSectionState
       children: [
         GuardianDashboardSectionChrome(title: l.careEyebrow),
         const SizedBox(height: 10),
-        GuardianDeskSectionCard(
-          tint: AppColorTokens.petCareLight,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(Icons.error_outline, color: AppColorTokens.danger),
-              const SizedBox(height: 8),
-              Text(l.careLoadError),
-              TextButton.icon(
-                onPressed: () =>
-                    ref.read(healthEntriesNotifierProvider.notifier).refresh(),
-                icon: const Icon(Icons.refresh, size: 18),
-                label: Text(l.retry),
-              ),
-            ],
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.error_outline, color: AppColorTokens.danger),
+            const SizedBox(height: 8),
+            Text(l.careLoadError),
+            TextButton.icon(
+              onPressed: () =>
+                  ref.read(healthEntriesNotifierProvider.notifier).refresh(),
+              icon: const Icon(Icons.refresh, size: 18),
+              label: Text(l.retry),
+            ),
+          ],
         ),
       ],
     );
