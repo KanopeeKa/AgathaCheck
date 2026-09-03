@@ -24,6 +24,7 @@ import {
   updatePetVet,
 } from '../support/api';
 import {
+  collectionFilterDimensionTrigger,
   dashboardSectionGroup,
   expectAppBarTitle,
   flutterGotoUrl,
@@ -247,7 +248,24 @@ test.describe('Guardian dashboard', () => {
     await page.goto(flutterGotoUrl('/pc/events'));
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, /^\/pc\/events(?:\?|$)/, 60_000);
-    for (const label of ['My Pets', 'My Fostered Pets', 'All pets', 'OwnedPet', 'FosterPet']) {
+
+    const petTrigger = collectionFilterDimensionTrigger(page, /^Pets(\s+\(\d+\))?$/i);
+    await expect(petTrigger).toBeVisible();
+    await petTrigger.click();
+    await refreshFlutterAccessibility(page);
+    for (const label of ['All pets', 'OwnedPet', 'FosterPet']) {
+      await expect(page.getByRole('checkbox', { name: label, exact: true })).toBeVisible();
+    }
+    await page.keyboard.press('Escape');
+    await refreshFlutterAccessibility(page);
+
+    const moreTrigger = collectionFilterDimensionTrigger(
+      page,
+      /^More filters$|^Plus de filtres$/i,
+    );
+    await moreTrigger.click();
+    await refreshFlutterAccessibility(page);
+    for (const label of ['My Pets', 'My Fostered Pets']) {
       await expect(page.getByRole('checkbox', { name: label, exact: true })).toBeVisible();
     }
   });
