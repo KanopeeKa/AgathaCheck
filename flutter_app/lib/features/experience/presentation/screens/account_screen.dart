@@ -9,7 +9,6 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../auth/data/auth_service.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../config/drawer_menu_config.dart';
-import '../widgets/organisation_visibility_section.dart';
 import '../widgets/account_organisation_settings_section.dart';
 import '../widgets/experience_shell_scaffold.dart';
 import '../../domain/entities/app_experience.dart';
@@ -62,8 +61,6 @@ class AccountScreen extends ConsumerWidget {
                   previewBuilder: (context) => Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const OrganisationVisibilitySection(embedded: true),
-                      const SizedBox(height: 20),
                       Text(
                         l.accountOrgSettingsTitle,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(

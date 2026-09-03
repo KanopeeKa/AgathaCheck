@@ -82,9 +82,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
     final theme = Theme.of(context);
     final shellTheme = themeForAppExperience(theme, experience);
     final isRoot = _isRoot();
-    if (isRoot) {
-      ref.watch(organisationMembershipVisibilitySyncProvider);
-    }
     final isOrg = experience == AppExperience.organization;
     final viewportWidth = MediaQuery.sizeOf(context).width;
     final isGuardianExperience = experience == AppExperience.petCare;
@@ -108,10 +105,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
         : null;
     final useOrgTitle = isOrg && screenTitle != null && orgNavVariant != null;
     final showWorkspaceToggleInAppBar = isRoot && !usesGuardianLeadingNav;
-    final showShelterWorkspace =
-        isRoot &&
-        (currentLocation.startsWith('/o/') ||
-            ref.watch(showOrganisationSectionProvider));
+    const showShelterWorkspace = true;
     final workspaceToggleWidth = showShelterWorkspace ? 184.0 : 132.0;
     final hideTitleForAccessibleCompactHeader =
         isRoot &&

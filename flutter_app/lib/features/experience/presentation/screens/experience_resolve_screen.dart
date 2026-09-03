@@ -40,7 +40,6 @@ class ExperienceResolveScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(organisationMembershipVisibilitySyncProvider);
     final pendingInvites = ref.watch(pendingOrgInvitesProvider);
     final hasPendingOrgInvites = pendingInvites.maybeWhen(
       data: (invites) => invites.isNotEmpty,

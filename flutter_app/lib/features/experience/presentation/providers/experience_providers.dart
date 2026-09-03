@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../organization/presentation/providers/organization_providers.dart';
@@ -12,7 +10,6 @@ import '../../data/org_onboarding_store.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../domain/services/experience_eligibility.dart';
 import '../../domain/services/guardian_onboarding_rules.dart';
-import '../../domain/services/organisation_section_visibility.dart';
 import '../../domain/services/org_onboarding_rules.dart';
 
 final experiencePreferencesStoreProvider = Provider<ExperiencePreferencesStore>(
@@ -60,43 +57,9 @@ final experienceEligibilityProvider =
       );
     });
 
-final showOrganisationSectionPrefProvider = Provider<bool>((ref) {
-  return ref
-      .watch(experiencePreferencesStoreProvider)
-      .readShowOrganisationSection();
-});
-
 final hasOrgMembershipProvider = Provider<bool>((ref) {
   final orgs = ref.watch(organizationListProvider).valueOrNull;
   return orgs != null && orgs.isNotEmpty;
-});
-
-final showOrganisationSectionProvider = Provider<bool>((ref) {
-  final pref = ref.watch(showOrganisationSectionPrefProvider);
-  final hasMembership = ref.watch(hasOrgMembershipProvider);
-  return OrganisationSectionVisibility.effectiveShowOrganisationSection(
-    showOrganisationSectionPref: pref,
-    hasOrgMembership: hasMembership,
-  );
-});
-
-/// When membership appears, persist show-org on (D-v3-VIS-1).
-final organisationMembershipVisibilitySyncProvider = Provider<void>((ref) {
-  ref.listen<AsyncValue<List<Organization>>>(organizationListProvider, (
-    _,
-    next,
-  ) {
-    next.whenData((orgs) {
-      if (orgs.isNotEmpty) {
-        unawaited(
-          ref
-              .read(experiencePreferencesStoreProvider)
-              .writeShowOrganisationSection(true),
-        );
-        ref.invalidate(showOrganisationSectionPrefProvider);
-      }
-    });
-  });
 });
 
 /// True when every org membership is foster-role (limited org portal).

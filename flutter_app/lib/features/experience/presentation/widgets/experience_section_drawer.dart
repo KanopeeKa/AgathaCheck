@@ -37,11 +37,7 @@ class ExperienceSectionDrawer extends ConsumerWidget {
         ? AppExperience.organization
         : AppExperience.petCare;
     final activeKey = _activeSemanticKey(location: location);
-    final showOrganisationSection = ref.watch(showOrganisationSectionProvider);
-    final topEntries = DrawerMenuConfig.sectionSwitcherEntries(
-      l: l,
-      showOrganisationSection: showOrganisationSection,
-    );
+    final topEntries = DrawerMenuConfig.sectionSwitcherEntries(l: l);
     final accountItem = DrawerMenuConfig.accountItem(l);
 
     return Drawer(

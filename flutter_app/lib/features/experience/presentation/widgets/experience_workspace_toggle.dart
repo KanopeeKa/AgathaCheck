@@ -7,9 +7,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_experience.dart';
 import '../providers/experience_providers.dart';
 
-/// Compact, top-level switcher between Guardian and Shelter workspaces.
-///
-/// Shelter remains unavailable until the existing visibility rules allow it.
+/// Shelter workspace is always available in the shell (D-v5-WORKSPACE-1).
 class ExperienceWorkspaceToggle extends ConsumerWidget {
   const ExperienceWorkspaceToggle({
     super.key,
