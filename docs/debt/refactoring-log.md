@@ -29,6 +29,23 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 ---
 
+## guardian-shell-hierarchy-0b2d — Responsive shell hierarchy (2026-09-03)
+
+**Goal:** AgathaTrack once per navigation context — remove duplicate product title in app bar when leading nav carries brand; add tablet rail brand; polish workspace toggle weight and notification association.  
+**Plan:** `.agents/plans/guardian-shell-hierarchy-0b2d.md` · **Integration:** `cursor/guardian-shell-hierarchy-0b2d-integration-0b2d` · **Control issue:** #877
+
+| Phase | Outcome | Branch | Status |
+|-------|---------|--------|--------|
+| 1 | Shell hierarchy decisions + navigation contract | `cursor/shell-hierarchy-decisions-0b2d` | In progress |
+| 2 | Desktop single brand (≥840px) | `cursor/shell-hierarchy-desktop-0b2d` | Pending |
+| 3 | Tablet rail brand (600–839px) | `cursor/shell-hierarchy-tablet-0b2d` | Pending |
+| 4 | Shell chrome polish | `cursor/shell-hierarchy-chrome-0b2d` | Pending |
+| 5 | BDD/E2E hierarchy verification | `cursor/shell-hierarchy-e2e-0b2d` | Pending |
+
+Decisions: [shell-hierarchy-decisions.md](/docs/domains/navigation/changes/shell-hierarchy-decisions.md).
+
+---
+
 **Goal:** Adaptive Pet Care shell — bottom bar (&lt;600px), navigation rail (600–839px), expanded sidebar (≥840px); record D-v4-4/5; resolve D-v4-2 drawer retirement.  
 **Plan:** `.agents/plans/guardian-adaptive-nav-7221.md` · **Integration:** `cursor/guardian-adaptive-nav-7221-integration-7221` · **Control issue:** #768 · **Prerequisite:** PR #767 (workspace-wide compact bottom nav)
 

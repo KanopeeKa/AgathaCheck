@@ -44,6 +44,17 @@ Source: experience-program analysis + Q&A, 2026-07-25. Master brief: [navigation
 | **D-v4-4** | On Pet Care widths **≥600px**, the same five destinations as D-v4-1 appear in **leading application chrome** (navigation rail 600–839px; expanded sidebar ≥840px). This is primary shell navigation — **not** the hamburger drawer. The drawer must not duplicate these destinations. | locked | Pet Care adaptive nav 2026-08 |
 | **D-v4-5** | When leading nav is visible (≥600px Pet Care workspace), the hamburger **drawer is hidden**. Workspace switcher and brand live in the leading nav shell header; Account is pinned at the bottom of expanded sidebar (≥840px) or exposed as the fifth rail destination (600–839px). | locked | Pet Care adaptive nav 2026-08 |
 
+## H — Shell hierarchy (brand once per context)
+
+| ID | Decision | Status | Phase |
+|----|----------|--------|-------|
+| **D-shell-1** | **One product identity per navigation context** — when leading nav is visible, `AgathaTrack` is not duplicated in the app bar on Pet Care section roots. | locked | shell-hierarchy 2026-09 |
+| **D-shell-2** | Section roots suppress redundant app bar titles; deep routes keep contextual titles. | locked | shell-hierarchy 2026-09 |
+| **D-shell-4** | Workspace toggle = **Pet Care** / **Shelter**; **Actions** remains a nav destination only. | locked | shell-hierarchy 2026-09 |
+| **D-shell-6** | Tablet rail carries compact brand in header; desktop sidebar carries full brand. | locked | shell-hierarchy 2026-09 |
+
+Full detail: [shell-hierarchy-decisions.md](../changes/shell-hierarchy-decisions.md).
+
 ---
 
 ## How to use

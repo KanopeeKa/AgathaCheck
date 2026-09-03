@@ -96,6 +96,8 @@ Viewport **600–839px** exposes `GuardianNavigationRail` (`Key('guardian_naviga
 | Fostering | `/pc/fostering` | |
 | Account | `/account` | Fifth rail destination |
 
+**Shell hierarchy (D-shell-6):** rail header carries compact `AgathaTrack` brand (logo) above workspace toggle on section roots. App bar does **not** repeat product title on section roots (`/pc/home`, `/account`).
+
 Page object: `GuardianDashboardPage.openLeadingNavDestination(label)` (viewport-aware: rail vs sidebar vs bottom nav).
 
 The hamburger drawer is **not** available at these widths.
@@ -107,6 +109,8 @@ Viewport **≥840px** exposes `GuardianNavigationSidebar` (`Key('guardian_naviga
 - Header: brand + workspace toggle (`experience_workspace_toggle`)
 - Body: Dashboard, Pets, Actions, Fostering (with optional trailing badge on Actions — deferred)
 - Footer: Account (pinned, separated by divider)
+
+**Shell hierarchy (D-shell-1):** app bar does **not** repeat `AgathaTrack` on Pet Care section roots; brand lives in sidebar header only.
 
 Page object: same `openLeadingNavDestination(label)` helper; Account via footer row.
 
