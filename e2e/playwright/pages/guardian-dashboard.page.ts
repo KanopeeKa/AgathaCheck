@@ -8,6 +8,7 @@ import {
   petCardHiddenLocator,
   refreshFlutterAccessibility,
   semanticsByName,
+  skipOrgOnboardingIfPresent,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 
@@ -374,5 +375,18 @@ export class GuardianDashboardPage {
       .first();
     await item.click();
     await refreshFlutterAccessibility(this.page);
+  }
+
+  /** Switch to the Shelter workspace and settle on the org list hub. */
+  async switchToShelterWorkspace(): Promise<void> {
+    await this.openWorkspaceMenu();
+    await this.selectWorkspaceMenuItem(/^Shelter$|^Refuge$/i);
+    await waitForFlutterRoutePattern(
+      this.page,
+      /\/o\/(?:orgs|onboarding)(?:\?|$)/,
+      30_000,
+    );
+    await skipOrgOnboardingIfPresent(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
   }
 }

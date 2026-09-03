@@ -174,9 +174,7 @@ test.describe('Guardian navigation', () => {
     await dashboard.open();
     await dashboard.expectWorkspaceToggleVisible();
 
-    await dashboard.openWorkspaceMenu();
-    await dashboard.selectWorkspaceMenuItem(/^Shelter$|^Refuge$/i);
-    await waitForFlutterRoutePattern(page, /\/o\/orgs(?:\?|$)/, 30_000);
+    await dashboard.switchToShelterWorkspace();
     await new OrganizationListPage(page).expectLoaded();
 
     await dashboard.openWorkspaceMenu();
