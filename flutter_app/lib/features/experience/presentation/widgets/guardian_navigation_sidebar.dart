@@ -46,7 +46,7 @@ class GuardianNavigationSidebar extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -56,7 +56,7 @@ class GuardianNavigationSidebar extends ConsumerWidget {
                         linkLogo: false,
                       ),
                       if (isRoot) ...[
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         ExperienceWorkspaceToggle(
                           currentLocation: currentLocation,
                           onDarkBackground: false,

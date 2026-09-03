@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/widgets/app_logo_title.dart';
+import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
@@ -34,6 +35,7 @@ Widget _buildApp({
   int combinedUnread = 0,
   bool showOrganisationSection = false,
   Size? viewport,
+  String? screenTitle,
 }) {
   if (showOrganisationSection) {
     prefs.setBool('show_organisation_section', true);
@@ -42,6 +44,7 @@ Widget _buildApp({
   final shell = ExperienceShellScaffold(
     experience: experience,
     currentLocation: currentLocation,
+    screenTitle: screenTitle,
     child: const SizedBox.shrink(),
   );
 
@@ -148,6 +151,9 @@ void main() {
   testWidgets('section root shows centered logo title when provided', (
     tester,
   ) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -175,11 +181,14 @@ void main() {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
-          home: ExperienceShellScaffold(
-            experience: AppExperience.petCare,
-            currentLocation: '/pc/home',
-            screenTitle: 'My Pets dashboard',
-            child: const SizedBox.shrink(),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(390, 844)),
+            child: ExperienceShellScaffold(
+              experience: AppExperience.petCare,
+              currentLocation: '/pc/home',
+              screenTitle: 'My Pets dashboard',
+              child: const SizedBox.shrink(),
+            ),
           ),
         ),
       ),
@@ -519,11 +528,47 @@ void main() {
           findsOneWidget,
         );
         expect(
+          find.descendant(
+            of: rail,
+            matching: find.bySemanticsLabel('AgathaTrack'),
+          ),
+          findsOneWidget,
+        );
+        expect(find.text('AgathaTrack'), findsNothing);
+        expect(
           find.byKey(const Key('experience_workspace_toggle')),
           findsOneWidget,
         );
       },
     );
+
+    testWidgets('shows compact rail brand without duplicating app bar title', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(720, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.petCare,
+          currentLocation: '/pc/home',
+          viewport: const Size(720, 900),
+          screenTitle: 'AgathaTrack',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('AgathaTrack'), findsNothing);
+      final rail = find.byKey(const Key('guardian_navigation_rail'));
+      expect(
+        find.descendant(
+          of: rail,
+          matching: find.bySemanticsLabel('AgathaTrack'),
+        ),
+        findsOneWidget,
+      );
+    });
 
     testWidgets('keeps drawer available below 600px width', (tester) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
@@ -657,6 +702,60 @@ void main() {
         expect(find.text('Account'), findsOneWidget);
       },
     );
+
+    testWidgets('shows AgathaTrack once on section root at 1024px', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            experienceEligibilityProvider.overrideWith(
+              (ref) => AsyncValue.data(
+                ExperienceEligibilityRules.compute(
+                  pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
+                  orgMembershipCount: 0,
+                ),
+              ),
+            ),
+            showOrganisationSectionProvider.overrideWith((ref) => false),
+            combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
+            organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+          ],
+          child: MaterialApp(
+            theme: ThemeData(splashFactory: NoSplash.splashFactory),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: MediaQuery(
+              data: const MediaQueryData(size: Size(1024, 900)),
+              child: ExperienceShellScaffold(
+                experience: AppExperience.petCare,
+                currentLocation: '/pc/home',
+                screenTitle: 'AgathaTrack',
+                child: const SizedBox.shrink(),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('AgathaTrack'), findsOneWidget);
+      expect(
+        find.byKey(const Key('experience_notification_bell')),
+        findsOneWidget,
+      );
+    });
 
     testWidgets('sidebar width is ~240px at 1024px', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1024, 900));
@@ -799,16 +898,15 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('All pets'), findsOneWidget);
-        final appBarFinder = find.byType(AppBar);
         expect(
-          find.descendant(
-            of: appBarFinder,
-            matching: find.byType(AppLogoTitle),
-          ),
-          findsNothing,
+          find.byKey(const Key('experience_content_chrome')),
+          findsOneWidget,
         );
-        final appBar = tester.widget<AppBar>(appBarFinder);
-        expect(appBar.centerTitle, isFalse);
+        expect(find.byType(AppBar), findsNothing);
+        final chrome = tester.widget<Material>(
+          find.byKey(const Key('experience_content_chrome')),
+        );
+        expect(chrome.color, AppColorTokens.background);
       },
     );
 

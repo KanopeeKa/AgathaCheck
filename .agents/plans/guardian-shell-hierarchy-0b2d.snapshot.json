@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "plan_id": "guardian-shell-hierarchy-0b2d",
+  "approved_at": "2026-09-03T07:22:00Z",
+  "approved_by": "user chat 2026-09-03 (/execute-plan phases 1-4 authorization)",
+  "approved_until": "2026-09-05T07:22:00Z",
+  "content_hash": "sha256:7797138b489ac186fd57875d003b636d394ddf2c421d1739f0097b173ea01dad",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/guardian-shell-hierarchy-0b2d-integration-0b2d",
+  "control_issue": 877,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Shell hierarchy decisions and navigation contract",
+      "branch": "cursor/shell-hierarchy-decisions-0b2d",
+      "allowed_paths": [
+        "docs/domains/navigation/changes/shell-hierarchy-decisions.md",
+        "docs/domains/navigation/features/navigation-decisions.md",
+        "docs/e2e/navigation-contract.md",
+        "docs/debt/refactoring-log.md",
+        ".agents/plans/guardian-shell-hierarchy-0b2d.md",
+        ".agents/plans/guardian-shell-hierarchy-0b2d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Desktop single brand (>=840px)",
+      "branch": "cursor/shell-hierarchy-desktop-0b2d",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
+        "flutter_app/lib/features/experience/presentation/screens/experience_home_screens.dart",
+        "flutter_app/lib/features/experience/presentation/config/drawer_menu_config.dart",
+        "flutter_app/lib/core/widgets/app_logo_title.dart",
+        "flutter_app/test/features/experience/presentation/widgets/experience_shell_scaffold_test.dart",
+        "flutter_app/test/features/experience/presentation/screens/experience_home_screens_test.dart",
+        ".agents/plans/guardian-shell-hierarchy-0b2d.md",
+        ".agents/plans/guardian-shell-hierarchy-0b2d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_navigation_rail.dart"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Tablet rail brand and title suppression (600-839px)",
+      "branch": "cursor/shell-hierarchy-tablet-0b2d",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_navigation_rail.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
+        "flutter_app/lib/core/widgets/app_logo_title.dart",
+        "flutter_app/lib/core/branding/logo_assets.dart",
+        "flutter_app/test/features/experience/presentation/widgets/experience_shell_scaffold_test.dart",
+        "flutter_app/test/features/experience/presentation/widgets/guardian_navigation_rail_test.dart",
+        ".agents/plans/guardian-shell-hierarchy-0b2d.md",
+        ".agents/plans/guardian-shell-hierarchy-0b2d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Shell chrome polish (spacing, toggle weight, notification association)",
+      "branch": "cursor/shell-hierarchy-chrome-0b2d",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_navigation_sidebar.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_navigation_rail.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/experience_workspace_toggle.dart",
+        "flutter_app/lib/core/widgets/shell_notification_bell.dart",
+        "flutter_app/test/features/experience/**",
+        ".agents/plans/guardian-shell-hierarchy-0b2d.md",
+        ".agents/plans/guardian-shell-hierarchy-0b2d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "BDD/E2E hierarchy verification",
+      "branch": "cursor/shell-hierarchy-e2e-0b2d",
+      "allowed_paths": [
+        "flutter_app/test/bdd/features/guardian_dashboard.feature",
+        "flutter_app/test/features/experience/**",
+        "e2e/playwright/tests/**",
+        "e2e/playwright/support/**",
+        "docs/e2e/navigation-contract.md",
+        "docs/quality/bdd-journey-matrix.md",
+        ".agents/plans/guardian-shell-hierarchy-0b2d.md",
+        ".agents/plans/guardian-shell-hierarchy-0b2d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/887",
+      "pr_head_sha": "01aba426226c8464de1fd410c4cfd69423bd3780"
+    }
+  ]
+}
