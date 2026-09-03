@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/widgets/collection_filter/manage_fosters_collection_filter.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../auth/presentation/providers/auth_providers.dart';
 import '../../../domain/entities/foster_parent.dart';
@@ -221,53 +222,12 @@ class _ApprovalFilters extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final filters = <(ManageFostersApprovalFilter, String, Key)>[
-      (
-        ManageFostersApprovalFilter.underReview,
-        l.manageFostersFilterUnderReview,
-        const Key('manage_fosters_filter_under_review'),
-      ),
-      (
-        ManageFostersApprovalFilter.approved,
-        l.manageFostersFilterApproved,
-        const Key('manage_fosters_filter_approved'),
-      ),
-      (
-        ManageFostersApprovalFilter.archived,
-        l.manageFostersFilterArchived,
-        const Key('manage_fosters_filter_archived'),
-      ),
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l.manageFostersApprovalFiltersLabel,
-          style: theme.textTheme.labelMedium,
-        ),
-        const SizedBox(height: 4),
-        Wrap(
-          spacing: 8,
-          children: [
-            for (final (filter, label, key) in filters)
-              FilterChip(
-                key: key,
-                label: Text(label),
-                selected: selected == filter,
-                onSelected: (isSelected) {
-                  ref
-                      .read(manageFostersApprovalFilterProvider(orgId).notifier)
-                      .state = isSelected
-                      ? filter
-                      : null;
-                },
-              ),
-          ],
-        ),
-      ],
+    return ManageFostersApprovalCollectionFilterBar(
+      selectedFilter: selected,
+      onFilterChanged: (value) {
+        ref.read(manageFostersApprovalFilterProvider(orgId).notifier).state =
+            value;
+      },
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/widgets/org_filter_chips.dart';
+import 'package:pet_profile_app/core/widgets/collection_filter/org_context_collection_filter.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
@@ -8,28 +8,25 @@ void main() {
     return MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Builder(
-        builder: (context) {
-          final l = AppLocalizations.of(context)!;
-          return Scaffold(
-            body: OrgFilterChips(
-              orgNames: orgNames,
-              selected: null,
-              onSelected: (_) {},
-              l: l,
-            ),
-          );
-        },
+      home: Scaffold(
+        body: PetListOrgCollectionFilterBar(
+          orgNames: orgNames,
+          showFosteredChoice: true,
+          selectedFilter: null,
+          onFilterChanged: (_) {},
+        ),
       ),
     );
   }
 
-  testWidgets('renders localized filter chip labels', (tester) async {
+  testWidgets('renders collection filter dimension trigger', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
     await tester.pumpWidget(buildWidget(orgNames: ['Shelter A']));
     await tester.pumpAndSettle();
 
-    expect(find.text('All pets'), findsOneWidget);
-    expect(find.text('My Pets'), findsOneWidget);
-    expect(find.text('Shelter A'), findsOneWidget);
+    expect(
+      find.byKey(const Key('filter_dimension_trigger_context')),
+      findsOneWidget,
+    );
   });
 }
