@@ -372,12 +372,12 @@ last_completed_phase: 2
 halt_reason: null
 next_action: "continue phase 3 on branch cursor/care-all-pets-unified-tile-c4e8"
 artifact_ref:
-  branch: cursor/unified-pet-tile-integration-c4e8
+  branch: cursor/care-all-pets-unified-tile-c4e8
   plan_path: .agents/plans/unified-pet-tile-c4e8.md
-  plan_commit: d4ddfb5b58c815d377c94c05808984da5a92980c
+  plan_commit: 6e1f6d3250ef41bed4ec449460e17d89c34087b9
   snapshot_path: .agents/plans/unified-pet-tile-c4e8.snapshot.json
-  snapshot_commit: d4ddfb5b58c815d377c94c05808984da5a92980c
-open_prs: []
+  snapshot_commit: 6e1f6d3250ef41bed4ec449460e17d89c34087b9
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/956"]
 merge_commits: {}
 debt_issue_refs: []
 ```

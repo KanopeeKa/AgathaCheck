@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T22:18:00Z",
   "approved_by": "user chat 2026-09-03 — approve-autonomous unified-pet-tile-c4e8 (full 5-phase plan)",
   "approved_until": "2026-09-05T22:18:00Z",
-  "content_hash": "sha256:62fc9aa87d9aed10a58a6882c64f4d7bedc9aeba4253cedceb187fc41336663f",
+  "content_hash": "sha256:976c7b81df56fa15b10f3ae139312255cc791cd9e957737fdebb2584a06174b6",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/unified-pet-tile-integration-c4e8",
@@ -119,7 +119,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/956",
+      "pr_head_sha": "6e1f6d32"
     },
     {
       "id": "4",
