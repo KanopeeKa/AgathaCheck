@@ -6,7 +6,6 @@
 import { test } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
-import { ExperiencePage } from '../pages/experience.page';
 import { OnboardingPage } from '../pages/onboarding.page';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { seedRescueHearts } from '../support/api';
