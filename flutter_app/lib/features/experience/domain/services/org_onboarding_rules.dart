@@ -5,7 +5,7 @@ import '../../../pet_profile/domain/entities/pet.dart';
 class OrgOnboardingRules {
   const OrgOnboardingRules._();
 
-  static const orgHomePath = '/o/home';
+  static const orgHomePath = '/o/orgs';
   static const onboardingPath = '/o/onboarding';
 
   /// True when [pet] is org inventory (shelter/organisation-owned, not foster/shared).

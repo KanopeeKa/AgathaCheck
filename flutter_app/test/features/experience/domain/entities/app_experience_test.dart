@@ -25,12 +25,12 @@ void main() {
 
     test('homePath returns pet care and organization routes', () {
       expect(AppExperience.petCare.homePath(), '/pc/home');
-      expect(AppExperience.organization.homePath(), '/o/home');
+      expect(AppExperience.organization.homePath(), '/o/orgs');
       expect(
         AppExperience.organization.homePath(orgId: 'org-abc'),
         '/o/org-abc',
       );
-      expect(AppExperience.organization.homePath(orgId: ''), '/o/home');
+      expect(AppExperience.organization.homePath(orgId: ''), '/o/orgs');
     });
 
     test('eventsPath and settingsPath are namespaced per experience', () {

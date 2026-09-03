@@ -729,14 +729,28 @@ class AppLocalizationsFr extends AppLocalizations {
       'Lorsqu\'une nouvelle session commencera, vous la trouverez ici.';
 
   @override
-  String get guardianEmptyShelterTitle => 'Connectez-vous à un refuge';
+  String get guardianFosterInviteTitle => 'Make room for one more';
 
   @override
-  String get guardianEmptyShelterBody =>
-      'Vos relations avec les refuges, votre accueil et vos activités d\'accueil apparaîtront ici.';
+  String get guardianFosterInviteBody =>
+      'Fostering gives a shelter pet a safe place to land while they wait for their next chapter. It can be a small commitment with a huge impact — and a wonderfully rewarding way to help.';
 
   @override
-  String get connectShelter => 'Se connecter à un refuge';
+  String get findAShelter => 'Find a shelter';
+
+  @override
+  String get guardianLinkedShelterTitle =>
+      'Thank you for being part of their journey';
+
+  @override
+  String get guardianLinkedShelterBody =>
+      'By opening your home to a foster pet, you\'re giving shelters more room to help and animals more time, comfort, and care. Your support makes a real difference.';
+
+  @override
+  String get yourShelters => 'Your shelters';
+
+  @override
+  String get findAnotherShelter => 'Find another shelter';
 
   @override
   String get sessionDetailsUnavailable =>

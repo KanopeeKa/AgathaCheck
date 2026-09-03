@@ -72,7 +72,7 @@ class _OrgOnboardingScreenState extends ConsumerState<OrgOnboardingScreen> {
   Future<void> _skip() async {
     await _persistOnboardingComplete();
     if (!mounted) return;
-    context.go('/o/home');
+    context.go('/o/orgs');
   }
 
   Future<void> _finish() async {
@@ -115,7 +115,7 @@ class _OrgOnboardingScreenState extends ConsumerState<OrgOnboardingScreen> {
       await ref.read(healthEntriesNotifierProvider.notifier).create(entry);
       await _persistOnboardingComplete();
       if (!mounted) return;
-      context.go('/o/home');
+      context.go('/o/orgs');
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

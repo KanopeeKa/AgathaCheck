@@ -23,7 +23,7 @@ extension AppExperienceWire on AppExperience {
   String homePath({String? orgId}) => switch (this) {
     AppExperience.petCare => '/pc/home',
     AppExperience.organization =>
-      orgId != null && orgId.isNotEmpty ? '/o/$orgId' : '/o/home',
+      orgId != null && orgId.isNotEmpty ? '/o/$orgId' : '/o/orgs',
   };
 
   String get eventsPath => switch (this) {

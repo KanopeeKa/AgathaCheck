@@ -73,11 +73,11 @@ void main() {
     test('leaves org home unchanged', () {
       expect(
         GuardianOnboardingRules.resolveGuardianDestination(
-          targetPath: '/o/home',
+          targetPath: '/o/orgs',
           pets: const [],
           onboardingCompleted: false,
         ),
-        '/o/home',
+        '/o/orgs',
       );
     });
   });
