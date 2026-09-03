@@ -83,17 +83,17 @@ e2e/**
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: implement care block surface
+next_action: "continue phase 1 on branch cursor/guardian-care-block-surface-5d6a"
 artifact_ref:
   branch: cursor/guardian-care-block-surface-5d6a
   plan_path: .agents/plans/guardian-care-block-surface-5d6a.md
-  plan_commit: null
+  plan_commit: 5d7012520ef775939fa3c2f801bbbc39473d3919
   snapshot_path: .agents/plans/guardian-care-block-surface-5d6a.snapshot.json
-  snapshot_commit: null
-open_prs: []
+  snapshot_commit: 5d7012520ef775939fa3c2f801bbbc39473d3919
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/941"]
 merge_commits: {}
 debt_issue_refs: []
 ```
