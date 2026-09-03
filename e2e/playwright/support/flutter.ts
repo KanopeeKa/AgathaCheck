@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { isLiveHostingTarget, isLiveUatTarget } from './hosting';
 import { passHostingWaf } from './waf';
 
@@ -671,6 +672,27 @@ export function collectionFilterMobileTrigger(page: Page): Locator {
     page,
     /^Filters(\s+\d+)?$|^Filtres(\s+\d+)?$/i,
   );
+}
+
+/**
+ * Toggle a collection-filter choice (toolbar menu on wide viewports, sheet on narrow).
+ */
+export async function toggleCollectionFilterChoice(
+  page: Page,
+  dimensionLabel: string | RegExp,
+  choiceLabel: string | RegExp,
+): Promise<void> {
+  const mobile = collectionFilterMobileTrigger(page);
+  if (await mobile.isVisible({ timeout: 2_000 }).catch(() => false)) {
+    await mobile.click();
+  } else {
+    const trigger = collectionFilterDimensionTrigger(page, dimensionLabel);
+    await expect(trigger).toBeVisible({ timeout: 10_000 });
+    await trigger.click();
+  }
+  await refreshFlutterAccessibility(page);
+  await page.getByRole('checkbox', { name: choiceLabel }).click();
+  await refreshFlutterAccessibility(page);
 }
 
 /**
