@@ -26,7 +26,6 @@ import {
 import {
   collectionFilterDimensionTrigger,
   dashboardSectionGroup,
-  expectAppBarTitle,
   flutterGotoUrl,
   reachAuthenticatedHome,
   refreshFlutterAccessibility,
@@ -146,10 +145,10 @@ test.describe('Guardian dashboard', () => {
     await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
     await page.locator(`[flt-semantics-identifier="care_event_row_view_${entry.id}"]`).click();
     await refreshFlutterAccessibility(page);
-    // Flutter web push from dashboard may not update the hash route; assert shell UI instead.
+    // Flutter web push from dashboard may not update the hash route; assert workbench UI.
     await expect(page.getByRole('button', { name: /go back/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /snooze/i })).toHaveCount(0);
-    await expectAppBarTitle(page, 'Viewable Care');
+    await expect(page.getByRole('button', { name: /close event/i })).toBeVisible();
     await expect(page.getByText('Due today')).toBeVisible();
   });
 
