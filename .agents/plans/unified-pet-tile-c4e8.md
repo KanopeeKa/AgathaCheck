@@ -374,10 +374,10 @@ next_action: "continue phase 1 on branch cursor/unified-pet-tile-foundation-c4e8
 artifact_ref:
   branch: cursor/unified-pet-tile-foundation-c4e8
   plan_path: .agents/plans/unified-pet-tile-c4e8.md
-  plan_commit: 19416adff5101fa09ed69e5bd330627f52cbdbb8
+  plan_commit: 213dedf027c0b1440391115e740438965d354583
   snapshot_path: .agents/plans/unified-pet-tile-c4e8.snapshot.json
-  snapshot_commit: 19416adff5101fa09ed69e5bd330627f52cbdbb8
-open_prs: []
+  snapshot_commit: 213dedf027c0b1440391115e740438965d354583
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/951"]
 merge_commits: {}
 debt_issue_refs: []
 ```
