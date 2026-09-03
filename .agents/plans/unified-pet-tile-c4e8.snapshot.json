@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "plan_id": "unified-pet-tile-c4e8",
+  "approved_at": "2026-09-03T22:18:00Z",
+  "approved_by": "user chat 2026-09-03 — approve-autonomous unified-pet-tile-c4e8 (full 5-phase plan)",
+  "approved_until": "2026-09-05T22:18:00Z",
+  "content_hash": "sha256:13f784b7fc6fdafcb6eb2897cd920d1ff80f637de6e4870d9cd050a182555bf9",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/unified-pet-tile-integration-c4e8",
+  "control_issue": 950,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Unified tile widget and status resolver",
+      "branch": "cursor/unified-pet-tile-foundation-c4e8",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/widgets/unified_pet_tile.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_tile_status_line.dart",
+        "flutter_app/lib/features/pet_profile/presentation/utils/pet_tile_dimensions.dart",
+        "flutter_app/test/features/pet_profile/presentation/widgets/unified_pet_tile_test.dart",
+        "flutter_app/test/features/pet_profile/presentation/widgets/pet_tile_status_line_test.dart",
+        ".agents/plans/unified-pet-tile-c4e8.md",
+        ".agents/plans/unified-pet-tile-c4e8.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Care dashboard rail uncapped carousel",
+      "branch": "cursor/care-pet-rail-carousel-c4e8",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_shell_home_content.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_my_pets_section.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_dashboard_helpers.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_dashboard_section_header.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/horizontal_carousel_controls.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/unified_pet_tile.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_tile_status_line.dart",
+        "flutter_app/lib/features/pet_profile/presentation/utils/pet_tile_dimensions.dart",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/unified-pet-tile-c4e8.md",
+        ".agents/plans/unified-pet-tile-c4e8.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "3",
+      "title": "Care All pets screen and passed-away collapse",
+      "branch": "cursor/care-all-pets-unified-tile-c4e8",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/**",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_pets_tile_grid.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/unified_pet_tile.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_tile_status_line.dart",
+        "flutter_app/lib/features/pet_profile/presentation/utils/pet_tile_dimensions.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/features/experience/presentation/widgets/guardian_pets_tile_grid_test.dart",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/unified-pet-tile-c4e8.md",
+        ".agents/plans/unified-pet-tile-c4e8.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "4",
+      "title": "Shelter org surfaces unified tile",
+      "branch": "cursor/shelter-unified-pet-tile-c4e8",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/widgets/org_pets/**",
+        "flutter_app/lib/features/organization/presentation/screens/organization_pets_screen.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/organisation_profile_pets.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/organization_pets_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/unified_pet_tile.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_tile_status_line.dart",
+        "flutter_app/lib/features/pet_profile/presentation/utils/pet_tile_dimensions.dart",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/unified-pet-tile-c4e8.md",
+        ".agents/plans/unified-pet-tile-c4e8.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "5",
+      "title": "Legacy surfaces cleanup and blueprint",
+      "branch": "cursor/unified-pet-tile-cleanup-c4e8",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_card.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/personal_pets_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/fostered_pets_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/organization_pets_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/passed_away_pets_section.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_dashboard_pet_card.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_full_list_pet_card.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_shell_shared_pet_card.dart",
+        "flutter_app/test/**",
+        "docs/design/plans/agathatrack-redesign-blueprint.md",
+        "docs/design/copy-tone.md",
+        ".agents/plans/unified-pet-tile-c4e8.md",
+        ".agents/plans/unified-pet-tile-c4e8.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    }
+  ]
+}
