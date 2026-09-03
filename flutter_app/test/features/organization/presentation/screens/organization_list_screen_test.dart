@@ -71,8 +71,9 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Rescue Hearts'), findsOneWidget);
-      expect(find.byKey(const Key('org_discover_nav_row')), findsOneWidget);
-      expect(find.text('Discover Organisations'), findsWidgets);
+      expect(find.text('My Organisations'), findsOneWidget);
+      expect(find.byKey(const Key('shelter_tasks_preview')), findsOneWidget);
+      expect(find.byKey(const Key('org_discover_nav_row')), findsNothing);
       expect(find.byKey(const Key('org_discovery_results')), findsNothing);
     },
   );

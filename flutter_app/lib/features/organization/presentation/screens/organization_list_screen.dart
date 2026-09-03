@@ -6,7 +6,6 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/widgets/pet_card.dart';
 import '../providers/organization_providers.dart';
 import '../providers/shelter_tasks_provider.dart';
-import '../widgets/org_discover_nav_row.dart';
 import '../widgets/org_hub_section_header.dart';
 import '../widgets/org_membership_tile.dart';
 import '../widgets/org_shell_app_bar_title.dart';
@@ -34,11 +33,6 @@ class OrganizationListScreen extends ConsumerWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          OrgHubSectionHeader(
-            title: l.organisationsDashboardTitle,
-            subtitle: l.orgMembershipByEmailInvite,
-          ),
-          const SizedBox(height: 16),
           OrgHubSectionHeader(title: l.myOrganizations),
           const SizedBox(height: 10),
           orgsAsync.when(
@@ -119,13 +113,6 @@ class OrganizationListScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
           const ShelterTasksPreview(),
-          const SizedBox(height: 20),
-          OrgHubSectionHeader(
-            title: l.discoverOrganizations,
-            subtitle: l.orgMembershipByEmailInvite,
-          ),
-          const SizedBox(height: 10),
-          const OrgDiscoverNavRow(),
         ],
       ),
     );
