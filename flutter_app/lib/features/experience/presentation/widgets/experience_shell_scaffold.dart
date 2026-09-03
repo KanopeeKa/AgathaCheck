@@ -26,7 +26,7 @@ import '../../../organization/presentation/utils/org_screen_theme.dart';
 /// Shell scaffold shared by guardian and organisation experience screens.
 ///
 /// Navigation reversal (phase-1-navigation.md):
-/// - Workspace toggle on section roots (`/g/home`, `/o/orgs`, `/account`).
+/// - Workspace toggle on section roots (`/pc/home`, `/o/orgs`, `/account`).
 /// - Back arrow on all other screens (Navigator.canPop → pop; else → section root).
 /// - Persistent bell with combined unread badge opens notification panel (endDrawer).
 /// - No Home button.
@@ -66,6 +66,8 @@ class ExperienceShellScaffold extends ConsumerWidget {
 
   /// Optional org for thumbnail titles in the org shell.
   final Organization? organization;
+
+  static const _toolbarHeight = 64.0;
 
   bool _isRoot() => DrawerMenuConfig.sectionRootPaths.contains(currentLocation);
 
@@ -115,8 +117,62 @@ class ExperienceShellScaffold extends ConsumerWidget {
         isRoot &&
         MediaQuery.sizeOf(context).width < 360 &&
         MediaQuery.textScalerOf(context).scale(14) > 18;
+    final suppressGuardianSectionRootAppBarTitle =
+        isGuardianExperience && usesGuardianLeadingNav && isRoot;
     final usesGuardianDesktopContentHeader =
-        isGuardianExperience && usesGuardianLeadingNav;
+        isGuardianExperience &&
+        usesGuardianLeadingNav &&
+        !suppressGuardianSectionRootAppBarTitle;
+    final showTitle =
+        screenTitle != null &&
+        !hideTitleForAccessibleCompactHeader &&
+        !suppressGuardianSectionRootAppBarTitle;
+    final titleWidget = !showTitle
+        ? const SizedBox.shrink()
+        : useOrgTitle
+        ? OrgShellAppBarTitle(
+            title: screenTitle!,
+            variant: orgNavVariant!,
+            organization: organization,
+          )
+        : usesGuardianDesktopContentHeader
+        ? Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              screenTitle!,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: AppColorTokens.heading,
+              ),
+            ),
+          )
+        : AppLogoTitle(
+            title: screenTitle!,
+            experience: experience,
+            useShellLogo: usesGuardianPrimaryNavigation,
+          );
+    final trailingActions = _buildTrailingActions(
+      theme: theme,
+      usesGuardianPrimaryNavigation: usesGuardianPrimaryNavigation,
+    );
+    final leadingWidget = showWorkspaceToggleInAppBar
+        ? Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: ExperienceWorkspaceToggle(
+              currentLocation: currentLocation,
+              onDarkBackground: usesGuardianPrimaryNavigation,
+              showShelter: showShelterWorkspace,
+            ),
+          )
+        : !isRoot
+        ? IconButton(
+            key: const Key('experience_back_button'),
+            icon: const Icon(Icons.arrow_back),
+            tooltip: l.goBack,
+            onPressed: () => _onBack(context),
+          )
+        : null;
 
     return Theme(
       data: shellTheme,
@@ -126,74 +182,24 @@ class ExperienceShellScaffold extends ConsumerWidget {
             : experience == AppExperience.petCare
             ? AppColorTokens.background
             : null,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          toolbarHeight: 64,
-          leadingWidth: showWorkspaceToggleInAppBar
-              ? workspaceToggleWidth
-              : null,
-          backgroundColor: appBarColor,
-          foregroundColor: appBarForeground,
-          surfaceTintColor: Colors.transparent,
-          scrolledUnderElevation: 0,
-          elevation: 0,
-          leading: showWorkspaceToggleInAppBar
-              ? Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: ExperienceWorkspaceToggle(
-                    currentLocation: currentLocation,
-                    onDarkBackground: usesGuardianPrimaryNavigation,
-                    showShelter: showShelterWorkspace,
-                  ),
-                )
-              : !isRoot
-              ? IconButton(
-                  key: const Key('experience_back_button'),
-                  icon: const Icon(Icons.arrow_back),
-                  tooltip: l.goBack,
-                  onPressed: () => _onBack(context),
-                )
-              : null,
-          centerTitle: !usesGuardianDesktopContentHeader,
-          title: screenTitle == null || hideTitleForAccessibleCompactHeader
-              ? const SizedBox.shrink()
-              : useOrgTitle
-              ? OrgShellAppBarTitle(
-                  title: screenTitle!,
-                  variant: orgNavVariant!,
-                  organization: organization,
-                )
-              : usesGuardianDesktopContentHeader
-              ? Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    screenTitle!,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: AppColorTokens.heading,
-                    ),
-                  ),
-                )
-              : AppLogoTitle(
-                  title: screenTitle!,
-                  experience: experience,
-                  useShellLogo: usesGuardianPrimaryNavigation,
-                ),
-          actions: [
-            if (contextualActions.isNotEmpty) ...contextualActions,
-            if (contextualActions.isNotEmpty)
-              VerticalDivider(
-                width: 16,
-                indent: 18,
-                endIndent: 18,
-                color: usesGuardianPrimaryNavigation
-                    ? AppColorTokens.petCareLight
-                    : theme.colorScheme.outlineVariant,
+        appBar: usesGuardianLeadingNav
+            ? null
+            : AppBar(
+                automaticallyImplyLeading: false,
+                toolbarHeight: _toolbarHeight,
+                leadingWidth: showWorkspaceToggleInAppBar
+                    ? workspaceToggleWidth
+                    : null,
+                backgroundColor: appBarColor,
+                foregroundColor: appBarForeground,
+                surfaceTintColor: Colors.transparent,
+                scrolledUnderElevation: 0,
+                elevation: 0,
+                leading: leadingWidget,
+                centerTitle: !usesGuardianDesktopContentHeader,
+                title: titleWidget,
+                actions: trailingActions,
               ),
-            Builder(builder: (ctx) => const ShellNotificationBell()),
-          ],
-        ),
         drawer: hideGuardianDrawer ? null : const ExperienceSectionDrawer(),
         endDrawer: const NotificationPanel(),
         body: usesGuardianLeadingNav
@@ -204,7 +210,25 @@ class ExperienceShellScaffold extends ConsumerWidget {
                     GuardianNavigationSidebar(currentLocation: currentLocation)
                   else
                     GuardianNavigationRail(currentLocation: currentLocation),
-                  Expanded(child: child),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _ContentChromeBar(
+                          backgroundColor: appBarColor,
+                          foregroundColor: appBarForeground,
+                          leading: leadingWidget,
+                          leadingWidth: showWorkspaceToggleInAppBar
+                              ? workspaceToggleWidth
+                              : 56,
+                          title: titleWidget,
+                          centerTitle: !usesGuardianDesktopContentHeader,
+                          actions: trailingActions,
+                        ),
+                        Expanded(child: child),
+                      ],
+                    ),
+                  ),
                 ],
               )
             : child,
@@ -215,6 +239,25 @@ class ExperienceShellScaffold extends ConsumerWidget {
     );
   }
 
+  List<Widget> _buildTrailingActions({
+    required ThemeData theme,
+    required bool usesGuardianPrimaryNavigation,
+  }) {
+    return [
+      if (contextualActions.isNotEmpty) ...contextualActions,
+      if (contextualActions.isNotEmpty)
+        VerticalDivider(
+          width: 16,
+          indent: 18,
+          endIndent: 18,
+          color: usesGuardianPrimaryNavigation
+              ? AppColorTokens.petCareLight
+              : theme.colorScheme.outlineVariant,
+        ),
+      Builder(builder: (ctx) => const ShellNotificationBell()),
+    ];
+  }
+
   void _onBack(BuildContext context) {
     final returnTo = shellReturnToFromState(GoRouterState.of(context));
     handleShellBack(
@@ -223,6 +266,73 @@ class ExperienceShellScaffold extends ConsumerWidget {
       returnTo: returnTo,
       defaultPath: backPath ?? _sectionRoot(),
       forceBackPath: forceBackPath,
+    );
+  }
+}
+
+/// Top chrome for the main content column when leading navigation is visible.
+class _ContentChromeBar extends StatelessWidget {
+  const _ContentChromeBar({
+    required this.backgroundColor,
+    required this.foregroundColor,
+    required this.leading,
+    required this.leadingWidth,
+    required this.title,
+    required this.centerTitle,
+    required this.actions,
+  });
+
+  final Color backgroundColor;
+  final Color? foregroundColor;
+  final Widget? leading;
+  final double leadingWidth;
+  final Widget title;
+  final bool centerTitle;
+  final List<Widget> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      key: const Key('experience_content_chrome'),
+      color: backgroundColor,
+      child: SafeArea(
+        bottom: false,
+        child: IconTheme.merge(
+          data: IconThemeData(color: foregroundColor),
+          child: DefaultTextStyle.merge(
+            style: TextStyle(color: foregroundColor),
+            child: SizedBox(
+              height: ExperienceShellScaffold._toolbarHeight,
+              child: Row(
+                children: [
+                  if (leading != null)
+                    SizedBox(
+                      width: leadingWidth,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: leading,
+                      ),
+                    ),
+                  Expanded(
+                    child: centerTitle
+                        ? Center(child: title)
+                        : Align(alignment: Alignment.centerLeft, child: title),
+                  ),
+                  ...actions.map(
+                    (action) => IconTheme.merge(
+                      data: IconThemeData(
+                        color: foregroundColor ?? theme.colorScheme.onSurface,
+                      ),
+                      child: action,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

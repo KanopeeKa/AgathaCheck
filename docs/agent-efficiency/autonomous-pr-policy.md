@@ -110,9 +110,7 @@ Post a **triage comment** on the PR before applying fixes.
 
 **Never ignore** blocker / critical / high / must signals.
 
-**Low confidence** → stop and ask human.
-
-**Execute-plan override:** When gate is active and phase scope is frozen in the snapshot, low-confidence triage is uncommon. Prefer a **debt issue + continue** unless must-fix vs merge-safety is genuinely ambiguous. Halt with `**Needs you:**` on the control issue — not a user-chat question.
+**Low confidence** → stop and ask human — **except during active execute-plan** (`gate` exit `0`): prefer **debt issue + continue** unless must-fix vs merge-safety is genuinely ambiguous; halt with `**Needs you:**` on the **control issue** + short chat alert — not a permission question in chat for routine work.
 
 **In-scope valid feedback stays in the PR.** Out-of-scope deferrals become issues (see §Debt issues). Aligns with `testing.mdc`.
 
@@ -223,13 +221,13 @@ See `docs/e2e/uat-deploy-tiers.md` · `docs/pipelines/ci-cd-gates.md` §3 · `do
 
 ## Issue hygiene (autonomous runs)
 
-| When | Action |
-|------|--------|
-| Create issue and **start work immediately** | `node scripts/github_issue_workflow.js start-work --issue <n> --body "…"` (comment + `busy`) |
-| Create debt issue for **later** | Comment on PR with issue # only |
-| Progress / milestone | Comment on the issue |
-| Pause or question for human | Comment with `**Needs you:**` + reason; halt/pause execute-plan when blocked |
-| Plan or task complete | Close with summary comment (`complete-plan --write` for control issues) |
+| When | Control issue | User chat (execute-plan) |
+|------|---------------|--------------------------|
+| Create issue and **start work immediately** | `node scripts/github_issue_workflow.js start-work --issue <n> --body "…"` (comment + `busy`) | — |
+| Create debt issue for **later** | Comment on PR with issue # only | — |
+| Progress / milestone | Comment on the issue | Brief status (optional) |
+| Pause or question for human | `**Needs you:**`; halt/pause when blocked | Short alert: issue link + unblock action |
+| Plan or task complete | Close with summary (`complete-plan --write` for control issues) | Brief completion note |
 
 **Project board status** (In Progress, Done, etc.) is **not** updated by Cloud Agents — GitHub does not grant Projects write on agent tokens. Use comments + `busy`; humans or GitHub Actions update the board when needed.
 

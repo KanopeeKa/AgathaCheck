@@ -17,7 +17,7 @@ node scripts/execute_plan_runtime.js current-phase <plan_id>
 
 ## Rules
 
-1. **Autonomy contract** — gate exit `0` → proceed; never ask "shall I continue?" in user chat (control issue for blockers only)
+1. **Autonomy contract** — gate exit `0` → proceed; never ask "shall I continue?" in user chat for routine work. **Blockers:** control issue (detail) + short chat alert (issue link).
 2. **Babysit-plus** on intermediate phase PRs; **babysit-uat** on final PR to `main` — never plain `/babysit`
 3. **Always merge** when gates pass (no manual/labeled modes)
 4. **Phase gate = merge-done** — PR merged into base before next phase (final main PR also needs pre-UAT green)
@@ -26,6 +26,7 @@ node scripts/execute_plan_runtime.js current-phase <plan_id>
 7. **Halt only on revoke / escalation / session_limit (~24h)** — do not close PRs; see autonomous-pr-policy §Halt and resume
 8. **48h `approved_until`** — mandatory autonomy window; re-approve if expired
 9. **Issue hygiene** — control issue: comment milestones; `start-work` + `busy` on session start; close on complete (`complete-plan --write`). Final main merge: `/babysit-uat` watches pre-UAT for merge SHA — **never** poll deploy
+10. **Turn boundaries ≠ stop** — each cloud turn ends when you respond; commit/push/PR update, post control-issue milestone, state `next_action`, then **continue the phase loop** in-session or on resume. Never ask "shall I continue?" in user chat. Gate exit `2` → `halt` on control issue only.
 
 ## Resume
 

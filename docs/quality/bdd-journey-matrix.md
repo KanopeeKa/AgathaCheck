@@ -139,6 +139,13 @@ existing full pet, event, vet, and notification workflows.
 | P1 | Truthful first use | Empty Pet Care dashboard shows first-use guidance without false alerts | `guardian.dashboard.spec.ts` | ✅ |
 | P1 | Global notification hand-off | Pending foster placement surfaces as a notification, not a dashboard banner | `guardian.dashboard.spec.ts` | ✅ |
 | P1 | Full Events continuity | Global events screen shows unified list without tabs; Global events screen supports pet and cohort filters | `guardian.dashboard.spec.ts` | ✅ |
+| P1 | Compact bottom nav | Pet Care compact bottom nav reaches Pets, Actions, and Fostering destinations | `guardian.navigation.spec.ts` | ✅ |
+| P1 | Leading nav rail | Pet Care leading navigation rail reaches primary destinations at medium width | `guardian.navigation.spec.ts` | ✅ |
+| P1 | Expanded sidebar | Pet Care expanded sidebar reaches primary destinations at wide width | `guardian.navigation.spec.ts` | ✅ |
+| P1 | Workspace toggle | Workspace toggle switches between Pet Care and Shelter when available | `guardian.navigation.spec.ts` | ✅ |
+| P1 | Mobile shell hierarchy | Mobile Pet Care home shows one product brand in the app bar | `guardian.navigation.spec.ts` | ✅ |
+| P1 | Tablet shell hierarchy | Tablet Pet Care home carries brand in the navigation rail only | `guardian.navigation.spec.ts` | ✅ |
+| P1 | Desktop shell hierarchy | Desktop Pet Care home carries brand in the sidebar only | `guardian.navigation.spec.ts` | ✅ |
 
 **Verified responsive contract:** the suite enters `/pc/home` directly, checks
 the 320px narrow layout for no horizontal overflow, proves completion/undo at

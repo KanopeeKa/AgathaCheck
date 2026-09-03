@@ -270,7 +270,10 @@
     "Pet Care compact bottom nav reaches Pets, Actions, and Fostering destinations": "P1",
     "Pet Care leading navigation rail reaches primary destinations at medium width": "P1",
     "Pet Care expanded sidebar reaches primary destinations at wide width": "P1",
-    "Workspace toggle switches between Pet Care and Shelter when available": "P1"
+    "Workspace toggle switches between Pet Care and Shelter when available": "P1",
+    "Mobile Pet Care home shows one product brand in the app bar": "P1",
+    "Tablet Pet Care home carries brand in the navigation rail only": "P1",
+    "Desktop Pet Care home carries brand in the sidebar only": "P1"
   },
   "organisation_discovery.feature": {
     "Discover Organisations is visible without signing in": "P1",

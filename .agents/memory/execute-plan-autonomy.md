@@ -10,12 +10,20 @@ When `node scripts/execute_plan_runtime.js gate <plan_id>` exits **0** (`autonom
 - **Proceed** — implement, PR, babysit+, merge (`auto`), advance phases, resume after routine halts.
 - **Do not ask** the human "shall I continue?" in chat.
 
+## Cloud turn boundaries
+
+Each agent **turn** ends when you respond — that is not a phase gate. Before ending a turn: commit, push, update PR/plan artifacts, comment on the control issue, state `next_action`. Continue the phase loop in the same session when possible; never use turn end as an excuse to ask permission. Soft closers ("let me know", "whenever you want", "I can start phase N on request") count as permission-seeking.
+
 ## User chat vs control issue
 
 | Channel | Use for |
 |---------|---------|
-| **Control issue** | Milestones, halts, `**Needs you:**` blockers, `session_limit` checkpoints |
-| **User chat** | Brief status + what's next. Optional bundled follow-up questions **at end of turn only** — never as a flow break |
+| **Control issue** | Canonical record: milestones, halts, `**Needs you:**` detail, resume steps |
+| **User chat** | Routine brief status + what's next; **blocker alerts** (short ping + issue link — human sees chat first) |
+
+**Handoff:** Shape the plan in chat → one-time grant (`approve-autonomous` or standing grant in snapshot) → `/execute-plan` runs without permission prompts until complete or a real blocker.
+
+**Blocker dual-notify:** Post full detail on the control issue (`halt` / `**Needs you:**`), then a one-paragraph chat alert with issue # and the single action that unblocks you. Do not ask permission in chat for routine phase/PR/merge work.
 
 ## Follow-ups (during execute-plan)
 
@@ -29,7 +37,7 @@ When `node scripts/execute_plan_runtime.js gate <plan_id>` exits **0** (`autonom
 
 | Situation | Action |
 |-----------|--------|
-| Goal unclear | Halt + `**Needs you:**` on control issue |
+| Goal unclear | Halt + `**Needs you:**` on control issue + short chat alert |
 | Minor wording conflict, intention clear | Follow execute-plan snapshot; proceed |
 | `replit-agent-operating-policy` "stop and ask" | **Does not apply** during active execute-plan except §Escalation |
 
@@ -39,7 +47,7 @@ Rare when phase `allowed_paths` and exit criteria are tight. Default: **debt iss
 
 ## Session limit (24h)
 
-After **~24 hours** of continuous work on the same plan (or approaching pod/session timeout): `halt --reason session_limit`, record `next_action`, post on control issue. Human comments `resume-plan <plan_id>` — no re-approve if still within `approved_until` (48h default).
+After **~24 hours** of continuous work on the same plan (or approaching pod/session timeout): `halt --reason session_limit`, record `next_action`, post on control issue **and** short chat alert (`resume-plan <plan_id>` on the issue). No re-approve if still within `approved_until` (48h default).
 
 ## Phase workers vs UAT polling
 
