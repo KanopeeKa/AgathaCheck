@@ -13,7 +13,6 @@ import '../../../organization/domain/entities/organization.dart';
 import '../../../organization/presentation/widgets/org_shell_app_bar_title.dart';
 import '../../domain/entities/app_experience.dart';
 import '../config/drawer_menu_config.dart';
-import '../providers/experience_providers.dart';
 import '../utils/experience_theme.dart';
 import 'experience_section_drawer.dart';
 import 'experience_workspace_toggle.dart';
@@ -105,7 +104,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
         : null;
     final useOrgTitle = isOrg && screenTitle != null && orgNavVariant != null;
     const showShelterWorkspace = true;
-    final workspaceToggleWidth = showShelterWorkspace ? 184.0 : 132.0;
+    const workspaceToggleWidth = 184.0;
     final leadingWidth = usesGuardianLeadingNav
         ? (isRoot ? null : 56.0)
         : (isRoot ? workspaceToggleWidth : workspaceToggleWidth + 48);

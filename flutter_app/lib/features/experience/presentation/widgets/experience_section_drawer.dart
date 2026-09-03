@@ -7,7 +7,6 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../domain/entities/app_experience.dart';
 import '../config/drawer_menu_config.dart';
-import '../providers/experience_providers.dart';
 import '../utils/drawer_menu_actions.dart';
 import 'experience_drawer_identity_header.dart';
 import 'experience_drawer_menu.dart';
