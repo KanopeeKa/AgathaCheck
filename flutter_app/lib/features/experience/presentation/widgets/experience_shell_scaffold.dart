@@ -204,20 +204,24 @@ class ExperienceShellScaffold extends ConsumerWidget {
                   else
                     GuardianNavigationRail(currentLocation: currentLocation),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _ContentChromeBar(
-                          backgroundColor: appBarColor,
-                          foregroundColor: appBarForeground,
-                          leading: leadingWidget,
-                          leadingWidth: leadingWidth ?? 56,
-                          title: titleWidget,
-                          centerTitle: !usesGuardianDesktopContentHeader,
-                          actions: trailingActions,
-                        ),
-                        Expanded(child: child),
-                      ],
+                    child: ColoredBox(
+                      key: const Key('experience_workspace_canvas'),
+                      color: AppColorTokens.background,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _ContentChromeBar(
+                            backgroundColor: appBarColor,
+                            foregroundColor: appBarForeground,
+                            leading: leadingWidget,
+                            leadingWidth: leadingWidth ?? 56,
+                            title: titleWidget,
+                            centerTitle: !usesGuardianDesktopContentHeader,
+                            actions: trailingActions,
+                          ),
+                          Expanded(child: child),
+                        ],
+                      ),
                     ),
                   ),
                 ],
