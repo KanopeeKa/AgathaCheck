@@ -44,7 +44,7 @@ Replace chip-cloud collection filtering with a shared progressive-disclosure pat
 | **approved_at** | 2026-09-03T07:36:00Z |
 | **approved_until** | 2026-09-05T07:36:00Z |
 | **control_issue** | [#884](https://github.com/KanopeeKa/AgathaCheck/issues/884) |
-| **content_hash** | `sha256:021bf951193e9d7f8b559b0a49b6445fc77157f42861bb2f571a52867551d240` |
+| **content_hash** | `sha256:8b191071a344b5cb2780dcc0c71852d4ae9768b34d04ea9c4a42c188079aca13` |
 | **autonomy** | `active` |
 
 **Grant:** user chat 2026-09-03 (locked decisions 1–4, no Sort) + `approve-autonomous collection-filter-canonical-f8a2` on #884
