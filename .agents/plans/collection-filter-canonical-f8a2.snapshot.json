@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T07:36:00Z",
   "approved_by": "user chat 2026-09-03 (locked filter UX decisions + execute-plan authorization)",
   "approved_until": "2026-09-05T07:36:00Z",
-  "content_hash": "sha256:503590bee0087787b8c0509e1f6580fee0ad4ff1219407df9bb7b0aa0caf6581",
+  "content_hash": "sha256:bbacbc88e8546006e8e449bc416afa68f7f5b2644b96ca8cdc2c0f355ab0cb33",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/collection-filter-canonical-integration-f8a2",
@@ -39,10 +39,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/888",
+      "pr_head_sha": "fa49aecff58c885f4b991226b1ddd75937394432"
     },
     {
       "id": "2",
