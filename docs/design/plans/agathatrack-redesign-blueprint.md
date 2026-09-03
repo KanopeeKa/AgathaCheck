@@ -447,23 +447,23 @@ Every high-level surface needs all four states designed before implementation.
 
 ### Card H — My Pets
 
-**Job:** Give guardians a bounded, recognisable snapshot of their care responsibility.
+**Job:** Give guardians a recognisable snapshot of their care responsibility across all active shell pets.
 
 **Rules:**
 
-- Maximum 4 dashboard preview cards.
-- Each preview card has a roughly 96–112px photo region, accessible photo placeholder, pet name, and useful ownership/status context.
-- The card tap opens the existing full pet destination.
-- The section action opens the full pets list.
+- Uncapped horizontal carousel of unified pet tiles (web scroll arrows when overflow).
+- Section eyebrow: **My Pets** (`myPets`); section action: **All pets** (`allPets`) → full pets list.
+- Each tile uses the cross-domain **UnifiedPetTile**: ownership stripe, photo-forward layout, pet name, and a single status line (care urgency on Pet Care surfaces; shelter/foster context on org surfaces).
+- Passed-away pets are excluded from the dashboard rail; they appear collapsed under **Rainbow bridge** (`rainbowBridge`) on the full pets list.
+- Tile tap opens the existing full pet destination.
 - Relationship/shared/foster semantics remain visible where relevant; never imply exclusive ownership by default.
 
-**Card anatomy:**
+**Tile anatomy:**
 
 ```text
-[photo / labelled placeholder]
+[ownership stripe | photo / labelled placeholder]
 Pet name
-Relationship or care context
-Optional concise status
+Status line (care urgency, foster placement, or passed away)
 ```
 
 ### Card I — Due and Overdue

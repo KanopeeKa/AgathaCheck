@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/presentation/widgets/pet_card.dart';
+import '../../../pet_profile/presentation/utils/pet_tile_dimensions.dart';
+import '../widgets/org_pets/org_pet_tile_strip.dart';
 import '../../domain/services/foster_visibility.dart';
 import '../providers/organization_providers.dart';
 import '../utils/org_pets_care_utils.dart';
@@ -83,7 +84,7 @@ class OrganizationPetsScreen extends ConsumerWidget {
                       )
                     : LayoutBuilder(
                         builder: (context, constraints) {
-                          final tileWidth = PetCard.tileWidthFor(
+                          final tileWidth = PetTileDimensions.widthFor(
                             constraints.maxWidth,
                           );
                           return ListView(
@@ -91,8 +92,8 @@ class OrganizationPetsScreen extends ConsumerWidget {
                             padding: const EdgeInsets.all(16),
                             children: [
                               Wrap(
-                                spacing: PetCard.tileSpacing,
-                                runSpacing: PetCard.tileSpacing,
+                                spacing: OrgPetTileStrip.tileSpacing,
+                                runSpacing: OrgPetTileStrip.tileSpacing,
                                 children: [
                                   for (final entry in filtered)
                                     OrgPetListItem(
@@ -101,6 +102,7 @@ class OrganizationPetsScreen extends ConsumerWidget {
                                       showAttentionReason:
                                           tab == OrgPetsTab.needAttention,
                                       tileWidth: tileWidth,
+                                      placements: screenData.placements,
                                     ),
                                 ],
                               ),

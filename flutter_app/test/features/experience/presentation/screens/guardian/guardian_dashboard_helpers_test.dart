@@ -132,7 +132,7 @@ void main() {
   });
 
   test(
-    'Today preview is capped, attention-first, and leaves source lists alone',
+    'Rail pets are attention-first and preview metadata keeps legacy cap',
     () {
       final now = DateTime.now();
       final pets = List.generate(
@@ -171,10 +171,13 @@ void main() {
         pets: pets,
         now: now,
       );
-      final preview = guardianTodayPreviewPets(pets, controller, summary);
+      final rail = guardianTodayRailPets(pets, controller, summary);
+      final preview = guardianTodayPetPreview(pets, controller, summary);
 
-      expect(preview, hasLength(4));
-      expect(preview.take(2).map((pet) => pet.id), ['pet-5', 'pet-4']);
+      expect(rail, hasLength(6));
+      expect(rail.take(2).map((pet) => pet.id), ['pet-5', 'pet-4']);
+      expect(preview.visiblePets, hasLength(4));
+      expect(preview.overflowCount, 2);
       expect(pets.map((pet) => pet.id), [
         'pet-0',
         'pet-1',

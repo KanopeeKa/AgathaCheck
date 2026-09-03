@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
-import '../../../../pet_profile/presentation/widgets/pet_card.dart';
 import '../../providers/org_permissions_providers.dart';
 import '../../providers/org_provider_pet_summary.dart';
+import '../org_pets/org_pet_tile_strip.dart';
 
 /// Profile preview: up to 12 org pets sorted by last activity (summary API).
 class OrganisationProfilePets extends ConsumerWidget {
@@ -47,7 +47,7 @@ class OrganisationProfilePets extends ConsumerWidget {
         if (pets.isEmpty) {
           return Text(l.orgNoPets, style: mutedStyle);
         }
-        return PetTileStrip(
+        return OrgPetTileStrip(
           key: const Key('org_profile_pets_strip'),
           useWrap: true,
           pets: pets,
