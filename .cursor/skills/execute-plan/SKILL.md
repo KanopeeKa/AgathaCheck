@@ -139,7 +139,7 @@ Cloud agents end each **turn** when you respond. That is normal — it is **not*
 |-------------|-----|--------|
 | Phase still `in_progress` | Commit, push, update PR + plan artifacts; post milestone on control issue; end user chat with brief status + explicit `next_action` (e.g. "next: babysit+ merge phase 2") | Ask "shall I continue?", "want me to proceed?", or soft offers ("let me know", "whenever you want") |
 | Phase just merged, more `pending` | Immediately start next phase in the **same session** when context/time allows; otherwise record `next_action` on control issue and exit with status only | Treat merge as session complete |
-| Waiting on CI / pre-UAT watch | Use `cursor-subscriptions` subscribe tools or the watch scripts; resume when green — do not ask the human to nudge CI | Poll deploy-uat or prod-ready |
+| Waiting on CI / pre-UAT watch | `gh pr checks --watch` (phase PR CI) or `./scripts/babysit_uat_watch_preuat.sh <merge_sha>` (final main merge); resume when green — do not ask the human to nudge CI | Poll deploy-uat or prod-ready |
 | Queued follow-up messages exist | Keep working through the queue in this session | Stop after one phase because the turn ended |
 
 **Standing grant:** If the human authorized the full plan/roadmap once (`approve-autonomous`, or chat grant recorded in `approved_by`), you do **not** need a new approval per phase, per turn, or per PR.
