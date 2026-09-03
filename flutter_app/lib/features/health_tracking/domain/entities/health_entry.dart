@@ -40,6 +40,7 @@ class HealthEntry {
     this.petName,
     this.remindDaysBefore = 1,
     this.scheduleTimes,
+    this.status = 'active',
     this.createdAt,
     this.updatedAt,
   });
@@ -101,6 +102,9 @@ class HealthEntry {
   /// Ordered local wall-clock times (`HH:mm`). Null or empty = all-day doses.
   final List<String>? scheduleTimes;
 
+  /// Series lifecycle from API: `active` or `completed`.
+  final String status;
+
   /// When this entry was created.
   final DateTime? createdAt;
 
@@ -109,6 +113,7 @@ class HealthEntry {
 
   /// Whether a one-time entry has been completed.
   bool get isCompleted {
+    if (status == 'completed') return true;
     if (frequency != HealthFrequency.once) return false;
     if (completedOn != null) return true;
     if (nextDueDate != null && nextDueDate!.year >= 9999) return true;
@@ -171,6 +176,7 @@ class HealthEntry {
     int? remindDaysBefore,
     List<String>? scheduleTimes,
     bool clearScheduleTimes = false,
+    String? status,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -202,6 +208,7 @@ class HealthEntry {
       scheduleTimes: clearScheduleTimes
           ? null
           : (scheduleTimes ?? this.scheduleTimes),
+      status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

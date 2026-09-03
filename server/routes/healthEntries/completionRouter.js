@@ -2,12 +2,13 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { publicError } from '../../config/security.js';
 import { nextOccurrence } from '../../lib/recurrenceHelper.js';
-import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso, yesterdayCalendarIso } from '../../lib/calendarDate.js';
+import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../../lib/calendarDate.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { extractUserId, healthEntryToMap, historyToMap } from './shared.js';
 import { completeOldestPendingOccurrence } from './occurrencesRouter.js';
+import { closeHealthEntrySeries } from '../../lib/occurrenceLifecycle.js';
 import { syncNextDueDateFromOccurrences } from '../../lib/occurrenceScheduling.js';
 
 export function registerCompletionRoutes(router, pool) {
@@ -225,21 +226,22 @@ export function registerCompletionRoutes(router, pool) {
       if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
         return res.status(404).json({ error: 'Entry not found' });
       }
-      const yesterday = yesterdayCalendarIso();
-      const result = await pool.query(
-        `UPDATE health_entries SET status = 'completed', repeat_end_date = $1, updated_at = NOW()
-         WHERE id = $2 RETURNING *`,
-        [yesterday, entryId]
+      const existing = await pool.query(
+        'SELECT * FROM health_entries WHERE id = $1',
+        [entryId]
       );
-      if (result.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
-      const row = result.rows[0];
+      if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
+      const row = await closeHealthEntrySeries(pool, existing.rows[0], userId);
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'health_entry.closed',
         resourceType: 'health_entry',
         resourceId: entryId,
         petId: row.pet_id,
-        metadata: { entry_type: row.type, repeat_end_date: yesterday },
+        metadata: {
+          entry_type: row.type,
+          repeat_end_date: dateToIsoDate(row.repeat_end_date),
+        },
         req,
       });
       recordPetActivityForPet(pool, {

@@ -254,6 +254,32 @@ void main() {
     );
   });
 
+  testWidgets('close event shows confirmation when open occurrences exist', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildApp(
+        entry: openEntry,
+        historyFn: _openHistory,
+        openOccurrencesFn: _openOccurrences,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('pet_event_close_button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Close event?'), findsOneWidget);
+    expect(
+      find.textContaining('Closing this event will also close'),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('pet_event_close_confirm_button')),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('closed entry greys status and shows reopen', (tester) async {
     await tester.pumpWidget(
       buildApp(entry: closedEntry, historyFn: _closedHistory),

@@ -7731,6 +7731,24 @@ abstract class AppLocalizations {
   /// **'Close event'**
   String get closeEventAction;
 
+  /// No description provided for @closeEventConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Close event?'**
+  String get closeEventConfirmTitle;
+
+  /// No description provided for @closeEventConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing this event will also close all associated occurrences. They will no longer appear in your care lists.'**
+  String get closeEventConfirmMessage;
+
+  /// No description provided for @closeEventConfirmMessageWithCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing this event will also close {count} open occurrence(s). They will no longer appear in your care lists.'**
+  String closeEventConfirmMessageWithCount(int count);
+
   /// No description provided for @reopenEventAction.
   ///
   /// In en, this message translates to:

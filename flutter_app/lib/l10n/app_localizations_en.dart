@@ -4295,6 +4295,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get closeEventAction => 'Close event';
 
   @override
+  String get closeEventConfirmTitle => 'Close event?';
+
+  @override
+  String get closeEventConfirmMessage =>
+      'Closing this event will also close all associated occurrences. They will no longer appear in your care lists.';
+
+  @override
+  String closeEventConfirmMessageWithCount(int count) {
+    return 'Closing this event will also close $count open occurrence(s). They will no longer appear in your care lists.';
+  }
+
+  @override
   String get reopenEventAction => 'Reopen event';
 
   @override

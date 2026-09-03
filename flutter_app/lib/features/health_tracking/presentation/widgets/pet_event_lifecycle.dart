@@ -8,13 +8,27 @@ import 'health_entry_form/health_entry_frequency_labels.dart';
 
 /// Whether the event series is closed (W15 close or one-time completed).
 bool isHealthEntrySeriesClosed(HealthEntry entry) {
+  if (entry.status == 'completed') return true;
   if (entry.frequency == HealthFrequency.once) {
     return entry.isCompleted;
   }
   if (entry.repeatEndDate == null) return false;
   final today = calendarDateOnly(DateTime.now());
   final end = calendarDateOnly(entry.repeatEndDate!);
-  return end.isBefore(today) || end.isAtSameMomentAs(today);
+  return end.isBefore(today);
+}
+
+/// Whether closing the event will also close associated occurrences.
+///
+/// [openOccurrenceCount] is null while open occurrences are still loading.
+bool closeEventWillCloseOccurrences(
+  HealthEntry entry,
+  int? openOccurrenceCount,
+) {
+  if (isHealthEntrySeriesClosed(entry)) return false;
+  if (openOccurrenceCount == null) return true;
+  if (openOccurrenceCount > 0) return true;
+  return entry.frequency != HealthFrequency.once;
 }
 
 String healthEntryEditRoute(HealthEntry entry, String petId) {
