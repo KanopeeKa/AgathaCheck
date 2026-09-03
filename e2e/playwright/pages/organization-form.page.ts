@@ -5,7 +5,9 @@ import {
   enableFlutterAccessibility,
   fillSemanticsField,
   fillTextbox,
+  flutterRoutePath,
   selectDropdownOption,
+  skipOrgOnboardingIfPresent,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { OrganizationListPage } from './organization-list.page';
@@ -66,7 +68,15 @@ export class OrganizationFormPage {
       .first()
       .waitFor({ timeout: 30_000 });
     try {
-      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 8_000);
+      await waitForFlutterRoutePattern(
+        this.page,
+        /\/o\/(?:orgs\/[^/?#]+|onboarding)/,
+        30_000,
+      );
+      await skipOrgOnboardingIfPresent(this.page);
+      if (!/\/o\/orgs\/[^/?#]+/.test(flutterRoutePath(this.page.url()))) {
+        throw new Error('org profile not loaded after create');
+      }
     } catch {
       // Flutter web sometimes stays on /o/orgs after create; list card + hash fallback.
       const list = new OrganizationListPage(this.page);

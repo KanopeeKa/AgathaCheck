@@ -13,6 +13,7 @@ import {
   ORG_PETS_LIST_ROUTE,
   refreshFlutterAccessibility,
   selectDropdownOption,
+  skipOrgOnboardingIfPresent,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { OrganizationListPage } from './organization-list.page';
@@ -36,6 +37,16 @@ export class OrganizationDetailPage {
 
   async expectLoaded(orgName: string): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
+    await waitForFlutterRoutePattern(
+      this.page,
+      /\/o\/(?:orgs\/[^/?#]+|onboarding)/,
+      30_000,
+    );
+    await skipOrgOnboardingIfPresent(this.page);
+    if (!/\/o\/orgs\/[^/?#]+/.test(flutterRoutePath(this.page.url()))) {
+      const list = new OrganizationListPage(this.page);
+      await list.openOrg(orgName);
+    }
     await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
