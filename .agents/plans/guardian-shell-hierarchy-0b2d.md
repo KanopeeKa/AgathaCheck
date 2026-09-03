@@ -122,13 +122,13 @@ autonomy: active
 current_phase: 5
 last_completed_phase: 4
 halt_reason: null
-next_action: "start phase 5: checkout cursor/shell-hierarchy-e2e-0b2d"
+next_action: "continue phase 5 on branch cursor/shell-hierarchy-e2e-0b2d"
 artifact_ref:
-  branch: cursor/shell-hierarchy-chrome-0b2d
+  branch: cursor/shell-hierarchy-e2e-0b2d
   plan_path: .agents/plans/guardian-shell-hierarchy-0b2d.md
-  plan_commit: 84b2664cbddd4778a0c1e1147b2af3bca2946278
+  plan_commit: e021f6f3629d9a4a84b6bad2008618a4a1853156
   snapshot_path: .agents/plans/guardian-shell-hierarchy-0b2d.snapshot.json
-  snapshot_commit: 84b2664cbddd4778a0c1e1147b2af3bca2946278
+  snapshot_commit: e021f6f3629d9a4a84b6bad2008618a4a1853156
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

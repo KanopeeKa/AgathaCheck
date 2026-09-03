@@ -114,6 +114,8 @@ Viewport **≥840px** exposes `GuardianNavigationSidebar` (`Key('guardian_naviga
 
 Page object: same `openLeadingNavDestination(label)` helper; Account via footer row.
 
+**E2E (D-shell-1/6):** `guardian.navigation.spec.ts` asserts one `AgathaTrack` text at 390px (app bar) and 1024px (sidebar only), logo-only rail brand at 720px (`guardian_navigation_rail_brand`), and notification bell outside leading nav via `GuardianDashboardPage.expect*ShellHierarchy()`.
+
 The hamburger drawer is **not** available at these widths.
 
 ## Workspace toggle (D-v4-3)
