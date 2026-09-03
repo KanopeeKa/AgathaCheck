@@ -1,7 +1,7 @@
 /**
  * @bdd experience_navigation.feature
  * Scenario: Guardian-only user lands on guardian home after login
- * Scenario: Organisation-only user lands on organisation home after login
+ * Scenario: Organisation member reaches shelter hub via workspace toggle after Pet Care login
  * Scenario: Dual-role user lands on guardian home when no last section saved
  * Scenario: Drawer hides Organisation for guardian-only users by default
  * Scenario: Drawer shows Organisation when user is an org member
@@ -54,14 +54,15 @@ test.describe('Experience navigation', () => {
     await experience.expectGuardianShell();
   });
 
-  test('organisation-only user lands on organisation home after login', async ({
+  test('organisation member reaches shelter hub after Pet Care login', async ({
     page,
   }) => {
     await prepareLiveApiAccess(page, baseURL());
     const { alice } = await seedRescueHearts(baseURL());
     await loginFromLanding(page, alice.email, alice.password);
-    await waitForFlutterRoutePattern(page, /\/o\/home/, 60_000);
+    await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const experience = new ExperiencePage(page);
+    await experience.openDrawerOrgView();
     await experience.expectOrgShell();
     await expect(page.getByText(welcomeAgathaTrackText)).not.toBeVisible();
   });
