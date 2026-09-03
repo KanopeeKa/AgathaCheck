@@ -3607,6 +3607,42 @@ abstract class AppLocalizations {
   /// **'Filters {count}'**
   String collectionFiltersWithCount(int count);
 
+  /// No description provided for @collectionFilterSkippedHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped hidden'**
+  String get collectionFilterSkippedHidden;
+
+  /// No description provided for @eventFilterTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get eventFilterTypeLabel;
+
+  /// No description provided for @eventFilterStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get eventFilterStatusLabel;
+
+  /// No description provided for @eventFilterRecurrenceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurrence'**
+  String get eventFilterRecurrenceLabel;
+
+  /// No description provided for @eventFilterSkippedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get eventFilterSkippedLabel;
+
+  /// No description provided for @eventFilterCohortLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ownership'**
+  String get eventFilterCohortLabel;
+
   /// No description provided for @orgPetsFilterName.
   ///
   /// In en, this message translates to:

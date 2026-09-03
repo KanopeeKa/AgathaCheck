@@ -158,8 +158,11 @@ void main() {
     await tester.pumpWidget(buildEventsScreen());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('manage_events_status_dueOverdue')));
-    await tester.pumpAndSettle();
+    await tapCollectionFilterChoice(
+      tester,
+      dimensionId: 'status',
+      choiceId: 'dueOverdue',
+    );
 
     expect(find.text('Flea treatment'), findsOneWidget);
     expect(find.text('Heartgard'), findsNothing);
@@ -169,8 +172,12 @@ void main() {
     await tester.pumpWidget(buildEventsScreen());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('global_events_cohort_myPets')));
-    await tester.pumpAndSettle();
+    await tapCollectionFilterChoice(
+      tester,
+      dimensionId: 'cohort',
+      choiceId: 'myPets',
+      inMore: true,
+    );
 
     expect(find.text('Heartgard'), findsOneWidget);
     expect(find.text('Flea treatment'), findsNothing);
@@ -180,8 +187,12 @@ void main() {
     await tester.pumpWidget(buildEventsScreen());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('global_events_cohort_fosterPets')));
-    await tester.pumpAndSettle();
+    await tapCollectionFilterChoice(
+      tester,
+      dimensionId: 'cohort',
+      choiceId: 'fosterPets',
+      inMore: true,
+    );
 
     expect(find.text('Flea treatment'), findsOneWidget);
     expect(find.text('Heartgard'), findsNothing);
@@ -191,10 +202,16 @@ void main() {
     await tester.pumpWidget(buildEventsScreen());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('global_events_pet_pet-owned')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('global_events_pet_pet-foster')));
-    await tester.pumpAndSettle();
+    await tapCollectionFilterChoice(
+      tester,
+      dimensionId: 'pet',
+      choiceId: 'pet:pet-owned',
+    );
+    await tapCollectionFilterChoice(
+      tester,
+      dimensionId: 'pet',
+      choiceId: 'pet:pet-foster',
+    );
 
     expect(find.text('Heartgard'), findsOneWidget);
     expect(find.text('Flea treatment'), findsOneWidget);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/theme/app_color_tokens.dart';
+import '../../../../../core/widgets/collection_filter/collection_filter.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../health_tracking/domain/entities/health_history_entry.dart';
@@ -12,6 +13,7 @@ import '../../../../health_tracking/presentation/widgets/occurrence_care_actions
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/screens/widgets/pet_event_entry_list.dart';
 import '../../../../pet_profile/presentation/widgets/pet_list/home_event_actions.dart';
+import '../../../../pet_profile/presentation/screens/widgets/manage_events_collection_filter.dart';
 import 'guardian_due_events_screen.dart';
 
 // ---------------------------------------------------------------------------
@@ -226,16 +228,10 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
                     ),
                   ),
                 ),
-                GuardianGlobalEventsFilterBar(
+                GuardianGlobalEventsCollectionFilterBar(
                   shellPets: widget.shellPets,
                   filters: _filters,
                   onChanged: (f) => setState(() => _filters = f),
-                ),
-                ManageEventsFilterBar(
-                  filters: _filters.eventFilters,
-                  onChanged: (ef) => setState(
-                    () => _filters = _filters.copyWith(eventFilters: ef),
-                  ),
                 ),
                 _buildBody(l, entriesAsync, historiesAsync, scopedPets),
               ],

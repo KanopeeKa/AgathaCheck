@@ -357,13 +357,12 @@ void main() {
           findsOneWidget,
         );
 
-        // Switch cohort to "Foster pets" — owned-pet entry is excluded.
-        final fosterFilter = find.byKey(
-          const Key('global_events_cohort_fosterPets'),
+        await tapCollectionFilterChoice(
+          tester,
+          dimensionId: 'cohort',
+          choiceId: 'fosterPets',
+          inMore: true,
         );
-        await tester.ensureVisible(fosterFilter);
-        await tester.tap(fosterFilter);
-        await tester.pumpAndSettle();
 
         // Completed owned-pet row must not appear under the foster filter.
         expect(
@@ -401,9 +400,11 @@ void main() {
           findsOneWidget,
         );
 
-        // Select only the foster pet via the individual pet chip.
-        await tester.tap(find.byKey(const Key('global_events_pet_pet-foster')));
-        await tester.pumpAndSettle();
+        await tapCollectionFilterChoice(
+          tester,
+          dimensionId: 'pet',
+          choiceId: 'pet:pet-foster',
+        );
 
         // Completed owned-pet row must not appear under the foster-pet filter.
         expect(
@@ -451,13 +452,11 @@ void main() {
           findsOneWidget,
         );
 
-        // Switch type filter to "Preventive" — excludes medication.
-        final preventiveFilter = find.byKey(
-          const Key('manage_events_type_preventive'),
+        await tapCollectionFilterChoice(
+          tester,
+          dimensionId: 'type',
+          choiceId: 'preventive',
         );
-        await tester.ensureVisible(preventiveFilter);
-        await tester.tap(preventiveFilter);
-        await tester.pumpAndSettle();
 
         // Completed medication row must not appear under the preventive filter.
         expect(
@@ -503,9 +502,11 @@ void main() {
         await tester.tap(find.text('Mark Completed'));
         await tester.pumpAndSettle();
 
-        // Switch status filter to "Closed".
-        await tester.tap(find.byKey(const Key('manage_events_status_closed')));
-        await tester.pumpAndSettle();
+        await tapCollectionFilterChoice(
+          tester,
+          dimensionId: 'status',
+          choiceId: 'closed',
+        );
 
         // One-time completed entry is closed — must remain visible.
         expect(
@@ -548,9 +549,11 @@ void main() {
         await tester.tap(find.text('Mark Completed'));
         await tester.pumpAndSettle();
 
-        // Switch status filter to "Open".
-        await tester.tap(find.byKey(const Key('manage_events_status_open')));
-        await tester.pumpAndSettle();
+        await tapCollectionFilterChoice(
+          tester,
+          dimensionId: 'status',
+          choiceId: 'open',
+        );
 
         // Recurring completed entry — series still open — must remain visible.
         expect(

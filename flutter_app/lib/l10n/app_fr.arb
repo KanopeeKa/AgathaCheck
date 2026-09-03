@@ -672,6 +672,12 @@
       "count": { "type": "int" }
     }
   },
+  "collectionFilterSkippedHidden": "Ignorés masqués",
+  "eventFilterTypeLabel": "Type",
+  "eventFilterStatusLabel": "Statut",
+  "eventFilterRecurrenceLabel": "Récurrence",
+  "eventFilterSkippedLabel": "Ignorés",
+  "eventFilterCohortLabel": "Contexte",
   "orgPetsFilterName": "Nom",
   "orgPetsFilterFosteredBy": "Accueilli par",
   "orgPetsFilterShadow": "Ombre",

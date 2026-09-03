@@ -719,6 +719,12 @@
       "count": { "type": "int" }
     }
   },
+  "collectionFilterSkippedHidden": "Skipped hidden",
+  "eventFilterTypeLabel": "Type",
+  "eventFilterStatusLabel": "Status",
+  "eventFilterRecurrenceLabel": "Recurrence",
+  "eventFilterSkippedLabel": "Skipped",
+  "eventFilterCohortLabel": "Ownership",
   "orgPetsFilterName": "Name",
   "orgPetsFilterFosteredBy": "Fostered by",
   "orgPetsFilterShadow": "Shadow",

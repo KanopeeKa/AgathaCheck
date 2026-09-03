@@ -178,18 +178,32 @@ export class HealthDashboardPage {
     await this.page.waitForTimeout(500);
   }
 
-  /** Pet Care `/pc/events` global list — status filter chip (manage-events filter bar). */
+  /** Pet Care `/pc/events` global list — status filter via collection filter toolbar. */
   async selectDueOverdueFilter(): Promise<void> {
-    const chip = filterChipByName(
-      this.page,
-      /Due and Overdue|À faire et en retard/i,
-    );
-    if (!(await chip.isVisible({ timeout: 3_000 }).catch(() => false))) {
-      throw new Error(
-        'Due and Overdue filter chip not found — Pet Care /pc/events may not have loaded manage-events filters',
-      );
+    const mobileFilters = this.page.getByRole('button', {
+      name: /Filters(\s+\d+)?|Filtres(\s+\d+)?/i,
+    });
+    if (await mobileFilters.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await mobileFilters.click();
+      await refreshFlutterAccessibility(this.page);
+      await this.page
+        .getByRole('checkbox', { name: /Due and Overdue|À faire et en retard/i })
+        .click();
+    } else {
+      const statusTrigger = this.page.getByRole('button', {
+        name: /^Status( \(\d+\))?$/i,
+      });
+      if (!(await statusTrigger.isVisible({ timeout: 3_000 }).catch(() => false))) {
+        throw new Error(
+          'Status filter trigger not found — Pet Care /pc/events may not have loaded collection filters',
+        );
+      }
+      await statusTrigger.click();
+      await refreshFlutterAccessibility(this.page);
+      await this.page
+        .getByRole('checkbox', { name: /Due and Overdue|À faire et en retard/i })
+        .click();
     }
-    await chip.click();
     await refreshFlutterAccessibility(this.page);
     await this.page.waitForTimeout(500);
   }

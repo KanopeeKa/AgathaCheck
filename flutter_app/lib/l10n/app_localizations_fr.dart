@@ -1986,6 +1986,24 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get collectionFilterSkippedHidden => 'Ignorés masqués';
+
+  @override
+  String get eventFilterTypeLabel => 'Type';
+
+  @override
+  String get eventFilterStatusLabel => 'Statut';
+
+  @override
+  String get eventFilterRecurrenceLabel => 'Récurrence';
+
+  @override
+  String get eventFilterSkippedLabel => 'Ignorés';
+
+  @override
+  String get eventFilterCohortLabel => 'Contexte';
+
+  @override
   String get orgPetsFilterName => 'Nom';
 
   @override
