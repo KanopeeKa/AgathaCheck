@@ -141,7 +141,8 @@
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/821"
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/821",
+      "merge_commit": "f5588aae76b8afa35e1b515fec160908e2dc7b04"
     },
     {
       "id": "5",
