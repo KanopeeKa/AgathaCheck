@@ -16,6 +16,9 @@ class GuardianOperationsDeskLayout extends StatelessWidget {
     this.fosteringSection,
   });
 
+  /// Canonical max width for the guardian dashboard content grid (D-desk-7).
+  static const maxContentWidth = 1120.0;
+
   /// The viewport breakpoint is evaluated by the parent before page padding.
   static const wideBreakpoint = 900.0;
 
@@ -34,7 +37,7 @@ class GuardianOperationsDeskLayout extends StatelessWidget {
         return Center(
           child: ConstrainedBox(
             key: const Key('guardian_operations_desk_content'),
-            constraints: const BoxConstraints(maxWidth: 1180),
+            constraints: const BoxConstraints(maxWidth: maxContentWidth),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

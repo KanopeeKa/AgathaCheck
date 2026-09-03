@@ -68,12 +68,22 @@ class GuardianShellHomeContent extends ConsumerWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
+        final viewportWidth = constraints.maxWidth;
+        final horizontalPadding = viewportWidth < 600
+            ? 16.0
+            : viewportWidth < 840
+            ? 24.0
+            : 32.0;
+
         return Theme(
           data: deskTheme,
           child: ColoredBox(
             color: AppColorTokens.background,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.symmetric(
+                horizontal: horizontalPadding,
+                vertical: 20,
+              ),
               child: GuardianOperationsDeskLayout(
                 useWideLayout:
                     constraints.maxWidth >=

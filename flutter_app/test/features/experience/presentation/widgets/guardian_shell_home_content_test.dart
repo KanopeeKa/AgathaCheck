@@ -242,7 +242,7 @@ void main() {
         tester
             .getSize(find.byKey(const Key('guardian_operations_desk_content')))
             .width,
-        lessThanOrEqualTo(1180),
+        lessThanOrEqualTo(GuardianOperationsDeskLayout.maxContentWidth),
       );
 
       await tester.binding.setSurfaceSize(const Size(320, 700));
