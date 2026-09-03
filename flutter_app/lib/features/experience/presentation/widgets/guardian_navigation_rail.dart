@@ -8,7 +8,6 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_experience.dart';
 import '../config/drawer_menu_config.dart';
 import '../config/guardian_primary_destinations.dart';
-import '../providers/experience_providers.dart';
 import 'experience_workspace_toggle.dart';
 
 /// Leading navigation rail for Guardian workspace on medium widths (600–839px).
@@ -25,10 +24,6 @@ class GuardianNavigationRail extends ConsumerWidget {
     final destinations = GuardianPrimaryDestinations.destinations();
     final selectedIndex = GuardianPrimaryDestinations.indexFor(currentLocation);
     final isRoot = DrawerMenuConfig.sectionRootPaths.contains(currentLocation);
-    final showShelterWorkspace =
-        isRoot &&
-        (currentLocation.startsWith('/o/') ||
-            ref.watch(showOrganisationSectionProvider));
 
     return Semantics(
       identifier: 'guardian_navigation_rail',
@@ -81,7 +76,7 @@ class GuardianNavigationRail extends ConsumerWidget {
                   ExperienceWorkspaceToggle(
                     currentLocation: currentLocation,
                     onDarkBackground: false,
-                    showShelter: showShelterWorkspace,
+                    showShelter: true,
                   ),
                 ],
               ],

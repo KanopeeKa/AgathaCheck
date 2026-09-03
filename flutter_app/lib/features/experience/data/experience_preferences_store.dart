@@ -8,7 +8,6 @@ class ExperiencePreferencesStore {
 
   static const defaultExperienceKey = 'experience_default';
   static const rememberChoiceKey = 'experience_remember_choice';
-  static const showOrganisationSectionKey = 'show_organisation_section';
   static const lastAppSectionKey = 'last_app_section';
 
   final SharedPreferences _prefs;
@@ -27,13 +26,6 @@ class ExperiencePreferencesStore {
   }
 
   bool readRememberChoice() => _prefs.getBool(rememberChoiceKey) ?? false;
-
-  bool readShowOrganisationSection() =>
-      _prefs.getBool(showOrganisationSectionKey) ?? false;
-
-  Future<void> writeShowOrganisationSection(bool value) async {
-    await _prefs.setBool(showOrganisationSectionKey, value);
-  }
 
   AppExperience? readLastAppSection() =>
       AppExperienceWire.fromWire(_prefs.getString(lastAppSectionKey));

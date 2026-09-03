@@ -18,7 +18,6 @@ class DrawerMenuConfig {
   /// The separator marks the boundary between primary sections and Account.
   static List<DrawerMenuEntry> sectionSwitcherEntries({
     required AppLocalizations l,
-    required bool showOrganisationSection,
   }) {
     return [
       DrawerMenuEntry.item(
@@ -30,16 +29,15 @@ class DrawerMenuConfig {
           route: AppExperience.petCare.homePath(),
         ),
       ),
-      if (showOrganisationSection)
-        DrawerMenuEntry.item(
-          DrawerMenuItem(
-            semanticKey: 'drawer_organisation',
-            label: l.drawerOrganisation,
-            icon: Icons.business_outlined,
-            group: DrawerMenuGroup.organizationGreen,
-            route: '/o/orgs',
-          ),
+      DrawerMenuEntry.item(
+        DrawerMenuItem(
+          semanticKey: 'drawer_organisation',
+          label: l.drawerOrganisation,
+          icon: Icons.business_outlined,
+          group: DrawerMenuGroup.organizationGreen,
+          route: '/o/orgs',
         ),
+      ),
     ];
   }
 

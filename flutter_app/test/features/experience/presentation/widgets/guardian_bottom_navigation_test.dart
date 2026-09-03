@@ -38,7 +38,6 @@ Widget _buildCompactShell({
           ),
         ),
       ),
-      showOrganisationSectionProvider.overrideWith((ref) => false),
       combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
       guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
       orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
