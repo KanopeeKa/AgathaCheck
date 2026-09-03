@@ -118,3 +118,29 @@ Feature: Pet Care dashboard
     When I view the Pet Care dashboard
     Then I should see the workspace toggle
     And I should be able to switch to Shelter and back to Pet Care
+
+  @implemented
+  @P1
+  Scenario: Mobile Pet Care home shows one product brand in the app bar
+    Given I am signed in as a guardian with pets
+    When I view the Pet Care dashboard at compact width
+    Then I should see exactly one "AgathaTrack" brand label
+    And I should see compact bottom navigation
+    And I should not see leading navigation rail or sidebar
+
+  @implemented
+  @P1
+  Scenario: Tablet Pet Care home carries brand in the navigation rail only
+    Given I am signed in as a guardian with pets
+    When I view the Pet Care dashboard at medium width
+    Then I should see the navigation rail brand
+    And I should not see duplicate "AgathaTrack" text in the content chrome
+    And the notification bell should sit outside the navigation rail
+
+  @implemented
+  @P1
+  Scenario: Desktop Pet Care home carries brand in the sidebar only
+    Given I am signed in as a guardian with pets
+    When I view the Pet Care dashboard at wide width
+    Then I should see exactly one "AgathaTrack" brand label in the sidebar
+    And the notification bell should sit outside the navigation sidebar

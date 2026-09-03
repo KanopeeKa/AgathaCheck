@@ -4,6 +4,9 @@
  * Scenario: Pet Care leading navigation rail reaches primary destinations at medium width
  * Scenario: Pet Care expanded sidebar reaches primary destinations at wide width
  * Scenario: Workspace toggle switches between Pet Care and Shelter when available
+ * Scenario: Mobile Pet Care home shows one product brand in the app bar
+ * Scenario: Tablet Pet Care home carries brand in the navigation rail only
+ * Scenario: Desktop Pet Care home carries brand in the sidebar only
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
@@ -113,6 +116,48 @@ test.describe('Guardian navigation', () => {
     await dashboard.openLeadingNavDestination('Fostering');
     await waitForFlutterRoutePattern(page, /\/pc\/fostering(?:\?|$)/, 30_000);
     await expect(page.getByText(/Fostering Sessions|Sessions d'accueil/i).first()).toBeVisible();
+  });
+
+  test('Mobile Pet Care home shows one product brand in the app bar', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await prepareLiveApiAccess(page, baseURL());
+    const user = await signupUser(baseURL());
+    await createPet(baseURL(), user.accessToken, 'BrandPet');
+    await loginGuardian(page, user.email, user.password);
+
+    const dashboard = new GuardianDashboardPage(page);
+    await dashboard.open();
+    await dashboard.expectMobileShellHierarchy();
+  });
+
+  test('Tablet Pet Care home carries brand in the navigation rail only', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 720, height: 900 });
+    await prepareLiveApiAccess(page, baseURL());
+    const user = await signupUser(baseURL());
+    await createPet(baseURL(), user.accessToken, 'RailBrandPet');
+    await loginGuardian(page, user.email, user.password);
+
+    const dashboard = new GuardianDashboardPage(page);
+    await dashboard.open();
+    await dashboard.expectTabletShellHierarchy();
+  });
+
+  test('Desktop Pet Care home carries brand in the sidebar only', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1024, height: 900 });
+    await prepareLiveApiAccess(page, baseURL());
+    const user = await signupUser(baseURL());
+    await createPet(baseURL(), user.accessToken, 'SidebarBrandPet');
+    await loginGuardian(page, user.email, user.password);
+
+    const dashboard = new GuardianDashboardPage(page);
+    await dashboard.open();
+    await dashboard.expectDesktopShellHierarchy();
   });
 
   test('Workspace toggle switches between Pet Care and Shelter when available', async ({

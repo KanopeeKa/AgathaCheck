@@ -267,6 +267,79 @@ export class GuardianDashboardPage {
     await expect(this.leadingNavSidebar()).toBeVisible();
   }
 
+  bottomNavigation(): Locator {
+    return this.page
+      .locator('[flt-semantics-identifier="guardian_bottom_navigation"]')
+      .or(this.page.getByRole('button', { name: /Dashboard(?:\s+Tab\s+1\s+of\s+5)?/i }))
+      .first();
+  }
+
+  railBrand(): Locator {
+    return this.page
+      .locator('[flt-semantics-identifier="guardian_navigation_rail_brand"]')
+      .or(this.page.getByRole('img', { name: /AgathaTrack logo/i }))
+      .first();
+  }
+
+  notificationBell(): Locator {
+    return this.page
+      .locator('[flt-semantics-identifier="experience_notification_bell"]')
+      .or(this.page.getByRole('button', { name: /open notifications/i }))
+      .first();
+  }
+
+  /** Sidebar/rail product identity group (Flutter web exposes brand as group name). */
+  brandGroups(): Locator {
+    return this.page.getByRole('group', { name: /^AgathaTrack$/ });
+  }
+
+  /** Mobile app bar brand banner when leading nav is hidden. */
+  mobileAppBarBrand(): Locator {
+    return this.page.getByRole('banner', { name: /AgathaTrack/i });
+  }
+
+  async expectMobileShellHierarchy(): Promise<void> {
+    await expect(this.bottomNavigation()).toBeVisible();
+    await expect(this.leadingNavRail()).not.toBeVisible();
+    await expect(this.leadingNavSidebar()).not.toBeVisible();
+    await expect(this.mobileAppBarBrand()).toBeVisible();
+    await expect(this.brandGroups()).toHaveCount(0);
+  }
+
+  async expectTabletShellHierarchy(): Promise<void> {
+    await this.expectLeadingNavRailVisible();
+    await expect(this.leadingNavSidebar()).not.toBeVisible();
+    await expect(this.railBrand()).toBeVisible();
+    await expect(this.brandGroups()).toHaveCount(1);
+    await expect(this.mobileAppBarBrand()).not.toBeVisible();
+    await this.expectNotificationBellOutsideLeadingNav();
+  }
+
+  async expectDesktopShellHierarchy(): Promise<void> {
+    await this.expectLeadingNavSidebarVisible();
+    await expect(this.leadingNavRail()).not.toBeVisible();
+    await expect(this.brandGroups()).toHaveCount(1);
+    await expect(this.mobileAppBarBrand()).not.toBeVisible();
+    await this.expectNotificationBellOutsideLeadingNav();
+  }
+
+  /** D-shell-1/6: global actions live in content chrome, not leading nav. */
+  async expectNotificationBellOutsideLeadingNav(): Promise<void> {
+    const bell = this.notificationBell();
+    await expect(bell).toBeVisible();
+    const leading = (await this.leadingNavSidebar().isVisible().catch(() => false))
+      ? this.leadingNavSidebar()
+      : this.leadingNavRail();
+    await expect(leading).toBeVisible();
+    const bellBox = await bell.boundingBox();
+    const leadingBox = await leading.boundingBox();
+    expect(bellBox).not.toBeNull();
+    expect(leadingBox).not.toBeNull();
+    if (bellBox != null && leadingBox != null) {
+      expect(bellBox.x).toBeGreaterThanOrEqual(leadingBox.x + leadingBox.width - 2);
+    }
+  }
+
   async openFosteringViaBottomNav(): Promise<void> {
     await this.openBottomNavTab('Fostering');
     await waitForFlutterRoutePattern(this.page, /\/pc\/fostering(?:\?|$)/, 30_000);
