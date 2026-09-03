@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T19:48:00Z",
   "approved_by": "user chat 2026-09-03 (/execute-plan shelter desk parity phases, teal #EAF5F5/#1D7C84)",
   "approved_until": "2026-09-05T19:48:00Z",
-  "content_hash": "sha256:bb365b9904270dfd7d6af4e866adf7138151166230b0fc6b35f59eafc8103eff",
+  "content_hash": "sha256:bbb5aa7805e4937006cd9daa8947d91dc14628be375b05af1346fddb26376748",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/shelter-desk-parity-dd8e-integration-dd8e",
@@ -65,10 +65,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/945",
+      "pr_head_sha": "6b40aa78"
     },
     {
       "id": "2",
@@ -94,10 +96,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/945",
+      "pr_head_sha": "6b40aa78"
     },
     {
       "id": "3",
@@ -122,10 +126,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/945",
+      "pr_head_sha": "6b40aa78"
     },
     {
       "id": "4",
@@ -153,10 +159,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/945",
+      "pr_head_sha": "6b40aa78"
     },
     {
       "id": "5",
@@ -182,10 +190,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/945",
+      "pr_head_sha": "6b40aa78"
     },
     {
       "id": "6",
@@ -212,10 +222,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/945",
+      "pr_head_sha": "6b40aa78"
     },
     {
       "id": "7",
@@ -242,10 +254,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/945",
+      "pr_head_sha": "6b40aa78"
     }
   ]
 }
