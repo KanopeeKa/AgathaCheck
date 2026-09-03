@@ -60,14 +60,14 @@ autonomy: active
 current_phase: 0
 last_completed_phase: null
 halt_reason: null
-next_action: "babysit+ merge phase 0 PR to integration"
+next_action: "continue phase 0 on branch cursor/shelter-desk-framing-decisions-dd8e"
 artifact_ref:
   branch: cursor/shelter-desk-framing-decisions-dd8e
   plan_path: .agents/plans/shelter-desk-parity-dd8e.md
-  plan_commit: pending
+  plan_commit: 8f4dcaeb46b4223ea229053b9db08c817915f21c
   snapshot_path: .agents/plans/shelter-desk-parity-dd8e.snapshot.json
-  snapshot_commit: pending
-open_prs: []
+  snapshot_commit: 8f4dcaeb46b4223ea229053b9db08c817915f21c
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/943"]
 merge_commits: {}
 debt_issue_refs: []
 ```
