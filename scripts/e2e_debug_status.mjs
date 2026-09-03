@@ -18,7 +18,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const REMEDIAL_BRANCH_RE = /^cursor\/preuat-fix-[0-9a-f]{6,40}-6bba$/i;
+// Any cloud-agent suffix (4 hex chars), not only the /e2e-debug default -6bba.
+const REMEDIAL_BRANCH_RE = /^cursor\/preuat-fix-[0-9a-f]{6,40}-[0-9a-f]{4}$/i;
 export const SESSION_START_MARKER = '/e2e-debug session start';
 
 function usageError(msg) {
