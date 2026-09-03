@@ -711,6 +711,14 @@
   "orgPetsTabAdopted": "Adopted",
   "orgPetsTabAll": "All",
   "orgPetsFiltersLabel": "Filters",
+  "collectionFilterMore": "More filters",
+  "collectionFilterClearAll": "Clear all filters",
+  "collectionFiltersWithCount": "Filters {count}",
+  "@collectionFiltersWithCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "orgPetsFilterName": "Name",
   "orgPetsFilterFosteredBy": "Fostered by",
   "orgPetsFilterShadow": "Shadow",

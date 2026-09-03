@@ -334,16 +334,16 @@ After phase 4 merges into `cursor/collection-filter-canonical-integration-f8a2`:
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "/execute-plan collection-filter-canonical-f8a2"
+next_action: "continue phase 1 on branch cursor/collection-filter-foundation-f8a2"
 artifact_ref:
-  branch: null
+  branch: cursor/collection-filter-canonical-integration-f8a2
   plan_path: .agents/plans/collection-filter-canonical-f8a2.md
-  plan_commit: null
+  plan_commit: e6d1f7cf1d4e7f9297a79c04291ab8981a9f6bb8
   snapshot_path: .agents/plans/collection-filter-canonical-f8a2.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: e6d1f7cf1d4e7f9297a79c04291ab8981a9f6bb8
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T07:36:00Z",
   "approved_by": "user chat 2026-09-03 (locked filter UX decisions + execute-plan authorization)",
   "approved_until": "2026-09-05T07:36:00Z",
-  "content_hash": "sha256:8b191071a344b5cb2780dcc0c71852d4ae9768b34d04ea9c4a42c188079aca13",
+  "content_hash": "sha256:503590bee0087787b8c0509e1f6580fee0ad4ff1219407df9bb7b0aa0caf6581",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/collection-filter-canonical-integration-f8a2",
@@ -39,12 +39,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {

@@ -1975,6 +1975,17 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgPetsFiltersLabel => 'Filtres';
 
   @override
+  String get collectionFilterMore => 'Plus de filtres';
+
+  @override
+  String get collectionFilterClearAll => 'Effacer tous les filtres';
+
+  @override
+  String collectionFiltersWithCount(int count) {
+    return 'Filtres $count';
+  }
+
+  @override
   String get orgPetsFilterName => 'Nom';
 
   @override
