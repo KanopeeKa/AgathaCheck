@@ -34,6 +34,7 @@ Widget _buildApp({
   int combinedUnread = 0,
   bool showOrganisationSection = false,
   Size? viewport,
+  String? screenTitle,
 }) {
   if (showOrganisationSection) {
     prefs.setBool('show_organisation_section', true);
@@ -42,6 +43,7 @@ Widget _buildApp({
   final shell = ExperienceShellScaffold(
     experience: experience,
     currentLocation: currentLocation,
+    screenTitle: screenTitle,
     child: const SizedBox.shrink(),
   );
 
@@ -525,11 +527,44 @@ void main() {
           findsOneWidget,
         );
         expect(
+          find.descendant(
+            of: rail,
+            matching: find.bySemanticsLabel('AgathaTrack'),
+          ),
+          findsOneWidget,
+        );
+        expect(find.text('AgathaTrack'), findsNothing);
+        expect(
           find.byKey(const Key('experience_workspace_toggle')),
           findsOneWidget,
         );
       },
     );
+
+    testWidgets('shows compact rail brand without duplicating app bar title', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(720, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.petCare,
+          currentLocation: '/pc/home',
+          viewport: const Size(720, 900),
+          screenTitle: 'AgathaTrack',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('AgathaTrack'), findsNothing);
+      final rail = find.byKey(const Key('guardian_navigation_rail'));
+      expect(
+        find.descendant(of: rail, matching: find.bySemanticsLabel('AgathaTrack')),
+        findsOneWidget,
+      );
+    });
 
     testWidgets('keeps drawer available below 600px width', (tester) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
