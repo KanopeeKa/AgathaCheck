@@ -139,7 +139,7 @@ test.describe('Organisation pet management', () => {
     expect(bobEntries.some((e) => e.name === 'Annual Vaccination')).toBe(true);
 
     const petList = await loginAs(page, alice, { experience: 'organization' });
-    await petList.openHealthDashboard();
+    await petList.openHealthDashboard({ experience: 'organization' });
 
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
@@ -164,11 +164,10 @@ test.describe('Organisation pet management', () => {
     });
 
     const petList = await loginAs(page, alice, { experience: 'organization' });
-    await petList.openHealthDashboard();
+    await petList.openHealthDashboard({ experience: 'organization' });
 
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
-    await dashboard.selectOrgFilter(ORG_NAME);
     await dashboard.expectEntryVisible('Flea Treatment');
   });
 });
