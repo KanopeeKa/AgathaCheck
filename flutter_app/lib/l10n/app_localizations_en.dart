@@ -1951,6 +1951,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgPetsFiltersLabel => 'Filters';
 
   @override
+  String get collectionFilterMore => 'More filters';
+
+  @override
+  String get collectionFilterClearAll => 'Clear all filters';
+
+  @override
+  String collectionFiltersWithCount(int count) {
+    return 'Filters $count';
+  }
+
+  @override
   String get orgPetsFilterName => 'Name';
 
   @override

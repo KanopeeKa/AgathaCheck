@@ -3589,6 +3589,24 @@ abstract class AppLocalizations {
   /// **'Filters'**
   String get orgPetsFiltersLabel;
 
+  /// No description provided for @collectionFilterMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More filters'**
+  String get collectionFilterMore;
+
+  /// No description provided for @collectionFilterClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all filters'**
+  String get collectionFilterClearAll;
+
+  /// No description provided for @collectionFiltersWithCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters {count}'**
+  String collectionFiltersWithCount(int count);
+
   /// No description provided for @orgPetsFilterName.
   ///
   /// In en, this message translates to:

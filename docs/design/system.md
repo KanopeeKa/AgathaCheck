@@ -376,6 +376,19 @@ Every interactive component must provide:
 Hover is an enhancement for pointer devices. Mobile states must remain complete
 without hover.
 
+### 6.1a Collection filters
+
+Canonical progressive-disclosure filtering for list screens. Full spec:
+[`collection-filter.md`](./collection-filter.md).
+
+| Surface | Pattern |
+|---|---|
+| Wide (≥600 logical px) | Compact toolbar dimension menus + More filters + active chips |
+| Narrow | Filters sheet trigger + active chips |
+| Active state | Removable chips only for non-default selections |
+
+Implementation: `flutter_app/lib/core/widgets/collection_filter/`.
+
 ### 6.2 Buttons
 
 #### Primary button
