@@ -374,10 +374,10 @@ next_action: "continue phase 2 on branch cursor/care-pet-rail-carousel-c4e8"
 artifact_ref:
   branch: cursor/care-pet-rail-carousel-c4e8
   plan_path: .agents/plans/unified-pet-tile-c4e8.md
-  plan_commit: 729d43c13aa8cd37d938df5c9f8619d455f7daab
+  plan_commit: febb585c01147bcd4dfa168f155723737cc1cc32
   snapshot_path: .agents/plans/unified-pet-tile-c4e8.snapshot.json
-  snapshot_commit: 729d43c13aa8cd37d938df5c9f8619d455f7daab
-open_prs: []
+  snapshot_commit: febb585c01147bcd4dfa168f155723737cc1cc32
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/954"]
 merge_commits: {}
 debt_issue_refs: []
 ```
