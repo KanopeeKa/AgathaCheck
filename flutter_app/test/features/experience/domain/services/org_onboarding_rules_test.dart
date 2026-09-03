@@ -20,14 +20,14 @@ void main() {
       organizationName: 'Rescue Hearts',
     );
 
-    test('needs onboarding when no orgs and not completed', () {
+    test('does not need onboarding when user has no org memberships', () {
       expect(
         OrgOnboardingRules.needsOnboarding(
           pets: const [],
           orgs: const [],
           onboardingCompleted: false,
         ),
-        isTrue,
+        isFalse,
       );
     });
 
