@@ -215,6 +215,7 @@ class _PetLoadErrorView extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 /// Pet and cohort filter chips for the global guardian events list.
+@Deprecated('Use GuardianGlobalEventsCollectionFilterBar')
 class GuardianGlobalEventsFilterBar extends StatelessWidget {
   const GuardianGlobalEventsFilterBar({
     super.key,
