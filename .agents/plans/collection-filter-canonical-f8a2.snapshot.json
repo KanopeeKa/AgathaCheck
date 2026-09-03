@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T07:36:00Z",
   "approved_by": "user chat 2026-09-03 (locked filter UX decisions + execute-plan authorization)",
   "approved_until": "2026-09-05T07:36:00Z",
-  "content_hash": "sha256:9c06d190e48df31c40ff394033eab017f6b2f1cb57162d2f96c6ddc31430e7f0",
+  "content_hash": "sha256:6d8cbbc6e321443c5a7a475d07b1e8efa6ad7d796e69234b274ed0fe075382d8",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/collection-filter-canonical-integration-f8a2",
@@ -77,10 +77,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/890",
+      "pr_head_sha": "918fd7d875a2b975e87d06a0bd69514c8b3c4764"
     },
     {
       "id": "3",
