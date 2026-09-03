@@ -11,25 +11,34 @@ Transform the Shelter workspace (`/o/orgs` and org deep routes) into a **Care-sh
 
 **Non-goals (deferred):** per-org profile nav redesign; full `OrgShellScaffold` unification with `ExperienceShellScaffold`; dedicated shelter-tasks API (v1 client aggregation only).
 
-## Coordination — `unified-pet-tile-c4e8`
+## Coordination — `unified-pet-tile-c4e8` (locked)
 
 | Owner | Scope |
 |-------|--------|
-| **unified-pet-tile-c4e8** (other agent) | Tile look-and-feel: cover/meta ratio (~50% image), logo scale, typography, shared pet-grid primitive |
-| **shelter-dashboard-v2-c4e8** (this plan) | Dashboard IA, Shelter tasks, primary nav, pin preference + overlay, teal shell tokens, docs |
+| **unified-pet-tile-c4e8** | Tile geometry: cover/meta ratio, logo scale, bio/location layout, shared pet-grid primitive + `topRightOverlay` slot |
+| **shelter-dashboard-v2-c4e8** | Dashboard IA, Shelter tasks, primary nav, pin API + `ShelterMembershipPinButton`, teal shell tokens |
 
-**Handoff rule:** Phase 4 (pin overlay) applies to whatever membership tile widget `unified-pet-tile-c4e8` lands. If unified tile is not merged when Phase 4 starts, Phase 4 is limited to **pin control + provider wire** on current `OrgMembershipTile`, then a follow-up micro-phase rebases pin onto the unified widget.
+**Execution order (agreed):**
 
-**Integration branch policy:** Prefer rebasing this plan’s integration branch onto `unified-pet-tile-c4e8` integration when that plan exists, before Phase 4.
+| Wave | Phases | Notes |
+|------|--------|-------|
+| **A** | 0 → 1 → 2 → 3 → 6 → **5a** | Canon, pin API, nav shell, tasks, dashboard layout (no tile geometry) |
+| **Gate** | `unified-pet-tile-c4e8` merged to shared integration | Do not start phase 4 until unified membership tile is on integration |
+| **B** | 4 → **5b** | Pin overlay on unified tile; wire bio/town/postcode on final card |
+| **C** | 7 → 8 | Teal audit, tests + navigation contract |
+
+**Pin widget:** `ShelterMembershipPinButton` — 48dp touch target, top-right on cover; unified tile exposes overlay slot only.
+
+**Nav slots:** 5-slot geometry — slot 1 Dashboard, slot 2 pinned org (hidden when unset), slot 3 spacer, slot 4 Discover, slot 5 Account.
 
 ## Autonomy
 
 | Field | Value |
 |-------|-------|
-| **approved_by** | *(pending human review)* |
-| **approved_until** | *(set at `approve-autonomous` — +48h)* |
+| **approved_by** | user chat 2026-09-03 (/execute-plan shelter-dashboard-v2-c4e8, unified-tile handoff agreed) |
+| **approved_until** | 2026-09-05T22:45:00Z |
 | **base_branch** | `cursor/shelter-dashboard-v2-c4e8-integration-c4e8` |
-| **control_issue** | *(bootstrap after approval)* |
+| **control_issue** | #952 |
 
 ## Phases
 
@@ -67,21 +76,27 @@ Extend `ExperienceShellScaffold` for `AppExperience.organization`: leading nav +
 
 ### Phase 4 — Pin control on membership tile
 
-Pin icon top-right on tile cover (48dp touch target). Wire to Phase 1 API via Riverpod provider; replace-on-pin; unpin on tap when pinned. **Do not** change tile geometry here (unified-pet-tile plan).
+*Wave B only — **blocked** until `unified-pet-tile-c4e8` is on integration.*
+
+`ShelterMembershipPinButton` in unified tile overlay slot. Wire to Phase 1 API; replace-on-pin; unpin on tap when pinned.
 
 **Exit:** Pin/unpin updates nav slot without restart; invalid pin cleared after membership refresh.
 
 ---
 
-### Phase 5 — Shelter dashboard body redesign
+### Phase 5 — Shelter dashboard body redesign (5a layout, 5b tile meta)
 
-`OrganizationListScreen`: remove `OrgHubSectionHeader` for dashboard title/subtitle; start at **My organisations** eyebrow only; remove `OrgDiscoverNavRow` from body. Membership cards show **bio** + **town, postcode** (client: `town` + `publicProfileMetadata['postcode']`).
+**5a (wave A):** `OrganizationListScreen` — remove dashboard title/subtitle header; start at **My organisations** eyebrow; remove `OrgDiscoverNavRow` from body; section order per framing doc.
 
-**Exit:** Hub matches framing doc section order; discover only via nav; widget tests updated.
+**5b (wave B, after unified tile + phase 4):** Membership cards show **bio** + **town, postcode** on unified tile; finalize grid tests.
+
+**Exit:** Hub matches framing doc; discover only via nav; widget tests updated.
 
 ---
 
 ### Phase 6 — Shelter tasks preview (v1 aggregation)
+
+*Runs in wave A (before unified-tile gate).*
 
 New `ShelterTasksPreview` section with `GuardianDashboardSectionHeader`-style eyebrow on `organizationLight` canvas. v1 provider aggregates across **all** memberships:
 
@@ -125,11 +140,11 @@ Widget tests for tasks, pin, shelter nav. Update `docs/e2e/navigation-contract.m
 ## Runtime state
 
 ```yaml
-autonomy: pending
+autonomy: active
 current_phase: null
 last_completed_phase: null
 halt_reason: null
-next_action: "human review — then approve-autonomous shelter-dashboard-v2-c4e8"
+next_action: "phase 0 — framing decisions"
 artifact_ref:
   branch: null
   plan_path: .agents/plans/shelter-dashboard-v2-c4e8.md

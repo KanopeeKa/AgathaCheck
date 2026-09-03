@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "plan_id": "shelter-dashboard-v2-c4e8",
-  "approved_at": "2026-09-03T22:32:00Z",
-  "approved_by": "DRAFT — pending human review (do not run gate)",
-  "approved_until": "2026-09-05T22:32:00Z",
-  "content_hash": "sha256:7a6ddd1b233b89c77d0c8627b1ce7cb590418eeea7ba6243322e0d044adde8a4",
-  "autonomy": "halted",
+  "approved_at": "2026-09-03T22:45:00Z",
+  "approved_by": "user chat 2026-09-03 (/execute-plan shelter-dashboard-v2-c4e8, approve-autonomous on control issue #952)",
+  "approved_until": "2026-09-05T22:45:00Z",
+  "content_hash": "sha256:6309d46088ffb76a049ffbaf46cd9dc8f0f299471a79d74fede0e062faa662e3",
+  "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/shelter-dashboard-v2-c4e8-integration-c4e8",
-  "control_issue": 1,
+  "control_issue": 952,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
