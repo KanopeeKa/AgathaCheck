@@ -377,6 +377,31 @@ void main() {
         'upcoming-soon',
         'upcoming-later',
       ]);
+      expect(find.text('All Actions'), findsOneWidget);
+      expect(
+        find.byKey(const Key('guardian_dashboard_care_view_all')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('places All Actions below the care block when entries exist', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _buildSection(
+          pets: const [_pet],
+          notifierFactory: () => _FixedHealthEntriesNotifier([_dueEntry]),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final blockY = tester.getTopLeft(
+        find.byKey(const Key('guardian_dashboard_care_block')),
+      ).dy;
+      final linkY = tester.getTopLeft(
+        find.byKey(const Key('guardian_dashboard_care_view_all')),
+      ).dy;
+      expect(linkY, greaterThan(blockY));
     });
   });
 
