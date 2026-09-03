@@ -4,8 +4,8 @@
   "approved_at": "2026-09-03T19:48:00Z",
   "approved_by": "user chat 2026-09-03 (/execute-plan shelter desk parity phases, teal #EAF5F5/#1D7C84)",
   "approved_until": "2026-09-05T19:48:00Z",
-  "content_hash": "sha256:bbb5aa7805e4937006cd9daa8947d91dc14628be375b05af1346fddb26376748",
-  "autonomy": "active",
+  "content_hash": "sha256:b71086219514b6764c1e8b631d3c4ed034c85b99f1f2bce2a72b59d5ed412dc9",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/shelter-desk-parity-dd8e-integration-dd8e",
   "control_issue": 942,
@@ -35,12 +35,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/943",
-      "pr_head_sha": "8f4dcaeb46b4223ea229053b9db08c817915f21c"
+      "pr_head_sha": "b08a228e"
     },
     {
       "id": "1",
