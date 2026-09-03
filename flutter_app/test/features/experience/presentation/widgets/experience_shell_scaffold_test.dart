@@ -289,7 +289,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
-    expect(find.byKey(const Key('experience_workspace_toggle')), findsOneWidget);
+    expect(
+      find.byKey(const Key('experience_workspace_toggle')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
 
@@ -389,9 +392,7 @@ void main() {
     );
   });
 
-  testWidgets('workspace toggle navigates to Shelter', (
-    tester,
-  ) async {
+  testWidgets('workspace toggle navigates to Shelter', (tester) async {
     await tester.pumpWidget(
       _buildWorkspaceRouterApp(prefs: prefs, initialLocation: '/pc/home'),
     );
@@ -409,9 +410,7 @@ void main() {
     expect(find.text('Shelter home'), findsOneWidget);
   });
 
-  testWidgets('workspace toggle navigates to Pet Care', (
-    tester,
-  ) async {
+  testWidgets('workspace toggle navigates to Pet Care', (tester) async {
     await tester.pumpWidget(
       _buildWorkspaceRouterApp(prefs: prefs, initialLocation: '/o/orgs'),
     );
@@ -440,7 +439,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
-    expect(find.byKey(const Key('experience_workspace_toggle')), findsOneWidget);
+    expect(
+      find.byKey(const Key('experience_workspace_toggle')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
 

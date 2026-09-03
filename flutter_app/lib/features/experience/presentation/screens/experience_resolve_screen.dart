@@ -16,7 +16,8 @@ class ExperienceResolveScreen extends ConsumerStatefulWidget {
       _ExperienceResolveScreenState();
 }
 
-class _ExperienceResolveScreenState extends ConsumerState<ExperienceResolveScreen> {
+class _ExperienceResolveScreenState
+    extends ConsumerState<ExperienceResolveScreen> {
   bool _navigated = false;
 
   void _navigate(ExperienceEligibility eligibility) {
@@ -29,10 +30,9 @@ class _ExperienceResolveScreenState extends ConsumerState<ExperienceResolveScree
       guardianOnboardingCompletedProvider,
     );
     final orgOnboardingCompleted = ref.read(orgOnboardingCompletedProvider);
-    final hasPendingOrgInvites = ref.read(pendingOrgInvitesProvider).maybeWhen(
-      data: (invites) => invites.isNotEmpty,
-      orElse: () => false,
-    );
+    final hasPendingOrgInvites = ref
+        .read(pendingOrgInvitesProvider)
+        .maybeWhen(data: (invites) => invites.isNotEmpty, orElse: () => false);
     final path = resolvePostLoginPath(
       eligibility: eligibility,
       pets: pets,
