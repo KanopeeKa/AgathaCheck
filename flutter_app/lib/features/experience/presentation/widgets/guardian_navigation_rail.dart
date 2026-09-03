@@ -6,7 +6,6 @@ import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_experience.dart';
-import '../config/drawer_menu_config.dart';
 import '../config/guardian_primary_destinations.dart';
 import 'experience_workspace_toggle.dart';
 
@@ -23,7 +22,6 @@ class GuardianNavigationRail extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final destinations = GuardianPrimaryDestinations.destinations();
     final selectedIndex = GuardianPrimaryDestinations.indexFor(currentLocation);
-    final isRoot = DrawerMenuConfig.sectionRootPaths.contains(currentLocation);
 
     return Semantics(
       identifier: 'guardian_navigation_rail',
@@ -71,14 +69,12 @@ class GuardianNavigationRail extends ConsumerWidget {
                     showTitle: false,
                   ),
                 ),
-                if (isRoot) ...[
-                  const SizedBox(height: 8),
-                  ExperienceWorkspaceToggle(
-                    currentLocation: currentLocation,
-                    onDarkBackground: false,
-                    showShelter: true,
-                  ),
-                ],
+                const SizedBox(height: 8),
+                ExperienceWorkspaceToggle(
+                  currentLocation: currentLocation,
+                  onDarkBackground: false,
+                  showShelter: true,
+                ),
               ],
             ),
           ),

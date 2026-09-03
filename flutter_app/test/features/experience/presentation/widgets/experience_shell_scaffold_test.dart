@@ -276,7 +276,7 @@ void main() {
     expect(find.byKey(const Key('experience_back_button')), findsNothing);
   });
 
-  testWidgets('non-root path shows back arrow, not workspace toggle', (
+  testWidgets('non-root path shows back arrow and workspace toggle', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -289,7 +289,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
-    expect(find.byKey(const Key('experience_workspace_toggle')), findsNothing);
+    expect(find.byKey(const Key('experience_workspace_toggle')), findsOneWidget);
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
 
@@ -440,7 +440,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
-    expect(find.byKey(const Key('experience_workspace_toggle')), findsNothing);
+    expect(find.byKey(const Key('experience_workspace_toggle')), findsOneWidget);
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
 
@@ -806,7 +806,7 @@ void main() {
     );
 
     testWidgets(
-      'shows back button on non-root without workspace toggle in app bar',
+      'shows back button on non-root with workspace toggle in sidebar',
       (tester) async {
         await tester.binding.setSurfaceSize(const Size(1024, 900));
         addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -824,7 +824,7 @@ void main() {
         expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
         expect(
           find.byKey(const Key('experience_workspace_toggle')),
-          findsNothing,
+          findsOneWidget,
         );
       },
     );
