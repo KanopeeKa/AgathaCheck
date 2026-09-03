@@ -199,7 +199,7 @@ class _GuardianUpcomingEventsSectionState
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          GuardianDashboardSectionHeader(title: l.careEyebrow),
+          GuardianDashboardSectionChrome(title: l.careEyebrow),
           const SizedBox(height: 10),
           const SizedBox(
             height: 56,
@@ -241,7 +241,12 @@ class _GuardianUpcomingEventsSectionState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GuardianDashboardSectionHeader(title: l.careEyebrow),
+        GuardianDashboardSectionChrome(
+          title: l.careEyebrow,
+          linkLabel: showAllCare ? l.allCare : null,
+          linkKey: const Key('guardian_dashboard_care_view_all'),
+          onLinkPressed: showAllCare ? () => context.go('/pc/events') : null,
+        ),
         const SizedBox(height: 10),
         GuardianDeskSectionCard(
           key: const Key('guardian_dashboard_care_section'),
@@ -255,12 +260,6 @@ class _GuardianUpcomingEventsSectionState
             priorities.all.isNotEmpty,
           ),
         ),
-        if (showAllCare)
-          GuardianDashboardSectionLink(
-            linkKey: const Key('guardian_dashboard_care_view_all'),
-            label: l.allCare,
-            onPressed: () => context.go('/pc/events'),
-          ),
       ],
     );
   }
@@ -269,7 +268,7 @@ class _GuardianUpcomingEventsSectionState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GuardianDashboardSectionHeader(title: l.careEyebrow),
+        GuardianDashboardSectionChrome(title: l.careEyebrow),
         const SizedBox(height: 10),
         GuardianDeskSectionCard(
           tint: AppColorTokens.petCareLight,

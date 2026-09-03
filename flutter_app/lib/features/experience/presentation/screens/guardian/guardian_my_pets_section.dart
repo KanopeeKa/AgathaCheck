@@ -66,6 +66,13 @@ class GuardianMyPetsSection extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (hasPreviewOverflow)
+              GuardianDashboardSectionChrome(
+                linkLabel: l.allPets,
+                linkKey: const Key('dashboard_manage_pets_link'),
+                onLinkPressed: () => context.go('/pc/pets'),
+              ),
+            if (hasPreviewOverflow) const SizedBox(height: 10),
             _GuardianPetRail(
               pets: previewPets!,
               careSummary: careSummary,
@@ -75,12 +82,6 @@ class GuardianMyPetsSection extends ConsumerWidget {
               parentContext: context,
               onAddPet: () => context.push('/add'),
             ),
-            if (hasPreviewOverflow)
-              GuardianDashboardSectionLink(
-                linkKey: const Key('dashboard_manage_pets_link'),
-                label: l.allPets,
-                onPressed: () => context.go('/pc/pets'),
-              ),
           ],
         ),
       );
