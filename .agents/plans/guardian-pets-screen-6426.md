@@ -91,8 +91,8 @@ Rework the guardian `/pc/pets` screen per ui-design-deep review and user decisio
 
 | Phase | Status | PR |
 |-------|--------|-----|
-| 1 | in_progress | |
-| 2 | pending | |
+| 1 | merged | #818 |
+| 2 | merged | #819 |
 
 ```yaml
 autonomy: completed
