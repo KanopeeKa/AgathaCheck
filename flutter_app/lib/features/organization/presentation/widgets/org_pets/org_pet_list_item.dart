@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_profile/presentation/widgets/pet_card.dart';
+import '../../../../pet_profile/presentation/utils/pet_tile_dimensions.dart';
+import '../../../../pet_profile/presentation/widgets/unified_pet_tile.dart';
+import '../../../domain/entities/foster_placement.dart';
 import '../../models/org_pet_list_entry.dart';
-import 'org_pets_filter_row.dart';
+import 'org_unified_pet_tile_helpers.dart';
 
 class OrgPetListItem extends StatelessWidget {
   const OrgPetListItem({
@@ -13,12 +15,14 @@ class OrgPetListItem extends StatelessWidget {
     required this.orgId,
     required this.showAttentionReason,
     required this.tileWidth,
+    this.placements = const [],
   });
 
   final OrgPetListEntry entry;
   final String orgId;
   final bool showAttentionReason;
   final double tileWidth;
+  final List<FosterPlacement> placements;
 
   @override
   Widget build(BuildContext context) {
@@ -46,35 +50,22 @@ class OrgPetListItem extends StatelessWidget {
     }
 
     final pet = entry.pet!;
-    return SizedBox(
+    final tileHeight = PetTileDimensions.heightFor(context);
+    final activePlacement = activePlacementForEntry(entry, placements);
+    final statusLine = resolveOrgPetTileStatusLine(
+      l: l,
+      pet: pet,
+      activePlacement: activePlacement,
+      attentionReason: entry.attentionReason,
+      includeAttentionReason: showAttentionReason,
+    );
+
+    return UnifiedPetTile(
+      pet: pet,
       width: tileWidth,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            width: tileWidth,
-            height: tileWidth,
-            child: PetCard(
-              pet: pet,
-              onTap: () => context.push('/pet/${pet.id}'),
-            ),
-          ),
-          if (showAttentionReason && entry.attentionReason != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                localizedAttentionReason(l, entry.attentionReason!),
-                key: Key('org_pet_attention_${pet.name}'),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.error,
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-        ],
-      ),
+      height: tileHeight,
+      statusLine: statusLine,
+      onTap: () => context.push('/pet/${pet.id}'),
     );
   }
 }
