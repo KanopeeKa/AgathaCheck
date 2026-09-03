@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T07:36:00Z",
   "approved_by": "user chat 2026-09-03 (locked filter UX decisions + execute-plan authorization)",
   "approved_until": "2026-09-05T07:36:00Z",
-  "content_hash": "sha256:d2195fc74844e743d53f1a336d60a0cb4f4f5cda68971cf3eb105529599a3775",
+  "content_hash": "sha256:a1911189dcc467f3498d02426525bdc629e56b1476ca881d8590c6b54294aeff",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/collection-filter-canonical-integration-f8a2",
@@ -120,7 +120,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/891",
+      "pr_head_sha": "7582e61eae12d3e314db2f5861650827f188ffe9"
     },
     {
       "id": "4",

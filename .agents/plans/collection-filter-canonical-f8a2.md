@@ -341,10 +341,10 @@ next_action: "continue phase 3 on branch cursor/collection-filter-events-org-f8a
 artifact_ref:
   branch: cursor/collection-filter-events-org-f8a2
   plan_path: .agents/plans/collection-filter-canonical-f8a2.md
-  plan_commit: b7b53c1559721948b119cfb978d3c0b4832a2fd1
+  plan_commit: 7582e61eae12d3e314db2f5861650827f188ffe9
   snapshot_path: .agents/plans/collection-filter-canonical-f8a2.snapshot.json
-  snapshot_commit: b7b53c1559721948b119cfb978d3c0b4832a2fd1
-open_prs: []
+  snapshot_commit: 7582e61eae12d3e314db2f5861650827f188ffe9
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/891"]
 merge_commits: {}
 debt_issue_refs: []
 ```
