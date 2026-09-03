@@ -141,7 +141,9 @@ class GuardianPetRailYarnDeco extends StatelessWidget {
         if (mode == GuardianPetRailDecoMode.full) ...[
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(top: compositionHeight * _yarnVerticalOffset),
+              padding: EdgeInsets.only(
+                top: compositionHeight * _yarnVerticalOffset,
+              ),
               child: Image.asset(
                 GuardianDashboardDecoAssets.yarnSegment,
                 height: yarnHeight,
@@ -214,7 +216,5 @@ double guardianPetRailContentWidth({
   double separatorWidth = 12,
 }) {
   if (petCount <= 0) return 0;
-  return petCount * cardWidth +
-      petCount * separatorWidth +
-      addTileWidth;
+  return petCount * cardWidth + petCount * separatorWidth + addTileWidth;
 }

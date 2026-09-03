@@ -41,9 +41,7 @@ class GuardianMyVetsSection extends ConsumerWidget {
             ? const SizedBox(
                 key: Key('guardian_vets_auth_waiting'),
                 height: 24,
-                child: Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
+                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
               )
             : vetListAsync.when(
                 loading: () => const SizedBox(
@@ -82,8 +80,9 @@ class GuardianMyVetsSection extends ConsumerWidget {
                     );
                   }
                   final pets = petsAsync.valueOrNull;
-                  final linkedPetsByVetId =
-                      pets == null ? null : _linkedPetsByVetId(pets);
+                  final linkedPetsByVetId = pets == null
+                      ? null
+                      : _linkedPetsByVetId(pets);
                   return Column(
                     children: [
                       for (final vet in resolvedVets)

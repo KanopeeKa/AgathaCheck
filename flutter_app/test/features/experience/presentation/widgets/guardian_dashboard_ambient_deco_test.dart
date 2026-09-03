@@ -65,7 +65,10 @@ void main() {
         ),
       );
 
-      expect(find.byKey(const Key('guardian_dashboard_pet_rail_deco')), findsOneWidget);
+      expect(
+        find.byKey(const Key('guardian_dashboard_pet_rail_deco')),
+        findsOneWidget,
+      );
       expect(find.byType(ExcludeSemantics), findsWidgets);
       expect(find.byType(IgnorePointer), findsWidgets);
     });
@@ -74,11 +77,7 @@ void main() {
   group('GuardianCareTeamPuppyDeco', () {
     testWidgets('renders puppy asset on wide layouts', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: GuardianCareTeamPuppyDeco(),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: GuardianCareTeamPuppyDeco())),
       );
 
       expect(
