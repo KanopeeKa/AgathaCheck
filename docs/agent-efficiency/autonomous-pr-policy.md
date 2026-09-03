@@ -221,13 +221,13 @@ See `docs/e2e/uat-deploy-tiers.md` · `docs/pipelines/ci-cd-gates.md` §3 · `do
 
 ## Issue hygiene (autonomous runs)
 
-| When | Action |
-|------|--------|
-| Create issue and **start work immediately** | `node scripts/github_issue_workflow.js start-work --issue <n> --body "…"` (comment + `busy`) |
-| Create debt issue for **later** | Comment on PR with issue # only |
-| Progress / milestone | Comment on the issue |
-| Pause or question for human | `**Needs you:**` on control issue; halt/pause when blocked | Short chat alert: issue link + unblock action |
-| Plan or task complete | Close with summary comment (`complete-plan --write` for control issues) | Brief completion note in chat |
+| When | Control issue | User chat (execute-plan) |
+|------|---------------|--------------------------|
+| Create issue and **start work immediately** | `node scripts/github_issue_workflow.js start-work --issue <n> --body "…"` (comment + `busy`) | — |
+| Create debt issue for **later** | Comment on PR with issue # only | — |
+| Progress / milestone | Comment on the issue | Brief status (optional) |
+| Pause or question for human | `**Needs you:**`; halt/pause when blocked | Short alert: issue link + unblock action |
+| Plan or task complete | Close with summary (`complete-plan --write` for control issues) | Brief completion note |
 
 **Project board status** (In Progress, Done, etc.) is **not** updated by Cloud Agents — GitHub does not grant Projects write on agent tokens. Use comments + `busy`; humans or GitHub Actions update the board when needed.
 
