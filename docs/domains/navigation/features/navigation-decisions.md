@@ -3,7 +3,7 @@ title: Navigation decisions
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-26
+last_updated: 2026-09-03
 tags: [navigation, decisions]
 domain: navigation
 feature_id: navigation-decisions
@@ -39,7 +39,7 @@ Source: experience-program analysis + Q&A, 2026-07-25. Master brief: [navigation
 | ID | Decision | Status | Phase |
 |----|----------|--------|-------|
 | **D-v4-1** | On compact Pet Care widths (&lt;600px), a **five-tab bottom bar** exposes Today (`/pc/home`), Pets (`/pc/pets`), Care (`/pc/events`), Fostering (`/pc/fostering`), and Account (`/account`). This **supersedes** blueprint §15 anti-pattern “five-tab bottom navigation bar” and is the approved mobile primary nav for Pet Care operational work. | locked | Pet Care ops desk 2026-08 |
-| **D-v4-2** | **Account entry:** On compact widths (&lt;600px), `/account` is reachable from the Pet Care bottom bar **and** the drawer while the drawer remains available. On medium+ widths where leading nav is visible (D-v4-4), Account is reachable from the leading nav footer/rail and the drawer is **retired** — dual drawer entry ends. Shelter workspace switching stays in the shell workspace switcher — not in the bottom bar or leading nav destination list. | locked | Pet Care adaptive nav 2026-08 |
+| **D-v4-2** | **Account entry:** On compact widths (&lt;600px), `/account` is reachable from the Pet Care bottom bar **and** the drawer while the drawer remains available. On medium+ widths where leading nav is visible (D-v4-4), Account is reachable from the leading nav footer/rail and the drawer is **retired** — dual drawer entry ends. **Shelter clause superseded (2026-09):** Shelter now has its own primary nav destinations (D-shelter-NAV-1); workspace switching stays in the shell workspace switcher on all screens (D-v5-WORKSPACE-4). | locked | Pet Care adaptive nav 2026-08; Shelter clause → [shelter-dashboard-v2-framing-decisions.md](/docs/domains/shelter/changes/shelter-dashboard-v2-framing-decisions.md) |
 | **D-v4-3** | Section roots (`/pc/home`, `/o/orgs`, `/account`) show the **workspace toggle** in the shell leading area instead of a back arrow. On compact Pet Care routes the toggle sits in the app bar; on medium+ it moves to the leading nav shell header (D-v4-5). Compact Pet Care primary routes also use plum app bar + bottom bar chrome. | locked | Pet Care adaptive nav 2026-08 |
 | **D-v4-4** | On Pet Care widths **≥600px**, the same five destinations as D-v4-1 appear in **leading application chrome** (navigation rail 600–839px; expanded sidebar ≥840px). This is primary shell navigation — **not** the hamburger drawer. The drawer must not duplicate these destinations. | locked | Pet Care adaptive nav 2026-08 |
 | **D-v4-5** | When leading nav is visible (≥600px Pet Care workspace), the hamburger **drawer is hidden**. Workspace switcher and brand live in the leading nav shell header; Account is pinned at the bottom of expanded sidebar (≥840px) or exposed as the fifth rail destination (600–839px). | locked | Pet Care adaptive nav 2026-08 |
@@ -66,6 +66,16 @@ Full detail: [shell-hierarchy-decisions.md](../changes/shell-hierarchy-decisions
 | **D-v5-WORKSPACE-5** | Fostering dashboard invite/thank-you copy + illustrations. | locked | workspace-nav-simplify |
 
 Full detail: [workspace-nav-simplify-decisions.md](../changes/workspace-nav-simplify-decisions.md).
+
+## J — Shelter primary navigation (2026-09)
+
+| ID | Decision | Status | Phase |
+|----|----------|--------|-------|
+| **D-shelter-NAV-1** | Shelter primary destinations: **Dashboard** (`/o/orgs`), optional **pinned org** (`/o/orgs/:id`), **Discover**, **Account** (`/account`). Same breakpoints as D-v4-4. **Persistent** on org deep routes. **Supersedes** D-desk-S5 and the Shelter clause of D-v4-2. | locked | shelter-dashboard-v2-c4e8 |
+| **D-shelter-NAV-2** | **One pinned org** per user (account preference, cross-device). Pin control on membership tile cover; nav slot hidden when unset; target `/o/orgs/:id`. | locked | shelter-dashboard-v2-c4e8 |
+| **D-shelter-NAV-3** | **Five-slot nav geometry** aligned with Pet Care bar; inactive centre spacer when pinned org unset. | locked | shelter-dashboard-v2-c4e8 |
+
+Full detail: [shelter-dashboard-v2-framing-decisions.md](/docs/domains/shelter/changes/shelter-dashboard-v2-framing-decisions.md). **D-v3-IA-2** amended there — Discover moves from hub body row to primary nav.
 
 ---
 

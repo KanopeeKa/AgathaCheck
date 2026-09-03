@@ -14,6 +14,27 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 ---
 
+## shelter-dashboard-v2-c4e8 — Shelter dashboard v2 (nav, tasks, pin) (2026-09-03)
+
+**Goal:** Care-shaped Shelter operations desk — primary nav, Shelter tasks preview, pinned org preference, streamlined dashboard body; tile geometry via `unified-pet-tile-c4e8`.  
+**Plan:** `.agents/plans/shelter-dashboard-v2-c4e8.md` · **Integration:** `cursor/shelter-dashboard-v2-c4e8-integration-c4e8` · **Control issue:** #952
+
+| Phase | Outcome | Branch | Status |
+|-------|---------|--------|--------|
+| 0 | Framing decisions | `cursor/shelter-dashboard-v2-framing-c4e8` | in progress |
+| 1 | Pinned org account preference API | `cursor/shelter-pinned-org-api-c4e8` | pending |
+| 2 | Shelter primary destinations config | `cursor/shelter-primary-nav-config-c4e8` | pending |
+| 3 | Org shell persistent primary nav | `cursor/shelter-shell-primary-nav-c4e8` | pending |
+| 4 | Pin control on membership tile | `cursor/shelter-tile-pin-c4e8` | pending (gated: unified-pet-tile-c4e8) |
+| 5 | Shelter dashboard body redesign | `cursor/shelter-dashboard-body-c4e8` | pending |
+| 6 | Shelter tasks preview v1 | `cursor/shelter-tasks-preview-c4e8` | pending |
+| 7 | Teal token audit | `cursor/shelter-teal-token-audit-c4e8` | pending |
+| 8 | Tests + navigation contract | `cursor/shelter-dashboard-v2-tests-c4e8` | pending |
+
+Decisions: [shelter-dashboard-v2-framing-decisions.md](/docs/domains/shelter/changes/shelter-dashboard-v2-framing-decisions.md).
+
+---
+
 ## shelter-desk-parity-dd8e — Shelter desk visual parity (2026-09-03)
 
 **Goal:** Teal Shelter desk patterns (section chrome, membership tiles, workspace toggle on org deep shell) without Care primary nav.  
