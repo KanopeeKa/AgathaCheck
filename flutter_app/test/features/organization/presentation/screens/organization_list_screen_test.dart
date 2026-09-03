@@ -65,6 +65,11 @@ void main() {
       expect(scaffold.backgroundColor, AppColorTokens.organizationLight);
 
       expect(find.byKey(const Key('org_create_button')), findsNothing);
+      expect(find.byKey(const Key('org_membership_grid')), findsOneWidget);
+      expect(
+        find.byKey(const Key('org_membership_tile_org-1')),
+        findsOneWidget,
+      );
       expect(find.text('Rescue Hearts'), findsOneWidget);
       expect(find.byKey(const Key('org_discover_nav_row')), findsOneWidget);
       expect(find.text('Discover Organisations'), findsWidgets);

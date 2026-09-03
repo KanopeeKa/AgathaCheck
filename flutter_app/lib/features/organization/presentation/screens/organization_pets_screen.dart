@@ -98,7 +98,6 @@ class OrganizationPetsScreen extends ConsumerWidget {
                                     OrgPetListItem(
                                       entry: entry,
                                       orgId: orgId,
-                                      isOrgAdmin: canManagePets,
                                       showAttentionReason:
                                           tab == OrgPetsTab.needAttention,
                                       tileWidth: tileWidth,

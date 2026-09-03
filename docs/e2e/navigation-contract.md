@@ -140,6 +140,17 @@ Section roots (`/pc/home`, `/o/orgs`, `/account`) show toggle without back arrow
 
 Shelter menu item is **always** visible (D-v5-WORKSPACE-1). Non-members land on `/o/orgs` empty state.
 
+### Shelter hub chrome (D-desk-S1, D-v3-NAV-1)
+
+| Surface | Route | Ready locator / assertion |
+|---------|-------|---------------------------|
+| Hub list | `/o/orgs` | `Key('org_membership_grid')` when memberships exist; empty-state copy when none |
+| Hub compact app bar | `/o/orgs` (width &lt;600px) | Teal `organizationPrimary` bar; `Key('experience_workspace_toggle')` without back |
+| Org deep shell | `/o/orgs/:orgId/**` | `Key('org_shell_workspace_toggle')` + `Key('org_shell_back')` on non-root routes |
+| Workspace switch | Any authenticated shell | Toggle only — **no** Shelter primary bottom/rail nav (D-v4-2) |
+
+Hub stays lightweight: memberships grid (`org_membership_tile_*`), pending invites, discover row — no operational desk previews on `/o/orgs`.
+
 ## Account entry (D-v4-2)
 
 | Path | When | Helper |

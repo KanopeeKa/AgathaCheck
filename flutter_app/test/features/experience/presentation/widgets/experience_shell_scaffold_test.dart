@@ -318,6 +318,24 @@ void main() {
     expect(find.byKey(const Key('experience_back_button')), findsNothing);
   });
 
+  testWidgets('org section root compact uses organizationPrimary app bar', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _buildApp(
+        prefs: prefs,
+        experience: AppExperience.organization,
+        currentLocation: '/o/orgs',
+        viewport: const Size(390, 844),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final appBar = tester.widget<AppBar>(find.byType(AppBar));
+    expect(appBar.backgroundColor, AppColorTokens.organizationPrimary);
+    expect(appBar.foregroundColor, AppColorTokens.inverse);
+  });
+
   testWidgets('baseline: bell is always visible on shell screens', (
     tester,
   ) async {

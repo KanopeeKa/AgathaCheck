@@ -96,10 +96,15 @@ class ExperienceShellScaffold extends ConsumerWidget {
     final usesGuardianLeadingNav =
         usesGuardianNavigationRail || usesGuardianNavigationSidebar;
     final hideGuardianDrawer = usesGuardianLeadingNav;
+    final usesShelterPrimaryChrome =
+        isOrg && GuardianPrimaryDestinations.isCompact(viewportWidth);
     final appBarColor = usesGuardianPrimaryNavigation
         ? AppColorTokens.petCarePrimary
+        : usesShelterPrimaryChrome
+        ? AppColorTokens.organizationPrimary
         : AppColorTokens.background;
-    final appBarForeground = usesGuardianPrimaryNavigation
+    final appBarForeground =
+        usesGuardianPrimaryNavigation || usesShelterPrimaryChrome
         ? AppColorTokens.inverse
         : null;
     final useOrgTitle = isOrg && screenTitle != null && orgNavVariant != null;
@@ -150,6 +155,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
     final trailingActions = _buildTrailingActions(
       theme: theme,
       usesGuardianPrimaryNavigation: usesGuardianPrimaryNavigation,
+      usesShelterPrimaryChrome: usesShelterPrimaryChrome,
     );
     final leadingWidget = usesGuardianLeadingNav
         ? (!isRoot
@@ -165,6 +171,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
             l: l,
             isRoot: isRoot,
             usesGuardianPrimaryNavigation: usesGuardianPrimaryNavigation,
+            usesShelterPrimaryChrome: usesShelterPrimaryChrome,
             currentLocation: currentLocation,
             showShelterWorkspace: showShelterWorkspace,
           );
@@ -237,7 +244,10 @@ class ExperienceShellScaffold extends ConsumerWidget {
   List<Widget> _buildTrailingActions({
     required ThemeData theme,
     required bool usesGuardianPrimaryNavigation,
+    required bool usesShelterPrimaryChrome,
   }) {
+    final onDarkChrome =
+        usesGuardianPrimaryNavigation || usesShelterPrimaryChrome;
     return [
       if (contextualActions.isNotEmpty) ...contextualActions,
       if (contextualActions.isNotEmpty)
@@ -247,6 +257,8 @@ class ExperienceShellScaffold extends ConsumerWidget {
           endIndent: 18,
           color: usesGuardianPrimaryNavigation
               ? AppColorTokens.petCareLight
+              : usesShelterPrimaryChrome
+              ? AppColorTokens.organizationLight
               : theme.colorScheme.outlineVariant,
         ),
       Builder(builder: (ctx) => const ShellNotificationBell()),
@@ -269,6 +281,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
     required AppLocalizations l,
     required bool isRoot,
     required bool usesGuardianPrimaryNavigation,
+    required bool usesShelterPrimaryChrome,
     required String currentLocation,
     required bool showShelterWorkspace,
   }) {
@@ -276,7 +289,8 @@ class ExperienceShellScaffold extends ConsumerWidget {
       padding: EdgeInsets.only(left: isRoot ? 8 : 0),
       child: ExperienceWorkspaceToggle(
         currentLocation: currentLocation,
-        onDarkBackground: usesGuardianPrimaryNavigation,
+        onDarkBackground:
+            usesGuardianPrimaryNavigation || usesShelterPrimaryChrome,
         showShelter: showShelterWorkspace,
       ),
     );

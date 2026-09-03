@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../pet_profile/presentation/widgets/pet_card.dart';
 import '../providers/organization_providers.dart';
 import '../utils/org_screen_theme.dart';
-import '../widgets/org_card.dart';
 import '../widgets/org_discover_nav_row.dart';
+import '../widgets/org_hub_section_header.dart';
+import '../widgets/org_membership_tile.dart';
 import '../widgets/org_shell_app_bar_title.dart';
 import '../widgets/org_shell_scaffold.dart';
 import '../widgets/organization_role_labels.dart';
@@ -32,6 +34,11 @@ class OrganizationListScreen extends ConsumerWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          OrgHubSectionHeader(
+            title: l.organisationsDashboardTitle,
+            subtitle: l.orgMembershipByEmailInvite,
+          ),
+          const SizedBox(height: 16),
           pendingAsync.when(
             loading: () => const SizedBox.shrink(),
             error: (_, __) => const SizedBox.shrink(),
@@ -40,13 +47,7 @@ class OrganizationListScreen extends ConsumerWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    l.pendingInvites,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  OrgHubSectionHeader(title: l.pendingInvites),
                   const SizedBox(height: 8),
                   ...invites.map(
                     (invite) => Card(
@@ -165,14 +166,8 @@ class OrganizationListScreen extends ConsumerWidget {
             },
           ),
           const SizedBox(height: 8),
-          Text(
-            l.myOrganizations,
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: colorScheme.primary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
+          OrgHubSectionHeader(title: l.myOrganizations),
+          const SizedBox(height: 10),
           orgsAsync.when(
             loading: () => const Center(
               child: Padding(
@@ -227,42 +222,34 @@ class OrganizationListScreen extends ConsumerWidget {
                 );
               }
 
-              return Column(
-                children: orgs
-                    .map(
-                      (org) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: OrgCard(
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  final tileWidth = OrgMembershipTile.tileWidthFor(
+                    constraints.maxWidth,
+                  );
+                  return Wrap(
+                    key: const Key('org_membership_grid'),
+                    spacing: PetCard.tileSpacing,
+                    runSpacing: PetCard.tileSpacing,
+                    children: [
+                      for (final org in orgs)
+                        OrgMembershipTile(
                           organization: org,
+                          tileWidth: tileWidth,
                           onTap: () => context.push('/o/orgs/${org.id}'),
                         ),
-                      ),
-                    )
-                    .toList(),
+                    ],
+                  );
+                },
               );
             },
           ),
-          const SizedBox(height: 16),
-          Divider(
-            height: 24,
-            thickness: 1,
-            color: colorScheme.primary.withValues(alpha: 0.35),
+          const SizedBox(height: 20),
+          OrgHubSectionHeader(
+            title: l.discoverOrganizations,
+            subtitle: l.orgMembershipByEmailInvite,
           ),
-          Text(
-            l.discoverOrganizations,
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: colorScheme.primary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            l.orgMembershipByEmailInvite,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           const OrgDiscoverNavRow(),
         ],
       ),
