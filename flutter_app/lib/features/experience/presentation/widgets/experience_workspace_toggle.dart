@@ -50,7 +50,8 @@ class ExperienceWorkspaceToggle extends ConsumerWidget {
             color: activeExperience == AppExperience.organization
                 ? AppColorTokens.organizationPrimary
                 : AppColorTokens.petCarePrimary,
-            constraints: const BoxConstraints.tightFor(width: 112, height: 48),
+            // Width matches the pill; do not cap menu height (48px clipped Shelter).
+            constraints: const BoxConstraints.tightFor(width: 112),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),

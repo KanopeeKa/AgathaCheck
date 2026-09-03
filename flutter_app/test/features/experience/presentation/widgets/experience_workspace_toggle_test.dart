@@ -127,6 +127,38 @@ void main() {
     );
   });
 
+  testWidgets('shows both workspace options without clipping', (tester) async {
+    await tester.pumpWidget(
+      _buildToggle(
+        prefs: prefs,
+        currentLocation: '/pc/home',
+        showShelter: true,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('experience_workspace_toggle')));
+    await tester.pumpAndSettle();
+
+    final guardianItem = find.byKey(
+      const Key('experience_workspace_menu_guardian'),
+    );
+    final shelterItem = find.byKey(
+      const Key('experience_workspace_menu_shelter'),
+    );
+    final menuCard = find.ancestor(
+      of: guardianItem,
+      matching: find.byWidgetPredicate(
+        (widget) => widget is Material && widget.type == MaterialType.card,
+      ),
+    );
+    expect(tester.getSize(menuCard).height, greaterThan(48));
+    expect(
+      tester.getCenter(shelterItem).dy,
+      greaterThan(tester.getCenter(guardianItem).dy),
+    );
+  });
+
   testWidgets('hides Shelter when showShelter is false', (tester) async {
     await tester.pumpWidget(
       _buildToggle(
