@@ -5,14 +5,24 @@
 import assert from 'node:assert/strict';
 import {
   evaluatePreflight,
+  isMainPreUatGateBlocking,
   isRemedialBranch,
   issueMatchesE2eDebugSession,
+  mergeBlockingPrs,
+  prTouchesE2eFiles,
   SESSION_START_MARKER,
 } from './e2e_debug_status.mjs';
 
 assert.equal(isRemedialBranch('cursor/preuat-fix-abc12345-6bba'), true);
 assert.equal(isRemedialBranch('cursor/preuat-fix-14c6c5b6-2600'), false);
 assert.equal(isRemedialBranch('cursor/other-branch-6bba'), false);
+
+assert.equal(prTouchesE2eFiles([{ path: 'e2e/playwright/tests/foo.spec.ts' }]), true);
+assert.equal(prTouchesE2eFiles([{ path: 'flutter_app/lib/main.dart' }]), false);
+
+assert.equal(isMainPreUatGateBlocking({ status: 'completed', conclusion: 'success' }), false);
+assert.equal(isMainPreUatGateBlocking({ status: 'completed', conclusion: 'failure' }), true);
+assert.equal(isMainPreUatGateBlocking({ status: 'in_progress', conclusion: null }), true);
 
 {
   const result = evaluatePreflight({
@@ -43,6 +53,58 @@ assert.equal(isRemedialBranch('cursor/other-branch-6bba'), false);
   assert.equal(result.safe_to_start, false);
   assert.equal(result.reason, 'open_remedial_pr');
   assert.equal(result.recommended_action, 'join_existing_pr');
+}
+
+{
+  const e2ePr = {
+    number: 55,
+    url: 'https://github.com/example/pr/55',
+    headRefName: 'cursor/workspace-nav-e2e-8c14',
+    updatedAt: '2026-08-23T00:00:00Z',
+    title: 'fix(e2e): shard drift',
+  };
+  const result = evaluatePreflight({
+    remedialPrs: [],
+    e2eTouchingPrs: [e2ePr],
+    mainPreUatBlocking: true,
+    busyIssues: [],
+    join: false,
+    force: false,
+    remedialBranch: null,
+  });
+  assert.equal(result.safe_to_start, false);
+  assert.equal(result.reason, 'open_e2e_pr_while_main_red');
+  assert.equal(result.blockers[0].type, 'open_e2e_pr_while_main_red');
+}
+
+{
+  const e2ePr = {
+    number: 55,
+    url: 'https://github.com/example/pr/55',
+    headRefName: 'cursor/workspace-nav-e2e-8c14',
+    updatedAt: '2026-08-23T00:00:00Z',
+    title: 'fix(e2e): shard drift',
+  };
+  const result = evaluatePreflight({
+    remedialPrs: [],
+    e2eTouchingPrs: [e2ePr],
+    mainPreUatBlocking: false,
+    busyIssues: [],
+    join: false,
+    force: false,
+    remedialBranch: null,
+  });
+  assert.equal(result.safe_to_start, true);
+  assert.equal(result.reason, 'clear');
+}
+
+{
+  const merged = mergeBlockingPrs(
+    [{ number: 1, headRefName: 'cursor/preuat-fix-deadbeef-6bba' }],
+    [{ number: 2, headRefName: 'cursor/foo-e2e-8c14' }],
+  );
+  assert.equal(merged.length, 2);
+  assert.equal(merged.find((pr) => pr.number === 1)?.blocker_kind, 'remedial_branch');
 }
 
 {

@@ -35,6 +35,7 @@ node scripts/e2e_debug_status.mjs --json
 | `0` / `true` | Proceed to Phase 1 |
 | `2` / `false`, `reason: e2e_debug_in_progress` | **Stop** — another agent holds `e2e-debug` + `busy` on a control issue. Wait, or comment on that issue and coordinate |
 | `2` / `false`, `reason: open_remedial_pr` | **Join** the open remedial PR — do not start a duplicate branch/stack. Re-run with `--join --remedial-branch <branch>` after resolve |
+| `2` / `false`, `reason: open_e2e_pr_while_main_red` | **Join** the open E2E PR while `main` pre-UAT is red — same join flow; do not open another `e2e/**` PR |
 | `2` / `false`, `reason: join_branch_mismatch` | Use `open_remedial_pr.branch` from JSON — one remedial PR per failure wave |
 
 **Claim session** (when starting fresh — control issue from `/execute-plan` or babysit-uat context):

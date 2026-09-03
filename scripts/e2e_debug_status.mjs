@@ -125,6 +125,47 @@ export function isRemedialBranch(branch) {
   return REMEDIAL_BRANCH_RE.test(branch || '');
 }
 
+/** True when a PR file list includes changes under e2e/. */
+export function prTouchesE2eFiles(files) {
+  if (!Array.isArray(files)) {
+    return false;
+  }
+  return files.some((entry) => {
+    const filePath = typeof entry === 'string' ? entry : entry?.path;
+    return typeof filePath === 'string' && filePath.startsWith('e2e/');
+  });
+}
+
+/**
+ * Main pre-UAT gate is blocking when the latest run is in-flight or not success.
+ * @param {{ status?: string, conclusion?: string|null }|null|undefined} run
+ */
+export function isMainPreUatGateBlocking(run) {
+  if (!run) {
+    return false;
+  }
+  if (run.status !== 'completed') {
+    return true;
+  }
+  return run.conclusion !== 'success';
+}
+
+/**
+ * Dedupe remedial + e2e-touching PRs by number (remedial metadata wins).
+ * @param {object[]} remedialPrs
+ * @param {object[]} e2eTouchingPrs
+ */
+export function mergeBlockingPrs(remedialPrs, e2eTouchingPrs) {
+  const byNumber = new Map();
+  for (const pr of e2eTouchingPrs) {
+    byNumber.set(pr.number, { ...pr, blocker_kind: 'e2e_touch' });
+  }
+  for (const pr of remedialPrs) {
+    byNumber.set(pr.number, { ...pr, blocker_kind: 'remedial_branch' });
+  }
+  return [...byNumber.values()].sort((a, b) => a.number - b.number);
+}
+
 /**
  * @param {{ labels?: { name: string }[], title?: string }} issue
  * @param {boolean} hasSessionComment
@@ -141,10 +182,33 @@ export function issueMatchesE2eDebugSession(issue, hasSessionComment = false) {
 }
 
 /**
- * @param {{ remedialPrs: object[], busyIssues: object[], join: boolean, force: boolean, remedialBranch: string|null }} input
+ * @param {{
+ *   remedialPrs: object[],
+ *   e2eTouchingPrs?: object[],
+ *   mainPreUatBlocking?: boolean,
+ *   busyIssues: object[],
+ *   join: boolean,
+ *   force: boolean,
+ *   remedialBranch: string|null,
+ * }} input
  */
 export function evaluatePreflight(input) {
-  const { remedialPrs, busyIssues, join, force, remedialBranch } = input;
+  const {
+    remedialPrs,
+    e2eTouchingPrs = [],
+    mainPreUatBlocking = false,
+    busyIssues,
+    join,
+    force,
+    remedialBranch,
+  } = input;
+
+  const activeE2ePrs =
+    mainPreUatBlocking && !force
+      ? e2eTouchingPrs.filter((pr) => !isRemedialBranch(pr.headRefName))
+      : [];
+
+  const blockingPrs = mergeBlockingPrs(remedialPrs, activeE2ePrs);
   const blockers = [];
 
   for (const issue of busyIssues) {
@@ -157,13 +221,17 @@ export function evaluatePreflight(input) {
     });
   }
 
-  for (const pr of remedialPrs) {
+  for (const pr of blockingPrs) {
     blockers.push({
-      type: 'open_remedial_pr',
+      type:
+        pr.blocker_kind === 'remedial_branch'
+          ? 'open_remedial_pr'
+          : 'open_e2e_pr_while_main_red',
       number: pr.number,
       url: pr.url,
       branch: pr.headRefName,
       updated_at: pr.updatedAt,
+      title: pr.title,
     });
   }
 
@@ -174,12 +242,13 @@ export function evaluatePreflight(input) {
       recommended_action: 'wait_or_join',
       blockers,
       busy_issue: busyIssues[0],
-      open_remedial_pr: remedialPrs[0] ?? null,
+      open_remedial_pr: blockingPrs[0] ?? null,
+      main_pre_uat_blocking: mainPreUatBlocking,
     };
   }
 
-  if (remedialPrs.length > 0 && !force) {
-    const target = remedialPrs.find((pr) => pr.headRefName === remedialBranch) || remedialPrs[0];
+  if (blockingPrs.length > 0 && !force) {
+    const target = blockingPrs.find((pr) => pr.headRefName === remedialBranch) || blockingPrs[0];
     if (join) {
       if (remedialBranch && target.headRefName !== remedialBranch) {
         return {
@@ -190,23 +259,32 @@ export function evaluatePreflight(input) {
           open_remedial_pr: target,
           expected_branch: target.headRefName,
           requested_branch: remedialBranch,
+          main_pre_uat_blocking: mainPreUatBlocking,
         };
       }
       return {
         safe_to_start: true,
         reason: 'join_existing_remedial_pr',
         recommended_action: 'join_existing_pr',
-        blockers: blockers.filter((b) => b.type !== 'open_remedial_pr'),
+        blockers: blockers.filter(
+          (b) => b.type !== 'open_remedial_pr' && b.type !== 'open_e2e_pr_while_main_red',
+        ),
         open_remedial_pr: target,
+        main_pre_uat_blocking: mainPreUatBlocking,
       };
     }
 
+    const reason =
+      remedialPrs.length > 0
+        ? 'open_remedial_pr'
+        : 'open_e2e_pr_while_main_red';
     return {
       safe_to_start: false,
-      reason: 'open_remedial_pr',
+      reason,
       recommended_action: 'join_existing_pr',
       blockers,
       open_remedial_pr: target,
+      main_pre_uat_blocking: mainPreUatBlocking,
     };
   }
 
@@ -216,6 +294,7 @@ export function evaluatePreflight(input) {
     recommended_action: 'start_fresh',
     blockers: [],
     open_remedial_pr: null,
+    main_pre_uat_blocking: mainPreUatBlocking,
   };
 }
 
@@ -236,6 +315,69 @@ function findOpenRemedialPrs() {
     return [];
   }
   return prs.filter((pr) => isRemedialBranch(pr.headRefName));
+}
+
+function findOpenE2eTouchingPrs() {
+  const prs = ghJson([
+    'pr',
+    'list',
+    '--state',
+    'open',
+    '--base',
+    'main',
+    '--limit',
+    '30',
+    '--json',
+    'number,url,headRefName,updatedAt,title',
+  ]);
+  if (!Array.isArray(prs)) {
+    return [];
+  }
+  const touching = [];
+  for (const pr of prs) {
+    if (isRemedialBranch(pr.headRefName)) {
+      continue;
+    }
+    const detail = ghJson(['pr', 'view', String(pr.number), '--json', 'files']);
+    if (prTouchesE2eFiles(detail?.files)) {
+      touching.push(pr);
+    }
+  }
+  return touching;
+}
+
+function getLatestMainPreUatRun() {
+  const runs = ghJson([
+    'run',
+    'list',
+    '--workflow',
+    'pre-uat-e2e.yml',
+    '--branch',
+    'main',
+    '--limit',
+    '1',
+    '--json',
+    'databaseId,url,conclusion,status,headSha,createdAt',
+  ]);
+  if (!Array.isArray(runs) || runs.length === 0) {
+    return null;
+  }
+  return runs[0];
+}
+
+function collectPreflightContext() {
+  const remedialPrs = findOpenRemedialPrs();
+  const mainPreUatRun = getLatestMainPreUatRun();
+  const mainPreUatBlocking = isMainPreUatGateBlocking(mainPreUatRun);
+  const e2eTouchingPrs = mainPreUatBlocking ? findOpenE2eTouchingPrs() : [];
+  const busyIssues = findBusyE2eDebugIssues();
+  return {
+    remedialPrs,
+    e2eTouchingPrs,
+    mainPreUatBlocking,
+    mainPreUatRun,
+    busyIssues,
+  };
 }
 
 function issueHasSessionStartComment(issueNumber) {
@@ -336,11 +478,12 @@ function claimBlocked(payload) {
 }
 
 function claimWork(issueNumber, mergeSha, { force = false } = {}) {
-  const remedialPrs = findOpenRemedialPrs();
-  const busyIssues = findBusyE2eDebugIssues();
+  const context = collectPreflightContext();
   const preflight = evaluatePreflight({
-    remedialPrs,
-    busyIssues,
+    remedialPrs: context.remedialPrs,
+    e2eTouchingPrs: context.e2eTouchingPrs,
+    mainPreUatBlocking: context.mainPreUatBlocking,
+    busyIssues: context.busyIssues,
     join: false,
     force,
     remedialBranch: null,
@@ -356,14 +499,18 @@ function claimWork(issueNumber, mergeSha, { force = false } = {}) {
     });
   }
 
-  if (!preflight.safe_to_start && preflight.reason === 'open_remedial_pr') {
+  if (
+    !preflight.safe_to_start &&
+    (preflight.reason === 'open_remedial_pr' || preflight.reason === 'open_e2e_pr_while_main_red')
+  ) {
     claimBlocked({
       action: 'claim',
       ok: false,
-      reason: 'open_remedial_pr',
+      reason: preflight.reason,
       open_remedial_pr: preflight.open_remedial_pr,
       recommended_action: 'join_existing_pr',
       blockers: preflight.blockers,
+      main_pre_uat_blocking: preflight.main_pre_uat_blocking,
     });
   }
 
@@ -466,11 +613,12 @@ function main() {
     return;
   }
 
-  const remedialPrs = findOpenRemedialPrs();
-  const busyIssues = findBusyE2eDebugIssues();
+  const context = collectPreflightContext();
   const result = evaluatePreflight({
-    remedialPrs,
-    busyIssues,
+    remedialPrs: context.remedialPrs,
+    e2eTouchingPrs: context.e2eTouchingPrs,
+    mainPreUatBlocking: context.mainPreUatBlocking,
+    busyIssues: context.busyIssues,
     join: opts.join,
     force: opts.force,
     remedialBranch: opts.remedialBranch,
@@ -478,8 +626,10 @@ function main() {
 
   const payload = {
     ...result,
-    remedial_prs: remedialPrs,
-    busy_issues: busyIssues,
+    remedial_prs: context.remedialPrs,
+    e2e_touching_prs: context.e2eTouchingPrs,
+    main_pre_uat_run: context.mainPreUatRun,
+    busy_issues: context.busyIssues,
   };
 
   if (opts.json) {
