@@ -126,10 +126,10 @@ next_action: "continue phase 5 on branch cursor/shell-hierarchy-e2e-0b2d"
 artifact_ref:
   branch: cursor/shell-hierarchy-e2e-0b2d
   plan_path: .agents/plans/guardian-shell-hierarchy-0b2d.md
-  plan_commit: e021f6f3629d9a4a84b6bad2008618a4a1853156
+  plan_commit: 01aba426226c8464de1fd410c4cfd69423bd3780
   snapshot_path: .agents/plans/guardian-shell-hierarchy-0b2d.snapshot.json
-  snapshot_commit: e021f6f3629d9a4a84b6bad2008618a4a1853156
-open_prs: []
+  snapshot_commit: 01aba426226c8464de1fd410c4cfd69423bd3780
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/887"]
 merge_commits: {}
 debt_issue_refs: []
 ```
