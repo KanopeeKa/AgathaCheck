@@ -31,12 +31,7 @@ class GuardianMyVetsSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          GuardianDashboardSectionChrome(
-            title: l.careTeamEyebrow,
-            linkLabel: showAllAction ? l.allCareTeams : null,
-            linkKey: const Key('guardian_dashboard_all_care_teams'),
-            onLinkPressed: showAllAction ? () => context.go('/pc/vets') : null,
-          ),
+          GuardianDashboardSectionHeader(title: l.careTeamEyebrow),
           const SizedBox(height: 10),
           auth.accessToken == null
               ? const SizedBox(
@@ -108,6 +103,12 @@ class GuardianMyVetsSection extends ConsumerWidget {
                     );
                   },
                 ),
+          if (showAllAction)
+            GuardianDashboardSectionLink(
+              linkKey: const Key('guardian_dashboard_all_care_teams'),
+              label: l.allCareTeams,
+              onPressed: () => context.go('/pc/vets'),
+            ),
         ],
       ),
     );

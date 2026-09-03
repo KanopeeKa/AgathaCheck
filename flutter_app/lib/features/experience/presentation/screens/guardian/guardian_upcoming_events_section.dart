@@ -207,7 +207,7 @@ class _GuardianUpcomingEventsSectionState
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          GuardianDashboardSectionChrome(title: l.careEyebrow),
+          GuardianDashboardSectionHeader(title: l.careEyebrow),
           const SizedBox(height: 10),
           _careSectionCard(
             const SizedBox(
@@ -245,18 +245,12 @@ class _GuardianUpcomingEventsSectionState
   ) {
     final careEntries = priorities.all;
     final petMap = {for (final pet in pets) pet.id: pet};
-    final showAllCare =
-        careEntries.length > GuardianUpcomingEventsSection.previewLimit;
+    final showAllCare = careEntries.isNotEmpty;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GuardianDashboardSectionChrome(
-          title: l.careEyebrow,
-          linkLabel: showAllCare ? l.allCare : null,
-          linkKey: const Key('guardian_dashboard_care_view_all'),
-          onLinkPressed: showAllCare ? () => context.go('/pc/events') : null,
-        ),
+        GuardianDashboardSectionHeader(title: l.careEyebrow),
         const SizedBox(height: 10),
         KeyedSubtree(
           key: const Key('guardian_dashboard_care_section'),
@@ -271,6 +265,12 @@ class _GuardianUpcomingEventsSectionState
             ),
           ),
         ),
+        if (showAllCare)
+          GuardianDashboardSectionLink(
+            linkKey: const Key('guardian_dashboard_care_view_all'),
+            label: l.allCare,
+            onPressed: () => context.go('/pc/events'),
+          ),
       ],
     );
   }
@@ -279,7 +279,7 @@ class _GuardianUpcomingEventsSectionState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GuardianDashboardSectionChrome(title: l.careEyebrow),
+        GuardianDashboardSectionHeader(title: l.careEyebrow),
         const SizedBox(height: 10),
         _careSectionCard(
           Column(
