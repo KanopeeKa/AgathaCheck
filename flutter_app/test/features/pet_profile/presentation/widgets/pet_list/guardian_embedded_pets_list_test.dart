@@ -60,52 +60,56 @@ void main() {
     expect(find.text('Foster'), findsOneWidget);
   });
 
-  testWidgets('excludes passed-away pets from main grid and shows collapsed section', (
-    tester,
-  ) async {
-    final pets = [
-      const Pet(id: 'active', name: 'Active', species: 'Cat'),
-      const Pet(
-        id: 'memorial',
-        name: 'Memorial',
-        species: 'Dog',
-        passedAway: true,
-      ),
-    ];
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.lightTheme,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Builder(
-          builder: (context) {
-            final l = AppLocalizations.of(context)!;
-            return Scaffold(
-              body: GuardianEmbeddedPetsList(
-                allPets: pets,
-                controller: PetListController(),
-                careSummary: null,
-                l: l,
-                theme: Theme.of(context),
-              ),
-            );
-          },
+  testWidgets(
+    'excludes passed-away pets from main grid and shows collapsed section',
+    (tester) async {
+      final pets = [
+        const Pet(id: 'active', name: 'Active', species: 'Cat'),
+        const Pet(
+          id: 'memorial',
+          name: 'Memorial',
+          species: 'Dog',
+          passedAway: true,
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      ];
 
-    expect(find.byType(PetListSectionHeader), findsOneWidget);
-    expect(find.text('Active'), findsOneWidget);
-    expect(find.text('Memorial'), findsNothing);
-    expect(find.byKey(const Key('guardian_passed_away_section')), findsOneWidget);
-    expect(find.text('Rainbow bridge'), findsOneWidget);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) {
+              final l = AppLocalizations.of(context)!;
+              return Scaffold(
+                body: GuardianEmbeddedPetsList(
+                  allPets: pets,
+                  controller: PetListController(),
+                  careSummary: null,
+                  l: l,
+                  theme: Theme.of(context),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Rainbow bridge'));
-    await tester.pumpAndSettle();
+      expect(find.byType(PetListSectionHeader), findsOneWidget);
+      expect(find.text('Active'), findsOneWidget);
+      expect(find.text('Memorial'), findsNothing);
+      expect(
+        find.byKey(const Key('guardian_passed_away_section')),
+        findsOneWidget,
+      );
+      expect(find.text('Rainbow bridge'), findsOneWidget);
 
-    expect(find.text('Memorial'), findsOneWidget);
-    expect(find.byType(UnifiedPetTile), findsNWidgets(2));
-  });
+      await tester.tap(find.text('Rainbow bridge'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Memorial'), findsOneWidget);
+      expect(find.byType(UnifiedPetTile), findsNWidgets(2));
+    },
+  );
 }

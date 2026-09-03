@@ -93,9 +93,7 @@ void main() {
   });
 
   testWidgets('ownership stripe is present', (tester) async {
-    await tester.pumpWidget(
-      wrap(UnifiedPetTile(pet: pet, onTap: () {})),
-    );
+    await tester.pumpWidget(wrap(UnifiedPetTile(pet: pet, onTap: () {})));
 
     expect(find.byType(ColoredBox), findsWidgets);
   });

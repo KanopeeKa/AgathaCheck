@@ -1,6 +1,7 @@
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
-import '../../../../pet_profile/presentation/widgets/pet_card.dart' show sortPetsByCreatedAt;
+import '../../../../pet_profile/presentation/widgets/pet_card.dart'
+    show sortPetsByCreatedAt;
 import '../../../../pet_profile/presentation/widgets/pet_tile_status_line.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 
@@ -188,11 +189,7 @@ List<Pet> guardianTodayRailPets(
   PetListController controller,
   GuardianTodayCareSummary? careSummary,
 ) {
-  return _guardianDashboardShellPetsSorted(
-    allPets,
-    controller,
-    careSummary,
-  );
+  return _guardianDashboardShellPetsSorted(allPets, controller, careSummary);
 }
 
 /// Selects a stable, attention-first dashboard preview without changing any

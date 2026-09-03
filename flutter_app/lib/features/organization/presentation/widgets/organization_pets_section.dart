@@ -151,11 +151,7 @@ class OrganizationPetsSection extends StatelessWidget {
 }
 
 class _OrgPetTile extends StatelessWidget {
-  const _OrgPetTile({
-    required this.pet,
-    required this.l,
-    required this.onTap,
-  });
+  const _OrgPetTile({required this.pet, required this.l, required this.onTap});
 
   final Pet pet;
   final AppLocalizations l;

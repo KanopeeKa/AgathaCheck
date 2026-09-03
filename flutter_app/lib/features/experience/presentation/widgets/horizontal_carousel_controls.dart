@@ -1,7 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-typedef HorizontalCarouselBuilder = Widget Function(ScrollController controller);
+typedef HorizontalCarouselBuilder =
+    Widget Function(ScrollController controller);
 
 /// Horizontal scroll region with subtle chevrons on fine-pointer devices.
 class HorizontalCarouselControls extends StatefulWidget {
@@ -21,7 +22,8 @@ class HorizontalCarouselControls extends StatefulWidget {
       _HorizontalCarouselControlsState();
 }
 
-class _HorizontalCarouselControlsState extends State<HorizontalCarouselControls> {
+class _HorizontalCarouselControlsState
+    extends State<HorizontalCarouselControls> {
   final ScrollController _controller = ScrollController();
   bool _canScrollBack = false;
   bool _canScrollForward = false;

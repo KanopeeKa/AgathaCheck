@@ -46,8 +46,7 @@ class UnifiedPetTile extends StatelessWidget {
           context: PetTileContext.petCare,
           careUrgency: PetTileCareUrgency.clear,
         );
-    final label =
-        semanticsLabel ?? '${pet.name}, ${resolvedStatus.label}';
+    final label = semanticsLabel ?? '${pet.name}, ${resolvedStatus.label}';
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -82,10 +81,7 @@ class UnifiedPetTile extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Container(
-                        width: 4,
-                        color: statusBarColor,
-                      ),
+                      Container(width: 4, color: statusBarColor),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -97,8 +93,7 @@ class UnifiedPetTile extends StatelessWidget {
                             Expanded(
                               flex: flex.text,
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(8, 2, 8, 4),
+                                padding: const EdgeInsets.fromLTRB(8, 2, 8, 4),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -110,8 +105,8 @@ class UnifiedPetTile extends StatelessWidget {
                                       overflow: TextOverflow.ellipsis,
                                       style: theme.textTheme.titleSmall
                                           ?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                     ),
                                     if (resolvedStatus.label.isNotEmpty) ...[
                                       const SizedBox(height: 2),
@@ -144,7 +139,9 @@ class _StatusRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    if (!status.showCareStyling || status.icon == null || status.label.isEmpty) {
+    if (!status.showCareStyling ||
+        status.icon == null ||
+        status.label.isEmpty) {
       return Text(
         status.label,
         maxLines: 1,

@@ -59,11 +59,7 @@ void main() {
   test('shelter line falls back to attention reason', () {
     final data = resolvePetTileStatusLine(
       l: l,
-      pet: const Pet(
-        id: '1',
-        name: 'Luna',
-        species: 'Dog',
-      ),
+      pet: const Pet(id: '1', name: 'Luna', species: 'Dog'),
       context: PetTileContext.shelter,
       attentionReason: OrgPetAttentionReason.fosterFinishingSoon,
     );

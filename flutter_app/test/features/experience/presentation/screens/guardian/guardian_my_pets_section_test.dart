@@ -125,26 +125,27 @@ void main() {
     }
   });
 
-  testWidgets('compact rail shows all preview pets and always exposes All pets', (
-    tester,
-  ) async {
-    final allPets = List.generate(
-      5,
-      (index) => Pet(id: 'pet-$index', name: 'Pet $index', species: 'Dog'),
-    );
+  testWidgets(
+    'compact rail shows all preview pets and always exposes All pets',
+    (tester) async {
+      final allPets = List.generate(
+        5,
+        (index) => Pet(id: 'pet-$index', name: 'Pet $index', species: 'Dog'),
+      );
 
-    await tester.pumpWidget(
-      buildSection(
-        pets: allPets,
-        previewPets: allPets,
-        previewOverflowCount: 0,
-      ),
-    );
+      await tester.pumpWidget(
+        buildSection(
+          pets: allPets,
+          previewPets: allPets,
+          previewOverflowCount: 0,
+        ),
+      );
 
-    expect(find.byType(UnifiedPetTile), findsNWidgets(5));
-    expect(find.text('Pet 4'), findsOneWidget);
-    expect(find.text('All pets'), findsOneWidget);
-  });
+      expect(find.byType(UnifiedPetTile), findsNWidgets(5));
+      expect(find.text('Pet 4'), findsOneWidget);
+      expect(find.text('All pets'), findsOneWidget);
+    },
+  );
 
   testWidgets('compact preview remains a horizontal rail at phone widths', (
     tester,

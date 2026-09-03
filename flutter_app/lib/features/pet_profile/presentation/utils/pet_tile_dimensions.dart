@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Target dimensions for [UnifiedPetTile] across carousel and grid layouts.
 class PetTileDimensions {
-  const PetTileDimensions._({
-    required this.width,
-    required this.height,
-  });
+  const PetTileDimensions._({required this.width, required this.height});
 
   final double width;
   final double height;
