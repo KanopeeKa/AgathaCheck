@@ -244,7 +244,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         child: const NotificationsScreen(
-          backPath: '/o/home',
+          backPath: '/o/orgs',
           scope: NotificationScope.organization,
         ),
         pets: [owned, foster],

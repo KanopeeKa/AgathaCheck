@@ -1358,23 +1358,47 @@ abstract class AppLocalizations {
   /// **'When a new session starts, you\'ll find it here.'**
   String get guardianEmptyFosteringBody;
 
-  /// No description provided for @guardianEmptyShelterTitle.
+  /// No description provided for @guardianFosterInviteTitle.
   ///
   /// In en, this message translates to:
-  /// **'Connect with a shelter'**
-  String get guardianEmptyShelterTitle;
+  /// **'Make room for one more'**
+  String get guardianFosterInviteTitle;
 
-  /// No description provided for @guardianEmptyShelterBody.
+  /// No description provided for @guardianFosterInviteBody.
   ///
   /// In en, this message translates to:
-  /// **'Your shelter relationships, onboarding and fostering activity will live here.'**
-  String get guardianEmptyShelterBody;
+  /// **'Fostering gives a shelter pet a safe place to land while they wait for their next chapter. It can be a small commitment with a huge impact — and a wonderfully rewarding way to help.'**
+  String get guardianFosterInviteBody;
 
-  /// No description provided for @connectShelter.
+  /// No description provided for @findAShelter.
   ///
   /// In en, this message translates to:
-  /// **'Connect with a shelter'**
-  String get connectShelter;
+  /// **'Find a shelter'**
+  String get findAShelter;
+
+  /// No description provided for @guardianLinkedShelterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for being part of their journey'**
+  String get guardianLinkedShelterTitle;
+
+  /// No description provided for @guardianLinkedShelterBody.
+  ///
+  /// In en, this message translates to:
+  /// **'By opening your home to a foster pet, you\'re giving shelters more room to help and animals more time, comfort, and care. Your support makes a real difference.'**
+  String get guardianLinkedShelterBody;
+
+  /// No description provided for @yourShelters.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shelters'**
+  String get yourShelters;
+
+  /// No description provided for @findAnotherShelter.
+  ///
+  /// In en, this message translates to:
+  /// **'Find another shelter'**
+  String get findAnotherShelter;
 
   /// No description provided for @sessionDetailsUnavailable.
   ///

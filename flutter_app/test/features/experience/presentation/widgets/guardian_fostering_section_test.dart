@@ -47,6 +47,12 @@ void main() {
     expect(find.text('Harbour Shelter'), findsNWidgets(2));
     expect(find.text('Active'), findsOneWidget);
     expect(find.text('Biscuit'), findsNothing);
+    expect(
+      find.text('Thank you for being part of their journey'),
+      findsOneWidget,
+    );
+    expect(find.text('Your shelters'), findsOneWidget);
+    expect(find.text('Find another shelter'), findsOneWidget);
   });
 
   testWidgets(
@@ -82,11 +88,8 @@ void main() {
         find.byKey(const Key('guardian_dashboard_empty_fostering')),
         findsOneWidget,
       );
-      expect(
-        find.byType(Image),
-        findsOneWidget,
-        reason: 'the fostering illustration belongs to shelter connection',
-      );
+      expect(find.text('Make room for one more'), findsOneWidget);
+      expect(find.text('Find a shelter'), findsOneWidget);
     },
   );
 

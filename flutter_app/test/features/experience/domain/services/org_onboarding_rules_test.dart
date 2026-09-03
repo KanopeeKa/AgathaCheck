@@ -96,7 +96,7 @@ void main() {
     test('redirects org home to onboarding when needed', () {
       expect(
         OrgOnboardingRules.resolveOrgDestination(
-          targetPath: '/o/home',
+          targetPath: '/o/orgs',
           pets: const [],
           orgs: const [org],
           onboardingCompleted: false,

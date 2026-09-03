@@ -44,7 +44,7 @@ void main() {
         GoRoute(
           path: '/o/invite',
           builder: (context, state) => const FosterPortalRouteGuard(
-            fallbackPath: '/o/home',
+            fallbackPath: '/o/orgs',
             child: Scaffold(body: Text('invite screen')),
           ),
         ),
@@ -79,7 +79,7 @@ void main() {
         GoRoute(
           path: '/o/invite',
           builder: (context, state) => const FosterPortalRouteGuard(
-            fallbackPath: '/o/home',
+            fallbackPath: '/o/orgs',
             child: Scaffold(body: Text('invite screen')),
           ),
         ),

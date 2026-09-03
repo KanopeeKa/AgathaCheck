@@ -183,13 +183,13 @@ List<RouteBase> buildExperienceRoutes() {
         GoRoute(
           path: '/o/home',
           name: 'orgHome',
-          builder: (context, state) => const OrgHomeScreen(),
+          redirect: (context, state) => '/o/orgs',
         ),
         GoRoute(
           path: '/o/events',
           name: 'orgEvents',
           builder: (context, state) => const FosterPortalRouteGuard(
-            fallbackPath: '/o/home',
+            fallbackPath: '/o/orgs',
             child: _OrgEventsScreen(),
           ),
         ),
@@ -197,7 +197,7 @@ List<RouteBase> buildExperienceRoutes() {
           path: '/o/invite',
           name: 'orgInvite',
           builder: (context, state) => const FosterPortalRouteGuard(
-            fallbackPath: '/o/home',
+            fallbackPath: '/o/orgs',
             child: ExperienceInviteScreen(
               experience: AppExperience.organization,
             ),
@@ -262,7 +262,7 @@ class _OrgEventsScreen extends ConsumerWidget {
       experience: AppExperience.organization,
       currentLocation: GoRouterState.of(context).uri.path,
       screenTitle: l.eventsNavLabel,
-      backPath: '/o/home',
+      backPath: '/o/orgs',
       contextualActions: [
         IconButton(
           key: const Key('org_events_add_app_bar'),
