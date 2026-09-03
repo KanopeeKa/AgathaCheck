@@ -9,7 +9,9 @@ import {
   dismissConsentBannerIfPresent,
   flutterGotoUrl,
   refreshFlutterAccessibility,
+  skipGuardianOnboardingIfPresent,
   waitForFlutterRoutePattern,
+  waitForPostLoginRoute,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
 
@@ -24,8 +26,12 @@ async function loginFosterOnly(
   await landing.goto();
   await landing.login(email, password);
   await dismissConsentBannerIfPresent(page);
-  await refreshFlutterAccessibility(page);
-  await waitForFlutterRoutePattern(page, /\/o\/home/, 60_000);
+  await waitForPostLoginRoute(page);
+  await skipGuardianOnboardingIfPresent(page);
+
+  const experience = new ExperiencePage(page);
+  await experience.switchToShelterWorkspace();
+  await waitForFlutterRoutePattern(page, /\/o\/orgs/, 60_000);
 }
 
 test.describe('Foster portal route guards', () => {
@@ -38,7 +44,7 @@ test.describe('Foster portal route guards', () => {
 
     await page.goto(flutterGotoUrl('/o/invite'));
     await refreshFlutterAccessibility(page);
-    await waitForFlutterRoutePattern(page, /\/o\/home/, 15_000);
+    await waitForFlutterRoutePattern(page, /\/o\/orgs/, 15_000);
     const experience = new ExperiencePage(page);
     await experience.expectOrgShell();
     await expect(page.getByText('Invite', { exact: true })).not.toBeVisible();
@@ -53,7 +59,7 @@ test.describe('Foster portal route guards', () => {
 
     await page.goto(flutterGotoUrl('/o/events'));
     await refreshFlutterAccessibility(page);
-    await waitForFlutterRoutePattern(page, /\/o\/home/, 15_000);
+    await waitForFlutterRoutePattern(page, /\/o\/orgs/, 15_000);
     const experience = new ExperiencePage(page);
     await experience.expectOrgShell();
     await expect(page.getByRole('button', { name: 'Add Health Event' })).not.toBeVisible();
