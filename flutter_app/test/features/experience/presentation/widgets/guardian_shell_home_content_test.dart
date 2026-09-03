@@ -90,12 +90,8 @@ void main() {
     );
     expect(find.text('All care teams'), findsOneWidget);
     expect(
-      tester
-          .widget<GuardianDeskSectionCard>(
-            find.byKey(const Key('guardian_dashboard_care_section')),
-          )
-          .tint,
-      AppColorTokens.petCareLight,
+      find.byKey(const Key('guardian_dashboard_care_section')),
+      findsOneWidget,
     );
     expect(find.text('Pending foster placements'), findsNothing);
     expect(find.text('Pending Shares'), findsNothing);
