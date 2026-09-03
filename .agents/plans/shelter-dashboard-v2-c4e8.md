@@ -144,13 +144,13 @@ autonomy: active
 current_phase: 3
 last_completed_phase: 2
 halt_reason: null
-next_action: "start phase 3: checkout cursor/shelter-shell-primary-nav-c4e8"
+next_action: "continue phase 3 on branch cursor/shelter-shell-primary-nav-c4e8"
 artifact_ref:
-  branch: cursor/shelter-dashboard-v2-c4e8-integration-c4e8
+  branch: cursor/shelter-shell-primary-nav-c4e8
   plan_path: .agents/plans/shelter-dashboard-v2-c4e8.md
-  plan_commit: 7b4c2b9abd227a936276bbf8572e1d3a549225f0
+  plan_commit: 502a6a840651a783e85e092d98f8cad88112324d
   snapshot_path: .agents/plans/shelter-dashboard-v2-c4e8.snapshot.json
-  snapshot_commit: 7b4c2b9abd227a936276bbf8572e1d3a549225f0
+  snapshot_commit: 502a6a840651a783e85e092d98f8cad88112324d
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

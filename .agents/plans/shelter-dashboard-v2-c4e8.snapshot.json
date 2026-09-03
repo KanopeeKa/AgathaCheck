@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T22:45:00Z",
   "approved_by": "user chat 2026-09-03 (/execute-plan shelter-dashboard-v2-c4e8, approve-autonomous on control issue #952)",
   "approved_until": "2026-09-05T22:45:00Z",
-  "content_hash": "sha256:9ebe2cdad9ab7dd3c9c47cfcec002e5f37884e386653dacf36393ef26f31a21c",
+  "content_hash": "sha256:9726b2f4c259566edc9bc0e292f567546e7b1fbe9d5ed24412e7e7f41eeb2153",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/shelter-dashboard-v2-c4e8-integration-c4e8",
@@ -130,7 +130,7 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
