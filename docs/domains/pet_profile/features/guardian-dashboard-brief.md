@@ -40,12 +40,13 @@ Notifications should be treated as a global cross-domain layer accessed from the
 
 All dashboard content sections should follow a consistent pattern:
 
-- Section title
-- Optional section-level action in the header when relevant
-- Compact preview of the most important items
-- End link or button leading to the full screen for that object type
+- Section title (eyebrow) in a header row, with optional **“All …”** navigation on the same row when a full-screen destination exists
+- Optional section-level create action in the header when relevant (deferred — create flows may live on full screens or empty states)
+- Compact preview of the most important items below the header row
 
 This creates a symmetrical and predictable dashboard model. The dashboard shows the most relevant subset, while the dedicated full screen handles the complete list and associated management actions.
+
+> **2026-09-03 (D-desk-3):** Section-level “All …” links move from the bottom of preview blocks to the **header row** beside the eyebrow title. See [desk-framing-decisions.md](../changes/desk-framing-decisions.md).
 
 ## Section rules
 
@@ -129,8 +130,8 @@ The dashboard version should:
 
 ### Section actions and links
 
-- The section should include **Add an event** in the header
-- The bottom of the section should include **All Events** or **See all** linking to the full Events screen
+- The section should include **Add an event** in the header (deferred — empty state may host create today)
+- The header row should include **All Actions** linking to the full Events screen when preview overflow exists
 
 ### Interaction
 
@@ -157,7 +158,7 @@ Display care teams as warm, tappable cards showing:
 - “Veterinary clinic · {town}” when location is available
 - Up to three linked-pet avatars with “+N” overflow and “Caring for N pets” when pet data is loaded
 
-The section uses a **CARE TEAM** eyebrow label and an **All care teams** footer link to the full vet list.
+The section uses a **CARE TEAM** eyebrow label and an **All care teams** link in the **header row** (when vets exist) to the full vet list.
 
 ### Detail model
 
@@ -170,8 +171,8 @@ A separate **edit mode** should exist for modifying the vet record. The current 
 
 ### Section actions and links
 
-- The section should include **Add a vet** in the header
-- The bottom of the section should include **All Vets** linking to the full vet list screen
+- The section should include **Add a vet** in the header (deferred)
+- The header row should include **All Vets** linking to the full vet list screen when vets exist
 
 ### Scope note
 
