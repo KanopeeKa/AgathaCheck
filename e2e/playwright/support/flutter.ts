@@ -109,6 +109,28 @@ export async function waitForFlutterRoute(page: Page, path: string): Promise<voi
   await dismissConsentBannerIfPresent(page);
   // Allow the first frame + Riverpod bootstrap.
   await page.waitForTimeout(750);
+
+  if (!path.startsWith('/o/')) return;
+
+  const targetPath = path.split('?')[0];
+  await waitForFlutterRoutePattern(
+    page,
+    new RegExp(`^${escapeRegExp(targetPath)}(?:\\?|$)|^/o/onboarding(?:\\?|$)`),
+    postLoginTimeout(30_000),
+  );
+  await skipOrgOnboardingIfPresent(page);
+  if (flutterRoutePath(page.url()).split('?')[0] !== targetPath) {
+    await page.goto(flutterGotoUrl(path));
+    await page.waitForSelector('flutter-view, flt-glass-pane', { state: 'attached', timeout: 60_000 });
+    await enableFlutterAccessibility(page);
+    await dismissConsentBannerIfPresent(page);
+    await page.waitForTimeout(750);
+    await waitForFlutterRoutePattern(
+      page,
+      new RegExp(`^${escapeRegExp(targetPath)}(?:\\?|$)`),
+      postLoginTimeout(30_000),
+    );
+  }
 }
 
 /**
