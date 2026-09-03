@@ -57,6 +57,18 @@ export class PetListPage {
     if (await isExperienceShellVisible(this.page)) {
       await this.page.goto(flutterGotoUrl(dashboardPath));
       await refreshFlutterAccessibility(this.page);
+      if (useOrgHome) {
+        await waitForFlutterRoutePattern(
+          this.page,
+          /\/o\/(?:events|onboarding)(?:\?|$)/,
+          30_000,
+        );
+        await skipOrgOnboardingIfPresent(this.page);
+        if (!dashboardRoutePattern.test(flutterRoutePath(this.page.url()))) {
+          await this.page.goto(flutterGotoUrl(dashboardPath));
+          await refreshFlutterAccessibility(this.page);
+        }
+      }
       await waitForFlutterRoutePattern(this.page, dashboardRoutePattern, 30_000);
     } else {
       if (useOrgHome) {
