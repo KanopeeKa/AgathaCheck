@@ -215,14 +215,17 @@ export class HealthDashboardPage {
   }
 
   async selectOrgFilter(orgName: string): Promise<void> {
-    const mobileFilters = collectionFilterMobileTrigger(this.page);
-    if (await mobileFilters.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await mobileFilters.click();
+    await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await this.page
-        .getByRole('checkbox', { name: orgName, exact: true })
-        .click();
-    } else {
+      const mobileFilters = collectionFilterMobileTrigger(this.page);
+      if (await mobileFilters.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await mobileFilters.click();
+        await refreshFlutterAccessibility(this.page);
+        await this.page
+          .getByRole('checkbox', { name: orgName, exact: true })
+          .click();
+        return;
+      }
       const moreTrigger = collectionFilterDimensionTrigger(
         this.page,
         /^More filters$|^Plus de filtres$/i,
@@ -233,15 +236,15 @@ export class HealthDashboardPage {
         await this.page
           .getByRole('checkbox', { name: orgName, exact: true })
           .click();
-      } else {
-        await this.page
-          .getByRole('button', { name: orgName, exact: true })
-          .or(this.page.getByRole('checkbox', { name: orgName, exact: true }))
-          .or(this.page.getByText(orgName, { exact: true }))
-          .first()
-          .click();
+        return;
       }
-    }
+      await this.page
+        .getByRole('button', { name: orgName, exact: true })
+        .or(this.page.getByRole('checkbox', { name: orgName, exact: true }))
+        .or(this.page.getByText(orgName, { exact: true }))
+        .first()
+        .click();
+    }).toPass({ timeout: 30_000 });
     await refreshFlutterAccessibility(this.page);
     await this.page.waitForTimeout(500);
   }
