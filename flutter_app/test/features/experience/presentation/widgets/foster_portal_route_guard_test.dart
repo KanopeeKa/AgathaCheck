@@ -38,6 +38,10 @@ void main() {
       initialLocation: '/o/invite',
       routes: [
         GoRoute(
+          path: '/o/orgs',
+          builder: (context, state) => const Scaffold(body: Text('org orgs')),
+        ),
+        GoRoute(
           path: '/o/home',
           builder: (context, state) => const Scaffold(body: Text('org home')),
         ),
@@ -65,13 +69,17 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.text('invite screen'), findsNothing);
-    expect(find.text('org home'), findsOneWidget);
+    expect(find.text('org orgs'), findsOneWidget);
   });
 
   testWidgets('allows org admin through blocked route', (tester) async {
     final router = GoRouter(
       initialLocation: '/o/invite',
       routes: [
+        GoRoute(
+          path: '/o/orgs',
+          builder: (context, state) => const Scaffold(body: Text('org orgs')),
+        ),
         GoRoute(
           path: '/o/home',
           builder: (context, state) => const Scaffold(body: Text('org home')),

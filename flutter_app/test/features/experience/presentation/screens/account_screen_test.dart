@@ -110,24 +110,22 @@ void main() {
     expect(find.text('Support'), findsOneWidget);
   });
 
-  testWidgets(
-    'account shows show-organisation toggle for guardian-only users',
-    (tester) async {
-      final guardianOnly = ExperienceEligibilityRules.compute(
-        pets: const [],
-        orgMembershipCount: 0,
-      );
+  testWidgets('account omits show-organisation toggle for guardian-only users', (
+    tester,
+  ) async {
+    final guardianOnly = ExperienceEligibilityRules.compute(
+      pets: const [],
+      orgMembershipCount: 0,
+    );
 
-      await tester.pumpWidget(buildApp(eligibility: guardianOnly));
-      await tester.pumpAndSettle();
+    await tester.pumpWidget(buildApp(eligibility: guardianOnly));
+    await tester.pumpAndSettle();
 
-      expect(
-        find.byKey(const Key('show_organisation_section_toggle')),
-        findsOneWidget,
-      );
-      expect(find.text('Preferences'), findsOneWidget);
-    },
-  );
+    expect(
+      find.byKey(const Key('show_organisation_section_toggle')),
+      findsNothing,
+    );
+  });
 
   testWidgets(
     'account landing remains usable at narrow width with large text',

@@ -70,7 +70,7 @@ GoRouter _router(String initialLocation) {
     initialLocation: initialLocation,
     routes: [
       GoRoute(
-        path: '/g/home',
+        path: '/pc/home',
         builder: (context, state) =>
             const Scaffold(body: Center(child: Text('Dashboard'))),
       ),
@@ -91,7 +91,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('pet detail back navigation', () {
-    testWidgets('deep link without returnTo falls back to /g/home', (
+    testWidgets('deep link without returnTo falls back to /pc/home', (
       tester,
     ) async {
       final router = _router('/pet/pet-nav-1');
@@ -101,7 +101,7 @@ void main() {
       await tester.tap(find.byKey(const Key('experience_back_button')));
       await _settle(tester);
 
-      expect(router.routerDelegate.currentConfiguration.uri.path, '/g/home');
+      expect(router.routerDelegate.currentConfiguration.uri.path, '/pc/home');
     });
 
     testWidgets('returnTo query navigates back without stack', (tester) async {
