@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T07:36:00Z",
   "approved_by": "user chat 2026-09-03 (locked filter UX decisions + execute-plan authorization)",
   "approved_until": "2026-09-05T07:36:00Z",
-  "content_hash": "sha256:6d8cbbc6e321443c5a7a475d07b1e8efa6ad7d796e69234b274ed0fe075382d8",
+  "content_hash": "sha256:d2195fc74844e743d53f1a336d60a0cb4f4f5cda68971cf3eb105529599a3775",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/collection-filter-canonical-integration-f8a2",
@@ -117,12 +117,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {

@@ -337,13 +337,13 @@ autonomy: active
 current_phase: 3
 last_completed_phase: 2
 halt_reason: null
-next_action: "start phase 3: checkout cursor/collection-filter-events-org-f8a2"
+next_action: "continue phase 3 on branch cursor/collection-filter-events-org-f8a2"
 artifact_ref:
-  branch: cursor/collection-filter-pc-events-f8a2
+  branch: cursor/collection-filter-events-org-f8a2
   plan_path: .agents/plans/collection-filter-canonical-f8a2.md
-  plan_commit: 918fd7d875a2b975e87d06a0bd69514c8b3c4764
+  plan_commit: b7b53c1559721948b119cfb978d3c0b4832a2fd1
   snapshot_path: .agents/plans/collection-filter-canonical-f8a2.snapshot.json
-  snapshot_commit: 918fd7d875a2b975e87d06a0bd69514c8b3c4764
+  snapshot_commit: b7b53c1559721948b119cfb978d3c0b4832a2fd1
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

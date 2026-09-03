@@ -13,10 +13,12 @@ import 'package:pet_profile_app/features/notifications/presentation/providers/no
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_manage_events_screen.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/manage_events_collection_filter.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/pet_event_entry_list.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
+import '../../../experience/presentation/screens/guardian/guardian_events_test_helpers.dart';
 
 class _TestHealthEntriesNotifier extends HealthEntriesNotifier {
   _TestHealthEntriesNotifier(this._entries);
@@ -362,10 +364,16 @@ void main() {
     await tester.pumpWidget(buildScreen());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('manage_events_type_medication')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('manage_events_type_preventive')));
-    await tester.pumpAndSettle();
+    await tapCollectionFilterChoice(
+      tester,
+      dimensionId: 'type',
+      choiceId: ManageEventsTypeFilter.medication.name,
+    );
+    await tapCollectionFilterChoice(
+      tester,
+      dimensionId: 'type',
+      choiceId: ManageEventsTypeFilter.preventive.name,
+    );
 
     expect(find.text('Heartgard'), findsOneWidget);
     expect(find.text('Flea treatment'), findsOneWidget);
@@ -377,8 +385,11 @@ void main() {
     await tester.pumpWidget(buildScreen());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('manage_events_status_dueOverdue')));
-    await tester.pumpAndSettle();
+    await tapCollectionFilterChoice(
+      tester,
+      dimensionId: 'status',
+      choiceId: ManageEventsStatusFilter.dueOverdue.name,
+    );
 
     expect(find.text('Flea treatment'), findsOneWidget);
     expect(find.text('Heartgard'), findsNothing);
@@ -393,13 +404,21 @@ void main() {
 
     expect(find.text('Skipped dose'), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('manage_events_show_skipped_chip')));
-    await tester.pumpAndSettle();
+    await tapCollectionFilterChoice(
+      tester,
+      dimensionId: 'skipped',
+      choiceId: ManageEventsCollectionFilterIds.hideSkipped,
+      inMore: true,
+    );
 
     expect(find.text('Skipped dose'), findsNothing);
 
-    await tester.tap(find.byKey(const Key('manage_events_show_skipped_chip')));
-    await tester.pumpAndSettle();
+    await tapCollectionFilterChoice(
+      tester,
+      dimensionId: 'skipped',
+      choiceId: ManageEventsCollectionFilterIds.all,
+      inMore: true,
+    );
 
     expect(find.text('Skipped dose'), findsOneWidget);
   });
@@ -412,8 +431,11 @@ void main() {
     await tester.pumpWidget(buildScreen());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('manage_events_status_closed')));
-    await tester.pumpAndSettle();
+    await tapCollectionFilterChoice(
+      tester,
+      dimensionId: 'status',
+      choiceId: ManageEventsStatusFilter.closed.name,
+    );
 
     expect(find.text('Dewormer'), findsOneWidget);
     expect(
