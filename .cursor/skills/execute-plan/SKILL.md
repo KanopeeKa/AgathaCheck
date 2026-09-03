@@ -129,6 +129,23 @@ Run when drafting a plan, **before** `approve-autonomous`:
 
 ---
 
+## Cloud session continuity (turn boundaries)
+
+Cloud agents end each **turn** when you respond. That is normal — it is **not** a phase boundary and **not** permission to stop the plan.
+
+| At turn end | Do | Do not |
+|-------------|-----|--------|
+| Phase still `in_progress` | Commit, push, update PR + plan artifacts; post milestone on control issue; end user chat with brief status + explicit `next_action` (e.g. "next: babysit+ merge phase 2") | Ask "shall I continue?", "want me to proceed?", or soft offers ("let me know", "whenever you want") |
+| Phase just merged, more `pending` | Immediately start next phase in the **same session** when context/time allows; otherwise record `next_action` on control issue and exit with status only | Treat merge as session complete |
+| Waiting on CI / pre-UAT watch | Use `cursor-subscriptions` subscribe tools or the watch scripts; resume when green — do not ask the human to nudge CI | Poll deploy-uat or prod-ready |
+| Queued follow-up messages exist | Keep working through the queue in this session | Stop after one phase because the turn ended |
+
+**Standing grant:** If the human authorized the full plan/roadmap once (`approve-autonomous`, or chat grant recorded in `approved_by`), you do **not** need a new approval per phase, per turn, or per PR.
+
+**Gate exit `2`:** Halt via control issue (`halt --write --post-comment`) with resume steps — not a user-chat question. Common codes: `expired` (`approved_until` past — re-approve on control issue), `revoked`, `not_approved`.
+
+---
+
 ## Multi-phase integration branch (recommended)
 
 For plans with **2+ phases** (especially UI or the same product area), batch merges to `main`:
@@ -163,7 +180,7 @@ The **orchestrator** (this session running `/execute-plan`) owns: gate, runtime 
 
 ### Per-phase implementation worker (recommended)
 
-At each phase **§3 Implement scope**, the orchestrator **should** delegate implementation to a **Task sub-agent** (`generalPurpose`) scoped to that phase's `allowed_paths`, exit criteria, and branch — then verify diff, open/update PR, and run babysit+.
+At each phase **§3 Implement scope**, the orchestrator **must** delegate implementation to a **Task sub-agent** (`generalPurpose`) when practical, scoped to that phase's `allowed_paths`, exit criteria, and branch — then verify diff, open/update PR, and run babysit+. Do not stop after the worker returns; continue through babysit+ and the next phase without asking the human.
 
 | Role | Owns |
 |------|------|

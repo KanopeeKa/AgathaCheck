@@ -110,9 +110,7 @@ Post a **triage comment** on the PR before applying fixes.
 
 **Never ignore** blocker / critical / high / must signals.
 
-**Low confidence** → stop and ask human.
-
-**Execute-plan override:** When gate is active and phase scope is frozen in the snapshot, low-confidence triage is uncommon. Prefer a **debt issue + continue** unless must-fix vs merge-safety is genuinely ambiguous. Halt with `**Needs you:**` on the control issue — not a user-chat question.
+**Low confidence** → stop and ask human — **except during active execute-plan** (`gate` exit `0`): prefer **debt issue + continue** unless must-fix vs merge-safety is genuinely ambiguous; halt with `**Needs you:**` on the **control issue** only — never a user-chat question.
 
 **In-scope valid feedback stays in the PR.** Out-of-scope deferrals become issues (see §Debt issues). Aligns with `testing.mdc`.
 

@@ -15,6 +15,8 @@ Autonomous PR operator. Extends lightweight `/babysit` with mandatory triage, de
 
 During `/execute-plan`, use **/babysit-plus** for intermediate phase PRs and **/babysit-uat** for the **final** PR to `main` — never plain `/babysit` alone.
 
+**Execute-plan override:** When `gate <plan_id>` exits `0`, do **not** halt or ask the human in chat for low-confidence triage — post `**Needs you:**` on the **control issue** only when merge safety is genuinely ambiguous; otherwise debt issue + continue. See autonomous-pr-policy §Execute-plan overrides and `.agents/memory/execute-plan-autonomy.md`.
+
 ---
 
 ## Inputs
@@ -96,7 +98,7 @@ Post a **triage comment** on the PR summarizing every active unresolved thread:
 | **Nits** | Fix if local + low-risk; else debt issue |
 | **Ignore** | No code; debt issue if valid concern deferred |
 
-Rules: see autonomous-pr-policy §Review triage. **Never ignore** blocker / critical / high / must signals. Low confidence → halt and ask human.
+Rules: see autonomous-pr-policy §Review triage. **Never ignore** blocker / critical / high / must signals. Low confidence → debt issue + continue during active execute-plan (`gate` exit `0`); otherwise halt with `**Needs you:**` on the control issue — never ask in user chat.
 
 Template:
 

@@ -10,6 +10,10 @@ When `node scripts/execute_plan_runtime.js gate <plan_id>` exits **0** (`autonom
 - **Proceed** — implement, PR, babysit+, merge (`auto`), advance phases, resume after routine halts.
 - **Do not ask** the human "shall I continue?" in chat.
 
+## Cloud turn boundaries
+
+Each agent **turn** ends when you respond — that is not a phase gate. Before ending a turn: commit, push, update PR/plan artifacts, comment on the control issue, state `next_action`. Continue the phase loop in the same session when possible; never use turn end as an excuse to ask permission. Soft closers ("let me know", "whenever you want", "I can start phase N on request") count as permission-seeking.
+
 ## User chat vs control issue
 
 | Channel | Use for |
