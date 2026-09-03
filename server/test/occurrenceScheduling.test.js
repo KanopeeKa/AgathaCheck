@@ -9,6 +9,10 @@ import {
   normalizeTime,
   scheduleTimesFromEntry,
 } from '../lib/occurrenceScheduling.js';
+import {
+  isEntrySeriesClosed,
+  isOccurrenceDateWithinSeries,
+} from '../lib/occurrenceLifecycle.js';
 
 describe('occurrenceScheduling helpers', () => {
   it('scheduleTimesFromEntry returns [null] for all-day', () => {
@@ -56,5 +60,16 @@ describe('occurrenceScheduling helpers', () => {
   it('addCalendarDaysIso shifts calendar days', () => {
     expect(addCalendarDaysIso('2026-09-02', 1)).toBe('2026-09-03');
     expect(addCalendarDaysIso('2026-09-02', -1)).toBe('2026-09-01');
+  });
+
+  it('isEntrySeriesClosed uses status and repeat end date', () => {
+    expect(isEntrySeriesClosed({ status: 'completed', frequency: 'daily' })).toBe(true);
+    expect(isEntrySeriesClosed({
+      frequency: 'daily',
+      repeat_end_date: new Date('2026-09-01'),
+    }, '2026-09-02')).toBe(true);
+    expect(isOccurrenceDateWithinSeries({
+      repeat_end_date: new Date('2026-09-30'),
+    }, '2026-10-01')).toBe(false);
   });
 });

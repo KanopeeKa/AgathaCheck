@@ -24,6 +24,7 @@ class HealthEntryModel extends HealthEntry {
     super.petName,
     super.remindDaysBefore,
     super.scheduleTimes,
+    super.status,
     super.createdAt,
     super.updatedAt,
   });
@@ -56,6 +57,7 @@ class HealthEntryModel extends HealthEntry {
       petName: json['pet_name'] as String?,
       remindDaysBefore: json['remind_days_before'] as int? ?? 1,
       scheduleTimes: _parseScheduleTimes(json['schedule_times']),
+      status: json['status'] as String? ?? 'active',
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
           : null,
@@ -86,6 +88,7 @@ class HealthEntryModel extends HealthEntry {
       petName: entry.petName,
       remindDaysBefore: entry.remindDaysBefore,
       scheduleTimes: entry.scheduleTimes,
+      status: entry.status,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     );
@@ -112,6 +115,7 @@ class HealthEntryModel extends HealthEntry {
       if (healthIssueId != null) 'health_issue_id': healthIssueId,
       'remind_days_before': remindDaysBefore,
       if (scheduleTimes != null) 'schedule_times': scheduleTimes,
+      'status': status,
     };
   }
 

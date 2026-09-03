@@ -1520,6 +1520,14 @@
   "@viewEntryTitle": { "placeholders": { "name": { "type": "String" } } },
   "seeHistory": "See history",
   "closeEventAction": "Close event",
+  "closeEventConfirmTitle": "Close event?",
+  "closeEventConfirmMessage": "Closing this event will also close all associated occurrences. They will no longer appear in your care lists.",
+  "closeEventConfirmMessageWithCount": "Closing this event will also close {count} open occurrence(s). They will no longer appear in your care lists.",
+  "@closeEventConfirmMessageWithCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "reopenEventAction": "Reopen event",
   "eventStatusClosed": "Closed",
   "relatesToHealthIssue": "Relates to health issue",

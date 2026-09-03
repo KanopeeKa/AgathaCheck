@@ -4370,6 +4370,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get closeEventAction => 'Fermer l\'événement';
 
   @override
+  String get closeEventConfirmTitle => 'Fermer l\'événement ?';
+
+  @override
+  String get closeEventConfirmMessage =>
+      'La fermeture de cet événement fermera aussi toutes les occurrences associées. Elles n\'apparaîtront plus dans vos listes de soins.';
+
+  @override
+  String closeEventConfirmMessageWithCount(int count) {
+    return 'La fermeture de cet événement fermera aussi $count occurrence(s) ouverte(s). Elles n\'apparaîtront plus dans vos listes de soins.';
+  }
+
+  @override
   String get reopenEventAction => 'Rouvrir l\'événement';
 
   @override

@@ -12,6 +12,12 @@ import {
   todayCalendarIso,
 } from './calendarDate.js';
 import { advanceByFrequency } from './recurrenceHelper.js';
+import {
+  finalizeOnceEntryIfNoPending,
+  isEntrySeriesClosed,
+  isOccurrenceDateWithinSeries,
+  tryAutoCloseRecurringWithEndDate,
+} from './occurrenceLifecycle.js';
 
 /**
  * @param {object|null|undefined} row health_entries row or body
@@ -229,38 +235,6 @@ export async function materialiseInitialOccurrences(pool, entry, todayIso = toda
 }
 
 /**
- * When a once-entry's last pending occurrence closes, mirror legacy mark-taken
- * by completing the parent health_entries row.
- *
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {object} entry health_entries row
- */
-async function finalizeOnceEntryIfNoPending(pool, entry) {
-  if (!isOnceEntry(entry)) return;
-  const pending = await pool.query(
-    `SELECT 1 FROM health_occurrences WHERE health_entry_id = $1 AND status = 'pending' LIMIT 1`,
-    [entry.id]
-  );
-  if (pending.rows.length > 0) return;
-
-  const closed = await pool.query(
-    `SELECT completed_on FROM health_occurrences
-     WHERE health_entry_id = $1 AND status = 'completed'
-     ORDER BY marked_at DESC NULLS LAST LIMIT 1`,
-    [entry.id]
-  );
-  if (closed.rows.length === 0) return;
-
-  const completedOn = dateToIsoDate(closed.rows[0].completed_on) || todayCalendarIso();
-  await pool.query(
-    `UPDATE health_entries SET status = 'completed', completed_on = $1,
-      completed_at = NOW(), next_due_date = NULL, updated_at = NOW()
-     WHERE id = $2 AND status != 'completed'`,
-    [completedOn, entry.id]
-  );
-}
-
-/**
  * After an occurrence closes, roll forward pending materialisation.
  *
  * @param {import('pg').Pool|import('pg').PoolClient} pool
@@ -268,6 +242,11 @@ async function finalizeOnceEntryIfNoPending(pool, entry) {
  * @param {string} [todayIso]
  */
 export async function materialiseAfterOccurrenceClose(pool, entry, todayIso = todayCalendarIso()) {
+  if (isEntrySeriesClosed(entry, todayIso)) {
+    await syncNextDueDateFromOccurrences(pool, entry.id);
+    return;
+  }
+
   if (isOnceEntry(entry)) {
     await syncNextDueDateFromOccurrences(pool, entry.id);
     await finalizeOnceEntryIfNoPending(pool, entry);
@@ -295,11 +274,18 @@ export async function materialiseAfterOccurrenceClose(pool, entry, todayIso = to
       ? dateToIsoDate(lastClosed.rows[0].scheduled_date)
       : materialisationAnchor(dateToIsoDate(entry.start_date), todayIso);
     const nextDay = addCalendarDaysIso(base, 1);
-    if (isWithinMaterialisationWindow(nextDay, todayIso) || nextDay <= todayIso) {
+    if (
+      isOccurrenceDateWithinSeries(entry, nextDay)
+      && (isWithinMaterialisationWindow(nextDay, todayIso) || nextDay <= todayIso)
+    ) {
       await insertOccurrencesForDay(pool, entry, nextDay);
     } else {
       const freqNext = advanceByFrequency(base, entry);
-      if (freqNext && isWithinMaterialisationWindow(freqNext, todayIso)) {
+      if (
+        freqNext
+        && isOccurrenceDateWithinSeries(entry, freqNext)
+        && isWithinMaterialisationWindow(freqNext, todayIso)
+      ) {
         await insertOccurrencesForDay(pool, entry, freqNext);
       }
     }
@@ -312,7 +298,10 @@ export async function materialiseAfterOccurrenceClose(pool, entry, todayIso = to
     );
     if (pendingOnEarliest.rows[0].c === 0) {
       const nextDay = addCalendarDaysIso(earliest, 1);
-      if (isWithinMaterialisationWindow(nextDay, todayIso)) {
+      if (
+        isOccurrenceDateWithinSeries(entry, nextDay)
+        && isWithinMaterialisationWindow(nextDay, todayIso)
+      ) {
         await insertOccurrencesForDay(pool, entry, nextDay);
       }
     }
@@ -325,13 +314,17 @@ export async function materialiseAfterOccurrenceClose(pool, entry, todayIso = to
       );
       if (remaining.rows[0].c > 0) continue;
       const nextDay = addCalendarDaysIso(dateIso, 1);
-      if (isWithinMaterialisationWindow(nextDay, todayIso)) {
+      if (
+        isOccurrenceDateWithinSeries(entry, nextDay)
+        && isWithinMaterialisationWindow(nextDay, todayIso)
+      ) {
         await insertOccurrencesForDay(pool, entry, nextDay);
       }
     }
   }
 
   await syncNextDueDateFromOccurrences(pool, entry.id);
+  await tryAutoCloseRecurringWithEndDate(pool, entry, todayIso);
 }
 
 /**

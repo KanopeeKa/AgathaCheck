@@ -6,7 +6,9 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../providers/health_providers.dart';
+import '../providers/occurrence_providers.dart';
 import '../widgets/pet_event_lifecycle.dart';
+import '../widgets/pet_event_close_confirm_dialog.dart';
 import '../widgets/pet_event_occurrence_actions.dart';
 import '../widgets/pet_event_view_body.dart';
 import '../widgets/pet_event_view_providers.dart';
@@ -67,12 +69,24 @@ class PetEventViewScreen extends ConsumerWidget {
             }
 
             final isClosed = isHealthEntrySeriesClosed(entry);
+            final openOccurrencesAsync = ref.watch(
+              entryOccurrencesProvider(entryId),
+            );
+            final openOccurrenceCount =
+                openOccurrencesAsync.valueOrNull?.length ?? 0;
 
             void onEdit() => context.push(healthEntryEditRoute(entry, petId));
 
             void onSeeHistory() => showPetEventHistory(context, ref, entryId);
 
             Future<void> onClose() async {
+              if (closeEventWillCloseOccurrences(entry, openOccurrenceCount)) {
+                final confirmed = await showCloseEventConfirmDialog(
+                  context,
+                  openOccurrenceCount: openOccurrenceCount,
+                );
+                if (confirmed != true || !context.mounted) return;
+              }
               await ref
                   .read(healthEntriesNotifierProvider.notifier)
                   .closeEvent(entryId);
