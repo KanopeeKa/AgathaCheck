@@ -4,7 +4,8 @@
  */
 import { DEMO_PASSWORD, DEMO_USERS } from './demo-constants.js';
 
-/** Stable key for the primary manual-test login (Frederique). */
+/** Stable key for the primary manual-test login (Frederique).
+ *  Legacy wire name `alice` is retained so DEMO_IDS/DEMO_USERS keys stay stable across scenarios. */
 export const MAIN_DEMO_USER_KEY = 'alice';
 
 /** Ordered list for documentation tables — main user first. */
