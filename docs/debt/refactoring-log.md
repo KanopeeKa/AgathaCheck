@@ -21,15 +21,17 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 | Phase | Outcome | Branch | Status |
 |-------|---------|--------|--------|
-| 0 | Framing decisions | `cursor/shelter-dashboard-v2-framing-c4e8` | in progress |
-| 1 | Pinned org account preference API | `cursor/shelter-pinned-org-api-c4e8` | pending |
-| 2 | Shelter primary destinations config | `cursor/shelter-primary-nav-config-c4e8` | pending |
-| 3 | Org shell persistent primary nav | `cursor/shelter-shell-primary-nav-c4e8` | pending |
-| 4 | Pin control on membership tile | `cursor/shelter-tile-pin-c4e8` | pending (gated: unified-pet-tile-c4e8) |
-| 5 | Shelter dashboard body redesign | `cursor/shelter-dashboard-body-c4e8` | pending |
-| 6 | Shelter tasks preview v1 | `cursor/shelter-tasks-preview-c4e8` | pending |
-| 7 | Teal token audit | `cursor/shelter-teal-token-audit-c4e8` | pending |
-| 8 | Tests + navigation contract | `cursor/shelter-dashboard-v2-tests-c4e8` | pending |
+| 0 | Framing decisions | `cursor/shelter-dashboard-v2-framing-c4e8` | done |
+| 1 | Pinned org account preference API | `cursor/shelter-pinned-org-api-c4e8` | done |
+| 2 | Shelter primary destinations config | `cursor/shelter-primary-nav-config-c4e8` | done |
+| 3 | Org shell persistent primary nav | `cursor/shelter-shell-primary-nav-c4e8` | done |
+| 4 | Pin control on membership tile | `cursor/shelter-tile-pin-c4e8` | done (wave B) |
+| 5 | Shelter dashboard body redesign | `cursor/shelter-dashboard-body-c4e8` | done (5a wave A; 5b wave B) |
+| 6 | Shelter tasks preview v1 | `cursor/shelter-tasks-preview-c4e8` | done |
+| 7 | Teal token audit | `cursor/shelter-teal-token-audit-c4e8` | done (wave C) |
+| 8 | Tests + navigation contract | `cursor/shelter-dashboard-v2-tests-c4e8` | done |
+
+**Waves:** A (0→1→2→3→6→5a) complete · B (4→5b) complete · C (7→8) phase 7 complete, phase 8 in progress.
 
 Decisions: [shelter-dashboard-v2-framing-decisions.md](/docs/domains/shelter/changes/shelter-dashboard-v2-framing-decisions.md).
 
