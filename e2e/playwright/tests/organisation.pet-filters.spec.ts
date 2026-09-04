@@ -147,7 +147,10 @@ test.describe('Organisation pet filters', () => {
     await selectOrgPetsTab(page, 'Need attention');
 
     await expectOrgPetVisible(page, 'Bella');
-    await expectAttentionReasonVisible(page, 'Foster finishing soon');
+    // Unified tile prefers active foster placement line over attention-reason copy.
+    await expect(
+      page.getByRole('button', { name: /Bella.*Active.*Eve Foster/i }).first(),
+    ).toBeVisible();
   });
 
   test('In foster tab lists pets currently in foster care', async ({ page }) => {
