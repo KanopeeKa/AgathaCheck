@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Truncate all application data while preserving schema and migration ledger.
+ * Wipe all application data while preserving schema and migration ledger.
+ * Discovers tables dynamically so new migrations stay covered automatically.
  * Non-production only — use before re-seeding UAT/demo databases.
  */
 import path from 'path';
@@ -15,49 +16,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
 
-const TABLES_TO_TRUNCATE = [
-  'adoption_visits',
-  'adoption_journeys',
-  'foster_request_responses',
-  'foster_request_targets',
-  'foster_request_pets',
-  'foster_requests',
-  'foster_placements',
-  'custody_transfers',
-  'health_event_photos',
-  'health_history',
-  'health_issue_documents',
-  'health_issue_events',
-  'health_issues',
-  'health_entries',
-  'weight_entries',
-  'pet_timeline_entries',
-  'pet_activity_events',
-  'family_event_history',
-  'family_events',
-  'notifications',
-  'notification_preferences',
-  'pet_access',
-  'shared_pets',
-  'pet_share_links',
-  'org_pet_home_hidden',
-  'organization_permissions',
-  'document_templates',
-  'org_connection_requests',
-  'org_connections',
-  'org_foster_parents',
-  'foster_profiles',
-  'prospects',
-  'archived_pets',
-  'audit_events',
-  'password_reset_tokens',
-  'refresh_tokens',
-  'vets',
-  'pets',
-  'organization_users',
-  'organizations',
-  'users',
-];
+const PRESERVED_TABLES = new Set(['_migrations']);
 
 function createPool() {
   const databaseUrl = process.env.DATABASE_URL;
@@ -73,14 +32,32 @@ function createPool() {
   });
 }
 
+export async function listApplicationTables(client) {
+  const { rows } = await client.query(
+    `SELECT tablename
+     FROM pg_tables
+     WHERE schemaname = 'public'
+       AND tablename <> ALL($1::text[])
+     ORDER BY tablename`,
+    [[...PRESERVED_TABLES]],
+  );
+  return rows.map((row) => row.tablename);
+}
+
 export async function truncateDemoData(pool) {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    const tableList = TABLES_TO_TRUNCATE.map((t) => `public.${t}`).join(', ');
+    const tables = await listApplicationTables(client);
+    if (tables.length === 0) {
+      console.log('truncate: no application tables found');
+      await client.query('COMMIT');
+      return;
+    }
+    const tableList = tables.map((table) => `public.${table}`).join(', ');
     await client.query(`TRUNCATE TABLE ${tableList} RESTART IDENTITY CASCADE`);
     await client.query('COMMIT');
-    console.log(`truncate: cleared ${TABLES_TO_TRUNCATE.length} application tables`);
+    console.log(`truncate: cleared ${tables.length} application tables`);
   } catch (err) {
     await client.query('ROLLBACK');
     throw err;

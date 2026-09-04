@@ -154,9 +154,10 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
   /// Merges fresh server entries with retained optimistic-completed items,
   /// keeping each completed entry at its captured index. No cap applied.
   ///
-  /// Completed items are only reinserted when [filterGuardianGlobalEvents]
-  /// would include them under the currently active cohort/pet/event filters —
-  /// preventing ghost rows when the user narrows the filter after completing.
+  /// Completed items are only reinserted when the active cohort/pet/type/skipped
+  /// filters would include them. The status filter is cleared for this check so
+  /// Undo rows stay visible even when the list defaults to due/overdue only —
+  /// preventing ghost rows when the user narrows pet/cohort filters after completing.
   List<_CareItem> _buildMergedList(
     List<HealthEntry> freshEntries,
     List<Pet> scopedPets,
@@ -167,17 +168,25 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
         .toList();
 
     final visibleCompleted = _completed.values.where((c) {
+      // Undo rows ignore the status filter so completion feedback stays visible
+      // even when the default view is due/overdue only.
       final passes = _isOrg
           ? filterOrgGlobalEvents(
               [c.filterEntry],
               scopedPets,
-              _orgFilters,
+              _orgFilters.copyWith(
+                eventFilters: _orgFilters.eventFilters.copyWith(statuses: {}),
+              ),
               histories,
             )
           : filterGuardianGlobalEvents(
               [c.filterEntry],
               scopedPets,
-              _guardianFilters,
+              _guardianFilters.copyWith(
+                eventFilters: _guardianFilters.eventFilters.copyWith(
+                  statuses: {},
+                ),
+              ),
               histories,
             );
       return passes.isNotEmpty;

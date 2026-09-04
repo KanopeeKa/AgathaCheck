@@ -23,7 +23,7 @@ enum GuardianEventsCohortFilter { all, myPets, fosterPets }
 /// Extended filters for global `/g/events` — manage-events filters plus pet/cohort.
 class GuardianGlobalEventsFilters {
   const GuardianGlobalEventsFilters({
-    this.eventFilters = const ManageEventsFilters(),
+    this.eventFilters = defaultGlobalEventsFilters,
     this.cohorts = const {},
     this.petIds = const {},
   });
@@ -69,7 +69,7 @@ class GuardianGlobalEventsFilters {
 /// Extended filters for org `/o/events` — manage-events filters plus pet/org scoping.
 class OrgGlobalEventsFilters {
   const OrgGlobalEventsFilters({
-    this.eventFilters = const ManageEventsFilters(),
+    this.eventFilters = defaultGlobalEventsFilters,
     this.petIds = const {},
     this.orgNames = const {},
   });

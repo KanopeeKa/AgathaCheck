@@ -1,12 +1,12 @@
 /**
  * Stable demo identities for UAT and demos.
- * Documented in docs/e2e/uat-demo-personas.md
+ * Credential table: docs/e2e/uat-demo-personas.md (validated by server/test/seed.test.js).
  */
 
-/** Documented demo password — acceptable only on isolated non-prod databases. */
-export const DEMO_PASSWORD = 'UatDemoPass1!';
+/** Shared demo password — acceptable only on isolated non-prod databases. */
+export const DEMO_PASSWORD = 'PassTest';
 export const DEMO_PASSWORD_HASH =
-  '$2b$10$BgtLHM4jS8/oSsNAjYDzfueZv0kk.qRH1fqS.AUvqqfKiKO6M6Atm';
+  '$2b$10$hvdaHaNIByRvzJR99.3B4O1eVrBrCfdxJRqHeXaeTBpVdwvjUj9xm';
 
 export const DEMO_IDS = {
   // Users
@@ -124,50 +124,63 @@ export const DEMO_IDS = {
 export const DEMO_USERS = {
   alice: {
     id: DEMO_IDS.alice,
-    email: 'alice@demo.agathatrack.test',
-    first_name: 'Alice',
-    last_name: 'Super',
+    email: 'frederique.prevost@gmail.com',
+    first_name: 'Frederique',
+    last_name: 'Prevost',
+    display_name: 'Frederique',
     category: 'pet_carer',
-    bio: 'Demo guardian and clinic super admin',
+    bio: 'Primary demo guardian and clinic super admin',
+    role_description:
+      'Main test user — pet carer + super admin (Happy Paws Clinic & Rescue Hearts)',
   },
   bob: {
     id: DEMO_IDS.bob,
     email: 'bob@demo.agathatrack.test',
     first_name: 'Bob',
     last_name: 'Member',
+    display_name: 'Bob',
     category: 'pet_carer',
     bio: 'Demo clinic admin',
+    role_description: 'Org admin at Happy Paws Clinic',
   },
   carol: {
     id: DEMO_IDS.carol,
     email: 'carol@demo.agathatrack.test',
     first_name: 'Carol',
     last_name: 'Guardian',
+    display_name: 'Carol',
     category: 'pet_carer',
     bio: 'Demo guardian with shared pet access',
+    role_description: 'Pet carer with shared access to Buddy',
   },
   eve: {
     id: DEMO_IDS.eve,
     email: 'eve@demo.agathatrack.test',
     first_name: 'Eve',
     last_name: 'Foster',
+    display_name: 'Eve',
     category: 'pet_carer',
     bio: 'Demo foster parent at Rescue Hearts',
+    role_description: 'Foster parent at Rescue Hearts',
   },
   dave: {
     id: DEMO_IDS.dave,
     email: 'dave@demo.agathatrack.test',
     first_name: 'Dave',
     last_name: 'Dual',
+    display_name: 'Dave',
     category: 'pet_carer',
     bio: 'Demo dual-role user — personal pet plus org member',
+    role_description: 'Dual-role user (personal pet + Rescue Hearts foster)',
   },
   grace: {
     id: DEMO_IDS.grace,
     email: 'grace@demo.agathatrack.test',
     first_name: 'Grace',
     last_name: 'Prospect',
+    display_name: 'Grace',
     category: 'pet_carer',
     bio: 'Demo adopter prospect',
+    role_description: 'Adoption prospect for Luna',
   },
 };

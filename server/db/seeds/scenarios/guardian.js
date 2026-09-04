@@ -29,5 +29,7 @@ export async function seedGuardian(client) {
     bio: 'Indoor cat with regular vet visits',
   });
 
-  console.log('seed: guardian scenario ready (Alice, Carol, Buddy, Whiskers)');
+  console.log(
+    'seed: guardian scenario ready (Frederique, Carol, Buddy, Whiskers)',
+  );
 }

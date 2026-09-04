@@ -18,7 +18,14 @@ import {
   seedRescueHearts,
   type TestUser,
 } from '../support/api';
-import { enableFlutterAccessibility, refreshFlutterAccessibility, toggleCollectionFilterChoice, waitForFlutterRoutePattern, escapeRegExp, semanticsByName } from '../support/flutter';
+import {
+  enableFlutterAccessibility,
+  refreshFlutterAccessibility,
+  toggleCollectionFilterChoice,
+  waitForFlutterRoutePattern,
+  escapeRegExp,
+  petCardNamePattern,
+} from '../support/flutter';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
 
@@ -51,10 +58,14 @@ async function openOrgPetsScreen(
 }
 
 async function expectOrgPetVisible(page: import('@playwright/test').Page, petName: string) {
-  const petPattern = new RegExp(`Pet:\\s*${escapeRegExp(petName)}`, 'i');
+  const petPattern = petCardNamePattern(petName);
   const shadowPattern = new RegExp(`${escapeRegExp(petName)}.*frozen shadow`, 'i');
   await expect(
-    semanticsByName(page, petPattern)
+    page
+      .getByRole('button', { name: petPattern })
+      .or(page.getByRole('group', { name: petPattern }))
+      .or(page.getByRole('checkbox', { name: petPattern }))
+      .or(page.getByRole('tab', { name: petPattern }))
       .or(page.getByRole('button', { name: shadowPattern }))
       .first(),
   ).toBeVisible();
@@ -64,9 +75,11 @@ async function expectAttentionReasonVisible(
   page: import('@playwright/test').Page,
   reason: string,
 ) {
+  const reasonPattern = new RegExp(escapeRegExp(reason), 'i');
   await expect(
     page
-      .getByRole('group', { name: new RegExp(escapeRegExp(reason), 'i') })
+      .getByRole('button', { name: reasonPattern })
+      .or(page.getByRole('group', { name: reasonPattern }))
       .or(page.getByText(reason, { exact: true }))
       .first(),
   ).toBeVisible();
@@ -136,7 +149,10 @@ test.describe('Organisation pet filters', () => {
     await selectOrgPetsTab(page, 'Need attention');
 
     await expectOrgPetVisible(page, 'Bella');
-    await expectAttentionReasonVisible(page, 'Foster finishing soon');
+    // Unified tile prefers active foster placement line over attention-reason copy.
+    await expect(
+      page.getByRole('button', { name: /Bella.*Active.*Eve Foster/i }).first(),
+    ).toBeVisible();
   });
 
   test('In foster tab lists pets currently in foster care', async ({ page }) => {

@@ -3,7 +3,7 @@ title: UAT demo data
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-02
+last_updated: 2026-09-04
 tags: [e2e, uat, demo]
 ---
 # UAT demo data
@@ -12,25 +12,27 @@ Rich synthetic dataset for **UAT and live demos**. Stable credentials, fixed UUI
 
 **Never** run on production. Production deploy paths are guarded — see [DEPLOYMENT_DB.md](../../DEPLOYMENT_DB.md).
 
+Credential reference (auto-synced from seed constants): [uat-demo-personas.md](./uat-demo-personas.md)
+
 ---
 
 ## Quick start
 
-### Local / dev (full wipe + schema)
+### Local / dev (full wipe — drops database, recreates schema, seeds data)
 
 ```bash
 APP_ENV=development scripts/db/uat-reset.sh
 ```
 
-Drops the database, bootstraps schema from canonical snapshot, then loads all demo scenarios.
+Drops the database (all tables), bootstraps schema from canonical snapshot, then loads all demo scenarios.
 
-### UAT server (data only — keeps schema + migrations)
+### UAT server (data only — truncates all application tables, keeps schema)
 
 ```bash
 APP_ENV=uat scripts/db/uat-refresh-demo.sh
 ```
 
-Truncates application tables and re-seeds. Use when the schema is already up to date.
+Truncates every `public` table except `_migrations`, then re-seeds. Use when the schema is already up to date.
 
 ### GitHub Actions (remote UAT)
 
@@ -44,15 +46,16 @@ Requires `UAT_SSH_ENABLED=true` and UAT SSH secrets. Restarts Passenger after se
 
 ## Credentials
 
-All demo users share the same password:
+See [uat-demo-personas.md](./uat-demo-personas.md) for the full table. Summary:
 
 | Field | Value |
 |-------|-------|
-| Password | `UatDemoPass1!` |
+| **Main user** | `frederique.prevost@gmail.com` |
+| **Shared password** | `PassTest` |
 
 | User | Email | Role |
 |------|-------|------|
-| Alice | `alice@demo.agathatrack.test` | Pet Care + super admin (Happy Paws Clinic & Rescue Hearts) |
+| **Frederique** (main) | `frederique.prevost@gmail.com` | Pet carer + super admin (Happy Paws Clinic & Rescue Hearts) |
 | Bob | `bob@demo.agathatrack.test` | Admin at Happy Paws Clinic |
 | Carol | `carol@demo.agathatrack.test` | Pet carer with shared access to Buddy |
 | Eve | `eve@demo.agathatrack.test` | Foster parent at Rescue Hearts |
@@ -61,18 +64,24 @@ All demo users share the same password:
 
 Password is intentionally weak and documented — acceptable only on isolated non-prod databases.
 
+To keep docs in sync after changing `server/db/seeds/demo-constants.js`:
+
+```bash
+node server/scripts/sync-demo-credentials-doc.js
+```
+
 ---
 
 ## What the dataset covers
 
 | Domain | Demo content |
 |--------|----------------|
-| **Owned pets** | Buddy (dog) and Whiskers (cat) — Alice; Pip (dog) — Dave |
+| **Owned pets** | Buddy (dog) and Whiskers (cat) — Frederique; Pip (dog) — Dave |
 | **Org pets** | Clinic Cat (Happy Paws); Max, Luna, Rocky, Mittens (Rescue Hearts) |
 | **Health** | Vaccinations, medications, overdue preventives, vet visits, active health issue |
 | **Weight** | Weight history for Buddy and Whiskers |
 | **Vets** | Dr. Sarah Mitchell linked to Buddy |
-| **Timeline & family** | Buddy adoption milestone; Alice holiday family event |
+| **Timeline & family** | Buddy adoption milestone; Frederique holiday family event |
 | **Fostering** | Active placement (Max ↔ Eve); foster-to-adopt (Rocky); completed (Mittens) |
 | **Foster requests** | Sent request with Eve's "can help" response |
 | **Adoption** | Rocky journey (pending conditions); Luna prospect + scheduled visit |
@@ -93,7 +102,7 @@ Run individually with `node server/scripts/seed.js --scenario=<name>`:
 
 | Scenario | Purpose |
 |----------|---------|
-| `guardian` | Alice, Carol, personal pets |
+| `guardian` | Frederique, Carol, personal pets |
 | `org-clinic` | Happy Paws Clinic, Bob, Clinic Cat (discoverable, org UX v3) |
 | `org-v3-demo` | Minimal org UX v3 subset: clinic + Rescue Hearts shell + connection |
 | `rescue-hearts` | Rescue Hearts charity, Eve, Dave, Grace, org pets |
@@ -112,7 +121,7 @@ Run individually with `node server/scripts/seed.js --scenario=<name>`:
 server/db/seeds/
   demo-constants.js      # Stable UUIDs and user definitions
   helpers.js             # Upsert helpers, relative calendar dates
-  truncate-data.js       # Wipe application data (keeps _migrations)
+  truncate-data.js       # Truncate all public tables (keeps _migrations)
   scenarios/             # One module per scenario
 server/scripts/seed.js   # CLI entry point
 ```
