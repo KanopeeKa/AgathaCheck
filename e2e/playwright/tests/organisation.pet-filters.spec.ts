@@ -64,6 +64,8 @@ async function expectOrgPetVisible(page: import('@playwright/test').Page, petNam
     page
       .getByRole('button', { name: petPattern })
       .or(page.getByRole('group', { name: petPattern }))
+      .or(page.getByRole('checkbox', { name: petPattern }))
+      .or(page.getByRole('tab', { name: petPattern }))
       .or(page.getByRole('button', { name: shadowPattern }))
       .first(),
   ).toBeVisible();
