@@ -94,7 +94,11 @@ class GuardianShellHomeContent extends ConsumerWidget {
                   onAddEvent: () =>
                       showAddEventTypePickerSheet(context, pets: shellPets),
                 ),
-                vetsSection: const GuardianMyVetsSection(),
+                vetsSection: GuardianMyVetsSection(
+                  useWideDeskLayout:
+                      constraints.maxWidth >=
+                      GuardianOperationsDeskLayout.wideBreakpoint,
+                ),
                 fosteringSection: GuardianFosteringSection(pets: shellPets),
               ),
             ),

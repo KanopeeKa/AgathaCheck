@@ -233,7 +233,7 @@ Optional non-interactive sketch overlays gated by **measured leftover space** (n
 - Opacity: **0.13** (`GuardianDashboardDecoThresholds.opacity`)
 - Mobile (`<600px`): hidden
 - Pet rail: overlay in horizontal slack beside cards; hidden when rail scrolls
-- Care Team puppy: wide (`≥900px`) + non-empty list; lower-right of stretched column
+- Care Team puppy: wide desk layout (content width `≥900px`) + non-empty list; lower-right of stretched column
 - `ExcludeSemantics` + `IgnorePointer`; real content always wins
 
 ## Implementation
