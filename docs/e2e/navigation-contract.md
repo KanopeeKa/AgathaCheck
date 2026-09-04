@@ -3,7 +3,7 @@ title: E2E navigation contract
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-02
+last_updated: 2026-09-04
 tags: [documentation]
 ---
 # E2E navigation contract
@@ -140,16 +140,85 @@ Section roots (`/pc/home`, `/o/orgs`, `/account`) show toggle without back arrow
 
 Shelter menu item is **always** visible (D-v5-WORKSPACE-1). Non-members land on `/o/orgs` empty state.
 
-### Shelter hub chrome (D-desk-S1, D-v3-NAV-1)
+### Shelter hub chrome (D-desk-S7, D-shelter-NAV-1)
 
 | Surface | Route | Ready locator / assertion |
 |---------|-------|---------------------------|
-| Hub list | `/o/orgs` | `Key('org_membership_grid')` when memberships exist; empty-state copy when none |
+| Dashboard body | `/o/orgs` | **My Organisations** eyebrow (`myOrganizations` l10n) + `Key('shelter_tasks_preview')` |
+| Membership grid | `/o/orgs` (has memberships) | `Key('org_membership_grid')`; cards `flt-semantics-identifier="org_membership_<id>"` |
+| Membership empty | `/o/orgs` (no memberships) | `orgNoOrganizations` copy (no grid key) |
 | Hub compact app bar | `/o/orgs` (width &lt;600px) | Teal `organizationPrimary` bar; `Key('experience_workspace_toggle')` without back |
-| Org deep shell | `/o/orgs/:orgId/**` | `Key('org_shell_workspace_toggle')` + `Key('org_shell_back')` on non-root routes |
-| Workspace switch | Any authenticated shell | Toggle only — **no** Shelter primary bottom/rail nav (D-v4-2) |
+| Org deep shell | `/o/orgs/:orgId/**` | `Key('experience_back_button')` on non-root routes; Shelter primary nav **persistent** (D-shelter-NAV-1) |
+| Workspace switch | Any authenticated shell | `Key('experience_workspace_toggle')` on every screen (D-v5-WORKSPACE-4) |
 
-Hub stays lightweight: memberships grid (`org_membership_tile_*`), pending invites, discover row — no operational desk previews on `/o/orgs`.
+Discover is **nav-only** (no `org_discover_nav_row` in dashboard body). Pending invites fold into **Shelter tasks** — not a separate hub section.
+
+## Shelter compact bottom nav (D-shelter-NAV-1)
+
+Viewport **&lt;600px** exposes the five-slot bottom bar (`Key('shelter_bottom_navigation')`) on all Shelter workspace routes (except `/o/onboarding`).
+
+| Tab label (EN) | Tab label (FR) | Route | Semantics identifier |
+|----------------|----------------|-------|----------------------|
+| Dashboard | Tableau de bord | `/o/orgs` | `shelter_nav_dashboard` |
+| *(pinned org)* | *(org short name)* | `/o/orgs/:id` | `shelter_nav_pinned_org` — slot hidden when unset |
+| *(spacer)* | — | — | inactive centre slot when unpinned (D-shelter-NAV-3) |
+| Discover Organisations | Découvrir des organisations | `/o/orgs/discover` | `shelter_nav_discover` |
+| Account | Compte | `/account` | `shelter_nav_account` |
+
+Selector order for tabs: `getByRole('button', { name })` → `getByRole('tab', { name })` → `flt-semantics-identifier` (Flutter 3.44 semantics).
+
+Nested org routes highlight **Dashboard** when unpinned, or **pinned org** when the path matches the pin (e.g. `/o/orgs/org-1/pets` → pinned slot).
+
+## Shelter leading navigation rail (D-shelter-NAV-1, medium)
+
+Viewport **600–839px** exposes `ShelterNavigationRail` (`Key('shelter_navigation_rail')`, `flt-semantics-identifier="shelter_navigation_rail"`) with the same destinations as compact bottom nav (no spacer slots).
+
+| Destination (EN) | Route | Notes |
+|------------------|-------|-------|
+| Dashboard | `/o/orgs` | Same ready locators as bottom nav |
+| *(pinned org)* | `/o/orgs/:id` | Hidden when unset |
+| Discover Organisations | `/o/orgs/discover` | |
+| Account | `/account` | Fourth rail destination when unpinned |
+
+**Shell hierarchy:** rail header carries compact `AgathaTrack` brand (`shelter_navigation_rail_brand`) above workspace toggle on section roots.
+
+The hamburger drawer is **not** available at these widths.
+
+## Shelter expanded sidebar (D-shelter-NAV-1, expanded)
+
+Viewport **≥840px** exposes `ShelterNavigationSidebar` (`Key('shelter_navigation_sidebar')`, `flt-semantics-identifier="shelter_navigation_sidebar"`) at ~240px width.
+
+- Header: brand + workspace toggle (`experience_workspace_toggle`)
+- Body: Dashboard, optional pinned org, Discover
+- Footer: Account (pinned, separated by divider)
+
+Org deep routes keep sidebar/rail/bottom nav visible. The hamburger drawer is **not** available at these widths.
+
+## Shelter tasks preview (D-shelter-TASKS-1)
+
+Cross-org actionable items on `/o/orgs` inside `Key('shelter_tasks_preview')`.
+
+| Locator | When |
+|---------|------|
+| `Key('shelter_tasks_preview')` | Section root — always on dashboard |
+| `Key('shelter_tasks_card')` | Loaded task data |
+| `Key('shelter_tasks_empty')` | Calm empty state (`guardianEmptyCareClearTitle` / `homeNoDueEvents`) |
+| `Key('shelter_task_row_<id>')` | Individual task row |
+| `Key('shelter_task_accept_<inviteId>')` | Pending invite accept |
+| `Key('shelter_task_decline_<inviteId>')` | Pending invite decline |
+
+Eyebrow label is currently the hardcoded EN string **SHELTER TASKS** (l10n key deferred). Invite rows use invite copy — not a separate **Pending Invitations** hub header.
+
+## Shelter membership pin (D-shelter-NAV-2)
+
+Pin control on membership tile cover (`OrgMembershipTile`).
+
+| Locator | Purpose |
+|---------|---------|
+| `flt-semantics-identifier="shelter_membership_pin_<orgId>"` | Pin/unpin button (48dp touch target) |
+| `Key('org_membership_tile_<orgId>')` | Tile widget key (cover + meta) |
+
+Semantics labels (EN): `Pin {org name} to navigation` (unpinned); `{org name} pinned to navigation` (pinned). Pin updates `pinned_organization_id` on `GET/PUT /auth/me` and the optional bottom-nav / rail / sidebar pinned slot without restart.
 
 ## Account entry (D-v4-2)
 

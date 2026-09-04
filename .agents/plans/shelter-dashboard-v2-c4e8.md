@@ -162,8 +162,8 @@ debt_issue_refs: []
 | 1 | done | cursor/shelter-pinned-org-api-c4e8 |
 | 2 | done | cursor/shelter-primary-nav-config-c4e8 |
 | 3 | done | cursor/shelter-shell-primary-nav-c4e8 |
-| 4 | pending | cursor/shelter-tile-pin-c4e8 |
-| 5 | pending | cursor/shelter-dashboard-body-c4e8 |
+| 4 | done | cursor/shelter-tile-pin-c4e8 |
+| 5 | done | cursor/shelter-dashboard-body-c4e8 |
 | 6 | done | cursor/shelter-tasks-preview-c4e8 |
-| 7 | pending | cursor/shelter-teal-token-audit-c4e8 |
-| 8 | pending | cursor/shelter-dashboard-v2-tests-c4e8 |
+| 7 | done | cursor/shelter-teal-token-audit-c4e8 |
+| 8 | in progress | cursor/shelter-dashboard-v2-tests-c4e8 |
