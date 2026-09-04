@@ -285,9 +285,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "done",
       "status_reason": null,
-      "status_detail": "navigation-contract + provider tests",
+      "status_detail": "navigation-contract + provider tests; 303 shard tests green",
       "debt_issue_refs": []
     }
   ]

@@ -29,7 +29,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 | 5 | Shelter dashboard body redesign | `cursor/shelter-dashboard-body-c4e8` | done (5a wave A; 5b wave B) |
 | 6 | Shelter tasks preview v1 | `cursor/shelter-tasks-preview-c4e8` | done |
 | 7 | Teal token audit | `cursor/shelter-teal-token-audit-c4e8` | done (wave C) |
-| 8 | Tests + navigation contract | `cursor/shelter-dashboard-v2-tests-c4e8` | in progress |
+| 8 | Tests + navigation contract | `cursor/shelter-dashboard-v2-tests-c4e8` | done |
 
 **Waves:** A (0→1→2→3→6→5a) complete · B (4→5b) complete · C (7→8) phase 7 complete, phase 8 in progress.
 

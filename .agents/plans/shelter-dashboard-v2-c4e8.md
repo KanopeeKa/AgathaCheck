@@ -142,7 +142,7 @@ Widget tests for tasks, pin, shelter nav. Update `docs/e2e/navigation-contract.m
 ```yaml
 autonomy: active
 current_phase: 8
-last_completed_phase: 7
+last_completed_phase: 8
 halt_reason: null
 next_action: "phase 8 complete — await merge PR"
 artifact_ref:
@@ -166,4 +166,4 @@ debt_issue_refs: []
 | 5 | done | cursor/shelter-dashboard-body-c4e8 |
 | 6 | done | cursor/shelter-tasks-preview-c4e8 |
 | 7 | done | cursor/shelter-teal-token-audit-c4e8 |
-| 8 | in progress | cursor/shelter-dashboard-v2-tests-c4e8 |
+| 8 | done | cursor/shelter-dashboard-v2-tests-c4e8 |
