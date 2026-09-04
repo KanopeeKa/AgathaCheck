@@ -58,11 +58,10 @@ bool guardianDashboardDecoAllowedForWidth(double viewportWidth) {
 
 /// Whether the Care Team puppy watermark may appear.
 bool guardianCareTeamPuppyDecoAllowed({
-  required double viewportWidth,
+  required bool useWideDeskLayout,
   required bool hasCareTeamCards,
 }) {
-  return viewportWidth >= GuardianDashboardDecoThresholds.wideMinWidth &&
-      hasCareTeamCards;
+  return useWideDeskLayout && hasCareTeamCards;
 }
 
 /// Non-interactive, non-semantic wrapper for ambient dashboard illustrations.

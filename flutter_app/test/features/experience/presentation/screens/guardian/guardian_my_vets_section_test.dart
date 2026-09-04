@@ -30,6 +30,7 @@ void main() {
     AuthState? authState,
     required VetListNotifier vetNotifier,
     PetListNotifier? petNotifier,
+    bool useWideDeskLayout = false,
   }) {
     final resolvedAuthState = authState ?? loggedInAuthState;
     final router = GoRouter(
@@ -37,7 +38,9 @@ void main() {
       routes: [
         GoRoute(
           path: '/pc/home',
-          builder: (_, __) => const Scaffold(body: GuardianMyVetsSection()),
+          builder: (_, __) => Scaffold(
+            body: GuardianMyVetsSection(useWideDeskLayout: useWideDeskLayout),
+          ),
         ),
         GoRoute(
           path: '/pc/vets/add',
@@ -75,6 +78,36 @@ void main() {
       ),
     );
   }
+
+  testWidgets('shows puppy watermark only on wide desk layout', (tester) async {
+    await tester.pumpWidget(
+      buildSection(
+        vetNotifier: _FixedVetNotifier(vets),
+        useWideDeskLayout: true,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('guardian_dashboard_care_team_puppy_deco')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('hides puppy watermark on narrow desk layout', (tester) async {
+    await tester.pumpWidget(
+      buildSection(
+        vetNotifier: _FixedVetNotifier(vets),
+        useWideDeskLayout: false,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('guardian_dashboard_care_team_puppy_deco')),
+      findsNothing,
+    );
+  });
 
   testWidgets('shows the care team eyebrow label', (tester) async {
     await tester.pumpWidget(buildSection(vetNotifier: _FixedVetNotifier(vets)));

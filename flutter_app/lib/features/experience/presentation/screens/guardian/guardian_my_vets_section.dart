@@ -10,12 +10,17 @@ import '../../../../vet/domain/entities/vet.dart';
 import '../../../../vet/presentation/providers/vet_providers.dart';
 import '../../../../vet/presentation/widgets/care_team_card.dart';
 import '../../widgets/guardian_dashboard_ambient_deco.dart';
+import '../../widgets/guardian_operations_desk_layout.dart';
 import '../../widgets/guardian_dashboard_section_header.dart';
 import '../../widgets/guardian_illustrated_empty_state.dart';
 
 /// Care team dashboard section — warm clinic cards with linked-pet previews.
 class GuardianMyVetsSection extends ConsumerWidget {
-  const GuardianMyVetsSection({super.key});
+  const GuardianMyVetsSection({super.key, this.useWideDeskLayout = false});
+
+  /// Whether the guardian desk is in the wide two-column layout (content
+  /// width ≥ [GuardianOperationsDeskLayout.wideBreakpoint]).
+  final bool useWideDeskLayout;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,9 +31,8 @@ class GuardianMyVetsSection extends ConsumerWidget {
     final vets = vetListAsync.valueOrNull ?? const <Vet>[];
     final showAllAction = auth.accessToken != null && vets.isNotEmpty;
 
-    final viewportWidth = MediaQuery.sizeOf(context).width;
     final showPuppyDeco = guardianCareTeamPuppyDecoAllowed(
-      viewportWidth: viewportWidth,
+      useWideDeskLayout: useWideDeskLayout,
       hasCareTeamCards: auth.accessToken != null && vets.isNotEmpty,
     );
 
