@@ -73,6 +73,32 @@ void main() {
     });
   });
 
+  group('guardianCareTeamPuppyDecoAllowed', () {
+    test('requires wide desk layout and care team cards', () {
+      expect(
+        guardianCareTeamPuppyDecoAllowed(
+          useWideDeskLayout: true,
+          hasCareTeamCards: true,
+        ),
+        isTrue,
+      );
+      expect(
+        guardianCareTeamPuppyDecoAllowed(
+          useWideDeskLayout: false,
+          hasCareTeamCards: true,
+        ),
+        isFalse,
+      );
+      expect(
+        guardianCareTeamPuppyDecoAllowed(
+          useWideDeskLayout: true,
+          hasCareTeamCards: false,
+        ),
+        isFalse,
+      );
+    });
+  });
+
   group('GuardianCareTeamPuppyDeco', () {
     testWidgets('renders puppy asset', (tester) async {
       await tester.pumpWidget(
