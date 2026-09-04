@@ -132,14 +132,22 @@ void main() {
   });
 
   testWidgets('uses a two-column desk layout on wide screens', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(900, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.view.physicalSize = const Size(1280, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
 
     await tester.pumpWidget(buildDashboard());
     await tester.pumpAndSettle();
 
     expect(
       find.byKey(const Key('guardian_desk_secondary_sections_wide')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('guardian_dashboard_care_team_puppy_deco')),
       findsOneWidget,
     );
     expect(
