@@ -144,13 +144,13 @@ autonomy: active
 current_phase: 7
 last_completed_phase: 6
 halt_reason: null
-next_action: "start phase 7: checkout cursor/shelter-teal-token-audit-c4e8"
+next_action: "continue phase 7 on branch cursor/shelter-teal-token-audit-c4e8"
 artifact_ref:
-  branch: cursor/shelter-dashboard-v2-c4e8-integration-c4e8
+  branch: cursor/shelter-teal-token-audit-c4e8
   plan_path: .agents/plans/shelter-dashboard-v2-c4e8.md
-  plan_commit: ffefb354518350361860194a5a25fceb8544e6d3
+  plan_commit: 01c4914daa8d5ef3211f3696b06ef0ed008a7d08
   snapshot_path: .agents/plans/shelter-dashboard-v2-c4e8.snapshot.json
-  snapshot_commit: ffefb354518350361860194a5a25fceb8544e6d3
+  snapshot_commit: 01c4914daa8d5ef3211f3696b06ef0ed008a7d08
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
