@@ -4,6 +4,17 @@ import 'package:pet_profile_app/features/pet_profile/presentation/screens/widget
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/manage_events_filters.dart';
 
 void main() {
+  test('default global filters are due and overdue only', () {
+    expect(
+      const GuardianGlobalEventsFilters().eventFilters.statuses,
+      {ManageEventsStatusFilter.dueOverdue},
+    );
+    expect(
+      const OrgGlobalEventsFilters().eventFilters.statuses,
+      {ManageEventsStatusFilter.dueOverdue},
+    );
+  });
+
   test('selection round-trip preserves guardian global filters', () {
     const filters = GuardianGlobalEventsFilters(
       eventFilters: ManageEventsFilters(

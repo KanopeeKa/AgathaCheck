@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/manage_events_filters.dart';
 
 import 'guardian_events_test_helpers.dart';
 
@@ -92,6 +93,21 @@ void main() {
         const {},
       );
 
+      // Default status filter is due/overdue — only the overdue foster entry.
+      expect(visible.map((entry) => entry.id), ['entry-foster']);
+    });
+
+    test('all status filter includes non-due open entries', () {
+      final entries = [_fosterEntry, _ownedEntry];
+      final visible = filterGuardianGlobalEvents(
+        entries,
+        _shellPets,
+        const GuardianGlobalEventsFilters(
+          eventFilters: ManageEventsFilters(statuses: {}),
+        ),
+        const {},
+      );
+
       expect(visible.map((entry) => entry.id), ['entry-foster', 'entry-owned']);
     });
   });
@@ -106,8 +122,9 @@ void main() {
 
     expect(find.text('Events'), findsNWidgets(2));
     expect(find.byType(TabBar), findsNothing);
-    expect(find.text('Heartgard'), findsOneWidget);
     expect(find.text('Flea treatment'), findsOneWidget);
+    expect(find.text('Heartgard'), findsNothing);
+    expect(find.text('Grooming'), findsNothing);
     expect(find.byKey(const Key('global_events_add_app_bar')), findsOneWidget);
   });
 
@@ -144,10 +161,10 @@ void main() {
     await tester.pumpWidget(buildEventsScreen());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Heartgard'));
+    await tester.tap(find.text('Flea treatment'));
     await tester.pumpAndSettle();
 
-    expect(find.text('View entry-owned'), findsOneWidget);
+    expect(find.text('View entry-foster'), findsOneWidget);
   });
 
   // ---------------------------------------------------------------------------
@@ -158,18 +175,28 @@ void main() {
     await tester.pumpWidget(buildEventsScreen());
     await tester.pumpAndSettle();
 
+    expect(find.text('Flea treatment'), findsOneWidget);
+    expect(find.text('Heartgard'), findsNothing);
+
     await tapCollectionFilterChoice(
       tester,
       dimensionId: 'status',
-      choiceId: 'dueOverdue',
+      choiceId: 'all',
     );
 
     expect(find.text('Flea treatment'), findsOneWidget);
-    expect(find.text('Heartgard'), findsNothing);
+    expect(find.text('Heartgard'), findsOneWidget);
   });
 
   testWidgets('my pets cohort hides foster entries', (tester) async {
-    await tester.pumpWidget(buildEventsScreen());
+    await tester.pumpWidget(
+      buildEventsScreen(
+        entries: [
+          _ownedEntry.copyWith(nextDueDate: DateTime.now()),
+          _fosterEntry,
+        ],
+      ),
+    );
     await tester.pumpAndSettle();
 
     await tapCollectionFilterChoice(
@@ -199,7 +226,25 @@ void main() {
   });
 
   testWidgets('multi-select pet filters combine with OR', (tester) async {
-    await tester.pumpWidget(buildEventsScreen());
+    await tester.pumpWidget(
+      buildEventsScreen(
+        entries: [
+          _ownedEntry.copyWith(nextDueDate: DateTime.now()),
+          _fosterEntry,
+          HealthEntry(
+            id: 'entry-shared',
+            petId: 'pet-shared',
+            name: 'Grooming',
+            type: HealthEntryType.other,
+            dosage: 'Full groom',
+            frequency: HealthFrequency.once,
+            startDate: DateTime(2025, 1, 1),
+            completedOn: DateTime(2025, 3, 1),
+            nextDueDate: DateTime(9999, 12, 31),
+          ),
+        ],
+      ),
+    );
     await tester.pumpAndSettle();
 
     await tapCollectionFilterChoice(
@@ -258,7 +303,9 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(390, 844));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    final notifier = TestMutableEntriesNotifier([_ownedEntry]);
+    final notifier = TestMutableEntriesNotifier([
+      _ownedEntry.copyWith(nextDueDate: DateTime.now()),
+    ]);
     await tester.pumpWidget(
       buildListScreen(pets: const [_ownedPet], notifierFactory: () => notifier),
     );
@@ -292,7 +339,9 @@ void main() {
     await tester.pumpWidget(
       buildListScreen(
         pets: const [_ownedPet],
-        notifierFactory: () => TestFixedEntriesNotifier([_ownedEntry]),
+        notifierFactory: () => TestFixedEntriesNotifier([
+          _ownedEntry.copyWith(nextDueDate: DateTime.now()),
+        ]),
       ),
     );
     await tester.pumpAndSettle();

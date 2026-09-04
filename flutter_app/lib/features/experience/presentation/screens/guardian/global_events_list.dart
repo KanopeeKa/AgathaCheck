@@ -167,17 +167,25 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
         .toList();
 
     final visibleCompleted = _completed.values.where((c) {
+      // Undo rows ignore the status filter so completion feedback stays visible
+      // even when the default view is due/overdue only.
       final passes = _isOrg
           ? filterOrgGlobalEvents(
               [c.filterEntry],
               scopedPets,
-              _orgFilters,
+              _orgFilters.copyWith(
+                eventFilters: _orgFilters.eventFilters.copyWith(statuses: {}),
+              ),
               histories,
             )
           : filterGuardianGlobalEvents(
               [c.filterEntry],
               scopedPets,
-              _guardianFilters,
+              _guardianFilters.copyWith(
+                eventFilters: _guardianFilters.eventFilters.copyWith(
+                  statuses: {},
+                ),
+              ),
               histories,
             );
       return passes.isNotEmpty;

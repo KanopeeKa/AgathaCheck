@@ -16,6 +16,11 @@ enum ManageEventsRecurringFilter { all, recurring, oneTime }
 /// Open/closed/due filter for the manage-events unified list.
 enum ManageEventsStatusFilter { all, open, closed, dueOverdue }
 
+/// Default status filter for the global `/g/events` and `/o/events` lists.
+const defaultGlobalEventsFilters = ManageEventsFilters(
+  statuses: {ManageEventsStatusFilter.dueOverdue},
+);
+
 /// Combined filter state for manage-events list screens.
 ///
 /// Empty [types], [statuses], and [recurring] sets mean "all" for that row.
