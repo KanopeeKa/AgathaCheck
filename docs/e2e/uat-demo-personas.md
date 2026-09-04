@@ -3,7 +3,7 @@ title: UAT demo personas
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-02
+last_updated: 2026-09-04
 tags: [testing,e2e,playwright]
 ---
 # UAT demo personas
@@ -12,24 +12,29 @@ Stable identities for **manual UAT and shared demo environments only**.
 
 **Full dataset documentation:** [uat-demo-data.md](./uat-demo-data.md)
 
+> Credential table below is generated from `server/db/seeds/demo-constants.js`.
+> After changing users or passwords, run `node server/scripts/sync-demo-credentials-doc.js`.
+
 ## Credentials
 
+<!-- DEMO_CREDENTIALS_TABLE:BEGIN -->
 | User | Email | Password | Role |
 |------|-------|----------|------|
-| Alice | `alice@demo.agathatrack.test` | `UatDemoPass1!` | Pet Care + org super admin |
-| Bob | `bob@demo.agathatrack.test` | `UatDemoPass1!` | Org admin (Happy Paws Clinic) |
-| Carol | `carol@demo.agathatrack.test` | `UatDemoPass1!` | Pet carer (shared access to Buddy) |
-| Eve | `eve@demo.agathatrack.test` | `UatDemoPass1!` | Foster parent (Rescue Hearts) |
-| Dave | `dave@demo.agathatrack.test` | `UatDemoPass1!` | Dual-role user |
-| Grace | `grace@demo.agathatrack.test` | `UatDemoPass1!` | Adoption prospect |
+| **Frederique** (main) | `frederique.prevost@gmail.com` | `PassTest` | Main test user — pet carer + super admin (Happy Paws Clinic & Rescue Hearts) |
+| Bob | `bob@demo.agathatrack.test` | `PassTest` | Org admin at Happy Paws Clinic |
+| Carol | `carol@demo.agathatrack.test` | `PassTest` | Pet carer with shared access to Buddy |
+| Eve | `eve@demo.agathatrack.test` | `PassTest` | Foster parent at Rescue Hearts |
+| Dave | `dave@demo.agathatrack.test` | `PassTest` | Dual-role user (personal pet + Rescue Hearts foster) |
+| Grace | `grace@demo.agathatrack.test` | `PassTest` | Adoption prospect for Luna |
+<!-- DEMO_CREDENTIALS_TABLE:END -->
 
-Password is intentionally weak and documented — acceptable only on isolated non-prod databases.
+All demo users share the same password for easy switching during manual testing. Password is intentionally weak and documented — acceptable only on isolated non-prod databases.
 
 ## Scenarios (`node server/scripts/seed.js`)
 
 | Scenario | Contents |
 |----------|----------|
-| `guardian` | Alice, Carol, Buddy, Whiskers (seed scenario key — wire value migrating to `pet_care`) |
+| `guardian` | Frederique, Carol, Buddy, Whiskers (seed scenario key — wire value migrating to `pet_care`) |
 | `org-clinic` | Happy Paws Clinic (discoverable, org UX v3 fields) |
 | `org-v3-demo` | `org-clinic` + Rescue Hearts shell + org connection |
 | `rescue-hearts` | Full charity dataset (fostering, adoption, pets) |

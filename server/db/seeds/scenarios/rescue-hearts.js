@@ -1,4 +1,4 @@
-import { ORG_ROLE_FOSTER, ORG_ROLE_SUPER_ADMIN } from '../../../lib/orgRoles.js';
+import { ORG_ROLE_ASSOCIATE, ORG_ROLE_SUPER_ADMIN } from '../../../lib/orgRoles.js';
 import { DEMO_IDS, DEMO_USERS } from '../demo-constants.js';
 import {
   calendarDaysFromToday,
@@ -47,14 +47,14 @@ export async function seedRescueHearts(client) {
     id: DEMO_IDS.eveRescueOrgUser,
     orgId: DEMO_IDS.rescueHeartsOrg,
     userId: DEMO_IDS.eve,
-    role: ORG_ROLE_FOSTER,
+    role: ORG_ROLE_ASSOCIATE,
   });
 
   await upsertOrgMember(client, {
     id: DEMO_IDS.daveRescueOrgUser,
     orgId: DEMO_IDS.rescueHeartsOrg,
     userId: DEMO_IDS.dave,
-    role: ORG_ROLE_FOSTER,
+    role: ORG_ROLE_ASSOCIATE,
   });
 
   await upsertPersonalPet(client, {
