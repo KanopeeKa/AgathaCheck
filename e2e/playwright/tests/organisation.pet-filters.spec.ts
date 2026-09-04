@@ -73,9 +73,11 @@ async function expectAttentionReasonVisible(
   page: import('@playwright/test').Page,
   reason: string,
 ) {
+  const reasonPattern = new RegExp(escapeRegExp(reason), 'i');
   await expect(
     page
-      .getByRole('group', { name: new RegExp(escapeRegExp(reason), 'i') })
+      .getByRole('button', { name: reasonPattern })
+      .or(page.getByRole('group', { name: reasonPattern }))
       .or(page.getByText(reason, { exact: true }))
       .first(),
   ).toBeVisible();
