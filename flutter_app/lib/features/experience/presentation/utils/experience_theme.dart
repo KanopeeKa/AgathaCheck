@@ -54,7 +54,9 @@ ThemeData themeForAppExperience(ThemeData base, AppExperience experience) {
       labelColor: primary,
       indicatorColor: primary,
     ),
-    progressIndicatorTheme: base.progressIndicatorTheme.copyWith(color: primary),
+    progressIndicatorTheme: base.progressIndicatorTheme.copyWith(
+      color: primary,
+    ),
     checkboxTheme: CheckboxThemeData(
       fillColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {

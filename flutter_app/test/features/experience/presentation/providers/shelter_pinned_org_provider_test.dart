@@ -49,9 +49,7 @@ void main() {
 
     test('returns null when pin is unset', () {
       expect(
-        shelterPinnedOrgIdFromAuthUser(
-          AuthUser(id: 'u1', email: 'a@b.com'),
-        ),
+        shelterPinnedOrgIdFromAuthUser(AuthUser(id: 'u1', email: 'a@b.com')),
         isNull,
       );
     });
@@ -59,11 +57,7 @@ void main() {
     test('returns pin id from auth user', () {
       expect(
         shelterPinnedOrgIdFromAuthUser(
-          AuthUser(
-            id: 'u1',
-            email: 'a@b.com',
-            pinnedOrganizationId: 'org-pin',
-          ),
+          AuthUser(id: 'u1', email: 'a@b.com', pinnedOrganizationId: 'org-pin'),
         ),
         'org-pin',
       );
@@ -74,9 +68,9 @@ void main() {
     test('resolves pinned org metadata from membership list', () async {
       final container = ProviderContainer(
         overrides: [
-          authProvider.overrideWith((ref) => _PinnedAuthNotifier(
-                pinnedOrganizationId: 'org-pin',
-              )),
+          authProvider.overrideWith(
+            (ref) => _PinnedAuthNotifier(pinnedOrganizationId: 'org-pin'),
+          ),
           organizationListProvider.overrideWith(_PinnedOrgListNotifier.new),
         ],
       );
@@ -94,9 +88,9 @@ void main() {
     test('returns null when pin id is not in membership list', () async {
       final container = ProviderContainer(
         overrides: [
-          authProvider.overrideWith((ref) => _PinnedAuthNotifier(
-                pinnedOrganizationId: 'missing-org',
-              )),
+          authProvider.overrideWith(
+            (ref) => _PinnedAuthNotifier(pinnedOrganizationId: 'missing-org'),
+          ),
           organizationListProvider.overrideWith(_PinnedOrgListNotifier.new),
         ],
       );
@@ -110,9 +104,9 @@ void main() {
     test('shelterPinnedOrgIdProvider mirrors auth pin', () {
       final container = ProviderContainer(
         overrides: [
-          authProvider.overrideWith((ref) => _PinnedAuthNotifier(
-                pinnedOrganizationId: 'org-pin',
-              )),
+          authProvider.overrideWith(
+            (ref) => _PinnedAuthNotifier(pinnedOrganizationId: 'org-pin'),
+          ),
           organizationListProvider.overrideWith(_PinnedOrgListNotifier.new),
         ],
       );

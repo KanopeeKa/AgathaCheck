@@ -26,26 +26,27 @@ final shelterPinnedOrgIdProvider = Provider<String?>((ref) {
 });
 
 /// Resolved pinned org metadata for Shelter nav widgets.
-final shelterPinnedOrganizationProvider =
-    Provider<ShelterPinnedOrganization?>((ref) {
-      final pinId = ref.watch(shelterPinnedOrgIdProvider);
-      if (pinId == null || pinId.isEmpty) return null;
+final shelterPinnedOrganizationProvider = Provider<ShelterPinnedOrganization?>((
+  ref,
+) {
+  final pinId = ref.watch(shelterPinnedOrgIdProvider);
+  if (pinId == null || pinId.isEmpty) return null;
 
-      final orgs = ref.watch(organizationListProvider).valueOrNull;
-      if (orgs == null) return null;
+  final orgs = ref.watch(organizationListProvider).valueOrNull;
+  if (orgs == null) return null;
 
-      Organization? org;
-      for (final candidate in orgs) {
-        if (candidate.id == pinId) {
-          org = candidate;
-          break;
-        }
-      }
-      if (org == null) return null;
+  Organization? org;
+  for (final candidate in orgs) {
+    if (candidate.id == pinId) {
+      org = candidate;
+      break;
+    }
+  }
+  if (org == null) return null;
 
-      return ShelterPinnedOrganization(
-        id: org.id,
-        name: org.name,
-        logoUrl: org.logoUrl,
-      );
-    });
+  return ShelterPinnedOrganization(
+    id: org.id,
+    name: org.name,
+    logoUrl: org.logoUrl,
+  );
+});

@@ -108,7 +108,8 @@ class ExperienceShellScaffold extends ConsumerWidget {
     final usesShelterPrimaryNavigation =
         shelterNavActive && ShelterPrimaryDestinations.isCompact(viewportWidth);
     final usesShelterNavigationSidebar =
-        shelterNavActive && ShelterPrimaryDestinations.isExpanded(viewportWidth);
+        shelterNavActive &&
+        ShelterPrimaryDestinations.isExpanded(viewportWidth);
     final usesShelterNavigationRail =
         shelterNavActive && ShelterPrimaryDestinations.isMedium(viewportWidth);
     final usesShelterLeadingNav =

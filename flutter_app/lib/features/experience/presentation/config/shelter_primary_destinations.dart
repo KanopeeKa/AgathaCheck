@@ -41,10 +41,7 @@ class ShelterPrimaryDestination {
 
 /// One visual position in the Shelter bottom bar.
 class ShelterNavSlot {
-  const ShelterNavSlot._({
-    required this.kind,
-    this.destination,
-  });
+  const ShelterNavSlot._({required this.kind, this.destination});
 
   const ShelterNavSlot.destination(ShelterPrimaryDestination destination)
     : this._(kind: ShelterNavSlotKind.destination, destination: destination);

@@ -79,8 +79,7 @@ class ShelterNavigationSidebar extends ConsumerWidget {
                         _SidebarDestinationTile(
                           destination: primaryDestinations[i],
                           selected: selectedIndex == i,
-                          onTap: () =>
-                              context.go(primaryDestinations[i].route),
+                          onTap: () => context.go(primaryDestinations[i].route),
                         ),
                     ],
                   ),

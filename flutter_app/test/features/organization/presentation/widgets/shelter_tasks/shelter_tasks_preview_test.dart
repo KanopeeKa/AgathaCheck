@@ -67,21 +67,20 @@ Widget _wrap(Widget child, List<Override> overrides) {
 
 void main() {
   group('ShelterTasksPreview', () {
-    testWidgets('shows calm empty state when there are no tasks', (tester) async {
+    testWidgets('shows calm empty state when there are no tasks', (
+      tester,
+    ) async {
       await tester.pumpWidget(
-        _wrap(
-          const ShelterTasksPreview(),
-          [
-            shelterTasksPreviewProvider.overrideWith(
-              () => _FakeShelterTasksNotifier(
-                const ShelterTasksPreviewData(
-                  previewTasks: [],
-                  totalTaskCount: 0,
-                ),
+        _wrap(const ShelterTasksPreview(), [
+          shelterTasksPreviewProvider.overrideWith(
+            () => _FakeShelterTasksNotifier(
+              const ShelterTasksPreviewData(
+                previewTasks: [],
+                totalTaskCount: 0,
               ),
             ),
-          ],
-        ),
+          ),
+        ]),
       );
       await tester.pumpAndSettle();
 
@@ -106,123 +105,7 @@ void main() {
       );
 
       await tester.pumpWidget(
-        _wrap(
-          const ShelterTasksPreview(),
-          [
-            shelterTasksPreviewProvider.overrideWith(
-              () => _FakeShelterTasksNotifier(
-                const ShelterTasksPreviewData(
-                  previewTasks: [
-                    ShelterTaskItem(
-                      id: 'invite-invite-1',
-                      kind: ShelterTaskKind.pendingInvite,
-                      orgId: 'org-new',
-                      orgName: 'New Rescue',
-                      title: 'New Rescue',
-                      routePath: '/o/orgs/org-new',
-                      invite: invite,
-                    ),
-                  ],
-                  totalTaskCount: 1,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text("You've been invited to join New Rescue"), findsOneWidget);
-      expect(find.byKey(const Key('shelter_task_accept_invite-1')), findsOneWidget);
-      expect(find.byKey(const Key('shelter_task_decline_invite-1')), findsOneWidget);
-      expect(find.text('Pending Invitations'), findsNothing);
-    });
-
-    testWidgets('shows pet attention tasks for multi-org preview', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        _wrap(
-          const ShelterTasksPreview(),
-          [
-            shelterTasksPreviewProvider.overrideWith(
-              () => _FakeShelterTasksNotifier(
-                const ShelterTasksPreviewData(
-                  previewTasks: [
-                    ShelterTaskItem(
-                      id: 'pet-org-1-max',
-                      kind: ShelterTaskKind.petNeedAttention,
-                      orgId: 'org-1',
-                      orgName: 'Rescue Hearts',
-                      title: 'Max',
-                      routePath: '/o/orgs/org-1/pets',
-                      attentionReason: OrgPetAttentionReason.notInFoster,
-                    ),
-                    ShelterTaskItem(
-                      id: 'pet-org-2-bella',
-                      kind: ShelterTaskKind.petNeedAttention,
-                      orgId: 'org-2',
-                      orgName: 'Paws Haven',
-                      title: 'Bella',
-                      routePath: '/o/orgs/org-2/pets',
-                      attentionReason:
-                          OrgPetAttentionReason.fosterFinishingSoon,
-                    ),
-                  ],
-                  totalTaskCount: 2,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Max'), findsOneWidget);
-      expect(find.text('Bella'), findsOneWidget);
-      expect(
-        find.text('Rescue Hearts · Not in foster'),
-        findsOneWidget,
-      );
-      expect(
-        find.text('Paws Haven · Foster finishing soon'),
-        findsOneWidget,
-      );
-    });
-  });
-
-  testWidgets('organization list screen shows tasks section without separate invites header', (
-    tester,
-  ) async {
-    final router = GoRouter(
-      initialLocation: '/o/orgs',
-      routes: [
-        GoRoute(
-          path: '/o/orgs',
-          builder: (context, state) => const OrganizationListScreen(),
-        ),
-      ],
-    );
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationListProvider.overrideWith(_OrgListNotifier.new),
-          pendingOrgInvitesProvider.overrideWith(
-            () => _PendingInvitesNotifier(const [
-              PendingOrgInvite(
-                id: 'invite-1',
-                organizationId: 'org-new',
-                organizationName: 'New Rescue',
-                organizationType: 'charity',
-                desiredRole: 'admin',
-                inviterName: 'Alex Admin',
-                inviterEmail: 'alex@example.com',
-                createdAt: '2026-01-01',
-              ),
-            ]),
-          ),
+        _wrap(const ShelterTasksPreview(), [
           shelterTasksPreviewProvider.overrideWith(
             () => _FakeShelterTasksNotifier(
               const ShelterTasksPreviewData(
@@ -234,36 +117,152 @@ void main() {
                     orgName: 'New Rescue',
                     title: 'New Rescue',
                     routePath: '/o/orgs/org-new',
-                    invite: PendingOrgInvite(
-                      id: 'invite-1',
-                      organizationId: 'org-new',
-                      organizationName: 'New Rescue',
-                      organizationType: 'charity',
-                      desiredRole: 'admin',
-                      inviterName: 'Alex Admin',
-                      inviterEmail: 'alex@example.com',
-                      createdAt: '2026-01-01',
-                    ),
+                    invite: invite,
                   ),
                 ],
                 totalTaskCount: 1,
               ),
             ),
           ),
-        ],
-        child: MaterialApp.router(
-          theme: AppTheme.lightTheme,
-          routerConfig: router,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
+        ]),
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('shelter_tasks_preview')), findsOneWidget);
-    expect(find.text('Pending Invitations'), findsNothing);
-    expect(find.text("You've been invited to join New Rescue"), findsOneWidget);
-    expect(find.byKey(const Key('org_membership_grid')), findsOneWidget);
+      expect(
+        find.text("You've been invited to join New Rescue"),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('shelter_task_accept_invite-1')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('shelter_task_decline_invite-1')),
+        findsOneWidget,
+      );
+      expect(find.text('Pending Invitations'), findsNothing);
+    });
+
+    testWidgets('shows pet attention tasks for multi-org preview', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(const ShelterTasksPreview(), [
+          shelterTasksPreviewProvider.overrideWith(
+            () => _FakeShelterTasksNotifier(
+              const ShelterTasksPreviewData(
+                previewTasks: [
+                  ShelterTaskItem(
+                    id: 'pet-org-1-max',
+                    kind: ShelterTaskKind.petNeedAttention,
+                    orgId: 'org-1',
+                    orgName: 'Rescue Hearts',
+                    title: 'Max',
+                    routePath: '/o/orgs/org-1/pets',
+                    attentionReason: OrgPetAttentionReason.notInFoster,
+                  ),
+                  ShelterTaskItem(
+                    id: 'pet-org-2-bella',
+                    kind: ShelterTaskKind.petNeedAttention,
+                    orgId: 'org-2',
+                    orgName: 'Paws Haven',
+                    title: 'Bella',
+                    routePath: '/o/orgs/org-2/pets',
+                    attentionReason: OrgPetAttentionReason.fosterFinishingSoon,
+                  ),
+                ],
+                totalTaskCount: 2,
+              ),
+            ),
+          ),
+        ]),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Max'), findsOneWidget);
+      expect(find.text('Bella'), findsOneWidget);
+      expect(find.text('Rescue Hearts · Not in foster'), findsOneWidget);
+      expect(find.text('Paws Haven · Foster finishing soon'), findsOneWidget);
+    });
   });
+
+  testWidgets(
+    'organization list screen shows tasks section without separate invites header',
+    (tester) async {
+      final router = GoRouter(
+        initialLocation: '/o/orgs',
+        routes: [
+          GoRoute(
+            path: '/o/orgs',
+            builder: (context, state) => const OrganizationListScreen(),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
+            organizationListProvider.overrideWith(_OrgListNotifier.new),
+            pendingOrgInvitesProvider.overrideWith(
+              () => _PendingInvitesNotifier(const [
+                PendingOrgInvite(
+                  id: 'invite-1',
+                  organizationId: 'org-new',
+                  organizationName: 'New Rescue',
+                  organizationType: 'charity',
+                  desiredRole: 'admin',
+                  inviterName: 'Alex Admin',
+                  inviterEmail: 'alex@example.com',
+                  createdAt: '2026-01-01',
+                ),
+              ]),
+            ),
+            shelterTasksPreviewProvider.overrideWith(
+              () => _FakeShelterTasksNotifier(
+                const ShelterTasksPreviewData(
+                  previewTasks: [
+                    ShelterTaskItem(
+                      id: 'invite-invite-1',
+                      kind: ShelterTaskKind.pendingInvite,
+                      orgId: 'org-new',
+                      orgName: 'New Rescue',
+                      title: 'New Rescue',
+                      routePath: '/o/orgs/org-new',
+                      invite: PendingOrgInvite(
+                        id: 'invite-1',
+                        organizationId: 'org-new',
+                        organizationName: 'New Rescue',
+                        organizationType: 'charity',
+                        desiredRole: 'admin',
+                        inviterName: 'Alex Admin',
+                        inviterEmail: 'alex@example.com',
+                        createdAt: '2026-01-01',
+                      ),
+                    ),
+                  ],
+                  totalTaskCount: 1,
+                ),
+              ),
+            ),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.lightTheme,
+            routerConfig: router,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('shelter_tasks_preview')), findsOneWidget);
+      expect(find.text('Pending Invitations'), findsNothing);
+      expect(
+        find.text("You've been invited to join New Rescue"),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('org_membership_grid')), findsOneWidget);
+    },
+  );
 }

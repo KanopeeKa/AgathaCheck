@@ -161,8 +161,7 @@ String? shelterTaskSubtitle(AppLocalizations l, ShelterTaskItem task) {
     ShelterTaskKind.fosterOnboarding =>
       '${task.orgName} · ${l.orgFosterBadgeNeedsAttention}',
     ShelterTaskKind.fosterRequestDraft ||
-    ShelterTaskKind.fosterRequestPendingResponses =>
-      task.orgName,
+    ShelterTaskKind.fosterRequestPendingResponses => task.orgName,
   };
 }
 

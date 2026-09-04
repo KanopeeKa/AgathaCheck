@@ -16,13 +16,13 @@ class ShelterBottomNavigation extends StatelessWidget {
   final String currentLocation;
   final ShelterPinnedOrganization? pinnedOrg;
 
-  static const compactBreakpoint =
-      ShelterPrimaryDestinations.compactBreakpoint;
+  static const compactBreakpoint = ShelterPrimaryDestinations.compactBreakpoint;
 
   static bool isCompact(double width) =>
       ShelterPrimaryDestinations.isCompact(width);
 
-  static bool supports(String path) => ShelterPrimaryDestinations.supports(path);
+  static bool supports(String path) =>
+      ShelterPrimaryDestinations.supports(path);
 
   static int indexFor(String path, {ShelterPinnedOrganization? pinnedOrg}) =>
       ShelterPrimaryDestinations.indexFor(path, pinnedOrg: pinnedOrg);
@@ -50,9 +50,7 @@ class ShelterBottomNavigation extends StatelessWidget {
           final route = navSlots[index].route;
           if (route != null) context.go(route);
         },
-        items: [
-          for (final slot in navSlots) _buildBarItem(context, l, slot),
-        ],
+        items: [for (final slot in navSlots) _buildBarItem(context, l, slot)],
       ),
     );
   }

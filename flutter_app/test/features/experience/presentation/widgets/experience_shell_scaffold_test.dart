@@ -1012,7 +1012,9 @@ void main() {
   });
 
   group('Shelter navigation (organization experience)', () {
-    testWidgets('compact /o/orgs shows teal bottom nav and bell', (tester) async {
+    testWidgets('compact /o/orgs shows teal bottom nav and bell', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -1026,7 +1028,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('shelter_bottom_navigation')), findsOneWidget);
+      expect(
+        find.byKey(const Key('shelter_bottom_navigation')),
+        findsOneWidget,
+      );
       expect(
         find.byKey(const Key('experience_notification_bell')),
         findsOneWidget,
@@ -1056,7 +1061,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('shelter_bottom_navigation')), findsOneWidget);
+      expect(
+        find.byKey(const Key('shelter_bottom_navigation')),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
       expect(
         find.byKey(const Key('experience_workspace_toggle')),
@@ -1121,7 +1129,9 @@ void main() {
       expect(scaffold.drawer, isNull);
     });
 
-    testWidgets('org deep route keeps sidebar visible at 1024px', (tester) async {
+    testWidgets('org deep route keeps sidebar visible at 1024px', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(1024, 900));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -1195,7 +1205,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Pinned Shelter'), findsOneWidget);
-      expect(find.byKey(const Key('shelter_bottom_navigation')), findsOneWidget);
+      expect(
+        find.byKey(const Key('shelter_bottom_navigation')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('onboarding route does not show shelter primary nav', (

@@ -84,10 +84,7 @@ void main() {
   ) async {
     await pumpTile(
       tester,
-      OrgMembershipTile(
-        organization: organizationWithoutPhoto,
-        tileWidth: 160,
-      ),
+      OrgMembershipTile(organization: organizationWithoutPhoto, tileWidth: 160),
     );
 
     final coloredBox = tester.widget<ColoredBox>(
@@ -104,10 +101,7 @@ void main() {
   ) async {
     await pumpTile(
       tester,
-      OrgMembershipTile(
-        organization: organizationWithMeta,
-        tileWidth: 160,
-      ),
+      OrgMembershipTile(organization: organizationWithMeta, tileWidth: 160),
     );
 
     expect(find.text('Paws Haven'), findsOneWidget);
@@ -123,16 +117,10 @@ void main() {
   ) async {
     await pumpTile(
       tester,
-      OrgMembershipTile(
-        organization: organizationWithoutPhoto,
-        tileWidth: 160,
-      ),
+      OrgMembershipTile(organization: organizationWithoutPhoto, tileWidth: 160),
     );
 
-    expect(
-      find.byKey(const Key('shelter_membership_pin_org-1')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('shelter_membership_pin_org-1')), findsNothing);
     expect(
       find.bySemanticsIdentifier('shelter_membership_pin_org-1'),
       findsOneWidget,
@@ -141,16 +129,16 @@ void main() {
     final semantics = tester.getSemantics(
       find.bySemanticsIdentifier('shelter_membership_pin_org-1'),
     );
-    expect(
-      semantics.label,
-      'Pin Rescue Hearts to navigation',
-    );
+    expect(semantics.label, 'Pin Rescue Hearts to navigation');
 
     await tester.longPress(
       find.bySemanticsIdentifier('shelter_membership_pin_org-1'),
     );
     await tester.pumpAndSettle();
-    expect(find.text(ShelterMembershipPinButton.unpinnedTooltip), findsOneWidget);
+    expect(
+      find.text(ShelterMembershipPinButton.unpinnedTooltip),
+      findsOneWidget,
+    );
   });
 
   testWidgets('pin button toggles pinned org preference', (tester) async {
@@ -158,21 +146,22 @@ void main() {
 
     await pumpTile(
       tester,
-      OrgMembershipTile(
-        organization: organizationWithoutPhoto,
-        tileWidth: 160,
-      ),
+      OrgMembershipTile(organization: organizationWithoutPhoto, tileWidth: 160),
       authNotifier: authNotifier,
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.bySemanticsIdentifier('shelter_membership_pin_org-1'));
+    await tester.tap(
+      find.bySemanticsIdentifier('shelter_membership_pin_org-1'),
+    );
     await tester.pumpAndSettle();
 
     expect(authNotifier.pinUpdates, ['org-1']);
     expect(authNotifier.state.user?.pinnedOrganizationId, 'org-1');
 
-    await tester.tap(find.bySemanticsIdentifier('shelter_membership_pin_org-1'));
+    await tester.tap(
+      find.bySemanticsIdentifier('shelter_membership_pin_org-1'),
+    );
     await tester.pumpAndSettle();
 
     expect(authNotifier.pinUpdates, ['org-1', null]);
@@ -203,10 +192,7 @@ void main() {
     final semantics = tester.getSemantics(
       find.bySemanticsIdentifier('shelter_membership_pin_org-1'),
     );
-    expect(
-      semantics.label,
-      'Rescue Hearts pinned to navigation',
-    );
+    expect(semantics.label, 'Rescue Hearts pinned to navigation');
 
     await tester.longPress(
       find.bySemanticsIdentifier('shelter_membership_pin_org-1'),
@@ -220,10 +206,7 @@ void main() {
   ) async {
     await pumpTile(
       tester,
-      OrgMembershipTile(
-        organization: organizationWithoutPhoto,
-        tileWidth: 160,
-      ),
+      OrgMembershipTile(organization: organizationWithoutPhoto, tileWidth: 160),
     );
 
     final tileColumn = tester.widget<Column>(

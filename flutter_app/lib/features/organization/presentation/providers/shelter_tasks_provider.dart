@@ -23,17 +23,20 @@ class ShelterTasksPreviewNotifier
     final orgs = await ref.watch(organizationListProvider.future);
     final invites = await ref.watch(pendingOrgInvitesProvider.future);
 
-    final tasks = <ShelterTaskItem>[
-      ..._inviteTasks(invites),
-      ...await _membershipTasks(orgs),
-    ]..sort((a, b) {
-      final order = a.sortOrder.compareTo(b.sortOrder);
-      if (order != 0) return order;
-      return a.title.compareTo(b.title);
-    });
+    final tasks =
+        <ShelterTaskItem>[
+          ..._inviteTasks(invites),
+          ...await _membershipTasks(orgs),
+        ]..sort((a, b) {
+          final order = a.sortOrder.compareTo(b.sortOrder);
+          if (order != 0) return order;
+          return a.title.compareTo(b.title);
+        });
 
     return ShelterTasksPreviewData(
-      previewTasks: tasks.take(shelterTasksPreviewMaxRows).toList(growable: false),
+      previewTasks: tasks
+          .take(shelterTasksPreviewMaxRows)
+          .toList(growable: false),
       totalTaskCount: tasks.length,
     );
   }
@@ -56,7 +59,9 @@ class ShelterTasksPreviewNotifier
         .toList(growable: false);
   }
 
-  Future<List<ShelterTaskItem>> _membershipTasks(List<Organization> orgs) async {
+  Future<List<ShelterTaskItem>> _membershipTasks(
+    List<Organization> orgs,
+  ) async {
     final results = await Future.wait(
       orgs.map(_loadOrgTasks),
       eagerError: false,
@@ -94,7 +99,9 @@ class ShelterTasksPreviewNotifier
 
   Future<List<ShelterTaskItem>> _petAttentionTasks(Organization org) async {
     final pets = await ref.watch(orgPetsProvider(org.id).future);
-    final placements = await ref.watch(fosteringSessionsListProvider(org.id).future);
+    final placements = await ref.watch(
+      fosteringSessionsListProvider(org.id).future,
+    );
     final tasks = <ShelterTaskItem>[];
 
     for (final pet in pets) {
@@ -114,7 +121,9 @@ class ShelterTasksPreviewNotifier
           title: pet.name,
           subtitle: org.name,
           routePath: '/o/orgs/${org.id}/pets',
-          sortOrder: reason == OrgPetAttentionReason.fosterFinishingSoon ? 10 : 11,
+          sortOrder: reason == OrgPetAttentionReason.fosterFinishingSoon
+              ? 10
+              : 11,
           attentionReason: reason,
         ),
       );

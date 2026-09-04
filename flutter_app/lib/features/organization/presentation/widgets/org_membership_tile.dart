@@ -103,10 +103,11 @@ class OrgMembershipTile extends ConsumerWidget {
                                   children: [
                                     Text(
                                       organization.name,
-                                      style: theme.textTheme.titleSmall?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        height: 1.1,
-                                      ),
+                                      style: theme.textTheme.titleSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            height: 1.1,
+                                          ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -114,11 +115,13 @@ class OrgMembershipTile extends ConsumerWidget {
                                       const SizedBox(height: 2),
                                       Text(
                                         locationLine,
-                                        style: theme.textTheme.bodySmall?.copyWith(
-                                          color:
-                                              theme.colorScheme.onSurfaceVariant,
-                                          height: 1.1,
-                                        ),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color: theme
+                                                  .colorScheme
+                                                  .onSurfaceVariant,
+                                              height: 1.1,
+                                            ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -180,9 +183,12 @@ class OrgMembershipTile extends ConsumerWidget {
                                   Expanded(
                                     child: Text(
                                       memberLabel,
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.colorScheme.onSurfaceVariant,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -266,10 +272,9 @@ class ShelterMembershipPinButton extends ConsumerWidget {
           elevation: 1,
           borderRadius: BorderRadius.circular(24),
           child: InkWell(
-            onTap: () =>
-                ref.read(shelterMembershipPinControllerProvider).toggle(
-                  organizationId,
-                ),
+            onTap: () => ref
+                .read(shelterMembershipPinControllerProvider)
+                .toggle(organizationId),
             borderRadius: BorderRadius.circular(24),
             child: SizedBox(
               width: 48,

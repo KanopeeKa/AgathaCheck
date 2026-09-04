@@ -6,11 +6,7 @@ import 'shelter_task_item.dart';
 import 'shelter_tasks_preview.dart';
 
 class ShelterTaskRow extends StatelessWidget {
-  const ShelterTaskRow({
-    super.key,
-    required this.task,
-    required this.l,
-  });
+  const ShelterTaskRow({super.key, required this.task, required this.l});
 
   final ShelterTaskItem task;
   final AppLocalizations l;
