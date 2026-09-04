@@ -59,7 +59,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('pet_card_Max')));
+    await tester.tap(find.byKey(const Key('unified_pet_tile_org-pet-1')));
     await tester.pumpAndSettle();
 
     expect(find.text('Pet org-pet-1'), findsOneWidget);

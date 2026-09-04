@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+
 import '../../../../core/router/shell_return_navigation.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/pet.dart';
 import '../widgets/pet_card.dart';
 
@@ -17,6 +18,7 @@ class PassedAwayPetsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (allPassedAway.isEmpty) return const SizedBox.shrink();
+    final l = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Card(
@@ -35,7 +37,7 @@ class PassedAwayPetsSection extends StatelessWidget {
             size: 20,
           ),
           title: Text(
-            'Rainbow Bridge',
+            l.rainbowBridge,
             style: theme.textTheme.titleSmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),

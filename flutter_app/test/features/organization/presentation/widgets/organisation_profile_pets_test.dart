@@ -6,7 +6,7 @@ import 'package:pet_profile_app/features/auth/presentation/providers/auth_provid
 import 'package:pet_profile_app/features/organization/presentation/providers/org_permissions_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/org_provider_deps.dart';
 import 'package:pet_profile_app/features/organization/presentation/widgets/org_profile/organisation_profile_pets.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_card.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/unified_pet_tile.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
@@ -98,7 +98,7 @@ void main() {
       );
 
       expect(find.byKey(const Key('org_profile_pets_strip')), findsOneWidget);
-      expect(find.byType(PetCard), findsNWidgets(12));
+      expect(find.byType(UnifiedPetTile), findsNWidgets(12));
     });
 
     testWidgets('shows empty state when no pets', (tester) async {
@@ -127,7 +127,7 @@ void main() {
         child: const OrganisationProfilePets(orgId: _orgId),
       );
 
-      await tester.tap(find.byType(PetCard));
+      await tester.tap(find.byType(UnifiedPetTile));
       await tester.pumpAndSettle();
 
       expect(find.text('redacted-route'), findsOneWidget);
@@ -149,7 +149,7 @@ void main() {
         child: const OrganisationProfilePets(orgId: _orgId),
       );
 
-      await tester.tap(find.byType(PetCard));
+      await tester.tap(find.byType(UnifiedPetTile));
       await tester.pumpAndSettle();
 
       expect(find.text('full-pet-route'), findsOneWidget);

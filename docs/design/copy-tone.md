@@ -73,5 +73,6 @@ Three labels must stay distinct in copy and l10n:
 | Due-items block | CARE ACTIONS (eyebrow) | SOINS | `careActionsEyebrow` or `careEyebrow` |
 | Full due list link | All Actions | Tous les soins | `allActions` |
 | Bottom nav | Actions | Soins | `actionsNavLabel` |
+| Passed-away pets section | Rainbow bridge | Au-delà des nuages | `rainbowBridge` — collapsed expansion on full pets list |
 
 Custody **guardianship** in legal/org docs is not the Pet Care workspace. See [pet_care README](/docs/domains/pet_care/README.md).
