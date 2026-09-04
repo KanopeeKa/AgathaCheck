@@ -8,12 +8,13 @@ import '../../../../core/utils/resolve_static_asset_url.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/widgets/pet_card.dart';
 import '../../domain/entities/organization.dart';
+import '../providers/shelter_membership_pin_provider.dart';
 import '../utils/org_screen_theme.dart';
 import 'org_image_avatar.dart';
 
 /// My Organisations hub tile — pet-grid geometry (D-v3-TILE-1, D-desk-S2).
 ///
-/// Top ~2/3 cover media, bottom ~1/3 meta. No hero → solid [organizationPrimary].
+/// Top ~1/2 cover media, bottom ~1/2 meta. No hero → solid [organizationPrimary].
 class OrgMembershipTile extends ConsumerWidget {
   const OrgMembershipTile({
     super.key,
@@ -41,6 +42,8 @@ class OrgMembershipTile extends ConsumerWidget {
       apiBaseUrl: ref.read(apiBaseUrlProvider),
     );
     final tileHeight = tileHeightFor(tileWidth);
+    final locationLine = _locationLine(organization);
+    final bio = organization.bio.trim();
 
     String typeLabel(OrganizationType type) {
       switch (type) {
@@ -53,111 +56,156 @@ class OrgMembershipTile extends ConsumerWidget {
 
     final memberLabel = l.petCount(organization.petCount);
 
-    return MergeSemantics(
-      child: Semantics(
-        identifier: 'org_membership_${organization.id}',
-        button: onTap != null,
-        onTap: onTap,
-        label:
-            '${organization.name}, ${typeLabel(organization.type)}, '
-            '$memberLabel',
-        child: SizedBox(
-          width: tileWidth,
-          height: tileHeight,
-          child: Card(
-            key: Key('org_membership_tile_${organization.id}'),
-            color: orgListCardColor(),
-            elevation: 0,
-            shape: orgListCardTheme().shape,
-            clipBehavior: Clip.antiAlias,
-            margin: EdgeInsets.zero,
-            child: InkWell(
-              onTap: onTap,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: _CoverArea(
-                      organization: organization,
-                      resolvedPhotoUrl: resolvedPhoto,
-                      resolvedLogoUrl: resolvedLogo,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
+    return Semantics(
+      identifier: 'org_membership_${organization.id}',
+      button: onTap != null,
+      onTap: onTap,
+      label:
+          '${organization.name}, ${typeLabel(organization.type)}, '
+          '$memberLabel',
+      child: SizedBox(
+        width: tileWidth,
+        height: tileHeight,
+        child: Card(
+          key: Key('org_membership_tile_${organization.id}'),
+          color: orgListCardColor(),
+          elevation: 0,
+          shape: orgListCardTheme().shape,
+          clipBehavior: Clip.antiAlias,
+          margin: EdgeInsets.zero,
+          child: Stack(
+            children: [
+              MergeSemantics(
+                child: InkWell(
+                  onTap: onTap,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: _CoverArea(
+                          organization: organization,
+                          resolvedPhotoUrl: resolvedPhoto,
+                          resolvedLogoUrl: resolvedLogo,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                organization.name,
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  height: 1.1,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 2),
-                              Wrap(
-                                spacing: 4,
-                                runSpacing: 2,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: [
-                                  _TypeBadge(
-                                    type: organization.type,
-                                    label: typeLabel(organization.type),
-                                  ),
-                                  if (organization.isSuperUser)
-                                    _RoleBadge(
-                                      label: l.orgSuperAdmin,
-                                      bg: AppTheme.orgSuperUserBg,
-                                      fg: AppTheme.orgSuperUserFg,
-                                      icon: Icons.star,
-                                    )
-                                  else if (organization.isOrgAdmin)
-                                    _RoleBadge(
-                                      label: l.orgAdmin,
-                                      bg: AppTheme.orgBadgeBg,
-                                      fg: AppTheme.orgBadgeFg,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      organization.name,
+                                      style: theme.textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        height: 1.1,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
+                                    if (locationLine != null) ...[
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        locationLine,
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                          color:
+                                              theme.colorScheme.onSurfaceVariant,
+                                          height: 1.1,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                    if (bio.isNotEmpty) ...[
+                                      const SizedBox(height: 2),
+                                      Flexible(
+                                        child: Text(
+                                          bio,
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: theme
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
+                                                height: 1.15,
+                                              ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                    const SizedBox(height: 2),
+                                    Wrap(
+                                      spacing: 4,
+                                      runSpacing: 2,
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      children: [
+                                        _TypeBadge(
+                                          type: organization.type,
+                                          label: typeLabel(organization.type),
+                                        ),
+                                        if (organization.isSuperUser)
+                                          _RoleBadge(
+                                            label: l.orgSuperAdmin,
+                                            bg: AppTheme.orgSuperUserBg,
+                                            fg: AppTheme.orgSuperUserFg,
+                                            icon: Icons.star,
+                                          )
+                                        else if (organization.isOrgAdmin)
+                                          _RoleBadge(
+                                            label: l.orgAdmin,
+                                            bg: AppTheme.orgBadgeBg,
+                                            fg: AppTheme.orgBadgeFg,
+                                          ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.pets,
+                                    size: 14,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      memberLabel,
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ],
                           ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.pets,
-                                size: 14,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  memberLabel,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+              Positioned(
+                top: 4,
+                right: 4,
+                child: ShelterMembershipPinButton(
+                  organizationId: organization.id,
+                  organizationName: organization.name,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -166,6 +214,79 @@ class OrgMembershipTile extends ConsumerWidget {
 
   /// Grid tile width for hub [Wrap] layouts.
   static double tileWidthFor(double maxWidth) => PetCard.tileWidthFor(maxWidth);
+}
+
+String? _locationLine(Organization organization) {
+  final town = organization.town.trim();
+  final postcode = _postcode(organization);
+  if (town.isNotEmpty && postcode != null) return '$town, $postcode';
+  if (town.isNotEmpty) return town;
+  return postcode;
+}
+
+String? _postcode(Organization organization) {
+  final raw = organization.publicProfileMetadata['postcode'];
+  if (raw == null) return null;
+  final value = raw.toString().trim();
+  return value.isEmpty ? null : value;
+}
+
+/// Pin control for membership tile cover (D-shelter-NAV-2).
+class ShelterMembershipPinButton extends ConsumerWidget {
+  const ShelterMembershipPinButton({
+    super.key,
+    required this.organizationId,
+    required this.organizationName,
+  });
+
+  static const unpinnedTooltip = 'Pin to menu';
+  static const pinnedTooltip = 'Pinned to menu — tap to unpin';
+
+  final String organizationId;
+  final String organizationName;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final controller = ref.watch(shelterMembershipPinControllerProvider);
+    final isPinned = controller.isPinned(organizationId);
+    final tooltip = isPinned ? pinnedTooltip : unpinnedTooltip;
+    final semanticsLabel = isPinned
+        ? '$organizationName pinned to navigation'
+        : 'Pin $organizationName to navigation';
+
+    return Semantics(
+      identifier: 'shelter_membership_pin_$organizationId',
+      button: true,
+      label: semanticsLabel,
+      child: Tooltip(
+        message: tooltip,
+        child: Material(
+          color: AppColorTokens.surface.withValues(alpha: 0.92),
+          elevation: 1,
+          borderRadius: BorderRadius.circular(24),
+          child: InkWell(
+            onTap: () =>
+                ref.read(shelterMembershipPinControllerProvider).toggle(
+                  organizationId,
+                ),
+            borderRadius: BorderRadius.circular(24),
+            child: SizedBox(
+              width: 48,
+              height: 48,
+              child: Icon(
+                isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+                size: 22,
+                color: isPinned
+                    ? AppColorTokens.organizationPrimary
+                    : theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _CoverArea extends StatelessWidget {
