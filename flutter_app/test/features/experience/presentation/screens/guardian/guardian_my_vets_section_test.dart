@@ -79,9 +79,7 @@ void main() {
     );
   }
 
-  testWidgets('shows puppy watermark only on wide desk layout', (
-    tester,
-  ) async {
+  testWidgets('shows puppy watermark only on wide desk layout', (tester) async {
     await tester.pumpWidget(
       buildSection(
         vetNotifier: _FixedVetNotifier(vets),
