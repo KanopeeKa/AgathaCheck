@@ -775,23 +775,23 @@ const GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL =
 
 /** Legacy guardian full-list card — `{name}, {ownership}, {care}`. */
 const GUARDIAN_FULL_LIST_THREE_PART = new RegExp(
-  `^[^,]+,\\s*[^,]+,\\s*${GUARDIAN_PET_LIST_CARE_TAIL}$`,
+  `^[^,]+,\\s*[^,]+,\\s*${GUARDIAN_PET_LIST_CARE_TAIL}`,
   'i',
 );
 
 /** Unified pet tile on guardian `/pc/pets` — `{name}, {care status}`. */
 const UNIFIED_PET_TILE_LIST = new RegExp(
-  `^[^,]+,\\s*${GUARDIAN_PET_LIST_CARE_TAIL}$`,
+  `^[^,]+,\\s*${GUARDIAN_PET_LIST_CARE_TAIL}`,
   'i',
 );
 
 const GUARDIAN_ACTIVE_FULL_LIST_THREE_PART = new RegExp(
-  `^(?!Passed [Aa]way|Rainbow Bridge|Décédé)[^,]+,\\s*[^,]+,\\s*${GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL}$`,
+  `^(?!Passed [Aa]way|Rainbow Bridge|Décédé)[^,]+,\\s*[^,]+,\\s*${GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL}`,
   'i',
 );
 
 const UNIFIED_ACTIVE_PET_TILE_LIST = new RegExp(
-  `^(?!Passed [Aa]way|Rainbow Bridge|Décédé)[^,]+,\\s*${GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL}$`,
+  `^(?!Passed [Aa]way|Rainbow Bridge|Décédé)[^,]+,\\s*${GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL}`,
   'i',
 );
 
