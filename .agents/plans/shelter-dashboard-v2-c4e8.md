@@ -148,10 +148,10 @@ next_action: "continue phase 7 on branch cursor/shelter-teal-token-audit-c4e8"
 artifact_ref:
   branch: cursor/shelter-teal-token-audit-c4e8
   plan_path: .agents/plans/shelter-dashboard-v2-c4e8.md
-  plan_commit: 01c4914daa8d5ef3211f3696b06ef0ed008a7d08
+  plan_commit: 7c71cf0202926e8fe227412fbe6fd52203d56939
   snapshot_path: .agents/plans/shelter-dashboard-v2-c4e8.snapshot.json
-  snapshot_commit: 01c4914daa8d5ef3211f3696b06ef0ed008a7d08
-open_prs: []
+  snapshot_commit: 7c71cf0202926e8fe227412fbe6fd52203d56939
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/970"]
 merge_commits: {}
 debt_issue_refs: []
 ```
