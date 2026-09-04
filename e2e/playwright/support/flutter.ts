@@ -766,37 +766,55 @@ export function petCardHiddenLocator(page: Page, petName: string) {
     .or(page.getByRole('tab', { name: pattern }));
 }
 
-/** Care-state tail on guardian full-list cards — `{name}, {ownership}, {care}`. */
+/** Care-state tail on guardian full-list cards — legacy `{name}, {ownership}, {care}` or unified `{name}, {care}`. */
 const GUARDIAN_PET_LIST_CARE_TAIL =
   '(?:All clear|Overdue|Due today|Care coming up|Passed away|Tout est en ordre|En retard|Aujourd\'hui|Soin à venir|Décédé\\(e\\))';
 
 const GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL =
   '(?:All clear|Overdue|Due today|Care coming up|Tout est en ordre|En retard|Aujourd\'hui|Soin à venir)';
 
-/** Any pet list tile on `/pc/pets` (legacy `Pet:` prefix or guardian full-list semantics). */
+/** Legacy guardian full-list card — `{name}, {ownership}, {care}`. */
+const GUARDIAN_FULL_LIST_THREE_PART = new RegExp(
+  `^[^,]+,\\s*[^,]+,\\s*${GUARDIAN_PET_LIST_CARE_TAIL}`,
+  'i',
+);
+
+/** Unified pet tile on guardian `/pc/pets` — `{name}, {care status}`. */
+const UNIFIED_PET_TILE_LIST = new RegExp(
+  `^[^,]+,\\s*${GUARDIAN_PET_LIST_CARE_TAIL}`,
+  'i',
+);
+
+const GUARDIAN_ACTIVE_FULL_LIST_THREE_PART = new RegExp(
+  `^(?!Passed [Aa]way|Rainbow Bridge|Décédé)[^,]+,\\s*[^,]+,\\s*${GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL}`,
+  'i',
+);
+
+const UNIFIED_ACTIVE_PET_TILE_LIST = new RegExp(
+  `^(?!Passed [Aa]way|Rainbow Bridge|Décédé)[^,]+,\\s*${GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL}`,
+  'i',
+);
+
+/** Any pet list tile on `/pc/pets` (legacy `Pet:` prefix or guardian/unified list semantics). */
 export function petListCardLocator(page: Page) {
-  const guardianFullList = new RegExp(
-    `^[^,]+,\\s*[^,]+,\\s*${GUARDIAN_PET_LIST_CARE_TAIL}$`,
-    'i',
-  );
   return page
     .getByRole('button', { name: /Pet:/i })
     .or(page.getByRole('group', { name: /Pet:/i }))
-    .or(page.getByRole('button', { name: guardianFullList }))
-    .or(page.getByRole('group', { name: guardianFullList }));
+    .or(page.getByRole('button', { name: GUARDIAN_FULL_LIST_THREE_PART }))
+    .or(page.getByRole('group', { name: GUARDIAN_FULL_LIST_THREE_PART }))
+    .or(page.getByRole('button', { name: UNIFIED_PET_TILE_LIST }))
+    .or(page.getByRole('group', { name: UNIFIED_PET_TILE_LIST }));
 }
 
 /** Active (non-passed-away) tiles on guardian `/pc/pets` — excludes Passed away section cards. */
 export function activePetListCardLocator(page: Page) {
-  const guardianActiveList = new RegExp(
-    `^(?!Passed [Aa]way|Rainbow Bridge|Décédé)[^,]+,\\s*[^,]+,\\s*${GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL}$`,
-    'i',
-  );
   return page
     .getByRole('button', { name: /Pet:/i })
     .or(page.getByRole('group', { name: /Pet:/i }))
-    .or(page.getByRole('button', { name: guardianActiveList }))
-    .or(page.getByRole('group', { name: guardianActiveList }));
+    .or(page.getByRole('button', { name: GUARDIAN_ACTIVE_FULL_LIST_THREE_PART }))
+    .or(page.getByRole('group', { name: GUARDIAN_ACTIVE_FULL_LIST_THREE_PART }))
+    .or(page.getByRole('button', { name: UNIFIED_ACTIVE_PET_TILE_LIST }))
+    .or(page.getByRole('group', { name: UNIFIED_ACTIVE_PET_TILE_LIST }));
 }
 
 /** Home shell or a pet tile after save/create (dashboard or list). */
