@@ -144,7 +144,7 @@ autonomy: active
 current_phase: 8
 last_completed_phase: 7
 halt_reason: null
-next_action: "continue phase 8 on branch cursor/shelter-dashboard-v2-tests-c4e8"
+next_action: "phase 8 complete — await merge PR"
 artifact_ref:
   branch: cursor/shelter-dashboard-v2-tests-c4e8
   plan_path: .agents/plans/shelter-dashboard-v2-c4e8.md
