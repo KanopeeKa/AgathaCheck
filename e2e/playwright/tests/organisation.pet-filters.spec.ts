@@ -18,7 +18,14 @@ import {
   seedRescueHearts,
   type TestUser,
 } from '../support/api';
-import { enableFlutterAccessibility, refreshFlutterAccessibility, toggleCollectionFilterChoice, waitForFlutterRoutePattern, escapeRegExp, semanticsByName } from '../support/flutter';
+import {
+  enableFlutterAccessibility,
+  refreshFlutterAccessibility,
+  toggleCollectionFilterChoice,
+  waitForFlutterRoutePattern,
+  escapeRegExp,
+  petCardNamePattern,
+} from '../support/flutter';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
 
@@ -51,10 +58,12 @@ async function openOrgPetsScreen(
 }
 
 async function expectOrgPetVisible(page: import('@playwright/test').Page, petName: string) {
-  const petPattern = new RegExp(`Pet:\\s*${escapeRegExp(petName)}`, 'i');
+  const petPattern = petCardNamePattern(petName);
   const shadowPattern = new RegExp(`${escapeRegExp(petName)}.*frozen shadow`, 'i');
   await expect(
-    semanticsByName(page, petPattern)
+    page
+      .getByRole('button', { name: petPattern })
+      .or(page.getByRole('group', { name: petPattern }))
       .or(page.getByRole('button', { name: shadowPattern }))
       .first(),
   ).toBeVisible();
