@@ -4,7 +4,7 @@
   "approved_at": "2026-09-03T22:45:00Z",
   "approved_by": "user chat 2026-09-03 (/execute-plan shelter-dashboard-v2-c4e8, approve-autonomous on control issue #952)",
   "approved_until": "2026-09-05T22:45:00Z",
-  "content_hash": "sha256:6083b0aa09fc29ba5449f92d6cac2c1f78c2e1fc66e5cb035880dbffdc4a71c5",
+  "content_hash": "sha256:40742a1f556ae8a50d8ea35d8748e011af167fc816edaf81c6564a23b25ad49a",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/shelter-dashboard-v2-c4e8-integration-c4e8",
@@ -160,9 +160,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "Coordinate with unified-pet-tile-c4e8 — pin overlay only",
+      "status_detail": null,
       "debt_issue_refs": []
     },
     {

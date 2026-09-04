@@ -144,13 +144,13 @@ autonomy: active
 current_phase: 4
 last_completed_phase: 6
 halt_reason: null
-next_action: "start phase 4: checkout cursor/shelter-tile-pin-c4e8"
+next_action: "continue phase 4 on branch cursor/shelter-tile-pin-c4e8"
 artifact_ref:
-  branch: cursor/shelter-dashboard-v2-c4e8-integration-c4e8
+  branch: cursor/shelter-tile-pin-c4e8
   plan_path: .agents/plans/shelter-dashboard-v2-c4e8.md
-  plan_commit: 16fe44fd675ec695b438a44d655628f28ddeffd8
+  plan_commit: 0d2b0056221ed54cfe1eddcb0e2941daab0c2da6
   snapshot_path: .agents/plans/shelter-dashboard-v2-c4e8.snapshot.json
-  snapshot_commit: 16fe44fd675ec695b438a44d655628f28ddeffd8
+  snapshot_commit: 0d2b0056221ed54cfe1eddcb0e2941daab0c2da6
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
