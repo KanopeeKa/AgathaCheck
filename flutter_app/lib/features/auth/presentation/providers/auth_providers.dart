@@ -188,6 +188,25 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// Sets or clears the Shelter pinned org (`PUT /auth/me` `pinned_organization_id`).
+  Future<void> updatePinnedOrganization(String? organizationId) async {
+    if (state.accessToken == null) return;
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final user = await _authService.updateMe(
+        state.accessToken!,
+        pinnedOrganizationId: organizationId,
+        updatePinnedOrganizationId: true,
+      );
+      state = state.copyWith(user: user, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString().replaceFirst('Exception: ', ''),
+      );
+    }
+  }
+
   Future<void> uploadPhoto(Uint8List bytes, String filename) async {
     if (state.accessToken == null) return;
     state = state.copyWith(isLoading: true, clearError: true);

@@ -15,8 +15,9 @@ String? shelterPinnedOrgIdFromAuthUser(AuthUser? user) {
 }
 
 String? _readPinnedOrganizationId(AuthUser user) {
-  // Bridge until AuthUser includes pinnedOrganizationId from GET /auth/me.
-  return null;
+  final pinId = user.pinnedOrganizationId;
+  if (pinId == null || pinId.isEmpty) return null;
+  return pinId;
 }
 
 /// Pinned org id for Shelter primary nav (account preference).
