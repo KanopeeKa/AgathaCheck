@@ -381,16 +381,16 @@ After all phases merged into `cursor/pet-form-redesign-f4a2-integration`:
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "Phase 1: pet photo API + species/gender normalization"
+next_action: "continue phase 1 on branch cursor/pet-photo-api-f4a2"
 artifact_ref:
-  branch: null
+  branch: cursor/pet-photo-api-f4a2
   plan_path: .agents/plans/pet-form-redesign-f4a2.md
-  plan_commit: null
+  plan_commit: ebae04dbe5d6aff3c07bbbc3662b92f9d9acbcca
   snapshot_path: .agents/plans/pet-form-redesign-f4a2.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: ebae04dbe5d6aff3c07bbbc3662b92f9d9acbcca
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

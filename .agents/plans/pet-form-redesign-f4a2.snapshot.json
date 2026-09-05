@@ -4,7 +4,7 @@
   "approved_at": "2026-09-05T13:35:00Z",
   "approved_by": "user-chat-standing-grant-2026-09-05-issue-976",
   "approved_until": "2026-09-07T13:35:00Z",
-  "content_hash": "sha256:6773b6334c067ba556ecfb1d3646451ec06d441edd2ad128af70d249282fcdac",
+  "content_hash": "sha256:d345209ba2eedc7a103414761e33bd5f79f20d8d3864465bb49b2a017066c19c",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/pet-form-redesign-f4a2-integration",
@@ -33,12 +33,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
