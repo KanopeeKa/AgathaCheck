@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:typed_data';
 import 'package:pet_profile_app/features/pet_profile/data/datasources/pet_local_datasource.dart';
 import 'package:pet_profile_app/features/pet_profile/data/datasources/pet_remote_datasource.dart';
 import 'package:pet_profile_app/features/pet_profile/data/models/pet_model.dart';
@@ -55,6 +56,21 @@ class FakeRemoteDataSource implements PetRemoteDataSource {
     if (failDelete) {
       throw PetRemoteException('boom', statusCode: 500);
     }
+  }
+
+  @override
+  Future<PetModel> uploadPetPhoto(
+    String petId,
+    Uint8List bytes,
+    String filename,
+    String token,
+  ) async {
+    return PetModel(
+      id: petId,
+      name: 'Uploaded',
+      species: 'Dog',
+      photoPath: '/uploads/pet_photos/$filename',
+    );
   }
 }
 

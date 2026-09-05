@@ -1238,6 +1238,33 @@ class AppLocalizationsFr extends AppLocalizations {
   String get petNameRequired => 'Le nom est requis';
 
   @override
+  String get petPhotoTooLarge => 'La photo doit faire 2 Mo ou moins';
+
+  @override
+  String get petPhotoUnsupportedType =>
+      'Seules les images JPG, PNG et WebP sont autorisées';
+
+  @override
+  String get petPhotoUploadFailed =>
+      'Échec du téléversement de la photo. Veuillez réessayer.';
+
+  @override
+  String get petPhotoNetworkError =>
+      'Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.';
+
+  @override
+  String get petPhotoUnauthorized =>
+      'Votre session a expiré. Reconnectez-vous et réessayez.';
+
+  @override
+  String get petPhotoPickFailed =>
+      'Impossible d\'ouvrir le sélecteur de photos. Veuillez réessayer.';
+
+  @override
+  String get petSaveFailed =>
+      'Échec de l\'enregistrement de l\'animal. Veuillez réessayer.';
+
+  @override
   String get species => 'Espèce *';
 
   @override

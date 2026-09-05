@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
 import '../models/pet_model.dart';
+import '../utils/pet_photo_bytes.dart';
 
 class PetRemoteException implements Exception {
   PetRemoteException(this.message, {this.statusCode});
@@ -17,6 +19,12 @@ abstract class PetRemoteDataSource {
   Future<List<PetModel>> getAllPetsIncludingOrg(String token);
   Future<PetModel> createPet(PetModel pet, String token);
   Future<PetModel> updatePet(PetModel pet, String token);
+  Future<PetModel> uploadPetPhoto(
+    String petId,
+    Uint8List bytes,
+    String filename,
+    String token,
+  );
   Future<void> deletePet(String id, String token);
 }
 
@@ -31,6 +39,27 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer $token',
   };
+
+  PetRemoteException _errorFromResponse(http.Response response, String fallback) {
+    try {
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      final message = data['error'] as String?;
+      return PetRemoteException(
+        message ?? fallback,
+        statusCode: response.statusCode,
+      );
+    } catch (_) {
+      return PetRemoteException(fallback, statusCode: response.statusCode);
+    }
+  }
+
+  Map<String, dynamic> _petPayload(PetModel pet) {
+    final payload = pet.toJson(includeWeightEntryDate: true);
+    if (isPendingPetPhotoUpload(pet.photoPath)) {
+      payload.remove('photoPath');
+    }
+    return payload;
+  }
 
   @override
   Future<List<PetModel>> getAllPets(String token) async {
@@ -73,13 +102,10 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/pets'),
       headers: _headers(token),
-      body: json.encode(pet.toJson(includeWeightEntryDate: true)),
+      body: json.encode(_petPayload(pet)),
     );
     if (response.statusCode >= 400) {
-      throw PetRemoteException(
-        'Failed to save pet',
-        statusCode: response.statusCode,
-      );
+      throw _errorFromResponse(response, 'Failed to save pet');
     }
     return PetModel.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
@@ -91,17 +117,44 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/pets/${pet.id}'),
       headers: _headers(token),
-      body: json.encode(pet.toJson(includeWeightEntryDate: true)),
+      body: json.encode(_petPayload(pet)),
     );
     if (response.statusCode >= 400) {
-      throw PetRemoteException(
-        'Failed to update pet',
-        statusCode: response.statusCode,
-      );
+      throw _errorFromResponse(response, 'Failed to update pet');
     }
     return PetModel.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
     );
+  }
+
+  @override
+  Future<PetModel> uploadPetPhoto(
+    String petId,
+    Uint8List bytes,
+    String filename,
+    String token,
+  ) async {
+    final uri = Uri.parse('$baseUrl/api/pets/$petId/photo');
+    final request = http.MultipartRequest('POST', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..files.add(http.MultipartFile.fromBytes('photo', bytes, filename: filename));
+
+    final streamedResponse = await _client.send(request);
+    final response = await http.Response.fromStream(streamedResponse);
+    if (response.statusCode >= 400) {
+      throw _errorFromResponse(response, 'Photo upload failed');
+    }
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    final petJson = data['pet'] as Map<String, dynamic>?;
+    if (petJson != null) {
+      return PetModel.fromJson(petJson);
+    }
+    return PetModel.fromJson({
+      'id': petId,
+      'name': '',
+      'species': '',
+      'photoPath': data['photoPath'],
+    });
   }
 
   @override

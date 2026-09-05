@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:image_picker/image_picker.dart';
 
+import '../../data/utils/pet_photo_bytes.dart';
 import '../../domain/entities/pet.dart';
+import 'pet_form_error_messages.dart';
 import 'pet_form_outcomes.dart';
 
 class PetFormController {
@@ -37,7 +39,7 @@ class PetFormController {
     );
   }
 
-  Future<void> pickImage() async {
+  Future<PetFormPickImageOutcome> pickImage() async {
     try {
       final picker = ImagePicker();
       final image = await picker.pickImage(
@@ -46,12 +48,23 @@ class PetFormController {
         maxHeight: 512,
         imageQuality: 75,
       );
-      if (image != null) {
-        final bytes = await image.readAsBytes();
-        _state = _state.copyWith(photoBase64: base64Encode(bytes));
+      if (image == null) {
+        return PetFormPickImageSuccess();
       }
-    } catch (e) {
-      // Handle error in UI
+      if (!isAllowedPetPhotoFilename(image.name)) {
+        return PetFormPickImageFailed(PetFormPhotoError.unsupportedType);
+      }
+      final bytes = await image.readAsBytes();
+      if (bytes.length > maxPetPhotoBytes) {
+        return PetFormPickImageFailed(PetFormPhotoError.tooLarge);
+      }
+      _state = _state.copyWith(
+        photoBase64: base64Encode(bytes),
+        pendingPhotoFilename: defaultPetPhotoFilename(image.name),
+      );
+      return PetFormPickImageSuccess();
+    } catch (_) {
+      return PetFormPickImageFailed(PetFormPhotoError.pickFailed);
     }
   }
 
@@ -86,7 +99,10 @@ class PetFormController {
     try {
       if (isEditing) {
         if (petId == null) {
-          return PetFormSubmitError(StateError('petId required for edit'));
+          return PetFormSubmitError(
+            PetFormSubmitErrorKind.saveFailed,
+            debugDetail: StateError('petId required for edit'),
+          );
         }
         final pets = deps.readPets();
         final existing = pets.where((p) => p.id == petId).firstOrNull;
@@ -146,7 +162,10 @@ class PetFormController {
       }
       return PetFormSubmitSuccess(orgId: orgId);
     } catch (e) {
-      return PetFormSubmitError(e);
+      return PetFormSubmitError(
+        petFormSubmitErrorKindFrom(e),
+        debugDetail: e,
+      );
     }
   }
 
@@ -183,6 +202,7 @@ class PetFormState {
   final String selectedSpecies;
   final String? selectedGender;
   final String? photoBase64;
+  final String? pendingPhotoFilename;
   final String? selectedVetId;
   final int? existingColorValue;
   final DateTime? dateOfBirth;
@@ -206,6 +226,7 @@ class PetFormState {
     this.selectedSpecies = '',
     this.selectedGender,
     this.photoBase64,
+    this.pendingPhotoFilename,
     this.selectedVetId,
     this.existingColorValue,
     this.dateOfBirth,
@@ -230,6 +251,7 @@ class PetFormState {
     String? selectedSpecies,
     String? selectedGender,
     String? photoBase64,
+    String? pendingPhotoFilename,
     String? selectedVetId,
     int? existingColorValue,
     DateTime? dateOfBirth,
@@ -253,6 +275,7 @@ class PetFormState {
       selectedSpecies: selectedSpecies ?? this.selectedSpecies,
       selectedGender: selectedGender ?? this.selectedGender,
       photoBase64: photoBase64 ?? this.photoBase64,
+      pendingPhotoFilename: pendingPhotoFilename ?? this.pendingPhotoFilename,
       selectedVetId: selectedVetId ?? this.selectedVetId,
       existingColorValue: existingColorValue ?? this.existingColorValue,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,

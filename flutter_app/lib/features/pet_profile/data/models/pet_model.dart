@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import '../../domain/entities/pet.dart';
 import '../../../../core/utils/calendar_date.dart';
+import '../utils/pet_profile_normalize.dart';
 
 class PetModel {
   const PetModel({
@@ -42,13 +43,13 @@ class PetModel {
     return PetModel(
       id: json['id'] as String,
       name: json['name'] as String,
-      species: json['species'] as String,
+      species: normalizePetSpecies(json['species'] as String?),
       breed: (json['breed'] as String?) ?? '',
       dateOfBirth: parseCalendarDate(
         json['dateOfBirth'] ?? json['date_of_birth'],
       ),
       weight: (json['weight'] as num?)?.toDouble(),
-      gender: json['gender'] as String?,
+      gender: normalizePetGender(json['gender'] as String?),
       bio: (json['bio'] as String?) ?? '',
       insurance: (json['insurance'] as String?) ?? '',
       neuteredDate: parseCalendarDate(json['neuteredDate']),

@@ -2251,6 +2251,48 @@ abstract class AppLocalizations {
   /// **'Name is required'**
   String get petNameRequired;
 
+  /// No description provided for @petPhotoTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo must be 2 MB or smaller'**
+  String get petPhotoTooLarge;
+
+  /// No description provided for @petPhotoUnsupportedType.
+  ///
+  /// In en, this message translates to:
+  /// **'Only JPG, PNG, and WebP images are allowed'**
+  String get petPhotoUnsupportedType;
+
+  /// No description provided for @petPhotoUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo upload failed. Please try again.'**
+  String get petPhotoUploadFailed;
+
+  /// No description provided for @petPhotoNetworkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the server. Check your connection and try again.'**
+  String get petPhotoNetworkError;
+
+  /// No description provided for @petPhotoUnauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Sign in again and retry.'**
+  String get petPhotoUnauthorized;
+
+  /// No description provided for @petPhotoPickFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the photo picker. Please try again.'**
+  String get petPhotoPickFailed;
+
+  /// No description provided for @petSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save pet. Please try again.'**
+  String get petSaveFailed;
+
   /// No description provided for @species.
   ///
   /// In en, this message translates to:
