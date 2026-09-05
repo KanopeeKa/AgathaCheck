@@ -80,6 +80,19 @@ Feature: Pet Profiles
     And the user saves the pet
     Then "Bella" should have breed "Golden Retriever"
 
+  @P1
+  Scenario: Edit form prefills existing pet details
+    Given a pet "Buddy" of species "Dog" with breed "Labrador" exists
+    When the user opens the edit form for "Buddy"
+    Then the edit form should show "Buddy" with species "Dog" and breed "Labrador"
+
+  @P1
+  Scenario: Cancelling unsaved edit changes
+    Given a pet "Bella" exists
+    When the user edits "Bella" and changes the name to "Changed"
+    And the user cancels the edit without saving
+    Then the pet list should still show "Bella"
+
   # ── Deleting Pets ────────────────────────────────────────────
 
   @P1

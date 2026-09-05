@@ -61,7 +61,12 @@ export class PetDetailPage {
 
   async openEdit(): Promise<void> {
     await this.page.getByRole('button', { name: /edit pet/i }).first().click();
-    await this.page.getByRole('button', { name: 'Update Pet' }).waitFor({ timeout: 30_000 });
+    await this.page
+      .getByRole('button', {
+        name: /Save changes|Save Pet|Enregistrer les modifications|Enregistrer l'animal/i,
+      })
+      .first()
+      .waitFor({ timeout: 30_000 });
   }
 
   async openSharingSection(): Promise<void> {

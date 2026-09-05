@@ -230,7 +230,10 @@ export class PetListPage {
     const addPetBtn = resolveAddButton();
     await addPetBtn.waitFor({ timeout: 30_000 });
     await addPetBtn.click();
-    await this.page.getByRole('button', { name: 'Save Pet' }).waitFor({ timeout: 30_000 });
+    await this.page
+      .getByRole('button', { name: /Save Pet|Enregistrer l'animal/i })
+      .first()
+      .waitFor({ timeout: 30_000 });
   }
 
   async expectPetVisible(name: string): Promise<void> {
