@@ -1222,6 +1222,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petNameRequired => 'Name is required';
 
   @override
+  String get petPhotoTooLarge => 'Photo must be 2 MB or smaller';
+
+  @override
+  String get petPhotoUnsupportedType =>
+      'Only JPG, PNG, and WebP images are allowed';
+
+  @override
+  String get petPhotoUploadFailed => 'Photo upload failed. Please try again.';
+
+  @override
+  String get petPhotoNetworkError =>
+      'Could not reach the server. Check your connection and try again.';
+
+  @override
+  String get petPhotoUnauthorized =>
+      'Your session expired. Sign in again and retry.';
+
+  @override
+  String get petPhotoPickFailed =>
+      'Could not open the photo picker. Please try again.';
+
+  @override
+  String get petSaveFailed => 'Failed to save pet. Please try again.';
+
+  @override
   String get species => 'Species *';
 
   @override

@@ -381,17 +381,17 @@ After all phases merged into `cursor/pet-form-redesign-f4a2-integration`:
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/pet-photo-api-f4a2"
+next_action: "continue phase 2 on branch cursor/pet-photo-client-f4a2"
 artifact_ref:
-  branch: cursor/pet-photo-api-f4a2
+  branch: cursor/pet-photo-client-f4a2
   plan_path: .agents/plans/pet-form-redesign-f4a2.md
-  plan_commit: 8588f505aef24b09f75d9794c2cb7de1e76a3606
+  plan_commit: c28b7c2b3afd57cd07bdeaa1d5d459ff382c4511
   snapshot_path: .agents/plans/pet-form-redesign-f4a2.snapshot.json
-  snapshot_commit: 8588f505aef24b09f75d9794c2cb7de1e76a3606
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/978"]
+  snapshot_commit: c28b7c2b3afd57cd07bdeaa1d5d459ff382c4511
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/979"]
 merge_commits: {}
 debt_issue_refs: []
 ```

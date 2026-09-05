@@ -34,7 +34,7 @@ void main() {
     breed: 'Golden Retriever',
     dateOfBirth: DateTime(2022, 1, 15),
     weight: 30.0,
-    gender: 'male',
+    gender: 'Male',
     bio: 'A friendly dog',
     insurance: 'PetPlan Gold',
     neuteredDate: DateTime(2023, 3, 10),
@@ -63,7 +63,7 @@ void main() {
       expect(model.dateOfBirth!.month, 1);
       expect(model.dateOfBirth!.day, 15);
       expect(model.weight, 30.0);
-      expect(model.gender, 'male');
+      expect(model.gender, 'Male');
       expect(model.bio, 'A friendly dog');
       expect(model.insurance, 'PetPlan Gold');
       expect(model.neuteredDate, isNotNull);
@@ -181,7 +181,7 @@ void main() {
       expect(json['breed'], 'Golden Retriever');
       expect(json['dateOfBirth'], isNotNull);
       expect(json['weight'], 30.0);
-      expect(json['gender'], 'male');
+      expect(json['gender'], 'Male');
       expect(json['bio'], 'A friendly dog');
       expect(json['insurance'], 'PetPlan Gold');
       expect(json['neuteredDate'], isNotNull);
@@ -250,7 +250,7 @@ void main() {
       expect(entity.breed, 'Golden Retriever');
       expect(entity.dateOfBirth, isNotNull);
       expect(entity.weight, 30.0);
-      expect(entity.gender, 'male');
+      expect(entity.gender, 'Male');
       expect(entity.bio, 'A friendly dog');
       expect(entity.insurance, 'PetPlan Gold');
       expect(entity.neuteredDate, isNotNull);
@@ -276,7 +276,7 @@ void main() {
         breed: 'Golden Retriever',
         dateOfBirth: DateTime(2022, 1, 15),
         weight: 30.0,
-        gender: 'male',
+        gender: 'Male',
         bio: 'A friendly dog',
         insurance: 'PetPlan Gold',
         neuteredDate: DateTime(2023, 3, 10),
