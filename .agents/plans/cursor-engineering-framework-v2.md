@@ -54,11 +54,11 @@ last_completed_phase: 1
 halt_reason: null
 next_action: "plan complete"
 artifact_ref:
-  branch: cursor/framework-plan-complete-75cb
+  branch: main
   plan_path: .agents/plans/cursor-engineering-framework-v2.md
-  plan_commit: a443ff249dcf37813911a65d1218fa547f5fbd93
+  plan_commit: 6352a712627b0af76507a7a038b3c6e61bf6ddec
   snapshot_path: .agents/plans/cursor-engineering-framework-v2.snapshot.json
-  snapshot_commit: a443ff249dcf37813911a65d1218fa547f5fbd93
+  snapshot_commit: 6352a712627b0af76507a7a038b3c6e61bf6ddec
 open_prs: []
 merge_commits: {"1":"a443ff249dcf37813911a65d1218fa547f5fbd93"}
 debt_issue_refs: []
