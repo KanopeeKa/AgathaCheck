@@ -179,15 +179,14 @@ export class HealthDashboardPage {
     await this.page.waitForTimeout(500);
   }
 
-  /** Pet Care `/pc/events` global list — status filter via collection filter toolbar. */
-  async selectDueOverdueFilter(): Promise<void> {
+  /** Pet Care `/pc/events` global list — clear status filter (default is Due and Overdue). */
+  async showAllStatusEntries(): Promise<void> {
+    const allStatus = /^(All|Tous)$/i;
     const mobileFilters = collectionFilterMobileTrigger(this.page);
     if (await mobileFilters.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await mobileFilters.click();
       await refreshFlutterAccessibility(this.page);
-      await this.page
-        .getByRole('checkbox', { name: /Due and Overdue|À faire et en retard/i })
-        .click();
+      await this.page.getByRole('checkbox', { name: allStatus }).click();
     } else {
       const statusTrigger = collectionFilterDimensionTrigger(
         this.page,
@@ -196,10 +195,32 @@ export class HealthDashboardPage {
       await expect(statusTrigger).toBeVisible({ timeout: 10_000 });
       await statusTrigger.click();
       await refreshFlutterAccessibility(this.page);
-      await this.page
-        .getByRole('checkbox', { name: /Due and Overdue|À faire et en retard/i })
-        .click();
+      await this.page.getByRole('checkbox', { name: allStatus }).click();
     }
+    await refreshFlutterAccessibility(this.page);
+    await this.page.waitForTimeout(500);
+  }
+
+  /** Pet Care `/pc/events` global list — status filter via collection filter toolbar. */
+  async selectDueOverdueFilter(): Promise<void> {
+    const dueOverdue = /Due and Overdue|À faire et en retard/i;
+    const mobileFilters = collectionFilterMobileTrigger(this.page);
+    if (await mobileFilters.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await mobileFilters.click();
+      await refreshFlutterAccessibility(this.page);
+    } else {
+      const dueChoice = this.page.getByRole('checkbox', { name: dueOverdue });
+      if (!(await dueChoice.isVisible({ timeout: 500 }).catch(() => false))) {
+        const statusTrigger = collectionFilterDimensionTrigger(
+          this.page,
+          /^Status( \(\d+\))?$/i,
+        );
+        await expect(statusTrigger).toBeVisible({ timeout: 10_000 });
+        await statusTrigger.click();
+        await refreshFlutterAccessibility(this.page);
+      }
+    }
+    await this.page.getByRole('checkbox', { name: dueOverdue }).click();
     await refreshFlutterAccessibility(this.page);
     await this.page.waitForTimeout(500);
   }

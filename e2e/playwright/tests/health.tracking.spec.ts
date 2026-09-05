@@ -285,7 +285,8 @@ test.describe('Health tracking', () => {
 
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
-    // Global /pc/events list shows all entries; snoozed +3 days is still in the unfiltered list.
+    // Global /pc/events defaults to Due and Overdue; snoozed +3 days is outside that window.
+    await dashboard.showAllStatusEntries();
     await dashboard.expectEntryVisible(entry.name);
     // Due and Overdue filter: +3 days with default remind_days_before=1 is outside the window.
     await dashboard.selectDueOverdueFilter();
