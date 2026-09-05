@@ -89,7 +89,10 @@ void main() {
   ) async {
     await tester.pumpWidget(
       ProviderScope(
-        overrides: _discoverScreenOverrides(orgs: [_dashboardOrg]),
+        overrides: _discoverScreenOverrides(
+          orgs: [_dashboardOrg],
+          withAuth: true,
+        ),
         child: MaterialApp(
           theme: AppTheme.lightTheme,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -186,7 +189,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: _discoverScreenOverrides(orgs: [_dashboardOrg]),
+        overrides: _discoverScreenOverrides(
+          orgs: [_dashboardOrg],
+          withAuth: true,
+        ),
         child: MaterialApp.router(
           theme: AppTheme.lightTheme,
           localizationsDelegates: AppLocalizations.localizationsDelegates,

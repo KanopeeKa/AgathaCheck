@@ -51,10 +51,7 @@ class OrgShellScaffold extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final resolvedOrg = _resolveOrganization(ref);
-    final location =
-        currentLocation ??
-        GoRouter.maybeOf(context)?.state.uri.path ??
-        '/o/orgs';
+    final location = _resolveCurrentLocation(context);
 
     return ExperienceShellScaffold(
       experience: AppExperience.organization,
@@ -85,5 +82,14 @@ class OrgShellScaffold extends ConsumerWidget {
           data: (orgs) => orgs.where((o) => o.id == id).firstOrNull,
           orElse: () => null,
         );
+  }
+
+  String _resolveCurrentLocation(BuildContext context) {
+    if (currentLocation != null) return currentLocation!;
+    final routerPath = GoRouter.maybeOf(context)?.state.uri.path;
+    if (routerPath != null) return routerPath;
+    final id = orgId;
+    if (id != null) return '/o/orgs/$id';
+    return '/o/orgs';
   }
 }

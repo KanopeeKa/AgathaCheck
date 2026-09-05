@@ -261,7 +261,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
                   else
                     GuardianNavigationRail(currentLocation: currentLocation),
                   Expanded(
-                    child: ColoredBox(
+                    child: Material(
                       key: const Key('experience_workspace_canvas'),
                       color: isOrg
                           ? orgListScaffoldBackground(context)
