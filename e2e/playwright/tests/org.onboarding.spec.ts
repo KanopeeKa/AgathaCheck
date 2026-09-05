@@ -61,7 +61,10 @@ test.describe('Organisation onboarding', () => {
     const experience = new ExperiencePage(page);
     await experience.switchToShelterWorkspace();
 
-    await completeOrgOnboarding(page, 'Max', 'Vaccine booster');
+    await completeOrgOnboarding(page, 'Max', 'Vaccine booster', {
+      existingOrg: true,
+      orgName: org.name,
+    });
 
     await experience.expectOrgShell();
 
