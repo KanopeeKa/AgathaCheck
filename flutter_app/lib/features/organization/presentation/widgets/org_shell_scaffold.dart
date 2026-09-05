@@ -2,21 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/app_color_tokens.dart';
-import '../../../../core/widgets/shell_notification_bell.dart';
-import '../../../../l10n/app_localizations.dart';
 import '../../../experience/domain/entities/app_experience.dart';
-import '../../../experience/presentation/utils/experience_theme.dart';
-import '../../../experience/presentation/widgets/experience_workspace_toggle.dart';
-import '../../../notifications/presentation/widgets/notification_panel.dart';
+import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../domain/entities/organization.dart';
 import '../providers/organization_providers.dart';
-import '../utils/org_screen_theme.dart';
 import 'org_shell_app_bar_title.dart';
 
-/// Organisation-area scaffold: teal background, adaptive nav title, bell (D-v3-NAV-1).
-///
-/// Includes [ExperienceWorkspaceToggle] on every route (D-v5-WORKSPACE-4, D-desk-S4).
+/// Organisation deep-route scaffold — delegates to [ExperienceShellScaffold]
+/// so Shelter primary nav (bottom / rail / sidebar) persists on `/o/**` routes.
 class OrgShellScaffold extends ConsumerWidget {
   const OrgShellScaffold({
     super.key,
@@ -55,89 +48,26 @@ class OrgShellScaffold extends ConsumerWidget {
   /// Route path for workspace toggle highlighting; defaults to [GoRouter] location.
   final String? currentLocation;
 
-  static const _workspaceToggleWidth = 184.0;
-  static const _backButtonWidth = 48.0;
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final shellTheme = themeForAppExperience(theme, AppExperience.organization);
     final resolvedOrg = _resolveOrganization(ref);
-    final location =
-        currentLocation ??
-        GoRouter.maybeOf(context)?.state.uri.path ??
-        '/o/orgs';
-    final leadingWidth = showBackButton
-        ? _workspaceToggleWidth + _backButtonWidth
-        : _workspaceToggleWidth;
+    final location = _resolveCurrentLocation(context);
 
-    return Theme(
-      data: shellTheme,
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: orgListScaffoldBackground(context),
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          leadingWidth: leadingWidth,
-          leading: _buildLeading(context, l, location),
-          centerTitle: true,
-          title: OrgShellAppBarTitle(
-            title: title,
-            variant: navVariant,
-            organization: resolvedOrg,
-          ),
-          actions: [
-            ...contextualActions,
-            ...trailingActions,
-            if (contextualActions.isNotEmpty || trailingActions.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Text(
-                  '|',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            Builder(builder: (ctx) => const ShellNotificationBell()),
-          ],
-        ),
-        endDrawer: endDrawer ?? const NotificationPanel(),
-        floatingActionButton: floatingActionButton,
-        body: child,
-      ),
-    );
-  }
-
-  Widget _buildLeading(
-    BuildContext context,
-    AppLocalizations l,
-    String location,
-  ) {
-    final toggle = Padding(
-      padding: EdgeInsets.only(left: showBackButton ? 0 : 8),
-      child: ExperienceWorkspaceToggle(
-        key: const Key('org_shell_workspace_toggle'),
-        currentLocation: location,
-        onDarkBackground: false,
-        showShelter: true,
-      ),
-    );
-
-    if (!showBackButton) return toggle;
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          key: leadingKey ?? const Key('org_shell_back'),
-          icon: const Icon(Icons.arrow_back),
-          tooltip: l.goBack,
-          onPressed: onBack ?? () => _defaultBack(context),
-        ),
-        toggle,
-      ],
+    return ExperienceShellScaffold(
+      experience: AppExperience.organization,
+      currentLocation: location,
+      screenTitle: title,
+      orgNavVariant: navVariant,
+      organization: resolvedOrg ?? organization,
+      contextualActions: [...contextualActions, ...trailingActions],
+      backPath: backPath,
+      onBackPressed: onBack,
+      backButtonKey: showBackButton
+          ? (leadingKey ?? const Key('org_shell_back'))
+          : null,
+      scaffoldKey: scaffoldKey,
+      floatingActionButton: floatingActionButton,
+      child: child,
     );
   }
 
@@ -154,12 +84,12 @@ class OrgShellScaffold extends ConsumerWidget {
         );
   }
 
-  void _defaultBack(BuildContext context) {
-    if (Navigator.canPop(context)) {
-      Navigator.pop(context);
-      return;
-    }
-    final destination = backPath ?? '/o/orgs';
-    context.go(destination);
+  String _resolveCurrentLocation(BuildContext context) {
+    if (currentLocation != null) return currentLocation!;
+    final routerPath = GoRouter.maybeOf(context)?.state.uri.path;
+    if (routerPath != null) return routerPath;
+    final id = orgId;
+    if (id != null) return '/o/orgs/$id';
+    return '/o/orgs';
   }
 }

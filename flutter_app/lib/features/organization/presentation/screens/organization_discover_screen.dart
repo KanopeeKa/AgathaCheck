@@ -10,6 +10,7 @@ import '../widgets/org_discovery/org_discover_search_field.dart';
 import '../widgets/org_discovery/org_discovery_list.dart';
 import '../widgets/org_shell_app_bar_title.dart';
 import '../widgets/org_shell_scaffold.dart';
+import '../../../experience/presentation/config/shelter_primary_destinations.dart';
 
 /// Dedicated discover screen — search, browse-as banner, return context (D-v3-DISC).
 class OrganizationDiscoverScreen extends ConsumerWidget {
@@ -30,6 +31,7 @@ class OrganizationDiscoverScreen extends ConsumerWidget {
     return OrgShellScaffold(
       title: l.discoverOrganizations,
       navVariant: OrgNavTitleVariant.textOnly,
+      currentLocation: ShelterPrimaryDestinations.discoverRoute,
       leadingKey: const Key('org_discover_back'),
       backPath: returnPath,
       onBack: () => _handleBack(context, returnPath),
