@@ -388,10 +388,10 @@ next_action: "continue phase 1 on branch cursor/pet-photo-api-f4a2"
 artifact_ref:
   branch: cursor/pet-photo-api-f4a2
   plan_path: .agents/plans/pet-form-redesign-f4a2.md
-  plan_commit: ebae04dbe5d6aff3c07bbbc3662b92f9d9acbcca
+  plan_commit: 8588f505aef24b09f75d9794c2cb7de1e76a3606
   snapshot_path: .agents/plans/pet-form-redesign-f4a2.snapshot.json
-  snapshot_commit: ebae04dbe5d6aff3c07bbbc3662b92f9d9acbcca
-open_prs: []
+  snapshot_commit: 8588f505aef24b09f75d9794c2cb7de1e76a3606
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/978"]
 merge_commits: {}
 debt_issue_refs: []
 ```
