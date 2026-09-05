@@ -51,10 +51,7 @@ void main() {
     await tester.pumpWidget(_wrap(const SizedBox.shrink()));
     await tester.pumpAndSettle();
 
-    expect(
-      find.byKey(const Key('shelter_bottom_navigation')),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('shelter_bottom_navigation')), findsOneWidget);
   });
 
   testWidgets('OrgShellScaffold keeps Shelter sidebar at expanded width', (
@@ -65,10 +62,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(
-      find.byKey(const Key('shelter_navigation_sidebar')),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('shelter_navigation_sidebar')), findsOneWidget);
     expect(find.byKey(const Key('shelter_bottom_navigation')), findsNothing);
   });
 }
