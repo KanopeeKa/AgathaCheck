@@ -22,6 +22,17 @@ Pre-UAT **remedial fix loop** — triage CI, scope shards from **diff since last
 
 ---
 
+## Router (e2e-debug)
+
+**Profile:** `classify-first` — see `.cursor/agent-kernel/protocols/e2e.md`.
+
+1. Run Phase 0 preflight below **first** (unchanged).
+2. Classify failure: `PRODUCT BUG` · `TEST BUG` · `TEST DATA` · `ENVIRONMENT` · `RACE` · `SELECTOR FRAGILITY` · `INFRASTRUCTURE` · `UNKNOWN`.
+3. **No test changes** before reasoned classification.
+4. Load other protocols only if root cause requires (e.g. 403 → `authorization`, `api-contract`).
+
+---
+
 ## Phase 0 — Preflight (mandatory — before anything else)
 
 **Do not** bootstrap the stack, spawn shard workers, or create a remedial branch until preflight passes.

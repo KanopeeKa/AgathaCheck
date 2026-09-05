@@ -13,6 +13,16 @@ description: Babysit+ through merge, then gate on pre-UAT E2E on main. On failur
 
 ---
 
+## Router (babysit-uat)
+
+**Profile:** `diff-scoped` — do not run full domain taxonomy before merge.
+
+1. PR changed files → existing `babysit_uat_shard_risk.mjs` (Phase 2 below).
+2. Load protocols only when journey-level PR (e.g. `bdd-journey` exit profile, material E2E spec changes) → `release-verification.md`.
+3. Core contract unchanged: babysit+ → merge → pre-UAT watch → e2e-debug remedial loop.
+
+---
+
 ## When to use
 
 | Caller | Skill |

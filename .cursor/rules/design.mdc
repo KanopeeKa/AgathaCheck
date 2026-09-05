@@ -33,7 +33,7 @@ AgathaTrack is **calm care coordination** — professional for shelters, warm fo
 | Situation | Use |
 |-----------|-----|
 | Touching a screen or widget | This rule + `accessibility.mdc` |
-| PR polish / quick review | Skill: `/ui-check` |
+| PR polish / quick review | `.cursor/agent-kernel/protocols/accessibility.md` §Quick pass (Router) |
 | New flow, theme shift, multi-screen consistency | Skill: `/ui-design-deep` → `docs/design/principles.md` |
 | Auth / landing on web | `.agents/memory/flutter-web-password-managers.md` |
 | UI rework / theme project | `docs/design/ui-rework-plan.md` |

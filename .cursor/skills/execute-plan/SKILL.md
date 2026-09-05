@@ -50,6 +50,24 @@ When session preflight **gate** exits `0`, autonomy is **active**. You have upfr
 
 **Merge:** Always squash-merge when gates pass (no `manual` / `labeled` modes).
 
+**Engineering Router:** `.cursor/agent-kernel/ROUTER.md` · Framework: `docs/engineering/cursor-agent-framework.md`
+
+---
+
+## Router (execute-plan)
+
+**Profile:** `full` at phase select + plan strengthen. **Skip strengthen** on resume-only sessions (babysit, CI watch, `next_action` already set).
+
+1. Read `ROUTER.md` — inspect, classify domains/surfaces, assign R0–R3, resolve protocols, map verification.
+2. **Strengthen** the phase/plan (gap analysis — not scope creep):
+   - Annotate: `router_risk`, `protocols[]`, `verification[]`, `phase_fit: in-scope | split-required`
+   - If new requirements fit phase outcome → include in implementation
+   - If additional independent outcome → **split phase** (update snapshot `allowed_paths`); do not mega-PR
+3. Delegate workers with `.cursor/agent-kernel/workers/phase-implementer.md` brief (risk + protocols + paths).
+4. R2+ before merge: integration review per `workers/integration-reviewer.md`.
+
+Resume-only: gate → resume-check → continue `next_action` — **no** full re-strengthen.
+
 ---
 
 ## Invocation
@@ -259,6 +277,7 @@ Repeat until all phases `merged` or autonomy halts.
 - First `pending` phase after last `merged`, or resume from `next_action` in live plan
 - Skip phases already `merged` — never redo merged work
 - Checkout `phase.branch`; create branch if missing
+- **Router (full):** classify phase; strengthen/split per §Router above; record annotations on control issue
 
 ### 2. Mark in progress
 
@@ -400,5 +419,6 @@ See autonomous-pr-policy §Escalation. Includes security/crypto, breaking API, p
 | `/pre-push-verify` | Before every push; full suite before merge |
 | `/spawn-sprint-agents` | Phase with `spawn_allowed: true` (parallel within one phase) |
 | Task `generalPurpose` | Per-phase implementation worker (orchestrator retains babysit+ / merge) |
-| `/single-backend-route-change` | Route phases per exit checklist |
 | `/split-flutter-screen` | Screen-split phases per exit checklist |
+
+**Tier 3 (internal — use Router protocols instead):** `single-backend-route-change` → `api-contract` + `validation`; `security-error-audit` → `security`; `ui-check` → `accessibility` §Quick pass.

@@ -1,58 +1,33 @@
 ---
 name: ui-check
-description: Quick UX and accessibility pass on Flutter UI changes before merge or polish. Use for single-screen edits, widget tweaks, or "does this look right?" — not full redesigns.
+description: >-
+  INTERNAL (Tier 3) — superseded by Engineering Router + .cursor/agent-kernel/protocols/accessibility.md
+  §Quick pass. Do not user-invoke; Tier 1 skills load accessibility protocol automatically.
 paths:
   - flutter_app/lib/**
 ---
 
-# UI check (light)
+# UI check (internal — Tier 3)
 
-## When to use
+> **Superseded by:** `.cursor/agent-kernel/protocols/accessibility.md` §Quick pass  
+> **Framework:** `docs/engineering/cursor-agent-framework.md`
 
-- Finishing a UI-touching PR
-- User asks for a quick UX/a11y sanity check
-- One screen or a few widgets changed
+This skill remains for backward compatibility. **Do not invoke manually.**
 
-**Not for:** theme overhauls, new multi-step flows, or product-wide consistency — use `/ui-design-deep`.
+When Flutter presentation changes, Tier 1 workflows (`/babysit-plus`, `/ui-design-deep`, etc.) run the Router and apply the **accessibility protocol quick pass** instead.
 
-## Escalate to `/ui-design-deep` when any apply
+## Quick pass (canonical — copy in protocol)
 
-- Editing `app_theme.dart` or adding `tokens.md`
-- Auth, landing, onboarding, or experience chooser
-- New multi-step wizard or flow
-- Changes spanning `/g/*` and `/o/*`
-- User asks for redesign, refresh, or brand work
-- Starting a phase from `docs/design/ui-rework-plan.md`
+1. Purpose clear in 5 seconds?
+2. Primary action obvious?
+3. Labels on inputs; focus visible; touch ≥48dp
+4. Theme/`colorScheme` — no ad-hoc colors
+5. Empty/loading/error still reasonable?
+6. Auth/landing: role-neutral entry if touched
 
-## Read first
+Escalate to `/ui-design-deep` for theme, landing/auth, multi-screen, or `/g/*` + `/o/*` span.
 
-- `.cursor/rules/design.mdc`
-- `.cursor/rules/accessibility.mdc`
-- Changed files only
-
-## Steps
-
-1. **Purpose** — Can a user answer in 5 seconds: what is this for, what next?
-2. **Hierarchy** — Primary action obvious? Visual noise or competing accents?
-3. **A11y spot-check** — labels on inputs, focus visible, touch ≥48dp, not color-only state, icon buttons have tooltips.
-4. **Consistency** — Uses `Theme`/`colorScheme`? Matches neighboring screens?
-5. **Copy** — Operational text direct; no cute tone in admin/health flows; strings in l10n.
-6. **States** — If you touched a list/form/action, are empty/loading/error still reasonable?
-7. **Auth entry** — If the change touches landing/auth, confirm the entry is role-neutral: sign-in/create-account only, with guardian/shelter/organisation context deferred until after authentication.
-8. **Landing tokens** — For the approved landing direction, use the roles in `docs/design/tokens.md` for palette, type, spacing, focus, and component states; do not add ad-hoc olive/gold/paper values.
-
-## Output (keep short)
-
-```markdown
-### UI check — <area>
-- **OK:** …
-- **Fix now:** … (requirement / small snag)
-- **Follow-up:** … (optional, separate PR if non-blocking)
-```
-
-Fix **Fix now** items in the same PR when ≤15 lines same file; else note as follow-up per atomic PR policy.
-
-## Verify (if code changed)
+## Verify
 
 ```bash
 ./scripts/pre-push-changed.sh

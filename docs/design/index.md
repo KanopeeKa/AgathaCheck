@@ -15,7 +15,7 @@ Lightweight by default. Go deeper only when the task needs it.
 | Tier | When | What to load |
 |------|------|----------------|
 | **0 — Everyday** | Small UI fix, one widget, routine feature work | `.cursor/rules/design.mdc` + `accessibility.mdc` |
-| **1 — UI check** | Review before merge, polish pass, “does this feel right?” | Skill `/ui-check` |
+| **1 — UI check** | Review before merge, polish pass, “does this feel right?” | Router → `.cursor/agent-kernel/protocols/accessibility.md` §Quick pass |
 | **2 — Design deep** | New flow, auth/landing refresh, theme work, multi-screen consistency | Skill `/ui-design-deep` + `principles.md` + `system.md` |
 | **2 — Fostering session detail** | View Session foster + shelter lenses | [session-detail-view.md](./session-detail-view.md) + domain [spec](../domains/fostering/features/session-detail-view.md) |
 

@@ -1,0 +1,36 @@
+---
+description: Pet Care domain boundaries — distinct from Shelter; backend authoritative
+globs: flutter_app/lib/features/experience/**,flutter_app/lib/features/health_tracking/**,flutter_app/lib/features/pet_profile/**,flutter_app/lib/features/sharing/**,server/routes/pets/**,server/routes/health*/**,server/routes/sharing/**,docs/domains/pet_care/**
+---
+
+# Pet Care architecture
+
+**Canonical docs:** `docs/domains/pet_care/README.md` · domain map: `docs/architecture/index.md`
+
+## Boundaries
+
+- **Pet Care** (`/pc/*`, `AppExperience.petCare`) and **Shelter** (`/o/*`) are distinct product domains.
+- Shared infrastructure (auth, API errors, storage, notifications) may affect both.
+- Do **not** accidentally redesign Shelter while hardening Pet Care.
+- Shared-code changes require **Shelter regression** consideration.
+
+## Authority
+
+- Backend is authoritative for business rules and security — not Flutter presentation.
+- Web, iOS, and Android consume the **same** Pet Care backend — no mobile-specific duplicate API.
+- Flutter must not be the only enforcement point for invariants.
+
+## API & clients
+
+- API contracts must consider **installed native clients** that cannot be force-refreshed.
+- Prefer additive API evolution. See `.cursor/agent-kernel/protocols/api-contract.md`.
+
+## Terminology & compatibility
+
+- Use **Pet Care** terminology (not casual reintroduction of legacy Guardian naming).
+- Do not break persisted/public compatibility for naming aesthetics alone.
+- Rename migrations in progress: see `docs/domains/pet_care/changes/`.
+
+## Sensitive areas (Router → high rigor)
+
+Health data, sharing, uploads, fostering custody, account/pet lifecycle — expect R2–R3 and protocols: `authorization`, `security`, `private-files`, `data-lifecycle`.

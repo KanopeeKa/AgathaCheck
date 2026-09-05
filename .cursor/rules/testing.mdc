@@ -5,6 +5,8 @@ globs: flutter_app/test/**,server/test/**,e2e/**
 
 # Testing
 
+**Invariant-centric procedure:** `.cursor/agent-kernel/protocols/testing.md` (Router loads when applicable).
+
 ## Pre-push
 
 Run `./scripts/pre-push-changed.sh` during iteration or `./scripts/pre-push.sh` before merge to `main`. See `/pre-push-verify` skill.
