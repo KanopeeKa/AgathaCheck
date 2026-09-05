@@ -93,6 +93,45 @@ describe('Pets API', () => {
       expect(res.body).toHaveProperty('chipId', 'CHIP-001');
     });
 
+    it('normalizes species and gender on create', async () => {
+      const returnedRow = makePetRow({ species: 'Cat', gender: 'Female' });
+      let capturedParams;
+      const app = createApp(createMockPool(async (sql, params) => {
+        if (sql.includes('FROM weight_entries')) return { rows: [] };
+        if (sql.includes('INSERT INTO weight_entries')) return { rows: [] };
+        if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
+        if (sql.includes('SELECT * FROM pets WHERE id = $1')) return { rows: [returnedRow] };
+        if (sql.includes('INSERT INTO pets')) {
+          capturedParams = params;
+          return { rows: [returnedRow] };
+        }
+        return { rows: [] };
+      }));
+      const res = await request(app)
+        .post('/api/pets')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Fluffy', species: 'cat', gender: 'female' });
+      expect(res.statusCode).toBe(201);
+      expect(capturedParams[3]).toBe('Cat');
+      expect(capturedParams[8]).toBe('Female');
+      expect(res.body.species).toBe('Cat');
+      expect(res.body.gender).toBe('Female');
+    });
+
+    it('rejects inline base64 photo paths on create', async () => {
+      const app = createApp(createMockPool());
+      const res = await request(app)
+        .post('/api/pets')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          name: 'Fluffy',
+          species: 'cat',
+          photoPath: 'data:image/png;base64,abc',
+        });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toContain('photo endpoint');
+    });
+
     it('creates pet with provided id (upsert)', async () => {
       const returnedRow = makePetRow();
       let capturedParams;
@@ -211,6 +250,54 @@ describe('Pets API', () => {
         });
       expect(res.statusCode).toBe(200);
       expect(res.body.name).toBe('Fluffy Updated');
+    });
+
+    it('preserves existing photo when photoPath is omitted on update', async () => {
+      const updatedRow = makePetRow({ photo_path: '/uploads/fluffy.jpg' });
+      let capturedParams;
+      const app = createApp(createMockPool(async (sql, params) => {
+        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
+        if (access) return access;
+        if (sql.includes('SELECT organization_id, photo_path FROM pets')) {
+          return { rows: [{ organization_id: null, photo_path: '/uploads/fluffy.jpg' }] };
+        }
+        if (sql.includes('FROM weight_entries')) return { rows: [{ weight: 4.5 }] };
+        if (sql.includes('INSERT INTO weight_entries')) return { rows: [] };
+        if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
+        if (sql.includes('SELECT * FROM pets WHERE id = $1')) return { rows: [updatedRow] };
+        if (sql.includes('UPDATE pets SET')) {
+          capturedParams = params;
+          return { rows: [updatedRow] };
+        }
+        return { rows: [] };
+      }));
+      const res = await request(app)
+        .put(`/api/pets/${petId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Fluffy', species: 'cat' });
+      expect(res.statusCode).toBe(200);
+      expect(capturedParams[13]).toBe('/uploads/fluffy.jpg');
+    });
+
+    it('rejects inline base64 photo paths on update', async () => {
+      const app = createApp(createMockPool(async (sql, params) => {
+        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
+        if (access) return access;
+        if (sql.includes('SELECT organization_id, photo_path FROM pets')) {
+          return { rows: [{ organization_id: null, photo_path: '/uploads/fluffy.jpg' }] };
+        }
+        return { rows: [] };
+      }));
+      const res = await request(app)
+        .put(`/api/pets/${petId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          name: 'Fluffy',
+          species: 'cat',
+          photoPath: 'data:image/png;base64,abc',
+        });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toContain('photo endpoint');
     });
 
     it('creates a weight entry when weight changes on update', async () => {

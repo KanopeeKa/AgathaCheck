@@ -28,7 +28,7 @@ describe('Pets API', () => {
       const pet = res.body[0];
       expect(pet).toHaveProperty('id', petId);
       expect(pet).toHaveProperty('name', 'Fluffy');
-      expect(pet).toHaveProperty('species', 'cat');
+      expect(pet).toHaveProperty('species', 'Cat');
       expect(pet).toHaveProperty('breed', 'Persian');
       expect(pet).toHaveProperty('dateOfBirth');
       expect(pet).toHaveProperty('date_of_birth');

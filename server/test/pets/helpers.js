@@ -78,6 +78,9 @@ export function createMockPool(queryHandler) {
       if (sql.includes('SELECT organization_id FROM pets')) {
         return { rows: [{ organization_id: 'org-uuid-1' }] };
       }
+      if (sql.includes('SELECT organization_id, photo_path FROM pets')) {
+        return { rows: [{ organization_id: 'org-uuid-1', photo_path: '/uploads/fluffy.jpg' }] };
+      }
       if (sql.includes('SELECT 1 FROM organization_users')) {
         return { rows: [{ '?column?': 1 }] };
       }

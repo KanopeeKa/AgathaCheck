@@ -40,9 +40,9 @@ export async function seedOrgClinic(client) {
     userId: DEMO_IDS.alice,
     orgId: DEMO_IDS.happyPawsOrg,
     name: 'Clinic Cat',
-    species: 'cat',
+    species: 'Cat',
     breed: 'British Shorthair',
-    gender: 'female',
+    gender: 'Female',
     bio: 'Organisation-held clinic patient for org pet management demos',
   });
 
