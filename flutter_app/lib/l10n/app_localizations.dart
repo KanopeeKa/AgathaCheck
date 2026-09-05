@@ -2371,6 +2371,72 @@ abstract class AppLocalizations {
   /// **'Select date'**
   String get petFormSelectDate;
 
+  /// No description provided for @petFormBasicDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic details'**
+  String get petFormBasicDetails;
+
+  /// No description provided for @petFormHealthDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Health details'**
+  String get petFormHealthDetails;
+
+  /// No description provided for @petFormAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get petFormAbout;
+
+  /// No description provided for @petFormCareAndRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Care & records'**
+  String get petFormCareAndRecords;
+
+  /// No description provided for @petFormSaveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get petFormSaveChanges;
+
+  /// No description provided for @petFormChangePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get petFormChangePhoto;
+
+  /// No description provided for @petFormPetSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet saved'**
+  String get petFormPetSaved;
+
+  /// No description provided for @petFormUnsavedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get petFormUnsavedTitle;
+
+  /// No description provided for @petFormUnsavedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes to this pet profile.'**
+  String get petFormUnsavedBody;
+
+  /// No description provided for @petFormDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get petFormDiscard;
+
+  /// No description provided for @petFormDangerZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Danger zone'**
+  String get petFormDangerZone;
+
   /// No description provided for @clearDate.
   ///
   /// In en, this message translates to:

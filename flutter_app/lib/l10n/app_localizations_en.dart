@@ -1287,6 +1287,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petFormSelectDate => 'Select date';
 
   @override
+  String get petFormBasicDetails => 'Basic details';
+
+  @override
+  String get petFormHealthDetails => 'Health details';
+
+  @override
+  String get petFormAbout => 'About';
+
+  @override
+  String get petFormCareAndRecords => 'Care & records';
+
+  @override
+  String get petFormSaveChanges => 'Save changes';
+
+  @override
+  String get petFormChangePhoto => 'Change photo';
+
+  @override
+  String get petFormPetSaved => 'Pet saved';
+
+  @override
+  String get petFormUnsavedTitle => 'Discard changes?';
+
+  @override
+  String get petFormUnsavedBody =>
+      'You have unsaved changes to this pet profile.';
+
+  @override
+  String get petFormDiscard => 'Discard';
+
+  @override
+  String get petFormDangerZone => 'Danger zone';
+
+  @override
   String get clearDate => 'Clear date';
 
   @override
