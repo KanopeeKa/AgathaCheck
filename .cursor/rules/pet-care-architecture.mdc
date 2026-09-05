@@ -23,7 +23,7 @@ globs: flutter_app/lib/features/experience/**,flutter_app/lib/features/health_tr
 ## API & clients
 
 - API contracts must consider **installed native clients** that cannot be force-refreshed.
-- Prefer additive API evolution. See `protocols/api-contract.md`.
+- Prefer additive API evolution. See `.cursor/agent-kernel/protocols/api-contract.md`.
 
 ## Terminology & compatibility
 

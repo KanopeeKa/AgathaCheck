@@ -23,7 +23,7 @@ globs: server/**,server/lib/**
 ## Authorization (summary)
 
 - Backend AuthZ mandatory — UI hiding is not security.
-- UUID/share URL possession is not authorization. See `protocols/authorization.md`.
+- UUID/share URL possession is not authorization. See `.cursor/agent-kernel/protocols/authorization.md`.
 
 ## File uploads
 
@@ -37,6 +37,6 @@ globs: server/**,server/lib/**
 
 ## Input / output
 
-- Validate external input (`protocols/validation.md`).
+- Validate external input (`.cursor/agent-kernel/protocols/validation.md`).
 - Explicit response DTOs — no indiscriminate DB-row serialization.
 - Public endpoints: data minimization.

@@ -1,7 +1,7 @@
 ---
 name: ui-check
 description: >-
-  INTERNAL (Tier 3) — superseded by Engineering Router + protocols/accessibility.md
+  INTERNAL (Tier 3) — superseded by Engineering Router + .cursor/agent-kernel/protocols/accessibility.md
   §Quick pass. Do not user-invoke; Tier 1 skills load accessibility protocol automatically.
 paths:
   - flutter_app/lib/**

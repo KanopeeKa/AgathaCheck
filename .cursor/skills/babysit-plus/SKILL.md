@@ -24,7 +24,7 @@ During `/execute-plan`, use **/babysit-plus** for intermediate phase PRs and **/
 **Profile:** `full` when **implementing** a fix/feature. **`diff-scoped`** when PR already exists (triage/CI/merge only).
 
 1. Read `.cursor/agent-kernel/ROUTER.md` with the matching profile.
-2. Resolve risk + protocols; read only listed files under `protocols/`.
+2. Resolve risk + protocols; read only listed files under `.cursor/agent-kernel/protocols/`.
 3. Map `verification[]` to `./scripts/pre-push-changed.sh`, Jest, flutter test, etc.
 4. Escalate R2/R3 during work without asking user to restart — split via issues/phases if multiple outcomes.
 
@@ -54,7 +54,7 @@ Required for **all** agent PR work (not only babysit+). Canonical checklist: `do
 3. **Design quality** — Against existing codebase patterns, assess **robustness**, **maintainability**, and **testability**. Prefer the smallest change that meets the requirement; avoid drive-by refactors.
 4. **Better solution check** — If a clearer pattern, safer abstraction, or simpler approach would satisfy the requirement with equal or less scope, **adopt it now** — adjust code and tests before opening the PR. Do not defer with "we'll fix in review."
 5. **Verification** — Run `./scripts/pre-push-changed.sh` after any adjustments from this review.
-6. **UI-touching PRs** — If the diff includes `flutter_app/lib/**/presentation/**`, theme, or router files, complete **`protocols/accessibility.md` §Quick pass** before create/update PR. Escalate to `/ui-design-deep` when theme, landing/auth, or multi-screen work applies.
+6. **UI-touching PRs** — If the diff includes `flutter_app/lib/**/presentation/**`, theme, or router files, complete **`.cursor/agent-kernel/protocols/accessibility.md` §Quick pass** before create/update PR. Escalate to `/ui-design-deep` when theme, landing/auth, or multi-screen work applies.
 
 Optional: `/review-bugbot` on the branch diff before push to dedupe a paid Bugbot PR review.
 

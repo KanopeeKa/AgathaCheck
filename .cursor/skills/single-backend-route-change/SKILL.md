@@ -10,14 +10,14 @@ paths:
 
 # Single-backend route change (internal — Tier 3)
 
-> **Superseded by:** `.cursor/agent-kernel/protocols/api-contract.md`, `validation.md`, `authorization.md`  
+> **Superseded by:** `.cursor/agent-kernel/protocols/api-contract.md`, `.cursor/agent-kernel/protocols/validation.md`, `.cursor/agent-kernel/protocols/authorization.md`  
 > **Framework:** `docs/engineering/cursor-agent-framework.md`
 
 Node Express is the **only** backend. Router loads API protocols when route behaviour changes.
 
 ## Canonical checklist
 
-See `protocols/api-contract.md` — route path, AuthN/AuthZ, validation, response DTO, status codes, `YYYY-MM-DD` dates, rate limiter, Jest tests, no 5xx leaks.
+See `.cursor/agent-kernel/protocols/api-contract.md` — route path, AuthN/AuthZ, validation, response DTO, status codes, `YYYY-MM-DD` dates, rate limiter, Jest tests, no 5xx leaks.
 
 ## File layout
 

@@ -24,7 +24,7 @@ Pre-UAT **remedial fix loop** — triage CI, scope shards from **diff since last
 
 ## Router (e2e-debug)
 
-**Profile:** `classify-first` — see `protocols/e2e.md`.
+**Profile:** `classify-first` — see `.cursor/agent-kernel/protocols/e2e.md`.
 
 1. Run Phase 0 preflight below **first** (unchanged).
 2. Classify failure: `PRODUCT BUG` · `TEST BUG` · `TEST DATA` · `ENVIRONMENT` · `RACE` · `SELECTOR FRAGILITY` · `INFRASTRUCTURE` · `UNKNOWN`.

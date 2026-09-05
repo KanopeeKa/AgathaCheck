@@ -48,9 +48,9 @@ The five commands above.
 
 | Former skill | Use instead |
 |--------------|-------------|
-| `/ui-check` | `protocols/accessibility.md` §Quick pass |
-| `/single-backend-route-change` | `protocols/api-contract.md` + `validation.md` |
-| `/security-error-audit` | `protocols/security.md` §5xx audit |
+| `/ui-check` | `.cursor/agent-kernel/protocols/accessibility.md` §Quick pass |
+| `/single-backend-route-change` | `.cursor/agent-kernel/protocols/api-contract.md` + `.cursor/agent-kernel/protocols/validation.md` |
+| `/security-error-audit` | `.cursor/agent-kernel/protocols/security.md` §5xx audit |
 
 Stubs remain for compatibility; descriptions mark them internal.
 
@@ -148,7 +148,7 @@ Coordination: `.cursor/rules/agent-coordination.mdc`.
 ## Adding future guidance
 
 1. Extend trigger row in `ROUTER.md`
-2. Add or extend a protocol under `protocols/`
+2. Add or extend a protocol under `.cursor/agent-kernel/protocols/`
 3. Map to `phase-exit-checklists.md` if execute-plan exit profile needed
 4. **Do not** add a new user-facing slash command unless truly a new workflow (e.g. future `/release-gate`)
 

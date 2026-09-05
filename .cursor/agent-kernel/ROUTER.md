@@ -174,19 +174,19 @@ Changes to shared patterns → shared-foundation phase. See `.cursor/rules/agent
 
 | ID | File |
 |----|------|
-| security | `protocols/security.md` |
-| authorization | `protocols/authorization.md` |
-| api-contract | `protocols/api-contract.md` |
-| validation | `protocols/validation.md` |
-| database-and-migrations | `protocols/database-and-migrations.md` |
-| private-files | `protocols/private-files.md` |
-| data-lifecycle | `protocols/data-lifecycle.md` |
-| testing | `protocols/testing.md` |
-| flutter-mobile | `protocols/flutter-mobile.md` |
-| accessibility | `protocols/accessibility.md` |
-| date-time | `protocols/date-time.md` |
-| documentation | `protocols/documentation.md` |
-| dependency-review | `protocols/dependency-review.md` |
-| observability | `protocols/observability.md` |
-| release-verification | `protocols/release-verification.md` |
-| e2e | `protocols/e2e.md` |
+| security | `.cursor/agent-kernel/protocols/security.md` |
+| authorization | `.cursor/agent-kernel/protocols/authorization.md` |
+| api-contract | `.cursor/agent-kernel/protocols/api-contract.md` |
+| validation | `.cursor/agent-kernel/protocols/validation.md` |
+| database-and-migrations | `.cursor/agent-kernel/protocols/database-and-migrations.md` |
+| private-files | `.cursor/agent-kernel/protocols/private-files.md` |
+| data-lifecycle | `.cursor/agent-kernel/protocols/data-lifecycle.md` |
+| testing | `.cursor/agent-kernel/protocols/testing.md` |
+| flutter-mobile | `.cursor/agent-kernel/protocols/flutter-mobile.md` |
+| accessibility | `.cursor/agent-kernel/protocols/accessibility.md` |
+| date-time | `.cursor/agent-kernel/protocols/date-time.md` |
+| documentation | `.cursor/agent-kernel/protocols/documentation.md` |
+| dependency-review | `.cursor/agent-kernel/protocols/dependency-review.md` |
+| observability | `.cursor/agent-kernel/protocols/observability.md` |
+| release-verification | `.cursor/agent-kernel/protocols/release-verification.md` |
+| e2e | `.cursor/agent-kernel/protocols/e2e.md` |

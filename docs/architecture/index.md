@@ -193,4 +193,4 @@ Product domains are documented under [/docs/domains/](/docs/domains/). Each row 
 | Before push | `./scripts/pre-push-changed.sh` or `/pre-push-verify` |
 | UI review / theme rework | `/ui-design-deep` · `docs/design/index.md` |
 | Multi-phase autonomous work | `/execute-plan` |
-| Security-sensitive change | Router → `protocols/security.md`, `authorization.md` |
+| Security-sensitive change | Router → `.cursor/agent-kernel/protocols/security.md`, `.cursor/agent-kernel/protocols/authorization.md` |

@@ -33,11 +33,11 @@ Inventory of existing agent artifacts and how the Engineering Router framework r
 
 | Former artifact | Canonical protocol / rule |
 |-----------------|---------------------------|
-| `security-error-audit` skill | `protocols/security.md` §5xx audit |
-| `single-backend-route-change` skill | `protocols/api-contract.md` + `validation.md` |
-| `ui-check` skill | `protocols/accessibility.md` §Quick pass |
-| `security.mdc` (expanded topics) | `protocols/security.md` + slim `security.mdc` |
-| `testing.mdc` (depth) | `protocols/testing.md` + slim `testing.mdc` |
+| `security-error-audit` skill | `.cursor/agent-kernel/protocols/security.md` §5xx audit |
+| `single-backend-route-change` skill | `.cursor/agent-kernel/protocols/api-contract.md` + `.cursor/agent-kernel/protocols/validation.md` |
+| `ui-check` skill | `.cursor/agent-kernel/protocols/accessibility.md` §Quick pass |
+| `security.mdc` (expanded topics) | `.cursor/agent-kernel/protocols/security.md` + slim `security.mdc` |
+| `testing.mdc` (depth) | `.cursor/agent-kernel/protocols/testing.md` + slim `testing.mdc` |
 
 Tier 3 skills remain as **internal/deprecated** stubs until references migrate.
 

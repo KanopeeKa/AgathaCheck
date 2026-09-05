@@ -15,7 +15,7 @@ paths:
 - Multi-screen visual or interaction consistency
 - User explicitly requests design direction or UI refactor planning
 
-**Not for:** routine widget fixes — use `protocols/accessibility.md` §Quick pass or everyday `design.mdc`.
+**Not for:** routine widget fixes — use `.cursor/agent-kernel/protocols/accessibility.md` §Quick pass or everyday `design.mdc`.
 
 ---
 

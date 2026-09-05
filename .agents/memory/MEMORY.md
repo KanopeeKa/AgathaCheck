@@ -28,7 +28,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 
 ### Tier 3 (Router protocols — do not invoke)
 
-`ui-check` → `protocols/accessibility.md` · `single-backend-route-change` → `api-contract` · `security-error-audit` → `security`
+`ui-check` → `.cursor/agent-kernel/protocols/accessibility.md` · `single-backend-route-change` → `.cursor/agent-kernel/protocols/api-contract.md` · `security-error-audit` → `.cursor/agent-kernel/protocols/security.md`
 
 ## Design (UI/UX)
 
