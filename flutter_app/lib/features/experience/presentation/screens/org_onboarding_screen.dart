@@ -102,6 +102,7 @@ class _OrgOnboardingScreenState extends ConsumerState<OrgOnboardingScreen> {
       final petId = await ref
           .read(petListProvider.notifier)
           .addPet(name: petName, species: _species, organizationId: orgId);
+      ref.invalidate(orgPetsProvider(orgId));
       final entry = HealthEntry(
         id: const Uuid().v4(),
         petId: petId,

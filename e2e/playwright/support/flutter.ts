@@ -368,14 +368,24 @@ export async function skipOrgOnboardingIfPresent(
   await refreshFlutterAccessibility(page);
 }
 
+export type CompleteOrgOnboardingOptions = {
+  timeout?: number;
+  /** When true, the user already belongs to a shelter (API seed). Waits for org-list hydration so the wizard skips org creation. */
+  existingOrg?: boolean;
+  /** Organisation name for the create-org step when [existingOrg] is false. */
+  orgName?: string;
+};
+
 /** Complete the org super-admin onboarding wizard (inventory pet + reminder). */
 export async function completeOrgOnboarding(
   page: Page,
   petName: string,
   reminderName: string,
-  timeout?: number,
+  options: CompleteOrgOnboardingOptions = {},
 ): Promise<void> {
-  const effectiveTimeout = timeout ?? postLoginTimeout(60_000);
+  const effectiveTimeout = options.timeout ?? postLoginTimeout(60_000);
+  const existingOrg = options.existingOrg ?? false;
+  const orgName = options.orgName ?? 'Rescue Hearts';
   await skipGuardianOnboardingIfPresent(page, effectiveTimeout);
   if (flutterRoutePath(page.url()) !== '/o/onboarding') {
     await page.goto(flutterGotoUrl('/o/onboarding'));
@@ -384,16 +394,35 @@ export async function completeOrgOnboarding(
   await waitForFlutterRoutePattern(page, /\/o\/onboarding/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 
-  await page.getByRole('button', { name: /get started/i }).click();
-  await refreshFlutterAccessibility(page);
-  const orgNameField = page.getByRole('textbox', { name: /organization name/i });
-  if (await orgNameField.isVisible({ timeout: 2_000 }).catch(() => false)) {
-    await fillLabelledField(page, 'Organisation Name', 'Rescue Hearts');
-    await page.getByRole('button', { name: 'Continue' }).click();
+  // OrgOnboardingScreen defaults _needsOrgStep=true until organizationListProvider
+  // resolves in a post-frame callback. Clicking Get started during that window
+  // shows the org-creation step and creates a duplicate shelter for seeded users.
+  await expect(async () => {
+    if (flutterRoutePath(page.url()) !== '/o/onboarding') {
+      await page.goto(flutterGotoUrl('/o/onboarding'));
+      await refreshFlutterAccessibility(page);
+    }
+    await page.getByRole('button', { name: /get started/i }).click();
     await refreshFlutterAccessibility(page);
-  }
-  await page.getByRole('textbox', { name: /name/i }).first().waitFor({ timeout: effectiveTimeout });
-  await fillLabelledField(page, 'Name', petName);
+    const orgNameField = page.getByRole('textbox', { name: /organization name/i });
+    const orgStepVisible = await orgNameField
+      .isVisible({ timeout: 1_000 })
+      .catch(() => false);
+    if (orgStepVisible) {
+      if (existingOrg) {
+        throw new Error('org onboarding wizard still hydrating — org creation step visible');
+      }
+      await fillLabelledField(page, 'Organisation Name', orgName);
+      await page.getByRole('button', { name: 'Continue' }).click();
+      await refreshFlutterAccessibility(page);
+    }
+    await page
+      .getByRole('textbox', { name: /name|pet name|nom/i })
+      .first()
+      .waitFor({ timeout: 5_000 });
+  }).toPass({ timeout: effectiveTimeout });
+
+  await fillTextbox(page, /name|pet name|nom/i, petName);
   await page.getByRole('button', { name: 'Continue' }).click();
   await refreshFlutterAccessibility(page);
   await page.getByRole('textbox', { name: /reminder name/i }).waitFor({ timeout: effectiveTimeout });
