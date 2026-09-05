@@ -99,6 +99,18 @@ describe('public upload serving', () => {
     expect(res.headers['content-type']).toMatch(/image\/jpeg/);
   });
 
+  it('rejects health_documents via public upload API', async () => {
+    const fileId = uuidv4();
+    const filename = `${fileId}.jpg`;
+    const filePath = path.join(tmpDir, 'uploads', 'health_documents', filename);
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, Buffer.from('jpeg'));
+
+    const app = createApp();
+    const res = await request(app).get(`/api/uploads/health_documents/${filename}`);
+    expect(res.status).toBe(404);
+  });
+
   it('returns 404 for missing files', async () => {
     const app = createApp();
     const fileId = uuidv4();

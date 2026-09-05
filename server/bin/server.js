@@ -17,6 +17,7 @@ import sharingRoutes from '../routes/sharing.js';
 import fosterPlacementsRoutes from '../routes/fosterPlacements.js';
 import custodyTransfersRoutes from '../routes/custodyTransfers.js';
 import uploadsRoutes from '../routes/uploads.js';
+import healthFilesRoutes from '../routes/healthFiles.js';
 import { corsOptions } from '../config/security.js';
 import { logPublicAccessModeOnce } from '../config/publicAccess.js';
 import { requestContextMiddleware } from '../middleware/requestContext.js';
@@ -61,11 +62,31 @@ export function createApp(customPool, comparePassword) {
   app.use(publicAccessGate);
   app.use(cors(corsOptions()));
   app.use(bodyParser.json());
+
+  const blockSensitiveUploadPaths = (req, res, next) => {
+    const normalized = req.path.replace(/\\/g, '/');
+    if (
+      normalized.startsWith('/health_documents/')
+      || normalized.startsWith('/health_photos/')
+      || normalized.startsWith('/private_health/')
+      || normalized === '/health_documents'
+      || normalized === '/health_photos'
+      || normalized === '/private_health'
+    ) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+    return next();
+  };
+
+  app.use('/uploads', blockSensitiveUploadPaths);
+  app.use('/backend/uploads', blockSensitiveUploadPaths);
   app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
   app.use('/backend/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
 
   app.use('/api/uploads', uploadsRoutes());
   app.use('/backend/api/uploads', uploadsRoutes());
+  app.use('/api/health-files', healthFilesRoutes(pool));
+  app.use('/backend/api/health-files', healthFilesRoutes(pool));
 
   app.use('/api/auth', authRoutes(pool, comparePassword));
   app.use('/api/pets', petsRoutes(pool));

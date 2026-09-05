@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/widgets/authenticated_network_image.dart';
+
 import '../../../../l10n/app_localizations.dart';
 import '../../../health_tracking/domain/entities/health_issue_document.dart';
 import '../../../health_tracking/presentation/providers/health_issue_providers.dart';
@@ -109,7 +111,7 @@ class HealthIssueDocumentsStrip extends ConsumerWidget {
           children: [
             Center(
               child: InteractiveViewer(
-                child: Image.network(url, fit: BoxFit.contain),
+                child: AuthenticatedNetworkImage(url: url, fit: BoxFit.contain),
               ),
             ),
             Positioned(
@@ -178,8 +180,8 @@ class _DocumentTile extends StatelessWidget {
                   ],
                 )
               else
-                Image.network(
-                  url,
+                AuthenticatedNetworkImage(
+                  url: url,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) =>
                       Icon(Icons.broken_image, color: colorScheme.outline),

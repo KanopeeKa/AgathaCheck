@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../../core/utils/resolve_health_file_url.dart';
+import '../../../../../core/widgets/authenticated_network_image.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../data/datasources/health_remote_datasource.dart';
 
@@ -34,13 +36,7 @@ class HealthEntryPhotosSection extends StatelessWidget {
 
   String _displayName(String path) => path.split('/').last;
 
-  String _documentUrl(String path) {
-    final normalizedBase = baseUrl.endsWith('/')
-        ? baseUrl.substring(0, baseUrl.length - 1)
-        : baseUrl;
-    final normalizedPath = path.startsWith('/') ? path.substring(1) : path;
-    return '$normalizedBase/$normalizedPath';
-  }
+  String _documentUrl(String path) => resolveHealthFileUrl(path, apiBaseUrl: baseUrl);
 
   Widget _documentPlaceholder(
     BuildContext context,
@@ -222,8 +218,8 @@ class HealthEntryPhotosSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             child: isPdf
                 ? _documentPlaceholder(context, photo.photoPath, colorScheme)
-                : Image.network(
-                    imageUrl,
+                : AuthenticatedNetworkImage(
+                    url: imageUrl,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Container(
                       color: colorScheme.surfaceContainerHighest,
@@ -345,7 +341,7 @@ class HealthEntryPhotosSection extends StatelessWidget {
           children: [
             Center(
               child: InteractiveViewer(
-                child: Image.network(imageUrl, fit: BoxFit.contain),
+                child: AuthenticatedNetworkImage(url: imageUrl, fit: BoxFit.contain),
               ),
             ),
             Positioned(

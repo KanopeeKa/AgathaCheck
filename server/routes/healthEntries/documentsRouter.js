@@ -3,7 +3,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { publicError } from '../../config/security.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
-import { extractUserId, handleDocumentUpload, saveHealthDocument } from './shared.js';
+import { buildHealthFileApiPath } from '../../lib/privateHealthStorage.js';
+import {
+  extractUserId,
+  handleDocumentUpload,
+  removeHealthDocumentFromDisk,
+  saveHealthDocument,
+} from './shared.js';
 
 export function registerDocumentsRoutes(router, pool) {
   router.get('/:id/photos', async (req, res) => {
@@ -42,7 +48,7 @@ export function registerDocumentsRoutes(router, pool) {
       const id = uuidv4();
       const url = req.file
         ? saveHealthDocument(req.file, id)
-        : req.body?.url || `/uploads/health_photos/${id}.jpg`;
+        : req.body?.url || buildHealthFileApiPath(id);
       const result = await pool.query(
         'INSERT INTO health_event_photos (id, health_entry_id, url) VALUES ($1, $2, $3) RETURNING *',
         [id, req.params.id, url]
@@ -66,10 +72,17 @@ export function registerDocumentsRoutes(router, pool) {
       if (!(await userCanManageHealthEntry(pool, req.params.entryId, userId))) {
         return res.status(404).json({ error: 'Entry not found' });
       }
+      const existing = await pool.query(
+        'SELECT url FROM health_event_photos WHERE id = $1 AND health_entry_id = $2',
+        [req.params.photoId, req.params.entryId]
+      );
       await pool.query(
         'DELETE FROM health_event_photos WHERE id = $1 AND health_entry_id = $2',
         [req.params.photoId, req.params.entryId]
       );
+      if (existing.rows[0]?.url) {
+        removeHealthDocumentFromDisk(existing.rows[0].url);
+      }
       res.json({ deleted: true });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });

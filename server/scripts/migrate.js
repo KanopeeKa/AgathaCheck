@@ -32,6 +32,7 @@ import { migrateRetireFosterWireRole } from './migrations/044_org_retire_foster_
 import { migrateOrganizationRolePermissionDefaults } from './migrations/045_organization_role_permission_defaults.js';
 import { backfillHealthOccurrences } from './migrations/047_health_occurrences_backfill.js';
 import { migratePinnedOrganizationId } from './migrations/049_pinned_organization_id.js';
+import { migratePrivateHealthFiles } from './migrations/050_private_health_files.js';
 import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 
 const { Pool } = pg;
@@ -117,6 +118,7 @@ const CODE_MIGRATIONS = {
   '045_organization_role_permission_defaults.sql': migrateOrganizationRolePermissionDefaults,
   '047_health_occurrences.sql': backfillHealthOccurrences,
   '049_pinned_organization_id.sql': migratePinnedOrganizationId,
+  '050_private_health_files.sql': migratePrivateHealthFiles,
 };
 
 async function applyMigration(client, name, sql) {
