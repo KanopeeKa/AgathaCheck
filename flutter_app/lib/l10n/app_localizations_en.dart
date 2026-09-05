@@ -1247,6 +1247,60 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petSaveFailed => 'Failed to save pet. Please try again.';
 
   @override
+  String get petSexLabel => 'Sex';
+
+  @override
+  String get petSexFemale => 'Female';
+
+  @override
+  String get petSexMale => 'Male';
+
+  @override
+  String get petSexUnknown => 'Unknown';
+
+  @override
+  String get petSpeciesMore => 'More species';
+
+  @override
+  String get petSpeciesMoreTitle => 'Choose species';
+
+  @override
+  String get petNeuterYes => 'Yes';
+
+  @override
+  String get petNeuterNo => 'No';
+
+  @override
+  String get petNeuterUnknown => 'Unknown';
+
+  @override
+  String get petNeuterNotApplicable => 'Not applicable';
+
+  @override
+  String get petNeuterSubtitle => 'Helps track health reminders for mammals';
+
+  @override
+  String get petNeuterTooltip =>
+      'Whether your pet has been surgically sterilised. Recording the date helps your vet track recovery.';
+
+  @override
+  String get petFormSelectDate => 'Select date';
+
+  @override
+  String get clearDate => 'Clear date';
+
+  @override
+  String aboutPetNamed(String petName) {
+    return 'About $petName';
+  }
+
+  @override
+  String get petInvalidWeight => 'Invalid weight';
+
+  @override
+  String get removeWeightEntry => 'Remove weight entry';
+
+  @override
   String get species => 'Species *';
 
   @override

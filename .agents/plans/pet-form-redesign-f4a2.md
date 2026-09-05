@@ -384,14 +384,14 @@ autonomy: active
 current_phase: 3
 last_completed_phase: 2
 halt_reason: null
-next_action: "start phase 3: checkout cursor/pet-form-primitives-f4a2"
+next_action: "continue phase 3 on branch cursor/pet-form-primitives-f4a2"
 artifact_ref:
-  branch: cursor/pet-form-redesign-f4a2-integration
+  branch: cursor/pet-form-primitives-f4a2
   plan_path: .agents/plans/pet-form-redesign-f4a2.md
-  plan_commit: d000a7026c20e4b8ac8a7af92f248ba30f2e199a
+  plan_commit: b04b9c069f041f4917abdea93f74cdba774681fe
   snapshot_path: .agents/plans/pet-form-redesign-f4a2.snapshot.json
-  snapshot_commit: d000a7026c20e4b8ac8a7af92f248ba30f2e199a
-open_prs: []
+  snapshot_commit: b04b9c069f041f4917abdea93f74cdba774681fe
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/980"]
 merge_commits: {}
 debt_issue_refs: []
 ```
