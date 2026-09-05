@@ -16,8 +16,11 @@
  * Scenario: Showing identification reminder for pet without ID
  * Scenario: No identification reminder for pet with ID
  * Scenario: Adding a photo to a pet profile
+ * Scenario: Edit form prefills existing pet details
+ * Scenario: Cancelling unsaved edit changes
  * Scenario: Linking a veterinarian to a pet
  */
+import path from 'node:path';
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { createPet, createVet, getAllPets, getPet } from '../support/api';
 import { PetFormPage } from '../pages/pet-form.page';
@@ -26,9 +29,11 @@ import { PetListPage } from '../pages/pet-list.page';
 import {
   getPetRecord,
   PET_COLOR_PALETTE,
-  TINY_PNG_BASE64,
   updatePetFields,
 } from '../pages/pet-profile.seed';
+
+const TINY_PET_PHOTO = path.join(process.cwd(), 'playwright/fixtures/tiny-pet.png');
+
 test.describe('Pet profiles', () => {
   test('empty pet list shows prompt on guardian dashboard', async ({ page, testUser }) => {
     const petList = await loginAs(page, testUser);
@@ -173,8 +178,7 @@ test.describe('Pet profiles', () => {
     await editForm.clickDeletePet();
     await editForm.cancelDelete();
 
-    // Save without changes and confirm pet still exists
-    await editForm.save();
+    await editForm.cancel();
     await detail.expectLoaded('Charlie');
     await petList.openManagePets();
     await petList.expectPetVisible('Charlie');
@@ -289,21 +293,82 @@ test.describe('Pet profiles', () => {
     await detail.expectNoIdentificationReminder('Luna');
   });
 
-  test('pet profile displays uploaded photo', async ({ page, testUser }) => {
+  test('edit form prefills seeded pet details', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Buddy', 'Dog');
+    await updatePetFields(baseURL, testUser.accessToken, pet.id, {
+      name: 'Buddy',
+      species: 'Dog',
+      breed: 'Labrador',
+      gender: 'Male',
+    });
+
+    const petList = await loginAs(page, testUser);
+    await petList.openPet('Buddy', pet.id);
+
+    const detail = new PetDetailPage(page);
+    await detail.expectLoaded('Buddy');
+    await detail.openEdit();
+
+    const editForm = new PetFormPage(page);
+    await editForm.expectLoaded();
+    await editForm.expectEditPrefill({
+      name: 'Buddy',
+      species: 'Dog',
+      sex: 'Male',
+    });
+    const record = await getPetRecord(baseURL, testUser.accessToken, pet.id);
+    expect(record.breed).toBe('Labrador');
+    expect(record.species).toBe('Dog');
+  });
+
+  test('user can cancel unsaved edit changes', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
-    await updatePetFields(baseURL, testUser.accessToken, pet.id, {
-      name: 'Bella',
-      species: 'Dog',
-      photoPath: TINY_PNG_BASE64,
-    });
 
     const petList = await loginAs(page, testUser);
     await petList.openPet('Bella', pet.id);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Bella');
-    await detail.expectPetPhotoVisible('Bella');
+    await detail.openEdit();
+
+    const editForm = new PetFormPage(page);
+    await editForm.expectLoaded();
+    await editForm.fillName('Changed');
+    await editForm.cancel();
+    await editForm.confirmDiscardUnsaved();
+
+    await detail.expectLoaded('Bella');
+    await petList.openManagePets();
+    await petList.expectPetVisible('Bella');
+    await petList.expectPetHidden('Changed');
+  });
+
+  test('user can upload a photo from the edit form', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
+
+    const petList = await loginAs(page, testUser);
+    await petList.openPet('Bella', pet.id);
+
+    const detail = new PetDetailPage(page);
+    await detail.expectLoaded('Bella');
+    await detail.openEdit();
+
+    const editForm = new PetFormPage(page);
+    await editForm.expectLoaded();
+    await editForm.uploadPhoto(TINY_PET_PHOTO);
+    await expect(
+      page.getByRole('button', { name: /Save changes|Enregistrer les modifications/i }),
+    ).toBeEnabled();
+    await editForm.save();
+
+    await detail.expectLoaded('Bella');
+
+    const record = await getPetRecord(baseURL, testUser.accessToken, pet.id);
+    expect(record.photoPath).toBeTruthy();
+    expect(record.photoPath).toMatch(/^\/uploads\//);
   });
 
   test('user can link a veterinarian to a pet from the edit form', async ({ page, testUser }) => {

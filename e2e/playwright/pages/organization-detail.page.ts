@@ -459,7 +459,10 @@ export class OrganizationDetailPage {
       .first();
     await addButton.waitFor({ timeout: 30_000 });
     await addButton.click();
-    await this.page.getByRole('button', { name: 'Save Pet' }).waitFor({ timeout: 30_000 });
+    await this.page
+      .getByRole('button', { name: /Save Pet|Enregistrer l'animal/i })
+      .first()
+      .waitFor({ timeout: 30_000 });
   }
 
   async openManageFosters(): Promise<void> {

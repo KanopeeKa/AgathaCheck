@@ -1,4 +1,5 @@
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   enableFlutterAccessibility,
@@ -6,8 +7,11 @@ import {
   postPetMutationShellLocator,
   refreshFlutterAccessibility,
   selectDropdownOption,
+  semanticsByName,
   waitForHomeAfterMutation,
 } from '../support/flutter';
+
+const PRIMARY_SPECIES = ['Dog', 'Cat'] as const;
 
 /**
  * Add / edit pet form (`/add`, `/edit/:id`).
@@ -16,48 +20,129 @@ import {
 export class PetFormPage {
   constructor(private readonly page: Page) {}
 
-  async expectLoaded(): Promise<void> {
-    await enableFlutterAccessibility(this.page);
-    await dismissConsentBannerIfPresent(this.page);
-    await this.page
-      .getByRole('button', { name: /Save Pet|Update Pet/ })
-      .waitFor({ timeout: 30_000 });
+  private saveButtonLocator() {
+    return this.page.getByRole('button', {
+      name: /Save Pet|Save changes|Enregistrer l'animal|Enregistrer les modifications/i,
+    });
   }
 
-  async fillName(name: string): Promise<void> {
-    await this.typeIntoPetField(/^Name/, name);
+  private cancelButtonLocator() {
+    return this.page.getByRole('button', { name: /^Cancel$|^Annuler$/i });
   }
 
-  async fillBreed(breed: string): Promise<void> {
-    await this.typeIntoPetField(/^Breed/, breed);
+  /** Pet form textboxes are unlabeled in semantics; order is stable within the form body. */
+  private textboxAt(index: number): Locator {
+    return this.page.getByRole('textbox').nth(index);
   }
 
-  /** Type into a Flutter web pet form textbox; fill() alone does not fire onChanged. */
-  private async typeIntoPetField(name: string | RegExp, value: string): Promise<void> {
-    const field = this.page.getByRole('textbox', { name });
+  private async typeIntoTextbox(index: number, value: string): Promise<void> {
+    const field = this.textboxAt(index);
     await field.waitFor({ state: 'visible' });
     await field.click();
-    await this.page.waitForTimeout(200);
+    await this.page.waitForTimeout(150);
     await field.press('Control+a');
     await this.page.keyboard.press('Backspace');
     await this.page.keyboard.type(value, { delay: 45 });
     await field.press('Tab');
-    await this.page.waitForTimeout(200);
+    await this.page.waitForTimeout(150);
+  }
+
+  async expectLoaded(): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    await dismissConsentBannerIfPresent(this.page);
+    await this.saveButtonLocator().first().waitFor({ timeout: 30_000 });
+    await this.cancelButtonLocator().first().waitFor({ timeout: 15_000 });
+  }
+
+  async fillName(name: string): Promise<void> {
+    await this.typeIntoTextbox(0, name);
+  }
+
+  async fillBreed(breed: string): Promise<void> {
+    await this.typeIntoTextbox(1, breed);
   }
 
   async selectSpecies(species: string): Promise<void> {
-    await selectDropdownOption(this.page, 'Species *', species);
     await refreshFlutterAccessibility(this.page);
+    if (PRIMARY_SPECIES.includes(species as (typeof PRIMARY_SPECIES)[number])) {
+      const chip = semanticsByName(this.page, species);
+      if (await chip.isVisible().catch(() => false)) {
+        await chip.click();
+      } else {
+        await expect(this.page.getByText(species, { exact: true }).first()).toBeVisible();
+      }
+    } else {
+      await this.page.getByRole('checkbox', { name: /More species/i }).click();
+      await this.page.getByRole('button', { name: species, exact: true }).click();
+    }
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async selectSex(sex: 'Female' | 'Male' | 'Unknown'): Promise<void> {
+    await this.page.getByRole('button', { name: sex, exact: true }).click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async uploadPhoto(filePath: string): Promise<void> {
+    const fileChooserPromise = this.page.waitForEvent('filechooser');
+    await this.page.getByRole('button', { name: /Change photo|Changer la photo/i }).click();
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles(filePath);
+    await this.page.waitForTimeout(500);
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectSaveDisabled(): Promise<void> {
+    await expect(this.saveButtonLocator().first()).toBeDisabled();
+  }
+
+  async expectEditPrefill(expected: {
+    name: string;
+    breed?: string;
+    species?: string;
+    sex?: 'Female' | 'Male' | 'Unknown';
+  }): Promise<void> {
+    await expect(
+      this.page.getByRole('banner', { name: new RegExp(`Edit ${expected.name}`, 'i') }),
+    ).toBeVisible();
+    if (expected.species && expected.sex) {
+      await expect(
+        this.page.getByText(`${expected.name} ${expected.species} ${expected.sex}`).first(),
+      ).toBeVisible();
+    }
+    if (expected.breed) {
+      await expect(this.page.getByText(expected.breed, { exact: true }).first()).toBeVisible();
+    } else if (expected.species) {
+      await expect(this.page.getByText(expected.species, { exact: true }).first()).toBeVisible();
+    }
+    if (expected.sex) {
+      await expect(this.page.getByRole('button', { name: expected.sex, exact: true })).toBeVisible();
+    }
+    await this.expectSaveDisabled();
   }
 
   async save(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const saveButton = this.page.getByRole('button', { name: /Save Pet|Update Pet/ });
+    const saveButton = this.saveButtonLocator().first();
+    await expect(saveButton).toBeEnabled({ timeout: 15_000 });
     await saveButton.click();
-    await this.page
-      .getByRole('button', { name: /Save Pet|Update Pet/ })
-      .waitFor({ state: 'hidden', timeout: 30_000 });
+    await this.saveButtonLocator().first().waitFor({ state: 'hidden', timeout: 30_000 });
     await postPetMutationShellLocator(this.page).waitFor({ timeout: 30_000 });
+  }
+
+  async cancel(): Promise<void> {
+    await this.cancelButtonLocator().first().click();
+  }
+
+  async confirmDiscardUnsaved(): Promise<void> {
+    await this.page.getByRole('button', { name: /^Discard$|^Abandonner$/i }).click();
+  }
+
+  async dismissDiscardUnsaved(): Promise<void> {
+    await this.page
+      .getByRole('button', { name: /^Cancel$|^Annuler$/i })
+      .last()
+      .click();
   }
 
   async createPet(name: string, species: string): Promise<void> {
@@ -80,8 +165,8 @@ export class PetFormPage {
   /** Click the "Delete Pet" button to open the confirmation dialog. */
   async clickDeletePet(): Promise<void> {
     const deleteBtn = this.page.getByRole('button', { name: 'Delete Pet', exact: false });
-    await deleteBtn.scrollIntoViewIfNeeded();
-    await deleteBtn.click();
+    await deleteBtn.first().scrollIntoViewIfNeeded();
+    await deleteBtn.first().click();
     await refreshFlutterAccessibility(this.page);
     await this.page.getByRole('button', { name: 'Delete', exact: true }).waitFor({ timeout: 15_000 });
   }
@@ -96,17 +181,15 @@ export class PetFormPage {
   async cancelDelete(): Promise<void> {
     await this.page.getByRole('button', { name: 'Cancel', exact: true }).click();
     await this.page.waitForTimeout(500);
-    // Should still be on the edit form
-    await this.page.getByRole('button', { name: /Update Pet/ }).waitFor({ timeout: 15_000 });
+    await this.saveButtonLocator().first().waitFor({ timeout: 15_000 });
   }
 
   /** Click the "Passed Away" button to open the confirmation dialog. */
   async clickPassedAway(): Promise<void> {
     const btn = this.page.getByRole('button', { name: 'Passed Away', exact: false });
-    await btn.scrollIntoViewIfNeeded();
-    await btn.click();
+    await btn.first().scrollIntoViewIfNeeded();
+    await btn.first().click();
     await refreshFlutterAccessibility(this.page);
-    // Dialog shows OK and Cancel
     await this.page.getByRole('button', { name: 'OK', exact: true }).waitFor({ timeout: 15_000 });
   }
 
@@ -120,7 +203,7 @@ export class PetFormPage {
   async cancelPassedAway(): Promise<void> {
     await this.page.getByRole('button', { name: 'Cancel', exact: true }).click();
     await this.page.waitForTimeout(500);
-    await this.page.getByRole('button', { name: /Update Pet/ }).waitFor({ timeout: 15_000 });
+    await this.saveButtonLocator().first().waitFor({ timeout: 15_000 });
   }
 
   async fillChipId(chipId: string): Promise<void> {

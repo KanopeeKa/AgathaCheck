@@ -57,6 +57,7 @@ export async function updatePetFields(
     breed?: string;
     dateOfBirth?: string | null;
     chipId?: string;
+    gender?: string | null;
     photoPath?: string | null;
     passedAway?: boolean;
     vetId?: string | null;
@@ -79,7 +80,7 @@ export async function updatePetFields(
       passedAway: fields.passedAway ?? current.passedAway ?? false,
       vetId: fields.vetId ?? current.vetId ?? null,
       weight: (current as { weight?: number | null }).weight ?? null,
-      gender: (current as { gender?: string | null }).gender ?? null,
+      gender: fields.gender ?? (current as { gender?: string | null }).gender ?? null,
       bio: '',
       insurance: '',
       chipDismissed: false,
