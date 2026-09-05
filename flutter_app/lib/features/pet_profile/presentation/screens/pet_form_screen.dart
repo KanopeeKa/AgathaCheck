@@ -11,8 +11,10 @@ import '../controllers/pet_form_controller.dart';
 import '../controllers/pet_form_error_messages.dart';
 import '../controllers/pet_form_outcomes.dart';
 import '../providers/pet_providers.dart';
+import '../widgets/pet_form/pet_form_actions_bar.dart';
+import '../widgets/pet_form/pet_form_breakpoints.dart';
 import '../widgets/pet_form/pet_form_confirm_dialogs.dart';
-import 'widgets/pet_form_screen_body.dart';
+import '../widgets/pet_form/pet_form_screen_body.dart';
 
 class PetFormScreen extends ConsumerStatefulWidget {
   const PetFormScreen({super.key, this.petId, this.initialOrgId});
@@ -139,16 +141,35 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
 
   Pet _previewPet() {
     final species = _controller.state.selectedSpecies;
+    final weightText = _isEditing
+        ? _weightController.text.trim()
+        : (_showWeightInput ? _newWeightController.text.trim() : '');
+    final parsedWeight = double.tryParse(weightText);
+
     return Pet(
       id: widget.petId ?? 'new',
       name: _nameController.text.trim().isEmpty
           ? ' '
           : _nameController.text.trim(),
       species: species.isEmpty ? 'Dog' : species,
+      breed: _breedController.text.trim(),
+      dateOfBirth: _controller.state.dateOfBirth,
+      weight: parsedWeight,
+      gender: _controller.state.selectedGender,
       photoPath: _controller.state.photoBase64,
       colorValue: _controller.state.existingColorValue,
       passedAway: _passedAway,
     );
+  }
+
+  String? _previewWeightLabel() {
+    final weightText = _isEditing
+        ? _weightController.text.trim()
+        : (_showWeightInput ? _newWeightController.text.trim() : '');
+    if (weightText.isEmpty) return null;
+    final parsed = double.tryParse(weightText);
+    if (parsed == null) return null;
+    return '${parsed.toStringAsFixed(1)} kg';
   }
 
   @override
@@ -341,6 +362,9 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
 
   Widget _buildForm() {
     final l = AppLocalizations.of(context)!;
+    final width = MediaQuery.sizeOf(context).width;
+    final isPhone =
+        PetFormBreakpoints.layoutForWidth(width) == PetFormLayoutSize.phone;
 
     return PopScope(
       canPop: !_controller.isDirty,
@@ -363,6 +387,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           formKey: _formKey,
           controller: _controller,
           previewPet: _previewPet(),
+          previewWeightLabel: _previewWeightLabel(),
           isEditing: _isEditing,
           isLoading: _isLoading,
           isShared: _isShared,
@@ -412,6 +437,15 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           onDelete: _confirmDeletePet,
           onPassedAway: _confirmPassedAway,
         ),
+        bottomNavigationBar: isPhone
+            ? PetFormStickyActionsBar(
+                isEditing: _isEditing,
+                isLoading: _isLoading,
+                isDirty: _controller.isDirty,
+                onSave: _savePet,
+                onCancel: _handleBack,
+              )
+            : null,
       ),
     );
   }

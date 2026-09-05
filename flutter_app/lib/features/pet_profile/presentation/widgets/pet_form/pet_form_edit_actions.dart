@@ -45,6 +45,7 @@ class PetFormEditActions extends StatelessWidget {
           ),
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: theme.colorScheme.error.withAlpha(120)),
+            minimumSize: const Size.fromHeight(48),
           ),
         ),
         if (!passedAway) ...[
@@ -62,6 +63,7 @@ class PetFormEditActions extends StatelessWidget {
             label: Text(l.passedAway),
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: theme.colorScheme.outline.withAlpha(80)),
+              minimumSize: const Size.fromHeight(48),
             ),
           ),
         ],

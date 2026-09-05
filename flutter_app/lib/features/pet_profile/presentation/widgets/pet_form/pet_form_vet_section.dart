@@ -36,6 +36,7 @@ class PetFormVetSection extends ConsumerWidget {
       ),
       data: (vets) {
         return DropdownButtonFormField<String?>(
+          isExpanded: true,
           initialValue: vets.any((v) => v.id == selectedVetId)
               ? selectedVetId
               : null,
