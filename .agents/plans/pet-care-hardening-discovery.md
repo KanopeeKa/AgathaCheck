@@ -15,14 +15,15 @@ Produce a **repo-grounded Phase A discovery** for the Pet Care gold-standard har
 
 **No production code changes** in this phase — documentation and plan artifacts only.
 
-## Autonomy (pending approval)
+## Autonomy
 
 | Field | Value |
 |-------|-------|
-| **approved_at** | pending |
-| **approved_until** | `approved_at + 48h` after grant |
+| **approved_at** | 2026-09-05T23:01:00Z |
+| **approved_until** | 2026-09-07T23:01:00Z |
+| **approved_by** | user chat — product decisions + findings accepted |
 | **control_issue** | [#993](https://github.com/KanopeeKa/AgathaCheck/issues/993) |
-| **grant keyword** | `approve-autonomous pet-care-hardening-discovery` |
+| **autonomy** | `active` |
 
 ## Router annotations
 
@@ -65,11 +66,11 @@ Charter: user-provided *Pet Care Gold-Standard Engineering Hardening* spec (2026
 ## Runtime state
 
 ```yaml
-autonomy: halted
-current_phase: null
+autonomy: active
+current_phase: 1
 last_completed_phase: null
-halt_reason: awaiting_approval
-next_action: "Human: approve-autonomous pet-care-hardening-discovery on control issue; then /execute-plan pet-care-hardening-discovery to merge Phase A PR"
+halt_reason: null
+next_action: "babysit+ merge PR #994; complete-plan; bootstrap pet-care-p0-private-files"
 artifact_ref:
   branch: cursor/pet-care-hardening-discovery-75cb
   plan_path: .agents/plans/pet-care-hardening-discovery.md

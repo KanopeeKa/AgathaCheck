@@ -223,13 +223,84 @@ Evidence column cites file paths inspected 2026-09-05. Severity: **P0** release 
 
 ---
 
-## Product decisions required (before implementation)
+## Product decisions (locked 2026-09-05)
 
-1. **Share scopes** — Which fields appear on preview vs after accept? (owner email, health history, vet notes, chip/insurance)
-2. **Collaborator write scope** — Can shared carers edit health entries, weight, vet? Delete pet?
-3. **Foster capabilities** — Align with `foster_placements` session lifecycle
-4. **Session migration** — Dual-mode period for existing web clients when moving to cookie refresh?
-5. **Account deletion** — Hard delete vs anonymize audit rows?
+Signed off via user chat + control issue [#993](https://github.com/KanopeeKa/AgathaCheck/issues/993). Findings table **accepted**. Architecture should stay **flexible** where noted (scopes/tiers may evolve).
+
+### A. Share links
+
+| ID | Decision |
+|----|----------|
+| **A1 Preview** (anonymous, before accept) | Pet name, species, breed, photo, age, **owner first name only** |
+| **A2 After accept** | Full access to everything the collaborator policy allows |
+| **A3 Scope model** | **One fixed policy** for now; design for per-link scopes later |
+| **A4 Default expiry** | **7 days** |
+| **A5 Max expiry** | **90 days** cap |
+| **A6 Claim model** | **Keep current** (single-use / claimed link behaviour) |
+| **A7 Legacy links** | **Revoke all unclaimed** links at security migration; owners must create new scoped, expiring links |
+
+**Preview must NOT include:** owner email, insurance, microchip, health history, vet details, health documents.
+
+### B. Collaborator (`shared` / `guardian`)
+
+| Capability | Owner | Collaborator |
+|------------|-------|--------------|
+| All owner-only lifecycle (delete pet, transfer ownership, delete all data, passed-away) | Yes | No |
+| View pet profile | Yes | Yes |
+| Health entries — view / create / edit | Yes | Yes |
+| Health documents — upload / view / delete | Yes | Yes |
+| Weight — view / add / edit / delete | Yes | Yes |
+| Vet — view | Yes | Yes |
+| Share links — create / revoke | Yes | Yes |
+| Notifications — complete / mute | Yes | Yes |
+| Timeline / manual history notes | Yes | Add / edit / delete **own notes only** (not others') |
+
+| ID | Decision |
+|----|----------|
+| **B1 Tiers** | **One collaborator tier** for now; keep policy model extensible |
+| **B2 Revocation** | Owner removal is **immediate** on next API call |
+| **B3 Offline copies** | Acceptable that revoked users may retain downloaded files |
+
+### C. Foster carer
+
+| ID | Decision |
+|----|----------|
+| **C1 vs collaborator** | **Same capabilities** as collaborator during active session (nothing extra) |
+| **C2 Session end** | Access **lingers 7 days** then ends |
+| **C3 Post-session** | Foster receives a **retained care report** (auto-generated download/archive for their records) |
+| **C4 After session** | **Cannot** edit or delete entries they created once session + grace ended |
+| **C5 Share links** | **Yes** — can create share links (during active access) |
+| **C6 Ownership** | **No** transfer or delete; **may change vet** |
+| **C7 Org vs personal** | **No difference** beyond rules above |
+
+### D. Organisation members (Pet Care)
+
+| ID | Decision |
+|----|----------|
+| **D1 Org viewers** | **Read-only always** in Pet Care workspace |
+| **D2 Org admins** | Edit org pets via **Shelter tools only**, unless they are also the foster parent on that pet |
+
+### E. Session & account
+
+| ID | Decision |
+|----|----------|
+| **E1 Web auth migration** | **No dual-mode** — cut over when session-v2 ships |
+| **E2 Password reset/change** | **Revoke all sessions** on all devices |
+| **E3 Account deletion** | **Anonymize** retained rows for compliance/analytics; purge sensitive bytes |
+| **E4 Logout** | **Revoke all devices** |
+
+### Capability seeds (for `pet-care-auth-platform`)
+
+Initial capability names derived from decisions above:
+
+- `pet.view`, `pet.profile.edit`, `pet.delete`, `pet.lifecycle.manage`
+- `pet.health.view`, `pet.health.edit`, `pet.health.documents.manage`
+- `pet.weight.view`, `pet.weight.edit`
+- `pet.vet.view`, `pet.vet.edit`
+- `pet.sharing.manage`
+- `pet.notifications.manage`
+- `pet.timeline.own_notes` (own notes only)
+- `pet.foster.report` (post-session report delivery)
 
 ---
 
@@ -258,5 +329,5 @@ Use integration branch `cursor/pet-care-hardening-integration-75cb` for parallel
 - [x] Security invariant mapping
 - [x] Shelter regression subset named
 - [x] Follow-on plan slices and milestones
-- [ ] Human review: product decisions (share scopes)
-- [ ] `approve-autonomous pet-care-hardening-discovery` on control issue
+- [x] Human review: product decisions (share scopes) — locked 2026-09-05 on #993
+- [x] `approve-autonomous pet-care-hardening-discovery` on control issue
