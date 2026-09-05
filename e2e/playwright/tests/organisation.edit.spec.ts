@@ -13,7 +13,7 @@ import {
   signupUser,
   updateOrganization,
 } from '../support/api';
-import { enableFlutterAccessibility } from '../support/flutter';
+import { enableFlutterAccessibility, expectAppBarTitle } from '../support/flutter';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
 
@@ -101,7 +101,7 @@ test.describe('Organisation edit', () => {
     await detail.openEdit();
     await enableFlutterAccessibility(page);
 
-    await expect(page.getByRole('heading', { name: /Edit Organisation/i })).toBeVisible();
+    await expectAppBarTitle(page, /Edit Organisation|Modifier l'organisation/i);
   });
 
   test('@P1 super admin sees delete organisation control on edit screen only', async ({
