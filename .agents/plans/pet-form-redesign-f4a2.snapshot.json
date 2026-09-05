@@ -4,7 +4,7 @@
   "approved_at": "2026-09-05T13:35:00Z",
   "approved_by": "user-chat-standing-grant-2026-09-05-issue-976",
   "approved_until": "2026-09-07T13:35:00Z",
-  "content_hash": "sha256:5f7e9f38652e86262ba1a2723edc30f41cc8c09a84c00acda4f9498793c39007",
+  "content_hash": "sha256:b0e515ce6d2eab86a7df17d825a00d9f45a13ee7b36326a69bddac6fee49e54c",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/pet-form-redesign-f4a2-integration",
@@ -69,7 +69,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/979",
+      "pr_head_sha": "c28b7c2b"
     },
     {
       "id": "3",
