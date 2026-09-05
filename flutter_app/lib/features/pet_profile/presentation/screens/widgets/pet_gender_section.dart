@@ -46,10 +46,7 @@ class PetGenderSection extends StatelessWidget {
             value: PetSexSelection.female,
             label: Text(l.petSexFemale),
           ),
-          ButtonSegment(
-            value: PetSexSelection.male,
-            label: Text(l.petSexMale),
-          ),
+          ButtonSegment(value: PetSexSelection.male, label: Text(l.petSexMale)),
           ButtonSegment(
             value: PetSexSelection.unknown,
             label: Text(l.petSexUnknown),

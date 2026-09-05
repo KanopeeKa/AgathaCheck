@@ -168,10 +168,7 @@ class PetFormController {
       }
       return PetFormSubmitSuccess(orgId: orgId);
     } catch (e) {
-      return PetFormSubmitError(
-        petFormSubmitErrorKindFrom(e),
-        debugDetail: e,
-      );
+      return PetFormSubmitError(petFormSubmitErrorKindFrom(e), debugDetail: e);
     }
   }
 

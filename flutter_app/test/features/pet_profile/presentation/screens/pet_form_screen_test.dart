@@ -164,11 +164,7 @@ void main() {
   });
 
   testWidgets('save is disabled until the form is dirty', (tester) async {
-    final pet = Pet(
-      id: 'pet-1',
-      name: 'Bella',
-      species: 'Dog',
-    );
+    final pet = Pet(id: 'pet-1', name: 'Bella', species: 'Dog');
 
     await tester.pumpWidget(_wrap(pet));
     await tester.pump();

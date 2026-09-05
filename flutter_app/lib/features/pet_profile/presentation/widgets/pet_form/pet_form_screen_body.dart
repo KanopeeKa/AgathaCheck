@@ -182,10 +182,7 @@ class _PhoneLayout extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          props._formContent(
-            layoutSize: layoutSize,
-            includeActionsBar: false,
-          ),
+          props._formContent(layoutSize: layoutSize, includeActionsBar: false),
         ],
       ),
     );

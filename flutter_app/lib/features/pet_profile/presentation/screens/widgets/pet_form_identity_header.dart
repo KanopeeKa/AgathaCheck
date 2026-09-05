@@ -24,11 +24,7 @@ class PetFormIdentityHeader extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: SizedBox(
-            width: 120,
-            height: 120,
-            child: PetPhoto(pet: pet),
-          ),
+          child: SizedBox(width: 120, height: 120, child: PetPhoto(pet: pet)),
         ),
         const SizedBox(height: 12),
         TextButton.icon(

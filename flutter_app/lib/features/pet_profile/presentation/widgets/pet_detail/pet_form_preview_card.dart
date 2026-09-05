@@ -70,10 +70,7 @@ class PetFormPreviewCard extends StatelessWidget {
                 if (pet.ageDisplay != null)
                   PetInfoChip(icon: Icons.cake, label: pet.ageDisplay!),
                 if (weightLabel != null && weightLabel!.isNotEmpty)
-                  PetInfoChip(
-                    icon: Icons.monitor_weight,
-                    label: weightLabel!,
-                  ),
+                  PetInfoChip(icon: Icons.monitor_weight, label: weightLabel!),
               ],
             ),
           ],

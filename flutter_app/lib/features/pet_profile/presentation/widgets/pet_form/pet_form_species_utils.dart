@@ -5,8 +5,7 @@ const primaryPetSpecies = ['Dog', 'Cat'];
 
 String normalizePetFormSpecies(String? raw) => normalizePetSpecies(raw);
 
-bool isPrimaryPetSpecies(String species) =>
-    primaryPetSpecies.contains(species);
+bool isPrimaryPetSpecies(String species) => primaryPetSpecies.contains(species);
 
 List<String> morePetSpeciesOptions() => AppConstants.species
     .where((species) => !primaryPetSpecies.contains(species))

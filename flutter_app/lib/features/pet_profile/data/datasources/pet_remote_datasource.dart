@@ -40,7 +40,10 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
     'Authorization': 'Bearer $token',
   };
 
-  PetRemoteException _errorFromResponse(http.Response response, String fallback) {
+  PetRemoteException _errorFromResponse(
+    http.Response response,
+    String fallback,
+  ) {
     try {
       final data = json.decode(response.body) as Map<String, dynamic>;
       final message = data['error'] as String?;
@@ -137,7 +140,9 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
     final uri = Uri.parse('$baseUrl/api/pets/$petId/photo');
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $token'
-      ..files.add(http.MultipartFile.fromBytes('photo', bytes, filename: filename));
+      ..files.add(
+        http.MultipartFile.fromBytes('photo', bytes, filename: filename),
+      );
 
     final streamedResponse = await _client.send(request);
     final response = await http.Response.fromStream(streamedResponse);

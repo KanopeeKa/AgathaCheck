@@ -30,10 +30,7 @@ Widget _wrapAddForm({double width = 320}) {
   final router = GoRouter(
     initialLocation: '/',
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const PetFormScreen(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => const PetFormScreen()),
     ],
   );
   return ProviderScope(
@@ -121,7 +118,10 @@ void main() {
       expect(find.byKey(const Key('pet_form_layout_tablet')), findsOneWidget);
       expect(find.byKey(const Key('pet_form_sticky_actions')), findsNothing);
       expect(find.byKey(const Key('pet_form_preview_card')), findsNothing);
-      expect(find.byKey(const Key('pet_form_species_breed_row')), findsOneWidget);
+      expect(
+        find.byKey(const Key('pet_form_species_breed_row')),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('pet_form_dob_weight_row')), findsOneWidget);
 
       final tabletBox = tester.getRect(
@@ -152,7 +152,9 @@ void main() {
       await tester.enterText(find.byKey(const Key('pet_name_field')), 'Rex');
       await tester.pump();
 
-      final saveButton = tester.getRect(find.byKey(const Key('save_pet_button')));
+      final saveButton = tester.getRect(
+        find.byKey(const Key('save_pet_button')),
+      );
       expect(saveButton.height, greaterThanOrEqualTo(48));
     });
   });

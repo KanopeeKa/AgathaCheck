@@ -142,7 +142,9 @@ class PetFormContent extends StatelessWidget {
               PetFormInsuranceSection(
                 textController: insuranceController,
                 onChanged: (value) {
-                  controller.state = controller.state.copyWith(insurance: value);
+                  controller.state = controller.state.copyWith(
+                    insurance: value,
+                  );
                   onMarkDirty();
                 },
               ),
@@ -156,10 +158,7 @@ class PetFormContent extends StatelessWidget {
               ),
             ],
           ),
-          if (includeActionsBar) ...[
-            const SizedBox(height: 24),
-            actionsBar,
-          ],
+          if (includeActionsBar) ...[const SizedBox(height: 24), actionsBar],
           if (isEditing && !isShared)
             PetFormEditActions(
               isLoading: isLoading,
@@ -301,11 +300,7 @@ class PetFormContent extends StatelessWidget {
     );
 
     if (!_usePairedRows) {
-      return [
-        weightField,
-        const SizedBox(height: 16),
-        neuteredField,
-      ];
+      return [weightField, const SizedBox(height: 16), neuteredField];
     }
 
     return [neuteredField];

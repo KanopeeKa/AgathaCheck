@@ -28,6 +28,8 @@
     "Empty pet list shows prompt on guardian dashboard": "P0",
     "Editing a pet's name": "P1",
     "Editing a pet's breed": "P1",
+    "Edit form prefills existing pet details": "P1",
+    "Cancelling unsaved edit changes": "P1",
     "Deleting a pet": "P1",
     "Cancelling pet deletion": "P1",
     "Marking a pet as passed away": "P1",

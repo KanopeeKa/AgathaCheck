@@ -318,9 +318,9 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
             SnackBar(content: Text(petFormSubmitErrorMessage(l, kind))),
           );
         case PetFormSubmitSuccess():
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l.petFormPetSaved)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l.petFormPetSaved)));
           _navigateAfterForm();
       }
     } finally {

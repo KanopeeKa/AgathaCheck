@@ -15,14 +15,11 @@ Widget _wrap(Widget child) {
 
 void main() {
   group('PetSpeciesSection', () {
-    testWidgets('selects Dog chip when prefill is lowercase dog', (tester) async {
+    testWidgets('selects Dog chip when prefill is lowercase dog', (
+      tester,
+    ) async {
       await tester.pumpWidget(
-        _wrap(
-          PetSpeciesSection(
-            selectedSpecies: 'dog',
-            onChanged: (_) {},
-          ),
-        ),
+        _wrap(PetSpeciesSection(selectedSpecies: 'dog', onChanged: (_) {})),
       );
       await tester.pumpAndSettle();
 
@@ -30,7 +27,9 @@ void main() {
       expect(find.text('Dog'), findsWidgets);
     });
 
-    testWidgets('opens more species sheet and returns selection', (tester) async {
+    testWidgets('opens more species sheet and returns selection', (
+      tester,
+    ) async {
       String? picked;
       await tester.pumpWidget(
         _wrap(
@@ -56,12 +55,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        _wrap(
-          PetGenderSection(
-            selectedGender: 'male',
-            onChanged: (_) {},
-          ),
-        ),
+        _wrap(PetGenderSection(selectedGender: 'male', onChanged: (_) {})),
       );
       await tester.pumpAndSettle();
 
@@ -88,7 +82,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('pet_neuter_not_applicable')), findsOneWidget);
+      expect(
+        find.byKey(const Key('pet_neuter_not_applicable')),
+        findsOneWidget,
+      );
       expect(find.text('Not applicable'), findsOneWidget);
       expect(find.byType(SegmentedButton<PetNeuterSelection>), findsNothing);
     });

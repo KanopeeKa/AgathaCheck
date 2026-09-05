@@ -27,18 +27,11 @@ class PetFormBioSection extends StatelessWidget {
       child: TextFormField(
         key: const Key('pet_bio_field'),
         controller: textController,
-        decoration: const InputDecoration(
-          alignLabelWithHint: true,
-        ),
+        decoration: const InputDecoration(alignLabelWithHint: true),
         maxLines: 4,
         maxLength: 500,
         buildCounter:
-            (
-              context, {
-              required currentLength,
-              required isFocused,
-              maxLength,
-            }) {
+            (context, {required currentLength, required isFocused, maxLength}) {
               return Align(
                 alignment: Alignment.centerRight,
                 child: Text(

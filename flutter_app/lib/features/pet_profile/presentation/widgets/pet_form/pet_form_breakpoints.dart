@@ -1,9 +1,5 @@
 /// Layout breakpoints for the add/edit pet form.
-enum PetFormLayoutSize {
-  phone,
-  tablet,
-  desktop,
-}
+enum PetFormLayoutSize { phone, tablet, desktop }
 
 /// Width thresholds and max-width constraints for responsive pet form layouts.
 abstract final class PetFormBreakpoints {

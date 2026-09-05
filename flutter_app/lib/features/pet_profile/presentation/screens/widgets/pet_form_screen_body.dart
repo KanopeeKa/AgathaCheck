@@ -155,7 +155,9 @@ class PetFormScreenBody extends StatelessWidget {
                     controller: breedController,
                     decoration: const InputDecoration(),
                     onChanged: (value) {
-                      controller.state = controller.state.copyWith(breed: value);
+                      controller.state = controller.state.copyWith(
+                        breed: value,
+                      );
                       onMarkDirty();
                     },
                   ),
