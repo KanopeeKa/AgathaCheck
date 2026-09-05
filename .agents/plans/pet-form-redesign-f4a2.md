@@ -382,15 +382,15 @@ After all phases merged into `cursor/pet-form-redesign-f4a2-integration`:
 ```yaml
 autonomy: active
 current_phase: 4
-last_completed_phase: 3
+last_completed_phase: 6
 halt_reason: null
 next_action: "continue phase 4 on branch cursor/pet-form-redesign-phone-f4a2"
 artifact_ref:
-  branch: cursor/pet-form-redesign-phone-f4a2
+  branch: cursor/pet-form-redesign-f4a2-integration
   plan_path: .agents/plans/pet-form-redesign-f4a2.md
-  plan_commit: 6740e787462e6e82bc55f1142686e28bb828d5a4
+  plan_commit: 61d11663d73bb05945a058aa42d2058a5e3627a7
   snapshot_path: .agents/plans/pet-form-redesign-f4a2.snapshot.json
-  snapshot_commit: 6740e787462e6e82bc55f1142686e28bb828d5a4
+  snapshot_commit: 61d11663d73bb05945a058aa42d2058a5e3627a7
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
