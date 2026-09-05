@@ -73,6 +73,12 @@ void main() {
     });
   });
 
+  group('GuardianDashboardDecoThresholds', () {
+    test('ambient sketches use 80% opacity', () {
+      expect(GuardianDashboardDecoThresholds.opacity, 0.8);
+    });
+  });
+
   group('guardianCareTeamPuppyDecoAllowed', () {
     test('requires wide desk layout and care team cards', () {
       expect(

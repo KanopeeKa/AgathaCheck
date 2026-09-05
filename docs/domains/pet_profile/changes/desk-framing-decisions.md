@@ -28,7 +28,7 @@ Refine visual hierarchy between app shell navigation, main workspace canvas, and
 | **D-desk-7** | **Dashboard max width.** Canonical content grid max width **1120px** on `/pc/home`, centered with responsive horizontal padding (16 / 24 / 32 by breakpoint). | locked |
 | **D-desk-8** | **Sidebar active state.** Selected nav tile uses one primary channel (colour + optional slim left bar). Avoid oversized fill backgrounds that read as content cards. | locked |
 | **D-desk-9** | **Out of scope:** redesign of `CareEventRow`, `CareTeamCard`, pet cards, fostering rows; shell-wide max width on every guardian route (hub routes optional follow-up); create actions in section headers (debt). | locked |
-| **D-desk-10** | **Ambient dashboard decorations.** Optional non-interactive sketch overlays on `/pc/home` wide web only, gated by measured leftover space. Asset family in `assets/dashboard/dashboard-deco-*.png`; opacity 0.13; `ExcludeSemantics` + `IgnorePointer`. Pet rail: cat/yarn/ball overlay beside rail when slack allows. Care Team: puppy watermark lower-right when column has slack. Hidden on mobile; real content always wins. | locked |
+| **D-desk-10** | **Ambient dashboard decorations.** Optional non-interactive sketch overlays on `/pc/home` wide web only, gated by measured leftover space. Asset family in `assets/dashboard/dashboard-deco-*.png`; opacity 0.8; `ExcludeSemantics` + `IgnorePointer`. Pet rail: cat/yarn/ball overlay beside rail when slack allows. Care Team: puppy watermark lower-right when column has slack. Hidden on mobile; real content always wins. | locked |
 
 ## Supersedes
 
