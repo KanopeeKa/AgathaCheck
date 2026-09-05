@@ -802,7 +802,7 @@ void main() {
         );
         expect(sidebarSurface.color, AppColorTokens.surface);
 
-        final canvas = tester.widget<ColoredBox>(
+        final canvas = tester.widget<Material>(
           find.byKey(const Key('experience_workspace_canvas')),
         );
         expect(canvas.color, AppColorTokens.background);
