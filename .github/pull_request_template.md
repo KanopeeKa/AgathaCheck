@@ -24,7 +24,7 @@
 - [ ] `docs/architecture/api-reference.md` updated if wire format changed
 - [ ] No raw `err.message` / `e.toString()` in 5xx responses (`publicError()` used)
 - [ ] Form fields have labels; interactive cards use semantics where appropriate
-- [ ] Flutter UI touched → `/ui-check` done or N/A (note in PR if non-trivial)
+- [ ] Flutter UI touched → Router `accessibility` protocol §Quick pass done or N/A
 - [ ] User journeys: Gherkin + Playwright with `@bdd` (or debt issue linked)
 - [ ] `docs/debt/debt.md` updated for new deferrals (remove row when closed)
 
