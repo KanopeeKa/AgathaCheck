@@ -40,11 +40,10 @@ Fix UAT-blocking pet edit bugs (species/gender prefill, photo upload 413, raw er
 
 | Field | Value |
 |-------|-------|
-| **approved_at** | |
-| **approved_until** | `approved_at + 48h` |
+| **approved_at** | 2026-09-05T13:35:00Z |
+| **approved_until** | 2026-09-07T13:35:00Z |
 | **control_issue** | [#976](https://github.com/KanopeeKa/AgathaCheck/issues/976) |
-| **content_hash** | from snapshot |
-| **autonomy** | `pending` |
+| **autonomy** | `active` |
 
 **Grant keyword:** `approve-autonomous pet-form-redesign-f4a2`
 
@@ -381,11 +380,11 @@ After all phases merged into `cursor/pet-form-redesign-f4a2-integration`:
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: pending
-current_phase: null
+autonomy: active
+current_phase: "1"
 last_completed_phase: null
 halt_reason: null
-next_action: "Human approve-autonomous pet-form-redesign-f4a2 on control issue"
+next_action: "Phase 1: pet photo API + species/gender normalization"
 artifact_ref:
   branch: null
   plan_path: .agents/plans/pet-form-redesign-f4a2.md
