@@ -20,6 +20,8 @@ mapfile -t FILES < <(
     -name 'uat-htaccess.lib.sh' -o \
     -name 'uat-e2e-env.lib.sh' -o \
     -name 'prepare-uat-ssh-remote.sh' -o \
+    -name 'prepare-uat-ssh-demo-reset.sh' -o \
+    -name 'uat-ssh-demo-reset.sh' -o \
     -name 'mask-log-value.lib.sh' \
   \) | sort
 )

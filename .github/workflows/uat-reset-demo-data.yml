@@ -74,6 +74,10 @@ jobs:
         if: steps.whitelist_add.outcome == 'success'
         run: sleep 30
 
+      - name: Prepare remote demo reset script
+        if: steps.whitelist_add.outcome == 'success'
+        run: bash scripts/ci/prepare-uat-ssh-demo-reset.sh
+
       - name: Reset UAT demo data via SSH
         if: steps.whitelist_add.outcome == 'success'
         uses: appleboy/ssh-action@2ead5e36573f08b82fbfce1504f1a4b05a647c6f # v1.2.2
@@ -85,7 +89,7 @@ jobs:
           port: ${{ secrets.UAT_SSH_PORT || 22 }}
           timeout: 120s
           command_timeout: 5m
-          script_path: scripts/ci/uat-ssh-demo-reset.sh
+          script_path: .ci-uat-ssh-demo-reset.sh
 
       - name: o2switch SSH whitelist — cleanup
         if: always()
