@@ -51,7 +51,12 @@ export class OrganizationDiscoverPage {
       `You are browsing as ${escapeRegExp(orgName)}|Vous parcourez en tant que ${escapeRegExp(orgName)}`,
       'i',
     );
-    await expect(this.page.getByText(pattern).first()).toBeVisible({ timeout: 30_000 });
+    const banner = this.page
+      .locator('[flt-semantics-identifier="org_discover_browse_as_banner"]')
+      .or(this.page.getByText(pattern))
+      .first();
+    await expect(banner).toBeVisible({ timeout: 30_000 });
+    await expect(banner).toContainText(pattern);
   }
 
   async searchByName(query: string): Promise<void> {

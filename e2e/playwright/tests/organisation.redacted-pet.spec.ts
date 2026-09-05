@@ -12,7 +12,7 @@ import {
   getRedactedOrgPet,
   signupUser,
 } from '../support/api';
-import { enableFlutterAccessibility, refreshFlutterAccessibility, waitForFlutterRoute } from '../support/flutter';
+import { enableFlutterAccessibility, expectAppBarTitle, refreshFlutterAccessibility, waitForFlutterRoute } from '../support/flutter';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
 
@@ -84,7 +84,7 @@ test.describe('Redacted organisation pet profile', () => {
     await refreshFlutterAccessibility(page);
 
     // Redacted profile: pet name in shell title; species is covered by API allowlist test below.
-    await expect(page.getByRole('heading', { name: PET_NAME })).toBeVisible();
+    await expectAppBarTitle(page, PET_NAME);
     await expect(page.getByText(/timeline|health|foster session|document/i)).toHaveCount(0);
   });
 

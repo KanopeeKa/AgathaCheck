@@ -31,7 +31,9 @@ export class OrganizationConnectionsPage {
   }
 
   discoverCta() {
-    return this.page.locator('[flt-semantics-identifier="org_connections_discover_cta"]');
+    return this.page
+      .locator('[flt-semantics-identifier="org_connections_discover_cta"]')
+      .filter({ visible: true });
   }
 
   async openDiscover(): Promise<void> {

@@ -266,13 +266,11 @@ export class OrganizationListPage {
   }
 
   discoverNavRow() {
+    // Shelter shell primary nav (D-shelter-NAV); legacy inline row kept for older builds.
     return this.page
-      .locator('[flt-semantics-identifier="org_discover_nav_row"]')
-      .or(
-        this.page.getByRole('button', {
-          name: /Discover Organisations|Découvrir des organisations/i,
-        }),
-      )
+      .locator('[flt-semantics-identifier="shelter_nav_discover"]')
+      .or(this.page.locator('[flt-semantics-identifier="org_discover_nav_row"]'))
+      .filter({ visible: true })
       .first();
   }
 
