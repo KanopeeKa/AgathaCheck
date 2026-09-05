@@ -87,7 +87,7 @@ void main() {
       expect(find.byKey(const Key('shelter_tasks_preview')), findsOneWidget);
       expect(find.byKey(const Key('shelter_tasks_empty')), findsOneWidget);
       expect(find.text('All caught up'), findsOneWidget);
-      expect(find.text('SHELTER TASKS'), findsOneWidget);
+      expect(find.text('Shelter tasks'), findsOneWidget);
     });
 
     testWidgets('folds pending invites into tasks block with actions', (

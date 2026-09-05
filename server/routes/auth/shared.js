@@ -74,8 +74,8 @@ export async function reconcilePinnedOrganizationId(pool, userId, pinnedOrgId) {
   const role = await getActiveOrgMembershipRole(pool, userId, pinnedOrgId);
   if (role) return pinnedOrgId;
   await pool.query(
-    'UPDATE users SET pinned_organization_id = NULL, updated_at = NOW() WHERE id = $1',
-    [userId],
+    'UPDATE users SET pinned_organization_id = NULL, updated_at = NOW() WHERE id = $1 AND pinned_organization_id = $2',
+    [userId, pinnedOrgId],
   );
   return null;
 }

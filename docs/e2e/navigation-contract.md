@@ -207,7 +207,7 @@ Cross-org actionable items on `/o/orgs` inside `Key('shelter_tasks_preview')`.
 | `Key('shelter_task_accept_<inviteId>')` | Pending invite accept |
 | `Key('shelter_task_decline_<inviteId>')` | Pending invite decline |
 
-Eyebrow label is currently the hardcoded EN string **SHELTER TASKS** (l10n key deferred). Invite rows use invite copy — not a separate **Pending Invitations** hub header.
+Eyebrow label uses `shelterTasksEyebrowLabel` l10n. Invite rows use invite copy — not a separate **Pending Invitations** hub header.
 
 ## Shelter membership pin (D-shelter-NAV-2)
 

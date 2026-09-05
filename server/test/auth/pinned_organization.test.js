@@ -63,7 +63,7 @@ describe('Auth Routes — pinned organization preference', () => {
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('pinned_organization_id', null);
       expect(clearCalls).toHaveLength(1);
-      expect(clearCalls[0].params).toEqual([userId]);
+      expect(clearCalls[0].params).toEqual([userId, orgId]);
     });
 
     it('returns null and clears stale pin when membership is pending', async () => {

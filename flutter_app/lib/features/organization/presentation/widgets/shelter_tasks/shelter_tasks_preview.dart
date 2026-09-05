@@ -14,9 +14,6 @@ import '../organization_role_labels.dart';
 import 'shelter_task_item.dart';
 import 'shelter_task_row.dart';
 
-// D-shelter-TASKS-1: dedicated l10n key deferred to phase 8 (path constraint).
-const shelterTasksEyebrowLabel = 'SHELTER TASKS';
-
 class ShelterTasksPreview extends ConsumerWidget {
   const ShelterTasksPreview({super.key});
 
@@ -30,7 +27,7 @@ class ShelterTasksPreview extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         GuardianDashboardSectionHeader(
-          title: shelterTasksEyebrowLabel,
+          title: l.shelterTasksEyebrowLabel,
           titleColor: AppColorTokens.organizationPrimary,
         ),
         const SizedBox(height: 10),
