@@ -40,7 +40,10 @@ export class OrganizationConnectionsPage {
     await expect(cta).toBeVisible({ timeout: 30_000 });
     await cta.scrollIntoViewIfNeeded();
     await cta.click();
-    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/discover/, 30_000);
+    // Flutter web can paint discover before the hash route updates.
+    await expect(
+      this.page.locator('[flt-semantics-identifier="org_discover_browse_as_banner"]'),
+    ).toBeVisible({ timeout: 30_000 });
     await refreshFlutterAccessibility(this.page);
   }
 

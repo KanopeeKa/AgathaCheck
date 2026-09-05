@@ -4,8 +4,8 @@ import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
   expectAppBarTitle,
+  flutterRoutePath,
   refreshFlutterAccessibility,
-  waitForFlutterRoutePattern,
 } from '../support/flutter';
 
 /**
@@ -16,8 +16,25 @@ export class OrganizationDiscoverPage {
 
   async expectLoaded(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/discover/, 30_000);
-    await refreshFlutterAccessibility(this.page);
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const path = flutterRoutePath(this.page.url());
+      const onDiscoverRoute = /\/o\/orgs\/discover/.test(path);
+      const banner = this.page.locator(
+        '[flt-semantics-identifier="org_discover_browse_as_banner"]',
+      );
+      const titleVisible = await this.page
+        .getByText(/^Discover Organisations|Découvrir des organisations$/i)
+        .first()
+        .isVisible()
+        .catch(() => false);
+      if (!onDiscoverRoute && !titleVisible) {
+        throw new Error(`Discover screen not ready (path=${path})`);
+      }
+      if (!(await banner.isVisible().catch(() => false)) && !titleVisible) {
+        throw new Error('Discover browse-as banner not visible');
+      }
+    }).toPass({ timeout: 30_000 });
     await expectAppBarTitle(this.page, /Discover Organisations|Découvrir des organisations/i);
   }
 
