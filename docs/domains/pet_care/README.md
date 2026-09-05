@@ -53,3 +53,11 @@ Eyebrow labels use **ALL CAPS** in EN (`CARE ACTIONS`, `PETS` where used). FR ey
 ## Related feature domains
 
 Pet CRUD, timeline, and list behaviour remain documented under [pet_profile](/docs/domains/pet_profile/README.md). Health due-items under [health_tracking](/docs/domains/health_tracking/README.md). Shell navigation under [navigation](/docs/domains/navigation/README.md).
+
+## Engineering hardening programme
+
+Phase A discovery (findings table, milestones, follow-on plans):
+
+- [changes/hardening-discovery.md](changes/hardening-discovery.md)
+- Control issue: [#993](https://github.com/KanopeeKa/AgathaCheck/issues/993) (`pet-care-hardening-discovery`)
+- Programme index: [pet-care-hardening](/docs/engineering/pet-care-hardening/README.md)
