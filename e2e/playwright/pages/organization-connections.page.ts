@@ -4,15 +4,9 @@ import {
   dismissConsentBannerIfPresent,
   enableFlutterAccessibility,
   expectAppBarTitle,
-  flutterRoutePath,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
-
-function extractConnectionsOrgId(url: string): string | undefined {
-  const match = flutterRoutePath(url).match(/\/o\/orgs\/([^/]+)\/connections/);
-  return match?.[1];
-}
 
 /**
  * Connected organisations screen (`/o/orgs/:id/connections`).
@@ -37,31 +31,16 @@ export class OrganizationConnectionsPage {
   }
 
   discoverCta() {
-    return this.page
-      .locator('[flt-semantics-identifier="org_connections_discover_cta"]')
-      .or(this.page.getByRole('button', { name: /Discover Organisations|Découvrir des organisations/i }))
-      .filter({ visible: true })
-      .first();
+    return this.page.locator('[flt-semantics-identifier="org_connections_discover_cta"]');
   }
 
   async openDiscover(): Promise<void> {
     await enableFlutterAccessibility(this.page);
     const cta = this.discoverCta();
+    await expect(cta).toBeVisible({ timeout: 30_000 });
     await cta.scrollIntoViewIfNeeded();
     await cta.click();
-    try {
-      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/discover/, 12_000);
-    } catch {
-      // Flutter web hash can lag behind the painted route; fall back to direct hash nav.
-      const orgId = extractConnectionsOrgId(this.page.url());
-      if (!orgId) {
-        throw new Error('Cannot navigate to discover: orgId not found in connections URL');
-      }
-      await this.page.evaluate((id) => {
-        window.location.hash = `#/o/orgs/discover?from=org&orgId=${id}`;
-      }, orgId);
-      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/discover/, 20_000);
-    }
+    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/discover/, 30_000);
     await refreshFlutterAccessibility(this.page);
   }
 
