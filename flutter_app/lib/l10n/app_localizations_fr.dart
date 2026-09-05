@@ -1265,6 +1265,61 @@ class AppLocalizationsFr extends AppLocalizations {
       'Échec de l\'enregistrement de l\'animal. Veuillez réessayer.';
 
   @override
+  String get petSexLabel => 'Sexe';
+
+  @override
+  String get petSexFemale => 'Femelle';
+
+  @override
+  String get petSexMale => 'Mâle';
+
+  @override
+  String get petSexUnknown => 'Inconnu';
+
+  @override
+  String get petSpeciesMore => 'Autres espèces';
+
+  @override
+  String get petSpeciesMoreTitle => 'Choisir l\'espèce';
+
+  @override
+  String get petNeuterYes => 'Oui';
+
+  @override
+  String get petNeuterNo => 'Non';
+
+  @override
+  String get petNeuterUnknown => 'Inconnu';
+
+  @override
+  String get petNeuterNotApplicable => 'Non applicable';
+
+  @override
+  String get petNeuterSubtitle =>
+      'Aide à suivre les rappels de santé pour les mammifères';
+
+  @override
+  String get petNeuterTooltip =>
+      'Indique si votre animal a été stérilisé chirurgicalement. La date aide votre vétérinaire à suivre la convalescence.';
+
+  @override
+  String get petFormSelectDate => 'Sélectionner une date';
+
+  @override
+  String get clearDate => 'Effacer la date';
+
+  @override
+  String aboutPetNamed(String petName) {
+    return 'À propos de $petName';
+  }
+
+  @override
+  String get petInvalidWeight => 'Poids invalide';
+
+  @override
+  String get removeWeightEntry => 'Retirer l\'entrée de poids';
+
+  @override
   String get species => 'Espèce *';
 
   @override

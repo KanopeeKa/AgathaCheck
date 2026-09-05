@@ -2293,6 +2293,108 @@ abstract class AppLocalizations {
   /// **'Failed to save pet. Please try again.'**
   String get petSaveFailed;
 
+  /// No description provided for @petSexLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sex'**
+  String get petSexLabel;
+
+  /// No description provided for @petSexFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get petSexFemale;
+
+  /// No description provided for @petSexMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get petSexMale;
+
+  /// No description provided for @petSexUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get petSexUnknown;
+
+  /// No description provided for @petSpeciesMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More species'**
+  String get petSpeciesMore;
+
+  /// No description provided for @petSpeciesMoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose species'**
+  String get petSpeciesMoreTitle;
+
+  /// No description provided for @petNeuterYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get petNeuterYes;
+
+  /// No description provided for @petNeuterNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get petNeuterNo;
+
+  /// No description provided for @petNeuterUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get petNeuterUnknown;
+
+  /// No description provided for @petNeuterNotApplicable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not applicable'**
+  String get petNeuterNotApplicable;
+
+  /// No description provided for @petNeuterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Helps track health reminders for mammals'**
+  String get petNeuterSubtitle;
+
+  /// No description provided for @petNeuterTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Whether your pet has been surgically sterilised. Recording the date helps your vet track recovery.'**
+  String get petNeuterTooltip;
+
+  /// No description provided for @petFormSelectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get petFormSelectDate;
+
+  /// No description provided for @clearDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear date'**
+  String get clearDate;
+
+  /// No description provided for @aboutPetNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'About {petName}'**
+  String aboutPetNamed(String petName);
+
+  /// No description provided for @petInvalidWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid weight'**
+  String get petInvalidWeight;
+
+  /// No description provided for @removeWeightEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove weight entry'**
+  String get removeWeightEntry;
+
   /// No description provided for @species.
   ///
   /// In en, this message translates to:

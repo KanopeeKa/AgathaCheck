@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
@@ -142,8 +143,14 @@ void main() {
 
     expect(find.text('Dog'), findsOneWidget);
     expect(find.text('Female'), findsOneWidget);
-    expect(find.text('15/03/2020'), findsOneWidget);
-    expect(find.text('20/06/2021'), findsOneWidget);
+    expect(
+      find.text(formatCalendarDateMedium(DateTime(2020, 3, 15))),
+      findsOneWidget,
+    );
+    expect(
+      find.text(formatCalendarDateMedium(DateTime(2021, 6, 20))),
+      findsOneWidget,
+    );
     expect(find.text('Dr Smith'), findsOneWidget);
   });
 
@@ -158,9 +165,7 @@ void main() {
     expect(find.text('Happy Paws Clinic'), findsOneWidget);
 
     await tester.enterText(find.byKey(const Key('pet_name_field')), 'Bella');
-    await tester.tap(find.byKey(const Key('pet_species_field')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Dog').last);
+    await tester.tap(find.byKey(const Key('pet_species_chip_Dog')));
     await tester.pumpAndSettle();
 
     await tester.ensureVisible(find.byKey(const Key('save_pet_button')));
