@@ -44,6 +44,10 @@ class ExperienceShellScaffold extends ConsumerWidget {
     this.contextualActions = const [],
     this.backPath,
     this.forceBackPath = false,
+    this.onBackPressed,
+    this.backButtonKey,
+    this.scaffoldKey,
+    this.floatingActionButton,
     this.orgNavVariant,
     this.organization,
   });
@@ -63,6 +67,16 @@ class ExperienceShellScaffold extends ConsumerWidget {
 
   /// When true, [backPath] is used even when [Navigator.canPop] is true.
   final bool forceBackPath;
+
+  /// When set, overrides default shell back handling (e.g. org profile returnTo).
+  final VoidCallback? onBackPressed;
+
+  /// Optional key for the back button (org deep routes preserve legacy keys).
+  final Key? backButtonKey;
+
+  final GlobalKey<ScaffoldState>? scaffoldKey;
+
+  final Widget? floatingActionButton;
 
   /// Organisation nav title variant (D-v3-NAV-1). When set with [screenTitle],
   /// replaces [AppLogoTitle] for organisation experience screens.
@@ -184,7 +198,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
     final leadingWidget = usesLeadingNav
         ? (!isRoot
               ? IconButton(
-                  key: const Key('experience_back_button'),
+                  key: backButtonKey ?? const Key('experience_back_button'),
                   icon: const Icon(Icons.arrow_back),
                   tooltip: l.goBack,
                   onPressed: () => _onBack(context),
@@ -203,6 +217,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
     return Theme(
       data: shellTheme,
       child: Scaffold(
+        key: scaffoldKey,
         backgroundColor: isOrg
             ? orgListScaffoldBackground(context)
             : experience == AppExperience.petCare
@@ -226,6 +241,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
               ),
         drawer: hideSectionDrawer ? null : const ExperienceSectionDrawer(),
         endDrawer: const NotificationPanel(),
+        floatingActionButton: floatingActionButton,
         body: usesLeadingNav
             ? Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -305,6 +321,10 @@ class ExperienceShellScaffold extends ConsumerWidget {
   }
 
   void _onBack(BuildContext context) {
+    if (onBackPressed != null) {
+      onBackPressed!();
+      return;
+    }
     final returnTo = shellReturnToFromState(GoRouterState.of(context));
     handleShellBack(
       context,
@@ -340,7 +360,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          key: const Key('experience_back_button'),
+          key: backButtonKey ?? const Key('experience_back_button'),
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,
           onPressed: () => _onBack(context),
