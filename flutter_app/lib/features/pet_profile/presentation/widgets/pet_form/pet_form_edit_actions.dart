@@ -27,8 +27,14 @@ class PetFormEditActions extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: 32),
-        const Divider(),
-        const SizedBox(height: 16),
+        Text(
+          l.petFormDangerZone,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.error,
+          ),
+        ),
+        const SizedBox(height: 12),
         OutlinedButton.icon(
           key: const Key('delete_pet_button'),
           onPressed: isLoading ? null : onDelete,
@@ -39,6 +45,7 @@ class PetFormEditActions extends StatelessWidget {
           ),
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: theme.colorScheme.error.withAlpha(120)),
+            minimumSize: const Size.fromHeight(48),
           ),
         ),
         if (!passedAway) ...[
@@ -56,6 +63,7 @@ class PetFormEditActions extends StatelessWidget {
             label: Text(l.passedAway),
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: theme.colorScheme.outline.withAlpha(80)),
+              minimumSize: const Size.fromHeight(48),
             ),
           ),
         ],

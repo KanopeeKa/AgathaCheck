@@ -1,42 +1,62 @@
 import 'package:flutter/material.dart';
+
 import '../../../../../l10n/app_localizations.dart';
+import '../../../data/utils/pet_profile_normalize.dart';
+import '../../widgets/pet_form/pet_form_labeled_field.dart';
+
+enum PetSexSelection { female, male, unknown }
+
+PetSexSelection? petSexSelectionFromGender(String? gender) {
+  final normalized = normalizePetGender(gender);
+  if (normalized == 'Female') return PetSexSelection.female;
+  if (normalized == 'Male') return PetSexSelection.male;
+  return PetSexSelection.unknown;
+}
+
+String? petGenderFromSexSelection(PetSexSelection? selection) {
+  return switch (selection) {
+    PetSexSelection.female => 'Female',
+    PetSexSelection.male => 'Male',
+    PetSexSelection.unknown => null,
+    null => null,
+  };
+}
 
 class PetGenderSection extends StatelessWidget {
-  final String? selectedGender;
-  final ValueChanged<String?> onChanged;
-
   const PetGenderSection({
     super.key,
     required this.selectedGender,
     required this.onChanged,
   });
 
+  final String? selectedGender;
+  final ValueChanged<String?> onChanged;
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    return DropdownButtonFormField<String?>(
-      key: const Key('pet_gender_field'),
-      initialValue: selectedGender,
-      decoration: InputDecoration(
-        labelText: l.gender,
-        helperText: 'Useful for health and behaviour tracking',
-        suffixIcon: selectedGender != null
-            ? IconButton(
-                icon: const Icon(Icons.clear, size: 18),
-                tooltip: 'Clear gender',
-                onPressed: () => onChanged(null),
-              )
-            : const Icon(Icons.info_outline),
+    final selection = petSexSelectionFromGender(selectedGender);
+
+    return PetFormLabeledField(
+      label: l.petSexLabel,
+      child: SegmentedButton<PetSexSelection>(
+        key: const Key('pet_gender_field'),
+        segments: [
+          ButtonSegment(
+            value: PetSexSelection.female,
+            label: Text(l.petSexFemale),
+          ),
+          ButtonSegment(value: PetSexSelection.male, label: Text(l.petSexMale)),
+          ButtonSegment(
+            value: PetSexSelection.unknown,
+            label: Text(l.petSexUnknown),
+          ),
+        ],
+        selected: {selection ?? PetSexSelection.unknown},
+        onSelectionChanged: (values) {
+          onChanged(petGenderFromSexSelection(values.first));
+        },
       ),
-      items: [
-        const DropdownMenuItem<String?>(
-          value: null,
-          child: Text('Not specified'),
-        ),
-        DropdownMenuItem(value: 'Male', child: Text(l.male)),
-        DropdownMenuItem(value: 'Female', child: Text(l.female)),
-      ],
-      onChanged: onChanged,
     );
   }
 }

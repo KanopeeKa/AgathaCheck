@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
@@ -108,6 +109,10 @@ String _fieldText(WidgetTester tester, Key fieldKey) {
   return editable.controller.text;
 }
 
+FilledButton _saveButton(WidgetTester tester) {
+  return tester.widget<FilledButton>(find.byKey(const Key('save_pet_button')));
+}
+
 void main() {
   testWidgets('prefills existing pet information when editing', (tester) async {
     final pet = Pet(
@@ -130,6 +135,11 @@ void main() {
     await tester.pump();
 
     expect(find.text('Edit Bella'), findsOneWidget);
+    expect(find.text('Basic details'), findsOneWidget);
+    expect(find.text('Health details'), findsOneWidget);
+    expect(find.text('About Bella'), findsOneWidget);
+    expect(find.text('Care & records'), findsOneWidget);
+    expect(find.text('Change photo'), findsOneWidget);
     expect(_fieldText(tester, const Key('pet_name_field')), 'Bella');
     expect(_fieldText(tester, const Key('pet_breed_field')), 'Collie');
     expect(_fieldText(tester, const Key('pet_weight_field')), '12.5');
@@ -142,9 +152,30 @@ void main() {
 
     expect(find.text('Dog'), findsOneWidget);
     expect(find.text('Female'), findsOneWidget);
-    expect(find.text('15/03/2020'), findsOneWidget);
-    expect(find.text('20/06/2021'), findsOneWidget);
+    expect(
+      find.text(formatCalendarDateMedium(DateTime(2020, 3, 15))),
+      findsOneWidget,
+    );
+    expect(
+      find.text(formatCalendarDateMedium(DateTime(2021, 6, 20))),
+      findsOneWidget,
+    );
     expect(find.text('Dr Smith'), findsOneWidget);
+  });
+
+  testWidgets('save is disabled until the form is dirty', (tester) async {
+    final pet = Pet(id: 'pet-1', name: 'Bella', species: 'Dog');
+
+    await tester.pumpWidget(_wrap(pet));
+    await tester.pump();
+    await tester.pump();
+
+    expect(_saveButton(tester).onPressed, isNull);
+
+    await tester.enterText(find.byKey(const Key('pet_name_field')), 'Bella!');
+    await tester.pump();
+
+    expect(_saveButton(tester).onPressed, isNotNull);
   });
 
   testWidgets('creates an organisation pet when initialOrgId is provided', (
@@ -158,9 +189,7 @@ void main() {
     expect(find.text('Happy Paws Clinic'), findsOneWidget);
 
     await tester.enterText(find.byKey(const Key('pet_name_field')), 'Bella');
-    await tester.tap(find.byKey(const Key('pet_species_field')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Dog').last);
+    await tester.tap(find.byKey(const Key('pet_species_chip_Dog')));
     await tester.pumpAndSettle();
 
     await tester.ensureVisible(find.byKey(const Key('save_pet_button')));

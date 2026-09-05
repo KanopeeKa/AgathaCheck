@@ -132,6 +132,26 @@ sealed class PetFormSubmitOutcome {}
 
 enum PetFormSubmitValidation { nameRequired, invalidWeight, petNotFound }
 
+enum PetFormPhotoError { tooLarge, unsupportedType, pickFailed }
+
+enum PetFormSubmitErrorKind {
+  photoTooLarge,
+  photoUnsupportedType,
+  photoUploadFailed,
+  networkError,
+  unauthorized,
+  saveFailed,
+}
+
+sealed class PetFormPickImageOutcome {}
+
+class PetFormPickImageSuccess extends PetFormPickImageOutcome {}
+
+class PetFormPickImageFailed extends PetFormPickImageOutcome {
+  PetFormPickImageFailed(this.error);
+  final PetFormPhotoError error;
+}
+
 class PetFormSubmitValidationFailed extends PetFormSubmitOutcome {
   PetFormSubmitValidationFailed(this.reason);
   final PetFormSubmitValidation reason;
@@ -145,6 +165,8 @@ class PetFormSubmitSuccess extends PetFormSubmitOutcome {
 }
 
 class PetFormSubmitError extends PetFormSubmitOutcome {
-  PetFormSubmitError(this.error);
-  final Object error;
+  PetFormSubmitError(this.kind, {Object? debugDetail}) : error = debugDetail;
+
+  final PetFormSubmitErrorKind kind;
+  final Object? error;
 }

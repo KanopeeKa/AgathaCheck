@@ -9,11 +9,11 @@ export async function seedGuardian(client) {
     id: DEMO_IDS.buddyPet,
     userId: DEMO_IDS.alice,
     name: 'Buddy',
-    species: 'dog',
+    species: 'Dog',
     breed: 'Labrador Retriever',
     dateOfBirth: calendarDaysFromToday(-365 * 4),
     weight: 28.5,
-    gender: 'male',
+    gender: 'Male',
     bio: 'Friendly family dog — demo guardian pet with rich health history',
   });
 
@@ -21,11 +21,11 @@ export async function seedGuardian(client) {
     id: DEMO_IDS.whiskersPet,
     userId: DEMO_IDS.alice,
     name: 'Whiskers',
-    species: 'cat',
+    species: 'Cat',
     breed: 'Domestic Shorthair',
     dateOfBirth: calendarDaysFromToday(-365 * 3),
     weight: 4.2,
-    gender: 'female',
+    gender: 'Female',
     bio: 'Indoor cat with regular vet visits',
   });
 

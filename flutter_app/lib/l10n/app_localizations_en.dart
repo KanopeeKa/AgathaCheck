@@ -1222,6 +1222,119 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petNameRequired => 'Name is required';
 
   @override
+  String get petPhotoTooLarge => 'Photo must be 2 MB or smaller';
+
+  @override
+  String get petPhotoUnsupportedType =>
+      'Only JPG, PNG, and WebP images are allowed';
+
+  @override
+  String get petPhotoUploadFailed => 'Photo upload failed. Please try again.';
+
+  @override
+  String get petPhotoNetworkError =>
+      'Could not reach the server. Check your connection and try again.';
+
+  @override
+  String get petPhotoUnauthorized =>
+      'Your session expired. Sign in again and retry.';
+
+  @override
+  String get petPhotoPickFailed =>
+      'Could not open the photo picker. Please try again.';
+
+  @override
+  String get petSaveFailed => 'Failed to save pet. Please try again.';
+
+  @override
+  String get petSexLabel => 'Sex';
+
+  @override
+  String get petSexFemale => 'Female';
+
+  @override
+  String get petSexMale => 'Male';
+
+  @override
+  String get petSexUnknown => 'Unknown';
+
+  @override
+  String get petSpeciesMore => 'More species';
+
+  @override
+  String get petSpeciesMoreTitle => 'Choose species';
+
+  @override
+  String get petNeuterYes => 'Yes';
+
+  @override
+  String get petNeuterNo => 'No';
+
+  @override
+  String get petNeuterUnknown => 'Unknown';
+
+  @override
+  String get petNeuterNotApplicable => 'Not applicable';
+
+  @override
+  String get petNeuterSubtitle => 'Helps track health reminders for mammals';
+
+  @override
+  String get petNeuterTooltip =>
+      'Whether your pet has been surgically sterilised. Recording the date helps your vet track recovery.';
+
+  @override
+  String get petFormSelectDate => 'Select date';
+
+  @override
+  String get petFormBasicDetails => 'Basic details';
+
+  @override
+  String get petFormHealthDetails => 'Health details';
+
+  @override
+  String get petFormAbout => 'About';
+
+  @override
+  String get petFormCareAndRecords => 'Care & records';
+
+  @override
+  String get petFormSaveChanges => 'Save changes';
+
+  @override
+  String get petFormChangePhoto => 'Change photo';
+
+  @override
+  String get petFormPetSaved => 'Pet saved';
+
+  @override
+  String get petFormUnsavedTitle => 'Discard changes?';
+
+  @override
+  String get petFormUnsavedBody =>
+      'You have unsaved changes to this pet profile.';
+
+  @override
+  String get petFormDiscard => 'Discard';
+
+  @override
+  String get petFormDangerZone => 'Danger zone';
+
+  @override
+  String get clearDate => 'Clear date';
+
+  @override
+  String aboutPetNamed(String petName) {
+    return 'About $petName';
+  }
+
+  @override
+  String get petInvalidWeight => 'Invalid weight';
+
+  @override
+  String get removeWeightEntry => 'Remove weight entry';
+
+  @override
   String get species => 'Species *';
 
   @override

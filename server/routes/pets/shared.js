@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../../config/jwtSecret.js';
 import { dateToIsoDate } from '../../lib/calendarDate.js';
+import { normalizeGender, normalizeSpecies } from '../../lib/petProfileNormalize.js';
 
 export const FOSTER_PLACEMENT_SELECT_SQL = `
   (SELECT fp.status
@@ -54,13 +55,13 @@ export function petRowToMap(row) {
     id: row.id,
     user_id: row.user_id,
     name: row.name,
-    species: row.species,
+    species: normalizeSpecies(row.species),
     breed: row.breed || '',
     age: row.age,
     dateOfBirth: row.date_of_birth ? dateToIsoDate(row.date_of_birth) : null,
     date_of_birth: row.date_of_birth ? dateToIsoDate(row.date_of_birth) : null,
     weight: row.weight,
-    gender: row.gender,
+    gender: normalizeGender(row.gender),
     bio: row.bio || '',
     insurance: row.insurance || '',
     neuteredDate: row.neutered_date ? dateToIsoDate(row.neutered_date) : null,

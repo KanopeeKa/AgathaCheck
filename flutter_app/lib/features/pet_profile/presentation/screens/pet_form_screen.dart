@@ -3,29 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/shell_return_navigation.dart';
-import '../controllers/pet_form_controller.dart';
-import '../controllers/pet_form_outcomes.dart';
-
-import '../../../../core/utils/constants.dart';
 import '../../../../core/utils/calendar_date_picker.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/pet.dart';
+import '../controllers/pet_form_controller.dart';
+import '../controllers/pet_form_error_messages.dart';
+import '../controllers/pet_form_outcomes.dart';
 import '../providers/pet_providers.dart';
-import '../widgets/pet_form/pet_form_bio_section.dart';
-import '../widgets/pet_form/pet_form_chip_section.dart';
+import '../widgets/pet_form/pet_form_actions_bar.dart';
+import '../widgets/pet_form/pet_form_breakpoints.dart';
 import '../widgets/pet_form/pet_form_confirm_dialogs.dart';
-import '../widgets/pet_form/pet_form_edit_actions.dart';
-import '../widgets/pet_form/pet_form_info_tooltip.dart';
-import '../widgets/pet_form/pet_form_insurance_section.dart';
-import '../widgets/pet_form/pet_form_neutered_section.dart';
-import '../widgets/pet_form/pet_form_vet_section.dart';
-import '../widgets/pet_form/pet_form_weight_section.dart';
-import 'widgets/pet_photo_section.dart';
-import 'widgets/pet_species_section.dart';
-import 'widgets/pet_gender_section.dart';
-import 'widgets/pet_dob_section.dart';
-import 'widgets/pet_ownership_selector.dart';
+import '../widgets/pet_form/pet_form_screen_body.dart';
 
 class PetFormScreen extends ConsumerStatefulWidget {
   const PetFormScreen({super.key, this.petId, this.initialOrgId});
@@ -48,13 +37,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   final _bioController = TextEditingController();
   final _insuranceController = TextEditingController();
   final _chipIdController = TextEditingController();
-  final _assignmentNotesController = TextEditingController();
 
-  String _selectedSpecies = '';
-  String? _photoBase64;
-  String? _selectedOrgId;
   String? _selectedVetId;
-  DateTime? _dateOfBirth;
   DateTime? _neuteredDate;
   bool? _isNeutered;
   bool _passedAway = false;
@@ -62,6 +46,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   bool _isLoading = false;
   bool _isInitialized = false;
   bool _showWeightInput = false;
+  bool _suppressDirty = false;
 
   bool get _isEditing => widget.petId != null;
 
@@ -70,14 +55,32 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     super.initState();
     _controller = PetFormController();
     if (!_isEditing && widget.initialOrgId != null) {
-      _selectedOrgId = widget.initialOrgId;
       _controller.setSelectedOrgId(widget.initialOrgId);
     }
+    for (final controller in [
+      _nameController,
+      _breedController,
+      _weightController,
+      _newWeightController,
+      _bioController,
+      _insuranceController,
+      _chipIdController,
+    ]) {
+      controller.addListener(_markDirty);
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_isEditing) _controller.captureBaseline();
+    });
+  }
+
+  void _markDirty() {
+    if (_suppressDirty) return;
+    setState(() {});
   }
 
   void _onOwnershipChanged(String? orgId) {
-    setState(() => _selectedOrgId = orgId);
     _controller.setSelectedOrgId(orgId);
+    _markDirty();
   }
 
   void _navigateAfterForm() {
@@ -89,11 +92,44 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
       goToPetDetail(context, widget.petId!);
       return;
     }
-    if (_selectedOrgId != null) {
-      context.go('/organizations/$_selectedOrgId');
+    if (_controller.state.selectedOrgId != null) {
+      context.go('/organizations/${_controller.state.selectedOrgId}');
       return;
     }
     context.go('/');
+  }
+
+  Future<bool> _confirmDiscard() async {
+    if (!_controller.isDirty || !mounted) return true;
+    final l = AppLocalizations.of(context)!;
+    final discard = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l.petFormUnsavedTitle),
+        content: Text(l.petFormUnsavedBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l.petFormDiscard),
+          ),
+        ],
+      ),
+    );
+    return discard ?? false;
+  }
+
+  Future<void> _handleBack() async {
+    if (!_controller.isDirty) {
+      _navigateAfterForm();
+      return;
+    }
+    if (await _confirmDiscard() && mounted) {
+      _navigateAfterForm();
+    }
   }
 
   String _formTitle(AppLocalizations l) {
@@ -101,6 +137,39 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     final name = _nameController.text.trim();
     if (name.isNotEmpty) return l.editPetNamed(name);
     return l.editPetTitle;
+  }
+
+  Pet _previewPet() {
+    final species = _controller.state.selectedSpecies;
+    final weightText = _isEditing
+        ? _weightController.text.trim()
+        : (_showWeightInput ? _newWeightController.text.trim() : '');
+    final parsedWeight = double.tryParse(weightText);
+
+    return Pet(
+      id: widget.petId ?? 'new',
+      name: _nameController.text.trim().isEmpty
+          ? ' '
+          : _nameController.text.trim(),
+      species: species.isEmpty ? 'Dog' : species,
+      breed: _breedController.text.trim(),
+      dateOfBirth: _controller.state.dateOfBirth,
+      weight: parsedWeight,
+      gender: _controller.state.selectedGender,
+      photoPath: _controller.state.photoBase64,
+      colorValue: _controller.state.existingColorValue,
+      passedAway: _passedAway,
+    );
+  }
+
+  String? _previewWeightLabel() {
+    final weightText = _isEditing
+        ? _weightController.text.trim()
+        : (_showWeightInput ? _newWeightController.text.trim() : '');
+    if (weightText.isEmpty) return null;
+    final parsed = double.tryParse(weightText);
+    if (parsed == null) return null;
+    return '${parsed.toStringAsFixed(1)} kg';
   }
 
   @override
@@ -112,35 +181,46 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _bioController.dispose();
     _insuranceController.dispose();
     _chipIdController.dispose();
-    _assignmentNotesController.dispose();
     super.dispose();
   }
 
   void _populateForm(Pet pet) {
+    _suppressDirty = true;
     _nameController.text = pet.name;
     _breedController.text = pet.breed;
     _weightController.text = pet.weight?.toString() ?? '';
     _bioController.text = pet.bio;
     _insuranceController.text = pet.insurance;
     _chipIdController.text = pet.chipId;
-    _selectedSpecies = pet.species;
-    _photoBase64 = pet.photoPath;
     _selectedVetId = pet.vetId;
-    _dateOfBirth = pet.dateOfBirth;
     _neuteredDate = pet.neuteredDate;
-    _isNeutered = pet.neuteredDate != null ? true : null;
+    _isNeutered = pet.neuteredDate != null
+        ? true
+        : pet.neuterDismissed
+        ? false
+        : null;
     _passedAway = pet.passedAway;
     _isShared = pet.isShared;
-    _selectedOrgId = pet.organizationId;
 
     _controller.populateForm(pet);
+    _controller.captureBaseline();
+    _suppressDirty = false;
   }
 
   Future<void> _pickImage() async {
-    await _controller.pickImage();
-    setState(() {
-      _photoBase64 = _controller.state.photoBase64;
-    });
+    final outcome = await _controller.pickImage();
+    if (!mounted) return;
+
+    _markDirty();
+    final l = AppLocalizations.of(context)!;
+    switch (outcome) {
+      case PetFormPickImageSuccess():
+        break;
+      case PetFormPickImageFailed(:final error):
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(petFormPickImageErrorMessage(l, error))),
+        );
+    }
   }
 
   Future<void> _pickNeuteredDate() async {
@@ -152,15 +232,37 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
       lastDate: now,
     );
     if (picked != null) {
-      final date = picked;
-      setState(() {
-        _neuteredDate = date;
-      });
+      setState(() => _neuteredDate = picked);
       _controller.state = _controller.state.copyWith(
-        neuteredDate: date,
+        neuteredDate: picked,
         neuterDismissed: false,
       );
+      _markDirty();
     }
+  }
+
+  void _onNeuteredChanged(bool? val) {
+    setState(() {
+      _isNeutered = val;
+      if (val != true) _neuteredDate = null;
+    });
+    if (val == true) {
+      _controller.state = _controller.state.copyWith(
+        isNeutered: true,
+        neuterDismissed: false,
+      );
+    } else if (val == false) {
+      _controller.state = _controller.state.copyWith(
+        isNeutered: false,
+        neuteredDate: null,
+      );
+    } else {
+      _controller.state = _controller.state.copyWith(
+        isNeutered: null,
+        neuteredDate: null,
+      );
+    }
+    _markDirty();
   }
 
   Future<void> _confirmDeletePet() async {
@@ -205,17 +307,20 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         case PetFormSubmitValidationFailed(:final reason):
           final message = switch (reason) {
             PetFormSubmitValidation.nameRequired => l.petNameRequired,
-            PetFormSubmitValidation.invalidWeight => 'Invalid weight',
-            PetFormSubmitValidation.petNotFound => 'Pet not found',
+            PetFormSubmitValidation.invalidWeight => l.petInvalidWeight,
+            PetFormSubmitValidation.petNotFound => l.petNotFound,
           };
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(message)));
-        case PetFormSubmitError(:final error):
+        case PetFormSubmitError(:final kind):
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(petFormSubmitErrorMessage(l, kind))),
+          );
+        case PetFormSubmitSuccess():
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('Failed to save pet: $error')));
-        case PetFormSubmitSuccess():
+          ).showSnackBar(SnackBar(content: Text(l.petFormPetSaved)));
           _navigateAfterForm();
       }
     } finally {
@@ -225,7 +330,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
 
     if (_isEditing && !_isInitialized) {
@@ -237,7 +341,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         ),
         error: (e, _) => Scaffold(
           appBar: AppBar(title: AppLogoTitle(title: _formTitle(l))),
-          body: Center(child: Text('Error: $e')),
+          body: Center(child: Text(l.petNotFound)),
         ),
         data: (pet) {
           if (pet != null && !_isInitialized) {
@@ -248,229 +352,100 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               });
             });
           }
-          return _buildForm(theme);
+          return _buildForm();
         },
       );
     }
 
-    return _buildForm(theme);
+    return _buildForm();
   }
 
-  Widget _buildForm(ThemeData theme) {
+  Widget _buildForm() {
     final l = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: AppLogoTitle(title: _formTitle(l)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: l.goBack,
-          onPressed: _navigateAfterForm,
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              PetPhotoSection(
-                photoBase64: _photoBase64,
-                onPickImage: _pickImage,
-              ),
-              const SizedBox(height: 24),
-              if (!_isEditing)
-                PetOwnershipSelector(
-                  controller: _controller,
-                  initialOrgId: widget.initialOrgId,
-                  selectedOrgId: _selectedOrgId,
-                  onOrgIdChanged: _onOwnershipChanged,
-                ),
-              if (!_isEditing) const SizedBox(height: 16),
-              TextFormField(
-                key: const Key('pet_name_field'),
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: l.petName,
-                  helperText: 'Your pet\'s name or nickname',
-                  suffixIcon: PetFormInfoTooltip(
-                    message: 'The name your pet responds to',
-                  ),
-                ),
-                onChanged: (value) =>
-                    _controller.state = _controller.state.copyWith(name: value),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return l.petNameRequired;
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              PetSpeciesSection(
-                selectedSpecies: _controller.state.selectedSpecies,
-                onChanged: (value) {
-                  _controller.state = _controller.state.copyWith(
-                    selectedSpecies: value,
-                  );
-                  setState(() => _selectedSpecies = value);
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                key: const Key('pet_breed_field'),
-                controller: _breedController,
-                decoration: InputDecoration(
-                  labelText: l.breed,
-                  helperText: 'Breed or variety, if known',
-                ),
-                onChanged: (value) => _controller.state = _controller.state
-                    .copyWith(breed: value),
-              ),
-              const SizedBox(height: 16),
-              PetGenderSection(
-                selectedGender: _controller.state.selectedGender,
-                onChanged: (value) {
-                  _controller.state = _controller.state.copyWith(
-                    selectedGender: value,
-                  );
-                  setState(() {});
-                },
-              ),
-              const SizedBox(height: 16),
-              PetDobSection(
-                dateOfBirth: _controller.state.dateOfBirth ?? _dateOfBirth,
-                onChanged: (date) {
-                  _controller.state = _controller.state.copyWith(
-                    dateOfBirth: date,
-                  );
-                  setState(() => _dateOfBirth = date);
-                },
-              ),
-              const SizedBox(height: 16),
-              if (_isEditing)
-                PetFormWeightSection(
-                  isEditing: true,
-                  showWeightInput: _showWeightInput,
-                  weightController: _weightController,
-                  newWeightController: _newWeightController,
-                  controller: _controller,
-                  onShowWeightInput: () {
-                    setState(() => _showWeightInput = true);
-                    _controller.setShowWeightInput(true);
-                  },
-                  onHideWeightInput: () {
-                    setState(() {
-                      _showWeightInput = false;
-                      _newWeightController.clear();
-                    });
-                    _controller.setShowWeightInput(false);
-                    _controller.setNewWeight('');
-                  },
-                ),
-              if (!_isEditing)
-                PetFormWeightSection(
-                  isEditing: false,
-                  showWeightInput: _showWeightInput,
-                  weightController: _weightController,
-                  newWeightController: _newWeightController,
-                  controller: _controller,
-                  onShowWeightInput: () {
-                    setState(() => _showWeightInput = true);
-                    _controller.setShowWeightInput(true);
-                  },
-                  onHideWeightInput: () {
-                    setState(() {
-                      _showWeightInput = false;
-                      _newWeightController.clear();
-                    });
-                    _controller.setShowWeightInput(false);
-                    _controller.setNewWeight('');
-                  },
-                ),
-              const SizedBox(height: 16),
-              if (!AppConstants.speciesWithoutNeutering.contains(
-                _selectedSpecies,
-              ))
-                PetFormNeuteredSection(
-                  isNeutered: _isNeutered,
-                  neuteredDate: _neuteredDate,
-                  onNeuteredChanged: (val) {
-                    setState(() {
-                      _isNeutered = val;
-                      if (val == false) _neuteredDate = null;
-                    });
-                    if (val == true) {
-                      _controller.state = _controller.state.copyWith(
-                        isNeutered: true,
-                        neuterDismissed: false,
-                      );
-                    } else if (val == false) {
-                      _controller.state = _controller.state.copyWith(
-                        isNeutered: false,
-                        neuteredDate: null,
-                      );
-                    }
-                  },
-                  onPickNeuteredDate: _pickNeuteredDate,
-                  onClearNeuteredDate: () {
-                    setState(() => _neuteredDate = null);
-                    _controller.state = _controller.state.copyWith(
-                      neuteredDate: null,
-                    );
-                  },
-                ),
-              if (!AppConstants.speciesWithoutNeutering.contains(
-                _selectedSpecies,
-              ))
-                const SizedBox(height: 16),
-              PetFormBioSection(
-                textController: _bioController,
-                onChanged: (value) =>
-                    _controller.state = _controller.state.copyWith(bio: value),
-              ),
-              const SizedBox(height: 16),
-              PetFormVetSection(
-                selectedVetId: _selectedVetId,
-                controller: _controller,
-                onVetSelected: (value) =>
-                    setState(() => _selectedVetId = value),
-              ),
-              const SizedBox(height: 16),
-              PetFormInsuranceSection(
-                textController: _insuranceController,
-                onChanged: (value) => _controller.state = _controller.state
-                    .copyWith(insurance: value),
-              ),
-              const SizedBox(height: 16),
-              PetFormChipSection(
-                textController: _chipIdController,
-                onChanged: (value) => _controller.state = _controller.state
-                    .copyWith(chipId: value),
-              ),
-              const SizedBox(height: 24),
-              FilledButton.icon(
-                key: const Key('save_pet_button'),
-                onPressed: _isLoading ? null : _savePet,
-                icon: _isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.save),
-                label: Text(_isEditing ? 'Update Pet' : l.savePet),
-              ),
-              if (_isEditing && !_isShared)
-                PetFormEditActions(
-                  isLoading: _isLoading,
-                  passedAway: _passedAway,
-                  onDelete: _confirmDeletePet,
-                  onPassedAway: _confirmPassedAway,
-                ),
-            ],
+    final width = MediaQuery.sizeOf(context).width;
+    final isPhone =
+        PetFormBreakpoints.layoutForWidth(width) == PetFormLayoutSize.phone;
+
+    return PopScope(
+      canPop: !_controller.isDirty,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        if (await _confirmDiscard() && context.mounted) {
+          _navigateAfterForm();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: AppLogoTitle(title: _formTitle(l)),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            tooltip: l.goBack,
+            onPressed: _handleBack,
           ),
         ),
+        body: PetFormScreenBody(
+          formKey: _formKey,
+          controller: _controller,
+          previewPet: _previewPet(),
+          previewWeightLabel: _previewWeightLabel(),
+          isEditing: _isEditing,
+          isLoading: _isLoading,
+          isShared: _isShared,
+          passedAway: _passedAway,
+          showWeightInput: _showWeightInput,
+          initialOrgId: widget.initialOrgId,
+          nameController: _nameController,
+          breedController: _breedController,
+          weightController: _weightController,
+          newWeightController: _newWeightController,
+          bioController: _bioController,
+          insuranceController: _insuranceController,
+          chipIdController: _chipIdController,
+          selectedVetId: _selectedVetId,
+          neuteredDate: _neuteredDate,
+          isNeutered: _isNeutered,
+          onChangePhoto: _pickImage,
+          onOwnershipChanged: _onOwnershipChanged,
+          onMarkDirty: _markDirty,
+          onShowWeightInput: () {
+            setState(() => _showWeightInput = true);
+            _controller.setShowWeightInput(true);
+            _markDirty();
+          },
+          onHideWeightInput: () {
+            setState(() {
+              _showWeightInput = false;
+              _newWeightController.clear();
+            });
+            _controller.setShowWeightInput(false);
+            _controller.setNewWeight('');
+            _markDirty();
+          },
+          onNeuteredChanged: _onNeuteredChanged,
+          onPickNeuteredDate: _pickNeuteredDate,
+          onClearNeuteredDate: () {
+            setState(() => _neuteredDate = null);
+            _controller.state = _controller.state.copyWith(neuteredDate: null);
+            _markDirty();
+          },
+          onVetSelected: (value) {
+            setState(() => _selectedVetId = value);
+            _markDirty();
+          },
+          onSave: _savePet,
+          onCancel: _handleBack,
+          onDelete: _confirmDeletePet,
+          onPassedAway: _confirmPassedAway,
+        ),
+        bottomNavigationBar: isPhone
+            ? PetFormStickyActionsBar(
+                isEditing: _isEditing,
+                isLoading: _isLoading,
+                isDirty: _controller.isDirty,
+                onSave: _savePet,
+                onCancel: _handleBack,
+              )
+            : null,
       ),
     );
   }

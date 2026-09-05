@@ -1,37 +1,47 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import 'pet_form_info_tooltip.dart';
+import 'pet_form_labeled_field.dart';
 
 class PetFormBioSection extends StatelessWidget {
   const PetFormBioSection({
     super.key,
     required this.textController,
     required this.onChanged,
+    this.petName = '',
   });
 
   final TextEditingController textController;
   final ValueChanged<String> onChanged;
+  final String petName;
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final label = petName.trim().isEmpty
+        ? l.petBio
+        : l.aboutPetNamed(petName.trim());
 
-    return TextFormField(
-      key: const Key('pet_bio_field'),
-      controller: textController,
-      decoration: InputDecoration(
-        labelText: l.petBio,
-        alignLabelWithHint: true,
-        helperText: 'Personality traits, likes, quirks',
-        suffixIcon: PetFormInfoTooltip(
-          message:
-              'Anything a caregiver should know about your pet\'s temperament or habits',
-        ),
+    return PetFormLabeledField(
+      label: label,
+      child: TextFormField(
+        key: const Key('pet_bio_field'),
+        controller: textController,
+        decoration: const InputDecoration(alignLabelWithHint: true),
+        maxLines: 4,
+        maxLength: 500,
+        buildCounter:
+            (context, {required currentLength, required isFocused, maxLength}) {
+              return Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  '$currentLength / $maxLength',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              );
+            },
+        onChanged: onChanged,
       ),
-      maxLines: 4,
-      maxLength: 500,
-      onChanged: onChanged,
     );
   }
 }

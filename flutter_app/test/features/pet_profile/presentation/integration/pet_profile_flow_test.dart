@@ -193,6 +193,9 @@ void main() {
 
       await navigateToAddPetForm(tester);
 
+      await tester.tap(find.byKey(const Key('pet_species_chip_Dog')));
+      await pumpApp(tester);
+
       final saveButton = find.byKey(const Key('save_pet_button'));
       await tester.ensureVisible(saveButton);
       await pumpApp(tester);
@@ -220,9 +223,7 @@ void main() {
       await navigateToAddPetForm(tester);
 
       await tester.enterText(find.byKey(const Key('pet_name_field')), 'Buddy');
-      await tester.tap(find.byKey(const Key('pet_species_field')));
-      await pumpApp(tester);
-      await tester.tap(find.text('Dog').last);
+      await tester.tap(find.byKey(const Key('pet_species_chip_Dog')));
       await pumpApp(tester);
 
       final saveButton = find.byKey(const Key('save_pet_button'));

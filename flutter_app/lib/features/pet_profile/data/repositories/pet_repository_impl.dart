@@ -5,6 +5,7 @@ import '../../domain/repositories/pet_repository.dart';
 import '../datasources/pet_local_datasource.dart';
 import '../datasources/pet_remote_datasource.dart';
 import '../models/pet_model.dart';
+import '../utils/pet_photo_bytes.dart';
 
 class PetRepositoryImpl implements PetRepository {
   PetRepositoryImpl(this._localDataSource, {this.remoteDataSource, this.token});
@@ -82,17 +83,40 @@ class PetRepositoryImpl implements PetRepository {
     return model?.toEntity();
   }
 
+  Future<PetModel> _uploadPendingPhotoIfNeeded(
+    PetModel remotePet,
+    String? pendingPhotoPath,
+  ) async {
+    if (remoteDataSource == null || token == null || token!.isEmpty) {
+      return remotePet;
+    }
+    if (!isPendingPetPhotoUpload(pendingPhotoPath)) {
+      return remotePet;
+    }
+    final bytes = decodePendingPetPhotoBytes(pendingPhotoPath!);
+    final filename = defaultPetPhotoFilename('pet.jpg');
+    return remoteDataSource!.uploadPetPhoto(
+      remotePet.id,
+      bytes,
+      filename,
+      token!,
+    );
+  }
+
   @override
   Future<Pet> addPet(Pet pet) async {
     final model = PetModel.fromEntity(pet);
     final saved = await _localDataSource.addPet(model);
     if (remoteDataSource != null && token != null && token!.isNotEmpty) {
       try {
-        await remoteDataSource!.createPet(model, token!);
+        final remotePet = await remoteDataSource!.createPet(model, token!);
+        final synced = await _uploadPendingPhotoIfNeeded(
+          remotePet,
+          model.photoPath,
+        );
+        await _localDataSource.updatePet(synced);
+        return synced.toEntity();
       } catch (e) {
-        // Server rejected the create. Roll back the optimistic local write so
-        // the pet does not linger in the cache (and later resurrect on refresh)
-        // and surface the failure to the caller instead of silently swallowing.
         await _localDataSource.deletePet(model.id);
         debugPrint('PetRepository: Failed to save pet to server: $e');
         rethrow;
@@ -108,10 +132,14 @@ class PetRepositoryImpl implements PetRepository {
     final saved = await _localDataSource.updatePet(model);
     if (remoteDataSource != null && token != null && token!.isNotEmpty) {
       try {
-        await remoteDataSource!.updatePet(model, token!);
+        final remotePet = await remoteDataSource!.updatePet(model, token!);
+        final synced = await _uploadPendingPhotoIfNeeded(
+          remotePet,
+          model.photoPath,
+        );
+        await _localDataSource.updatePet(synced);
+        return synced.toEntity();
       } catch (e) {
-        // Server rejected the update. Restore the pre-mutation local snapshot so
-        // the cache does not diverge from the server and surface the failure.
         if (prior != null) {
           await _localDataSource.updatePet(prior);
         } else {

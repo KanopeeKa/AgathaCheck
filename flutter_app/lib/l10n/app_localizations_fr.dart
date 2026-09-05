@@ -1238,6 +1238,122 @@ class AppLocalizationsFr extends AppLocalizations {
   String get petNameRequired => 'Le nom est requis';
 
   @override
+  String get petPhotoTooLarge => 'La photo doit faire 2 Mo ou moins';
+
+  @override
+  String get petPhotoUnsupportedType =>
+      'Seules les images JPG, PNG et WebP sont autorisées';
+
+  @override
+  String get petPhotoUploadFailed =>
+      'Échec du téléversement de la photo. Veuillez réessayer.';
+
+  @override
+  String get petPhotoNetworkError =>
+      'Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.';
+
+  @override
+  String get petPhotoUnauthorized =>
+      'Votre session a expiré. Reconnectez-vous et réessayez.';
+
+  @override
+  String get petPhotoPickFailed =>
+      'Impossible d\'ouvrir le sélecteur de photos. Veuillez réessayer.';
+
+  @override
+  String get petSaveFailed =>
+      'Échec de l\'enregistrement de l\'animal. Veuillez réessayer.';
+
+  @override
+  String get petSexLabel => 'Sexe';
+
+  @override
+  String get petSexFemale => 'Femelle';
+
+  @override
+  String get petSexMale => 'Mâle';
+
+  @override
+  String get petSexUnknown => 'Inconnu';
+
+  @override
+  String get petSpeciesMore => 'Autres espèces';
+
+  @override
+  String get petSpeciesMoreTitle => 'Choisir l\'espèce';
+
+  @override
+  String get petNeuterYes => 'Oui';
+
+  @override
+  String get petNeuterNo => 'Non';
+
+  @override
+  String get petNeuterUnknown => 'Inconnu';
+
+  @override
+  String get petNeuterNotApplicable => 'Non applicable';
+
+  @override
+  String get petNeuterSubtitle =>
+      'Aide à suivre les rappels de santé pour les mammifères';
+
+  @override
+  String get petNeuterTooltip =>
+      'Indique si votre animal a été stérilisé chirurgicalement. La date aide votre vétérinaire à suivre la convalescence.';
+
+  @override
+  String get petFormSelectDate => 'Sélectionner une date';
+
+  @override
+  String get petFormBasicDetails => 'Informations de base';
+
+  @override
+  String get petFormHealthDetails => 'Santé';
+
+  @override
+  String get petFormAbout => 'À propos';
+
+  @override
+  String get petFormCareAndRecords => 'Soins et dossiers';
+
+  @override
+  String get petFormSaveChanges => 'Enregistrer les modifications';
+
+  @override
+  String get petFormChangePhoto => 'Changer la photo';
+
+  @override
+  String get petFormPetSaved => 'Animal enregistré';
+
+  @override
+  String get petFormUnsavedTitle => 'Abandonner les modifications ?';
+
+  @override
+  String get petFormUnsavedBody =>
+      'Vous avez des modifications non enregistrées pour ce profil animal.';
+
+  @override
+  String get petFormDiscard => 'Abandonner';
+
+  @override
+  String get petFormDangerZone => 'Zone de danger';
+
+  @override
+  String get clearDate => 'Effacer la date';
+
+  @override
+  String aboutPetNamed(String petName) {
+    return 'À propos de $petName';
+  }
+
+  @override
+  String get petInvalidWeight => 'Poids invalide';
+
+  @override
+  String get removeWeightEntry => 'Retirer l\'entrée de poids';
+
+  @override
   String get species => 'Espèce *';
 
   @override

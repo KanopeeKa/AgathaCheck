@@ -5,6 +5,7 @@ import { registerFamilyEventsRoutes } from './familyEventsRouter.js';
 import { registerAccessRoutes } from './accessRouter.js';
 import { registerLifecycleRoutes } from './lifecycleRouter.js';
 import { registerCoreRoutes } from './coreRouter.js';
+import { registerPhotoRoutes } from './photoRouter.js';
 import { registerTimelineRoutes } from '../timeline/index.js';
 
 export default function petsRoutes(pool) {
@@ -15,6 +16,7 @@ export default function petsRoutes(pool) {
   registerTimelineRoutes(router, pool);
   registerAccessRoutes(router, pool);
   registerLifecycleRoutes(router, pool);
+  registerPhotoRoutes(router, pool);
   registerCoreRoutes(router, pool);
   return router;
 }

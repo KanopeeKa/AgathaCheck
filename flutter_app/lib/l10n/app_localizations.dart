@@ -2251,6 +2251,216 @@ abstract class AppLocalizations {
   /// **'Name is required'**
   String get petNameRequired;
 
+  /// No description provided for @petPhotoTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo must be 2 MB or smaller'**
+  String get petPhotoTooLarge;
+
+  /// No description provided for @petPhotoUnsupportedType.
+  ///
+  /// In en, this message translates to:
+  /// **'Only JPG, PNG, and WebP images are allowed'**
+  String get petPhotoUnsupportedType;
+
+  /// No description provided for @petPhotoUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo upload failed. Please try again.'**
+  String get petPhotoUploadFailed;
+
+  /// No description provided for @petPhotoNetworkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the server. Check your connection and try again.'**
+  String get petPhotoNetworkError;
+
+  /// No description provided for @petPhotoUnauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Sign in again and retry.'**
+  String get petPhotoUnauthorized;
+
+  /// No description provided for @petPhotoPickFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the photo picker. Please try again.'**
+  String get petPhotoPickFailed;
+
+  /// No description provided for @petSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save pet. Please try again.'**
+  String get petSaveFailed;
+
+  /// No description provided for @petSexLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sex'**
+  String get petSexLabel;
+
+  /// No description provided for @petSexFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get petSexFemale;
+
+  /// No description provided for @petSexMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get petSexMale;
+
+  /// No description provided for @petSexUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get petSexUnknown;
+
+  /// No description provided for @petSpeciesMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More species'**
+  String get petSpeciesMore;
+
+  /// No description provided for @petSpeciesMoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose species'**
+  String get petSpeciesMoreTitle;
+
+  /// No description provided for @petNeuterYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get petNeuterYes;
+
+  /// No description provided for @petNeuterNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get petNeuterNo;
+
+  /// No description provided for @petNeuterUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get petNeuterUnknown;
+
+  /// No description provided for @petNeuterNotApplicable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not applicable'**
+  String get petNeuterNotApplicable;
+
+  /// No description provided for @petNeuterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Helps track health reminders for mammals'**
+  String get petNeuterSubtitle;
+
+  /// No description provided for @petNeuterTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Whether your pet has been surgically sterilised. Recording the date helps your vet track recovery.'**
+  String get petNeuterTooltip;
+
+  /// No description provided for @petFormSelectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get petFormSelectDate;
+
+  /// No description provided for @petFormBasicDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic details'**
+  String get petFormBasicDetails;
+
+  /// No description provided for @petFormHealthDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Health details'**
+  String get petFormHealthDetails;
+
+  /// No description provided for @petFormAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get petFormAbout;
+
+  /// No description provided for @petFormCareAndRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Care & records'**
+  String get petFormCareAndRecords;
+
+  /// No description provided for @petFormSaveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get petFormSaveChanges;
+
+  /// No description provided for @petFormChangePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get petFormChangePhoto;
+
+  /// No description provided for @petFormPetSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet saved'**
+  String get petFormPetSaved;
+
+  /// No description provided for @petFormUnsavedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get petFormUnsavedTitle;
+
+  /// No description provided for @petFormUnsavedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes to this pet profile.'**
+  String get petFormUnsavedBody;
+
+  /// No description provided for @petFormDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get petFormDiscard;
+
+  /// No description provided for @petFormDangerZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Danger zone'**
+  String get petFormDangerZone;
+
+  /// No description provided for @clearDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear date'**
+  String get clearDate;
+
+  /// No description provided for @aboutPetNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'About {petName}'**
+  String aboutPetNamed(String petName);
+
+  /// No description provided for @petInvalidWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid weight'**
+  String get petInvalidWeight;
+
+  /// No description provided for @removeWeightEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove weight entry'**
+  String get removeWeightEntry;
+
   /// No description provided for @species.
   ///
   /// In en, this message translates to:
