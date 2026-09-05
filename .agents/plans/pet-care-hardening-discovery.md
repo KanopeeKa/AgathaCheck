@@ -70,14 +70,14 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "babysit+ merge PR #994; complete-plan; bootstrap pet-care-p0-private-files"
+next_action: "continue phase 1 on branch cursor/pet-care-hardening-discovery-75cb"
 artifact_ref:
   branch: cursor/pet-care-hardening-discovery-75cb
   plan_path: .agents/plans/pet-care-hardening-discovery.md
-  plan_commit: pending
+  plan_commit: 887cc73328f48b8f841d96a11c2d83f264d6a5a8
   snapshot_path: .agents/plans/pet-care-hardening-discovery.snapshot.json
-  snapshot_commit: pending
-open_prs: []
+  snapshot_commit: 887cc73328f48b8f841d96a11c2d83f264d6a5a8
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/994"]
 merge_commits: {}
 debt_issue_refs: []
 ```
