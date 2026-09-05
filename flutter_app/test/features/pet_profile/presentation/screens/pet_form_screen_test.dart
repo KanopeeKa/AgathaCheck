@@ -109,6 +109,10 @@ String _fieldText(WidgetTester tester, Key fieldKey) {
   return editable.controller.text;
 }
 
+FilledButton _saveButton(WidgetTester tester) {
+  return tester.widget<FilledButton>(find.byKey(const Key('save_pet_button')));
+}
+
 void main() {
   testWidgets('prefills existing pet information when editing', (tester) async {
     final pet = Pet(
@@ -131,6 +135,11 @@ void main() {
     await tester.pump();
 
     expect(find.text('Edit Bella'), findsOneWidget);
+    expect(find.text('Basic details'), findsOneWidget);
+    expect(find.text('Health details'), findsOneWidget);
+    expect(find.text('About Bella'), findsOneWidget);
+    expect(find.text('Care & records'), findsOneWidget);
+    expect(find.text('Change photo'), findsOneWidget);
     expect(_fieldText(tester, const Key('pet_name_field')), 'Bella');
     expect(_fieldText(tester, const Key('pet_breed_field')), 'Collie');
     expect(_fieldText(tester, const Key('pet_weight_field')), '12.5');
@@ -152,6 +161,25 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Dr Smith'), findsOneWidget);
+  });
+
+  testWidgets('save is disabled until the form is dirty', (tester) async {
+    final pet = Pet(
+      id: 'pet-1',
+      name: 'Bella',
+      species: 'Dog',
+    );
+
+    await tester.pumpWidget(_wrap(pet));
+    await tester.pump();
+    await tester.pump();
+
+    expect(_saveButton(tester).onPressed, isNull);
+
+    await tester.enterText(find.byKey(const Key('pet_name_field')), 'Bella!');
+    await tester.pump();
+
+    expect(_saveButton(tester).onPressed, isNotNull);
   });
 
   testWidgets('creates an organisation pet when initialOrgId is provided', (

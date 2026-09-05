@@ -27,8 +27,14 @@ class PetFormEditActions extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: 32),
-        const Divider(),
-        const SizedBox(height: 16),
+        Text(
+          l.petFormDangerZone,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.error,
+          ),
+        ),
+        const SizedBox(height: 12),
         OutlinedButton.icon(
           key: const Key('delete_pet_button'),
           onPressed: isLoading ? null : onDelete,
