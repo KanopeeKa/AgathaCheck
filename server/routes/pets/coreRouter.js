@@ -3,6 +3,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { publicError } from '../../config/security.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import {
+  normalizeGender,
+  normalizeSpecies,
+  sanitizePhotoPathForWrite,
+} from '../../lib/petProfileNormalize.js';
+import {
   maybeCreateWeightEntryFromPetPayload,
   refreshPetWeightCache,
   resolveWeightEntryDateFromBody,
@@ -157,12 +162,19 @@ export function registerCoreRoutes(router, pool) {
     try {
       const id = req.body.id || uuidv4();
       const {
-        name, species, breed = '', age, weight, gender,
+        name, breed = '', age, weight,
         bio = '', insurance = '',
         neuterDismissed = false, chipId = '', chipDismissed = false,
-        photoPath, vetId, colorValue, passedAway = false,
+        vetId, colorValue, passedAway = false,
         organization_id
       } = req.body;
+      const species = normalizeSpecies(req.body.species);
+      const gender = normalizeGender(req.body.gender);
+      const photoSanitized = sanitizePhotoPathForWrite(req.body.photoPath);
+      if (!photoSanitized.ok) {
+        return res.status(400).json({ error: photoSanitized.error });
+      }
+      const photoPath = photoSanitized.value;
       const dateOfBirth = normalizeCalendarDateInput(req.body.dateOfBirth || req.body.date_of_birth);
       const neuteredDate = normalizeCalendarDateInput(req.body.neuteredDate);
       if (organization_id && !(await userInOrg(pool, organization_id, userId))) {
@@ -182,7 +194,7 @@ export function registerCoreRoutes(router, pool) {
          WHERE pets.user_id = $2 RETURNING *`,
         [id, userId, name, species, breed, age, dateOfBirth, weight, gender,
          bio, insurance, neuteredDate, neuterDismissed, chipId, chipDismissed,
-         photoPath || null, vetId || null, colorValue != null ? colorValue : null,
+         photoPath, vetId || null, colorValue != null ? colorValue : null,
          passedAway, organization_id || null]
       );
       const pet = result.rows[0];
@@ -220,18 +232,28 @@ export function registerCoreRoutes(router, pool) {
         return res.status(404).json({ error: 'Pet not found' });
       }
       const {
-        name, species, breed = '', age, weight, gender,
+        name, breed = '', age, weight,
         bio = '', insurance = '',
         neuterDismissed = false, chipId = '', chipDismissed = false,
-        photoPath, vetId, colorValue, passedAway = false,
+        vetId, colorValue, passedAway = false,
         organization_id
       } = req.body;
-      const dateOfBirth = normalizeCalendarDateInput(req.body.dateOfBirth || req.body.date_of_birth);
-      const neuteredDate = normalizeCalendarDateInput(req.body.neuteredDate);
+      const species = normalizeSpecies(req.body.species);
+      const gender = normalizeGender(req.body.gender);
       const existingPet = await pool.query(
-        'SELECT organization_id FROM pets WHERE id = $1',
+        'SELECT organization_id, photo_path FROM pets WHERE id = $1',
         [id]
       );
+      let photoPath = existingPet.rows[0]?.photo_path ?? null;
+      if (Object.prototype.hasOwnProperty.call(req.body, 'photoPath')) {
+        const photoSanitized = sanitizePhotoPathForWrite(req.body.photoPath);
+        if (!photoSanitized.ok) {
+          return res.status(400).json({ error: photoSanitized.error });
+        }
+        photoPath = photoSanitized.value;
+      }
+      const dateOfBirth = normalizeCalendarDateInput(req.body.dateOfBirth || req.body.date_of_birth);
+      const neuteredDate = normalizeCalendarDateInput(req.body.neuteredDate);
       const previousOrgId = existingPet.rows[0]?.organization_id || null;
       const nextOrgId = organization_id || null;
       if (nextOrgId && String(nextOrgId) !== String(previousOrgId || '')
@@ -246,7 +268,7 @@ export function registerCoreRoutes(router, pool) {
          WHERE id=$19 RETURNING *`,
         [name, species, breed, age, dateOfBirth, weight, gender,
          bio, insurance, neuteredDate, neuterDismissed, chipId, chipDismissed,
-         photoPath || null, vetId || null, colorValue != null ? colorValue : null,
+         photoPath, vetId || null, colorValue != null ? colorValue : null,
          passedAway, organization_id || null, id]
       );
       if (result.rows.length === 0) {

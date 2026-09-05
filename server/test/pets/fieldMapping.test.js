@@ -28,6 +28,8 @@ describe('Pets API', () => {
       expect(pet.neuteredDate).toBeDefined();
       expect(pet.neuterDismissed).toBe(false);
       expect(pet.colorValue).toBe(PET_COLOR_PALETTE[0]);
+      expect(pet.species).toBe('Cat');
+      expect(pet.gender).toBe('Female');
     });
 
     it('handles null optional fields', async () => {

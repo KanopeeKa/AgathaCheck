@@ -61,11 +61,11 @@ export async function seedRescueHearts(client) {
     id: DEMO_IDS.davePersonalPet,
     userId: DEMO_IDS.dave,
     name: 'Pip',
-    species: 'dog',
+    species: 'Dog',
     breed: 'Terrier mix',
     dateOfBirth: calendarDaysFromToday(-365 * 2),
     weight: 8.5,
-    gender: 'male',
+    gender: 'Male',
     bio: 'Dave personal pet — dual-role demo user',
   });
 
@@ -74,11 +74,11 @@ export async function seedRescueHearts(client) {
     userId: DEMO_IDS.alice,
     orgId: DEMO_IDS.rescueHeartsOrg,
     name: 'Max',
-    species: 'dog',
+    species: 'Dog',
     breed: 'Border Collie',
     dateOfBirth: calendarDaysFromToday(-365 * 2),
     weight: 18.0,
-    gender: 'male',
+    gender: 'Male',
     bio: 'Active foster placement with Eve',
   });
 
@@ -87,11 +87,11 @@ export async function seedRescueHearts(client) {
     userId: DEMO_IDS.alice,
     orgId: DEMO_IDS.rescueHeartsOrg,
     name: 'Luna',
-    species: 'cat',
+    species: 'Cat',
     breed: 'Tabby',
     dateOfBirth: calendarDaysFromToday(-365),
     weight: 3.8,
-    gender: 'female',
+    gender: 'Female',
     bio: 'Available for adoption — scheduled visit with prospect',
   });
 
@@ -100,11 +100,11 @@ export async function seedRescueHearts(client) {
     userId: DEMO_IDS.alice,
     orgId: DEMO_IDS.rescueHeartsOrg,
     name: 'Rocky',
-    species: 'dog',
+    species: 'Dog',
     breed: 'Staffordshire Bull Terrier',
     dateOfBirth: calendarDaysFromToday(-365 * 3),
     weight: 16.5,
-    gender: 'male',
+    gender: 'Male',
     bio: 'Foster-to-adopt journey in progress',
   });
 
@@ -113,11 +113,11 @@ export async function seedRescueHearts(client) {
     userId: DEMO_IDS.alice,
     orgId: DEMO_IDS.rescueHeartsOrg,
     name: 'Mittens',
-    species: 'cat',
+    species: 'Cat',
     breed: 'Domestic Longhair',
     dateOfBirth: calendarDaysFromToday(-365 * 5),
     weight: 4.5,
-    gender: 'female',
+    gender: 'Female',
     bio: 'Completed foster placement — historical record',
   });
 
