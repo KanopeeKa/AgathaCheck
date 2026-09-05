@@ -26,7 +26,7 @@ abstract final class GuardianDashboardDecoThresholds {
   static const railFullComposition = 280.0;
 
   /// Opacity for ambient sketch overlays on `background`.
-  static const opacity = 0.13;
+  static const opacity = 0.8;
 
   /// Reference composition height used inside [FittedBox] scaling.
   static const compositionHeight = 72.0;
