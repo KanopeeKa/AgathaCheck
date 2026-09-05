@@ -1,48 +1,40 @@
 ---
 name: single-backend-route-change
-description: Add or change an HTTP API route with Node.js (canonical), Jest tests, and calendar-date wire format. Use for new endpoints, request validation, auth guards, or status-code changes.
+description: >-
+  INTERNAL (Tier 3) — superseded by Router protocols api-contract + validation +
+  authorization. Do not user-invoke; use /babysit-plus or /execute-plan with Router.
 paths:
   - server/routes/**
   - server/test/**
 ---
 
-# Single-backend route change
+# Single-backend route change (internal — Tier 3)
 
-Node Express is the **only** backend (fully tested).
+> **Superseded by:** `.cursor/agent-kernel/protocols/api-contract.md`, `validation.md`, `authorization.md`  
+> **Framework:** `docs/engineering/cursor-agent-framework.md`
 
-## Checklist (same PR)
+Node Express is the **only** backend. Router loads API protocols when route behaviour changes.
 
-- [ ] Route path + HTTP method
-- [ ] Auth / role guards
-- [ ] Request body validation
-- [ ] Response JSON shape
-- [ ] Status codes
-- [ ] Calendar date fields as `YYYY-MM-DD` (`calendarDate.js`)
-- [ ] `router.use(createApiLimiter())` in route composer (not auth routes using `createAuthLimiter`)
-- [ ] Jest test in mirrored `server/test/<domain>/`
-- [ ] No raw `err.message` / `e.toString()` / `$e` in 5xx bodies — use `publicError()` / `errorDetails()`
+## Canonical checklist
+
+See `protocols/api-contract.md` — route path, AuthN/AuthZ, validation, response DTO, status codes, `YYYY-MM-DD` dates, rate limiter, Jest tests, no 5xx leaks.
 
 ## File layout
 
 ```
 server/routes/<domain>/
-  index.js          # composer; mount static before /:id
+  index.js
   <area>Router.js
 server/test/<domain>/
   <area>.test.js
 ```
 
-## Steps
+## Verify
 
-1. Read existing domain: `docs/architecture/index.md` + current route module.
-2. Implement Node handler + tests first (supertest + mock pool).
-3. If Flutter consumes the endpoint, update repository/datasource in matching `flutter_app/lib/features/<feature>/`.
-4. **UI check (when Flutter UI changed)** — If step 3 touched presentation screens/widgets, run **`/ui-check`** before opening the PR.
-5. **Verify:**
-   ```bash
-   cd server && npx jest --env=node --forceExit test/<domain>/
-   node scripts/check_file_size.js
-   ```
+```bash
+cd server && npx jest --env=node --forceExit test/<domain>/
+./scripts/pre-push-changed.sh
+```
 
 ## Domain memories
 

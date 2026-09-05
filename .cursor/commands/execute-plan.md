@@ -7,6 +7,8 @@ description: Run a multi-phase autonomous plan from a frozen snapshot; babysit+ 
 
 Orchestrate an approved multi-phase plan. Read and follow **`.cursor/skills/execute-plan/SKILL.md`** — do not improvise policy.
 
+**Router:** `.cursor/agent-kernel/ROUTER.md` at phase start — see skill §Router.
+
 ## Quick start
 
 ```bash

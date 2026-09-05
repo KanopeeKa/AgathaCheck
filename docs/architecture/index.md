@@ -28,7 +28,7 @@ Full conventions: `docs/architecture/modularity.md`.
 | Governance scripts | `scripts/` | file size, BDD gate, priority tags |
 | Calendar dates | `docs/architecture/calendar-dates.md` | `YYYY-MM-DD` wire format |
 | API reference | `docs/architecture/api-reference.md` | REST endpoints |
-| Design / UX | `docs/design/index.md` | Tiers, `system.md`, `/ui-check`, `/ui-design-deep` |
+| Design / UX | `docs/design/index.md` | Tiers, `system.md`, `/ui-design-deep`, Router `accessibility` protocol |
 | Navigation shell & phased delivery | `docs/domains/navigation/` + `docs/domains/cross-domain/changes/` | **Active** — supersedes `docs/archived/navigation-v2.md`; read [navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md) first |
 
 ---
@@ -185,11 +185,12 @@ Product domains are documented under [/docs/domains/](/docs/domains/). Each row 
 
 | Task | Start here |
 |------|------------|
-| Split a screen | `/split-flutter-screen` skill |
-| New API endpoint | `/single-backend-route-change` skill |
-| BDD → Playwright | `/add-bdd-playwright-scenario` skill |
-| Parallel sprint | `/spawn-sprint-agents` skill |
-| Before push | `/pre-push-verify` skill or `./scripts/pre-push-changed.sh` |
-| UI review / theme rework | `docs/design/index.md` · `/ui-check` · `/ui-design-deep` · `docs/design/plans/ui-rework-plan.md` |
-| Security audit | `/security-error-audit` skill |
-| UAT deploy / live smoke red | `docs/e2e/uat-live-operations-runbook.md` · `docs/e2e/uat-waf-queue-lessons.md` · `.agents/memory/uat-live-e2e-triage.md` |
+| **Default** | Five Tier 1 commands — see `docs/engineering/cursor-agent-framework.md` |
+| Split a screen | `/split-flutter-screen` (Tier 2) |
+| New API endpoint | `/babysit-plus` or `/execute-plan` — Router → `api-contract` protocol |
+| BDD → Playwright | `/add-bdd-playwright-scenario` (Tier 2) |
+| Parallel sprint | `/spawn-sprint-agents` (Tier 2) |
+| Before push | `./scripts/pre-push-changed.sh` or `/pre-push-verify` |
+| UI review / theme rework | `/ui-design-deep` · `docs/design/index.md` |
+| Multi-phase autonomous work | `/execute-plan` |
+| Security-sensitive change | Router → `protocols/security.md`, `authorization.md` |

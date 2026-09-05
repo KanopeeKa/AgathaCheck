@@ -1,36 +1,42 @@
 ---
-description: Security patterns for API error handling, dependencies, and secrets
+description: Security invariants for API, uploads, and secrets — detail in security protocol
 globs: server/**,server/lib/**
 ---
 
 # Security
 
+**Deep procedure:** `.cursor/agent-kernel/protocols/security.md` (Router loads when applicable).
+
 ## Error responses (5xx)
 
 - **Never** return raw `err.message`, `e.toString()`, or `'$e'` in production 5xx bodies.
 - Use `publicError()` / `errorDetails()` from `server/config/security.js`.
-- Before claiming redaction is complete, grep **all** of: `err.message`, `e.toString()`, `$e`, `details` inside JSON error bodies on the Node backend.
+- Before claiming redaction complete, grep: `err.message`, `e.toString()`, `$e`, `details` in JSON error bodies.
 
-## Dependencies
+## Auth & rate limiting
 
-- Run `npm audit` in `server/` and `e2e/` before push.
-- Do not ignore **high** or **critical** advisories without a linked issue.
-- CI blocks merges on high+ npm audit findings.
+- Sensitive auth endpoints: `createAuthLimiter()` (`server/config/rateLimit.js`).
+- Other DB/filesystem routers: `router.use(createApiLimiter())` before handlers.
+- One AuthN mechanism — no ad-hoc token parsing in handlers.
+- Secrets/tokens never logged. Passwords: bcrypt; JWT via jsonwebtoken.
 
-## Secrets
+## Authorization (summary)
 
-- Never commit API keys, JWT secrets, or passwords.
-- JWT dev fallback is documented in `.agents/memory/jwt-secret-dev-fallback.md` — ensure production requires explicit secret.
-
-## Auth
-
-- Sensitive auth endpoints use rate limiting (`server/config/rateLimit.js` → `createAuthLimiter()`): signup, login, forgot/reset password.
-- All other API routers that perform DB or filesystem access must call `router.use(createApiLimiter())` in their route composer (`routes/*/index.js` or the top of a monolithic route module) before registering handlers. This satisfies CodeQL `js/missing-rate-limiting` and mitigates DoS.
-- `createApiLimiter()` is skipped under `NODE_ENV=test` and `E2E=1` (same as auth limiter).
-- Passwords hashed with bcrypt; tokens via jsonwebtoken.
+- Backend AuthZ mandatory — UI hiding is not security.
+- UUID/share URL possession is not authorization. See `protocols/authorization.md`.
 
 ## File uploads
 
-- Never build filesystem paths from `file.originalname` or request params. Use a server-generated UUID as `fileId` and pass it to `saveUploadedFile()`.
-- Always persist uploads with `saveUploadedFile()` (path containment under a fixed root, mode `0o600`).
-- Multer must use `memoryStorage()` plus MIME allowlists in `fileFilter`.
+- Server-generated UUID `fileId`; never paths from `originalname` or params.
+- `saveUploadedFile()` with path containment, mode `0o600`.
+- Multer: `memoryStorage()` + MIME allowlist in `fileFilter`.
+
+## Dependencies
+
+- `npm audit` in `server/` and `e2e/` before push; CI blocks high+.
+
+## Input / output
+
+- Validate external input (`protocols/validation.md`).
+- Explicit response DTOs — no indiscriminate DB-row serialization.
+- Public endpoints: data minimization.

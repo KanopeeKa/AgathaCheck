@@ -16,15 +16,17 @@ Canonical merge gates for PRs: [autonomous-pr-policy.md](./autonomous-pr-policy.
 
 ## Profile index
 
-| Profile | Use when |
-|---------|----------|
-| `default` | Any phase — always included |
-| `flutter-screen-split` | Extracting widgets/screens under `flutter_app/lib/` |
-| `single-backend-route` | Node route changes |
-| `bdd-journey` | User journey / E2E behavior change |
-| `governance` | Scripts, CI, allowlists, docs/agent-efficiency |
+| Profile | Use when | Router protocols (additive) |
+|---------|----------|----------------------------|
+| `default` | Any phase — always included | testing (baseline) |
+| `flutter-screen-split` | Extracting widgets/screens under `flutter_app/lib/` | accessibility, flutter-mobile, testing |
+| `single-backend-route` | Node route changes | api-contract, validation, authorization (sanity), security (5xx), testing |
+| `bdd-journey` | User journey / E2E behavior change | testing, e2e, release-verification |
+| `governance` | Scripts, CI, allowlists, docs/agent-efficiency | documentation, testing |
 
 Profiles are **additive**: `exit_checklist: single-backend-route` means `default` + `single-backend-route` sections.
+
+**Router:** `.cursor/agent-kernel/ROUTER.md` classifies work; exit profiles **execute** verification at merge time.
 
 ---
 

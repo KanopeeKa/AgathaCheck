@@ -1,5 +1,5 @@
 ---
-description: Slim always-on agent pointers — details live in Skills, docs, and path-scoped rules
+description: Slim always-on agent pointers — Router, five commands, links to docs and path-scoped rules
 alwaysApply: true
 ---
 
@@ -8,73 +8,63 @@ alwaysApply: true
 ## Start here
 
 - **Domain map:** `docs/architecture/index.md` (read before broad search)
+- **Cursor framework:** `docs/engineering/cursor-agent-framework.md` · Router: `.cursor/agent-kernel/ROUTER.md`
 - **Efficiency plan:** `docs/agent-efficiency/plans/agent-efficiency-plan.md`
 - **Sprint status:** `docs/debt/refactoring-log.md`
 - **Institutional memory:** `.agents/memory/MEMORY.md`
 
-## PR hygiene (always)
+## Tier 1 commands (normal use)
 
-- **Pre-PR critical self-review** before every PR open/update — `.cursor/rules/pr-hygiene.mdc`
-- **Bugbot-first** automatic review; Copilot optional — `docs/agent-efficiency/pr-review-cost-efficiency.md`
-- **Babysit model:** `composer-2.5` only for `/babysit`, `/babysit-plus`, and `/babysit-uat`
+| Command | Use for |
+|---------|---------|
+| `/execute-plan` | Multi-phase autonomous plans — gate exit `0` = proceed without asking |
+| `/babysit-plus` | Bounded autonomous work → PR triage, CI, merge |
+| `/babysit-uat` | **Final** merge to `main` + pre-UAT E2E gate |
+| `/e2e-debug` | Pre-UAT remedial fix loop (chains to babysit-uat) |
+| `/ui-design-deep` | Flow/theme/multi-screen design + implementation |
 
-## Pre-push (single source of truth)
+Each Tier 1 skill runs the **Engineering Router** first (profile per skill), then loads only applicable **protocols** under `.cursor/agent-kernel/protocols/`.
+
+## Definition of done
+
+Complete when the requested outcome **and** Router-determined verification pass: tests, lint/pre-push, contracts, migrations, security checks, docs — as applicable. Not merely “looks working.” Details: Router + `docs/engineering/cursor-agent-framework.md`.
+
+## PR hygiene
+
+- **Pre-PR critical self-review** — `.cursor/rules/pr-hygiene.mdc`
+- **Babysit model:** `composer-2.5` only for `/babysit`, `/babysit-plus`, `/babysit-uat`
+- Policy: `docs/agent-efficiency/pr-review-cost-efficiency.md`
+
+## Pre-push
 
 | When | Command |
 |------|---------|
 | During iteration | `./scripts/pre-push-changed.sh` |
 | Before merge to `main` | `./scripts/pre-push.sh` |
 
-Do not duplicate these commands in chat — run the script. Skill: `/pre-push-verify`.
+Skill: `/pre-push-verify`. Do not duplicate in chat — run the script.
 
-## Skills (recurring workflows)
+## Internal / advanced (Tier 2)
 
-| Skill | Use for |
-|-------|---------|
-| `/split-flutter-screen` | Screen/widget extraction |
-| `/single-backend-route-change` | Node API changes |
-| `/add-bdd-playwright-scenario` | Gherkin → Playwright |
-| `/spawn-sprint-agents` | Parallel sprint coordination |
-| `/security-error-audit` | 5xx error redaction |
-| `/pre-push-verify` | Which tests to run |
-| `/babysit-plus` | Autonomous PR triage, debt issues, CI loop, always merge |
-| `/babysit-uat` | Final merge to main + pre-UAT E2E gate |
-| `/e2e-debug` | Pre-UAT remedial — diff since last green, parallel shard fixes |
-| `/dependabot-batch` | Weekly Dependabot inventory, batch branch, forced pre-merge E2E, babysit-uat |
-| `/execute-plan` | Multi-phase autonomous orchestrator — gate exit `0` = proceed without asking; see `.agents/memory/execute-plan-autonomy.md` |
-| `/ui-check` | Quick UX/a11y pass on UI changes |
-| `/ui-design-deep` | In-depth UX/design review or refactor planning |
+`/spawn-sprint-agents` · `/pre-push-verify` · `/dependabot-batch` · `/split-flutter-screen` · `/add-bdd-playwright-scenario`
 
-## UX (everyday drift guards)
-
-**UX:** Calm care coordination — see `design.mdc` when editing Flutter; `/ui-check` or `/ui-design-deep` for reviews (`docs/design/index.md`). UI rework: `docs/design/ui-rework-plan.md`.
+Orchestrators invoke these; not equivalent to Tier 1.
 
 ## Non-negotiables
 
 - Hand-written files ≤ **500 lines** (`node scripts/check_file_size.js`)
-- BDD gate: `node e2e/scripts/check_bdd_coverage.js --report-only` (currently ≥150 mapped of 241 total; totals drift)
-- Node.js is the canonical backend
+- BDD gate: `node e2e/scripts/check_bdd_coverage.js --report-only`
+- Node.js canonical backend; calendar dates `YYYY-MM-DD` on wire
 - Never raw exception text in prod 5xx bodies
-- Calendar dates as `YYYY-MM-DD` on the wire
-- **UAT Tiger Protect WAF:** HTTP IP whitelisting for GitHub Actions is **not available** — never ask the operator to whitelist CI egress. Live browser E2E is **advisory** (`uat-live-e2e.yml`); deploy path is HTTP smoke only. See `docs/e2e/uat-deploy-tiers.md` and `docs/e2e/uat-waf-queue-lessons.md`.
-
-## Atomic PRs (summary)
-
-- **One PR = one verifiable outcome** (single sentence; cross-domain OK when serving that outcome).
-- **Snags:** fix trivial same-file issues inline; else micro-PR or debt issue — never silent deferral.
-- Full policy: `docs/agent-efficiency/atomic-pr-policy.md`
-
-## Merge policy (summary)
-
-- **Single domain / single agent:** PR direct to `main` when CI green.
-- **Multi-agent sprint:** integration branch → one PR to `main`. See `merge-policy.mdc` + `/spawn-sprint-agents`.
+- **UAT WAF:** no CI IP whitelist — live E2E advisory; see `docs/e2e/uat-deploy-tiers.md`
+- **Atomic PRs:** one verifiable outcome — `docs/agent-efficiency/atomic-pr-policy.md`
 
 ## Cloud environment
 
-PostgreSQL: `sudo pg_ctlcluster 16 main start` each session.  
+PostgreSQL: `sudo pg_ctlcluster 16 main start`  
 Backend: `cd server && PGUSER=user PGPASSWORD=password PGHOST=localhost PGPORT=5432 PGDATABASE=agatha_db node bin/start.js`  
-Full cloud caveats: `AGENTS.md`.
+Full: `AGENTS.md`.
 
-## Path-scoped rules (auto-apply when editing matching files)
+## Path-scoped rules
 
-`modularity.mdc`, `testing.mdc`, `security.mdc`, `single-backend.mdc`, `accessibility.mdc`, `design.mdc`, `agent-coordination.mdc`
+`modularity.mdc` · `testing.mdc` · `security.mdc` · `single-backend.mdc` · `accessibility.mdc` · `design.mdc` · `pet-care-architecture.mdc` · `agent-coordination.mdc`

@@ -1,6 +1,6 @@
 ---
 name: ui-design-deep
-description: In-depth UX, accessibility, and design-system review for new flows, landing/auth refresh, theme changes, or multi-screen consistency. Use when /ui-check is not enough.
+description: In-depth UX, accessibility, and design-system review for new flows, landing/auth refresh, theme changes, or multi-screen consistency. Router design-scoped profile; use accessibility protocol quick pass for routine polish.
 paths:
   - flutter_app/lib/**
   - docs/design/**
@@ -15,9 +15,23 @@ paths:
 - Multi-screen visual or interaction consistency
 - User explicitly requests design direction or UI refactor planning
 
-**Not for:** routine widget fixes — use `/ui-check` or everyday `design.mdc` only.
+**Not for:** routine widget fixes — use `protocols/accessibility.md` §Quick pass or everyday `design.mdc`.
 
-## Read first
+---
+
+## Router (ui-design-deep)
+
+**Profile:** `design-scoped`
+
+1. Read `.cursor/agent-kernel/ROUTER.md` (design-scoped).
+2. Default protocols: `accessibility`, `flutter-mobile`, `testing`.
+3. Add `api-contract`, `authorization`, `security` only if API/network/storage contract changes.
+4. Multi-step journeys → `release-verification.md`.
+5. **Ceiling:** visual-only / spacing / copy on existing components → R0–R1; do not load `private-files` or migrations.
+
+Inspect existing design system before proposing changes (see §Read first below).
+
+---
 
 1. `docs/design/index.md` — tier and refactor phases
 2. `docs/design/ui-rework-plan.md` — if theme rework or multi-phase UI work

@@ -4,25 +4,35 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 
 ## Skills (prefer these for workflows)
 
-| Skill | Replaces ad-hoc prompts for |
-|-------|----------------------------|
+**Framework:** `docs/engineering/cursor-agent-framework.md` · Router: `.cursor/agent-kernel/ROUTER.md`
+
+### Tier 1 (normal use)
+
+| Skill | Use for |
+|-------|---------|
+| `/execute-plan` | Multi-phase autonomy — see `execute-plan-autonomy.md` |
+| `/babysit-plus` | Bounded autonomous PR work |
+| `/babysit-uat` | Final merge to `main` + pre-UAT E2E |
+| `/e2e-debug` | Pre-UAT remedial loop |
+| `/ui-design-deep` | Flow/theme/multi-screen design |
+
+### Tier 2 (internal/advanced)
+
+| Skill | Use for |
+|-------|---------|
 | `/split-flutter-screen` | Screen extraction |
 | `/add-bdd-playwright-scenario` | Gherkin → Playwright |
-| `/single-backend-route-change` | Node API route changes |
 | `/spawn-sprint-agents` | Parallel sprint coordination |
-| `/security-error-audit` | 5xx redaction grep |
 | `/pre-push-verify` | Which tests to run |
-| `/babysit-plus` | Autonomous PR triage, debt, CI loop, merge (composer-2.5 only) |
-| `/babysit-uat` | Final merge to `main` + pre-UAT E2E gate |
-| `/e2e-debug` | Pre-UAT remedial — diff since last green, parallel shard fixes |
-| `/execute-plan` | Multi-phase autonomy — see `execute-plan-autonomy.md` |
-| `/ui-check` | Quick UX/a11y pass on UI changes — **auto-reminded** when `pre-push-changed.sh` detects presentation edits |
-| `/ui-design-deep` | In-depth UX/design review or refactor planning |
-| `/review-bugbot` | Pre-push local review to dedupe paid Bugbot runs (command) |
+| `/dependabot-batch` | Weekly dependency batch |
+
+### Tier 3 (Router protocols — do not invoke)
+
+`ui-check` → `protocols/accessibility.md` · `single-backend-route-change` → `api-contract` · `security-error-audit` → `security`
 
 ## Design (UI/UX)
 
-- Map: `docs/design/index.md` — tier 0 everyday rules, `/ui-check`, `/ui-design-deep`
+- Map: `docs/design/index.md` — tier 0 everyday rules, Router `accessibility` protocol, `/ui-design-deep`
 - **UI rework plan:** `docs/design/ui-rework-plan.md` (phases 0–7)
 - Copy / org branding: `docs/design/copy-tone.md`
 - Principles (deep only): `docs/design/principles.md`

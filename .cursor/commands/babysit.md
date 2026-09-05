@@ -9,7 +9,7 @@ Your job is to get this PR to a merge-ready state.
 
 **Model:** **`composer-2.5` only** — switch before starting if needed. See `docs/agent-efficiency/pr-review-cost-efficiency.md`.
 
-**Pre-PR review:** If the PR is not open yet, complete mandatory pre-PR critical self-review first (`.cursor/rules/pr-hygiene.mdc`). If the diff touches Flutter presentation UI, run **`/ui-check`** before opening the PR.
+**Pre-PR review:** If the PR is not open yet, complete mandatory pre-PR critical self-review first (`.cursor/rules/pr-hygiene.mdc`). Run the **Engineering Router** (`.cursor/agent-kernel/ROUTER.md`, profile per skill). If the diff touches Flutter presentation UI, apply **`protocols/accessibility.md` §Quick pass** before opening the PR.
 
 Check PR status, comments, and latest CI and resolve any issues until the PR is ready to merge.
 
