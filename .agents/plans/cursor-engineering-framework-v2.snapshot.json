@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "plan_id": "cursor-engineering-framework-v2",
+  "approved_at": "2026-09-05T21:00:00Z",
+  "approved_by": "user chat — build and implement framework v2; review PR988; babysit+ merge; execute-plan",
+  "approved_until": "2026-09-07T21:00:00Z",
+  "content_hash": "sha256:d2bb637cec558566506d1f59d43fadd1432dd82fc9f1fd5ef96237ee29a6e3fc",
+  "autonomy": "completed",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 989,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Engineering Router framework v2",
+      "branch": "cursor/cursor-engineering-framework-v2-75cb",
+      "allowed_paths": [
+        ".cursor/agent-kernel/**",
+        ".cursor/rules/**",
+        ".cursor/skills/**",
+        ".cursor/commands/**",
+        ".agents/plans/cursor-engineering-framework-v2.*",
+        ".agents/memory/MEMORY.md",
+        "docs/engineering/**",
+        "docs/agent-efficiency/phase-exit-checklists.md",
+        "docs/architecture/index.md",
+        "docs/design/index.md",
+        ".github/pull_request_template.md"
+      ],
+      "forbidden_paths": [
+        "server/routes/**",
+        "flutter_app/lib/features/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": "PR #988 squash-merged to main",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/988",
+      "pr_head_sha": "dfc4cc7afd9c799199e669833826e4b1a9473adbc",
+      "merge_commit": "a443ff249dcf37813911a65d1218fa547f5fbd93",
+      "debt_issue_refs": []
+    }
+  ]
+}

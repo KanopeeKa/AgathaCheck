@@ -26,7 +26,7 @@ paths:
 1. Read `.cursor/agent-kernel/ROUTER.md` (design-scoped).
 2. Default protocols: `accessibility`, `flutter-mobile`, `testing`.
 3. Add `api-contract`, `authorization`, `security` only if API/network/storage contract changes.
-4. Multi-step journeys → `release-verification.md`.
+4. Multi-step journeys → `.cursor/agent-kernel/protocols/release-verification.md`.
 5. **Ceiling:** visual-only / spacing / copy on existing components → R0–R1; do not load `private-files` or migrations.
 
 Inspect existing design system before proposing changes (see §Read first below).

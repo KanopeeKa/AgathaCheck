@@ -34,6 +34,36 @@ verification: [pre-push-changed.sh]
 phase_fit: in-scope
 ```
 
+## Completion
+
+| Field | Value |
+|-------|-------|
+| **PR** | [#988](https://github.com/KanopeeKa/AgathaCheck/pull/988) |
+| **merge_commit** | `a443ff249dcf37813911a65d1218fa547f5fbd93` |
+| **completed** | 2026-09-05 |
+| **autonomy** | `completed` |
+
+Copilot review (5 threads): canonical protocol paths under `.cursor/agent-kernel/protocols/` — fixed before merge.
+
+## Runtime state
+
+```yaml
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
+halt_reason: null
+next_action: "plan complete"
+artifact_ref:
+  branch: cursor/framework-plan-complete-75cb
+  plan_path: .agents/plans/cursor-engineering-framework-v2.md
+  plan_commit: a443ff249dcf37813911a65d1218fa547f5fbd93
+  snapshot_path: .agents/plans/cursor-engineering-framework-v2.snapshot.json
+  snapshot_commit: a443ff249dcf37813911a65d1218fa547f5fbd93
+open_prs: []
+merge_commits: {"1":"a443ff249dcf37813911a65d1218fa547f5fbd93"}
+debt_issue_refs: []
+```
+
 ## Next
 
-Use this framework as orchestration layer for Pet Care hardening programme.
+Use this framework as orchestration layer for Pet Care hardening programme. Start plans with `/execute-plan <plan_id>` — Router runs automatically.
