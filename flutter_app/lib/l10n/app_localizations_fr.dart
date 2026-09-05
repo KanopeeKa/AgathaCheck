@@ -1871,6 +1871,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myOrganizations => 'Mes organisations';
 
   @override
+  String get shelterTasksEyebrowLabel => 'Tâches refuge';
+
+  @override
   String get organisationsDashboardTitle => 'Tableau de bord des refuges';
 
   @override

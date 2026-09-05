@@ -3397,6 +3397,12 @@ abstract class AppLocalizations {
   /// **'My Organisations'**
   String get myOrganizations;
 
+  /// No description provided for @shelterTasksEyebrowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelter tasks'**
+  String get shelterTasksEyebrowLabel;
+
   /// No description provided for @organisationsDashboardTitle.
   ///
   /// In en, this message translates to:

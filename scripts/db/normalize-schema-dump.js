@@ -17,9 +17,11 @@ const NOISE_PREFIXES = [
   '\\unrestrict',
 ];
 
-function isNoiseLine(trimmed) {
+function isNoiseLine(trimmed, rawLine) {
   if (!trimmed) return true;
   if (trimmed.startsWith('--')) return true;
+  // pg_dump session SET commands are top-level; preserve SET inside function bodies.
+  if (trimmed.startsWith('SET ') && /^\s/.test(rawLine)) return false;
   return NOISE_PREFIXES.some((prefix) => trimmed.startsWith(prefix));
 }
 
@@ -63,7 +65,7 @@ export function normalizeSchemaDump(raw) {
 
   for (const line of lines) {
     const trimmed = line.trimEnd();
-    if (isNoiseLine(trimmed.trim())) continue;
+    if (isNoiseLine(trimmed.trim(), line)) continue;
     kept.push(canonicalizeCheckConstraintArrays(canonicalizePartialIndexArrays(trimmed)));
   }
 

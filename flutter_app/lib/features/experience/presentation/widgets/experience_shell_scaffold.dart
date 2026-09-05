@@ -17,9 +17,14 @@ import '../utils/experience_theme.dart';
 import 'experience_section_drawer.dart';
 import 'experience_workspace_toggle.dart';
 import '../config/guardian_primary_destinations.dart';
+import '../config/shelter_primary_destinations.dart';
 import 'guardian_bottom_navigation.dart';
 import 'guardian_navigation_rail.dart';
 import 'guardian_navigation_sidebar.dart';
+import 'shelter_bottom_navigation.dart';
+import 'shelter_navigation_rail.dart';
+import 'shelter_navigation_sidebar.dart';
+import 'shelter_pinned_org_provider.dart';
 import '../../../organization/presentation/utils/org_screen_theme.dart';
 
 /// Shell scaffold shared by guardian and organisation experience screens.
@@ -84,6 +89,11 @@ class ExperienceShellScaffold extends ConsumerWidget {
     final isOrg = experience == AppExperience.organization;
     final viewportWidth = MediaQuery.sizeOf(context).width;
     final isGuardianExperience = experience == AppExperience.petCare;
+    final shelterNavActive =
+        isOrg && ShelterPrimaryDestinations.supports(currentLocation);
+    final pinnedOrg = shelterNavActive
+        ? ref.watch(shelterPinnedOrganizationProvider)
+        : null;
     final usesGuardianPrimaryNavigation =
         isGuardianExperience &&
         GuardianPrimaryDestinations.isCompact(viewportWidth);
@@ -95,9 +105,18 @@ class ExperienceShellScaffold extends ConsumerWidget {
         GuardianPrimaryDestinations.isMedium(viewportWidth);
     final usesGuardianLeadingNav =
         usesGuardianNavigationRail || usesGuardianNavigationSidebar;
-    final hideGuardianDrawer = usesGuardianLeadingNav;
-    final usesShelterPrimaryChrome =
-        isOrg && GuardianPrimaryDestinations.isCompact(viewportWidth);
+    final usesShelterPrimaryNavigation =
+        shelterNavActive && ShelterPrimaryDestinations.isCompact(viewportWidth);
+    final usesShelterNavigationSidebar =
+        shelterNavActive &&
+        ShelterPrimaryDestinations.isExpanded(viewportWidth);
+    final usesShelterNavigationRail =
+        shelterNavActive && ShelterPrimaryDestinations.isMedium(viewportWidth);
+    final usesShelterLeadingNav =
+        usesShelterNavigationRail || usesShelterNavigationSidebar;
+    final usesLeadingNav = usesGuardianLeadingNav || usesShelterLeadingNav;
+    final hideSectionDrawer = usesLeadingNav;
+    final usesShelterPrimaryChrome = usesShelterPrimaryNavigation;
     final appBarColor = usesGuardianPrimaryNavigation
         ? AppColorTokens.petCarePrimary
         : usesShelterPrimaryChrome
@@ -117,16 +136,21 @@ class ExperienceShellScaffold extends ConsumerWidget {
         isRoot &&
         MediaQuery.sizeOf(context).width < 360 &&
         MediaQuery.textScalerOf(context).scale(14) > 18;
-    final suppressGuardianSectionRootAppBarTitle =
-        isGuardianExperience && usesGuardianLeadingNav && isRoot;
-    final usesGuardianDesktopContentHeader =
-        isGuardianExperience &&
-        usesGuardianLeadingNav &&
-        !suppressGuardianSectionRootAppBarTitle;
+    final suppressSectionRootAppBarTitle =
+        (isGuardianExperience && usesGuardianLeadingNav && isRoot) ||
+        (shelterNavActive && usesShelterLeadingNav && isRoot);
+    final usesDesktopContentHeader =
+        (isGuardianExperience &&
+            usesGuardianLeadingNav &&
+            !suppressSectionRootAppBarTitle) ||
+        (shelterNavActive &&
+            usesShelterLeadingNav &&
+            !suppressSectionRootAppBarTitle &&
+            screenTitle != null);
     final showTitle =
         screenTitle != null &&
         !hideTitleForAccessibleCompactHeader &&
-        !suppressGuardianSectionRootAppBarTitle;
+        !suppressSectionRootAppBarTitle;
     final titleWidget = !showTitle
         ? const SizedBox.shrink()
         : useOrgTitle
@@ -135,7 +159,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
             variant: orgNavVariant!,
             organization: organization,
           )
-        : usesGuardianDesktopContentHeader
+        : usesDesktopContentHeader
         ? Align(
             alignment: Alignment.centerLeft,
             child: Text(
@@ -157,7 +181,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
       usesGuardianPrimaryNavigation: usesGuardianPrimaryNavigation,
       usesShelterPrimaryChrome: usesShelterPrimaryChrome,
     );
-    final leadingWidget = usesGuardianLeadingNav
+    final leadingWidget = usesLeadingNav
         ? (!isRoot
               ? IconButton(
                   key: const Key('experience_back_button'),
@@ -184,7 +208,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
             : experience == AppExperience.petCare
             ? AppColorTokens.background
             : null,
-        appBar: usesGuardianLeadingNav
+        appBar: usesLeadingNav
             ? null
             : AppBar(
                 automaticallyImplyLeading: false,
@@ -196,24 +220,36 @@ class ExperienceShellScaffold extends ConsumerWidget {
                 scrolledUnderElevation: 0,
                 elevation: 0,
                 leading: leadingWidget,
-                centerTitle: !usesGuardianDesktopContentHeader,
+                centerTitle: !usesDesktopContentHeader,
                 title: titleWidget,
                 actions: trailingActions,
               ),
-        drawer: hideGuardianDrawer ? null : const ExperienceSectionDrawer(),
+        drawer: hideSectionDrawer ? null : const ExperienceSectionDrawer(),
         endDrawer: const NotificationPanel(),
-        body: usesGuardianLeadingNav
+        body: usesLeadingNav
             ? Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (usesGuardianNavigationSidebar)
+                  if (usesShelterLeadingNav)
+                    usesShelterNavigationSidebar
+                        ? ShelterNavigationSidebar(
+                            currentLocation: currentLocation,
+                            pinnedOrg: pinnedOrg,
+                          )
+                        : ShelterNavigationRail(
+                            currentLocation: currentLocation,
+                            pinnedOrg: pinnedOrg,
+                          )
+                  else if (usesGuardianNavigationSidebar)
                     GuardianNavigationSidebar(currentLocation: currentLocation)
                   else
                     GuardianNavigationRail(currentLocation: currentLocation),
                   Expanded(
                     child: ColoredBox(
                       key: const Key('experience_workspace_canvas'),
-                      color: AppColorTokens.background,
+                      color: isOrg
+                          ? orgListScaffoldBackground(context)
+                          : AppColorTokens.background,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -223,7 +259,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
                             leading: leadingWidget,
                             leadingWidth: leadingWidth ?? 56,
                             title: titleWidget,
-                            centerTitle: !usesGuardianDesktopContentHeader,
+                            centerTitle: !usesDesktopContentHeader,
                             actions: trailingActions,
                           ),
                           Expanded(child: child),
@@ -236,6 +272,11 @@ class ExperienceShellScaffold extends ConsumerWidget {
             : child,
         bottomNavigationBar: usesGuardianPrimaryNavigation
             ? GuardianBottomNavigation(currentLocation: currentLocation)
+            : usesShelterPrimaryNavigation
+            ? ShelterBottomNavigation(
+                currentLocation: currentLocation,
+                pinnedOrg: pinnedOrg,
+              )
             : null,
       ),
     );
@@ -246,8 +287,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
     required bool usesGuardianPrimaryNavigation,
     required bool usesShelterPrimaryChrome,
   }) {
-    final onDarkChrome =
-        usesGuardianPrimaryNavigation || usesShelterPrimaryChrome;
     return [
       if (contextualActions.isNotEmpty) ...contextualActions,
       if (contextualActions.isNotEmpty)

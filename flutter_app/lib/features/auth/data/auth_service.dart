@@ -12,6 +12,7 @@ class AuthUser {
   final String? category;
   final String? bio;
   final String? photoUrl;
+  final String? pinnedOrganizationId;
   final String? createdAt;
   final String? updatedAt;
 
@@ -23,6 +24,7 @@ class AuthUser {
     this.category,
     this.bio,
     this.photoUrl,
+    this.pinnedOrganizationId,
     this.createdAt,
     this.updatedAt,
   });
@@ -36,6 +38,7 @@ class AuthUser {
       category: json['category']?.toString(),
       bio: json['bio']?.toString(),
       photoUrl: json['photo_url']?.toString(),
+      pinnedOrganizationId: json['pinned_organization_id']?.toString(),
       createdAt: json['created_at']?.toString(),
       updatedAt: json['updated_at']?.toString(),
     );
@@ -168,6 +171,8 @@ class AuthService {
     String? category,
     String? bio,
     String? locale,
+    String? pinnedOrganizationId,
+    bool updatePinnedOrganizationId = false,
   }) async {
     final body = <String, dynamic>{};
     if (firstName != null) body['first_name'] = firstName;
@@ -175,6 +180,9 @@ class AuthService {
     if (category != null) body['category'] = category;
     if (bio != null) body['bio'] = bio;
     if (locale != null) body['locale'] = locale;
+    if (updatePinnedOrganizationId) {
+      body['pinned_organization_id'] = pinnedOrganizationId;
+    }
 
     final response = await _client.put(
       Uri.parse('$baseUrl/api/auth/me'),

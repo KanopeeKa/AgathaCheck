@@ -668,6 +668,7 @@
   "notificationsDesc": "Recent alerts and reminders",
 
   "myOrganizations": "My Organisations",
+  "shelterTasksEyebrowLabel": "Shelter tasks",
   "organisationsDashboardTitle": "Shelters dashboard",
   "discoverOrganizations": "Discover Organisations",
   "orgDiscoveryEmpty": "No organisations to discover yet",

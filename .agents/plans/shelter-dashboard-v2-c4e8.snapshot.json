@@ -1,0 +1,296 @@
+{
+  "schema_version": 1,
+  "plan_id": "shelter-dashboard-v2-c4e8",
+  "approved_at": "2026-09-03T22:45:00Z",
+  "approved_by": "user chat 2026-09-03 (/execute-plan shelter-dashboard-v2-c4e8, approve-autonomous on control issue #952)",
+  "approved_until": "2026-09-05T22:45:00Z",
+  "content_hash": "sha256:2588372760fc7b2f44e5575f8051747509431c4278f6e45a91914e4c7f32b6bd",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/shelter-dashboard-v2-c4e8-integration-c4e8",
+  "control_issue": 952,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "0",
+      "title": "Shelter dashboard v2 framing decisions",
+      "branch": "cursor/shelter-dashboard-v2-framing-c4e8",
+      "allowed_paths": [
+        "docs/domains/shelter/changes/shelter-dashboard-v2-framing-decisions.md",
+        "docs/domains/navigation/features/navigation-decisions.md",
+        "docs/debt/refactoring-log.md",
+        ".agents/plans/shelter-dashboard-v2-c4e8.md",
+        ".agents/plans/shelter-dashboard-v2-c4e8.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/953",
+      "pr_head_sha": "6a835097"
+    },
+    {
+      "id": "1",
+      "title": "Pinned org account preference API",
+      "branch": "cursor/shelter-pinned-org-api-c4e8",
+      "allowed_paths": [
+        "server/routes/auth/**",
+        "server/scripts/migrations/**",
+        "server/test/**",
+        "docs/architecture/api-reference.md",
+        ".agents/plans/shelter-dashboard-v2-c4e8.md",
+        ".agents/plans/shelter-dashboard-v2-c4e8.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/955",
+      "pr_head_sha": "43148b91"
+    },
+    {
+      "id": "2",
+      "title": "Shelter primary destinations config",
+      "branch": "cursor/shelter-primary-nav-config-c4e8",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/config/shelter_primary_destinations.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/shelter_*.dart",
+        "flutter_app/test/features/experience/presentation/widgets/shelter_*",
+        ".agents/plans/shelter-dashboard-v2-c4e8.md",
+        ".agents/plans/shelter-dashboard-v2-c4e8.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/960",
+      "pr_head_sha": "5d041cc9"
+    },
+    {
+      "id": "3",
+      "title": "Org shell persistent primary nav",
+      "branch": "cursor/shelter-shell-primary-nav-c4e8",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/shelter_*.dart",
+        "flutter_app/test/features/experience/presentation/widgets/experience_shell_scaffold_test.dart",
+        "flutter_app/test/features/experience/presentation/widgets/shelter_*",
+        ".agents/plans/shelter-dashboard-v2-c4e8.md",
+        ".agents/plans/shelter-dashboard-v2-c4e8.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/961",
+      "pr_head_sha": "11c15f32"
+    },
+    {
+      "id": "4",
+      "title": "Pin control on membership tile",
+      "branch": "cursor/shelter-tile-pin-c4e8",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/widgets/org_membership_tile.dart",
+        "flutter_app/lib/features/organization/presentation/providers/**",
+        "flutter_app/test/features/organization/presentation/widgets/org_membership_tile_test.dart",
+        ".agents/plans/shelter-dashboard-v2-c4e8.md",
+        ".agents/plans/shelter-dashboard-v2-c4e8.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/969",
+      "pr_head_sha": "be79e557"
+    },
+    {
+      "id": "5",
+      "title": "Shelter dashboard body redesign",
+      "branch": "cursor/shelter-dashboard-body-c4e8",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/screens/organization_list_screen.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/org_hub_section_header.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/org_discover_nav_row.dart",
+        "flutter_app/test/features/organization/presentation/screens/organization_list_screen_test.dart",
+        ".agents/plans/shelter-dashboard-v2-c4e8.md",
+        ".agents/plans/shelter-dashboard-v2-c4e8.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/963",
+      "pr_head_sha": "b68d1c95"
+    },
+    {
+      "id": "6",
+      "title": "Shelter tasks preview v1",
+      "branch": "cursor/shelter-tasks-preview-c4e8",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/widgets/shelter_tasks/**",
+        "flutter_app/lib/features/organization/presentation/providers/shelter_tasks*.dart",
+        "flutter_app/lib/features/organization/presentation/screens/organization_list_screen.dart",
+        "flutter_app/test/features/organization/presentation/widgets/shelter_tasks/**",
+        ".agents/plans/shelter-dashboard-v2-c4e8.md",
+        ".agents/plans/shelter-dashboard-v2-c4e8.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/962",
+      "pr_head_sha": "d8181a24"
+    },
+    {
+      "id": "7",
+      "title": "Teal token audit",
+      "branch": "cursor/shelter-teal-token-audit-c4e8",
+      "allowed_paths": [
+        "docs/design/tokens.md",
+        "flutter_app/lib/core/theme/**",
+        "flutter_app/lib/features/experience/presentation/utils/experience_theme.dart",
+        ".agents/plans/shelter-dashboard-v2-c4e8.md",
+        ".agents/plans/shelter-dashboard-v2-c4e8.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/970",
+      "pr_head_sha": "9ebbafca"
+    },
+    {
+      "id": "8",
+      "title": "Tests and navigation contract",
+      "branch": "cursor/shelter-dashboard-v2-tests-c4e8",
+      "allowed_paths": [
+        "docs/e2e/navigation-contract.md",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/features/experience/**",
+        "docs/debt/refactoring-log.md",
+        ".agents/plans/shelter-dashboard-v2-c4e8.md",
+        ".agents/plans/shelter-dashboard-v2-c4e8.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/971",
+      "pr_head_sha": "c94d5487"
+    }
+  ]
+}

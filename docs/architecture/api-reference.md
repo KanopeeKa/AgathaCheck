@@ -27,8 +27,8 @@ checks (`super_admin`, `admin`, `foster`). See `docs/domains/fostering/changes/o
 | POST | `/login` | public |
 | POST | `/refresh` | public; body `{ refresh_token }` |
 | POST | `/logout` | no server-side revocation (stateless JWT) |
-| GET | `/me` | current user |
-| PUT | `/me` | update profile (whitelisted fields) |
+| GET | `/me` | current user (includes `pinned_organization_id`, nullable) |
+| PUT | `/me` | update profile (whitelisted fields incl. `pinned_organization_id`; must be active org member) |
 | POST | `/me/photo` | sets a photo URL |
 | POST | `/change-password` | body `{ currentPassword, newPassword }` |
 | POST | `/forgot-password` | public; the reset `code` is returned/logged **only outside production** |

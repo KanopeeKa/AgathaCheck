@@ -1850,6 +1850,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myOrganizations => 'My Organisations';
 
   @override
+  String get shelterTasksEyebrowLabel => 'Shelter tasks';
+
+  @override
   String get organisationsDashboardTitle => 'Shelters dashboard';
 
   @override

@@ -3,7 +3,7 @@ title: Design tokens
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-26
+last_updated: 2026-09-04
 tags: [design,ui,ux]
 ---
 # Design tokens
@@ -179,7 +179,7 @@ Semantic **background fill only** — no borders on menu rows.
 | **g** | `organizationLight` | Organisation view (switch) | My Organisation, Notifications, Events, Org vets |
 | **w** | `surfaceAlt` | Settings, Help, About, Contact, Legal, Invite, Log out | same utility block |
 
-Shell top bar uses experience primary (plum on `/pc/*`, green on `/o/*`). Utility group never uses mode primary as row background.
+Shell top bar uses experience primary (plum on `/pc/*`, teal on `/o/*`). Utility group never uses mode primary as row background.
 
 **Ownership accents** (pets, vets, notifications): plum = guardian/personal; green = fostered/org-linked. Pair with text + icon (`docs/archived/navigation-v2.md`).
 
@@ -218,6 +218,23 @@ Dashboard preview blocks on `/pc/home` use an **open canvas** on `background` �
 - **Care preview exception:** `GuardianDeskSectionCard` with `petCareLight` wraps the CARE ACTIONS list (same token as pet-detail care preview); Care Team stays open canvas with per-row `CareTeamCard` surfaces
 - Fostering org tint (`organizationLight`) remains the cross-experience exception
 - Pet Care dashboard accents: plum; org/fostering cross-context: teal/org tokens when applicable
+
+## Dashboard sections (Shelter shell)
+
+Shelter dashboard blocks on `/o/orgs` use an **organizationLight canvas** — not Care `background` or plum (D-desk-S8). Section grouping matches the guardian desk eyebrow pattern but with teal tokens only:
+
+| Surface | Token | Widget / route |
+|---------|-------|----------------|
+| Scaffold canvas | `organizationLight` | `orgListScaffoldBackground` on `/o/orgs` and org shell body |
+| Section eyebrow | `organizationPrimary` | `OrgHubSectionHeader`, `GuardianDashboardSectionHeader` (Shelter tasks) |
+| Membership cards | `surface` | `orgListCardColor` / unified membership tile |
+| Task preview card | `surface` | `GuardianDeskSectionCard` inside `ShelterTasksPreview` |
+| Compact bottom nav | `organizationPrimary` bar; `organizationLight` unselected labels | `ShelterBottomNavigation` |
+| Rail / sidebar chrome | `surface` background; `organizationPrimary` selected state | `ShelterNavigationRail`, `ShelterNavigationSidebar` |
+| Compact app bar | `organizationPrimary` | `ExperienceShellScaffold` when Shelter primary nav active |
+| Workspace toggle menu | `organizationPrimary` when `/o/**` active | `ExperienceWorkspaceToggle` |
+
+**Grep guard (shelter-dashboard-v2):** no `petCarePrimary` / plum on `/o/**` presentation paths in this plan. Routed org UI uses `themeForAppExperience` to remap `ColorScheme` and component themes that would otherwise inherit guardian plum from `AppTheme.lightTheme`. Semantic warning/danger unchanged.
 
 ## Dashboard ambient decorations (guardian home, wide web)
 

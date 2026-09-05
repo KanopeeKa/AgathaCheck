@@ -1,3 +1,27 @@
+CREATE FUNCTION public.clear_pinned_org_on_membership_loss() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+      IF TG_OP = 'DELETE' THEN
+        UPDATE users
+           SET pinned_organization_id = NULL,
+               updated_at = NOW()
+         WHERE id = OLD.user_id
+           AND pinned_organization_id = OLD.organization_id;
+        RETURN OLD;
+      END IF;
+      IF TG_OP = 'UPDATE'
+         AND NEW.role LIKE 'pending_%'
+         AND (OLD.role IS NULL OR OLD.role NOT LIKE 'pending_%') THEN
+        UPDATE users
+           SET pinned_organization_id = NULL,
+               updated_at = NOW()
+         WHERE id = NEW.user_id
+           AND pinned_organization_id = NEW.organization_id;
+      END IF;
+      RETURN NEW;
+    END;
+    $$;
 CREATE TABLE public._migrations (
     id uuid NOT NULL,
     name character varying(255) NOT NULL,
@@ -576,7 +600,8 @@ CREATE TABLE public.users (
     photo_url text DEFAULT ''::text,
     locale character varying(10) DEFAULT 'en'::character varying,
     created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now()
+    updated_at timestamp with time zone DEFAULT now(),
+    pinned_organization_id uuid
 );
 CREATE TABLE public.vets (
     id uuid NOT NULL,
@@ -780,7 +805,9 @@ CREATE INDEX idx_pet_share_links_pet_id ON public.pet_share_links USING btree (p
 CREATE INDEX idx_pet_timeline_entries_pet_id ON public.pet_timeline_entries USING btree (pet_id, start_date);
 CREATE INDEX idx_prospects_email_lower ON public.prospects USING btree (lower((email)::text)) WHERE (email IS NOT NULL);
 CREATE INDEX idx_prospects_org_id ON public.prospects USING btree (organization_id);
+CREATE INDEX idx_users_pinned_organization_id ON public.users USING btree (pinned_organization_id) WHERE (pinned_organization_id IS NOT NULL);
 CREATE INDEX idx_vets_organization_id ON public.vets USING btree (organization_id);
+CREATE TRIGGER trg_clear_pinned_org_on_membership_loss AFTER DELETE OR UPDATE OF role ON public.organization_users FOR EACH ROW EXECUTE FUNCTION public.clear_pinned_org_on_membership_loss();
 ALTER TABLE ONLY public.adoption_journeys
     ADD CONSTRAINT adoption_journeys_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.adoption_journeys
@@ -997,6 +1024,8 @@ ALTER TABLE ONLY public.shared_pets
     ADD CONSTRAINT shared_pets_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.shared_pets
     ADD CONSTRAINT shared_pets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pinned_organization_id_fkey FOREIGN KEY (pinned_organization_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.vets
     ADD CONSTRAINT vets_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.vets
