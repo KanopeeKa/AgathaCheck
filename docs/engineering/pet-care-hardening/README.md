@@ -13,7 +13,7 @@ Gold-standard security and mobile-readiness programme for the Pet Care domain.
 
 | Doc | Role |
 |-----|------|
-| [discovery-report.md](./discovery-report.md) | Phase A inventory, findings table, recommended plan slices |
+| [hardening-discovery.md](../../domains/pet_care/changes/hardening-discovery.md) | Phase A inventory, findings table, recommended plan slices |
 | [../domains/pet_care/README.md](../../domains/pet_care/README.md) | Product domain map |
 | [../cursor-agent-framework.md](../cursor-agent-framework.md) | Agent orchestration (Router, execute-plan) |
 
@@ -21,7 +21,7 @@ Gold-standard security and mobile-readiness programme for the Pet Care domain.
 
 | plan_id | Phase | Status |
 |---------|-------|--------|
-| `pet-care-hardening-discovery` | A — discovery only | draft (awaiting `approve-autonomous`) |
+| `pet-care-hardening-discovery` | A — discovery only | active (PR #994) |
 | `pet-care-p0-private-files` | P0 implementation | not started |
 | `pet-care-p0-share-minimization` | P0 implementation | not started |
 | `pet-care-auth-platform` | B — shared foundations | not started |

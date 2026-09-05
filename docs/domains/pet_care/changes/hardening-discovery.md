@@ -127,7 +127,7 @@ Mounted in `server/bin/server.js` (also under `/backend/api/*`):
 |------|---------------|-------|
 | Pets CRUD | `server/test/pets/*` | Mock pool; ownership scoping tests exist |
 | Weight | `server/test/weightEntries.test.js` | No audit assertions found |
-| Health | `server/test/healthEntries.test.js`, `healthIssues.test.js` | Upload dir tests; no auth bypass tests for static files |
+| Health | `server/test/healthEntries.test.js`, `server/test/healthIssues.test.js` | Upload dir tests; no auth bypass tests for static files |
 | Sharing | `server/test/sharing.test.js` | Does not assert preview field minimization |
 | Auth | `server/test/auth/*` | Refresh/logout; **no rotation/revocation store** |
 | Foster (Pet Care API) | `server/test/fosterPlacements.test.js` | Thin vs org foster suite |
@@ -156,22 +156,22 @@ Evidence column cites file paths inspected 2026-09-05. Severity: **P0** release 
 | F-03 | P0 | Sharing | Share preview returns full pet map, owner **email**, vet (incl. notes), all health entries — no scope | `server/routes/sharing.js` L255–294 | Scoped preview DTO; product sign-off on fields | Field leakage tests per scope |
 | F-04 | P0 | Sharing | `pet_share_links` has no `expires_at` column | `db/schema/canonical.sql` L506–515 | Add expiry + enforce on preview/accept | Expired link → 410 |
 | F-05 | P1 | Auth | Access and refresh JWTs share payload shape; no `typ`/purpose claim | `server/routes/auth/shared.js` L18–24 | Distinct claims + reject cross-use | Token type negative tests |
-| F-06 | P1 | Auth | Refresh is stateless; logout does not invalidate refresh token | `sessionRouter.js` L112–154 logout logs only, no server session store | Server-side refresh sessions, rotation, reuse detection | Rotation reuse, logout invalidates refresh |
+| F-06 | P1 | Auth | Refresh is stateless; logout does not invalidate refresh token | `server/routes/auth/sessionRouter.js` L112–154 logout logs only, no server session store | Server-side refresh sessions, rotation, reuse detection | Rotation reuse, logout invalidates refresh |
 | F-07 | P1 | Auth | Web stores access+refresh in SharedPreferences (JS-readable) | `flutter_app/lib/features/auth/data/token_store.dart` L19–40 | HttpOnly cookie refresh + in-memory access (web); document native path | Web storage inspection / E2E |
-| F-08 | P1 | Auth | `extractUserId` duplicated in 8+ route files (inconsistent auth) | `pets/shared.js`, `sharing.js`, `weightEntries.js`, `vets.js`, `notifications.js`, `healthEntries/shared.js`, `healthIssues/shared.js`, `organizations/shared.js` | Central `requireAuth` middleware + typed principal | Missing/malformed/expired token tests once |
+| F-08 | P1 | Auth | `extractUserId` duplicated in 8+ route files (inconsistent auth) | `server/routes/pets/shared.js`, `server/routes/sharing.js`, `server/routes/weightEntries.js`, `server/routes/vets.js`, `server/routes/notifications.js`, `server/routes/healthEntries/shared.js`, `server/routes/healthIssues/shared.js`, `server/routes/organizations/shared.js` | Central `requireAuth` middleware + typed principal | Missing/malformed/expired token tests once |
 | F-09 | P1 | Lifecycle | `DELETE /api/pets/:id/data` returns success without deleting data | `server/routes/pets/lifecycleRouter.js` L4–8 | Implement or remove; Flutter calls this URL | Integration test: data actually removed |
-| F-10 | P1 | Lifecycle | `POST /api/pets/:id/passed-away` is documented stub (no side effects) | `lifecycleRouter.js` L10–17; `pets/README.md` | Implement notification side effects or deprecate route | Assert side effects or 410 removed |
-| F-11 | P1 | Flutter | Presentation builds raw API URLs for lifecycle stubs | `pet_providers.dart` L169, L196 | Route through repository/use case; fix when API real | Widget/integration tests |
+| F-10 | P1 | Lifecycle | `POST /api/pets/:id/passed-away` is documented stub (no side effects) | `server/routes/pets/lifecycleRouter.js` L10–17; `server/routes/pets/README.md` | Implement notification side effects or deprecate route | Assert side effects or 410 removed |
+| F-11 | P1 | Flutter | Presentation builds raw API URLs for lifecycle stubs | `flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart` L169, L196 | Route through repository/use case; fix when API real | Widget/integration tests |
 | F-12 | P1 | Data lifecycle | Account deletion `DELETE /api/auth/me` deletes DB user only — no file cleanup pass | `server/routes/auth/profileRouter.js` L199–200 | `StoredObject` service; delete user/pet files | Post-delete byte retrieval fails |
 | F-13 | P1 | Validation | Weight accepts `parseFloat(missing) → 0` | `server/routes/weightEntries.js` L112, L134 | Explicit validation; reject invalid | 400 on missing/NaN/negative |
 | F-14 | P1 | API contract | No OpenAPI spec; manual `api-reference.md` only | Repo search: no `openapi*` files | OpenAPI subset + CI validate | Contract tests on critical DTOs |
 | F-15 | P2 | Security headers | No Helmet/CSP/HSTS configuration found | `server/bin/server.js`; grep helmet: none | Tune CSP for Flutter web + tests | Header assertion tests |
 | F-16 | P2 | Rate limiting | Static `/uploads` has no rate limiter (unlike API routers using `createApiLimiter`) | `server/bin/server.js` vs `sharing.js` L110 | Rate limit or remove public health path | Abuse test optional |
 | F-17 | P2 | Testing | No real PostgreSQL integration tests in CI | `server/test/helpers/petAccessMocks.js` pattern | Ephemeral PG for policy/constraints/share claim | CI job `integration` tag |
-| F-18 | P2 | Audit | Weight CRUD has no `logAuditEventSafe` calls in route module | `grep audit weightEntries` empty | Audit policy for sensitive mutations | Assert audit rows in tests |
+| F-18 | P2 | Audit | Weight CRUD has no `logAuditEventSafe` calls in route module | `server/routes/weightEntries.js` (no audit calls) | Audit policy for sensitive mutations | Assert audit rows in tests |
 | F-19 | P2 | Coverage | Jest collects coverage but no enforced minimum thresholds | No `coverageThreshold` in server package | Ratchet on `petAccess.js`, policy modules | CI threshold |
 | F-20 | P2 | Lint | No ESLint config in repository | Repo search | ESLint ratchet on `server/` | CI lint job |
-| F-21 | P2 | Hygiene | Dead `.bak` route files remain | `server/routes/pets.js.bak`, `auth.js.bak` | Remove | N/A |
+| F-21 | P2 | Hygiene | Dead `.bak` route files remain | `server/routes/pets.js.bak`, `server/routes/auth.js.bak` | Remove | N/A |
 | F-22 | P2 | Terminology | Guardian → Pet Care rename in progress | `docs/domains/pet_care/README.md` | Separate plan; don't mix with security PRs | N/A |
 | F-23 | P3 | Observability | `requestContextMiddleware` exists; no formal security-event taxonomy doc | `server/middleware/requestContext.js` | Document alert-worthy events | N/A |
 
