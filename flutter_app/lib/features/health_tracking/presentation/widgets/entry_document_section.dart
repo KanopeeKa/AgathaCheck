@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/utils/resolve_health_file_url.dart';
@@ -38,7 +37,8 @@ class EntryDocumentSection extends StatelessWidget {
 
   String _displayName(String path) => path.split('/').last;
 
-  String _documentUrl(String path) => resolveHealthFileUrl(path, apiBaseUrl: baseUrl);
+  String _documentUrl(String path) =>
+      resolveHealthFileUrl(path, apiBaseUrl: baseUrl);
 
   Widget _documentPlaceholder(
     BuildContext context,
@@ -342,7 +342,10 @@ class EntryDocumentSection extends StatelessWidget {
           children: [
             Center(
               child: InteractiveViewer(
-                child: AuthenticatedNetworkImage(url: imageUrl, fit: BoxFit.contain),
+                child: AuthenticatedNetworkImage(
+                  url: imageUrl,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
             Positioned(

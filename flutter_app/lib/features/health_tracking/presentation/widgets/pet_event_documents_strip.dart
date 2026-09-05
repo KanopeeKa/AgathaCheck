@@ -79,7 +79,8 @@ class _DocumentTile extends StatelessWidget {
   bool _isPdf(String path) =>
       path.toLowerCase().split('?').first.endsWith('.pdf');
 
-  String _documentUrl(String path) => resolveHealthFileUrl(path, apiBaseUrl: baseUrl);
+  String _documentUrl(String path) =>
+      resolveHealthFileUrl(path, apiBaseUrl: baseUrl);
 
   Future<void> _open(BuildContext context) async {
     final l = AppLocalizations.of(context)!;

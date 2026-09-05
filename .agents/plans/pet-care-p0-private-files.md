@@ -22,7 +22,7 @@ Close **F-01**: health documents and entry photos are no longer publicly servabl
 | **approved_at** | 2026-09-05T23:55:00Z |
 | **approved_until** | 2026-09-07T23:55:00Z |
 | **approved_by** | standing grant — Pet Care hardening roadmap (user chat 2026-09-05) |
-| **control_issue** | TBD |
+| **control_issue** | [#997](https://github.com/KanopeeKa/AgathaCheck/issues/997) |
 | **autonomy** | `active` |
 
 ## Router annotations
@@ -70,10 +70,10 @@ next_action: "continue phase 1 on branch cursor/pet-care-p0-private-files-75cb"
 artifact_ref:
   branch: cursor/pet-care-p0-private-files-75cb
   plan_path: .agents/plans/pet-care-p0-private-files.md
-  plan_commit: 18a1bc7510d46fed1b29383c8393b17b84571eeb
+  plan_commit: e1ce9dee67606845f7c14e094f57d28e9236ce87
   snapshot_path: .agents/plans/pet-care-p0-private-files.snapshot.json
-  snapshot_commit: 18a1bc7510d46fed1b29383c8393b17b84571eeb
-open_prs: []
+  snapshot_commit: e1ce9dee67606845f7c14e094f57d28e9236ce87
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/998"]
 merge_commits: {}
 debt_issue_refs: []
 ```

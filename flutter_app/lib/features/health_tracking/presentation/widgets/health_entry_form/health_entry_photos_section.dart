@@ -36,7 +36,8 @@ class HealthEntryPhotosSection extends StatelessWidget {
 
   String _displayName(String path) => path.split('/').last;
 
-  String _documentUrl(String path) => resolveHealthFileUrl(path, apiBaseUrl: baseUrl);
+  String _documentUrl(String path) =>
+      resolveHealthFileUrl(path, apiBaseUrl: baseUrl);
 
   Widget _documentPlaceholder(
     BuildContext context,
@@ -341,7 +342,10 @@ class HealthEntryPhotosSection extends StatelessWidget {
           children: [
             Center(
               child: InteractiveViewer(
-                child: AuthenticatedNetworkImage(url: imageUrl, fit: BoxFit.contain),
+                child: AuthenticatedNetworkImage(
+                  url: imageUrl,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
             Positioned(

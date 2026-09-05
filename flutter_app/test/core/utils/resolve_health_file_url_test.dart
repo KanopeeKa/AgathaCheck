@@ -26,7 +26,10 @@ void main() {
 
     test('isPrivateHealthFileUrl detects API paths', () {
       expect(isPrivateHealthFileUrl('/api/health-files/id'), isTrue);
-      expect(isPrivateHealthFileUrl('/uploads/health_documents/x.jpg'), isFalse);
+      expect(
+        isPrivateHealthFileUrl('/uploads/health_documents/x.jpg'),
+        isFalse,
+      );
     });
   });
 }
