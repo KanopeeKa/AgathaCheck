@@ -53,10 +53,10 @@ next_action: "continue phase 1 on branch cursor/pet-care-p0-share-minimization-7
 artifact_ref:
   branch: cursor/pet-care-p0-share-minimization-75cb
   plan_path: .agents/plans/pet-care-p0-share-minimization.md
-  plan_commit: 8e54f38b647fd54abd1e465c3e9118c688b4e252
+  plan_commit: 128d62a5ea815dad79ce5ddcaef9d4763bc57744
   snapshot_path: .agents/plans/pet-care-p0-share-minimization.snapshot.json
-  snapshot_commit: 8e54f38b647fd54abd1e465c3e9118c688b4e252
-open_prs: []
+  snapshot_commit: 128d62a5ea815dad79ce5ddcaef9d4763bc57744
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1001"]
 merge_commits: {}
 debt_issue_refs: []
 ```
