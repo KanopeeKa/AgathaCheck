@@ -35,9 +35,9 @@ next_action: "continue phase 2 on branch cursor/pet-care-terminology-flutter-75c
 artifact_ref:
   branch: cursor/pet-care-terminology-flutter-75cb
   plan_path: .agents/plans/pet-care-terminology-rename.md
-  plan_commit: eb6e60ba6226af801d5042c99c2e7cea9002e16b
+  plan_commit: 695e8027fe9b614003bae1da354270dba8b6365c
   snapshot_path: .agents/plans/pet-care-terminology-rename.snapshot.json
-  snapshot_commit: eb6e60ba6226af801d5042c99c2e7cea9002e16b
+  snapshot_commit: 695e8027fe9b614003bae1da354270dba8b6365c
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
