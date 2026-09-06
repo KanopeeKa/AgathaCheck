@@ -574,6 +574,16 @@ CREATE TABLE public.prospects (
     CONSTRAINT prospects_creation_source_check CHECK (((creation_source)::text = ANY ((ARRAY['manual_shelter_entry'::character varying, 'registered_user'::character varying])::text[]))),
     CONSTRAINT prospects_retention_category_check CHECK ((retention_category = ANY (ARRAY['manual_contact'::text, 'declined_archived'::text, 'prospect_relationship'::text])))
 );
+CREATE TABLE public.refresh_sessions (
+    id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    token_hash text NOT NULL,
+    family_id uuid NOT NULL,
+    rotated_from uuid,
+    revoked_at timestamp with time zone,
+    expires_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
 CREATE TABLE public.refresh_tokens (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -733,6 +743,8 @@ ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.prospects
     ADD CONSTRAINT prospects_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.refresh_sessions
+    ADD CONSTRAINT refresh_sessions_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.refresh_tokens
@@ -807,6 +819,9 @@ CREATE INDEX idx_pet_share_links_pet_id ON public.pet_share_links USING btree (p
 CREATE INDEX idx_pet_timeline_entries_pet_id ON public.pet_timeline_entries USING btree (pet_id, start_date);
 CREATE INDEX idx_prospects_email_lower ON public.prospects USING btree (lower((email)::text)) WHERE (email IS NOT NULL);
 CREATE INDEX idx_prospects_org_id ON public.prospects USING btree (organization_id);
+CREATE INDEX idx_refresh_sessions_family_id ON public.refresh_sessions USING btree (family_id);
+CREATE UNIQUE INDEX idx_refresh_sessions_token_hash ON public.refresh_sessions USING btree (token_hash);
+CREATE INDEX idx_refresh_sessions_user_id ON public.refresh_sessions USING btree (user_id);
 CREATE INDEX idx_users_pinned_organization_id ON public.users USING btree (pinned_organization_id) WHERE (pinned_organization_id IS NOT NULL);
 CREATE INDEX idx_vets_organization_id ON public.vets USING btree (organization_id);
 CREATE TRIGGER trg_clear_pinned_org_on_membership_loss AFTER DELETE OR UPDATE OF role ON public.organization_users FOR EACH ROW EXECUTE FUNCTION public.clear_pinned_org_on_membership_loss();
@@ -1018,6 +1033,10 @@ ALTER TABLE ONLY public.prospects
     ADD CONSTRAINT prospects_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.prospects
     ADD CONSTRAINT prospects_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.refresh_sessions
+    ADD CONSTRAINT refresh_sessions_rotated_from_fkey FOREIGN KEY (rotated_from) REFERENCES public.refresh_sessions(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.refresh_sessions
+    ADD CONSTRAINT refresh_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.shared_pets

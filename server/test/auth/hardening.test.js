@@ -6,6 +6,7 @@ import {
   makeToken,
   makeRefreshToken,
   mockComparePassword,
+  seedRefreshSession,
 } from './helpers.js';
 
 describe('Auth Routes — Hardening', () => {
@@ -127,18 +128,23 @@ describe('Auth Routes — Hardening', () => {
     it('refresh returns 401 when the user no longer exists', async () => {
       const pool = buildMockPool({ selectUserExists: async () => ({ rows: [] }) });
       const a = createApp(pool, mockComparePassword);
+      const refreshToken = makeRefreshToken();
+      seedRefreshSession(pool, refreshToken);
       const res = await request(a)
         .post('/api/auth/refresh')
-        .send({ refresh_token: makeRefreshToken() });
+        .send({ refresh_token: refreshToken });
       expect(res.statusCode).toBe(401);
     });
 
     it('refresh succeeds when the user still exists', async () => {
+      const refreshToken = makeRefreshToken();
+      seedRefreshSession(mockPool, refreshToken);
       const res = await request(app)
         .post('/api/auth/refresh')
-        .send({ refresh_token: makeRefreshToken() });
+        .send({ refresh_token: refreshToken });
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('access_token');
+      expect(res.body).toHaveProperty('refresh_token');
     });
 
     it('signup rejects an invalid email format', async () => {

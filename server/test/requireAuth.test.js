@@ -10,7 +10,16 @@ const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'defa
 
 describe('requireAuth', () => {
   const userId = 'user-auth-1';
-  const token = jwt.sign({ id: userId, email: 'a@example.com' }, JWT_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign(
+    { id: userId, email: 'a@example.com', typ: 'access' },
+    JWT_SECRET,
+    { expiresIn: '1h' },
+  );
+  const refreshToken = jwt.sign(
+    { id: userId, email: 'a@example.com', typ: 'refresh', sid: 'session-1' },
+    JWT_SECRET,
+    { expiresIn: '30d' },
+  );
 
   it('userIdFromAuthHeader returns id for valid bearer token', () => {
     expect(userIdFromAuthHeader(`Bearer ${token}`)).toBe(userId);
@@ -44,6 +53,19 @@ describe('requireAuth', () => {
     requireAuth(req, res, next);
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('userIdFromAuthHeader returns null for refresh token', () => {
+    expect(userIdFromAuthHeader(`Bearer ${refreshToken}`)).toBeNull();
+  });
+
+  it('requireAuth middleware returns 401 for refresh token', () => {
+    const req = { headers: { Authorization: `Bearer ${refreshToken}` } };
+    const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+    const next = jest.fn();
+    requireAuth(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(401);
     expect(next).not.toHaveBeenCalled();
   });
 

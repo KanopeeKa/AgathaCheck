@@ -2,9 +2,7 @@
  * Central JWT auth helpers for Pet Care routes (F-08).
  * Replaces duplicated extractUserId copies across route files.
  */
-import jwt from 'jsonwebtoken';
-
-import { JWT_SECRET } from '../config/jwtSecret.js';
+import { verifyAccessToken } from '../routes/auth/shared.js';
 
 /**
  * @param {string | undefined} authHeader
@@ -13,7 +11,7 @@ import { JWT_SECRET } from '../config/jwtSecret.js';
 export function userIdFromAuthHeader(authHeader) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
   try {
-    const payload = jwt.verify(authHeader.substring(7), JWT_SECRET);
+    const payload = verifyAccessToken(authHeader.substring(7));
     return payload?.id ?? null;
   } catch (_) {
     return null;
