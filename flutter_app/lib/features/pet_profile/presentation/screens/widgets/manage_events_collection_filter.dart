@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pet_profile_app/core/widgets/collection_filter/collection_filter.dart';
-import 'package:pet_profile_app/features/experience/presentation/screens/guardian/guardian_due_events_screen.dart';
+import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -286,8 +286,8 @@ ManageEventsFilters manageEventsFiltersFromSelections(
   return _manageEventsFiltersFromCoreSelections(selections);
 }
 
-CollectionFilterSelections selectionsFromGuardianGlobalEventsFilters(
-  GuardianGlobalEventsFilters filters,
+CollectionFilterSelections selectionsFromPetCareGlobalEventsFilters(
+  PetCareGlobalEventsFilters filters,
 ) {
   return {
     ..._coreSelectionsFromManageEventsFilters(filters.eventFilters),
@@ -295,24 +295,24 @@ CollectionFilterSelections selectionsFromGuardianGlobalEventsFilters(
         .map(ManageEventsCollectionFilterIds.petChoice)
         .toSet(),
     ManageEventsCollectionFilterIds.cohort: {
-      if (filters.cohorts.contains(GuardianEventsCohortFilter.myPets))
+      if (filters.cohorts.contains(PetCareEventsCohortFilter.myPets))
         ManageEventsCollectionFilterIds.myPets,
-      if (filters.cohorts.contains(GuardianEventsCohortFilter.fosterPets))
+      if (filters.cohorts.contains(PetCareEventsCohortFilter.fosterPets))
         ManageEventsCollectionFilterIds.fosterPets,
     },
   };
 }
 
-GuardianGlobalEventsFilters guardianGlobalEventsFiltersFromSelections(
+PetCareGlobalEventsFilters guardianGlobalEventsFiltersFromSelections(
   CollectionFilterSelections selections,
 ) {
   final cohortSelected =
       selections[ManageEventsCollectionFilterIds.cohort] ?? const {};
-  final cohorts = <GuardianEventsCohortFilter>{
+  final cohorts = <PetCareEventsCohortFilter>{
     if (cohortSelected.contains(ManageEventsCollectionFilterIds.myPets))
-      GuardianEventsCohortFilter.myPets,
+      PetCareEventsCohortFilter.myPets,
     if (cohortSelected.contains(ManageEventsCollectionFilterIds.fosterPets))
-      GuardianEventsCohortFilter.fosterPets,
+      PetCareEventsCohortFilter.fosterPets,
   };
 
   final petSelected =
@@ -322,7 +322,7 @@ GuardianGlobalEventsFilters guardianGlobalEventsFiltersFromSelections(
       .map((id) => id.substring(4))
       .toSet();
 
-  return GuardianGlobalEventsFilters(
+  return PetCareGlobalEventsFilters(
     eventFilters: _manageEventsFiltersFromCoreSelections(selections),
     cohorts: cohorts,
     petIds: petIds,
@@ -330,8 +330,8 @@ GuardianGlobalEventsFilters guardianGlobalEventsFiltersFromSelections(
 }
 
 /// Canonical collection filter bar for the global guardian events list.
-class GuardianGlobalEventsCollectionFilterBar extends StatelessWidget {
-  const GuardianGlobalEventsCollectionFilterBar({
+class PetCareGlobalEventsCollectionFilterBar extends StatelessWidget {
+  const PetCareGlobalEventsCollectionFilterBar({
     super.key,
     required this.shellPets,
     required this.filters,
@@ -339,8 +339,8 @@ class GuardianGlobalEventsCollectionFilterBar extends StatelessWidget {
   });
 
   final List<Pet> shellPets;
-  final GuardianGlobalEventsFilters filters;
-  final ValueChanged<GuardianGlobalEventsFilters> onChanged;
+  final PetCareGlobalEventsFilters filters;
+  final ValueChanged<PetCareGlobalEventsFilters> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -349,7 +349,7 @@ class GuardianGlobalEventsCollectionFilterBar extends StatelessWidget {
       l: l,
       shellPets: shellPets,
     );
-    final selections = selectionsFromGuardianGlobalEventsFilters(filters);
+    final selections = selectionsFromPetCareGlobalEventsFilters(filters);
 
     return CollectionFilterBar(
       key: const Key('global_events_collection_filter_bar'),

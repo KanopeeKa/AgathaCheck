@@ -20,7 +20,7 @@ import '../../features/pet_profile/presentation/screens/pet_form_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_timeline_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_weight_tracking_screen.dart';
 import '../../features/pet_profile/presentation/widgets/pet_edit_permission_guard.dart';
-import '../../features/experience/presentation/screens/guardian/guardian_desk_preview_screen.dart';
+import '../../features/experience/presentation/screens/pet_care/pet_care_desk_preview_screen.dart';
 import '../../features/organization/presentation/screens/archived_pets_screen.dart';
 import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
 import '../../features/about/presentation/screens/about_screen.dart';
@@ -124,7 +124,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         GoRoute(
           path: '/preview/guardian-desk',
           name: 'guardianDeskPreview',
-          builder: (context, state) => const GuardianDeskPreviewScreen(),
+          builder: (context, state) => const PetCareDeskPreviewScreen(),
         ),
       GoRoute(
         path: '/forgot-password',

@@ -10,15 +10,15 @@ import '../../features/experience/presentation/screens/experience_chooser_screen
 import '../../features/experience/presentation/screens/experience_home_screens.dart';
 import '../../features/experience/presentation/screens/experience_resolve_screen.dart';
 import '../../features/experience/presentation/screens/experience_settings_screen.dart';
-import '../../features/experience/presentation/screens/guardian_onboarding_screen.dart';
+import '../../features/experience/presentation/screens/pet_care_onboarding_screen.dart';
 import '../../features/experience/presentation/screens/org_onboarding_screen.dart';
 import '../../features/experience/presentation/widgets/foster_portal_route_guard.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
-import '../../features/experience/presentation/screens/guardian/guardian_all_pets_screen.dart';
-import '../../features/experience/presentation/screens/guardian/guardian_bulk_share_select_screen.dart';
-import '../../features/experience/presentation/screens/guardian/add_event_type_picker_sheet.dart';
-import '../../features/experience/presentation/screens/guardian/guardian_due_events_screen.dart';
-import '../../features/experience/presentation/screens/guardian/guardian_fostering_screen.dart';
+import '../../features/experience/presentation/screens/pet_care/pet_care_all_pets_screen.dart';
+import '../../features/experience/presentation/screens/pet_care/pet_care_bulk_share_select_screen.dart';
+import '../../features/experience/presentation/screens/pet_care/add_event_type_picker_sheet.dart';
+import '../../features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart';
+import '../../features/experience/presentation/screens/pet_care/pet_care_fostering_screen.dart';
 import '../../features/pet_profile/domain/entities/pet.dart';
 import '../../features/pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../features/pet_profile/presentation/providers/pet_providers.dart';
@@ -46,7 +46,7 @@ List<RouteBase> buildExperienceRoutes() {
     GoRoute(
       path: '/pc/onboarding',
       name: 'petCareOnboarding',
-      builder: (context, state) => const GuardianOnboardingScreen(),
+      builder: (context, state) => const PetCareOnboardingScreen(),
     ),
     GoRoute(
       path: '/g/onboarding',
@@ -85,18 +85,17 @@ List<RouteBase> buildExperienceRoutes() {
         GoRoute(
           path: '/pc/home',
           name: 'petCareHome',
-          builder: (context, state) => const GuardianHomeScreen(),
+          builder: (context, state) => const PetCareHomeScreen(),
         ),
         GoRoute(
           path: '/pc/pets',
           name: 'petCareAllPets',
-          builder: (context, state) => const GuardianAllPetsScreen(),
+          builder: (context, state) => const PetCareAllPetsScreen(),
           routes: [
             GoRoute(
               path: 'bulk-share',
               name: 'petCareBulkSharePets',
-              builder: (context, state) =>
-                  const GuardianBulkShareSelectScreen(),
+              builder: (context, state) => const PetCareBulkShareSelectScreen(),
             ),
           ],
         ),
@@ -108,7 +107,7 @@ List<RouteBase> buildExperienceRoutes() {
         GoRoute(
           path: '/pc/fostering',
           name: 'petCareFostering',
-          builder: (context, state) => const GuardianFosteringScreen(),
+          builder: (context, state) => const PetCareFosteringScreen(),
         ),
         GoRoute(
           path: '/pc/invite',
@@ -244,7 +243,7 @@ class _PetCareEventsScreen extends ConsumerWidget {
               : null,
         ),
       ],
-      child: const GuardianDueEventsScreen(),
+      child: const PetCareDueEventsScreen(),
     );
   }
 }

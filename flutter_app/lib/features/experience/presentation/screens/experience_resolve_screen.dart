@@ -26,8 +26,8 @@ class _ExperienceResolveScreenState
 
     final pets = ref.read(petListProvider).valueOrNull ?? [];
     final orgs = ref.read(organizationListProvider).valueOrNull ?? [];
-    final guardianOnboardingCompleted = ref.read(
-      guardianOnboardingCompletedProvider,
+    final petCareOnboardingCompleted = ref.read(
+      petCareOnboardingCompletedProvider,
     );
     final orgOnboardingCompleted = ref.read(orgOnboardingCompletedProvider);
     final hasPendingOrgInvites = ref
@@ -37,7 +37,7 @@ class _ExperienceResolveScreenState
       eligibility: eligibility,
       pets: pets,
       orgs: orgs,
-      guardianOnboardingCompleted: guardianOnboardingCompleted,
+      petCareOnboardingCompleted: petCareOnboardingCompleted,
       orgOnboardingCompleted: orgOnboardingCompleted,
       hasPendingOrgInvites: hasPendingOrgInvites,
     );

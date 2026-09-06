@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../experience/presentation/screens/guardian/guardian_dashboard_helpers.dart';
-import '../../../../experience/presentation/widgets/guardian_pets_tile_grid.dart';
+import '../../../../experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart';
+import '../../../../experience/presentation/widgets/pet_care_pets_tile_grid.dart';
 import '../../../domain/entities/pet.dart';
 import '../pet_card.dart';
 
@@ -9,8 +9,8 @@ import '../pet_card.dart';
 ///
 /// Renders passed-away pets with [UnifiedPetTile] (wings overlay) inside an
 /// [ExpansionTile] collapsed by default.
-class GuardianPassedAwaySection extends StatelessWidget {
-  const GuardianPassedAwaySection({
+class PetCarePassedAwaySection extends StatelessWidget {
+  const PetCarePassedAwaySection({
     super.key,
     required this.pets,
     required this.title,
@@ -21,7 +21,7 @@ class GuardianPassedAwaySection extends StatelessWidget {
   final List<Pet> pets;
   final String title;
   final ValueChanged<Pet> onPetTap;
-  final GuardianTodayCareSummary? careSummary;
+  final PetCareTodayCareSummary? careSummary;
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +80,7 @@ class GuardianPassedAwaySection extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-              child: GuardianPetsTileGrid(
+              child: PetCarePetsTileGrid(
                 pets: sorted,
                 careSummary: careSummary,
                 onPetTap: onPetTap,

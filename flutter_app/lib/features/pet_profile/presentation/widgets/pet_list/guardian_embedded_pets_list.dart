@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../experience/presentation/screens/guardian/guardian_dashboard_helpers.dart';
-import '../../../../experience/presentation/widgets/guardian_pets_tile_grid.dart';
+import '../../../../experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart';
+import '../../../../experience/presentation/widgets/pet_care_pets_tile_grid.dart';
 import '../../../domain/entities/pet.dart';
 import '../../controllers/pet_list_controller.dart';
 import 'guardian_passed_away_section.dart';
 import 'pet_list_section_header.dart';
 
 /// Guardian shell pets list body (`/g/pets`) with dashboard-aligned sections.
-class GuardianEmbeddedPetsList extends StatelessWidget {
-  const GuardianEmbeddedPetsList({
+class PetCareEmbeddedPetsList extends StatelessWidget {
+  const PetCareEmbeddedPetsList({
     super.key,
     required this.allPets,
     required this.controller,
@@ -22,15 +22,15 @@ class GuardianEmbeddedPetsList extends StatelessWidget {
 
   final List<Pet> allPets;
   final PetListController controller;
-  final GuardianTodayCareSummary? careSummary;
+  final PetCareTodayCareSummary? careSummary;
   final AppLocalizations l;
   final ThemeData theme;
 
   @override
   Widget build(BuildContext context) {
-    final owned = guardianDashboardPersonalPets(allPets, controller);
-    final shared = guardianDashboardSharedPets(allPets, controller);
-    final fostered = guardianDashboardFosterPets(allPets, controller);
+    final owned = petCareDashboardPersonalPets(allPets, controller);
+    final shared = petCareDashboardSharedPets(allPets, controller);
+    final fostered = petCareDashboardFosterPets(allPets, controller);
     final passedAway = controller
         .guardianShellPets(allPets)
         .where((pet) => pet.passedAway)
@@ -47,7 +47,7 @@ class GuardianEmbeddedPetsList extends StatelessWidget {
             title: l.myPets,
             count: owned.length,
           ),
-          GuardianPetsTileGrid(
+          PetCarePetsTileGrid(
             pets: owned,
             careSummary: careSummary,
             onPetTap: openPet,
@@ -60,7 +60,7 @@ class GuardianEmbeddedPetsList extends StatelessWidget {
             title: l.sharedPets,
             count: shared.length,
           ),
-          GuardianPetsTileGrid(
+          PetCarePetsTileGrid(
             pets: shared,
             careSummary: careSummary,
             onPetTap: openPet,
@@ -73,7 +73,7 @@ class GuardianEmbeddedPetsList extends StatelessWidget {
             title: l.myFosteredPets,
             count: fostered.length,
           ),
-          GuardianPetsTileGrid(
+          PetCarePetsTileGrid(
             pets: fostered,
             careSummary: careSummary,
             onPetTap: openPet,
@@ -81,7 +81,7 @@ class GuardianEmbeddedPetsList extends StatelessWidget {
           const SizedBox(height: 16),
         ],
         if (passedAway.isNotEmpty)
-          GuardianPassedAwaySection(
+          PetCarePassedAwaySection(
             pets: passedAway,
             title: l.rainbowBridge,
             careSummary: careSummary,

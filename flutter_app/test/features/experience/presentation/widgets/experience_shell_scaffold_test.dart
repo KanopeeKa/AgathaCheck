@@ -11,8 +11,8 @@ import 'package:pet_profile_app/features/experience/domain/entities/app_experien
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/experience_shell_scaffold.dart';
-import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_navigation_rail.dart';
-import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_navigation_sidebar.dart';
+import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_navigation_rail.dart';
+import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_navigation_sidebar.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/shelter_pinned_org_provider.dart';
 import 'package:pet_profile_app/features/experience/presentation/config/shelter_primary_destinations.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
@@ -483,8 +483,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('guardian_navigation_rail')), findsOneWidget);
-      expect(find.byKey(const Key('guardian_bottom_navigation')), findsNothing);
+      expect(find.byKey(const Key('pet_care_navigation_rail')), findsOneWidget);
+      expect(find.byKey(const Key('pet_care_bottom_navigation')), findsNothing);
       expect(find.text('Dashboard'), findsOneWidget);
     });
 
@@ -522,7 +522,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        final rail = find.byKey(const Key('guardian_navigation_rail'));
+        final rail = find.byKey(const Key('pet_care_navigation_rail'));
         expect(
           find.descendant(
             of: rail,
@@ -563,7 +563,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('AgathaTrack'), findsNothing);
-      final rail = find.byKey(const Key('guardian_navigation_rail'));
+      final rail = find.byKey(const Key('pet_care_navigation_rail'));
       expect(
         find.descendant(
           of: rail,
@@ -608,12 +608,12 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(
-          find.byKey(const Key('guardian_navigation_sidebar')),
+          find.byKey(const Key('pet_care_navigation_sidebar')),
           findsOneWidget,
         );
-        expect(find.byKey(const Key('guardian_navigation_rail')), findsNothing);
+        expect(find.byKey(const Key('pet_care_navigation_rail')), findsNothing);
         expect(
-          find.byKey(const Key('guardian_bottom_navigation')),
+          find.byKey(const Key('pet_care_bottom_navigation')),
           findsNothing,
         );
         final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
@@ -667,7 +667,7 @@ void main() {
 
       expect(find.byType(Row), findsWidgets);
       expect(find.text('Rail content'), findsOneWidget);
-      expect(find.byType(GuardianNavigationRail), findsOneWidget);
+      expect(find.byType(PetCareNavigationRail), findsOneWidget);
     });
   });
 
@@ -689,12 +689,12 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(
-          find.byKey(const Key('guardian_navigation_sidebar')),
+          find.byKey(const Key('pet_care_navigation_sidebar')),
           findsOneWidget,
         );
-        expect(find.byKey(const Key('guardian_navigation_rail')), findsNothing);
+        expect(find.byKey(const Key('pet_care_navigation_rail')), findsNothing);
         expect(
-          find.byKey(const Key('guardian_bottom_navigation')),
+          find.byKey(const Key('pet_care_bottom_navigation')),
           findsNothing,
         );
         expect(find.text('Dashboard'), findsOneWidget);
@@ -773,9 +773,9 @@ void main() {
       await tester.pumpAndSettle();
 
       final sidebarSize = tester.getSize(
-        find.byKey(const Key('guardian_navigation_sidebar')),
+        find.byKey(const Key('pet_care_navigation_sidebar')),
       );
-      expect(sidebarSize.width, GuardianNavigationSidebar.width);
+      expect(sidebarSize.width, PetCareNavigationSidebar.width);
     });
 
     testWidgets(
@@ -796,7 +796,7 @@ void main() {
 
         final sidebarSurface = tester.widget<ColoredBox>(
           find.descendant(
-            of: find.byKey(const Key('guardian_navigation_sidebar')),
+            of: find.byKey(const Key('pet_care_navigation_sidebar')),
             matching: find.byType(ColoredBox),
           ),
         );
@@ -861,7 +861,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        final sidebar = find.byKey(const Key('guardian_navigation_sidebar'));
+        final sidebar = find.byKey(const Key('pet_care_navigation_sidebar'));
         expect(
           find.descendant(
             of: sidebar,
@@ -1007,7 +1007,7 @@ void main() {
 
       expect(find.byType(Row), findsWidgets);
       expect(find.text('Sidebar content'), findsOneWidget);
-      expect(find.byType(GuardianNavigationSidebar), findsOneWidget);
+      expect(find.byType(PetCareNavigationSidebar), findsOneWidget);
     });
   });
 

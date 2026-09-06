@@ -45,7 +45,7 @@ import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_
 import 'package:pet_profile_app/features/subscription/data/services/revenuecat_service.dart';
 import 'package:pet_profile_app/features/subscription/domain/entities/subscription_status.dart';
 import 'package:pet_profile_app/features/subscription/presentation/providers/subscription_providers.dart';
-import 'package:pet_profile_app/features/experience/presentation/screens/guardian/guardian_my_vets_section.dart';
+import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/pet_care_my_vets_section.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -132,7 +132,7 @@ GoRouter _router({required String initialLocation}) {
       ...buildVetExperienceRoutes(),
       GoRoute(
         path: '/pc/home',
-        builder: (_, __) => const Scaffold(body: GuardianMyVetsSection()),
+        builder: (_, __) => const Scaffold(body: PetCareMyVetsSection()),
       ),
     ],
     errorBuilder: (_, state) => Scaffold(body: Text('not-found:${state.uri}')),

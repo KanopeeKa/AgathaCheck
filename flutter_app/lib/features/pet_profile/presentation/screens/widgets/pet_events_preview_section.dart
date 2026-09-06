@@ -4,11 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../experience/presentation/screens/guardian/guardian_upcoming_events_section.dart';
-import '../../../../experience/presentation/widgets/guardian_care_preview/guardian_care_preview_optimistic.dart';
-import '../../../../experience/presentation/widgets/guardian_dashboard_section_header.dart';
-import '../../../../experience/presentation/widgets/guardian_illustrated_empty_state.dart';
-import '../../../../experience/presentation/widgets/guardian_operations_desk_layout.dart';
+import '../../../../experience/presentation/screens/pet_care/pet_care_upcoming_events_section.dart';
+import '../../../../experience/presentation/widgets/pet_care_preview/pet_care_preview_optimistic.dart';
+import '../../../../experience/presentation/widgets/pet_care_dashboard_section_header.dart';
+import '../../../../experience/presentation/widgets/pet_care_illustrated_empty_state.dart';
+import '../../../../experience/presentation/widgets/pet_care_operations_desk_layout.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../../health_tracking/presentation/widgets/care_event_row_context.dart';
@@ -33,14 +33,14 @@ class PetEventsPreviewSection extends ConsumerStatefulWidget {
 
 class _PetEventsPreviewSectionState
     extends ConsumerState<PetEventsPreviewSection> {
-  final Map<String, GuardianCareOptimisticCompletion> _completed = {};
+  final Map<String, PetCareCareOptimisticCompletion> _completed = {};
 
   Future<void> _onMarkDone(HealthEntry entry, int previewIndex) async {
     final result = await HomeEventActions.showCompletionSheet(context);
     if (result == null || !mounted) return;
 
     setState(() {
-      _completed[entry.id] = GuardianCareOptimisticCompletion(
+      _completed[entry.id] = PetCareCareOptimisticCompletion(
         entry: entry,
         previewIndex: previewIndex,
       );
@@ -77,7 +77,7 @@ class _PetEventsPreviewSectionState
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final entriesAsync = ref.watch(petHealthEntriesByIdProvider(widget.petId));
-    final previewLimit = GuardianUpcomingEventsSection.previewLimit;
+    final previewLimit = PetCareUpcomingEventsSection.previewLimit;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -85,9 +85,7 @@ class _PetEventsPreviewSectionState
         loading: () => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            GuardianDashboardSectionHeader(
-              title: l.careForPet(widget.pet.name),
-            ),
+            PetCareDashboardSectionHeader(title: l.careForPet(widget.pet.name)),
             const SizedBox(height: 10),
             const SizedBox(
               height: 56,
@@ -98,11 +96,9 @@ class _PetEventsPreviewSectionState
         error: (error, _) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            GuardianDashboardSectionHeader(
-              title: l.careForPet(widget.pet.name),
-            ),
+            PetCareDashboardSectionHeader(title: l.careForPet(widget.pet.name)),
             const SizedBox(height: 10),
-            GuardianDeskSectionCard(
+            PetCareDeskSectionCard(
               tint: AppColorTokens.guardianLight,
               child: Text(
                 l.errorLoadingEntries(error.toString()),
@@ -122,7 +118,7 @@ class _PetEventsPreviewSectionState
             });
 
           final showAllCare = dueEntries.length > previewLimit;
-          final items = buildGuardianCareMobilePreview(
+          final items = buildPetCareMobilePreview(
             dueEntries: dueEntries,
             completed: _completed,
             previewLimit: previewLimit,
@@ -131,15 +127,15 @@ class _PetEventsPreviewSectionState
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              GuardianDashboardSectionHeader(
+              PetCareDashboardSectionHeader(
                 title: l.careForPet(widget.pet.name),
               ),
               const SizedBox(height: 10),
-              GuardianDeskSectionCard(
+              PetCareDeskSectionCard(
                 key: const Key('pet_detail_care_section'),
                 tint: AppColorTokens.guardianLight,
                 child: items.isEmpty
-                    ? GuardianIllustratedEmptyState(
+                    ? PetCareIllustratedEmptyState(
                         key: const Key('pet_detail_empty_care'),
                         title: l.guardianEmptyCareClearTitle,
                         body: l.homeNoDueEvents,
@@ -148,7 +144,7 @@ class _PetEventsPreviewSectionState
                         onAction: () =>
                             context.push('/pet/${widget.petId}/events'),
                       )
-                    : GuardianCarePreviewEventList(
+                    : PetCareCarePreviewEventList(
                         items: items,
                         petMap: {widget.pet.id: widget.pet},
                         onMarkDone: _onMarkDone,
@@ -159,7 +155,7 @@ class _PetEventsPreviewSectionState
                       ),
               ),
               if (showAllCare)
-                GuardianDashboardSectionLink(
+                PetCareDashboardSectionLink(
                   linkKey: const Key('pet_detail_care_view_all'),
                   label: l.allCare,
                   onPressed: () => context.push('/pet/${widget.petId}/events'),

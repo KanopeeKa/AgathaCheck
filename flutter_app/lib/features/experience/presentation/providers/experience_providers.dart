@@ -5,11 +5,11 @@ import '../../../organization/domain/entities/organization.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../data/experience_preferences_store.dart';
-import '../../data/guardian_onboarding_store.dart';
+import '../../data/pet_care_onboarding_store.dart';
 import '../../data/org_onboarding_store.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../domain/services/experience_eligibility.dart';
-import '../../domain/services/guardian_onboarding_rules.dart';
+import '../../domain/services/pet_care_onboarding_rules.dart';
 
 final experiencePreferencesStoreProvider = Provider<ExperiencePreferencesStore>(
   (ref) {
@@ -17,14 +17,12 @@ final experiencePreferencesStoreProvider = Provider<ExperiencePreferencesStore>(
   },
 );
 
-final guardianOnboardingStoreProvider = Provider<GuardianOnboardingStore>((
-  ref,
-) {
-  return GuardianOnboardingStore(ref.watch(sharedPreferencesProvider));
+final petCareOnboardingStoreProvider = Provider<PetCareOnboardingStore>((ref) {
+  return PetCareOnboardingStore(ref.watch(sharedPreferencesProvider));
 });
 
-final guardianOnboardingCompletedProvider = Provider<bool>((ref) {
-  return ref.watch(guardianOnboardingStoreProvider).readCompleted();
+final petCareOnboardingCompletedProvider = Provider<bool>((ref) {
+  return ref.watch(petCareOnboardingStoreProvider).readCompleted();
 });
 
 final orgOnboardingStoreProvider = Provider<OrgOnboardingStore>((ref) {
@@ -81,16 +79,16 @@ String resolvePostLoginPath({
   required ExperienceEligibility eligibility,
   List<Pet> pets = const [],
   List<Organization> orgs = const [],
-  bool guardianOnboardingCompleted = true,
+  bool petCareOnboardingCompleted = true,
   bool orgOnboardingCompleted = true,
   bool hasPendingOrgInvites = false,
 }) {
   // D-v5-WORKSPACE-2: everyone lands on Pet Care home (empty state when no pets).
   var path = AppExperience.petCare.homePath();
-  path = GuardianOnboardingRules.resolveGuardianDestination(
+  path = PetCareOnboardingRules.resolvePetCareDestination(
     targetPath: path,
     pets: pets,
-    onboardingCompleted: guardianOnboardingCompleted,
+    onboardingCompleted: petCareOnboardingCompleted,
   );
   return path;
 }
