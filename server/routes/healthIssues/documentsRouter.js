@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { publicError } from '../../config/security.js';
-import { userCanManageHealthIssue } from '../../lib/petAccess.js';
+import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { buildHealthFileApiPath } from '../../lib/privateHealthStorage.js';
 import {
   handleDocumentUpload,
@@ -13,11 +13,21 @@ import { extractUserId } from './shared.js';
 const MAX_DOCUMENTS_PER_ISSUE = 4;
 
 export function registerDocumentsRoutes(router, pool) {
+  async function canManageHealthDocuments(pool, issueId, userId) {
+    const row = await pool.query(
+      'SELECT pet_id FROM health_issues WHERE id = $1 LIMIT 1',
+      [issueId],
+    );
+    const petId = row.rows[0]?.pet_id;
+    if (!petId) return false;
+    return hasPetCapability(pool, userId, petId, PET_CAPABILITIES.HEALTH_DOCUMENTS_MANAGE);
+  }
+
   router.get('/:id/documents', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await userCanManageHealthIssue(pool, req.params.id, userId))) {
+      if (!(await canManageHealthDocuments(pool, req.params.id, userId))) {
         return res.status(404).json({ error: 'Not found' });
       }
       const result = await pool.query(
@@ -39,7 +49,7 @@ export function registerDocumentsRoutes(router, pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await userCanManageHealthIssue(pool, req.params.id, userId))) {
+      if (!(await canManageHealthDocuments(pool, req.params.id, userId))) {
         return res.status(404).json({ error: 'Not found' });
       }
       const countResult = await pool.query(
@@ -67,7 +77,7 @@ export function registerDocumentsRoutes(router, pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await userCanManageHealthIssue(pool, req.params.issueId, userId))) {
+      if (!(await canManageHealthDocuments(pool, req.params.issueId, userId))) {
         return res.status(404).json({ error: 'Not found' });
       }
       const existing = await pool.query(

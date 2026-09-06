@@ -93,6 +93,10 @@ function buildMockPool() {
       return { rows: [{ '?column?': 1 }] };
     }
 
+    if (sql.includes('SELECT pet_id FROM weight_entries WHERE id = $1')) {
+      return { rows: [{ pet_id: petId }] };
+    }
+
     if (sql.includes('INSERT INTO weight_entries')) {
       return {
         rows: [{

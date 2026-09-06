@@ -6,9 +6,9 @@ import { publicError } from '../config/security.js';
 import { normalizeCalendarDateInput } from '../lib/calendarDate.js';
 import {
   accessiblePetSql,
-  userCanManagePet,
   userCanManageHealthIssue,
 } from '../lib/petAccess.js';
+import { hasPetCapability, PET_CAPABILITIES } from '../lib/petCapabilityPolicy.js';
 import { removeHealthDocumentFromDisk } from './healthEntries/shared.js';
 import { registerDocumentsRoutes } from './healthIssues/documentsRouter.js';
 import { extractUserId, issueRowToMap } from './healthIssues/shared.js';
@@ -26,7 +26,7 @@ export default function healthIssuesRoutes(pool) {
       const petId = req.query.pet_id || req.query.petId;
       let result;
       if (petId) {
-        if (!(await userCanManagePet(pool, petId, userId))) {
+        if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.HEALTH_VIEW))) {
           return res.status(403).json({ error: 'Forbidden' });
         }
         result = await pool.query(
@@ -75,7 +75,7 @@ export default function healthIssuesRoutes(pool) {
       const data = req.body;
       const id = data.id || uuidv4();
       const petId = data.pet_id || data.petId;
-      if (!(await userCanManagePet(pool, petId, userId))) {
+      if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.HEALTH_EDIT))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
       const startDate = normalizeCalendarDateInput(data.start_date || data.startDate);
@@ -151,7 +151,12 @@ export default function healthIssuesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await userCanManageHealthIssue(pool, req.params.issueId, userId))) {
+      const issueRow = await pool.query(
+        'SELECT pet_id FROM health_issues WHERE id = $1 LIMIT 1',
+        [req.params.issueId],
+      );
+      const petId = issueRow.rows[0]?.pet_id;
+      if (!petId || !(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.HEALTH_VIEW))) {
         return res.status(404).json({ error: 'Not found' });
       }
       const result = await pool.query(

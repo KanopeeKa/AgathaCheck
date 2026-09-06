@@ -16,11 +16,11 @@ import { logAuditEventSafe } from '../../lib/audit.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import {
   userCanAccessPet,
-  userCanManagePet,
   userOwnsPet,
   COLLABORATOR_ROLES,
   FOSTER_PET_ACCESS_ROLE,
 } from '../../lib/petAccess.js';
+import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { orgPetViewerRolesSql } from '../../lib/orgRoles.js';
 import { OPEN_PLACEMENT_STATUSES } from '../../lib/fosterPlacements.js';
 import {
@@ -228,7 +228,7 @@ export function registerCoreRoutes(router, pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const { id } = req.params;
-      if (!(await userCanManagePet(pool, id, userId))) {
+      if (!(await hasPetCapability(pool, userId, id, PET_CAPABILITIES.PROFILE_EDIT))) {
         return res.status(404).json({ error: 'Pet not found' });
       }
       const {

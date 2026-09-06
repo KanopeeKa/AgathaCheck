@@ -5,9 +5,9 @@ import { assertAtLeastOneDate } from '../../lib/recurrenceHelper.js';
 import { dateToIsoDate, normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import {
   accessiblePetSql,
-  userCanManagePet,
   userCanManageHealthEntry,
 } from '../../lib/petAccess.js';
+import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import {
   extractUserId,
   healthEntryToMap,
@@ -25,7 +25,7 @@ export function registerCrudRoutes(router, pool) {
       const petId = req.query.pet_id || req.query.petId;
       let result;
       if (petId) {
-        if (!(await userCanManagePet(pool, petId, userId))) {
+        if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.HEALTH_VIEW))) {
           return res.status(403).json({ error: 'Forbidden' });
         }
         result = await pool.query(
@@ -103,7 +103,7 @@ export function registerCrudRoutes(router, pool) {
       const data = req.body;
       const id = data.id || uuidv4();
       const petId = data.pet_id || data.petId;
-      if (!(await userCanManagePet(pool, petId, userId))) {
+      if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.HEALTH_EDIT))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
       const startDate = normalizeCalendarDateInput(data.start_date || data.startDate);

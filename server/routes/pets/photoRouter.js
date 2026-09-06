@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { publicError } from '../../config/security.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
-import { userCanManagePet } from '../../lib/petAccess.js';
+import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import {
   DEFAULT_MAX_UPLOAD_BYTES,
   extensionForMime,
@@ -71,7 +71,7 @@ export function registerPhotoRoutes(router, pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { id } = req.params;
-    if (!(await userCanManagePet(pool, id, userId))) {
+    if (!(await hasPetCapability(pool, userId, id, PET_CAPABILITIES.PROFILE_EDIT))) {
       return res.status(404).json({ error: 'Pet not found' });
     }
     if (!req.file) {
