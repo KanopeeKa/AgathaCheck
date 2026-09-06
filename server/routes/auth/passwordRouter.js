@@ -8,7 +8,8 @@ import { resolveEmailLocale } from '../../lib/email/locale.js';
 import { isSmtpConfigured } from '../../config/mail.js';
 import { sendPasswordResetEmail } from '../../services/mailService.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
-import { extractToken, FORGOT_PASSWORD_MESSAGE, isProduction, verifyToken } from './shared.js';
+import { revokeAllUserRefreshSessions } from '../../lib/refreshSessions.js';
+import { extractToken, FORGOT_PASSWORD_MESSAGE, isProduction, verifyAccessToken } from './shared.js';
 
 export function registerPasswordRoutes(router, pool, { comparePassword, authLimiter }) {
   router.post('/change-password', async (req, res) => {
@@ -17,7 +18,7 @@ export function registerPasswordRoutes(router, pool, { comparePassword, authLimi
       return res.status(401).json({ error: 'Missing or invalid Authorization header' });
     }
     try {
-      const payload = verifyToken(token);
+      const payload = verifyAccessToken(token);
       const { currentPassword, newPassword } = req.body;
       if (!currentPassword || !newPassword) {
         return res.status(400).json({ error: 'Current and new passwords are required' });
@@ -35,6 +36,7 @@ export function registerPasswordRoutes(router, pool, { comparePassword, authLimi
       }
       const newHash = await bcrypt.hash(newPassword, 10);
       await pool.query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [newHash, payload.id]);
+      await revokeAllUserRefreshSessions(pool, payload.id);
       logAuditEventSafe(pool, {
         actorUserId: payload.id,
         action: 'auth.password_changed',
@@ -122,6 +124,7 @@ export function registerPasswordRoutes(router, pool, { comparePassword, authLimi
       const { id: tokenId, user_id: userId } = result.rows[0];
       const newHash = await bcrypt.hash(new_password, 10);
       await pool.query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [newHash, userId]);
+      await revokeAllUserRefreshSessions(pool, userId);
       await pool.query('UPDATE password_reset_tokens SET used = true WHERE id = $1', [tokenId]);
       logAuditEventSafe(pool, {
         actorUserId: userId,

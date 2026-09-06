@@ -8,6 +8,7 @@ import {
   buildMockPool,
   makeRefreshToken,
   mockComparePassword,
+  seedRefreshSession,
 } from './helpers.js';
 
 describe('Auth Routes — Session', () => {
@@ -93,8 +94,11 @@ describe('Auth Routes — Session', () => {
       const decoded = jwt.verify(res.body.access_token, JWT_SECRET);
       expect(decoded).toHaveProperty('id');
       expect(decoded).toHaveProperty('email', 'jwt@example.com');
+      expect(decoded).toHaveProperty('typ', 'access');
       const decodedRefresh = jwt.verify(res.body.refresh_token, JWT_SECRET);
       expect(decodedRefresh).toHaveProperty('id');
+      expect(decodedRefresh).toHaveProperty('typ', 'refresh');
+      expect(decodedRefresh).toHaveProperty('sid');
     });
 
     it('should return 400 when email is missing', async () => {
@@ -235,14 +239,17 @@ describe('Auth Routes — Session', () => {
   describe('POST /api/auth/refresh', () => {
     it('should return a new access token with valid refresh token', async () => {
       const refreshToken = makeRefreshToken();
+      seedRefreshSession(mockPool, refreshToken);
       const res = await request(app)
         .post('/api/auth/refresh')
         .send({ refresh_token: refreshToken });
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('access_token');
+      expect(res.body).toHaveProperty('refresh_token');
       const decoded = jwt.verify(res.body.access_token, JWT_SECRET);
       expect(decoded).toHaveProperty('id', userId);
       expect(decoded).toHaveProperty('email', userEmail);
+      expect(decoded).toHaveProperty('typ', 'access');
     });
 
     it('should return 400 when refresh_token is missing', async () => {
@@ -262,7 +269,11 @@ describe('Auth Routes — Session', () => {
     });
 
     it('should return 401 with expired refresh token', async () => {
-      const expiredToken = jwt.sign({ id: userId, email: userEmail }, JWT_SECRET, { expiresIn: '-1s' });
+      const expiredToken = jwt.sign(
+        { id: userId, email: userEmail, typ: 'refresh', sid: 'expired-sid' },
+        JWT_SECRET,
+        { expiresIn: '-1s' },
+      );
       const res = await request(app)
         .post('/api/auth/refresh')
         .send({ refresh_token: expiredToken });
@@ -271,7 +282,11 @@ describe('Auth Routes — Session', () => {
     });
 
     it('should return 401 with token signed with wrong secret', async () => {
-      const badToken = jwt.sign({ id: userId, email: userEmail }, 'wrong_secret', { expiresIn: '30d' });
+      const badToken = jwt.sign(
+        { id: userId, email: userEmail, typ: 'refresh', sid: 'bad-sid' },
+        'wrong_secret',
+        { expiresIn: '30d' },
+      );
       const res = await request(app)
         .post('/api/auth/refresh')
         .send({ refresh_token: badToken });

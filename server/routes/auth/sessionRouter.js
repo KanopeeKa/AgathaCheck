@@ -7,11 +7,15 @@ import { linkExternalFostersByEmail } from '../../lib/orgPeople.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { logger } from '../../lib/logger.js';
 import {
+  issueTokenPair,
+  revokeAllUserRefreshSessions,
+  rotateRefreshToken,
+} from '../../lib/refreshSessions.js';
+import {
   extractToken,
-  signAccessToken,
-  signRefreshToken,
   userRowToMap,
-  verifyToken,
+  verifyAccessToken,
+  verifyRefreshToken,
 } from './shared.js';
 
 export function registerSessionRoutes(router, pool, { comparePassword, authLimiter }) {
@@ -44,8 +48,7 @@ export function registerSessionRoutes(router, pool, { comparePassword, authLimit
       }
       const user = { id: result.rows[0].id, email, first_name, last_name, category, bio, photo_url, locale };
       await linkExternalFostersByEmail(pool, user.id, email);
-      const accessToken = signAccessToken(user.id, user.email);
-      const refreshToken = signRefreshToken(user.id, user.email);
+      const { accessToken, refreshToken } = await issueTokenPair(pool, user.id, user.email);
       logAuditEventSafe(pool, {
         actorUserId: user.id,
         action: 'auth.signup',
@@ -93,8 +96,7 @@ export function registerSessionRoutes(router, pool, { comparePassword, authLimit
       }
       const user = userRowToMap(userRow);
       await linkExternalFostersByEmail(pool, user.id, user.email);
-      const accessToken = signAccessToken(user.id, user.email);
-      const refreshToken = signRefreshToken(user.id, user.email);
+      const { accessToken, refreshToken } = await issueTokenPair(pool, user.id, user.email);
       logAuditEventSafe(pool, {
         actorUserId: user.id,
         action: 'auth.login',
@@ -115,30 +117,31 @@ export function registerSessionRoutes(router, pool, { comparePassword, authLimit
       return res.status(400).json({ error: 'refresh_token is required' });
     }
     try {
-      const payload = verifyToken(refresh_token);
-      const userResult = await pool.query('SELECT id FROM users WHERE id = $1', [payload.id]);
+      const prePayload = verifyRefreshToken(refresh_token);
+      const userResult = await pool.query('SELECT id FROM users WHERE id = $1', [prePayload.id]);
       if (userResult.rows.length === 0) {
         return res.status(401).json({ error: 'Invalid or expired refresh token' });
       }
-      const accessToken = signAccessToken(payload.id, payload.email);
+      const { accessToken, refreshToken } = await rotateRefreshToken(pool, refresh_token);
       logAuditEventSafe(pool, {
-        actorUserId: payload.id,
+        actorUserId: prePayload.id,
         action: 'auth.token_refresh',
         resourceType: 'user',
-        resourceId: payload.id,
+        resourceId: prePayload.id,
         req,
       });
-      res.status(200).json({ access_token: accessToken });
+      res.status(200).json({ access_token: accessToken, refresh_token: refreshToken });
     } catch (err) {
       return res.status(401).json({ error: 'Invalid or expired refresh token', ...errorDetails(err) });
     }
   });
 
-  router.post('/logout', (req, res) => {
+  router.post('/logout', async (req, res) => {
     const token = extractToken(req);
     if (token) {
       try {
-        const payload = verifyToken(token);
+        const payload = verifyAccessToken(token);
+        await revokeAllUserRefreshSessions(pool, payload.id);
         logAuditEventSafe(pool, {
           actorUserId: payload.id,
           action: 'auth.logout',
