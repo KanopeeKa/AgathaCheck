@@ -63,19 +63,20 @@ export class SharedPetPage {
     }).toPass({ timeout });
   }
 
-  async expectOwnerName(name: string): Promise<void> {
+  /** Scoped preview (F-03): owner first name only — not full name or email. */
+  async expectOwnerFirstName(firstName: string): Promise<void> {
     await this.page.getByText('Shared by').waitFor();
-    await this.page.getByText(name).waitFor();
+    await this.page.getByText(firstName, { exact: true }).waitFor();
   }
 
-  async expectHealthEntry(name: string): Promise<void> {
-    await this.page.getByText(name).waitFor();
+  /** Scoped preview must not expose health records. */
+  async expectNoHealthSection(): Promise<void> {
+    await expect(this.page.getByText('Health')).toHaveCount(0);
   }
 
-  async expectVet(name: string): Promise<void> {
-    await this.page.getByText('Veterinarians').waitFor();
-    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    await this.page.getByText(new RegExp(escaped)).nth(1).waitFor();
+  /** Scoped preview must not expose veterinarian details. */
+  async expectNoVetSection(): Promise<void> {
+    await expect(this.page.getByText('Veterinarians')).toHaveCount(0);
   }
 
   async acceptShare(): Promise<void> {
