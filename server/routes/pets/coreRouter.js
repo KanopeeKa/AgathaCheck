@@ -13,6 +13,7 @@ import {
   resolveWeightEntryDateFromBody,
 } from '../../lib/petWeightSync.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
+import { deleteAllPetData } from '../../lib/petDataLifecycle.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import {
   userCanAccessPet,
@@ -323,6 +324,7 @@ export function registerCoreRoutes(router, pool) {
         petId: id,
         req,
       });
+      await deleteAllPetData(pool, id, { actorUserId: userId, req });
       await pool.query('DELETE FROM pets WHERE id = $1 AND user_id = $2', [id, userId]);
       res.json({ deleted: true });
     } catch (err) {

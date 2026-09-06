@@ -131,7 +131,15 @@ export class PetFormPage {
   }
 
   async cancel(): Promise<void> {
-    await this.cancelButtonLocator().first().click();
+    // Prefer AppBar back — sticky Cancel collides with dialog Cancel in the a11y tree.
+    const back = this.page
+      .getByRole('banner')
+      .getByRole('button', { name: /Back|Retour/i });
+    if (await back.first().isVisible().catch(() => false)) {
+      await back.first().click();
+    } else {
+      await this.cancelButtonLocator().first().click();
+    }
   }
 
   async confirmDiscardUnsaved(): Promise<void> {
@@ -175,12 +183,16 @@ export class PetFormPage {
   async confirmDelete(): Promise<void> {
     await this.page.getByRole('button', { name: 'Delete', exact: true }).click();
     await waitForHomeAfterMutation(this.page);
+    await refreshFlutterAccessibility(this.page);
   }
 
   /** Cancel the delete dialog. */
   async cancelDelete(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Cancel', exact: true }).click();
-    await this.page.waitForTimeout(500);
+    // Dialog Cancel is last in the a11y tree — form Cancel matches first (shard 6 flake).
+    await this.cancelButtonLocator().last().click();
+    await this.page
+      .getByRole('button', { name: 'Delete', exact: true })
+      .waitFor({ state: 'hidden', timeout: 15_000 });
     await this.saveButtonLocator().first().waitFor({ timeout: 15_000 });
   }
 
@@ -201,8 +213,10 @@ export class PetFormPage {
 
   /** Cancel the passed-away dialog. */
   async cancelPassedAway(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Cancel', exact: true }).click();
-    await this.page.waitForTimeout(500);
+    await this.cancelButtonLocator().last().click();
+    await this.page
+      .getByRole('button', { name: 'OK', exact: true })
+      .waitFor({ state: 'hidden', timeout: 15_000 });
     await this.saveButtonLocator().first().waitFor({ timeout: 15_000 });
   }
 

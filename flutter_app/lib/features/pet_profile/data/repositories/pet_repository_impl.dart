@@ -171,13 +171,7 @@ class PetRepositoryImpl implements PetRepository {
 
   @override
   Future<void> deletePetWithDataCleanup(String id) async {
-    if (remoteDataSource != null && token != null && token!.isNotEmpty) {
-      try {
-        await remoteDataSource!.deletePetData(id, token!);
-      } catch (e) {
-        debugPrint('PetRepository: cascade delete of pet data failed: $e');
-      }
-    }
+    // Server DELETE /:id purges related rows + files (F-09/F-12) before removing the pet.
     await deletePet(id);
   }
 
