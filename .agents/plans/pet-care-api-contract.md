@@ -52,9 +52,9 @@ next_action: "continue phase 1 on branch cursor/pet-care-api-contract-75cb"
 artifact_ref:
   branch: cursor/pet-care-api-contract-75cb
   plan_path: .agents/plans/pet-care-api-contract.md
-  plan_commit: 9be1523598bb0d7742ca8bbc0379ed91a04215a2
+  plan_commit: 703ee287cbbd0c57742ba3e8c0c8a63a8a00d71e
   snapshot_path: .agents/plans/pet-care-api-contract.snapshot.json
-  snapshot_commit: 9be1523598bb0d7742ca8bbc0379ed91a04215a2
+  snapshot_commit: 703ee287cbbd0c57742ba3e8c0c8a63a8a00d71e
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
