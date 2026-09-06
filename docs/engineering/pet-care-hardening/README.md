@@ -25,6 +25,6 @@ Gold-standard security and mobile-readiness programme for the Pet Care domain.
 | `pet-care-p0-private-files` | P0 — F-01 private health files | merged (#998) |
 | `pet-care-p0-share-minimization` | P0 — F-03/F-04 share preview + expiry | merged (#1001) |
 | `pet-care-auth-platform` | B — shared foundations (F-08) | merged (#1006) |
-| `pet-care-capability-auth-rollout` | F-02 capability rollout | in progress |
+| `pet-care-capability-auth-rollout` | F-02 capability rollout | merged (#1009) |
 
 See discovery report §Recommended follow-on plans for the full slice list.

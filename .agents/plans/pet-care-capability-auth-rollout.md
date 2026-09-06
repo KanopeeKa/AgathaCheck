@@ -45,18 +45,18 @@ Implement **F-02** fine-grained Pet Care authorization: differentiate read vs ma
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/pet-care-capability-auth-rollout-75cb"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/pet-care-capability-auth-rollout-75cb
+  branch: main
   plan_path: .agents/plans/pet-care-capability-auth-rollout.md
-  plan_commit: 98941081746c55abcd020819e4275d49042dbab1
+  plan_commit: f298343855e184b103d181fdfb199ad91c86078c
   snapshot_path: .agents/plans/pet-care-capability-auth-rollout.snapshot.json
-  snapshot_commit: 98941081746c55abcd020819e4275d49042dbab1
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1009"]
+  snapshot_commit: f298343855e184b103d181fdfb199ad91c86078c
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
