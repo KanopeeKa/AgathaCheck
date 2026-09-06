@@ -28,7 +28,12 @@ export function signRefreshToken(id, email, sid) {
 
 export function verifyAccessToken(token) {
   const payload = jwt.verify(token, JWT_SECRET);
-  if (payload.typ !== TOKEN_TYPE_ACCESS) {
+  if (payload.typ === TOKEN_TYPE_REFRESH) {
+    const err = new Error('Invalid token type');
+    err.name = 'JsonWebTokenError';
+    throw err;
+  }
+  if (payload.typ !== undefined && payload.typ !== TOKEN_TYPE_ACCESS) {
     const err = new Error('Invalid token type');
     err.name = 'JsonWebTokenError';
     throw err;

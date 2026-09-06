@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import { createApp } from '../../bin/server.js';
 import {
   JWT_SECRET,
-  userId,
   userEmail,
   buildMockPool,
   makeToken,
