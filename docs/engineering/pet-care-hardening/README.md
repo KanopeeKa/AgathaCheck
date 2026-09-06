@@ -33,6 +33,8 @@ Gold-standard security and mobile-readiness programme for the Pet Care domain.
 | `pet-care-weight-validation` | F-13 weight input validation | merged (#1029) |
 | `pet-care-route-hygiene` | F-21 remove dead .bak route files | merged (#1030) |
 | `pet-care-security-hardening` | F-15 headers + F-16 upload rate limit | merged (#1031) |
-| `pet-care-observability-taxonomy` | F-23 security event taxonomy doc | in progress |
+| `pet-care-observability-taxonomy` | F-23 security event taxonomy doc | merged (#1037) |
+
+**Roadmap status:** `pet-care-hardening-roadmap` complete (all discovery follow-on slices through F-23 merged). Deferred: F-17/F-20 CI workflow jobs ([#1025](https://github.com/KanopeeKa/AgathaCheck/issues/1025) — escalation); F-22 terminology rename (separate plan).
 
 See [security-event-taxonomy.md](./security-event-taxonomy.md) for F-23 alert taxonomy.
