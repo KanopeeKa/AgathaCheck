@@ -47,7 +47,7 @@ function buildMockPool() {
     }
 
     if (sql.includes('JOIN organization_users ou')) {
-      const [pid, uid] = params;
+      const [, uid] = params;
       if (uid !== orgViewerId) return { rows: [] };
       return { rows: orgViewerAccess.has(`${orgId}:${uid}`) ? [{ '?column?': 1 }] : [] };
     }
