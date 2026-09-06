@@ -13,7 +13,7 @@ void main() {
       DrawerMenuItem(
         semanticKey: 'drawer_my_pets',
         label: 'Pet Care',
-        group: DrawerMenuGroup.guardianPlum,
+        group: DrawerMenuGroup.petCarePlum,
         route: '/pc/home',
       ),
     ),

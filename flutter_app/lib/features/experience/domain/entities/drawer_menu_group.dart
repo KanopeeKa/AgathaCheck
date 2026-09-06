@@ -1,7 +1,7 @@
 /// Semantic background groups for experience drawer rows (navigation v2).
 enum DrawerMenuGroup {
-  /// Guardian plum tint — guardian-role items.
-  guardianPlum,
+  /// Pet Care plum tint — workspace section items.
+  petCarePlum,
 
   /// Organisation green tint — org-role items.
   organizationGreen,

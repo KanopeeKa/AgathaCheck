@@ -22,10 +22,10 @@ class DrawerMenuConfig {
     return [
       DrawerMenuEntry.item(
         DrawerMenuItem(
-          semanticKey: 'drawer_guardian',
+          semanticKey: 'drawer_pet_care',
           label: l.drawerPetCare,
           icon: Icons.pets_outlined,
-          group: DrawerMenuGroup.guardianPlum,
+          group: DrawerMenuGroup.petCarePlum,
           route: AppExperience.petCare.homePath(),
         ),
       ),

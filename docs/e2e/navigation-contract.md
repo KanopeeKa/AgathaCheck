@@ -54,7 +54,7 @@ After API seeding, the Pet Care home `DueEventsSection` does not refresh until t
 
 ## Pet Care workspace naming (D38)
 
-Routes use `/pc/*`. Wire value `pet_care` replaces legacy `guardian` for experience scope. Some Flutter/E2E identifiers still use `guardian_*` prefixes until a follow-up rename lands.
+Routes use `/pc/*`. Wire value `pet_care` replaces legacy `guardian` for experience scope. Shell drawer/toggle semantics use `drawer_pet_care` and `experience_workspace_menu_pet_care` (tier-1 rename, F-22 follow-up). Other Flutter/E2E identifiers may still use `guardian_*` prefixes — see [terminology-rename-inventory](/docs/domains/pet_care/changes/terminology-rename-inventory.md) §Deferred drift.
 
 | Surface | EN | FR |
 |---------|----|----|

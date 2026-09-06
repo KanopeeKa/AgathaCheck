@@ -39,7 +39,7 @@ Eyebrow labels use **ALL CAPS** in EN (`CARE ACTIONS`, `PETS` where used). FR ey
 
 ## Code map
 
-Wire and routes use `pet_care` and `/pc/*`. Internal workspace identifiers use `pet_care_*` filenames, `PetCare*` classes, and `petCare*` l10n keys — completed by execute-plan [`pet-care-terminology-rename`](../../.agents/plans/pet-care-terminology-rename.md) (PRs #1041–#1045). Residual inventory: [terminology-rename-inventory.md](changes/terminology-rename-inventory.md).
+Wire and routes use `pet_care` and `/pc/*`. Internal workspace identifiers use `pet_care_*` filenames, `PetCare*` classes, `petCare*` l10n keys, and shell semantics `drawer_pet_care` / `experience_workspace_menu_pet_care` — completed by execute-plan [`pet-care-terminology-rename`](../../.agents/plans/pet-care-terminology-rename.md) (PRs #1041–#1045) plus tier-1 shell semantics follow-up. Residual inventory and deferred drift: [terminology-rename-inventory.md](changes/terminology-rename-inventory.md).
 
 **Not** Pet Care workspace terminology: custody **guardianship**, `individual_guardianship` transfer kinds, legal holder on a pet — see [org-custody-model.md](/docs/domains/shelter/features/org-custody-model.md).
 

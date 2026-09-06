@@ -439,7 +439,7 @@ void main() {
     await tester.tap(find.byKey(const Key('experience_workspace_toggle')));
     await tester.pumpAndSettle();
     final guardianItem = find.byKey(
-      const Key('experience_workspace_menu_guardian'),
+      const Key('experience_workspace_menu_pet_care'),
     );
     await tester.ensureVisible(guardianItem);
     await tester.tap(guardianItem);
