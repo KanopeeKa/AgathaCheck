@@ -4,7 +4,7 @@
   "approved_at": "2026-09-06T10:35:00Z",
   "approved_by": "standing grant — Pet Care hardening roadmap (user chat 2026-09-05)",
   "approved_until": "2026-09-08T10:35:00Z",
-  "content_hash": "sha256:ca8f644773f24558408b5c8a90935e53de6038f462d0bed8977bf6929c917e7f",
+  "content_hash": "sha256:dd7fa0db0724c467d5614a20dc7fe393c501de7905d5b375f0919a05457507f0",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -78,7 +78,8 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_head_sha": "df2fea32"
     }
   ]
 }

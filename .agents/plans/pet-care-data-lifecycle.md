@@ -64,9 +64,9 @@ next_action: "continue phase 2 on branch cursor/pet-care-data-lifecycle-flutter-
 artifact_ref:
   branch: cursor/pet-care-data-lifecycle-flutter-75cb
   plan_path: .agents/plans/pet-care-data-lifecycle.md
-  plan_commit: d54872cebe33c581ef837d914a05340c40abdf5a
+  plan_commit: df2fea324829a0c80de572b2ed48758fb2d04a29
   snapshot_path: .agents/plans/pet-care-data-lifecycle.snapshot.json
-  snapshot_commit: d54872cebe33c581ef837d914a05340c40abdf5a
+  snapshot_commit: df2fea324829a0c80de572b2ed48758fb2d04a29
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
