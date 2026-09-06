@@ -45,18 +45,18 @@ Close **F-03** and **F-04**: anonymous share preview exposes only scoped fields 
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/pet-care-p0-share-minimization-75cb"
+next_action: "plan complete"
 artifact_ref:
   branch: cursor/pet-care-p0-share-minimization-75cb
   plan_path: .agents/plans/pet-care-p0-share-minimization.md
-  plan_commit: 128d62a5ea815dad79ce5ddcaef9d4763bc57744
+  plan_commit: 694b7816cf87913d68e7426baccacd361fe24f13
   snapshot_path: .agents/plans/pet-care-p0-share-minimization.snapshot.json
-  snapshot_commit: 128d62a5ea815dad79ce5ddcaef9d4763bc57744
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1001"]
-merge_commits: {}
+  snapshot_commit: 694b7816cf87913d68e7426baccacd361fe24f13
+open_prs: []
+merge_commits: {"1":"ae8304ca4f6da555a97fa63e55e2ccceb0c34233"}
 debt_issue_refs: []
 ```
