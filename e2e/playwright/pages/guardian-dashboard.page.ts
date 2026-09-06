@@ -232,11 +232,11 @@ export class GuardianDashboardPage {
    */
   async openLeadingNavDestination(label: string): Promise<void> {
     const sidebar = this.page.locator(
-      '[flt-semantics-identifier="guardian_navigation_sidebar"]',
+      '[flt-semantics-identifier="pet_care_navigation_sidebar"]',
     );
-    const rail = this.page.locator('[flt-semantics-identifier="guardian_navigation_rail"]');
+    const rail = this.page.locator('[flt-semantics-identifier="pet_care_navigation_rail"]');
     const bottomNav = this.page.locator(
-      '[flt-semantics-identifier="guardian_bottom_navigation"]',
+      '[flt-semantics-identifier="pet_care_bottom_navigation"]',
     );
 
     if (await sidebar.isVisible().catch(() => false)) {
@@ -253,11 +253,11 @@ export class GuardianDashboardPage {
   }
 
   leadingNavRail(): Locator {
-    return this.page.locator('[flt-semantics-identifier="guardian_navigation_rail"]');
+    return this.page.locator('[flt-semantics-identifier="pet_care_navigation_rail"]');
   }
 
   leadingNavSidebar(): Locator {
-    return this.page.locator('[flt-semantics-identifier="guardian_navigation_sidebar"]');
+    return this.page.locator('[flt-semantics-identifier="pet_care_navigation_sidebar"]');
   }
 
   async expectLeadingNavRailVisible(): Promise<void> {
@@ -270,14 +270,14 @@ export class GuardianDashboardPage {
 
   bottomNavigation(): Locator {
     return this.page
-      .locator('[flt-semantics-identifier="guardian_bottom_navigation"]')
+      .locator('[flt-semantics-identifier="pet_care_bottom_navigation"]')
       .or(this.page.getByRole('button', { name: /Dashboard(?:\s+Tab\s+1\s+of\s+5)?/i }))
       .first();
   }
 
   railBrand(): Locator {
     return this.page
-      .locator('[flt-semantics-identifier="guardian_navigation_rail_brand"]')
+      .locator('[flt-semantics-identifier="pet_care_navigation_rail_brand"]')
       .or(this.page.getByRole('img', { name: /AgathaTrack logo/i }))
       .first();
   }
