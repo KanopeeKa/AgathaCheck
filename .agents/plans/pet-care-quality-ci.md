@@ -17,7 +17,7 @@ Raise Pet Care backend quality gates: weight-entry audit events (F-18), Jest cov
 |-------|-------|
 | **approved_at** | 2026-09-06T13:50:00Z |
 | **approved_until** | 2026-09-08T13:50:00Z |
-| **control_issue** | TBD |
+| **control_issue** | #1024 |
 | **autonomy** | active |
 
 Standing grant: Pet Care hardening roadmap (user chat 2026-09-05).
