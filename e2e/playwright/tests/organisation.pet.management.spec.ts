@@ -129,7 +129,8 @@ test.describe('Organisation pet management', () => {
     });
 
     const today = new Date().toISOString().slice(0, 10);
-    await createHealthEntry(baseURL, bob.accessToken, pet.id, {
+    // Pet owner creates; org members are read-only per F-02 capability policy (D1).
+    await createHealthEntry(baseURL, alice.accessToken, pet.id, {
       name: 'Annual Vaccination',
       type: 'preventive',
       nextDueDate: today,
