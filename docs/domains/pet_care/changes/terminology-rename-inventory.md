@@ -2,7 +2,7 @@
 title: Pet Care terminology rename — residual inventory (F-22)
 owner: Documentation Team
 audience: agent
-status: active
+status: completed
 last_updated: 2026-09-06
 tags: [pet_care, migration, f-22]
 ---
@@ -68,11 +68,11 @@ Keep `fromWire('guardian')` dual-read for stored prefs.
 
 ## F-22 completion criteria
 
-- [ ] Zero `guardian_*` filenames under `flutter_app/lib/features/experience/` (except assets path `assets/dashboard/guardian-empty-*.png` — rename asset optional debt)
-- [ ] Zero `AppExperience.guardian` references in `flutter_app/lib`
-- [ ] Workspace l10n keys use `petCare*` / `experiencePetCare*` naming (custody/legal keys exempt)
-- [ ] `docs/domains/pet_care/README.md` code map no longer says "migration in progress"
-- [ ] F-22 row in `hardening-discovery.md` marked addressed with link to this plan
+- [x] Zero `guardian_*` filenames under `flutter_app/lib/features/experience/` (except assets path `assets/dashboard/guardian-empty-*.png` — rename asset optional debt)
+- [x] Zero `AppExperience.guardian` references in `flutter_app/lib`
+- [x] Workspace l10n keys use `petCare*` / `experiencePetCare*` naming (custody/legal keys exempt)
+- [x] `docs/domains/pet_care/README.md` code map no longer says "migration in progress"
+- [x] F-22 row in `hardening-discovery.md` marked addressed with link to this plan
 
 ## Phase map
 

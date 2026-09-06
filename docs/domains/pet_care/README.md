@@ -3,7 +3,7 @@ title: Pet Care domain
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-02
+last_updated: 2026-09-06
 tags: [domain, pet_care, experience]
 ---
 
@@ -37,9 +37,9 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 
 Eyebrow labels use **ALL CAPS** in EN (`CARE ACTIONS`, `PETS` where used). FR eyebrows stay uppercase where already established (`SOINS`, `ANIMAUX`).
 
-## Code map (target — internal rename in progress)
+## Code map
 
-Wire and routes are migrated (`pet_care`, `/pc/*`). **F-22** (`pet-care-terminology-rename`) is renaming residual `guardian_*` filenames and l10n keys — see [terminology-rename-inventory.md](changes/terminology-rename-inventory.md).
+Wire and routes use `pet_care` and `/pc/*`. Internal workspace identifiers use `pet_care_*` filenames, `PetCare*` classes, and `petCare*` l10n keys — completed by execute-plan [`pet-care-terminology-rename`](../../.agents/plans/pet-care-terminology-rename.md) (PRs #1041–#1045). Residual inventory: [terminology-rename-inventory.md](changes/terminology-rename-inventory.md).
 
 **Not** Pet Care workspace terminology: custody **guardianship**, `individual_guardianship` transfer kinds, legal holder on a pet — see [org-custody-model.md](/docs/domains/shelter/features/org-custody-model.md).
 
