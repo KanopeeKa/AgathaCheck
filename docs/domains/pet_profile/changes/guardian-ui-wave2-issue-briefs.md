@@ -116,7 +116,7 @@ UI + policy doc update
 ### UI notes
 - Read `AuthUser` from `authProvider`.
 - Keep close button and divider below header block.
-- Preserve semantic keys: `drawer_account`, `drawer_guardian`, `drawer_organisation`.
+- Preserve semantic keys: `drawer_account`, `drawer_pet_care`, `drawer_organisation`.
 
 ### Acceptance criteria
 - [ ] Drawer matches layout spec; Account reachable from top block.

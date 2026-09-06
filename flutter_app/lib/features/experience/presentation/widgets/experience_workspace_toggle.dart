@@ -58,7 +58,7 @@ class ExperienceWorkspaceToggle extends ConsumerWidget {
             onSelected: (selected) => _selectExperience(context, ref, selected),
             itemBuilder: (context) => [
               PopupMenuItem<AppExperience>(
-                key: const Key('experience_workspace_menu_guardian'),
+                key: const Key('experience_workspace_menu_pet_care'),
                 value: AppExperience.petCare,
                 child: Text(
                   l.drawerPetCare,

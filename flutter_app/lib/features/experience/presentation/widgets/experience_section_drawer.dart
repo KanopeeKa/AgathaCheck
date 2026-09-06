@@ -21,7 +21,7 @@ class ExperienceSectionDrawer extends ConsumerWidget {
   String? _activeSemanticKey({required String location}) {
     if (location == '/account') return 'drawer_account';
     if (location.startsWith('/pc/') || location.startsWith('/g/')) {
-      return 'drawer_guardian';
+      return 'drawer_pet_care';
     }
     if (location.startsWith('/o/')) return 'drawer_organisation';
     return null;

@@ -118,7 +118,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('experience_workspace_menu_guardian')),
+      find.byKey(const Key('experience_workspace_menu_pet_care')),
       findsOneWidget,
     );
     expect(
@@ -141,7 +141,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final guardianItem = find.byKey(
-      const Key('experience_workspace_menu_guardian'),
+      const Key('experience_workspace_menu_pet_care'),
     );
     final shelterItem = find.byKey(
       const Key('experience_workspace_menu_shelter'),
@@ -173,7 +173,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('experience_workspace_menu_guardian')),
+      find.byKey(const Key('experience_workspace_menu_pet_care')),
       findsOneWidget,
     );
     expect(
@@ -223,7 +223,7 @@ void main() {
     await tester.tap(find.byKey(const Key('experience_workspace_toggle')));
     await tester.pumpAndSettle();
     final guardianItem = find.byKey(
-      const Key('experience_workspace_menu_guardian'),
+      const Key('experience_workspace_menu_pet_care'),
     );
     await tester.ensureVisible(guardianItem);
     await tester.tap(guardianItem);

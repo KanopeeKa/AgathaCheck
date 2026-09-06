@@ -3,7 +3,7 @@ title: Pet Care terminology rename — residual inventory (F-22)
 owner: Documentation Team
 audience: agent
 status: completed
-last_updated: 2026-09-06
+last_updated: 2026-09-07
 tags: [pet_care, migration, f-22]
 ---
 
@@ -84,3 +84,39 @@ Keep `fromWire('guardian')` dual-read for stored prefs.
 | 4 | Alias cleanup + test keys |
 | 5 | Discovery/programme doc closure |
 | debt | Optional assets, onboarding keys, nav semantics, missed widget keys |
+| tier-1 | Shell semantics: `drawer_pet_care`, `experience_workspace_menu_pet_care`, `DrawerMenuGroup.petCarePlum` |
+
+## Shell semantics (tier 1 — completed)
+
+Workspace shell locators now match Pet Care vocabulary (user-visible labels already said Pet Care).
+
+| Before | After |
+|--------|-------|
+| `drawer_guardian` | `drawer_pet_care` |
+| `experience_workspace_menu_guardian` | `experience_workspace_menu_pet_care` |
+| `DrawerMenuGroup.guardianPlum` | `DrawerMenuGroup.petCarePlum` |
+
+Update Flutter widget tests in the same PR when these keys change. E2E did not assert the old drawer/toggle keys.
+
+## Deferred drift (tier 2–3 — intentional, do not rename in bulk)
+
+Remaining **guardian** identifiers are **not** workspace branding. Rename only when touching the owning feature; do not reopen F-22 as a mega-rename.
+
+### Tier 2 — `pet_profile` domain (rename on next touch)
+
+| Identifier | Location | Suggested target | Why deferred |
+|------------|----------|------------------|--------------|
+| `PetListController.guardianShellPets()` | `pet_list_controller.dart` | `shellCustodyPets()` or similar | Domain filter (personal shell vs org inventory), not workspace label |
+| `guardian_passed_away_section` | `pet_profile` widgets | `shell_passed_away_section` | pet_profile feature boundary |
+| `guardian_embedded_pets_list` | `pet_profile` widgets | `shell_embedded_pets_list` | Used from Pet Care but owned by pet_profile |
+
+### Tier 3 — test infra (optional batch)
+
+| Item | Notes |
+|------|-------|
+| `guardian_dashboard.feature`, `guardian_onboarding.feature` | BDD filenames; no runtime effect; update coverage map if renamed |
+| `guardian.navigation.spec.ts`, `guardian_navigation_*` keys | Nav rail/sidebar E2E; separate from drawer/toggle tier 1 |
+
+### Permanent custody carve-out (never rename for workspace consistency)
+
+See table below under **Intentionally unchanged**.

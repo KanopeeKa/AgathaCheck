@@ -55,7 +55,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('drawer_close')), findsOneWidget);
-    expect(find.byKey(const Key('drawer_guardian')), findsOneWidget);
+    expect(find.byKey(const Key('drawer_pet_care')), findsOneWidget);
     expect(find.byKey(const Key('drawer_organisation')), findsOneWidget);
     expect(find.byKey(const Key('drawer_account')), findsOneWidget);
     expect(find.text('AgathaTrack'), findsOneWidget);
@@ -65,7 +65,7 @@ void main() {
 
     final drawerHeight = tester.getSize(find.byType(Drawer)).height;
     final guardianTop = tester
-        .getTopLeft(find.byKey(const Key('drawer_guardian')))
+        .getTopLeft(find.byKey(const Key('drawer_pet_care')))
         .dy;
     final accountTop = tester
         .getTopLeft(find.byKey(const Key('drawer_account')))

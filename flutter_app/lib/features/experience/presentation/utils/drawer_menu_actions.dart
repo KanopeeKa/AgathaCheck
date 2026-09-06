@@ -19,7 +19,7 @@ Future<void> handleExperienceDrawerItemTap(
 
   switch (item.semanticKey) {
     // Phase 1 unified section switcher entries
-    case 'drawer_guardian':
+    case 'drawer_pet_care':
       await store.writeLastAppSection(AppExperience.petCare);
       context.go(AppExperience.petCare.homePath());
       return;
