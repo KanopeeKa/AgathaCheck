@@ -25,19 +25,19 @@ Standing grant: `approve-autonomous pet-care-hardening-roadmap` — user chat 20
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: orchestrate
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: orchestrate
 halt_reason: null
-next_action: bootstrap and gate child plan pet-care-observability-taxonomy
+next_action: "roadmap complete"
 artifact_ref:
-  branch: cursor/pet-care-observability-taxonomy-75cb
+  branch: main
   plan_path: .agents/plans/pet-care-hardening-roadmap.md
-  plan_commit: null
+  plan_commit: ba2cb9d87114c5dd2ee0be911788f9e1206bcb41
   snapshot_path: .agents/plans/pet-care-hardening-roadmap.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: ba2cb9d87114c5dd2ee0be911788f9e1206bcb41
 open_prs: []
-merge_commits: {}
+merge_commits: {"orchestrate":"ba2cb9d87114c5dd2ee0be911788f9e1206bcb41"}
 debt_issue_refs: [1025]
 ```
 
