@@ -8,6 +8,7 @@
     "start": "node bin/server.js",
     "dev": "node --watch bin/server.js",
     "test": "jest --env=node --runInBand",
+    "test:policy-coverage": "jest --coverage --collectCoverageFrom=lib/petAccess.js --collectCoverageFrom=lib/petCapabilityPolicy.js --env=node --forceExit",
     "audit-retention": "node scripts/audit-retention.js"
   },
   "dependencies": {
@@ -28,8 +29,10 @@
   "devDependencies": {
     "@babel/core": "^8.0.1",
     "@babel/preset-env": "^8.0.0",
+    "@eslint/js": "^9.39.5",
     "babel-jest": "^30.5.0",
     "babel-plugin-transform-import-meta": "^3.0.0",
+    "eslint": "^9.39.5",
     "jest": "^30.5.0",
     "nodemon": "^3.0.1",
     "supertest": "^7.2.2"

@@ -136,6 +136,8 @@ run_governance() {
   node scripts/check_skill_frontmatter.js
   node scripts/validate_openapi.js
   node --test scripts/validate_openapi.test.js
+  node scripts/validate_eslint.js
+  node --test scripts/validate_eslint.test.js
   node --test scripts/github_issue_workflow.test.js
   node --test scripts/db/normalize-schema-dump.test.js
   node scripts/db/check-migration-manifest.js
@@ -180,6 +182,8 @@ run_server() {
     else
       npx jest --env=node --forceExit
     fi
+    echo "    policy coverage ratchet"
+    npm run test:policy-coverage
   )
 }
 

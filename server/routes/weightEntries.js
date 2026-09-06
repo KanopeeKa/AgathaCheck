@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { createApiLimiter } from '../config/rateLimit.js';
 import { publicError } from '../config/security.js';
+import { logAuditEventSafe } from '../lib/audit.js';
 import { extractUserId } from '../lib/requireAuth.js';
 import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../lib/calendarDate.js';
 import { refreshPetWeightCache } from '../lib/petWeightSync.js';
@@ -104,6 +105,15 @@ export default function weightEntriesRoutes(pool) {
         [id, petId, userId, weightVal, data.unit || 'kg', dateVal, data.notes || '']
       );
       await refreshPetWeightCache(pool, petId);
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'weight_entry.created',
+        resourceType: 'weight_entry',
+        resourceId: id,
+        petId,
+        metadata: { weight: weightVal, unit: data.unit || 'kg' },
+        req,
+      });
       res.status(201).json(weightEntryToMap(result.rows[0]));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -128,6 +138,15 @@ export default function weightEntriesRoutes(pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
       const row = result.rows[0];
       await refreshPetWeightCache(pool, row.pet_id);
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'weight_entry.updated',
+        resourceType: 'weight_entry',
+        resourceId: req.params.id,
+        petId: row.pet_id,
+        metadata: { weight: weightVal, unit: data.unit || 'kg' },
+        req,
+      });
       res.json(weightEntryToMap(row));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -150,6 +169,14 @@ export default function weightEntriesRoutes(pool) {
       if (petId) {
         await refreshPetWeightCache(pool, petId);
       }
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'weight_entry.deleted',
+        resourceType: 'weight_entry',
+        resourceId: req.params.id,
+        petId: petId || null,
+        req,
+      });
       res.json({ deleted: true });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
