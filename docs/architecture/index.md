@@ -127,7 +127,9 @@ Product domains are documented under [/docs/domains/](/docs/domains/). Each row 
 | BDD | `notifications.feature` |
 | E2E | `notifications.spec.ts` |
 
-### Shelter (incl. foster, custody, adoption)
+### Shelter (incl. foster, custody, adoption) — **FROZEN** (not MVP)
+
+> **Status (2026-09):** Frozen with Fostering. Not maintained; not in CI. See [/docs/engineering/frozen-domains/](/docs/engineering/frozen-domains/).
 
 | | Path |
 |---|------|
