@@ -170,8 +170,9 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     final pet = pets.where((p) => p.id == petId).firstOrNull;
     if (pet == null) return false;
 
-    final hasSharedUsers =
-        await ref.read(petRepositoryProvider).markPassedAway(pet);
+    final hasSharedUsers = await ref
+        .read(petRepositoryProvider)
+        .markPassedAway(pet);
     ref.invalidateSelf();
     ref.invalidate(allPetsIncludingOrgProvider);
     return hasSharedUsers;

@@ -59,9 +59,7 @@ class RecordingPetRepository implements PetRepository {
   }
 }
 
-ProviderContainer makeContainer({
-  required RecordingPetRepository repo,
-}) {
+ProviderContainer makeContainer({required RecordingPetRepository repo}) {
   final container = ProviderContainer(
     overrides: [
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
@@ -149,18 +147,17 @@ void main() {
     });
 
     test('returns false when pet is unknown', () async {
-        final repo = RecordingPetRepository(initial: [samplePet()]);
-        final container = makeContainer(repo: repo);
-        addTearDown(container.dispose);
+      final repo = RecordingPetRepository(initial: [samplePet()]);
+      final container = makeContainer(repo: repo);
+      addTearDown(container.dispose);
 
-        await container.read(petListProvider.future);
-        final result = await container
-            .read(petListProvider.notifier)
-            .markPassedAway('does-not-exist');
+      await container.read(petListProvider.future);
+      final result = await container
+          .read(petListProvider.notifier)
+          .markPassedAway('does-not-exist');
 
-        expect(result, false);
-        expect(repo.updated, isEmpty);
-      },
-    );
+      expect(result, false);
+      expect(repo.updated, isEmpty);
+    });
   });
 }
