@@ -58,16 +58,16 @@ Ship **session v2** for Pet Care mobile beta readiness: distinct access/refresh 
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/pet-care-session-v2-backend-75cb"
+next_action: "continue phase 2 on branch cursor/pet-care-session-v2-flutter-75cb"
 artifact_ref:
-  branch: cursor/pet-care-session-v2-backend-75cb
+  branch: cursor/pet-care-session-v2-flutter-75cb
   plan_path: .agents/plans/pet-care-session-v2.md
-  plan_commit: f6b00637a6dd1a1a5c27756e16a015e7252a59cc
+  plan_commit: 4ee8cc6026ef1344fd7bda2f7cd01f1fd30eedcf
   snapshot_path: .agents/plans/pet-care-session-v2.snapshot.json
-  snapshot_commit: f6b00637a6dd1a1a5c27756e16a015e7252a59cc
+  snapshot_commit: 4ee8cc6026ef1344fd7bda2f7cd01f1fd30eedcf
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
