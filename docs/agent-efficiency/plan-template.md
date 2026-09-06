@@ -25,8 +25,11 @@ Copy to `.agents/plans/<plan_id>.md` and fill in. Pair with `<plan_id>.snapshot.
 | **base_branch** | `main` |
 | **default_merge_mode** | `auto` (only valid value — agents always merge when gates pass) |
 | **artifact_branch_policy** | `phase-branch` (default) |
+| **plan_kind** | omit for single plans; `roadmap` for multi-plan parent orchestrators |
 
 **Multi-phase (2+):** prefer `base_branch: cursor/<plan_id>-integration-<suffix>` — phase PRs merge to integration; one final PR integration → `main`. See execute-plan skill §Multi-phase integration branch.
+
+**Roadmap parent (`plan_kind: roadmap`):** one standing grant chains multiple child `plan_id`s. Snapshot includes `child_plans[]` with `{plan_id, status}` per slice; runtime CLI tracks progress (`roadmap-status`, `roadmap-set-child`). See [execute-plan-runtime.md](./execute-plan-runtime.md) §Roadmap orchestrator.
 
 ---
 

@@ -242,3 +242,38 @@ test('normalizeStatusName maps common aliases', () => {
   assert.equal(normalizeStatusName('  Ready  '), 'Ready');
   assert.equal(normalizeStatusName(42), '42');
 });
+
+test('roadmap snapshots track child plan progression', () => {
+  const {
+    findNextPendingChild,
+    roadmapStatus,
+    setRoadmapChildStatus,
+  } = require('./lib/execute_plan_roadmap');
+  const snapshot = loadSnapshotFromPath(exampleSnapshot);
+  snapshot.plan_kind = 'roadmap';
+  snapshot.programme_ref = 'docs/engineering/pet-care-hardening/README.md';
+  snapshot.child_plans = [
+    { plan_id: 'child-a', status: 'merged', merge_commit: 'aaa' },
+    { plan_id: 'child-b', status: 'pending' },
+  ];
+  snapshot.current_child_plan_id = null;
+  snapshot.content_hash = computeHash(snapshot);
+  validateSnapshot(snapshot);
+
+  let status = roadmapStatus(snapshot);
+  assert.equal(status.next_child_plan_id, 'child-b');
+  assert.equal(status.complete, false);
+
+  setRoadmapChildStatus(snapshot, 'child-b', 'in_progress');
+  assert.equal(snapshot.current_child_plan_id, 'child-b');
+  assert.match(computeNextAction(snapshot), /continue child plan child-b/);
+
+  setRoadmapChildStatus(snapshot, 'child-b', 'merged', {
+    merge_commit: 'bbb',
+    pr_url: 'https://github.com/o/r/pull/2',
+  });
+  status = roadmapStatus(snapshot);
+  assert.equal(status.complete, true);
+  assert.equal(findNextPendingChild(snapshot), null);
+  assert.equal(computeNextAction(snapshot), 'roadmap complete');
+});

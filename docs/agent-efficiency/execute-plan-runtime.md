@@ -135,6 +135,20 @@ node scripts/execute_plan_runtime.js complete-plan <plan_id> --write
 
 **Issue comments:** use `--post-comment` on `halt`, `pause`, `resume-uat`; `complete-plan --write` closes with summary. For ad-hoc updates: `node scripts/github_issue_workflow.js comment --issue <n> --body "…"`.
 
+### Roadmap orchestrator (`plan_kind: roadmap`)
+
+Parent snapshots that chain multiple child `plan_id`s under one standing grant:
+
+```bash
+node scripts/execute_plan_runtime.js roadmap-status pet-care-hardening-roadmap
+node scripts/execute_plan_runtime.js roadmap-next-child pet-care-hardening-roadmap
+node scripts/execute_plan_runtime.js roadmap-set-child pet-care-hardening-roadmap \
+  --child pet-care-observability-taxonomy --status merged \
+  --pr-url <url> --merge-commit <sha> --write
+```
+
+After each child merge: `complete-plan` on the child, then `roadmap-set-child` on the parent. When `roadmap-status` reports `complete: true`, run `complete-plan` on the roadmap parent.
+
 ---
 
 ## Agent workflow (summary)

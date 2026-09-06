@@ -12,6 +12,7 @@ const {
   PHASE_STATUS,
   STATUS_REASON,
 } = require('./execute_plan_constants');
+const { isRoadmap, validateRoadmap } = require('./execute_plan_roadmap');
 
 const REPO_ROOT = path.resolve(__dirname, '../..');
 const PLANS_DIR = path.join(REPO_ROOT, '.agents/plans');
@@ -148,6 +149,12 @@ function validateSnapshot(obj, { checkHash = true } = {}) {
     throw new ExecutePlanError('content_hash must match sha256:<hex>');
   }
   obj.phases.forEach((phase, i) => validatePhase(phase, i));
+  if (obj.plan_kind != null && obj.plan_kind !== 'roadmap') {
+    throw new ExecutePlanError('plan_kind must be "roadmap" when set');
+  }
+  if (isRoadmap(obj)) {
+    validateRoadmap(obj);
+  }
   if (checkHash) {
     const expected = computeHash(obj);
     if (obj.content_hash !== expected) {

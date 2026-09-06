@@ -192,6 +192,23 @@ A single `plan_id` stays small on purpose (tight `allowed_paths`, one reviewable
 3. Before slicing sequentially, re-check the roadmap for independent waves (disjoint `allowed_paths`, e.g. backend-only vs Flutter-only, or unrelated features). If the human named `/spawn-sprint-agents` or you identify such a wave yourself, set `spawn_allowed: true` and invoke **/spawn-sprint-agents** for that wave rather than defaulting to one plan at a time — sequential slicing when parallel was explicitly requested is itself a standing-grant violation.
 4. Only fall back to a soft closer / control-issue `**Needs you:**` when: the roadmap is genuinely exhausted, the next slice needs a decision the grant didn't cover (e.g. new escalation-list item), or `approved_until` would be exceeded before it can be re-validated.
 
+### Roadmap parent orchestrator (`plan_kind: roadmap`)
+
+When the standing grant names a multi-plan programme, create a **parent roadmap snapshot** with `child_plans[]` listing each slice. Use the runtime CLI to track child progress — do not rely on chat memory alone.
+
+| CLI | Purpose |
+|-----|---------|
+| `roadmap-status <roadmap_id>` | Current child, pending list, `complete` flag |
+| `roadmap-next-child <roadmap_id>` | Next `pending` child `plan_id` |
+| `roadmap-set-child <roadmap_id> --child <id> --status <s> --write` | Record child merge / in-progress |
+
+**Turn-end checklist (active roadmap):** before ending any turn while a standing grant covers remaining children:
+
+1. Child PR merged? → `complete-plan` on child + `roadmap-set-child --status merged` on parent
+2. Run `roadmap-next-child` — if pending, bootstrap child plan + control issue in the same session when possible
+3. Post milestone on roadmap control issue with explicit `next_action`
+4. **Forbidden closers:** "shall I continue?", "which finding next?", "let me know when…", "say which wave…"
+
 ---
 
 ## Phase delegation (orchestrator vs workers)

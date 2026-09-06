@@ -179,6 +179,20 @@ gh pr view <url> --json state,mergedAt,mergeCommit
 
 Verify merge commit is ancestor of `origin/<base_branch>` before execute-plan advances to the next phase.
 
+### 7b. Roadmap child handoff (`plan_kind: roadmap`)
+
+When babysit+ or babysit-uat merges a **child** plan PR (not the roadmap parent):
+
+1. On the **child** plan: `node scripts/execute_plan_runtime.js complete-plan <child_plan_id> --write`
+2. On the **roadmap parent**:
+   ```bash
+   node scripts/execute_plan_runtime.js roadmap-set-child <roadmap_id> \
+     --child <child_plan_id> --status merged \
+     --pr-url <url> --merge-commit <sha> --write
+   ```
+3. `roadmap-next-child <roadmap_id>` — bootstrap and gate the next pending child without permission prompts when the standing grant covers remaining scope
+4. When `roadmap-status` reports `complete: true`, `complete-plan <roadmap_id> --write` on the parent
+
 **Babysit+ ends here.** Do not poll pre-UAT, promote, or deploy. For final merge to `main` when pre-UAT must pass, delegate to **/babysit-uat** instead.
 
 ### 8. Post-merge (out of scope for babysit+)
