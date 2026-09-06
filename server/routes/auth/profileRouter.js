@@ -2,6 +2,8 @@ import { errorDetails } from '../../config/security.js';
 import { listFosterContactsForUser } from '../../lib/orgPeople.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { deletePostHogPerson } from '../../lib/posthogServer.js';
+import { purgeAllPetFilesForUser } from '../../lib/petDataLifecycle.js';
+import { revokeAllUserRefreshSessions } from '../../lib/refreshSessions.js';
 import {
   buildUserDataExport,
   exportAuditMetadata,
@@ -196,6 +198,8 @@ export function registerProfileRoutes(router, pool, { comparePassword }) {
         resourceId: payload.id,
         req,
       });
+      await revokeAllUserRefreshSessions(pool, payload.id);
+      const purgeResult = await purgeAllPetFilesForUser(pool, payload.id);
       await deletePostHogPerson(payload.id);
       await pool.query('DELETE FROM users WHERE id = $1', [payload.id]);
       logAuditEventSafe(pool, {
@@ -204,6 +208,7 @@ export function registerProfileRoutes(router, pool, { comparePassword }) {
         resourceType: 'user',
         resourceId: payload.id,
         req,
+        metadata: purgeResult,
       });
       res.status(200).json({ message: 'Account deleted successfully' });
     } catch (err) {

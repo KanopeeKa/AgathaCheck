@@ -124,16 +124,17 @@ describe('Pets API', () => {
       expect(res.body).toHaveProperty('message', 'Access removed');
     });
 
-    it('DELETE /:id/data returns deleted', async () => {
+    it('DELETE /:id/data returns deleted with rows_removed', async () => {
       const res = await request(app)
         .delete(`/api/pets/${petId}/data`)
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('deleted', true);
       expect(res.body).toHaveProperty('pet_id', petId);
+      expect(res.body).toHaveProperty('rows_removed');
     });
 
-    it('POST /:id/passed-away returns passed_away: true', async () => {
+    it('POST /:id/passed-away returns passed_away and notified_count', async () => {
       const res = await request(app)
         .post(`/api/pets/${petId}/passed-away`)
         .set('Authorization', `Bearer ${token}`)
@@ -141,6 +142,7 @@ describe('Pets API', () => {
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('passed_away', true);
       expect(res.body).toHaveProperty('pet_id', petId);
+      expect(res.body).toHaveProperty('notified_count');
     });
   });
 });
