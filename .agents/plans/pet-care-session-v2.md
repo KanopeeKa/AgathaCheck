@@ -57,18 +57,18 @@ Ship **session v2** for Pet Care mobile beta readiness: distinct access/refresh 
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: 2
-last_completed_phase: 1
+autonomy: completed
+current_phase: null
+last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/pet-care-session-v2-flutter-75cb"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/pet-care-session-v2-flutter-75cb
+  branch: cursor/plan-runtime-sync-75cb
   plan_path: .agents/plans/pet-care-session-v2.md
-  plan_commit: a2f119308a5a2562274b5edc2b01bff7108a41a1
+  plan_commit: 71e48f440f8a1592adc537dfb26781fe8e43d5c0
   snapshot_path: .agents/plans/pet-care-session-v2.snapshot.json
-  snapshot_commit: a2f119308a5a2562274b5edc2b01bff7108a41a1
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1014"]
+  snapshot_commit: 71e48f440f8a1592adc537dfb26781fe8e43d5c0
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
