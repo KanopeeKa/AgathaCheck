@@ -20,6 +20,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | Section | Link |
 |---------|------|
 | Domain rename plan | [changes/domain-rename-plan.md](changes/domain-rename-plan.md) |
+| F-22 residual inventory | [changes/terminology-rename-inventory.md](changes/terminology-rename-inventory.md) |
 | Pet profile decisions (D38) | [pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md) |
 | Navigation contract (E2E) | [navigation-contract.md](/docs/e2e/navigation-contract.md) |
 | Program vocabulary | [program-contract.md](/docs/domains/cross-domain/changes/program-contract.md) §2 |
@@ -36,17 +37,9 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 
 Eyebrow labels use **ALL CAPS** in EN (`CARE ACTIONS`, `PETS` where used). FR eyebrows stay uppercase where already established (`SOINS`, `ANIMAUX`).
 
-## Code map (target — migration in progress)
+## Code map (target — internal rename in progress)
 
-| Layer | Path | Notes |
-|-------|------|-------|
-| Flutter shell | `flutter_app/lib/features/experience/` | Renaming from `guardian_*` → `pet_care_*` |
-| Routes | `/pc/home`, `/pc/pets`, `/pc/events`, `/pc/fostering` | Replaces `/pc/*` |
-| Experience enum | `AppExperience.petCare`, wire `pet_care` | Replaces `guardian` |
-| Theme | `petCarePrimary`, `petCareLight` | Replaces `guardianPrimary` |
-| User category (wire) | `pet_carer` | Replaces `pet_guardian` |
-| Notification scope | `pet_care` | Replaces `guardian` |
-| BDD / E2E | `pet_care.*.spec.ts`, workspace locators | See navigation contract |
+Wire and routes are migrated (`pet_care`, `/pc/*`). **F-22** (`pet-care-terminology-rename`) is renaming residual `guardian_*` filenames and l10n keys — see [terminology-rename-inventory.md](changes/terminology-rename-inventory.md).
 
 **Not** Pet Care workspace terminology: custody **guardianship**, `individual_guardianship` transfer kinds, legal holder on a pet — see [org-custody-model.md](/docs/domains/shelter/features/org-custody-model.md).
 
