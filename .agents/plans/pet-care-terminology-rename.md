@@ -31,14 +31,14 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: start phase 1 — terminology inventory and F-22 completion criteria
+next_action: "continue phase 1 on branch cursor/pet-care-terminology-rename-75cb"
 artifact_ref:
   branch: cursor/pet-care-terminology-rename-75cb
   plan_path: .agents/plans/pet-care-terminology-rename.md
-  plan_commit: null
+  plan_commit: 2ce3ef65247c56634497527de95ed34c6c889a9c
   snapshot_path: .agents/plans/pet-care-terminology-rename.snapshot.json
-  snapshot_commit: null
-open_prs: []
+  snapshot_commit: 2ce3ef65247c56634497527de95ed34c6c889a9c
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1041"]
 merge_commits: {}
 debt_issue_refs: []
 ```
