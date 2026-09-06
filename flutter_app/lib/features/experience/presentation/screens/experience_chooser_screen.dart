@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_experience.dart';
-import '../../domain/services/guardian_onboarding_rules.dart';
+import '../../domain/services/pet_care_onboarding_rules.dart';
 import '../../domain/services/org_onboarding_rules.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
@@ -63,10 +63,10 @@ class ExperienceChooserScreen extends ConsumerWidget {
     context.go('/pc/home');
   }
 
-  void _goGuardianOnboarding(BuildContext context, WidgetRef ref) {
+  void _goPetCareOnboarding(BuildContext context, WidgetRef ref) {
     final pets = ref.read(petListProvider).valueOrNull ?? [];
-    final completed = ref.read(guardianOnboardingCompletedProvider);
-    final path = GuardianOnboardingRules.resolveGuardianDestination(
+    final completed = ref.read(petCareOnboardingCompletedProvider);
+    final path = PetCareOnboardingRules.resolvePetCareDestination(
       targetPath: AppExperience.petCare.homePath(),
       pets: pets,
       onboardingCompleted: completed,
@@ -108,7 +108,7 @@ class ExperienceChooserScreen extends ConsumerWidget {
             accentColor: colors.petCarePrimary,
             onAccentColor: colors.petCareOnPrimary,
             accentContainer: colors.petCareLight,
-            onTap: () => _goGuardianOnboarding(context, ref),
+            onTap: () => _goPetCareOnboarding(context, ref),
           ),
           const SizedBox(height: 12),
           _FtueActionCard(

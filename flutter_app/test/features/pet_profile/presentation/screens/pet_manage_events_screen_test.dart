@@ -18,7 +18,7 @@ import 'package:pet_profile_app/features/pet_profile/presentation/screens/widget
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
-import '../../../experience/presentation/screens/guardian/guardian_events_test_helpers.dart';
+import '../../../experience/presentation/screens/pet_care/pet_care_events_test_helpers.dart';
 
 class _TestHealthEntriesNotifier extends HealthEntriesNotifier {
   _TestHealthEntriesNotifier(this._entries);

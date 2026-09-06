@@ -6,7 +6,7 @@ import '../../../../core/utils/constants.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../../experience/presentation/screens/guardian/guardian_dashboard_helpers.dart';
+import '../../../experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/events_nav_icon_button.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
@@ -60,7 +60,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
         ? ref.watch(healthEntriesNotifierProvider)
         : null;
     final careSummary = (entriesAsync != null && entriesAsync.hasValue)
-        ? GuardianTodayCareSummary.forPets(
+        ? PetCareTodayCareSummary.forPets(
             entries: entriesAsync.valueOrNull!,
             pets: _controller.guardianShellPets(petListAsync.valueOrNull ?? []),
           )
@@ -110,7 +110,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
         }
 
         if (widget.embeddedInShell) {
-          return GuardianEmbeddedPetsList(
+          return PetCareEmbeddedPetsList(
             allPets: allPets,
             controller: _controller,
             careSummary: careSummary,

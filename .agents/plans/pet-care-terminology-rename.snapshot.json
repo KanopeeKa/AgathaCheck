@@ -33,11 +33,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1041",
-      "pr_head_sha": "2ce3ef65247c56634497527de95ed34c6c889a9c",
+      "pr_head_sha": "2583c61ea1c5e313ee709c64b43eac9667628718",
       "debt_issue_refs": []
     },
     {
@@ -64,12 +64,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
@@ -168,5 +165,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:56143d2f405928aa35cdfd011ef6c3d5ba736383ab0a4c25e86cc05b1e0b993b"
+  "content_hash": "sha256:f6572e87df49911fdc3132de72a88990ba3f51f092eb19b3e2143b10580682c0"
 }

@@ -7,7 +7,7 @@ import 'package:pet_profile_app/features/pet_profile/presentation/widgets/unifie
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('GuardianPassedAwaySection is collapsed by default', (
+  testWidgets('PetCarePassedAwaySection is collapsed by default', (
     tester,
   ) async {
     final pets = [
@@ -28,7 +28,7 @@ void main() {
           builder: (context) {
             final l = AppLocalizations.of(context)!;
             return Scaffold(
-              body: GuardianPassedAwaySection(
+              body: PetCarePassedAwaySection(
                 pets: pets,
                 title: l.rainbowBridge,
                 careSummary: null,

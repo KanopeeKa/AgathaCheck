@@ -39,7 +39,7 @@ void main() {
           builder: (context) {
             final l = AppLocalizations.of(context)!;
             return Scaffold(
-              body: GuardianEmbeddedPetsList(
+              body: PetCareEmbeddedPetsList(
                 allPets: pets,
                 controller: PetListController(),
                 careSummary: null,
@@ -82,7 +82,7 @@ void main() {
             builder: (context) {
               final l = AppLocalizations.of(context)!;
               return Scaffold(
-                body: GuardianEmbeddedPetsList(
+                body: PetCareEmbeddedPetsList(
                   allPets: pets,
                   controller: PetListController(),
                   careSummary: null,

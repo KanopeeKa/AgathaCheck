@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pet_profile_app/core/widgets/collection_filter/collection_filter.dart';
-import 'package:pet_profile_app/features/experience/presentation/screens/guardian/guardian_due_events_screen.dart';
+import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 

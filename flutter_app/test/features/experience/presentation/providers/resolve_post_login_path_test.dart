@@ -42,7 +42,7 @@ void main() {
         resolvePostLoginPath(
           eligibility: _guardianOnly(),
           pets: const [Pet(id: '1', name: 'Mine', species: 'Cat')],
-          guardianOnboardingCompleted: true,
+          petCareOnboardingCompleted: true,
         ),
         '/pc/home',
       );
@@ -53,7 +53,7 @@ void main() {
         resolvePostLoginPath(
           eligibility: _guardianOnly(),
           pets: const [],
-          guardianOnboardingCompleted: true,
+          petCareOnboardingCompleted: true,
         ),
         '/pc/home',
       );
@@ -64,7 +64,7 @@ void main() {
         resolvePostLoginPath(
           eligibility: _guardianOnly(),
           pets: const [],
-          guardianOnboardingCompleted: false,
+          petCareOnboardingCompleted: false,
         ),
         '/pc/onboarding',
       );
@@ -82,7 +82,7 @@ void main() {
               type: OrganizationType.charity,
             ),
           ],
-          guardianOnboardingCompleted: true,
+          petCareOnboardingCompleted: true,
           orgOnboardingCompleted: true,
         ),
         '/pc/home',
@@ -110,7 +110,7 @@ void main() {
               type: OrganizationType.charity,
             ),
           ],
-          guardianOnboardingCompleted: true,
+          petCareOnboardingCompleted: true,
         ),
         '/pc/home',
       );
@@ -128,7 +128,7 @@ void main() {
               type: OrganizationType.charity,
             ),
           ],
-          guardianOnboardingCompleted: true,
+          petCareOnboardingCompleted: true,
         ),
         '/pc/home',
       );

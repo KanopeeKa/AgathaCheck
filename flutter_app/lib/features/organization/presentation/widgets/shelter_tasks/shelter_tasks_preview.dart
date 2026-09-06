@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../experience/presentation/widgets/guardian_dashboard_section_header.dart';
-import '../../../../experience/presentation/widgets/guardian_illustrated_empty_state.dart';
-import '../../../../experience/presentation/widgets/guardian_operations_desk_layout.dart';
+import '../../../../experience/presentation/widgets/pet_care_dashboard_section_header.dart';
+import '../../../../experience/presentation/widgets/pet_care_illustrated_empty_state.dart';
+import '../../../../experience/presentation/widgets/pet_care_operations_desk_layout.dart';
 import '../../providers/org_provider_invites.dart';
 import '../../providers/shelter_tasks_provider.dart';
 import '../../utils/org_pets_care_utils.dart';
@@ -26,13 +26,13 @@ class ShelterTasksPreview extends ConsumerWidget {
       key: const Key('shelter_tasks_preview'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GuardianDashboardSectionHeader(
+        PetCareDashboardSectionHeader(
           title: l.shelterTasksEyebrowLabel,
           titleColor: AppColorTokens.organizationPrimary,
         ),
         const SizedBox(height: 10),
         tasksAsync.when(
-          loading: () => const GuardianDeskSectionCard(
+          loading: () => const PetCareDeskSectionCard(
             tint: AppColorTokens.surface,
             child: SizedBox(
               height: 56,
@@ -40,11 +40,11 @@ class ShelterTasksPreview extends ConsumerWidget {
             ),
           ),
           error: (_, __) => const SizedBox.shrink(),
-          data: (data) => GuardianDeskSectionCard(
+          data: (data) => PetCareDeskSectionCard(
             key: const Key('shelter_tasks_card'),
             tint: AppColorTokens.surface,
             child: data.isEmpty
-                ? GuardianIllustratedEmptyState(
+                ? PetCareIllustratedEmptyState(
                     key: const Key('shelter_tasks_empty'),
                     title: l.guardianEmptyCareClearTitle,
                     body: l.homeNoDueEvents,

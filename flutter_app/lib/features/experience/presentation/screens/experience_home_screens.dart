@@ -8,21 +8,21 @@ import '../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
-import '../../domain/services/guardian_onboarding_rules.dart';
+import '../../domain/services/pet_care_onboarding_rules.dart';
 import '../../domain/services/org_onboarding_rules.dart';
 import '../providers/experience_providers.dart';
 import '../widgets/experience_shell_scaffold.dart';
-import '../widgets/guardian_shell_home_content.dart';
+import '../widgets/pet_care_shell_home_content.dart';
 
 /// Guardian experience home (`/pc/home`).
-class GuardianHomeScreen extends ConsumerStatefulWidget {
-  const GuardianHomeScreen({super.key});
+class PetCareHomeScreen extends ConsumerStatefulWidget {
+  const PetCareHomeScreen({super.key});
 
   @override
-  ConsumerState<GuardianHomeScreen> createState() => _GuardianHomeScreenState();
+  ConsumerState<PetCareHomeScreen> createState() => _PetCareHomeScreenState();
 }
 
-class _GuardianHomeScreenState extends ConsumerState<GuardianHomeScreen> {
+class _PetCareHomeScreenState extends ConsumerState<PetCareHomeScreen> {
   final _controller = PetListController();
 
   @override
@@ -40,12 +40,12 @@ class _GuardianHomeScreenState extends ConsumerState<GuardianHomeScreen> {
     if (!mounted) return;
     final pets = ref.read(petListProvider).valueOrNull;
     if (pets == null) return;
-    final completed = ref.read(guardianOnboardingCompletedProvider);
-    if (GuardianOnboardingRules.needsOnboarding(
+    final completed = ref.read(petCareOnboardingCompletedProvider);
+    if (PetCareOnboardingRules.needsOnboarding(
       pets: pets,
       onboardingCompleted: completed,
     )) {
-      context.go(GuardianOnboardingRules.onboardingPath);
+      context.go(PetCareOnboardingRules.onboardingPath);
     }
   }
 
@@ -65,7 +65,7 @@ class _GuardianHomeScreenState extends ConsumerState<GuardianHomeScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('$e')),
         data: (pets) =>
-            GuardianShellHomeContent(allPets: pets, controller: _controller),
+            PetCareShellHomeContent(allPets: pets, controller: _controller),
       ),
     );
   }
