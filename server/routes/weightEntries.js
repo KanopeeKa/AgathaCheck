@@ -8,9 +8,9 @@ import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../
 import { refreshPetWeightCache } from '../lib/petWeightSync.js';
 import {
   accessiblePetSql,
-  userCanManagePet,
   userCanManageWeightEntry,
 } from '../lib/petAccess.js';
+import { hasPetCapability, PET_CAPABILITIES } from '../lib/petCapabilityPolicy.js';
 
 function weightEntryToMap(row) {
   return {
@@ -36,7 +36,7 @@ export default function weightEntriesRoutes(pool) {
       const petId = req.query.pet_id || req.query.petId;
       let result;
       if (petId) {
-        if (!(await userCanManagePet(pool, petId, userId))) {
+        if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.WEIGHT_VIEW))) {
           return res.status(403).json({ error: 'Forbidden' });
         }
         result = await pool.query(
@@ -69,7 +69,7 @@ export default function weightEntriesRoutes(pool) {
       if (!petId) {
         return res.status(400).json({ error: 'pet_id is required' });
       }
-      if (!(await userCanManagePet(pool, petId, userId))) {
+      if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.WEIGHT_VIEW))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
       const result = await pool.query(
@@ -93,7 +93,7 @@ export default function weightEntriesRoutes(pool) {
       const data = req.body;
       const id = data.id || uuidv4();
       const petId = data.pet_id || data.petId;
-      if (!(await userCanManagePet(pool, petId, userId))) {
+      if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.WEIGHT_EDIT))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
       const dateVal = normalizeCalendarDateInput(data.date || data.measured_at)

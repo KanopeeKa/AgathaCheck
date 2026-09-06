@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { publicError } from '../../config/security.js';
-import { userCanManageHealthEntry } from '../../lib/petAccess.js';
+import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { buildHealthFileApiPath } from '../../lib/privateHealthStorage.js';
 import {
@@ -12,11 +12,21 @@ import {
 } from './shared.js';
 
 export function registerDocumentsRoutes(router, pool) {
+  async function canManageHealthDocuments(pool, entryId, userId) {
+    const row = await pool.query(
+      'SELECT pet_id FROM health_entries WHERE id = $1 LIMIT 1',
+      [entryId],
+    );
+    const petId = row.rows[0]?.pet_id;
+    if (!petId) return false;
+    return hasPetCapability(pool, userId, petId, PET_CAPABILITIES.HEALTH_DOCUMENTS_MANAGE);
+  }
+
   router.get('/:id/photos', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await userCanManageHealthEntry(pool, req.params.id, userId))) {
+      if (!(await canManageHealthDocuments(pool, req.params.id, userId))) {
         return res.status(404).json({ error: 'Entry not found' });
       }
       const result = await pool.query(
@@ -38,7 +48,7 @@ export function registerDocumentsRoutes(router, pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await userCanManageHealthEntry(pool, req.params.id, userId))) {
+      if (!(await canManageHealthDocuments(pool, req.params.id, userId))) {
         return res.status(404).json({ error: 'Entry not found' });
       }
       const entryRow = await pool.query(
@@ -69,7 +79,7 @@ export function registerDocumentsRoutes(router, pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await userCanManageHealthEntry(pool, req.params.entryId, userId))) {
+      if (!(await canManageHealthDocuments(pool, req.params.entryId, userId))) {
         return res.status(404).json({ error: 'Entry not found' });
       }
       const existing = await pool.query(

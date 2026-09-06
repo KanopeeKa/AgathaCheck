@@ -82,9 +82,34 @@ export async function userCanAccessPet(pool, petId, userId) {
   return orgMember.rows.length > 0;
 }
 
-/** Owner or active collaborator — full edit access except sharing management. */
+/** Active shared/guardian or foster pet_access — not org-viewer-only. */
+export async function userHasCollaboratorAccess(pool, petId, userId) {
+  if (!petId || !userId) return false;
+  const shared = await pool.query(
+    `SELECT 1 FROM pet_access
+     WHERE pet_id = $1 AND user_id = $2
+       AND role IN (${COLLABORATOR_ROLES_SQL})
+       AND COALESCE(hidden, false) = false
+     LIMIT 1`,
+    [petId, userId]
+  );
+  if (shared.rows.length > 0) return true;
+  const foster = await pool.query(
+    `SELECT 1 FROM pet_access
+     WHERE pet_id = $1 AND user_id = $2
+       AND role = $3
+       AND COALESCE(hidden, false) = false
+     LIMIT 1`,
+    [petId, userId, FOSTER_PET_ACCESS_ROLE]
+  );
+  return foster.rows.length > 0;
+}
+
+/** Owner or active collaborator/foster — manage health, weight, profile; not delete/lifecycle. */
 export async function userCanManagePet(pool, petId, userId) {
-  return userCanAccessPet(pool, petId, userId);
+  if (!petId || !userId) return false;
+  if (await userOwnsPet(pool, petId, userId)) return true;
+  return userHasCollaboratorAccess(pool, petId, userId);
 }
 
 /** Owner or active foster parent during an in-progress placement — may create share links. */
@@ -107,35 +132,32 @@ export async function userCanSharePet(pool, petId, userId) {
 
 export async function userCanManageWeightEntry(pool, entryId, userId) {
   const result = await pool.query(
-    `SELECT 1 FROM weight_entries we
-     JOIN pets p ON p.id = we.pet_id
-     WHERE we.id = $1 AND ${accessiblePetSql('p', '$2')}
-     LIMIT 1`,
-    [entryId, userId]
+    'SELECT pet_id FROM weight_entries WHERE id = $1 LIMIT 1',
+    [entryId]
   );
-  return result.rows.length > 0;
+  const petId = result.rows[0]?.pet_id;
+  if (!petId) return false;
+  return userCanManagePet(pool, petId, userId);
 }
 
 export async function userCanManageHealthEntry(pool, entryId, userId) {
   const result = await pool.query(
-    `SELECT 1 FROM health_entries he
-     JOIN pets p ON p.id = he.pet_id
-     WHERE he.id = $1 AND ${accessiblePetSql('p', '$2')}
-     LIMIT 1`,
-    [entryId, userId]
+    'SELECT pet_id FROM health_entries WHERE id = $1 LIMIT 1',
+    [entryId]
   );
-  return result.rows.length > 0;
+  const petId = result.rows[0]?.pet_id;
+  if (!petId) return false;
+  return userCanManagePet(pool, petId, userId);
 }
 
 export async function userCanManageHealthIssue(pool, issueId, userId) {
   const result = await pool.query(
-    `SELECT 1 FROM health_issues hi
-     JOIN pets p ON p.id = hi.pet_id
-     WHERE hi.id = $1 AND ${accessiblePetSql('p', '$2')}
-     LIMIT 1`,
-    [issueId, userId]
+    'SELECT pet_id FROM health_issues WHERE id = $1 LIMIT 1',
+    [issueId]
   );
-  return result.rows.length > 0;
+  const petId = result.rows[0]?.pet_id;
+  if (!petId) return false;
+  return userCanManagePet(pool, petId, userId);
 }
 
 /** All user IDs that should receive pet-scoped notifications (owner + collaborators). */

@@ -1,7 +1,4 @@
-/**
- * Pet capability policy skeleton (F-08 / discovery §Capability seeds).
- * Full F-02 rollout maps routes to fine-grained capabilities in a follow-on plan.
- */
+/** Pet capability policy — maps discovery capability seeds to access helpers. */
 import {
   userCanAccessPet,
   userCanManagePet,
@@ -44,24 +41,23 @@ export async function hasPetCapability(pool, userId, petId, capability) {
 
   switch (capability) {
     case PET_CAPABILITIES.VIEW:
+    case PET_CAPABILITIES.HEALTH_VIEW:
+    case PET_CAPABILITIES.WEIGHT_VIEW:
+    case PET_CAPABILITIES.VET_VIEW:
+    case PET_CAPABILITIES.FOSTER_REPORT:
       return userCanAccessPet(pool, petId, userId);
     case PET_CAPABILITIES.SHARING_MANAGE:
       return userCanSharePet(pool, petId, userId);
     case PET_CAPABILITIES.DELETE:
+    case PET_CAPABILITIES.LIFECYCLE_MANAGE:
       return userOwnsPet(pool, petId, userId);
     case PET_CAPABILITIES.PROFILE_EDIT:
-    case PET_CAPABILITIES.LIFECYCLE_MANAGE:
-    case PET_CAPABILITIES.HEALTH_VIEW:
     case PET_CAPABILITIES.HEALTH_EDIT:
     case PET_CAPABILITIES.HEALTH_DOCUMENTS_MANAGE:
-    case PET_CAPABILITIES.WEIGHT_VIEW:
     case PET_CAPABILITIES.WEIGHT_EDIT:
-    case PET_CAPABILITIES.VET_VIEW:
     case PET_CAPABILITIES.VET_EDIT:
     case PET_CAPABILITIES.NOTIFICATIONS_MANAGE:
     case PET_CAPABILITIES.TIMELINE_OWN_NOTES:
-    case PET_CAPABILITIES.FOSTER_REPORT:
-      // Skeleton: coarse manage gate until capability-auth-rollout differentiates roles.
       return userCanManagePet(pool, petId, userId);
     default:
       return false;

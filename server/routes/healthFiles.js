@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { publicError } from '../config/security.js';
-import { userCanAccessPet } from '../lib/petAccess.js';
+import { hasPetCapability, PET_CAPABILITIES } from '../lib/petCapabilityPolicy.js';
 import { resolvePrivateHealthFile } from '../lib/privateHealthStorage.js';
 import { extractUserId } from './healthEntries/shared.js';
 
@@ -36,7 +36,7 @@ export default function healthFilesRoutes(pool) {
 
     try {
       const petId = await lookupHealthFilePetId(pool, req.params.id);
-      if (!petId || !(await userCanAccessPet(pool, petId, userId))) {
+      if (!petId || !(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.HEALTH_VIEW))) {
         return res.status(404).json({ error: 'Not found' });
       }
 

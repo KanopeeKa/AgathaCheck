@@ -5,7 +5,7 @@ import { logAuditEventSafe } from '../../lib/audit.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { dateToIsoDate } from '../../lib/calendarDate.js';
 import { buildPetTimeline } from '../../lib/timelineComposite.js';
-import { userCanAccessPet } from '../../lib/petAccess.js';
+import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { extractUserId } from '../pets/shared.js';
 
 export const AUDIT_PET_TIMELINE_ENTRY_CREATED = 'pet_timeline_entry_created';
@@ -57,7 +57,7 @@ export function registerTimelineRoutes(router, pool) {
     }
 
     try {
-      if (!(await userCanAccessPet(pool, petId, userId))) {
+      if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.TIMELINE_OWN_NOTES))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
 
@@ -103,7 +103,7 @@ export function registerTimelineRoutes(router, pool) {
       : undefined;
 
     try {
-      if (!(await userCanAccessPet(pool, petId, userId))) {
+      if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.TIMELINE_OWN_NOTES))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
 
@@ -163,7 +163,7 @@ export function registerTimelineRoutes(router, pool) {
     const { id: petId, entryId } = req.params;
 
     try {
-      if (!(await userCanAccessPet(pool, petId, userId))) {
+      if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.TIMELINE_OWN_NOTES))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
 

@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { publicError } from '../../config/security.js';
 import { dateToIsoDate, normalizeCalendarDateInput } from '../../lib/calendarDate.js';
-import { userCanManagePet } from '../../lib/petAccess.js';
+import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { extractUserId } from './shared.js';
 
 export function registerFamilyEventsRoutes(router, pool) {
@@ -26,8 +26,12 @@ export function registerFamilyEventsRoutes(router, pool) {
     };
   }
 
+  async function userCanViewPetFamilyEvents(pool, petId, userId) {
+    return hasPetCapability(pool, userId, petId, PET_CAPABILITIES.VIEW);
+  }
+
   async function userCanManagePetFamilyEvents(pool, petId, userId) {
-    return userCanManagePet(pool, petId, userId);
+    return hasPetCapability(pool, userId, petId, PET_CAPABILITIES.PROFILE_EDIT);
   }
 
   router.get('/:id/family-events', async (req, res) => {
@@ -35,7 +39,7 @@ export function registerFamilyEventsRoutes(router, pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const petId = req.params.id;
     try {
-      if (!(await userCanManagePetFamilyEvents(pool, petId, userId))) {
+      if (!(await userCanViewPetFamilyEvents(pool, petId, userId))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
       const result = await pool.query(
@@ -226,7 +230,7 @@ export function registerFamilyEventsRoutes(router, pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { id: petId, eventId } = req.params;
     try {
-      if (!(await userCanManagePetFamilyEvents(pool, petId, userId))) {
+      if (!(await userCanViewPetFamilyEvents(pool, petId, userId))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
       const result = await pool.query(

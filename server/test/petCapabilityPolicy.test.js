@@ -70,4 +70,55 @@ describe('petCapabilityPolicy', () => {
     ]);
     expect(await hasPetCapability(pool, ownerId, petId, PET_CAPABILITIES.SHARING_MANAGE)).toBe(true);
   });
+
+  it('pet.lifecycle.manage requires ownership', async () => {
+    const pool = mockPool([
+      (sql, params) => {
+        if (sql.includes('FROM pets WHERE id = $1 AND user_id = $2') && params[1] === ownerId) {
+          return { rows: [{ '?column?': 1 }] };
+        }
+        if (sql.includes('FROM pets WHERE id = $1 AND user_id = $2') && params[1] === viewerId) {
+          return { rows: [] };
+        }
+        return undefined;
+      },
+    ]);
+    expect(await hasPetCapability(pool, ownerId, petId, PET_CAPABILITIES.LIFECYCLE_MANAGE)).toBe(true);
+    expect(await hasPetCapability(pool, viewerId, petId, PET_CAPABILITIES.LIFECYCLE_MANAGE)).toBe(false);
+  });
+
+  it('org viewer may view but not edit health or weight', async () => {
+    const orgViewerId = 'org-viewer-1';
+    const collaboratorId = 'collab-1';
+    const pool = mockPool([
+      (sql, params) => {
+        if (sql.includes('FROM pets WHERE id = $1 AND user_id = $2')) {
+          return { rows: [] };
+        }
+        if (sql.startsWith('SELECT 1 FROM pet_access') && params[1] === collaboratorId) {
+          return { rows: [{ '?column?': 1 }] };
+        }
+        if (sql.startsWith('SELECT 1 FROM pet_access')) {
+          return { rows: [] };
+        }
+        if (sql.includes('JOIN organization_users ou') && params[1] === orgViewerId) {
+          return { rows: [{ '?column?': 1 }] };
+        }
+        if (sql.includes('JOIN organization_users ou')) {
+          return { rows: [] };
+        }
+        return undefined;
+      },
+    ]);
+
+    expect(await hasPetCapability(pool, orgViewerId, petId, PET_CAPABILITIES.HEALTH_VIEW)).toBe(true);
+    expect(await hasPetCapability(pool, orgViewerId, petId, PET_CAPABILITIES.WEIGHT_VIEW)).toBe(true);
+    expect(await hasPetCapability(pool, orgViewerId, petId, PET_CAPABILITIES.HEALTH_EDIT)).toBe(false);
+    expect(await hasPetCapability(pool, orgViewerId, petId, PET_CAPABILITIES.WEIGHT_EDIT)).toBe(false);
+    expect(await hasPetCapability(pool, orgViewerId, petId, PET_CAPABILITIES.PROFILE_EDIT)).toBe(false);
+
+    expect(await hasPetCapability(pool, collaboratorId, petId, PET_CAPABILITIES.HEALTH_EDIT)).toBe(true);
+    expect(await hasPetCapability(pool, collaboratorId, petId, PET_CAPABILITIES.WEIGHT_EDIT)).toBe(true);
+    expect(await hasPetCapability(pool, collaboratorId, petId, PET_CAPABILITIES.PROFILE_EDIT)).toBe(true);
+  });
 });
