@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-care-observability-taxonomy",
+  "approved_at": "2026-09-06T19:50:00Z",
+  "approved_by": "standing grant — approve-autonomous pet-care-hardening-roadmap (user chat 2026-09-06)",
+  "approved_until": "2026-09-08T19:50:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1036,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Security event taxonomy doc (F-23)",
+      "branch": "cursor/pet-care-observability-taxonomy-75cb",
+      "allowed_paths": [
+        ".agents/plans/pet-care-observability-taxonomy.*",
+        "docs/engineering/pet-care-hardening/security-event-taxonomy.md",
+        "docs/engineering/pet-care-hardening/README.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "flutter_app/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1037",
+      "pr_head_sha": "de6418eb79c6c3f5cad6f6f966950f3e4cfcf659",
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:91d4a777eda8c3487376b60267ebb63e553671338fb192917f95ae202e298d19"
+}

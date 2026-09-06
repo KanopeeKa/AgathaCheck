@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-care-hardening-roadmap",
+  "plan_kind": "roadmap",
+  "programme_ref": "docs/engineering/pet-care-hardening/README.md",
+  "approved_at": "2026-09-06T19:50:00Z",
+  "approved_by": "standing grant — approve-autonomous pet-care-hardening-roadmap (user chat 2026-09-06)",
+  "approved_until": "2026-09-08T19:50:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1035,
+  "artifact_branch_policy": "phase-branch",
+  "current_child_plan_id": "pet-care-observability-taxonomy",
+  "child_plans": [
+    {
+      "plan_id": "pet-care-hardening-discovery",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/994"
+    },
+    {
+      "plan_id": "pet-care-p0-private-files",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/998"
+    },
+    {
+      "plan_id": "pet-care-p0-share-minimization",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1001"
+    },
+    {
+      "plan_id": "pet-care-auth-platform",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1006"
+    },
+    {
+      "plan_id": "pet-care-capability-auth-rollout",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1009"
+    },
+    {
+      "plan_id": "pet-care-session-v2",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1013"
+    },
+    {
+      "plan_id": "pet-care-data-lifecycle",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1017"
+    },
+    {
+      "plan_id": "pet-care-api-contract",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1022"
+    },
+    {
+      "plan_id": "pet-care-quality-ci",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1026"
+    },
+    {
+      "plan_id": "pet-care-weight-validation",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1029"
+    },
+    {
+      "plan_id": "pet-care-route-hygiene",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1030"
+    },
+    {
+      "plan_id": "pet-care-security-hardening",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1031"
+    },
+    {
+      "plan_id": "pet-care-observability-taxonomy",
+      "status": "in_progress"
+    }
+  ],
+  "phases": [
+    {
+      "id": "orchestrate",
+      "title": "Roadmap orchestration (child plan bootstrap + tracking)",
+      "branch": "cursor/pet-care-observability-taxonomy-75cb",
+      "allowed_paths": [
+        ".agents/plans/pet-care-hardening-roadmap.*",
+        ".agents/plans/pet-care-observability-taxonomy.*",
+        "docs/engineering/pet-care-hardening/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": [
+        1025
+      ]
+    }
+  ],
+  "content_hash": "sha256:e957570554b677363270e76e379c321f2ccf3d68b69dd527ea71c5ed49e20022"
+}
