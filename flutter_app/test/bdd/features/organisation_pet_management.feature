@@ -42,8 +42,9 @@ Feature: Organisation Pet Management
   @P1
   Scenario: Adding a health entry to an organisation pet
     Given a pet "Bella" exists under "Happy Paws Clinic"
-    When "Bob" adds a health entry "Annual Vaccination" of type "preventive" for "Bella"
+    When "Alice" adds a health entry "Annual Vaccination" of type "preventive" for "Bella"
     Then "Bella" should have a health entry named "Annual Vaccination"
+    And "Bob" should see "Annual Vaccination" in the health dashboard
     And "Alice" should also see "Annual Vaccination" in the health dashboard
 
   @P1
