@@ -29,14 +29,14 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: start phase 1: checkout cursor/pet-care-observability-taxonomy-75cb
+next_action: "continue phase 1 on branch cursor/pet-care-observability-taxonomy-75cb"
 artifact_ref:
   branch: cursor/pet-care-observability-taxonomy-75cb
   plan_path: .agents/plans/pet-care-observability-taxonomy.md
-  plan_commit: null
+  plan_commit: de6418eb79c6c3f5cad6f6f966950f3e4cfcf659
   snapshot_path: .agents/plans/pet-care-observability-taxonomy.snapshot.json
-  snapshot_commit: null
-open_prs: []
+  snapshot_commit: de6418eb79c6c3f5cad6f6f966950f3e4cfcf659
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1037"]
 merge_commits: {}
 debt_issue_refs: []
 ```
