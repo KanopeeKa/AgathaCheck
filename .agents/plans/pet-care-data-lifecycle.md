@@ -22,7 +22,7 @@ Implement real pet data deletion, passed-away collaborator notifications, accoun
 | **approved_at** | 2026-09-06T10:35:00Z |
 | **approved_until** | 2026-09-08T10:35:00Z |
 | **approved_by** | standing grant — Pet Care hardening roadmap (user chat 2026-09-05) |
-| **control_issue** | TBD |
+| **control_issue** | [#1016](https://github.com/KanopeeKa/AgathaCheck/issues/1016) |
 | **autonomy** | `active` |
 
 ## Phases
@@ -64,10 +64,10 @@ next_action: "continue phase 1 on branch cursor/pet-care-data-lifecycle-backend-
 artifact_ref:
   branch: cursor/pet-care-data-lifecycle-backend-75cb
   plan_path: .agents/plans/pet-care-data-lifecycle.md
-  plan_commit: 82397e4702cdd2a0abc0a17679e338c1ee0110f9
+  plan_commit: f9c5af2d9b5240c3107db2a2cc41e45eaa88ceb9
   snapshot_path: .agents/plans/pet-care-data-lifecycle.snapshot.json
-  snapshot_commit: 82397e4702cdd2a0abc0a17679e338c1ee0110f9
-open_prs: []
+  snapshot_commit: f9c5af2d9b5240c3107db2a2cc41e45eaa88ceb9
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1017"]
 merge_commits: {}
 debt_issue_refs: []
 ```
