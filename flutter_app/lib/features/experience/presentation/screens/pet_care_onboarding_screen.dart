@@ -100,12 +100,12 @@ class _PetCareOnboardingScreenState
       child: Scaffold(
         key: const Key('pet_care_onboarding_screen'),
         appBar: AppBar(
-          title: Text(l.guardianOnboardingTitle),
+          title: Text(l.petCareOnboardingTitle),
           actions: [
             TextButton(
               key: const Key('guardian_onboarding_skip'),
               onPressed: _isSaving ? null : _skip,
-              child: Text(l.guardianOnboardingSkip),
+              child: Text(l.petCareOnboardingSkip),
             ),
           ],
         ),
@@ -124,8 +124,8 @@ class _PetCareOnboardingScreenState
                 children: [
                   _WelcomeStep(
                     key: const Key('guardian_onboarding_welcome'),
-                    title: l.guardianOnboardingWelcomeTitle,
-                    body: l.guardianOnboardingWelcomeBody,
+                    title: l.petCareOnboardingWelcomeTitle,
+                    body: l.petCareOnboardingWelcomeBody,
                     iconColor: xp.petCarePrimary,
                   ),
                   _PetStep(
@@ -154,8 +154,8 @@ class _PetCareOnboardingScreenState
                         )
                       : Text(
                           _step == 0
-                              ? l.guardianOnboardingGetStarted
-                              : l.guardianOnboardingFinish,
+                              ? l.petCareOnboardingGetStarted
+                              : l.petCareOnboardingFinish,
                         ),
                 ),
               ),
@@ -226,11 +226,11 @@ class _PetStep extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       children: [
         Text(
-          l.guardianOnboardingPetStepTitle,
+          l.petCareOnboardingPetStepTitle,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 8),
-        Text(l.guardianOnboardingPetStepBody),
+        Text(l.petCareOnboardingPetStepBody),
         const SizedBox(height: 24),
         TextField(
           key: const Key('onboarding_pet_name_field'),

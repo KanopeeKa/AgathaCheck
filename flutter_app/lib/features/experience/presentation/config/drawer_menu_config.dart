@@ -23,7 +23,7 @@ class DrawerMenuConfig {
       DrawerMenuEntry.item(
         DrawerMenuItem(
           semanticKey: 'drawer_guardian',
-          label: l.drawerGuardian,
+          label: l.drawerPetCare,
           icon: Icons.pets_outlined,
           group: DrawerMenuGroup.guardianPlum,
           route: AppExperience.petCare.homePath(),

@@ -67,7 +67,7 @@ class ExperienceInviteScreen extends ConsumerWidget {
               const SizedBox(height: 8),
               Text(
                 experience == AppExperience.petCare
-                    ? l.experienceGuardianInviteHint
+                    ? l.experiencePetCareInviteHint
                     : l.experienceOrganizationInviteHint,
                 textAlign: TextAlign.center,
               ),

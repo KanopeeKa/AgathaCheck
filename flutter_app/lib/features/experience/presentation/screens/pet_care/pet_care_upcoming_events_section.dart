@@ -135,8 +135,8 @@ class _PetCareUpcomingEventsSectionState
         return PetCareIllustratedEmptyState(
           key: const Key('guardian_dashboard_empty_care'),
           assetPath: 'assets/dashboard/guardian-empty-care.png',
-          title: l.guardianEmptyCareTitle,
-          body: l.guardianEmptyCareBody,
+          title: l.petCareEmptyCareTitle,
+          body: l.petCareEmptyCareBody,
           actionLabel: l.addAnEvent,
           actionKey: const Key('guardian_dashboard_empty_care_action'),
           onAction: widget.onAddEvent,
@@ -144,7 +144,7 @@ class _PetCareUpcomingEventsSectionState
       }
       return PetCareIllustratedEmptyState(
         key: const Key('guardian_dashboard_empty_care_clear'),
-        title: l.guardianEmptyCareClearTitle,
+        title: l.petCareEmptyCareClearTitle,
         body: emptyMessage,
         actionLabel: l.allCare,
         actionIcon: Icons.calendar_month_outlined,

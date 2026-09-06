@@ -80,8 +80,8 @@ class PetCareFosteringSection extends StatelessWidget {
                 if (fostered.isEmpty)
                   PetCareIllustratedEmptyState(
                     key: const Key('guardian_dashboard_empty_fostering'),
-                    title: l.guardianEmptyFosteringTitle,
-                    body: l.guardianEmptyFosteringBody,
+                    title: l.petCareEmptyFosteringTitle,
+                    body: l.petCareEmptyFosteringBody,
                   )
                 else ...[
                   for (final pet in fostered.take(
@@ -94,8 +94,8 @@ class PetCareFosteringSection extends StatelessWidget {
                   PetCareIllustratedEmptyState(
                     key: const Key('guardian_dashboard_empty_shelters'),
                     assetPath: _fosterInviteAsset,
-                    title: l.guardianFosterInviteTitle,
-                    body: l.guardianFosterInviteBody,
+                    title: l.petCareFosterInviteTitle,
+                    body: l.petCareFosterInviteBody,
                     actionLabel: l.findAShelter,
                     actionIcon: Icons.business_outlined,
                     actionKey: const Key(
@@ -107,8 +107,8 @@ class PetCareFosteringSection extends StatelessWidget {
                   PetCareIllustratedEmptyState(
                     key: const Key('guardian_dashboard_linked_shelters'),
                     assetPath: _fosterThanksAsset,
-                    title: l.guardianLinkedShelterTitle,
-                    body: l.guardianLinkedShelterBody,
+                    title: l.petCareLinkedShelterTitle,
+                    body: l.petCareLinkedShelterBody,
                   ),
                   const SizedBox(height: 12),
                   Text(

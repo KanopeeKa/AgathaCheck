@@ -64,16 +64,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Keep the people and information around each pet connected.';
 
   @override
-  String get landingGuardianPathSummary => 'For pet parents and foster carers';
+  String get landingPetCarePathSummary => 'For pet parents and foster carers';
 
   @override
-  String get landingGuardianPathExpandCta => 'See how it works';
+  String get landingPetCarePathExpandCta => 'See how it works';
 
   @override
-  String get landingGuardianPathCollapseCta => 'Show less';
+  String get landingPetCarePathCollapseCta => 'Show less';
 
   @override
-  String get landingGuardianPathDetail =>
+  String get landingPetCarePathDetail =>
       'Track vet visits, medications, weight, and daily care in one place. Coordinate with your household and keep every pet\'s health history safe.';
 
   @override
@@ -414,10 +414,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noPetsYet => 'No pets yet';
 
   @override
-  String get guardianEmptyPetsTitle => 'Who are we caring for?';
+  String get petCareEmptyPetsTitle => 'Who are we caring for?';
 
   @override
-  String get guardianEmptyPetsBody =>
+  String get petCareEmptyPetsBody =>
       'Add your first pet to start keeping track of their care.';
 
   @override
@@ -466,10 +466,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addVetFirst => 'Add a veterinarian. No vets yet.';
 
   @override
-  String get guardianEmptyVetTitle => 'Keep your vet close at hand';
+  String get petCareEmptyVetTitle => 'Keep your vet close at hand';
 
   @override
-  String get guardianEmptyVetBody =>
+  String get petCareEmptyVetBody =>
       'Add your veterinary clinic so their details are here when you need them.';
 
   @override
@@ -675,14 +675,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noCareSoon => 'No upcoming care in the current reminder window.';
 
   @override
-  String get guardianEmptyCareTitle => 'Start their care routine';
+  String get petCareEmptyCareTitle => 'Start their care routine';
 
   @override
-  String get guardianEmptyCareBody =>
+  String get petCareEmptyCareBody =>
       'Add your first care item to keep track of everyday care, treatments and appointments.';
 
   @override
-  String get guardianEmptyCareClearTitle => 'All caught up';
+  String get petCareEmptyCareClearTitle => 'All caught up';
 
   @override
   String get viewAll => 'View all';
@@ -712,28 +712,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noFosteringSessions => 'No active fostering sessions yet.';
 
   @override
-  String get guardianEmptyFosteringTitle => 'No fostering sessions right now';
+  String get petCareEmptyFosteringTitle => 'No fostering sessions right now';
 
   @override
-  String get guardianEmptyFosteringBody =>
+  String get petCareEmptyFosteringBody =>
       'When a new session starts, you\'ll find it here.';
 
   @override
-  String get guardianFosterInviteTitle => 'Make room for one more';
+  String get petCareFosterInviteTitle => 'Make room for one more';
 
   @override
-  String get guardianFosterInviteBody =>
+  String get petCareFosterInviteBody =>
       'Fostering gives a shelter pet a safe place to land while they wait for their next chapter. It can be a small commitment with a huge impact — and a wonderfully rewarding way to help.';
 
   @override
   String get findAShelter => 'Find a shelter';
 
   @override
-  String get guardianLinkedShelterTitle =>
+  String get petCareLinkedShelterTitle =>
       'Thank you for being part of their journey';
 
   @override
-  String get guardianLinkedShelterBody =>
+  String get petCareLinkedShelterBody =>
       'By opening your home to a foster pet, you\'re giving shelters more room to help and animals more time, comfort, and care. Your support makes a real difference.';
 
   @override
@@ -4657,10 +4657,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get remindChipOneWeek => '1 week';
 
   @override
-  String get experienceGuardianTitle => 'Pet Care';
+  String get experiencePetCareTitle => 'Pet Care';
 
   @override
-  String get experienceGuardianSubtitle =>
+  String get experiencePetCareSubtitle =>
       'Track care, reminders, and shared looking-after for your pets.';
 
   @override
@@ -4693,7 +4693,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgNotificationsDrawer => 'Organisation notifications';
 
   @override
-  String get guardianNotificationsDrawer => 'Pet Care notifications';
+  String get petCareNotificationsDrawer => 'Pet Care notifications';
 
   @override
   String get myVets => 'Care team';
@@ -4708,7 +4708,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allCareTeams => 'All care teams';
 
   @override
-  String get guardianDashboardTitle => 'Pet Care dashboard';
+  String get petCareDashboardTitle => 'Pet Care dashboard';
 
   @override
   String get upcomingPetEvents => 'Upcoming Pet Events';
@@ -4791,7 +4791,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myOrganisation => 'My Organisation';
 
   @override
-  String get experienceGuardianView => 'Pet Care view';
+  String get experiencePetCareView => 'Pet Care view';
 
   @override
   String get experienceDefaultSettingTitle => 'Default experience';
@@ -4812,7 +4812,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Shelters stay visible because you belong to at least one shelter.';
 
   @override
-  String get experienceGuardianInviteHint =>
+  String get experiencePetCareInviteHint =>
       'Add a pet or open a pet profile to share care with someone.';
 
   @override
@@ -4820,40 +4820,40 @@ class AppLocalizationsEn extends AppLocalizations {
       'Invite team members to help run your organisation.';
 
   @override
-  String get guardianOnboardingTitle => 'Get started';
+  String get petCareOnboardingTitle => 'Get started';
 
   @override
-  String get guardianOnboardingSkip => 'Skip for now';
+  String get petCareOnboardingSkip => 'Skip for now';
 
   @override
-  String get guardianOnboardingWelcomeTitle => 'Welcome to AgathaTrack';
+  String get petCareOnboardingWelcomeTitle => 'Welcome to AgathaTrack';
 
   @override
-  String get guardianOnboardingWelcomeBody =>
+  String get petCareOnboardingWelcomeBody =>
       'Add your first pet to start tracking their care.';
 
   @override
-  String get guardianOnboardingGetStarted => 'Get started';
+  String get petCareOnboardingGetStarted => 'Get started';
 
   @override
-  String get guardianOnboardingPetStepTitle => 'Add your first pet';
+  String get petCareOnboardingPetStepTitle => 'Add your first pet';
 
   @override
-  String get guardianOnboardingPetStepBody =>
+  String get petCareOnboardingPetStepBody =>
       'Tell us who you are caring for. You can add more details later.';
 
   @override
-  String get guardianOnboardingReminderStepTitle => 'Set your first reminder';
+  String get petCareOnboardingReminderStepTitle => 'Set your first reminder';
 
   @override
-  String get guardianOnboardingReminderStepBody =>
+  String get petCareOnboardingReminderStepBody =>
       'Medications, preventives, and vet visits — we will remind you when they are due.';
 
   @override
-  String get guardianOnboardingReminderNameLabel => 'Reminder name';
+  String get petCareOnboardingReminderNameLabel => 'Reminder name';
 
   @override
-  String get guardianOnboardingFinish => 'Finish setup';
+  String get petCareOnboardingFinish => 'Finish setup';
 
   @override
   String get orgOnboardingTitle => 'Set up your organisation';
@@ -4977,7 +4977,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adoptionJourneyStatusUnknown => 'Unknown';
 
   @override
-  String get drawerGuardian => 'Pet Care';
+  String get drawerPetCare => 'Pet Care';
 
   @override
   String get drawerOrganisation => 'Shelters';

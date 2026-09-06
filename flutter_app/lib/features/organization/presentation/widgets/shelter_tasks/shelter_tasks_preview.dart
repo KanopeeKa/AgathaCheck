@@ -46,7 +46,7 @@ class ShelterTasksPreview extends ConsumerWidget {
             child: data.isEmpty
                 ? PetCareIllustratedEmptyState(
                     key: const Key('shelter_tasks_empty'),
-                    title: l.guardianEmptyCareClearTitle,
+                    title: l.petCareEmptyCareClearTitle,
                     body: l.homeNoDueEvents,
                   )
                 : Column(

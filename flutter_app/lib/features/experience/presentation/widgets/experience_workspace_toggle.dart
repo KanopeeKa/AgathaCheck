@@ -31,7 +31,7 @@ class ExperienceWorkspaceToggle extends ConsumerWidget {
         : AppColorTokens.body;
     final activeLabel = activeExperience == AppExperience.organization
         ? l.workspaceShelter
-        : l.drawerGuardian;
+        : l.drawerPetCare;
 
     return Semantics(
       container: true,
@@ -61,7 +61,7 @@ class ExperienceWorkspaceToggle extends ConsumerWidget {
                 key: const Key('experience_workspace_menu_guardian'),
                 value: AppExperience.petCare,
                 child: Text(
-                  l.drawerGuardian,
+                  l.drawerPetCare,
                   style: const TextStyle(color: AppColorTokens.inverse),
                 ),
               ),

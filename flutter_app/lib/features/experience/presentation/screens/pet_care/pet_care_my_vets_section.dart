@@ -74,8 +74,8 @@ class PetCareMyVetsSection extends ConsumerWidget {
                     return PetCareIllustratedEmptyState(
                       key: const Key('guardian_dashboard_empty_vets'),
                       assetPath: 'assets/dashboard/guardian-empty-vets.png',
-                      title: l.guardianEmptyVetTitle,
-                      body: l.guardianEmptyVetBody,
+                      title: l.petCareEmptyVetTitle,
+                      body: l.petCareEmptyVetBody,
                       actionLabel: l.addVet,
                       actionKey: const Key(
                         'guardian_dashboard_empty_vets_action',

@@ -77,7 +77,7 @@ class PetCareTodayOrientation extends StatelessWidget {
       case PetCareTodayScreenState.allClear:
         return '${l.today}: ${l.todayAllClear}';
       case PetCareTodayScreenState.firstUse:
-        return '${l.today}: ${l.guardianOnboardingWelcomeBody}';
+        return '${l.today}: ${l.petCareOnboardingWelcomeBody}';
       case PetCareTodayScreenState.loading:
         return l.today;
       case PetCareTodayScreenState.partial:
@@ -105,7 +105,7 @@ class PetCareTodayOrientation extends StatelessWidget {
       case PetCareTodayScreenState.firstUse:
         return _statusLine(
           icon: Icons.pets_outlined,
-          message: l.guardianOnboardingWelcomeBody,
+          message: l.petCareOnboardingWelcomeBody,
           color: theme.colorScheme.onPrimaryContainer,
         );
       case PetCareTodayScreenState.loading:
