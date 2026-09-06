@@ -4,7 +4,7 @@
   "approved_at": "2026-09-06T10:35:00Z",
   "approved_by": "standing grant — Pet Care hardening roadmap (user chat 2026-09-05)",
   "approved_until": "2026-09-08T10:35:00Z",
-  "content_hash": "sha256:dd7fa0db0724c467d5614a20dc7fe393c501de7905d5b375f0919a05457507f0",
+  "content_hash": "sha256:3aa66c90d159c2401f796c2406eab2021e34598094296fa5af03a5fb8356b27c",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -79,7 +79,8 @@
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_head_sha": "df2fea32"
+      "pr_head_sha": "291421d2",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1018"
     }
   ]
 }

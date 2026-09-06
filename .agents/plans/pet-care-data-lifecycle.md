@@ -64,10 +64,10 @@ next_action: "continue phase 2 on branch cursor/pet-care-data-lifecycle-flutter-
 artifact_ref:
   branch: cursor/pet-care-data-lifecycle-flutter-75cb
   plan_path: .agents/plans/pet-care-data-lifecycle.md
-  plan_commit: df2fea324829a0c80de572b2ed48758fb2d04a29
+  plan_commit: 291421d278ffda70b620e658f16e4f3376a61c3f
   snapshot_path: .agents/plans/pet-care-data-lifecycle.snapshot.json
-  snapshot_commit: df2fea324829a0c80de572b2ed48758fb2d04a29
-open_prs: []
+  snapshot_commit: 291421d278ffda70b620e658f16e4f3376a61c3f
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1018"]
 merge_commits: {}
 debt_issue_refs: []
 ```
