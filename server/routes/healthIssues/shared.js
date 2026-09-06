@@ -1,18 +1,7 @@
-import jwt from 'jsonwebtoken';
-
-import { JWT_SECRET } from '../../config/jwtSecret.js';
+import { extractUserId } from '../../lib/requireAuth.js';
 import { dateToIsoDate } from '../../lib/calendarDate.js';
 
-export function extractUserId(req) {
-  const auth = req.headers['authorization'] || req.headers['Authorization'];
-  if (!auth || !auth.startsWith('Bearer ')) return null;
-  try {
-    return jwt.verify(auth.substring(7), JWT_SECRET).id;
-  } catch (_) {
-    return null;
-  }
-}
-
+export { extractUserId };
 export function issueRowToMap(row) {
   return {
     id: row.id,

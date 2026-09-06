@@ -1,7 +1,6 @@
 import multer from 'multer';
-import jwt from 'jsonwebtoken';
 
-import { JWT_SECRET } from '../../config/jwtSecret.js';
+import { extractUserId } from '../../lib/requireAuth.js';
 import { dateToIsoDate } from '../../lib/calendarDate.js';
 import { extensionForMime } from '../../lib/safeUpload.js';
 import {
@@ -17,6 +16,7 @@ export {
   HEALTH_DOCUMENT_EXTENSIONS,
   HEALTH_DOCUMENT_MIME_TYPES,
   MAX_HEALTH_DOCUMENT_BYTES,
+  extractUserId,
 };
 
 const _upload = multer({
@@ -55,17 +55,6 @@ export function handleDocumentUpload(req, res, next) {
     return res.status(400).json({ error: err.message });
   });
 }
-
-export function extractUserId(req) {
-  const auth = req.headers['authorization'] || req.headers['Authorization'];
-  if (!auth || !auth.startsWith('Bearer ')) return null;
-  try {
-    return jwt.verify(auth.substring(7), JWT_SECRET).id;
-  } catch (_) {
-    return null;
-  }
-}
-
 export const HEALTH_ENTRY_TYPES = new Set([
   'medication',
   'preventive',
