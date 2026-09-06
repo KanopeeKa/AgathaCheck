@@ -25,9 +25,9 @@ class PetCareFosteringSection extends StatelessWidget {
 
   static const _previewLimit = 2;
   static const _fosterInviteAsset =
-      'assets/dashboard/guardian-foster-invite.png';
+      'assets/dashboard/pet-care-foster-invite.png';
   static const _fosterThanksAsset =
-      'assets/dashboard/guardian-foster-thanks.png';
+      'assets/dashboard/pet-care-foster-thanks.png';
 
   @override
   Widget build(BuildContext context) {

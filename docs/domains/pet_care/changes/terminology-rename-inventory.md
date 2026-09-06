@@ -68,7 +68,7 @@ Keep `fromWire('guardian')` dual-read for stored prefs.
 
 ## F-22 completion criteria
 
-- [x] Zero `guardian_*` filenames under `flutter_app/lib/features/experience/` (except assets path `assets/dashboard/guardian-empty-*.png` — rename asset optional debt)
+- [x] Zero `guardian_*` filenames under `flutter_app/lib/features/experience/` (dashboard assets renamed to `pet-care-empty-*.png` / `pet-care-foster-*.png` in debt PR)
 - [x] Zero `AppExperience.guardian` references in `flutter_app/lib`
 - [x] Workspace l10n keys use `petCare*` / `experiencePetCare*` naming (custody/legal keys exempt)
 - [x] `docs/domains/pet_care/README.md` code map no longer says "migration in progress"
@@ -83,3 +83,4 @@ Keep `fromWire('guardian')` dual-read for stored prefs.
 | 3 | l10n key migration |
 | 4 | Alias cleanup + test keys |
 | 5 | Discovery/programme doc closure |
+| debt | Optional assets, onboarding keys, nav semantics, missed widget keys |

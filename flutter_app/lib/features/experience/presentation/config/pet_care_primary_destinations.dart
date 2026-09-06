@@ -119,17 +119,17 @@ class PetCarePrimaryDestinations {
   static String semanticsIdentifier(String route) {
     switch (route) {
       case '/pc/home':
-        return 'guardian_nav_dashboard';
+        return 'pet_care_nav_dashboard';
       case '/pc/pets':
-        return 'guardian_nav_pets';
+        return 'pet_care_nav_pets';
       case '/pc/events':
-        return 'guardian_nav_care';
+        return 'pet_care_nav_care';
       case '/pc/fostering':
-        return 'guardian_nav_fostering';
+        return 'pet_care_nav_fostering';
       case '/account':
-        return 'guardian_nav_account';
+        return 'pet_care_nav_account';
       default:
-        return 'guardian_nav_unknown';
+        return 'pet_care_nav_unknown';
     }
   }
 }

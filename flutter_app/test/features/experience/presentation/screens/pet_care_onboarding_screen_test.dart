@@ -27,10 +27,10 @@ void main() {
 
     expect(find.byKey(const Key('pet_care_onboarding_screen')), findsOneWidget);
     expect(
-      find.byKey(const Key('guardian_onboarding_welcome')),
+      find.byKey(const Key('pet_care_onboarding_welcome')),
       findsOneWidget,
     );
-    expect(find.byKey(const Key('guardian_onboarding_skip')), findsOneWidget);
+    expect(find.byKey(const Key('pet_care_onboarding_skip')), findsOneWidget);
     expect(find.text('Welcome to AgathaTrack'), findsOneWidget);
   });
 }

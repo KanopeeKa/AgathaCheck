@@ -107,7 +107,7 @@ class PetCareMyPetsSection extends ConsumerWidget {
                       sharedPets.isEmpty)
                     PetCareIllustratedEmptyState(
                       key: const Key('pet_care_dashboard_empty_pets'),
-                      assetPath: 'assets/dashboard/guardian-empty-pets.png',
+                      assetPath: 'assets/dashboard/pet-care-empty-pets.png',
                       title: l.petCareEmptyPetsTitle,
                       body: l.petCareEmptyPetsBody,
                       actionLabel: l.addPet,
@@ -192,7 +192,7 @@ class _PetCarePetRail extends StatelessWidget {
       child: pets.isEmpty
           ? PetCareIllustratedEmptyState(
               key: const Key('pet_care_dashboard_empty_pets'),
-              assetPath: 'assets/dashboard/guardian-empty-pets.png',
+              assetPath: 'assets/dashboard/pet-care-empty-pets.png',
               title: l.petCareEmptyPetsTitle,
               body: l.petCareEmptyPetsBody,
               actionLabel: l.addPet,

@@ -636,7 +636,7 @@ void main() {
           reason: 'undo affordance must be present during AsyncLoading',
         );
         expect(
-          find.byKey(const Key('guardian_due_events_refreshing')),
+          find.byKey(const Key('pet_care_due_events_refreshing')),
           findsOneWidget,
           reason:
               'cached refresh must remain visibly distinct from settled data',

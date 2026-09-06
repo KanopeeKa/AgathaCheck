@@ -36,13 +36,13 @@ class PetCareOperationsDeskLayout extends StatelessWidget {
 
         return Center(
           child: ConstrainedBox(
-            key: const Key('guardian_operations_desk_content'),
+            key: const Key('pet_care_operations_desk_content'),
             constraints: const BoxConstraints(maxWidth: maxContentWidth),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 PetCareDeskSectionCard(
-                  key: const Key('guardian_desk_primary_section_card'),
+                  key: const Key('pet_care_desk_primary_section_card'),
                   showSurface: false,
                   child: petsSection,
                 ),
@@ -50,7 +50,7 @@ class PetCareOperationsDeskLayout extends StatelessWidget {
                 if (isWide)
                   IntrinsicHeight(
                     child: Row(
-                      key: const Key('guardian_desk_secondary_sections_wide'),
+                      key: const Key('pet_care_desk_secondary_sections_wide'),
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Expanded(flex: 3, child: eventsSection),
@@ -61,7 +61,7 @@ class PetCareOperationsDeskLayout extends StatelessWidget {
                   )
                 else
                   Column(
-                    key: const Key('guardian_desk_secondary_sections_narrow'),
+                    key: const Key('pet_care_desk_secondary_sections_narrow'),
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       eventsSection,

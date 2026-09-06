@@ -11,12 +11,24 @@ void main() {
       expect(store.readCompleted(), isFalse);
     });
 
-    test('markCompleted persists flag', () async {
-      SharedPreferences.setMockInitialValues({});
+    test('dual-reads legacy guardian onboarding flag', () async {
+      SharedPreferences.setMockInitialValues({
+        PetCareOnboardingStore.legacyCompletedKey: true,
+      });
+      final prefs = await SharedPreferences.getInstance();
+      final store = PetCareOnboardingStore(prefs);
+      expect(store.readCompleted(), isTrue);
+    });
+
+    test('markCompleted migrates off legacy key', () async {
+      SharedPreferences.setMockInitialValues({
+        PetCareOnboardingStore.legacyCompletedKey: true,
+      });
       final prefs = await SharedPreferences.getInstance();
       final store = PetCareOnboardingStore(prefs);
       await store.markCompleted();
-      expect(store.readCompleted(), isTrue);
+      expect(prefs.getBool(PetCareOnboardingStore.completedKey), isTrue);
+      expect(prefs.getBool(PetCareOnboardingStore.legacyCompletedKey), isNull);
     });
 
     test('clear removes flag', () async {

@@ -143,7 +143,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('guardian_desk_secondary_sections_wide')),
+      find.byKey(const Key('pet_care_desk_secondary_sections_wide')),
       findsOneWidget,
     );
     expect(
@@ -151,11 +151,11 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.byKey(const Key('guardian_desk_primary_section_card')),
+      find.byKey(const Key('pet_care_desk_primary_section_card')),
       findsOneWidget,
     );
     expect(
-      find.byKey(const Key('guardian_desk_secondary_sections_narrow')),
+      find.byKey(const Key('pet_care_desk_secondary_sections_narrow')),
       findsNothing,
     );
   });
@@ -170,11 +170,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('guardian_desk_secondary_sections_narrow')),
+      find.byKey(const Key('pet_care_desk_secondary_sections_narrow')),
       findsOneWidget,
     );
     expect(
-      find.byKey(const Key('guardian_desk_secondary_sections_wide')),
+      find.byKey(const Key('pet_care_desk_secondary_sections_wide')),
       findsNothing,
     );
   });
@@ -217,13 +217,13 @@ void main() {
 
         expect(find.byType(SingleChildScrollView), findsOneWidget);
         expect(
-          find.byKey(const Key('guardian_desk_secondary_sections_wide')),
+          find.byKey(const Key('pet_care_desk_secondary_sections_wide')),
           width >= PetCareOperationsDeskLayout.wideBreakpoint
               ? findsOneWidget
               : findsNothing,
         );
         expect(
-          find.byKey(const Key('guardian_desk_secondary_sections_narrow')),
+          find.byKey(const Key('pet_care_desk_secondary_sections_narrow')),
           width < PetCareOperationsDeskLayout.wideBreakpoint
               ? findsOneWidget
               : findsNothing,
@@ -243,7 +243,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(
         tester
-            .getSize(find.byKey(const Key('guardian_operations_desk_content')))
+            .getSize(find.byKey(const Key('pet_care_operations_desk_content')))
             .width,
         lessThanOrEqualTo(PetCareOperationsDeskLayout.maxContentWidth),
       );
