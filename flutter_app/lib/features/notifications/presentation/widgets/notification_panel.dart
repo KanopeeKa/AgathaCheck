@@ -195,7 +195,7 @@ class _KindFilterChips extends StatelessWidget {
           _FilterChip(
             label: l.notificationKindCare,
             selected: selected == NotificationKind.care,
-            color: xp.guardianPrimary,
+            color: xp.petCarePrimary,
             onTap: () => onSelected(NotificationKind.care),
           ),
           _FilterChip(

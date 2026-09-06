@@ -27,7 +27,7 @@ void main() {
       expect(
         PetViewerRoleResolver.resolve(
           pet: _pet(isFoster: true, organizationName: 'Shelter'),
-          experience: AppExperience.guardian,
+          experience: AppExperience.petCare,
         ),
         PetViewerRole.fosterCarer,
       );
@@ -37,7 +37,7 @@ void main() {
       expect(
         PetViewerRoleResolver.resolve(
           pet: _pet(isShared: true),
-          experience: AppExperience.guardian,
+          experience: AppExperience.petCare,
         ),
         PetViewerRole.sharedCarer,
       );
@@ -57,7 +57,7 @@ void main() {
       expect(
         PetViewerRoleResolver.resolve(
           pet: _pet(organizationId: 'o1', organizationName: 'Shelter'),
-          experience: AppExperience.guardian,
+          experience: AppExperience.petCare,
         ),
         PetViewerRole.guardian,
       );
@@ -68,7 +68,7 @@ void main() {
     test('guardian owner gets full personal actions', () {
       final actions = PetDetailActions.visible(
         pet: _pet(),
-        experience: AppExperience.guardian,
+        experience: AppExperience.petCare,
         role: PetViewerRole.guardian,
       );
       expect(actions, contains(PetDetailAction.editProfile));
@@ -80,7 +80,7 @@ void main() {
     test('shared carer can download but not edit or assign vet', () {
       final actions = PetDetailActions.visible(
         pet: _pet(isShared: true),
-        experience: AppExperience.guardian,
+        experience: AppExperience.petCare,
         role: PetViewerRole.sharedCarer,
       );
       expect(actions, contains(PetDetailAction.downloadReport));
@@ -91,7 +91,7 @@ void main() {
     test('foster carer can download but not manage sharing', () {
       final actions = PetDetailActions.visible(
         pet: _pet(isFoster: true, organizationName: 'Shelter'),
-        experience: AppExperience.guardian,
+        experience: AppExperience.petCare,
         role: PetViewerRole.fosterCarer,
       );
       expect(actions, contains(PetDetailAction.downloadReport));
@@ -122,7 +122,7 @@ void main() {
     test('unresolved policy inputs deny all privileged actions', () {
       final actions = PetDetailActions.visible(
         pet: _pet(),
-        experience: AppExperience.guardian,
+        experience: AppExperience.petCare,
         role: PetViewerRole.guardian,
         policyInputsResolved: false,
       );
@@ -130,7 +130,7 @@ void main() {
 
       final ctx = PetDetailActions.resolveContext(
         pet: _pet(),
-        experience: AppExperience.guardian,
+        experience: AppExperience.petCare,
         policyInputsResolved: false,
       );
       expect(ctx.isPolicyResolved, isFalse);
@@ -163,7 +163,7 @@ void main() {
           (
             label: 'guardian / guardian',
             pet: _pet(),
-            experience: AppExperience.guardian,
+            experience: AppExperience.petCare,
             role: PetViewerRole.guardian,
             isOrgAdmin: false,
             expected: {
@@ -176,7 +176,7 @@ void main() {
           (
             label: 'guardian / sharedCarer',
             pet: _pet(isShared: true),
-            experience: AppExperience.guardian,
+            experience: AppExperience.petCare,
             role: PetViewerRole.sharedCarer,
             isOrgAdmin: false,
             expected: {PetDetailAction.downloadReport},
@@ -184,7 +184,7 @@ void main() {
           (
             label: 'guardian / fosterCarer',
             pet: _pet(isFoster: true, organizationName: 'Shelter'),
-            experience: AppExperience.guardian,
+            experience: AppExperience.petCare,
             role: PetViewerRole.fosterCarer,
             isOrgAdmin: false,
             expected: {PetDetailAction.downloadReport},
@@ -227,7 +227,7 @@ void main() {
           (
             label: 'guardian experience / org inventory pet',
             pet: _pet(organizationId: 'o1', organizationName: 'Shelter'),
-            experience: AppExperience.guardian,
+            experience: AppExperience.petCare,
             role: PetViewerRole.guardian,
             isOrgAdmin: false,
             expected: {

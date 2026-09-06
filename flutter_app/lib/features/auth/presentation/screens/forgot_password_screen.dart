@@ -139,7 +139,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 children: [
                   const BrandedLogo(
                     size: 64,
-                    experience: AppExperience.guardian,
+                    experience: AppExperience.petCare,
                     borderRadius: BorderRadius.all(Radius.circular(16)),
                   ),
                   const SizedBox(height: 16),

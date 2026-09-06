@@ -29,7 +29,7 @@ class AppTheme {
   static ThemeData get lightTheme {
     const colorScheme = ColorScheme(
       brightness: Brightness.light,
-      primary: AppColorTokens.guardianPrimary,
+      primary: AppColorTokens.petCarePrimary,
       onPrimary: AppColorTokens.inverse,
       primaryContainer: AppColorTokens.guardianLight,
       onPrimaryContainer: AppColorTokens.guardianActive,
@@ -92,7 +92,7 @@ class AppTheme {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(
-            color: AppColorTokens.guardianPrimary,
+            color: AppColorTokens.petCarePrimary,
             width: 2,
           ),
         ),
@@ -106,14 +106,14 @@ class AppTheme {
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: AppColorTokens.guardianPrimary,
+        backgroundColor: AppColorTokens.petCarePrimary,
         foregroundColor: AppColorTokens.inverse,
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: AppColorTokens.guardianPrimary,
+          backgroundColor: AppColorTokens.petCarePrimary,
           foregroundColor: AppColorTokens.inverse,
           minimumSize: const Size(48, 48),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
@@ -134,13 +134,13 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           minimumSize: const Size(48, 48),
-          foregroundColor: AppColorTokens.guardianPrimary,
+          foregroundColor: AppColorTokens.petCarePrimary,
         ),
       ),
       tabBarTheme: const TabBarThemeData(
-        labelColor: AppColorTokens.guardianPrimary,
+        labelColor: AppColorTokens.petCarePrimary,
         unselectedLabelColor: AppColorTokens.muted,
-        indicatorColor: AppColorTokens.guardianPrimary,
+        indicatorColor: AppColorTokens.petCarePrimary,
       ),
       dividerTheme: const DividerThemeData(color: AppColorTokens.border),
       snackBarTheme: SnackBarThemeData(
@@ -181,12 +181,12 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: AppColorTokens.guardianPrimary,
+        color: AppColorTokens.petCarePrimary,
       ),
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return AppColorTokens.guardianPrimary;
+            return AppColorTokens.petCarePrimary;
           }
           return null;
         }),
@@ -194,7 +194,7 @@ class AppTheme {
       radioTheme: RadioThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return AppColorTokens.guardianPrimary;
+            return AppColorTokens.petCarePrimary;
           }
           return AppColorTokens.muted;
         }),
@@ -208,7 +208,7 @@ class AppTheme {
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return AppColorTokens.guardianPrimary;
+            return AppColorTokens.petCarePrimary;
           }
           return AppColorTokens.border;
         }),

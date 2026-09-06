@@ -40,7 +40,7 @@ Color resolvePetOwnershipAccentColor(BuildContext context, Pet pet) {
   if (pet.colorValue != null) {
     return Color(pet.colorValue!);
   }
-  return xp.guardianPrimary;
+  return xp.petCarePrimary;
 }
 
 /// Central ownership accent resolver (navigation v2).

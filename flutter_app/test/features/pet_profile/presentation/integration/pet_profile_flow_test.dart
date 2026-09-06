@@ -98,11 +98,11 @@ void main() {
           trackPetsTapped = true;
         }
         if (find
-                .byKey(const Key('guardian_dashboard_pet_preview'))
+                .byKey(const Key('pet_care_dashboard_pet_preview'))
                 .evaluate()
                 .isNotEmpty &&
             find
-                .byKey(const Key('guardian_dashboard_add_pet'))
+                .byKey(const Key('pet_care_dashboard_add_pet'))
                 .evaluate()
                 .isNotEmpty) {
           return;
@@ -111,7 +111,7 @@ void main() {
     }
 
     Future<void> navigateToAddPetForm(WidgetTester tester) async {
-      final addPet = find.byKey(const Key('guardian_dashboard_add_pet'));
+      final addPet = find.byKey(const Key('pet_care_dashboard_add_pet'));
       await tester.ensureVisible(addPet);
       await tester.tapAt(tester.getCenter(addPet));
       await pumpApp(tester, frames: 5);
@@ -131,12 +131,12 @@ void main() {
       await pumpGuardianHome(tester);
 
       expect(
-        find.byKey(const Key('guardian_dashboard_pet_preview')),
+        find.byKey(const Key('pet_care_dashboard_pet_preview')),
         findsOneWidget,
         reason: 'Should show the empty pet preview rail',
       );
       expect(
-        find.byKey(const Key('guardian_dashboard_add_pet')),
+        find.byKey(const Key('pet_care_dashboard_add_pet')),
         findsOneWidget,
         reason: 'Should offer an add-pet action on the empty dashboard',
       );

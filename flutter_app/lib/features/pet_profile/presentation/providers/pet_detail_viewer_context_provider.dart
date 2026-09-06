@@ -17,7 +17,7 @@ AppExperience _resolveExperience(AsyncValue petsAsync, AsyncValue orgsAsync) {
     orgMembershipCount: orgs.length,
   );
 
-  return eligibility.resolveAutoExperience() ?? AppExperience.guardian;
+  return eligibility.resolveAutoExperience() ?? AppExperience.petCare;
 }
 
 /// Resolved pet-detail policy for [petId], or restricted context while inputs load.

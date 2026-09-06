@@ -39,9 +39,5 @@ void main() {
       expect(AppExperience.petCare.settingsPath, '/pc/settings');
       expect(AppExperience.organization.settingsPath, '/o/settings');
     });
-
-    test('deprecated guardian alias points to petCare', () {
-      expect(AppExperience.guardian, AppExperience.petCare);
-    });
   });
 }

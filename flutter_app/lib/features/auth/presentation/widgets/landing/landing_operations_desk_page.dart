@@ -61,7 +61,7 @@ class LandingOperationsDeskPage extends StatelessWidget {
 
   ThemeData _landingTheme(ThemeData theme) {
     final scheme = theme.colorScheme.copyWith(
-      primary: AppColorTokens.guardianPrimary,
+      primary: AppColorTokens.petCarePrimary,
       onPrimary: AppColorTokens.inverse,
       primaryContainer: AppColorTokens.guardianLight,
       onPrimaryContainer: AppColorTokens.guardianActive,
@@ -97,7 +97,7 @@ class LandingOperationsDeskPage extends StatelessWidget {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: AppColorTokens.guardianPrimary,
+          backgroundColor: AppColorTokens.petCarePrimary,
           foregroundColor: AppColorTokens.inverse,
           minimumSize: const Size.fromHeight(50),
           shape: RoundedRectangleBorder(
@@ -110,7 +110,7 @@ class LandingOperationsDeskPage extends StatelessWidget {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColorTokens.guardianPrimary,
+          foregroundColor: AppColorTokens.petCarePrimary,
           minimumSize: const Size(48, 48),
         ),
       ),

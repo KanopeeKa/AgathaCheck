@@ -76,21 +76,21 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('guardian_dashboard_pet_preview')),
+      find.byKey(const Key('pet_care_dashboard_pet_preview')),
       findsOneWidget,
     );
     expect(find.text('CARE ACTIONS'), findsOneWidget);
     expect(find.text('FOSTERING SESSIONS'), findsOneWidget);
     expect(find.text('Make room for one more'), findsOneWidget);
-    expect(find.byKey(const Key('guardian_dashboard_add_care')), findsNothing);
-    expect(find.byKey(const Key('guardian_dashboard_add_vet')), findsNothing);
+    expect(find.byKey(const Key('pet_care_dashboard_add_care')), findsNothing);
+    expect(find.byKey(const Key('pet_care_dashboard_add_vet')), findsNothing);
     expect(
-      find.byKey(const Key('guardian_dashboard_empty_care_action')),
+      find.byKey(const Key('pet_care_dashboard_empty_care_action')),
       findsOneWidget,
     );
     expect(find.text('All care teams'), findsOneWidget);
     expect(
-      find.byKey(const Key('guardian_dashboard_care_section')),
+      find.byKey(const Key('pet_care_dashboard_care_section')),
       findsOneWidget,
     );
     expect(find.text('Pending foster placements'), findsNothing);
@@ -125,10 +125,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('guardian_dashboard_pet_preview')),
+      find.byKey(const Key('pet_care_dashboard_pet_preview')),
       findsOneWidget,
     );
-    expect(find.byKey(const Key('guardian_dashboard_add_pet')), findsOneWidget);
+    expect(find.byKey(const Key('pet_care_dashboard_add_pet')), findsOneWidget);
   });
 
   testWidgets('uses a two-column desk layout on wide screens', (tester) async {
@@ -147,7 +147,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.byKey(const Key('guardian_dashboard_care_team_puppy_deco')),
+      find.byKey(const Key('pet_care_dashboard_care_team_puppy_deco')),
       findsOneWidget,
     );
     expect(
@@ -184,7 +184,7 @@ void main() {
       buildDashboard(healthNotifier: _LoadingHealthEntriesNotifier()),
     );
     await tester.pump();
-    expect(find.byKey(const Key('guardian_dashboard_add_care')), findsNothing);
+    expect(find.byKey(const Key('pet_care_dashboard_add_care')), findsNothing);
 
     final errorNotifier = _RetryingErrorHealthEntriesNotifier();
     await tester.pumpWidget(buildDashboard(healthNotifier: errorNotifier));
@@ -267,7 +267,7 @@ void main() {
       );
 
       expect(
-        find.byKey(const Key('guardian_dashboard_add_care')),
+        find.byKey(const Key('pet_care_dashboard_add_care')),
         findsNothing,
       );
       expect(find.text('Toutes les équipes de soins'), findsOneWidget);

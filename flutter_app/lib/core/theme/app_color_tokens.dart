@@ -26,8 +26,6 @@ abstract final class AppColorTokens {
   static const Color petCareLight = Color(0xFFE8E1E3);
   static const Color petCareSoft = Color(0xFFE7DCE2);
 
-  @Deprecated('Use petCarePrimary')
-  static const Color guardianPrimary = petCarePrimary;
   @Deprecated('Use petCareHover')
   static const Color guardianHover = petCareHover;
   @Deprecated('Use petCareActive')

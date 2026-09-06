@@ -17,7 +17,7 @@ class PetWeightTrackingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final experience = AppExperience.guardian;
+    final experience = AppExperience.petCare;
 
     void onAddEntry() => openAddWeightEntrySheet(context, ref, petId);
 

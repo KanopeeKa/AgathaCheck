@@ -29,7 +29,7 @@ VetAccent resolveVetAccent(BuildContext context, {String? organizationId}) {
   }
   return VetAccent(
     isOrganization: false,
-    primary: xp.guardianPrimary,
+    primary: xp.petCarePrimary,
     onPrimary: xp.guardianOnPrimary,
     surface: xp.guardianLight.withAlpha(120),
   );

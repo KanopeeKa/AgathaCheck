@@ -28,7 +28,7 @@ class PetEventViewScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final experience = AppExperience.guardian;
+    final experience = AppExperience.petCare;
     final petsAsync = ref.watch(allPetsIncludingOrgProvider);
     final entryAsync = ref.watch(
       petHealthEntryByIdProvider((petId: petId, entryId: entryId)),

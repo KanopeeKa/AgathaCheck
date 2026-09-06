@@ -77,15 +77,15 @@ void main() {
 
       expect(find.text('No fostering sessions right now'), findsOneWidget);
       expect(
-        find.byKey(const Key('guardian_dashboard_empty_fostering_action')),
+        find.byKey(const Key('pet_care_dashboard_empty_fostering_action')),
         findsNothing,
       );
       expect(
-        find.byKey(const Key('guardian_dashboard_empty_shelters_action')),
+        find.byKey(const Key('pet_care_dashboard_empty_shelters_action')),
         findsOneWidget,
       );
       expect(
-        find.byKey(const Key('guardian_dashboard_empty_fostering')),
+        find.byKey(const Key('pet_care_dashboard_empty_fostering')),
         findsOneWidget,
       );
       expect(find.text('Make room for one more'), findsOneWidget);

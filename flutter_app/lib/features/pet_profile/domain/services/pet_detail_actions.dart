@@ -105,7 +105,7 @@ class PetDetailContext {
   /// have finished loading. UI must treat [isPolicyResolved] == false as "show nothing
   /// privileged" — never flash edit/share/placement actions during provider churn.
   factory PetDetailContext.restricted({
-    AppExperience experience = AppExperience.guardian,
+    AppExperience experience = AppExperience.petCare,
   }) {
     return PetDetailContext(
       experience: experience,

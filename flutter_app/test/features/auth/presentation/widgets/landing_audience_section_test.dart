@@ -14,7 +14,7 @@ void main() {
             title: 'Pet parents',
             body: 'Body copy placeholder',
             placeholderLabel: 'Screenshot coming soon',
-            accentColor: AppColorTokens.guardianPrimary,
+            accentColor: AppColorTokens.petCarePrimary,
           ),
         ),
       ),

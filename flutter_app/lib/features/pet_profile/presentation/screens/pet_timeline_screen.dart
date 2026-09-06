@@ -20,7 +20,7 @@ class PetTimelineScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final experience = AppExperience.guardian;
+    final experience = AppExperience.petCare;
     final petAsync = ref.watch(petByIdProvider(petId));
     final timelineAsync = ref.watch(petTimelineListProvider(petId));
 

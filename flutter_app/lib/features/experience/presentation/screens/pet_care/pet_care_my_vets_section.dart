@@ -72,13 +72,13 @@ class PetCareMyVetsSection extends ConsumerWidget {
                 data: (resolvedVets) {
                   if (resolvedVets.isEmpty) {
                     return PetCareIllustratedEmptyState(
-                      key: const Key('guardian_dashboard_empty_vets'),
+                      key: const Key('pet_care_dashboard_empty_vets'),
                       assetPath: 'assets/dashboard/guardian-empty-vets.png',
                       title: l.petCareEmptyVetTitle,
                       body: l.petCareEmptyVetBody,
                       actionLabel: l.addVet,
                       actionKey: const Key(
-                        'guardian_dashboard_empty_vets_action',
+                        'pet_care_dashboard_empty_vets_action',
                       ),
                       onAction: () => context.go('/pc/vets/add'),
                     );
@@ -109,7 +109,7 @@ class PetCareMyVetsSection extends ConsumerWidget {
               ),
         if (showAllAction)
           PetCareDashboardSectionLink(
-            linkKey: const Key('guardian_dashboard_all_care_teams'),
+            linkKey: const Key('pet_care_dashboard_all_care_teams'),
             label: l.allCareTeams,
             onPressed: () => context.go('/pc/vets'),
           ),

@@ -1,12 +1,5 @@
 /// Product experience shell: individual pet care vs shelter/organisation.
-enum AppExperience {
-  petCare,
-  organization;
-
-  /// Deprecated compile-time alias — use [petCare].
-  @Deprecated('Use AppExperience.petCare')
-  static const guardian = petCare;
-}
+enum AppExperience { petCare, organization }
 
 extension AppExperienceWire on AppExperience {
   String get wire => switch (this) {

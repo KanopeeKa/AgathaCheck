@@ -6,16 +6,16 @@ import 'package:pet_profile_app/core/theme/experience_colors.dart';
 
 void main() {
   group('AppTheme', () {
-    test('lightTheme uses guardian plum as default primary', () {
+    test('lightTheme uses pet care plum as default primary', () {
       final theme = AppTheme.lightTheme;
-      expect(theme.colorScheme.primary, AppColorTokens.guardianPrimary);
+      expect(theme.colorScheme.primary, AppColorTokens.petCarePrimary);
       expect(theme.scaffoldBackgroundColor, AppColorTokens.background);
     });
 
     test('lightTheme registers ExperienceColors extension', () {
       final ext = AppTheme.lightTheme.extension<ExperienceColors>();
       expect(ext, isNotNull);
-      expect(ext!.guardianPrimary, AppColorTokens.guardianPrimary);
+      expect(ext!.petCarePrimary, AppColorTokens.petCarePrimary);
       expect(ext.organizationPrimary, AppColorTokens.organizationPrimary);
       expect(ext.success, AppColorTokens.success);
     });
@@ -24,7 +24,7 @@ void main() {
       const ext = ExperienceColors.light;
       expect(
         ext.primaryFor(organization: false),
-        AppColorTokens.guardianPrimary,
+        AppColorTokens.petCarePrimary,
       );
       expect(
         ext.primaryFor(organization: true),

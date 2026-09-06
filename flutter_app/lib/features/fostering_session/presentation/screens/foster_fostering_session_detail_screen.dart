@@ -29,7 +29,7 @@ class FosterFosteringSessionDetailScreen extends ConsumerWidget {
     if (resolvedPlacementId == null) {
       final resolving = ref.watch(openFosterPlacementForPetProvider(petId));
       return ExperienceShellScaffold(
-        experience: AppExperience.guardian,
+        experience: AppExperience.petCare,
         currentLocation: GoRouterState.of(context).uri.path,
         screenTitle: l.fosteringSessionDetailTitle,
         backPath: '/pet/$petId',
@@ -53,7 +53,7 @@ class FosterFosteringSessionDetailScreen extends ConsumerWidget {
     final sessionAsync = ref.watch(fosteringSessionDetailProvider(key));
 
     return ExperienceShellScaffold(
-      experience: AppExperience.guardian,
+      experience: AppExperience.petCare,
       currentLocation: GoRouterState.of(context).uri.path,
       screenTitle: l.fosteringSessionDetailTitle,
       backPath: '/pet/$petId',

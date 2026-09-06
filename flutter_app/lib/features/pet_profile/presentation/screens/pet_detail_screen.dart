@@ -50,7 +50,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
 
         final theme = Theme.of(context);
         final isOrgPet = pet.organizationId != null;
-        final experience = AppExperience.guardian;
+        final experience = AppExperience.petCare;
         final useOrgChrome =
             isOrgPet && experience == AppExperience.organization;
         final viewerContext = ref.watch(

@@ -65,7 +65,7 @@ void main() {
       );
 
       expect(
-        find.byKey(const Key('guardian_dashboard_pet_rail_deco')),
+        find.byKey(const Key('pet_care_dashboard_pet_rail_deco')),
         findsOneWidget,
       );
       expect(find.byType(ExcludeSemantics), findsWidgets);
@@ -112,7 +112,7 @@ void main() {
       );
 
       expect(
-        find.byKey(const Key('guardian_dashboard_care_team_puppy_deco')),
+        find.byKey(const Key('pet_care_dashboard_care_team_puppy_deco')),
         findsOneWidget,
       );
     });

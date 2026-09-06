@@ -234,7 +234,7 @@ void main() {
 
     expect(find.text('CARE ACTIONS'), findsOneWidget);
     expect(
-      find.byKey(const Key('guardian_dashboard_care_block')),
+      find.byKey(const Key('pet_care_dashboard_care_block')),
       findsOneWidget,
     );
     expect(find.byType(PetCareDeskSectionCard), findsOneWidget);
@@ -248,7 +248,7 @@ void main() {
     await tester.pumpWidget(_buildSection(onAddEvent: () => addEventCalls++));
     await tester.pumpAndSettle();
     await tester.tap(
-      find.byKey(const Key('guardian_dashboard_empty_care_action')),
+      find.byKey(const Key('pet_care_dashboard_empty_care_action')),
     );
     await tester.pumpAndSettle();
 
@@ -318,7 +318,7 @@ void main() {
       expect(find.byKey(const Key('care_event_row_list')), findsNothing);
       expect(find.text('Start their care routine'), findsOneWidget);
       expect(
-        find.byKey(const Key('guardian_dashboard_empty_care')),
+        find.byKey(const Key('pet_care_dashboard_empty_care')),
         findsOneWidget,
       );
     });
@@ -379,7 +379,7 @@ void main() {
       ]);
       expect(find.text('All Actions'), findsOneWidget);
       expect(
-        find.byKey(const Key('guardian_dashboard_care_view_all')),
+        find.byKey(const Key('pet_care_dashboard_care_view_all')),
         findsOneWidget,
       );
     });
@@ -396,10 +396,10 @@ void main() {
       await tester.pumpAndSettle();
 
       final blockY = tester
-          .getTopLeft(find.byKey(const Key('guardian_dashboard_care_block')))
+          .getTopLeft(find.byKey(const Key('pet_care_dashboard_care_block')))
           .dy;
       final linkY = tester
-          .getTopLeft(find.byKey(const Key('guardian_dashboard_care_view_all')))
+          .getTopLeft(find.byKey(const Key('pet_care_dashboard_care_view_all')))
           .dy;
       expect(linkY, greaterThan(blockY));
     });

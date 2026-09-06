@@ -28,17 +28,17 @@ Complete F-22 residual **Guardian → Pet Care** terminology: rename workspace-s
 
 ```yaml
 autonomy: active
-current_phase: 3
-last_completed_phase: 2
+current_phase: 4
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 3 on branch cursor/pet-care-terminology-l10n-75cb"
+next_action: "continue phase 4 on branch cursor/pet-care-terminology-cleanup-75cb"
 artifact_ref:
-  branch: cursor/pet-care-terminology-l10n-75cb
+  branch: cursor/pet-care-terminology-cleanup-75cb
   plan_path: .agents/plans/pet-care-terminology-rename.md
-  plan_commit: 8f72de53128905d6a63f2dc3502da3f4fcf57beb
+  plan_commit: c5e097d68df217211efcdbe92b9fcc5d003b6733
   snapshot_path: .agents/plans/pet-care-terminology-rename.snapshot.json
-  snapshot_commit: 8f72de53128905d6a63f2dc3502da3f4fcf57beb
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1043"]
+  snapshot_commit: c5e097d68df217211efcdbe92b9fcc5d003b6733
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1044"]
 merge_commits: {}
 debt_issue_refs: []
 ```
