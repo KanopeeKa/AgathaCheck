@@ -52,10 +52,10 @@ next_action: "continue phase 1 on branch cursor/pet-care-api-contract-75cb"
 artifact_ref:
   branch: cursor/pet-care-api-contract-75cb
   plan_path: .agents/plans/pet-care-api-contract.md
-  plan_commit: 703ee287cbbd0c57742ba3e8c0c8a63a8a00d71e
+  plan_commit: 79039e5f9dfc5884de867e482f73ac2ee342fc79
   snapshot_path: .agents/plans/pet-care-api-contract.snapshot.json
-  snapshot_commit: 703ee287cbbd0c57742ba3e8c0c8a63a8a00d71e
-open_prs: []
+  snapshot_commit: 79039e5f9dfc5884de867e482f73ac2ee342fc79
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1022"]
 merge_commits: {}
 debt_issue_refs: []
 ```
