@@ -62,18 +62,18 @@ phase_fit: in-scope
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/pet-care-p0-private-files-75cb"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/pet-care-p0-private-files-75cb
+  branch: main
   plan_path: .agents/plans/pet-care-p0-private-files.md
-  plan_commit: e1ce9dee67606845f7c14e094f57d28e9236ce87
+  plan_commit: 29be890e314c1abef9bd01350f5bb97849e80afd
   snapshot_path: .agents/plans/pet-care-p0-private-files.snapshot.json
-  snapshot_commit: e1ce9dee67606845f7c14e094f57d28e9236ce87
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/998"]
+  snapshot_commit: 29be890e314c1abef9bd01350f5bb97849e80afd
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
