@@ -160,14 +160,44 @@ class PetRepositoryImpl implements PetRepository {
       try {
         await remoteDataSource!.deletePet(id, token!);
       } catch (e) {
-        // Server rejected the delete. Restore the pre-mutation local snapshot so
-        // the cache does not diverge from the server and surface the failure.
         if (prior != null) {
           await _localDataSource.addPet(prior);
         }
         debugPrint('PetRepository: Failed to delete pet from server: $e');
         rethrow;
       }
+    }
+  }
+
+  @override
+  Future<void> deletePetWithDataCleanup(String id) async {
+    if (remoteDataSource != null && token != null && token!.isNotEmpty) {
+      try {
+        await remoteDataSource!.deletePetData(id, token!);
+      } catch (e) {
+        debugPrint('PetRepository: cascade delete of pet data failed: $e');
+      }
+    }
+    await deletePet(id);
+  }
+
+  @override
+  Future<bool> markPassedAway(Pet pet) async {
+    final updated = pet.copyWith(passedAway: true, colorValue: 0xFFFFFFFF);
+    await updatePet(updated);
+    if (remoteDataSource == null || token == null || token!.isEmpty) {
+      return false;
+    }
+    try {
+      final count = await remoteDataSource!.notifyPassedAway(
+        pet.id,
+        pet.name,
+        token!,
+      );
+      return count > 0;
+    } catch (e) {
+      debugPrint('PetRepository: passed-away notification failed: $e');
+      return false;
     }
   }
 

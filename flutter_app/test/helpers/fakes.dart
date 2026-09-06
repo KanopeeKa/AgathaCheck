@@ -32,6 +32,10 @@ class FakePetRepository implements PetRepository {
   Future<Pet> updatePet(Pet pet) async => pet;
   @override
   Future<void> deletePet(String id) async {}
+  @override
+  Future<void> deletePetWithDataCleanup(String id) async {}
+  @override
+  Future<bool> markPassedAway(Pet pet) async => false;
 }
 
 class FakeGetAllPets extends GetAllPets {

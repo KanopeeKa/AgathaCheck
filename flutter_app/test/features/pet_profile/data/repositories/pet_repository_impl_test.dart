@@ -59,6 +59,17 @@ class FakeRemoteDataSource implements PetRemoteDataSource {
   }
 
   @override
+  Future<void> deletePetData(String id, String token) async {}
+
+  @override
+  Future<int> notifyPassedAway(
+    String petId,
+    String petName,
+    String token,
+  ) async =>
+      petName.contains('notify') ? 2 : 0;
+
+  @override
   Future<PetModel> uploadPetPhoto(
     String petId,
     Uint8List bytes,
