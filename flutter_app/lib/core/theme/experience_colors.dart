@@ -53,8 +53,6 @@ class ExperienceColors extends ThemeExtension<ExperienceColors> {
   final Color danger;
   final Color info;
 
-  @Deprecated('Use petCarePrimary')
-  Color get guardianPrimary => petCarePrimary;
   @Deprecated('Use petCareOnPrimary')
   Color get guardianOnPrimary => petCareOnPrimary;
   @Deprecated('Use petCareHover')

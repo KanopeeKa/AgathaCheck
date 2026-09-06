@@ -8,7 +8,7 @@ void main() {
       'maps guardian to plum and organisation to teal on light surfaces',
       () {
         expect(
-          LogoAssets.pngFor(AppExperience.guardian),
+          LogoAssets.pngFor(AppExperience.petCare),
           'assets/logo-plum.png',
         );
         expect(
@@ -16,7 +16,7 @@ void main() {
           'assets/logo-teal.png',
         );
         expect(
-          LogoAssets.jpgFor(AppExperience.guardian),
+          LogoAssets.jpgFor(AppExperience.petCare),
           'assets/logo-plum.jpg',
         );
         expect(
@@ -28,7 +28,7 @@ void main() {
 
     test('uses light monochrome marks on dark surfaces', () {
       expect(
-        LogoAssets.pngFor(AppExperience.guardian, onDarkBackground: true),
+        LogoAssets.pngFor(AppExperience.petCare, onDarkBackground: true),
         'assets/logo-plum-light.png',
       );
       expect(
@@ -52,7 +52,7 @@ void main() {
       'guardian shell chrome uses the light plum mark on the plum app bar',
       () {
         expect(
-          LogoAssets.pngForShell(AppExperience.guardian),
+          LogoAssets.pngForShell(AppExperience.petCare),
           'assets/logo-plum-light.png',
         );
         expect(
@@ -71,8 +71,8 @@ void main() {
         LogoAssets.experienceForRoute('/organizations/abc'),
         AppExperience.organization,
       );
-      expect(LogoAssets.experienceForRoute('/g/home'), AppExperience.guardian);
-      expect(LogoAssets.experienceForRoute('/about'), AppExperience.guardian);
+      expect(LogoAssets.experienceForRoute('/g/home'), AppExperience.petCare);
+      expect(LogoAssets.experienceForRoute('/about'), AppExperience.petCare);
     });
   });
 }

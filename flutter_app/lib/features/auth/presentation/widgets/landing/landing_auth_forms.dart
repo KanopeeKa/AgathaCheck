@@ -448,12 +448,12 @@ class LandingAuthCard extends StatelessWidget {
                 indicatorSize: TabBarIndicatorSize.tab,
                 indicator: const UnderlineTabIndicator(
                   borderSide: BorderSide(
-                    color: AppColorTokens.guardianPrimary,
+                    color: AppColorTokens.petCarePrimary,
                     width: 3,
                   ),
                   insets: EdgeInsets.symmetric(horizontal: 18),
                 ),
-                labelColor: AppColorTokens.guardianPrimary,
+                labelColor: AppColorTokens.petCarePrimary,
                 unselectedLabelColor: AppColorTokens.landingInkSoft,
                 labelStyle: theme.textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w700,

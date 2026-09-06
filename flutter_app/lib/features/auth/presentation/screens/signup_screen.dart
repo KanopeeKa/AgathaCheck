@@ -71,7 +71,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 children: [
                   const BrandedLogo(
                     size: 80,
-                    experience: AppExperience.guardian,
+                    experience: AppExperience.petCare,
                     borderRadius: BorderRadius.all(Radius.circular(16)),
                   ),
                   const SizedBox(height: 16),

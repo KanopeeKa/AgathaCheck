@@ -89,7 +89,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('guardian_dashboard_care_team_puppy_deco')),
+      find.byKey(const Key('pet_care_dashboard_care_team_puppy_deco')),
       findsOneWidget,
     );
   });
@@ -104,7 +104,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('guardian_dashboard_care_team_puppy_deco')),
+      find.byKey(const Key('pet_care_dashboard_care_team_puppy_deco')),
       findsNothing,
     );
   });
@@ -165,7 +165,7 @@ void main() {
 
     expect(find.text('Keep your vet close at hand'), findsOneWidget);
     expect(
-      find.byKey(const Key('guardian_dashboard_empty_vets')),
+      find.byKey(const Key('pet_care_dashboard_empty_vets')),
       findsOneWidget,
     );
   });
@@ -244,7 +244,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.tap(
-      find.byKey(const Key('guardian_dashboard_empty_vets_action')),
+      find.byKey(const Key('pet_care_dashboard_empty_vets_action')),
     );
     await tester.pumpAndSettle();
 

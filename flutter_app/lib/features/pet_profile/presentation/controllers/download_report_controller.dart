@@ -103,7 +103,7 @@ class DownloadReportController {
 
       Uint8List? logoBytes;
       try {
-        final experience = AppExperience.guardian;
+        final experience = AppExperience.petCare;
         final data = await rootBundle.load(LogoAssets.pngFor(experience));
         logoBytes = data.buffer.asUint8List();
       } catch (_) {}

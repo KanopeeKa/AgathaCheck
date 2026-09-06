@@ -15,7 +15,7 @@ class VetListScreen extends ConsumerWidget {
   const VetListScreen({
     super.key,
     this.embeddedInShell = false,
-    this.experience = AppExperience.guardian,
+    this.experience = AppExperience.petCare,
     this.backPath = '/pc/home',
   });
 
@@ -124,7 +124,7 @@ class VetListScreen extends ConsumerWidget {
                     final orgName = orgMatches.isEmpty
                         ? null
                         : orgMatches.first.name;
-                    if (experience == AppExperience.guardian) {
+                    if (experience == AppExperience.petCare) {
                       return VetCompactRow(
                         vet: vet,
                         linkedPetCount: linkedPets.length,

@@ -116,7 +116,7 @@ class _AccountOrgSettingsScreenState
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final experience = AppExperience.guardian;
+    final experience = AppExperience.petCare;
     final orgsAsync = ref.watch(organizationListProvider);
     final privacyAsync = ref.watch(memberPrivacyProvider(widget.orgId));
     final org = orgsAsync.valueOrNull == null

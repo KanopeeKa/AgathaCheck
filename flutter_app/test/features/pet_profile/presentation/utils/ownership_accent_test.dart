@@ -45,7 +45,7 @@ void main() {
     expect(accent.showsFosterLabel, isFalse);
     expect(
       accent.accentColor,
-      AppTheme.lightTheme.extension<ExperienceColors>()!.guardianPrimary,
+      AppTheme.lightTheme.extension<ExperienceColors>()!.petCarePrimary,
     );
   });
 

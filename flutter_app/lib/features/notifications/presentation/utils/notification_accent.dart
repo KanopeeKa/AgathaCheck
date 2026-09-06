@@ -38,7 +38,7 @@ NotificationAccent resolveNotificationAccent(
     case NotificationScope.guardian:
       return NotificationAccent(
         scope: scope,
-        primary: xp.guardianPrimary,
+        primary: xp.petCarePrimary,
         onPrimary: xp.guardianOnPrimary,
         unreadSurface: xp.guardianLight.withAlpha(120),
       );

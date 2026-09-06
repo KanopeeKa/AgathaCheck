@@ -106,12 +106,12 @@ class PetCareMyPetsSection extends ConsumerWidget {
                       fosterPets.isEmpty &&
                       sharedPets.isEmpty)
                     PetCareIllustratedEmptyState(
-                      key: const Key('guardian_dashboard_empty_pets'),
+                      key: const Key('pet_care_dashboard_empty_pets'),
                       assetPath: 'assets/dashboard/guardian-empty-pets.png',
                       title: l.petCareEmptyPetsTitle,
                       body: l.petCareEmptyPetsBody,
                       actionLabel: l.addPet,
-                      actionKey: const Key('guardian_dashboard_add_pet'),
+                      actionKey: const Key('pet_care_dashboard_add_pet'),
                       onAction: () => context.push('/add'),
                     )
                   else if (personalPets.isNotEmpty)
@@ -187,16 +187,16 @@ class _PetCarePetRail extends StatelessWidget {
     final addTileWidth = petCareDashboardAddPetTileWidth(viewportWidth);
 
     return SizedBox(
-      key: const Key('guardian_dashboard_pet_preview'),
+      key: const Key('pet_care_dashboard_pet_preview'),
       height: railHeight,
       child: pets.isEmpty
           ? PetCareIllustratedEmptyState(
-              key: const Key('guardian_dashboard_empty_pets'),
+              key: const Key('pet_care_dashboard_empty_pets'),
               assetPath: 'assets/dashboard/guardian-empty-pets.png',
               title: l.petCareEmptyPetsTitle,
               body: l.petCareEmptyPetsBody,
               actionLabel: l.addPet,
-              actionKey: const Key('guardian_dashboard_add_pet'),
+              actionKey: const Key('pet_care_dashboard_add_pet'),
               onAction: onAddPet,
             )
           : LayoutBuilder(
@@ -316,7 +316,7 @@ class _AddPetTile extends StatelessWidget {
           color: AppColorTokens.surface,
           borderRadius: BorderRadius.circular(16),
           child: InkWell(
-            key: const Key('guardian_dashboard_add_pet'),
+            key: const Key('pet_care_dashboard_add_pet'),
             borderRadius: BorderRadius.circular(16),
             onTap: onPressed,
             child: Padding(

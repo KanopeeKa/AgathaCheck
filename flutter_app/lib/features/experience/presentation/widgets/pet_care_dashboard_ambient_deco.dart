@@ -110,7 +110,7 @@ class PetCarePetRailYarnDeco extends StatelessWidget {
 
     return PetCareDashboardAmbientDeco(
       child: SizedBox(
-        key: const Key('guardian_dashboard_pet_rail_deco'),
+        key: const Key('pet_care_dashboard_pet_rail_deco'),
         width: width,
         height: height,
         child: FittedBox(
@@ -195,7 +195,7 @@ class PetCareCareTeamPuppyDeco extends StatelessWidget {
     return PetCareDashboardAmbientDeco(
       child: Image.asset(
         PetCareDashboardDecoAssets.puppyBowl,
-        key: const Key('guardian_dashboard_care_team_puppy_deco'),
+        key: const Key('pet_care_dashboard_care_team_puppy_deco'),
         width: width,
         height: height,
         fit: BoxFit.contain,

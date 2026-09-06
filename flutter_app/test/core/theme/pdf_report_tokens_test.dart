@@ -20,7 +20,7 @@ void main() {
 
     test('primary tokens mirror AppColorTokens', () {
       expectSameHex(
-        AppColorTokens.guardianPrimary,
+        AppColorTokens.petCarePrimary,
         PdfReportTokens.primary.toInt(),
         'PdfReportTokens.primary',
       );

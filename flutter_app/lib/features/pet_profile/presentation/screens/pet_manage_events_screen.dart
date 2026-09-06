@@ -22,7 +22,7 @@ class PetManageEventsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final petsAsync = ref.watch(allPetsIncludingOrgProvider);
-    final experience = AppExperience.guardian;
+    final experience = AppExperience.petCare;
 
     return petsAsync.when(
       loading: () =>

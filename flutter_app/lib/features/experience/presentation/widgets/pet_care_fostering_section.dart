@@ -79,7 +79,7 @@ class PetCareFosteringSection extends StatelessWidget {
               children: [
                 if (fostered.isEmpty)
                   PetCareIllustratedEmptyState(
-                    key: const Key('guardian_dashboard_empty_fostering'),
+                    key: const Key('pet_care_dashboard_empty_fostering'),
                     title: l.petCareEmptyFosteringTitle,
                     body: l.petCareEmptyFosteringBody,
                   )
@@ -92,20 +92,20 @@ class PetCareFosteringSection extends StatelessWidget {
                 const SizedBox(height: 16),
                 if (shelters.isEmpty)
                   PetCareIllustratedEmptyState(
-                    key: const Key('guardian_dashboard_empty_shelters'),
+                    key: const Key('pet_care_dashboard_empty_shelters'),
                     assetPath: _fosterInviteAsset,
                     title: l.petCareFosterInviteTitle,
                     body: l.petCareFosterInviteBody,
                     actionLabel: l.findAShelter,
                     actionIcon: Icons.business_outlined,
                     actionKey: const Key(
-                      'guardian_dashboard_empty_shelters_action',
+                      'pet_care_dashboard_empty_shelters_action',
                     ),
                     onAction: () => context.go('/o/orgs'),
                   )
                 else ...[
                   PetCareIllustratedEmptyState(
-                    key: const Key('guardian_dashboard_linked_shelters'),
+                    key: const Key('pet_care_dashboard_linked_shelters'),
                     assetPath: _fosterThanksAsset,
                     title: l.petCareLinkedShelterTitle,
                     body: l.petCareLinkedShelterBody,
@@ -125,7 +125,7 @@ class PetCareFosteringSection extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton.icon(
-                      key: const Key('guardian_dashboard_find_another_shelter'),
+                      key: const Key('pet_care_dashboard_find_another_shelter'),
                       style: TextButton.styleFrom(
                         minimumSize: const Size(48, 48),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,

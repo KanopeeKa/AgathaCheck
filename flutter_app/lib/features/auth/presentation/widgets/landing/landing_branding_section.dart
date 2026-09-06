@@ -130,7 +130,7 @@ class _BrandLockup extends StatelessWidget {
             children: const [
               TextSpan(
                 text: 'Agatha',
-                style: TextStyle(color: AppColorTokens.guardianPrimary),
+                style: TextStyle(color: AppColorTokens.petCarePrimary),
               ),
               TextSpan(
                 text: 'Track',

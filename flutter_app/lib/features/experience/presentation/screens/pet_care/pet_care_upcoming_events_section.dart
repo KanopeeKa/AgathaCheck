@@ -111,7 +111,7 @@ class _PetCareUpcomingEventsSectionState
 
   Widget _careSectionCard(Widget child) {
     return PetCareDeskSectionCard(
-      key: const Key('guardian_dashboard_care_block'),
+      key: const Key('pet_care_dashboard_care_block'),
       tint: AppColorTokens.petCareLight,
       child: child,
     );
@@ -133,17 +133,17 @@ class _PetCareUpcomingEventsSectionState
     if (items.isEmpty) {
       if (!hasAnyCare) {
         return PetCareIllustratedEmptyState(
-          key: const Key('guardian_dashboard_empty_care'),
+          key: const Key('pet_care_dashboard_empty_care'),
           assetPath: 'assets/dashboard/guardian-empty-care.png',
           title: l.petCareEmptyCareTitle,
           body: l.petCareEmptyCareBody,
           actionLabel: l.addAnEvent,
-          actionKey: const Key('guardian_dashboard_empty_care_action'),
+          actionKey: const Key('pet_care_dashboard_empty_care_action'),
           onAction: widget.onAddEvent,
         );
       }
       return PetCareIllustratedEmptyState(
-        key: const Key('guardian_dashboard_empty_care_clear'),
+        key: const Key('pet_care_dashboard_empty_care_clear'),
         title: l.petCareEmptyCareClearTitle,
         body: emptyMessage,
         actionLabel: l.allCare,
@@ -253,7 +253,7 @@ class _PetCareUpcomingEventsSectionState
         PetCareDashboardSectionHeader(title: l.careEyebrow),
         const SizedBox(height: 10),
         KeyedSubtree(
-          key: const Key('guardian_dashboard_care_section'),
+          key: const Key('pet_care_dashboard_care_section'),
           child: _careSectionCard(
             _buildMobileContent(
               context,
@@ -267,7 +267,7 @@ class _PetCareUpcomingEventsSectionState
         ),
         if (showAllCare)
           PetCareDashboardSectionLink(
-            linkKey: const Key('guardian_dashboard_care_view_all'),
+            linkKey: const Key('pet_care_dashboard_care_view_all'),
             label: l.allCare,
             onPressed: () => context.go('/pc/events'),
           ),

@@ -19,7 +19,7 @@ class PetHealthIssuesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final experience = AppExperience.guardian;
+    final experience = AppExperience.petCare;
     final issuesAsync = ref.watch(healthIssueNotifierProvider(petId));
     final controller = HealthIssuesController(ref);
 

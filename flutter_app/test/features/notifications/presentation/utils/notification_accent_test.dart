@@ -24,7 +24,7 @@ void main() {
     );
 
     final xp = ExperienceColors.light;
-    expect(accent.primary, xp.guardianPrimary);
+    expect(accent.primary, xp.petCarePrimary);
     expect(accent.onPrimary, xp.guardianOnPrimary);
     expect(accent.unreadSurface, xp.guardianLight.withAlpha(120));
     expect(accent.isOrganization, isFalse);

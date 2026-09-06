@@ -7,7 +7,7 @@ void main() {
   testWidgets('landing path card uses accent fill without border', (
     tester,
   ) async {
-    const accent = AppColorTokens.guardianPrimary;
+    const accent = AppColorTokens.petCarePrimary;
     const onAccent = AppColorTokens.inverse;
     var pressed = false;
 
@@ -49,7 +49,7 @@ void main() {
           body: LandingPathCard(
             summary: 'For pet parents',
             actionLabel: 'Learn more',
-            accentColor: AppColorTokens.guardianPrimary,
+            accentColor: AppColorTokens.petCarePrimary,
             onAccentColor: AppColorTokens.inverse,
             icon: Icons.pets,
             onPressed: () {},

@@ -18,7 +18,7 @@ Widget _wrap(Pet pet, {PetDetailContext? viewerContext}) {
       viewerContext ??
       PetDetailActions.resolveContext(
         pet: pet,
-        experience: AppExperience.guardian,
+        experience: AppExperience.petCare,
       );
   return ProviderScope(
     overrides: [
@@ -95,7 +95,7 @@ void main() {
     );
     final ctx = PetDetailActions.resolveContext(
       pet: pet,
-      experience: AppExperience.guardian,
+      experience: AppExperience.petCare,
     );
 
     await tester.pumpWidget(_wrap(pet, viewerContext: ctx));
@@ -115,7 +115,7 @@ void main() {
     );
     final ctx = PetDetailActions.resolveContext(
       pet: pet,
-      experience: AppExperience.guardian,
+      experience: AppExperience.petCare,
     );
 
     await tester.pumpWidget(_wrap(pet, viewerContext: ctx));
@@ -151,7 +151,7 @@ void main() {
     );
     var ctx = PetDetailActions.resolveContext(
       pet: orgPet,
-      experience: AppExperience.guardian,
+      experience: AppExperience.petCare,
       isOrgAdmin: true,
     );
 
@@ -257,7 +257,7 @@ void main() {
     );
     final ctx = PetDetailActions.resolveContext(
       pet: pet,
-      experience: AppExperience.guardian,
+      experience: AppExperience.petCare,
     );
 
     await tester.pumpWidget(_wrap(pet, viewerContext: ctx));

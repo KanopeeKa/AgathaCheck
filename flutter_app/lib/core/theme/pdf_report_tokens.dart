@@ -9,7 +9,7 @@ import 'package:pdf/pdf.dart';
 /// hex here too — `test/core/theme/pdf_report_tokens_test.dart` asserts the
 /// two stay in sync.
 abstract final class PdfReportTokens {
-  /// Mirrors `AppColorTokens.guardianPrimary`.
+  /// Mirrors `AppColorTokens.petCarePrimary`.
   static const PdfColor primary = PdfColor.fromInt(0xFF755B68);
 
   /// Mirrors `AppColorTokens.guardianLight`.
