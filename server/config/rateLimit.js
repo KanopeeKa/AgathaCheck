@@ -70,3 +70,20 @@ export function createApiLimiter() {
     message: { error: 'Too many requests, please try again later.' },
   });
 }
+
+/**
+ * Rate limiter for public static /uploads paths (F-16).
+ * Configurable via STATIC_UPLOAD_RATE_LIMIT_WINDOW_MS and STATIC_UPLOAD_RATE_LIMIT_MAX.
+ */
+export function createStaticUploadLimiter() {
+  const windowMs = Number(process.env.STATIC_UPLOAD_RATE_LIMIT_WINDOW_MS) || 60 * 1000;
+  const limit = Number(process.env.STATIC_UPLOAD_RATE_LIMIT_MAX) || 300;
+  return rateLimit({
+    windowMs,
+    limit,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    skip: shouldSkipRateLimit,
+    message: { error: 'Too many requests, please try again later.' },
+  });
+}
