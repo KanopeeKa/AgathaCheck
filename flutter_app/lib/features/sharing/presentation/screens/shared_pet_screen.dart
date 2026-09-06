@@ -15,8 +15,6 @@ import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../widgets/shared_pet_profile_card.dart';
 import '../widgets/shared_pet_accept_section.dart';
 import '../widgets/shared_pet_owner_card.dart';
-import '../widgets/shared_pet_vet_card.dart';
-import '../widgets/shared_pet_health_entry_card.dart';
 
 class SharedPetScreen extends ConsumerStatefulWidget {
   const SharedPetScreen({super.key, required this.shareCode});
@@ -29,15 +27,11 @@ class SharedPetScreen extends ConsumerStatefulWidget {
 
 class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
   Map<String, dynamic>? _petData;
-  List<Map<String, dynamic>> _healthEntries = [];
-  Map<String, dynamic>? _vetData;
   Map<String, dynamic>? _ownerData;
   bool _loading = true;
   String? _errorKey;
   bool _accepting = false;
 
-  // Use the shared base URL ('/backend' on web) for consistency with the rest
-  // of the app rather than a hardcoded prefix.
   String get _baseUrl => ref.read(apiBaseUrlProvider);
 
   @override
@@ -56,11 +50,12 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
         final data = json.decode(response.body);
         setState(() {
           _petData = data['pet'] as Map<String, dynamic>?;
-          _healthEntries =
-              (data['health_entries'] as List?)?.cast<Map<String, dynamic>>() ??
-              [];
-          _vetData = data['vet'] as Map<String, dynamic>?;
           _ownerData = data['owner'] as Map<String, dynamic>?;
+          _loading = false;
+        });
+      } else if (response.statusCode == 410) {
+        setState(() {
+          _errorKey = 'expired';
           _loading = false;
         });
       } else {
@@ -88,9 +83,11 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
     }
 
     if (_errorKey != null || _petData == null) {
-      final errorMessage = _errorKey == 'load_failed'
-          ? l.sharedPetLoadFailed
-          : l.sharedPetNotFound;
+      final errorMessage = switch (_errorKey) {
+        'load_failed' => l.sharedPetLoadFailed,
+        'expired' => l.sharedPetNotFound,
+        _ => l.sharedPetNotFound,
+      };
       return Scaffold(
         appBar: AppBar(title: AppLogoTitle(title: l.sharedPetTitle)),
         body: Center(
@@ -127,9 +124,9 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
       } else {
         ageDisplay = '${diff.toStringAsFixed(1)} yrs';
       }
+    } else if (pet['age'] != null) {
+      ageDisplay = '${pet['age']} yrs';
     }
-    final weight = (pet['weight'] as num?)?.toDouble();
-    final bio = pet['bio'] as String? ?? '';
     final photoPath = pet['photoPath'] as String?;
 
     return Scaffold(
@@ -174,16 +171,15 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
             species: species,
             breed: breed,
             ageDisplay: ageDisplay,
-            weight: weight,
-            vetName: _vetData != null ? _vetData!['name'] as String? : null,
-            bio: bio,
+            weight: null,
+            vetName: null,
+            bio: '',
             photoPath: photoPath,
             colorScheme: colorScheme,
             theme: theme,
             buildPhoto: _buildPhoto,
             buildChip: _buildChip,
           ),
-
           const SizedBox(height: 16),
           SharedPetAcceptSection(
             isLoggedIn: ref.watch(authProvider).isLoggedIn,
@@ -209,7 +205,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Error: \\${e.toString().replaceFirst("Exception: ", "")}',
+                      'Error: ${e.toString().replaceFirst("Exception: ", "")}',
                     ),
                   ),
                 );
@@ -222,8 +218,8 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
             promptText: l.sharedPetAcceptPrompt,
             buttonText: _accepting ? l.sharedPetAdding : l.acceptAndAdd,
           ),
-
-          if (_ownerData != null) ...[
+          if (_ownerData != null &&
+              (_ownerData!['first_name'] as String?)?.isNotEmpty == true) ...[
             const SizedBox(height: 24),
             Row(
               children: [
@@ -239,60 +235,6 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
               colorScheme: colorScheme,
             ),
           ],
-
-          if (_vetData != null) ...[
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Icon(Icons.local_hospital, color: colorScheme.primary),
-                const SizedBox(width: 8),
-                Text(l.veterinarians, style: theme.textTheme.titleLarge),
-              ],
-            ),
-            const SizedBox(height: 8),
-            SharedPetVetCard(
-              vetData: _vetData!,
-              theme: theme,
-              colorScheme: colorScheme,
-            ),
-          ],
-
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Icon(Icons.list_alt, color: colorScheme.primary),
-              const SizedBox(width: 8),
-              Text(l.events, style: theme.textTheme.titleLarge),
-            ],
-          ),
-          const SizedBox(height: 8),
-          if (_healthEntries.isEmpty)
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.medical_services_outlined,
-                        size: 48,
-                        color: colorScheme.outline,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(l.noEntriesYet, style: theme.textTheme.bodyLarge),
-                    ],
-                  ),
-                ),
-              ),
-            )
-          else
-            ..._healthEntries.map(
-              (e) => SharedPetHealthEntryCard(
-                entry: e,
-                theme: theme,
-                colorScheme: colorScheme,
-              ),
-            ),
         ],
       ),
     );

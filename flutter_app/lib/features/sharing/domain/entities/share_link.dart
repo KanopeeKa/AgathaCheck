@@ -5,6 +5,7 @@ class ShareLink {
     required this.status,
     this.createdAt,
     this.claimedAt,
+    this.expiresAt,
     this.claimedBy,
     this.claimedByName,
   });
@@ -14,6 +15,7 @@ class ShareLink {
   final String status;
   final DateTime? createdAt;
   final DateTime? claimedAt;
+  final DateTime? expiresAt;
   final String? claimedBy;
   final String? claimedByName;
 
@@ -27,6 +29,7 @@ class ShareLink {
       status: (json['status'] ?? 'pending').toString(),
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
       claimedAt: DateTime.tryParse(json['claimed_at']?.toString() ?? ''),
+      expiresAt: DateTime.tryParse(json['expires_at']?.toString() ?? ''),
       claimedBy: json['claimed_by']?.toString(),
       claimedByName: json['claimed_by_name']?.toString(),
     );

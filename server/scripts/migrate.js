@@ -33,6 +33,7 @@ import { migrateOrganizationRolePermissionDefaults } from './migrations/045_orga
 import { backfillHealthOccurrences } from './migrations/047_health_occurrences_backfill.js';
 import { migratePinnedOrganizationId } from './migrations/049_pinned_organization_id.js';
 import { migratePrivateHealthFiles } from './migrations/050_private_health_files.js';
+import { migrateShareLinkExpiry } from './migrations/051_share_link_expiry.js';
 import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 
 const { Pool } = pg;
@@ -119,6 +120,7 @@ const CODE_MIGRATIONS = {
   '047_health_occurrences.sql': backfillHealthOccurrences,
   '049_pinned_organization_id.sql': migratePinnedOrganizationId,
   '050_private_health_files.sql': migratePrivateHealthFiles,
+  '051_share_link_expiry.sql': migrateShareLinkExpiry,
 };
 
 async function applyMigration(client, name, sql) {

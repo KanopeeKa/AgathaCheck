@@ -22,8 +22,8 @@ Gold-standard security and mobile-readiness programme for the Pet Care domain.
 | plan_id | Phase | Status |
 |---------|-------|--------|
 | `pet-care-hardening-discovery` | A — discovery only | merged (#994) |
-| `pet-care-p0-private-files` | P0 — F-01 private health files | active |
-| `pet-care-p0-share-minimization` | P0 implementation | not started |
+| `pet-care-p0-private-files` | P0 — F-01 private health files | merged (#998) |
+| `pet-care-p0-share-minimization` | P0 — F-03/F-04 share preview + expiry | active |
 | `pet-care-auth-platform` | B — shared foundations | not started |
 
 See discovery report §Recommended follow-on plans for the full slice list.

@@ -21,7 +21,7 @@ export function registerAccessRoutes(router, pool) {
       }
       const result = await pool.query(
         `SELECT sl.id, sl.code, sl.status, sl.created_at, sl.claimed_at,
-                sl.claimed_by,
+                sl.claimed_by, sl.expires_at,
                 TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) as claimed_by_name
          FROM pet_share_links sl
          LEFT JOIN users u ON u.id = sl.claimed_by
@@ -35,6 +35,9 @@ export function registerAccessRoutes(router, pool) {
         status: row.status || 'pending',
         created_at: row.created_at,
         claimed_at: row.claimed_at,
+        expires_at: row.expires_at
+          ? (row.expires_at.toISOString?.() || String(row.expires_at))
+          : null,
         claimed_by: row.claimed_by,
         claimed_by_name: row.claimed_by_name?.trim() || null,
       })));
