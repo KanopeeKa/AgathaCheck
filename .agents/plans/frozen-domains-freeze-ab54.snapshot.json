@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "plan_id": "frozen-domains-freeze-ab54",
+  "approved_at": "2026-09-07T23:15:00Z",
+  "approved_by": "user chat 2026-09-07 (build full plan; /execute-plan fully)",
+  "approved_until": "2026-09-09T23:15:00Z",
+  "content_hash": "sha256:96a83c94613903c9eda64306d81914157a9e62232e0af8ef70951dfb6e6ed07b",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/frozen-domains-freeze-ab54-integration-ab54",
+  "control_issue": 1050,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Freeze contract",
+      "branch": "cursor/frozen-domains-contract-ab54",
+      "allowed_paths": [
+        "docs/engineering/frozen-domains/**",
+        "docs/architecture/index.md",
+        "docs/domains/pet_care/README.md",
+        "docs/domains/shelter/README.md",
+        "docs/domains/fostering/README.md",
+        ".agents/plans/frozen-domains-freeze-ab54.md",
+        ".agents/plans/frozen-domains-freeze-ab54.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/lib/**",
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**",
+        "scripts/ci/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Technical isolation",
+      "branch": "cursor/frozen-domains-isolate-ab54",
+      "allowed_paths": [
+        "docs/engineering/frozen-domains/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/features/vet/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/analysis_options.yaml",
+        "server/bin/server.js",
+        "server/jest.config.cjs",
+        "server/jest.config.frozen.cjs",
+        "server/jest.config.active.cjs",
+        "server/package.json",
+        "server/routes/pets/**",
+        "server/lib/**",
+        "server/test/pets/**",
+        "server/test/gdpr/**",
+        "server/test/auth/**",
+        "scripts/check_frozen_domain_boundaries.sh",
+        "scripts/test-frozen-domains.sh",
+        ".agents/plans/frozen-domains-freeze-ab54.md",
+        ".agents/plans/frozen-domains-freeze-ab54.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/lib/features/fostering_session/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Product pivot",
+      "branch": "cursor/frozen-domains-pivot-ab54",
+      "allowed_paths": [
+        "flutter_app/lib/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/features/vet/**",
+        "flutter_app/test/features/pet_profile/**",
+        "docs/engineering/frozen-domains/**",
+        "docs/domains/navigation/**",
+        "docs/e2e/navigation-contract.md",
+        ".agents/plans/frozen-domains-freeze-ab54.md",
+        ".agents/plans/frozen-domains-freeze-ab54.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "server/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/lib/features/fostering_session/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Active test/CI repair",
+      "branch": "cursor/frozen-domains-ci-ab54",
+      "allowed_paths": [
+        ".github/workflows/**",
+        "scripts/ci/**",
+        "scripts/pre-push-changed.sh",
+        "scripts/pre-push.sh",
+        "scripts/check_frozen_domain_boundaries.sh",
+        "e2e/**",
+        "flutter_app/test/bdd/features/**",
+        "flutter_app/scripts/run_tests_ci_shard.sh",
+        "flutter_app/scripts/merge_flutter_coverage.sh",
+        "docs/quality/bdd-journey-matrix.md",
+        "docs/pipelines/ci-cd-gates.md",
+        "docs/engineering/frozen-domains/**",
+        ".agents/plans/frozen-domains-freeze-ab54.md",
+        ".agents/plans/frozen-domains-freeze-ab54.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/lib/features/fostering_session/**",
+        "server/routes/organizations/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "Seal",
+      "branch": "cursor/frozen-domains-seal-ab54",
+      "allowed_paths": [
+        "docs/**",
+        ".cursor/rules/**",
+        ".agents/memory/MEMORY.md",
+        "scripts/test-frozen-domains.sh",
+        "scripts/check_frozen_domain_boundaries.sh",
+        "docs/engineering/frozen-domains/**",
+        ".agents/plans/frozen-domains-freeze-ab54.md",
+        ".agents/plans/frozen-domains-freeze-ab54.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/lib/features/organization/**",
+        "server/routes/organizations/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

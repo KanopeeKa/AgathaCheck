@@ -3,15 +3,13 @@ title: Pet Care domain
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-06
+last_updated: 2026-09-07
 tags: [domain, pet_care, experience]
 ---
 
 # Pet Care
 
-The **Pet Care** workspace is the plum (`/pc/*`) operational experience for individual carers: owned pets, shared pets, fostered pets, due care actions, vets, and fostering sessions. Product-facing term **Pet Care** replaces legacy **Guardian** and drawer label **My Pets** (which now names only the dashboard pet-rail section).
-
-Peer workspace: **Shelter** (`/o/*`, teal). See [shelter README](/docs/domains/shelter/README.md).
+The **Pet Care** workspace is the plum (`/pc/*`) operational experience for individual carers: owned pets, shared pets, due care actions, and vets. **MVP (2026-09):** fostering sessions and Shelter workspace are frozen — fostered animals are ordinary pets with no special UI. See [mvp-pivot-decisions.md](/docs/engineering/frozen-domains/mvp-pivot-decisions.md).
 
 Part of the AgathaTrack domain-first documentation tree. Cross-cutting architecture: [/docs/architecture/index.md](/docs/architecture/index.md).
 

@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "frozenAsOf": "2026-09-07",
+  "domains": {
+    "shelter": "frozen",
+    "fostering": "frozen"
+  },
+  "sourceRoots": [
+    "flutter_app/lib/features/organization",
+    "flutter_app/lib/features/fostering_session"
+  ],
+  "serverRoots": [
+    "server/routes/organizations",
+    "server/routes/fosterPlacements.js",
+    "server/routes/custodyTransfers.js"
+  ],
+  "testRoots": [
+    "flutter_app/test/features/organization",
+    "flutter_app/test/features/fostering_session",
+    "server/test/organizations"
+  ],
+  "bddFeaturePatterns": [
+    "organisation_*",
+    "org_*",
+    "foster_*",
+    "fostering_*",
+    "redacted_org_pet",
+    "admin_contacts",
+    "pet_screen_filters",
+    "pet_ownership_and_adoption"
+  ],
+  "activeSurfacesToRemove": [
+    "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_fostering_screen.dart",
+    "flutter_app/lib/features/experience/presentation/widgets/pet_care_fostering_section.dart"
+  ],
+  "sharedInfrastructure": [
+    "server/lib/petAccess.js",
+    "server/lib/petCapabilityPolicy.js",
+    "server/lib/gdprUserExport.js",
+    "server/routes/auth",
+    "server/routes/pets",
+    "flutter_app/lib/features/subscription"
+  ],
+  "retainedSchema": [
+    "organizations",
+    "organization_users",
+    "foster_placements",
+    "custody_transfers",
+    "archived_pets"
+  ],
+  "env": {
+    "enableFrozenDomains": "ENABLE_FROZEN_DOMAINS",
+    "default": false
+  }
+}
