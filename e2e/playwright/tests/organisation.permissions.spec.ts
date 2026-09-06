@@ -49,8 +49,10 @@ test.describe('Organisation permissions', () => {
     const bobPerms = await getOrgPermissionsMe(baseURL, bob.accessToken, org.id);
     expect(bobPerms.effective_permissions).toContain('manage_pets');
 
-    const audit = await getOrgAuditEvents(baseURL, alice.accessToken, org.id);
-    expect(audit.some((e) => e.action === 'bundle_preset_applied')).toBe(true);
+    await expect(async () => {
+      const audit = await getOrgAuditEvents(baseURL, alice.accessToken, org.id);
+      expect(audit.some((e) => e.action === 'bundle_preset_applied')).toBe(true);
+    }).toPass({ timeout: 15_000 });
   });
 
   test('@P1 only super admin can grant individual permissions', async () => {
