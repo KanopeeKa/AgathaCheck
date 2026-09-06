@@ -44,29 +44,29 @@ export function clearRefreshTokenCookie(res) {
   res.setHeader('Set-Cookie', headers);
 }
 
-/** Manual Cookie header parse — no extra npm dependency. */
-export function parseCookieHeader(header) {
-  const cookies = {};
-  if (!header || typeof header !== 'string') return cookies;
+/** Read one cookie by fixed name — avoids dynamic property keys from user input. */
+export function getCookieValue(header, cookieName) {
+  if (!header || typeof header !== 'string' || cookieName !== REFRESH_COOKIE_NAME) {
+    return null;
+  }
+  const prefix = `${cookieName}=`;
   for (const segment of header.split(';')) {
     const trimmed = segment.trim();
-    if (!trimmed) continue;
-    const eq = trimmed.indexOf('=');
-    if (eq === -1) continue;
-    const name = trimmed.slice(0, eq).trim();
-    const value = trimmed.slice(eq + 1);
+    if (!trimmed.startsWith(prefix)) continue;
+    const value = trimmed.slice(prefix.length);
     try {
-      cookies[name] = decodeURIComponent(value);
+      return decodeURIComponent(value);
     } catch {
-      cookies[name] = value;
+      return value;
     }
   }
-  return cookies;
+  return null;
 }
 
 export function readRefreshTokenFromRequest(req) {
-  const cookies = req.cookies ?? parseCookieHeader(req.headers?.cookie);
-  const fromCookie = cookies[REFRESH_COOKIE_NAME];
+  const fromCookie =
+    req.cookies?.[REFRESH_COOKIE_NAME]
+    ?? getCookieValue(req.headers?.cookie, REFRESH_COOKIE_NAME);
   if (fromCookie) return fromCookie;
   const fromBody = req.body?.refresh_token;
   if (fromBody) return fromBody;

@@ -18,7 +18,7 @@ import fosterPlacementsRoutes from '../routes/fosterPlacements.js';
 import custodyTransfersRoutes from '../routes/custodyTransfers.js';
 import uploadsRoutes from '../routes/uploads.js';
 import healthFilesRoutes from '../routes/healthFiles.js';
-import { parseCookieHeader } from '../lib/authCookies.js';
+import { REFRESH_COOKIE_NAME, getCookieValue } from '../lib/authCookies.js';
 import { corsOptions } from '../config/security.js';
 import { logPublicAccessModeOnce } from '../config/publicAccess.js';
 import { requestContextMiddleware } from '../middleware/requestContext.js';
@@ -63,7 +63,8 @@ export function createApp(customPool, comparePassword) {
   app.use(publicAccessGate);
   app.use(cors(corsOptions()));
   app.use((req, res, next) => {
-    req.cookies = parseCookieHeader(req.headers.cookie);
+    const refreshToken = getCookieValue(req.headers.cookie, REFRESH_COOKIE_NAME);
+    req.cookies = refreshToken ? { [REFRESH_COOKIE_NAME]: refreshToken } : {};
     next();
   });
   app.use(bodyParser.json());
