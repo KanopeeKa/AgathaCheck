@@ -45,18 +45,18 @@ Establish shared Pet Care auth foundations: **F-08** central `requireAuth` middl
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/pet-care-auth-platform-75cb"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/pet-care-auth-platform-75cb
+  branch: main
   plan_path: .agents/plans/pet-care-auth-platform.md
-  plan_commit: 6a47948edffdbfa989a5ee34c396dd1f9113de99
+  plan_commit: fe4d9e7c93ced9611ae7809232dffcf90cfbac49
   snapshot_path: .agents/plans/pet-care-auth-platform.snapshot.json
-  snapshot_commit: 6a47948edffdbfa989a5ee34c396dd1f9113de99
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1006"]
-merge_commits: {}
+  snapshot_commit: fe4d9e7c93ced9611ae7809232dffcf90cfbac49
+open_prs: []
+merge_commits: {"1":"fe4d9e7c93ced9611ae7809232dffcf90cfbac49"}
 debt_issue_refs: []
 ```
