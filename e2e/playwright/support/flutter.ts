@@ -522,7 +522,7 @@ export function guardianAccountTabLocator(page: Page): Locator {
 
 export async function isGuardianBottomNavVisible(page: Page): Promise<boolean> {
   return page
-    .locator('[flt-semantics-identifier="guardian_bottom_navigation"]')
+    .locator('[flt-semantics-identifier="pet_care_bottom_navigation"]')
     .or(page.getByRole('button', { name: /^Dashboard$|^Tableau de bord$/i }))
     .first()
     .isVisible({ timeout: 2_000 })
