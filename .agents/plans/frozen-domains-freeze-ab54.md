@@ -347,16 +347,16 @@ server/routes/organizations/**
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "Bootstrap integration branch; phase 1 freeze contract"
+next_action: "continue phase 1 on branch cursor/frozen-domains-contract-ab54"
 artifact_ref:
-  branch: null
+  branch: cursor/frozen-domains-contract-ab54
   plan_path: .agents/plans/frozen-domains-freeze-ab54.md
-  plan_commit: null
+  plan_commit: 3b6cbd82d3cceb3ac31df6bd0d63c8b14b4ec47f
   snapshot_path: .agents/plans/frozen-domains-freeze-ab54.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 3b6cbd82d3cceb3ac31df6bd0d63c8b14b4ec47f
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
