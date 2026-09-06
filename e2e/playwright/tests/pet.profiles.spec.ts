@@ -165,6 +165,15 @@ test.describe('Pet profiles', () => {
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Charlie', 'Dog');
+    await expect
+      .poll(
+        async () => {
+          const pets = await getAllPets(baseURL, testUser.accessToken);
+          return pets.some((p) => p.id === pet.id);
+        },
+        { timeout: 15_000 },
+      )
+      .toBe(true);
 
     const petList = await loginAs(page, testUser);
     await petList.openPet('Charlie', pet.id);
@@ -177,6 +186,15 @@ test.describe('Pet profiles', () => {
     await editForm.expectLoaded();
     await editForm.clickDeletePet();
     await editForm.cancelDelete();
+    await expect
+      .poll(
+        async () => {
+          const pets = await getAllPets(baseURL, testUser.accessToken);
+          return pets.some((p) => p.id === pet.id);
+        },
+        { timeout: 15_000 },
+      )
+      .toBe(true);
 
     await editForm.cancel();
     await detail.expectLoaded('Charlie');
