@@ -35,10 +35,10 @@ next_action: "continue phase 5 on branch cursor/pet-care-terminology-docs-75cb"
 artifact_ref:
   branch: cursor/pet-care-terminology-docs-75cb
   plan_path: .agents/plans/pet-care-terminology-rename.md
-  plan_commit: aa9f2783ed30a066879dfb94ad22cf6983b055c5
+  plan_commit: 3ad0e5ebccf54f8359dbc98b51a22ffea87a92c1
   snapshot_path: .agents/plans/pet-care-terminology-rename.snapshot.json
-  snapshot_commit: aa9f2783ed30a066879dfb94ad22cf6983b055c5
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/"]
+  snapshot_commit: 3ad0e5ebccf54f8359dbc98b51a22ffea87a92c1
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1045"]
 merge_commits: {}
 debt_issue_refs: []
 ```
