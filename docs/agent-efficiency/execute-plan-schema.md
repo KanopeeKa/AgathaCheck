@@ -50,6 +50,21 @@ An autonomous multi-phase run is driven by:
 | `control_issue` | integer | yes | GitHub issue number |
 | `artifact_branch_policy` | enum | yes | `phase-branch` (default) \| `main` |
 | `phases` | array | yes | Ordered phase objects (see below) |
+| `plan_kind` | enum | no | `roadmap` — parent orchestrator spanning multiple child `plan_id`s |
+| `programme_ref` | string | no | Index doc for roadmap programmes (e.g. `docs/engineering/pet-care-hardening/README.md`) |
+| `child_plans` | array | when roadmap | Child plan tracking objects (see below) |
+| `current_child_plan_id` | string \| null | no | Active child `plan_id` when a child is `in_progress` |
+
+### Roadmap child plan object (`plan_kind: roadmap`)
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `plan_id` | string | yes | Child execute-plan id |
+| `status` | enum | yes | `pending` \| `in_progress` \| `merged` \| `skipped` |
+| `pr_url` | string \| null | no | Final child PR URL |
+| `merge_commit` | string \| null | no | Merge commit after child completes |
+
+Roadmap parents still require at least one orchestrator `phase` (usually a single phase for plan-artifact updates). Child plans are bootstrapped and executed via `/execute-plan` on each child `plan_id`; the parent tracks progress via `roadmap-set-child` CLI (see [execute-plan-runtime.md](./execute-plan-runtime.md)).
 
 ### `artifact_branch_policy`
 

@@ -16,6 +16,9 @@
  *   node scripts/execute_plan_runtime.js init-control-issue <plan_id>
  *   node scripts/execute_plan_runtime.js set-project-status <plan_id> --status <name> [--issue N]
  *   node scripts/execute_plan_runtime.js complete-plan <plan_id> [--write] [--skip-close]
+ *   node scripts/execute_plan_runtime.js roadmap-status <roadmap_id>
+ *   node scripts/execute_plan_runtime.js roadmap-next-child <roadmap_id>
+ *   node scripts/execute_plan_runtime.js roadmap-set-child <roadmap_id> --child <plan_id> --status <status> [--pr-url u] [--merge-commit sha] [--write]
  */
 
 'use strict';
@@ -45,6 +48,11 @@ const {
   ExecutePlanError,
 } = require('./lib/execute_plan_lib');
 const {
+  findNextPendingChild,
+  roadmapStatus,
+  setRoadmapChildStatus,
+} = require('./lib/execute_plan_roadmap');
+const {
   closeIssueWithComment,
   postIssueComment,
   updateIssueProjectStatus,
@@ -67,6 +75,9 @@ Commands:
   init-control-issue <plan_id>
   set-project-status <plan_id> --status <name> [--issue N]
   complete-plan <plan_id> [--write] [--skip-close] [--post-comment]
+  roadmap-status <roadmap_id>
+  roadmap-next-child <roadmap_id>
+  roadmap-set-child <roadmap_id> --child <plan_id> --status <status> [--pr-url u] [--merge-commit sha] [--write]
 `);
   process.exit(1);
 }
@@ -303,6 +314,56 @@ function runSync(cmd, planId, flags) {
           project_status_note:
             'New control issues enter Project status Backlog (human/Actions). Agents use start-work (comment + busy) when work begins.',
         });
+        break;
+      }
+
+      case 'roadmap-status': {
+        if (!planId) usage();
+        const snapshot = loadSnapshot(planId);
+        validateSnapshot(snapshot);
+        printJson(roadmapStatus(snapshot));
+        break;
+      }
+
+      case 'roadmap-next-child': {
+        if (!planId) usage();
+        const snapshot = loadSnapshot(planId);
+        validateSnapshot(snapshot);
+        const next = findNextPendingChild(snapshot);
+        printJson({
+          roadmap_id: planId,
+          next_child_plan_id: next?.plan_id ?? null,
+          child: next,
+          next_action: computeNextAction(snapshot),
+        });
+        break;
+      }
+
+      case 'roadmap-set-child': {
+        if (!planId || !flags.child || !flags.status) usage();
+        const snapshot = loadSnapshot(planId);
+        validateSnapshot(snapshot);
+        setRoadmapChildStatus(snapshot, flags.child, flags.status, {
+          pr_url: flags['pr-url'],
+          merge_commit: flags['merge-commit'],
+        });
+        if (flags.write) {
+          saveSnapshot(planId, snapshot);
+          syncRuntimeState(planId);
+          printJson({
+            ok: true,
+            ...roadmapStatus(snapshot),
+            next_action: computeNextAction(snapshot),
+          });
+        } else {
+          printJson({
+            ok: true,
+            dry_run: true,
+            ...roadmapStatus(snapshot),
+            next_action: computeNextAction(snapshot),
+          });
+          console.error('execute_plan_runtime: dry-run (pass --write to persist)');
+        }
         break;
       }
 

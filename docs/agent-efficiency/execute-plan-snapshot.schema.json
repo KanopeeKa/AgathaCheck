@@ -43,9 +43,34 @@
       "type": "array",
       "minItems": 1,
       "items": { "$ref": "#/$defs/phase" }
+    },
+    "plan_kind": {
+      "type": "string",
+      "enum": ["roadmap"]
+    },
+    "programme_ref": { "type": "string", "minLength": 1 },
+    "current_child_plan_id": { "type": ["string", "null"] },
+    "child_plans": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/child_plan" }
     }
   },
   "$defs": {
+    "child_plan": {
+      "type": "object",
+      "required": ["plan_id", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "plan_id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "in_progress", "merged", "skipped"]
+        },
+        "pr_url": { "type": ["string", "null"] },
+        "merge_commit": { "type": ["string", "null"] }
+      }
+    },
     "allowed_exception": {
       "type": "string",
       "enum": [

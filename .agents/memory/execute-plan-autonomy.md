@@ -67,6 +67,7 @@ When the standing grant names scope beyond the current `plan_id` ("entire plan/r
 - Auto-bootstrap the next slice's plan + snapshot and keep looping — do not close the turn with "let me know" / "whenever you want" / "say which wave and I'll bootstrap it." Those are soft-stops, not different from asking permission.
 - Re-check for independent waves before slicing sequentially; use `/spawn-sprint-agents` when the human named it or you identify disjoint `allowed_paths`.
 - Keep control-issue auditability per plan even when self-authorizing from a standing chat grant.
+- **Roadmap parents** (`plan_kind: roadmap`): use `roadmap-status` / `roadmap-set-child` CLI on the parent after each child `complete-plan` — see execute-plan skill §Roadmap parent orchestrator.
 
 Full detail: `.cursor/skills/execute-plan/SKILL.md` §Roadmap chaining.
 

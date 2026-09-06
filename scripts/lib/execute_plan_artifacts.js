@@ -16,6 +16,12 @@ const {
   loadSnapshot,
   planPaths,
 } = require('./execute_plan_schema');
+const {
+  assertRoadmapCanComplete,
+  computeRoadmapNextAction,
+  isRoadmap,
+  roadmapStatus,
+} = require('./execute_plan_roadmap');
 
 const RUNTIME_BLOCK_RE = /```yaml\r?\n([\s\S]*?)\r?\n```/;
 
@@ -133,17 +139,37 @@ function renderControlIssueBody(snapshot) {
       return `| ${p.id} | ${p.title} | ${mode} | ${p.status} |`;
     })
     .join('\n');
+  const childRows =
+    isRoadmap(snapshot) && snapshot.child_plans
+      ? snapshot.child_plans
+          .map((c) => {
+            const pr = c.pr_url ? `[link](${c.pr_url})` : '—';
+            return `| ${c.plan_id} | ${c.status} | ${pr} |`;
+          })
+          .join('\n')
+      : null;
+  const childSection = childRows
+    ? [
+        '',
+        '## Child plans (roadmap)',
+        '| plan_id | Status | PR |',
+        '|---------|--------|-----|',
+        childRows,
+      ]
+    : [];
   return [
     '## Plan',
     `- **ID:** ${snapshot.plan_id}`,
     `- **Snapshot:** \`.agents/plans/${snapshot.plan_id}.snapshot.json\``,
     `- **Content hash:** ${snapshot.content_hash}`,
     `- **Approved until:** ${snapshot.approved_until} (48h default)`,
+    ...(isRoadmap(snapshot) ? [`- **Kind:** roadmap`] : []),
     '',
     '## Phases',
     '| ID | Title | Merge mode | Status |',
     '|----|-------|------------|--------|',
     rows,
+    ...childSection,
     '',
     '## Revoke',
     'Add label `autonomous-revoked` (halt only — does not close PRs).',
@@ -321,6 +347,10 @@ function checkResume(snapshot, phaseId, options = {}) {
 }
 
 function computeNextAction(snapshot) {
+  if (isRoadmap(snapshot)) {
+    const roadmapAction = computeRoadmapNextAction(snapshot);
+    if (roadmapAction) return roadmapAction;
+  }
   const blocked = snapshot.phases.find((p) => p.status === 'blocked');
   if (blocked) return `unblock phase ${blocked.id}: ${blocked.status_reason}`;
   const active = findCurrentPhase(snapshot);
@@ -337,6 +367,11 @@ function computeNextAction(snapshot) {
 }
 
 function setAutonomyCompleted(snapshot) {
+  if (isRoadmap(snapshot)) {
+    assertRoadmapCanComplete(snapshot);
+    snapshot.autonomy = 'completed';
+    return snapshot;
+  }
   const pending = snapshot.phases.filter((p) => p.status !== 'merged');
   if (pending.length > 0) {
     throw new ExecutePlanError(
@@ -474,6 +509,7 @@ module.exports = {
   parseRuntimeBlock,
   renderCompletePlanComment,
   renderControlIssueBody,
+  roadmapStatus,
   renderControlIssueTitle,
   renderHaltComment,
   renderPauseComment,
