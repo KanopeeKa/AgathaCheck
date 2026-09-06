@@ -1,0 +1,295 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Agatha Track — Pet Care critical API subset",
+    "version": "1.0.0",
+    "description": "Stable DTO contract for pets CRUD, lifecycle, and auth session tokens (F-14). Mounted at /api and /backend/api."
+  },
+  "servers": [{ "url": "/api" }],
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "operationId": "authSignup",
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthSessionResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "authLogin",
+        "responses": {
+          "200": {
+            "description": "Authenticated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthSessionResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "authRefresh",
+        "responses": {
+          "200": {
+            "description": "Tokens rotated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthTokenPair" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets": {
+      "get": {
+        "operationId": "listPets",
+        "responses": {
+          "200": {
+            "description": "Owned pets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Pet" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPet",
+        "responses": {
+          "201": {
+            "description": "Pet created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Pet" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/all": {
+      "get": {
+        "operationId": "listAllPets",
+        "responses": {
+          "200": {
+            "description": "Owned, shared, foster, and org pets visible to user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Pet" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{id}": {
+      "get": {
+        "operationId": "getPet",
+        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "responses": {
+          "200": {
+            "description": "Pet detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Pet" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "updatePet",
+        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "responses": {
+          "200": {
+            "description": "Pet updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Pet" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deletePet",
+        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "responses": {
+          "200": {
+            "description": "Pet deleted (data cascade on server)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeletePetResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{id}/data": {
+      "delete": {
+        "operationId": "deletePetData",
+        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "responses": {
+          "200": {
+            "description": "Pet-related rows and files removed; pet row retained until DELETE /pets/{id}",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PetDataDeleteResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{id}/passed-away": {
+      "post": {
+        "operationId": "notifyPassedAway",
+        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "responses": {
+          "200": {
+            "description": "Collaborators notified",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PassedAwayResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "PetId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" }
+      }
+    },
+    "schemas": {
+      "CalendarDate": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "description": "Calendar day on the wire (YYYY-MM-DD)"
+      },
+      "User": {
+        "type": "object",
+        "required": ["id", "email"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "email": { "type": "string", "format": "email" },
+          "first_name": { "type": "string" },
+          "last_name": { "type": "string" },
+          "category": { "type": "string" },
+          "locale": { "type": "string" }
+        }
+      },
+      "AuthTokenPair": {
+        "type": "object",
+        "required": ["access_token", "refresh_token"],
+        "additionalProperties": false,
+        "properties": {
+          "access_token": { "type": "string" },
+          "refresh_token": { "type": "string" }
+        }
+      },
+      "AuthSessionResponse": {
+        "type": "object",
+        "required": ["user", "access_token", "refresh_token"],
+        "additionalProperties": false,
+        "properties": {
+          "user": { "$ref": "#/components/schemas/User" },
+          "access_token": { "type": "string" },
+          "refresh_token": { "type": "string" }
+        }
+      },
+      "Pet": {
+        "type": "object",
+        "required": ["id", "name", "species"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "user_id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "species": { "type": "string" },
+          "breed": { "type": "string" },
+          "age": { "type": ["number", "null"] },
+          "dateOfBirth": { "oneOf": [{ "$ref": "#/components/schemas/CalendarDate" }, { "type": "null" }] },
+          "date_of_birth": { "oneOf": [{ "$ref": "#/components/schemas/CalendarDate" }, { "type": "null" }] },
+          "weight": { "type": ["number", "null"] },
+          "gender": { "type": ["string", "null"] },
+          "bio": { "type": "string" },
+          "insurance": { "type": "string" },
+          "neuteredDate": { "oneOf": [{ "$ref": "#/components/schemas/CalendarDate" }, { "type": "null" }] },
+          "neuterDismissed": { "type": "boolean" },
+          "chipId": { "type": "string" },
+          "chipDismissed": { "type": "boolean" },
+          "photoPath": { "type": ["string", "null"] },
+          "vetId": { "type": ["string", "null"] },
+          "colorValue": { "type": ["integer", "null"] },
+          "passedAway": { "type": "boolean" },
+          "organization_id": { "type": ["string", "null"], "format": "uuid" },
+          "organization_name": { "type": ["string", "null"] },
+          "is_shared": { "type": "boolean" },
+          "is_foster": { "type": "boolean" },
+          "foster_placement_status": { "type": ["string", "null"] },
+          "foster_name": { "type": ["string", "null"] },
+          "primary_holder_name": { "type": ["string", "null"] },
+          "created_at": { "type": "string" },
+          "updated_at": { "type": "string" }
+        }
+      },
+      "DeletePetResponse": {
+        "type": "object",
+        "required": ["deleted"],
+        "additionalProperties": false,
+        "properties": {
+          "deleted": { "type": "boolean", "const": true }
+        }
+      },
+      "PetDataDeleteResponse": {
+        "type": "object",
+        "required": ["deleted", "pet_id", "rows_removed", "files_removed"],
+        "additionalProperties": false,
+        "properties": {
+          "deleted": { "type": "boolean", "const": true },
+          "pet_id": { "type": "string", "format": "uuid" },
+          "rows_removed": { "type": "object", "additionalProperties": { "type": "integer" } },
+          "files_removed": { "type": "integer", "minimum": 0 }
+        }
+      },
+      "PassedAwayResponse": {
+        "type": "object",
+        "required": ["passed_away", "pet_id", "notified_count"],
+        "additionalProperties": false,
+        "properties": {
+          "passed_away": { "type": "boolean", "const": true },
+          "pet_id": { "type": "string", "format": "uuid" },
+          "notified_count": { "type": "integer", "minimum": 0 }
+        }
+      }
+    }
+  }
+}

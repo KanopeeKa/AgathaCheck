@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-care-api-contract",
+  "approved_at": "2026-09-06T13:30:00Z",
+  "approved_by": "standing grant — Pet Care hardening roadmap (user chat 2026-09-05)",
+  "approved_until": "2026-09-08T13:30:00Z",
+  "content_hash": "sha256:3c715f7dbbc7e49ee6c739b124a2ce9e815084d4f08a98b9682ed315ba4d801d",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1021,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "OpenAPI subset + validation + contract tests (F-14)",
+      "branch": "cursor/pet-care-api-contract-75cb",
+      "allowed_paths": [
+        ".agents/plans/pet-care-api-contract.*",
+        "docs/architecture/openapi/**",
+        "docs/architecture/api-reference.md",
+        "scripts/validate_openapi.js",
+        "scripts/validate_openapi.test.js",
+        "scripts/pre-push-changed.sh",
+        "server/lib/openapi/**",
+        "server/test/openapi/**",
+        "server/test/pets/**",
+        "docs/engineering/pet-care-hardening/README.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

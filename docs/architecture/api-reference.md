@@ -20,6 +20,12 @@ tags: [api, reference]
 (access token from signup/login). Organization routes enforce membership and role
 checks (`super_admin`, `admin`, `foster`). See `docs/domains/fostering/changes/org-fostering-strategy.md`.
 
+**OpenAPI (Pet Care subset).** Stable DTO contracts for auth session tokens and
+critical pets/lifecycle endpoints live in
+[`docs/architecture/openapi/pet-care-critical.json`](openapi/pet-care-critical.json).
+Validate with `node scripts/validate_openapi.js`; Jest contract tests in
+`server/test/openapi/petCareContract.test.js` assert live responses match the spec.
+
 ### Auth (`/api/auth`)
 | Method | Path | Notes |
 |---|---|---|
