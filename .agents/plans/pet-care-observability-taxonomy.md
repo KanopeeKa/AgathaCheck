@@ -25,19 +25,19 @@ Standing grant: `approve-autonomous pet-care-hardening-roadmap` — user chat 20
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/pet-care-observability-taxonomy-75cb"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/pet-care-observability-taxonomy-75cb
+  branch: main
   plan_path: .agents/plans/pet-care-observability-taxonomy.md
-  plan_commit: de6418eb79c6c3f5cad6f6f966950f3e4cfcf659
+  plan_commit: ba2cb9d87114c5dd2ee0be911788f9e1206bcb41
   snapshot_path: .agents/plans/pet-care-observability-taxonomy.snapshot.json
-  snapshot_commit: de6418eb79c6c3f5cad6f6f966950f3e4cfcf659
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1037"]
-merge_commits: {}
+  snapshot_commit: ba2cb9d87114c5dd2ee0be911788f9e1206bcb41
+open_prs: []
+merge_commits: {"1":"ba2cb9d87114c5dd2ee0be911788f9e1206bcb41"}
 debt_issue_refs: []
 ```
 

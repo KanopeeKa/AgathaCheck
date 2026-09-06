@@ -6,12 +6,12 @@
   "approved_at": "2026-09-06T19:50:00Z",
   "approved_by": "standing grant — approve-autonomous pet-care-hardening-roadmap (user chat 2026-09-06)",
   "approved_until": "2026-09-08T19:50:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1035,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "pet-care-observability-taxonomy",
+  "current_child_plan_id": null,
   "child_plans": [
     {
       "plan_id": "pet-care-hardening-discovery",
@@ -75,7 +75,9 @@
     },
     {
       "plan_id": "pet-care-observability-taxonomy",
-      "status": "in_progress"
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1037",
+      "merge_commit": "ba2cb9d87114c5dd2ee0be911788f9e1206bcb41"
     }
   ],
   "phases": [
@@ -101,16 +103,15 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1037",
+      "merge_commit": "ba2cb9d87114c5dd2ee0be911788f9e1206bcb41",
       "debt_issue_refs": [
         1025
       ]
     }
   ],
-  "content_hash": "sha256:e957570554b677363270e76e379c321f2ccf3d68b69dd527ea71c5ed49e20022"
+  "content_hash": "sha256:942a8083a8da4ca64d6252a7bd12beeca8a20bfb2a2005ae6385c26920ee5567"
 }
