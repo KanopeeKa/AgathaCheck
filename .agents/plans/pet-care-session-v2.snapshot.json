@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-care-session-v2",
+  "approved_at": "2026-09-06T08:00:00Z",
+  "approved_by": "standing grant — Pet Care hardening roadmap (user chat 2026-09-05)",
+  "approved_until": "2026-09-08T08:00:00Z",
+  "content_hash": "sha256:544e3e8484e11ceeff651b3c7ce1ba5fc3f3412b37be0771ed72384b92a196aa",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1012,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Backend refresh sessions + token typ claims (F-05, F-06)",
+      "branch": "cursor/pet-care-session-v2-backend-75cb",
+      "allowed_paths": [
+        ".agents/plans/pet-care-session-v2.*",
+        "server/routes/auth/**",
+        "server/lib/requireAuth.js",
+        "server/lib/**",
+        "server/migrations/**",
+        "server/test/auth/**",
+        "server/test/**",
+        "db/schema/**",
+        "docs/engineering/pet-care-hardening/README.md",
+        "docs/domains/pet_care/changes/hardening-discovery.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "2",
+      "title": "Flutter web secure storage cutover (F-07)",
+      "branch": "cursor/pet-care-session-v2-flutter-75cb",
+      "allowed_paths": [
+        ".agents/plans/pet-care-session-v2.*",
+        "flutter_app/lib/features/auth/**",
+        "flutter_app/test/features/auth/**",
+        "flutter_app/test/**",
+        "docs/engineering/pet-care-hardening/README.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    }
+  ]
+}
