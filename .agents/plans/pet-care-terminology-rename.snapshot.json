@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-care-terminology-rename",
+  "approved_at": "2026-09-06T20:35:00Z",
+  "approved_by": "user chat 2026-09-06 — approve-autonomous pet-care-terminology-rename",
+  "approved_until": "2026-09-08T20:35:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1040,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Terminology inventory and F-22 completion criteria",
+      "branch": "cursor/pet-care-terminology-rename-75cb",
+      "allowed_paths": [
+        ".agents/plans/pet-care-terminology-rename.*",
+        "docs/domains/pet_care/**",
+        "docs/engineering/pet-care-hardening/README.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        "db/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1041",
+      "pr_head_sha": "2ce3ef65247c56634497527de95ed34c6c889a9c",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Flutter experience layer guardian_* file and class renames",
+      "branch": "cursor/pet-care-terminology-flutter-75cb",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/test/features/experience/**",
+        ".agents/plans/pet-care-terminology-rename.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Workspace l10n key migration (guardian* → petCare*)",
+      "branch": "cursor/pet-care-terminology-l10n-75cb",
+      "allowed_paths": [
+        "flutter_app/lib/l10n/**",
+        "flutter_app/lib/features/**",
+        "flutter_app/test/**",
+        ".agents/plans/pet-care-terminology-rename.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Deprecated alias cleanup and widget test keys",
+      "branch": "cursor/pet-care-terminology-cleanup-75cb",
+      "allowed_paths": [
+        "flutter_app/lib/**",
+        "flutter_app/test/**",
+        ".agents/plans/pet-care-terminology-rename.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "Close F-22 in discovery and programme docs",
+      "branch": "cursor/pet-care-terminology-docs-75cb",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        "docs/engineering/pet-care-hardening/**",
+        ".agents/plans/pet-care-terminology-rename.*"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        "db/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:56143d2f405928aa35cdfd011ef6c3d5ba736383ab0a4c25e86cc05b1e0b993b"
+}
