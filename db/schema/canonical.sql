@@ -511,7 +511,8 @@ CREATE TABLE public.pet_share_links (
     created_at timestamp with time zone DEFAULT now(),
     status character varying(20) DEFAULT 'pending'::character varying NOT NULL,
     claimed_by uuid,
-    claimed_at timestamp with time zone
+    claimed_at timestamp with time zone,
+    expires_at timestamp with time zone
 );
 CREATE TABLE public.pet_timeline_entries (
     id uuid NOT NULL,
@@ -801,6 +802,7 @@ CREATE INDEX idx_pet_activity_events_occurred_at ON public.pet_activity_events U
 CREATE INDEX idx_pet_activity_events_org_id ON public.pet_activity_events USING btree (org_id);
 CREATE INDEX idx_pet_activity_events_pet_id ON public.pet_activity_events USING btree (pet_id);
 CREATE INDEX idx_pet_share_links_code ON public.pet_share_links USING btree (code);
+CREATE INDEX idx_pet_share_links_expires_at ON public.pet_share_links USING btree (expires_at) WHERE ((status)::text = 'pending'::text);
 CREATE INDEX idx_pet_share_links_pet_id ON public.pet_share_links USING btree (pet_id);
 CREATE INDEX idx_pet_timeline_entries_pet_id ON public.pet_timeline_entries USING btree (pet_id, start_date);
 CREATE INDEX idx_prospects_email_lower ON public.prospects USING btree (lower((email)::text)) WHERE (email IS NOT NULL);

@@ -7,7 +7,12 @@ import { createApiLimiter } from '../config/rateLimit.js';
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { createNotification, userDisplayName } from '../lib/notificationHelper.js';
-import { dateToIsoDate } from '../lib/calendarDate.js';
+import {
+  isShareLinkExpired,
+  normalizeShareExpiryDays,
+  shareExpiryFromNow,
+} from '../lib/shareLinkPolicy.js';
+import { buildSharePreviewResponse } from '../lib/sharePreview.js';
 import { userCanSharePet, userOwnsPet } from '../lib/petAccess.js';
 
 function extractUserId(req) {
@@ -24,74 +29,14 @@ function generateShareCode() {
   return crypto.randomBytes(6).toString('base64url').slice(0, 8);
 }
 
-const PET_COLOR_PALETTE = [
-  0xFF7E57C2, 0xFF9575CD, 0xFF5C6BC0, 0xFF7986CB, 0xFF4DB6AC,
-  0xFF81C784, 0xFF4FC3F7, 0xFFBA68C8, 0xFFF06292, 0xFFE57373,
-  0xFFFFB74D, 0xFFA1887F, 0xFF90A4AE, 0xFF64B5F6, 0xFFAED581,
-];
-
-function resolveColorValue(raw) {
-  if (raw == null) return null;
-  const v = typeof raw === 'number' ? raw : parseInt(raw, 10);
-  if (isNaN(v)) return null;
-  if (v < PET_COLOR_PALETTE.length) return PET_COLOR_PALETTE[v];
-  return v;
-}
-
-function petRowToMap(row) {
-  return {
-    id: row.id,
-    user_id: row.user_id,
-    name: row.name,
-    species: row.species,
-    breed: row.breed || '',
-    age: row.age,
-    dateOfBirth: row.date_of_birth ? dateToIsoDate(row.date_of_birth) : null,
-    date_of_birth: row.date_of_birth ? dateToIsoDate(row.date_of_birth) : null,
-    weight: row.weight,
-    gender: row.gender,
-    bio: row.bio || '',
-    insurance: row.insurance || '',
-    neuteredDate: row.neutered_date ? dateToIsoDate(row.neutered_date) : null,
-    neuterDismissed: row.neuter_dismissed || false,
-    chipId: row.chip_id || '',
-    chipDismissed: row.chip_dismissed || false,
-    photoPath: row.photo_path,
-    vetId: row.vet_id ? String(row.vet_id) : null,
-    colorValue: resolveColorValue(row.color_index),
-    passedAway: row.passed_away || false,
-    organization_id: row.organization_id,
-    created_at: row.created_at,
-    updated_at: row.updated_at,
-  };
-}
-
-function vetRowToMap(row) {
-  return {
-    id: row.id,
-    name: row.name,
-    clinic: row.clinic,
-    phone: row.phone,
-    email: row.email,
-    website: row.website || '',
-    address: row.address || '',
-    notes: row.notes || '',
-  };
-}
-
-function healthEntryToMap(row) {
-  return {
-    id: row.id,
-    pet_id: row.pet_id,
-    name: row.name || '',
-    type: row.type,
-    dosage: row.dosage || '',
-    frequency: row.frequency || 'once',
-    start_date: row.start_date ? dateToIsoDate(row.start_date) : null,
-    next_due_date: row.next_due_date ? dateToIsoDate(row.next_due_date) : null,
-    notes: row.notes || '',
-    status: row.status || 'active',
-  };
+function shareLinkBlockedResponse(link) {
+  if (link.status === 'revoked') {
+    return { status: 410, error: 'Share link is no longer valid' };
+  }
+  if (isShareLinkExpired(link.expires_at)) {
+    return { status: 410, error: 'Share link has expired' };
+  }
+  return null;
 }
 
 async function loadShareLink(pool, code) {
@@ -121,14 +66,18 @@ export default function sharingRoutes(pool) {
       let code;
       let linkId;
       let inserted = false;
+      const expiresInDays = normalizeShareExpiryDays(
+        req.body?.expires_in_days ?? req.body?.expiresInDays
+      );
+      const expiresAt = shareExpiryFromNow(expiresInDays);
       for (let attempt = 0; attempt < 5 && !inserted; attempt++) {
         code = generateShareCode();
         linkId = uuidv4();
         try {
           await pool.query(
-            `INSERT INTO pet_share_links (id, pet_id, code, created_by, status)
-             VALUES ($1, $2, $3, $4, 'pending')`,
-            [linkId, petId, code, userId]
+            `INSERT INTO pet_share_links (id, pet_id, code, created_by, status, expires_at)
+             VALUES ($1, $2, $3, $4, 'pending', $5)`,
+            [linkId, petId, code, userId, expiresAt]
           );
           inserted = true;
         } catch (err) {
@@ -138,7 +87,12 @@ export default function sharingRoutes(pool) {
       if (!inserted) {
         return res.status(500).json({ error: 'Could not generate share code' });
       }
-      res.status(201).json({ share_code: code, link_id: linkId });
+      res.status(201).json({
+        share_code: code,
+        link_id: linkId,
+        expires_at: expiresAt.toISOString(),
+        expires_in_days: expiresInDays,
+      });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -248,8 +202,9 @@ export default function sharingRoutes(pool) {
       if (!link) {
         return res.status(404).json({ error: 'Share link not found or expired' });
       }
-      if (link.status === 'revoked') {
-        return res.status(410).json({ error: 'Share link is no longer valid' });
+      const blocked = shareLinkBlockedResponse(link);
+      if (blocked) {
+        return res.status(blocked.status).json({ error: blocked.error });
       }
 
       const petResult = await pool.query('SELECT * FROM pets WHERE id = $1', [link.pet_id]);
@@ -259,39 +214,12 @@ export default function sharingRoutes(pool) {
       const petRow = petResult.rows[0];
 
       const ownerResult = await pool.query(
-        'SELECT id, first_name, last_name, email, photo_url, bio, category FROM users WHERE id = $1',
+        'SELECT first_name FROM users WHERE id = $1',
         [petRow.user_id]
       );
       const owner = ownerResult.rows[0] || {};
 
-      let vet = null;
-      if (petRow.vet_id) {
-        const vetResult = await pool.query('SELECT * FROM vets WHERE id = $1', [petRow.vet_id]);
-        if (vetResult.rows.length > 0) {
-          vet = vetRowToMap(vetResult.rows[0]);
-        }
-      }
-
-      const healthResult = await pool.query(
-        `SELECT * FROM health_entries WHERE pet_id = $1 ORDER BY next_due_date ASC NULLS LAST, created_at DESC`,
-        [link.pet_id]
-      );
-
-      res.json({
-        link_status: link.status || 'pending',
-        pet: petRowToMap(petRow),
-        owner: {
-          id: owner.id,
-          first_name: owner.first_name || '',
-          last_name: owner.last_name || '',
-          email: owner.email || '',
-          photo_url: owner.photo_url || '',
-          bio: owner.bio || '',
-          category: owner.category || 'pet_carer',
-        },
-        vet,
-        health_entries: healthResult.rows.map(healthEntryToMap),
-      });
+      res.json(buildSharePreviewResponse(link, petRow, owner));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -321,9 +249,10 @@ export default function sharingRoutes(pool) {
         await client.query('ROLLBACK');
         return res.status(404).json({ error: 'Share link not found or expired' });
       }
-      if (link.status === 'revoked') {
+      const blocked = shareLinkBlockedResponse(link);
+      if (blocked) {
         await client.query('ROLLBACK');
-        return res.status(410).json({ error: 'Share link is no longer valid' });
+        return res.status(blocked.status).json({ error: blocked.error });
       }
       if (link.owner_id === userId) {
         await client.query('ROLLBACK');

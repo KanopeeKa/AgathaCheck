@@ -10,6 +10,8 @@ const otherToken = jwt.sign({ id: otherUserId, email: 'other@example.com' }, JWT
 const petId = 'pet-1';
 const shareCode = 'abc12345';
 const linkId = 'link-1';
+const futureExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+const pastExpiry = new Date(Date.now() - 60 * 1000);
 
 function buildMockPool(overrides = {}) {
   const queries = [];
@@ -31,6 +33,7 @@ function buildMockPool(overrides = {}) {
           pet_name: 'Buddy',
           status: 'pending',
           claimed_by: null,
+          expires_at: futureExpiry,
         }],
       };
     }
@@ -44,6 +47,7 @@ function buildMockPool(overrides = {}) {
           owner_id: userId,
           status: 'pending',
           claimed_by: null,
+          expires_at: futureExpiry,
         }],
       };
     }
@@ -137,8 +141,8 @@ function buildMockPool(overrides = {}) {
     if (sql.includes('SELECT * FROM health_entries WHERE pet_id')) {
       return { rows: [] };
     }
-    if (sql.includes('SELECT id, first_name, last_name, email, photo_url, bio, category FROM users')) {
-      return { rows: [{ id: userId, first_name: 'Alice', last_name: 'Owner', email: 'alice@example.com' }] };
+    if (sql.includes('SELECT first_name FROM users WHERE id = $1')) {
+      return { rows: [{ first_name: 'Alice' }] };
     }
     return { rows: [] };
   };
@@ -237,14 +241,45 @@ describe('Sharing API', () => {
   });
 
   describe('GET /:code (resolve share link)', () => {
-    it('returns pet preview data without auth', async () => {
+    it('returns scoped pet preview data without auth', async () => {
       const res = await request(app).get(`/api/share/${shareCode}`);
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('pet');
       expect(res.body.pet).toHaveProperty('name', 'Buddy');
+      expect(res.body.pet).not.toHaveProperty('insurance');
+      expect(res.body.pet).not.toHaveProperty('chipId');
       expect(res.body).toHaveProperty('link_status', 'pending');
+      expect(res.body).toHaveProperty('expires_at');
       expect(res.body).toHaveProperty('owner');
-      expect(res.body).toHaveProperty('health_entries');
+      expect(res.body.owner).toEqual({ first_name: 'Alice' });
+      expect(res.body).not.toHaveProperty('health_entries');
+      expect(res.body).not.toHaveProperty('vet');
+    });
+
+    it('returns 410 for expired share link', async () => {
+      const pool = buildMockPool({
+        query: async (sql) => {
+          if (sql.includes('FROM pet_share_links sl') && sql.includes('WHERE sl.code')) {
+            return {
+              rows: [{
+                id: linkId,
+                pet_id: petId,
+                code: shareCode,
+                created_by: userId,
+                owner_id: userId,
+                status: 'pending',
+                claimed_by: null,
+                expires_at: pastExpiry,
+              }],
+            };
+          }
+          return { rows: [] };
+        },
+      });
+      const a = createApp(pool);
+      const res = await request(a).get(`/api/share/${shareCode}`);
+      expect(res.statusCode).toBe(410);
+      expect(res.body.error).toMatch(/expired/i);
     });
 
     it('returns 404 for unknown code', async () => {

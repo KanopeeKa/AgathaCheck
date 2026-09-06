@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-care-p0-share-minimization",
+  "approved_at": "2026-09-06T04:35:00Z",
+  "approved_by": "standing grant — Pet Care hardening roadmap (user chat 2026-09-05)",
+  "approved_until": "2026-09-08T04:35:00Z",
+  "content_hash": "sha256:4b7cfb1af50189be73ab693b893952b6d68ed76306286b167e1e5a85da771e49",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1000,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Scoped share preview + link expiry (F-03, F-04)",
+      "branch": "cursor/pet-care-p0-share-minimization-75cb",
+      "allowed_paths": [
+        ".agents/plans/pet-care-p0-share-minimization.*",
+        "server/lib/sharePreview.js",
+        "server/lib/shareLinkPolicy.js",
+        "server/routes/sharing.js",
+        "server/routes/pets/accessRouter.js",
+        "server/scripts/migrate.js",
+        "server/scripts/migrations/051_share_link_expiry.js",
+        "db/migrations/051_share_link_expiry.sql",
+        "db/migrations/051_share_link_expiry_down.sql",
+        "db/schema/migration-manifest.json",
+        "db/schema/canonical.sql",
+        "server/test/sharing.test.js",
+        "flutter_app/lib/features/sharing/**",
+        "flutter_app/test/features/sharing/**",
+        "docs/engineering/pet-care-hardening/README.md",
+        "docs/domains/pet_care/changes/hardening-discovery.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

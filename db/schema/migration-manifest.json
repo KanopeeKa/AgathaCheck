@@ -56,7 +56,8 @@
     "047_health_occurrences.sql",
     "048_pet_care_domain_rename.sql",
     "049_pinned_organization_id.sql",
-    "050_private_health_files.sql"
+    "050_private_health_files.sql",
+    "051_share_link_expiry.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
@@ -69,6 +70,7 @@
     "042_org_member_privacy.sql",
     "047_health_occurrences.sql",
     "049_pinned_organization_id.sql",
-    "050_private_health_files.sql"
+    "050_private_health_files.sql",
+    "051_share_link_expiry.sql"
   ]
 }
