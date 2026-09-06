@@ -24,7 +24,15 @@ export function handlePetAccessQuery(sql, params, {
 export function handleManageEntryQuery(sql, params, {
   deniedEntryIds = ['he-notmine', 'hi-notmine', 'nonexistent'],
   tableName,
+  entryPetId = 'pet-1',
 } = {}) {
+  const baseTable = tableName ? tableName.split(' ')[0] : null;
+  if (baseTable && sql.includes(`SELECT pet_id FROM ${baseTable}`)) {
+    const [entryId] = params;
+    if (deniedEntryIds.includes(entryId)) return { rows: [] };
+    return { rows: [{ pet_id: entryPetId }] };
+  }
+
   const pattern = `SELECT 1 FROM ${tableName}`;
   if (sql.includes(pattern) && sql.includes('JOIN pets p')) {
     const [entryId] = params;

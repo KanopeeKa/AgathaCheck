@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-care-capability-auth-rollout",
+  "approved_at": "2026-09-06T06:35:00Z",
+  "approved_by": "standing grant — Pet Care hardening roadmap (user chat 2026-09-05)",
+  "approved_until": "2026-09-08T06:35:00Z",
+  "content_hash": "sha256:b3a9bce9e35e98d1f972413adad23ed8b1fc2fa1c1082b8861530d6a8d6d1e16",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1008,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Capability policy rollout + route wiring (F-02)",
+      "branch": "cursor/pet-care-capability-auth-rollout-75cb",
+      "allowed_paths": [
+        ".agents/plans/pet-care-capability-auth-rollout.*",
+        "server/lib/petAccess.js",
+        "server/lib/petCapabilityPolicy.js",
+        "server/routes/pets/**",
+        "server/routes/healthEntries/**",
+        "server/routes/healthIssues/**",
+        "server/routes/healthIssues.js",
+        "server/routes/healthFiles.js",
+        "server/routes/weightEntries.js",
+        "server/routes/timeline/**",
+        "server/routes/notifications.js",
+        "server/test/petCapabilityPolicy.test.js",
+        "server/test/petCapabilityAuthMatrix.test.js",
+        "server/test/sharedPetAccess.test.js",
+        "server/test/helpers/petAccessMocks.js",
+        "server/test/**",
+        "docs/engineering/pet-care-hardening/README.md",
+        "docs/domains/pet_care/changes/hardening-discovery.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

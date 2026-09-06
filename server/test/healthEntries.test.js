@@ -712,7 +712,9 @@ describe('Health Entries API', () => {
         .put('/api/health-entries/he-1')
         .set('Authorization', `Bearer ${token}`)
         .send({ name: 'Test', next_due_date: '2026-01-01' });
-      const accessQuery = queryLog.find(q => q.sql.includes('SELECT 1 FROM health_entries he') && q.sql.includes('JOIN pets p'));
+      const accessQuery = queryLog.find(
+        (q) => q.sql.includes('SELECT pet_id FROM health_entries') || (q.sql.includes('SELECT 1 FROM health_entries he') && q.sql.includes('JOIN pets p')),
+      );
       const updateQuery = queryLog.find(q => q.sql.includes('UPDATE health_entries SET name'));
       expect(accessQuery).toBeDefined();
       expect(updateQuery.params[15]).toBe('he-1');
