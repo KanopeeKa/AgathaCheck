@@ -134,6 +134,8 @@ run_governance() {
   node --test scripts/ci/resolve-promote-commit-sha.test.js
   node --test scripts/ci/assert-ci-gate.test.js
   node scripts/check_skill_frontmatter.js
+  node scripts/validate_openapi.js
+  node --test scripts/validate_openapi.test.js
   node --test scripts/github_issue_workflow.test.js
   node --test scripts/db/normalize-schema-dump.test.js
   node scripts/db/check-migration-manifest.js
