@@ -392,17 +392,13 @@ POST /backend/api/auth/login
 - **PUT** `/api/pets/{id}/access/{userId}/role` — No-op stub returning `{ "updated": true, "user_id": "{userId}" }`.
 - **DELETE** `/api/pets/{id}/access/{userId}` — No-op stub returning `{ "deleted": true, "user_id": "{userId}" }`.
 
-### Delete Pet Data — STUB
+### Delete Pet Data
 
-> **Status:** auth-gated but currently a no-op stub — it returns the static response below without deleting anything. Use `DELETE /api/pets/{id}` to actually remove a pet.
+- **DELETE** `/api/pets/{id}/data` — Deletes pet-related rows (health, weight, timeline, shares, etc.) and purges health/pet upload files. Pet profile row remains until `DELETE /api/pets/{id}`.
 
-- **DELETE** `/api/pets/{id}/data` — Returns `{ "deleted": true, "pet_id": "{id}" }`.
+### Mark Pet as Passed Away
 
-### Mark Pet as Passed Away — STUB
-
-> **Status:** auth-gated but currently a no-op stub — it returns the static response below without updating the pet's `passed_away` column. Use `PUT /api/pets/{id}` with `passedAway: true` to persist this.
-
-- **POST** `/api/pets/{id}/passed-away` — Returns `{ "passed_away": true, "pet_id": "{id}" }`.
+- **POST** `/api/pets/{id}/passed-away` — Notifies collaborators (`notified_count` in response). Pet `passedAway` flag is persisted via `PUT /api/pets/{id}`.
 
 
 
