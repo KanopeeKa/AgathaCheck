@@ -4,8 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
-import 'auth_client_stub.dart'
-    if (dart.library.html) 'auth_client_web.dart';
+import 'auth_client_stub.dart' if (dart.library.html) 'auth_client_web.dart';
 import 'token_store.dart';
 
 class AuthUser {
@@ -140,8 +139,7 @@ class AuthService {
   }
 
   Future<String> refreshToken(String refreshToken) async {
-    final useCookieOnly =
-        kIsWeb && refreshToken == kHttpOnlyRefreshSentinel;
+    final useCookieOnly = kIsWeb && refreshToken == kHttpOnlyRefreshSentinel;
     final response = await _client.post(
       Uri.parse('$baseUrl/api/auth/refresh'),
       headers: {'Content-Type': 'application/json'},
@@ -161,8 +159,7 @@ class AuthService {
     if (accessToken != null && accessToken.isNotEmpty) {
       headers['Authorization'] = 'Bearer $accessToken';
     }
-    final useCookieOnly =
-        kIsWeb && refreshToken == kHttpOnlyRefreshSentinel;
+    final useCookieOnly = kIsWeb && refreshToken == kHttpOnlyRefreshSentinel;
     await _client.post(
       Uri.parse('$baseUrl/api/auth/logout'),
       headers: headers,

@@ -70,7 +70,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (kIsWeb) {
       state = state.copyWith(isLoading: true, clearError: true);
       try {
-        final newAccess = await _authService.refreshToken(kHttpOnlyRefreshSentinel);
+        final newAccess = await _authService.refreshToken(
+          kHttpOnlyRefreshSentinel,
+        );
         final user = await _authService.getMe(newAccess);
         await _tokenStore.writeTokens(newAccess, kHttpOnlyRefreshSentinel);
         state = AuthState(
