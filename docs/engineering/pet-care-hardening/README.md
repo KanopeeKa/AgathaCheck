@@ -28,6 +28,7 @@ Gold-standard security and mobile-readiness programme for the Pet Care domain.
 | `pet-care-capability-auth-rollout` | F-02 capability rollout | merged (#1009) |
 | `pet-care-session-v2` | F-05–F-07 session v2 (refresh + web cookies) | merged (#1013, #1014) |
 | `pet-care-data-lifecycle` | F-09–F-12 data lifecycle | merged (#1017, #1018; pre-UAT remedial #1019) |
-| `pet-care-api-contract` | F-14 OpenAPI subset + contract tests | in progress |
+| `pet-care-api-contract` | F-14 OpenAPI subset + contract tests | merged (#1022) |
+| `pet-care-quality-ci` | F-17–F-20 | pending |
 
 See discovery report §Recommended follow-on plans for the full slice list.

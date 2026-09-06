@@ -44,18 +44,18 @@ Introduce an OpenAPI 3.1 subset for critical Pet Care endpoints (pets CRUD, life
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/pet-care-api-contract-75cb"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/pet-care-api-contract-75cb
+  branch: main
   plan_path: .agents/plans/pet-care-api-contract.md
-  plan_commit: 79039e5f9dfc5884de867e482f73ac2ee342fc79
+  plan_commit: 3f0f678c31709c4d61c5c568c275a9a766371132
   snapshot_path: .agents/plans/pet-care-api-contract.snapshot.json
-  snapshot_commit: 79039e5f9dfc5884de867e482f73ac2ee342fc79
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1022"]
+  snapshot_commit: 3f0f678c31709c4d61c5c568c275a9a766371132
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
