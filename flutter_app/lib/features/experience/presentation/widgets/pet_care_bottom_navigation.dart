@@ -14,8 +14,7 @@ class PetCareBottomNavigation extends StatelessWidget {
 
   final String currentLocation;
 
-  static const compactBreakpoint =
-      PetCarePrimaryDestinations.compactBreakpoint;
+  static const compactBreakpoint = PetCarePrimaryDestinations.compactBreakpoint;
 
   static bool isCompact(double width) =>
       PetCarePrimaryDestinations.isCompact(width);
@@ -23,8 +22,7 @@ class PetCareBottomNavigation extends StatelessWidget {
   static bool supports(String path) =>
       PetCarePrimaryDestinations.supports(path);
 
-  static int indexFor(String path) =>
-      PetCarePrimaryDestinations.indexFor(path);
+  static int indexFor(String path) => PetCarePrimaryDestinations.indexFor(path);
 
   @override
   Widget build(BuildContext context) {

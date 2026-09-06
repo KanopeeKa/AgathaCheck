@@ -17,9 +17,7 @@ final experiencePreferencesStoreProvider = Provider<ExperiencePreferencesStore>(
   },
 );
 
-final petCareOnboardingStoreProvider = Provider<PetCareOnboardingStore>((
-  ref,
-) {
+final petCareOnboardingStoreProvider = Provider<PetCareOnboardingStore>((ref) {
   return PetCareOnboardingStore(ref.watch(sharedPreferencesProvider));
 });
 

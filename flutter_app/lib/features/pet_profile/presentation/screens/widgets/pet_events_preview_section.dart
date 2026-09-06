@@ -85,9 +85,7 @@ class _PetEventsPreviewSectionState
         loading: () => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            PetCareDashboardSectionHeader(
-              title: l.careForPet(widget.pet.name),
-            ),
+            PetCareDashboardSectionHeader(title: l.careForPet(widget.pet.name)),
             const SizedBox(height: 10),
             const SizedBox(
               height: 56,
@@ -98,9 +96,7 @@ class _PetEventsPreviewSectionState
         error: (error, _) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            PetCareDashboardSectionHeader(
-              title: l.careForPet(widget.pet.name),
-            ),
+            PetCareDashboardSectionHeader(title: l.careForPet(widget.pet.name)),
             const SizedBox(height: 10),
             PetCareDeskSectionCard(
               tint: AppColorTokens.guardianLight,

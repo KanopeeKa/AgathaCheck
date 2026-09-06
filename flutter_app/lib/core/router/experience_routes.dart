@@ -95,8 +95,7 @@ List<RouteBase> buildExperienceRoutes() {
             GoRoute(
               path: 'bulk-share',
               name: 'petCareBulkSharePets',
-              builder: (context, state) =>
-                  const PetCareBulkShareSelectScreen(),
+              builder: (context, state) => const PetCareBulkShareSelectScreen(),
             ),
           ],
         ),
