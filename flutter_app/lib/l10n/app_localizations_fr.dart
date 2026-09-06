@@ -66,17 +66,17 @@ class AppLocalizationsFr extends AppLocalizations {
       'Gardez les personnes et les informations liées à chaque animal connectées.';
 
   @override
-  String get landingGuardianPathSummary =>
+  String get landingPetCarePathSummary =>
       'Pour les particuliers et les familles d\'accueil';
 
   @override
-  String get landingGuardianPathExpandCta => 'Découvrir le fonctionnement';
+  String get landingPetCarePathExpandCta => 'Découvrir le fonctionnement';
 
   @override
-  String get landingGuardianPathCollapseCta => 'Réduire';
+  String get landingPetCarePathCollapseCta => 'Réduire';
 
   @override
-  String get landingGuardianPathDetail =>
+  String get landingPetCarePathDetail =>
       'Suivez les visites vétérinaires, les médicaments, le poids et les soins quotidiens en un seul endroit. Coordonnez-vous avec votre foyer et gardez l\'historique de santé de chaque animal en sécurité.';
 
   @override
@@ -421,10 +421,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noPetsYet => 'Aucun animal';
 
   @override
-  String get guardianEmptyPetsTitle => 'De qui prenons-nous soin ?';
+  String get petCareEmptyPetsTitle => 'De qui prenons-nous soin ?';
 
   @override
-  String get guardianEmptyPetsBody =>
+  String get petCareEmptyPetsBody =>
       'Ajoutez votre premier animal pour commencer à suivre ses soins.';
 
   @override
@@ -473,11 +473,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addVetFirst => 'Ajouter un vétérinaire. Aucun vétérinaire trouvé.';
 
   @override
-  String get guardianEmptyVetTitle =>
+  String get petCareEmptyVetTitle =>
       'Gardez votre vétérinaire à portée de main';
 
   @override
-  String get guardianEmptyVetBody =>
+  String get petCareEmptyVetBody =>
       'Ajoutez votre clinique vétérinaire pour retrouver ses coordonnées lorsque vous en avez besoin.';
 
   @override
@@ -686,14 +686,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucun soin à venir dans la fenêtre de rappel actuelle.';
 
   @override
-  String get guardianEmptyCareTitle => 'Commencez leur routine de soins';
+  String get petCareEmptyCareTitle => 'Commencez leur routine de soins';
 
   @override
-  String get guardianEmptyCareBody =>
+  String get petCareEmptyCareBody =>
       'Ajoutez votre premier soin pour suivre les soins quotidiens, traitements et rendez-vous.';
 
   @override
-  String get guardianEmptyCareClearTitle => 'Tout est en ordre';
+  String get petCareEmptyCareClearTitle => 'Tout est en ordre';
 
   @override
   String get viewAll => 'Voir tout';
@@ -724,29 +724,29 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucune session d\'accueil active pour le moment.';
 
   @override
-  String get guardianEmptyFosteringTitle =>
+  String get petCareEmptyFosteringTitle =>
       'Aucune session d\'accueil pour le moment';
 
   @override
-  String get guardianEmptyFosteringBody =>
+  String get petCareEmptyFosteringBody =>
       'Lorsqu\'une nouvelle session commencera, vous la trouverez ici.';
 
   @override
-  String get guardianFosterInviteTitle => 'Faire place à un de plus';
+  String get petCareFosterInviteTitle => 'Faire place à un de plus';
 
   @override
-  String get guardianFosterInviteBody =>
+  String get petCareFosterInviteBody =>
       'L\'accueil offre à un animal de refuge un lieu sûr en attendant la suite de son histoire. Un petit engagement peut avoir un impact immense — et c\'est une façon merveilleuse d\'aider.';
 
   @override
   String get findAShelter => 'Trouver un refuge';
 
   @override
-  String get guardianLinkedShelterTitle =>
+  String get petCareLinkedShelterTitle =>
       'Merci de faire partie de leur parcours';
 
   @override
-  String get guardianLinkedShelterBody =>
+  String get petCareLinkedShelterBody =>
       'En ouvrant votre foyer à un animal en accueil, vous libérez de la place pour les refuges et offrez plus de temps, de confort et de soins aux animaux. Votre soutien fait vraiment la différence.';
 
   @override
@@ -4736,10 +4736,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get remindChipOneWeek => '1 semaine';
 
   @override
-  String get experienceGuardianTitle => 'Suivi';
+  String get experiencePetCareTitle => 'Suivi';
 
   @override
-  String get experienceGuardianSubtitle =>
+  String get experiencePetCareSubtitle =>
       'Suivez les soins, rappels et garde partagée de vos animaux.';
 
   @override
@@ -4773,7 +4773,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgNotificationsDrawer => 'Notifications organisation';
 
   @override
-  String get guardianNotificationsDrawer => 'Notifications Suivi';
+  String get petCareNotificationsDrawer => 'Notifications Suivi';
 
   @override
   String get myVets => 'Équipe de soins';
@@ -4788,7 +4788,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get allCareTeams => 'Toutes les équipes de soins';
 
   @override
-  String get guardianDashboardTitle => 'Tableau de bord Suivi';
+  String get petCareDashboardTitle => 'Tableau de bord Suivi';
 
   @override
   String get upcomingPetEvents => 'Événements à venir';
@@ -4871,7 +4871,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myOrganisation => 'Mon organisation';
 
   @override
-  String get experienceGuardianView => 'Vue Suivi';
+  String get experiencePetCareView => 'Vue Suivi';
 
   @override
   String get experienceDefaultSettingTitle => 'Expérience par défaut';
@@ -4893,7 +4893,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'La section Refuges reste visible car vous appartenez à au moins un refuge.';
 
   @override
-  String get experienceGuardianInviteHint =>
+  String get experiencePetCareInviteHint =>
       'Ajoutez un animal ou ouvrez sa fiche pour partager les soins.';
 
   @override
@@ -4901,41 +4901,40 @@ class AppLocalizationsFr extends AppLocalizations {
       'Invitez des membres de l\'équipe pour gérer votre organisation.';
 
   @override
-  String get guardianOnboardingTitle => 'Premiers pas';
+  String get petCareOnboardingTitle => 'Premiers pas';
 
   @override
-  String get guardianOnboardingSkip => 'Passer pour l\'instant';
+  String get petCareOnboardingSkip => 'Passer pour l\'instant';
 
   @override
-  String get guardianOnboardingWelcomeTitle => 'Bienvenue sur AgathaTrack';
+  String get petCareOnboardingWelcomeTitle => 'Bienvenue sur AgathaTrack';
 
   @override
-  String get guardianOnboardingWelcomeBody =>
+  String get petCareOnboardingWelcomeBody =>
       'Ajoutez votre premier animal pour commencer à suivre ses soins.';
 
   @override
-  String get guardianOnboardingGetStarted => 'Commencer';
+  String get petCareOnboardingGetStarted => 'Commencer';
 
   @override
-  String get guardianOnboardingPetStepTitle => 'Ajoutez votre premier animal';
+  String get petCareOnboardingPetStepTitle => 'Ajoutez votre premier animal';
 
   @override
-  String get guardianOnboardingPetStepBody =>
+  String get petCareOnboardingPetStepBody =>
       'Dites-nous qui vous accompagnez. Vous pourrez ajouter plus de détails plus tard.';
 
   @override
-  String get guardianOnboardingReminderStepTitle =>
-      'Créez votre premier rappel';
+  String get petCareOnboardingReminderStepTitle => 'Créez votre premier rappel';
 
   @override
-  String get guardianOnboardingReminderStepBody =>
+  String get petCareOnboardingReminderStepBody =>
       'Médicaments, préventifs et visites vétérinaires — nous vous rappellerons les échéances.';
 
   @override
-  String get guardianOnboardingReminderNameLabel => 'Nom du rappel';
+  String get petCareOnboardingReminderNameLabel => 'Nom du rappel';
 
   @override
-  String get guardianOnboardingFinish => 'Terminer la configuration';
+  String get petCareOnboardingFinish => 'Terminer la configuration';
 
   @override
   String get orgOnboardingTitle => 'Configurer votre organisation';
@@ -5062,7 +5061,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get adoptionJourneyStatusUnknown => 'Inconnu';
 
   @override
-  String get drawerGuardian => 'Suivi';
+  String get drawerPetCare => 'Suivi';
 
   @override
   String get drawerOrganisation => 'Refuges';

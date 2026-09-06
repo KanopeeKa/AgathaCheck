@@ -137,7 +137,7 @@ class _PetEventsPreviewSectionState
                 child: items.isEmpty
                     ? PetCareIllustratedEmptyState(
                         key: const Key('pet_detail_empty_care'),
-                        title: l.guardianEmptyCareClearTitle,
+                        title: l.petCareEmptyCareClearTitle,
                         body: l.homeNoDueEvents,
                         actionLabel: l.allCare,
                         actionIcon: Icons.calendar_month_outlined,

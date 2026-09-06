@@ -446,7 +446,7 @@ class _ReminderStep extends StatelessWidget {
           key: const Key('onboarding_org_reminder_name_field'),
           controller: nameController,
           decoration: InputDecoration(
-            labelText: l.guardianOnboardingReminderNameLabel,
+            labelText: l.petCareOnboardingReminderNameLabel,
             border: const OutlineInputBorder(),
           ),
         ),

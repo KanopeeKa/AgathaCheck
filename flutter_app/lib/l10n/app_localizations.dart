@@ -194,29 +194,29 @@ abstract class AppLocalizations {
   /// **'Keep the people and information around each pet connected.'**
   String get landingDeskCreateBody;
 
-  /// No description provided for @landingGuardianPathSummary.
+  /// No description provided for @landingPetCarePathSummary.
   ///
   /// In en, this message translates to:
   /// **'For pet parents and foster carers'**
-  String get landingGuardianPathSummary;
+  String get landingPetCarePathSummary;
 
-  /// No description provided for @landingGuardianPathExpandCta.
+  /// No description provided for @landingPetCarePathExpandCta.
   ///
   /// In en, this message translates to:
   /// **'See how it works'**
-  String get landingGuardianPathExpandCta;
+  String get landingPetCarePathExpandCta;
 
-  /// No description provided for @landingGuardianPathCollapseCta.
+  /// No description provided for @landingPetCarePathCollapseCta.
   ///
   /// In en, this message translates to:
   /// **'Show less'**
-  String get landingGuardianPathCollapseCta;
+  String get landingPetCarePathCollapseCta;
 
-  /// No description provided for @landingGuardianPathDetail.
+  /// No description provided for @landingPetCarePathDetail.
   ///
   /// In en, this message translates to:
   /// **'Track vet visits, medications, weight, and daily care in one place. Coordinate with your household and keep every pet\'s health history safe.'**
-  String get landingGuardianPathDetail;
+  String get landingPetCarePathDetail;
 
   /// No description provided for @landingOrgPathSummary.
   ///
@@ -842,17 +842,17 @@ abstract class AppLocalizations {
   /// **'No pets yet'**
   String get noPetsYet;
 
-  /// No description provided for @guardianEmptyPetsTitle.
+  /// No description provided for @petCareEmptyPetsTitle.
   ///
   /// In en, this message translates to:
   /// **'Who are we caring for?'**
-  String get guardianEmptyPetsTitle;
+  String get petCareEmptyPetsTitle;
 
-  /// No description provided for @guardianEmptyPetsBody.
+  /// No description provided for @petCareEmptyPetsBody.
   ///
   /// In en, this message translates to:
   /// **'Add your first pet to start keeping track of their care.'**
-  String get guardianEmptyPetsBody;
+  String get petCareEmptyPetsBody;
 
   /// No description provided for @noPetsMatchFilter.
   ///
@@ -932,17 +932,17 @@ abstract class AppLocalizations {
   /// **'Add a veterinarian. No vets yet.'**
   String get addVetFirst;
 
-  /// No description provided for @guardianEmptyVetTitle.
+  /// No description provided for @petCareEmptyVetTitle.
   ///
   /// In en, this message translates to:
   /// **'Keep your vet close at hand'**
-  String get guardianEmptyVetTitle;
+  String get petCareEmptyVetTitle;
 
-  /// No description provided for @guardianEmptyVetBody.
+  /// No description provided for @petCareEmptyVetBody.
   ///
   /// In en, this message translates to:
   /// **'Add your veterinary clinic so their details are here when you need them.'**
-  String get guardianEmptyVetBody;
+  String get petCareEmptyVetBody;
 
   /// No description provided for @selectVeterinarian.
   ///
@@ -1280,23 +1280,23 @@ abstract class AppLocalizations {
   /// **'No upcoming care in the current reminder window.'**
   String get noCareSoon;
 
-  /// No description provided for @guardianEmptyCareTitle.
+  /// No description provided for @petCareEmptyCareTitle.
   ///
   /// In en, this message translates to:
   /// **'Start their care routine'**
-  String get guardianEmptyCareTitle;
+  String get petCareEmptyCareTitle;
 
-  /// No description provided for @guardianEmptyCareBody.
+  /// No description provided for @petCareEmptyCareBody.
   ///
   /// In en, this message translates to:
   /// **'Add your first care item to keep track of everyday care, treatments and appointments.'**
-  String get guardianEmptyCareBody;
+  String get petCareEmptyCareBody;
 
-  /// No description provided for @guardianEmptyCareClearTitle.
+  /// No description provided for @petCareEmptyCareClearTitle.
   ///
   /// In en, this message translates to:
   /// **'All caught up'**
-  String get guardianEmptyCareClearTitle;
+  String get petCareEmptyCareClearTitle;
 
   /// No description provided for @viewAll.
   ///
@@ -1352,29 +1352,29 @@ abstract class AppLocalizations {
   /// **'No active fostering sessions yet.'**
   String get noFosteringSessions;
 
-  /// No description provided for @guardianEmptyFosteringTitle.
+  /// No description provided for @petCareEmptyFosteringTitle.
   ///
   /// In en, this message translates to:
   /// **'No fostering sessions right now'**
-  String get guardianEmptyFosteringTitle;
+  String get petCareEmptyFosteringTitle;
 
-  /// No description provided for @guardianEmptyFosteringBody.
+  /// No description provided for @petCareEmptyFosteringBody.
   ///
   /// In en, this message translates to:
   /// **'When a new session starts, you\'ll find it here.'**
-  String get guardianEmptyFosteringBody;
+  String get petCareEmptyFosteringBody;
 
-  /// No description provided for @guardianFosterInviteTitle.
+  /// No description provided for @petCareFosterInviteTitle.
   ///
   /// In en, this message translates to:
   /// **'Make room for one more'**
-  String get guardianFosterInviteTitle;
+  String get petCareFosterInviteTitle;
 
-  /// No description provided for @guardianFosterInviteBody.
+  /// No description provided for @petCareFosterInviteBody.
   ///
   /// In en, this message translates to:
   /// **'Fostering gives a shelter pet a safe place to land while they wait for their next chapter. It can be a small commitment with a huge impact — and a wonderfully rewarding way to help.'**
-  String get guardianFosterInviteBody;
+  String get petCareFosterInviteBody;
 
   /// No description provided for @findAShelter.
   ///
@@ -1382,17 +1382,17 @@ abstract class AppLocalizations {
   /// **'Find a shelter'**
   String get findAShelter;
 
-  /// No description provided for @guardianLinkedShelterTitle.
+  /// No description provided for @petCareLinkedShelterTitle.
   ///
   /// In en, this message translates to:
   /// **'Thank you for being part of their journey'**
-  String get guardianLinkedShelterTitle;
+  String get petCareLinkedShelterTitle;
 
-  /// No description provided for @guardianLinkedShelterBody.
+  /// No description provided for @petCareLinkedShelterBody.
   ///
   /// In en, this message translates to:
   /// **'By opening your home to a foster pet, you\'re giving shelters more room to help and animals more time, comfort, and care. Your support makes a real difference.'**
-  String get guardianLinkedShelterBody;
+  String get petCareLinkedShelterBody;
 
   /// No description provided for @yourShelters.
   ///
@@ -8379,17 +8379,17 @@ abstract class AppLocalizations {
   /// **'1 week'**
   String get remindChipOneWeek;
 
-  /// No description provided for @experienceGuardianTitle.
+  /// No description provided for @experiencePetCareTitle.
   ///
   /// In en, this message translates to:
   /// **'Pet Care'**
-  String get experienceGuardianTitle;
+  String get experiencePetCareTitle;
 
-  /// No description provided for @experienceGuardianSubtitle.
+  /// No description provided for @experiencePetCareSubtitle.
   ///
   /// In en, this message translates to:
   /// **'Track care, reminders, and shared looking-after for your pets.'**
-  String get experienceGuardianSubtitle;
+  String get experiencePetCareSubtitle;
 
   /// No description provided for @experienceOrganizationTitle.
   ///
@@ -8445,11 +8445,11 @@ abstract class AppLocalizations {
   /// **'Organisation notifications'**
   String get orgNotificationsDrawer;
 
-  /// No description provided for @guardianNotificationsDrawer.
+  /// No description provided for @petCareNotificationsDrawer.
   ///
   /// In en, this message translates to:
   /// **'Pet Care notifications'**
-  String get guardianNotificationsDrawer;
+  String get petCareNotificationsDrawer;
 
   /// No description provided for @myVets.
   ///
@@ -8475,11 +8475,11 @@ abstract class AppLocalizations {
   /// **'All care teams'**
   String get allCareTeams;
 
-  /// No description provided for @guardianDashboardTitle.
+  /// No description provided for @petCareDashboardTitle.
   ///
   /// In en, this message translates to:
   /// **'Pet Care dashboard'**
-  String get guardianDashboardTitle;
+  String get petCareDashboardTitle;
 
   /// No description provided for @upcomingPetEvents.
   ///
@@ -8607,11 +8607,11 @@ abstract class AppLocalizations {
   /// **'My Organisation'**
   String get myOrganisation;
 
-  /// No description provided for @experienceGuardianView.
+  /// No description provided for @experiencePetCareView.
   ///
   /// In en, this message translates to:
   /// **'Pet Care view'**
-  String get experienceGuardianView;
+  String get experiencePetCareView;
 
   /// No description provided for @experienceDefaultSettingTitle.
   ///
@@ -8643,11 +8643,11 @@ abstract class AppLocalizations {
   /// **'Shelters stay visible because you belong to at least one shelter.'**
   String get experienceShowOrganisationSectionMemberLocked;
 
-  /// No description provided for @experienceGuardianInviteHint.
+  /// No description provided for @experiencePetCareInviteHint.
   ///
   /// In en, this message translates to:
   /// **'Add a pet or open a pet profile to share care with someone.'**
-  String get experienceGuardianInviteHint;
+  String get experiencePetCareInviteHint;
 
   /// No description provided for @experienceOrganizationInviteHint.
   ///
@@ -8655,71 +8655,71 @@ abstract class AppLocalizations {
   /// **'Invite team members to help run your organisation.'**
   String get experienceOrganizationInviteHint;
 
-  /// No description provided for @guardianOnboardingTitle.
+  /// No description provided for @petCareOnboardingTitle.
   ///
   /// In en, this message translates to:
   /// **'Get started'**
-  String get guardianOnboardingTitle;
+  String get petCareOnboardingTitle;
 
-  /// No description provided for @guardianOnboardingSkip.
+  /// No description provided for @petCareOnboardingSkip.
   ///
   /// In en, this message translates to:
   /// **'Skip for now'**
-  String get guardianOnboardingSkip;
+  String get petCareOnboardingSkip;
 
-  /// No description provided for @guardianOnboardingWelcomeTitle.
+  /// No description provided for @petCareOnboardingWelcomeTitle.
   ///
   /// In en, this message translates to:
   /// **'Welcome to AgathaTrack'**
-  String get guardianOnboardingWelcomeTitle;
+  String get petCareOnboardingWelcomeTitle;
 
-  /// No description provided for @guardianOnboardingWelcomeBody.
+  /// No description provided for @petCareOnboardingWelcomeBody.
   ///
   /// In en, this message translates to:
   /// **'Add your first pet to start tracking their care.'**
-  String get guardianOnboardingWelcomeBody;
+  String get petCareOnboardingWelcomeBody;
 
-  /// No description provided for @guardianOnboardingGetStarted.
+  /// No description provided for @petCareOnboardingGetStarted.
   ///
   /// In en, this message translates to:
   /// **'Get started'**
-  String get guardianOnboardingGetStarted;
+  String get petCareOnboardingGetStarted;
 
-  /// No description provided for @guardianOnboardingPetStepTitle.
+  /// No description provided for @petCareOnboardingPetStepTitle.
   ///
   /// In en, this message translates to:
   /// **'Add your first pet'**
-  String get guardianOnboardingPetStepTitle;
+  String get petCareOnboardingPetStepTitle;
 
-  /// No description provided for @guardianOnboardingPetStepBody.
+  /// No description provided for @petCareOnboardingPetStepBody.
   ///
   /// In en, this message translates to:
   /// **'Tell us who you are caring for. You can add more details later.'**
-  String get guardianOnboardingPetStepBody;
+  String get petCareOnboardingPetStepBody;
 
-  /// No description provided for @guardianOnboardingReminderStepTitle.
+  /// No description provided for @petCareOnboardingReminderStepTitle.
   ///
   /// In en, this message translates to:
   /// **'Set your first reminder'**
-  String get guardianOnboardingReminderStepTitle;
+  String get petCareOnboardingReminderStepTitle;
 
-  /// No description provided for @guardianOnboardingReminderStepBody.
+  /// No description provided for @petCareOnboardingReminderStepBody.
   ///
   /// In en, this message translates to:
   /// **'Medications, preventives, and vet visits — we will remind you when they are due.'**
-  String get guardianOnboardingReminderStepBody;
+  String get petCareOnboardingReminderStepBody;
 
-  /// No description provided for @guardianOnboardingReminderNameLabel.
+  /// No description provided for @petCareOnboardingReminderNameLabel.
   ///
   /// In en, this message translates to:
   /// **'Reminder name'**
-  String get guardianOnboardingReminderNameLabel;
+  String get petCareOnboardingReminderNameLabel;
 
-  /// No description provided for @guardianOnboardingFinish.
+  /// No description provided for @petCareOnboardingFinish.
   ///
   /// In en, this message translates to:
   /// **'Finish setup'**
-  String get guardianOnboardingFinish;
+  String get petCareOnboardingFinish;
 
   /// No description provided for @orgOnboardingTitle.
   ///
@@ -8937,11 +8937,11 @@ abstract class AppLocalizations {
   /// **'Unknown'**
   String get adoptionJourneyStatusUnknown;
 
-  /// No description provided for @drawerGuardian.
+  /// No description provided for @drawerPetCare.
   ///
   /// In en, this message translates to:
   /// **'Pet Care'**
-  String get drawerGuardian;
+  String get drawerPetCare;
 
   /// No description provided for @drawerOrganisation.
   ///
