@@ -1,10 +1,9 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import jwt from 'jsonwebtoken';
 
 import { createApiLimiter } from '../config/rateLimit.js';
-import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
+import { extractUserId } from '../lib/requireAuth.js';
 import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../lib/calendarDate.js';
 import { refreshPetWeightCache } from '../lib/petWeightSync.js';
 import {
@@ -12,16 +11,6 @@ import {
   userCanManagePet,
   userCanManageWeightEntry,
 } from '../lib/petAccess.js';
-
-function extractUserId(req) {
-  const auth = req.headers['authorization'] || req.headers['Authorization'];
-  if (!auth || !auth.startsWith('Bearer ')) return null;
-  try {
-    return jwt.verify(auth.substring(7), JWT_SECRET).id;
-  } catch (_) {
-    return null;
-  }
-}
 
 function weightEntryToMap(row) {
   return {

@@ -1,22 +1,10 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import jwt from 'jsonwebtoken';
 
 import { createApiLimiter } from '../config/rateLimit.js';
-import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
+import { extractUserId } from '../lib/requireAuth.js';
 import { userInOrg } from './pets/shared.js';
-
-function extractUserId(req) {
-  const auth = req.headers['authorization'] || req.headers['Authorization'];
-  if (!auth || !auth.startsWith('Bearer ')) return null;
-  try {
-    const payload = jwt.verify(auth.substring(7), JWT_SECRET);
-    return payload.id;
-  } catch (_) {
-    return null;
-  }
-}
 
 function vetRowToMap(row) {
   return {
