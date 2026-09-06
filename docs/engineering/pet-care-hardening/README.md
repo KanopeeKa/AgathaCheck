@@ -27,5 +27,6 @@ Gold-standard security and mobile-readiness programme for the Pet Care domain.
 | `pet-care-auth-platform` | B — shared foundations (F-08) | merged (#1006) |
 | `pet-care-capability-auth-rollout` | F-02 capability rollout | merged (#1009) |
 | `pet-care-session-v2` | F-05–F-07 session v2 (refresh + web cookies) | merged (#1013, #1014) |
+| `pet-care-data-lifecycle` | F-09–F-12 data lifecycle | in progress |
 
 See discovery report §Recommended follow-on plans for the full slice list.

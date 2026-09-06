@@ -36,4 +36,20 @@ class MockPetRepository extends Mock implements PetRepository {
             returnValue: Future.value(),
           )
           as Future<void>;
+
+  @override
+  Future<void> deletePetWithDataCleanup(String? id) =>
+      super.noSuchMethod(
+            Invocation.method(#deletePetWithDataCleanup, [id]),
+            returnValue: Future.value(),
+          )
+          as Future<void>;
+
+  @override
+  Future<bool> markPassedAway(Pet? pet) =>
+      super.noSuchMethod(
+            Invocation.method(#markPassedAway, [pet]),
+            returnValue: Future.value(false),
+          )
+          as Future<bool>;
 }

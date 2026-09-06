@@ -26,6 +26,8 @@ abstract class PetRemoteDataSource {
     String token,
   );
   Future<void> deletePet(String id, String token);
+  Future<void> deletePetData(String id, String token);
+  Future<int> notifyPassedAway(String petId, String petName, String token);
 }
 
 class PetRemoteDataSourceImpl implements PetRemoteDataSource {
@@ -169,13 +171,49 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
       headers: _headers(token),
     );
     if (response.statusCode >= 400) {
-      // Surface the failure to the caller instead of silently swallowing it —
-      // otherwise the UI would remove the pet locally while it still exists
-      // on the server.
       throw PetRemoteException(
         'Failed to delete pet',
         statusCode: response.statusCode,
       );
+    }
+  }
+
+  @override
+  Future<void> deletePetData(String id, String token) async {
+    final response = await _client.delete(
+      Uri.parse('$baseUrl/api/pets/$id/data'),
+      headers: _headers(token),
+    );
+    if (response.statusCode >= 400) {
+      throw PetRemoteException(
+        'Failed to delete pet data',
+        statusCode: response.statusCode,
+      );
+    }
+  }
+
+  @override
+  Future<int> notifyPassedAway(
+    String petId,
+    String petName,
+    String token,
+  ) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/pets/$petId/passed-away'),
+      headers: _headers(token),
+      body: json.encode({'pet_name': petName}),
+    );
+    if (response.statusCode >= 400) {
+      throw PetRemoteException(
+        'Failed to notify passed away',
+        statusCode: response.statusCode,
+      );
+    }
+    try {
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      return (data['notified_count'] as num?)?.toInt() ?? 0;
+    } catch (_) {
+      return 0;
     }
   }
 }

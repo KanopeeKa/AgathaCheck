@@ -26,4 +26,11 @@ abstract class PetRepository {
 
   /// Deletes a pet profile by its [id].
   Future<void> deletePet(String id);
+
+  /// Best-effort cascade delete of pet-related data, then removes the pet.
+  Future<void> deletePetWithDataCleanup(String id);
+
+  /// Persists passed-away on the server and notifies collaborators.
+  /// Returns whether any collaborators were notified.
+  Future<bool> markPassedAway(Pet pet);
 }
