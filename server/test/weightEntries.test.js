@@ -99,6 +99,10 @@ describe('Weight Entries API', () => {
           return { rows: [] };
         }
 
+        if (sql.includes('INSERT INTO audit_events')) {
+          return { rows: [{ id: 'audit-1' }] };
+        }
+
         return { rows: [] };
       },
       end: async () => {},
@@ -303,7 +307,7 @@ describe('Weight Entries API', () => {
         .post('/api/weight-entries')
         .set('Authorization', `Bearer ${token}`)
         .send({ pet_id: 'pet-1', weight: 4.2 });
-      const cacheUpdate = lastQuery.sql.includes('UPDATE pets SET weight = (');
+      const cacheUpdate = allQueries.some((q) => q.sql.includes('UPDATE pets SET weight = ('));
       expect(cacheUpdate).toBe(true);
     });
   });
@@ -407,6 +411,103 @@ describe('Weight Entries API', () => {
         .set('Authorization', `Bearer ${token}`);
       expect(res.body[0].date).toBe('2026-03-26');
       expect(res.body[0].date).not.toMatch(/T/);
+    });
+  });
+
+  describe('Audit events (F-18)', () => {
+    it('records audit event on create', async () => {
+      const auditInserts = [];
+      const mockPool = {
+        query: async (sql, params) => {
+          const access = handlePetAccessQuery(sql, params, {
+            userId,
+            ownedPetIds: ['pet-1'],
+          });
+          if (access) return access;
+          if (sql.includes('INSERT INTO weight_entries')) {
+            return {
+              rows: [makeWeightRow({ id: params[0], pet_id: params[1], weight: params[3] })],
+            };
+          }
+          if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
+          if (sql.includes('INSERT INTO audit_events')) {
+            auditInserts.push(params);
+            return { rows: [{ id: 'audit-1' }] };
+          }
+          return { rows: [] };
+        },
+        end: async () => {},
+      };
+      const auditApp = createApp(mockPool);
+      const res = await request(auditApp)
+        .post('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ pet_id: 'pet-1', weight: 4.2 });
+      expect(res.statusCode).toBe(201);
+      expect(auditInserts.some((p) => p.includes('weight_entry.created'))).toBe(true);
+    });
+
+    it('records audit event on update', async () => {
+      const auditInserts = [];
+      const mockPool = {
+        query: async (sql, params) => {
+          if (sql.includes('SELECT pet_id FROM weight_entries WHERE id = $1')) {
+            return { rows: [{ pet_id: 'pet-1' }] };
+          }
+          const access = handlePetAccessQuery(sql, params, {
+            userId,
+            ownedPetIds: ['pet-1'],
+          });
+          if (access) return access;
+          if (sql.includes('UPDATE weight_entries')) {
+            return { rows: [makeWeightRow({ id: params[4], pet_id: 'pet-1', weight: params[0] })] };
+          }
+          if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
+          if (sql.includes('INSERT INTO audit_events')) {
+            auditInserts.push(params);
+            return { rows: [{ id: 'audit-1' }] };
+          }
+          return { rows: [] };
+        },
+        end: async () => {},
+      };
+      const auditApp = createApp(mockPool);
+      const res = await request(auditApp)
+        .put('/api/weight-entries/we-1')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ weight: 5.0 });
+      expect(res.statusCode).toBe(200);
+      expect(auditInserts.some((p) => p.includes('weight_entry.updated'))).toBe(true);
+    });
+
+    it('records audit event on delete', async () => {
+      const auditInserts = [];
+      const mockPool = {
+        query: async (sql, params) => {
+          if (sql.includes('SELECT pet_id FROM weight_entries WHERE id = $1')) {
+            return { rows: [{ pet_id: 'pet-1' }] };
+          }
+          const access = handlePetAccessQuery(sql, params, {
+            userId,
+            ownedPetIds: ['pet-1'],
+          });
+          if (access) return access;
+          if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
+          if (sql.includes('DELETE FROM weight_entries')) return { rows: [] };
+          if (sql.includes('INSERT INTO audit_events')) {
+            auditInserts.push(params);
+            return { rows: [{ id: 'audit-1' }] };
+          }
+          return { rows: [] };
+        },
+        end: async () => {},
+      };
+      const auditApp = createApp(mockPool);
+      const res = await request(auditApp)
+        .delete('/api/weight-entries/we-1')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(auditInserts.some((p) => p.includes('weight_entry.deleted'))).toBe(true);
     });
   });
 });
