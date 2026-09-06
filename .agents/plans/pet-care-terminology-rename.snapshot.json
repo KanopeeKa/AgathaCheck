@@ -4,7 +4,7 @@
   "approved_at": "2026-09-06T20:35:00Z",
   "approved_by": "user chat 2026-09-06 — approve-autonomous pet-care-terminology-rename",
   "approved_until": "2026-09-08T20:35:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1040,
@@ -156,13 +156,13 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1045",
-      "pr_head_sha": "3ad0e5eb"
+      "pr_head_sha": "8367196c"
     }
   ],
-  "content_hash": "sha256:76de0c66f942742f604f19464ec5c591ce12eb30c264d2284bfbe311e9fc4ef6"
+  "content_hash": "sha256:1e31ff30856835f6162844bda0395afd6cfa1e1c3ab8e8b62df5ec6ac0e5b657"
 }
