@@ -94,6 +94,77 @@ describe('Auth Routes — Session v2 (F-05, F-06)', () => {
     });
   });
 
+  describe('HttpOnly cookie refresh (F-07)', () => {
+    it('login sets HttpOnly refresh cookie on /api/auth path', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .send({ email: userEmail, password: 'testpassword' });
+      expect(res.statusCode).toBe(200);
+      const setCookie = res.headers['set-cookie'];
+      expect(setCookie).toBeDefined();
+      const cookies = Array.isArray(setCookie) ? setCookie : [setCookie];
+      expect(cookies.some((c) => c.includes('HttpOnly'))).toBe(true);
+      expect(cookies.some((c) => c.includes('Path=/api/auth'))).toBe(true);
+      expect(cookies.some((c) => c.includes('Path=/backend/api/auth'))).toBe(true);
+    });
+
+    it('refresh accepts HttpOnly cookie without body refresh_token', async () => {
+      const login = await request(app)
+        .post('/api/auth/login')
+        .send({ email: userEmail, password: 'testpassword' });
+      expect(login.statusCode).toBe(200);
+
+      const setCookie = login.headers['set-cookie'];
+      const cookieHeader = Array.isArray(setCookie) ? setCookie.join('; ') : setCookie;
+
+      const refresh = await request(app)
+        .post('/api/auth/refresh')
+        .set('Cookie', cookieHeader)
+        .send({});
+      expect(refresh.statusCode).toBe(200);
+      expect(refresh.body.access_token).toBeDefined();
+      expect(refresh.body.refresh_token).toBeDefined();
+    });
+
+    it('logout clears refresh cookie', async () => {
+      const login = await request(app)
+        .post('/api/auth/login')
+        .send({ email: userEmail, password: 'testpassword' });
+      expect(login.statusCode).toBe(200);
+
+      const setCookie = login.headers['set-cookie'];
+      const cookieHeader = Array.isArray(setCookie) ? setCookie.join('; ') : setCookie;
+
+      const logout = await request(app)
+        .post('/api/auth/logout')
+        .set('Authorization', `Bearer ${login.body.access_token}`)
+        .set('Cookie', cookieHeader);
+      expect(logout.statusCode).toBe(200);
+
+      const cleared = logout.headers['set-cookie'];
+      expect(cleared).toBeDefined();
+      const clearedCookies = Array.isArray(cleared) ? cleared : [cleared];
+      expect(clearedCookies.some((c) => c.includes('Max-Age=0'))).toBe(true);
+    });
+
+    it('cookie refresh works on /backend/api/auth path', async () => {
+      const login = await request(app)
+        .post('/backend/api/auth/login')
+        .send({ email: userEmail, password: 'testpassword' });
+      expect(login.statusCode).toBe(200);
+
+      const setCookie = login.headers['set-cookie'];
+      const cookieHeader = Array.isArray(setCookie) ? setCookie.join('; ') : setCookie;
+
+      const refresh = await request(app)
+        .post('/backend/api/auth/refresh')
+        .set('Cookie', cookieHeader)
+        .send({});
+      expect(refresh.statusCode).toBe(200);
+      expect(refresh.body.access_token).toBeDefined();
+    });
+  });
+
   describe('Logout and password change revoke sessions (E2, E4)', () => {
     it('logout invalidates refresh tokens for all devices', async () => {
       const login = await request(app)

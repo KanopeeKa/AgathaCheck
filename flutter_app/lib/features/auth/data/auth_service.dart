@@ -4,6 +4,9 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
+import 'auth_client_stub.dart' if (dart.library.html) 'auth_client_web.dart';
+import 'token_store.dart';
+
 class AuthUser {
   final String id;
   final String email;
@@ -79,7 +82,20 @@ class AuthService {
 
   AuthService({String? baseUrl, http.Client? client})
     : baseUrl = baseUrl ?? (kIsWeb ? '' : 'http://localhost:5000'),
-      _client = client ?? http.Client();
+      _client = client ?? createAuthHttpClient();
+
+  AuthResult _parseAuthResult(Map<String, dynamic> data) {
+    final refreshFromBody =
+        (data['refresh_token'] ?? data['refreshToken']) as String?;
+    final refreshToken = kIsWeb && refreshFromBody == null
+        ? kHttpOnlyRefreshSentinel
+        : refreshFromBody!;
+    return AuthResult(
+      user: AuthUser.fromJson(data['user'] as Map<String, dynamic>),
+      accessToken: (data['access_token'] ?? data['accessToken']) as String,
+      refreshToken: refreshToken,
+    );
+  }
 
   Future<AuthResult> signup({
     required String email,
@@ -102,11 +118,7 @@ class AuthService {
       throw Exception(body['error'] ?? 'Signup failed');
     }
     final data = json.decode(response.body) as Map<String, dynamic>;
-    return AuthResult(
-      user: AuthUser.fromJson(data['user'] as Map<String, dynamic>),
-      accessToken: (data['access_token'] ?? data['accessToken']) as String,
-      refreshToken: (data['refresh_token'] ?? data['refreshToken']) as String,
-    );
+    return _parseAuthResult(data);
   }
 
   Future<AuthResult> login({
@@ -123,18 +135,17 @@ class AuthService {
       throw Exception(body['error'] ?? 'Login failed');
     }
     final data = json.decode(response.body) as Map<String, dynamic>;
-    return AuthResult(
-      user: AuthUser.fromJson(data['user'] as Map<String, dynamic>),
-      accessToken: (data['access_token'] ?? data['accessToken']) as String,
-      refreshToken: (data['refresh_token'] ?? data['refreshToken']) as String,
-    );
+    return _parseAuthResult(data);
   }
 
   Future<String> refreshToken(String refreshToken) async {
+    final useCookieOnly = kIsWeb && refreshToken == kHttpOnlyRefreshSentinel;
     final response = await _client.post(
       Uri.parse('$baseUrl/api/auth/refresh'),
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({'refresh_token': refreshToken}),
+      body: useCookieOnly
+          ? json.encode({})
+          : json.encode({'refresh_token': refreshToken}),
     );
     if (response.statusCode >= 400) {
       throw Exception('Session expired. Please log in again.');
@@ -143,11 +154,18 @@ class AuthService {
     return (data['access_token'] ?? data['accessToken']) as String;
   }
 
-  Future<void> logout(String refreshToken) async {
+  Future<void> logout(String refreshToken, {String? accessToken}) async {
+    final headers = <String, String>{'Content-Type': 'application/json'};
+    if (accessToken != null && accessToken.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $accessToken';
+    }
+    final useCookieOnly = kIsWeb && refreshToken == kHttpOnlyRefreshSentinel;
     await _client.post(
       Uri.parse('$baseUrl/api/auth/logout'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({'refresh_token': refreshToken}),
+      headers: headers,
+      body: useCookieOnly
+          ? json.encode({})
+          : json.encode({'refresh_token': refreshToken}),
     );
   }
 

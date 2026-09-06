@@ -98,6 +98,47 @@ void main() {
     });
   });
 
+  group('WebTokenStore', () {
+    test('stores access in memory and returns refresh sentinel', () async {
+      SharedPreferences.setMockInitialValues({
+        'auth_access_token': 'legacy-access',
+        'auth_refresh_token': 'legacy-refresh',
+      });
+      final prefs = await SharedPreferences.getInstance();
+      final store = WebTokenStore(prefs);
+
+      expect(await store.readAccessToken(), isNull);
+      expect(await store.readRefreshToken(), isNull);
+
+      await store.writeTokens('access-1', 'ignored-refresh');
+      expect(await store.readAccessToken(), 'access-1');
+      expect(await store.readRefreshToken(), kHttpOnlyRefreshSentinel);
+      expect(prefs.getString('auth_access_token'), isNull);
+      expect(prefs.getString('auth_refresh_token'), isNull);
+
+      await store.writeAccessToken('access-2');
+      expect(await store.readAccessToken(), 'access-2');
+      expect(await store.readRefreshToken(), kHttpOnlyRefreshSentinel);
+
+      await store.clear();
+      expect(await store.readAccessToken(), isNull);
+      expect(await store.readRefreshToken(), isNull);
+    });
+
+    test('clears legacy SharedPreferences keys on first use', () async {
+      SharedPreferences.setMockInitialValues({
+        'auth_access_token': 'legacy-access',
+        'auth_refresh_token': 'legacy-refresh',
+      });
+      final prefs = await SharedPreferences.getInstance();
+      final store = WebTokenStore(prefs);
+
+      await store.readAccessToken();
+      expect(prefs.getString('auth_access_token'), isNull);
+      expect(prefs.getString('auth_refresh_token'), isNull);
+    });
+  });
+
   group('createTokenStore platform selection', () {
     late SharedPreferences prefs;
     setUp(() async {

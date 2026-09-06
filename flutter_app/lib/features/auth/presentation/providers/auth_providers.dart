@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -66,6 +67,26 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> _loadSavedSession() async {
+    if (kIsWeb) {
+      state = state.copyWith(isLoading: true, clearError: true);
+      try {
+        final newAccess = await _authService.refreshToken(
+          kHttpOnlyRefreshSentinel,
+        );
+        final user = await _authService.getMe(newAccess);
+        await _tokenStore.writeTokens(newAccess, kHttpOnlyRefreshSentinel);
+        state = AuthState(
+          user: user,
+          accessToken: newAccess,
+          refreshToken: kHttpOnlyRefreshSentinel,
+        );
+      } catch (_) {
+        await _clearTokens();
+        state = const AuthState();
+      }
+      return;
+    }
+
     final accessToken = await _tokenStore.readAccessToken();
     final refreshToken = await _tokenStore.readRefreshToken();
 
@@ -152,9 +173,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
-    if (state.refreshToken != null) {
+    final refreshToken = state.refreshToken;
+    if (refreshToken != null || (kIsWeb && state.accessToken != null)) {
       try {
-        await _authService.logout(state.refreshToken!);
+        await _authService.logout(
+          refreshToken ?? kHttpOnlyRefreshSentinel,
+          accessToken: state.accessToken,
+        );
       } catch (_) {}
     }
     await _clearTokens();
@@ -250,10 +275,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
         final newAccess = await _authService.refreshToken(state.refreshToken!);
         await _tokenStore.writeAccessToken(newAccess);
         final user = await _authService.getMe(newAccess);
+        final refreshToken = kIsWeb
+            ? kHttpOnlyRefreshSentinel
+            : state.refreshToken;
         state = AuthState(
           user: user,
           accessToken: newAccess,
-          refreshToken: state.refreshToken,
+          refreshToken: refreshToken,
         );
         return newAccess;
       } catch (_) {
@@ -297,7 +325,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final newAccess = await _authService.refreshToken(refreshToken);
       await _tokenStore.writeAccessToken(newAccess);
-      state = state.copyWith(accessToken: newAccess);
+      state = state.copyWith(
+        accessToken: newAccess,
+        refreshToken: kIsWeb ? kHttpOnlyRefreshSentinel : refreshToken,
+      );
       return newAccess;
     } catch (_) {
       await _clearTokens();
@@ -318,7 +349,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final authService = ref.watch(authServiceProvider);
   final prefs = ref.watch(sharedPreferencesProvider);
-  // Secure storage on mobile; SharedPreferences on web/desktop/tests.
+  // Secure storage on mobile; in-memory + HttpOnly cookie on web; prefs elsewhere.
   return AuthNotifier(authService, createTokenStore(prefs));
 });
 

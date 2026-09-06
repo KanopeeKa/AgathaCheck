@@ -91,4 +91,39 @@ void main() {
       expect(notifier.state.refreshToken, isNull);
     },
   );
+
+  test(
+    'forceRefreshAccessToken works with WebTokenStore HttpOnly sentinel',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final store = WebTokenStore(prefs);
+      await store.writeTokens('old-access', kHttpOnlyRefreshSentinel);
+
+      String? refreshBody;
+      final mock = MockClient((req) async {
+        if (req.url.path.endsWith('/api/auth/me')) {
+          return http.Response(jsonEncode({'id': '1', 'email': 'a@b.c'}), 200);
+        }
+        if (req.url.path.endsWith('/api/auth/refresh')) {
+          refreshBody = req.body;
+          return http.Response(jsonEncode({'access_token': 'new-access'}), 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final notifier = AuthNotifier(
+        AuthService(baseUrl: '', client: mock),
+        store,
+      );
+      await _waitForRefreshToken(notifier);
+      expect(notifier.state.refreshToken, kHttpOnlyRefreshSentinel);
+
+      final token = await notifier.forceRefreshAccessToken();
+
+      expect(token, 'new-access');
+      expect(refreshBody, contains(kHttpOnlyRefreshSentinel));
+      expect(notifier.state.accessToken, 'new-access');
+      expect(notifier.state.refreshToken, kHttpOnlyRefreshSentinel);
+    },
+  );
 }

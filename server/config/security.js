@@ -38,10 +38,10 @@ export function corsOptions() {
   const raw = process.env.CORS_ALLOWED_ORIGINS;
   if (raw && raw.trim()) {
     const list = raw.split(',').map((s) => s.trim()).filter(Boolean);
-    return { origin: list };
+    return { origin: list, credentials: true };
   }
   if (isProduction()) {
     return { origin: false };
   }
-  return {};
+  return { credentials: true };
 }
