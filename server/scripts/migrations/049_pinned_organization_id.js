@@ -53,6 +53,6 @@ export async function migratePinnedOrganizationId(client) {
     CREATE TRIGGER trg_clear_pinned_org_on_membership_loss
     AFTER DELETE OR UPDATE OF role ON organization_users
     FOR EACH ROW
-    EXECUTE FUNCTION clear_pinned_org_on_membership_loss()
+    EXECUTE PROCEDURE clear_pinned_org_on_membership_loss()
   `);
 }
