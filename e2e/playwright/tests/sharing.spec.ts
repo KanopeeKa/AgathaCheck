@@ -2,9 +2,9 @@
  * @bdd sharing.feature
  * Scenario: Creating a share link for a pet
  * Scenario: Viewing a shared pet without being logged in
- * Scenario: Viewing a shared pet's health entries
- * Scenario: Viewing a shared pet's vet information
- * Scenario: Viewing owner information on shared pet page
+ * Scenario: Scoped share preview hides health entries
+ * Scenario: Scoped share preview hides veterinarian
+ * Scenario: Viewing owner first name on shared pet page
  * Scenario: Accepting a share into personal pet list
  * Scenario: Opening an expired or invalid share link
  * Scenario: Hiding a shared pet via swipe
@@ -94,7 +94,7 @@ test.describe('Pet sharing', () => {
     await detail.createShareLink();
   });
 
-  test('shared pet page shows health entries and owner name', async ({ page }) => {
+  test('scoped share preview shows owner first name only (no health)', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const owner = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
     const pet = await createPet(baseURL, owner.accessToken, 'Bella', 'Dog');
@@ -107,11 +107,11 @@ test.describe('Pet sharing', () => {
     const sharedPet = new SharedPetPage(page);
     await sharedPet.goto(link.share_code);
     await sharedPet.expectLoaded('Bella');
-    await sharedPet.expectOwnerName('Alice Owner');
-    await sharedPet.expectHealthEntry('Vaccination');
+    await sharedPet.expectOwnerFirstName('Alice');
+    await sharedPet.expectNoHealthSection();
   });
 
-  test('shared pet page shows linked veterinarian', async ({ page }) => {
+  test('scoped share preview does not show veterinarian', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const owner = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
     const pet = await createPet(baseURL, owner.accessToken, 'Bella', 'Dog');
@@ -126,7 +126,7 @@ test.describe('Pet sharing', () => {
     const sharedPet = new SharedPetPage(page);
     await sharedPet.goto(link.share_code);
     await sharedPet.expectLoaded('Bella');
-    await sharedPet.expectVet('Dr. Smith');
+    await sharedPet.expectNoVetSection();
   });
 
   test('logged-in user can accept a share into their pet list', async ({ page }) => {

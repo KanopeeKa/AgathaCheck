@@ -25,24 +25,24 @@ Feature: Pet Sharing
     And the user should see a prompt to sign up or log in
 
   @P1
-  Scenario: Viewing a shared pet's health entries
+  Scenario: Scoped share preview hides health entries
     Given "Bella" has health entries "Vaccination" and "Flea Treatment"
     And "Alice" has created a share link for "Bella"
     When a user opens the share link
-    Then the user should see health entries "Vaccination" and "Flea Treatment"
+    Then the user should not see health entries on the share preview
 
   @P1
-  Scenario: Viewing a shared pet's vet information
+  Scenario: Scoped share preview hides veterinarian
     Given "Bella" is linked to vet "Dr. Smith"
     And "Alice" has created a share link for "Bella"
     When a user opens the share link
-    Then the user should see "Dr. Smith" in the veterinarian section
+    Then the user should not see veterinarian details on the share preview
 
   @P1
-  Scenario: Viewing owner information on shared pet page
+  Scenario: Viewing owner first name on shared pet page
     Given "Alice" has created a share link for "Bella"
     When a user opens the share link
-    Then the user should see "Alice"'s name as the pet owner
+    Then the user should see "Alice"'s first name as the pet owner
 
   # ── Accepting Shares ─────────────────────────────────────────
 
