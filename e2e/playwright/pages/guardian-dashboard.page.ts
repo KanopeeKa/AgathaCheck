@@ -199,18 +199,18 @@ export class GuardianDashboardPage {
   private destinationSemanticsId(label: string): string {
     switch (label) {
       case 'Dashboard':
-        return 'guardian_nav_dashboard';
+        return 'pet_care_nav_dashboard';
       case 'Pets':
-        return 'guardian_nav_pets';
+        return 'pet_care_nav_pets';
       case 'Actions':
       case 'Care':
-        return 'guardian_nav_care';
+        return 'pet_care_nav_care';
       case 'Fostering':
-        return 'guardian_nav_fostering';
+        return 'pet_care_nav_fostering';
       case 'Account':
-        return 'guardian_nav_account';
+        return 'pet_care_nav_account';
       default:
-        return `guardian_nav_${label.toLowerCase()}`;
+        return `pet_care_nav_${label.toLowerCase()}`;
     }
   }
 

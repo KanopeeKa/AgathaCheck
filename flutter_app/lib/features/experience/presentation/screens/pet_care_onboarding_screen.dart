@@ -103,7 +103,7 @@ class _PetCareOnboardingScreenState
           title: Text(l.petCareOnboardingTitle),
           actions: [
             TextButton(
-              key: const Key('guardian_onboarding_skip'),
+              key: const Key('pet_care_onboarding_skip'),
               onPressed: _isSaving ? null : _skip,
               child: Text(l.petCareOnboardingSkip),
             ),
@@ -123,7 +123,7 @@ class _PetCareOnboardingScreenState
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
                   _WelcomeStep(
-                    key: const Key('guardian_onboarding_welcome'),
+                    key: const Key('pet_care_onboarding_welcome'),
                     title: l.petCareOnboardingWelcomeTitle,
                     body: l.petCareOnboardingWelcomeBody,
                     iconColor: xp.petCarePrimary,
@@ -143,8 +143,8 @@ class _PetCareOnboardingScreenState
                 width: double.infinity,
                 child: FilledButton(
                   key: _step == 1
-                      ? const Key('guardian_onboarding_complete')
-                      : const Key('guardian_onboarding_continue'),
+                      ? const Key('pet_care_onboarding_complete')
+                      : const Key('pet_care_onboarding_continue'),
                   onPressed: _isSaving ? null : _nextStep,
                   child: _isSaving
                       ? const SizedBox(

@@ -134,7 +134,7 @@ class _PetCareUpcomingEventsSectionState
       if (!hasAnyCare) {
         return PetCareIllustratedEmptyState(
           key: const Key('pet_care_dashboard_empty_care'),
-          assetPath: 'assets/dashboard/guardian-empty-care.png',
+          assetPath: 'assets/dashboard/pet-care-empty-care.png',
           title: l.petCareEmptyCareTitle,
           body: l.petCareEmptyCareBody,
           actionLabel: l.addAnEvent,
@@ -228,7 +228,7 @@ class _PetCareUpcomingEventsSectionState
         _careContent(context, priorities, pets, l),
         const SizedBox(height: 8),
         const SizedBox(
-          key: Key('guardian_due_events_refreshing'),
+          key: Key('pet_care_due_events_refreshing'),
           height: 20,
           width: 20,
           child: CircularProgressIndicator(strokeWidth: 2),

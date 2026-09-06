@@ -127,7 +127,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.byKey(const Key('guardian_vets_auth_waiting')), findsOneWidget);
+    expect(find.byKey(const Key('pet_care_vets_auth_waiting')), findsOneWidget);
     expect(find.text('Keep your vet close at hand'), findsNothing);
   });
 
@@ -137,8 +137,8 @@ void main() {
     await tester.pumpWidget(buildSection(vetNotifier: _LoadingVetNotifier()));
     await tester.pump();
 
-    expect(find.byKey(const Key('guardian_vets_loading')), findsOneWidget);
-    expect(find.byKey(const Key('guardian_vets_auth_waiting')), findsNothing);
+    expect(find.byKey(const Key('pet_care_vets_loading')), findsOneWidget);
+    expect(find.byKey(const Key('pet_care_vets_auth_waiting')), findsNothing);
   });
 
   testWidgets('shows an actionable retry when the vet provider fails', (

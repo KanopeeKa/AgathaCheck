@@ -43,13 +43,13 @@ class PetCareMyVetsSection extends ConsumerWidget {
         const SizedBox(height: 10),
         auth.accessToken == null
             ? const SizedBox(
-                key: Key('guardian_vets_auth_waiting'),
+                key: Key('pet_care_vets_auth_waiting'),
                 height: 24,
                 child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
               )
             : vetListAsync.when(
                 loading: () => const SizedBox(
-                  key: Key('guardian_vets_loading'),
+                  key: Key('pet_care_vets_loading'),
                   height: 24,
                   child: Center(
                     child: CircularProgressIndicator(strokeWidth: 2),
@@ -73,7 +73,7 @@ class PetCareMyVetsSection extends ConsumerWidget {
                   if (resolvedVets.isEmpty) {
                     return PetCareIllustratedEmptyState(
                       key: const Key('pet_care_dashboard_empty_vets'),
-                      assetPath: 'assets/dashboard/guardian-empty-vets.png',
+                      assetPath: 'assets/dashboard/pet-care-empty-vets.png',
                       title: l.petCareEmptyVetTitle,
                       body: l.petCareEmptyVetBody,
                       actionLabel: l.addVet,
