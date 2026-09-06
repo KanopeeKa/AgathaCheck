@@ -10,8 +10,8 @@ import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../widgets/experience_shell_scaffold.dart';
 import '../../widgets/pet_care_pets_tile_grid.dart';
 import '../../../domain/entities/app_experience.dart';
-import '../guardian/pet_care_bulk_share.dart';
-import '../guardian/pet_care_dashboard_helpers.dart';
+import 'pet_care_bulk_share.dart';
+import 'pet_care_dashboard_helpers.dart';
 
 /// Multi-select screen for bulk-sharing owned guardian pets.
 class PetCareBulkShareSelectScreen extends ConsumerStatefulWidget {
