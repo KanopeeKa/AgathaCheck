@@ -31,6 +31,7 @@ Gold-standard security and mobile-readiness programme for the Pet Care domain.
 | `pet-care-api-contract` | F-14 OpenAPI subset + contract tests | merged (#1022) |
 | `pet-care-quality-ci` | F-17–F-20 quality gates | merged (#1026; CI jobs debt #1025) |
 | `pet-care-weight-validation` | F-13 weight input validation | merged (#1029) |
-| `pet-care-route-hygiene` | F-21 remove dead .bak route files | in progress |
+| `pet-care-route-hygiene` | F-21 remove dead .bak route files | merged (#1030) |
+| `pet-care-security-hardening` | F-15 headers + F-16 upload rate limit | in progress |
 
 See discovery report §Recommended follow-on plans for the full slice list.

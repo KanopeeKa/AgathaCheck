@@ -20,6 +20,8 @@ import uploadsRoutes from '../routes/uploads.js';
 import healthFilesRoutes from '../routes/healthFiles.js';
 import { REFRESH_COOKIE_NAME, getCookieValue } from '../lib/authCookies.js';
 import { corsOptions } from '../config/security.js';
+import { securityHeadersMiddleware } from '../config/securityHeaders.js';
+import { createStaticUploadLimiter } from '../config/rateLimit.js';
 import { logPublicAccessModeOnce } from '../config/publicAccess.js';
 import { requestContextMiddleware } from '../middleware/requestContext.js';
 import { publicAccessGate } from '../middleware/publicAccessGate.js';
@@ -59,6 +61,7 @@ export function createApp(customPool, comparePassword) {
   logPublicAccessModeOnce();
 
   app.set('trust proxy', 1);
+  app.use(securityHeadersMiddleware());
   app.use(requestContextMiddleware);
   app.use(publicAccessGate);
   app.use(cors(corsOptions()));
@@ -84,6 +87,10 @@ export function createApp(customPool, comparePassword) {
     return next();
   };
 
+  const staticUploadLimiter = createStaticUploadLimiter();
+
+  app.use('/uploads', staticUploadLimiter);
+  app.use('/backend/uploads', staticUploadLimiter);
   app.use('/uploads', blockSensitiveUploadPaths);
   app.use('/backend/uploads', blockSensitiveUploadPaths);
   app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
