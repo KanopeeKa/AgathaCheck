@@ -30,5 +30,6 @@ Gold-standard security and mobile-readiness programme for the Pet Care domain.
 | `pet-care-data-lifecycle` | F-09–F-12 data lifecycle | merged (#1017, #1018; pre-UAT remedial #1019) |
 | `pet-care-api-contract` | F-14 OpenAPI subset + contract tests | merged (#1022) |
 | `pet-care-quality-ci` | F-17–F-20 quality gates | merged (#1026; CI jobs debt #1025) |
+| `pet-care-weight-validation` | F-13 weight input validation | in progress |
 
 See discovery report §Recommended follow-on plans for the full slice list.

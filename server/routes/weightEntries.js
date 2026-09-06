@@ -26,6 +26,20 @@ function weightEntryToMap(row) {
   };
 }
 
+function parseWeightInput(raw) {
+  if (raw === undefined || raw === null || raw === '') {
+    return { error: 'weight is required' };
+  }
+  const weightVal = typeof raw === 'number' ? raw : parseFloat(String(raw));
+  if (!Number.isFinite(weightVal)) {
+    return { error: 'weight must be a number' };
+  }
+  if (weightVal <= 0) {
+    return { error: 'weight must be positive' };
+  }
+  return { value: weightVal };
+}
+
 export default function weightEntriesRoutes(pool) {
   const router = express.Router();
   router.use(createApiLimiter());
@@ -99,7 +113,11 @@ export default function weightEntriesRoutes(pool) {
       }
       const dateVal = normalizeCalendarDateInput(data.date || data.measured_at)
         || todayCalendarIso();
-      const weightVal = typeof data.weight === 'number' ? data.weight : parseFloat(data.weight || '0');
+      const parsedWeight = parseWeightInput(data.weight);
+      if (parsedWeight.error) {
+        return res.status(400).json({ error: parsedWeight.error });
+      }
+      const weightVal = parsedWeight.value;
       const result = await pool.query(
         'INSERT INTO weight_entries (id, pet_id, user_id, weight, unit, date, notes) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
         [id, petId, userId, weightVal, data.unit || 'kg', dateVal, data.notes || '']
@@ -130,7 +148,11 @@ export default function weightEntriesRoutes(pool) {
       const data = req.body;
       const dateVal = normalizeCalendarDateInput(data.date || data.measured_at)
         || todayCalendarIso();
-      const weightVal = typeof data.weight === 'number' ? data.weight : parseFloat(data.weight || '0');
+      const parsedWeight = parseWeightInput(data.weight);
+      if (parsedWeight.error) {
+        return res.status(400).json({ error: parsedWeight.error });
+      }
+      const weightVal = parsedWeight.value;
       const result = await pool.query(
         'UPDATE weight_entries SET weight = $1, unit = $2, date = $3, notes = $4 WHERE id = $5 RETURNING *',
         [weightVal, data.unit || 'kg', dateVal, data.notes || '', req.params.id]

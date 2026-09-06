@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-care-weight-validation",
+  "approved_at": "2026-09-06T15:15:00Z",
+  "approved_by": "standing grant — Pet Care hardening roadmap (user chat 2026-09-05)",
+  "approved_until": "2026-09-08T15:15:00Z",
+  "content_hash": "sha256:72a8ba5e199833e9ccda66f600ae8f7908c0c8d6f2f089c3fa801b04f462d24c",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1028,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Weight entry validation rejects missing/NaN/negative (F-13)",
+      "branch": "cursor/pet-care-weight-validation-75cb",
+      "allowed_paths": [
+        ".agents/plans/pet-care-weight-validation.*",
+        "server/routes/weightEntries.js",
+        "server/test/weightEntries.test.js",
+        "docs/engineering/pet-care-hardening/README.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

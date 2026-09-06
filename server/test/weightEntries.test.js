@@ -302,6 +302,40 @@ describe('Weight Entries API', () => {
       expect(res.statusCode).toBe(403);
     });
 
+    it('returns 400 when weight is missing', async () => {
+      const res = await request(app)
+        .post('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ pet_id: 'pet-1' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/weight is required/i);
+    });
+
+    it('returns 400 when weight is not a number', async () => {
+      const res = await request(app)
+        .post('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ pet_id: 'pet-1', weight: 'not-a-number' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/weight must be a number/i);
+    });
+
+    it('returns 400 when weight is zero or negative', async () => {
+      const zero = await request(app)
+        .post('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ pet_id: 'pet-1', weight: 0 });
+      expect(zero.statusCode).toBe(400);
+      expect(zero.body.error).toMatch(/positive/i);
+
+      const negative = await request(app)
+        .post('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ pet_id: 'pet-1', weight: -1 });
+      expect(negative.statusCode).toBe(400);
+      expect(negative.body.error).toMatch(/positive/i);
+    });
+
     it('refreshes pets.weight after create', async () => {
       await request(app)
         .post('/api/weight-entries')
@@ -340,6 +374,15 @@ describe('Weight Entries API', () => {
       const update = [...allQueries].reverse().find((q) => q.sql.includes('UPDATE weight_entries'));
       expect(update.sql).toContain('UPDATE weight_entries');
       expect(update.params[4]).toBe('we-1');
+    });
+
+    it('returns 400 when weight is invalid on update', async () => {
+      const res = await request(app)
+        .put('/api/weight-entries/we-1')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ weight: 'bad' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/weight must be a number/i);
     });
   });
 
