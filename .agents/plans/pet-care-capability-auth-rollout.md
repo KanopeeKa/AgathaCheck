@@ -53,10 +53,10 @@ next_action: "continue phase 1 on branch cursor/pet-care-capability-auth-rollout
 artifact_ref:
   branch: cursor/pet-care-capability-auth-rollout-75cb
   plan_path: .agents/plans/pet-care-capability-auth-rollout.md
-  plan_commit: ea500c8772ceed747264f366637252c85bb7ca0c
+  plan_commit: 98941081746c55abcd020819e4275d49042dbab1
   snapshot_path: .agents/plans/pet-care-capability-auth-rollout.snapshot.json
-  snapshot_commit: ea500c8772ceed747264f366637252c85bb7ca0c
-open_prs: []
+  snapshot_commit: 98941081746c55abcd020819e4275d49042dbab1
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1009"]
 merge_commits: {}
 debt_issue_refs: []
 ```
