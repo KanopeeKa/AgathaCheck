@@ -109,9 +109,9 @@
   "sharing.feature": {
     "Creating a share link for a pet": "P0",
     "Viewing a shared pet without being logged in": "P0",
-    "Viewing a shared pet's health entries": "P1",
-    "Viewing a shared pet's vet information": "P1",
-    "Viewing owner information on shared pet page": "P1",
+    "Scoped share preview hides health entries": "P1",
+    "Scoped share preview hides veterinarian": "P1",
+    "Viewing owner first name on shared pet page": "P1",
     "Accepting a share into personal pet list": "P1",
     "Pending share appears in pet list": "P2",
     "Accepting a pending share into personal list": "P2",
