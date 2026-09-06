@@ -18,6 +18,7 @@ import fosterPlacementsRoutes from '../routes/fosterPlacements.js';
 import custodyTransfersRoutes from '../routes/custodyTransfers.js';
 import uploadsRoutes from '../routes/uploads.js';
 import healthFilesRoutes from '../routes/healthFiles.js';
+import { parseCookieHeader } from '../lib/authCookies.js';
 import { corsOptions } from '../config/security.js';
 import { logPublicAccessModeOnce } from '../config/publicAccess.js';
 import { requestContextMiddleware } from '../middleware/requestContext.js';
@@ -61,6 +62,10 @@ export function createApp(customPool, comparePassword) {
   app.use(requestContextMiddleware);
   app.use(publicAccessGate);
   app.use(cors(corsOptions()));
+  app.use((req, res, next) => {
+    req.cookies = parseCookieHeader(req.headers.cookie);
+    next();
+  });
   app.use(bodyParser.json());
 
   const blockSensitiveUploadPaths = (req, res, next) => {

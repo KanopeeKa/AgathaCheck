@@ -7,6 +7,11 @@ import { linkExternalFostersByEmail } from '../../lib/orgPeople.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { logger } from '../../lib/logger.js';
 import {
+  clearRefreshTokenCookie,
+  readRefreshTokenFromRequest,
+  setRefreshTokenCookie,
+} from '../../lib/authCookies.js';
+import {
   issueTokenPair,
   revokeAllUserRefreshSessions,
   rotateRefreshToken,
@@ -56,6 +61,7 @@ export function registerSessionRoutes(router, pool, { comparePassword, authLimit
         resourceId: user.id,
         req,
       });
+      setRefreshTokenCookie(res, refreshToken);
       res.status(201).json({ user, access_token: accessToken, refresh_token: refreshToken });
     } catch (err) {
       logger.error({ err }, 'signup error');
@@ -104,6 +110,7 @@ export function registerSessionRoutes(router, pool, { comparePassword, authLimit
         resourceId: user.id,
         req,
       });
+      setRefreshTokenCookie(res, refreshToken);
       res.status(200).json({ user, access_token: accessToken, refresh_token: refreshToken });
     } catch (err) {
       logger.error({ err }, 'login error');
@@ -112,7 +119,7 @@ export function registerSessionRoutes(router, pool, { comparePassword, authLimit
   });
 
   router.post('/refresh', async (req, res) => {
-    const { refresh_token } = req.body;
+    const refresh_token = readRefreshTokenFromRequest(req);
     if (!refresh_token) {
       return res.status(400).json({ error: 'refresh_token is required' });
     }
@@ -130,6 +137,7 @@ export function registerSessionRoutes(router, pool, { comparePassword, authLimit
         resourceId: prePayload.id,
         req,
       });
+      setRefreshTokenCookie(res, refreshToken);
       res.status(200).json({ access_token: accessToken, refresh_token: refreshToken });
     } catch (err) {
       return res.status(401).json({ error: 'Invalid or expired refresh token', ...errorDetails(err) });
@@ -153,6 +161,7 @@ export function registerSessionRoutes(router, pool, { comparePassword, authLimit
         // Ignore invalid tokens on logout.
       }
     }
+    clearRefreshTokenCookie(res);
     res.status(200).json({ message: 'Logged out' });
   });
 }

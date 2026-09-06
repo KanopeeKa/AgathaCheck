@@ -4,7 +4,7 @@
   "approved_at": "2026-09-06T08:00:00Z",
   "approved_by": "standing grant — Pet Care hardening roadmap (user chat 2026-09-05)",
   "approved_until": "2026-09-08T08:00:00Z",
-  "content_hash": "sha256:55cb7678dce393d161f0253ea42dd57da2bf25c92c7194a29897d1fd39b6f149",
+  "content_hash": "sha256:50cf28f1068d4096e509d13db9c6771a849b3d85e23b3b4142b6bd587f05e402",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -41,7 +41,7 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "in_progress",
+      "status": "pending",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
@@ -57,6 +57,12 @@
         "flutter_app/lib/features/auth/**",
         "flutter_app/test/features/auth/**",
         "flutter_app/test/**",
+        "server/lib/authCookies.js",
+        "server/routes/auth/sessionRouter.js",
+        "server/routes/auth/shared.js",
+        "server/bin/server.js",
+        "server/test/auth/sessionV2.test.js",
+        "server/config/security.js",
         "docs/engineering/pet-care-hardening/README.md"
       ],
       "forbidden_paths": [
@@ -73,13 +79,10 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "debt_issue_refs": []
     }
   ]
 }

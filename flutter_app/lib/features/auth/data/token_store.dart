@@ -16,6 +16,10 @@ abstract class TokenStore {
 const _accessTokenKey = 'auth_access_token';
 const _refreshTokenKey = 'auth_refresh_token';
 
+/// Returned by [WebTokenStore.readRefreshToken] when the refresh token lives in
+/// an HttpOnly cookie and is not readable from Dart.
+const kHttpOnlyRefreshSentinel = '__http_only_refresh__';
+
 /// SharedPreferences-backed store (web/dev/tests). Tokens live in plaintext
 /// local storage — acceptable on web (no OS keychain) but not on mobile, where
 /// [SecureTokenStore] is used instead.
@@ -41,6 +45,59 @@ class PrefsTokenStore implements TokenStore {
 
   @override
   Future<void> clear() async {
+    await _prefs.remove(_accessTokenKey);
+    await _prefs.remove(_refreshTokenKey);
+  }
+}
+
+/// Web-only store: access token in memory; refresh token in HttpOnly cookie.
+class WebTokenStore implements TokenStore {
+  WebTokenStore(this._prefs);
+
+  final SharedPreferences _prefs;
+  String? _accessToken;
+  bool _httpOnlyRefreshActive = false;
+  bool _migrationAttempted = false;
+
+  Future<void> _maybeMigrateFromPrefs() async {
+    if (_migrationAttempted) return;
+    _migrationAttempted = true;
+    await _prefs.remove(_accessTokenKey);
+    await _prefs.remove(_refreshTokenKey);
+  }
+
+  @override
+  Future<String?> readAccessToken() async {
+    await _maybeMigrateFromPrefs();
+    return _accessToken;
+  }
+
+  @override
+  Future<String?> readRefreshToken() async {
+    await _maybeMigrateFromPrefs();
+    return _httpOnlyRefreshActive ? kHttpOnlyRefreshSentinel : null;
+  }
+
+  @override
+  Future<void> writeAccessToken(String token) async {
+    await _maybeMigrateFromPrefs();
+    _accessToken = token;
+    await _prefs.remove(_accessTokenKey);
+  }
+
+  @override
+  Future<void> writeTokens(String access, String refresh) async {
+    await _maybeMigrateFromPrefs();
+    _accessToken = access;
+    _httpOnlyRefreshActive = true;
+    await _prefs.remove(_accessTokenKey);
+    await _prefs.remove(_refreshTokenKey);
+  }
+
+  @override
+  Future<void> clear() async {
+    _accessToken = null;
+    _httpOnlyRefreshActive = false;
     await _prefs.remove(_accessTokenKey);
     await _prefs.remove(_refreshTokenKey);
   }
@@ -134,9 +191,12 @@ class SecureTokenStore implements TokenStore {
   }
 }
 
-/// Picks the right store for the platform: secure storage on Android/iOS, and
-/// SharedPreferences everywhere else (web/desktop/tests).
+/// Picks the right store for the platform: secure storage on Android/iOS,
+/// in-memory access + HttpOnly cookie refresh on web, SharedPreferences elsewhere.
 TokenStore createTokenStore(SharedPreferences prefs) {
+  if (kIsWeb) {
+    return WebTokenStore(prefs);
+  }
   if (!kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS)) {
