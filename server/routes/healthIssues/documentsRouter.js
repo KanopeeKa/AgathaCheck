@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { publicError } from '../../config/security.js';
 import { userCanManageHealthIssue } from '../../lib/petAccess.js';
+import { buildHealthFileApiPath } from '../../lib/privateHealthStorage.js';
 import {
   handleDocumentUpload,
   removeHealthDocumentFromDisk,
@@ -51,7 +52,7 @@ export function registerDocumentsRoutes(router, pool) {
       const id = uuidv4();
       const url = req.file
         ? saveHealthDocument(req.file, id)
-        : req.body?.url || `/uploads/health_documents/${id}.jpg`;
+        : req.body?.url || buildHealthFileApiPath(id);
       const result = await pool.query(
         'INSERT INTO health_issue_documents (id, health_issue_id, url) VALUES ($1, $2, $3) RETURNING *',
         [id, req.params.id, url]

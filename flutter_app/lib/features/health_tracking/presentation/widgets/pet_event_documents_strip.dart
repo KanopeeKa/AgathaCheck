@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
+import '../../../../core/utils/resolve_health_file_url.dart';
+import '../../../../core/widgets/authenticated_network_image.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/health_remote_datasource.dart';
 import 'pet_event_view_providers.dart';
@@ -77,13 +79,8 @@ class _DocumentTile extends StatelessWidget {
   bool _isPdf(String path) =>
       path.toLowerCase().split('?').first.endsWith('.pdf');
 
-  String _documentUrl(String path) {
-    final normalizedBase = baseUrl.endsWith('/')
-        ? baseUrl.substring(0, baseUrl.length - 1)
-        : baseUrl;
-    final normalizedPath = path.startsWith('/') ? path.substring(1) : path;
-    return '$normalizedBase/$normalizedPath';
-  }
+  String _documentUrl(String path) =>
+      resolveHealthFileUrl(path, apiBaseUrl: baseUrl);
 
   Future<void> _open(BuildContext context) async {
     final l = AppLocalizations.of(context)!;
@@ -106,7 +103,7 @@ class _DocumentTile extends StatelessWidget {
           children: [
             Center(
               child: InteractiveViewer(
-                child: Image.network(url, fit: BoxFit.contain),
+                child: AuthenticatedNetworkImage(url: url, fit: BoxFit.contain),
               ),
             ),
             Positioned(
@@ -157,8 +154,8 @@ class _DocumentTile extends StatelessWidget {
                     ),
                   ],
                 )
-              : Image.network(
-                  url,
+              : AuthenticatedNetworkImage(
+                  url: url,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) =>
                       Icon(Icons.broken_image, color: colorScheme.outline),

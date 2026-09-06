@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-care-p0-private-files",
+  "approved_at": "2026-09-05T23:55:00Z",
+  "approved_by": "standing grant — Pet Care hardening roadmap (user chat 2026-09-05)",
+  "approved_until": "2026-09-07T23:55:00Z",
+  "content_hash": "sha256:b1832a6ebf78542ee1382a701bfb2d6d8a1b9093301451dd289186733878d39e",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 997,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Private health file serving (F-01)",
+      "branch": "cursor/pet-care-p0-private-files-75cb",
+      "allowed_paths": [
+        ".agents/plans/pet-care-p0-private-files.*",
+        "server/lib/privateHealthStorage.js",
+        "server/lib/servePublicUpload.js",
+        "server/routes/healthFiles.js",
+        "server/routes/healthEntries/**",
+        "server/routes/healthIssues/**",
+        "server/bin/server.js",
+        "server/scripts/migrate.js",
+        "server/scripts/migrations/050_private_health_files.js",
+        "db/migrations/050_private_health_files.sql",
+        "db/migrations/050_private_health_files_down.sql",
+        "db/schema/migration-manifest.json",
+        "server/test/**",
+        "flutter_app/lib/core/widgets/authenticated_network_image.dart",
+        "flutter_app/lib/core/utils/resolve_health_file_url.dart",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_profile/presentation/controllers/health_issues_controller.dart",
+        "flutter_app/test/core/utils/resolve_health_file_url_test.dart",
+        "docs/engineering/pet-care-hardening/README.md",
+        "docs/domains/pet_care/changes/hardening-discovery.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/998",
+      "pr_head_sha": "e1ce9dee67606845f7c14e094f57d28e9236ce87"
+    }
+  ]
+}

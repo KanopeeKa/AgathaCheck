@@ -1,19 +1,23 @@
-import path from 'path';
-import fs from 'fs';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../../config/jwtSecret.js';
 import { dateToIsoDate } from '../../lib/calendarDate.js';
-import { extensionForMime, resolvePathUnderRoot, saveUploadedFile } from '../../lib/safeUpload.js';
+import { extensionForMime } from '../../lib/safeUpload.js';
+import {
+  HEALTH_DOCUMENT_EXTENSIONS,
+  HEALTH_DOCUMENT_MIME_TYPES,
+  MAX_HEALTH_DOCUMENT_BYTES,
+  privateHealthDir,
+  removePrivateHealthFile,
+  savePrivateHealthFile,
+} from '../../lib/privateHealthStorage.js';
 
-export const MAX_HEALTH_DOCUMENT_BYTES = 2 * 1024 * 1024;
-export const HEALTH_DOCUMENT_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.pdf']);
-export const HEALTH_DOCUMENT_MIME_TYPES = new Set([
-  'image/jpeg',
-  'image/png',
-  'application/pdf',
-]);
+export {
+  HEALTH_DOCUMENT_EXTENSIONS,
+  HEALTH_DOCUMENT_MIME_TYPES,
+  MAX_HEALTH_DOCUMENT_BYTES,
+};
 
 const _upload = multer({
   storage: multer.memoryStorage(),
@@ -29,35 +33,17 @@ const _upload = multer({
 });
 
 export function healthUploadDir() {
-  return process.env.HEALTH_UPLOAD_DIR || path.resolve(process.cwd(), 'uploads', 'health_documents');
+  return privateHealthDir();
 }
 
 export function saveHealthDocument(file, id) {
-  const dir = healthUploadDir();
-  const { filename } = saveUploadedFile({
-    buffer: file.buffer,
-    mimeType: file.mimetype,
-    fileId: id,
-    rootDir: dir,
-    allowedExtensions: HEALTH_DOCUMENT_EXTENSIONS,
-    maxBytes: MAX_HEALTH_DOCUMENT_BYTES,
-  });
-  return `/uploads/health_documents/${filename}`;
+  const { apiPath } = savePrivateHealthFile(file, id);
+  return apiPath;
 }
 
-/** Best-effort removal of a persisted health document by its public URL path. */
+/** Best-effort removal of a persisted health document by its API or legacy URL path. */
 export function removeHealthDocumentFromDisk(url) {
-  if (!url || typeof url !== 'string') return;
-  const prefix = '/uploads/health_documents/';
-  if (!url.startsWith(prefix)) return;
-  const filename = url.slice(prefix.length);
-  if (!filename || filename.includes('/') || filename.includes('\\')) return;
-  try {
-    const filePath = resolvePathUnderRoot(healthUploadDir(), filename);
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-  } catch (_) {
-    // ignore missing or invalid paths
-  }
+  removePrivateHealthFile(url);
 }
 
 export function handleDocumentUpload(req, res, next) {

@@ -13,6 +13,7 @@ import '../../../health_tracking/presentation/utils/health_document_picker.dart'
 import '../../../health_tracking/presentation/providers/health_issue_providers.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+import 'package:pet_profile_app/core/utils/resolve_health_file_url.dart';
 
 class HealthIssuesController {
   HealthIssuesController(this.ref);
@@ -251,11 +252,7 @@ class HealthIssuesController {
 
   String documentUrl(String path) {
     final baseUrl = ref.read(apiBaseUrlProvider);
-    final normalizedBase = baseUrl.endsWith('/')
-        ? baseUrl.substring(0, baseUrl.length - 1)
-        : baseUrl;
-    final normalizedPath = path.startsWith('/') ? path.substring(1) : path;
-    return '$normalizedBase/$normalizedPath';
+    return resolveHealthFileUrl(path, apiBaseUrl: baseUrl);
   }
 
   bool isPdfDocument(String path) =>

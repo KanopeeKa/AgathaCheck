@@ -1056,7 +1056,7 @@ describe('Health Entries API', () => {
         .attach('photo', Buffer.from('document'), { filename, contentType });
       expect(res.statusCode).toBe(201);
       expect(res.body.url).toMatch(
-        new RegExp(`/uploads/health_documents/.+\\.${filename.split('.').pop()}$`)
+        /^\/api\/health-files\/[0-9a-f-]{36}$/
       );
     });
 

@@ -10,8 +10,6 @@ const PUBLIC_UPLOAD_SUBDIRS = new Set([
   'org_photos',
   'org_logos',
   'photos',
-  'health_documents',
-  'health_photos',
 ]);
 
 const SAFE_FILENAME = /^[0-9a-zA-Z][0-9a-zA-Z._-]*\.(jpg|jpeg|png|webp|pdf)$/i;
@@ -33,12 +31,6 @@ function resolveUploadDir(subdir) {
   if (subdir === 'org_photos' || subdir === 'org_logos') {
     if (process.env.ORG_UPLOAD_DIR) {
       return path.resolve(process.env.ORG_UPLOAD_DIR);
-    }
-    return path.resolve(defaultUploadsRoot(), subdir);
-  }
-  if (subdir === 'health_documents' || subdir === 'health_photos') {
-    if (process.env.HEALTH_UPLOAD_DIR) {
-      return path.resolve(process.env.HEALTH_UPLOAD_DIR);
     }
     return path.resolve(defaultUploadsRoot(), subdir);
   }
