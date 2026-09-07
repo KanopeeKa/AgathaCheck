@@ -3,8 +3,6 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   flutterGotoUrl,
-  guardianAccountTabLocator,
-  isGuardianBottomNavVisible,
   openAccountFromShell,
   openExperienceDrawer,
   refreshFlutterAccessibility,
