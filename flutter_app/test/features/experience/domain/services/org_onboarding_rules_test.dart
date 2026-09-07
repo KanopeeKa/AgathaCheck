@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pet_profile_app/features/experience/domain/services/org_onboarding_rules.dart';
+import 'package:pet_profile_app/features/organization/domain/services/org_onboarding_rules.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 

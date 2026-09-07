@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../features/organization/presentation/providers/manage_fosters_providers.dart';
-import '../../../l10n/app_localizations.dart';
-import 'collection_filter.dart';
+import '../../../../core/widgets/collection_filter/collection_filter.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../providers/manage_fosters_providers.dart';
 
 abstract final class ManageFostersCollectionFilterIds {
   static const approval = 'approval';

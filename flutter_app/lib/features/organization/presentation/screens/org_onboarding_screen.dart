@@ -10,10 +10,10 @@ import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../organization/domain/entities/organization.dart';
-import '../../../organization/presentation/providers/organization_providers.dart';
+import '../../domain/entities/organization.dart';
+import '../providers/organization_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
-import '../providers/experience_providers.dart';
+import '../../../experience/presentation/providers/experience_providers.dart';
 
 /// Guided wizard for org super-admins: create org, first inventory pet, reminder.
 class OrgOnboardingScreen extends ConsumerStatefulWidget {

@@ -9,8 +9,6 @@ import '../../../../core/widgets/shell_notification_bell.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../notifications/presentation/widgets/notification_panel.dart';
-import '../../../organization/domain/entities/organization.dart';
-import '../../../organization/presentation/widgets/org_shell_app_bar_title.dart';
 import '../../domain/entities/app_experience.dart';
 import '../config/drawer_menu_config.dart';
 import '../utils/experience_theme.dart';
@@ -24,8 +22,6 @@ import 'pet_care_navigation_sidebar.dart';
 import 'shelter_bottom_navigation.dart';
 import 'shelter_navigation_rail.dart';
 import 'shelter_navigation_sidebar.dart';
-import 'shelter_pinned_org_provider.dart';
-import '../../../organization/presentation/utils/org_screen_theme.dart';
 
 /// Shell scaffold shared by guardian and organisation experience screens.
 ///
@@ -48,8 +44,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
     this.backButtonKey,
     this.scaffoldKey,
     this.floatingActionButton,
-    this.orgNavVariant,
-    this.organization,
   });
 
   final AppExperience experience;
@@ -78,13 +72,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
 
   final Widget? floatingActionButton;
 
-  /// Organisation nav title variant (D-v3-NAV-1). When set with [screenTitle],
-  /// replaces [AppLogoTitle] for organisation experience screens.
-  final OrgNavTitleVariant? orgNavVariant;
-
-  /// Optional org for thumbnail titles in the org shell.
-  final Organization? organization;
-
   static const _toolbarHeight = 64.0;
 
   bool _isRoot() => DrawerMenuConfig.sectionRootPaths.contains(currentLocation);
@@ -105,9 +92,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
     final isPetCareExperience = experience == AppExperience.petCare;
     final shelterNavActive =
         isOrg && ShelterPrimaryDestinations.supports(currentLocation);
-    final pinnedOrg = shelterNavActive
-        ? ref.watch(shelterPinnedOrganizationProvider)
-        : null;
     final usesPetCarePrimaryNavigation =
         isPetCareExperience &&
         PetCarePrimaryDestinations.isCompact(viewportWidth);
@@ -140,7 +124,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
         usesPetCarePrimaryNavigation || usesShelterPrimaryChrome
         ? AppColorTokens.inverse
         : null;
-    final useOrgTitle = isOrg && screenTitle != null && orgNavVariant != null;
     const showShelterWorkspace = true;
     const workspaceToggleWidth = 184.0;
     final leadingWidth = usesPetCareLeadingNav
@@ -167,12 +150,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
         !suppressSectionRootAppBarTitle;
     final titleWidget = !showTitle
         ? const SizedBox.shrink()
-        : useOrgTitle
-        ? OrgShellAppBarTitle(
-            title: screenTitle!,
-            variant: orgNavVariant!,
-            organization: organization,
-          )
         : usesDesktopContentHeader
         ? Align(
             alignment: Alignment.centerLeft,
@@ -218,9 +195,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
       data: shellTheme,
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: isOrg
-            ? orgListScaffoldBackground(context)
-            : experience == AppExperience.petCare
+        backgroundColor: experience == AppExperience.petCare
             ? AppColorTokens.background
             : null,
         appBar: usesLeadingNav
@@ -250,11 +225,11 @@ class ExperienceShellScaffold extends ConsumerWidget {
                     usesShelterNavigationSidebar
                         ? ShelterNavigationSidebar(
                             currentLocation: currentLocation,
-                            pinnedOrg: pinnedOrg,
+                            pinnedOrg: null,
                           )
                         : ShelterNavigationRail(
                             currentLocation: currentLocation,
-                            pinnedOrg: pinnedOrg,
+                            pinnedOrg: null,
                           )
                   else if (usesPetCareNavigationSidebar)
                     PetCareNavigationSidebar(currentLocation: currentLocation)
@@ -263,9 +238,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
                   Expanded(
                     child: Material(
                       key: const Key('experience_workspace_canvas'),
-                      color: isOrg
-                          ? orgListScaffoldBackground(context)
-                          : AppColorTokens.background,
+                      color: AppColorTokens.background,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -291,7 +264,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
             : usesShelterPrimaryNavigation
             ? ShelterBottomNavigation(
                 currentLocation: currentLocation,
-                pinnedOrg: pinnedOrg,
+                pinnedOrg: null,
               )
             : null,
       ),

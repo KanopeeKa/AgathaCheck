@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pet_profile_app/core/router/organization_routes.dart';
+import 'package:pet_profile_app/features/organization/presentation/router/organization_routes.dart';
 
 void main() {
   group('legacyOrganizationRedirectForPath', () {

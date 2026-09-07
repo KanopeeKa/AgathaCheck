@@ -7,10 +7,7 @@ import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../../../core/branding/logo_assets.dart';
 import '../../../experience/domain/entities/app_experience.dart';
-import '../../../organization/domain/entities/family_event.dart';
-import '../../../organization/domain/entities/foster_placement.dart';
-import '../../../organization/presentation/providers/foster_placements_providers.dart';
-import '../../../organization/presentation/providers/organization_providers.dart';
+import '../../domain/entities/pet_report_supplement.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
 import '../../../weight_tracking/presentation/providers/weight_providers.dart';
@@ -31,7 +28,7 @@ class DownloadReportController {
       builder: (ctx) => _ReportSectionsDialog(
         sections: sections,
         l: l,
-        showFosterHistory: pet.organizationId != null,
+        showFosterHistory: false,
       ),
     );
 
@@ -65,22 +62,8 @@ class DownloadReportController {
       final accessList = await ref.read(petAccessProvider(pet.id).future);
       final unit = ref.read(weightUnitProvider(pet.id));
 
-      List<FamilyEvent> familyEventsList = [];
-      List<FosterPlacement> fosterPlacements = const [];
-      if (pet.organizationId != null) {
-        try {
-          familyEventsList = await ref.read(
-            familyEventsProvider(pet.id).future,
-          );
-        } catch (_) {}
-        if (result.fosterHistory) {
-          try {
-            fosterPlacements = await ref.read(
-              petFosterHistoryProvider((pet.organizationId!, pet.id)).future,
-            );
-          } catch (_) {}
-        }
-      }
+      const familyEventsList = <PetReportFamilyEvent>[];
+      const fosterPlacements = <PetReportFosterPlacement>[];
 
       final Map<String, List<Map<String, dynamic>>> healthHistories = {};
       if (result.includeFullLog) {

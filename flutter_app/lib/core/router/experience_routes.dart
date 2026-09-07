@@ -5,20 +5,16 @@ import 'package:go_router/go_router.dart';
 import '../../features/experience/domain/entities/app_experience.dart';
 import '../../l10n/app_localizations.dart';
 import '../../features/experience/presentation/screens/account_screen.dart';
-import '../../features/organization/presentation/screens/account_org_settings_screen.dart';
 import '../../features/experience/presentation/screens/experience_chooser_screen.dart';
 import '../../features/experience/presentation/screens/experience_home_screens.dart';
 import '../../features/experience/presentation/screens/experience_resolve_screen.dart';
 import '../../features/experience/presentation/screens/experience_settings_screen.dart';
 import '../../features/experience/presentation/screens/pet_care_onboarding_screen.dart';
-import '../../features/experience/presentation/screens/org_onboarding_screen.dart';
-import '../../features/experience/presentation/widgets/foster_portal_route_guard.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_all_pets_screen.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_bulk_share_select_screen.dart';
 import '../../features/experience/presentation/screens/pet_care/add_event_type_picker_sheet.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart';
-import '../../features/experience/presentation/screens/pet_care/pet_care_fostering_screen.dart';
 import '../../features/pet_profile/domain/entities/pet.dart';
 import '../../features/pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../features/pet_profile/presentation/providers/pet_providers.dart';
@@ -56,10 +52,8 @@ List<RouteBase> buildExperienceRoutes() {
     ),
     GoRoute(
       path: '/o/onboarding',
-      name: 'orgOnboarding',
-      builder: (context, state) => const OrgOnboardingScreen(),
+      redirect: (context, state) => '/pc/home',
     ),
-    // Account section root (navigation reversal, phase-1-navigation.md)
     GoRoute(
       path: '/account',
       name: 'account',
@@ -67,15 +61,7 @@ List<RouteBase> buildExperienceRoutes() {
       routes: [
         GoRoute(
           path: 'orgs/:orgId',
-          name: 'accountOrgSettings',
-          builder: (context, state) {
-            final highlightLeave =
-                state.uri.queryParameters['highlight'] == 'leave';
-            return AccountOrgSettingsScreen(
-              orgId: state.pathParameters['orgId']!,
-              highlightLeave: highlightLeave,
-            );
-          },
+          redirect: (context, state) => '/account',
         ),
       ],
     ),
@@ -106,8 +92,7 @@ List<RouteBase> buildExperienceRoutes() {
         ),
         GoRoute(
           path: '/pc/fostering',
-          name: 'petCareFostering',
-          builder: (context, state) => const PetCareFosteringScreen(),
+          redirect: (context, state) => '/pc/home',
         ),
         GoRoute(
           path: '/pc/invite',
@@ -115,19 +100,16 @@ List<RouteBase> buildExperienceRoutes() {
           builder: (context, state) =>
               const ExperienceInviteScreen(experience: AppExperience.petCare),
         ),
-        // Deprecated: /pc/settings → /account
         GoRoute(
           path: '/pc/settings',
           name: 'petCareSettings',
           redirect: (context, state) => '/account',
         ),
-        // Deprecated: /pc/notifications → bell-only (slide-over panel)
         GoRoute(
           path: '/pc/notifications',
           name: 'petCareNotifications',
           redirect: (context, state) => '/pc/home',
         ),
-        // Legacy /g/* redirects
         GoRoute(
           path: '/g/home',
           name: 'guardianHome',
@@ -154,9 +136,7 @@ List<RouteBase> buildExperienceRoutes() {
         ),
         GoRoute(
           path: '/g/fostering',
-          name: 'guardianFostering',
-          redirect: (context, state) =>
-              legacyPetCareRedirectForPath(state.uri.path),
+          redirect: (context, state) => '/pc/home',
         ),
         GoRoute(
           path: '/g/invite',
@@ -173,46 +153,6 @@ List<RouteBase> buildExperienceRoutes() {
           path: '/g/notifications',
           name: 'guardianNotifications',
           redirect: (context, state) => '/pc/home',
-        ),
-      ],
-    ),
-    ShellRoute(
-      builder: (context, state, child) => child,
-      routes: [
-        GoRoute(
-          path: '/o/home',
-          name: 'orgHome',
-          redirect: (context, state) => '/o/orgs',
-        ),
-        GoRoute(
-          path: '/o/events',
-          name: 'orgEvents',
-          builder: (context, state) => const FosterPortalRouteGuard(
-            fallbackPath: '/o/orgs',
-            child: _OrgEventsScreen(),
-          ),
-        ),
-        GoRoute(
-          path: '/o/invite',
-          name: 'orgInvite',
-          builder: (context, state) => const FosterPortalRouteGuard(
-            fallbackPath: '/o/orgs',
-            child: ExperienceInviteScreen(
-              experience: AppExperience.organization,
-            ),
-          ),
-        ),
-        // Deprecated: /o/settings → /account
-        GoRoute(
-          path: '/o/settings',
-          name: 'orgSettings',
-          redirect: (context, state) => '/account',
-        ),
-        // Deprecated: /o/notifications → bell-only (slide-over panel)
-        GoRoute(
-          path: '/o/notifications',
-          name: 'orgNotifications',
-          redirect: (context, state) => '/o/orgs',
         ),
       ],
     ),
@@ -244,35 +184,6 @@ class _PetCareEventsScreen extends ConsumerWidget {
         ),
       ],
       child: const PetCareDueEventsScreen(),
-    );
-  }
-}
-
-class _OrgEventsScreen extends ConsumerWidget {
-  const _OrgEventsScreen();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppLocalizations.of(context)!;
-    final petsAsync = ref.watch(petListProvider);
-    final allPets = petsAsync.valueOrNull ?? const <Pet>[];
-    final shellPets = PetListController().orgShellPets(allPets);
-    return ExperienceShellScaffold(
-      experience: AppExperience.organization,
-      currentLocation: GoRouterState.of(context).uri.path,
-      screenTitle: l.eventsNavLabel,
-      backPath: '/o/orgs',
-      contextualActions: [
-        IconButton(
-          key: const Key('org_events_add_app_bar'),
-          tooltip: l.addAnEvent,
-          icon: const Icon(Icons.add),
-          onPressed: petsAsync.hasValue && shellPets.isNotEmpty
-              ? () => showAddEventTypePickerSheet(context, pets: shellPets)
-              : null,
-        ),
-      ],
-      child: const OrgDueEventsScreen(),
     );
   }
 }

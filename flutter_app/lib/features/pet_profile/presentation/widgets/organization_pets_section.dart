@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../core/router/shell_return_navigation.dart';
-import '../../../organization/presentation/providers/organization_providers.dart';
-import '../../../organization/presentation/utils/pet_custody_helpers.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../widgets/pet_card.dart';
@@ -66,23 +65,6 @@ class OrganizationPetsSection extends StatelessWidget {
         confirmMessage: l.hideSharedPetConfirm(pet.name),
         onConfirm: () =>
             ref.read(hiddenSharedPetsProvider.notifier).hideSharedPet(pet.id),
-        child: sized,
-      );
-    }
-    final orgId = pet.organizationId;
-    final canHomeHide =
-        orgId != null &&
-        pet.isFosteredOrgPet &&
-        ref.watch(isOrgAdminProvider(orgId));
-    if (canHomeHide) {
-      return _buildDismissible(
-        pet: pet,
-        keySuffix: 'home_hide_${pet.id}',
-        label: l.hideFromHomeList,
-        confirmTitle: l.hideFromHomeList,
-        confirmMessage: l.hideFromHomeListConfirm(pet.name),
-        onConfirm: () =>
-            ref.read(orgHomeHiddenPetsProvider(orgId).notifier).hide(pet.id),
         child: sized,
       );
     }

@@ -13,7 +13,7 @@ import 'package:pet_profile_app/features/experience/presentation/providers/exper
 import 'package:pet_profile_app/features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_navigation_rail.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_navigation_sidebar.dart';
-import 'package:pet_profile_app/features/experience/presentation/widgets/shelter_pinned_org_provider.dart';
+import 'package:pet_profile_app/features/organization/presentation/providers/shelter_pinned_org_provider.dart';
 import 'package:pet_profile_app/features/experience/presentation/config/shelter_primary_destinations.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';

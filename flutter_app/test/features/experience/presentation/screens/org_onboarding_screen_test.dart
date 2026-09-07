@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pet_profile_app/features/experience/presentation/screens/org_onboarding_screen.dart';
+import 'package:pet_profile_app/features/organization/presentation/screens/org_onboarding_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 

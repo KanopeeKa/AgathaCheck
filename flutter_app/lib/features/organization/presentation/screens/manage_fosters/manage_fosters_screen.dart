@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/widgets/collection_filter/manage_fosters_collection_filter.dart';
+import '../../widgets/collection_filter/manage_fosters_collection_filter.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../auth/presentation/providers/auth_providers.dart';
 import '../../../domain/entities/foster_parent.dart';

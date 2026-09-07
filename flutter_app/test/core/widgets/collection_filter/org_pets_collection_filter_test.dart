@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pet_profile_app/core/widgets/collection_filter/org_pets_collection_filter.dart';
+import 'package:pet_profile_app/features/organization/presentation/widgets/collection_filter/org_pets_collection_filter.dart';
 import 'package:pet_profile_app/features/organization/presentation/utils/org_pets_care_utils.dart';
 
 void main() {

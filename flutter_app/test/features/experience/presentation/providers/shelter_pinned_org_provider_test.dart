@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/auth/data/auth_service.dart';
 import 'package:pet_profile_app/features/auth/data/token_store.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
-import 'package:pet_profile_app/features/experience/presentation/widgets/shelter_pinned_org_provider.dart';
+import 'package:pet_profile_app/features/organization/presentation/providers/shelter_pinned_org_provider.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 
