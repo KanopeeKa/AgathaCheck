@@ -1334,6 +1334,72 @@ abstract class AppLocalizations {
   /// **'Default schedule'**
   String get careSourceSystemDefault;
 
+  /// No description provided for @careSuggestionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested by Agatha'**
+  String get careSuggestionTitle;
+
+  /// No description provided for @careSuggestionAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Add rhythm'**
+  String get careSuggestionAccept;
+
+  /// No description provided for @careSuggestionDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get careSuggestionDismiss;
+
+  /// No description provided for @careSuggestionNotRelevant.
+  ///
+  /// In en, this message translates to:
+  /// **'Not relevant'**
+  String get careSuggestionNotRelevant;
+
+  /// No description provided for @careSuggestionWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Why?'**
+  String get careSuggestionWhy;
+
+  /// No description provided for @careSuggestionWhyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Why Agatha suggests this'**
+  String get careSuggestionWhyTitle;
+
+  /// No description provided for @careSuggestionGenericWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'This recurring rhythm can help you stay organised between vet visits.'**
+  String get careSuggestionGenericWhy;
+
+  /// No description provided for @careSuggestionWeightMonitoringWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular weight checks help you notice gradual changes early.'**
+  String get careSuggestionWeightMonitoringWhy;
+
+  /// No description provided for @careSuggestionDentalWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'A steady dental review rhythm keeps mouth care on your calendar.'**
+  String get careSuggestionDentalWhy;
+
+  /// No description provided for @careSuggestionWellnessWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'A yearly wellness review gives you a calm checkpoint for routine care.'**
+  String get careSuggestionWellnessWhy;
+
+  /// No description provided for @careSuggestionCadenceSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Every {interval} {frequency}'**
+  String careSuggestionCadenceSummary(int interval, String frequency);
+
   /// No description provided for @careLoadError.
   ///
   /// In en, this message translates to:

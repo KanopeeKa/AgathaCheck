@@ -149,6 +149,15 @@ Shared pets appear in `GET /api/pets/all` with `is_shared: true`. Fostered pets 
 
 Share links are **single-use**: once accepted, the same link cannot be used by another user (`410`).
 
+### Care recommendations (`/api/pets/:id/care-recommendations`) — Phase C crisp rules
+
+Server-authoritative Agatha suggestions (weight, dental, wellness rhythm families). Suggestions do not affect Care Status until accepted.
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/care-recommendations` | Sync pending recommendations for pet (`HEALTH_VIEW`) |
+| POST | `/care-recommendations/:recommendationId/respond` | Body `{ action: accept\|adjust\|dismiss\|not_relevant, adjust?: { frequency, frequency_interval } }`; accept/adjust creates recurring `health_entry` with `care_source` `agatha_accepted` / `agatha_adjusted` (`HEALTH_EDIT`) |
+
 ### Pet family events (`/api/pets/:id/family-events`) — Node backend
 
 Org placement/foster periods (legacy shape; see `docs/domains/fostering/changes/org-fostering-strategy.md` for

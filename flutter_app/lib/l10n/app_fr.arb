@@ -229,6 +229,23 @@
   "careSourceAgathaAccepted": "Accepté depuis Agatha",
   "careSourceAgathaAdjusted": "Ajusté avec Agatha",
   "careSourceSystemDefault": "Calendrier par défaut",
+  "careSuggestionTitle": "Suggestion d'Agatha",
+  "careSuggestionAccept": "Ajouter le rythme",
+  "careSuggestionDismiss": "Ignorer",
+  "careSuggestionNotRelevant": "Pas pertinent",
+  "careSuggestionWhy": "Pourquoi ?",
+  "careSuggestionWhyTitle": "Pourquoi Agatha propose ceci",
+  "careSuggestionGenericWhy": "Ce rythme récurrent peut vous aider à rester organisé entre les visites vétérinaires.",
+  "careSuggestionWeightMonitoringWhy": "Des contrôles de poids réguliers permettent de repérer tôt les changements progressifs.",
+  "careSuggestionDentalWhy": "Un rythme de suivi dentaire aide à garder les soins bucco-dentaires au calendrier.",
+  "careSuggestionWellnessWhy": "Un bilan annuel offre un point de repère calme pour les soins courants.",
+  "careSuggestionCadenceSummary": "Tous les {interval} {frequency}",
+  "@careSuggestionCadenceSummary": {
+    "placeholders": {
+      "interval": { "type": "int" },
+      "frequency": { "type": "String" }
+    }
+  },
   "careLoadError": "Impossible de charger les soins pour le moment.",
   "careEyebrow": "SOINS",
   "petsEyebrow": "ANIMAUX",

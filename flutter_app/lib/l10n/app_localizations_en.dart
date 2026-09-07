@@ -703,6 +703,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careSourceSystemDefault => 'Default schedule';
 
   @override
+  String get careSuggestionTitle => 'Suggested by Agatha';
+
+  @override
+  String get careSuggestionAccept => 'Add rhythm';
+
+  @override
+  String get careSuggestionDismiss => 'Dismiss';
+
+  @override
+  String get careSuggestionNotRelevant => 'Not relevant';
+
+  @override
+  String get careSuggestionWhy => 'Why?';
+
+  @override
+  String get careSuggestionWhyTitle => 'Why Agatha suggests this';
+
+  @override
+  String get careSuggestionGenericWhy =>
+      'This recurring rhythm can help you stay organised between vet visits.';
+
+  @override
+  String get careSuggestionWeightMonitoringWhy =>
+      'Regular weight checks help you notice gradual changes early.';
+
+  @override
+  String get careSuggestionDentalWhy =>
+      'A steady dental review rhythm keeps mouth care on your calendar.';
+
+  @override
+  String get careSuggestionWellnessWhy =>
+      'A yearly wellness review gives you a calm checkpoint for routine care.';
+
+  @override
+  String careSuggestionCadenceSummary(int interval, String frequency) {
+    return 'Every $interval $frequency';
+  }
+
+  @override
   String get careLoadError => 'We couldn\'t load care right now.';
 
   @override
