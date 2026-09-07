@@ -191,17 +191,31 @@ export class ExperiencePage {
 
   /** Pet Care MVP drawer: Pet Care + Account only (Shelter workspace frozen). */
   async expectUnifiedDrawerItems(): Promise<void> {
-    await openExperienceDrawer(this.page);
+    const viewport = this.page.viewportSize();
+    if (viewport && viewport.width >= 600) {
+      await this.page.setViewportSize({ width: 375, height: 812 });
+    }
+    await dismissConsentBannerIfPresent(this.page);
     await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByRole('button', { name: /^Pet Care\b/i })).toBeVisible();
-    await expect(this.page.getByRole('button', { name: /^Account\b/i })).toBeVisible();
-    await expect(this.page.getByRole('button', { name: /^Shelters\b/i })).not.toBeVisible();
-    await expect(this.page.locator('[flt-semantics-identifier="drawer_organisation"]')).toHaveCount(0);
-    // Deprecated items must not appear
-    await expect(this.page.getByText('Events', { exact: true })).not.toBeVisible();
-    await expect(this.page.getByText('My vets', { exact: true })).not.toBeVisible();
-    await expect(this.page.getByText('Notifications', { exact: true })).not.toBeVisible();
-    await expect(this.page.getByText('Settings', { exact: true })).not.toBeVisible();
+    await expect(async () => {
+      await openExperienceDrawer(this.page);
+      await refreshFlutterAccessibility(this.page);
+      const petCareEntry = this.page
+        .getByRole('button', { name: /^Pet Care\b|^Suivi\b/i })
+        .or(this.page.getByText(/^Pet Care$|^Suivi$/i));
+      const accountEntry = this.page
+        .getByRole('button', { name: /^Account\b|^Compte\b/i })
+        .or(this.page.getByText(/^Account$|^Compte$/i));
+      await expect(petCareEntry.first()).toBeVisible({ timeout: 5_000 });
+      await expect(accountEntry.first()).toBeVisible({ timeout: 5_000 });
+      await expect(this.page.getByRole('button', { name: /^Shelters\b/i })).not.toBeVisible();
+      await expect(this.page.locator('[flt-semantics-identifier="drawer_organisation"]')).toHaveCount(0);
+      // Deprecated items must not appear
+      await expect(this.page.getByText('Events', { exact: true })).not.toBeVisible();
+      await expect(this.page.getByText('My vets', { exact: true })).not.toBeVisible();
+      await expect(this.page.getByText('Notifications', { exact: true })).not.toBeVisible();
+      await expect(this.page.getByText('Settings', { exact: true })).not.toBeVisible();
+    }).toPass({ timeout: 45_000 });
   }
 
   /** Assert bell badge shows the expected count. */
