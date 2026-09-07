@@ -98,11 +98,13 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "implement phase 1 — Care Foundation"
+next_action: "continue phase 1 on branch cursor/care-foundation-phase-a-dc3b"
 artifact_ref:
   branch: cursor/care-foundation-phase-a-dc3b
   plan_path: .agents/plans/care-foundation-c7a1.md
+  plan_commit: 62f1016e521309e553e496d8adce0d0d382c9f86
   snapshot_path: .agents/plans/care-foundation-c7a1.snapshot.json
+  snapshot_commit: 62f1016e521309e553e496d8adce0d0d382c9f86
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
