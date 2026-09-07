@@ -12,8 +12,20 @@ import '../utils/pet_tile_dimensions.dart';
 import 'pet_photo_image.dart';
 import 'pet_tile_status_line.dart';
 
+/// Reads [apiBaseUrlProvider] when a [ProviderScope] is present; otherwise web default.
+String resolveApiBaseUrlForPetPhoto(BuildContext context) {
+  try {
+    return ProviderScope.containerOf(
+      context,
+      listen: false,
+    ).read(apiBaseUrlProvider);
+  } catch (_) {
+    return '/backend';
+  }
+}
+
 /// Cross-domain pet tile: photo-forward card with ownership stripe and two text lines.
-class UnifiedPetTile extends ConsumerWidget {
+class UnifiedPetTile extends StatelessWidget {
   const UnifiedPetTile({
     super.key,
     required this.pet,
@@ -22,6 +34,7 @@ class UnifiedPetTile extends ConsumerWidget {
     this.width,
     this.height,
     this.semanticsLabel,
+    this.apiBaseUrl,
   });
 
   final Pet pet;
@@ -30,13 +43,15 @@ class UnifiedPetTile extends ConsumerWidget {
   final double? width;
   final double? height;
   final String? semanticsLabel;
+  final String? apiBaseUrl;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final ownership = resolvePetOwnershipAccent(context, pet, l);
-    final apiBaseUrl = ref.watch(apiBaseUrlProvider);
+    final resolvedApiBaseUrl =
+        apiBaseUrl ?? resolveApiBaseUrlForPetPhoto(context);
     final statusBarColor = pet.isFoster
         ? fosterOwnershipAccentColor(context)
         : ownership.accentColor;
@@ -92,7 +107,7 @@ class UnifiedPetTile extends ConsumerWidget {
                               flex: flex.photo,
                               child: _PhotoArea(
                                 pet: pet,
-                                apiBaseUrl: apiBaseUrl,
+                                apiBaseUrl: resolvedApiBaseUrl,
                               ),
                             ),
                             Expanded(
