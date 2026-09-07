@@ -28,7 +28,7 @@ description: Babysit+ through merge, then gate on pre-UAT E2E on main. On failur
 | Caller | Skill |
 |--------|-------|
 | Standalone PR → `main` needing pre-UAT confidence | `/babysit-uat` |
-| **Remedial PR from `/e2e-debug`** (standalone or delegated) | **`/babysit-uat` — mandatory follow-up; merge + watch** |
+| **Remedial PR from `/e2e-debug`** (standalone or delegated) | **`/babysit-uat` — mandatory same-session follow-up; merge + watch** |
 | `/execute-plan` **intermediate** phase PR (integration parent) | `/babysit-plus` only |
 | `/execute-plan` **final** PR → `main` | `/babysit-uat` |
 | Narrow PR CI-only / docs | `/babysit-plus` (avoids pre-UAT queue pressure) |

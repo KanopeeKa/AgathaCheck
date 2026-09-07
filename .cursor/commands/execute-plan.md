@@ -12,29 +12,34 @@ Orchestrate an approved multi-phase plan. Read and follow **`.cursor/skills/exec
 ## Quick start
 
 ```bash
-# Preflight (every session) — exit 0 = proceed without asking human
+# Resolve plan_id from conversation / branch / control issue when omitted (skill §Resolve plan_id)
+# Checkout phase or integration branch so snapshot exists locally, then:
 node scripts/execute_plan_runtime.js gate <plan_id> --labels execute-plan,plan:<plan_id>,autonomous-approved
 node scripts/execute_plan_runtime.js current-phase <plan_id>
 ```
 
+Bare **`/execute-plan`** (no id) is valid when context is unambiguous — see skill §Resolve plan_id.
+
 ## Rules
 
-1. **Autonomy contract** — gate exit `0` → proceed; never ask "shall I continue?" in user chat for routine work. **Blockers:** control issue (detail) + short chat alert (issue link).
+1. **Run-until-blocked** — gate exit `0` → stay in the phase loop until merge-done, `complete-plan`, or §Halt; never ask "shall I continue?" mid-flow
 2. **Babysit-plus** on intermediate phase PRs; **babysit-uat** on final PR to `main` — never plain `/babysit`
 3. **Always merge** when gates pass (no manual/labeled modes)
 4. **Phase gate = merge-done** — PR merged into base before next phase (final main PR also needs pre-UAT green)
 5. **Integration branch** — 2+ phases: `base_branch` = integration; one final PR to `main`
 6. **Per-phase worker** — Task sub-agent for implementation; orchestrator owns babysit+ / merge
-7. **Halt only on revoke / escalation / session_limit (~24h)** — do not close PRs; see autonomous-pr-policy §Halt and resume
+7. **Halt only on revoke / escalation / session_limit (~24h)** — the only routine checkpoint; see autonomous-pr-policy §Halt and resume
 8. **48h `approved_until`** — mandatory autonomy window; re-approve if expired
-9. **Issue hygiene** — control issue: comment milestones; `start-work` + `busy` on session start; close on complete (`complete-plan --write`). Final main merge: `/babysit-uat` watches pre-UAT for merge SHA — **never** poll deploy
-10. **Turn boundaries ≠ stop** — each cloud turn ends when you respond; commit/push/PR update, post control-issue milestone, state `next_action`, then **continue the phase loop** in-session or on resume. Never ask "shall I continue?" in user chat. Gate exit `2` → `halt` on control issue only.
+9. **Issue hygiene** — control-issue milestones are telemetry, not stop signals; `complete-plan --write` closes the plan; `/babysit-uat` on final main merge — **never** poll deploy
+10. **e2e-debug → babysit-uat** — mandatory chain on pre-UAT failure; never stop with an open remedial PR
+11. **Artifact branch** — checkout phase/integration branch before gate; snapshot may not exist on `main`
 
 ## Resume
 
 After human removes `autonomous-revoked` and comments `resume-plan <plan_id>` (also after `session_limit` checkpoint):
 
 ```
+/execute-plan resume
 /execute-plan <plan_id> resume
 ```
 
