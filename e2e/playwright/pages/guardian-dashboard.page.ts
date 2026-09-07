@@ -34,7 +34,7 @@ export class GuardianDashboardPage {
     await expect(this.section(/My Pets|Mes animaux/i)).toBeVisible();
     await expect(this.section(/CARE ACTIONS|SOINS/i)).toBeVisible();
     await expect(this.section(/Care team|CARE TEAM|Équipe de soins|ÉQUIPE DE SOINS/i)).toBeVisible();
-    await expect(this.section(/Fostering Sessions|Sessions d'accueil/i)).toBeVisible();
+    await expect(this.section(/Fostering Sessions|Sessions d'accueil/i)).not.toBeVisible();
   }
 
   careRegion(): Locator {

@@ -39,7 +39,7 @@ async function loginGuardian(
 }
 
 test.describe('Guardian navigation', () => {
-  test('Pet Care compact bottom nav reaches Pets, Actions, and Fostering destinations', async ({
+  test('Pet Care compact bottom nav reaches Pets, Actions, and Account destinations', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 375, height: 812 });
@@ -60,8 +60,8 @@ test.describe('Guardian navigation', () => {
     await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 30_000);
     await new HealthDashboardPage(page).expectLoaded();
 
-    await dashboard.openFosteringViaBottomNav();
-    await expect(page).toHaveURL(/#\/pc\/fostering/);
+    await dashboard.openBottomNavTab('Account');
+    await waitForFlutterRoutePattern(page, /\/account(?:\?|$)/, 30_000);
   });
 
   test('Guardian leading navigation rail reaches primary destinations at medium width', async ({
@@ -86,9 +86,8 @@ test.describe('Guardian navigation', () => {
     await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 30_000);
     await new HealthDashboardPage(page).expectLoaded();
 
-    await dashboard.openLeadingNavDestination('Fostering');
-    await waitForFlutterRoutePattern(page, /\/pc\/fostering(?:\?|$)/, 30_000);
-    await expect(page.getByText(/Fostering Sessions|Sessions d'accueil/i).first()).toBeVisible();
+    await dashboard.openLeadingNavDestination('Account');
+    await waitForFlutterRoutePattern(page, /\/account(?:\?|$)/, 30_000);
   });
 
   test('Guardian expanded sidebar reaches primary destinations at wide width', async ({
@@ -113,9 +112,8 @@ test.describe('Guardian navigation', () => {
     await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 30_000);
     await new HealthDashboardPage(page).expectLoaded();
 
-    await dashboard.openLeadingNavDestination('Fostering');
-    await waitForFlutterRoutePattern(page, /\/pc\/fostering(?:\?|$)/, 30_000);
-    await expect(page.getByText(/Fostering Sessions|Sessions d'accueil/i).first()).toBeVisible();
+    await dashboard.openLeadingNavDestination('Account');
+    await waitForFlutterRoutePattern(page, /\/account(?:\?|$)/, 30_000);
   });
 
   test('Mobile Pet Care home shows one product brand in the app bar', async ({
@@ -160,7 +158,7 @@ test.describe('Guardian navigation', () => {
     await dashboard.expectDesktopShellHierarchy();
   });
 
-  test('Workspace toggle switches between Pet Care and Shelter when available', async ({
+  test.skip('Workspace toggle switches between Pet Care and Shelter when available', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 375, height: 812 });

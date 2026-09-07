@@ -50,7 +50,7 @@ test.describe('Experience navigation', () => {
     await experience.expectGuardianShell();
   });
 
-  test('organisation-only user reaches shelter hub from Pet Care home after login', async ({
+  test.skip('organisation-only user reaches shelter hub from Pet Care home after login', async ({
     page,
   }) => {
     await prepareLiveApiAccess(page, baseURL());
@@ -76,7 +76,7 @@ test.describe('Experience navigation', () => {
     await expect(page.getByText(welcomeAgathaTrackText)).not.toBeVisible();
   });
 
-  test('drawer hides Organisation for guardian-only users by default', async ({
+  test('drawer hides Organisation for all users in Pet Care MVP', async ({
     page,
     testUser,
   }) => {
@@ -86,7 +86,7 @@ test.describe('Experience navigation', () => {
     await experience.expectDrawerWithoutOrganisation();
   });
 
-  test('drawer shows Organisation when user is an org member', async ({
+  test('dual-role user drawer stays Pet Care MVP (no shelter entry)', async ({
     page,
   }) => {
     await prepareLiveApiAccess(page, baseURL());
@@ -109,7 +109,7 @@ test.describe('Experience navigation', () => {
     await expect(page.getByText(welcomeAgathaTrackText)).not.toBeVisible();
   });
 
-  test('user switches to organisation view from guardian drawer', async ({
+  test.skip('user switches to organisation view from guardian drawer', async ({
     page,
   }) => {
     await prepareLiveApiAccess(page, baseURL());
@@ -161,18 +161,17 @@ test.describe('Experience navigation', () => {
     await notificationsPage.expectBadgeVisible(unreadCount);
   });
 
-  test('workspace toggle is visible on guardian home and sub-screens', async ({
+  test('workspace toggle is hidden in Pet Care MVP', async ({
     page,
     testUser,
   }) => {
     await loginFromLanding(page, testUser.email, testUser.password);
     await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
-    await expect(workspaceToggleLocator(page)).toBeVisible();
+    await expect(workspaceToggleLocator(page)).not.toBeVisible();
 
     await page.goto(flutterGotoUrl('/pc/pets'));
     await refreshFlutterAccessibility(page);
-    // D-v5-WORKSPACE-4: toggle stays visible on non-root routes (alongside back).
-    await expect(workspaceToggleLocator(page)).toBeVisible();
+    await expect(workspaceToggleLocator(page)).not.toBeVisible();
     await expect(page.getByRole('button', { name: /back/i })).toBeVisible();
   });
 
