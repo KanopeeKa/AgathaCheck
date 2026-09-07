@@ -3,8 +3,6 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   flutterGotoUrl,
-  guardianAccountTabLocator,
-  isGuardianBottomNavVisible,
   openAccountFromShell,
   openExperienceDrawer,
   refreshFlutterAccessibility,
@@ -191,31 +189,14 @@ export class ExperiencePage {
     await this.expectUnifiedDrawerItems();
   }
 
-  /** Assert workspace switcher (or legacy drawer) exposes the expected section entries. */
+  /** Pet Care MVP drawer: Pet Care + Account only (Shelter workspace frozen). */
   async expectUnifiedDrawerItems(): Promise<void> {
-    const toggle = workspaceToggleLocator(this.page);
-    if (await toggle.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      await toggle.click();
-      await refreshFlutterAccessibility(this.page);
-      await expect(
-        this.page.getByRole('menuitem', { name: /^Pet Care$|^Suivi$/i }),
-      ).toBeVisible();
-      await expect(
-        this.page.getByRole('menuitem', { name: /^Shelter$|^Refuge$/i }),
-      ).toBeVisible();
-      await this.page.keyboard.press('Escape');
-      if (await isGuardianBottomNavVisible(this.page)) {
-        await expect(guardianAccountTabLocator(this.page)).toBeVisible();
-      }
-      return;
-    }
-
     await openExperienceDrawer(this.page);
     await refreshFlutterAccessibility(this.page);
-    // Flutter web exposes drawer rows as buttons (label may repeat in accessible name).
     await expect(this.page.getByRole('button', { name: /^Pet Care\b/i })).toBeVisible();
-    await expect(this.page.getByRole('button', { name: /^Shelters\b/i })).toBeVisible();
     await expect(this.page.getByRole('button', { name: /^Account\b/i })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^Shelters\b/i })).not.toBeVisible();
+    await expect(this.page.locator('[flt-semantics-identifier="drawer_organisation"]')).toHaveCount(0);
     // Deprecated items must not appear
     await expect(this.page.getByText('Events', { exact: true })).not.toBeVisible();
     await expect(this.page.getByText('My vets', { exact: true })).not.toBeVisible();
