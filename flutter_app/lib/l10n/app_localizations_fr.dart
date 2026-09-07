@@ -712,6 +712,45 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careSourceSystemDefault => 'Calendrier par défaut';
 
   @override
+  String get careSuggestionTitle => 'Suggestion d\'Agatha';
+
+  @override
+  String get careSuggestionAccept => 'Ajouter le rythme';
+
+  @override
+  String get careSuggestionDismiss => 'Ignorer';
+
+  @override
+  String get careSuggestionNotRelevant => 'Pas pertinent';
+
+  @override
+  String get careSuggestionWhy => 'Pourquoi ?';
+
+  @override
+  String get careSuggestionWhyTitle => 'Pourquoi Agatha propose ceci';
+
+  @override
+  String get careSuggestionGenericWhy =>
+      'Ce rythme récurrent peut vous aider à rester organisé entre les visites vétérinaires.';
+
+  @override
+  String get careSuggestionWeightMonitoringWhy =>
+      'Des contrôles de poids réguliers permettent de repérer tôt les changements progressifs.';
+
+  @override
+  String get careSuggestionDentalWhy =>
+      'Un rythme de suivi dentaire aide à garder les soins bucco-dentaires au calendrier.';
+
+  @override
+  String get careSuggestionWellnessWhy =>
+      'Un bilan annuel offre un point de repère calme pour les soins courants.';
+
+  @override
+  String careSuggestionCadenceSummary(int interval, String frequency) {
+    return 'Tous les $interval $frequency';
+  }
+
+  @override
   String get careLoadError => 'Impossible de charger les soins pour le moment.';
 
   @override
