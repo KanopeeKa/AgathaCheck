@@ -38,12 +38,7 @@ void main() {
           const SizedBox(
             width: 140,
             child: PetPhoto(
-              pet: Pet(
-                id: 'p1',
-                name: 'Rex',
-                species: 'Dog',
-                passedAway: true,
-              ),
+              pet: Pet(id: 'p1', name: 'Rex', species: 'Dog', passedAway: true),
             ),
           ),
         ),
@@ -82,4 +77,3 @@ void main() {
     );
   });
 }
-

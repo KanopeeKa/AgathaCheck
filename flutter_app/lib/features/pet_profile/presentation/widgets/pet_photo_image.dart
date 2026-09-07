@@ -43,6 +43,7 @@ Widget? buildPetPhotoImage({
       bytes,
       fit: fit,
       semanticLabel: semanticLabel,
+      errorBuilder: errorBuilder,
     );
   } catch (_) {
     return null;

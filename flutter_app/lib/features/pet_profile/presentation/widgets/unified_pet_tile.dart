@@ -13,7 +13,7 @@ import 'pet_photo_image.dart';
 import 'pet_tile_status_line.dart';
 
 /// Cross-domain pet tile: photo-forward card with ownership stripe and two text lines.
-class UnifiedPetTile extends StatelessWidget {
+class UnifiedPetTile extends ConsumerWidget {
   const UnifiedPetTile({
     super.key,
     required this.pet,
@@ -32,10 +32,11 @@ class UnifiedPetTile extends StatelessWidget {
   final String? semanticsLabel;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final ownership = resolvePetOwnershipAccent(context, pet, l);
+    final apiBaseUrl = ref.watch(apiBaseUrlProvider);
     final statusBarColor = pet.isFoster
         ? fosterOwnershipAccentColor(context)
         : ownership.accentColor;
@@ -89,7 +90,7 @@ class UnifiedPetTile extends StatelessWidget {
                           children: [
                             Expanded(
                               flex: flex.photo,
-                              child: _PhotoArea(pet: pet),
+                              child: _PhotoArea(pet: pet, apiBaseUrl: apiBaseUrl),
                             ),
                             Expanded(
                               flex: flex.text,
@@ -174,16 +175,16 @@ class _StatusRow extends StatelessWidget {
   }
 }
 
-class _PhotoArea extends ConsumerWidget {
-  const _PhotoArea({required this.pet});
+class _PhotoArea extends StatelessWidget {
+  const _PhotoArea({required this.pet, required this.apiBaseUrl});
 
   final Pet pet;
+  final String apiBaseUrl;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final petColor = resolvePetAccentColor(context, pet);
-    final apiBaseUrl = ref.watch(apiBaseUrlProvider);
-    Widget image = _photoOrPlaceholder(petColor, apiBaseUrl);
+    Widget image = _photoOrPlaceholder(petColor);
 
     if (pet.passedAway) {
       image = Stack(
@@ -216,7 +217,7 @@ class _PhotoArea extends ConsumerWidget {
     return image;
   }
 
-  Widget _photoOrPlaceholder(Color petColor, String apiBaseUrl) {
+  Widget _photoOrPlaceholder(Color petColor) {
     final image = buildPetPhotoImage(
       photoPath: pet.photoPath,
       apiBaseUrl: apiBaseUrl,

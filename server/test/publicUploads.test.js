@@ -115,14 +115,23 @@ describe('public upload serving', () => {
 
   it('resolves pet photos from PET_PHOTO_UPLOAD_DIR when set', () => {
     const customDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pet-upload-'));
-    process.env.PET_PHOTO_UPLOAD_DIR = customDir;
-    const fileId = uuidv4();
-    const filename = `${fileId}.jpg`;
-    fs.writeFileSync(path.join(customDir, filename), Buffer.from('jpeg'));
+    const previous = process.env.PET_PHOTO_UPLOAD_DIR;
+    try {
+      process.env.PET_PHOTO_UPLOAD_DIR = customDir;
+      const fileId = uuidv4();
+      const filename = `${fileId}.jpg`;
+      fs.writeFileSync(path.join(customDir, filename), Buffer.from('jpeg'));
 
-    const resolved = resolvePublicUploadFile(`pet_photos/${filename}`);
-    expect(resolved.filePath).toBe(fs.realpathSync(path.join(customDir, filename)));
-    delete process.env.PET_PHOTO_UPLOAD_DIR;
+      const resolved = resolvePublicUploadFile(`pet_photos/${filename}`);
+      expect(resolved.filePath).toBe(fs.realpathSync(path.join(customDir, filename)));
+    } finally {
+      if (previous === undefined) {
+        delete process.env.PET_PHOTO_UPLOAD_DIR;
+      } else {
+        process.env.PET_PHOTO_UPLOAD_DIR = previous;
+      }
+      fs.rmSync(customDir, { recursive: true, force: true });
+    }
   });
 
   it('rejects health_documents via public upload API', async () => {
