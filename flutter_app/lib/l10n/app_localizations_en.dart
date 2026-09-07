@@ -663,6 +663,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dismiss => 'Dismiss';
 
   @override
+  String get careRhythmsTitle => 'Care Rhythms';
+
+  @override
+  String get careRhythmsSubtitle => 'Your recurring care routines.';
+
+  @override
+  String get careActionsSubtitle =>
+      'What\'s due from those routines and other scheduled care.';
+
+  @override
+  String get careRhythmsEmpty =>
+      'No recurring care routines yet. Add a recurring event to see it here.';
+
+  @override
+  String careRhythmNextDue(String date) {
+    return 'Next due $date';
+  }
+
+  @override
+  String get careSourceGuardianDefined => 'Added by you';
+
+  @override
+  String get careSourceVetInstruction => 'From your vet';
+
+  @override
+  String get careSourceTreatmentSchedule => 'Treatment schedule';
+
+  @override
+  String get careSourceCarePlan => 'Care plan';
+
+  @override
+  String get careSourceAgathaAccepted => 'Accepted from Agatha';
+
+  @override
+  String get careSourceAgathaAdjusted => 'Adjusted with Agatha';
+
+  @override
+  String get careSourceSystemDefault => 'Default schedule';
+
+  @override
   String get careLoadError => 'We couldn\'t load care right now.';
 
   @override

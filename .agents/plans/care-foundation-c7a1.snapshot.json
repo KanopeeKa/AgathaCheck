@@ -48,7 +48,7 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
@@ -83,11 +83,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
       "debt_issue_refs": []
     },
     {
@@ -132,5 +130,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:a0c275a61b22953c745ce711086e5070a3a2d734b32f8add56730b99b4ff3084"
+  "content_hash": "sha256:22ab4c40fe1e5b230037ddda8ba8c1ded50a11f4ec17dfc40d159dec6701bad4"
 }
