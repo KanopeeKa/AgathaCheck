@@ -241,6 +241,23 @@
   "careSourceAgathaAccepted": "Accepted from Agatha",
   "careSourceAgathaAdjusted": "Adjusted with Agatha",
   "careSourceSystemDefault": "Default schedule",
+  "careSuggestionTitle": "Suggested by Agatha",
+  "careSuggestionAccept": "Add rhythm",
+  "careSuggestionDismiss": "Dismiss",
+  "careSuggestionNotRelevant": "Not relevant",
+  "careSuggestionWhy": "Why?",
+  "careSuggestionWhyTitle": "Why Agatha suggests this",
+  "careSuggestionGenericWhy": "This recurring rhythm can help you stay organised between vet visits.",
+  "careSuggestionWeightMonitoringWhy": "Regular weight checks help you notice gradual changes early.",
+  "careSuggestionDentalWhy": "A steady dental review rhythm keeps mouth care on your calendar.",
+  "careSuggestionWellnessWhy": "A yearly wellness review gives you a calm checkpoint for routine care.",
+  "careSuggestionCadenceSummary": "Every {interval} {frequency}",
+  "@careSuggestionCadenceSummary": {
+    "placeholders": {
+      "interval": { "type": "int" },
+      "frequency": { "type": "String" }
+    }
+  },
   "careLoadError": "We couldn't load care right now.",
   "careEyebrow": "CARE ACTIONS",
   "petsEyebrow": "PETS",
