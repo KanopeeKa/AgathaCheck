@@ -81,6 +81,9 @@ export PASSENGER_HTACCESS_FILE
 echo "=== node_modules invariant (pre-restart) ==="
 uat_nm_assert pre 1 0
 
+echo "=== Verify runtime dependencies in node_modules ==="
+bash "$(cd "$(dirname "$0")" && pwd)/verify-server-deps-installed.sh"
+
 echo "=== Database migrations ==="
 cd "${APPDIR}"
 if ! uat_nm_use_node; then

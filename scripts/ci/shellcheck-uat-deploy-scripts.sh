@@ -17,6 +17,8 @@ mapfile -t FILES < <(
     -name 'check-uat-ssh-action-pin.sh' -o \
     -name 'uat-collect-deploy-state.sh' -o \
     -name 'uat-ssh-backend-deploy.sh' -o \
+    -name 'verify-server-deps-installed.sh' -o \
+    -name 'detect-deploy-package-changed.sh' -o \
     -name 'uat-htaccess.lib.sh' -o \
     -name 'uat-e2e-env.lib.sh' -o \
     -name 'prepare-uat-ssh-remote.sh' -o \

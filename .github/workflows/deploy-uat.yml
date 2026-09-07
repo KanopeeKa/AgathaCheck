@@ -267,15 +267,9 @@ jobs:
       # If the token is missing the step warns and skips — FTP deploy still succeeds.
       - name: Detect package.json changes (for conditional npm install)
         id: pkg_changed
-        run: |
-          # Compare against origin/main to detect package.json changes in this release branch.
-          git fetch --depth=1 origin main 2>/dev/null || true
-          if git diff --name-only origin/main...HEAD 2>/dev/null | grep -q '^server/package'; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "::warning title=Dependencies changed::server/package.json or package-lock.json changed — manual cPanel Run NPM Install required after deploy."
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          fi
+        env:
+          DEPLOY_REF: ${{ needs.resolve-trigger.outputs.deploy_ref }}
+        run: bash scripts/ci/detect-deploy-package-changed.sh --kind uat
 
       - name: Record package.json change banner
         if: steps.pkg_changed.outputs.changed == 'true'
@@ -283,14 +277,26 @@ jobs:
           {
             echo "## Dependencies changed"
             echo
+            echo "Baseline tag: \`${{ steps.pkg_changed.outputs.baseline_tag }}\`"
             echo "This deploy includes \`server/package.json\` or \`server/package-lock.json\` changes."
             echo "**Manual action required:** cPanel → **Setup Node.js App** → **Run NPM Install** → **Restart**"
+            echo "SSH deploy verifies every runtime dependency resolves before migrate/restart."
             echo "(Automated CloudLinux install-modules is Phase 3 — not enabled yet.)"
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Defer cPanel restart until NPM install (dependencies changed)
+        if: >-
+          vars.UAT_CPANEL_RESTART_ENABLED == 'true' &&
+          steps.pkg_changed.outputs.changed == 'true'
+        run: |
+          echo "::notice::Skipping cPanel UAPI restart — server/package.json changed since ${{ steps.pkg_changed.outputs.baseline_tag }}."
+          echo "::notice::Run cPanel → Setup Node.js App → Run NPM Install, then let the SSH deploy step verify dependencies and restart Passenger."
+
       - name: Restart UAT Node.js app via cPanel UAPI (no SSH)
         id: cpanel_restart
-        if: vars.UAT_CPANEL_RESTART_ENABLED == 'true'
+        if: >-
+          vars.UAT_CPANEL_RESTART_ENABLED == 'true' &&
+          steps.pkg_changed.outputs.changed != 'true'
         continue-on-error: true
         env:
           CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
