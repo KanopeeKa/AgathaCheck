@@ -68,6 +68,7 @@ Feature: Pet Care dashboard
 
   @implemented
   @P1
+  @frozen
   Scenario: Pending foster placement surfaces as a notification, not a dashboard banner
     Given an organisation has sent me a pending foster placement
     When I view the Pet Care dashboard
@@ -84,6 +85,7 @@ Feature: Pet Care dashboard
 
   @implemented
   @P1
+  @frozen
   Scenario: Global events screen supports pet and cohort filters
     Given I am signed in as a guardian with owned and foster pets and health entries
     When I open the global events screen
@@ -92,27 +94,28 @@ Feature: Pet Care dashboard
 
   @implemented
   @P1
-  Scenario: Pet Care compact bottom nav reaches Pets, Actions, and Fostering destinations
+  Scenario: Pet Care compact bottom nav reaches Today, Pets, Care, and Account destinations
     Given I am signed in as a guardian with pets
     When I use the compact bottom navigation
-    Then I should reach the Pets, Actions, and Fostering destinations
+    Then I should reach the Today, Pets, Care, and Account destinations
 
   @implemented
   @P1
   Scenario: Pet Care leading navigation rail reaches primary destinations at medium width
     Given I am signed in as a guardian with pets
     When I use the leading navigation at medium width
-    Then I should reach the Pets, Actions, and Fostering destinations via the navigation rail
+    Then I should reach the Today, Pets, Care, and Account destinations via the navigation rail
 
   @implemented
   @P1
   Scenario: Pet Care expanded sidebar reaches primary destinations at wide width
     Given I am signed in as a guardian with pets
     When I use the leading navigation at wide width
-    Then I should reach the Pets, Actions, and Fostering destinations via the navigation sidebar
+    Then I should reach the Today, Pets, Care, and Account destinations via the navigation sidebar
 
   @implemented
   @P1
+  @frozen
   Scenario: Workspace toggle switches between Pet Care and Shelter when available
     Given I am signed in as a guardian with shelter access
     When I view the Pet Care dashboard

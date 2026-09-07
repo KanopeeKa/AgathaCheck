@@ -4,6 +4,7 @@ Feature: Account area
   So that I control when the Organisation section appears
 
   @P1
+  @frozen
   Scenario: Guardian-only user can enable show organisation section
     Given a registered user with email "guardian@example.com" and password "secret123"
     And the user has no organisation memberships
@@ -12,6 +13,7 @@ Feature: Account area
     Then the drawer should contain "Organisation" as a section item
 
   @P1
+  @frozen
   Scenario: Org member cannot disable show organisation section
     Given a registered user with email "dual@example.com" and password "secret123"
     And the user belongs to an organisation
@@ -20,6 +22,7 @@ Feature: Account area
     And the user should see organisation visibility locked explanation text
 
   @P1
+  @frozen
   Scenario: Login restores last active organisation section
     Given a registered user with email "dual@example.com" and password "secret123"
     And the user belongs to an organisation

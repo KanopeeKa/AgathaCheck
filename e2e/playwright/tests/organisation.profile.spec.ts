@@ -50,7 +50,7 @@ const ORG_NAME = 'Rescue Hearts';
 const DESCRIPTION = 'A caring rescue shelter';
 
 test.describe('Organisation profile', () => {
-  test('@P1 @smoke-ci @smoke-uat anonymous visitor can view discoverable organisation profile', async ({
+  test('@P1 @smoke-uat anonymous visitor can view discoverable organisation profile', async ({
     page,
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';

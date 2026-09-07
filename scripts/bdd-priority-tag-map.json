@@ -269,7 +269,7 @@
     "Pending foster placement surfaces as a notification, not a dashboard banner": "P1",
     "Global events screen shows unified list without tabs": "P1",
     "Global events screen supports pet and cohort filters": "P1",
-    "Pet Care compact bottom nav reaches Pets, Actions, and Fostering destinations": "P1",
+    "Pet Care compact bottom nav reaches Today, Pets, Care, and Account destinations": "P1",
     "Pet Care leading navigation rail reaches primary destinations at medium width": "P1",
     "Pet Care expanded sidebar reaches primary destinations at wide width": "P1",
     "Workspace toggle switches between Pet Care and Shelter when available": "P1",

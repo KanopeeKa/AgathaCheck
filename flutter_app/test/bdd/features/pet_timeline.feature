@@ -4,6 +4,7 @@ Feature: Pet timeline
   So that I understand its full journey without a separate family-events screen
 
   @P1
+  @frozen
   Scenario: Timeline screen shows a fostering session card
     Given "Max" had a fostering session with "Frank" from "2025-06-01" to "2025-08-31"
     When I view "Max"'s timeline screen
