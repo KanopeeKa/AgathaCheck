@@ -10,7 +10,7 @@ supersedes: AgathaTrack CIM Implementation Spec v0.1 (2026-09-07 upload)
 
 # Care Foundation & Intelligence Roadmap
 
-**Version:** 0.2 (foundation-first)  
+**Version:** 0.3 (foundation-first)  
 **Target:** Pet Care domain only  
 **Initial Agatha Suggestions species scope:** cats and dogs  
 **Internal working name:** CIM — Care Intelligence Model  
@@ -29,8 +29,9 @@ It **supersedes** *AgathaTrack Care Intelligence (CIM) Implementation Spec — D
 
 | Section | Purpose |
 |---------|---------|
-| **Phases A–C** | Active implementation spec — build these in order |
-| **Phases D–E** | Gated experiments — do not start without passing prior go/no-go gates |
+| **Phases A–C** | Active implementation spec — build in order **without pausing for permission between phases** |
+| **Phase D** | Gated experiment — **pause and wait for product-owner test dataset** before starting |
+| **Phase E** | Continue after Phase D unless product owner redirects |
 | **Vision appendix** | Product direction and future surfaces — **not** permission to implement |
 | **Architecture reference** | Stable boundaries that span all phases |
 
@@ -38,9 +39,11 @@ It **supersedes** *AgathaTrack Care Intelligence (CIM) Implementation Spec — D
 
 - Treat the vision appendix or deferred roadmap as an implementation brief
 - Skip Care Rhythms and jump to Agatha Suggestions
+- **Start Phase D without the product-owner test dataset** (see §10)
 - Commit to fuzzy inference before crisp-rule evaluation (Phase D)
-- Ship production safeguards before data-quality and clinical review gates (Phase E)
+- Ship production safeguards before data-quality and clinical review criteria are met (Phase E)
 - Redesign unrelated Pet Care features or reintroduce Shelter/Fostering dependencies
+- **Pause between Phases A, B, or C to ask for permission** — complete each phase's definition of done, then proceed
 
 Stay consistent with existing Flutter + Riverpod, repository/use-case patterns, GoRouter, recurrence infrastructure, notification infrastructure, design tokens, and responsive shell.
 
@@ -96,15 +99,19 @@ If the app says **All Set** most of the time and surfaces a genuinely useful sug
 
 ```text
 Phase A — Care Foundation
-    ↓ go/no-go
+        ↓  (continue — no permission pause)
 Phase B — Care Rhythms
-    ↓ go/no-go
+        ↓  (continue — no permission pause)
 Phase C — Suggested by Agatha (crisp rules only)
-    ↓ go/no-go
+        ↓  ⏸ PAUSE — product owner supplies test dataset
 Phase D — Pattern Intelligence (experiment: crisp vs fuzzy)
-    ↓ go/no-go
-Phase E — Safeguards (gated; weight-only minimum bar)
+        ↓  (continue unless redirected)
+Phase E — Safeguards (weight-only minimum bar; multi-signal deferred)
 ```
+
+**Autonomous execution:** Phases A → B → C run back-to-back. Meet each phase's definition of done (§13), then start the next phase without asking for approval.
+
+**Single mandatory pause:** Before Phase D, stop and wait for the product owner to provide a test dataset for pattern evaluation. Do not substitute synthetic fixtures alone if the owner has indicated a dataset is coming.
 
 **Deferred roadmap** (vision only — see appendix): Care Plans, Agatha Tips, Seasonal Care, Timeline → Care Story evolution, learned ranking / ML, freemium presentation policy implementation.
 
@@ -175,7 +182,7 @@ Exact “Worth a Check” review-window timing can be refined after usability va
 - Care Plans
 - Server-side Care Status API (may follow in Phase C if shared-care needs it; semantics must match client service)
 
-### Go/no-go gate (before Phase B)
+### Completion criteria (then proceed to Phase B)
 
 | Criterion | Required |
 |-----------|----------|
@@ -184,8 +191,9 @@ Exact “Worth a Check” review-window timing can be refined after usability va
 | CareFamily icon mapping | Tested; safe fallback for `other` |
 | CareFamily backfill | Strategy executed or documented default for unmigrated rows |
 | Shelter teal / danger on pet-summary overdue | Removed from Pet Care surfaces |
-| Usability validation | **Scheduled or completed** for status labels and colour intensity (see §7) |
 | Design docs | Updated for Phase A deliverables |
+
+Usability validation for status labels and colour intensity (§7) may run in parallel; do not block Phase B on it.
 
 ---
 
@@ -236,7 +244,7 @@ Suggested section subtitles:
 - Care Rhythms: *“Your recurring care routines.”*
 - Actions: *“What’s due from those routines and other scheduled care.”*
 
-### Go/no-go gate (before Phase C)
+### Completion criteria (then proceed to Phase C)
 
 | Criterion | Required |
 |-----------|----------|
@@ -244,7 +252,6 @@ Suggested section subtitles:
 | Notification consistency | Unchanged or verified against recurrence changes |
 | Navigation | Profile → Care Rhythms → correct pet; responsive mobile/tablet/web |
 | Negative routes | Cross-pet ID rejected; dosage fields untouched on cadence edit |
-| Usability spot-check | At least informal validation that guardians understand Rhythms vs Actions |
 
 ---
 
@@ -295,7 +302,7 @@ A suggestion alone **cannot** change Care Status.
 
 CIM cannot override explicit veterinary cadence. `NOT_RELEVANT` suppresses resurfacing unless context changes materially.
 
-### Go/no-go gate (before Phase D)
+### Completion criteria (then pause before Phase D)
 
 | Criterion | Required |
 |-----------|----------|
@@ -303,7 +310,8 @@ CIM cannot override explicit veterinary cadence. `NOT_RELEVANT` suppresses resur
 | Acceptance flow | Accept/adjust creates exactly one rhythm; idempotent; transactional where practical |
 | Suppression policy | Existing rhythm, dismissed, not relevant — all tested |
 | Analytics events | Quality events captured (presented, accepted, dismissed, not relevant) — not vanity engagement |
-| Product review | Three families producing useful, non-noisy suggestions on synthetic fixtures |
+
+After Phase C meets definition of done (§13), **stop and wait** for the product-owner test dataset before starting Phase D.
 
 ---
 
@@ -435,6 +443,16 @@ Unsupported species must not crash Care Status or rhythm flows.
 
 ## 10. Phase D — Pattern Intelligence (experiment)
 
+### Mandatory pause before starting
+
+**Do not begin Phase D until the product owner provides a test dataset** for pattern evaluation.
+
+When Phase C is complete:
+
+1. Report completion briefly (what shipped, where tests live).
+2. **Wait** for the dataset — do not ask whether to proceed with Phase D; the pause is automatic.
+3. Use the supplied dataset as the primary evaluation input (supplement with synthetic fixtures from Appendix C as needed).
+
 ### Goal
 
 Evaluate whether longitudinal pattern detection needs fuzzy inference — or whether crisp statistical rules are sufficient.
@@ -459,7 +477,7 @@ Do threshold cliffs cause poor behaviour?
 
 - Centralised weight feature extraction (if not done in Phase C)
 - Crisp threshold rules with documented parameters
-- Synthetic case suite (Cat A–F, Dog A–D from v0.1 appendix)
+- Evaluation against **product-owner test dataset** plus synthetic cases (Appendix C)
 - Internal audit trace (features, rules fired, candidate output)
 - Comparison report: crisp vs fuzzy on boundary cases
 
@@ -469,24 +487,25 @@ Do threshold cliffs cause poor behaviour?
 - User-facing fuzzy outputs or confidence percentages
 - LLM integration
 
-### Go/no-go gate (before Phase E)
+### Completion criteria (then proceed to Phase E)
 
 | Criterion | Required |
 |-----------|----------|
 | Evaluation complete | Written decision: crisp sufficient, or fuzzy justified |
 | If fuzzy chosen | Versioned membership functions, deterministic output, property tests |
-| Clinical/product review | Thresholds and false-positive behaviour reviewed |
 | No diagnosis in output | Negative-route tests pass |
 
 ---
 
-## 11. Phase E — Safeguards (gated)
+## 11. Phase E — Safeguards
 
-### Gate (hard requirement)
+### Hard requirements (not a permission pause)
 
 > **No production multi-signal safeguard until at least two reliable structured longitudinal signals exist and their capture behaviour has been validated.**
 
-The Luna mockup (weight decline + lower activity) remains in the **vision appendix** — not a Phase E commitment.
+The Luna mockup (weight decline + lower activity) remains in the **vision appendix**.
+
+Proceed to Phase E after Phase D without asking for permission, subject to the minimum bar below.
 
 ### Minimum bar for any production safeguard
 
@@ -496,10 +515,9 @@ Even weight-only:
 - Unit consistency
 - Personal baseline confidence thresholds
 - Robust outlier handling
-- Veterinary review of rule copy and thresholds
-- Dedicated go/no-go milestone with false-positive/false-negative evaluation
+- False-positive/false-negative evaluation documented in implementation notes
 
-### Safeguard UX (when approved)
+### Safeguard UX (when criteria met)
 
 - Info blue calm card — “Worth checking with your vet”
 - No diagnosis, disease names, alarm animation, or emergency classification
@@ -600,7 +618,12 @@ Each phase is complete only when:
 7. Canonical docs updated in the same phase
 8. No new Shelter/Fostering coupling introduced
 9. Lint/static analysis passes
-10. Go/no-go gate criteria met before starting the next phase
+
+Phases A → B → C: proceed to the next phase when the current phase satisfies this list — **no permission pause**.
+
+Phase D: start only after the product-owner test dataset is supplied (§10).
+
+Phase E: proceed after Phase D satisfies this list unless the product owner redirects scope.
 
 ---
 
@@ -649,21 +672,24 @@ Vision-only until activity (or equivalent second signal) is a validated, structu
 
 ## 15. Cursor handoff — start here
 
-**Immediate task when implementation begins:**
+**Execution model**
 
-> **Phase A — Care Foundation only.**
+| Phases | Behaviour |
+|--------|-----------|
+| **A → B → C** | Implement sequentially. When a phase meets §13 definition of done, **start the next phase immediately** — do not pause for approval. |
+| **Before D** | **Stop and wait** for product-owner test dataset (§10). |
+| **D → E** | Continue after dataset evaluation unless redirected. |
 
-Before coding:
+**First task when implementation begins:** Phase A — Care Foundation.
+
+Before coding Phase A:
 
 1. Inspect `main` for Pet Care / Shelter separation completeness (§4 prerequisites)
 2. Search codebase for `PetTileCareUrgency`, `PetCareTodayCareSummary`, `NeuterReminderCard`, `ChipReminderCard`, `HealthEntry`
-3. Confirm usability validation is scheduled for status copy/colours
 
 Do **not** implement recommendation generation, fuzzy inference, or safeguards in Phase A.
 
-**After Phase A go/no-go:** Phase B — Care Rhythms.
-
-**Do not skip to Phase C** until rhythms and Actions relationship are shippable.
+After Phase A completes → Phase B (Care Rhythms). After Phase B → Phase C (Suggested by Agatha). After Phase C → **pause for dataset** → Phase D.
 
 ---
 
@@ -721,4 +747,4 @@ docs/engineering/frozen-domains/mvp-pivot-decisions.md
 
 ---
 
-*End of Care Foundation & Intelligence Roadmap v0.2*
+*End of Care Foundation & Intelligence Roadmap v0.3*
