@@ -22,7 +22,10 @@ class PetCareNavigationSidebar extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final destinations = PetCarePrimaryDestinations.destinations();
     final accountDestination = destinations.last;
-    final primaryDestinations = destinations.sublist(0, destinations.length - 1);
+    final primaryDestinations = destinations.sublist(
+      0,
+      destinations.length - 1,
+    );
     final selectedIndex = PetCarePrimaryDestinations.indexFor(currentLocation);
 
     return Semantics(
