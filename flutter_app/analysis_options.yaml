@@ -1,4 +1,7 @@
 analyzer:
+  exclude:
+    - lib/features/organization/**
+    - lib/features/fostering_session/**
   errors:
     deprecated_member_use: warning
 

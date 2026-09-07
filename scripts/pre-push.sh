@@ -11,6 +11,7 @@ agatha_flutter_verify
 
 echo "==> Governance gates"
 node scripts/check_file_size.js
+bash scripts/check_frozen_domain_boundaries.sh
 node scripts/validate_execute_plan_snapshot.js .agents/plans/_example.snapshot.json
 node scripts/validate_execute_plan_snapshot.js --drift-test
 node --test scripts/execute_plan_runtime.test.js
@@ -33,15 +34,17 @@ echo "==> Server (audit + Jest)"
 (
   cd server
   npm audit --audit-level=high
-  npx jest --env=node --forceExit
+  npm test -- --forceExit
 )
 
-echo "==> Flutter (codegen + analyze + test)"
+echo "==> Flutter (codegen + analyze + active CI shards)"
 (
   cd flutter_app
   dart run build_runner build --delete-conflicting-outputs
   flutter analyze --no-fatal-warnings --no-fatal-infos
-  flutter test --concurrency=1 --exclude-tags=integration
+  for shard in pet-core pet-screens pet-widgets health rest-a rest-b; do
+    bash scripts/run_tests_ci_shard.sh "$shard"
+  done
 )
 
 echo "==> Format check"

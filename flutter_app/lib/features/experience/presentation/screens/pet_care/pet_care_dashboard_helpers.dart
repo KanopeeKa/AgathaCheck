@@ -306,7 +306,7 @@ PetCareTodayCareUrgency? _urgencyForEntry(
   return null;
 }
 
-/// Active owned pets (not shared or foster) for the guardian dashboard, oldest first.
+/// Active personal pets (owned and foster; not shared) for the guardian dashboard.
 List<Pet> petCareDashboardPersonalPets(
   List<Pet> allPets,
   PetListController controller,

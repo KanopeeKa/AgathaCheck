@@ -25,13 +25,7 @@ class PetCarePrimaryDestinations {
   static const compactBreakpoint = 600.0;
   static const expandedBreakpoint = 840.0;
 
-  static const routes = [
-    '/pc/home',
-    '/pc/pets',
-    '/pc/events',
-    '/pc/fostering',
-    '/account',
-  ];
+  static const routes = ['/pc/home', '/pc/pets', '/pc/events', '/account'];
 
   static bool isCompact(double width) => width < compactBreakpoint;
 
@@ -56,8 +50,7 @@ class PetCarePrimaryDestinations {
   }
 
   static int indexFor(String path) {
-    if (path == '/account' || path.startsWith('/account/')) return 4;
-    if (path == '/pc/fostering' || path.startsWith('/pc/fostering/')) return 3;
+    if (path == '/account' || path.startsWith('/account/')) return 3;
     if (_isCarePath(path)) return 2;
     if (_isPetsPath(path)) return 1;
     return 0;
@@ -96,12 +89,6 @@ class PetCarePrimaryDestinations {
       labelBuilder: _careLabel,
     ),
     PetCarePrimaryDestination(
-      route: '/pc/fostering',
-      icon: Icons.home_work_outlined,
-      selectedIcon: Icons.home_work,
-      labelBuilder: _fosteringLabel,
-    ),
-    PetCarePrimaryDestination(
       route: '/account',
       icon: Icons.person_outline,
       selectedIcon: Icons.person,
@@ -112,7 +99,6 @@ class PetCarePrimaryDestinations {
   static String _dashboardLabel(AppLocalizations l) => l.dashboardNavLabel;
   static String _petsLabel(AppLocalizations l) => l.petsNavLabel;
   static String _careLabel(AppLocalizations l) => l.careNavLabel;
-  static String _fosteringLabel(AppLocalizations l) => l.fostering;
   static String _accountLabel(AppLocalizations l) => l.accountTitle;
 
   /// Stable semantics identifier for E2E (`flt-semantics-identifier` on web).
@@ -124,8 +110,6 @@ class PetCarePrimaryDestinations {
         return 'pet_care_nav_pets';
       case '/pc/events':
         return 'pet_care_nav_care';
-      case '/pc/fostering':
-        return 'pet_care_nav_fostering';
       case '/account':
         return 'pet_care_nav_account';
       default:

@@ -30,7 +30,6 @@ class PetCareEmbeddedPetsList extends StatelessWidget {
   Widget build(BuildContext context) {
     final owned = petCareDashboardPersonalPets(allPets, controller);
     final shared = petCareDashboardSharedPets(allPets, controller);
-    final fostered = petCareDashboardFosterPets(allPets, controller);
     final passedAway = controller
         .guardianShellPets(allPets)
         .where((pet) => pet.passedAway)
@@ -62,19 +61,6 @@ class PetCareEmbeddedPetsList extends StatelessWidget {
           ),
           PetCarePetsTileGrid(
             pets: shared,
-            careSummary: careSummary,
-            onPetTap: openPet,
-          ),
-          const SizedBox(height: 16),
-        ],
-        if (fostered.isNotEmpty) ...[
-          PetListSectionHeader(
-            icon: Icons.home_work_outlined,
-            title: l.myFosteredPets,
-            count: fostered.length,
-          ),
-          PetCarePetsTileGrid(
-            pets: fostered,
             careSummary: careSummary,
             onPetTap: openPet,
           ),

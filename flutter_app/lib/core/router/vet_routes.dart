@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import '../../features/experience/domain/entities/app_experience.dart';
 import '../../l10n/app_localizations.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
-import '../../features/organization/presentation/utils/org_profile_return.dart';
 import '../../features/vet/presentation/screens/vet_detail_screen.dart';
 import '../../features/vet/presentation/screens/vet_form_screen.dart';
 import '../../features/vet/presentation/screens/vet_list_screen.dart';
@@ -38,36 +37,30 @@ List<RouteBase> buildVetExperienceRoutes() {
       path: '/g/vets/:id',
       redirect: (context, state) => '/pc/vets/${state.pathParameters['id']}',
     ),
+    GoRoute(path: '/o/vets', redirect: (context, state) => '/pc/vets'),
     GoRoute(
-      path: '/o/vets',
-      name: 'orgVets',
-      builder: (context, state) => ExperienceShellScaffold(
-        experience: AppExperience.organization,
-        currentLocation: state.uri.path,
-        child: const VetListScreen(
-          embeddedInShell: true,
-          experience: AppExperience.organization,
-        ),
-      ),
-      routes: _vetFormRoutes(listPath: '/o/vets'),
+      path: '/o/vets/:tail(.*)',
+      redirect: (context, state) {
+        final tail = state.pathParameters['tail'] ?? '';
+        if (tail.isEmpty) return '/pc/vets';
+        return '/pc/vets/$tail';
+      },
     ),
   ];
 }
 
 List<RouteBase> _vetFormRoutes({required String listPath}) {
-  final isPetCare = listPath == '/pc/vets';
   return [
     GoRoute(
       path: 'add',
-      name: '${isPetCare ? 'petCare' : 'org'}AddVet',
+      name: 'petCareAddVet',
       builder: (context, state) {
-        final orgId = state.uri.queryParameters['org'];
-        return VetFormScreen(listPath: listPath, defaultOrganizationId: orgId);
+        return VetFormScreen(listPath: listPath);
       },
     ),
     GoRoute(
       path: 'edit/:id',
-      name: '${isPetCare ? 'petCare' : 'org'}EditVet',
+      name: 'petCareEditVet',
       builder: (context, state) {
         final vetId = state.pathParameters['id']!;
         return VetFormScreen(vetId: vetId, listPath: listPath);
@@ -75,19 +68,15 @@ List<RouteBase> _vetFormRoutes({required String listPath}) {
     ),
     GoRoute(
       path: ':id',
-      name: '${isPetCare ? 'petCare' : 'org'}VetDetail',
+      name: 'petCareVetDetail',
       builder: (context, state) {
         final vetId = state.pathParameters['id']!;
         final l = AppLocalizations.of(context)!;
-        final returnTo = orgProfileReturnToFromState(state);
         return ExperienceShellScaffold(
-          experience: isPetCare
-              ? AppExperience.petCare
-              : AppExperience.organization,
+          experience: AppExperience.petCare,
           currentLocation: state.uri.path,
           screenTitle: l.careTeam,
-          backPath: returnTo,
-          forceBackPath: returnTo != null,
+          backPath: listPath,
           child: VetDetailScreen(vetId: vetId, listPath: listPath),
         );
       },

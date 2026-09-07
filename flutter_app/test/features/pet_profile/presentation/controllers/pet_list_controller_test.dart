@@ -80,7 +80,7 @@ void main() {
     expect(controller.getOrgGroups([fostered]), isEmpty);
   });
 
-  test('fostered filter chip shows only fostered pets', () {
+  test('fostered filter chip matches personal filter in MVP', () {
     final controller = PetListController()..orgFilter = '_fostered';
     final fostered = _pet(
       id: 'foster-1',
@@ -93,7 +93,7 @@ void main() {
     final filtered = controller.filterPets([fostered, owned]);
 
     expect(filtered, hasLength(1));
-    expect(filtered.single.id, 'foster-1');
+    expect(filtered.single.id, 'owned-1');
   });
 
   test('org filter excludes fostered pets from organisation inventory', () {

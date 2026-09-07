@@ -48,6 +48,19 @@ function scenarioIndent(line) {
   return m ? m[1].length : 2;
 }
 
+function isFrozenScenario(lines, scenarioIndex) {
+  for (let j = scenarioIndex - 1; j >= 0; j--) {
+    const trimmed = lines[j].trim();
+    if (trimmed === '' || trimmed.startsWith('#')) continue;
+    if (trimmed.startsWith('@')) {
+      if (trimmed.includes('@frozen') || trimmed.includes('@legacy')) return true;
+      continue;
+    }
+    break;
+  }
+  return false;
+}
+
 function processFeatureFile(filePath, fileName, priorityMap, apply) {
   const lines = fs.readFileSync(filePath, 'utf8').split('\n');
   const issues = [];
@@ -61,6 +74,11 @@ function processFeatureFile(filePath, fileName, priorityMap, apply) {
 
     const title = scenarioMatch[2].trim();
     const indent = scenarioMatch[1];
+
+    if (isFrozenScenario(lines, i)) {
+      continue;
+    }
+
     const expected = priorityMap.get(`${fileName}\0${title}`);
 
     if (!expected) {

@@ -79,15 +79,16 @@ void main() {
     );
 
     expect(accent.kind, PetOwnershipKind.organizationLinked);
-    expect(accent.showsFosterLabel, isTrue);
-    expect(accent.fosterLabel, contains('In foster care'));
+    expect(accent.showsFosterLabel, isFalse);
     expect(
       accent.accentColor,
       AppTheme.lightTheme.extension<ExperienceColors>()!.organizationPrimary,
     );
   });
 
-  testWidgets('isFoster flag shows green foster label', (tester) async {
+  testWidgets('foster flag is treated like guardian-owned in MVP', (
+    tester,
+  ) async {
     const pet = Pet(
       id: 'p3',
       name: 'Luna',
@@ -112,7 +113,7 @@ void main() {
       ),
     );
 
-    expect(accent.showsFosterLabel, isTrue);
-    expect(accent.fosterLabel, 'In foster care');
+    expect(accent.kind, PetOwnershipKind.guardianOwned);
+    expect(accent.showsFosterLabel, isFalse);
   });
 }

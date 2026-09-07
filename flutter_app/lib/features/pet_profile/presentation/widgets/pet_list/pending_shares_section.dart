@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/utils/constants.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../organization/presentation/providers/organization_providers.dart';
 import '../../../../sharing/presentation/providers/sharing_providers.dart';
 
 class PendingSharesSection extends ConsumerWidget {
@@ -183,72 +182,7 @@ class PendingShareCard extends ConsumerWidget {
     PendingShare share,
     AppLocalizations l,
   ) {
-    final orgsAsync = ref.read(organizationListProvider);
-    final orgs = orgsAsync.valueOrNull ?? [];
-
-    if (orgs.isEmpty) {
-      _doAcceptShare(context, ref, share.petId, null, l);
-      return;
-    }
-
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        final theme = Theme.of(ctx);
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l.acceptShareTo,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  l.acceptShareToHint,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.person)),
-                  title: Text(l.myPets),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    _doAcceptShare(context, ref, share.petId, null, l);
-                  },
-                ),
-                const Divider(),
-                ...orgs.map(
-                  (org) => ListTile(
-                    leading: const CircleAvatar(child: Icon(Icons.business)),
-                    title: Text(org.name),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      _doAcceptShare(context, ref, share.petId, org.id, l);
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+    _doAcceptShare(context, ref, share.petId, null, l);
   }
 
   Future<void> _doAcceptShare(

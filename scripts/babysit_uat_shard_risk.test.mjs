@@ -28,16 +28,20 @@ function run(paths) {
 
 {
   const out = run(['flutter_app/lib/features/organization/presentation/screens/foo.dart']);
-  assert.ok(out.shards.length >= 1);
-  assert.ok(out.shards.some((s) => s.index === 12));
-  assert.equal(out.merge_action, 'act_now');
+  assert.equal(out.shards.length, 0);
+  assert.equal(out.merge_action, 'wait');
 }
 
 {
   const out = run(['e2e/playwright/tests/organisation.edit.spec.ts']);
-  const shard = out.shards.find((s) => s.index === 12);
-  assert.ok(shard);
-  assert.equal(shard.risk, 'high');
+  assert.equal(out.shards.length, 0);
+  assert.equal(out.merge_action, 'wait');
+}
+
+{
+  const out = run(['flutter_app/lib/features/experience/presentation/screens/foo.dart']);
+  assert.ok(out.shards.length >= 1);
+  assert.ok(out.shards.some((s) => s.index === 3 || s.index === 4));
 }
 
 {

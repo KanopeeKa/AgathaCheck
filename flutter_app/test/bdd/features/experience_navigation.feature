@@ -16,6 +16,7 @@ Feature: Experience navigation
     Then the user should be navigated to the guardian home screen
 
   @P1
+  @frozen
   Scenario: Organisation-only user lands on organisation home after login
     Given a registered user with email "orgadmin@example.com" and password "secret123"
     And the user belongs to an organisation
@@ -123,6 +124,7 @@ Feature: Experience navigation
     And the drawer should contain "Account" as the bottom-pinned item
 
   @P0
+  @frozen
   Scenario: Drawer shows Organisation when user is an org member
     Given a registered user with email "dual@example.com" and password "secret123"
     And the user belongs to an organisation

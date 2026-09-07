@@ -20,7 +20,7 @@ import {
 } from '../support/api';
 
 test.describe('Organisation discovery', () => {
-  test('@P1 @smoke-ci @smoke-uat anonymous request returns discoverable organisation', async () => {
+  test('@P1 @smoke-uat anonymous request returns discoverable organisation', async () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const owner = await signupUser(baseURL, { firstName: 'Rescue', lastName: 'Admin' });
     const org = await createOrganization(baseURL, owner.accessToken, {

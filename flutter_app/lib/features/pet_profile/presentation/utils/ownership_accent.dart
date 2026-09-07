@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../organization/presentation/utils/foster_placement_display.dart';
 import '../../domain/entities/pet.dart';
 
 /// Ownership accent kind for pets (navigation v2 plum vs green).
@@ -56,17 +55,13 @@ PetOwnershipAccent resolvePetOwnershipAccent(
       ? xp.organizationOnPrimary
       : xp.guardianOnPrimary;
 
-  final fosterLine = petFosterPlacementCardLine(l, pet);
-  final fosterLabel =
-      fosterLine ?? (pet.isFoster ? l.fosterPlacementInProgress : null);
-
   return PetOwnershipAccent(
     kind: isOrgLinked
         ? PetOwnershipKind.organizationLinked
         : PetOwnershipKind.guardianOwned,
     accentColor: accentColor,
     onAccentColor: onAccentColor,
-    fosterLabel: fosterLabel,
+    fosterLabel: null,
   );
 }
 

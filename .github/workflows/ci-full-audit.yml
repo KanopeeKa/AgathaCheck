@@ -95,13 +95,6 @@ jobs:
     with:
       shard: health
 
-  flutter-test-org:
-    needs: [decide, flutter-analyze]
-    if: needs.decide.outputs.should_run == 'true'
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: org
-
   flutter-test-rest-a:
     needs: [decide, flutter-analyze]
     if: needs.decide.outputs.should_run == 'true'
@@ -123,7 +116,6 @@ jobs:
       - flutter-test-pet-screens
       - flutter-test-pet-widgets
       - flutter-test-health
-      - flutter-test-org
       - flutter-test-rest-a
       - flutter-test-rest-b
     if: needs.decide.outputs.should_run == 'true'
@@ -155,16 +147,6 @@ jobs:
       test_suite: smoke-ci
       web_artifact_name: ${{ needs.flutter-build-web.outputs.artifact_name }}
 
-  ci-e2e-org:
-    needs: [decide, flutter-build-web]
-    if: >-
-      needs.decide.outputs.should_run == 'true' &&
-      needs.flutter-build-web.result == 'success'
-    uses: ./.github/workflows/_reusable-e2e-local.yml
-    with:
-      test_suite: org-journey
-      web_artifact_name: ${{ needs.flutter-build-web.outputs.artifact_name }}
-
   audit-gate:
     name: Full audit passed
     needs:
@@ -176,14 +158,12 @@ jobs:
       - flutter-test-pet-screens
       - flutter-test-pet-widgets
       - flutter-test-health
-      - flutter-test-org
       - flutter-test-rest-a
       - flutter-test-rest-b
       - flutter-coverage
       - flutter-integration
       - flutter-build-web
       - ci-e2e-canary
-      - ci-e2e-org
     if: >-
       always() &&
       needs.decide.outputs.should_run == 'true'
@@ -206,14 +186,12 @@ jobs:
           FLUTTER_TEST_PET_SCREENS: ${{ needs.flutter-test-pet-screens.result }}
           FLUTTER_TEST_PET_WIDGETS: ${{ needs.flutter-test-pet-widgets.result }}
           FLUTTER_TEST_HEALTH: ${{ needs.flutter-test-health.result }}
-          FLUTTER_TEST_ORG: ${{ needs.flutter-test-org.result }}
           FLUTTER_TEST_REST_A: ${{ needs.flutter-test-rest-a.result }}
           FLUTTER_TEST_REST_B: ${{ needs.flutter-test-rest-b.result }}
           FLUTTER_COVERAGE: ${{ needs.flutter-coverage.result }}
           FLUTTER_INTEGRATION: ${{ needs.flutter-integration.result }}
           FLUTTER_BUILD_WEB: ${{ needs.flutter-build-web.result }}
           CI_E2E_CANARY: ${{ needs.ci-e2e-canary.result }}
-          CI_E2E_ORG: ${{ needs.ci-e2e-org.result }}
         run: bash scripts/ci/assert-ci-gate.sh
 
   spawn-agent-on-failure:

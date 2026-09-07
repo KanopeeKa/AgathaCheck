@@ -82,7 +82,6 @@ describe('Pets API', () => {
           vetId: 'vet-uuid-1',
           colorValue: 0,
           passedAway: false,
-          organization_id: 'org-uuid-1',
         });
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty('id', petId);

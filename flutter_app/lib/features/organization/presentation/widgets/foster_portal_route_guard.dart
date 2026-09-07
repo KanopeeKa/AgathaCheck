@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../organization/presentation/providers/organization_providers.dart';
-import '../providers/experience_providers.dart';
+import '../providers/organization_providers.dart';
+import '../../../experience/presentation/providers/experience_providers.dart';
 
 /// Redirects foster-portal org members away from routes hidden in the drawer.
 class FosterPortalRouteGuard extends ConsumerStatefulWidget {

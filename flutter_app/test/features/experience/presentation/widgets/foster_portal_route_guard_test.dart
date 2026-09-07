@@ -1,8 +1,9 @@
+@Tags(['frozen'])
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pet_profile_app/features/experience/presentation/widgets/foster_portal_route_guard.dart';
+import 'package:pet_profile_app/features/organization/presentation/widgets/foster_portal_route_guard.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 

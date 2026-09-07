@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/widgets/collection_filter/org_context_collection_filter.dart';
-import '../../../organization/domain/entities/organization.dart';
-import '../../../organization/presentation/providers/organization_providers.dart';
 
 export '../../../../core/widgets/collection_filter/org_context_collection_filter.dart'
     show VetOrgCollectionFilterBar;
 
-/// Filter bar for vet list: All | My vets | per-org.
+/// Filter bar for vet list: All | My vets (frozen MVP — no per-org filters).
 @Deprecated('Use VetOrgCollectionFilterBar')
-class VetFilterBar extends ConsumerWidget {
+class VetFilterBar extends StatelessWidget {
   const VetFilterBar({
     super.key,
     required this.selectedFilter,
@@ -23,12 +20,9 @@ class VetFilterBar extends ConsumerWidget {
   final bool guardianOnly;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final orgsAsync = ref.watch(organizationListProvider);
-    final orgs = orgsAsync.valueOrNull ?? <Organization>[];
-
+  Widget build(BuildContext context) {
     return VetOrgCollectionFilterBar(
-      orgs: orgs.map((org) => (id: org.id, name: org.name)).toList(),
+      orgs: const [],
       organizationScope: guardianOnly,
       selectedFilter: selectedFilter,
       onFilterChanged: onFilterChanged,

@@ -22,6 +22,7 @@ import {
   FOSTER_PET_ACCESS_ROLE,
 } from '../../lib/petAccess.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
+import { rejectFrozenOrganizationIdOnPetWrite } from '../../lib/frozenDomains.js';
 import { orgPetViewerRolesSql } from '../../lib/orgRoles.js';
 import { OPEN_PLACEMENT_STATUSES } from '../../lib/fosterPlacements.js';
 import {
@@ -160,6 +161,7 @@ export function registerCoreRoutes(router, pool) {
   router.post('/', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (rejectFrozenOrganizationIdOnPetWrite(req, res)) return;
     try {
       const id = req.body.id || uuidv4();
       const {
@@ -227,6 +229,7 @@ export function registerCoreRoutes(router, pool) {
   router.put('/:id', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (rejectFrozenOrganizationIdOnPetWrite(req, res)) return;
     try {
       const { id } = req.params;
       if (!(await hasPetCapability(pool, userId, id, PET_CAPABILITIES.PROFILE_EDIT))) {

@@ -7,67 +7,74 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final controller = PetListController();
 
-  test('petCareDashboardPersonalPets returns owned pets only, sorted', () {
-    final pets = [
-      Pet(
-        id: '2',
-        name: 'Beta',
-        species: 'Dog',
-        breed: '',
-        createdAt: DateTime(2024, 2, 1),
-      ),
-      Pet(
-        id: '1',
-        name: 'Alpha',
-        species: 'Dog',
-        breed: '',
-        createdAt: DateTime(2024, 1, 1),
-      ),
-      Pet(
-        id: '3',
-        name: 'Foster',
-        species: 'Cat',
-        breed: '',
-        isFoster: true,
-        createdAt: DateTime(2024, 3, 1),
-      ),
-      Pet(
-        id: '4',
-        name: 'Shared',
-        species: 'Dog',
-        breed: '',
-        isShared: true,
-        createdAt: DateTime(2024, 4, 1),
-      ),
-    ];
+  test(
+    'petCareDashboardPersonalPets returns owned and foster pets, sorted',
+    () {
+      final pets = [
+        Pet(
+          id: '2',
+          name: 'Beta',
+          species: 'Dog',
+          breed: '',
+          createdAt: DateTime(2024, 2, 1),
+        ),
+        Pet(
+          id: '1',
+          name: 'Alpha',
+          species: 'Dog',
+          breed: '',
+          createdAt: DateTime(2024, 1, 1),
+        ),
+        Pet(
+          id: '3',
+          name: 'Foster',
+          species: 'Cat',
+          breed: '',
+          isFoster: true,
+          createdAt: DateTime(2024, 3, 1),
+        ),
+        Pet(
+          id: '4',
+          name: 'Shared',
+          species: 'Dog',
+          breed: '',
+          isShared: true,
+          createdAt: DateTime(2024, 4, 1),
+        ),
+      ];
 
-    final personal = petCareDashboardPersonalPets(pets, controller);
-    expect(personal.length, 2);
-    expect(personal.map((p) => p.name).toList(), ['Alpha', 'Beta']);
-  });
+      final personal = petCareDashboardPersonalPets(pets, controller);
+      expect(personal.length, 3);
+      expect(personal.map((p) => p.name).toList(), ['Alpha', 'Beta', 'Foster']);
+    },
+  );
 
-  test('petCareDashboardPersonalPets excludes shared and foster pets', () {
-    final pets = [
-      const Pet(id: '1', name: 'Mine', species: 'Dog', breed: ''),
-      const Pet(
-        id: '2',
-        name: 'Shared',
-        species: 'Cat',
-        breed: '',
-        isShared: true,
-      ),
-      const Pet(
-        id: '3',
-        name: 'Fostered',
-        species: 'Cat',
-        breed: '',
-        isFoster: true,
-      ),
-    ];
+  test(
+    'petCareDashboardPersonalPets excludes shared pets but keeps foster',
+    () {
+      final pets = [
+        const Pet(id: '1', name: 'Mine', species: 'Dog', breed: ''),
+        const Pet(
+          id: '2',
+          name: 'Shared',
+          species: 'Cat',
+          breed: '',
+          isShared: true,
+        ),
+        const Pet(
+          id: '3',
+          name: 'Fostered',
+          species: 'Cat',
+          breed: '',
+          isFoster: true,
+        ),
+      ];
 
-    final personal = petCareDashboardPersonalPets(pets, controller);
-    expect(personal.map((p) => p.name).toList(), ['Mine']);
-  });
+      final personal = petCareDashboardPersonalPets(pets, controller);
+      expect(personal, hasLength(2));
+      expect(personal.map((p) => p.name), containsAll(['Mine', 'Fostered']));
+    },
+  );
 
   test('petCareDashboardSharedPets returns shared pets only', () {
     final pets = [

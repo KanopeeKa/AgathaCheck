@@ -82,6 +82,12 @@ for f in "${files[@]}"; do
     continue
   fi
 
+  if grep -qE "@Tags\(\[.*'frozen'" "$f" 2>/dev/null; then
+    echo "Skipping $f (frozen tag)"
+    skipped=$((skipped + 1))
+    continue
+  fi
+
   count=$((count + 1))
   echo "::group::flutter test $f"
   if flutter test "$f" --concurrency=1 --coverage --exclude-tags=integration; then

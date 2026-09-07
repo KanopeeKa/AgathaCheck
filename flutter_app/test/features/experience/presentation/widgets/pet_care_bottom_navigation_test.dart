@@ -74,8 +74,7 @@ void main() {
       expect(PetCareBottomNavigation.indexFor('/pc/home'), 0);
       expect(PetCareBottomNavigation.indexFor('/pc/pets'), 1);
       expect(PetCareBottomNavigation.indexFor('/pc/events'), 2);
-      expect(PetCareBottomNavigation.indexFor('/pc/fostering'), 3);
-      expect(PetCareBottomNavigation.indexFor('/account'), 4);
+      expect(PetCareBottomNavigation.indexFor('/account'), 3);
     });
 
     test('maps nested Guardian workspace routes to the closest tab', () {
@@ -88,14 +87,13 @@ void main() {
       expect(PetCareBottomNavigation.indexFor('/pet/pet-1/events'), 2);
       expect(PetCareBottomNavigation.indexFor('/pet/pet-1/events/entry-1'), 2);
       expect(PetCareBottomNavigation.indexFor('/add'), 1);
-      expect(PetCareBottomNavigation.indexFor('/account/orgs/org-1'), 4);
+      expect(PetCareBottomNavigation.indexFor('/account/orgs/org-1'), 3);
     });
 
     test('recognises Guardian workspace routes', () {
       expect(PetCareBottomNavigation.supports('/pc/home'), isTrue);
       expect(PetCareBottomNavigation.supports('/pc/pets'), isTrue);
       expect(PetCareBottomNavigation.supports('/pc/events'), isTrue);
-      expect(PetCareBottomNavigation.supports('/pc/fostering'), isTrue);
       expect(PetCareBottomNavigation.supports('/account'), isTrue);
       expect(PetCareBottomNavigation.supports('/pc/vets/vet-1'), isTrue);
       expect(PetCareBottomNavigation.supports('/pet/pet-1'), isTrue);
@@ -128,7 +126,6 @@ void main() {
       expect(find.text('Dashboard'), findsOneWidget);
       expect(find.text('Pets'), findsOneWidget);
       expect(find.text('Actions'), findsOneWidget);
-      expect(find.text('Fostering'), findsOneWidget);
       expect(find.text('Account'), findsOneWidget);
       expect(
         find.byKey(const Key('pet_care_bottom_navigation')),

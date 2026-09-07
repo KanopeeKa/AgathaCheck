@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../../experience/presentation/widgets/shelter_pinned_org_provider.dart';
+import '../providers/shelter_pinned_org_provider.dart';
 
 /// Pin/unpin control for Shelter membership tiles (D-shelter-NAV-2).
 final shelterMembershipPinControllerProvider =

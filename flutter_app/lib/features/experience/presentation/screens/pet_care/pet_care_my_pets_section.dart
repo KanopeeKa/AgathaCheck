@@ -48,14 +48,11 @@ class PetCareMyPetsSection extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final personalPets = petCareDashboardPersonalPets(allPets, controller);
-    final fosterPets = petCareDashboardFosterPets(allPets, controller);
     final sharedPets = petCareDashboardSharedPets(allPets, controller);
     final hasAny = petCareDashboardHasAnyPets(allPets, controller);
     final showUnifiedPreview = previewPets != null;
     final showPersonalSubgroupTitle =
-        !showUnifiedPreview &&
-        personalPets.isNotEmpty &&
-        (fosterPets.isNotEmpty || sharedPets.isNotEmpty);
+        !showUnifiedPreview && personalPets.isNotEmpty && sharedPets.isNotEmpty;
 
     if (showUnifiedPreview) {
       return Semantics(
@@ -102,9 +99,7 @@ class PetCareMyPetsSection extends ConsumerWidget {
                 ...[
                   if (showPersonalSubgroupTitle)
                     _PetSubgroupTitle(title: l.myPets),
-                  if (personalPets.isEmpty &&
-                      fosterPets.isEmpty &&
-                      sharedPets.isEmpty)
+                  if (personalPets.isEmpty && sharedPets.isEmpty)
                     PetCareIllustratedEmptyState(
                       key: const Key('pet_care_dashboard_empty_pets'),
                       assetPath: 'assets/dashboard/pet-care-empty-pets.png',
@@ -120,16 +115,6 @@ class PetCareMyPetsSection extends ConsumerWidget {
                       pets: personalPets,
                       onPetTap: (pet) => openPetDetail(context, pet.id),
                     ),
-                  if (fosterPets.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    _PetSubgroupTitle(title: l.myFosteredPets),
-                    const SizedBox(height: 8),
-                    PetTileStrip(
-                      useWrap: true,
-                      pets: fosterPets,
-                      onPetTap: (pet) => openPetDetail(context, pet.id),
-                    ),
-                  ],
                   if (sharedPets.isNotEmpty) ...[
                     const SizedBox(height: 16),
                     _PetSubgroupTitle(title: l.sharedPets),

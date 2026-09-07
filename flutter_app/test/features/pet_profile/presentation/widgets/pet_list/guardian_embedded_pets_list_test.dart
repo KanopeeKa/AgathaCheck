@@ -9,7 +9,7 @@ import 'package:pet_profile_app/features/pet_profile/presentation/widgets/unifie
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('shows owned, shared, and fostered sections separately', (
+  testWidgets('shows owned and shared sections; foster pets in owned', (
     tester,
   ) async {
     final pets = [
@@ -53,7 +53,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(PetListSectionHeader), findsNWidgets(3));
+    expect(find.byType(PetListSectionHeader), findsNWidgets(2));
     expect(find.byType(UnifiedPetTile), findsNWidgets(3));
     expect(find.text('Owned'), findsOneWidget);
     expect(find.text('Shared'), findsOneWidget);

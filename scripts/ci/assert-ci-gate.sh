@@ -50,7 +50,6 @@ declare -A RESULTS=(
   [flutter-test-pet-screens]="${FLUTTER_TEST_PET_SCREENS:-}"
   [flutter-test-pet-widgets]="${FLUTTER_TEST_PET_WIDGETS:-}"
   [flutter-test-health]="${FLUTTER_TEST_HEALTH:-}"
-  [flutter-test-org]="${FLUTTER_TEST_ORG:-}"
   [flutter-test-rest-a]="${FLUTTER_TEST_REST_A:-}"
   [flutter-test-rest-b]="${FLUTTER_TEST_REST_B:-}"
   [flutter-coverage]="${FLUTTER_COVERAGE:-}"
@@ -58,9 +57,6 @@ declare -A RESULTS=(
   [flutter-build-web]="${FLUTTER_BUILD_WEB:-}"
   [ci-e2e-canary]="${CI_E2E_CANARY:-}"
 )
-if [[ -n "${CI_E2E_ORG:-}" ]]; then
-  RESULTS[ci-e2e-org]="${CI_E2E_ORG}"
-fi
 
 # ci-e2e-canary skips when flutter-build-web fails or scope skips stack; require green when build ran.
 ci_e2e_canary_passes() {
@@ -74,23 +70,6 @@ ci_e2e_canary_passes() {
     [[ "$canary" == "success" ]]
   else
     [[ "$canary" == "success" || "$canary" == "skipped" ]]
-  fi
-}
-
-ci_e2e_org_passes() {
-  local org="${CI_E2E_ORG:-}"
-  local build="${FLUTTER_BUILD_WEB:-}"
-  if [[ -z "$org" ]]; then
-    return 0
-  fi
-  if job_expects_skip "ci-e2e-org"; then
-    [[ "$org" == "success" || "$org" == "skipped" ]]
-    return
-  fi
-  if [[ "$build" == "success" ]]; then
-    [[ "$org" == "success" ]]
-  else
-    [[ "$org" == "success" || "$org" == "skipped" ]]
   fi
 }
 
@@ -115,19 +94,11 @@ trap 'rm -f "$SUMMARY_TMP"' EXIT
   echo "| Job | Result | Pass |"
   echo "|-----|--------|------|"
   for job in startup-smoke test-suite flutter-analyze \
-    flutter-test-pet-core flutter-test-pet-screens flutter-test-pet-widgets flutter-test-health flutter-test-org flutter-test-rest-a flutter-test-rest-b \
-    flutter-coverage flutter-integration flutter-build-web ci-e2e-canary \
-    ${CI_E2E_ORG:+ci-e2e-org}; do
+    flutter-test-pet-core flutter-test-pet-screens flutter-test-pet-widgets flutter-test-health flutter-test-rest-a flutter-test-rest-b \
+    flutter-coverage flutter-integration flutter-build-web ci-e2e-canary; do
     result="${RESULTS[$job]}"
     if [[ "$job" == "ci-e2e-canary" ]]; then
       if ci_e2e_canary_passes; then
-        pass="yes"
-      else
-        pass="**no**"
-        failed=1
-      fi
-    elif [[ "$job" == "ci-e2e-org" ]]; then
-      if ci_e2e_org_passes; then
         pass="yes"
       else
         pass="**no**"

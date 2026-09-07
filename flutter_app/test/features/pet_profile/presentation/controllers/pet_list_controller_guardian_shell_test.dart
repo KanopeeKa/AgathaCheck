@@ -108,13 +108,16 @@ void main() {
     expect(groups.keys, containsAll(['Rescue A', 'Rescue B']));
   });
 
-  test('getOwnedPets excludes shared and foster pets', () {
-    final pets = [
-      const Pet(id: '1', name: 'Mine', species: 'Cat'),
-      const Pet(id: '2', name: 'Shared', species: 'Dog', isShared: true),
-      const Pet(id: '3', name: 'Foster', species: 'Cat', isFoster: true),
-    ];
-    final owned = controller.getOwnedPets(pets);
-    expect(owned.map((p) => p.id), ['1']);
-  });
+  test(
+    'getOwnedPets excludes shared pets; foster pets count as owned in MVP',
+    () {
+      final pets = [
+        const Pet(id: '1', name: 'Mine', species: 'Cat'),
+        const Pet(id: '2', name: 'Shared', species: 'Dog', isShared: true),
+        const Pet(id: '3', name: 'Foster', species: 'Cat', isFoster: true),
+      ];
+      final owned = controller.getOwnedPets(pets);
+      expect(owned.map((p) => p.id), ['1', '3']);
+    },
+  );
 }

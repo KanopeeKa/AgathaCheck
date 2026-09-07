@@ -12,6 +12,28 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const flutterRoot = path.resolve(__dirname, '..');
+const repoRoot = path.resolve(flutterRoot, '..');
+
+function frozenDomainSourcePrefixes() {
+  const manifestPath = path.join(
+    repoRoot,
+    'docs/engineering/frozen-domains/manifest.json',
+  );
+  if (!fs.existsSync(manifestPath)) return [];
+
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const roots = manifest.sourceRoots || [];
+  return roots.map((root) => {
+    const normalized = root.replace(/^flutter_app\//, '');
+    return `lib/${normalized.replace(/^lib\//, '')}`;
+  });
+}
+
+function isFrozenDomainSource(file, frozenPrefixes) {
+  return frozenPrefixes.some(
+    (prefix) => file === prefix || file.startsWith(`${prefix}/`),
+  );
+}
 
 function parseArgs(argv) {
   let lcovPath = path.join(flutterRoot, 'coverage', 'lcov.info');
@@ -33,6 +55,7 @@ function parseArgs(argv) {
 }
 
 function listDomainSources() {
+  const frozenPrefixes = frozenDomainSourcePrefixes();
   const output = execSync('find lib -path "*/domain/*.dart"', {
     cwd: flutterRoot,
     encoding: 'utf8',
@@ -41,6 +64,7 @@ function listDomainSources() {
     .trim()
     .split('\n')
     .filter(Boolean)
+    .filter((file) => !isFrozenDomainSource(file, frozenPrefixes))
     .sort();
 }
 

@@ -13,14 +13,12 @@ all_success_env() {
   export FLUTTER_TEST_PET_SCREENS=success
   export FLUTTER_TEST_PET_WIDGETS=success
   export FLUTTER_TEST_HEALTH=success
-  export FLUTTER_TEST_ORG=success
   export FLUTTER_TEST_REST_A=success
   export FLUTTER_TEST_REST_B=success
   export FLUTTER_COVERAGE=success
   export FLUTTER_INTEGRATION=success
   export FLUTTER_BUILD_WEB=success
   export CI_E2E_CANARY=success
-  unset CI_E2E_ORG
 }
 
 run_gate() {
@@ -65,14 +63,13 @@ export FLUTTER_TEST_PET_CORE=skipped
 export FLUTTER_TEST_PET_SCREENS=skipped
 export FLUTTER_TEST_PET_WIDGETS=skipped
 export FLUTTER_TEST_HEALTH=skipped
-export FLUTTER_TEST_ORG=skipped
 export FLUTTER_TEST_REST_A=skipped
 export FLUTTER_TEST_REST_B=skipped
 export FLUTTER_COVERAGE=skipped
 export FLUTTER_INTEGRATION=skipped
 export FLUTTER_BUILD_WEB=skipped
 export CI_E2E_CANARY=skipped
-export CI_SCOPE_JSON='{"scope":"SERVER_ONLY","skip_jobs":["flutter-analyze","flutter-test-pet-core","flutter-test-pet-screens","flutter-test-pet-widgets","flutter-test-health","flutter-test-org","flutter-test-rest-a","flutter-test-rest-b","flutter-coverage","flutter-integration","flutter-build-web","ci-e2e-canary"]}'
+export CI_SCOPE_JSON='{"scope":"SERVER_ONLY","skip_jobs":["flutter-analyze","flutter-test-pet-core","flutter-test-pet-screens","flutter-test-pet-widgets","flutter-test-health","flutter-test-rest-a","flutter-test-rest-b","flutter-coverage","flutter-integration","flutter-build-web","ci-e2e-canary"]}'
 assert_exit 0 "scoped skips accepted when listed in skip_jobs"
 
 # Skipped job not in skip_jobs → fail
@@ -90,16 +87,7 @@ assert_exit 1 "canary failure fails when build succeeded"
 all_success_env
 export FLUTTER_BUILD_WEB=skipped
 export CI_E2E_CANARY=skipped
-export CI_SCOPE_JSON='{"scope":"SERVER_ONLY","skip_jobs":["flutter-analyze","flutter-test-pet-core","flutter-test-pet-screens","flutter-test-pet-widgets","flutter-test-health","flutter-test-org","flutter-test-rest-a","flutter-test-rest-b","flutter-coverage","flutter-integration","flutter-build-web","ci-e2e-canary"]}'
+export CI_SCOPE_JSON='{"scope":"SERVER_ONLY","skip_jobs":["flutter-analyze","flutter-test-pet-core","flutter-test-pet-screens","flutter-test-pet-widgets","flutter-test-health","flutter-test-rest-a","flutter-test-rest-b","flutter-coverage","flutter-integration","flutter-build-web","ci-e2e-canary"]}'
 assert_exit 0 "canary skip ok when build skipped (scoped)"
-
-# ci-e2e-org is optional (ci-full-audit only)
-all_success_env
-export CI_E2E_ORG=success
-assert_exit 0 "optional org journey success passes gate"
-
-all_success_env
-export CI_E2E_ORG=failure
-assert_exit 1 "optional org journey failure fails gate when CI_E2E_ORG set"
 
 echo "assert-ci-gate tests passed"

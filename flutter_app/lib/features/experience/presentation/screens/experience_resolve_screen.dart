@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../domain/services/experience_eligibility.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../providers/experience_providers.dart';
@@ -25,21 +24,13 @@ class _ExperienceResolveScreenState
     _navigated = true;
 
     final pets = ref.read(petListProvider).valueOrNull ?? [];
-    final orgs = ref.read(organizationListProvider).valueOrNull ?? [];
     final petCareOnboardingCompleted = ref.read(
       petCareOnboardingCompletedProvider,
     );
-    final orgOnboardingCompleted = ref.read(orgOnboardingCompletedProvider);
-    final hasPendingOrgInvites = ref
-        .read(pendingOrgInvitesProvider)
-        .maybeWhen(data: (invites) => invites.isNotEmpty, orElse: () => false);
     final path = resolvePostLoginPath(
       eligibility: eligibility,
       pets: pets,
-      orgs: orgs,
       petCareOnboardingCompleted: petCareOnboardingCompleted,
-      orgOnboardingCompleted: orgOnboardingCompleted,
-      hasPendingOrgInvites: hasPendingOrgInvites,
     );
     context.go(path);
   }

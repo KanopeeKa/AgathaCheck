@@ -10,12 +10,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SHARDS } from './shard-files.mjs';
+import { FROZEN_E2E_SPECS } from './frozen-e2e-specs.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TESTS_DIR = path.join(__dirname, '..', 'playwright', 'tests');
 
 /** Specs intentionally excluded from Pre-UAT localhost shards. */
-const ALLOWLIST = new Set(['uat-auth-warmup.spec.ts']);
+const ALLOWLIST = new Set(['uat-auth-warmup.spec.ts', ...FROZEN_E2E_SPECS]);
 
 const reportOnly = process.argv.includes('--report-only');
 
