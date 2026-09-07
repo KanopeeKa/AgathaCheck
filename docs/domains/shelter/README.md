@@ -2,12 +2,14 @@
 title: Shelter domain
 owner: Documentation Team
 audience: both
-status: active
-last_updated: 2026-08-23
-tags: [domain,shelter]
+status: frozen
+last_updated: 2026-09-07
+tags: [domain,shelter,frozen]
 ---
 
 # Shelter
+
+> **FROZEN (2026-09):** Not in MVP; not maintained. Rehydration: [/docs/engineering/frozen-domains/rehydration-runbook.md](/docs/engineering/frozen-domains/rehydration-runbook.md).
 
 Shelter identity, discovery, people & permissions, member privacy, branding — custody data model (not transfer workflows). Product-facing term **Shelter** replaces legacy "Organisation" in docs; code paths remain `organization` until a dedicated migration.
 
