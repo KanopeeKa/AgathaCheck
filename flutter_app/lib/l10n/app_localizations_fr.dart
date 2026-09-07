@@ -645,32 +645,71 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careStatusUpcoming => 'Soin à venir';
 
   @override
-  String get careStatusAllSet => 'All Set';
+  String get careStatusAllSet => 'Tout est en ordre';
 
   @override
-  String get careStatusWorthACheck => 'Worth a Check';
+  String get careStatusWorthACheck => 'À vérifier';
 
   @override
-  String get careStatusTimeToFollowUp => 'Time to Follow Up';
+  String get careStatusTimeToFollowUp => 'À suivre';
 
   @override
-  String get careStatusAllSetBody =>
-      'Everything you\'re currently tracking is up to date.';
+  String get careStatusAllSetBody => 'Tout ce que vous suivez est à jour.';
 
   @override
-  String get careStatusReviewAction => 'Review';
+  String get careStatusReviewAction => 'Vérifier';
 
   @override
-  String get careStatusViewAction => 'View action';
+  String get careStatusViewAction => 'Voir l\'action';
 
   @override
-  String get profilePromptChipMissing => 'Microchip details not added';
+  String get profilePromptChipMissing => 'Puce non renseignée';
 
   @override
-  String get profilePromptNeuterMissing => 'Neutering status not recorded';
+  String get profilePromptNeuterMissing => 'Stérilisation non renseignée';
 
   @override
-  String get dismiss => 'Dismiss';
+  String get dismiss => 'Ignorer';
+
+  @override
+  String get careRhythmsTitle => 'Rythmes de soins';
+
+  @override
+  String get careRhythmsSubtitle => 'Vos routines de soins récurrentes.';
+
+  @override
+  String get careActionsSubtitle =>
+      'Ce qui est à faire à partir de ces routines et des soins planifiés.';
+
+  @override
+  String get careRhythmsEmpty =>
+      'Aucune routine récurrente pour l\'instant. Ajoutez un soin récurrent pour le voir ici.';
+
+  @override
+  String careRhythmNextDue(String date) {
+    return 'Prochaine échéance $date';
+  }
+
+  @override
+  String get careSourceGuardianDefined => 'Ajouté par vous';
+
+  @override
+  String get careSourceVetInstruction => 'Selon votre vétérinaire';
+
+  @override
+  String get careSourceTreatmentSchedule => 'Protocole de traitement';
+
+  @override
+  String get careSourceCarePlan => 'Plan de soins';
+
+  @override
+  String get careSourceAgathaAccepted => 'Accepté depuis Agatha';
+
+  @override
+  String get careSourceAgathaAdjusted => 'Ajusté avec Agatha';
+
+  @override
+  String get careSourceSystemDefault => 'Calendrier par défaut';
 
   @override
   String get careLoadError => 'Impossible de charger les soins pour le moment.';

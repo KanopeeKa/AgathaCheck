@@ -1262,6 +1262,78 @@ abstract class AppLocalizations {
   /// **'Dismiss'**
   String get dismiss;
 
+  /// No description provided for @careRhythmsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Care Rhythms'**
+  String get careRhythmsTitle;
+
+  /// No description provided for @careRhythmsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your recurring care routines.'**
+  String get careRhythmsSubtitle;
+
+  /// No description provided for @careActionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s due from those routines and other scheduled care.'**
+  String get careActionsSubtitle;
+
+  /// No description provided for @careRhythmsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No recurring care routines yet. Add a recurring event to see it here.'**
+  String get careRhythmsEmpty;
+
+  /// No description provided for @careRhythmNextDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Next due {date}'**
+  String careRhythmNextDue(String date);
+
+  /// No description provided for @careSourceGuardianDefined.
+  ///
+  /// In en, this message translates to:
+  /// **'Added by you'**
+  String get careSourceGuardianDefined;
+
+  /// No description provided for @careSourceVetInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'From your vet'**
+  String get careSourceVetInstruction;
+
+  /// No description provided for @careSourceTreatmentSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment schedule'**
+  String get careSourceTreatmentSchedule;
+
+  /// No description provided for @careSourceCarePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Care plan'**
+  String get careSourceCarePlan;
+
+  /// No description provided for @careSourceAgathaAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted from Agatha'**
+  String get careSourceAgathaAccepted;
+
+  /// No description provided for @careSourceAgathaAdjusted.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjusted with Agatha'**
+  String get careSourceAgathaAdjusted;
+
+  /// No description provided for @careSourceSystemDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default schedule'**
+  String get careSourceSystemDefault;
+
   /// No description provided for @careLoadError.
   ///
   /// In en, this message translates to:

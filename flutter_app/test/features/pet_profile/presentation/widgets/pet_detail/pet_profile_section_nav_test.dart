@@ -15,7 +15,7 @@ void main() {
     );
   }
 
-  testWidgets('shows timeline, weight, and health issues nav rows', (
+  testWidgets('shows timeline, care rhythms, weight, and health issues nav rows', (
     tester,
   ) async {
     final router = GoRouter(
@@ -30,6 +30,11 @@ void main() {
         GoRoute(
           path: '/pet/:petId/timeline',
           builder: (context, state) => const Scaffold(body: Text('Timeline')),
+        ),
+        GoRoute(
+          path: '/pet/:petId/care-rhythms',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Care rhythms')),
         ),
         GoRoute(
           path: '/pet/:petId/weight',
@@ -47,10 +52,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Timeline'), findsOneWidget);
+    expect(find.text('Care Rhythms'), findsOneWidget);
     expect(find.text('Weight Tracking'), findsOneWidget);
     expect(find.text('Health Issues'), findsOneWidget);
-    expect(find.byIcon(Icons.chevron_right), findsNWidgets(3));
-    expect(find.byType(Divider), findsNWidgets(2));
+    expect(find.byIcon(Icons.chevron_right), findsNWidgets(4));
+    expect(find.byType(Divider), findsNWidgets(3));
   });
 
   testWidgets('timeline row navigates to dedicated route', (tester) async {
