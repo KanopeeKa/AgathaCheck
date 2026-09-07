@@ -89,7 +89,7 @@ void main() {
     );
   }
 
-  testWidgets('account screen uses shell workspace toggle and section rows', (
+  testWidgets('account screen shows section rows without workspace toggle', (
     tester,
   ) async {
     await tester.pumpWidget(buildApp());
@@ -97,10 +97,8 @@ void main() {
 
     expect(
       find.byKey(const Key('experience_workspace_toggle')),
-      findsOneWidget,
+      findsNothing,
     );
-    expect(find.text('Pet Care'), findsOneWidget);
-    expect(find.byIcon(Icons.keyboard_arrow_down), findsOneWidget);
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
     expect(find.byKey(const Key('account_hamburger')), findsNothing);
     expect(find.byKey(const Key('account_identity_summary')), findsOneWidget);

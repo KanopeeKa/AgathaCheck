@@ -125,7 +125,7 @@ void main() {
 
       expect(find.text('Dashboard'), findsOneWidget);
       expect(find.text('Pets'), findsOneWidget);
-      expect(find.text('Care'), findsOneWidget);
+      expect(find.text('Actions'), findsOneWidget);
       expect(find.text('Account'), findsOneWidget);
       expect(
         find.byKey(const Key('pet_care_bottom_navigation')),

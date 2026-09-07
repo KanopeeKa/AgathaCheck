@@ -56,7 +56,7 @@ void main() {
 
     expect(find.byKey(const Key('drawer_close')), findsOneWidget);
     expect(find.byKey(const Key('drawer_pet_care')), findsOneWidget);
-    expect(find.byKey(const Key('drawer_organisation')), findsOneWidget);
+    expect(find.byKey(const Key('drawer_organisation')), findsNothing);
     expect(find.byKey(const Key('drawer_account')), findsOneWidget);
     expect(find.text('AgathaTrack'), findsOneWidget);
     expect(find.text('Test User'), findsOneWidget);

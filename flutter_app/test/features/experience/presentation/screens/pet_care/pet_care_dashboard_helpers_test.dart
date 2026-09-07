@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final controller = PetListController();
 
-  test('petCareDashboardPersonalPets returns owned pets only, sorted', () {
+  test('petCareDashboardPersonalPets returns owned and foster pets, sorted', () {
     final pets = [
       Pet(
         id: '2',
@@ -42,11 +42,11 @@ void main() {
     ];
 
     final personal = petCareDashboardPersonalPets(pets, controller);
-    expect(personal.length, 2);
-    expect(personal.map((p) => p.name).toList(), ['Alpha', 'Beta']);
+    expect(personal.length, 3);
+    expect(personal.map((p) => p.name).toList(), ['Alpha', 'Beta', 'Foster']);
   });
 
-  test('petCareDashboardPersonalPets excludes shared and foster pets', () {
+  test('petCareDashboardPersonalPets excludes shared pets but keeps foster', () {
     final pets = [
       const Pet(id: '1', name: 'Mine', species: 'Dog', breed: ''),
       const Pet(
@@ -66,7 +66,8 @@ void main() {
     ];
 
     final personal = petCareDashboardPersonalPets(pets, controller);
-    expect(personal.map((p) => p.name).toList(), ['Mine']);
+    expect(personal, hasLength(2));
+    expect(personal.map((p) => p.name), containsAll(['Mine', 'Fostered']));
   });
 
   test('petCareDashboardSharedPets returns shared pets only', () {

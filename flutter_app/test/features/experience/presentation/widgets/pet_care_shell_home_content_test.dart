@@ -80,7 +80,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('CARE ACTIONS'), findsOneWidget);
-    expect(find.text('Care team'), findsOneWidget);
+    expect(find.text('CARE TEAM'), findsOneWidget);
     expect(find.byKey(const Key('pet_care_dashboard_add_care')), findsNothing);
     expect(find.byKey(const Key('pet_care_dashboard_add_vet')), findsNothing);
     expect(

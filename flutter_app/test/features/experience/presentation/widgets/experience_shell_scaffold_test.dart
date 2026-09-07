@@ -1,3 +1,4 @@
+@Tags(['frozen'])
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -246,46 +247,46 @@ void main() {
     );
   });
 
-  testWidgets('section root shows workspace toggle, not back arrow', (
+  testWidgets('section root uses compact Guardian chrome without workspace toggle', (
     tester,
   ) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
         experience: AppExperience.petCare,
         currentLocation: '/pc/home',
+        viewport: const Size(390, 844),
       ),
     );
     await tester.pumpAndSettle();
 
     expect(
       find.byKey(const Key('experience_workspace_toggle')),
-      findsOneWidget,
-    );
-    expect(find.text('Pet Care'), findsOneWidget);
-    expect(find.byIcon(Icons.keyboard_arrow_down), findsOneWidget);
-    expect(
-      tester
-          .getSize(find.byKey(const Key('experience_workspace_toggle')))
-          .height,
-      48,
-    );
-    expect(
-      tester.getSize(find.byKey(const Key('experience_workspace_pill'))).height,
-      32,
+      findsNothing,
     );
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
     expect(find.byKey(const Key('experience_back_button')), findsNothing);
+    expect(
+      find.byKey(const Key('pet_care_bottom_navigation')),
+      findsOneWidget,
+    );
   });
 
-  testWidgets('non-root path shows back arrow and workspace toggle', (
+  testWidgets('non-root path shows back arrow without workspace toggle', (
     tester,
   ) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
         experience: AppExperience.petCare,
         currentLocation: '/pc/events',
+        viewport: const Size(390, 844),
       ),
     );
     await tester.pumpAndSettle();
@@ -293,7 +294,7 @@ void main() {
     expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
     expect(
       find.byKey(const Key('experience_workspace_toggle')),
-      findsOneWidget,
+      findsNothing,
     );
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
@@ -318,7 +319,7 @@ void main() {
     expect(find.byIcon(Icons.keyboard_arrow_down), findsOneWidget);
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
     expect(find.byKey(const Key('experience_back_button')), findsNothing);
-  });
+  }, skip: true); // frozen MVP: shelter workspace chrome disabled
 
   testWidgets('org section root compact uses organizationPrimary app bar', (
     tester,
