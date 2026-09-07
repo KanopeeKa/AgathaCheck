@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/widgets/collection_filter/org_pets_collection_filter.dart';
+import '../collection_filter/org_pets_collection_filter.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../providers/org_pets_screen_providers.dart';
 import '../../utils/org_pets_care_utils.dart';

@@ -12,8 +12,7 @@ import '../../domain/entities/pet.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/domain/entities/health_issue.dart';
 import '../../../notifications/domain/entities/app_notification.dart';
-import '../../../organization/domain/entities/foster_placement.dart';
-import '../../../organization/domain/entities/family_event.dart';
+import '../../domain/entities/pet_report_supplement.dart';
 import '../../../sharing/domain/entities/pet_access.dart';
 import '../../../weight_tracking/domain/entities/weight_entry.dart';
 import '../../../vet/domain/entities/vet.dart';
@@ -74,8 +73,8 @@ class PetReportService {
     List<WeightEntry> weightEntries = const [],
     List<HealthEntry> healthEntries = const [],
     List<HealthIssue> healthIssues = const [],
-    List<FamilyEvent> familyEvents = const [],
-    List<FosterPlacement> fosterPlacements = const [],
+    List<PetReportFamilyEvent> familyEvents = const [],
+    List<PetReportFosterPlacement> fosterPlacements = const [],
     List<AppNotification> petNotifications = const [],
     List<PetAccess> accessList = const [],
     Map<String, List<Map<String, dynamic>>> healthHistories = const {},

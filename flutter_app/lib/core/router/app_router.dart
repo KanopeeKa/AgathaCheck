@@ -12,7 +12,6 @@ import '../../features/health_tracking/presentation/screens/pet_event_view_scree
 import '../../features/notifications/presentation/screens/notification_settings_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/notifications/presentation/screens/pending_actions_screen.dart';
-import '../../features/fostering_session/presentation/screens/foster_fostering_session_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_health_issues_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_manage_events_screen.dart';
@@ -21,7 +20,6 @@ import '../../features/pet_profile/presentation/screens/pet_timeline_screen.dart
 import '../../features/pet_profile/presentation/screens/pet_weight_tracking_screen.dart';
 import '../../features/pet_profile/presentation/widgets/pet_edit_permission_guard.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_desk_preview_screen.dart';
-import '../../features/organization/presentation/screens/archived_pets_screen.dart';
 import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
 import '../../features/about/presentation/screens/about_screen.dart';
 import '../../features/about/presentation/screens/legal_document_screen.dart';
@@ -32,7 +30,7 @@ import '../../features/subscription/presentation/screens/paywall_screen.dart';
 import '../widgets/consent_banner.dart';
 import '../providers/analytics_providers.dart';
 import 'experience_routes.dart';
-import 'organization_routes.dart';
+import 'frozen_domain_route_stubs.dart';
 import 'vet_routes.dart';
 
 bool get _designReviewEnabled {
@@ -204,14 +202,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/pet/:petId/fostering-session',
-        name: 'fosterFosteringSessionDetail',
-        builder: (context, state) {
+        redirect: (context, state) {
           final petId = state.pathParameters['petId']!;
-          final placementId = state.uri.queryParameters['placementId'] ?? '';
-          return FosterFosteringSessionDetailScreen(
-            petId: petId,
-            placementId: placementId,
-          );
+          return '/pet/$petId';
         },
       ),
       GoRoute(
@@ -387,22 +380,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           return SharedPetScreen(shareCode: code);
         },
       ),
-      ...buildOrgManagementRoutes(),
-      GoRoute(
-        path: '/organizations',
-        redirect: (context, state) =>
-            redirectLegacyOrganizationPath(state) ?? '/o/orgs',
-      ),
-      GoRoute(
-        path: '/organizations/:tail(.*)',
-        redirect: (context, state) =>
-            redirectLegacyOrganizationPath(state) ?? '/o/orgs',
-      ),
-      GoRoute(
-        path: '/archived-pets',
-        name: 'userArchivedPets',
-        builder: (context, state) => const ArchivedPetsScreen(),
-      ),
+      ...buildFrozenDomainRedirectRoutes(),
       GoRoute(
         path: '/consent-settings',
         name: 'consentSettings',

@@ -1,4 +1,4 @@
-import '../../../organization/domain/entities/organization.dart';
+import '../entities/organization.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 
 /// Pure rules for when org super-admin onboarding should appear.

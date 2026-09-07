@@ -2,9 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/data/auth_service.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../../organization/domain/entities/organization.dart';
-import '../../../organization/presentation/providers/organization_providers.dart';
-import '../config/shelter_primary_destinations.dart';
+import '../../domain/entities/organization.dart';
+import '../providers/organization_providers.dart';
+import '../../../experience/presentation/config/shelter_primary_destinations.dart';
 
 /// `pinned_organization_id` from the authenticated user (`GET /auth/me`).
 ///

@@ -18,6 +18,7 @@ import fosterPlacementsRoutes from '../routes/fosterPlacements.js';
 import custodyTransfersRoutes from '../routes/custodyTransfers.js';
 import uploadsRoutes from '../routes/uploads.js';
 import healthFilesRoutes from '../routes/healthFiles.js';
+import { frozenDomainsEnabled } from '../lib/frozenDomains.js';
 import { REFRESH_COOKIE_NAME, getCookieValue } from '../lib/authCookies.js';
 import { corsOptions } from '../config/security.js';
 import { securityHeadersMiddleware } from '../config/securityHeaders.js';
@@ -104,14 +105,16 @@ export function createApp(customPool, comparePassword) {
   app.use('/api/auth', authRoutes(pool, comparePassword));
   app.use('/api/pets', petsRoutes(pool));
   app.use('/api/vets', vetsRoutes(pool));
-  app.use('/api/organizations', organizationsRoutes(pool));
+  if (frozenDomainsEnabled()) {
+    app.use('/api/organizations', organizationsRoutes(pool));
+    app.use('/api/foster-placements', fosterPlacementsRoutes(pool));
+    app.use('/api/custody-transfers', custodyTransfersRoutes(pool));
+  }
   app.use('/api/notifications', notificationsRoutes(pool));
   app.use('/api/weight-entries', weightEntriesRoutes(pool));
   app.use('/api/health-entries', healthEntriesRoutes(pool));
   app.use('/api/health-issues', healthIssuesRoutes(pool));
   app.use('/api/share', sharingRoutes(pool));
-  app.use('/api/foster-placements', fosterPlacementsRoutes(pool));
-  app.use('/api/custody-transfers', custodyTransfersRoutes(pool));
   app.use('/api/archived-pets', (req, res) => {
     res.json([]);
   });
@@ -123,14 +126,16 @@ export function createApp(customPool, comparePassword) {
   app.use('/server/api/auth', authRoutes(pool, comparePassword));
   app.use('/backend/api/pets', petsRoutes(pool));
   app.use('/backend/api/vets', vetsRoutes(pool));
-  app.use('/backend/api/organizations', organizationsRoutes(pool));
+  if (frozenDomainsEnabled()) {
+    app.use('/backend/api/organizations', organizationsRoutes(pool));
+    app.use('/backend/api/foster-placements', fosterPlacementsRoutes(pool));
+    app.use('/backend/api/custody-transfers', custodyTransfersRoutes(pool));
+  }
   app.use('/backend/api/notifications', notificationsRoutes(pool));
   app.use('/backend/api/weight-entries', weightEntriesRoutes(pool));
   app.use('/backend/api/health-entries', healthEntriesRoutes(pool));
   app.use('/backend/api/health-issues', healthIssuesRoutes(pool));
   app.use('/backend/api/share', sharingRoutes(pool));
-  app.use('/backend/api/foster-placements', fosterPlacementsRoutes(pool));
-  app.use('/backend/api/custody-transfers', custodyTransfersRoutes(pool));
 
   app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK' });

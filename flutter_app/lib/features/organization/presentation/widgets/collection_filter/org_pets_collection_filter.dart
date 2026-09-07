@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../features/organization/presentation/utils/org_pets_care_utils.dart';
-import '../../../l10n/app_localizations.dart';
-import 'collection_filter.dart';
+import '../../../../core/widgets/collection_filter/collection_filter.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../utils/org_pets_care_utils.dart';
 
 abstract final class OrgPetsCollectionFilterIds {
   static const refinements = 'refinements';

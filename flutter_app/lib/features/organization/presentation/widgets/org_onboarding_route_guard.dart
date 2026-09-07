@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../organization/presentation/providers/organization_providers.dart';
+import '../providers/organization_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/services/org_onboarding_rules.dart';
-import '../providers/experience_providers.dart';
+import '../../../experience/presentation/providers/experience_providers.dart';
 
 /// Redirects org super-admins to onboarding when entering the shelter workspace.
 class OrgOnboardingRouteGuard extends ConsumerStatefulWidget {

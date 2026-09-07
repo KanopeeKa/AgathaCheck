@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 
@@ -77,7 +76,6 @@ class PetFormSubmitDeps {
                 );
           },
       updatePet: (pet) => ref.read(petListProvider.notifier).updatePet(pet),
-      invalidateOrgPets: (orgId) => ref.invalidate(orgPetsProvider(orgId)),
     );
   }
 
@@ -123,7 +121,6 @@ class PetFormSubmitDeps {
                 );
           },
       updatePet: (pet) => ref.read(petListProvider.notifier).updatePet(pet),
-      invalidateOrgPets: (orgId) => ref.invalidate(orgPetsProvider(orgId)),
     );
   }
 }

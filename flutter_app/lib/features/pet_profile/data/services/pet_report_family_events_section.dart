@@ -2,11 +2,11 @@ import '../../../../core/theme/pdf_report_tokens.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../organization/domain/entities/family_event.dart';
+import '../../domain/entities/pet_report_supplement.dart';
 
 class PetFamilyEventsSectionBuilder {
   static List<pw.Widget> build(
-    List<FamilyEvent> events,
+    List<PetReportFamilyEvent> events,
     DateFormat dateFormat,
     AppLocalizations l,
   ) {
@@ -18,7 +18,7 @@ class PetFamilyEventsSectionBuilder {
       ];
     }
 
-    final sorted = List<FamilyEvent>.from(events)
+    final sorted = List<PetReportFamilyEvent>.from(events)
       ..sort((a, b) => b.fromDate.compareTo(a.fromDate));
 
     return [
