@@ -17,7 +17,7 @@ export function rejectFrozenOrganizationIdOnPetWrite(req, res) {
   const orgId = body.organization_id ?? body.organizationId;
   if (orgId != null && String(orgId).trim() !== '') {
     res.status(400).json({
-      error: 'organization_id is not supported while Shelter domains are frozen',
+      error: 'organization_id is not supported while frozen domains are disabled',
     });
     return true;
   }

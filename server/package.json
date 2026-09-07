@@ -9,7 +9,7 @@
     "dev": "node --watch bin/server.js",
     "test": "jest -c jest.config.active.cjs --env=node --runInBand",
     "test:frozen": "jest -c jest.config.frozen.cjs --env=node --runInBand",
-    "test:policy-coverage": "jest --coverage --collectCoverageFrom=lib/petAccess.js --collectCoverageFrom=lib/petCapabilityPolicy.js --env=node --forceExit",
+    "test:policy-coverage": "jest --config jest.config.active.cjs --coverage --collectCoverageFrom=lib/petAccess.js --collectCoverageFrom=lib/petCapabilityPolicy.js --env=node --forceExit",
     "audit-retention": "node scripts/audit-retention.js"
   },
   "dependencies": {

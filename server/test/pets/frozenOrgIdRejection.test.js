@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { createApp } from '../../bin/server.js';
-import { createMockPool, makePetRow, token, petId, userId } from './helpers.js';
+import { createMockPool, token, petId, userId } from './helpers.js';
 import { handlePetAccessQuery } from '../helpers/petAccessMocks.js';
 
 describe('Pets API frozen org linkage', () => {
