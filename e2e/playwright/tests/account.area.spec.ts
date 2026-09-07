@@ -12,6 +12,7 @@ import { createPet, signupUser } from '../support/api';
 import {
   logOutFromApp,
   reachAuthenticatedHome,
+  refreshFlutterAccessibility,
   skipOrgOnboardingIfPresent,
   waitForFlutterRoutePattern,
   workspaceToggleLocator,
@@ -30,6 +31,7 @@ async function loginFromLanding(
   await landing.login(email, password);
   await reachAuthenticatedHome(page);
   await skipOrgOnboardingIfPresent(page);
+  await refreshFlutterAccessibility(page);
 }
 
 test.describe('Account area organisation visibility', () => {
