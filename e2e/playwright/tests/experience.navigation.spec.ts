@@ -87,6 +87,7 @@ test.describe('Experience navigation', () => {
   test('drawer hides Organisation for all users in Pet Care MVP', async ({
     page,
   }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
     await prepareLiveApiAccess(page, baseURL());
     const user = await signupUser(baseURL());
     await createPet(baseURL(), user.accessToken, 'Drawer MVP Pet');
@@ -99,6 +100,7 @@ test.describe('Experience navigation', () => {
   test('dual-role user drawer stays Pet Care MVP (no shelter entry)', async ({
     page,
   }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
     await prepareLiveApiAccess(page, baseURL());
     const user = await signupUser(baseURL());
     await createPet(baseURL(), user.accessToken, 'Drawer Pet');
