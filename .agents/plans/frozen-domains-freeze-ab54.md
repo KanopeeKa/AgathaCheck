@@ -347,16 +347,16 @@ server/routes/organizations/**
 
 ```yaml
 autonomy: active
-current_phase: 2
-last_completed_phase: 1
+current_phase: 4
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/frozen-domains-isolate-ab54"
+next_action: "continue phase 4 on branch cursor/frozen-domains-ci-ab54"
 artifact_ref:
-  branch: cursor/frozen-domains-freeze-ab54-integration-ab54
+  branch: cursor/frozen-domains-ci-ab54
   plan_path: .agents/plans/frozen-domains-freeze-ab54.md
-  plan_commit: 0d770476c50acdff353fba1352315ba7526e3db4
+  plan_commit: da33cb8b5fd1aae67a765850003e3d692245f0be
   snapshot_path: .agents/plans/frozen-domains-freeze-ab54.snapshot.json
-  snapshot_commit: 0d770476c50acdff353fba1352315ba7526e3db4
+  snapshot_commit: da33cb8b5fd1aae67a765850003e3d692245f0be
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

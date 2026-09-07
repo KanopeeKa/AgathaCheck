@@ -18,72 +18,56 @@ import { SHARDS, SHARD_TOTAL } from '../e2e/scripts/shard-files.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-/** Shards with historical flake / org IA sensitivity — boost to high when overlapped. */
-const HIGH_BOOST_SHARDS = new Set([3, 10, 12, 13]);
+/** Shards with historical flake sensitivity — boost to high when overlapped. */
+const HIGH_BOOST_SHARDS = new Set([3, 4, 8]);
 
 const RISK_ORDER = { none: 0, low: 1, medium: 2, high: 3 };
 
-/** Repo-relative path patterns → shard indices (1-based). */
+/** Repo-relative path patterns → shard indices (1-based). Active Pet Care shards only. */
 const PATH_TO_SHARDS = [
   {
-    re: /^flutter_app\/lib\/features\/organization\//,
-    shards: [3, 10, 12, 13],
-    reason: 'org Flutter',
-  },
-  {
-    re: /^flutter_app\/test\/features\/organization\//,
-    shards: [3, 10, 12, 13],
-    reason: 'org Flutter tests',
-  },
-  {
-    re: /^flutter_app\/lib\/core\/router\/organization/,
-    shards: [3, 10, 12, 13],
-    reason: 'org routes',
-  },
-  {
-    re: /^server\/routes\/organizations\//,
-    shards: [3, 10, 12, 13],
-    reason: 'org API',
-  },
-  {
-    re: /^e2e\/playwright\/pages\/organization/,
-    shards: [3, 12, 13],
-    reason: 'org Playwright pages',
-  },
-  {
-    re: /^e2e\/playwright\/pages\/manage-fosters/,
-    shards: [13],
-    reason: 'foster Playwright page',
-  },
-  {
     re: /^flutter_app\/lib\/features\/health_tracking\//,
-    shards: [2],
+    shards: [1],
     reason: 'health Flutter',
   },
   {
     re: /^flutter_app\/lib\/features\/pet_profile\//,
-    shards: [4, 5, 6, 7, 8],
+    shards: [2],
     reason: 'pet Flutter',
   },
   {
     re: /^flutter_app\/lib\/features\/auth\//,
-    shards: [3, 9, 11],
+    shards: [5],
     reason: 'auth Flutter',
   },
   {
     re: /^flutter_app\/lib\/features\/experience\//,
-    shards: [11, 13],
+    shards: [3, 4],
     reason: 'experience Flutter',
   },
   {
-    re: /^flutter_app\/lib\/l10n\//,
-    shards: [3, 10, 12, 13],
-    reason: 'l10n (org-heavy)',
-    risk: 'low',
+    re: /^flutter_app\/lib\/features\/notifications\//,
+    shards: [8],
+    reason: 'notifications Flutter',
+  },
+  {
+    re: /^flutter_app\/lib\/features\/sharing\//,
+    shards: [7],
+    reason: 'sharing Flutter',
+  },
+  {
+    re: /^flutter_app\/lib\/features\/weight_tracking\//,
+    shards: [6],
+    reason: 'weight Flutter',
+  },
+  {
+    re: /^flutter_app\/lib\/features\/vet\//,
+    shards: [9],
+    reason: 'vet Flutter',
   },
   {
     re: /^flutter_app\/lib\/core\//,
-    shards: [3, 9, 10, 11, 12, 13],
+    shards: [3, 4, 5, 7, 8, 9],
     reason: 'shared core',
     risk: 'low',
   },

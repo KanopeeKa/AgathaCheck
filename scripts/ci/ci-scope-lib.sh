@@ -25,7 +25,6 @@ CI_SCOPE_SHARD_PET_CORE=false
 CI_SCOPE_SHARD_PET_SCREENS=false
 CI_SCOPE_SHARD_PET_WIDGETS=false
 CI_SCOPE_SHARD_HEALTH=false
-CI_SCOPE_SHARD_ORG=false
 CI_SCOPE_SHARD_REST_A=false
 CI_SCOPE_SHARD_REST_B=false
 
@@ -49,7 +48,6 @@ ci_scope_reset() {
   CI_SCOPE_SHARD_PET_SCREENS=false
   CI_SCOPE_SHARD_PET_WIDGETS=false
   CI_SCOPE_SHARD_HEALTH=false
-  CI_SCOPE_SHARD_ORG=false
   CI_SCOPE_SHARD_REST_A=false
   CI_SCOPE_SHARD_REST_B=false
 }
@@ -60,7 +58,6 @@ ci_scope_enable_shard() {
     pet-screens) CI_SCOPE_SHARD_PET_SCREENS=true ;;
     pet-widgets) CI_SCOPE_SHARD_PET_WIDGETS=true ;;
     health) CI_SCOPE_SHARD_HEALTH=true ;;
-    org) CI_SCOPE_SHARD_ORG=true ;;
     rest-a) CI_SCOPE_SHARD_REST_A=true ;;
     rest-b) CI_SCOPE_SHARD_REST_B=true ;;
     *) ;;
@@ -72,7 +69,6 @@ ci_scope_enable_all_shards() {
   CI_SCOPE_SHARD_PET_SCREENS=true
   CI_SCOPE_SHARD_PET_WIDGETS=true
   CI_SCOPE_SHARD_HEALTH=true
-  CI_SCOPE_SHARD_ORG=true
   CI_SCOPE_SHARD_REST_A=true
   CI_SCOPE_SHARD_REST_B=true
 }
@@ -82,7 +78,6 @@ ci_scope_any_shard_enabled() {
     || "$CI_SCOPE_SHARD_PET_SCREENS" == true \
     || "$CI_SCOPE_SHARD_PET_WIDGETS" == true \
     || "$CI_SCOPE_SHARD_HEALTH" == true \
-    || "$CI_SCOPE_SHARD_ORG" == true \
     || "$CI_SCOPE_SHARD_REST_A" == true \
     || "$CI_SCOPE_SHARD_REST_B" == true ]]
 }
@@ -128,12 +123,6 @@ ci_scope_classify_flutter_shard() {
       ;;
     flutter_app/lib/features/health_tracking/*|flutter_app/test/features/health_tracking/*)
       ci_scope_enable_shard health
-      ;;
-    flutter_app/lib/features/organization/*|flutter_app/test/features/organization/*)
-      ci_scope_enable_shard org
-      ;;
-    flutter_app/lib/core/router/organization_routes.dart)
-      ci_scope_enable_shard org
       ;;
     flutter_app/lib/features/auth/*|flutter_app/lib/features/sharing/* \
       |flutter_app/lib/features/notifications/*|flutter_app/lib/features/subscription/* \
@@ -198,9 +187,9 @@ ci_scope_classify_path() {
     server/*)
       CI_SCOPE_HAS_SERVER_TEST=true
       ;;
-    flutter_app/lib/core/router/organization_routes.dart)
-      CI_SCOPE_HAS_FLUTTER=true
-      ci_scope_enable_shard org
+    flutter_app/lib/features/organization/*|flutter_app/test/features/organization/* \
+      |flutter_app/lib/features/fostering_session/*|flutter_app/test/features/fostering_session/*)
+      # Frozen domain roots — governance + boundary script only
       ;;
     flutter_app/lib/core/*|flutter_app/lib/l10n/*|flutter_app/pubspec.*)
       CI_SCOPE_FORCE_FULL=true
@@ -219,9 +208,8 @@ ci_scope_classify_path() {
       CI_SCOPE_HAS_FLUTTER=true
       ci_scope_classify_flutter_shard "$f"
       ;;
-    e2e/playwright/tests/organisation*.spec.ts|e2e/playwright/tests/foster.onboarding.spec.ts|e2e/playwright/pages/organization*.page.ts|e2e/playwright/pages/manage-fosters.page.ts)
-      CI_SCOPE_FORCE_FULL=true
-      CI_SCOPE_HAS_E2E=true
+    e2e/playwright/tests/organisation*.spec.ts|e2e/playwright/tests/foster*.spec.ts|e2e/playwright/tests/adoption.spec.ts|e2e/playwright/tests/experience.foster-portal.spec.ts|e2e/playwright/tests/fostering*.spec.ts|e2e/playwright/tests/org.*.spec.ts)
+      # Frozen Playwright specs — governance only
       ;;
     e2e/*)
       CI_SCOPE_FORCE_FULL=true
@@ -325,8 +313,7 @@ ci_scope_run_integration() {
   return 1
 }
 
-# Organisation journey Playwright — full suite runs in ci-full-audit / pre-uat-e2e only.
-# PR CI covers org via @smoke-ci in ci-e2e-canary.
+# Frozen Shelter/Fostering domains are excluded from active PR CI shards.
 
 ci_scope_bool() {
   if "$1"; then
@@ -348,7 +335,7 @@ ci_scope_emit_json() {
 
   python3 - "$scope" "$CI_SCOPE_FORCE_FULL" "$CI_SCOPE_ESCAPE_FULL" "$run_analyze" "$run_stack" "$run_backend" "$run_e2e_audit" "$run_integration" \
     "$CI_SCOPE_SHARD_PET_CORE" "$CI_SCOPE_SHARD_PET_SCREENS" "$CI_SCOPE_SHARD_PET_WIDGETS" \
-    "$CI_SCOPE_SHARD_HEALTH" "$CI_SCOPE_SHARD_ORG" "$CI_SCOPE_SHARD_REST_A" "$CI_SCOPE_SHARD_REST_B" <<'PY'
+    "$CI_SCOPE_SHARD_HEALTH" "$CI_SCOPE_SHARD_REST_A" "$CI_SCOPE_SHARD_REST_B" <<'PY'
 import json, sys
 
 (
@@ -364,10 +351,9 @@ import json, sys
     shard_pet_screens,
     shard_pet_widgets,
     shard_health,
-    shard_org,
     shard_rest_a,
     shard_rest_b,
-) = sys.argv[1:16]
+) = sys.argv[1:15]
 
 def b(v):
     return v == "true"
@@ -383,7 +369,6 @@ shard_map = {
     "pet-screens": b(shard_pet_screens),
     "pet-widgets": b(shard_pet_widgets),
     "health": b(shard_health),
-    "org": b(shard_org),
     "rest-a": b(shard_rest_a),
     "rest-b": b(shard_rest_b),
 }
@@ -393,7 +378,6 @@ job_ids = {
     "pet-screens": "flutter-test-pet-screens",
     "pet-widgets": "flutter-test-pet-widgets",
     "health": "flutter-test-health",
-    "org": "flutter-test-org",
     "rest-a": "flutter-test-rest-a",
     "rest-b": "flutter-test-rest-b",
 }

@@ -104,6 +104,7 @@ Feature: Notifications
     Then the user should be navigated to "Bella"'s detail screen
 
   @P1
+  @frozen
   Scenario: Tapping an organisation notification navigates to org detail
     Given a notification exists for organisation "Happy Paws Clinic"
     When the user taps the notification
@@ -132,6 +133,7 @@ Feature: Notifications
   # ── Organisation Notifications ───────────────────────────────
 
   @P2
+  @frozen
   Scenario: Organisation-related notifications display org icon
     Given a notification related to organisation "Happy Paws Clinic" exists
     When the user views the notifications screen

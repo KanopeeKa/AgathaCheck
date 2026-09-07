@@ -1,14 +1,10 @@
 /**
  * @bdd experience_navigation.feature
  * Scenario: Guardian-only user lands on guardian home after login
- * Scenario: Organisation-only user lands on organisation home after login
  * Scenario: Dual-role user lands on guardian home when no last section saved
  * Scenario: Drawer hides Organisation for guardian-only users by default
- * Scenario: Drawer shows Organisation when user is an org member
- * Scenario: User switches to organisation view from guardian drawer
  * Scenario: Bell shows a single combined unread badge across both notification kinds
  * Scenario: Hamburger is shown only on section root screens
- * Scenario: Guardian chooser hides organisation option for guardian-only users
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';

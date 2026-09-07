@@ -1,14 +1,9 @@
 #!/usr/bin/env node
 /**
- * File-balanced Playwright shards for CI (~13 parallel jobs).
+ * File-balanced Playwright shards for Pre-UAT E2E (active Pet Care specs only).
  *
- * Playwright --shard splits by test count; slow specs (adoption, health) dominate
- * wall-clock. This manifest isolates the heaviest files and packs the rest by
- * approximate weight (spec line count). Rebalance when adding large spec files.
- *
- * Shard 10 isolates org.onboarding (historically flaky after Nav v2 / theme work).
- * Shard 6 groups pet profile + guardian primary nav journeys (pet-detail-ux-c2ce).
- * Shard 12–13 split org v2 (ci-test-depth-abc9) from experience/foster flows (Aug 2026).
+ * Frozen Shelter/Fostering specs are listed in frozen-e2e-specs.mjs and validated
+ * via validate-shard-manifest.mjs allowlist — not run in CI shards.
  *
  * Usage:
  *   node e2e/scripts/shard-files.mjs           # print manifest summary
@@ -16,62 +11,39 @@
  */
 import { fileURLToPath } from 'node:url';
 
-export const SHARD_TOTAL = 13;
+export const SHARD_TOTAL = 9;
 
 /** @type {string[][]} */
 export const SHARDS = [
-  ['playwright/tests/adoption.spec.ts'],
   ['playwright/tests/health.tracking.spec.ts'],
-  [
-    'playwright/tests/organisation.management.spec.ts',
-    'playwright/tests/organisation.dashboard.spec.ts',
-    'playwright/tests/gdpr.data-rights.spec.ts',
-    'playwright/tests/auth.login.spec.ts',
-    'playwright/tests/organisation.discovery.spec.ts',
-    'playwright/tests/organisation.permissions.spec.ts',
-    'playwright/tests/organisation.customisations.spec.ts',
-  ],
-  [
-    'playwright/tests/weight.tracking.spec.ts',
-    'playwright/tests/auth.profile.spec.ts',
-  ],
-  ['playwright/tests/notifications.spec.ts'],
   [
     'playwright/tests/pet.profiles.spec.ts',
     'playwright/tests/pet.detail-navigation.spec.ts',
     'playwright/tests/pet.timeline.spec.ts',
-    'playwright/tests/guardian.navigation.spec.ts',
-    'playwright/tests/organisation.pet-filters.spec.ts',
   ],
-  ['playwright/tests/veterinarian.spec.ts'],
-  ['playwright/tests/organisation.pet.management.spec.ts'],
   [
-    'playwright/tests/org.timeline.spec.ts',
-    'playwright/tests/auth.signup.spec.ts',
+    'playwright/tests/guardian.navigation.spec.ts',
+    'playwright/tests/guardian.dashboard.spec.ts',
   ],
-  ['playwright/tests/org.onboarding.spec.ts'],
+  ['playwright/tests/experience.navigation.spec.ts'],
+  [
+    'playwright/tests/auth.login.spec.ts',
+    'playwright/tests/auth.signup.spec.ts',
+    'playwright/tests/auth.profile.spec.ts',
+  ],
+  ['playwright/tests/weight.tracking.spec.ts'],
   [
     'playwright/tests/sharing.spec.ts',
-    'playwright/tests/help.faq.spec.ts',
-    'playwright/tests/experience.foster-portal.spec.ts',
-    'playwright/tests/guardian.onboarding.spec.ts',
-  ],
-  [
-    'playwright/tests/organisation.profile.spec.ts',
-    'playwright/tests/organisation.edit.spec.ts',
-    'playwright/tests/organisation.sessions.spec.ts',
-    'playwright/tests/organisation.redacted-pet.spec.ts',
-    'playwright/tests/organisation.admin-contacts.spec.ts',
-    'playwright/tests/organisation.connections.spec.ts',
-    'playwright/tests/organisation.member.privacy.spec.ts',
-  ],
-  [
     'playwright/tests/account.area.spec.ts',
-    'playwright/tests/fostering.platform.spec.ts',
-    'playwright/tests/fostering.session-detail.spec.ts',
-    'playwright/tests/foster.onboarding.spec.ts',
-    'playwright/tests/guardian.dashboard.spec.ts',
-    'playwright/tests/experience.navigation.spec.ts',
+  ],
+  [
+    'playwright/tests/notifications.spec.ts',
+    'playwright/tests/help.faq.spec.ts',
+  ],
+  [
+    'playwright/tests/gdpr.data-rights.spec.ts',
+    'playwright/tests/guardian.onboarding.spec.ts',
+    'playwright/tests/veterinarian.spec.ts',
   ],
 ];
 

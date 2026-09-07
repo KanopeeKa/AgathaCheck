@@ -11,6 +11,7 @@ agatha_flutter_verify
 
 echo "==> Governance gates"
 node scripts/check_file_size.js
+bash scripts/check_frozen_domain_boundaries.sh
 node scripts/validate_execute_plan_snapshot.js .agents/plans/_example.snapshot.json
 node scripts/validate_execute_plan_snapshot.js --drift-test
 node --test scripts/execute_plan_runtime.test.js
