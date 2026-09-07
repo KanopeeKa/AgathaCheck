@@ -90,7 +90,10 @@ class UnifiedPetTile extends ConsumerWidget {
                           children: [
                             Expanded(
                               flex: flex.photo,
-                              child: _PhotoArea(pet: pet, apiBaseUrl: apiBaseUrl),
+                              child: _PhotoArea(
+                                pet: pet,
+                                apiBaseUrl: apiBaseUrl,
+                              ),
                             ),
                             Expanded(
                               flex: flex.text,
