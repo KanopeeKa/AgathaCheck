@@ -17,6 +17,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 
 | Section | Link |
 |---------|------|
+| **Care Foundation & Intelligence roadmap (v0.2)** | [changes/care-foundation-roadmap.md](changes/care-foundation-roadmap.md) |
 | Domain rename plan | [changes/domain-rename-plan.md](changes/domain-rename-plan.md) |
 | F-22 residual inventory | [changes/terminology-rename-inventory.md](changes/terminology-rename-inventory.md) |
 | Pet profile decisions (D38) | [pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md) |
