@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/domain/entities/care_status.dart';
 import '../../../pet_profile/presentation/utils/pet_tile_dimensions.dart';
 import '../../../pet_profile/presentation/widgets/pet_card.dart'
     show sortPetsByCreatedAt;
@@ -83,14 +84,14 @@ class PetCarePetsTileGrid extends StatelessWidget {
     required double tileHeight,
   }) {
     final theme = Theme.of(context);
-    final careState = careSummary == null
-        ? PetCareTodayPetCareState.clear
-        : petCareTodayPetCareState(pet, careSummary!);
+    final careStatus = careSummary == null
+        ? CareStatus.allSet
+        : petCareStatusFor(pet, careSummary!);
     final statusLine = resolvePetTileStatusLine(
       l: l,
       pet: pet,
       context: PetTileContext.petCare,
-      careUrgency: petTileCareUrgencyFor(careState),
+      careStatus: careStatus,
     );
     final selected = selectedPetIds.contains(pet.id);
 

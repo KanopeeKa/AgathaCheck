@@ -1,4 +1,5 @@
 import '../../../../pet_profile/domain/entities/pet.dart';
+import '../../../../pet_profile/domain/entities/care_status.dart';
 import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../../pet_profile/presentation/widgets/pet_card.dart'
     show sortPetsByCreatedAt;
@@ -261,34 +262,31 @@ PetCareTodayPetPreview petCareTodayPetPreview(
   );
 }
 
-/// Returns the strongest visible care status for a pet in the dashboard
-/// preview. The UI supplies the localized wording.
+/// Returns the Care Status for a pet in the dashboard preview.
+CareStatus petCareStatusFor(Pet pet, PetCareTodayCareSummary careSummary) {
+  if (careSummary.priorities.overdue.any((entry) => entry.petId == pet.id)) {
+    return CareStatus.timeToFollowUp;
+  }
+  if (careSummary.priorities.dueToday.any((entry) => entry.petId == pet.id) ||
+      careSummary.priorities.upcoming.any((entry) => entry.petId == pet.id)) {
+    return CareStatus.worthACheck;
+  }
+  return CareStatus.allSet;
+}
+
+@Deprecated('Use petCareStatusFor')
 PetCareTodayPetCareState petCareTodayPetCareState(
   Pet pet,
   PetCareTodayCareSummary careSummary,
 ) {
-  if (careSummary.priorities.overdue.any((entry) => entry.petId == pet.id)) {
-    return PetCareTodayPetCareState.overdue;
-  }
-  if (careSummary.priorities.dueToday.any((entry) => entry.petId == pet.id)) {
-    return PetCareTodayPetCareState.dueToday;
-  }
-  if (careSummary.priorities.upcoming.any((entry) => entry.petId == pet.id)) {
-    return PetCareTodayPetCareState.upcoming;
-  }
-  return PetCareTodayPetCareState.clear;
+  return switch (petCareStatusFor(pet, careSummary)) {
+    CareStatus.timeToFollowUp => PetCareTodayPetCareState.overdue,
+    CareStatus.worthACheck => PetCareTodayPetCareState.upcoming,
+    CareStatus.allSet => PetCareTodayPetCareState.clear,
+  };
 }
 
 enum PetCareTodayPetCareState { overdue, dueToday, upcoming, clear }
-
-PetTileCareUrgency petTileCareUrgencyFor(PetCareTodayPetCareState state) {
-  return switch (state) {
-    PetCareTodayPetCareState.overdue => PetTileCareUrgency.overdue,
-    PetCareTodayPetCareState.dueToday => PetTileCareUrgency.dueToday,
-    PetCareTodayPetCareState.upcoming => PetTileCareUrgency.upcoming,
-    PetCareTodayPetCareState.clear => PetTileCareUrgency.clear,
-  };
-}
 
 PetCareTodayCareUrgency? _urgencyForEntry(
   HealthEntry entry,

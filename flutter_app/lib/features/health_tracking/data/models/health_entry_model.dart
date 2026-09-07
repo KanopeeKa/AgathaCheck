@@ -1,5 +1,7 @@
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';
+import '../../../pet_profile/domain/entities/care_family.dart';
+import '../../../pet_profile/domain/entities/care_source.dart';
 import '../../../../core/utils/calendar_date.dart';
 
 /// Data model for [HealthEntry] with JSON serialization.
@@ -25,6 +27,8 @@ class HealthEntryModel extends HealthEntry {
     super.remindDaysBefore,
     super.scheduleTimes,
     super.status,
+    super.careFamily,
+    super.careSource,
     super.createdAt,
     super.updatedAt,
   });
@@ -58,6 +62,8 @@ class HealthEntryModel extends HealthEntry {
       remindDaysBefore: json['remind_days_before'] as int? ?? 1,
       scheduleTimes: _parseScheduleTimes(json['schedule_times']),
       status: json['status'] as String? ?? 'active',
+      careFamily: CareFamilyWire.fromWire(json['care_family'] as String?),
+      careSource: CareSourceWire.fromWire(json['care_source'] as String?),
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
           : null,
@@ -89,6 +95,8 @@ class HealthEntryModel extends HealthEntry {
       remindDaysBefore: entry.remindDaysBefore,
       scheduleTimes: entry.scheduleTimes,
       status: entry.status,
+      careFamily: entry.careFamily,
+      careSource: entry.careSource,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     );
@@ -116,6 +124,8 @@ class HealthEntryModel extends HealthEntry {
       'remind_days_before': remindDaysBefore,
       if (scheduleTimes != null) 'schedule_times': scheduleTimes,
       'status': status,
+      if (careFamily != null) 'care_family': careFamily!.wireValue,
+      if (careSource != null) 'care_source': careSource!.wireValue,
     };
   }
 

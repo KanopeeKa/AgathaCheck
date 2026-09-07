@@ -1,4 +1,6 @@
 import 'recurrence_anchor.dart';
+import '../../../pet_profile/domain/entities/care_family.dart';
+import '../../../pet_profile/domain/entities/care_source.dart';
 
 /// Represents a health tracking entry in the domain layer.
 ///
@@ -41,6 +43,8 @@ class HealthEntry {
     this.remindDaysBefore = 1,
     this.scheduleTimes,
     this.status = 'active',
+    this.careFamily,
+    this.careSource,
     this.createdAt,
     this.updatedAt,
   });
@@ -104,6 +108,12 @@ class HealthEntry {
 
   /// Series lifecycle from API: `active` or `completed`.
   final String status;
+
+  /// Semantic care family (optional until backfilled).
+  final CareFamily? careFamily;
+
+  /// Provenance for how this care was established.
+  final CareSource? careSource;
 
   /// When this entry was created.
   final DateTime? createdAt;
@@ -177,6 +187,10 @@ class HealthEntry {
     List<String>? scheduleTimes,
     bool clearScheduleTimes = false,
     String? status,
+    CareFamily? careFamily,
+    bool clearCareFamily = false,
+    CareSource? careSource,
+    bool clearCareSource = false,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -209,6 +223,8 @@ class HealthEntry {
           ? null
           : (scheduleTimes ?? this.scheduleTimes),
       status: status ?? this.status,
+      careFamily: clearCareFamily ? null : (careFamily ?? this.careFamily),
+      careSource: clearCareSource ? null : (careSource ?? this.careSource),
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

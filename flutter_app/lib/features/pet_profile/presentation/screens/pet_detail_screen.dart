@@ -7,14 +7,18 @@ import '../../../../core/widgets/screen_overflow_actions.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../experience/domain/entities/app_experience.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
+import '../../domain/entities/care_status.dart';
 import '../../domain/services/pet_detail_actions.dart';
 import '../controllers/download_report_controller.dart';
 import '../providers/pet_detail_viewer_context_provider.dart';
 import '../providers/pet_providers.dart';
+import '../controllers/chip_reminder_controller.dart';
+import '../controllers/neuter_reminder_controller.dart';
+import '../providers/pet_care_status_provider.dart';
+import '../widgets/care_status_summary_card.dart';
+import '../widgets/profile_prompt_row.dart';
 import '../widgets/pet_detail/pet_detail_profile_card.dart';
 import '../widgets/pet_detail/pet_profile_section_nav.dart';
-import 'widgets/chip_reminder_card.dart';
-import 'widgets/neuter_reminder_card.dart';
 import 'widgets/pet_events_preview_section.dart';
 import 'widgets/sharing_section.dart';
 
@@ -92,6 +96,8 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
           ),
         ];
 
+        final careSummary = ref.watch(petCareStatusSummaryProvider(widget.petId));
+
         Widget body = ExperienceShellScaffold(
           experience: experience,
           currentLocation: GoRouterState.of(context).uri.path,
@@ -105,12 +111,41 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                   viewerContext: viewerContext,
                 ),
               ),
+              SliverToBoxAdapter(
+                child: CareStatusSummaryCard(
+                  status: careSummary.status,
+                  onReview: careSummary.status == CareStatus.worthACheck
+                      ? () => context.go('/pc/events')
+                      : null,
+                  onViewAction:
+                      careSummary.status == CareStatus.timeToFollowUp
+                      ? () => context.go('/pc/events')
+                      : null,
+                ),
+              ),
               if (pet.neuteredDate == null &&
                   !pet.neuterDismissed &&
                   !AppConstants.speciesWithoutNeutering.contains(pet.species))
-                SliverToBoxAdapter(child: NeuterReminderCard(pet: pet)),
+                SliverToBoxAdapter(
+                  child: ProfilePromptRow(
+                    message: l.profilePromptNeuterMissing,
+                    icon: Icons.info_outline,
+                    dismissLabel: l.dismiss,
+                    onDismiss: () => NeuterReminderController(
+                      ref,
+                    ).dismissNeuterReminder(pet),
+                  ),
+                ),
               if (pet.chipId.isEmpty && !pet.chipDismissed)
-                SliverToBoxAdapter(child: ChipReminderCard(pet: pet)),
+                SliverToBoxAdapter(
+                  child: ProfilePromptRow(
+                    message: l.profilePromptChipMissing,
+                    icon: Icons.memory_outlined,
+                    dismissLabel: l.dismiss,
+                    onDismiss: () =>
+                        ChipReminderController(ref).dismissChipReminder(pet),
+                  ),
+                ),
               SliverToBoxAdapter(
                 child: PetProfileSectionNav(petId: widget.petId),
               ),

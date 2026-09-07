@@ -645,6 +645,34 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careStatusUpcoming => 'Soin à venir';
 
   @override
+  String get careStatusAllSet => 'All Set';
+
+  @override
+  String get careStatusWorthACheck => 'Worth a Check';
+
+  @override
+  String get careStatusTimeToFollowUp => 'Time to Follow Up';
+
+  @override
+  String get careStatusAllSetBody =>
+      'Everything you\'re currently tracking is up to date.';
+
+  @override
+  String get careStatusReviewAction => 'Review';
+
+  @override
+  String get careStatusViewAction => 'View action';
+
+  @override
+  String get profilePromptChipMissing => 'Microchip details not added';
+
+  @override
+  String get profilePromptNeuterMissing => 'Neutering status not recorded';
+
+  @override
+  String get dismiss => 'Dismiss';
+
+  @override
   String get careLoadError => 'Impossible de charger les soins pour le moment.';
 
   @override

@@ -1208,6 +1208,60 @@ abstract class AppLocalizations {
   /// **'Care coming up'**
   String get careStatusUpcoming;
 
+  /// No description provided for @careStatusAllSet.
+  ///
+  /// In en, this message translates to:
+  /// **'All Set'**
+  String get careStatusAllSet;
+
+  /// No description provided for @careStatusWorthACheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Worth a Check'**
+  String get careStatusWorthACheck;
+
+  /// No description provided for @careStatusTimeToFollowUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to Follow Up'**
+  String get careStatusTimeToFollowUp;
+
+  /// No description provided for @careStatusAllSetBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything you\'re currently tracking is up to date.'**
+  String get careStatusAllSetBody;
+
+  /// No description provided for @careStatusReviewAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get careStatusReviewAction;
+
+  /// No description provided for @careStatusViewAction.
+  ///
+  /// In en, this message translates to:
+  /// **'View action'**
+  String get careStatusViewAction;
+
+  /// No description provided for @profilePromptChipMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Microchip details not added'**
+  String get profilePromptChipMissing;
+
+  /// No description provided for @profilePromptNeuterMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Neutering status not recorded'**
+  String get profilePromptNeuterMissing;
+
+  /// No description provided for @dismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
+
   /// No description provided for @careLoadError.
   ///
   /// In en, this message translates to:
