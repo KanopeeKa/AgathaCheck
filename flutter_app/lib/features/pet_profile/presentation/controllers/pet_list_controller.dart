@@ -88,9 +88,7 @@ class PetListController {
   }
 
   List<Pet> getOwnedPets(List<Pet> shellPets) {
-    return shellPets
-        .where((p) => !p.passedAway && !p.isShared)
-        .toList();
+    return shellPets.where((p) => !p.passedAway && !p.isShared).toList();
   }
 
   Map<String, List<Pet>> groupSharedPets(List<Pet> shellPets) {

@@ -25,12 +25,7 @@ class PetCarePrimaryDestinations {
   static const compactBreakpoint = 600.0;
   static const expandedBreakpoint = 840.0;
 
-  static const routes = [
-    '/pc/home',
-    '/pc/pets',
-    '/pc/events',
-    '/account',
-  ];
+  static const routes = ['/pc/home', '/pc/pets', '/pc/events', '/account'];
 
   static bool isCompact(double width) => width < compactBreakpoint;
 

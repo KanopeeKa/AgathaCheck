@@ -86,7 +86,9 @@ void main() {
     );
   });
 
-  testWidgets('foster flag is treated like guardian-owned in MVP', (tester) async {
+  testWidgets('foster flag is treated like guardian-owned in MVP', (
+    tester,
+  ) async {
     const pet = Pet(
       id: 'p3',
       name: 'Luna',

@@ -52,9 +52,7 @@ class PetCareMyPetsSection extends ConsumerWidget {
     final hasAny = petCareDashboardHasAnyPets(allPets, controller);
     final showUnifiedPreview = previewPets != null;
     final showPersonalSubgroupTitle =
-        !showUnifiedPreview &&
-        personalPets.isNotEmpty &&
-        sharedPets.isNotEmpty;
+        !showUnifiedPreview && personalPets.isNotEmpty && sharedPets.isNotEmpty;
 
     if (showUnifiedPreview) {
       return Semantics(

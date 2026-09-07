@@ -37,10 +37,7 @@ List<RouteBase> buildVetExperienceRoutes() {
       path: '/g/vets/:id',
       redirect: (context, state) => '/pc/vets/${state.pathParameters['id']}',
     ),
-    GoRoute(
-      path: '/o/vets',
-      redirect: (context, state) => '/pc/vets',
-    ),
+    GoRoute(path: '/o/vets', redirect: (context, state) => '/pc/vets'),
     GoRoute(
       path: '/o/vets/:tail(.*)',
       redirect: (context, state) {

@@ -95,10 +95,7 @@ void main() {
     await tester.pumpWidget(buildApp());
     await tester.pumpAndSettle();
 
-    expect(
-      find.byKey(const Key('experience_workspace_toggle')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('experience_workspace_toggle')), findsNothing);
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
     expect(find.byKey(const Key('account_hamburger')), findsNothing);
     expect(find.byKey(const Key('account_identity_summary')), findsOneWidget);

@@ -3,22 +3,13 @@ import 'package:go_router/go_router.dart';
 /// Redirect routes for frozen Shelter/Fostering domains (no organization imports).
 List<RouteBase> buildFrozenDomainRedirectRoutes() {
   return [
-    GoRoute(
-      path: '/o/:rest(.*)',
-      redirect: (context, state) => '/pc/home',
-    ),
-    GoRoute(
-      path: '/organizations',
-      redirect: (context, state) => '/pc/home',
-    ),
+    GoRoute(path: '/o/:rest(.*)', redirect: (context, state) => '/pc/home'),
+    GoRoute(path: '/organizations', redirect: (context, state) => '/pc/home'),
     GoRoute(
       path: '/organizations/:tail(.*)',
       redirect: (context, state) => '/pc/home',
     ),
-    GoRoute(
-      path: '/archived-pets',
-      redirect: (context, state) => '/pc/home',
-    ),
+    GoRoute(path: '/archived-pets', redirect: (context, state) => '/pc/home'),
   ];
 }
 

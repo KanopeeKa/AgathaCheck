@@ -247,33 +247,34 @@ void main() {
     );
   });
 
-  testWidgets('section root uses compact Guardian chrome without workspace toggle', (
-    tester,
-  ) async {
-    await tester.binding.setSurfaceSize(const Size(390, 844));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+  testWidgets(
+    'section root uses compact Guardian chrome without workspace toggle',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    await tester.pumpWidget(
-      _buildApp(
-        prefs: prefs,
-        experience: AppExperience.petCare,
-        currentLocation: '/pc/home',
-        viewport: const Size(390, 844),
-      ),
-    );
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        _buildApp(
+          prefs: prefs,
+          experience: AppExperience.petCare,
+          currentLocation: '/pc/home',
+          viewport: const Size(390, 844),
+        ),
+      );
+      await tester.pumpAndSettle();
 
-    expect(
-      find.byKey(const Key('experience_workspace_toggle')),
-      findsNothing,
-    );
-    expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
-    expect(find.byKey(const Key('experience_back_button')), findsNothing);
-    expect(
-      find.byKey(const Key('pet_care_bottom_navigation')),
-      findsOneWidget,
-    );
-  });
+      expect(
+        find.byKey(const Key('experience_workspace_toggle')),
+        findsNothing,
+      );
+      expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
+      expect(find.byKey(const Key('experience_back_button')), findsNothing);
+      expect(
+        find.byKey(const Key('pet_care_bottom_navigation')),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('non-root path shows back arrow without workspace toggle', (
     tester,
@@ -292,10 +293,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
-    expect(
-      find.byKey(const Key('experience_workspace_toggle')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('experience_workspace_toggle')), findsNothing);
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
 

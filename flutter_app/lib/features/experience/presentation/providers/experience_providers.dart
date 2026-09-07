@@ -37,10 +37,7 @@ final experienceEligibilityProvider =
 
       return petsAsync.when(
         data: (pets) => AsyncValue.data(
-          ExperienceEligibilityRules.compute(
-            pets: pets,
-            orgMembershipCount: 0,
-          ),
+          ExperienceEligibilityRules.compute(pets: pets, orgMembershipCount: 0),
         ),
         loading: () => const AsyncValue.loading(),
         error: (e, st) => AsyncValue.error(e, st),

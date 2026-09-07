@@ -314,7 +314,6 @@ void main() {
     test('guardianVets resolves to legacy /g/vets redirect path', () {
       expect(router.namedLocation('guardianVets'), '/g/vets');
     });
-
   });
 
   // -------------------------------------------------------------------------
@@ -390,10 +389,7 @@ void main() {
       await _settle(tester);
 
       expect(find.textContaining('not-found:'), findsNothing);
-      expect(
-        router.routerDelegate.currentConfiguration.uri.path,
-        '/pc/home',
-      );
+      expect(router.routerDelegate.currentConfiguration.uri.path, '/pc/home');
     });
   });
 

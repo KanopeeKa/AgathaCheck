@@ -50,19 +50,13 @@ List<RouteBase> buildExperienceRoutes() {
       redirect: (context, state) =>
           legacyPetCareRedirectForPath(state.uri.path),
     ),
-    GoRoute(
-      path: '/o/onboarding',
-      redirect: (context, state) => '/pc/home',
-    ),
+    GoRoute(path: '/o/onboarding', redirect: (context, state) => '/pc/home'),
     GoRoute(
       path: '/account',
       name: 'account',
       builder: (context, state) => const AccountScreen(),
       routes: [
-        GoRoute(
-          path: 'orgs/:orgId',
-          redirect: (context, state) => '/account',
-        ),
+        GoRoute(path: 'orgs/:orgId', redirect: (context, state) => '/account'),
       ],
     ),
     ShellRoute(
@@ -134,10 +128,7 @@ List<RouteBase> buildExperienceRoutes() {
           redirect: (context, state) =>
               legacyPetCareRedirectForPath(state.uri.path),
         ),
-        GoRoute(
-          path: '/g/fostering',
-          redirect: (context, state) => '/pc/home',
-        ),
+        GoRoute(path: '/g/fostering', redirect: (context, state) => '/pc/home'),
         GoRoute(
           path: '/g/invite',
           name: 'guardianInvite',
