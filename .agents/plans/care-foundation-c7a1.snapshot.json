@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-foundation-c7a1",
+  "approved_at": "2026-09-07T18:58:00Z",
+  "approved_by": "user chat 2026-09-07 — /execute-plan (Phases A–C autonomous; pause before D per roadmap v0.3)",
+  "approved_until": "2026-09-09T18:58:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/care-foundation-c7a1-integration-dc3b",
+  "control_issue": 1082,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Care Foundation — status, family, source, icons, prompts",
+      "branch": "cursor/care-foundation-phase-a-dc3b",
+      "allowed_paths": [
+        ".agents/plans/care-foundation-c7a1.*",
+        "docs/design/**",
+        "docs/domains/pet_care/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/core/theme/**",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/**",
+        "flutter_app/lib/features/experience/presentation/widgets/pet_care_*",
+        "flutter_app/lib/features/health_tracking/domain/**",
+        "flutter_app/lib/features/health_tracking/data/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/features/pet_profile/**",
+        "server/migrations/**",
+        "server/routes/healthEntries/**",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**",
+        "server/routes/organizations/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Care Rhythms — recurring care configuration screen",
+      "branch": "cursor/care-foundation-phase-b-dc3b",
+      "allowed_paths": [
+        ".agents/plans/care-foundation-c7a1.*",
+        "docs/domains/pet_care/**",
+        "docs/design/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_profile/presentation/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/features/pet_profile/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**",
+        "server/routes/careIntelligence/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Suggested by Agatha — crisp rules, API, suggestion UX",
+      "branch": "cursor/care-foundation-phase-c-dc3b",
+      "allowed_paths": [
+        ".agents/plans/care-foundation-c7a1.*",
+        "docs/domains/pet_care/**",
+        "docs/design/**",
+        "docs/architecture/api-reference.md",
+        "flutter_app/lib/features/care_intelligence/**",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/**",
+        "flutter_app/lib/features/pet_profile/presentation/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/care_intelligence/**",
+        "flutter_app/test/features/pet_profile/**",
+        "server/routes/careIntelligence/**",
+        "server/routes/index.js",
+        "server/test/careIntelligence/**",
+        "server/migrations/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:b823f14e4045b2631eca3b4d7621ffd72bb87a452236f6f3dd0a8dfd0623888e"
+}
