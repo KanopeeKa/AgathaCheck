@@ -99,6 +99,41 @@ describe('public upload serving', () => {
     expect(res.headers['content-type']).toMatch(/image\/jpeg/);
   });
 
+  it('serves pet photos via GET /api/uploads/pet_photos', async () => {
+    const fileId = uuidv4();
+    const filename = `${fileId}.jpg`;
+    const filePath = path.join(tmpDir, 'uploads', 'pet_photos', filename);
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, Buffer.from('jpeg'));
+
+    const app = createApp();
+    const res = await request(app).get(`/api/uploads/pet_photos/${filename}`);
+
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/image\/jpeg/);
+  });
+
+  it('resolves pet photos from PET_PHOTO_UPLOAD_DIR when set', () => {
+    const customDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pet-upload-'));
+    const previous = process.env.PET_PHOTO_UPLOAD_DIR;
+    try {
+      process.env.PET_PHOTO_UPLOAD_DIR = customDir;
+      const fileId = uuidv4();
+      const filename = `${fileId}.jpg`;
+      fs.writeFileSync(path.join(customDir, filename), Buffer.from('jpeg'));
+
+      const resolved = resolvePublicUploadFile(`pet_photos/${filename}`);
+      expect(resolved.filePath).toBe(fs.realpathSync(path.join(customDir, filename)));
+    } finally {
+      if (previous === undefined) {
+        delete process.env.PET_PHOTO_UPLOAD_DIR;
+      } else {
+        process.env.PET_PHOTO_UPLOAD_DIR = previous;
+      }
+      fs.rmSync(customDir, { recursive: true, force: true });
+    }
+  });
+
   it('rejects health_documents via public upload API', async () => {
     const fileId = uuidv4();
     const filename = `${fileId}.jpg`;

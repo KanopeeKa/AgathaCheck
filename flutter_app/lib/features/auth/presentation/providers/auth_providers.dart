@@ -233,7 +233,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> uploadPhoto(Uint8List bytes, String filename) async {
-    if (state.accessToken == null) return;
+    if (state.accessToken == null) {
+      throw Exception('Not authenticated');
+    }
     state = state.copyWith(isLoading: true, clearError: true);
     try {
       final user = await _authService.uploadPhoto(
@@ -243,10 +245,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
       state = state.copyWith(user: user, isLoading: false);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString().replaceFirst('Exception: ', ''),
-      );
+      final message = e.toString().replaceFirst('Exception: ', '');
+      state = state.copyWith(isLoading: false, error: message);
+      throw Exception(message);
     }
   }
 

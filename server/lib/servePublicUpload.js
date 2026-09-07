@@ -10,6 +10,7 @@ const PUBLIC_UPLOAD_SUBDIRS = new Set([
   'org_photos',
   'org_logos',
   'photos',
+  'pet_photos',
 ]);
 
 const SAFE_FILENAME = /^[0-9a-zA-Z][0-9a-zA-Z._-]*\.(jpg|jpeg|png|webp|pdf)$/i;
@@ -36,6 +37,12 @@ function resolveUploadDir(subdir) {
   }
   if (subdir === 'photos') {
     return path.resolve(defaultUploadsRoot(), 'photos');
+  }
+  if (subdir === 'pet_photos') {
+    if (process.env.PET_PHOTO_UPLOAD_DIR) {
+      return path.resolve(process.env.PET_PHOTO_UPLOAD_DIR);
+    }
+    return path.resolve(defaultUploadsRoot(), 'pet_photos');
   }
   return defaultUploadsRoot();
 }

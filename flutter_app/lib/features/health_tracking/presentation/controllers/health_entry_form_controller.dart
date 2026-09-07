@@ -335,6 +335,12 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
           scheduleTimes: _effectiveScheduleTimes(),
         );
         await notifier.updateEntry(entry);
+        if (state.pendingPhotos.isNotEmpty && _entryId != null) {
+          final filesToUpload = List<XFile>.from(state.pendingPhotos);
+          await uploadPendingPhotosToEntry(_entryId!, filesToUpload);
+          clearPendingPhotos();
+          await loadPhotos();
+        }
       } else {
         final createUseCase = ref.read(createHealthEntryProvider);
         final createdEntryIds = <String>[];

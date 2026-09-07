@@ -1,7 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -9,7 +9,20 @@ import '../../domain/entities/pet.dart';
 import '../utils/ownership_accent.dart';
 import '../utils/pet_accent_color.dart';
 import '../utils/pet_tile_dimensions.dart';
+import 'pet_photo_image.dart';
 import 'pet_tile_status_line.dart';
+
+/// Reads [apiBaseUrlProvider] when a [ProviderScope] is present; otherwise web default.
+String resolveApiBaseUrlForPetPhoto(BuildContext context) {
+  try {
+    return ProviderScope.containerOf(
+      context,
+      listen: false,
+    ).read(apiBaseUrlProvider);
+  } catch (_) {
+    return '/backend';
+  }
+}
 
 /// Cross-domain pet tile: photo-forward card with ownership stripe and two text lines.
 class UnifiedPetTile extends StatelessWidget {
@@ -21,6 +34,7 @@ class UnifiedPetTile extends StatelessWidget {
     this.width,
     this.height,
     this.semanticsLabel,
+    this.apiBaseUrl,
   });
 
   final Pet pet;
@@ -29,12 +43,15 @@ class UnifiedPetTile extends StatelessWidget {
   final double? width;
   final double? height;
   final String? semanticsLabel;
+  final String? apiBaseUrl;
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final ownership = resolvePetOwnershipAccent(context, pet, l);
+    final resolvedApiBaseUrl =
+        apiBaseUrl ?? resolveApiBaseUrlForPetPhoto(context);
     final statusBarColor = pet.isFoster
         ? fosterOwnershipAccentColor(context)
         : ownership.accentColor;
@@ -88,7 +105,10 @@ class UnifiedPetTile extends StatelessWidget {
                           children: [
                             Expanded(
                               flex: flex.photo,
-                              child: _PhotoArea(pet: pet),
+                              child: _PhotoArea(
+                                pet: pet,
+                                apiBaseUrl: resolvedApiBaseUrl,
+                              ),
                             ),
                             Expanded(
                               flex: flex.text,
@@ -174,9 +194,10 @@ class _StatusRow extends StatelessWidget {
 }
 
 class _PhotoArea extends StatelessWidget {
-  const _PhotoArea({required this.pet});
+  const _PhotoArea({required this.pet, required this.apiBaseUrl});
 
   final Pet pet;
+  final String apiBaseUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -215,22 +236,13 @@ class _PhotoArea extends StatelessWidget {
   }
 
   Widget _photoOrPlaceholder(Color petColor) {
-    if (pet.photoPath != null && pet.photoPath!.isNotEmpty) {
-      if (pet.photoPath!.startsWith('asset://')) {
-        return Image.asset(
-          pet.photoPath!.substring('asset://'.length),
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _placeholder(petColor),
-        );
-      }
-      try {
-        final bytes = base64Decode(pet.photoPath!);
-        return Image.memory(bytes, fit: BoxFit.cover);
-      } catch (_) {
-        return _placeholder(petColor);
-      }
-    }
-    return _placeholder(petColor);
+    final image = buildPetPhotoImage(
+      photoPath: pet.photoPath,
+      apiBaseUrl: apiBaseUrl,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => _placeholder(petColor),
+    );
+    return image ?? _placeholder(petColor);
   }
 
   Widget _placeholder(Color petColor) {
