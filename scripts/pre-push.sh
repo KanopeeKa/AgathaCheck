@@ -34,7 +34,7 @@ echo "==> Server (audit + Jest)"
 (
   cd server
   npm audit --audit-level=high
-  npx jest --env=node --forceExit
+  npm test -- --forceExit
 )
 
 echo "==> Flutter (codegen + analyze + test)"

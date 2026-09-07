@@ -25,6 +25,8 @@ Shelter and Fostering are **frozen** — preserved in Git, not maintained, not i
 
 ## Freeze complete (acceptance)
 
+See [freeze-verification-2026-09.md](freeze-verification-2026-09.md) for the verified checklist at tag `frozen-domains-baseline-2026-09`.
+
 1. No Shelter/Fostering reachable in MVP UI.
 2. No frozen HTTP endpoints in production/UAT.
 3. Active code does not import frozen feature modules.
