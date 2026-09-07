@@ -96,15 +96,15 @@ After Phase 3 merge: **halt for dataset** — do not bootstrap Phase D without p
 ```yaml
 autonomy: active
 current_phase: 2
-last_completed_phase: null
+last_completed_phase: 1
 halt_reason: null
 next_action: "continue phase 2 on branch cursor/care-foundation-phase-b-dc3b"
 artifact_ref:
   branch: cursor/care-foundation-phase-b-dc3b
   plan_path: .agents/plans/care-foundation-c7a1.md
-  plan_commit: 755e9c769501d74596ba2394ebe0084b4eac5c9d
+  plan_commit: 47ee322aea0071037e0a74d8cce2d75acbd3ed45
   snapshot_path: .agents/plans/care-foundation-c7a1.snapshot.json
-  snapshot_commit: 755e9c769501d74596ba2394ebe0084b4eac5c9d
+  snapshot_commit: 47ee322aea0071037e0a74d8cce2d75acbd3ed45
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

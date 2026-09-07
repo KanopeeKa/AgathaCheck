@@ -48,7 +48,7 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
@@ -130,5 +130,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:4f2dc081e2e828084d559c9f80f2957a4500863c519e92bf23de2c06c934fb41"
+  "content_hash": "sha256:22ab4c40fe1e5b230037ddda8ba8c1ded50a11f4ec17dfc40d159dec6701bad4"
 }
