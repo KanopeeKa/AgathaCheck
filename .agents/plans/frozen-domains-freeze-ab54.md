@@ -346,17 +346,17 @@ server/routes/organizations/**
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
-current_phase: 5
-last_completed_phase: 4
+autonomy: completed
+current_phase: null
+last_completed_phase: 5
 halt_reason: null
-next_action: "continue phase 5 on branch cursor/frozen-domains-seal-ab54"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/frozen-domains-ci-ab54
+  branch: main
   plan_path: .agents/plans/frozen-domains-freeze-ab54.md
-  plan_commit: 7e56853344996c85342672703429a4d8cf9c6f7d
+  plan_commit: 612a34c0a9662d32e67aba2b850454402de557dc
   snapshot_path: .agents/plans/frozen-domains-freeze-ab54.snapshot.json
-  snapshot_commit: 7e56853344996c85342672703429a4d8cf9c6f7d
+  snapshot_commit: 612a34c0a9662d32e67aba2b850454402de557dc
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
