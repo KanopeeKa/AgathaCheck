@@ -83,7 +83,58 @@ export function validateHealthEntryTypeForWrite(type) {
   return { ok: true, type };
 }
 
+export const CARE_FAMILIES = new Set([
+  'medication',
+  'vaccination',
+  'parasite_prevention',
+  'wellness_review',
+  'dental',
+  'weight_monitoring',
+  'grooming',
+  'nail_care',
+  'other',
+]);
+
+export const CARE_SOURCES = new Set([
+  'guardian_defined',
+  'vet_instruction',
+  'treatment_schedule',
+  'care_plan',
+  'agatha_accepted',
+  'agatha_adjusted',
+  'system_default',
+]);
+
+export function inferCareFamilyFromType(type) {
+  switch (normalizeHealthEntryTypeForRead(type)) {
+    case 'medication':
+      return 'medication';
+    case 'vet_visit':
+      return 'wellness_review';
+    default:
+      return 'other';
+  }
+}
+
+export function validateCareFamilyForWrite(value) {
+  if (value == null || value === '') return { ok: true, value: null };
+  if (!CARE_FAMILIES.has(value)) {
+    return { ok: false, error: `Invalid care family: ${value}` };
+  }
+  return { ok: true, value };
+}
+
+export function validateCareSourceForWrite(value) {
+  if (value == null || value === '') return { ok: true, value: 'guardian_defined' };
+  if (!CARE_SOURCES.has(value)) {
+    return { ok: false, error: `Invalid care source: ${value}` };
+  }
+  return { ok: true, value };
+}
+
 export function healthEntryToMap(row) {
+  const careFamily =
+    row.care_family || inferCareFamilyFromType(row.type);
   return {
     id: row.id,
     pet_id: row.pet_id,
@@ -107,6 +158,8 @@ export function healthEntryToMap(row) {
     remind_days_before: row.remind_days_before ?? 1,
     schedule_times: row.schedule_times ?? null,
     status: row.status || 'active',
+    care_family: careFamily,
+    care_source: row.care_source || 'guardian_defined',
     completed_at: row.completed_at ? row.completed_at.toISOString?.() || String(row.completed_at) : null,
     created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,
     updated_at: row.updated_at ? row.updated_at.toISOString?.() || String(row.updated_at) : null,

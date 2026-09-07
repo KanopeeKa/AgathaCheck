@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/care_status.dart';
 import '../../domain/entities/pet.dart';
 
 /// Which status rules apply when resolving line 2 on a [UnifiedPetTile].
 enum PetTileContext { petCare, shelter }
-
-/// Care urgency for Pet Care surfaces (maps from dashboard care state at call site).
-enum PetTileCareUrgency { overdue, dueToday, upcoming, clear }
 
 /// Shelter attention reasons retained for API compatibility in frozen layouts.
 enum PetTileAttentionReason { overdueVaccination, missingChip, other }
@@ -26,7 +24,7 @@ class PetTileStatusLineData {
   final IconData? icon;
   final Color? color;
 
-  /// When true, line 2 uses icon + semantic colour (Pet Care urgency).
+  /// When true, line 2 uses icon + semantic colour (Pet Care status).
   final bool showCareStyling;
 }
 
@@ -34,7 +32,7 @@ PetTileStatusLineData resolvePetTileStatusLine({
   required AppLocalizations l,
   required Pet pet,
   required PetTileContext context,
-  PetTileCareUrgency? careUrgency,
+  CareStatus? careStatus,
   PetTileAttentionReason? attentionReason,
 }) {
   if (pet.passedAway) {
@@ -44,7 +42,7 @@ PetTileStatusLineData resolvePetTileStatusLine({
   return switch (context) {
     PetTileContext.petCare => _resolvePetCareLine(
       l,
-      careUrgency ?? PetTileCareUrgency.clear,
+      careStatus ?? CareStatus.allSet,
     ),
     PetTileContext.shelter => _resolveShelterLine(
       l,
@@ -56,25 +54,22 @@ PetTileStatusLineData resolvePetTileStatusLine({
 
 PetTileStatusLineData _resolvePetCareLine(
   AppLocalizations l,
-  PetTileCareUrgency urgency,
+  CareStatus status,
 ) {
-  final label = switch (urgency) {
-    PetTileCareUrgency.overdue => l.overdue,
-    PetTileCareUrgency.dueToday => l.urgencyDueToday,
-    PetTileCareUrgency.upcoming => l.careStatusUpcoming,
-    PetTileCareUrgency.clear => l.careStatusAllClear,
+  final label = switch (status) {
+    CareStatus.allSet => l.careStatusAllSet,
+    CareStatus.worthACheck => l.careStatusWorthACheck,
+    CareStatus.timeToFollowUp => l.careStatusTimeToFollowUp,
   };
-  final color = switch (urgency) {
-    PetTileCareUrgency.overdue => AppColorTokens.danger,
-    PetTileCareUrgency.dueToday => AppColorTokens.petCarePrimary,
-    PetTileCareUrgency.upcoming => AppColorTokens.organizationActive,
-    PetTileCareUrgency.clear => AppColorTokens.success,
+  final color = switch (status) {
+    CareStatus.allSet => AppColorTokens.success,
+    CareStatus.worthACheck => AppColorTokens.info,
+    CareStatus.timeToFollowUp => AppColorTokens.petCarePrimary,
   };
-  final icon = switch (urgency) {
-    PetTileCareUrgency.overdue => Icons.priority_high_rounded,
-    PetTileCareUrgency.dueToday => Icons.schedule_outlined,
-    PetTileCareUrgency.upcoming => Icons.event_outlined,
-    PetTileCareUrgency.clear => Icons.check_circle_outline,
+  final icon = switch (status) {
+    CareStatus.allSet => Icons.check_circle_outline,
+    CareStatus.worthACheck => Icons.info_outline,
+    CareStatus.timeToFollowUp => Icons.schedule_outlined,
   };
   return PetTileStatusLineData(
     label: label,

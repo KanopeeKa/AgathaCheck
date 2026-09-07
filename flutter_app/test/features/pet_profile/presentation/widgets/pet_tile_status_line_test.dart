@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/care_status.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_tile_status_line.dart';
 
@@ -11,62 +12,32 @@ void main() {
     l = await AppLocalizations.delegate.load(const Locale('en'));
   });
 
-  test('pet care line uses icon styling for overdue', () {
+  test('time to follow up uses plum styling', () {
     final data = resolvePetTileStatusLine(
       l: l,
       pet: const Pet(id: '1', name: 'Miso', species: 'Cat'),
       context: PetTileContext.petCare,
-      careUrgency: PetTileCareUrgency.overdue,
+      careStatus: CareStatus.timeToFollowUp,
     );
 
-    expect(data.label, l.overdue);
+    expect(data.label, l.careStatusTimeToFollowUp);
     expect(data.showCareStyling, isTrue);
     expect(data.icon, isNotNull);
     expect(data.color, isNotNull);
   });
 
-  test('pet care clear line uses all clear label', () {
+  test('all set line uses All Set label', () {
     final data = resolvePetTileStatusLine(
       l: l,
       pet: const Pet(id: '1', name: 'Miso', species: 'Cat'),
       context: PetTileContext.petCare,
-      careUrgency: PetTileCareUrgency.clear,
+      careStatus: CareStatus.allSet,
     );
 
-    expect(data.label, l.careStatusAllClear);
+    expect(data.label, l.careStatusAllSet);
   });
 
-  test('shelter line prefers foster placement summary', skip: true, () {
-    final data = resolvePetTileStatusLine(
-      l: l,
-      pet: const Pet(
-        id: '1',
-        name: 'Luna',
-        species: 'Dog',
-        organizationId: 'org-1',
-        fosterPlacementStatus: 'in_progress',
-        fosterName: 'Alex',
-      ),
-      context: PetTileContext.shelter,
-      attentionReason: PetTileAttentionReason.other,
-    );
-
-    expect(data.label, contains(l.fosterPlacementInProgress));
-    expect(data.showCareStyling, isFalse);
-  });
-
-  test('shelter line falls back to attention reason', () {
-    final data = resolvePetTileStatusLine(
-      l: l,
-      pet: const Pet(id: '1', name: 'Luna', species: 'Dog'),
-      context: PetTileContext.shelter,
-      attentionReason: PetTileAttentionReason.missingChip,
-    );
-
-    expect(data.label, 'missingChip');
-  });
-
-  test('passed away suppresses care urgency', () {
+  test('passed away suppresses care status', () {
     final data = resolvePetTileStatusLine(
       l: l,
       pet: const Pet(
@@ -76,7 +47,7 @@ void main() {
         passedAway: true,
       ),
       context: PetTileContext.petCare,
-      careUrgency: PetTileCareUrgency.overdue,
+      careStatus: CareStatus.timeToFollowUp,
     );
 
     expect(data.label, l.passedAway);

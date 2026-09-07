@@ -5,6 +5,7 @@ import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/care_status.dart';
 import '../../domain/entities/pet.dart';
 import '../utils/ownership_accent.dart';
 import '../utils/pet_accent_color.dart';
@@ -61,7 +62,7 @@ class UnifiedPetTile extends StatelessWidget {
           l: l,
           pet: pet,
           context: PetTileContext.petCare,
-          careUrgency: PetTileCareUrgency.clear,
+          careStatus: CareStatus.allSet,
         );
     final label = semanticsLabel ?? '${pet.name}, ${resolvedStatus.label}';
 

@@ -717,7 +717,7 @@ describe('Health Entries API', () => {
       );
       const updateQuery = queryLog.find(q => q.sql.includes('UPDATE health_entries SET name'));
       expect(accessQuery).toBeDefined();
-      expect(updateQuery.params[15]).toBe('he-1');
+      expect(updateQuery.params[17]).toBe('he-1');
     });
 
     it('rejects deprecated types on update', async () => {
