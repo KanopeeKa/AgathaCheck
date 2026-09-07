@@ -203,11 +203,9 @@ export class ExperiencePage {
       this.page.locator('[flt-semantics-identifier="drawer_organisation"]'),
     ).toHaveCount(0);
 
-    const accountChrome = this.page
-      .locator('[flt-semantics-identifier="pet_care_bottom_navigation"]')
-      .or(this.page.locator('[flt-semantics-identifier="pet_care_nav_account"]'))
-      .or(guardianAccountTabLocator(this.page));
-    await expect(accountChrome.first()).toBeVisible({ timeout: 15_000 });
+    const accountChrome = guardianAccountTabLocator(this.page)
+      .or(this.page.locator('[flt-semantics-identifier="pet_care_nav_account"]'));
+    await expect(accountChrome).toBeVisible({ timeout: 15_000 });
 
     await openExperienceDrawer(this.page);
     await refreshFlutterAccessibility(this.page);
