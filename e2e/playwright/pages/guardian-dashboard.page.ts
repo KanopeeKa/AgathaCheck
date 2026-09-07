@@ -216,14 +216,18 @@ export class GuardianDashboardPage {
 
   private async clickLeadingNavItem(container: Locator, label: string): Promise<void> {
     const semanticsId = this.destinationSemanticsId(label);
-    const byIdentifier = container.locator(
-      `[flt-semantics-identifier="${semanticsId}"]`,
-    );
-    if ((await byIdentifier.count()) > 0) {
+    const byIdentifier = this.page.locator(`[flt-semantics-identifier="${semanticsId}"]`);
+    if (await byIdentifier.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
       await byIdentifier.first().click();
       return;
     }
-    await this.leadingNavItem(container, label).click();
+    const textPattern = this.destinationNamePattern(label);
+    const byText = container.getByText(textPattern).first();
+    if (await byText.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await byText.click();
+      return;
+    }
+    await this.leadingNavItem(container, label).click({ timeout: 30_000 });
   }
 
   /**
