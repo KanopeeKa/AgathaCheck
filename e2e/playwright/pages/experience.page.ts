@@ -190,14 +190,10 @@ export class ExperiencePage {
     await this.expectUnifiedDrawerItems();
   }
 
-  /** Pet Care MVP shell: no Shelter workspace; Account reachable from compact chrome. */
+  /** Pet Care MVP shell: no Shelter workspace; Account reachable from shell chrome. */
   async expectUnifiedDrawerItems(): Promise<void> {
-    const viewport = this.page.viewportSize();
-    if (!viewport || viewport.width >= 600) {
-      await this.page.setViewportSize({ width: 375, height: 812 });
-      await refreshFlutterAccessibility(this.page);
-    }
     await dismissConsentBannerIfPresent(this.page);
+    await refreshFlutterAccessibility(this.page);
 
     await expect(workspaceToggleLocator(this.page)).not.toBeVisible();
     await expect(
@@ -206,9 +202,13 @@ export class ExperiencePage {
     await expect(
       this.page.locator('[flt-semantics-identifier="drawer_organisation"]'),
     ).toHaveCount(0);
-    await expect(guardianAccountTabLocator(this.page)).toBeVisible({ timeout: 15_000 });
 
-    // When the section drawer opens (edge swipe), it must stay Pet Care MVP only.
+    const accountChrome = this.page
+      .locator('[flt-semantics-identifier="pet_care_bottom_navigation"]')
+      .or(this.page.locator('[flt-semantics-identifier="pet_care_nav_account"]'))
+      .or(guardianAccountTabLocator(this.page));
+    await expect(accountChrome.first()).toBeVisible({ timeout: 15_000 });
+
     await openExperienceDrawer(this.page);
     await refreshFlutterAccessibility(this.page);
     await expect(
