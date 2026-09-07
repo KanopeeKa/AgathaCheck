@@ -10,7 +10,6 @@ import '../screens/pet_care/add_event_type_picker_sheet.dart';
 import '../screens/pet_care/pet_care_my_pets_section.dart';
 import '../screens/pet_care/pet_care_my_vets_section.dart';
 import '../screens/pet_care/pet_care_upcoming_events_section.dart';
-import 'pet_care_fostering_section.dart';
 import 'pet_care_operations_desk_layout.dart';
 
 /// Guardian dashboard body: My Pets, Upcoming Pet Events, My Vets (phase 2.1).
@@ -99,7 +98,6 @@ class PetCareShellHomeContent extends ConsumerWidget {
                       constraints.maxWidth >=
                       PetCareOperationsDeskLayout.wideBreakpoint,
                 ),
-                fosteringSection: PetCareFosteringSection(pets: shellPets),
               ),
             ),
           ),

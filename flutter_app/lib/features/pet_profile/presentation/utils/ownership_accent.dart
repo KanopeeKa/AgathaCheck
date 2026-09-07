@@ -61,7 +61,7 @@ PetOwnershipAccent resolvePetOwnershipAccent(
         : PetOwnershipKind.guardianOwned,
     accentColor: accentColor,
     onAccentColor: onAccentColor,
-    fosterLabel: pet.isFoster ? l.fosterPlacementInProgress : null,
+    fosterLabel: null,
   );
 }
 
