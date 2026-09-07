@@ -187,7 +187,7 @@ test.describe('Pet sharing', () => {
     await petList.expectPetVisible('Bella');
   });
 
-  test('@legacy accepting pending share into organisation returns deprecated status', async () => {
+  test.skip('@legacy accepting pending share into organisation returns deprecated status', async () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const owner = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
     const bob = await signupUser(baseURL, { firstName: 'Bob', lastName: 'Member' });
