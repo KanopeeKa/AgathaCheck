@@ -91,6 +91,23 @@ Deliver Pet Care care organisation and quiet Agatha Suggestions in three autonom
 
 After Phase 3 merge: **halt for dataset** — do not bootstrap Phase D without product-owner test data (roadmap §10).
 
+## Runtime
+
+```yaml
+autonomy: active
+current_phase: 1
+last_completed_phase: null
+halt_reason: null
+next_action: "implement phase 1 — Care Foundation"
+artifact_ref:
+  branch: cursor/care-foundation-phase-a-dc3b
+  plan_path: .agents/plans/care-foundation-c7a1.md
+  snapshot_path: .agents/plans/care-foundation-c7a1.snapshot.json
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```
+
 ## next_action
 
 Implement Phase 1 on `cursor/care-foundation-phase-a-dc3b`.
