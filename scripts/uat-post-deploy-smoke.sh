@@ -131,11 +131,13 @@ EOF
       cat <<'EOF'
 Passenger returned a 500 crash page — the Node.js app is failing to start.
 Most common causes on o2switch CloudLinux:
-  1. node_modules is a real dir instead of the nodevenv symlink — SSH step should have fixed it.
+  1. Missing npm packages after server/package.json changed — run cPanel → Setup Node.js App → Run NPM Install, then Restart.
+     Deploy compares against the previous uat-* tag; FTP never uploads node_modules.
+  2. node_modules is a real dir instead of the nodevenv symlink — SSH step should have fixed it.
      Manual fix: cPanel → File Manager → /backend → delete node_modules → Node.js Apps → Run NPM Install.
-  2. JWT_SECRET or other required env vars missing — set them in cPanel → Node.js Apps → Env vars.
-  3. .env file absent or has wrong DB credentials — verify /backend/.env on the server.
-  4. SSH key not authorized — add the public key printed in "Verify UAT SSH" step to cPanel → SSH Access.
+  3. JWT_SECRET or other required env vars missing — set them in cPanel → Node.js Apps → Env vars.
+  4. .env file absent or has wrong DB credentials — verify /backend/.env on the server.
+  5. SSH key not authorized — add the public key printed in "Verify UAT SSH" step to cPanel → SSH Access.
 EOF
       ;;
     unknown)

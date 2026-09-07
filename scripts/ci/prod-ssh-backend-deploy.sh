@@ -16,6 +16,7 @@ APPDIR="${PROD_SITE_ROOT}/backend"
 PKG_CHANGED="${PKG_CHANGED:-false}"
 
 export UAT_APP_DIR="$APPDIR"
+export PROD_APP_DIR="$APPDIR"
 
 echo "PROD_SSH_DEPLOY_BEGIN"
 echo "=== PROD SSH backend deploy ==="
@@ -35,6 +36,9 @@ if [[ "$PKG_CHANGED" == "true" ]]; then
   echo "::warning title=Dependencies changed::server/package.json or package-lock.json changed in this deploy."
   echo "::warning::Manual action required: cPanel → Setup Node.js App → Run NPM Install → Restart"
 fi
+
+echo "=== Verify runtime dependencies in node_modules ==="
+bash "$(cd "$(dirname "$0")" && pwd)/verify-server-deps-installed.sh"
 
 echo "=== node_modules check (pre-migrate) ==="
 if [[ -L "${APPDIR}/node_modules" ]]; then
