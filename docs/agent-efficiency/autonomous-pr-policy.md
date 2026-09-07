@@ -42,9 +42,10 @@ When `node scripts/execute_plan_runtime.js gate <plan_id>` exits `0`, these gene
 | Generic rule | During active execute-plan |
 |--------------|---------------------------|
 | "Stop and ask human" (low confidence, minor policy conflict) | Proceed per snapshot; debt issue + continue; halt only on §Escalation or unclear goal |
-| User-chat follow-up questions | Bundle at end of turn; never break phase flow |
+| User-chat follow-up questions | Debt issue or defer until `complete-plan` / §Halt — never break phase flow |
 | `replit-agent-operating-policy` "stop and ask" | Does not apply except §Escalation |
-| Cloud turn boundaries | Commit/push/PR update each turn, then **continue the phase loop** without asking |
+| Cloud turn boundaries | **Run-until-blocked** — no routine chat status; continue phase loop until merge-done, `complete-plan`, or §Halt (`session_limit` only routine checkpoint) |
+| `/execute-plan` without plan_id | Infer from conversation, branch, control issue, or single `busy` issue — skill §Resolve plan_id |
 
 Memory: `.agents/memory/execute-plan-autonomy.md` · Skill: `.cursor/skills/execute-plan/SKILL.md` §Autonomy contract
 

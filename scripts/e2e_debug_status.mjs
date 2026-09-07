@@ -572,7 +572,7 @@ function releaseWork(issueNumber) {
     '## /e2e-debug session end',
     `- released_at: ${new Date().toISOString()}`,
     '',
-    'Remedial PR ready for `/babysit-uat` handoff (or session halted).',
+    'Remedial PR ready — invoke `/babysit-uat` immediately in this session (merge + pre-UAT watch). Do not stop here.',
   ].join('\n');
 
   postIssueComment(issueNumber, body);

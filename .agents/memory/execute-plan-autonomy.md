@@ -1,37 +1,61 @@
 ---
 name: Execute-plan autonomy contract
-description: When /execute-plan gate passes, proceed without permission prompts. Control issue for blockers; integration branch + per-phase workers for multi-phase plans.
+description: When /execute-plan gate passes, proceed without permission prompts. Run-until-blocked; control issue for blockers only.
 ---
 
 ## Green light
 
 When `node scripts/execute_plan_runtime.js gate <plan_id>` exits **0** (`autonomy: active`, `autonomous-approved`, not revoked, `approved_until` in future):
 
-- **Proceed** — implement, PR, babysit+, merge (`auto`), advance phases, resume after routine halts.
-- **Do not ask** the human "shall I continue?" in chat.
+- **Run-until-blocked** — implement, PR, babysit+, merge, advance phases without stopping for milestones or turn boundaries
+- **Do not ask** the human "shall I continue?" in chat
+- **`/execute-plan` without id** — infer plan from conversation, branch, control issue, or single `busy` issue (skill §Resolve plan_id)
 
-## Cloud turn boundaries
+## Default mode: run-until-blocked
 
-Each agent **turn** ends when you respond — that is not a phase gate. Before ending a turn: commit, push, update PR/plan artifacts, comment on the control issue, state `next_action`. Continue the phase loop in the same session when possible; never use turn end as an excuse to ask permission. Soft closers ("let me know", "whenever you want", "I can start phase N on request") count as permission-seeking.
+Stop only when:
+
+1. Phase **merge-done** (+ pre-UAT green on final main PR) → next phase or `complete-plan`
+2. **`complete-plan`** finished
+3. **§Halt / §Escalation** (including `session_limit` ~24h — the only routine checkpoint)
+4. Pod hard stop → `halt --reason session_limit`; human `resume-plan` on control issue
+
+**Not stop points:** PR opened, CI green, control-issue milestone, worker returned, e2e-debug opened remedial PR. Continue in-loop; e2e-debug **must** chain `/babysit-uat` same session.
+
+## Cloud turns
+
+Prefer long tool-only stretches before any user-visible reply. Control-issue milestones are **telemetry**, not session boundaries. If the platform ends the turn mid-phase, next session: `/execute-plan` (no id) or `resume-plan` on the issue — never permission-seeking chat.
 
 ## User chat vs control issue
 
 | Channel | Use for |
 |---------|---------|
-| **Control issue** | Canonical record: milestones, halts, `**Needs you:**` detail, resume steps |
-| **User chat** | Routine brief status + what's next; **blocker alerts** (short ping + issue link — human sees chat first) |
+| **Control issue** | Milestones (telemetry), halts, `**Needs you:**` detail, resume steps |
+| **User chat** | **Blocker alerts only** — short ping + issue link when §Halt |
 
-**Handoff:** Shape the plan in chat → one-time grant (`approve-autonomous` or standing grant in snapshot) → `/execute-plan` runs without permission prompts until complete or a real blocker.
+Do not send routine progress summaries that end the turn mid-phase.
 
-**Blocker dual-notify:** Post full detail on the control issue (`halt` / `**Needs you:**`), then a one-paragraph chat alert with issue # and the single action that unblocks you. Do not ask permission in chat for routine phase/PR/merge work.
+## Resolve plan_id (no explicit id)
+
+1. This conversation / linked control issue
+2. Checked-out branch → snapshot on that branch
+3. `plan:<id>` label on control issue
+4. Roadmap → `roadmap-next-child`
+5. Single open `busy` + `autonomous-approved` execute-plan issue
+
+Multiple matches → `**Needs you:**` on control issue; do not guess.
+
+## Preflight artifact branch
+
+Checkout phase or integration branch **before** `gate` — `.agents/plans/<plan_id>.snapshot.json` may not exist on `main`.
 
 ## Follow-ups (during execute-plan)
 
 | Kind | Action |
 |------|--------|
 | Small, in touched files, stability / tech-debt / correctness | Fix inline — do not ask |
-| Larger or out-of-phase scope | Debt issue (`tech-debt`, `plan:<id>`) — continue current phase |
-| Interesting but non-blocking | Bundle as questions at end of turn, or one follow-up issue |
+| Larger or out-of-phase scope | Debt issue — continue current phase |
+| Interesting but non-blocking | Debt issue or bundle **after** plan complete — do not pause |
 
 ## Conflicts between rules
 
@@ -40,39 +64,5 @@ Each agent **turn** ends when you respond — that is not a phase gate. Before e
 | Goal unclear | Halt + `**Needs you:**` on control issue + short chat alert |
 | Minor wording conflict, intention clear | Follow execute-plan snapshot; proceed |
 | `replit-agent-operating-policy` "stop and ask" | **Does not apply** during active execute-plan except §Escalation |
-
-## Low confidence (review triage)
-
-Rare when phase `allowed_paths` and exit criteria are tight. Default: **debt issue + continue** — halt only when must-fix vs merge-safety is genuinely ambiguous.
-
-## Session limit (24h)
-
-After **~24 hours** of continuous work on the same plan (or approaching pod/session timeout): `halt --reason session_limit`, record `next_action`, post on control issue **and** short chat alert (`resume-plan <plan_id>` on the issue). No re-approve if still within `approved_until` (48h default).
-
-## Phase workers vs UAT polling
-
-| Spawn | Allowed? |
-|-------|----------|
-| Task sub-agent for **phase implementation** (one phase scope) | **Yes — recommended** at phase boundary |
-| `/spawn-sprint-agents` when `spawn_allowed: true` | **Yes** |
-| **UAT subagent** after merge (`agent-uat-babysit.sh`) | **No** — CI Pre-UAT owns promotion |
-| Main session polling `deploy-uat` / prod-ready | **Never** |
-
-Orchestrator owns: gate, runtime sync, babysit+, merge, next phase.
-
-## Roadmap chaining (multi-plan grants)
-
-When the standing grant names scope beyond the current `plan_id` ("entire plan/roadmap," "all phases," or explicit `/spawn-sprint-agents` for a wave), plan completion is **not** session completion:
-
-- Auto-bootstrap the next slice's plan + snapshot and keep looping — do not close the turn with "let me know" / "whenever you want" / "say which wave and I'll bootstrap it." Those are soft-stops, not different from asking permission.
-- Re-check for independent waves before slicing sequentially; use `/spawn-sprint-agents` when the human named it or you identify disjoint `allowed_paths`.
-- Keep control-issue auditability per plan even when self-authorizing from a standing chat grant.
-- **Roadmap parents** (`plan_kind: roadmap`): use `roadmap-status` / `roadmap-set-child` CLI on the parent after each child `complete-plan` — see execute-plan skill §Roadmap parent orchestrator.
-
-Full detail: `.cursor/skills/execute-plan/SKILL.md` §Roadmap chaining.
-
-## Integration branch (2+ phases)
-
-For multi-phase plans (especially UI / same product area): set snapshot `base_branch` to `cursor/<plan_id>-integration-<suffix>`. Phase PRs target integration; **one final PR** integration → `main` after all phases merged. Reduces repeated merges to `main` during the sprint.
 
 Full skill: `.cursor/skills/execute-plan/SKILL.md`

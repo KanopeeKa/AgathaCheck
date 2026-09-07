@@ -29,6 +29,18 @@ node scripts/validate_execute_plan_snapshot.js --drift-test
 
 ## CLI — `scripts/execute_plan_runtime.js`
 
+### Resolve plan_id (orchestrator)
+
+When `/execute-plan` is invoked without `plan_id`, the orchestrator infers it before gate (skill §Resolve plan_id):
+
+1. Conversation / linked control issue body or title
+2. Checked-out `cursor/*` branch — fetch branch and load `.agents/plans/<plan_id>.snapshot.json`
+3. `plan:<id>` label on control issue
+4. Roadmap parent → `roadmap-next-child`
+5. Single open issue with `execute-plan` + `autonomous-approved` + `busy`
+
+Checkout the artifact branch **before** `gate` — snapshots on `artifact_branch_policy: phase-branch` plans may not exist on `main`.
+
 ### Autonomy gate (preflight)
 
 Confirms snapshot `autonomy: active`, `approved_until` in the future, and control issue labels (`autonomous-approved`, not `autonomous-revoked`).
