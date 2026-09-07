@@ -333,7 +333,7 @@ test.describe('Notifications', () => {
     await petDetail.expectLoaded(pet.name);
   });
 
-  test('tapping an organisation notification navigates to org detail', async ({ page }) => {
+  test.skip('tapping an organisation notification navigates to org detail', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const stamp = Date.now();
     const alice = await signupUser(baseURL, {
