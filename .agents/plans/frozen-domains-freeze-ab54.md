@@ -352,13 +352,13 @@ last_completed_phase: 5
 halt_reason: null
 next_action: "plan complete"
 artifact_ref:
-  branch: main
+  branch: cursor/plan-complete-freeze-ab54
   plan_path: .agents/plans/frozen-domains-freeze-ab54.md
-  plan_commit: 612a34c0a9662d32e67aba2b850454402de557dc
+  plan_commit: 0db14bbc35e9c8b876b8886c521598dc42643c0e
   snapshot_path: .agents/plans/frozen-domains-freeze-ab54.snapshot.json
-  snapshot_commit: 612a34c0a9662d32e67aba2b850454402de557dc
+  snapshot_commit: 0db14bbc35e9c8b876b8886c521598dc42643c0e
 open_prs: []
-merge_commits: {}
+merge_commits: {"1":"0d770476c50acdff353fba1352315ba7526e3db4","2":"11541a2bc6091b1e375a76f27ea2fa28f881ad66","3":"da33cb8b5fd1aae67a765850003e3d692245f0be","4":"7de3f48831237a6af21a608978e28ac2e43c9a81","5":"7767b054aa727a774ad2361262b43a25470ff86e"}
 debt_issue_refs: []
 ```
 

@@ -44,7 +44,8 @@
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1051",
-      "pr_head_sha": "0d770476"
+      "pr_head_sha": "0d770476",
+      "merge_commit": "0d770476c50acdff353fba1352315ba7526e3db4"
     },
     {
       "id": "2",
@@ -92,7 +93,8 @@
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1055",
-      "pr_head_sha": "11541a2b"
+      "pr_head_sha": "11541a2b",
+      "merge_commit": "11541a2bc6091b1e375a76f27ea2fa28f881ad66"
     },
     {
       "id": "3",
@@ -130,6 +132,7 @@
       "status_detail": null,
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1056",
       "pr_head_sha": "da33cb8b",
+      "merge_commit": "da33cb8b5fd1aae67a765850003e3d692245f0be",
       "debt_issue_refs": []
     },
     {
@@ -171,7 +174,8 @@
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1057",
-      "pr_head_sha": "7e568533"
+      "pr_head_sha": "7e568533",
+      "merge_commit": "7de3f48831237a6af21a608978e28ac2e43c9a81"
     },
     {
       "id": "5",
@@ -203,7 +207,8 @@
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1059"
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1059",
+      "merge_commit": "7767b054aa727a774ad2361262b43a25470ff86e"
     }
   ]
 }
