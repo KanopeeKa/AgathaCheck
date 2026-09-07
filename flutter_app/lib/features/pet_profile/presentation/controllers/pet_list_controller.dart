@@ -28,10 +28,9 @@ class PetListController {
   bool hasFosteredPets(List<Pet> allPets) => allPets.any((p) => p.isFoster);
 
   bool _isPersonalPet(Pet p) =>
-      !p.isFoster &&
-      (p.isShared ||
-          p.organizationId == null ||
-          (p.organizationName == null || p.organizationName!.isEmpty));
+      p.isShared ||
+      p.organizationId == null ||
+      (p.organizationName == null || p.organizationName!.isEmpty);
 
   List<Pet> filterPets(List<Pet> allPets) {
     if (orgFilter == null) return allPets;
@@ -39,7 +38,7 @@ class PetListController {
       return allPets.where(_isPersonalPet).toList();
     }
     if (orgFilter == '_fostered') {
-      return allPets.where((p) => p.isFoster).toList();
+      return allPets.where(_isPersonalPet).toList();
     }
     return allPets
         .where(
@@ -68,9 +67,9 @@ class PetListController {
     return filteredPets.where((p) => p.passedAway && p.isFoster).toList();
   }
 
-  /// Pets visible in the guardian shell (personal + fostered; no org inventory).
+  /// Pets visible in the Pet Care shell (personal + shared; no org inventory).
   List<Pet> guardianShellPets(List<Pet> allPets) {
-    return allPets.where((p) => _isPersonalPet(p) || p.isFoster).toList();
+    return allPets.where(_isPersonalPet).toList();
   }
 
   /// Org inventory pets for the organisation shell home.
@@ -90,7 +89,7 @@ class PetListController {
 
   List<Pet> getOwnedPets(List<Pet> shellPets) {
     return shellPets
-        .where((p) => !p.passedAway && !p.isShared && !p.isFoster)
+        .where((p) => !p.passedAway && !p.isShared)
         .toList();
   }
 
