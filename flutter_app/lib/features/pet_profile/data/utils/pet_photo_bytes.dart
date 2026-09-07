@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:http_parser/http_parser.dart';
+
 const int maxPetPhotoBytes = 2 * 1024 * 1024;
 
 const Set<String> allowedPetPhotoExtensions = {
@@ -46,4 +48,15 @@ String defaultPetPhotoFilename(String? originalName) {
 bool isAllowedPetPhotoFilename(String? filename) {
   final lower = (filename ?? '').toLowerCase();
   return allowedPetPhotoExtensions.any(lower.endsWith);
+}
+
+/// Maps pet photo filename extensions to multipart MIME types for web uploads.
+MediaType contentTypeForPetPhotoFilename(String filename) {
+  final lower = filename.toLowerCase();
+  if (lower.endsWith('.png')) return MediaType('image', 'png');
+  if (lower.endsWith('.webp')) return MediaType('image', 'webp');
+  if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) {
+    return MediaType('image', 'jpeg');
+  }
+  return MediaType('image', 'jpeg');
 }

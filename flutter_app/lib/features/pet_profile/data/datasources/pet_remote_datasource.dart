@@ -143,7 +143,12 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $token'
       ..files.add(
-        http.MultipartFile.fromBytes('photo', bytes, filename: filename),
+        http.MultipartFile.fromBytes(
+          'photo',
+          bytes,
+          filename: filename,
+          contentType: contentTypeForPetPhotoFilename(filename),
+        ),
       );
 
     final streamedResponse = await _client.send(request);
