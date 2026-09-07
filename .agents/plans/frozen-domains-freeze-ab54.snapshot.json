@@ -4,7 +4,7 @@
   "approved_at": "2026-09-07T23:15:00Z",
   "approved_by": "user chat 2026-09-07 (build full plan; /execute-plan fully)",
   "approved_until": "2026-09-09T23:15:00Z",
-  "content_hash": "sha256:acca33203c58f49955df6c15418aa593e5332639ff5d525801d0899190b493ea",
+  "content_hash": "sha256:f918e64c246ff52bbcc03f2cc5acb5c8feef412ab87068df0b1a1690430437a7",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/frozen-domains-freeze-ab54-integration-ab54",
@@ -169,7 +169,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1057",
+      "pr_head_sha": "a901cd0d"
     },
     {
       "id": "5",

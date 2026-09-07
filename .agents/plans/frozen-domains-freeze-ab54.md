@@ -354,10 +354,10 @@ next_action: "continue phase 4 on branch cursor/frozen-domains-ci-ab54"
 artifact_ref:
   branch: cursor/frozen-domains-ci-ab54
   plan_path: .agents/plans/frozen-domains-freeze-ab54.md
-  plan_commit: da33cb8b5fd1aae67a765850003e3d692245f0be
+  plan_commit: a901cd0d90a093224c12a13a0c13c1897bc9df2d
   snapshot_path: .agents/plans/frozen-domains-freeze-ab54.snapshot.json
-  snapshot_commit: da33cb8b5fd1aae67a765850003e3d692245f0be
-open_prs: []
+  snapshot_commit: a901cd0d90a093224c12a13a0c13c1897bc9df2d
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1057"]
 merge_commits: {}
 debt_issue_refs: []
 ```
