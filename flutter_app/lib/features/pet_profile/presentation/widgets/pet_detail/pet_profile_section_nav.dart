@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 
-/// Chevron navigation rows for Timeline, Weight tracking, and Health issues.
+/// Chevron navigation rows for Timeline, Care Rhythms, Weight tracking, and Health issues.
 class PetProfileSectionNav extends StatelessWidget {
   const PetProfileSectionNav({super.key, required this.petId});
 
@@ -25,6 +25,14 @@ class PetProfileSectionNav extends StatelessWidget {
               title: Text(l.petTimelineTitle),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push('/pet/$petId/timeline'),
+            ),
+            const Divider(height: 1),
+            ListTile(
+              key: const Key('pet_profile_nav_care_rhythms'),
+              contentPadding: EdgeInsets.zero,
+              title: Text(l.careRhythmsTitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/pet/$petId/care-rhythms'),
             ),
             const Divider(height: 1),
             ListTile(
