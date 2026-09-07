@@ -53,7 +53,7 @@ void main() {
     expect(find.byType(Wrap), findsOneWidget);
   });
 
-  testWidgets('baseline: shows foster subgroup when foster pets exist', (
+  testWidgets('baseline: foster pets appear in My Pets without subgroup', (
     tester,
   ) async {
     final pets = [
@@ -70,9 +70,10 @@ void main() {
     await tester.pumpWidget(buildSection(pets: pets));
     await tester.pumpAndSettle();
 
-    expect(find.text('My Fostered Pets'), findsOneWidget);
+    expect(find.text('My Fostered Pets'), findsNothing);
+    expect(find.text('Buddy'), findsOneWidget);
     expect(find.text('Luna'), findsOneWidget);
-    expect(find.byType(Wrap), findsNWidgets(2));
+    expect(find.byType(Wrap), findsOneWidget);
   });
 
   testWidgets('baseline: shows empty state when no pets', (tester) async {

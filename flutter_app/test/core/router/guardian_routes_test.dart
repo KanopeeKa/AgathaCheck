@@ -280,10 +280,6 @@ void main() {
     test('petCareAddVet resolves to /pc/vets/add', () {
       expect(router.namedLocation('petCareAddVet'), '/pc/vets/add');
     });
-
-    test('petCareFostering resolves to /pc/fostering', () {
-      expect(router.namedLocation('petCareFostering'), '/pc/fostering');
-    });
   });
 
   group('legacy guardian named route registration', () {
@@ -319,9 +315,6 @@ void main() {
       expect(router.namedLocation('guardianVets'), '/g/vets');
     });
 
-    test('guardianFostering resolves to legacy /g/fostering redirect path', () {
-      expect(router.namedLocation('guardianFostering'), '/g/fostering');
-    });
   });
 
   // -------------------------------------------------------------------------
@@ -399,7 +392,7 @@ void main() {
       expect(find.textContaining('not-found:'), findsNothing);
       expect(
         router.routerDelegate.currentConfiguration.uri.path,
-        '/pc/fostering',
+        '/pc/home',
       );
     });
   });
