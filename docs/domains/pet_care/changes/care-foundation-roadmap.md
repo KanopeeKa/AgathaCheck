@@ -356,10 +356,10 @@ Adjust copy and colour intensity based on results. Architecture (three states, s
 
 | State | Accent | Notes |
 |-------|--------|-------|
-| All Set | Success `#2B7A2E` | Sparse green |
-| Worth a Check | Info `#5C7EA6` | No amber warning |
-| Time to Follow Up | Pet Care plum `#755B68` | No orange/red at pet-summary level |
-| Agatha suggestion | Warm accent `#D6A08F` / surface `#F4E4DD` | Distinct from plum |
+| All Set | `success` | Sparse green |
+| Worth a Check | `info` | No amber warning |
+| Time to Follow Up | Pet Care `primary` | No orange/red at pet-summary level |
+| Agatha suggestion | `accent` / `lightAccent` | Distinct from plum |
 
 Reserve warning/danger tokens for genuine error semantics and **within Actions** operational overdue styling where appropriate.
 
@@ -695,21 +695,23 @@ After Phase A completes → Phase B (Care Rhythms). After Phase B → Phase C (S
 
 ## Appendix A — Canonical colour tokens
 
-| Role | Value |
+Use token names from [`docs/design/tokens.md`](../../../design/tokens.md) (hex values live there only). Pet Care–relevant roles:
+
+| Role | Token |
 |------|-------|
-| Background | `#EAE8E8` |
-| Surface | `#FFFDFC` |
-| Grouped surface | `#F2ECE6` |
-| Border | `#E4DDD6` |
-| Pet Care primary plum | `#755B68` |
-| Pet Care icon | `#A78294` |
-| Pet Care soft icon surface | `#E8E1E3` |
-| Warm Agatha accent | `#D6A08F` |
-| Warm Agatha surface | `#F4E4DD` |
-| Information | `#5C7EA6` |
-| Success | `#2B7A2E` |
-| Warning | `#D6A63A` |
-| Danger | `#C65B58` |
+| Background | `background` |
+| Surface | `surface` |
+| Grouped surface | `surfaceAlt` |
+| Border | `border` |
+| Pet Care primary plum | `primary` (Pet Care mode) |
+| Pet Care icon support | `plum-400` (see [`system.md`](../../../design/system.md)) |
+| Pet Care soft icon surface | `light` |
+| Warm Agatha accent | `accent` |
+| Warm Agatha surface | `lightAccent` |
+| Information | `info` |
+| Success | `success` |
+| Warning | `warning` |
+| Danger | `danger` |
 
 Warning/danger are not ordinary Care Status colours at pet-summary level.
 
