@@ -99,7 +99,7 @@ jobs:
 
       - name: Run backend tests with coverage
         working-directory: server
-        run: npx jest --env=node --forceExit --coverage
+        run: npm test -- --forceExit --coverage
 
       - name: Upload Jest coverage
         uses: actions/upload-artifact@v6
