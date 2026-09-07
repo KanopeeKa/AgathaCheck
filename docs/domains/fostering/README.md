@@ -2,12 +2,14 @@
 title: Fostering domain
 owner: Documentation Team
 audience: both
-status: active
-last_updated: 2026-08-22
-tags: [domain,fostering]
+status: frozen
+last_updated: 2026-09-07
+tags: [domain,fostering,frozen]
 ---
 
 # Fostering
+
+> **FROZEN (2026-09):** Platform and Pet Care fostering sessions not in MVP. See [/docs/engineering/frozen-domains/](/docs/engineering/frozen-domains/).
 
 Foster onboarding, placements, self-management, adoption, pet return — custody transfer workflows.
 
