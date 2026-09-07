@@ -122,11 +122,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:60b8fc67d10f3daf37a868bf1c299ac8d5a2c2b10159812a96a839703d5070da"
+  "content_hash": "sha256:84030b1dcd40f344318202cc5b7562544a939d4a28b7b78b77a7aa1e94ffbda4"
 }
