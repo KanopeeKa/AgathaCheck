@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
-import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 
 ExperienceEligibility _dual() => ExperienceEligibilityRules.compute(
@@ -75,13 +74,6 @@ void main() {
         resolvePostLoginPath(
           eligibility: _orgOnly(),
           pets: const [],
-          orgs: const [
-            Organization(
-              id: 'o1',
-              name: 'Rescue',
-              type: OrganizationType.charity,
-            ),
-          ],
           petCareOnboardingCompleted: true,
           orgOnboardingCompleted: true,
         ),
@@ -103,13 +95,6 @@ void main() {
               organizationName: 'Rescue',
             ),
           ],
-          orgs: const [
-            Organization(
-              id: 'o1',
-              name: 'Rescue',
-              type: OrganizationType.charity,
-            ),
-          ],
           petCareOnboardingCompleted: true,
         ),
         '/pc/home',
@@ -121,13 +106,6 @@ void main() {
         resolvePostLoginPath(
           eligibility: _dual(),
           pets: const [Pet(id: '1', name: 'Mine', species: 'Cat')],
-          orgs: const [
-            Organization(
-              id: 'o1',
-              name: 'Rescue',
-              type: OrganizationType.charity,
-            ),
-          ],
           petCareOnboardingCompleted: true,
         ),
         '/pc/home',

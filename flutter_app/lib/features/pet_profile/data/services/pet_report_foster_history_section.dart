@@ -2,11 +2,11 @@ import '../../../../core/theme/pdf_report_tokens.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../organization/domain/entities/foster_placement.dart';
+import '../../domain/entities/pet_report_supplement.dart';
 
 class PetFosterHistorySectionBuilder {
   static List<pw.Widget> build(
-    List<FosterPlacement> placements,
+    List<PetReportFosterPlacement> placements,
     DateFormat dateFormat,
     AppLocalizations l,
   ) {
@@ -67,7 +67,10 @@ class PetFosterHistorySectionBuilder {
     ];
   }
 
-  static String _statusLabel(AppLocalizations l, FosterPlacement placement) {
+  static String _statusLabel(
+    AppLocalizations l,
+    PetReportFosterPlacement placement,
+  ) {
     if (placement.isPending) return l.fosterPlacementPending;
     if (placement.isInProgress) return l.fosterPlacementInProgress;
     if (placement.isPendingConditions) return l.pendingAdoptionConditions;

@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../organization/presentation/utils/foster_placement_display.dart';
-import '../../../organization/presentation/utils/org_pets_care_utils.dart';
-import '../../../organization/presentation/widgets/org_pets/org_pets_filter_row.dart';
 import '../../domain/entities/pet.dart';
 
 /// Which status rules apply when resolving line 2 on a [UnifiedPetTile].
@@ -12,6 +9,9 @@ enum PetTileContext { petCare, shelter }
 
 /// Care urgency for Pet Care surfaces (maps from dashboard care state at call site).
 enum PetTileCareUrgency { overdue, dueToday, upcoming, clear }
+
+/// Shelter attention reasons retained for API compatibility in frozen layouts.
+enum PetTileAttentionReason { overdueVaccination, missingChip, other }
 
 /// Resolved second-line presentation for a unified pet tile.
 class PetTileStatusLineData {
@@ -35,7 +35,7 @@ PetTileStatusLineData resolvePetTileStatusLine({
   required Pet pet,
   required PetTileContext context,
   PetTileCareUrgency? careUrgency,
-  OrgPetAttentionReason? attentionReason,
+  PetTileAttentionReason? attentionReason,
 }) {
   if (pet.passedAway) {
     return PetTileStatusLineData(label: l.passedAway);
@@ -87,15 +87,14 @@ PetTileStatusLineData _resolvePetCareLine(
 PetTileStatusLineData _resolveShelterLine(
   AppLocalizations l,
   Pet pet, {
-  OrgPetAttentionReason? attentionReason,
+  PetTileAttentionReason? attentionReason,
 }) {
-  final fosterLine = petFosterPlacementCardLine(l, pet);
-  if (fosterLine != null && fosterLine.isNotEmpty) {
-    return PetTileStatusLineData(label: fosterLine);
+  if (pet.isFoster) {
+    return PetTileStatusLineData(label: l.fosterPlacementInProgress);
   }
   if (attentionReason != null) {
     return PetTileStatusLineData(
-      label: localizedAttentionReason(l, attentionReason),
+      label: attentionReason.name,
       color: AppColorTokens.danger,
     );
   }

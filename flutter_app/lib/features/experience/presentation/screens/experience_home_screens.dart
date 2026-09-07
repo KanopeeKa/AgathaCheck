@@ -7,9 +7,7 @@ import '../../../notifications/presentation/providers/notification_providers.dar
 import '../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/app_experience.dart';
-import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../domain/services/pet_care_onboarding_rules.dart';
-import '../../domain/services/org_onboarding_rules.dart';
 import '../providers/experience_providers.dart';
 import '../widgets/experience_shell_scaffold.dart';
 import '../widgets/pet_care_shell_home_content.dart';

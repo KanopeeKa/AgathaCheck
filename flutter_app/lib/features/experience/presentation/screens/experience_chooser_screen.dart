@@ -6,9 +6,7 @@ import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../domain/services/pet_care_onboarding_rules.dart';
-import '../../domain/services/org_onboarding_rules.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
-import '../../../organization/presentation/providers/organization_providers.dart';
 import '../providers/experience_providers.dart';
 
 /// Action-oriented first-time experience after sign-up or when account is empty.
@@ -75,16 +73,7 @@ class ExperienceChooserScreen extends ConsumerWidget {
   }
 
   void _goShelterOnboarding(BuildContext context, WidgetRef ref) {
-    final pets = ref.read(petListProvider).valueOrNull ?? [];
-    final orgs = ref.read(organizationListProvider).valueOrNull ?? [];
-    final completed = ref.read(orgOnboardingCompletedProvider);
-    final path = OrgOnboardingRules.resolveOrgDestination(
-      targetPath: AppExperience.organization.homePath(),
-      pets: pets,
-      orgs: orgs,
-      onboardingCompleted: completed,
-    );
-    context.go(path);
+    context.go('/pc/home');
   }
 
   @override
