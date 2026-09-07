@@ -21,8 +21,8 @@ class PetCareNavigationSidebar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final destinations = PetCarePrimaryDestinations.destinations();
-    final primaryDestinations = destinations.take(4).toList();
-    final accountDestination = destinations[4];
+    final accountDestination = destinations.last;
+    final primaryDestinations = destinations.sublist(0, destinations.length - 1);
     final selectedIndex = PetCarePrimaryDestinations.indexFor(currentLocation);
 
     return Semantics(
