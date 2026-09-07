@@ -60,6 +60,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [UAT live E2E & deploy triage](uat-live-e2e-triage.md) — migrations/ownership, auth bypass, **`E2E=1` required on UAT Node**, API seed-before-login, 500/401/429 symptom map; full runbook `docs/e2e/uat-live-operations-runbook.md`.
 - [UAT deploy tiers (pre-E2E pipeline)](../../docs/e2e/uat-deploy-tiers.md) — pre-uat-e2e → promote → light deploy; nightly live WAF E2E advisory
 - [UAT WAF + queue lessons (Jul 2026)](../../docs/e2e/uat-waf-queue-lessons.md) — WAF helpers for `uat-live-e2e.yml` only; **CI IP whitelist not available**
+- [Frozen domains (Shelter/Fostering)](../../docs/engineering/frozen-domains/README.md) — MVP is Pet Care only; frozen code stays in Git; `check_frozen_domain_boundaries.sh` blocks active imports; tag `frozen-domains-baseline-2026-09` after freeze
 
 ## Quick references
 

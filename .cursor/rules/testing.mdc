@@ -19,7 +19,7 @@ Run `./scripts/pre-push-changed.sh` during iteration or `./scripts/pre-push.sh` 
 | Flutter domain/data | `flutter test` | Models, repos, datasources |
 | Flutter UI | Widget tests | Extracted widgets + critical screens |
 | Integration | `flutter test` integration dir | **Blocking in CI** — no `continue-on-error` |
-| Journeys | Playwright (`e2e/`) | Full suite: **pre-uat-e2e.yml** post-merge to `main` + weekly **e2e.yml** cron; PR: **@smoke-ci** canary only; annotate `@bdd` + `@smoke` for critical paths |
+| Journeys | Playwright (`e2e/`) | Full suite: **pre-uat-e2e.yml** (9 active shards) post-merge to `main`; PR: **@smoke-ci** canary only (Pet Care — no org/foster smoke). Frozen specs listed in `e2e/scripts/frozen-e2e-specs.mjs`. |
 
 ## BDD (hybrid — no Cucumber runner)
 
@@ -37,5 +37,6 @@ Run `./scripts/pre-push-changed.sh` during iteration or `./scripts/pre-push.sh` 
 
 - Add tests before or during extraction, not after.
 - New route → Jest; new widget → widget test in mirrored path.
-- BDD: keep `@bdd` header titles **exact** match to Gherkin `Scenario:` lines.
-- Pre-push: `node scripts/check_file_size.js` and `node e2e/scripts/check_bdd_coverage.js`.
+- BDD: keep `@bdd` header titles **exact** match to Gherkin `Scenario:` lines; frozen scenarios use `@frozen` or live in excluded feature patterns (`manifest.json`).
+- Pre-push: `node scripts/check_file_size.js`, `node e2e/scripts/check_bdd_coverage.js`, `bash scripts/check_frozen_domain_boundaries.sh`.
+- Frozen domains: no `flutter-test-org` shard; Jest active config excludes `server/test/organizations`; manual `scripts/test-frozen-domains.sh` only.

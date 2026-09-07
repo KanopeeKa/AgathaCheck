@@ -45,7 +45,7 @@ Read `docs/architecture/index.md` before broad search. Do not classify from file
 
 ### 2. Classify domains & surfaces
 
-**Domains:** Pet Care, Shelter, Auth, shared org infrastructure. Pet Care sub-areas: profile, health, weight, vets, sharing, fostering, notifications, timeline.
+**Domains:** Pet Care (active MVP), **Shelter/Fostering (frozen** — `docs/engineering/frozen-domains/`). Pet Care sub-areas: profile, health, weight, vets, sharing, notifications, timeline. Do not import frozen `organization` / `fostering_session` roots from active code.
 
 **Surfaces (cumulative):** Flutter UI/state/networking, backend routes, domain logic, AuthN, AuthZ, public endpoints, persisted data, health/sensitive data, DB/schema/migration, file storage, sharing tokens, recurrence/dates, dependencies, CI, observability, docs, E2E.
 
@@ -63,7 +63,7 @@ Local UI, internal refactor without contract change, straightforward domain logi
 
 #### R2 — cross-boundary or sensitive (behaviour changed)
 
-**Floors** when behaviour actually changes: external API, AuthZ, validation of persisted input, health/sharing/uploads, DB schema, mobile networking, notifications, shared Pet Care/Shelter infrastructure.
+**Floors** when behaviour actually changes: external API, AuthZ, validation of persisted input, health/sharing/uploads, DB schema, mobile networking, notifications, shared Pet Care infrastructure (frozen Shelter/Fostering excluded from active CI).
 
 #### R3 — critical infrastructure
 

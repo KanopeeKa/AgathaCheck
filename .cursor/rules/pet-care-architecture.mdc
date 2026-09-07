@@ -9,10 +9,9 @@ globs: flutter_app/lib/features/experience/**,flutter_app/lib/features/health_tr
 
 ## Boundaries
 
-- **Pet Care** (`/pc/*`, `AppExperience.petCare`) and **Shelter** (`/o/*`) are distinct product domains.
-- Shared infrastructure (auth, API errors, storage, notifications) may affect both.
-- Do **not** accidentally redesign Shelter while hardening Pet Care.
-- Shared-code changes require **Shelter regression** consideration.
+- **Pet Care** (`/pc/*`, `AppExperience.petCare`) is the **active MVP**. **Shelter** (`/o/*`) and **Fostering** are **frozen** — preserved in Git, not in active CI or product (`docs/engineering/frozen-domains/`).
+- Shared infrastructure (auth, API errors, storage, notifications) may still touch retained schema; do **not** reintroduce Shelter/Fostering UI or active imports from frozen feature roots.
+- Do **not** redesign frozen Shelter code while hardening Pet Care; frozen paths are excluded from `flutter analyze` and blocked by `scripts/check_frozen_domain_boundaries.sh`.
 
 ## Authority
 
