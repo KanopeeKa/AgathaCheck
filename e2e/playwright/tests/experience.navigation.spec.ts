@@ -86,9 +86,11 @@ test.describe('Experience navigation', () => {
 
   test('drawer hides Organisation for all users in Pet Care MVP', async ({
     page,
-    testUser,
   }) => {
-    await loginFromLanding(page, testUser.email, testUser.password);
+    await prepareLiveApiAccess(page, baseURL());
+    const user = await signupUser(baseURL());
+    await createPet(baseURL(), user.accessToken, 'Drawer MVP Pet');
+    await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.expectDrawerWithoutOrganisation();
