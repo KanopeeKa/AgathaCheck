@@ -11,11 +11,10 @@ class DrawerMenuConfig {
 
   static const contactEmail = 'contact@agathatrack.com';
 
-  /// The three section-root paths where the workspace toggle is shown.
-  static const sectionRootPaths = {'/pc/home', '/o/orgs', '/account'};
+  /// Pet Care section roots (workspace toggle removed — D-MVP-1).
+  static const sectionRootPaths = {'/pc/home', '/account'};
 
-  /// Unified drawer entries: Guardian + Organisation (top), Account (bottom-pinned).
-  /// The separator marks the boundary between primary sections and Account.
+  /// Pet Care drawer entry + Account (bottom-pinned).
   static List<DrawerMenuEntry> sectionSwitcherEntries({
     required AppLocalizations l,
   }) {
@@ -27,15 +26,6 @@ class DrawerMenuConfig {
           icon: Icons.pets_outlined,
           group: DrawerMenuGroup.petCarePlum,
           route: AppExperience.petCare.homePath(),
-        ),
-      ),
-      DrawerMenuEntry.item(
-        DrawerMenuItem(
-          semanticKey: 'drawer_organisation',
-          label: l.drawerOrganisation,
-          icon: Icons.business_outlined,
-          group: DrawerMenuGroup.organizationGreen,
-          route: '/o/orgs',
         ),
       ),
     ];
