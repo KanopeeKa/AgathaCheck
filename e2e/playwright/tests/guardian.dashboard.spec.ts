@@ -8,9 +8,7 @@
  * Scenario: Care preview supports completion and undo
  * Scenario: Care team preview reaches linked vet details
  * Scenario: Empty Pet Care dashboard shows first-use guidance without false alerts
- * Scenario: Pending foster placement surfaces as a notification, not a dashboard banner
  * Scenario: Global events screen shows unified list without tabs
- * Scenario: Global events screen supports pet and cohort filters
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';

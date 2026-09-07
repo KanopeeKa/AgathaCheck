@@ -96,15 +96,6 @@ jobs:
     with:
       shard: health
 
-  flutter-test-org:
-    needs: [ci-scope, flutter-analyze]
-    if: >-
-      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
-      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'org')
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: org
-
   flutter-test-rest-a:
     needs: [ci-scope, flutter-analyze]
     if: >-
@@ -130,7 +121,6 @@ jobs:
       - flutter-test-pet-screens
       - flutter-test-pet-widgets
       - flutter-test-health
-      - flutter-test-org
       - flutter-test-rest-a
       - flutter-test-rest-b
     if: needs.ci-scope.outputs.run_flutter_coverage == 'true'
@@ -177,7 +167,6 @@ jobs:
       - flutter-test-pet-screens
       - flutter-test-pet-widgets
       - flutter-test-health
-      - flutter-test-org
       - flutter-test-rest-a
       - flutter-test-rest-b
       - flutter-coverage
@@ -195,7 +184,6 @@ jobs:
       flutter_test_pet_screens: ${{ needs.flutter-test-pet-screens.result }}
       flutter_test_pet_widgets: ${{ needs.flutter-test-pet-widgets.result }}
       flutter_test_health: ${{ needs.flutter-test-health.result }}
-      flutter_test_org: ${{ needs.flutter-test-org.result }}
       flutter_test_rest_a: ${{ needs.flutter-test-rest-a.result }}
       flutter_test_rest_b: ${{ needs.flutter-test-rest-b.result }}
       flutter_coverage: ${{ needs.flutter-coverage.result }}

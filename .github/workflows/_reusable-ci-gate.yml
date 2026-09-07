@@ -29,9 +29,6 @@ on:
       flutter_test_health:
         required: true
         type: string
-      flutter_test_org:
-        required: true
-        type: string
       flutter_test_rest_a:
         required: true
         type: string
@@ -76,7 +73,6 @@ jobs:
           FLUTTER_TEST_PET_SCREENS: ${{ inputs.flutter_test_pet_screens }}
           FLUTTER_TEST_PET_WIDGETS: ${{ inputs.flutter_test_pet_widgets }}
           FLUTTER_TEST_HEALTH: ${{ inputs.flutter_test_health }}
-          FLUTTER_TEST_ORG: ${{ inputs.flutter_test_org }}
           FLUTTER_TEST_REST_A: ${{ inputs.flutter_test_rest_a }}
           FLUTTER_TEST_REST_B: ${{ inputs.flutter_test_rest_b }}
           FLUTTER_COVERAGE: ${{ inputs.flutter_coverage }}

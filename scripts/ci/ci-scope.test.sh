@@ -68,10 +68,10 @@ assert_json_field "$json" run_backend False "flutter-only skips backend"
 assert_json_field "$json" run_flutter_integration False "flutter-only without pet_profile skips integration"
 python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["rest-a"], shards' <<<"$json"
 
-# Organisation-only runs org shard
+# Frozen organisation code does not run active Flutter CI
 ci_scope_classify_paths $'flutter_app/lib/features/organization/presentation/screens/organisation_profile_screen.dart'
 json="$(ci_scope_emit_json)"
-python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["org"], shards' <<<"$json"
+assert_json_field "$json" run_flutter_stack False "frozen org paths skip flutter stack"
 
 # Generic e2e scripts do not trigger org-specific Playwright job (full suite is audit/pre-uat only)
 ci_scope_classify_paths $'e2e/scripts/check-smoke-tags.mjs'

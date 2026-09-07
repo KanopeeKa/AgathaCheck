@@ -32,7 +32,7 @@ test.describe('Organisation dashboard IA', () => {
     await orgList.expectNoInlineDiscoverTiles();
   });
 
-  test('@P1 @smoke-ci @smoke-uat discover nav row opens discover screen', async ({ page }) => {
+  test('@P1 @smoke-uat discover nav row opens discover screen', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const owner = await signupUser(baseURL, { firstName: 'Rescue', lastName: 'Admin' });
     const org = await createOrganization(baseURL, owner.accessToken, {
