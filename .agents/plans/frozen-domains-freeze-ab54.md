@@ -347,17 +347,17 @@ server/routes/organizations/**
 
 ```yaml
 autonomy: active
-current_phase: 4
-last_completed_phase: 3
+current_phase: 5
+last_completed_phase: 4
 halt_reason: null
-next_action: "continue phase 4 on branch cursor/frozen-domains-ci-ab54"
+next_action: "continue phase 5 on branch cursor/frozen-domains-seal-ab54"
 artifact_ref:
   branch: cursor/frozen-domains-ci-ab54
   plan_path: .agents/plans/frozen-domains-freeze-ab54.md
-  plan_commit: a901cd0d90a093224c12a13a0c13c1897bc9df2d
+  plan_commit: 7e56853344996c85342672703429a4d8cf9c6f7d
   snapshot_path: .agents/plans/frozen-domains-freeze-ab54.snapshot.json
-  snapshot_commit: a901cd0d90a093224c12a13a0c13c1897bc9df2d
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1057"]
+  snapshot_commit: 7e56853344996c85342672703429a4d8cf9c6f7d
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
