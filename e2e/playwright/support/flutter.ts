@@ -515,7 +515,9 @@ export function workspaceToggleLocator(page: Page): Locator {
 /** Guardian bottom nav Account tab when compact shell is active (D-v4-2). */
 export function guardianAccountTabLocator(page: Page): Locator {
   return page
-    .getByRole('button', { name: /^Account$|^Compte$/i })
+    .getByRole('button', {
+      name: /^Account(?:\s+Tab\s+\d+\s+of\s+\d+)?$|^Compte(?:\s+Onglet\s+\d+\s+sur\s+\d+)?$/i,
+    })
     .or(page.getByRole('tab', { name: /^Account$|^Compte$/i }))
     .first();
 }
