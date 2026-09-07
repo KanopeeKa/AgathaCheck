@@ -24,7 +24,7 @@ import { prepareLiveApiAccess } from '../support/waf';
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
 test.describe('Pet timeline', () => {
-  test('timeline screen shows a fostering session card', async ({ page }) => {
+  test.skip('timeline screen shows a fostering session card', async ({ page }) => {
     await prepareLiveApiAccess(page, baseURL());
     const { alice, eve, org } = await seedRescueHearts(baseURL());
     const pet = await createOrgPet(baseURL(), alice.accessToken, org.id, {

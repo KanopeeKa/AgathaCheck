@@ -9,7 +9,14 @@
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
-import { seedDualRoleUser, seedRescueHearts, signupUser, seedOverdueNotification, fosterInviteToOrganization, inviteToOrganization, acceptInvite, getPendingInvites, getUnreadNotificationCount } from '../support/api';
+import {
+  seedDualRoleUser,
+  seedRescueHearts,
+  signupUser,
+  createPet,
+  seedOverdueNotification,
+  getUnreadNotificationCount,
+} from '../support/api';
 import { NotificationsPage } from '../pages/notifications.page';
 import {
   dismissConsentBannerIfPresent,
@@ -68,7 +75,8 @@ test.describe('Experience navigation', () => {
     page,
   }) => {
     await prepareLiveApiAccess(page, baseURL());
-    const { user } = await seedDualRoleUser(baseURL());
+    const user = await signupUser(baseURL());
+    await createPet(baseURL(), user.accessToken, 'Personal Pet');
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const experience = new ExperiencePage(page);
@@ -90,7 +98,8 @@ test.describe('Experience navigation', () => {
     page,
   }) => {
     await prepareLiveApiAccess(page, baseURL());
-    const { user } = await seedDualRoleUser(baseURL());
+    const user = await signupUser(baseURL());
+    await createPet(baseURL(), user.accessToken, 'Drawer Pet');
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const experience = new ExperiencePage(page);
@@ -101,7 +110,8 @@ test.describe('Experience navigation', () => {
     page,
   }) => {
     await prepareLiveApiAccess(page, baseURL());
-    const { user } = await seedDualRoleUser(baseURL());
+    const user = await signupUser(baseURL());
+    await createPet(baseURL(), user.accessToken, 'Home Pet');
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
     const experience = new ExperiencePage(page);
@@ -138,18 +148,9 @@ test.describe('Experience navigation', () => {
       petName: 'Luna',
       entryName: 'Heartworm',
     });
-
-    const { alice, org } = await seedRescueHearts(baseURL());
-    await inviteToOrganization(baseURL(), alice.accessToken, org.id, {
-      email: user.email,
-      role: 'associate',
-    });
-    const invites = await getPendingInvites(baseURL(), user.accessToken);
-    const invite = invites.find((item) => item.organization_id === org.id);
-    expect(invite).toBeTruthy();
-    await acceptInvite(baseURL(), user.accessToken, invite!.id);
-    await fosterInviteToOrganization(baseURL(), alice.accessToken, org.id, {
-      userIds: [user.userId],
+    await seedOverdueNotification(baseURL(), user.accessToken, {
+      petName: 'Buddy',
+      entryName: 'Flea treatment',
     });
 
     const unreadCount = await getUnreadNotificationCount(baseURL(), user.accessToken);
