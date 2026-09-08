@@ -2,9 +2,9 @@
   "schema_version": 1,
   "plan_id": "care-foundation-c7a1",
   "approved_at": "2026-09-08T21:56:00Z",
-  "approved_by": "user chat 2026-09-08 — approve-autonomous care-foundation-c7a1 (Phase D replan; supersedes 2026-09-07 A–C-only grant)",
-  "approved_until": "2026-09-10T21:56:00Z",
-  "autonomy": "halted",
+  "approved_by": "user chat 2026-09-08 — approve-autonomous + standing grant run-until-complete (all phases; D0.5/D5b via chat)",
+  "approved_until": "2026-09-10T22:45:00Z",
+  "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-foundation-c7a1-integration-dc3b",
   "control_issue": 1082,
@@ -229,11 +229,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "Gate D5b: model_selection_approval_required before Phase E handoff",
+      "status_detail": null,
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:4c4d006faaa3a9ea80a84af30d53cff0d90f99ad585dac55929843c1d7bec431"
+  "content_hash": "sha256:0dde58dbf464b37a05a198bccfb5ad031f9bf4c9884d25612b9e22b54f8a0a9f"
 }

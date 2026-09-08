@@ -112,17 +112,17 @@ Phase D scope re-approved via `approve-autonomous care-foundation-c7a1` on #1082
 ## Runtime
 
 ```yaml
-autonomy: halted
+autonomy: active
 current_phase: 6
 last_completed_phase: 5
-halt_reason: halted
-next_action: "start phase 6: checkout cursor/care-foundation-phase-d-exec-dc3b"
+halt_reason: null
+next_action: "continue phase 6 on branch cursor/care-foundation-phase-d-exec-dc3b"
 artifact_ref:
-  branch: cursor/care-foundation-phase-d0-dc3b
+  branch: cursor/care-foundation-phase-d-exec-dc3b
   plan_path: .agents/plans/care-foundation-c7a1.md
-  plan_commit: 151b658b3aa110d85f267c42e10cb40d3a2a8397
+  plan_commit: 6fb0606e920a5e6c11819a52b3a8b1bfdfd500d3
   snapshot_path: .agents/plans/care-foundation-c7a1.snapshot.json
-  snapshot_commit: 151b658b3aa110d85f267c42e10cb40d3a2a8397
+  snapshot_commit: 6fb0606e920a5e6c11819a52b3a8b1bfdfd500d3
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

@@ -7,7 +7,7 @@ import { registerLifecycleRoutes } from './lifecycleRouter.js';
 import { registerCoreRoutes } from './coreRouter.js';
 import { registerPhotoRoutes } from './photoRouter.js';
 import { registerTimelineRoutes } from '../timeline/index.js';
-import { registerCareIntelligenceRoutes } from '../careIntelligence/index.js';
+import { registerCareIntelligenceRoutes, registerCareIntelligenceReviewRoutes } from '../careIntelligence/index.js';
 
 export default function petsRoutes(pool) {
   const router = express.Router();
@@ -16,6 +16,7 @@ export default function petsRoutes(pool) {
   registerFamilyEventsRoutes(router, pool);
   registerTimelineRoutes(router, pool);
   registerCareIntelligenceRoutes(router, pool);
+  registerCareIntelligenceReviewRoutes(router, pool);
   registerAccessRoutes(router, pool);
   registerLifecycleRoutes(router, pool);
   registerPhotoRoutes(router, pool);

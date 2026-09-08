@@ -162,6 +162,12 @@ Server-authoritative Agatha suggestions (weight, dental, wellness rhythm familie
 | GET | `/care-recommendations` | Sync pending recommendations for pet (`HEALTH_VIEW`) |
 | POST | `/care-recommendations/:recommendationId/respond` | Body `{ action: accept\|adjust\|dismiss\|not_relevant, adjust?: { frequency, frequency_interval } }`; accept/adjust creates recurring `health_entry` with `care_source` `agatha_accepted` / `agatha_adjusted` (`HEALTH_EDIT`) |
 
+### Review relevance (Phase D — internal only)
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/pets/:id/review-relevance/evaluate` | Internal evaluation harness output; `internal_only: true`; not a guardian safeguard (`HEALTH_VIEW`) |
+
 ### Pet family events (`/api/pets/:id/family-events`) — Node backend
 
 Org placement/foster periods (legacy shape; see `docs/domains/fostering/changes/org-fostering-strategy.md` for
