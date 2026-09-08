@@ -28,6 +28,8 @@ const STATUS_REASON = new Set([
   'revoked',
   'session_limit',
   'human_pause',
+  'governance_approval_required',
+  'model_selection_approval_required',
   'drift',
   'ci_exhausted',
   'merge_failed',

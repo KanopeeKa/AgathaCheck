@@ -157,6 +157,8 @@ Unclassified out-of-path file → `status: blocked`, `status_reason: drift`.
 | `revoked` | `halted` | Control issue `autonomous-revoked` or past `approved_until` |
 | `session_limit` | `halted` | Agent checkpoint after **~24h** continuous work or approaching session timeout; human `resume-plan` (no re-approve while `approved_until` valid) |
 | `human_pause` | `halted` | Explicit pause without revoke |
+| `governance_approval_required` | `halted` | Product/governance sign-off (e.g. Phase D D0.5, execute-plan re-approval after scope change) |
+| `model_selection_approval_required` | `halted` | Clinical/product model-selection sign-off (e.g. Phase D D5b before Phase E) |
 | `drift` | `blocked` | Path / scope violation |
 | `ci_exhausted` | `blocked` | CI retry budget spent |
 | `merge_failed` | `blocked` | Merge blocked or PR closed unmerged |

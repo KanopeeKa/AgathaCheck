@@ -3,14 +3,14 @@ title: Care Foundation & Intelligence Roadmap
 owner: Product / Documentation
 audience: both
 status: active
-last_updated: 2026-09-07
+last_updated: 2026-09-08
 tags: [pet_care, care_intelligence, roadmap, implementation]
 supersedes: AgathaTrack CIM Implementation Spec v0.1 (2026-09-07 upload)
 ---
 
 # Care Foundation & Intelligence Roadmap
 
-**Version:** 0.3 (foundation-first)  
+**Version:** 0.4 (review-relevance)  
 **Target:** Pet Care domain only  
 **Initial Agatha Suggestions species scope:** cats and dogs  
 **Internal working name:** CIM — Care Intelligence Model  
@@ -30,8 +30,8 @@ It **supersedes** *AgathaTrack Care Intelligence (CIM) Implementation Spec — D
 | Section | Purpose |
 |---------|---------|
 | **Phases A–C** | Active implementation spec — build in order **without pausing for permission between phases** |
-| **Phase D** | Gated experiment — **pause and wait for product-owner test dataset** before starting |
-| **Phase E** | Continue after Phase D unless product owner redirects |
+| **Phase D** | Review relevance — weight-first, internal-only; see [phase-d-review-relevance-plan.md](./phase-d-review-relevance-plan.md) |
+| **Phase E** | Guardian safeguards when evidence supports; see [care-intelligence.md](../features/care-intelligence.md) |
 | **Vision appendix** | Product direction and future surfaces — **not** permission to implement |
 | **Architecture reference** | Stable boundaries that span all phases |
 
@@ -39,8 +39,8 @@ It **supersedes** *AgathaTrack Care Intelligence (CIM) Implementation Spec — D
 
 - Treat the vision appendix or deferred roadmap as an implementation brief
 - Skip Care Rhythms and jump to Agatha Suggestions
-- **Start Phase D without the product-owner test dataset** (see §10)
-- Commit to fuzzy inference before crisp-rule evaluation (Phase D)
+- **Start Phase D runtime work before D0.5 governance approval** (see [phase-d-review-relevance-plan.md](./phase-d-review-relevance-plan.md))
+- Commit to fuzzy inference before crisp-rule evaluation completes (Phase D)
 - Ship production safeguards before data-quality and clinical review criteria are met (Phase E)
 - Redesign unrelated Pet Care features or reintroduce Shelter/Fostering dependencies
 - **Pause between Phases A, B, or C to ask for permission** — complete each phase's definition of done, then proceed
@@ -102,16 +102,16 @@ Phase A — Care Foundation
         ↓  (continue — no permission pause)
 Phase B — Care Rhythms
         ↓  (continue — no permission pause)
-Phase C — Suggested by Agatha (crisp rules only)
-        ↓  ⏸ PAUSE — product owner supplies test dataset
-Phase D — Pattern Intelligence (experiment: crisp vs fuzzy)
-        ↓  (continue unless redirected)
-Phase E — Safeguards (weight-only minimum bar; multi-signal deferred)
+Phase C — Suggested by Agatha (crisp rules only)  ✅ shipped on integration branch
+        ↓
+Phase D — Review Relevance (weight-first, internal-only; human gates D0.5, D5b)
+        ↓
+Phase E — Safeguards (conservative; weight-only permitted when evidence supports)
 ```
 
-**Autonomous execution:** Phases A → B → C run back-to-back. Meet each phase's definition of done (§13), then start the next phase without asking for approval.
+**Autonomous execution:** Phases A → B → C ran back-to-back on integration branch. Phase D follows [phase-d-review-relevance-plan.md](./phase-d-review-relevance-plan.md) with human gates **D0.5** (`governance_approval_required`) and **D5b** (`model_selection_approval_required`).
 
-**Single mandatory pause:** Before Phase D, stop and wait for the product owner to provide a test dataset for pattern evaluation. Do not substitute synthetic fixtures alone if the owner has indicated a dataset is coming.
+**Canonical product behaviour:** [care-intelligence.md](../features/care-intelligence.md)
 
 **Deferred roadmap** (vision only — see appendix): Care Plans, Agatha Tips, Seasonal Care, Timeline → Care Story evolution, learned ranking / ML, freemium presentation policy implementation.
 
@@ -302,16 +302,16 @@ A suggestion alone **cannot** change Care Status.
 
 CIM cannot override explicit veterinary cadence. `NOT_RELEVANT` suppresses resurfacing unless context changes materially.
 
-### Completion criteria (then pause before Phase D)
+### Completion criteria
 
 | Criterion | Required |
 |-----------|----------|
 | Candidate-rule negative tests | Engine does not diagnose, auto-create care, or override vet cadence |
 | Acceptance flow | Accept/adjust creates exactly one rhythm; idempotent; transactional where practical |
 | Suppression policy | Existing rhythm, dismissed, not relevant — all tested |
-| Analytics events | Quality events captured (presented, accepted, dismissed, not relevant) — not vanity engagement |
+| Analytics events | Quality events captured (presented, accepted, dismissed, not relevant) — deferred debt acceptable |
 
-After Phase C meets definition of done (§13), **stop and wait** for the product-owner test dataset before starting Phase D.
+Phase C is **complete** on integration branch (PR #1085). Residual debt classified in [phase-d-review-relevance-plan.md](./phase-d-review-relevance-plan.md) §4. Proceed to Phase D per execute-plan after replan re-approval.
 
 ---
 
@@ -441,71 +441,36 @@ Unsupported species must not crash Care Status or rhythm flows.
 
 ---
 
-## 10. Phase D — Pattern Intelligence (experiment)
+## 10. Phase D — Review Relevance
 
-### Mandatory pause before starting
+**Status:** active (not started — awaiting execute-plan re-approval after replan PR)
 
-**Do not begin Phase D until the product owner provides a test dataset** for pattern evaluation.
-
-When Phase C is complete:
-
-1. Report completion briefly (what shipped, where tests live).
-2. **Wait** for the dataset — do not ask whether to proceed with Phase D; the pause is automatic.
-3. Use the supplied dataset as the primary evaluation input (supplement with synthetic fixtures from Appendix C as needed).
-
-### Goal
-
-Evaluate whether longitudinal pattern detection needs fuzzy inference — or whether crisp statistical rules are sufficient.
-
-### Approach (revised from v0.1)
-
-**Fuzzy inference is a preferred experiment, not a committed architecture.**
-
-```text
-Statistics + feature extraction
-        ↓
-Crisp rule baseline
-        ↓
-Synthetic fixtures + internal evaluation
-        ↓
-Do threshold cliffs cause poor behaviour?
-        ├── no  → keep crisp rules
-        └── yes → prototype Mamdani fuzzy inference
-```
-
-### Phase D deliverables
-
-- Centralised weight feature extraction (if not done in Phase C)
-- Crisp threshold rules with documented parameters
-- Evaluation against **product-owner test dataset** plus synthetic cases (Appendix C)
-- Internal audit trace (features, rules fired, candidate output)
-- Comparison report: crisp vs fuzzy on boundary cases
-
-### Explicitly not in Phase D
-
-- Production safeguard UI
-- User-facing fuzzy outputs or confidence percentages
-- LLM integration
-
-### Completion criteria (then proceed to Phase E)
-
-| Criterion | Required |
+| Reference | Document |
 |-----------|----------|
-| Evaluation complete | Written decision: crisp sufficient, or fuzzy justified |
-| If fuzzy chosen | Versioned membership functions, deterministic output, property tests |
-| No diagnosis in output | Negative-route tests pass |
+| Canonical product behaviour | [care-intelligence.md](../features/care-intelligence.md) |
+| Execution plan (D0–D7) | [phase-d-review-relevance-plan.md](./phase-d-review-relevance-plan.md) |
+
+**Scope:** weight-first, internal-only until Phase E. No production safeguard UI.
+
+**Human gates:** D0.5 (`governance_approval_required`) before research on production user data; D5b (`model_selection_approval_required`) before Phase E scope lock.
+
+**Explicitly not in Phase D:** guardian-facing safeguards, fuzzy outputs, LLM integration, multi-signal production logic.
+
+Detailed mechanics, ownership, benchmark staging, and completion criteria live in the execution plan — not duplicated here.
 
 ---
 
 ## 11. Phase E — Safeguards
 
-### Hard requirements (not a permission pause)
+### Hard requirements
 
-> **No production multi-signal safeguard until at least two reliable structured longitudinal signals exist and their capture behaviour has been validated.**
+> **Multi-signal safeguards** (e.g. weight + activity) require at least two reliable structured longitudinal signal families with validated capture behaviour.
 
-The Luna mockup (weight decline + lower activity) remains in the **vision appendix**.
+> **Weight-only safeguards** are permitted when evidence supports — see [care-intelligence.md](../features/care-intelligence.md) (single-signal copy rule, high bar, structured context in production).
 
-Proceed to Phase E after Phase D without asking for permission, subject to the minimum bar below.
+The Luna mockup (weight decline + lower activity) remains in the **vision appendix** until a second signal is validated.
+
+Proceed to Phase E only after **D5b** approval on the Phase D plan.
 
 ### Minimum bar for any production safeguard
 
@@ -619,11 +584,11 @@ Each phase is complete only when:
 8. No new Shelter/Fostering coupling introduced
 9. Lint/static analysis passes
 
-Phases A → B → C: proceed to the next phase when the current phase satisfies this list — **no permission pause**.
+Phases A → B → C: complete on integration branch.
 
-Phase D: start only after the product-owner test dataset is supplied (§10).
+Phase D: per [phase-d-review-relevance-plan.md](./phase-d-review-relevance-plan.md); human gates D0.5 and D5b.
 
-Phase E: proceed after Phase D satisfies this list unless the product owner redirects scope.
+Phase E: after D5b approval; per [care-intelligence.md](../features/care-intelligence.md).
 
 ---
 
@@ -655,7 +620,7 @@ Deferred until structured feedback volume exists. Target: usefulness model, not 
 
 > Worth checking with your vet — weight gradually decreased and lower activity recorded.
 
-Vision-only until activity (or equivalent second signal) is a validated, structured longitudinal data source.
+Vision-only until activity (or equivalent second signal) is a validated, structured longitudinal data source. **Weight-only** safeguards may ship earlier per feature doc when D5b approves.
 
 ### Locked UX decisions from v0.1 that remain architecture-locked
 
@@ -676,20 +641,13 @@ Vision-only until activity (or equivalent second signal) is a validated, structu
 
 | Phases | Behaviour |
 |--------|-----------|
-| **A → B → C** | Implement sequentially. When a phase meets §13 definition of done, **start the next phase immediately** — do not pause for approval. |
-| **Before D** | **Stop and wait** for product-owner test dataset (§10). |
-| **D → E** | Continue after dataset evaluation unless redirected. |
+| **A → B → C** | Complete on integration branch (`cursor/care-foundation-c7a1-integration-dc3b`). |
+| **D** | [phase-d-review-relevance-plan.md](./phase-d-review-relevance-plan.md) — resume at **D0** after replan PR merges and execute-plan **re-approval** on [#1082](https://github.com/KanopeeKa/AgathaCheck/issues/1082). |
+| **E** | After D5b (`model_selection_approval_required`). |
 
-**First task when implementation begins:** Phase A — Care Foundation.
+**Canonical behaviour:** [care-intelligence.md](../features/care-intelligence.md)
 
-Before coding Phase A:
-
-1. Inspect `main` for Pet Care / Shelter separation completeness (§4 prerequisites)
-2. Search codebase for `PetTileCareUrgency`, `PetCareTodayCareSummary`, `NeuterReminderCard`, `ChipReminderCard`, `HealthEntry`
-
-Do **not** implement recommendation generation, fuzzy inference, or safeguards in Phase A.
-
-After Phase A completes → Phase B (Care Rhythms). After Phase B → Phase C (Suggested by Agatha). After Phase C → **pause for dataset** → Phase D.
+Do **not** implement recommendation generation, fuzzy inference, or safeguards in Phase A–C workstreams.
 
 ---
 
@@ -734,7 +692,9 @@ docs/engineering/frozen-domains/mvp-pivot-decisions.md
 
 ---
 
-## Appendix C — Synthetic evaluation fixtures (Phase D+)
+## Appendix C — Synthetic evaluation fixtures
+
+Operational fixture detail lives in [phase-d-review-relevance-plan.md](./phase-d-review-relevance-plan.md) Appendix A. Summary personas:
 
 | Fixture | Expected |
 |---------|----------|
@@ -749,4 +709,4 @@ docs/engineering/frozen-domains/mvp-pivot-decisions.md
 
 ---
 
-*End of Care Foundation & Intelligence Roadmap v0.3*
+*End of Care Foundation & Intelligence Roadmap v0.4*
