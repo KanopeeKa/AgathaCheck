@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "plan_id": "care-foundation-c7a1",
-  "approved_at": "2026-09-07T18:58:00Z",
-  "approved_by": "user chat 2026-09-07 — /execute-plan (Phases A–C autonomous; pause before D per roadmap v0.3)",
-  "approved_until": "2026-09-09T18:58:00Z",
+  "approved_at": "2026-09-08T21:56:00Z",
+  "approved_by": "user chat 2026-09-08 — approve-autonomous care-foundation-c7a1 (Phase D replan; supersedes 2026-09-07 A–C-only grant)",
+  "approved_until": "2026-09-10T21:56:00Z",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-foundation-c7a1-integration-dc3b",
@@ -50,7 +50,7 @@
       "exit_checklist": "flutter-screen-split",
       "status": "merged",
       "status_reason": null,
-      "status_detail": null,
+      "status_detail": "PR #1083",
       "debt_issue_refs": []
     },
     {
@@ -83,9 +83,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": null,
+      "status_detail": "PR #1084",
       "debt_issue_refs": []
     },
     {
@@ -124,9 +124,112 @@
       "exit_checklist": "single-backend-route",
       "status": "merged",
       "status_reason": null,
+      "status_detail": "PR #1085",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Phase D documentation replan — feature doc, delivery plan, execute-plan reconciliation",
+      "branch": "cursor/phase-d-docs-replan-dc3b",
+      "allowed_paths": [
+        ".agents/plans/care-foundation-c7a1.*",
+        "docs/domains/pet_care/**",
+        "docs/agent-efficiency/execute-plan-schema.md",
+        "docs/agent-efficiency/execute-plan-snapshot.schema.json",
+        "scripts/lib/execute_plan_constants.js"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**",
+        "server/routes/careIntelligence/**",
+        "server/migrations/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
       "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "D0 — Semantics, provenance contracts, D6.0 benchmark schema",
+      "branch": "cursor/care-foundation-phase-d0-dc3b",
+      "allowed_paths": [
+        ".agents/plans/care-foundation-c7a1.*",
+        "docs/domains/pet_care/**",
+        "docs/architecture/**",
+        "regulatory/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**",
+        "server/routes/careIntelligence/**",
+        "server/migrations/**",
+        "server/test/careIntelligence/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Gate D0.5: governance_approval_required before prod user-data research",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "6",
+      "title": "D1–D7 — Review relevance execution (weight-first, internal-only)",
+      "branch": "cursor/care-foundation-phase-d-exec-dc3b",
+      "allowed_paths": [
+        ".agents/plans/care-foundation-c7a1.*",
+        "docs/domains/pet_care/**",
+        "docs/architecture/**",
+        "regulatory/**",
+        "flutter_app/lib/features/care_intelligence/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**",
+        "server/routes/careIntelligence/**",
+        "server/migrations/**",
+        "server/test/careIntelligence/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Gate D5b: model_selection_approval_required before Phase E handoff",
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:84030b1dcd40f344318202cc5b7562544a939d4a28b7b78b77a7aa1e94ffbda4"
+  "content_hash": "sha256:e0b3584f00f5f6a7a72bfc64c16165bac4052267e255ffed91d004d35e87c19b"
 }
