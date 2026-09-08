@@ -32,24 +32,16 @@ Deliver Pet Care care organisation (Phases A–B), quiet Agatha Suggestions (Pha
 
 | Field | Value |
 |-------|-------|
-| **approved_at** | 2026-09-07T18:58:00Z |
-| **approved_until** | 2026-09-09T18:58:00Z |
-| **approved_by** | user chat 2026-09-07 — Phases A–C autonomous only |
-| **reapproval_required** | **yes** — 2026-09-08 replan supersedes A–C grant for Phase D scope |
+| **approved_at** | 2026-09-08T21:56:00Z |
+| **approved_until** | 2026-09-10T21:56:00Z |
+| **approved_by** | user chat 2026-09-08 — `approve-autonomous care-foundation-c7a1` (Phase D scope; supersedes A–C-only grant) |
+| **reapproval_required** | no — re-approved 2026-09-08 |
 | **control_issue** | [#1082](https://github.com/KanopeeKa/AgathaCheck/issues/1082) |
-| **autonomy** | `halted` — awaiting re-approval after replan PR merges |
+| **autonomy** | `active` |
 
-### Re-approval (mandatory before D0)
+### Re-approval (completed 2026-09-08)
 
-The 2026-09-07 autonomous grant covered **Phases A–C only** (including the obsolete “product-owner test dataset” pause before Phase D). That boundary is **superseded**.
-
-After the Phase D documentation replan PR merges:
-
-1. Product owner comments `approve-autonomous care-foundation-c7a1` on #1082 with refreshed approval window.
-2. Agent updates `approved_at`, `approved_until`, and sets `autonomy: active`.
-3. Resume at **Phase 5 — D0** (not before).
-
-Do **not** mutate the snapshot scope without this re-approval step.
+Phase D scope re-approved via `approve-autonomous care-foundation-c7a1` on #1082. Proceed with phase 4 merge, then D0.
 
 ## Phases
 
@@ -120,12 +112,12 @@ Do **not** mutate the snapshot scope without this re-approval step.
 ## Runtime
 
 ```yaml
-autonomy: halted
+autonomy: active
 current_phase: 4
 last_completed_phase: 3
-halt_reason: governance_approval_required
-halt_detail: "Phase D replan PR in progress; A–C grant superseded — re-approve before D0"
-next_action: "Complete phase 4 docs replan PR; then request re-approval on #1082 before phase 5"
+halt_reason: null
+halt_detail: null
+next_action: "babysit+ merge phase 4 PR #1086, then start phase 5 D0"
 artifact_ref:
   branch: cursor/care-foundation-c7a1-integration-dc3b
   plan_path: .agents/plans/care-foundation-c7a1.md
@@ -137,4 +129,4 @@ debt_issue_refs: []
 
 ## next_action
 
-Land phase 4 (docs replan). Post re-approval request on #1082. Do not start D0 until re-approved.
+Land phase 4 (docs replan PR #1086), then start phase 5 — D0 on `cursor/care-foundation-phase-d0-dc3b`.

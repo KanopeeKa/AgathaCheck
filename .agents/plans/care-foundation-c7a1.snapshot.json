@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "plan_id": "care-foundation-c7a1",
-  "approved_at": "2026-09-07T18:58:00Z",
-  "approved_by": "user chat 2026-09-07 — Phases A–C autonomous only; 2026-09-08 replan supersedes Phase D scope — re-approval required before D0",
-  "approved_until": "2026-09-09T18:58:00Z",
-  "autonomy": "halted",
+  "approved_at": "2026-09-08T21:56:00Z",
+  "approved_by": "user chat 2026-09-08 — approve-autonomous care-foundation-c7a1 (Phase D replan; supersedes 2026-09-07 A–C-only grant)",
+  "approved_until": "2026-09-10T21:56:00Z",
+  "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-foundation-c7a1-integration-dc3b",
   "control_issue": 1082,
@@ -231,5 +231,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:24d49ce70738d22ea8f0db7f16c00f454240d5dd77fbf0de8db39162b691b9c4"
+  "content_hash": "sha256:e0b3584f00f5f6a7a72bfc64c16165bac4052267e255ffed91d004d35e87c19b"
 }
