@@ -4,7 +4,7 @@
   "approved_at": "2026-09-08T21:56:00Z",
   "approved_by": "user chat 2026-09-08 — approve-autonomous care-foundation-c7a1 (Phase D replan; supersedes 2026-09-07 A–C-only grant)",
   "approved_until": "2026-09-10T21:56:00Z",
-  "autonomy": "active",
+  "autonomy": "halted",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-foundation-c7a1-integration-dc3b",
   "control_issue": 1082,
@@ -190,12 +190,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1087",
-      "pr_head_sha": "64ff01a7ea574262f8bbb38b9140bac407263718"
+      "pr_head_sha": "151b658b"
     },
     {
       "id": "6",
@@ -235,5 +235,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:21c25d34366ca44a5545fffba278197760906d4490237dcf85671ca604ed7e4a"
+  "content_hash": "sha256:4c4d006faaa3a9ea80a84af30d53cff0d90f99ad585dac55929843c1d7bec431"
 }
