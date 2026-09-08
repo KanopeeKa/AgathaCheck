@@ -1,0 +1,78 @@
+[
+  {
+    "caseId": "bm_decline_no_context",
+    "species": "cat",
+    "provenance": "synthetic_constructed",
+    "dateOfBirth": "2017-01-01",
+    "measurements": [
+      { "date": "2026-01-05", "weight": 5.5, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-01-25", "weight": 5.2, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-02-15", "weight": 4.9, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-03-08", "weight": 4.6, "unit": "kg", "measurement_source": "guardian" }
+    ],
+    "weightContext": { "management_context": "none" },
+    "expectedReviewRelevance": "relevant",
+    "reviewers": [],
+    "disagreementFlag": false
+  },
+  {
+    "caseId": "bm_vet_target_on_track",
+    "species": "dog",
+    "provenance": "synthetic_constructed",
+    "dateOfBirth": "2019-05-01",
+    "measurements": [
+      { "date": "2026-01-10", "weight": 12.1, "unit": "kg", "measurement_source": "clinic" },
+      { "date": "2026-02-05", "weight": 11.9, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-02-28", "weight": 11.8, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-03-20", "weight": 11.7, "unit": "kg", "measurement_source": "guardian" }
+    ],
+    "weightContext": {
+      "reference_value": 11.8,
+      "reference_authority": "vet_target",
+      "management_context": "vet_managed"
+    },
+    "expectedReviewRelevance": "not_relevant",
+    "reviewers": [
+      {
+        "reviewerId": "vet-a",
+        "reviewerDecision": "not_relevant",
+        "reviewerConfidence": "high",
+        "reviewerRationale": "On vet weight-loss plan"
+      }
+    ],
+    "adjudicatedLabel": "not_relevant",
+    "adjudicationReason": "Active vet-managed target",
+    "disagreementFlag": false
+  },
+  {
+    "caseId": "bm_ambiguous_single_source",
+    "species": "cat",
+    "provenance": "synthetic_constructed",
+    "dateOfBirth": "2016-08-01",
+    "measurements": [
+      { "date": "2026-01-12", "weight": 4.2, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-02-02", "weight": 4.0, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-02-22", "weight": 3.9, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-03-14", "weight": 3.8, "unit": "kg", "measurement_source": "guardian" }
+    ],
+    "weightContext": { "management_context": "none" },
+    "expectedReviewRelevance": "uncertain/reviewer_disagreement",
+    "reviewers": [
+      {
+        "reviewerId": "vet-a",
+        "reviewerDecision": "relevant",
+        "reviewerConfidence": "medium",
+        "reviewerRationale": "Mild but persistent decline"
+      },
+      {
+        "reviewerId": "vet-b",
+        "reviewerDecision": "not_relevant",
+        "reviewerConfidence": "medium",
+        "reviewerRationale": "Within normal fluctuation for senior cat"
+      }
+    ],
+    "adjudicatedLabel": "uncertain",
+    "adjudicationReason": "Reviewer disagreement preserved",
+    "disagreementFlag": true
+  }
+]
