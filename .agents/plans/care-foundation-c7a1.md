@@ -118,12 +118,12 @@ last_completed_phase: 4
 halt_reason: null
 next_action: "continue phase 5 on branch cursor/care-foundation-phase-d0-dc3b"
 artifact_ref:
-  branch: cursor/phase-d-docs-replan-dc3b
+  branch: cursor/care-foundation-phase-d0-dc3b
   plan_path: .agents/plans/care-foundation-c7a1.md
-  plan_commit: e40b4788ad3412778ed3eeb328e1820c0edfa871
+  plan_commit: 64ff01a7ea574262f8bbb38b9140bac407263718
   snapshot_path: .agents/plans/care-foundation-c7a1.snapshot.json
-  snapshot_commit: e40b4788ad3412778ed3eeb328e1820c0edfa871
-open_prs: []
+  snapshot_commit: 64ff01a7ea574262f8bbb38b9140bac407263718
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1087"]
 merge_commits: {}
 debt_issue_refs: []
 ```
