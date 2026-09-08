@@ -1,8 +1,5 @@
 /// Supported species for structured Pet Care intelligence (cats and dogs).
-enum PetSpecies {
-  cat,
-  dog,
-}
+enum PetSpecies { cat, dog }
 
 /// Resolves free-text [Pet.species] to a supported species when possible.
 PetSpecies? resolveSupportedSpecies(String raw) {

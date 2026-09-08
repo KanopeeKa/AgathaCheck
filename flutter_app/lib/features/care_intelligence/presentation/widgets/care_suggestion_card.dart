@@ -25,11 +25,13 @@ class CareSuggestionCard extends ConsumerWidget {
     final theme = Theme.of(context);
 
     Future<void> respond(CareRecommendationResponseAction action) async {
-      await ref.read(careIntelligenceRepositoryProvider).respond(
-        petId: petId,
-        recommendationId: recommendation.id,
-        action: action,
-      );
+      await ref
+          .read(careIntelligenceRepositoryProvider)
+          .respond(
+            petId: petId,
+            recommendationId: recommendation.id,
+            action: action,
+          );
       ref.invalidate(petCareRecommendationsProvider(petId));
       ref.invalidate(petProfileCareSuggestionProvider(petId));
       ref.invalidate(healthEntriesNotifierProvider);
@@ -73,7 +75,8 @@ class CareSuggestionCard extends ConsumerWidget {
               children: [
                 FilledButton(
                   key: Key('care_suggestion_accept_${recommendation.id}'),
-                  onPressed: () => respond(CareRecommendationResponseAction.accept),
+                  onPressed: () =>
+                      respond(CareRecommendationResponseAction.accept),
                   child: Text(l.careSuggestionAccept),
                 ),
                 OutlinedButton(

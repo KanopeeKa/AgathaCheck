@@ -5,7 +5,9 @@ class PetCarePresentationPolicy {
   const PetCarePresentationPolicy();
 
   /// Pet profile may show at most one prominent suggestion card.
-  CareRecommendation? profileSuggestion(List<CareRecommendation> recommendations) {
+  CareRecommendation? profileSuggestion(
+    List<CareRecommendation> recommendations,
+  ) {
     return recommendations.where((r) => r.isPending).firstOrNull;
   }
 

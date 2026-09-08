@@ -29,14 +29,14 @@ final petCarePresentationPolicyProvider = Provider<PetCarePresentationPolicy>(
 
 final petCareRecommendationsProvider =
     FutureProvider.family<List<CareRecommendation>, String>((ref, petId) async {
-      return ref.read(careIntelligenceRepositoryProvider).getRecommendations(petId);
+      return ref
+          .read(careIntelligenceRepositoryProvider)
+          .getRecommendations(petId);
     });
 
 final petProfileCareSuggestionProvider =
     Provider.family<AsyncValue<CareRecommendation?>, String>((ref, petId) {
       final recsAsync = ref.watch(petCareRecommendationsProvider(petId));
       final policy = ref.watch(petCarePresentationPolicyProvider);
-      return recsAsync.whenData(
-        (recs) => policy.profileSuggestion(recs),
-      );
+      return recsAsync.whenData((recs) => policy.profileSuggestion(recs));
     });

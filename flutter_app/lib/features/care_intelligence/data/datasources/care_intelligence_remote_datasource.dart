@@ -6,10 +6,8 @@ import '../models/care_recommendation_model.dart';
 import '../../domain/entities/care_recommendation.dart';
 
 class CareIntelligenceRemoteDataSource {
-  CareIntelligenceRemoteDataSource({
-    required this.baseUrl,
-    http.Client? client,
-  }) : _client = client ?? http.Client();
+  CareIntelligenceRemoteDataSource({required this.baseUrl, http.Client? client})
+    : _client = client ?? http.Client();
 
   final String baseUrl;
   final http.Client _client;
@@ -27,10 +25,14 @@ class CareIntelligenceRemoteDataSource {
 
   void _check(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode < 300) return;
-    throw Exception('Care intelligence request failed (${response.statusCode})');
+    throw Exception(
+      'Care intelligence request failed (${response.statusCode})',
+    );
   }
 
-  Future<List<CareRecommendationModel>> fetchRecommendations(String petId) async {
+  Future<List<CareRecommendationModel>> fetchRecommendations(
+    String petId,
+  ) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/pets/$petId/care-recommendations'),
       headers: _headers(),

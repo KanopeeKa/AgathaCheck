@@ -10,11 +10,7 @@ import '../care_source_labels.dart';
 
 /// One recurring-care rhythm row: family icon, cadence, next due, provenance.
 class CareRhythmRow extends StatelessWidget {
-  const CareRhythmRow({
-    super.key,
-    required this.entry,
-    required this.petId,
-  });
+  const CareRhythmRow({super.key, required this.entry, required this.petId});
 
   final HealthEntry entry;
   final String petId;

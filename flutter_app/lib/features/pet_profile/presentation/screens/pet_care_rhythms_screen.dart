@@ -76,10 +76,8 @@ class PetCareRhythmsScreen extends ConsumerWidget {
                         key: const Key('care_rhythms_list'),
                         itemCount: rhythms.length,
                         separatorBuilder: (_, __) => const Divider(height: 1),
-                        itemBuilder: (context, index) => CareRhythmRow(
-                          entry: rhythms[index],
-                          petId: petId,
-                        ),
+                        itemBuilder: (context, index) =>
+                            CareRhythmRow(entry: rhythms[index], petId: petId),
                       ),
               ),
               SafeArea(

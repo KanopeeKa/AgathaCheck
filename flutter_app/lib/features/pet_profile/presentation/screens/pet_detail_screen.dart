@@ -97,7 +97,9 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
           ),
         ];
 
-        final careSummary = ref.watch(petCareStatusSummaryProvider(widget.petId));
+        final careSummary = ref.watch(
+          petCareStatusSummaryProvider(widget.petId),
+        );
 
         Widget body = ExperienceShellScaffold(
           experience: experience,
@@ -118,8 +120,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                   onReview: careSummary.status == CareStatus.worthACheck
                       ? () => context.go('/pc/events')
                       : null,
-                  onViewAction:
-                      careSummary.status == CareStatus.timeToFollowUp
+                  onViewAction: careSummary.status == CareStatus.timeToFollowUp
                       ? () => context.go('/pc/events')
                       : null,
                 ),

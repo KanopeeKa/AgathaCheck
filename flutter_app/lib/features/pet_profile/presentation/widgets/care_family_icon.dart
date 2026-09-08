@@ -7,11 +7,7 @@ import '../../../health_tracking/domain/entities/health_entry.dart';
 
 /// Care-family icon with plum semantic styling.
 class CareFamilyIcon extends StatelessWidget {
-  const CareFamilyIcon({
-    super.key,
-    required this.family,
-    this.size = 20,
-  });
+  const CareFamilyIcon({super.key, required this.family, this.size = 20});
 
   final CareFamily family;
   final double size;

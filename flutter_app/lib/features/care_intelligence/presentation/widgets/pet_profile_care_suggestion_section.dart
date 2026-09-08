@@ -20,10 +20,7 @@ class PetProfileCareSuggestionSection extends ConsumerWidget {
       error: (_, __) => const SizedBox.shrink(),
       data: (recommendation) {
         if (recommendation == null) return const SizedBox.shrink();
-        return CareSuggestionCard(
-          petId: petId,
-          recommendation: recommendation,
-        );
+        return CareSuggestionCard(petId: petId, recommendation: recommendation);
       },
     );
   }

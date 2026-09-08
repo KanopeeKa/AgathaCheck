@@ -58,14 +58,11 @@ class CareStatusSummaryCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                switch (status) {
-                  CareStatus.allSet => Icons.check_circle_outline,
-                  CareStatus.worthACheck => Icons.info_outline,
-                  CareStatus.timeToFollowUp => Icons.schedule_outlined,
-                },
-                color: accent,
-              ),
+              Icon(switch (status) {
+                CareStatus.allSet => Icons.check_circle_outline,
+                CareStatus.worthACheck => Icons.info_outline,
+                CareStatus.timeToFollowUp => Icons.schedule_outlined,
+              }, color: accent),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -84,10 +81,7 @@ class CareStatusSummaryCard extends StatelessWidget {
                     ],
                     if (status != CareStatus.allSet && onAction != null) ...[
                       const SizedBox(height: 8),
-                      TextButton(
-                        onPressed: onAction,
-                        child: Text(actionLabel),
-                      ),
+                      TextButton(onPressed: onAction, child: Text(actionLabel)),
                     ],
                   ],
                 ),

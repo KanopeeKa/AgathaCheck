@@ -22,12 +22,7 @@ class WeightManagementContextSelector extends StatelessWidget {
         helperText: 'Is this weight change already being managed?',
       ),
       items: ManagementContext.values
-          .map(
-            (ctx) => DropdownMenuItem(
-              value: ctx,
-              child: Text(_label(ctx)),
-            ),
-          )
+          .map((ctx) => DropdownMenuItem(value: ctx, child: Text(_label(ctx))))
           .toList(),
       onChanged: (v) {
         if (v != null) onChanged(v);
@@ -36,9 +31,9 @@ class WeightManagementContextSelector extends StatelessWidget {
   }
 
   String _label(ManagementContext ctx) => switch (ctx) {
-        ManagementContext.none => 'Not sure / not managed',
-        ManagementContext.vetManaged => 'Yes, with my vet',
-        ManagementContext.carePlan => 'Yes, as part of a care plan',
-        ManagementContext.treatmentRelated => 'Related to treatment',
-      };
+    ManagementContext.none => 'Not sure / not managed',
+    ManagementContext.vetManaged => 'Yes, with my vet',
+    ManagementContext.carePlan => 'Yes, as part of a care plan',
+    ManagementContext.treatmentRelated => 'Related to treatment',
+  };
 }

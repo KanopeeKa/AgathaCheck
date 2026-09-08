@@ -99,6 +99,24 @@ CREATE TABLE public.audit_events (
     CONSTRAINT audit_events_outcome_check CHECK ((outcome = ANY (ARRAY['success'::text, 'failure'::text]))),
     CONSTRAINT audit_events_retention_tier_check CHECK ((retention_tier = ANY (ARRAY['hot'::text, 'warm'::text, 'cold'::text])))
 );
+CREATE TABLE public.care_recommendations (
+    id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    care_family character varying(50) NOT NULL,
+    suggestion_key character varying(100) NOT NULL,
+    status character varying(30) DEFAULT 'pending'::character varying NOT NULL,
+    engine_version character varying(20) NOT NULL,
+    knowledge_version character varying(20) NOT NULL,
+    suggested_name character varying(255) NOT NULL,
+    suggested_frequency character varying(30) NOT NULL,
+    suggested_frequency_interval integer DEFAULT 1 NOT NULL,
+    suggested_health_entry_type character varying(30) DEFAULT 'other'::character varying NOT NULL,
+    rationale_key character varying(100) NOT NULL,
+    health_entry_id uuid,
+    responded_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
 CREATE TABLE public.custody_transfers (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -261,7 +279,9 @@ CREATE TABLE public.health_entries (
     completed_on date,
     recurrence_anchor character varying(50) DEFAULT 'from_completion'::character varying,
     repeat_end_date date,
-    schedule_times jsonb
+    schedule_times jsonb,
+    care_family character varying(50),
+    care_source character varying(50) DEFAULT 'guardian_defined'::character varying
 );
 CREATE TABLE public.health_event_photos (
     id uuid NOT NULL,
@@ -553,7 +573,12 @@ CREATE TABLE public.pets (
     care_holder_kind character varying(10),
     care_holder_user_id uuid,
     care_holder_org_id uuid,
-    last_activity_at timestamp with time zone
+    last_activity_at timestamp with time zone,
+    weight_reference_value double precision,
+    weight_reference_authority character varying(50),
+    weight_management_context character varying(50) DEFAULT 'none'::character varying NOT NULL,
+    CONSTRAINT pets_weight_management_context_check CHECK (((weight_management_context)::text = ANY ((ARRAY['none'::character varying, 'vet_managed'::character varying, 'care_plan'::character varying, 'treatment_related'::character varying])::text[]))),
+    CONSTRAINT pets_weight_reference_authority_check CHECK (((weight_reference_authority IS NULL) OR ((weight_reference_authority)::text = ANY ((ARRAY['vet_target'::character varying, 'guardian_reference'::character varying, 'historical_baseline'::character varying])::text[]))))
 );
 CREATE TABLE public.prospects (
     id uuid NOT NULL,
@@ -637,7 +662,9 @@ CREATE TABLE public.weight_entries (
     date date,
     notes text DEFAULT ''::text,
     measured_at timestamp with time zone DEFAULT now(),
-    created_at timestamp with time zone DEFAULT now()
+    created_at timestamp with time zone DEFAULT now(),
+    measurement_source character varying(50) DEFAULT 'guardian'::character varying NOT NULL,
+    CONSTRAINT weight_entries_measurement_source_check CHECK (((measurement_source)::text = ANY ((ARRAY['guardian'::character varying, 'clinic'::character varying, 'device'::character varying, 'imported'::character varying])::text[])))
 );
 ALTER TABLE ONLY public._migrations
     ADD CONSTRAINT _migrations_pkey PRIMARY KEY (id);
@@ -649,6 +676,8 @@ ALTER TABLE ONLY public.archived_pets
     ADD CONSTRAINT archived_pets_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.audit_events
     ADD CONSTRAINT audit_events_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.care_recommendations
+    ADD CONSTRAINT care_recommendations_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.document_templates
@@ -761,6 +790,8 @@ ALTER TABLE ONLY public.vets
     ADD CONSTRAINT vets_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.weight_entries
     ADD CONSTRAINT weight_entries_pkey PRIMARY KEY (id);
+CREATE UNIQUE INDEX care_recommendations_pet_family_key_idx ON public.care_recommendations USING btree (pet_id, care_family, suggestion_key);
+CREATE INDEX care_recommendations_pet_status_idx ON public.care_recommendations USING btree (pet_id, status);
 CREATE UNIQUE INDEX idx_adoption_journeys_one_open_per_session ON public.adoption_journeys USING btree (fostering_session_id) WHERE ((status)::text = ANY ((ARRAY['awaiting_foster_confirmation'::character varying, 'pending_conditions'::character varying])::text[]));
 CREATE INDEX idx_adoption_journeys_org_id ON public.adoption_journeys USING btree (organization_id);
 CREATE INDEX idx_adoption_journeys_session_id ON public.adoption_journeys USING btree (fostering_session_id);
@@ -853,6 +884,10 @@ ALTER TABLE ONLY public.archived_pets
     ADD CONSTRAINT archived_pets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.audit_events
     ADD CONSTRAINT audit_events_actor_user_id_fkey FOREIGN KEY (actor_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.care_recommendations
+    ADD CONSTRAINT care_recommendations_health_entry_id_fkey FOREIGN KEY (health_entry_id) REFERENCES public.health_entries(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.care_recommendations
+    ADD CONSTRAINT care_recommendations_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_from_org_id_fkey FOREIGN KEY (from_org_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.custody_transfers

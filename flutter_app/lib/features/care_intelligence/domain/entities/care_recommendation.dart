@@ -45,9 +45,4 @@ class CareRecommendation {
   bool get isPending => status == CareRecommendationStatus.pending;
 }
 
-enum CareRecommendationResponseAction {
-  accept,
-  adjust,
-  dismiss,
-  notRelevant,
-}
+enum CareRecommendationResponseAction { accept, adjust, dismiss, notRelevant }

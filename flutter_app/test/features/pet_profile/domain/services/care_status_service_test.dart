@@ -36,9 +36,7 @@ void main() {
   test('overdue entry returns Time to Follow Up', () {
     final summary = service.evaluate(
       petId: petId,
-      entries: [
-        _entry(id: 'e1', petId: petId, nextDue: DateTime(2026, 9, 1)),
-      ],
+      entries: [_entry(id: 'e1', petId: petId, nextDue: DateTime(2026, 9, 1))],
       now: now,
     );
     expect(summary.status, CareStatus.timeToFollowUp);
@@ -48,9 +46,7 @@ void main() {
   test('due today returns Worth a Check', () {
     final summary = service.evaluate(
       petId: petId,
-      entries: [
-        _entry(id: 'e1', petId: petId, nextDue: DateTime(2026, 9, 7)),
-      ],
+      entries: [_entry(id: 'e1', petId: petId, nextDue: DateTime(2026, 9, 7))],
       now: now,
     );
     expect(summary.status, CareStatus.worthACheck);

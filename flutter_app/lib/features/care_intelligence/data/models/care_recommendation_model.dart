@@ -38,8 +38,9 @@ class CareRecommendationModel {
     return CareRecommendationModel(
       id: json['id'] as String,
       petId: json['pet_id'] as String,
-      careFamily: CareFamilyWire.fromWire(json['care_family'] as String?)
-          ?? CareFamily.other,
+      careFamily:
+          CareFamilyWire.fromWire(json['care_family'] as String?) ??
+          CareFamily.other,
       suggestionKey: json['suggestion_key'] as String,
       status: _statusFromWire(json['status'] as String?),
       engineVersion: json['engine_version'] as String,

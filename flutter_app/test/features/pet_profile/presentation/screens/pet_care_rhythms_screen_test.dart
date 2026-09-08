@@ -80,7 +80,10 @@ void main() {
         authProvider.overrideWith((ref) => FakeAuthNotifier()),
         experienceEligibilityProvider.overrideWith(
           (ref) => AsyncValue.data(
-            ExperienceEligibilityRules.compute(pets: [pet], orgMembershipCount: 0),
+            ExperienceEligibilityRules.compute(
+              pets: [pet],
+              orgMembershipCount: 0,
+            ),
           ),
         ),
         organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),

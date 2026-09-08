@@ -1,9 +1,5 @@
 /// Pet-level care-management status (not a health diagnosis).
-enum CareStatus {
-  allSet,
-  worthACheck,
-  timeToFollowUp,
-}
+enum CareStatus { allSet, worthACheck, timeToFollowUp }
 
 /// Deterministic evaluation result for a pet's tracked care.
 class CareStatusSummary {

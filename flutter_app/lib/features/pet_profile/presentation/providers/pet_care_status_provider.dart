@@ -10,7 +10,8 @@ const _careStatusService = CareStatusService();
 
 final petCareStatusSummaryProvider = Provider.family<CareStatusSummary, String>(
   (ref, petId) {
-    final entries = ref.watch(healthEntriesNotifierProvider).valueOrNull ??
+    final entries =
+        ref.watch(healthEntriesNotifierProvider).valueOrNull ??
         const <HealthEntry>[];
     return _careStatusService.evaluate(
       petId: petId,

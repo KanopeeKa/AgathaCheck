@@ -1,33 +1,19 @@
 /// Weight provenance enums (D0 contract). Distinct from [CareSource] on health rhythms.
 library;
 
-enum MeasurementSource {
-  guardian,
-  clinic,
-  device,
-  imported,
-}
+enum MeasurementSource { guardian, clinic, device, imported }
 
-enum ReferenceAuthority {
-  vetTarget,
-  guardianReference,
-  historicalBaseline,
-}
+enum ReferenceAuthority { vetTarget, guardianReference, historicalBaseline }
 
-enum ManagementContext {
-  none,
-  vetManaged,
-  carePlan,
-  treatmentRelated,
-}
+enum ManagementContext { none, vetManaged, carePlan, treatmentRelated }
 
 extension MeasurementSourceWire on MeasurementSource {
   String get wireValue => switch (this) {
-        MeasurementSource.guardian => 'guardian',
-        MeasurementSource.clinic => 'clinic',
-        MeasurementSource.device => 'device',
-        MeasurementSource.imported => 'imported',
-      };
+    MeasurementSource.guardian => 'guardian',
+    MeasurementSource.clinic => 'clinic',
+    MeasurementSource.device => 'device',
+    MeasurementSource.imported => 'imported',
+  };
 
   static MeasurementSource? fromWire(String? value) {
     switch (value?.trim().toLowerCase()) {
@@ -47,10 +33,10 @@ extension MeasurementSourceWire on MeasurementSource {
 
 extension ReferenceAuthorityWire on ReferenceAuthority {
   String get wireValue => switch (this) {
-        ReferenceAuthority.vetTarget => 'vet_target',
-        ReferenceAuthority.guardianReference => 'guardian_reference',
-        ReferenceAuthority.historicalBaseline => 'historical_baseline',
-      };
+    ReferenceAuthority.vetTarget => 'vet_target',
+    ReferenceAuthority.guardianReference => 'guardian_reference',
+    ReferenceAuthority.historicalBaseline => 'historical_baseline',
+  };
 
   static ReferenceAuthority? fromWire(String? value) {
     switch (value?.trim().toLowerCase()) {
@@ -68,11 +54,11 @@ extension ReferenceAuthorityWire on ReferenceAuthority {
 
 extension ManagementContextWire on ManagementContext {
   String get wireValue => switch (this) {
-        ManagementContext.none => 'none',
-        ManagementContext.vetManaged => 'vet_managed',
-        ManagementContext.carePlan => 'care_plan',
-        ManagementContext.treatmentRelated => 'treatment_related',
-      };
+    ManagementContext.none => 'none',
+    ManagementContext.vetManaged => 'vet_managed',
+    ManagementContext.carePlan => 'care_plan',
+    ManagementContext.treatmentRelated => 'treatment_related',
+  };
 
   static ManagementContext fromWire(String? value) {
     switch (value?.trim().toLowerCase()) {
