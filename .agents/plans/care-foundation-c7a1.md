@@ -1,30 +1,32 @@
 ---
-title: Care Foundation & Intelligence (Phases A–C)
+title: Care Foundation & Intelligence (Phases A–E)
 owner: Product / Agent
 audience: agent
 status: active
-last_updated: 2026-09-07
+last_updated: 2026-09-08
 tags: [pet_care, care_intelligence, execute-plan]
 ---
 
-# Care Foundation & Intelligence (Phases A–C)
+# Care Foundation & Intelligence (Phases A–E)
 
 ## Metadata
 
 | Field | Value |
 |-------|-------|
 | **plan_id** | `care-foundation-c7a1` |
-| **title** | Care Foundation through Suggested by Agatha |
+| **title** | Care Foundation through Review Relevance |
 | **author** | Cloud agent |
 | **created** | 2026-09-07 |
 | **base_branch** | `cursor/care-foundation-c7a1-integration-dc3b` |
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
-| **canonical spec** | `docs/domains/pet_care/changes/care-foundation-roadmap.md` v0.3 |
+| **canonical spec** | `docs/domains/pet_care/features/care-intelligence.md` |
+| **delivery plan** | `docs/domains/pet_care/changes/phase-d-review-relevance-plan.md` |
+| **roadmap** | `docs/domains/pet_care/changes/care-foundation-roadmap.md` v0.4 |
 
 ## Goal
 
-Deliver Pet Care care organisation and quiet Agatha Suggestions in three autonomous phases: **Care Foundation** (status, family, source, icons, prompts), **Care Rhythms** (recurring care configuration), and **Suggested by Agatha** (three crisp-rule families). **Pause before Phase D** (pattern intelligence) until product owner supplies test dataset — out of scope for this plan.
+Deliver Pet Care care organisation (Phases A–B), quiet Agatha Suggestions (Phase C), and weight-first **review-relevance** evaluation (Phase D) with human gates before production user-data research (D0.5) and Phase E scope lock (D5b). Phase E guardian safeguards follow D5b approval.
 
 ## Autonomy
 
@@ -32,79 +34,102 @@ Deliver Pet Care care organisation and quiet Agatha Suggestions in three autonom
 |-------|-------|
 | **approved_at** | 2026-09-07T18:58:00Z |
 | **approved_until** | 2026-09-09T18:58:00Z |
-| **approved_by** | user chat 2026-09-07 — `/execute-plan` (Phases A–C autonomous; pause before D per roadmap v0.3) |
-| **control_issue** | TBD |
-| **autonomy** | `active` |
+| **approved_by** | user chat 2026-09-07 — Phases A–C autonomous only |
+| **reapproval_required** | **yes** — 2026-09-08 replan supersedes A–C grant for Phase D scope |
+| **control_issue** | [#1082](https://github.com/KanopeeKa/AgathaCheck/issues/1082) |
+| **autonomy** | `halted` — awaiting re-approval after replan PR merges |
+
+### Re-approval (mandatory before D0)
+
+The 2026-09-07 autonomous grant covered **Phases A–C only** (including the obsolete “product-owner test dataset” pause before Phase D). That boundary is **superseded**.
+
+After the Phase D documentation replan PR merges:
+
+1. Product owner comments `approve-autonomous care-foundation-c7a1` on #1082 with refreshed approval window.
+2. Agent updates `approved_at`, `approved_until`, and sets `autonomy: active`.
+3. Resume at **Phase 5 — D0** (not before).
+
+Do **not** mutate the snapshot scope without this re-approval step.
 
 ## Phases
 
-### Phase 1 — Care Foundation
+### Phase 1 — Care Foundation ✅
 
 | Field | Value |
 |-------|-------|
 | **id** | `1` |
 | **branch** | `cursor/care-foundation-phase-a-dc3b` |
-| **exit_checklist** | `flutter-screen-split` |
+| **status** | merged (#1083) |
 
-**Scope:** `PetSpecies`, `CareFamily`, `CareSource`, `CareStatus`, `CareStatusService`, pet tile + profile status UI, profile prompt simplification, care-family icons, design docs. No recommendations.
-
-**Exit criteria:**
-
-- [ ] Three-state Care Status on pet tiles and pet profile
-- [ ] Shelter teal removed from Pet Care urgency colours
-- [ ] CareFamily/CareSource persisted with conservative backfill
-- [ ] Unit + widget tests; design docs updated
-
-### Phase 2 — Care Rhythms
+### Phase 2 — Care Rhythms ✅
 
 | Field | Value |
 |-------|-------|
 | **id** | `2` |
 | **branch** | `cursor/care-foundation-phase-b-dc3b` |
-| **exit_checklist** | `flutter-screen-split` |
+| **status** | merged (#1084) |
 
-**Scope:** Care Rhythms route/screen, profile nav row, edit/pause, Actions relationship copy.
-
-**Exit criteria:**
-
-- [ ] `/pet/:id/care-rhythms` lists recurring HealthEntry rows
-- [ ] Cadence edit updates Actions schedule
-- [ ] Actions vs Rhythms semantics in l10n + docs
-
-### Phase 3 — Suggested by Agatha
+### Phase 3 — Suggested by Agatha ✅
 
 | Field | Value |
 |-------|-------|
 | **id** | `3` |
 | **branch** | `cursor/care-foundation-phase-c-dc3b` |
+| **status** | merged (#1085) |
+
+### Phase 4 — Phase D documentation replan
+
+| Field | Value |
+|-------|-------|
+| **id** | `4` |
+| **branch** | `cursor/phase-d-docs-replan-dc3b` |
+| **exit_checklist** | `default` |
+
+**Scope:** Feature doc, Phase D delivery plan, roadmap v0.4, README index, execute-plan reconciliation, schema halt reasons. **No runtime care-intelligence code.**
+
+### Phase 5 — D0 Semantics & data contracts
+
+| Field | Value |
+|-------|-------|
+| **id** | `5` |
+| **branch** | `cursor/care-foundation-phase-d0-dc3b` |
 | **exit_checklist** | `single-backend-route` |
+| **gate** | D0.5 → `halted` / `governance_approval_required` |
 
-**Scope:** Server recommendation engine (weight, dental, wellness families), persistence, API, Flutter suggestion UX. No fuzzy, safeguards, or LLM.
+**Scope:** Provenance model (`measurementSource`, `referenceAuthority`, `managementContext`), WeightChangeSpec contract, trace types, D6.0 benchmark schema.
 
-**Exit criteria:**
+### Phase 6 — D1–D7 Review relevance execution
 
-- [ ] Three families with negative-route tests
-- [ ] Accept/adjust creates Care Rhythm; suggestions never in Actions pre-acceptance
-- [ ] Presentation policy caps dashboard/profile cards
+| Field | Value |
+|-------|-------|
+| **id** | `6` |
+| **branch** | `cursor/care-foundation-phase-d-exec-dc3b` |
+| **exit_checklist** | `single-backend-route` |
+| **gate** | D5b → `halted` / `model_selection_approval_required` |
 
-## Halt boundary
+**Scope:** Per [phase-d-review-relevance-plan.md](../../docs/domains/pet_care/changes/phase-d-review-relevance-plan.md). Parallel context micro-PRs allowed.
 
-After Phase 3 merge: **halt for dataset** — do not bootstrap Phase D without product-owner test data (roadmap §10).
+## Halt boundaries
+
+| Gate | `status_reason` | Trigger |
+|------|-----------------|---------|
+| Replan re-approval | `governance_approval_required` | After phase 4 merge, before phase 5 |
+| D0.5 | `governance_approval_required` | Before prod user-data research |
+| D5b | `model_selection_approval_required` | Before Phase E handoff |
 
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: 2
+autonomy: halted
+current_phase: 4
 last_completed_phase: 3
-halt_reason: null
-next_action: "start phase 2: checkout cursor/care-foundation-phase-b-dc3b"
+halt_reason: governance_approval_required
+halt_detail: "Phase D replan PR in progress; A–C grant superseded — re-approve before D0"
+next_action: "Complete phase 4 docs replan PR; then request re-approval on #1082 before phase 5"
 artifact_ref:
   branch: cursor/care-foundation-c7a1-integration-dc3b
   plan_path: .agents/plans/care-foundation-c7a1.md
-  plan_commit: fa5e08cfaf7e2cd13b79863af494775c7363beeb
   snapshot_path: .agents/plans/care-foundation-c7a1.snapshot.json
-  snapshot_commit: fa5e08cfaf7e2cd13b79863af494775c7363beeb
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
@@ -112,4 +137,4 @@ debt_issue_refs: []
 
 ## next_action
 
-Implement Phase 1 on `cursor/care-foundation-phase-a-dc3b`.
+Land phase 4 (docs replan). Post re-approval request on #1082. Do not start D0 until re-approved.
