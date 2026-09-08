@@ -12,6 +12,7 @@ import {
   userCanManageWeightEntry,
 } from '../lib/petAccess.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../lib/petCapabilityPolicy.js';
+import { validateMeasurementSource } from './careIntelligence/provenance.js';
 
 function weightEntryToMap(row) {
   return {
@@ -22,6 +23,7 @@ function weightEntryToMap(row) {
     unit: row.unit || 'kg',
     date: row.date ? dateToIsoDate(row.date) : null,
     notes: row.notes || '',
+    measurement_source: row.measurement_source || 'guardian',
     created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,
   };
 }
@@ -118,9 +120,14 @@ export default function weightEntriesRoutes(pool) {
         return res.status(400).json({ error: parsedWeight.error });
       }
       const weightVal = parsedWeight.value;
+      const sourceInput = data.measurement_source ?? data.measurementSource;
+      const sourceResult = validateMeasurementSource(sourceInput);
+      if (!sourceResult.ok) {
+        return res.status(400).json({ error: sourceResult.error });
+      }
       const result = await pool.query(
-        'INSERT INTO weight_entries (id, pet_id, user_id, weight, unit, date, notes) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-        [id, petId, userId, weightVal, data.unit || 'kg', dateVal, data.notes || '']
+        'INSERT INTO weight_entries (id, pet_id, user_id, weight, unit, date, notes, measurement_source) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+        [id, petId, userId, weightVal, data.unit || 'kg', dateVal, data.notes || '', sourceResult.value]
       );
       await refreshPetWeightCache(pool, petId);
       logAuditEventSafe(pool, {
@@ -153,9 +160,14 @@ export default function weightEntriesRoutes(pool) {
         return res.status(400).json({ error: parsedWeight.error });
       }
       const weightVal = parsedWeight.value;
+      const sourceInput = data.measurement_source ?? data.measurementSource;
+      const sourceResult = validateMeasurementSource(sourceInput);
+      if (!sourceResult.ok) {
+        return res.status(400).json({ error: sourceResult.error });
+      }
       const result = await pool.query(
-        'UPDATE weight_entries SET weight = $1, unit = $2, date = $3, notes = $4 WHERE id = $5 RETURNING *',
-        [weightVal, data.unit || 'kg', dateVal, data.notes || '', req.params.id]
+        'UPDATE weight_entries SET weight = $1, unit = $2, date = $3, notes = $4, measurement_source = $5 WHERE id = $6 RETURNING *',
+        [weightVal, data.unit || 'kg', dateVal, data.notes || '', sourceResult.value, req.params.id]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
       const row = result.rows[0];

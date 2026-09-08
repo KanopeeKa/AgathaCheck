@@ -121,6 +121,10 @@ up to 2 MB.
 `GET /` (optional `?pet_id=`), `GET /latest?pet_id=`, `POST /` (verifies pet
 ownership), `PUT /:id`, `DELETE /:id`.
 
+D0 provenance: responses include `measurement_source` (`guardian`|`clinic`|`device`|`imported`).
+POST/PUT accept optional `measurement_source`. Pet weight reference/context fields live on `PUT /api/pets/:id`
+(`weight_reference_value`, `weight_reference_authority`, `weight_management_context`) — see [d0-provenance-contract.md](../domains/pet_care/changes/d0-provenance-contract.md).
+
 ### Notifications (`/api/notifications`)
 `GET /`, `GET /unread-count`, `PUT|POST /:id/read`, `PUT|POST /read-all`,
 `GET|PUT /preferences`, `POST /check-due`.

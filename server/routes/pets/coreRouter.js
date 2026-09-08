@@ -22,6 +22,10 @@ import {
   FOSTER_PET_ACCESS_ROLE,
 } from '../../lib/petAccess.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
+import {
+  validateManagementContext,
+  validateReferenceAuthority,
+} from '../careIntelligence/provenance.js';
 import { rejectFrozenOrganizationIdOnPetWrite } from '../../lib/frozenDomains.js';
 import { orgPetViewerRolesSql } from '../../lib/orgRoles.js';
 import { OPEN_PLACEMENT_STATUSES } from '../../lib/fosterPlacements.js';
@@ -245,7 +249,7 @@ export function registerCoreRoutes(router, pool) {
       const species = normalizeSpecies(req.body.species);
       const gender = normalizeGender(req.body.gender);
       const existingPet = await pool.query(
-        'SELECT organization_id, photo_path FROM pets WHERE id = $1',
+        'SELECT organization_id, photo_path, weight_reference_value, weight_reference_authority, weight_management_context FROM pets WHERE id = $1',
         [id]
       );
       let photoPath = existingPet.rows[0]?.photo_path ?? null;
@@ -264,16 +268,51 @@ export function registerCoreRoutes(router, pool) {
           && !(await userInOrg(pool, nextOrgId, userId))) {
         return res.status(403).json({ error: 'Not a member of this organization' });
       }
+      const existingRow = existingPet.rows[0] || {};
+      let weightReferenceValue = existingRow.weight_reference_value ?? null;
+      let weightReferenceAuthority = existingRow.weight_reference_authority ?? null;
+      let weightManagementContext = existingRow.weight_management_context || 'none';
+      if (Object.prototype.hasOwnProperty.call(req.body, 'weight_reference_value')
+          || Object.prototype.hasOwnProperty.call(req.body, 'weightReferenceValue')) {
+        const rawRef = req.body.weight_reference_value ?? req.body.weightReferenceValue;
+        if (rawRef === null || rawRef === '') {
+          weightReferenceValue = null;
+        } else {
+          const parsed = typeof rawRef === 'number' ? rawRef : parseFloat(String(rawRef));
+          if (!Number.isFinite(parsed) || parsed <= 0) {
+            return res.status(400).json({ error: 'weight_reference_value must be a positive number' });
+          }
+          weightReferenceValue = parsed;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(req.body, 'weight_reference_authority')
+          || Object.prototype.hasOwnProperty.call(req.body, 'weightReferenceAuthority')) {
+        const authResult = validateReferenceAuthority(
+          req.body.weight_reference_authority ?? req.body.weightReferenceAuthority,
+        );
+        if (!authResult.ok) return res.status(400).json({ error: authResult.error });
+        weightReferenceAuthority = authResult.value;
+      }
+      if (Object.prototype.hasOwnProperty.call(req.body, 'weight_management_context')
+          || Object.prototype.hasOwnProperty.call(req.body, 'weightManagementContext')) {
+        const ctxResult = validateManagementContext(
+          req.body.weight_management_context ?? req.body.weightManagementContext,
+        );
+        if (!ctxResult.ok) return res.status(400).json({ error: ctxResult.error });
+        weightManagementContext = ctxResult.value;
+      }
       const result = await pool.query(
         `UPDATE pets SET name=$1, species=$2, breed=$3, age=$4, date_of_birth=$5, weight=$6, gender=$7,
           bio=$8, insurance=$9, neutered_date=$10, neuter_dismissed=$11, chip_id=$12, chip_dismissed=$13,
           photo_path=$14, vet_id=$15, color_index=$16, passed_away=$17, organization_id=$18,
+          weight_reference_value=$19, weight_reference_authority=$20, weight_management_context=$21,
           updated_at=NOW()
-         WHERE id=$19 RETURNING *`,
+         WHERE id=$22 RETURNING *`,
         [name, species, breed, age, dateOfBirth, weight, gender,
          bio, insurance, neuteredDate, neuterDismissed, chipId, chipDismissed,
          photoPath, vetId || null, colorValue != null ? colorValue : null,
-         passedAway, organization_id || null, id]
+         passedAway, organization_id || null,
+         weightReferenceValue, weightReferenceAuthority, weightManagementContext, id]
       );
       if (result.rows.length === 0) {
         return res.status(404).json({ error: 'Pet not found' });
