@@ -3,7 +3,7 @@ title: Pet Care domain
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-07
+last_updated: 2026-09-08
 tags: [domain, pet_care, experience]
 ---
 
@@ -13,10 +13,19 @@ The **Pet Care** workspace is the plum (`/pc/*`) operational experience for indi
 
 Part of the AgathaTrack domain-first documentation tree. Cross-cutting architecture: [/docs/architecture/index.md](/docs/architecture/index.md).
 
+## Care Intelligence
+
+| Document | Role |
+|----------|------|
+| [features/care-intelligence.md](features/care-intelligence.md) | Canonical product behaviour |
+| [changes/care-foundation-roadmap.md](changes/care-foundation-roadmap.md) | Programme sequencing (v0.4) |
+| [changes/phase-d-review-relevance-plan.md](changes/phase-d-review-relevance-plan.md) | Active Phase D research/delivery plan |
+
 ## On this domain
 
 | Section | Link |
 |---------|------|
+| **Care Foundation & Intelligence roadmap (v0.4)** | [changes/care-foundation-roadmap.md](changes/care-foundation-roadmap.md) |
 | Domain rename plan | [changes/domain-rename-plan.md](changes/domain-rename-plan.md) |
 | F-22 residual inventory | [changes/terminology-rename-inventory.md](changes/terminology-rename-inventory.md) |
 | Pet profile decisions (D38) | [pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md) |

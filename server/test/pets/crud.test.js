@@ -257,7 +257,7 @@ describe('Pets API', () => {
       const app = createApp(createMockPool(async (sql, params) => {
         const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
         if (access) return access;
-        if (sql.includes('SELECT organization_id, photo_path FROM pets')) {
+        if (sql.includes('SELECT organization_id, photo_path') && sql.includes('FROM pets')) {
           return { rows: [{ organization_id: null, photo_path: '/uploads/fluffy.jpg' }] };
         }
         if (sql.includes('FROM weight_entries')) return { rows: [{ weight: 4.5 }] };
@@ -282,7 +282,7 @@ describe('Pets API', () => {
       const app = createApp(createMockPool(async (sql, params) => {
         const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
         if (access) return access;
-        if (sql.includes('SELECT organization_id, photo_path FROM pets')) {
+        if (sql.includes('SELECT organization_id, photo_path') && sql.includes('FROM pets')) {
           return { rows: [{ organization_id: null, photo_path: '/uploads/fluffy.jpg' }] };
         }
         return { rows: [] };

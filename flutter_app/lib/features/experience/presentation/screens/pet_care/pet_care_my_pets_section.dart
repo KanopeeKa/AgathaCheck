@@ -7,6 +7,7 @@ import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../core/widgets/dashboard_section.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
+import '../../../../pet_profile/domain/entities/care_status.dart';
 import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../../pet_profile/presentation/widgets/pet_card.dart';
 import '../../../../pet_profile/presentation/utils/pet_tile_dimensions.dart';
@@ -257,14 +258,14 @@ class _PetCarePetRail extends StatelessWidget {
     required double tileWidth,
     required double tileHeight,
   }) {
-    final careState = careSummary == null
-        ? PetCareTodayPetCareState.clear
-        : petCareTodayPetCareState(pet, careSummary!);
+    final careStatus = careSummary == null
+        ? CareStatus.allSet
+        : petCareStatusFor(pet, careSummary!);
     final statusLine = resolvePetTileStatusLine(
       l: l,
       pet: pet,
       context: PetTileContext.petCare,
-      careUrgency: petTileCareUrgencyFor(careState),
+      careStatus: careStatus,
     );
     return UnifiedPetTile(
       pet: pet,

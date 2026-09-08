@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-foundation-c7a1",
+  "approved_at": "2026-09-08T21:56:00Z",
+  "approved_by": "user chat 2026-09-08 — approve-autonomous + standing grant run-until-complete (all phases; D0.5/D5b via chat)",
+  "approved_until": "2026-09-10T22:45:00Z",
+  "autonomy": "completed",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/care-foundation-c7a1-integration-dc3b",
+  "control_issue": 1082,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Care Foundation — status, family, source, icons, prompts",
+      "branch": "cursor/care-foundation-phase-a-dc3b",
+      "allowed_paths": [
+        ".agents/plans/care-foundation-c7a1.*",
+        "docs/design/**",
+        "docs/domains/pet_care/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/core/theme/**",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/**",
+        "flutter_app/lib/features/experience/presentation/widgets/pet_care_*",
+        "flutter_app/lib/features/health_tracking/domain/**",
+        "flutter_app/lib/features/health_tracking/data/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/features/pet_profile/**",
+        "server/migrations/**",
+        "server/routes/healthEntries/**",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**",
+        "server/routes/organizations/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": "PR #1083",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Care Rhythms — recurring care configuration screen",
+      "branch": "cursor/care-foundation-phase-b-dc3b",
+      "allowed_paths": [
+        ".agents/plans/care-foundation-c7a1.*",
+        "docs/domains/pet_care/**",
+        "docs/design/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_profile/presentation/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/features/pet_profile/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**",
+        "server/routes/careIntelligence/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": "PR #1084",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Suggested by Agatha — crisp rules, API, suggestion UX",
+      "branch": "cursor/care-foundation-phase-c-dc3b",
+      "allowed_paths": [
+        ".agents/plans/care-foundation-c7a1.*",
+        "docs/domains/pet_care/**",
+        "docs/design/**",
+        "docs/architecture/api-reference.md",
+        "flutter_app/lib/features/care_intelligence/**",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/**",
+        "flutter_app/lib/features/pet_profile/presentation/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/care_intelligence/**",
+        "flutter_app/test/features/pet_profile/**",
+        "server/routes/careIntelligence/**",
+        "server/routes/index.js",
+        "server/test/careIntelligence/**",
+        "server/migrations/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": "PR #1085",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Phase D documentation replan — feature doc, delivery plan, execute-plan reconciliation",
+      "branch": "cursor/phase-d-docs-replan-dc3b",
+      "allowed_paths": [
+        ".agents/plans/care-foundation-c7a1.*",
+        "docs/domains/pet_care/**",
+        "docs/agent-efficiency/execute-plan-schema.md",
+        "docs/agent-efficiency/execute-plan-snapshot.schema.json",
+        "scripts/lib/execute_plan_constants.js"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**",
+        "server/routes/careIntelligence/**",
+        "server/migrations/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1086",
+      "pr_head_sha": "e40b4788"
+    },
+    {
+      "id": "5",
+      "title": "D0 — Semantics, provenance contracts, D6.0 benchmark schema",
+      "branch": "cursor/care-foundation-phase-d0-dc3b",
+      "allowed_paths": [
+        ".agents/plans/care-foundation-c7a1.*",
+        "docs/domains/pet_care/**",
+        "docs/architecture/**",
+        "regulatory/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**",
+        "server/routes/careIntelligence/**",
+        "server/migrations/**",
+        "server/test/careIntelligence/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1087",
+      "pr_head_sha": "151b658b"
+    },
+    {
+      "id": "6",
+      "title": "D1–D7 — Review relevance execution (weight-first, internal-only)",
+      "branch": "cursor/care-foundation-phase-d-exec-dc3b",
+      "allowed_paths": [
+        ".agents/plans/care-foundation-c7a1.*",
+        "docs/domains/pet_care/**",
+        "docs/architecture/**",
+        "regulatory/**",
+        "flutter_app/lib/features/care_intelligence/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**",
+        "server/routes/careIntelligence/**",
+        "server/migrations/**",
+        "server/test/careIntelligence/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1088",
+      "pr_head_sha": "f67d0ee5"
+    }
+  ],
+  "content_hash": "sha256:c463988ddf52ae433346c0f2d793f0a32c9fe3fa02c5675f54d09843c0913dbf"
+}

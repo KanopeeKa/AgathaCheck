@@ -13,6 +13,9 @@ import {
   healthEntryToMap,
   csvCell,
   validateHealthEntryTypeForWrite,
+  validateCareFamilyForWrite,
+  validateCareSourceForWrite,
+  inferCareFamilyFromType,
 } from './shared.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { materialiseInitialOccurrences, parseScheduleTimesInput } from '../../lib/occurrenceScheduling.js';
@@ -122,9 +125,24 @@ export function registerCrudRoutes(router, pool) {
         return res.status(400).json({ error: typeValidation.error });
       }
       const scheduleTimes = parseScheduleTimesInput(data);
+      const careFamilyValidation = validateCareFamilyForWrite(
+        data.care_family || data.careFamily,
+      );
+      if (!careFamilyValidation.ok) {
+        return res.status(400).json({ error: careFamilyValidation.error });
+      }
+      const careSourceValidation = validateCareSourceForWrite(
+        data.care_source || data.careSource,
+      );
+      if (!careSourceValidation.ok) {
+        return res.status(400).json({ error: careSourceValidation.error });
+      }
+      const careFamily =
+        careFamilyValidation.value ||
+        inferCareFamilyFromType(typeValidation.type);
       const result = await pool.query(
-        `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, schedule_times, status)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19) RETURNING *`,
+        `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, schedule_times, status, care_family, care_source)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21) RETURNING *`,
         [
           id, petId, userId,
           data.name || '',
@@ -140,6 +158,8 @@ export function registerCrudRoutes(router, pool) {
           data.remind_days_before || data.remindDaysBefore || 1,
           scheduleTimes !== undefined ? scheduleTimes : null,
           completedOn ? 'completed' : (data.status || 'active'),
+          careFamily,
+          careSourceValidation.value,
         ]
       );
       const entry = result.rows[0];
@@ -184,12 +204,28 @@ export function registerCrudRoutes(router, pool) {
       if (!typeValidation.ok) {
         return res.status(400).json({ error: typeValidation.error });
       }
+      const careFamilyValidation = validateCareFamilyForWrite(
+        data.care_family || data.careFamily,
+      );
+      if (!careFamilyValidation.ok) {
+        return res.status(400).json({ error: careFamilyValidation.error });
+      }
+      const careSourceValidation = validateCareSourceForWrite(
+        data.care_source || data.careSource,
+      );
+      if (!careSourceValidation.ok) {
+        return res.status(400).json({ error: careSourceValidation.error });
+      }
+      const careFamily =
+        careFamilyValidation.value ||
+        inferCareFamilyFromType(typeValidation.type);
       const result = await pool.query(
         `UPDATE health_entries SET name = $1, type = $2, dosage = $3, frequency = $4, frequency_days = $5,
           frequency_interval = $6, start_date = $7, next_due_date = $8, completed_on = $9,
           recurrence_anchor = $10, repeat_end_date = $11, notes = $12,
-          health_issue_id = $13, remind_days_before = $14, status = $15, updated_at = NOW()
-         WHERE id = $16 RETURNING *`,
+          health_issue_id = $13, remind_days_before = $14, status = $15,
+          care_family = $16, care_source = $17, updated_at = NOW()
+         WHERE id = $18 RETURNING *`,
         [
           data.name || '',
           typeValidation.type,
@@ -203,6 +239,8 @@ export function registerCrudRoutes(router, pool) {
           healthIssueId,
           data.remind_days_before || data.remindDaysBefore || 1,
           completedOn ? 'completed' : (data.status || 'active'),
+          careFamily,
+          careSourceValidation.value,
           req.params.id,
         ]
       );

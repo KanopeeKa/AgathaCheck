@@ -31,6 +31,9 @@
 | `age` | DOUBLE PRECISION | Pet age (legacy, calculated from DOB) | No |
 | `date_of_birth` | DATE | Pet date of birth | No |
 | `weight` | DOUBLE PRECISION | Current weight | No |
+| `weight_reference_value` | DOUBLE PRECISION | D0: optional reference/target weight | No |
+| `weight_reference_authority` | VARCHAR(50) | D0: `vet_target`, `guardian_reference`, `historical_baseline` | No |
+| `weight_management_context` | VARCHAR(50) | D0: active weight management context | No |
 | `gender` | VARCHAR(50) | Pet gender | No |
 | `bio` | TEXT | Pet biography/notes | Yes |
 | `insurance` | TEXT | Insurance information | Yes |
@@ -87,6 +90,7 @@
 | `pet_id` | VARCHAR(255) | Associated pet |
 | `date` | DATE | Measurement date |
 | `weight` | DOUBLE PRECISION | Weight value |
+| `measurement_source` | VARCHAR(50) | D0: `guardian`, `clinic`, `device`, `imported` (per-entry; not inferred from pet context) |
 | `notes` | TEXT | User notes |
 
 ### 1.7 Veterinarian Data (stored in shared_pets / pet data)

@@ -1208,6 +1208,198 @@ abstract class AppLocalizations {
   /// **'Care coming up'**
   String get careStatusUpcoming;
 
+  /// No description provided for @careStatusAllSet.
+  ///
+  /// In en, this message translates to:
+  /// **'All Set'**
+  String get careStatusAllSet;
+
+  /// No description provided for @careStatusWorthACheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Worth a Check'**
+  String get careStatusWorthACheck;
+
+  /// No description provided for @careStatusTimeToFollowUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to Follow Up'**
+  String get careStatusTimeToFollowUp;
+
+  /// No description provided for @careStatusAllSetBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything you\'re currently tracking is up to date.'**
+  String get careStatusAllSetBody;
+
+  /// No description provided for @careStatusReviewAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get careStatusReviewAction;
+
+  /// No description provided for @careStatusViewAction.
+  ///
+  /// In en, this message translates to:
+  /// **'View action'**
+  String get careStatusViewAction;
+
+  /// No description provided for @profilePromptChipMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Microchip details not added'**
+  String get profilePromptChipMissing;
+
+  /// No description provided for @profilePromptNeuterMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Neutering status not recorded'**
+  String get profilePromptNeuterMissing;
+
+  /// No description provided for @dismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
+
+  /// No description provided for @careRhythmsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Care Rhythms'**
+  String get careRhythmsTitle;
+
+  /// No description provided for @careRhythmsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your recurring care routines.'**
+  String get careRhythmsSubtitle;
+
+  /// No description provided for @careActionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s due from those routines and other scheduled care.'**
+  String get careActionsSubtitle;
+
+  /// No description provided for @careRhythmsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No recurring care routines yet. Add a recurring event to see it here.'**
+  String get careRhythmsEmpty;
+
+  /// No description provided for @careRhythmNextDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Next due {date}'**
+  String careRhythmNextDue(String date);
+
+  /// No description provided for @careSourceGuardianDefined.
+  ///
+  /// In en, this message translates to:
+  /// **'Added by you'**
+  String get careSourceGuardianDefined;
+
+  /// No description provided for @careSourceVetInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'From your vet'**
+  String get careSourceVetInstruction;
+
+  /// No description provided for @careSourceTreatmentSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment schedule'**
+  String get careSourceTreatmentSchedule;
+
+  /// No description provided for @careSourceCarePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Care plan'**
+  String get careSourceCarePlan;
+
+  /// No description provided for @careSourceAgathaAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted from Agatha'**
+  String get careSourceAgathaAccepted;
+
+  /// No description provided for @careSourceAgathaAdjusted.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjusted with Agatha'**
+  String get careSourceAgathaAdjusted;
+
+  /// No description provided for @careSourceSystemDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default schedule'**
+  String get careSourceSystemDefault;
+
+  /// No description provided for @careSuggestionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested by Agatha'**
+  String get careSuggestionTitle;
+
+  /// No description provided for @careSuggestionAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Add rhythm'**
+  String get careSuggestionAccept;
+
+  /// No description provided for @careSuggestionDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get careSuggestionDismiss;
+
+  /// No description provided for @careSuggestionNotRelevant.
+  ///
+  /// In en, this message translates to:
+  /// **'Not relevant'**
+  String get careSuggestionNotRelevant;
+
+  /// No description provided for @careSuggestionWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Why?'**
+  String get careSuggestionWhy;
+
+  /// No description provided for @careSuggestionWhyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Why Agatha suggests this'**
+  String get careSuggestionWhyTitle;
+
+  /// No description provided for @careSuggestionGenericWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'This recurring rhythm can help you stay organised between vet visits.'**
+  String get careSuggestionGenericWhy;
+
+  /// No description provided for @careSuggestionWeightMonitoringWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular weight checks help you notice gradual changes early.'**
+  String get careSuggestionWeightMonitoringWhy;
+
+  /// No description provided for @careSuggestionDentalWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'A steady dental review rhythm keeps mouth care on your calendar.'**
+  String get careSuggestionDentalWhy;
+
+  /// No description provided for @careSuggestionWellnessWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'A yearly wellness review gives you a calm checkpoint for routine care.'**
+  String get careSuggestionWellnessWhy;
+
+  /// No description provided for @careSuggestionCadenceSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Every {interval} {frequency}'**
+  String careSuggestionCadenceSummary(int interval, String frequency);
+
   /// No description provided for @careLoadError.
   ///
   /// In en, this message translates to:

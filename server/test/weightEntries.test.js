@@ -373,7 +373,7 @@ describe('Weight Entries API', () => {
         .send({ weight: 5 });
       const update = [...allQueries].reverse().find((q) => q.sql.includes('UPDATE weight_entries'));
       expect(update.sql).toContain('UPDATE weight_entries');
-      expect(update.params[4]).toBe('we-1');
+      expect(update.params[5]).toBe('we-1');
     });
 
     it('returns 400 when weight is invalid on update', async () => {

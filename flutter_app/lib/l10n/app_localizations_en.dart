@@ -635,6 +635,113 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careStatusUpcoming => 'Care coming up';
 
   @override
+  String get careStatusAllSet => 'All Set';
+
+  @override
+  String get careStatusWorthACheck => 'Worth a Check';
+
+  @override
+  String get careStatusTimeToFollowUp => 'Time to Follow Up';
+
+  @override
+  String get careStatusAllSetBody =>
+      'Everything you\'re currently tracking is up to date.';
+
+  @override
+  String get careStatusReviewAction => 'Review';
+
+  @override
+  String get careStatusViewAction => 'View action';
+
+  @override
+  String get profilePromptChipMissing => 'Microchip details not added';
+
+  @override
+  String get profilePromptNeuterMissing => 'Neutering status not recorded';
+
+  @override
+  String get dismiss => 'Dismiss';
+
+  @override
+  String get careRhythmsTitle => 'Care Rhythms';
+
+  @override
+  String get careRhythmsSubtitle => 'Your recurring care routines.';
+
+  @override
+  String get careActionsSubtitle =>
+      'What\'s due from those routines and other scheduled care.';
+
+  @override
+  String get careRhythmsEmpty =>
+      'No recurring care routines yet. Add a recurring event to see it here.';
+
+  @override
+  String careRhythmNextDue(String date) {
+    return 'Next due $date';
+  }
+
+  @override
+  String get careSourceGuardianDefined => 'Added by you';
+
+  @override
+  String get careSourceVetInstruction => 'From your vet';
+
+  @override
+  String get careSourceTreatmentSchedule => 'Treatment schedule';
+
+  @override
+  String get careSourceCarePlan => 'Care plan';
+
+  @override
+  String get careSourceAgathaAccepted => 'Accepted from Agatha';
+
+  @override
+  String get careSourceAgathaAdjusted => 'Adjusted with Agatha';
+
+  @override
+  String get careSourceSystemDefault => 'Default schedule';
+
+  @override
+  String get careSuggestionTitle => 'Suggested by Agatha';
+
+  @override
+  String get careSuggestionAccept => 'Add rhythm';
+
+  @override
+  String get careSuggestionDismiss => 'Dismiss';
+
+  @override
+  String get careSuggestionNotRelevant => 'Not relevant';
+
+  @override
+  String get careSuggestionWhy => 'Why?';
+
+  @override
+  String get careSuggestionWhyTitle => 'Why Agatha suggests this';
+
+  @override
+  String get careSuggestionGenericWhy =>
+      'This recurring rhythm can help you stay organised between vet visits.';
+
+  @override
+  String get careSuggestionWeightMonitoringWhy =>
+      'Regular weight checks help you notice gradual changes early.';
+
+  @override
+  String get careSuggestionDentalWhy =>
+      'A steady dental review rhythm keeps mouth care on your calendar.';
+
+  @override
+  String get careSuggestionWellnessWhy =>
+      'A yearly wellness review gives you a calm checkpoint for routine care.';
+
+  @override
+  String careSuggestionCadenceSummary(int interval, String frequency) {
+    return 'Every $interval $frequency';
+  }
+
+  @override
   String get careLoadError => 'We couldn\'t load care right now.';
 
   @override

@@ -1,0 +1,54 @@
+[
+  {
+    "caseId": "rv_sparse_measurements",
+    "pet": { "id": "pet-rv-1", "date_of_birth": "2020-01-01" },
+    "measurements": [
+      { "date": "2026-01-01", "weight": 5.0, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-01-05", "weight": 4.9, "unit": "kg", "measurement_source": "guardian" }
+    ],
+    "expectReviewRelevant": false
+  },
+  {
+    "caseId": "rv_vet_managed_suppressed",
+    "pet": { "id": "pet-rv-2", "date_of_birth": "2019-06-01" },
+    "measurements": [
+      { "date": "2026-01-01", "weight": 6.0, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-01-20", "weight": 5.7, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-02-10", "weight": 5.4, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-03-01", "weight": 5.1, "unit": "kg", "measurement_source": "guardian" }
+    ],
+    "weightContext": {
+      "reference_value": null,
+      "reference_authority": null,
+      "management_context": "vet_managed"
+    },
+    "expectReviewRelevant": false
+  },
+  {
+    "caseId": "rv_persistent_decline_unexplained",
+    "pet": { "id": "pet-rv-3", "date_of_birth": "2018-03-15" },
+    "measurements": [
+      { "date": "2026-01-01", "weight": 6.0, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-01-20", "weight": 5.7, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-02-10", "weight": 5.3, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-03-01", "weight": 5.0, "unit": "kg", "measurement_source": "guardian" }
+    ],
+    "weightContext": {
+      "reference_value": null,
+      "reference_authority": null,
+      "management_context": "none"
+    },
+    "expectReviewRelevant": true
+  },
+  {
+    "caseId": "rv_puppy_growth_ordinary",
+    "pet": { "id": "pet-rv-4", "date_of_birth": "2025-06-01" },
+    "measurements": [
+      { "date": "2026-01-01", "weight": 8.0, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-01-20", "weight": 8.5, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-02-10", "weight": 9.0, "unit": "kg", "measurement_source": "guardian" },
+      { "date": "2026-03-01", "weight": 9.4, "unit": "kg", "measurement_source": "guardian" }
+    ],
+    "expectReviewRelevant": false
+  }
+]

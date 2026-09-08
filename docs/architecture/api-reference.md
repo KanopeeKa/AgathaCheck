@@ -121,6 +121,10 @@ up to 2 MB.
 `GET /` (optional `?pet_id=`), `GET /latest?pet_id=`, `POST /` (verifies pet
 ownership), `PUT /:id`, `DELETE /:id`.
 
+D0 provenance: responses include `measurement_source` (`guardian`|`clinic`|`device`|`imported`).
+POST/PUT accept optional `measurement_source`. Pet weight reference/context fields live on `PUT /api/pets/:id`
+(`weight_reference_value`, `weight_reference_authority`, `weight_management_context`) — see [d0-provenance-contract.md](../domains/pet_care/changes/d0-provenance-contract.md).
+
 ### Notifications (`/api/notifications`)
 `GET /`, `GET /unread-count`, `PUT|POST /:id/read`, `PUT|POST /read-all`,
 `GET|PUT /preferences`, `POST /check-due`.
@@ -148,6 +152,21 @@ Pet access management on `/api/pets/:id/...` (owner unless noted):
 Shared pets appear in `GET /api/pets/all` with `is_shared: true`. Fostered pets use `is_foster: true` (and `is_shared: false`). Shared and org-visible pets may include `primary_holder_name` (display name of the pet's primary holder) when the viewer is permitted to see it.
 
 Share links are **single-use**: once accepted, the same link cannot be used by another user (`410`).
+
+### Care recommendations (`/api/pets/:id/care-recommendations`) — Phase C crisp rules
+
+Server-authoritative Agatha suggestions (weight, dental, wellness rhythm families). Suggestions do not affect Care Status until accepted.
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/care-recommendations` | Sync pending recommendations for pet (`HEALTH_VIEW`) |
+| POST | `/care-recommendations/:recommendationId/respond` | Body `{ action: accept\|adjust\|dismiss\|not_relevant, adjust?: { frequency, frequency_interval } }`; accept/adjust creates recurring `health_entry` with `care_source` `agatha_accepted` / `agatha_adjusted` (`HEALTH_EDIT`) |
+
+### Review relevance (Phase D — internal only)
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/pets/:id/review-relevance/evaluate` | Internal evaluation harness output; `internal_only: true`; not a guardian safeguard (`HEALTH_VIEW`) |
 
 ### Pet family events (`/api/pets/:id/family-events`) — Node backend
 
