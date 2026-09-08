@@ -1,6 +1,7 @@
 import { publicError } from '../../config/security.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { accessiblePetSql } from '../../lib/petAccess.js';
+import { isProduction } from '../auth/shared.js';
 import { extractUserId } from '../pets/shared.js';
 import { evaluateReviewRelevance } from './reviewRelevance.js';
 import { weightContextFromPetRow } from './provenance.js';
@@ -28,6 +29,9 @@ export function registerReviewRelevanceRoutes(router, pool) {
   router.get('/:id/review-relevance/evaluate', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (isProduction() && process.env.CARE_INTELLIGENCE_INTERNAL_EVAL !== '1') {
+      return res.status(404).json({ error: 'Not found' });
+    }
     const { id: petId } = req.params;
     try {
       if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.HEALTH_VIEW))) {
