@@ -113,15 +113,16 @@ Phase D scope re-approved via `approve-autonomous care-foundation-c7a1` on #1082
 
 ```yaml
 autonomy: active
-current_phase: 4
-last_completed_phase: 3
+current_phase: 5
+last_completed_phase: 4
 halt_reason: null
-halt_detail: null
-next_action: "babysit+ merge phase 4 PR #1086, then start phase 5 D0"
+next_action: "continue phase 5 on branch cursor/care-foundation-phase-d0-dc3b"
 artifact_ref:
-  branch: cursor/care-foundation-c7a1-integration-dc3b
+  branch: cursor/phase-d-docs-replan-dc3b
   plan_path: .agents/plans/care-foundation-c7a1.md
+  plan_commit: e40b4788ad3412778ed3eeb328e1820c0edfa871
   snapshot_path: .agents/plans/care-foundation-c7a1.snapshot.json
+  snapshot_commit: e40b4788ad3412778ed3eeb328e1820c0edfa871
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
