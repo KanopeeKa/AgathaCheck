@@ -4,7 +4,7 @@
   "approved_at": "2026-09-08T21:56:00Z",
   "approved_by": "user chat 2026-09-08 — approve-autonomous + standing grant run-until-complete (all phases; D0.5/D5b via chat)",
   "approved_until": "2026-09-10T22:45:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-foundation-c7a1-integration-dc3b",
   "control_issue": 1082,
@@ -237,5 +237,5 @@
       "pr_head_sha": "f67d0ee5"
     }
   ],
-  "content_hash": "sha256:54a7f631012d33bdd61a957a7724887c6cada49f0a6d4201088480cecdafab9d"
+  "content_hash": "sha256:c463988ddf52ae433346c0f2d793f0a32c9fe3fa02c5675f54d09843c0913dbf"
 }
