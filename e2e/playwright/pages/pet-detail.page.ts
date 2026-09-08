@@ -125,15 +125,20 @@ export class PetDetailPage {
       .waitFor({ timeout: 15_000 });
   }
 
-  async expectIdentificationReminder(petName: string): Promise<void> {
+  async expectIdentificationReminder(_petName: string): Promise<void> {
     await enableFlutterAccessibility(this.page);
-    const pattern = new RegExp(`${petName} has no identification`, 'i');
-    await this.page.getByRole('group', { name: pattern }).first().waitFor({ timeout: 15_000 });
+    const pattern = /Microchip details not added|Puce non renseignée/i;
+    await this.page
+      .getByRole('group', { name: pattern })
+      .or(this.page.getByText(pattern))
+      .first()
+      .waitFor({ timeout: 15_000 });
   }
 
-  async expectNoIdentificationReminder(petName: string): Promise<void> {
+  async expectNoIdentificationReminder(_petName: string): Promise<void> {
+    const pattern = /Microchip details not added|Puce non renseignée/i;
     await expect(
-      this.page.getByText(new RegExp(`${petName} has no identification`, 'i')),
+      this.page.getByText(pattern).or(this.page.getByRole('group', { name: pattern })),
     ).toHaveCount(0);
   }
 
