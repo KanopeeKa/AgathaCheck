@@ -797,12 +797,12 @@ export function petCardHiddenLocator(page: Page, petName: string) {
     .or(page.getByRole('tab', { name: pattern }));
 }
 
-/** Care-state tail on guardian full-list cards — legacy `{name}, {ownership}, {care}` or unified `{name}, {care}`. */
+/** Care-state tail on guardian full-list cards — legacy or Phase A care foundation labels. */
 const GUARDIAN_PET_LIST_CARE_TAIL =
-  '(?:All clear|Overdue|Due today|Care coming up|Passed away|Tout est en ordre|En retard|Aujourd\'hui|Soin à venir|Décédé\\(e\\))';
+  '(?:All [Ss]et|All clear|Worth a Check|Time to Follow Up|Overdue|Due today|Care coming up|Passed away|Tout est en ordre|À vérifier|À suivre|En retard|Aujourd\'hui|Soin à venir|Décédé\\(e\\))';
 
 const GUARDIAN_ACTIVE_PET_LIST_CARE_TAIL =
-  '(?:All clear|Overdue|Due today|Care coming up|Tout est en ordre|En retard|Aujourd\'hui|Soin à venir)';
+  '(?:All [Ss]et|All clear|Worth a Check|Time to Follow Up|Overdue|Due today|Care coming up|Tout est en ordre|À vérifier|À suivre|En retard|Aujourd\'hui|Soin à venir)';
 
 /** Legacy guardian full-list card — `{name}, {ownership}, {care}`. */
 const GUARDIAN_FULL_LIST_THREE_PART = new RegExp(
