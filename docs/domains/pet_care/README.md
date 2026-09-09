@@ -23,7 +23,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 
 ## Care Progression (next programme)
 
-Starts **after** Care Foundation Phase E merges to `main`. **Architecture and delivery plan approved** (subject to amendment incorporation); **implementation not started** until Phase E merges.
+Starts **after** Care Foundation Phase E merges to `main`. Architecture and delivery plan **approved**; implementation **not started** until Phase E merges.
 
 | Document | Role |
 |----------|------|
