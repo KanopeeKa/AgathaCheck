@@ -29,12 +29,13 @@ class PetEventOccurrenceActions {
   ) async {
     if (WeightOccurrenceCareActions.isWeightRhythm(entry)) {
       try {
-        final saved = await WeightOccurrenceCareActions.showWeightEntrySheetForOccurrence(
-          context,
-          ref,
-          entry,
-          occurrence.id,
-        );
+        final saved =
+            await WeightOccurrenceCareActions.showWeightEntrySheetForOccurrence(
+              context,
+              ref,
+              entry,
+              occurrence.id,
+            );
         if (!saved || !context.mounted) return;
         invalidateOccurrenceData(ref, entry.id);
       } catch (_) {

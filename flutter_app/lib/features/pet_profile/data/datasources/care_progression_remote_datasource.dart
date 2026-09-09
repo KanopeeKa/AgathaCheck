@@ -23,9 +23,7 @@ class CareProgressionRemoteDataSource {
 
   void _check(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode < 300) return;
-    throw Exception(
-      'Care progression request failed (${response.statusCode})',
-    );
+    throw Exception('Care progression request failed (${response.statusCode})');
   }
 
   Future<List<CareEstablishmentModel>> fetchEstablishments(String petId) async {
@@ -37,9 +35,7 @@ class CareProgressionRemoteDataSource {
     final body = json.decode(response.body) as Map<String, dynamic>;
     final list = body['establishments'] as List<dynamic>? ?? [];
     return list
-        .map(
-          (e) => CareEstablishmentModel.fromJson(e as Map<String, dynamic>),
-        )
+        .map((e) => CareEstablishmentModel.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 }

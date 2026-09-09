@@ -27,7 +27,7 @@ final careProgressionRepositoryProvider = Provider<CareProgressionRepository>(
 
 final petCareEstablishmentsProvider =
     FutureProvider.family<List<CareEstablishment>, String>((ref, petId) async {
-      return ref.read(careProgressionRepositoryProvider).getEstablishments(
-        petId,
-      );
+      return ref
+          .read(careProgressionRepositoryProvider)
+          .getEstablishments(petId);
     });

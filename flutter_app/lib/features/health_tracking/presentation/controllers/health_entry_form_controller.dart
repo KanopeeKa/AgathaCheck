@@ -188,8 +188,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
     }
     state = state.copyWith(
       frequency: frequency,
-      careFamily:
-          state.careFamily ?? defaultCareFamilyForEntryType(state.type),
+      careFamily: state.careFamily ?? defaultCareFamilyForEntryType(state.type),
     );
   }
 

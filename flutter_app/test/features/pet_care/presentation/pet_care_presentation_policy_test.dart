@@ -120,10 +120,9 @@ void main() {
   });
 
   test('dashboardMilestoneMoment suppressed when suggestion active', () {
-    final moment = policy.dashboardMilestoneMoment(
-      {'pet-1': _moment(petId: 'pet-1')},
-      activeSuggestion: _rec(id: 'pending'),
-    );
+    final moment = policy.dashboardMilestoneMoment({
+      'pet-1': _moment(petId: 'pet-1'),
+    }, activeSuggestion: _rec(id: 'pending'));
     expect(moment, isNull);
   });
 
@@ -133,10 +132,9 @@ void main() {
     });
     expect(safeguard?.id, 'sg-2');
 
-    final suggestion = policy.dashboardSuggestion(
-      {'pet-1': [_rec(id: 'pending')]},
-      activeSafeguard: safeguard,
-    );
+    final suggestion = policy.dashboardSuggestion({
+      'pet-1': [_rec(id: 'pending')],
+    }, activeSafeguard: safeguard);
     final moment = policy.dashboardMilestoneMoment(
       {'pet-1': _moment(petId: 'pet-1')},
       activeSafeguard: safeguard,

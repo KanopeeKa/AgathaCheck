@@ -102,10 +102,8 @@ class PetCareShellHomeContent extends ConsumerWidget {
                     ),
                     eventsSection: PetCareUpcomingEventsSection(
                       pets: shellPets,
-                      onAddEvent: () => showAddEventTypePickerSheet(
-                        context,
-                        pets: shellPets,
-                      ),
+                      onAddEvent: () =>
+                          showAddEventTypePickerSheet(context, pets: shellPets),
                     ),
                     vetsSection: PetCareMyVetsSection(
                       useWideDeskLayout:

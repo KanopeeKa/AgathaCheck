@@ -93,30 +93,33 @@ void main() {
       ),
     ];
 
-    final ids = establishedRhythmEntryIds(
-      establishments,
-      [weightRhythm, fleaRhythm],
-    );
+    final ids = establishedRhythmEntryIds(establishments, [
+      weightRhythm,
+      fleaRhythm,
+    ]);
 
     expect(ids, {'weight-1'});
   });
 
-  test('establishedRhythmEntryIds ignores establishments for missing rhythms', () {
-    final rhythm = _entry(
-      id: 'weight-1',
-      name: 'Weight',
-      frequency: HealthFrequency.weekly,
-    ).copyWith(careFamily: CareFamily.weightMonitoring);
-    final establishments = [
-      CareEstablishment(
-        id: 'est-1',
-        careFamily: CareFamily.weightMonitoring,
-        healthEntryId: 'other-entry',
-        establishedAt: DateTime(2026, 1, 1),
-        policyVersion: 'weight_v1',
-      ),
-    ];
+  test(
+    'establishedRhythmEntryIds ignores establishments for missing rhythms',
+    () {
+      final rhythm = _entry(
+        id: 'weight-1',
+        name: 'Weight',
+        frequency: HealthFrequency.weekly,
+      ).copyWith(careFamily: CareFamily.weightMonitoring);
+      final establishments = [
+        CareEstablishment(
+          id: 'est-1',
+          careFamily: CareFamily.weightMonitoring,
+          healthEntryId: 'other-entry',
+          establishedAt: DateTime(2026, 1, 1),
+          policyVersion: 'weight_v1',
+        ),
+      ];
 
-    expect(establishedRhythmEntryIds(establishments, [rhythm]), isEmpty);
-  });
+      expect(establishedRhythmEntryIds(establishments, [rhythm]), isEmpty);
+    },
+  );
 }

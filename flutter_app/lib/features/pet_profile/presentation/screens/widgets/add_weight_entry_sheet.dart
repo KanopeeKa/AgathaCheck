@@ -123,7 +123,11 @@ Future<void> showAddWeightEntrySheet({
                   final weightInKg = convertToKg(inputWeight, unit);
 
                   if (onSave != null) {
-                    await onSave(weightInKg, calendarDateOnly(selectedDate), notesController.text.trim());
+                    await onSave(
+                      weightInKg,
+                      calendarDateOnly(selectedDate),
+                      notesController.text.trim(),
+                    );
                   } else {
                     final entry = WeightEntry(
                       id: '',

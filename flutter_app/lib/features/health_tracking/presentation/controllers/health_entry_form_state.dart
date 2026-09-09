@@ -158,9 +158,7 @@ class HealthEntryFormState {
       scheduleAtSpecificTimes:
           scheduleAtSpecificTimes ?? this.scheduleAtSpecificTimes,
       scheduleTimes: scheduleTimes ?? this.scheduleTimes,
-      careFamily: clearCareFamily
-          ? null
-          : (careFamily ?? this.careFamily),
+      careFamily: clearCareFamily ? null : (careFamily ?? this.careFamily),
     );
   }
 }

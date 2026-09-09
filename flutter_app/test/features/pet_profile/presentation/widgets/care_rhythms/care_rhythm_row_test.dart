@@ -34,7 +34,8 @@ void main() {
         ),
         GoRoute(
           path: '/pet/:petId/events/:entryId',
-          builder: (context, state) => const Scaffold(body: Text('Event detail')),
+          builder: (context, state) =>
+              const Scaffold(body: Text('Event detail')),
         ),
       ],
     );
@@ -53,7 +54,10 @@ void main() {
     await tester.pumpWidget(buildRow(isEstablished: true));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('care_rhythm_established_marker')), findsOneWidget);
+    expect(
+      find.byKey(const Key('care_rhythm_established_marker')),
+      findsOneWidget,
+    );
     expect(find.text('Established'), findsOneWidget);
   });
 
@@ -61,7 +65,10 @@ void main() {
     await tester.pumpWidget(buildRow(isEstablished: false));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('care_rhythm_established_marker')), findsNothing);
+    expect(
+      find.byKey(const Key('care_rhythm_established_marker')),
+      findsNothing,
+    );
     expect(find.text('Established'), findsNothing);
   });
 
@@ -72,7 +79,9 @@ void main() {
     await tester.pumpAndSettle();
 
     final dueFinder = find.byKey(const Key('care_rhythm_next_due'));
-    final markerFinder = find.byKey(const Key('care_rhythm_established_marker'));
+    final markerFinder = find.byKey(
+      const Key('care_rhythm_established_marker'),
+    );
     expect(dueFinder, findsOneWidget);
     expect(markerFinder, findsOneWidget);
 

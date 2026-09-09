@@ -28,8 +28,10 @@ class PetCareRhythmsScreen extends ConsumerWidget {
     final establishmentsAsync = ref.watch(petCareEstablishmentsProvider(petId));
     final establishedIds = establishmentsAsync.maybeWhen(
       data: (establishments) => entriesAsync.maybeWhen(
-        data: (entries) =>
-            establishedRhythmEntryIds(establishments, filterCareRhythms(entries)),
+        data: (entries) => establishedRhythmEntryIds(
+          establishments,
+          filterCareRhythms(entries),
+        ),
         orElse: () => <String>{},
       ),
       orElse: () => <String>{},

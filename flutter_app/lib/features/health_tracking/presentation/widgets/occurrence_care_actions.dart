@@ -165,12 +165,13 @@ class OccurrenceCareActions {
           if (skipEarlierMissed) {
             await skipAllMissed(ref, entry);
           }
-          final saved = await WeightOccurrenceCareActions.showWeightEntrySheetForOccurrence(
-            context,
-            ref,
-            entry,
-            occurrenceId,
-          );
+          final saved =
+              await WeightOccurrenceCareActions.showWeightEntrySheetForOccurrence(
+                context,
+                ref,
+                entry,
+                occurrenceId,
+              );
           if (!saved) {
             throw StateError('weight entry dismissed');
           }
@@ -189,12 +190,13 @@ class OccurrenceCareActions {
     }
 
     final occurrenceId = occurrences.first.id;
-    final saved = await WeightOccurrenceCareActions.showWeightEntrySheetForOccurrence(
-      context,
-      ref,
-      entry,
-      occurrenceId,
-    );
+    final saved =
+        await WeightOccurrenceCareActions.showWeightEntrySheetForOccurrence(
+          context,
+          ref,
+          entry,
+          occurrenceId,
+        );
     if (!saved || !context.mounted) return null;
     return OccurrenceMarkDoneResult(
       completedOn: DateTime.now(),

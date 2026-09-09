@@ -112,9 +112,9 @@ void main() {
         healthEntriesNotifierProvider.overrideWith(
           () => _TestHealthEntriesNotifier(entries),
         ),
-        petCareEstablishmentsProvider('pet-1').overrideWith(
-          (ref) async => establishments,
-        ),
+        petCareEstablishmentsProvider(
+          'pet-1',
+        ).overrideWith((ref) async => establishments),
         apiBaseUrlProvider.overrideWithValue('http://test.local'),
       ],
       child: MaterialApp.router(
