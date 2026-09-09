@@ -31,6 +31,23 @@ void main() {
       expect(segment.fillable, isTrue);
     });
 
+    test('fromJson parses care milestone segment', () {
+      final segment = PetTimelineSegment.fromJson({
+        'kind': 'care_milestone',
+        'id': 'ms-1',
+        'start_date': '2025-09-01',
+        'milestone_type': 'weight_monitoring_established',
+        'care_family': 'weight_monitoring',
+        'bundle_id': 'bundle-1',
+        'includes_first_care': true,
+      });
+
+      expect(segment.isCareMilestone, isTrue);
+      expect(segment.milestoneType, 'weight_monitoring_established');
+      expect(segment.careFamily, 'weight_monitoring');
+      expect(segment.includesFirstCare, isTrue);
+    });
+
     test('dateOfBirth and joinedAgatha factories set stable kinds', () {
       final dob = PetTimelineSegment.dateOfBirth(DateTime(2019, 5, 20));
       final joined = PetTimelineSegment.joinedAgatha(

@@ -12,6 +12,10 @@ class PetTimelineSegment {
     this.primaryHolderName,
     this.fosterName,
     this.fillable = false,
+    this.milestoneType,
+    this.careFamily,
+    this.bundleId,
+    this.includesFirstCare = false,
   });
 
   final String kind;
@@ -23,11 +27,16 @@ class PetTimelineSegment {
   final String? primaryHolderName;
   final String? fosterName;
   final bool fillable;
+  final String? milestoneType;
+  final String? careFamily;
+  final String? bundleId;
+  final bool includesFirstCare;
 
   bool get isGap => kind == 'gap';
   bool get isFosteringSession => kind == 'fostering_session';
   bool get isManual => kind == 'manual';
   bool get isCustody => kind == 'custody';
+  bool get isCareMilestone => kind == 'care_milestone';
   bool get isDateOfBirth => kind == 'date_of_birth';
   bool get isJoinedAgatha => kind == 'joined_agatha';
 
@@ -66,6 +75,10 @@ class PetTimelineSegment {
           json['guardian_name']?.toString(),
       fosterName: json['foster_name']?.toString(),
       fillable: json['fillable'] == true,
+      milestoneType: json['milestone_type']?.toString(),
+      careFamily: json['care_family']?.toString(),
+      bundleId: json['bundle_id']?.toString(),
+      includesFirstCare: json['includes_first_care'] == true,
     );
   }
 }
