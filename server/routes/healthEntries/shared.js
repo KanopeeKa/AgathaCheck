@@ -1,5 +1,11 @@
 import multer from 'multer';
 
+import {
+  CARE_FAMILIES,
+  CARE_SOURCES,
+  validateCareFamily as validateCareFamilyEnum,
+  validateCareSource as validateCareSourceEnum,
+} from '../../lib/care/enums.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 import { dateToIsoDate } from '../../lib/calendarDate.js';
 import { extensionForMime } from '../../lib/safeUpload.js';
@@ -83,27 +89,7 @@ export function validateHealthEntryTypeForWrite(type) {
   return { ok: true, type };
 }
 
-export const CARE_FAMILIES = new Set([
-  'medication',
-  'vaccination',
-  'parasite_prevention',
-  'wellness_review',
-  'dental',
-  'weight_monitoring',
-  'grooming',
-  'nail_care',
-  'other',
-]);
-
-export const CARE_SOURCES = new Set([
-  'guardian_defined',
-  'vet_instruction',
-  'treatment_schedule',
-  'care_plan',
-  'agatha_accepted',
-  'agatha_adjusted',
-  'system_default',
-]);
+export { CARE_FAMILIES, CARE_SOURCES };
 
 export function inferCareFamilyFromType(type) {
   switch (normalizeHealthEntryTypeForRead(type)) {
@@ -116,20 +102,12 @@ export function inferCareFamilyFromType(type) {
   }
 }
 
-export function validateCareFamilyForWrite(value) {
-  if (value == null || value === '') return { ok: true, value: null };
-  if (!CARE_FAMILIES.has(value)) {
-    return { ok: false, error: `Invalid care family: ${value}` };
-  }
-  return { ok: true, value };
+export function validateCareFamilyForWrite(value, { recurring = false } = {}) {
+  return validateCareFamilyEnum(value, { required: recurring });
 }
 
 export function validateCareSourceForWrite(value) {
-  if (value == null || value === '') return { ok: true, value: 'guardian_defined' };
-  if (!CARE_SOURCES.has(value)) {
-    return { ok: false, error: `Invalid care source: ${value}` };
-  }
-  return { ok: true, value };
+  return validateCareSourceEnum(value);
 }
 
 export function healthEntryToMap(row) {

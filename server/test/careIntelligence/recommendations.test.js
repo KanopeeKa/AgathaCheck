@@ -2,7 +2,10 @@ import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { createApp } from '../../bin/server.js';
 import { handlePetAccessQuery } from '../helpers/petAccessMocks.js';
-import { evaluateCareRecommendationCandidates } from '../../routes/careIntelligence/ruleEngine.js';
+import {
+  evaluateCareRecommendationCandidates,
+  hasActiveRecurringCare,
+} from '../../routes/careIntelligence/ruleEngine.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 const userId = 'test-user-id';
@@ -44,7 +47,16 @@ describe('care intelligence rule engine', () => {
     ]);
   });
 
-  test('suppresses when established rhythm exists for family', () => {
+  test('hasActiveRecurringCare detects recurring family', () => {
+    expect(hasActiveRecurringCare([
+      { frequency: 'monthly', care_family: 'weight_monitoring' },
+    ], 'weight_monitoring')).toBe(true);
+    expect(hasActiveRecurringCare([
+      { frequency: 'once', care_family: 'weight_monitoring' },
+    ], 'weight_monitoring')).toBe(false);
+  });
+
+  test('suppresses when active recurring care exists for family', () => {
     const candidates = evaluateCareRecommendationCandidates({
       pet: makePet(),
       healthEntries: [{

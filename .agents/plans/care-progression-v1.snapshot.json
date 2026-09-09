@@ -43,9 +43,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "Blocked until Phase E on main",
+      "status_detail": null,
       "debt_issue_refs": []
     },
     {
@@ -282,5 +282,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:997b8a485c50e1dd0c0b5f9ac9dd3cb4deee13aa7b191677faf699299402f526"
+  "content_hash": "sha256:728caa1039c5a3d5f3658596dda48e4f664a6380a7222c4544ea111bb00a9c0a"
 }

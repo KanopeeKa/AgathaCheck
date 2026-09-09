@@ -125,8 +125,11 @@ export function registerCrudRoutes(router, pool) {
         return res.status(400).json({ error: typeValidation.error });
       }
       const scheduleTimes = parseScheduleTimesInput(data);
+      const frequency = data.frequency || 'once';
+      const isRecurring = frequency && frequency !== 'once';
       const careFamilyValidation = validateCareFamilyForWrite(
         data.care_family || data.careFamily,
+        { recurring: isRecurring },
       );
       if (!careFamilyValidation.ok) {
         return res.status(400).json({ error: careFamilyValidation.error });
@@ -148,7 +151,7 @@ export function registerCrudRoutes(router, pool) {
           data.name || '',
           typeValidation.type,
           data.dosage || '',
-          data.frequency || 'once',
+          frequency,
           data.frequency_days || data.frequencyDays || null,
           data.frequency_interval || data.frequencyInterval || 1,
           startDate, nextDueDate, completedOn,
@@ -204,8 +207,11 @@ export function registerCrudRoutes(router, pool) {
       if (!typeValidation.ok) {
         return res.status(400).json({ error: typeValidation.error });
       }
+      const frequency = data.frequency || 'once';
+      const isRecurring = frequency && frequency !== 'once';
       const careFamilyValidation = validateCareFamilyForWrite(
         data.care_family || data.careFamily,
+        { recurring: isRecurring },
       );
       if (!careFamilyValidation.ok) {
         return res.status(400).json({ error: careFamilyValidation.error });
@@ -230,7 +236,7 @@ export function registerCrudRoutes(router, pool) {
           data.name || '',
           typeValidation.type,
           data.dosage || '',
-          data.frequency || 'once',
+          frequency,
           data.frequency_days || data.frequencyDays || null,
           data.frequency_interval || data.frequencyInterval || 1,
           startDate, nextDueDate, completedOn,

@@ -46,6 +46,17 @@ See snapshot for CP-0 … CP-7 branch names, allowed_paths, and exit criteria al
 
 ```yaml
 autonomy: active
-current_phase: null
-next_action: wait for Phase E merge, then CP-0
+current_phase: cp0
+last_completed_phase: null
+halt_reason: null
+next_action: "continue phase cp0 on branch cursor/care-progression-cp0-2d95"
+artifact_ref:
+  branch: cursor/care-progression-cp0-2d95
+  plan_path: .agents/plans/care-progression-v1.md
+  plan_commit: f8cc1d758a5478014c510077812e2eed3c7a76e7
+  snapshot_path: .agents/plans/care-progression-v1.snapshot.json
+  snapshot_commit: f8cc1d758a5478014c510077812e2eed3c7a76e7
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
 ```
