@@ -8,11 +8,15 @@ import '../../../../weight_tracking/domain/entities/weight_entry.dart';
 import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../controllers/weight_tracking_controller.dart';
 
+typedef WeightEntrySaveCallback =
+    Future<void> Function(double weightKg, DateTime date, String notes);
+
 Future<void> showAddWeightEntrySheet({
   required BuildContext context,
   required String petId,
   required WeightUnit unit,
   required WeightTrackingController controller,
+  WeightEntrySaveCallback? onSave,
 }) {
   final unitLabel = weightUnitLabel(unit);
   final weightController = TextEditingController();
@@ -118,15 +122,19 @@ Future<void> showAddWeightEntrySheet({
 
                   final weightInKg = convertToKg(inputWeight, unit);
 
-                  final entry = WeightEntry(
-                    id: '',
-                    petId: petId,
-                    date: calendarDateOnly(selectedDate),
-                    weight: weightInKg,
-                    notes: notesController.text.trim(),
-                  );
+                  if (onSave != null) {
+                    await onSave(weightInKg, calendarDateOnly(selectedDate), notesController.text.trim());
+                  } else {
+                    final entry = WeightEntry(
+                      id: '',
+                      petId: petId,
+                      date: calendarDateOnly(selectedDate),
+                      weight: weightInKg,
+                      notes: notesController.text.trim(),
+                    );
 
-                  await controller.addWeightEntry(petId, entry);
+                    await controller.addWeightEntry(petId, entry);
+                  }
 
                   if (ctx.mounted) Navigator.pop(ctx);
                 },

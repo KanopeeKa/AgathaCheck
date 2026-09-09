@@ -84,6 +84,16 @@ abstract class HealthRemoteDataSource {
     String entryId,
     String occurrenceId,
   );
+  Future<void> completeWeightOccurrence({
+    required String petId,
+    required String entryId,
+    required String occurrenceId,
+    required double weightKg,
+    required DateTime date,
+    String notes = '',
+    String unit = 'kg',
+    String measurementSource = 'guardian',
+  });
 }
 
 /// Implementation of [HealthRemoteDataSource] using HTTP.
@@ -452,6 +462,35 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
     return HealthOccurrenceModel.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
     );
+  }
+
+  @override
+  Future<void> completeWeightOccurrence({
+    required String petId,
+    required String entryId,
+    required String occurrenceId,
+    required double weightKg,
+    required DateTime date,
+    String notes = '',
+    String unit = 'kg',
+    String measurementSource = 'guardian',
+  }) async {
+    final response = await _client.post(
+      Uri.parse(
+        '$baseUrl/api/pets/$petId/care-rhythms/$entryId/occurrences/$occurrenceId/complete-weight',
+      ),
+      headers: _authHeaders(jsonBody: true),
+      body: json.encode({
+        'weight': weightKg,
+        'unit': unit,
+        'date': toCalendarDateString(calendarDateOnly(date)),
+        'notes': notes,
+        'measurement_source': measurementSource,
+      }),
+    );
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      _checkResponse(response);
+    }
   }
 
   void _checkResponse(http.Response response) {
