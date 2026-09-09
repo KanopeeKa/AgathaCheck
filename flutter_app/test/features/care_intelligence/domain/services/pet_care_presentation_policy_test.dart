@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_recommendation.dart';
+import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_safeguard.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/services/pet_care_presentation_policy.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 
@@ -24,6 +25,19 @@ CareRecommendation _rec({
   );
 }
 
+CareSafeguard _safeguard({required String id}) {
+  return CareSafeguard(
+    id: id,
+    petId: 'pet-1',
+    safeguardType: 'weight_trend_down',
+    safeguardKey: 'weight_trend_down:pet-1',
+    status: 'active',
+    policyVersion: '1.0.0',
+    copyKey: 'careSafeguardWeightTrendDown',
+    evidence: const {'measurement_count': 4},
+  );
+}
+
 void main() {
   const policy = PetCarePresentationPolicy();
 
@@ -35,6 +49,14 @@ void main() {
     expect(rec?.id, 'pending');
   });
 
+  test('profileSuggestion suppressed when safeguard active', () {
+    final rec = policy.profileSuggestion(
+      [_rec(id: 'pending')],
+      activeSafeguard: _safeguard(id: 'sg-1'),
+    );
+    expect(rec, isNull);
+  });
+
   test('dashboardSuggestion returns at most one pending across pets', () {
     final rec = policy.dashboardSuggestion({
       'pet-1': [_rec(id: 'a', status: CareRecommendationStatus.dismissed)],
@@ -42,5 +64,13 @@ void main() {
       'pet-3': [_rec(id: 'c')],
     });
     expect(rec?.id, 'b');
+  });
+
+  test('dashboardSuggestion suppressed when safeguard active', () {
+    final rec = policy.dashboardSuggestion(
+      {'pet-2': [_rec(id: 'b')]},
+      activeSafeguard: _safeguard(id: 'sg-1'),
+    );
+    expect(rec, isNull);
   });
 }

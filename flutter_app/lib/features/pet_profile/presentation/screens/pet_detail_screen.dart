@@ -15,6 +15,7 @@ import '../providers/pet_providers.dart';
 import '../controllers/chip_reminder_controller.dart';
 import '../controllers/neuter_reminder_controller.dart';
 import '../providers/pet_care_status_provider.dart';
+import '../../../care_intelligence/presentation/widgets/pet_profile_care_safeguard_section.dart';
 import '../../../care_intelligence/presentation/widgets/pet_profile_care_suggestion_section.dart';
 import '../widgets/care_status_summary_card.dart';
 import '../widgets/profile_prompt_row.dart';
@@ -148,6 +149,12 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                         ChipReminderController(ref).dismissChipReminder(pet),
                   ),
                 ),
+              SliverToBoxAdapter(
+                child: PetProfileCareSafeguardSection(
+                  petId: widget.petId,
+                  petName: pet.name,
+                ),
+              ),
               SliverToBoxAdapter(
                 child: PetProfileCareSuggestionSection(petId: widget.petId),
               ),

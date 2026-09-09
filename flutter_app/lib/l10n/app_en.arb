@@ -258,6 +258,23 @@
       "frequency": { "type": "String" }
     }
   },
+  "careSafeguardTitle": "Worth checking with your vet",
+  "careSafeguardWeightTrendDown": "{petName}'s weight has been trending down across several measurements. There isn't a known weight plan recorded, so it may be worth mentioning this to your vet.",
+  "@careSafeguardWeightTrendDown": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "careSafeguardViewChanges": "View changes",
+  "careSafeguardDismiss": "Dismiss",
+  "careSafeguardEvidenceTitle": "What we noticed",
+  "careSafeguardEvidenceMeasurementCount": "{count} weight measurements reviewed",
+  "@careSafeguardEvidenceMeasurementCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "careSafeguardEvidenceTrendDown": "Weight has been trending down over time",
   "careLoadError": "We couldn't load care right now.",
   "careEyebrow": "CARE ACTIONS",
   "petsEyebrow": "PETS",

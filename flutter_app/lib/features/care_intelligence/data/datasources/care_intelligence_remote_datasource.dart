@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/care_recommendation_model.dart';
+import '../models/care_safeguard_model.dart';
 import '../../domain/entities/care_recommendation.dart';
 
 class CareIntelligenceRemoteDataSource {
@@ -42,6 +43,33 @@ class CareIntelligenceRemoteDataSource {
     return list
         .map((e) => CareRecommendationModel.fromJson(e as Map<String, dynamic>))
         .toList();
+  }
+
+  Future<List<CareSafeguardModel>> fetchSafeguards(String petId) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/pets/$petId/care-safeguards'),
+      headers: _headers(),
+    );
+    _check(response);
+    final list = json.decode(response.body) as List<dynamic>;
+    return list
+        .map((e) => CareSafeguardModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<CareSafeguardModel> dismissSafeguard({
+    required String petId,
+    required String safeguardId,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/pets/$petId/care-safeguards/$safeguardId/dismiss'),
+      headers: _headers(jsonBody: true),
+      body: json.encode({}),
+    );
+    _check(response);
+    return CareSafeguardModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<CareRecommendationModel> respond({

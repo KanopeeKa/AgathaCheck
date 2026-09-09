@@ -5,6 +5,7 @@ import '../../../../core/providers/api_base_url_provider.dart';
 import '../../data/datasources/care_intelligence_remote_datasource.dart';
 import '../../data/repositories/care_intelligence_repository_impl.dart';
 import '../../domain/entities/care_recommendation.dart';
+import '../../domain/entities/care_safeguard.dart';
 import '../../domain/repositories/care_intelligence_repository.dart';
 import '../../domain/services/pet_care_presentation_policy.dart';
 
@@ -34,9 +35,30 @@ final petCareRecommendationsProvider =
           .getRecommendations(petId);
     });
 
+final petCareSafeguardsProvider =
+    FutureProvider.family<List<CareSafeguard>, String>((ref, petId) async {
+      return ref.read(careIntelligenceRepositoryProvider).getSafeguards(petId);
+    });
+
+final petProfileCareSafeguardProvider =
+    Provider.family<AsyncValue<CareSafeguard?>, String>((ref, petId) {
+      final safeguardsAsync = ref.watch(petCareSafeguardsProvider(petId));
+      final policy = ref.watch(petCarePresentationPolicyProvider);
+      return safeguardsAsync.whenData(
+        (safeguards) => policy.profileSafeguard(safeguards),
+      );
+    });
+
 final petProfileCareSuggestionProvider =
     Provider.family<AsyncValue<CareRecommendation?>, String>((ref, petId) {
       final recsAsync = ref.watch(petCareRecommendationsProvider(petId));
+      final safeguardAsync = ref.watch(petProfileCareSafeguardProvider(petId));
       final policy = ref.watch(petCarePresentationPolicyProvider);
-      return recsAsync.whenData((recs) => policy.profileSuggestion(recs));
+      final activeSafeguard = safeguardAsync.valueOrNull;
+      return recsAsync.whenData(
+        (recs) => policy.profileSuggestion(
+          recs,
+          activeSafeguard: activeSafeguard,
+        ),
+      );
     });

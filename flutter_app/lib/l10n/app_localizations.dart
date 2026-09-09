@@ -1400,6 +1400,48 @@ abstract class AppLocalizations {
   /// **'Every {interval} {frequency}'**
   String careSuggestionCadenceSummary(int interval, String frequency);
 
+  /// No description provided for @careSafeguardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Worth checking with your vet'**
+  String get careSafeguardTitle;
+
+  /// No description provided for @careSafeguardWeightTrendDown.
+  ///
+  /// In en, this message translates to:
+  /// **'{petName}\'s weight has been trending down across several measurements. There isn\'t a known weight plan recorded, so it may be worth mentioning this to your vet.'**
+  String careSafeguardWeightTrendDown(String petName);
+
+  /// No description provided for @careSafeguardViewChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'View changes'**
+  String get careSafeguardViewChanges;
+
+  /// No description provided for @careSafeguardDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get careSafeguardDismiss;
+
+  /// No description provided for @careSafeguardEvidenceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What we noticed'**
+  String get careSafeguardEvidenceTitle;
+
+  /// No description provided for @careSafeguardEvidenceMeasurementCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} weight measurements reviewed'**
+  String careSafeguardEvidenceMeasurementCount(int count);
+
+  /// No description provided for @careSafeguardEvidenceTrendDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight has been trending down over time'**
+  String get careSafeguardEvidenceTrendDown;
+
   /// No description provided for @careLoadError.
   ///
   /// In en, this message translates to:

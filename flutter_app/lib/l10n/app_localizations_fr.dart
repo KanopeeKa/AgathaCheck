@@ -751,6 +751,32 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get careSafeguardTitle => 'À mentionner à votre vétérinaire';
+
+  @override
+  String careSafeguardWeightTrendDown(String petName) {
+    return 'Le poids de $petName a tendance à baisser sur plusieurs mesures. Aucun plan de poids connu n\'est enregistré — il peut être utile d\'en parler à votre vétérinaire.';
+  }
+
+  @override
+  String get careSafeguardViewChanges => 'Voir les changements';
+
+  @override
+  String get careSafeguardDismiss => 'Ignorer';
+
+  @override
+  String get careSafeguardEvidenceTitle => 'Ce que nous avons remarqué';
+
+  @override
+  String careSafeguardEvidenceMeasurementCount(int count) {
+    return '$count mesures de poids examinées';
+  }
+
+  @override
+  String get careSafeguardEvidenceTrendDown =>
+      'Le poids a tendance à baisser dans le temps';
+
+  @override
   String get careLoadError => 'Impossible de charger les soins pour le moment.';
 
   @override
