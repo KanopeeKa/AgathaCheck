@@ -9,6 +9,15 @@ updates:
     labels:
       - dependencies
       - server
+    ignore:
+      # ESLint 10 + @eslint/js 10 need a coordinated config migration.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@eslint/js"
+        update-types: ["version-update:semver-major"]
+      # nodemailer 10.x breaking changes need a dedicated review PR.
+      - dependency-name: "nodemailer"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: npm
     directory: /e2e
@@ -38,3 +47,6 @@ updates:
       # file_picker 12.1.2 breaks web/android builds (darwinOptions API mismatch).
       - dependency-name: "file_picker"
         versions: ["12.1.2"]
+      # Riverpod 3.x needs a dedicated migration PR (Provider API changes).
+      - dependency-name: "flutter_riverpod"
+        update-types: ["version-update:semver-major"]
