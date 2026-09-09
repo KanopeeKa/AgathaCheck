@@ -34,19 +34,20 @@ Inspect existing design system before proposing changes (see §Read first below)
 ---
 
 1. `docs/design/index.md` — tier and refactor phases
-2. `docs/design/ui-rework-plan.md` — if theme rework or multi-phase UI work
-3. `docs/design/principles.md` — personality, palette target, layout
-4. `docs/design/copy-tone.md` — copy and org branding boundaries
-5. `docs/archived/experience-split-plan.md (archived, see Experience Program)` — if guardian/org/foster context matters
-6. `flutter_app/lib/core/theme/app_theme.dart` (+ `docs/design/tokens.md` once Phase 0 lands)
-7. `.cursor/rules/design.mdc` + `accessibility.mdc`
-8. Auth/landing on web: `.agents/memory/flutter-web-password-managers.md`
-9. Screens/widgets under review
+2. `docs/design/true-north.md` — product values and active direction (Pet Care centre of gravity)
+3. `docs/design/ui-rework-plan.md` — if theme rework or multi-phase UI work
+4. `docs/design/principles.md` — visual personality, palette target, layout
+5. `docs/design/copy-tone.md` — voice, register, copy patterns
+6. `docs/design/terminology.md` — pet parent, care roles, legal terms, l10n
+7. `docs/engineering/frozen-domains/` — if preserved Shelter/Fostering context matters (frozen, not active True North)
+8. `flutter_app/lib/core/theme/app_theme.dart` (+ `docs/design/tokens.md` once Phase 0 lands)
+9. `.cursor/rules/design.mdc` + `accessibility.mdc`
+10. Auth/landing on web: `.agents/memory/flutter-web-password-managers.md`
+11. Screens/widgets under review
 
 For landing/auth work, also treat `docs/design/index.md`, `docs/design/tokens.md`,
-and `docs/design/copy-tone.md` as the approved direction. The landing reference
-is role-neutral and uses the Operations Desk treatment: deep olive, warm paper,
-muted gold, and the protective shelter arch mark. Do not introduce an
+`docs/design/copy-tone.md`, and `docs/design/terminology.md` as the approved direction.
+The landing reference is role-neutral Pet Care entry. Do not introduce an
 audience chooser before authentication.
 
 ## Steps
@@ -61,10 +62,9 @@ audience chooser before authentication.
 - **UX** — confusion, weak hierarchy, friction, missing states
 - **A11y** — contrast, semantics, keyboard/focus, touch, forms, motion
 - **Design** — token drift, spacing rhythm, off-brand tone
-- **Landing/auth** — one universal entry point; shelter/foster context is
-  supporting copy, not a login path; guardian/organisation context begins after
-  authentication; palette, typography, spacing, states, and logo rules must
-  agree with the expanded landing section in `docs/design/tokens.md`
+- **Landing/auth** — one universal Pet Care entry point; no audience chooser;
+  care context begins after authentication; palette, typography, spacing, states,
+  and logo rules must agree with `docs/design/tokens.md`
 
 ### 3. System first
 

@@ -15,6 +15,7 @@ Shelter and Fostering are **frozen** — preserved in Git, not maintained, not i
 |-----|---------|
 | [philosophy.md](philosophy.md) | Why and what “frozen” means |
 | [mvp-pivot-decisions.md](mvp-pivot-decisions.md) | Locked D-MVP-* product decisions |
+| [shelter-branding.md](shelter-branding.md) | Preserved Shelter org branding rules (not active True North) |
 | [manifest.json](manifest.json) | Minimal machine-readable roots (boundary script + CI) |
 | [rehydration-runbook.md](rehydration-runbook.md) | How to revisit frozen domains later |
 | [ci-integration.md](ci-integration.md) | What active CI excludes |

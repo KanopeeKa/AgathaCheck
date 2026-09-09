@@ -39,8 +39,10 @@ tags: [documentation, standards, policy]
 |-------|----------------|
 | Full system spec | `docs/design/system.md` |
 | Token tables / hex | `docs/design/tokens.md` only |
-| Principles (why) | `docs/design/principles.md` — no hex |
+| True North (why) | `docs/design/true-north.md` |
+| Visual principles | `docs/design/principles.md` — no hex |
 | Copy / tone | `docs/design/copy-tone.md` |
+| Terminology | `docs/design/terminology.md` |
 | Re-skin procedure | `docs/design/skin-change-guide.md` |
 
 ## Placement rules

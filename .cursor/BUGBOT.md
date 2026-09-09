@@ -15,7 +15,7 @@ Project-specific review context for Cursor Bugbot on pull requests. See `docs/ag
 
 - Missing tests for backend route or security-sensitive changes in touched domains.
 - Drive-by refactors unrelated to the PR’s stated outcome (atomic PR policy).
-- Flutter UI changes without considering accessibility (`accessibility.mdc`) or calm-care copy (`docs/design/copy-tone.md`).
+- Flutter UI changes without considering accessibility (`accessibility.mdc`) or calm-care copy (`docs/design/true-north.md`, `docs/design/copy-tone.md`, `docs/design/terminology.md`).
 - E2E locator/assertion brittleness — prefer stable roles/labels over implementation details.
 
 ## Prefer not to flag

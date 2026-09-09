@@ -26,8 +26,9 @@ globs: flutter_app/lib/features/experience/**,flutter_app/lib/features/health_tr
 
 ## Terminology & compatibility
 
-- Use **Pet Care** terminology (not casual reintroduction of legacy Guardian naming).
+- Use **Pet Care** workspace terminology and **pet parent** relationship language per `docs/design/terminology.md` (not casual reintroduction of legacy Guardian naming in new copy).
 - Do not break persisted/public compatibility for naming aesthetics alone.
+- Known terminology debt: `terminology.md` §Known terminology debt — fix in deliberate copy migrations, not ad hoc PRs.
 - Rename migrations in progress: see `docs/domains/pet_care/changes/`.
 
 ## Sensitive areas (Router → high rigor)

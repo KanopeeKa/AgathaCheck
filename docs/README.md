@@ -123,9 +123,11 @@ Navigation shell reversal and phased delivery (formerly `docs/experience-program
 | Document | Purpose | Status |
 |----------|---------|--------|
 | [/docs/design/index.md](/docs/design/index.md) | Design system overview | Active |
-| [/docs/design/principles.md](/docs/design/principles.md) | Core design principles | Active |
+| [/docs/design/true-north.md](/docs/design/true-north.md) | Product values and active direction | Active |
+| [/docs/design/copy-tone.md](/docs/design/copy-tone.md) | Voice, tone, and copy patterns | Active |
+| [/docs/design/terminology.md](/docs/design/terminology.md) | Pet parent, care roles, legal terms, l10n | Active |
+| [/docs/design/principles.md](/docs/design/principles.md) | Visual design principles (deep reference) | Active |
 | [/docs/design/tokens.md](/docs/design/tokens.md) | Design tokens and theming | Active |
-| [/docs/design/copy-tone.md](/docs/design/copy-tone.md) | Writing style and tone guide | Active |
 | [/docs/design/skin-change-guide.md](/docs/design/skin-change-guide.md) | Theming and branding customization | Active |
 | [/docs/design/plans/ui-rework-plan.md](/docs/design/plans/ui-rework-plan.md) | Comprehensive UI overhaul plan | Active |
 
