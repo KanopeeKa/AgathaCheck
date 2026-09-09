@@ -46,17 +46,17 @@ See snapshot for CP-0 … CP-7 branch names, allowed_paths, and exit criteria al
 
 ```yaml
 autonomy: active
-current_phase: cp1
-last_completed_phase: cp0
+current_phase: cp2
+last_completed_phase: cp1
 halt_reason: null
-next_action: "continue phase cp1 on branch cursor/care-progression-cp1-2d95"
+next_action: "continue phase cp2 on branch cursor/care-progression-cp2-2d95"
 artifact_ref:
-  branch: cursor/care-progression-cp1-2d95
+  branch: cursor/care-progression-v1-integration-2d95
   plan_path: .agents/plans/care-progression-v1.md
-  plan_commit: fc15e6082644f70065bfc523e44f04930d786eee
+  plan_commit: cce28d5c2d8bc2fadd0b580bf78ad9ce1762cec3
   snapshot_path: .agents/plans/care-progression-v1.snapshot.json
-  snapshot_commit: fc15e6082644f70065bfc523e44f04930d786eee
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1098"]
+  snapshot_commit: cce28d5c2d8bc2fadd0b580bf78ad9ce1762cec3
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
