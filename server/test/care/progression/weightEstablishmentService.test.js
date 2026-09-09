@@ -39,6 +39,7 @@ describe('weightEstablishmentService', () => {
 
   it('persists establishment on first eligible transition', async () => {
     let inserted = false;
+    let milestoneInserts = 0;
     const pool = makePool([
       (sql) => {
         if (sql.includes('FROM health_entries') && sql.includes('pet_id = $2')) {
@@ -90,12 +91,39 @@ describe('weightEstablishmentService', () => {
         }
         return undefined;
       },
+      (sql) => {
+        if (sql.includes('SELECT 1 FROM care_milestones')) {
+          return { rows: [] };
+        }
+        return undefined;
+      },
+      (sql) => {
+        if (sql.includes('INSERT INTO care_milestones')) {
+          milestoneInserts += 1;
+          return {
+            rows: [{
+              id: `ms-${milestoneInserts}`,
+              pet_id: petId,
+              milestone_type: sql.includes('first_care') ? 'first_care_established' : 'weight_monitoring_established',
+              care_family: 'weight_monitoring',
+              source_entity_id: healthEntryId,
+              dedupe_key: `key-${milestoneInserts}`,
+              achieved_at: new Date('2026-09-09T12:00:00.000Z'),
+              policy_version: '1.0.0',
+              bundle_id: 'bundle-1',
+            }],
+          };
+        }
+        return undefined;
+      },
     ]);
 
     const outcome = await maybePersistWeightEstablishment(pool, { petId, healthEntryId });
     expect(outcome.persisted).toBe(true);
     expect(outcome.establishment.policy_version).toBe(WEIGHT_ESTABLISHMENT_POLICY_VERSION);
     expect(outcome.evaluation.maturity).toBe('established');
+    expect(outcome.milestones?.milestones).toHaveLength(2);
+    expect(milestoneInserts).toBe(2);
   });
 
   it('does not persist when evidence is insufficient', async () => {

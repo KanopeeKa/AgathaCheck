@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { dateToIsoDate } from '../../calendarDate.js';
+import { createMilestonesOnEstablishment } from './careMilestoneService.js';
 import {
   evaluateWeightEstablishment,
   WEIGHT_ESTABLISHMENT_POLICY_VERSION,
@@ -149,10 +150,18 @@ export async function maybePersistWeightEstablishment(pool, { petId, healthEntry
   );
 
   if (insertResult.rows.length > 0) {
+    const establishment = establishmentToDto(insertResult.rows[0]);
+    const milestones = await createMilestonesOnEstablishment(pool, {
+      petId,
+      careFamily: facts.entry.care_family,
+      healthEntryId,
+      achievedAt: insertResult.rows[0].established_at,
+    });
     return {
       persisted: true,
-      establishment: establishmentToDto(insertResult.rows[0]),
+      establishment,
       evaluation,
+      milestones,
     };
   }
 
