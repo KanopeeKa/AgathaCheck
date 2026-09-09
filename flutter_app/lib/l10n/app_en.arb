@@ -234,6 +234,7 @@
   "careRhythmsEmpty": "No recurring care routines yet. Add a recurring event to see it here.",
   "careRhythmNextDue": "Next due {date}",
   "@careRhythmNextDue": { "placeholders": { "date": { "type": "String" } } },
+  "careProgressionEstablishedMarker": "Established",
   "careFamilyFieldLabel": "Care category",
   "careFamilyFieldHelper": "Choose what kind of recurring care this rhythm represents.",
   "careFamilyMedication": "Medication",

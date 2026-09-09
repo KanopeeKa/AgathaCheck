@@ -222,6 +222,7 @@
   "careRhythmsEmpty": "Aucune routine récurrente pour l'instant. Ajoutez un soin récurrent pour le voir ici.",
   "careRhythmNextDue": "Prochaine échéance {date}",
   "@careRhythmNextDue": { "placeholders": { "date": { "type": "String" } } },
+  "careProgressionEstablishedMarker": "Établi",
   "careSourceGuardianDefined": "Ajouté par vous",
   "careSourceVetInstruction": "Selon votre vétérinaire",
   "careSourceTreatmentSchedule": "Protocole de traitement",
