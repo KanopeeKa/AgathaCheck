@@ -1,0 +1,286 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-progression-v1",
+  "approved_at": "2026-09-09T10:10:00Z",
+  "approved_by": "user chat 2026-09-09 — standing grant full Care Progression CP-0–CP-7 via /execute-plan",
+  "approved_until": "2026-09-11T10:10:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/care-progression-v1-integration-2d95",
+  "control_issue": 1095,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "cp0",
+      "title": "CP-0 — Naming, care_family write-path, data audit",
+      "branch": "cursor/care-progression-cp0-2d95",
+      "allowed_paths": [
+        ".agents/plans/care-progression-v1.*",
+        ".agents/plans/care-programme-v1-2d95.*",
+        "docs/domains/pet_care/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/features/pet_profile/**",
+        "scripts/care/**",
+        "server/routes/careIntelligence/**",
+        "server/routes/healthEntries/**",
+        "server/lib/care/**",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/migrations/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Blocked until Phase E on main",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "cp1",
+      "title": "CP-1 — Shared care core & authority seams",
+      "branch": "cursor/care-progression-cp1-2d95",
+      "allowed_paths": [
+        ".agents/plans/care-progression-v1.*",
+        "docs/domains/pet_care/**",
+        "docs/architecture/api-reference.md",
+        "flutter_app/lib/features/pet_care/**",
+        "flutter_app/test/features/pet_care/**",
+        "server/lib/care/**",
+        "server/routes/careIntelligence/**",
+        "server/routes/careProgression/**",
+        "server/routes/index.js",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/migrations/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "cp2",
+      "title": "CP-2 — Weight occurrence ↔ observation completion",
+      "branch": "cursor/care-progression-cp2-2d95",
+      "allowed_paths": [
+        ".agents/plans/care-progression-v1.*",
+        "docs/domains/pet_care/**",
+        "docs/architecture/api-reference.md",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**",
+        "server/migrations/**",
+        "server/routes/healthEntries/**",
+        "server/routes/weightEntries/**",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "cp3",
+      "title": "CP-3 — Weight establishment evaluator",
+      "branch": "cursor/care-progression-cp3-2d95",
+      "allowed_paths": [
+        ".agents/plans/care-progression-v1.*",
+        "docs/domains/pet_care/**",
+        "regulatory/DATA_MAP.md",
+        "flutter_app/lib/features/pet_care/**",
+        "flutter_app/test/features/pet_care/**",
+        "server/lib/care/**",
+        "server/migrations/**",
+        "server/routes/careProgression/**",
+        "server/routes/index.js",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "cp4",
+      "title": "CP-4 — Milestone persistence & idempotency",
+      "branch": "cursor/care-progression-cp4-2d95",
+      "allowed_paths": [
+        ".agents/plans/care-progression-v1.*",
+        "docs/domains/pet_care/**",
+        "regulatory/DATA_MAP.md",
+        "flutter_app/lib/features/pet_care/**",
+        "flutter_app/test/features/pet_care/**",
+        "server/lib/care/**",
+        "server/migrations/**",
+        "server/routes/careProgression/**",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "cp5",
+      "title": "CP-5 — Care Rhythms Established marker",
+      "branch": "cursor/care-progression-cp5-2d95",
+      "allowed_paths": [
+        ".agents/plans/care-progression-v1.*",
+        "docs/domains/pet_care/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "cp6",
+      "title": "CP-6 — Presentation arbitration",
+      "branch": "cursor/care-progression-cp6-2d95",
+      "allowed_paths": [
+        ".agents/plans/care-progression-v1.*",
+        "docs/domains/pet_care/**",
+        "flutter_app/lib/features/care_intelligence/**",
+        "flutter_app/lib/features/pet_care/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**",
+        "server/routes/careProgression/**",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "cp7",
+      "title": "CP-7 — Timeline milestone integration",
+      "branch": "cursor/care-progression-cp7-2d95",
+      "allowed_paths": [
+        ".agents/plans/care-progression-v1.*",
+        "docs/domains/pet_care/**",
+        "e2e/**",
+        "flutter_app/lib/features/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**",
+        "server/routes/careProgression/**",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:997b8a485c50e1dd0c0b5f9ac9dd3cb4deee13aa7b191677faf699299402f526"
+}
