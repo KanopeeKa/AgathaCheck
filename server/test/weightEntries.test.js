@@ -87,8 +87,20 @@ describe('Weight Entries API', () => {
           };
         }
 
+        if (sql.includes('SELECT pet_id, health_occurrence_id FROM weight_entries WHERE id = $1')) {
+          return { rows: [{ pet_id: 'pet-1', health_occurrence_id: null }] };
+        }
+
         if (sql.includes('SELECT pet_id FROM weight_entries WHERE id = $1')) {
           return { rows: [{ pet_id: 'pet-1' }] };
+        }
+
+        if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
+          return { rows: [] };
+        }
+
+        if (sql.includes('UPDATE health_occurrences SET status = \'pending\'')) {
+          return { rows: [{ health_entry_id: 'he-1' }] };
         }
 
         if (sql.includes('UPDATE pets SET weight = (')) {
@@ -105,6 +117,10 @@ describe('Weight Entries API', () => {
 
         return { rows: [] };
       },
+      connect: async () => ({
+        query: async (sql, params) => mockPool.query(sql, params),
+        release: () => {},
+      }),
       end: async () => {},
     };
     app = createApp(mockPool);
@@ -404,6 +420,43 @@ describe('Weight Entries API', () => {
       expect(del.params[0]).toBe('we-1');
     });
 
+    it('re-opens linked occurrence when deleting occurrence-bound weight', async () => {
+      const queries = [];
+      const mockPool = {
+        query: async (sql, params) => {
+          queries.push({ sql, params });
+          if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') return { rows: [] };
+          const access = handlePetAccessQuery(sql, params, {
+            userId,
+            ownedPetIds: ['pet-1'],
+          });
+          if (access) return access;
+          const manageWeight = handleManageEntryQuery(sql, params, { tableName: 'weight_entries we' });
+          if (manageWeight) return manageWeight;
+          if (sql.includes('SELECT pet_id, health_occurrence_id FROM weight_entries WHERE id = $1')) {
+            return { rows: [{ pet_id: 'pet-1', health_occurrence_id: 'occ-linked' }] };
+          }
+          if (sql.includes('UPDATE health_occurrences SET status = \'pending\'')) {
+            return { rows: [{ health_entry_id: 'he-weight' }] };
+          }
+          if (sql.includes('DELETE FROM weight_entries')) return { rows: [] };
+          if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
+          return { rows: [] };
+        },
+        connect: async () => ({
+          query: async (sql, params) => mockPool.query(sql, params),
+          release: () => {},
+        }),
+        end: async () => {},
+      };
+      const deleteApp = createApp(mockPool);
+      const res = await request(deleteApp)
+        .delete('/api/weight-entries/we-linked')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(queries.some((q) => q.sql.includes('UPDATE health_occurrences SET status = \'pending\''))).toBe(true);
+    });
+
     it('refreshes pets.weight after delete', async () => {
       const queries = [];
       const mockPool = {
@@ -416,13 +469,18 @@ describe('Weight Entries API', () => {
           if (access) return access;
           const manageWeight = handleManageEntryQuery(sql, params, { tableName: 'weight_entries we' });
           if (manageWeight) return manageWeight;
-          if (sql.includes('SELECT pet_id FROM weight_entries WHERE id = $1')) {
-            return { rows: [{ pet_id: 'pet-1' }] };
+          if (sql.includes('SELECT pet_id, health_occurrence_id FROM weight_entries WHERE id = $1')) {
+            return { rows: [{ pet_id: 'pet-1', health_occurrence_id: null }] };
           }
+          if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') return { rows: [] };
           if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
           if (sql.includes('DELETE FROM weight_entries')) return { rows: [] };
           return { rows: [] };
         },
+        connect: async () => ({
+          query: async (sql, params) => mockPool.query(sql, params),
+          release: () => {},
+        }),
         end: async () => {},
       };
       const deleteApp = createApp(mockPool);
@@ -527,14 +585,17 @@ describe('Weight Entries API', () => {
       const auditInserts = [];
       const mockPool = {
         query: async (sql, params) => {
-          if (sql.includes('SELECT pet_id FROM weight_entries WHERE id = $1')) {
-            return { rows: [{ pet_id: 'pet-1' }] };
+          if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') return { rows: [] };
+          if (sql.includes('SELECT pet_id, health_occurrence_id FROM weight_entries WHERE id = $1')) {
+            return { rows: [{ pet_id: 'pet-1', health_occurrence_id: null }] };
           }
           const access = handlePetAccessQuery(sql, params, {
             userId,
             ownedPetIds: ['pet-1'],
           });
           if (access) return access;
+          const manageWeight = handleManageEntryQuery(sql, params, { tableName: 'weight_entries we' });
+          if (manageWeight) return manageWeight;
           if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
           if (sql.includes('DELETE FROM weight_entries')) return { rows: [] };
           if (sql.includes('INSERT INTO audit_events')) {
@@ -543,6 +604,10 @@ describe('Weight Entries API', () => {
           }
           return { rows: [] };
         },
+        connect: async () => ({
+          query: async (sql, params) => mockPool.query(sql, params),
+          release: () => {},
+        }),
         end: async () => {},
       };
       const auditApp = createApp(mockPool);
