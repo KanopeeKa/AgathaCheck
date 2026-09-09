@@ -51,12 +51,12 @@ last_completed_phase: cp0
 halt_reason: null
 next_action: "continue phase cp1 on branch cursor/care-progression-cp1-2d95"
 artifact_ref:
-  branch: cursor/care-progression-cp0-2d95
+  branch: cursor/care-progression-cp1-2d95
   plan_path: .agents/plans/care-progression-v1.md
-  plan_commit: 0d160315fb99f305e016fd5a8e78b2d2b19f3838
+  plan_commit: fc15e6082644f70065bfc523e44f04930d786eee
   snapshot_path: .agents/plans/care-progression-v1.snapshot.json
-  snapshot_commit: 0d160315fb99f305e016fd5a8e78b2d2b19f3838
-open_prs: []
+  snapshot_commit: fc15e6082644f70065bfc523e44f04930d786eee
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1098"]
 merge_commits: {}
 debt_issue_refs: []
 ```
