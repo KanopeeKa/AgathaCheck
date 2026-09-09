@@ -50,11 +50,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "completed",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:ea98c717b114db0452e2c2ae7ad1655763d5aad0ccfa944161e840897fb71855"
+  "content_hash": "sha256:a98b36742709220093b0895dae207df498a9232eeb66bc588965fc8b738d3408"
 }
