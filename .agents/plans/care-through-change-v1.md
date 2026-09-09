@@ -67,14 +67,14 @@ autonomy: active
 current_phase: cc1
 last_completed_phase: null
 halt_reason: null
-next_action: "CC-1 planned absence persistence"
+next_action: "continue phase cc1 on branch cursor/care-through-change-cc1-6605"
 artifact_ref:
   branch: cursor/care-through-change-v1-integration-6605
   plan_path: .agents/plans/care-through-change-v1.md
+  plan_commit: b1a8e9927f99b0357ddb941cc17056ba6f226dc7
   snapshot_path: .agents/plans/care-through-change-v1.snapshot.json
+  snapshot_commit: b1a8e9927f99b0357ddb941cc17056ba6f226dc7
 open_prs: []
-merge_prerequisites:
-  main_includes_pr_1107: true
-  cc4_requires_pr_1108: true
+merge_commits: {}
 debt_issue_refs: []
 ```
