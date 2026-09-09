@@ -1,4 +1,5 @@
 import { dateToIsoDate } from './calendarDate.js';
+import { MILESTONE_TYPES } from './care/progression/careMilestoneService.js';
 import { userDisplayName } from './notificationHelper.js';
 import { userOwnsPet } from './petAccess.js';
 import { userCanAccessOrgPetOperational } from './orgPetViewAccess.js';
@@ -92,6 +93,58 @@ async function loadFosteringSessions(pool, petId) {
     foster_name: row.foster_name?.trim() || userDisplayName({ email: row.foster_email }),
     fillable: false,
   }));
+}
+
+async function loadCareMilestoneSegments(pool, petId) {
+  const result = await pool.query(
+    `SELECT id, milestone_type, care_family, bundle_id, achieved_at
+     FROM care_milestones
+     WHERE pet_id = $1
+     ORDER BY achieved_at ASC`,
+    [petId],
+  );
+
+  const byBundle = new Map();
+  for (const row of result.rows) {
+    const key = row.bundle_id || row.id;
+    if (!byBundle.has(key)) {
+      byBundle.set(key, []);
+    }
+    byBundle.get(key).push(row);
+  }
+
+  const segments = [];
+  for (const bundleRows of byBundle.values()) {
+    const sorted = [...bundleRows].sort((a, b) => {
+      if (a.milestone_type === MILESTONE_TYPES.WEIGHT_MONITORING_ESTABLISHED) return -1;
+      if (b.milestone_type === MILESTONE_TYPES.WEIGHT_MONITORING_ESTABLISHED) return 1;
+      return 0;
+    });
+    const primary = sorted.find(
+      (row) => row.milestone_type !== MILESTONE_TYPES.FIRST_CARE_ESTABLISHED,
+    ) || sorted[0];
+    const includesFirstCare = sorted.some(
+      (row) => row.milestone_type === MILESTONE_TYPES.FIRST_CARE_ESTABLISHED,
+    );
+
+    segments.push({
+      kind: 'care_milestone',
+      id: primary.id,
+      start_date: isoDate(primary.achieved_at),
+      end_date: null,
+      title: '',
+      description: '',
+      primary_holder_name: null,
+      foster_name: null,
+      fillable: false,
+      milestone_type: primary.milestone_type,
+      care_family: primary.care_family,
+      bundle_id: primary.bundle_id,
+      includes_first_care: includesFirstCare,
+    });
+  }
+
+  return segments;
 }
 
 async function loadManualEntries(pool, petId) {
@@ -203,13 +256,14 @@ export async function buildPetTimeline(pool, petId, viewerId) {
   }
   const pet = petResult.rows[0];
 
-  const [custody, sessions, manual] = await Promise.all([
+  const [custody, sessions, manual, milestones] = await Promise.all([
     loadCustodySegments(pool, petId, viewerId),
     loadFosteringSessions(pool, petId),
     loadManualEntries(pool, petId),
+    loadCareMilestoneSegments(pool, petId),
   ]);
 
-  const dataSegments = mergeSegmentRanges([...custody, ...sessions, ...manual]);
+  const dataSegments = mergeSegmentRanges([...custody, ...sessions, ...manual, ...milestones]);
   const timelineStartMs = dateOnlyMs(pet.date_of_birth)
     ?? dateOnlyMs(pet.created_at)
     ?? Date.now();

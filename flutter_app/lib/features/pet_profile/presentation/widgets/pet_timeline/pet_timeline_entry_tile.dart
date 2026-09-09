@@ -24,7 +24,7 @@ class PetTimelineEntryTile extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
 
     final headline = petTimelineHeadline(segment, l);
-    final subtitle = petTimelineSubtitle(segment, l);
+    final subtitle = petTimelineSubtitle(segment, l, petName: petName);
 
     return Card(
       key: Key('timeline_entry_${segment.kind}_${segment.id}'),

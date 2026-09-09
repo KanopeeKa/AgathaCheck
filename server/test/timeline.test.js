@@ -58,8 +58,25 @@ function buildMockPool() {
           }],
         };
       }
-      if (sql.includes('FROM pet_timeline_entries')) {
+      if (sql.includes('FROM pet_timeline_entries') && !sql.includes('WHERE id')) {
         return { rows: [] };
+      }
+      if (sql.includes('FROM care_milestones')) {
+        return {
+          rows: [{
+            id: 'ms-1',
+            milestone_type: 'weight_monitoring_established',
+            care_family: 'weight_monitoring',
+            bundle_id: 'bundle-1',
+            achieved_at: new Date('2025-09-01T12:00:00Z'),
+          }, {
+            id: 'ms-2',
+            milestone_type: 'first_care_established',
+            care_family: null,
+            bundle_id: 'bundle-1',
+            achieved_at: new Date('2025-09-01T12:00:00Z'),
+          }],
+        };
       }
       if (sql.includes('INSERT INTO pet_timeline_entries')) {
         return {
@@ -96,6 +113,24 @@ function buildMockPool() {
 }
 
 describe('Pet timeline API', () => {
+  it('GET /api/pets/:id/timeline returns care milestone segments grouped by bundle', async () => {
+    const pool = buildMockPool();
+    const app = createApp(pool);
+    const res = await request(app)
+      .get(`/api/pets/${petId}/timeline`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    const milestone = res.body.segments.find((s) => s.kind === 'care_milestone');
+    expect(milestone).toBeDefined();
+    expect(milestone.id).toBe('ms-1');
+    expect(milestone.milestone_type).toBe('weight_monitoring_established');
+    expect(milestone.care_family).toBe('weight_monitoring');
+    expect(milestone.includes_first_care).toBe(true);
+    expect(milestone.start_date).toBe('2025-09-01');
+    expect(res.body.segments.filter((s) => s.kind === 'care_milestone')).toHaveLength(1);
+  });
+
   it('GET /api/pets/:id/timeline returns fostering session segments', async () => {
     const pool = buildMockPool();
     const app = createApp(pool);

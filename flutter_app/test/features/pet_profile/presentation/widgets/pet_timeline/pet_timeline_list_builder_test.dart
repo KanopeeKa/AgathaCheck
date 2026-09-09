@@ -78,6 +78,25 @@ void main() {
       expect(list.last.startDate, '2020-01-01');
     });
 
+    test('includes care milestone segments from API', () {
+      final list = buildPetTimelineList(
+        pet: null,
+        apiSegments: const [
+          PetTimelineSegment(
+            kind: 'care_milestone',
+            id: 'ms-1',
+            startDate: '2025-09-01',
+            milestoneType: 'weight_monitoring_established',
+            careFamily: 'weight_monitoring',
+            includesFirstCare: true,
+          ),
+        ],
+      );
+
+      expect(list.where((s) => s.isCareMilestone), hasLength(1));
+      expect(list.first.isCareMilestone, isTrue);
+    });
+
     test('includes custody and gaps when display options enable them', () {
       final list = buildPetTimelineList(
         pet: null,

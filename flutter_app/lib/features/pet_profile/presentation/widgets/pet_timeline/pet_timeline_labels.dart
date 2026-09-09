@@ -33,10 +33,21 @@ String petTimelineHeadline(PetTimelineSegment segment, AppLocalizations l) {
     return l.petTimelineCustodySegment(guardian);
   }
   if (segment.isGap) return l.petTimelineNoData;
+  if (segment.isCareMilestone) return l.careProgressionMilestoneTitle;
   return segment.title.isNotEmpty ? segment.title : l.petTimelineManualEntry;
 }
 
-String? petTimelineSubtitle(PetTimelineSegment segment, AppLocalizations l) {
+String? petTimelineSubtitle(
+  PetTimelineSegment segment,
+  AppLocalizations l, {
+  String? petName,
+}) {
+  if (segment.isCareMilestone && petName != null && petName.isNotEmpty) {
+    if (segment.includesFirstCare) {
+      return l.careProgressionFirstCareCombinedBody(petName);
+    }
+    return l.careProgressionWeightEstablishedBody(petName);
+  }
   if (segment.isJoinedAgatha) {
     final guardian = segment.primaryHolderName?.trim();
     if (guardian == null || guardian.isEmpty) return null;
@@ -49,6 +60,7 @@ String? petTimelineSubtitle(PetTimelineSegment segment, AppLocalizations l) {
 IconData petTimelineIcon(PetTimelineSegment segment) {
   if (segment.isDateOfBirth) return Icons.cake_outlined;
   if (segment.isJoinedAgatha) return Icons.pets_outlined;
+  if (segment.isCareMilestone) return Icons.emoji_events_outlined;
   if (segment.isFosteringSession) return Icons.home_work_outlined;
   if (segment.isCustody) return Icons.swap_horiz_outlined;
   if (segment.isGap) return Icons.more_horiz;

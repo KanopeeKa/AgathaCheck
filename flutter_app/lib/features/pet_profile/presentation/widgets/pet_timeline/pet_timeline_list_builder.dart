@@ -30,6 +30,7 @@ List<PetTimelineSegment> buildPetTimelineList({
     if (segment.isCustody && !options.includeCustody) continue;
     if (segment.isFosteringSession ||
         segment.isManual ||
+        segment.isCareMilestone ||
         (options.includeCustody && segment.isCustody) ||
         (options.includeGaps && segment.isGap)) {
       entries.add(segment);
