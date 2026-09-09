@@ -1,23 +1,25 @@
 import { publicError } from '../../config/security.js';
-import { CareFamilyCapabilityPolicy } from '../../lib/care/capabilities.js';
-import { loadEstablishmentsForPet } from '../../lib/care/progression/weightEstablishmentService.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { accessiblePetSql } from '../../lib/petAccess.js';
+import { reEvaluateWeightEstablishments } from '../../lib/care/progression/weightEstablishmentService.js';
+import { isProduction } from '../auth/shared.js';
 import { extractUserId } from '../pets/shared.js';
 
 /**
- * GET /api/pets/:petId/care-progression — establishment + milestones read model (CP-1 stub).
+ * POST /api/pets/:petId/care-progression/re-evaluate — internal/dev re-evaluation (CP-3).
  */
-export function registerCareProgressionReadRoutes(router, pool) {
-  router.get('/:id/care-progression', async (req, res) => {
+export function registerCareProgressionReEvaluateRoutes(router, pool) {
+  router.post('/:id/care-progression/re-evaluate', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (isProduction() && process.env.CARE_PROGRESSION_INTERNAL_EVAL !== '1') {
+      return res.status(404).json({ error: 'Not found' });
+    }
 
     const { id: petId } = req.params;
+    const healthEntryId = req.body?.health_entry_id || req.body?.healthEntryId || null;
+
     try {
-      if (!CareFamilyCapabilityPolicy.supportsProgressionRead()) {
-        return res.status(503).json({ error: 'Care progression unavailable' });
-      }
       if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.HEALTH_VIEW))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
@@ -29,10 +31,14 @@ export function registerCareProgressionReadRoutes(router, pool) {
       if (petResult.rows.length === 0) {
         return res.status(404).json({ error: 'Pet not found' });
       }
-      const establishments = await loadEstablishmentsForPet(pool, petId);
-      return res.json({ establishments, milestones: [] });
+
+      const results = await reEvaluateWeightEstablishments(pool, petId, healthEntryId);
+      return res.json({
+        results,
+        internal_only: true,
+      });
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      return res.status(500).json({ error: publicError(err) });
     }
   });
 }

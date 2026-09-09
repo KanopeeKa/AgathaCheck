@@ -14,12 +14,24 @@ describe('GET /api/pets/:id/care-progression', () => {
     expect(res.statusCode).toBe(401);
   });
 
-  it('returns empty establishments and milestones for authorised guardian', async () => {
+  it('returns establishments and empty milestones for authorised guardian', async () => {
+    const establishedAt = new Date('2026-09-09T12:00:00.000Z');
     const app = createTestApp(async (sql, params) => {
       const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
       if (access) return access;
       if (sql.includes('FROM pets p') && sql.includes('WHERE p.id = $1')) {
         return { rows: [{ id: petId }] };
+      }
+      if (sql.includes('FROM care_establishments') && sql.includes('WHERE pet_id = $1')) {
+        return {
+          rows: [{
+            id: 'est-1',
+            care_family: 'weight_monitoring',
+            health_entry_id: 'he-weight',
+            established_at: establishedAt,
+            policy_version: '1.0.0',
+          }],
+        };
       }
       return { rows: [] };
     });
@@ -27,7 +39,14 @@ describe('GET /api/pets/:id/care-progression', () => {
       .get(`/api/pets/${petId}/care-progression`)
       .set('Authorization', `Bearer ${token}`);
     expect(res.statusCode).toBe(200);
-    expect(res.body).toEqual({ establishments: [], milestones: [] });
+    expect(res.body.milestones).toEqual([]);
+    expect(res.body.establishments).toEqual([{
+      id: 'est-1',
+      care_family: 'weight_monitoring',
+      health_entry_id: 'he-weight',
+      established_at: establishedAt.toISOString(),
+      policy_version: '1.0.0',
+    }]);
   });
 
   it('returns 403 when guardian lacks health view capability', async () => {
