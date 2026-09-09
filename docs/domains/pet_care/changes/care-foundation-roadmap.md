@@ -709,4 +709,21 @@ Operational fixture detail lives in [phase-d-review-relevance-plan.md](./phase-d
 
 ---
 
+---
+
+## 16. Successor programme — Care Progression
+
+Phases A–E (this roadmap) complete the **Care Foundation & Intelligence** programme. The **next** Pet Care programme is **Care Progression** — a separate execute-plan, not an extension of `care-foundation-c7a1`.
+
+**Starts when:** Phase E (guardian safeguards) is merged to `main`.
+
+| Document | Role |
+|----------|------|
+| [care-progression.md](../features/care-progression.md) | Canonical product semantics |
+| [care-progression-delivery-plan.md](./care-progression-delivery-plan.md) | CP-0–CP-7 implementation sequencing |
+
+Care Progression covers Established maturity, Milestones, and weight occurrence ↔ observation evidence. It does **not** extend Phase D/E scope or modify the CIM execute-plan snapshot.
+
+---
+
 *End of Care Foundation & Intelligence Roadmap v0.4*

@@ -224,7 +224,8 @@ Benchmark curation, evidence traces, and any production safeguard persistence mu
 | Artifact | Role |
 |----------|------|
 | [Care Foundation roadmap](../changes/care-foundation-roadmap.md) | Programme sequencing (Phases A–E) |
-| [Phase D Review Relevance plan](../changes/phase-d-review-relevance-plan.md) | Active research/delivery mechanics (D0–D7) |
+| [Phase D Review Relevance plan](../changes/phase-d-review-relevance-plan.md) | Phase D research/delivery mechanics (D0–D7) |
 | Execute-plan `care-foundation-c7a1` | Autonomous implementation state — control issue [#1082](https://github.com/KanopeeKa/AgathaCheck/issues/1082) |
+| [Care Progression](../features/care-progression.md) | **Next programme** (after Phase E) — not part of CIM |
 
 Phase mechanics, gates, and completion criteria belong in the delivery plan, not in this document.

@@ -3,7 +3,7 @@ title: Pet Care domain
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-08
+last_updated: 2026-09-09
 tags: [domain, pet_care, experience]
 ---
 
@@ -18,8 +18,18 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | Document | Role |
 |----------|------|
 | [features/care-intelligence.md](features/care-intelligence.md) | Canonical product behaviour |
-| [changes/care-foundation-roadmap.md](changes/care-foundation-roadmap.md) | Programme sequencing (v0.4) |
-| [changes/phase-d-review-relevance-plan.md](changes/phase-d-review-relevance-plan.md) | Active Phase D research/delivery plan |
+| [changes/care-foundation-roadmap.md](changes/care-foundation-roadmap.md) | Programme sequencing (v0.4) — Phases A–E |
+| [changes/phase-d-review-relevance-plan.md](changes/phase-d-review-relevance-plan.md) | Phase D research/delivery plan |
+
+## Care Progression (next programme — draft)
+
+Starts **after** Care Foundation Phase E merges to `main`. Architecture review complete; implementation not started.
+
+| Document | Role |
+|----------|------|
+| [features/care-progression.md](features/care-progression.md) | Canonical product behaviour |
+| [changes/care-progression-delivery-plan.md](changes/care-progression-delivery-plan.md) | CP-0–CP-7 delivery plan (draft for review) |
+| [features/care-entitlements.md](features/care-entitlements.md) | Future tier principles (no runtime in V1) |
 
 ## On this domain
 
