@@ -12,6 +12,7 @@ import {
   registerCareIntelligenceReviewRoutes,
   registerCareSafeguardRoutes,
 } from '../careIntelligence/index.js';
+import { registerCareProgressionRoutes } from '../index.js';
 
 export default function petsRoutes(pool) {
   const router = express.Router();
@@ -22,6 +23,7 @@ export default function petsRoutes(pool) {
   registerCareIntelligenceRoutes(router, pool);
   registerCareIntelligenceReviewRoutes(router, pool);
   registerCareSafeguardRoutes(router, pool);
+  registerCareProgressionRoutes(router, pool);
   registerAccessRoutes(router, pool);
   registerLifecycleRoutes(router, pool);
   registerPhotoRoutes(router, pool);

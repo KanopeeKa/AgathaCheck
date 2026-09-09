@@ -43,10 +43,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Blocked until Phase E on main",
-      "debt_issue_refs": []
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1097",
+      "pr_head_sha": "0d160315"
     },
     {
       "id": "cp1",
@@ -78,10 +80,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1098",
+      "pr_head_sha": "ab8c9af3"
     },
     {
       "id": "cp2",
@@ -113,10 +117,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1099",
+      "pr_head_sha": "987eb389"
     },
     {
       "id": "cp3",
@@ -147,10 +153,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1100",
+      "pr_head_sha": "c31d366b"
     },
     {
       "id": "cp4",
@@ -180,10 +188,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1101",
+      "pr_head_sha": "0fbd05e4"
     },
     {
       "id": "cp5",
@@ -211,10 +221,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1102",
+      "pr_head_sha": "596fae96"
     },
     {
       "id": "cp6",
@@ -244,10 +256,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1103",
+      "pr_head_sha": "35e21528"
     },
     {
       "id": "cp7",
@@ -276,11 +290,13 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1104",
+      "pr_head_sha": "500138e4"
     }
   ],
-  "content_hash": "sha256:997b8a485c50e1dd0c0b5f9ac9dd3cb4deee13aa7b191677faf699299402f526"
+  "content_hash": "sha256:ee2e777fcc97389a2b98e9a1765545b1cb8ecb314367bf7d6f1008271e464a83"
 }

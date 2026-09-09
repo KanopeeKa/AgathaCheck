@@ -92,8 +92,52 @@
 | `weight` | DOUBLE PRECISION | Weight value |
 | `measurement_source` | VARCHAR(50) | D0: `guardian`, `clinic`, `device`, `imported` (per-entry; not inferred from pet context) |
 | `notes` | TEXT | User notes |
+| `health_occurrence_id` | UUID | Optional FK linking observation to a completed health occurrence (CP-2) |
 
-### 1.6a Care Safeguards (care_safeguards table) — Phase E
+### 1.6a Care Establishments (care_establishments table) — Care Progression CP-3
+
+Historical transition record when a recurring care rhythm becomes Established (V1: weight monitoring only). Not a mutable current-state row; establishment is not revoked when linked weights are deleted.
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `id` | UUID | Establishment record identifier |
+| `pet_id` | UUID | Associated pet |
+| `care_family` | VARCHAR(50) | Care family (e.g. `weight_monitoring`) |
+| `health_entry_id` | UUID | Recurring rhythm that became established (`UNIQUE` in V1) |
+| `established_at` | TIMESTAMPTZ | When establishment transition was recorded |
+| `policy_version` | VARCHAR(20) | Evaluator policy version at transition |
+| `created_at` | TIMESTAMPTZ | Row creation timestamp |
+
+### 1.6b Care Milestones (care_milestones table) — Care Progression CP-4
+
+Durable milestone records for meaningful care progression events (V1: `weight_monitoring_established`, `first_care_established`). Idempotent via `dedupe_key` per pet.
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `id` | UUID | Milestone record identifier |
+| `pet_id` | UUID | Associated pet |
+| `milestone_type` | VARCHAR(50) | e.g. `weight_monitoring_established`, `first_care_established` |
+| `care_family` | VARCHAR(50) | Care family when family-scoped (nullable for pet-level milestones) |
+| `source_entity_id` | UUID | Source rhythm or entity (e.g. `health_entry_id` for weight) |
+| `care_period_key` | VARCHAR(50) | Reserved for episode-keyed milestones (V1.1+) |
+| `dedupe_key` | VARCHAR(100) | Server identity for idempotent create (`UNIQUE` per pet) |
+| `achieved_at` | TIMESTAMPTZ | When milestone was achieved |
+| `policy_version` | VARCHAR(20) | Milestone policy version at creation |
+| `bundle_id` | UUID | Groups milestones presented as one combined moment |
+| `created_at` | TIMESTAMPTZ | Row creation timestamp |
+
+### 1.6c Care Milestone Presentations (care_milestone_presentations table) — Care Progression CP-4
+
+Per-user presentation state — records when a prominent milestone card was rendered to a guardian.
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `id` | UUID | Presentation record identifier |
+| `milestone_id` | UUID | Milestone that was presented (`UNIQUE` with `user_id`) |
+| `user_id` | INTEGER | Guardian who was shown the moment |
+| `shown_at` | TIMESTAMPTZ | When the card was acknowledged as rendered |
+
+### 1.6d Care Safeguards (care_safeguards table) — Phase E
 
 | Field | Type | Purpose |
 |-------|------|---------|

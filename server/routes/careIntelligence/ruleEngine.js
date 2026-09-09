@@ -16,7 +16,7 @@ function entryCareFamily(entry) {
   return entry.care_family || null;
 }
 
-function hasEstablishedRhythm(entries, careFamily) {
+export function hasActiveRecurringCare(entries, careFamily) {
   return entries.some((entry) => (
     isRecurring(entry) && entryCareFamily(entry) === careFamily
   ));
@@ -64,7 +64,7 @@ export function evaluateCareRecommendationCandidates({
     if (!template) return;
     const { care_family: careFamily } = template;
     if (!predicate()) return;
-    if (hasEstablishedRhythm(healthEntries, careFamily)) return;
+    if (hasActiveRecurringCare(healthEntries, careFamily)) return;
     if (hasVetCadence(healthEntries, careFamily)) return;
     if (isSuppressedByResponse(existingRecommendations, careFamily)) return;
     if (isDismissedRecently(existingRecommendations, careFamily)) return;

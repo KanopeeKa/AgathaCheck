@@ -77,4 +77,15 @@ abstract class HealthRepository {
   Future<int> skipMissedOccurrences(String entryId);
 
   Future<HealthOccurrence> undoOccurrence(String entryId, String occurrenceId);
+
+  Future<void> completeWeightOccurrence({
+    required String petId,
+    required String entryId,
+    required String occurrenceId,
+    required double weightKg,
+    required DateTime date,
+    String notes = '',
+    String unit = 'kg',
+    String measurementSource = 'guardian',
+  });
 }

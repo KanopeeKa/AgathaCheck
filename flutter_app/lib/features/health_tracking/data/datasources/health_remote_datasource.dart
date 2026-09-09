@@ -7,6 +7,8 @@ import '../../../../core/utils/calendar_date.dart';
 import '../models/health_entry_model.dart';
 import '../models/health_history_model.dart';
 import '../models/health_occurrence_model.dart';
+import 'health_occurrence_remote_datasource.dart';
+import 'health_weight_completion_remote.dart';
 
 class EventPhoto {
   final String id;
@@ -84,6 +86,16 @@ abstract class HealthRemoteDataSource {
     String entryId,
     String occurrenceId,
   );
+  Future<void> completeWeightOccurrence({
+    required String petId,
+    required String entryId,
+    required String occurrenceId,
+    required double weightKg,
+    required DateTime date,
+    String notes = '',
+    String unit = 'kg',
+    String measurementSource = 'guardian',
+  });
 }
 
 /// Implementation of [HealthRemoteDataSource] using HTTP.
@@ -347,33 +359,25 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
   }
 
   @override
-  Future<List<HealthOccurrenceModel>> getOpenOccurrences(String entryId) async {
-    final response = await _client.get(
-      Uri.parse(
-        '$baseUrl/api/health-entries/$entryId/occurrences',
-      ).replace(queryParameters: const {'status': 'open'}),
+  Future<List<HealthOccurrenceModel>> getOpenOccurrences(String entryId) {
+    return fetchOpenOccurrences(
+      client: _client,
+      baseUrl: baseUrl,
       headers: _authHeaders(),
+      checkResponse: _checkResponse,
+      entryId: entryId,
     );
-    _checkResponse(response);
-    final list = json.decode(response.body) as List<dynamic>;
-    return list
-        .map((e) => HealthOccurrenceModel.fromJson(e as Map<String, dynamic>))
-        .toList();
   }
 
   @override
-  Future<List<HealthOccurrenceModel>> getPastOccurrences(String entryId) async {
-    final response = await _client.get(
-      Uri.parse(
-        '$baseUrl/api/health-entries/$entryId/occurrences',
-      ).replace(queryParameters: const {'status': 'past'}),
+  Future<List<HealthOccurrenceModel>> getPastOccurrences(String entryId) {
+    return fetchPastOccurrences(
+      client: _client,
+      baseUrl: baseUrl,
       headers: _authHeaders(),
+      checkResponse: _checkResponse,
+      entryId: entryId,
     );
-    _checkResponse(response);
-    final list = json.decode(response.body) as List<dynamic>;
-    return list
-        .map((e) => HealthOccurrenceModel.fromJson(e as Map<String, dynamic>))
-        .toList();
   }
 
   @override
@@ -383,26 +387,18 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
     String notes = '',
     DateTime? completedOn,
     bool skipEarlierMissed = false,
-  }) async {
-    final body = <String, dynamic>{
-      'notes': notes,
-      'skip_earlier_missed': skipEarlierMissed,
-    };
-    if (completedOn != null) {
-      body['completed_on'] = toCalendarDateString(completedOn);
-    }
-    final response = await _client.post(
-      Uri.parse(
-        '$baseUrl/api/health-entries/$entryId/occurrences/$occurrenceId/complete',
-      ),
+  }) {
+    return postCompleteOccurrence(
+      client: _client,
+      baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
-      body: json.encode(body),
+      checkResponse: _checkResponse,
+      entryId: entryId,
+      occurrenceId: occurrenceId,
+      notes: notes,
+      completedOn: completedOn,
+      skipEarlierMissed: skipEarlierMissed,
     );
-    _checkResponse(response);
-    final decoded = json.decode(response.body) as Map<String, dynamic>;
-    final occurrence =
-        decoded['occurrence'] as Map<String, dynamic>? ?? decoded;
-    return HealthOccurrenceModel.fromJson(occurrence);
   }
 
   @override
@@ -410,47 +406,68 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
     String entryId,
     String occurrenceId, {
     String notes = '',
-  }) async {
-    final response = await _client.post(
-      Uri.parse(
-        '$baseUrl/api/health-entries/$entryId/occurrences/$occurrenceId/skip',
-      ),
+  }) {
+    return postSkipOccurrence(
+      client: _client,
+      baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
-      body: json.encode({'notes': notes}),
-    );
-    _checkResponse(response);
-    return HealthOccurrenceModel.fromJson(
-      json.decode(response.body) as Map<String, dynamic>,
+      checkResponse: _checkResponse,
+      entryId: entryId,
+      occurrenceId: occurrenceId,
+      notes: notes,
     );
   }
 
   @override
-  Future<int> skipMissedOccurrences(String entryId) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/health-entries/$entryId/occurrences/skip-missed'),
+  Future<int> skipMissedOccurrences(String entryId) {
+    return postSkipMissedOccurrences(
+      client: _client,
+      baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
-      body: json.encode({}),
+      checkResponse: _checkResponse,
+      entryId: entryId,
     );
-    _checkResponse(response);
-    final decoded = json.decode(response.body) as Map<String, dynamic>;
-    return decoded['count'] as int? ?? 0;
   }
 
   @override
   Future<HealthOccurrenceModel> undoOccurrence(
     String entryId,
     String occurrenceId,
-  ) async {
-    final response = await _client.post(
-      Uri.parse(
-        '$baseUrl/api/health-entries/$entryId/occurrences/$occurrenceId/undo',
-      ),
+  ) {
+    return postUndoOccurrence(
+      client: _client,
+      baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
-      body: json.encode({}),
+      checkResponse: _checkResponse,
+      entryId: entryId,
+      occurrenceId: occurrenceId,
     );
-    _checkResponse(response);
-    return HealthOccurrenceModel.fromJson(
-      json.decode(response.body) as Map<String, dynamic>,
+  }
+
+  @override
+  Future<void> completeWeightOccurrence({
+    required String petId,
+    required String entryId,
+    required String occurrenceId,
+    required double weightKg,
+    required DateTime date,
+    String notes = '',
+    String unit = 'kg',
+    String measurementSource = 'guardian',
+  }) {
+    return completeWeightOccurrenceRemote(
+      client: _client,
+      baseUrl: baseUrl,
+      headers: _authHeaders(jsonBody: true),
+      checkResponse: _checkResponse,
+      petId: petId,
+      entryId: entryId,
+      occurrenceId: occurrenceId,
+      weightKg: weightKg,
+      date: date,
+      notes: notes,
+      unit: unit,
+      measurementSource: measurementSource,
     );
   }
 

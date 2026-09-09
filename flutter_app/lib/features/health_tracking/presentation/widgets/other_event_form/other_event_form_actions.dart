@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../pet_profile/domain/entities/care_family.dart';
+import '../../../../pet_profile/domain/services/care_family_write.dart';
 import '../../../domain/entities/health_entry.dart';
 import '../../../domain/entities/recurrence_anchor.dart';
 import '../../providers/health_providers.dart';
@@ -42,6 +44,7 @@ class OtherEventFormActions {
       required RecurrenceAnchor recurrenceAnchor,
       required DateTime? repeatEndDate,
       required int remindDaysBefore,
+      CareFamily? careFamily,
     })
     applyLoaded,
     required void Function(bool) setLoading,
@@ -71,6 +74,7 @@ class OtherEventFormActions {
           recurrenceAnchor: entry.recurrenceAnchor,
           repeatEndDate: entry.repeatEndDate,
           remindDaysBefore: entry.remindDaysBefore,
+          careFamily: entry.careFamily,
         );
       }
     } catch (e) {
@@ -102,6 +106,7 @@ class OtherEventFormActions {
     required HealthEntryType type,
     required String name,
     required String notes,
+    CareFamily? careFamily,
     required List<XFile> pendingPhotos,
     required void Function(bool) setLoading,
     required void Function(DateTime?) setCompletedOn,
@@ -168,6 +173,11 @@ class OtherEventFormActions {
           frequency == HealthFrequency.once && effectiveCompleted != null
           ? null
           : dueDate;
+      final resolvedCareFamily = resolveCareFamilyForWrite(
+        frequency: frequency,
+        type: type,
+        selected: careFamily,
+      );
 
       if (isEdit) {
         final entry = HealthEntry(
@@ -186,6 +196,7 @@ class OtherEventFormActions {
           recurrenceAnchor: recurrenceAnchor,
           notes: notes.trim(),
           remindDaysBefore: remindDaysBefore,
+          careFamily: resolvedCareFamily,
         );
         await notifier.updateEntry(entry);
       } else {
@@ -208,6 +219,7 @@ class OtherEventFormActions {
           recurrenceAnchor: recurrenceAnchor,
           notes: notes.trim(),
           remindDaysBefore: remindDaysBefore,
+          careFamily: resolvedCareFamily,
         );
         final created = await createUseCase.call(entry);
         if (pendingPhotos.isNotEmpty) {

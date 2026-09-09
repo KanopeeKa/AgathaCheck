@@ -71,18 +71,18 @@ Ship production guardian safeguards for weight monitoring when evidence supports
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/care-foundation-phase-e-2d95"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/care-foundation-phase-e-2d95
+  branch: main
   plan_path: .agents/plans/care-foundation-phase-e-2d95.md
-  plan_commit: 9c301382d86ca5cb9c08dd22c6f1f9707865d889
+  plan_commit: 394f77ea05e087a7565e5a92bc0a8396d5eeef5d
   snapshot_path: .agents/plans/care-foundation-phase-e-2d95.snapshot.json
-  snapshot_commit: 9c301382d86ca5cb9c08dd22c6f1f9707865d889
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1096"]
+  snapshot_commit: 394f77ea05e087a7565e5a92bc0a8396d5eeef5d
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```

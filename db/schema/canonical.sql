@@ -99,6 +99,34 @@ CREATE TABLE public.audit_events (
     CONSTRAINT audit_events_outcome_check CHECK ((outcome = ANY (ARRAY['success'::text, 'failure'::text]))),
     CONSTRAINT audit_events_retention_tier_check CHECK ((retention_tier = ANY (ARRAY['hot'::text, 'warm'::text, 'cold'::text])))
 );
+CREATE TABLE public.care_establishments (
+    id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    care_family character varying(50) NOT NULL,
+    health_entry_id uuid NOT NULL,
+    established_at timestamp with time zone NOT NULL,
+    policy_version character varying(20) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+CREATE TABLE public.care_milestone_presentations (
+    id uuid NOT NULL,
+    milestone_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    shown_at timestamp with time zone DEFAULT now() NOT NULL
+);
+CREATE TABLE public.care_milestones (
+    id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    milestone_type character varying(50) NOT NULL,
+    care_family character varying(50),
+    source_entity_id uuid,
+    care_period_key character varying(50),
+    dedupe_key character varying(100) NOT NULL,
+    achieved_at timestamp with time zone NOT NULL,
+    policy_version character varying(20) NOT NULL,
+    bundle_id uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
 CREATE TABLE public.care_recommendations (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -677,6 +705,7 @@ CREATE TABLE public.weight_entries (
     measured_at timestamp with time zone DEFAULT now(),
     created_at timestamp with time zone DEFAULT now(),
     measurement_source character varying(50) DEFAULT 'guardian'::character varying NOT NULL,
+    health_occurrence_id uuid,
     CONSTRAINT weight_entries_measurement_source_check CHECK (((measurement_source)::text = ANY ((ARRAY['guardian'::character varying, 'clinic'::character varying, 'device'::character varying, 'imported'::character varying])::text[])))
 );
 ALTER TABLE ONLY public._migrations
@@ -689,6 +718,18 @@ ALTER TABLE ONLY public.archived_pets
     ADD CONSTRAINT archived_pets_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.audit_events
     ADD CONSTRAINT audit_events_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.care_establishments
+    ADD CONSTRAINT care_establishments_health_entry_id_key UNIQUE (health_entry_id);
+ALTER TABLE ONLY public.care_establishments
+    ADD CONSTRAINT care_establishments_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.care_milestone_presentations
+    ADD CONSTRAINT care_milestone_presentations_milestone_id_user_id_key UNIQUE (milestone_id, user_id);
+ALTER TABLE ONLY public.care_milestone_presentations
+    ADD CONSTRAINT care_milestone_presentations_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.care_milestones
+    ADD CONSTRAINT care_milestones_pet_id_dedupe_key_key UNIQUE (pet_id, dedupe_key);
+ALTER TABLE ONLY public.care_milestones
+    ADD CONSTRAINT care_milestones_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.care_recommendations
     ADD CONSTRAINT care_recommendations_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.care_safeguards
@@ -823,6 +864,11 @@ CREATE INDEX idx_audit_events_org_id ON public.audit_events USING btree (org_id)
 CREATE INDEX idx_audit_events_pet_id ON public.audit_events USING btree (pet_id) WHERE (pet_id IS NOT NULL);
 CREATE INDEX idx_audit_events_resource ON public.audit_events USING btree (resource_type, resource_id);
 CREATE INDEX idx_audit_events_retention_tier ON public.audit_events USING btree (retention_tier, occurred_at);
+CREATE INDEX idx_care_establishments_pet_family ON public.care_establishments USING btree (pet_id, care_family);
+CREATE INDEX idx_care_establishments_pet_id ON public.care_establishments USING btree (pet_id);
+CREATE INDEX idx_care_milestone_presentations_user ON public.care_milestone_presentations USING btree (user_id, shown_at DESC);
+CREATE INDEX idx_care_milestones_pet_bundle ON public.care_milestones USING btree (pet_id, bundle_id);
+CREATE INDEX idx_care_milestones_pet_id ON public.care_milestones USING btree (pet_id);
 CREATE INDEX idx_custody_transfers_pet_status ON public.custody_transfers USING btree (pet_id, status);
 CREATE INDEX idx_custody_transfers_to_org ON public.custody_transfers USING btree (to_org_id, status);
 CREATE INDEX idx_document_templates_org_type ON public.document_templates USING btree (organization_id, template_type);
@@ -872,6 +918,7 @@ CREATE UNIQUE INDEX idx_refresh_sessions_token_hash ON public.refresh_sessions U
 CREATE INDEX idx_refresh_sessions_user_id ON public.refresh_sessions USING btree (user_id);
 CREATE INDEX idx_users_pinned_organization_id ON public.users USING btree (pinned_organization_id) WHERE (pinned_organization_id IS NOT NULL);
 CREATE INDEX idx_vets_organization_id ON public.vets USING btree (organization_id);
+CREATE UNIQUE INDEX idx_weight_entries_health_occurrence_id ON public.weight_entries USING btree (health_occurrence_id) WHERE (health_occurrence_id IS NOT NULL);
 CREATE TRIGGER trg_clear_pinned_org_on_membership_loss AFTER DELETE OR UPDATE OF role ON public.organization_users FOR EACH ROW EXECUTE FUNCTION public.clear_pinned_org_on_membership_loss();
 ALTER TABLE ONLY public.adoption_journeys
     ADD CONSTRAINT adoption_journeys_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
@@ -901,6 +948,16 @@ ALTER TABLE ONLY public.archived_pets
     ADD CONSTRAINT archived_pets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.audit_events
     ADD CONSTRAINT audit_events_actor_user_id_fkey FOREIGN KEY (actor_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.care_establishments
+    ADD CONSTRAINT care_establishments_health_entry_id_fkey FOREIGN KEY (health_entry_id) REFERENCES public.health_entries(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.care_establishments
+    ADD CONSTRAINT care_establishments_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.care_milestone_presentations
+    ADD CONSTRAINT care_milestone_presentations_milestone_id_fkey FOREIGN KEY (milestone_id) REFERENCES public.care_milestones(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.care_milestone_presentations
+    ADD CONSTRAINT care_milestone_presentations_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.care_milestones
+    ADD CONSTRAINT care_milestones_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.care_recommendations
     ADD CONSTRAINT care_recommendations_health_entry_id_fkey FOREIGN KEY (health_entry_id) REFERENCES public.health_entries(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.care_recommendations
@@ -1105,6 +1162,8 @@ ALTER TABLE ONLY public.vets
     ADD CONSTRAINT vets_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.vets
     ADD CONSTRAINT vets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.weight_entries
+    ADD CONSTRAINT weight_entries_health_occurrence_id_fkey FOREIGN KEY (health_occurrence_id) REFERENCES public.health_occurrences(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.weight_entries
     ADD CONSTRAINT weight_entries_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.weight_entries

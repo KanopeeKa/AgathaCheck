@@ -10,10 +10,16 @@ import '../care_source_labels.dart';
 
 /// One recurring-care rhythm row: family icon, cadence, next due, provenance.
 class CareRhythmRow extends StatelessWidget {
-  const CareRhythmRow({super.key, required this.entry, required this.petId});
+  const CareRhythmRow({
+    super.key,
+    required this.entry,
+    required this.petId,
+    this.isEstablished = false,
+  });
 
   final HealthEntry entry;
   final String petId;
+  final bool isEstablished;
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +43,19 @@ class CareRhythmRow extends StatelessWidget {
           if (nextDue != null)
             Text(
               nextDue,
+              key: const Key('care_rhythm_next_due'),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: closed
                     ? colorScheme.onSurfaceVariant
                     : healthEntryStatusColor(entry, colorScheme),
+              ),
+            ),
+          if (isEstablished)
+            Text(
+              l.careProgressionEstablishedMarker,
+              key: const Key('care_rhythm_established_marker'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
           if (provenance != null)

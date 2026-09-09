@@ -691,6 +691,56 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get careProgressionEstablishedMarker => 'Établi';
+
+  @override
+  String get careProgressionMilestoneTitle => 'Une petite étape';
+
+  @override
+  String careProgressionWeightEstablishedBody(String petName) {
+    return 'Le suivi régulier du poids de $petName fait désormais partie de sa routine de soins.';
+  }
+
+  @override
+  String careProgressionFirstCareCombinedBody(String petName) {
+    return 'Le suivi régulier du poids de $petName fait désormais partie de sa routine de soins — son premier rythme de soins devenu habituel.';
+  }
+
+  @override
+  String get careFamilyFieldLabel => 'Catégorie de soins';
+
+  @override
+  String get careFamilyFieldHelper =>
+      'Choisissez le type de soins récurrents représenté par ce rythme.';
+
+  @override
+  String get careFamilyMedication => 'Médicament';
+
+  @override
+  String get careFamilyVaccination => 'Vaccination';
+
+  @override
+  String get careFamilyParasitePrevention => 'Prévention antiparasitaire';
+
+  @override
+  String get careFamilyWellnessReview => 'Bilan de santé';
+
+  @override
+  String get careFamilyDental => 'Soins dentaires';
+
+  @override
+  String get careFamilyWeightMonitoring => 'Suivi du poids';
+
+  @override
+  String get careFamilyGrooming => 'Toilettage';
+
+  @override
+  String get careFamilyNailCare => 'Soins des griffes';
+
+  @override
+  String get careFamilyOther => 'Autres soins';
+
+  @override
   String get careSourceGuardianDefined => 'Ajouté par vous';
 
   @override

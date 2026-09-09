@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../pet_profile/domain/entities/care_family.dart';
+import '../../../pet_profile/domain/services/care_family_write.dart';
 import '../../data/datasources/health_remote_datasource.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';
@@ -61,7 +63,9 @@ class HealthEntryFormState {
     this.allowedTypes,
     this.scheduleAtSpecificTimes = false,
     this.scheduleTimes = const ['08:00'],
-  }) : startDate = startDate ?? DateTime.now();
+    CareFamily? careFamily,
+  }) : startDate = startDate ?? DateTime.now(),
+       careFamily = careFamily ?? defaultCareFamilyForEntryType(type);
 
   final String name;
   final String dosage;
@@ -85,6 +89,7 @@ class HealthEntryFormState {
   final List<HealthEntryType>? allowedTypes;
   final bool scheduleAtSpecificTimes;
   final List<String> scheduleTimes;
+  final CareFamily? careFamily;
 
   int get totalPhotoCount => photos.length + pendingPhotos.length;
 
@@ -118,7 +123,9 @@ class HealthEntryFormState {
     List<HealthEntryType>? allowedTypes,
     bool? scheduleAtSpecificTimes,
     List<String>? scheduleTimes,
+    CareFamily? careFamily,
     bool clearDueDate = false,
+    bool clearCareFamily = false,
     bool clearCompletedOn = false,
     bool clearRepeatEndDate = false,
     bool clearHealthIssueId = false,
@@ -151,6 +158,7 @@ class HealthEntryFormState {
       scheduleAtSpecificTimes:
           scheduleAtSpecificTimes ?? this.scheduleAtSpecificTimes,
       scheduleTimes: scheduleTimes ?? this.scheduleTimes,
+      careFamily: clearCareFamily ? null : (careFamily ?? this.careFamily),
     );
   }
 }

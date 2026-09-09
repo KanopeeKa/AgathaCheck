@@ -12,6 +12,10 @@ import {
 } from '../../lib/occurrenceScheduling.js';
 import { tryAutoCloseRecurringWithEndDate } from '../../lib/occurrenceLifecycle.js';
 import { extractUserId } from './shared.js';
+import {
+  isWeightMonitoringEntry,
+  WEIGHT_GENERIC_COMPLETE_ERROR,
+} from './weightOccurrenceCompletion.js';
 
 async function loadEntry(pool, entryId, userId) {
   if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
@@ -24,7 +28,7 @@ async function loadEntry(pool, entryId, userId) {
   return result.rows[0] || null;
 }
 
-async function loadOccurrence(pool, entryId, occId) {
+export async function loadOccurrence(pool, entryId, occId) {
   const result = await pool.query(
     `SELECT ho.*,
       TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS marked_by_name
@@ -82,6 +86,9 @@ export function registerOccurrenceRoutes(router, pool) {
       const entryId = req.params.id;
       const entry = await loadEntry(pool, entryId, userId);
       if (!entry) return res.status(404).json({ error: 'Entry not found' });
+      if (isWeightMonitoringEntry(entry)) {
+        return res.status(400).json({ error: WEIGHT_GENERIC_COMPLETE_ERROR });
+      }
       const occ = await loadOccurrence(pool, entryId, req.params.occId);
       if (!occ || occ.status !== 'pending') {
         return res.status(404).json({ error: 'Occurrence not found' });
@@ -242,6 +249,12 @@ export function registerOccurrenceRoutes(router, pool) {
  * Complete the oldest pending occurrence for mark-taken compatibility.
  */
 export async function completeOldestPendingOccurrence(pool, entryId, userId, body = {}, req = null) {
+  const entry = (await pool.query('SELECT * FROM health_entries WHERE id = $1', [entryId])).rows[0];
+  if (isWeightMonitoringEntry(entry)) {
+    const err = new Error(WEIGHT_GENERIC_COMPLETE_ERROR);
+    err.statusCode = 400;
+    throw err;
+  }
   const pending = await pool.query(
     `SELECT id FROM health_occurrences
      WHERE health_entry_id = $1 AND status = 'pending'
@@ -252,7 +265,6 @@ export async function completeOldestPendingOccurrence(pool, entryId, userId, bod
   );
   if (pending.rows.length === 0) return null;
   const occId = pending.rows[0].id;
-  const entry = (await pool.query('SELECT * FROM health_entries WHERE id = $1', [entryId])).rows[0];
   const completedOn = resolveCompletedOn(body.completed_on || body.completedOn);
   const notes = body.notes || '';
   const markedAt = new Date();

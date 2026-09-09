@@ -4,7 +4,7 @@
   "approved_at": "2026-09-09T10:10:00Z",
   "approved_by": "user chat 2026-09-09 — standing grant Phase E + full Care Progression via /execute-plan (D5b implied)",
   "approved_until": "2026-09-11T10:10:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1094,
@@ -46,13 +46,13 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_head_sha": "9c301382d86ca5cb9c08dd22c6f1f9707865d889",
+      "pr_head_sha": "394f77ea05e087a7565e5a92bc0a8396d5eeef5d",
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1096"
     }
   ],
-  "content_hash": "sha256:19d86fab90a7b722a3275c7c001c0d737aa22f65eb5b87564aac88bf5ef06b63"
+  "content_hash": "sha256:9228b2aff66661d79d0c0886ceef7cffc1f91fcb90f6cc07d7a6444b51c00a50"
 }

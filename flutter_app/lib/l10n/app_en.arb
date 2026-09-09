@@ -234,6 +234,31 @@
   "careRhythmsEmpty": "No recurring care routines yet. Add a recurring event to see it here.",
   "careRhythmNextDue": "Next due {date}",
   "@careRhythmNextDue": { "placeholders": { "date": { "type": "String" } } },
+  "careProgressionEstablishedMarker": "Established",
+  "careProgressionMilestoneTitle": "A little milestone",
+  "careProgressionWeightEstablishedBody": "{petName}'s regular weight monitoring is now part of her routine care.",
+  "@careProgressionWeightEstablishedBody": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "careProgressionFirstCareCombinedBody": "{petName}'s regular weight monitoring is now part of her routine care — her first care rhythm to become routine.",
+  "@careProgressionFirstCareCombinedBody": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "careFamilyFieldLabel": "Care category",
+  "careFamilyFieldHelper": "Choose what kind of recurring care this rhythm represents.",
+  "careFamilyMedication": "Medication",
+  "careFamilyVaccination": "Vaccination",
+  "careFamilyParasitePrevention": "Parasite prevention",
+  "careFamilyWellnessReview": "Wellness review",
+  "careFamilyDental": "Dental care",
+  "careFamilyWeightMonitoring": "Weight monitoring",
+  "careFamilyGrooming": "Grooming",
+  "careFamilyNailCare": "Nail care",
+  "careFamilyOther": "Other care",
   "careSourceGuardianDefined": "Added by you",
   "careSourceVetInstruction": "From your vet",
   "careSourceTreatmentSchedule": "Treatment schedule",

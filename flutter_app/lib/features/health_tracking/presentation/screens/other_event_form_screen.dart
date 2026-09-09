@@ -8,8 +8,11 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import '../../data/datasources/health_remote_datasource.dart';
+import '../../../pet_profile/domain/entities/care_family.dart';
+import '../../../pet_profile/domain/services/care_family_write.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';
+import '../widgets/care_family_picker_field.dart';
 import '../widgets/entry_due_completed_row.dart';
 import '../widgets/recurrence_anchor_toggle.dart';
 import '../widgets/entry_document_section.dart';
@@ -56,6 +59,7 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
   List<EventPhoto> _photos = [];
   List<XFile> _pendingPhotos = [];
   int _remindDaysBefore = 1;
+  CareFamily _careFamily = defaultCareFamilyForEntryType(HealthEntryType.other);
 
   static const _allowedTypes = kOtherEventTypes;
 
@@ -107,6 +111,7 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
               required RecurrenceAnchor recurrenceAnchor,
               required DateTime? repeatEndDate,
               required int remindDaysBefore,
+              CareFamily? careFamily,
             }) {
               setState(() {
                 _nameController.text = name;
@@ -120,6 +125,7 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
                 _recurrenceAnchor = recurrenceAnchor;
                 _repeatEndDate = repeatEndDate;
                 _remindDaysBefore = remindDaysBefore;
+                if (careFamily != null) _careFamily = careFamily;
               });
             },
       );
@@ -148,6 +154,7 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
     type: _type,
     name: _nameController.text,
     notes: _notesController.text,
+    careFamily: _careFamily,
     pendingPhotos: _pendingPhotos,
     setLoading: (v) => setState(() => _isLoading = v),
     setCompletedOn: (d) => setState(() => _completedOn = d),
@@ -212,13 +219,23 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
                       frequency: _frequency,
                       frequencyInterval: _frequencyInterval,
                       repeatEndDate: _repeatEndDate,
-                      onFrequencyChanged: (f) => setState(() => _frequency = f),
+                      onFrequencyChanged: (f) => setState(() {
+                        _frequency = f;
+                        if (f == HealthFrequency.once) return;
+                        _careFamily = defaultCareFamilyForEntryType(_type);
+                      }),
                       onIntervalChanged: (n) =>
                           setState(() => _frequencyInterval = n),
                       onRepeatEndChanged: (d) =>
                           setState(() => _repeatEndDate = d),
                     ),
                     if (_frequency != HealthFrequency.once) ...[
+                      const SizedBox(height: 16),
+                      CareFamilyPickerField(
+                        value: _careFamily,
+                        onChanged: (family) =>
+                            setState(() => _careFamily = family),
+                      ),
                       const SizedBox(height: 16),
                       RecurrenceAnchorToggle(
                         value: _recurrenceAnchor,

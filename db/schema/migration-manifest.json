@@ -62,7 +62,10 @@
     "053_health_entry_care_semantics.sql",
     "054_care_recommendations.sql",
     "055_weight_provenance_contract.sql",
-    "056_care_safeguards.sql"
+    "056_care_safeguards.sql",
+    "057_weight_occurrence_link.sql",
+    "058_care_establishments.sql",
+    "059_care_milestones.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

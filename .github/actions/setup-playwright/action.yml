@@ -25,7 +25,6 @@ runs:
       run: |
         export PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"
         echo "PLAYWRIGHT_BROWSERS_PATH=$PLAYWRIGHT_BROWSERS_PATH" >> "$GITHUB_ENV"
-        npx playwright install chromium --with-deps
 
         headless_shell_dir="$(
           npx playwright install --dry-run chromium |
@@ -33,9 +32,22 @@ runs:
         )"
         headless_shell="$headless_shell_dir/chrome-headless-shell-linux64/chrome-headless-shell"
 
+        install_with_deps() {
+          npx playwright install chromium --with-deps "$@"
+        }
+
+        if [[ "${{ steps.playwright-cache.outputs.cache-hit }}" == "true" && -x "$headless_shell" ]]; then
+          echo "::notice::Playwright browser cache hit with valid headless shell; skipping apt deps install"
+        elif [[ -x "$headless_shell" ]]; then
+          echo "::notice::Playwright headless shell present; installing browser without apt deps"
+          npx playwright install chromium
+        else
+          install_with_deps
+        fi
+
         if [[ ! -x "$headless_shell" ]]; then
           echo "::warning::Playwright Chromium cache is missing the expected headless shell; forcing browser reconciliation"
-          npx playwright install chromium --with-deps --force
+          install_with_deps --force
         fi
 
         if [[ ! -x "$headless_shell" ]]; then

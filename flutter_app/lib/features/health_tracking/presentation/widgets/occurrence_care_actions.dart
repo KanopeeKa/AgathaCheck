@@ -9,6 +9,7 @@ import '../providers/health_providers.dart';
 import '../providers/occurrence_providers.dart';
 import 'mark_complete_sheet.dart';
 import 'occurrence_stack_sheet.dart';
+import 'weight_occurrence_care_actions.dart';
 
 /// Occurrence-aware mark-done, stack sheet, and bulk skip helpers for list surfaces.
 class OccurrenceCareActions {
@@ -20,6 +21,10 @@ class OccurrenceCareActions {
     WidgetRef ref,
     HealthEntry entry,
   ) async {
+    if (WeightOccurrenceCareActions.isWeightRhythm(entry)) {
+      return _showWeightMarkDoneFlow(context, ref, entry);
+    }
+
     List<HealthOccurrence> occurrences;
     try {
       occurrences = await ref.read(entryOccurrencesProvider(entry.id).future);
@@ -134,5 +139,69 @@ class OccurrenceCareActions {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(l.markCompletedAction)));
+  }
+
+  static Future<OccurrenceMarkDoneResult?> _showWeightMarkDoneFlow(
+    BuildContext context,
+    WidgetRef ref,
+    HealthEntry entry,
+  ) async {
+    List<HealthOccurrence> occurrences;
+    try {
+      occurrences = await ref.read(entryOccurrencesProvider(entry.id).future);
+    } catch (_) {
+      return null;
+    }
+
+    final summary = summarizeOpenOccurrences(occurrences, DateTime.now());
+    if (summary.openCount == 0) return null;
+
+    if (summary.openCount > 1 || summary.missedCount >= 1) {
+      final stackResult = await showOccurrenceStackSheet(
+        context,
+        entry: entry,
+        occurrences: occurrences,
+        onRecordHead: (occurrenceId, _, skipEarlierMissed) async {
+          if (skipEarlierMissed) {
+            await skipAllMissed(ref, entry);
+          }
+          final saved =
+              await WeightOccurrenceCareActions.showWeightEntrySheetForOccurrence(
+                context,
+                ref,
+                entry,
+                occurrenceId,
+              );
+          if (!saved) {
+            throw StateError('weight entry dismissed');
+          }
+        },
+        onSkipAllMissed: () async {
+          await skipAllMissed(ref, entry);
+        },
+      );
+      if (stackResult == null || !context.mounted) return null;
+      return OccurrenceMarkDoneResult(
+        completedOn: stackResult.completedOn,
+        occurrenceId: stackResult.occurrenceId,
+        skipEarlierMissed: stackResult.skipEarlierMissed,
+        alreadyPersisted: true,
+      );
+    }
+
+    final occurrenceId = occurrences.first.id;
+    final saved =
+        await WeightOccurrenceCareActions.showWeightEntrySheetForOccurrence(
+          context,
+          ref,
+          entry,
+          occurrenceId,
+        );
+    if (!saved || !context.mounted) return null;
+    return OccurrenceMarkDoneResult(
+      completedOn: DateTime.now(),
+      occurrenceId: occurrenceId,
+      alreadyPersisted: true,
+    );
   }
 }

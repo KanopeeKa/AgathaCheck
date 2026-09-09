@@ -121,6 +121,10 @@ up to 2 MB.
 `GET /` (optional `?pet_id=`), `GET /latest?pet_id=`, `POST /` (verifies pet
 ownership), `PUT /:id`, `DELETE /:id`.
 
+Responses include optional `health_occurrence_id` when the observation completed a
+care rhythm occurrence (CP-2). Deleting a linked weight entry re-opens the occurrence
+to `pending` and refreshes the rhythm `next_due_date`.
+
 D0 provenance: responses include `measurement_source` (`guardian`|`clinic`|`device`|`imported`).
 POST/PUT accept optional `measurement_source`. Pet weight reference/context fields live on `PUT /api/pets/:id`
 (`weight_reference_value`, `weight_reference_authority`, `weight_management_context`) — see [d0-provenance-contract.md](../domains/pet_care/changes/d0-provenance-contract.md).
@@ -161,6 +165,15 @@ Server-authoritative Agatha suggestions (weight, dental, wellness rhythm familie
 |---|---|---|
 | GET | `/care-recommendations` | Sync pending recommendations for pet (`HEALTH_VIEW`) |
 | POST | `/care-recommendations/:recommendationId/respond` | Body `{ action: accept\|adjust\|dismiss\|not_relevant, adjust?: { frequency, frequency_interval } }`; accept/adjust creates recurring `health_entry` with `care_source` `agatha_accepted` / `agatha_adjusted` (`HEALTH_EDIT`) |
+
+### Care progression (`/api/pets/:id/care-progression`) — CP-1+
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/care-progression` | Establishment + milestones read model (`HEALTH_VIEW`) |
+| POST | `/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight` | CP-2: transactional weight observation + occurrence complete for `weight_monitoring` rhythms (`WEIGHT_EDIT`); body `{ weight, unit?, date?, measurement_source?, notes? }`; idempotent retry with same payload returns `200` |
+
+Weight monitoring rhythms cannot use generic occurrence complete or mark-taken while pending — use `complete-weight`.
 
 ### Review relevance (Phase D — internal only)
 

@@ -8,6 +8,7 @@ import '../providers/health_providers.dart';
 import '../providers/occurrence_providers.dart';
 import 'mark_complete_sheet.dart';
 import 'occurrence_care_actions.dart';
+import 'weight_occurrence_care_actions.dart';
 import 'pet_event_view_providers.dart';
 
 /// Occurrence mutations from the event-view workbench.
@@ -26,6 +27,34 @@ class PetEventOccurrenceActions {
     HealthEntry entry,
     HealthOccurrence occurrence,
   ) async {
+    if (WeightOccurrenceCareActions.isWeightRhythm(entry)) {
+      try {
+        final saved =
+            await WeightOccurrenceCareActions.showWeightEntrySheetForOccurrence(
+              context,
+              ref,
+              entry,
+              occurrence.id,
+            );
+        if (!saved || !context.mounted) return;
+        invalidateOccurrenceData(ref, entry.id);
+      } catch (_) {
+        if (!context.mounted) return;
+        final l = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.careCompletionFailed)));
+        return;
+      }
+
+      if (!context.mounted) return;
+      final l = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.markCompletedAction)));
+      return;
+    }
+
     final completedOn = await showMarkCompleteSheet(context);
     if (completedOn == null || !context.mounted) return;
 

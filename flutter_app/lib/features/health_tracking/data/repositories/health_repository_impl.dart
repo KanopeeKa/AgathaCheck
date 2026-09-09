@@ -140,4 +140,27 @@ class HealthRepositoryImpl implements HealthRepository {
   Future<HealthOccurrence> undoOccurrence(String entryId, String occurrenceId) {
     return dataSource.undoOccurrence(entryId, occurrenceId);
   }
+
+  @override
+  Future<void> completeWeightOccurrence({
+    required String petId,
+    required String entryId,
+    required String occurrenceId,
+    required double weightKg,
+    required DateTime date,
+    String notes = '',
+    String unit = 'kg',
+    String measurementSource = 'guardian',
+  }) {
+    return dataSource.completeWeightOccurrence(
+      petId: petId,
+      entryId: entryId,
+      occurrenceId: occurrenceId,
+      weightKg: weightKg,
+      date: date,
+      notes: notes,
+      unit: unit,
+      measurementSource: measurementSource,
+    );
+  }
 }

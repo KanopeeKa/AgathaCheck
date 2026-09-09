@@ -30,20 +30,44 @@ runs:
             update
         }
 
+        disable_flaky_third_party_apt_sources() {
+          local source
+          while IFS= read -r source; do
+            [[ -z "$source" ]] && continue
+            sudo mv "$source" "${source}.disabled"
+            echo "::warning::Temporarily disabled apt source: $source"
+          done < <(
+            grep -rl 'dl.google.com/linux/chrome' \
+              /etc/apt/sources.list /etc/apt/sources.list.d 2>/dev/null || true
+          )
+        }
+
+        restore_disabled_apt_sources() {
+          local disabled
+          for disabled in /etc/apt/sources.list.d/*.disabled; do
+            [[ -e "$disabled" ]] || continue
+            sudo mv "$disabled" "${disabled%.disabled}"
+          done
+        }
+
         if ! apt_update; then
-          echo "::warning::Azure Ubuntu mirror update timed out; retrying the canonical mirror."
+          echo "::warning::apt update failed; retrying after mirror and third-party source fallbacks."
+          disable_flaky_third_party_apt_sources
           mapfile -t apt_sources < <(
             grep -rl 'http://azure.archive.ubuntu.com/ubuntu' \
               /etc/apt/sources.list /etc/apt/sources.list.d 2>/dev/null || true
           )
-          if [[ ${#apt_sources[@]} -eq 0 ]]; then
-            echo "::error::Unable to locate an Azure Ubuntu mirror source for fallback." >&2
-            exit 1
+          if [[ ${#apt_sources[@]} -gt 0 ]]; then
+            sudo sed -i \
+              's|http://azure.archive.ubuntu.com/ubuntu|http://archive.ubuntu.com/ubuntu|g' \
+              "${apt_sources[@]}"
           fi
-          sudo sed -i \
-            's|http://azure.archive.ubuntu.com/ubuntu|http://archive.ubuntu.com/ubuntu|g' \
-            "${apt_sources[@]}"
-          apt_update
+          apt_update || {
+            restore_disabled_apt_sources
+            echo "::error::apt update failed after mirror and third-party source fallbacks." >&2
+            exit 1
+          }
+          restore_disabled_apt_sources
         fi
 
         timeout 120s sudo env DEBIAN_FRONTEND=noninteractive apt-get \

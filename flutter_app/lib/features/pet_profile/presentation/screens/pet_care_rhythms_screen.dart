@@ -8,6 +8,7 @@ import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/add_health_entry_navigation.dart';
 import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../providers/care_progression_providers.dart';
 import '../widgets/care_rhythms/care_rhythm_helpers.dart';
 import '../widgets/care_rhythms/care_rhythm_row.dart';
 
@@ -24,6 +25,17 @@ class PetCareRhythmsScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final experience = AppExperience.petCare;
     final entriesAsync = ref.watch(petHealthEntriesByIdProvider(petId));
+    final establishmentsAsync = ref.watch(petCareEstablishmentsProvider(petId));
+    final establishedIds = establishmentsAsync.maybeWhen(
+      data: (establishments) => entriesAsync.maybeWhen(
+        data: (entries) => establishedRhythmEntryIds(
+          establishments,
+          filterCareRhythms(entries),
+        ),
+        orElse: () => <String>{},
+      ),
+      orElse: () => <String>{},
+    );
 
     void openAddRhythm() => navigateToAddHealthEntry(context, petId: petId);
 
@@ -76,8 +88,14 @@ class PetCareRhythmsScreen extends ConsumerWidget {
                         key: const Key('care_rhythms_list'),
                         itemCount: rhythms.length,
                         separatorBuilder: (_, __) => const Divider(height: 1),
-                        itemBuilder: (context, index) =>
-                            CareRhythmRow(entry: rhythms[index], petId: petId),
+                        itemBuilder: (context, index) {
+                          final entry = rhythms[index];
+                          return CareRhythmRow(
+                            entry: entry,
+                            petId: petId,
+                            isEstablished: establishedIds.contains(entry.id),
+                          );
+                        },
                       ),
               ),
               SafeArea(
