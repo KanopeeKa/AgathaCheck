@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 
 import { accessiblePetSql } from '../../lib/petAccess.js';
@@ -5,6 +6,15 @@ import { weightContextFromPetRow } from './provenance.js';
 import { evaluateWeightSafeguard } from './weightSafeguardEvaluator.js';
 
 export const SAFEGUARD_STATUSES = new Set(['active', 'dismissed']);
+
+export function evidenceFingerprint(evidence) {
+  const payload = {
+    measurement_count: evidence?.measurement_count ?? null,
+    direction: evidence?.direction ?? null,
+    classification: evidence?.classification ?? null,
+  };
+  return createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+}
 
 export function safeguardToMap(row) {
   return {
@@ -48,7 +58,7 @@ async function loadPetRow(pool, userId, petId) {
 }
 
 /**
- * Evaluate and upsert active safeguard when criteria met; clear stale active rows.
+ * Evaluate and upsert active safeguard when criteria met; remove stale active rows.
  */
 export async function syncPetSafeguards(pool, userId, petId) {
   const pet = await loadPetRow(pool, userId, petId);
@@ -71,22 +81,39 @@ export async function syncPetSafeguards(pool, userId, petId) {
   );
 
   if (!candidate) {
-    const activeRows = existingResult.rows.filter((row) => row.status === 'active');
-    for (const row of activeRows) {
-      await pool.query(
-        `UPDATE care_safeguards
-         SET status = 'dismissed', dismissed_at = NOW(), updated_at = NOW()
-         WHERE id = $1`,
-        [row.id],
-      );
-    }
+    await pool.query(
+      `DELETE FROM care_safeguards WHERE pet_id = $1 AND status = 'active'`,
+      [petId],
+    );
     return [];
   }
 
+  const fingerprint = evidenceFingerprint(candidate.evidence);
   const existing = existingByKey.get(candidate.safeguard_key);
   if (existing) {
     if (existing.status === 'dismissed') {
-      return [];
+      const dismissedFingerprint = existing.evidence_json?._dismiss_fingerprint;
+      if (dismissedFingerprint === fingerprint) {
+        return [];
+      }
+      const reactivated = await pool.query(
+        `UPDATE care_safeguards
+         SET status = 'active',
+             dismissed_at = NULL,
+             evidence_json = $1::jsonb,
+             policy_version = $2,
+             copy_key = $3,
+             updated_at = NOW()
+         WHERE id = $4
+         RETURNING *`,
+        [
+          JSON.stringify(candidate.evidence),
+          candidate.policy_version,
+          candidate.copy_key,
+          existing.id,
+        ],
+      );
+      return [reactivated.rows[0]];
     }
     const updated = await pool.query(
       `UPDATE care_safeguards
@@ -112,6 +139,12 @@ export async function syncPetSafeguards(pool, userId, petId) {
        id, pet_id, safeguard_type, safeguard_key, status,
        policy_version, copy_key, evidence_json
      ) VALUES ($1,$2,$3,$4,'active',$5,$6,$7::jsonb)
+     ON CONFLICT (pet_id, safeguard_key) DO UPDATE SET
+       status = EXCLUDED.status,
+       policy_version = EXCLUDED.policy_version,
+       copy_key = EXCLUDED.copy_key,
+       evidence_json = EXCLUDED.evidence_json,
+       updated_at = NOW()
      RETURNING *`,
     [
       id,
@@ -136,12 +169,28 @@ export async function dismissSafeguard(pool, userId, petId, safeguardId) {
   const pet = await loadPetRow(pool, userId, petId);
   if (!pet) return null;
 
+  const active = await pool.query(
+    `SELECT * FROM care_safeguards
+     WHERE id = $1 AND pet_id = $2 AND status = 'active'`,
+    [safeguardId, petId],
+  );
+  if (active.rows.length === 0) return undefined;
+
+  const row = active.rows[0];
+  const evidence = {
+    ...(row.evidence_json || {}),
+    _dismiss_fingerprint: evidenceFingerprint(row.evidence_json || {}),
+  };
+
   const result = await pool.query(
     `UPDATE care_safeguards
-     SET status = 'dismissed', dismissed_at = NOW(), updated_at = NOW()
-     WHERE id = $1 AND pet_id = $2 AND status = 'active'
+     SET status = 'dismissed',
+         dismissed_at = NOW(),
+         evidence_json = $1::jsonb,
+         updated_at = NOW()
+     WHERE id = $2 AND pet_id = $3 AND status = 'active'
      RETURNING *`,
-    [safeguardId, petId],
+    [JSON.stringify(evidence), safeguardId, petId],
   );
   if (result.rows.length === 0) return undefined;
   return safeguardToMap(result.rows[0]);
