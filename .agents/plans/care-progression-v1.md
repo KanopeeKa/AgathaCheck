@@ -45,17 +45,17 @@ See snapshot for CP-0 … CP-7 branch names, allowed_paths, and exit criteria al
 ## Runtime
 
 ```yaml
-autonomy: active
+autonomy: completed
 current_phase: null
 last_completed_phase: cp7
 halt_reason: null
 next_action: "plan complete"
 artifact_ref:
-  branch: cursor/care-progression-v1-integration-2d95
+  branch: main
   plan_path: .agents/plans/care-progression-v1.md
-  plan_commit: 399c1aca9f1f6501bb84d6f4598ee6f346bf6f44
+  plan_commit: 906e742a7e9d4889683b3854c1ecb41004b84187
   snapshot_path: .agents/plans/care-progression-v1.snapshot.json
-  snapshot_commit: 399c1aca9f1f6501bb84d6f4598ee6f346bf6f44
+  snapshot_commit: 906e742a7e9d4889683b3854c1ecb41004b84187
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
