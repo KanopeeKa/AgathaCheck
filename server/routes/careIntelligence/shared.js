@@ -3,11 +3,9 @@ import { dateToIsoDate } from '../../lib/calendarDate.js';
 export const ENGINE_VERSION = '1.0.0';
 export const KNOWLEDGE_VERSION = '1.0.0';
 
-export const CARE_FAMILIES = new Set([
-  'weight_monitoring',
-  'dental',
-  'wellness_review',
-]);
+import { CIM_SUGGESTION_CARE_FAMILIES } from '../../lib/care/enums.js';
+
+export const CARE_FAMILIES = CIM_SUGGESTION_CARE_FAMILIES;
 
 export const RECOMMENDATION_STATUSES = new Set([
   'pending',

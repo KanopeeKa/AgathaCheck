@@ -31,6 +31,8 @@ function makeHealthRow(overrides = {}) {
     health_issue_id: null,
     remind_days_before: 7,
     status: 'active',
+    care_family: 'wellness_review',
+    care_source: 'guardian_defined',
     completed_at: null,
     created_at: new Date('2025-01-01'),
     updated_at: new Date('2025-01-02'),
@@ -83,6 +85,16 @@ describe('Health Entries API', () => {
 
         if (sql.includes('SELECT he.*') && sql.includes('FROM health_entries')) {
           return { rows: [makeHealthRow(), makeHealthRow({ id: 'he-2', name: 'Vaccination' })] };
+        }
+
+        if (sql.includes('SELECT care_family, care_source FROM health_entries WHERE id')) {
+          if (params && params[0] === 'nonexistent') return { rows: [] };
+          return {
+            rows: [{
+              care_family: makeHealthRow({ id: params[0] }).care_family,
+              care_source: makeHealthRow({ id: params[0] }).care_source,
+            }],
+          };
         }
 
         if (sql.includes('SELECT * FROM health_entries WHERE id')) {
@@ -173,14 +185,16 @@ describe('Health Entries API', () => {
         }
 
         if (sql.includes('UPDATE health_entries SET name')) {
-          if (params && params[15] === 'nonexistent') return { rows: [] };
+          if (params && params[17] === 'nonexistent') return { rows: [] };
           return {
             rows: [makeHealthRow({
-              id: params[15],
+              id: params[17],
               name: params[0],
               type: params[1],
               dosage: params[2],
               frequency: params[3],
+              care_family: params[15],
+              care_source: params[16],
             })],
           };
         }
@@ -567,6 +581,7 @@ describe('Health Entries API', () => {
         health_issue_id: 'issue-1',
         remind_days_before: 3,
         status: 'active',
+        care_family: 'parasite_prevention',
       };
       const res = await request(app)
         .post('/api/health-entries')
@@ -654,6 +669,40 @@ describe('Health Entries API', () => {
         .send(entry);
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty('type', 'other');
+    });
+
+    it('rejects recurring create without care_family', async () => {
+      const entry = {
+        pet_id: 'pet-1',
+        name: 'Weekly weigh-in',
+        type: 'other',
+        frequency: 'weekly',
+        next_due_date: '2025-07-01',
+      };
+      const res = await request(app)
+        .post('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/care_family is required/i);
+    });
+
+    it('accepts recurring create with explicit care_family', async () => {
+      const entry = {
+        pet_id: 'pet-1',
+        name: 'Weekly weigh-in',
+        type: 'other',
+        frequency: 'weekly',
+        next_due_date: '2025-07-01',
+        care_family: 'weight_monitoring',
+      };
+      const res = await request(app)
+        .post('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(201);
+      const insertParams = queryLog.find((q) => q.sql.includes('INSERT INTO health_entries')).params;
+      expect(insertParams[19]).toBe('weight_monitoring');
     });
 
     it('rejects deprecated family_event type on create', async () => {
