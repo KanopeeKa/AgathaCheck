@@ -17,9 +17,9 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 
 | Document | Role |
 |----------|------|
-| [features/care-intelligence.md](features/care-intelligence.md) | Canonical product behaviour |
-| [changes/care-foundation-roadmap.md](changes/care-foundation-roadmap.md) | Programme sequencing (v0.4) — Phases A–E |
-| [changes/phase-d-review-relevance-plan.md](changes/phase-d-review-relevance-plan.md) | Phase D research/delivery plan |
+| [care-intelligence.md](/docs/domains/pet_care/features/care-intelligence.md) | Canonical product behaviour |
+| [care-foundation-roadmap.md](/docs/domains/pet_care/changes/care-foundation-roadmap.md) | Programme sequencing (v0.4) — Phases A–E |
+| [phase-d-review-relevance-plan.md](/docs/domains/pet_care/changes/phase-d-review-relevance-plan.md) | Phase D research/delivery plan |
 
 ## Care Progression (next programme — draft)
 
@@ -27,9 +27,9 @@ Starts **after** Care Foundation Phase E merges to `main`. Architecture review c
 
 | Document | Role |
 |----------|------|
-| [features/care-progression.md](features/care-progression.md) | Canonical product behaviour |
-| [changes/care-progression-delivery-plan.md](changes/care-progression-delivery-plan.md) | CP-0–CP-7 delivery plan (draft for review) |
-| [features/care-entitlements.md](features/care-entitlements.md) | Future tier principles (no runtime in V1) |
+| [care-progression.md](/docs/domains/pet_care/features/care-progression.md) | Canonical product behaviour |
+| [care-progression-delivery-plan.md](/docs/domains/pet_care/changes/care-progression-delivery-plan.md) | CP-0–CP-7 delivery plan (draft for review) |
+| [care-entitlements.md](/docs/domains/pet_care/features/care-entitlements.md) | Future tier principles (no runtime in V1) |
 
 ## On this domain
 

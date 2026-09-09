@@ -15,7 +15,8 @@ related_bdd: []
 
 This document defines how future subscription tiers may gate **optional** Pet Care capabilities without fragmenting care semantics or paywalling safety.
 
-**Related:** [Care Progression](care-progression.md) · [Care Intelligence](care-intelligence.md)
+**Related:** [Care Progression](/docs/domains/pet_care/features/care-progression.md) · [Care Intelligence](/docs/domains/pet_care/features/care-intelligence.md)
+
 
 ---
 

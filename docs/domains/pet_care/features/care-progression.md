@@ -13,9 +13,9 @@ related_bdd: []
 
 Care Progression makes **meaningful care visible over time** without gamification. It recognises durable care continuity (**Established**) and meaningful care moments (**Milestones**).
 
-**Programme delivery:** [care-progression-delivery-plan.md](../changes/care-progression-delivery-plan.md)  
-**Predecessor programme:** [Care Foundation roadmap](../changes/care-foundation-roadmap.md) (Phases A–E)  
-**Related:** [Care Intelligence](care-intelligence.md) · [Care entitlements](care-entitlements.md)
+**Programme delivery:** [care-progression-delivery-plan.md](/docs/domains/pet_care/changes/care-progression-delivery-plan.md)  
+**Predecessor programme:** [Care Foundation roadmap](/docs/domains/pet_care/changes/care-foundation-roadmap.md) (Phases A–E)  
+**Related:** [Care Intelligence](/docs/domains/pet_care/features/care-intelligence.md) · [Care entitlements](/docs/domains/pet_care/features/care-entitlements.md)
 
 ---
 
@@ -219,7 +219,7 @@ Do **not** overload `CareSource` on `health_entries`.
 | `referenceAuthority` | Who defines the **reference/target** | `vet_target`, `guardian_reference`, `historical_baseline` |
 | `managementContext` | Is change **already intentionally managed** | `none`, `vet_managed`, `care_plan`, `treatment_related` |
 
-Vocabulary aligns with [Care Intelligence provenance](care-intelligence.md#provenance-model-frozen-concepts). Never infer one concept from another without explicit evidence.
+Vocabulary aligns with the [Care Intelligence provenance model](/docs/domains/pet_care/features/care-intelligence.md) (see section **Provenance model**). Never infer one concept from another without explicit evidence.
 
 ---
 
@@ -474,8 +474,8 @@ Milestone and establishment persistence must be mapped in [DATA_MAP.md](/regulat
 
 | Artifact | Role |
 |----------|------|
-| [care-progression-delivery-plan.md](../changes/care-progression-delivery-plan.md) | CP-0–CP-7 sequencing, APIs, migrations, exit criteria |
-| [care-entitlements.md](care-entitlements.md) | Future tier principles (no runtime in V1) |
+| [care-progression-delivery-plan.md](/docs/domains/pet_care/changes/care-progression-delivery-plan.md) | CP-0–CP-7 sequencing, APIs, migrations, exit criteria |
+| [care-entitlements.md](/docs/domains/pet_care/features/care-entitlements.md) | Future tier principles (no runtime in V1) |
 | Future execute-plan `care-progression-*` | Created when implementation begins (after Phase E merge) |
 
 Phase mechanics belong in the delivery plan, not in this document.
