@@ -1011,6 +1011,17 @@ export async function markHealthEntryTaken(
     throw new Error(`markHealthEntryTaken failed (${res.status}): ${body}`);
   }
 }
+function inferCareFamilyFromType(type: string): string {
+  switch (type) {
+    case 'medication':
+      return 'medication';
+    case 'vet_visit':
+      return 'wellness_review';
+    default:
+      return 'other';
+  }
+}
+
 export async function createHealthEntry(
   baseURL: string,
   token: string,
@@ -1023,19 +1034,24 @@ export async function createHealthEntry(
     frequency?: string;
     frequencyDays?: number;
     scheduleTimes?: string[];
+    careFamily?: string;
   },
 ): Promise<TestHealthEntry> {
   const frequency = options.frequency ?? 'monthly';
+  const type = options.type ?? 'medication';
   const body: Record<string, unknown> = {
     pet_id: petId,
     name: options.name,
-    type: options.type ?? 'medication',
+    type,
     dosage: options.dosage ?? '1 tablet',
     frequency,
     frequency_days: frequency === 'once' ? null : (options.frequencyDays ?? 30),
     next_due_date: options.nextDueDate,
     status: 'active',
   };
+  if (frequency !== 'once') {
+    body.care_family = options.careFamily ?? inferCareFamilyFromType(type);
+  }
   if (options.scheduleTimes != null) {
     body.schedule_times = options.scheduleTimes;
   }
@@ -1068,24 +1084,30 @@ export async function updateHealthEntry(
     dosage?: string;
     frequency?: string;
     frequencyDays?: number;
+    careFamily?: string;
   },
 ): Promise<TestHealthEntry> {
   const frequency = options.frequency ?? 'monthly';
+  const type = options.type ?? 'medication';
+  const payload: Record<string, unknown> = {
+    name: options.name,
+    type,
+    dosage: options.dosage ?? '1 tablet',
+    frequency,
+    frequency_days: frequency === 'once' ? null : (options.frequencyDays ?? 30),
+    next_due_date: options.nextDueDate,
+    status: 'active',
+  };
+  if (frequency !== 'once') {
+    payload.care_family = options.careFamily ?? inferCareFamilyFromType(type);
+  }
   const res = await apiFetch(apiUrl(`/health-entries/${entryId}`, baseURL), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({
-      name: options.name,
-      type: options.type ?? 'medication',
-      dosage: options.dosage ?? '1 tablet',
-      frequency,
-      frequency_days: frequency === 'once' ? null : (options.frequencyDays ?? 30),
-      next_due_date: options.nextDueDate,
-      status: 'active',
-    }),
+    body: JSON.stringify(payload),
   });
 
   if (!res.ok) {
