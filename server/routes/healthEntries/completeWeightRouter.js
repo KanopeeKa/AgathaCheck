@@ -14,6 +14,7 @@ import {
 import { dateToIsoDate } from '../../lib/calendarDate.js';
 import { extractUserId } from '../pets/shared.js';
 import { loadOccurrence } from './occurrencesRouter.js';
+import { maybePersistWeightEstablishment } from '../../lib/care/progression/weightEstablishmentService.js';
 import {
   isWeightMonitoringEntry,
   newWeightEntryId,
@@ -100,6 +101,7 @@ export async function completeWeightOccurrence(pool, {
         'SELECT next_due_date FROM health_entries WHERE id = $1',
         [entryId],
       );
+      await maybePersistWeightEstablishment(pool, { petId, healthEntryId: entryId });
       return {
         status: 200,
         body: buildCompletionResponse(
@@ -187,6 +189,8 @@ export async function completeWeightOccurrence(pool, {
       metadata: { action: 'complete_weight_occurrence', entry_type: entry.type },
     });
 
+    await maybePersistWeightEstablishment(pool, { petId, healthEntryId: entryId });
+
     return {
       status: 201,
       body: buildCompletionResponse(
@@ -204,6 +208,7 @@ export async function completeWeightOccurrence(pool, {
           'SELECT next_due_date FROM health_entries WHERE id = $1',
           [entryId],
         );
+        await maybePersistWeightEstablishment(pool, { petId, healthEntryId: entryId });
         return {
           status: 200,
           body: buildCompletionResponse(
