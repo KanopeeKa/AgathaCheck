@@ -39,9 +39,7 @@ final petCareSafeguardsProvider =
 final petProfileCareSafeguardProvider =
     Provider.family<AsyncValue<CareSafeguard?>, String>((ref, petId) {
       final safeguardsAsync = ref.watch(petCareSafeguardsProvider(petId));
-      final policy = ref.watch(
-        petCarePresentationPolicyProvider,
-      );
+      final policy = ref.watch(petCarePresentationPolicyProvider);
       return safeguardsAsync.whenData(
         (safeguards) => policy.profileSafeguard(safeguards),
       );
@@ -51,9 +49,7 @@ final petProfileCareSuggestionProvider =
     Provider.family<AsyncValue<CareRecommendation?>, String>((ref, petId) {
       final recsAsync = ref.watch(petCareRecommendationsProvider(petId));
       final safeguardAsync = ref.watch(petProfileCareSafeguardProvider(petId));
-      final policy = ref.watch(
-        petCarePresentationPolicyProvider,
-      );
+      final policy = ref.watch(petCarePresentationPolicyProvider);
       final activeSafeguard = safeguardAsync.valueOrNull;
       return recsAsync.whenData(
         (recs) =>

@@ -5,10 +5,10 @@ import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../care_intelligence/domain/entities/care_recommendation.dart';
 import '../../../care_intelligence/domain/entities/care_safeguard.dart';
 import '../../../care_intelligence/presentation/providers/care_recommendations_provider.dart';
-import '../progression/data/datasources/care_progression_moments_remote_datasource.dart';
-import '../progression/data/repositories/care_progression_moments_repository_impl.dart';
-import '../progression/domain/entities/care_pending_moment.dart';
-import '../progression/domain/repositories/care_progression_moments_repository.dart';
+import '../../progression/data/datasources/care_progression_moments_remote_datasource.dart';
+import '../../progression/data/repositories/care_progression_moments_repository_impl.dart';
+import '../../progression/domain/entities/care_pending_moment.dart';
+import '../../progression/domain/repositories/care_progression_moments_repository.dart';
 import '../pet_care_presentation_policy.dart';
 
 export '../pet_care_presentation_policy.dart';
@@ -50,7 +50,9 @@ final petProfileCareMilestoneProvider =
     Provider.family<AsyncValue<CarePendingMoment?>, String>((ref, petId) {
       final policy = ref.watch(petCarePresentationPolicyProvider);
       final safeguardAsync = ref.watch(petProfileCareSafeguardProvider(petId));
-      final suggestionAsync = ref.watch(petProfileCareSuggestionProvider(petId));
+      final suggestionAsync = ref.watch(
+        petProfileCareSuggestionProvider(petId),
+      );
       final momentsAsync = ref.watch(petPendingCareMomentsProvider(petId));
 
       if (momentsAsync.isLoading ||
@@ -100,89 +102,89 @@ class PetCareDashboardSuggestionSlot extends PetCareDashboardContextualSlot {
 }
 
 class PetCareDashboardMilestoneSlot extends PetCareDashboardContextualSlot {
-  PetCareDashboardMilestoneSlot({
-    required this.petName,
-    required this.moment,
-  });
+  PetCareDashboardMilestoneSlot({required this.petName, required this.moment});
 
   final String petName;
   final CarePendingMoment moment;
 }
 
-final petDashboardCareContextualSlotProvider = Provider.family<
-  AsyncValue<PetCareDashboardContextualSlot?>,
-  List<String>
->((ref, petIds) {
-  if (petIds.isEmpty) return const AsyncData(null);
+final petDashboardCareContextualSlotProvider =
+    Provider.family<AsyncValue<PetCareDashboardContextualSlot?>, List<String>>((
+      ref,
+      petIds,
+    ) {
+      if (petIds.isEmpty) return const AsyncData(null);
 
-  final policy = ref.watch(petCarePresentationPolicyProvider);
-  final safeguardsByPetId = <String, List<CareSafeguard>>{};
-  final recommendationsByPetId = <String, List<CareRecommendation>>{};
-  final momentsByPetId = <String, CarePendingMoment?>{};
-  var loading = false;
-  Object? error;
-  StackTrace? stackTrace;
+      final policy = ref.watch(petCarePresentationPolicyProvider);
+      final safeguardsByPetId = <String, List<CareSafeguard>>{};
+      final recommendationsByPetId = <String, List<CareRecommendation>>{};
+      final momentsByPetId = <String, CarePendingMoment?>{};
+      var loading = false;
+      Object? error;
+      StackTrace? stackTrace;
 
-  for (final petId in petIds) {
-    final safeguardsAsync = ref.watch(petCareSafeguardsProvider(petId));
-    final recommendationsAsync = ref.watch(petCareRecommendationsProvider(petId));
-    final momentsAsync = ref.watch(petPendingCareMomentsProvider(petId));
+      for (final petId in petIds) {
+        final safeguardsAsync = ref.watch(petCareSafeguardsProvider(petId));
+        final recommendationsAsync = ref.watch(
+          petCareRecommendationsProvider(petId),
+        );
+        final momentsAsync = ref.watch(petPendingCareMomentsProvider(petId));
 
-    if (safeguardsAsync.isLoading ||
-        recommendationsAsync.isLoading ||
-        momentsAsync.isLoading) {
-      loading = true;
-    }
-    if (momentsAsync.hasError && error == null) {
-      error = momentsAsync.error;
-      stackTrace = momentsAsync.stackTrace;
-    }
+        if (safeguardsAsync.isLoading ||
+            recommendationsAsync.isLoading ||
+            momentsAsync.isLoading) {
+          loading = true;
+        }
+        if (momentsAsync.hasError && error == null) {
+          error = momentsAsync.error;
+          stackTrace = momentsAsync.stackTrace;
+        }
 
-    safeguardsByPetId[petId] = safeguardsAsync.valueOrNull ?? const [];
-    recommendationsByPetId[petId] =
-        recommendationsAsync.valueOrNull ?? const [];
-    momentsByPetId[petId] = momentsAsync.valueOrNull?.moments.firstOrNull;
-  }
+        safeguardsByPetId[petId] = safeguardsAsync.valueOrNull ?? const [];
+        recommendationsByPetId[petId] =
+            recommendationsAsync.valueOrNull ?? const [];
+        momentsByPetId[petId] = momentsAsync.valueOrNull?.moments.firstOrNull;
+      }
 
-  if (loading) return const AsyncLoading();
-  if (error != null) {
-    return AsyncError(error!, stackTrace ?? StackTrace.empty);
-  }
+      if (loading) return const AsyncLoading();
+      if (error != null) {
+        return AsyncError(error!, stackTrace ?? StackTrace.empty);
+      }
 
-  final activeSafeguard = policy.dashboardSafeguard(safeguardsByPetId);
-  if (activeSafeguard != null) {
-    return AsyncData(
-      PetCareDashboardSafeguardSlot(
-        petId: activeSafeguard.petId,
-        petName: '',
-        safeguard: activeSafeguard,
-      ),
-    );
-  }
+      final activeSafeguard = policy.dashboardSafeguard(safeguardsByPetId);
+      if (activeSafeguard != null) {
+        return AsyncData(
+          PetCareDashboardSafeguardSlot(
+            petId: activeSafeguard.petId,
+            petName: '',
+            safeguard: activeSafeguard,
+          ),
+        );
+      }
 
-  final suggestion = policy.dashboardSuggestion(
-    recommendationsByPetId,
-    activeSafeguard: activeSafeguard,
-  );
-  if (suggestion != null) {
-    return AsyncData(
-      PetCareDashboardSuggestionSlot(
-        petId: suggestion.petId,
-        recommendation: suggestion,
-      ),
-    );
-  }
+      final suggestion = policy.dashboardSuggestion(
+        recommendationsByPetId,
+        activeSafeguard: activeSafeguard,
+      );
+      if (suggestion != null) {
+        return AsyncData(
+          PetCareDashboardSuggestionSlot(
+            petId: suggestion.petId,
+            recommendation: suggestion,
+          ),
+        );
+      }
 
-  final moment = policy.dashboardMilestoneMoment(
-    momentsByPetId,
-    activeSafeguard: activeSafeguard,
-    activeSuggestion: suggestion,
-  );
-  if (moment != null) {
-    return AsyncData(
-      PetCareDashboardMilestoneSlot(petName: '', moment: moment),
-    );
-  }
+      final moment = policy.dashboardMilestoneMoment(
+        momentsByPetId,
+        activeSafeguard: activeSafeguard,
+        activeSuggestion: suggestion,
+      );
+      if (moment != null) {
+        return AsyncData(
+          PetCareDashboardMilestoneSlot(petName: '', moment: moment),
+        );
+      }
 
-  return const AsyncData(null);
-});
+      return const AsyncData(null);
+    });

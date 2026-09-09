@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../progression/domain/entities/care_pending_moment.dart';
+import '../../progression/domain/entities/care_pending_moment.dart';
 import '../care_milestone_copy.dart';
 import '../providers/pet_care_presentation_providers.dart';
 

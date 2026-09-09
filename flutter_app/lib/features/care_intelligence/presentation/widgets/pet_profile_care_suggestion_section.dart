@@ -18,7 +18,8 @@ class PetProfileCareSuggestionSection extends ConsumerWidget {
     final suggestionAsync = ref.watch(petProfileCareSuggestionProvider(petId));
     final milestoneAsync = ref.watch(petProfileCareMilestoneProvider(petId));
     final petsAsync = ref.watch(allPetsIncludingOrgProvider);
-    final petName = petsAsync.valueOrNull
+    final petName =
+        petsAsync.valueOrNull
             ?.where((pet) => pet.id == petId)
             .firstOrNull
             ?.name ??

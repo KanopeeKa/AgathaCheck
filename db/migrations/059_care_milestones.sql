@@ -24,7 +24,7 @@ CREATE INDEX IF NOT EXISTS idx_care_milestones_pet_bundle
 CREATE TABLE IF NOT EXISTS care_milestone_presentations (
   id UUID PRIMARY KEY,
   milestone_id UUID NOT NULL REFERENCES care_milestones(id) ON DELETE CASCADE,
-  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   shown_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (milestone_id, user_id)
 );
