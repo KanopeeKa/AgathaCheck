@@ -11,13 +11,13 @@
   "base_branch": "main",
   "control_issue": 1093,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "care-foundation-phase-e-2d95",
+  "current_child_plan_id": "care-progression-v1",
   "child_plans": [
     {
       "plan_id": "care-foundation-phase-e-2d95",
-      "status": "pending",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1096",
+      "merge_commit": "394f77ea05e087a7565e5a92bc0a8396d5eeef5d"
     },
     {
       "plan_id": "care-progression-v1",
@@ -56,5 +56,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:04692503b58cef91048723f5d147547d4e48e57504d69db0a3407847527666a4"
+  "content_hash": "sha256:ea98c717b114db0452e2c2ae7ad1655763d5aad0ccfa944161e840897fb71855"
 }
