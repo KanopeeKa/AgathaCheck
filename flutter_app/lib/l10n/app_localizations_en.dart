@@ -682,6 +682,40 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get careFamilyFieldLabel => 'Care category';
+
+  @override
+  String get careFamilyFieldHelper =>
+      'Choose what kind of recurring care this rhythm represents.';
+
+  @override
+  String get careFamilyMedication => 'Medication';
+
+  @override
+  String get careFamilyVaccination => 'Vaccination';
+
+  @override
+  String get careFamilyParasitePrevention => 'Parasite prevention';
+
+  @override
+  String get careFamilyWellnessReview => 'Wellness review';
+
+  @override
+  String get careFamilyDental => 'Dental care';
+
+  @override
+  String get careFamilyWeightMonitoring => 'Weight monitoring';
+
+  @override
+  String get careFamilyGrooming => 'Grooming';
+
+  @override
+  String get careFamilyNailCare => 'Nail care';
+
+  @override
+  String get careFamilyOther => 'Other care';
+
+  @override
   String get careSourceGuardianDefined => 'Added by you';
 
   @override

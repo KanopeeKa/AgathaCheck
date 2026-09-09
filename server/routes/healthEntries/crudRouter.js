@@ -207,10 +207,20 @@ export function registerCrudRoutes(router, pool) {
       if (!typeValidation.ok) {
         return res.status(400).json({ error: typeValidation.error });
       }
+      const existingResult = await pool.query(
+        'SELECT care_family, care_source FROM health_entries WHERE id = $1',
+        [req.params.id],
+      );
+      if (existingResult.rows.length === 0) {
+        return res.status(404).json({ error: 'Entry not found' });
+      }
+      const existing = existingResult.rows[0];
       const frequency = data.frequency || 'once';
       const isRecurring = frequency && frequency !== 'once';
+      const careFamilyInput =
+        data.care_family || data.careFamily || (isRecurring ? existing.care_family : null);
       const careFamilyValidation = validateCareFamilyForWrite(
-        data.care_family || data.careFamily,
+        careFamilyInput,
         { recurring: isRecurring },
       );
       if (!careFamilyValidation.ok) {
@@ -225,6 +235,8 @@ export function registerCrudRoutes(router, pool) {
       const careFamily =
         careFamilyValidation.value ||
         inferCareFamilyFromType(typeValidation.type);
+      const careSource =
+        careSourceValidation.value || existing.care_source || 'guardian_defined';
       const result = await pool.query(
         `UPDATE health_entries SET name = $1, type = $2, dosage = $3, frequency = $4, frequency_days = $5,
           frequency_interval = $6, start_date = $7, next_due_date = $8, completed_on = $9,
@@ -246,7 +258,7 @@ export function registerCrudRoutes(router, pool) {
           data.remind_days_before || data.remindDaysBefore || 1,
           completedOn ? 'completed' : (data.status || 'active'),
           careFamily,
-          careSourceValidation.value,
+          careSource,
           req.params.id,
         ]
       );

@@ -1292,6 +1292,72 @@ abstract class AppLocalizations {
   /// **'Next due {date}'**
   String careRhythmNextDue(String date);
 
+  /// No description provided for @careFamilyFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Care category'**
+  String get careFamilyFieldLabel;
+
+  /// No description provided for @careFamilyFieldHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what kind of recurring care this rhythm represents.'**
+  String get careFamilyFieldHelper;
+
+  /// No description provided for @careFamilyMedication.
+  ///
+  /// In en, this message translates to:
+  /// **'Medication'**
+  String get careFamilyMedication;
+
+  /// No description provided for @careFamilyVaccination.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccination'**
+  String get careFamilyVaccination;
+
+  /// No description provided for @careFamilyParasitePrevention.
+  ///
+  /// In en, this message translates to:
+  /// **'Parasite prevention'**
+  String get careFamilyParasitePrevention;
+
+  /// No description provided for @careFamilyWellnessReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Wellness review'**
+  String get careFamilyWellnessReview;
+
+  /// No description provided for @careFamilyDental.
+  ///
+  /// In en, this message translates to:
+  /// **'Dental care'**
+  String get careFamilyDental;
+
+  /// No description provided for @careFamilyWeightMonitoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight monitoring'**
+  String get careFamilyWeightMonitoring;
+
+  /// No description provided for @careFamilyGrooming.
+  ///
+  /// In en, this message translates to:
+  /// **'Grooming'**
+  String get careFamilyGrooming;
+
+  /// No description provided for @careFamilyNailCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Nail care'**
+  String get careFamilyNailCare;
+
+  /// No description provided for @careFamilyOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other care'**
+  String get careFamilyOther;
+
   /// No description provided for @careSourceGuardianDefined.
   ///
   /// In en, this message translates to:

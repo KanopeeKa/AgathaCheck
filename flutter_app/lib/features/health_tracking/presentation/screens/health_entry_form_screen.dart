@@ -20,6 +20,7 @@ import '../widgets/health_entry_form/health_entry_pet_selector.dart';
 import '../widgets/health_entry_form/health_entry_photos_section.dart';
 import '../widgets/health_entry_form/health_entry_remind_field.dart';
 import '../widgets/health_entry_form/health_entry_text_fields.dart';
+import '../widgets/care_family_picker_field.dart';
 
 import '../controllers/health_entry_form_controller.dart';
 import '../controllers/health_entry_form_outcomes.dart';
@@ -196,6 +197,14 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       recurrenceAnchor: form.recurrenceAnchor,
                       controller: _controller,
                     ),
+                    if (form.frequency != HealthFrequency.once &&
+                        form.careFamily != null) ...[
+                      const SizedBox(height: 16),
+                      CareFamilyPickerField(
+                        value: form.careFamily!,
+                        onChanged: _controller.setCareFamily,
+                      ),
+                    ],
                     if (form.frequency != HealthFrequency.once) ...[
                       const SizedBox(height: 16),
                       HealthEntryScheduleTimesSection(

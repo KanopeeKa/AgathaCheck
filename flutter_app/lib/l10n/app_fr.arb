@@ -246,6 +246,17 @@
       "frequency": { "type": "String" }
     }
   },
+  "careFamilyFieldLabel": "Catégorie de soins",
+  "careFamilyFieldHelper": "Choisissez le type de soins récurrents représenté par ce rythme.",
+  "careFamilyMedication": "Médicament",
+  "careFamilyVaccination": "Vaccination",
+  "careFamilyParasitePrevention": "Prévention antiparasitaire",
+  "careFamilyWellnessReview": "Bilan de santé",
+  "careFamilyDental": "Soins dentaires",
+  "careFamilyWeightMonitoring": "Suivi du poids",
+  "careFamilyGrooming": "Toilettage",
+  "careFamilyNailCare": "Soins des griffes",
+  "careFamilyOther": "Autres soins",
   "careSafeguardTitle": "À mentionner à votre vétérinaire",
   "careSafeguardWeightTrendDown": "Le poids de {petName} a tendance à baisser sur plusieurs mesures. Aucun plan de poids connu n'est enregistré — il peut être utile d'en parler à votre vétérinaire.",
   "@careSafeguardWeightTrendDown": {

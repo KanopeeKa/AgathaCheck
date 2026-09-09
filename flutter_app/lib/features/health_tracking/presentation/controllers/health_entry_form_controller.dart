@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/utils/calendar_date.dart';
+import '../../../pet_profile/domain/entities/care_family.dart';
+import '../../../pet_profile/domain/services/care_family_write.dart';
 import '../../data/datasources/health_remote_datasource.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';
@@ -156,6 +158,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
         scheduleTimes: entry.scheduleTimes?.isNotEmpty == true
             ? List<String>.from(entry.scheduleTimes!)
             : const ['08:00'],
+        careFamily: entry.careFamily,
       );
 
       return true;
@@ -170,10 +173,25 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
 
   void setNotes(String notes) => state = state.copyWith(notes: notes);
 
-  void setType(HealthEntryType type) => state = state.copyWith(type: type);
+  void setType(HealthEntryType type) => state = state.copyWith(
+    type: type,
+    careFamily: defaultCareFamilyForEntryType(type),
+  );
 
-  void setFrequency(HealthFrequency frequency) =>
-      state = state.copyWith(frequency: frequency);
+  void setCareFamily(CareFamily family) =>
+      state = state.copyWith(careFamily: family);
+
+  void setFrequency(HealthFrequency frequency) {
+    if (frequency == HealthFrequency.once) {
+      state = state.copyWith(frequency: frequency, clearCareFamily: true);
+      return;
+    }
+    state = state.copyWith(
+      frequency: frequency,
+      careFamily:
+          state.careFamily ?? defaultCareFamilyForEntryType(state.type),
+    );
+  }
 
   void setFrequencyInterval(int interval) =>
       state = state.copyWith(frequencyInterval: interval);
@@ -312,6 +330,11 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
           ? null
           : state.dueDate;
       final effectiveCompleted = state.completedOn;
+      final careFamily = resolveCareFamilyForWrite(
+        frequency: state.frequency,
+        type: state.type,
+        selected: state.careFamily,
+      );
 
       if (state.isEdit) {
         final entry = HealthEntry(
@@ -333,6 +356,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
           healthIssueId: state.selectedHealthIssueId,
           remindDaysBefore: state.remindDaysBefore,
           scheduleTimes: _effectiveScheduleTimes(),
+          careFamily: careFamily,
         );
         await notifier.updateEntry(entry);
         if (state.pendingPhotos.isNotEmpty && _entryId != null) {
@@ -368,6 +392,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
             healthIssueId: state.selectedHealthIssueId,
             remindDaysBefore: state.remindDaysBefore,
             scheduleTimes: _effectiveScheduleTimes(),
+            careFamily: careFamily,
           );
           final created = await createUseCase.call(entry);
           createdEntryIds.add(created.id);
