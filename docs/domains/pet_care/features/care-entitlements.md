@@ -1,5 +1,5 @@
 ---
-title: Care entitlements
+title: Care Entitlements
 owner: Product / Documentation
 audience: both
 domain: pet_care
@@ -9,14 +9,13 @@ related_prs: []
 related_bdd: []
 ---
 
-# Care entitlements
+# Care Entitlements
 
 **Status:** Principles only — **no runtime implementation in Care Progression V1.**
 
 This document defines how future subscription tiers may gate **optional** Pet Care capabilities without fragmenting care semantics or paywalling safety.
 
 **Related:** [Care Progression](/docs/domains/pet_care/features/care-progression.md) · [Care Intelligence](/docs/domains/pet_care/features/care-intelligence.md)
-
 
 ---
 
@@ -40,7 +39,7 @@ Capabilities answer:  “What does this family support?”
 
 ## Core principles
 
-1. **Essential care is not premium.** Core care families, core observations, Established markers, and core milestones for an entitled family are included with that family.
+1. **Essential care is not premium.** Core care capabilities are always available where applicable to the pet. For optional entitled capabilities, core progression semantics are included with access to that capability — Established markers and core milestones are not separately paywalled once the capability is entitled.
 2. **Safety remains free.** Safety-relevant conclusions derivable from data available to a free user must not be hidden behind a paywall.
 3. **Do not separately paywall** Established or core milestones for a care family the user is entitled to track.
 4. **Historical progression persists** after downgrade — already-achieved milestones and establishment remain visible.

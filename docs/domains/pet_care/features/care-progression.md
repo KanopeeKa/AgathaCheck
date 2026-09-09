@@ -29,7 +29,7 @@ Care Progression must **not** introduce:
 - Leaderboards or cross-pet comparison
 - “Perfect week” mechanics or progress for opening the app
 - Negative maturity states or punitive visuals
-- Progress rings (excluded from V1; see Non-goals)
+- Progress rings (see Out of scope below)
 
 Absence of a progression marker is **neutral** — it must never imply a guardian failed to establish care.
 
@@ -48,6 +48,14 @@ Absence of a progression marker is **neutral** — it must never imply a guardia
 | Timeline integration (late V1) | Paywall / entitlement implementation |
 | | Partner/device integrations |
 | | Consumption of CIM review-relevance output |
+
+### Non-goals (V1)
+
+- Progress rings, care chapters, badge collections
+- XP, streaks, leaderboards, engagement scoring
+- Seasonal or geography-based progression
+- Generic observation-store migration for architectural neatness alone
+- Client-side Establishment or milestone identity
 
 ---
 
@@ -204,7 +212,9 @@ Progression policy (care_progression)
   enough linked valid observations + elapsed time + rhythm continuity
 ```
 
-Progression must **not** consume Phase D review-relevance outputs. It may use shared observation-quality primitives, not CIM decision thresholds wholesale.
+Progression must **not** consume Phase D review-relevance outputs. It may use shared observation-quality **primitives** only.
+
+**CP-1 split (do not move CIM policy wholesale):** `server/routes/careIntelligence/weightQualityClassifier.js` today mixes neutral helpers with D1 review-relevance thresholds (`QUALITY_THRESHOLDS`, `classifyWeightSeriesQuality`). Extract primitives to `care_observations`; keep CIM adequacy policy in `care_intelligence`; add `weightEstablishmentPolicy` in `care_progression` with its own thresholds.
 
 ---
 
@@ -296,10 +306,23 @@ Established marker  →  only when confidently established
 Evaluators may distinguish internally (logs/tests only):
 
 ```text
-not_evaluable | insufficient_evidence | eligible_not_yet_established | established
+not_evaluable | insufficient_evidence | accumulating_evidence | established
 ```
 
-Only the transition to **established** is persisted (see Persistence). Intermediate states are derived on read unless a future audit requirement emerges.
+Only the transition to **established** is persisted as a historical record (see below). Intermediate states are derived on read unless a future audit requirement emerges.
+
+### Persistence (`care_establishments`)
+
+V1 persists only the **historical transition** when a rhythm becomes Established — not a mutable “current state”:
+
+```text
+care_establishments
+  id, pet_id, care_family, health_entry_id,
+  established_at, policy_version, created_at
+  UNIQUE (health_entry_id)   -- one first establishment per rhythm in V1
+```
+
+Future `establishmentEpoch` (re-establishment after long gap) may introduce a different uniqueness model when that feature ships. Milestones use polymorphic `dedupe_key`; establishments do not in V1.
 
 ### Resilience
 
@@ -327,7 +350,15 @@ AND weight_entries.health_occurrence_id = occurrence.id
 AND observation passes progression quality primitives
 ```
 
-Deleting a weight entry after establishment does **not** revoke establishment in V1 (documented limitation).
+### Linked-weight deletion and correction
+
+| Case | Behaviour |
+|------|-----------|
+| **Standalone** weight (`health_occurrence_id` null) | Normal delete/edit |
+| **Occurrence-linked** weight deleted | Weight removed **and** occurrence re-opened to `pending` in one transaction (unless replacing in same operation) |
+| **Establishment already recorded** | **Not** revoked — historical `care_establishments` row persists |
+
+Factual operational history may be corrected; progression transitions are not retroactively revoked in V1.
 
 ---
 
@@ -362,7 +393,11 @@ When `first_care_established` and `weight_monitoring_established` are created in
 Milestone generation must be **idempotent**. Recomputation (migration, backfill, policy change, background job) must not create duplicates or re-fire celebration.
 
 - **Persistence identity:** server-side `dedupe_key` (unique per pet).
-- **Presentation identity:** per-user `care_milestone_presentations` — each guardian may see the moment once; throttle applies to presentation, not persistence.
+- **Presentation identity:** per-user `care_milestone_presentations` — each guardian sees the moment once.
+
+**Presented means:** the prominent milestone card was **successfully rendered** to that guardian (not dismiss action). Insert presentation row on render acknowledgement.
+
+**Combined bundles:** when `first_care_established` and `weight_monitoring_established` share one card, acknowledging presentation must insert rows for **all** milestones in the bundle atomically.
 
 ### Presentation throttle (V1)
 

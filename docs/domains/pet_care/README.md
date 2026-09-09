@@ -21,14 +21,14 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | [care-foundation-roadmap.md](/docs/domains/pet_care/changes/care-foundation-roadmap.md) | Programme sequencing (v0.4) — Phases A–E |
 | [phase-d-review-relevance-plan.md](/docs/domains/pet_care/changes/phase-d-review-relevance-plan.md) | Phase D research/delivery plan |
 
-## Care Progression (next programme — draft)
+## Care Progression (next programme)
 
-Starts **after** Care Foundation Phase E merges to `main`. Architecture review complete; implementation not started.
+Starts **after** Care Foundation Phase E merges to `main`. **Architecture and delivery plan approved** (subject to amendment incorporation); **implementation not started** until Phase E merges.
 
 | Document | Role |
 |----------|------|
 | [care-progression.md](/docs/domains/pet_care/features/care-progression.md) | Canonical product behaviour |
-| [care-progression-delivery-plan.md](/docs/domains/pet_care/changes/care-progression-delivery-plan.md) | CP-0–CP-7 delivery plan (draft for review) |
+| [care-progression-delivery-plan.md](/docs/domains/pet_care/changes/care-progression-delivery-plan.md) | CP-0–CP-7 delivery plan (approved) |
 | [care-entitlements.md](/docs/domains/pet_care/features/care-entitlements.md) | Future tier principles (no runtime in V1) |
 
 ## On this domain

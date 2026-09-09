@@ -2,7 +2,7 @@
 title: Care Progression — Delivery Plan
 owner: Product / Agent
 audience: both
-status: draft
+status: active
 last_updated: 2026-09-09
 tags: [pet_care, care_progression, delivery]
 ---
@@ -13,7 +13,7 @@ tags: [pet_care, care_progression, delivery]
 **Predecessor programme:** [care-foundation-roadmap.md](./care-foundation-roadmap.md) (Phases A–E)  
 **Entitlements (principles):** [care-entitlements.md](../features/care-entitlements.md)
 
-**Status:** Draft for review — **no runtime implementation until approved.**
+**Status:** Architecture and delivery plan **approved** — **no runtime implementation** until Phase E merges to `main`.
 
 ---
 
@@ -80,6 +80,11 @@ Unless code review reveals a genuine contradiction, treat these as fixed:
 | 18 | Pausing/ending rhythm does not erase historical establishment |
 | 19 | Domain map is **normative**; folder migration is **incremental** |
 | 20 | Pre-production cleanup preferred; **checkpoint** before destructive actions |
+| 21 | Establishment persistence table: **`care_establishments`** (historical transition); `UNIQUE(health_entry_id)` in V1 — no `dedupe_key` on establishments |
+| 22 | CP-1: extract **observation primitives only**; CIM quality policy stays in CIM |
+| 23 | Weight completion API: nested occurrence path; **409** on materially different retry payload |
+| 24 | Deleting occurrence-linked weight **re-opens** occurrence; establishment record **not** revoked |
+| 25 | Milestone **presented** = card rendered; bundle acknowledgement **atomic** |
 
 ---
 
@@ -128,7 +133,8 @@ planning       observations
 | Target | V1 home (initial) | Migrate when |
 |--------|-------------------|--------------|
 | `care_core` | `server/lib/care/` + `flutter_app/lib/features/pet_care/core/` | CP-1 |
-| `care_observations` | Extract from `careIntelligence/weightQualityClassifier.js`; `weight_entries` routes | CP-1–CP-2 |
+| `care_observations` | Extract **primitives** from `server/routes/careIntelligence/weightQualityClassifier.js`; `weight_entries` routes | CP-1–CP-2 |
+| `care_intelligence` | `weightQualityPolicy.js` retains D/E thresholds (split from classifier in CP-1) | CP-1 |
 | `care_progression` | `server/routes/careProgression/` + `flutter_app/lib/features/pet_care/progression/` | CP-3–CP-5 |
 | `care_presentation` | Hoist from `care_intelligence/domain/services/pet_care_presentation_policy.dart` | CP-6 |
 | `care_planning` | Keep in `health_tracking` / `pet_profile` | Ongoing |
@@ -183,6 +189,7 @@ None for progression tables. Optional: dev/staging data cleanup SQL (pre-prod on
 
 - `POST/PATCH health_entries`: reject recurring writes without valid `care_family` (400).
 - Read path: keep inference fallback for legacy rows only.
+- DB `NOT NULL` on `care_family`: **defer** until audit proves safe — API invariant first (CP-0), schema constraint after cleanup (CP-0 exit or early CP-1).
 
 ### Tests
 
@@ -208,7 +215,15 @@ Progression tables, establishment logic, milestone UI.
 
 ### Goal
 
-Introduce shared server modules and Flutter `pet_care/core` without behaviour change to guardians.
+Introduce shared server modules and Flutter `pet_care/core` without behaviour change to guardians. **Split** observation primitives from CIM-specific quality policy — do **not** move D/E thresholds into `care_observations`.
+
+### Classifier split (from `server/routes/careIntelligence/weightQualityClassifier.js`)
+
+| Extract to `care_observations` | Keep / move to `care_intelligence` | New in `care_progression` |
+|------------------------------|-------------------------------------|---------------------------|
+| `parseDateMs`, `daysBetween`, `median`, `stdDev` | `QUALITY_THRESHOLDS` | `weightEstablishmentPolicy.js` |
+| Unit consistency, valid measurement shape | `classifyWeightSeriesQuality` (adequacy for review relevance) | Cadence-relative establishment thresholds |
+| Duplicate handling, timestamp validity | Re-export via `weightQualityPolicy.js` | Occurrence-linkage evidence rules |
 
 ### Deliverables
 
@@ -216,10 +231,11 @@ Introduce shared server modules and Flutter `pet_care/core` without behaviour ch
 |------|--------|
 | `server/lib/care/enums.js` | `CARE_FAMILIES`, `CARE_SOURCES`, wire validators |
 | `server/lib/care/capabilities.js` | `CareFamilyCapabilityPolicy` — code-defined matrix |
-| `server/lib/care/observations/primitives.js` | Valid weight, unit, timestamp helpers |
-| Move (no logic change) | `weightQualityClassifier.js` → `server/lib/care/observations/weightQuality.js`; CIM re-imports |
+| `server/lib/care/observations/weightPrimitives.js` | Domain-neutral helpers only |
+| `server/routes/careIntelligence/weightQualityPolicy.js` | CIM adequacy classifier (imports primitives) |
+| `server/lib/care/progression/weightEstablishmentPolicy.js` | Stub or skeleton — full logic in CP-3 |
 | Flutter `pet_care/core/` | Capability mirror + contract test or shared enum sync |
-| Stub route | `GET /api/pets/:petId/care-progression` → `{ establishment: [], milestones: [] }` (auth + capability check) |
+| Stub route | `GET /api/pets/:petId/care-progression` → `{ establishments: [], milestones: [] }` (auth + capability check) |
 | Move types (optional) | `weight_provenance.dart` toward `pet_care/core/` or `pet_care/observations/` |
 
 ### Migrations
@@ -229,7 +245,8 @@ None.
 ### Exit criteria
 
 - [ ] Single `CARE_FAMILIES` source on server.
-- [ ] CIM tests pass after weight quality move.
+- [ ] CIM review-relevance tests pass — behaviour unchanged after split.
+- [ ] No CIM decision thresholds live under `care_observations/`.
 - [ ] Capability policy unit tests per family.
 - [ ] Stub progression read endpoint returns 200 for authorised guardian.
 
@@ -239,25 +256,27 @@ None.
 
 ### Goal
 
-Transactional completion: real weight entry + occurrence complete, idempotent, FK-linked.
+Transactional completion: real weight entry + occurrence complete, idempotent, FK-linked. Define correction and deletion semantics before CP-3.
 
 ### Deliverables
 
 | Item | Detail |
 |------|--------|
 | Migration | `weight_entries.health_occurrence_id UUID NULL REFERENCES health_occurrences(id)`; partial unique index `WHERE health_occurrence_id IS NOT NULL` |
-| Endpoint | `POST /api/pets/:petId/care-rhythms/:entryId/complete-weight-occurrence` (or equivalent under `health_entries`) |
-| Behaviour | Validates `care_family = weight_monitoring`; creates `weight_entry`; completes occurrence; single transaction |
-| Idempotency | Repeat request with same occurrence returns existing linked weight (200, no duplicate) |
+| Endpoint | `POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight` |
+| Server checks | Occurrence belongs to entry; entry belongs to pet; `care_family = weight_monitoring`; guardian authorised; occurrence completable |
+| Behaviour | Creates `weight_entry`; completes occurrence; single transaction |
+| Idempotency | Same occurrence + **semantically same** payload → `200` with existing linked weight |
+| Conflict | Same occurrence + **materially different** payload → `409 Conflict` (use explicit edit/correction flow) |
+| Linked delete | Deleting occurrence-linked weight → remove weight **and** re-open occurrence to `pending` (unless atomic replace in same operation) |
 | Block generic complete | Weight monitoring entries with pending occurrences cannot use generic mark-complete without weight payload |
 | Flutter | Weight rhythm “mark done” → `AddWeightEntrySheet` bound to occurrence; not generic date-only sheet |
 | Skip | Existing skip path unchanged; documented as non-counting for progression |
 
-### Request body (illustrative)
+### Request body (observation only — occurrence in URL)
 
 ```json
 {
-  "occurrence_id": "uuid",
   "weight": 18.2,
   "unit": "kg",
   "date": "2026-09-09",
@@ -279,8 +298,10 @@ Transactional completion: real weight entry + occurrence complete, idempotent, F
 ### Tests
 
 - Happy path: weight + occurrence completed atomically.
-- Idempotent retry.
-- Wrong family → 400/422.
+- Idempotent retry (same payload → 200 existing).
+- Different payload retry → 409.
+- Wrong family / wrong occurrence parent → 400/404.
+- Delete linked weight re-opens occurrence.
 - Generic complete blocked for weight_monitoring with open occurrence.
 - Skip does not create weight row.
 - Agatha accept flow still creates rhythm only; occurrences materialised for first due.
@@ -303,30 +324,31 @@ Server evaluates weight monitoring maturity; persists transition to Established 
 
 | Item | Detail |
 |------|--------|
-| Migration | `care_establishment_states` (see schema below) |
+| Migration | `care_establishments` (see schema below) |
 | Policy | `server/lib/care/progression/weightEstablishmentPolicy.js` — cadence-relative, versioned |
 | Evaluator | `evaluateWeightEstablishment(petId, healthEntryId, facts)` → result + reason codes |
 | Triggers | CP-2 completion endpoint; optional internal `POST .../care-progression/re-evaluate` (admin/dev) |
 | Read API | Extend `GET .../care-progression` with establishment DTOs |
 | Flutter | Provider consumes server DTO only — no local evaluation |
 
-### `care_establishment_states` (illustrative)
+### `care_establishments` (illustrative)
+
+Historical transition record — **not** a mutable current-state row:
 
 ```sql
-CREATE TABLE care_establishment_states (
+CREATE TABLE care_establishments (
   id UUID PRIMARY KEY,
   pet_id UUID NOT NULL REFERENCES pets(id) ON DELETE CASCADE,
   care_family VARCHAR(50) NOT NULL,
   health_entry_id UUID NOT NULL REFERENCES health_entries(id) ON DELETE CASCADE,
   established_at TIMESTAMPTZ NOT NULL,
   policy_version VARCHAR(20) NOT NULL,
-  dedupe_key VARCHAR(100) NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE (pet_id, dedupe_key)
+  UNIQUE (health_entry_id)
 );
 ```
 
-`dedupe_key` example: `weight_monitoring:{health_entry_id}`.
+One first establishment per rhythm in V1. Future `establishmentEpoch` may change uniqueness when re-establishment ships. Milestones retain polymorphic `dedupe_key`; establishments do not in V1.
 
 ### Policy inputs
 
@@ -341,7 +363,7 @@ CREATE TABLE care_establishment_states (
 { maturity: null | 'established', reasonCodes: [], policyVersion: '1.0.0' }
 ```
 
-Persist row **only** on first transition to `established`. Never downgrade on miss or weight delete (V1).
+Insert row **only** on first transition to `established`. Never downgrade on miss. Deleting a linked weight may re-open the occurrence (CP-2) but does **not** delete or revoke `care_establishments` (V1).
 
 ### Tests
 
@@ -372,8 +394,9 @@ Durable milestones with server dedupe; per-user presentation state; combined-mom
 | Service | `CareMilestoneService` — `computeDedupeKey()`, idempotent create |
 | Milestones V1 | `weight_monitoring_established`, `first_care_established` |
 | Trigger | On establishment transition: create family milestone; if first family ever, also `first_care_established` |
-| Presentation query | `GET .../care-progression/pending-moments` — respects per-user shown state + 30-day throttle |
-| Combined moment | Single DTO when both created same run; family anchor + secondary copy flag |
+| Presentation query | `GET .../care-progression/pending-moments` — milestones with no `care_milestone_presentations` row for requesting user + 30-day throttle |
+| Acknowledgement API | `POST .../care-progression/moments/:bundleId/acknowledge-presented` — inserts presentation rows when card renders |
+| Combined moment | Single DTO when both created same run; family anchor + secondary copy flag; **atomic** acknowledgement for all milestones in bundle |
 
 ### `care_milestones` (illustrative)
 
@@ -415,10 +438,17 @@ Throttle: max one **prominent** moment per pet per user per 30 days (query layer
 | `weight_monitoring_established` | `weight_monitoring_established:{health_entry_id}` |
 | `first_care_established` | `first_care_established` |
 
+### Presentation semantics (frozen)
+
+- **Presented** = prominent milestone card successfully **rendered** to guardian (not dismiss action).
+- Bundle card rendered → insert `care_milestone_presentations` for **every** milestone in `bundle_id` atomically.
+- User A presented ≠ suppress User B.
+
 ### Tests
 
 - Re-eval job does not duplicate.
 - Same-run bundle groups milestones.
+- Atomic bundle acknowledgement (both presentation rows or neither).
 - User A shown ≠ suppress User B.
 - Throttle defers second moment within 30 days but persists both rows.
 
@@ -474,7 +504,8 @@ Central contextual card slot: safeguard > suggestion > milestone > prompt.
 
 - [ ] Safeguard beats milestone in widget tests.
 - [ ] Suggestion beats milestone when no safeguard.
-- [ ] Milestone marks `care_milestone_presentations` on dismiss/show.
+- [ ] Milestone marks `care_milestone_presentations` on successful card render (ack API).
+- [ ] Combined bundle acknowledgement is atomic.
 - [ ] Dashboard respects single-slot rule.
 
 ---
@@ -483,19 +514,32 @@ Central contextual card slot: safeguard > suggestion > milestone > prompt.
 
 ### Goal
 
-Persistent milestones visible in pet care history / timeline.
+Persistent milestones visible in pet care history / timeline — **one fact, multiple read surfaces**.
+
+### Default approach (preferred)
+
+```text
+care_milestones (canonical durable record)
+        ↓
+timeline/history query includes care_milestones
+        ↓
+renders care_milestone timeline item
+```
+
+Do **not** copy milestones into a second durable `activity_events` row unless existing timeline architecture cannot query `care_milestones` directly. If a persisted activity row is required, document the justification in CP-7 design note.
 
 ### Deliverables
 
 | Item | Detail |
 |------|--------|
-| Timeline event type | `care_milestone` (or extend pet activity with stable schema) |
-| UI | Milestone entries in history/timeline with descriptive copy |
+| Timeline query | Include `care_milestones` in pet history read model |
+| UI | Milestone entries with descriptive copy (semantic l10n keys — see Appendix C) |
 | BDD | Optional scenario mapping (if product requests) |
 
 ### Exit criteria
 
 - [ ] Achieved milestones appear in timeline for all authorised guardians.
+- [ ] No duplicate durable milestone representation without documented justification.
 - [ ] Presentation moment and timeline entry are distinct (moment ephemeral, timeline durable).
 
 ### Deferral note
@@ -529,10 +573,12 @@ Clear bounded-course semantics documented in `care_planning` (no progression amb
 |--------|------|-------|---------|
 | `GET` | `/api/pets/:petId/care-progression` | CP-1+ | Establishment + milestones read model |
 | `GET` | `/api/pets/:petId/care-progression/pending-moments` | CP-4 | Per-user presentation candidates |
-| `POST` | `/api/pets/:petId/care-rhythms/:entryId/complete-weight-occurrence` | CP-2 | Transactional weight completion |
+| `POST` | `/api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight` | CP-2 | Transactional weight completion |
+| `DELETE` | `/api/weight-entries/:id` | CP-2 | Extended: linked weight delete re-opens occurrence |
 | `POST` | `/api/pets/:petId/care-progression/re-evaluate` | CP-3 | Internal/dev re-evaluation (auth gated) |
+| `POST` | `/api/pets/:petId/care-progression/moments/:bundleId/acknowledge-presented` | CP-4/6 | Per-user presentation acknowledgement |
 
-Exact paths may follow existing `health_entries` router conventions — finalise in CP-1 design note.
+Paths are normative for Care Progression V1 unless a CP-1 design note documents an equivalent nested route under existing routers.
 
 ---
 
@@ -554,7 +600,7 @@ Run `./scripts/pre-push-changed.sh` per PR. BDD mapping when CP-7 scenarios exis
 
 Before CP-4 merge to `main`:
 
-- Update [DATA_MAP.md](/regulatory/DATA_MAP.md) for `care_establishment_states`, `care_milestones`, `care_milestone_presentations`, `weight_entries.health_occurrence_id`.
+- Update [DATA_MAP.md](/regulatory/DATA_MAP.md) for `care_establishments`, `care_milestones`, `care_milestone_presentations`, `weight_entries.health_occurrence_id`.
 
 ---
 
@@ -569,7 +615,6 @@ Before CP-4 merge to `main`:
 - Progression consuming CIM review-relevance
 - Guardian legacy classification/repair flows (pre-prod cleanup instead)
 - Re-establishment epoch after multi-year gap
-- Revoking establishment on weight delete
 - `medication_course_completed` in initial V1 ship
 - New Progress tab / progression feed
 - Multi-family establishment markers in UI (weight only V1)
@@ -645,17 +690,17 @@ Extend audit script with occurrence coverage and preventive row counts.
 
 ## Appendix C — Presentation copy templates (draft)
 
-**Established marker (rhythm row):** `Established`
+Use **semantic l10n keys with arguments** — not English possessive interpolation (`{possessive}` does not localise to French cleanly).
 
-**Milestone moment (family):**  
-Title: *A little milestone*  
-Body: *{petName}’s regular weight monitoring is now established.*
+| Key | EN example |
+|-----|------------|
+| `careProgressionEstablishedMarker` | Established |
+| `careProgressionMilestoneTitle` | A little milestone |
+| `careProgressionWeightEstablishedBody` | {petName}’s regular weight monitoring is now part of her routine care. |
+| `careProgressionFirstCareCombinedBody` | {petName}’s regular weight monitoring is now part of her routine care — her first care rhythm to become routine. |
 
-**Combined (first + family):**  
-Body: *{petName}’s regular weight monitoring is now established — the first care rhythm to become part of {possessive} routine.*
-
-Localise in CP-5/CP-6.
+Marker uses **Established**; celebratory body uses warmer routine-care language (avoid repeating the system term). Localise in CP-5/CP-6 with per-language grammar (e.g. FR gender agreement via pet context).
 
 ---
 
-*End of Care Progression Delivery Plan (draft for review)*
+*End of Care Progression Delivery Plan*

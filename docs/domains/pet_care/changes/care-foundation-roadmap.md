@@ -709,8 +709,6 @@ Operational fixture detail lives in [phase-d-review-relevance-plan.md](./phase-d
 
 ---
 
----
-
 ## 16. Successor programme — Care Progression
 
 Phases A–E (this roadmap) complete the **Care Foundation & Intelligence** programme. The **next** Pet Care programme is **Care Progression** — a separate execute-plan, not an extension of `care-foundation-c7a1`.
