@@ -4,7 +4,7 @@
   "approved_at": "2026-09-09T10:10:00Z",
   "approved_by": "user chat 2026-09-09 — standing grant full Care Progression CP-0–CP-7 via /execute-plan",
   "approved_until": "2026-09-11T10:10:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-progression-v1-integration-2d95",
   "control_issue": 1095,
@@ -298,5 +298,5 @@
       "pr_head_sha": "500138e4"
     }
   ],
-  "content_hash": "sha256:ee2e777fcc97389a2b98e9a1765545b1cb8ecb314367bf7d6f1008271e464a83"
+  "content_hash": "sha256:222363a6b1f7459a73cbc717e46ed047a62a771ecea24f5a7106ca7019726cd6"
 }

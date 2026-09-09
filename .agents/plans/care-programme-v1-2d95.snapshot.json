@@ -6,7 +6,7 @@
   "approved_at": "2026-09-09T10:10:00Z",
   "approved_by": "user chat 2026-09-09 — standing grant Phase E + full Care Progression CP-0–CP-7 via /execute-plan",
   "approved_until": "2026-09-11T10:10:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1093,
@@ -21,9 +21,9 @@
     },
     {
       "plan_id": "care-progression-v1",
-      "status": "pending",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1105",
+      "merge_commit": "906e742a7e9d4889683b3854c1ecb41004b84187"
     }
   ],
   "phases": [
@@ -50,7 +50,7 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "completed",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
