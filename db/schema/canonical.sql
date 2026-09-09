@@ -117,6 +117,19 @@ CREATE TABLE public.care_recommendations (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
+CREATE TABLE public.care_safeguards (
+    id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    safeguard_type character varying(50) NOT NULL,
+    safeguard_key character varying(100) NOT NULL,
+    status character varying(30) DEFAULT 'active'::character varying NOT NULL,
+    policy_version character varying(20) NOT NULL,
+    copy_key character varying(100) NOT NULL,
+    evidence_json jsonb DEFAULT '{}'::jsonb NOT NULL,
+    dismissed_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
 CREATE TABLE public.custody_transfers (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -678,6 +691,8 @@ ALTER TABLE ONLY public.audit_events
     ADD CONSTRAINT audit_events_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.care_recommendations
     ADD CONSTRAINT care_recommendations_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.care_safeguards
+    ADD CONSTRAINT care_safeguards_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.document_templates
@@ -792,6 +807,8 @@ ALTER TABLE ONLY public.weight_entries
     ADD CONSTRAINT weight_entries_pkey PRIMARY KEY (id);
 CREATE UNIQUE INDEX care_recommendations_pet_family_key_idx ON public.care_recommendations USING btree (pet_id, care_family, suggestion_key);
 CREATE INDEX care_recommendations_pet_status_idx ON public.care_recommendations USING btree (pet_id, status);
+CREATE UNIQUE INDEX care_safeguards_pet_key_idx ON public.care_safeguards USING btree (pet_id, safeguard_key);
+CREATE INDEX care_safeguards_pet_status_idx ON public.care_safeguards USING btree (pet_id, status);
 CREATE UNIQUE INDEX idx_adoption_journeys_one_open_per_session ON public.adoption_journeys USING btree (fostering_session_id) WHERE ((status)::text = ANY ((ARRAY['awaiting_foster_confirmation'::character varying, 'pending_conditions'::character varying])::text[]));
 CREATE INDEX idx_adoption_journeys_org_id ON public.adoption_journeys USING btree (organization_id);
 CREATE INDEX idx_adoption_journeys_session_id ON public.adoption_journeys USING btree (fostering_session_id);
@@ -888,6 +905,8 @@ ALTER TABLE ONLY public.care_recommendations
     ADD CONSTRAINT care_recommendations_health_entry_id_fkey FOREIGN KEY (health_entry_id) REFERENCES public.health_entries(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.care_recommendations
     ADD CONSTRAINT care_recommendations_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.care_safeguards
+    ADD CONSTRAINT care_safeguards_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_from_org_id_fkey FOREIGN KEY (from_org_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.custody_transfers

@@ -17,7 +17,9 @@ class CimEvidenceView extends StatelessWidget {
 
     final facts = <String>[];
     if (measurementCount is num) {
-      facts.add(l.careSafeguardEvidenceMeasurementCount(measurementCount.toInt()));
+      facts.add(
+        l.careSafeguardEvidenceMeasurementCount(measurementCount.toInt()),
+      );
     }
     if (direction == 'down') {
       facts.add(l.careSafeguardEvidenceTrendDown);
@@ -28,10 +30,7 @@ class CimEvidenceView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l.careSafeguardEvidenceTitle,
-          style: theme.textTheme.labelLarge,
-        ),
+        Text(l.careSafeguardEvidenceTitle, style: theme.textTheme.labelLarge),
         const SizedBox(height: 4),
         ...facts.map(
           (fact) => Padding(

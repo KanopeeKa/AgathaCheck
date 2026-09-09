@@ -79,10 +79,10 @@ next_action: "continue phase 1 on branch cursor/care-foundation-phase-e-2d95"
 artifact_ref:
   branch: cursor/care-foundation-phase-e-2d95
   plan_path: .agents/plans/care-foundation-phase-e-2d95.md
-  plan_commit: ac6b2c6ad7a93f0a5854f9dbf67a6b8edbc7c6d5
+  plan_commit: 9c301382d86ca5cb9c08dd22c6f1f9707865d889
   snapshot_path: .agents/plans/care-foundation-phase-e-2d95.snapshot.json
-  snapshot_commit: ac6b2c6ad7a93f0a5854f9dbf67a6b8edbc7c6d5
-open_prs: []
+  snapshot_commit: 9c301382d86ca5cb9c08dd22c6f1f9707865d889
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1096"]
 merge_commits: {}
 debt_issue_refs: []
 ```

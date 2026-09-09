@@ -62,7 +62,9 @@ class CareIntelligenceRemoteDataSource {
     required String safeguardId,
   }) async {
     final response = await _client.post(
-      Uri.parse('$baseUrl/api/pets/$petId/care-safeguards/$safeguardId/dismiss'),
+      Uri.parse(
+        '$baseUrl/api/pets/$petId/care-safeguards/$safeguardId/dismiss',
+      ),
       headers: _headers(jsonBody: true),
       body: json.encode({}),
     );

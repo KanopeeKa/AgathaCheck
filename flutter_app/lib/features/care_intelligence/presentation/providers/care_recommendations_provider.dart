@@ -56,9 +56,7 @@ final petProfileCareSuggestionProvider =
       final policy = ref.watch(petCarePresentationPolicyProvider);
       final activeSafeguard = safeguardAsync.valueOrNull;
       return recsAsync.whenData(
-        (recs) => policy.profileSuggestion(
-          recs,
-          activeSafeguard: activeSafeguard,
-        ),
+        (recs) =>
+            policy.profileSuggestion(recs, activeSafeguard: activeSafeguard),
       );
     });

@@ -50,10 +50,9 @@ void main() {
   });
 
   test('profileSuggestion suppressed when safeguard active', () {
-    final rec = policy.profileSuggestion(
-      [_rec(id: 'pending')],
-      activeSafeguard: _safeguard(id: 'sg-1'),
-    );
+    final rec = policy.profileSuggestion([
+      _rec(id: 'pending'),
+    ], activeSafeguard: _safeguard(id: 'sg-1'));
     expect(rec, isNull);
   });
 
@@ -67,10 +66,9 @@ void main() {
   });
 
   test('dashboardSuggestion suppressed when safeguard active', () {
-    final rec = policy.dashboardSuggestion(
-      {'pet-2': [_rec(id: 'b')]},
-      activeSafeguard: _safeguard(id: 'sg-1'),
-    );
+    final rec = policy.dashboardSuggestion({
+      'pet-2': [_rec(id: 'b')],
+    }, activeSafeguard: _safeguard(id: 'sg-1'));
     expect(rec, isNull);
   });
 }
