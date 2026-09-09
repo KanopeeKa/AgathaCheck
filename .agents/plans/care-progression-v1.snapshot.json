@@ -290,13 +290,13 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1104",
-      "pr_head_sha": "5029b5a1"
+      "pr_head_sha": "500138e4"
     }
   ],
-  "content_hash": "sha256:04824e63721badc113da0966f77b21e76d94f66ad1162be9d76de2af152451ee"
+  "content_hash": "sha256:ee2e777fcc97389a2b98e9a1765545b1cb8ecb314367bf7d6f1008271e464a83"
 }
