@@ -46,16 +46,16 @@ See snapshot for CP-0 … CP-7 branch names, allowed_paths, and exit criteria al
 
 ```yaml
 autonomy: active
-current_phase: cp5
-last_completed_phase: cp4
+current_phase: cp6
+last_completed_phase: cp5
 halt_reason: null
-next_action: "continue phase cp5 on branch cursor/care-progression-cp5-2d95"
+next_action: "continue phase cp6 on branch cursor/care-progression-cp6-2d95"
 artifact_ref:
   branch: cursor/care-progression-v1-integration-2d95
   plan_path: .agents/plans/care-progression-v1.md
-  plan_commit: 9a0a9798c74f7cfc4a0737113f0b08d1cb97239c
+  plan_commit: 760d5a83ea27164024b4a1aadb7f08411df9addd
   snapshot_path: .agents/plans/care-progression-v1.snapshot.json
-  snapshot_commit: 9a0a9798c74f7cfc4a0737113f0b08d1cb97239c
+  snapshot_commit: 760d5a83ea27164024b4a1aadb7f08411df9addd
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
