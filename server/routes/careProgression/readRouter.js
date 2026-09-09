@@ -1,5 +1,6 @@
 import { publicError } from '../../config/security.js';
 import { CareFamilyCapabilityPolicy } from '../../lib/care/capabilities.js';
+import { loadMilestonesForPet } from '../../lib/care/progression/careMilestoneService.js';
 import { loadEstablishmentsForPet } from '../../lib/care/progression/weightEstablishmentService.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { accessiblePetSql } from '../../lib/petAccess.js';
@@ -29,8 +30,11 @@ export function registerCareProgressionReadRoutes(router, pool) {
       if (petResult.rows.length === 0) {
         return res.status(404).json({ error: 'Pet not found' });
       }
-      const establishments = await loadEstablishmentsForPet(pool, petId);
-      return res.json({ establishments, milestones: [] });
+      const [establishments, milestones] = await Promise.all([
+        loadEstablishmentsForPet(pool, petId),
+        loadMilestonesForPet(pool, petId),
+      ]);
+      return res.json({ establishments, milestones });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
