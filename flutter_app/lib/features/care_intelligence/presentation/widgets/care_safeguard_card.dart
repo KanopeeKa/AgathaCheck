@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/care_safeguard.dart';
 import '../providers/care_recommendations_provider.dart';
+import '../../../pet_care/presentation/providers/pet_care_presentation_providers.dart';
 import 'cim_evidence_view.dart';
 
 /// Calm info-blue safeguard card (Phase E).
@@ -32,6 +33,7 @@ class CareSafeguardCard extends ConsumerWidget {
       ref.invalidate(petCareSafeguardsProvider(petId));
       ref.invalidate(petProfileCareSafeguardProvider(petId));
       ref.invalidate(petProfileCareSuggestionProvider(petId));
+      ref.invalidate(petProfileCareMilestoneProvider(petId));
     }
 
     return Card(

@@ -223,6 +223,19 @@
   "careRhythmNextDue": "Prochaine échéance {date}",
   "@careRhythmNextDue": { "placeholders": { "date": { "type": "String" } } },
   "careProgressionEstablishedMarker": "Établi",
+  "careProgressionMilestoneTitle": "Une petite étape",
+  "careProgressionWeightEstablishedBody": "Le suivi régulier du poids de {petName} fait désormais partie de sa routine de soins.",
+  "@careProgressionWeightEstablishedBody": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "careProgressionFirstCareCombinedBody": "Le suivi régulier du poids de {petName} fait désormais partie de sa routine de soins — son premier rythme de soins devenu habituel.",
+  "@careProgressionFirstCareCombinedBody": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
   "careSourceGuardianDefined": "Ajouté par vous",
   "careSourceVetInstruction": "Selon votre vétérinaire",
   "careSourceTreatmentSchedule": "Protocole de traitement",
