@@ -93,6 +93,20 @@
 | `measurement_source` | VARCHAR(50) | D0: `guardian`, `clinic`, `device`, `imported` (per-entry; not inferred from pet context) |
 | `notes` | TEXT | User notes |
 
+### 1.6a Care Safeguards (care_safeguards table) — Phase E
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `id` | UUID | Safeguard identifier |
+| `pet_id` | UUID | Associated pet |
+| `safeguard_type` | VARCHAR(50) | e.g. `weight_trend_down` |
+| `safeguard_key` | VARCHAR(100) | Dedupe key per pet |
+| `status` | VARCHAR(30) | `active` or `dismissed` |
+| `policy_version` | VARCHAR(20) | Evaluator version |
+| `copy_key` | VARCHAR(100) | l10n key for guardian copy |
+| `evidence_json` | JSONB | Facts-only evidence trace |
+| `dismissed_at` | TIMESTAMPTZ | When guardian dismissed |
+
 ### 1.7 Veterinarian Data (stored in shared_pets / pet data)
 
 Veterinarian contact information stored includes: name, clinic, phone, email, address, and notes.

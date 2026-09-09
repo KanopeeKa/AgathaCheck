@@ -742,6 +742,32 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get careSafeguardTitle => 'Worth checking with your vet';
+
+  @override
+  String careSafeguardWeightTrendDown(String petName) {
+    return '$petName\'s weight has been trending down across several measurements. There isn\'t a known weight plan recorded, so it may be worth mentioning this to your vet.';
+  }
+
+  @override
+  String get careSafeguardViewChanges => 'View changes';
+
+  @override
+  String get careSafeguardDismiss => 'Dismiss';
+
+  @override
+  String get careSafeguardEvidenceTitle => 'What we noticed';
+
+  @override
+  String careSafeguardEvidenceMeasurementCount(int count) {
+    return '$count weight measurements reviewed';
+  }
+
+  @override
+  String get careSafeguardEvidenceTrendDown =>
+      'Weight has been trending down over time';
+
+  @override
   String get careLoadError => 'We couldn\'t load care right now.';
 
   @override

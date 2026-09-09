@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-foundation-phase-e-2d95",
+  "approved_at": "2026-09-09T10:10:00Z",
+  "approved_by": "user chat 2026-09-09 — standing grant Phase E + full Care Progression via /execute-plan (D5b implied)",
+  "approved_until": "2026-09-11T10:10:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1094,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Phase E — weight-only guardian safeguards",
+      "branch": "cursor/care-foundation-phase-e-2d95",
+      "allowed_paths": [
+        ".agents/plans/care-foundation-phase-e-2d95.*",
+        ".agents/plans/care-programme-v1-2d95.*",
+        "docs/domains/pet_care/**",
+        "docs/architecture/api-reference.md",
+        "flutter_app/lib/features/care_intelligence/**",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/**",
+        "flutter_app/lib/features/experience/presentation/widgets/pet_care_*",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/care_intelligence/**",
+        "flutter_app/test/features/experience/**",
+        "regulatory/DATA_MAP.md",
+        "server/migrations/**",
+        "server/routes/careIntelligence/**",
+        "server/routes/index.js",
+        "server/test/careIntelligence/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**",
+        "server/routes/organizations/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_head_sha": "9c301382d86ca5cb9c08dd22c6f1f9707865d889",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1096"
+    }
+  ],
+  "content_hash": "sha256:19d86fab90a7b722a3275c7c001c0d737aa22f65eb5b87564aac88bf5ef06b63"
+}

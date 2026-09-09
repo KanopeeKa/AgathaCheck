@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-programme-v1-2d95",
+  "plan_kind": "roadmap",
+  "programme_ref": "docs/domains/pet_care/changes/care-progression-delivery-plan.md",
+  "approved_at": "2026-09-09T10:10:00Z",
+  "approved_by": "user chat 2026-09-09 — standing grant Phase E + full Care Progression CP-0–CP-7 via /execute-plan",
+  "approved_until": "2026-09-11T10:10:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1093,
+  "artifact_branch_policy": "phase-branch",
+  "current_child_plan_id": "care-foundation-phase-e-2d95",
+  "child_plans": [
+    {
+      "plan_id": "care-foundation-phase-e-2d95",
+      "status": "pending",
+      "pr_url": null,
+      "merge_commit": null
+    },
+    {
+      "plan_id": "care-progression-v1",
+      "status": "pending",
+      "pr_url": null,
+      "merge_commit": null
+    }
+  ],
+  "phases": [
+    {
+      "id": "orchestrate",
+      "title": "Roadmap orchestration (Phase E → Care Progression)",
+      "branch": "cursor/care-programme-v1-2d95",
+      "allowed_paths": [
+        ".agents/plans/care-programme-v1-2d95.*",
+        ".agents/plans/care-foundation-phase-e-2d95.*",
+        ".agents/plans/care-progression-v1.*",
+        "docs/domains/pet_care/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:04692503b58cef91048723f5d147547d4e48e57504d69db0a3407847527666a4"
+}
