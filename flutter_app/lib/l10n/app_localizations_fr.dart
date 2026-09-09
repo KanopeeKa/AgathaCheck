@@ -691,6 +691,9 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get careProgressionEstablishedMarker => 'Établi';
+
+  @override
   String get careFamilyFieldLabel => 'Catégorie de soins';
 
   @override

@@ -1292,6 +1292,12 @@ abstract class AppLocalizations {
   /// **'Next due {date}'**
   String careRhythmNextDue(String date);
 
+  /// No description provided for @careProgressionEstablishedMarker.
+  ///
+  /// In en, this message translates to:
+  /// **'Established'**
+  String get careProgressionEstablishedMarker;
+
   /// No description provided for @careFamilyFieldLabel.
   ///
   /// In en, this message translates to:

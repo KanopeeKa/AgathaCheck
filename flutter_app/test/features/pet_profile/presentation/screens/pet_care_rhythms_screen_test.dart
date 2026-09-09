@@ -12,8 +12,11 @@ import 'package:pet_profile_app/features/health_tracking/presentation/providers/
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/care_establishment.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_source.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/providers/care_progression_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_care_rhythms_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -59,7 +62,22 @@ void main() {
     nextDueDate: DateTime(2026, 10, 1),
   );
 
-  Widget buildApp({required List<HealthEntry> entries}) {
+  final weightRhythm = HealthEntry(
+    id: 'weight-1',
+    petId: 'pet-1',
+    name: 'Weight monitoring',
+    type: HealthEntryType.other,
+    frequency: HealthFrequency.weekly,
+    startDate: DateTime(2025, 1, 1),
+    nextDueDate: DateTime(2026, 10, 21),
+    careFamily: CareFamily.weightMonitoring,
+    careSource: CareSource.guardianDefined,
+  );
+
+  Widget buildApp({
+    required List<HealthEntry> entries,
+    List<CareEstablishment> establishments = const [],
+  }) {
     final router = GoRouter(
       initialLocation: '/pet/pet-1/care-rhythms',
       routes: [
@@ -94,6 +112,9 @@ void main() {
         healthEntriesNotifierProvider.overrideWith(
           () => _TestHealthEntriesNotifier(entries),
         ),
+        petCareEstablishmentsProvider('pet-1').overrideWith(
+          (ref) async => establishments,
+        ),
         apiBaseUrlProvider.overrideWithValue('http://test.local'),
       ],
       child: MaterialApp.router(
@@ -115,6 +136,29 @@ void main() {
     expect(find.text('Grooming'), findsNothing);
     expect(find.text('Added by you'), findsOneWidget);
     expect(find.byKey(const Key('care_rhythms_list')), findsOneWidget);
+  });
+
+  testWidgets('shows Established marker for weight rhythm when established', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildApp(
+        entries: [weightRhythm],
+        establishments: [
+          CareEstablishment(
+            id: 'est-1',
+            careFamily: CareFamily.weightMonitoring,
+            healthEntryId: 'weight-1',
+            establishedAt: DateTime(2026, 1, 1),
+            policyVersion: 'weight_v1',
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Weight monitoring'), findsOneWidget);
+    expect(find.text('Established'), findsOneWidget);
   });
 
   testWidgets('shows empty state when no recurring entries', (tester) async {
