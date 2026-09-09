@@ -685,6 +685,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careProgressionEstablishedMarker => 'Established';
 
   @override
+  String get careProgressionMilestoneTitle => 'A little milestone';
+
+  @override
+  String careProgressionWeightEstablishedBody(String petName) {
+    return '$petName\'s regular weight monitoring is now part of her routine care.';
+  }
+
+  @override
+  String careProgressionFirstCareCombinedBody(String petName) {
+    return '$petName\'s regular weight monitoring is now part of her routine care — her first care rhythm to become routine.';
+  }
+
+  @override
   String get careFamilyFieldLabel => 'Care category';
 
   @override

@@ -10,6 +10,7 @@ import '../screens/pet_care/add_event_type_picker_sheet.dart';
 import '../screens/pet_care/pet_care_my_pets_section.dart';
 import '../screens/pet_care/pet_care_my_vets_section.dart';
 import '../screens/pet_care/pet_care_upcoming_events_section.dart';
+import '../../../pet_care/presentation/widgets/pet_care_dashboard_contextual_slot_section.dart';
 import 'pet_care_operations_desk_layout.dart';
 
 /// Guardian dashboard body: My Pets, Upcoming Pet Events, My Vets (phase 2.1).
@@ -26,6 +27,10 @@ class PetCareShellHomeContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final shellPets = controller.guardianShellPets(allPets);
+    final shellPetIds = shellPets
+        .where((pet) => !pet.passedAway)
+        .map((pet) => pet.id)
+        .toList(growable: false);
     final entriesAsync = ref.watch(healthEntriesNotifierProvider);
     final careSummary = entriesAsync.valueOrNull == null
         ? null
@@ -78,26 +83,37 @@ class PetCareShellHomeContent extends ConsumerWidget {
                 horizontal: horizontalPadding,
                 vertical: 20,
               ),
-              child: PetCareOperationsDeskLayout(
-                useWideLayout:
-                    constraints.maxWidth >=
-                    PetCareOperationsDeskLayout.wideBreakpoint,
-                petsSection: PetCareMyPetsSection(
-                  allPets: allPets,
-                  controller: controller,
-                  previewPets: previewPets,
-                  careSummary: careSummary,
-                ),
-                eventsSection: PetCareUpcomingEventsSection(
-                  pets: shellPets,
-                  onAddEvent: () =>
-                      showAddEventTypePickerSheet(context, pets: shellPets),
-                ),
-                vetsSection: PetCareMyVetsSection(
-                  useWideDeskLayout:
-                      constraints.maxWidth >=
-                      PetCareOperationsDeskLayout.wideBreakpoint,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  PetCareDashboardContextualSlotSection(
+                    pets: shellPets,
+                    petIds: shellPetIds,
+                  ),
+                  PetCareOperationsDeskLayout(
+                    useWideLayout:
+                        constraints.maxWidth >=
+                        PetCareOperationsDeskLayout.wideBreakpoint,
+                    petsSection: PetCareMyPetsSection(
+                      allPets: allPets,
+                      controller: controller,
+                      previewPets: previewPets,
+                      careSummary: careSummary,
+                    ),
+                    eventsSection: PetCareUpcomingEventsSection(
+                      pets: shellPets,
+                      onAddEvent: () => showAddEventTypePickerSheet(
+                        context,
+                        pets: shellPets,
+                      ),
+                    ),
+                    vetsSection: PetCareMyVetsSection(
+                      useWideDeskLayout:
+                          constraints.maxWidth >=
+                          PetCareOperationsDeskLayout.wideBreakpoint,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

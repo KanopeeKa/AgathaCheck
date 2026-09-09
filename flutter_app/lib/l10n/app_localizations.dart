@@ -1298,6 +1298,24 @@ abstract class AppLocalizations {
   /// **'Established'**
   String get careProgressionEstablishedMarker;
 
+  /// No description provided for @careProgressionMilestoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A little milestone'**
+  String get careProgressionMilestoneTitle;
+
+  /// No description provided for @careProgressionWeightEstablishedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{petName}\'s regular weight monitoring is now part of her routine care.'**
+  String careProgressionWeightEstablishedBody(String petName);
+
+  /// No description provided for @careProgressionFirstCareCombinedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{petName}\'s regular weight monitoring is now part of her routine care — her first care rhythm to become routine.'**
+  String careProgressionFirstCareCombinedBody(String petName);
+
   /// No description provided for @careFamilyFieldLabel.
   ///
   /// In en, this message translates to:

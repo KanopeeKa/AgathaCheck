@@ -7,7 +7,7 @@ import '../../data/repositories/care_intelligence_repository_impl.dart';
 import '../../domain/entities/care_recommendation.dart';
 import '../../domain/entities/care_safeguard.dart';
 import '../../domain/repositories/care_intelligence_repository.dart';
-import '../../domain/services/pet_care_presentation_policy.dart';
+import '../../../pet_care/presentation/providers/pet_care_presentation_providers.dart';
 
 final careIntelligenceRemoteDataSourceProvider =
     Provider<CareIntelligenceRemoteDataSource>((ref) {
@@ -22,10 +22,6 @@ final careIntelligenceRepositoryProvider = Provider<CareIntelligenceRepository>(
   (ref) => CareIntelligenceRepositoryImpl(
     ref.watch(careIntelligenceRemoteDataSourceProvider),
   ),
-);
-
-final petCarePresentationPolicyProvider = Provider<PetCarePresentationPolicy>(
-  (ref) => const PetCarePresentationPolicy(),
 );
 
 final petCareRecommendationsProvider =
@@ -43,7 +39,9 @@ final petCareSafeguardsProvider =
 final petProfileCareSafeguardProvider =
     Provider.family<AsyncValue<CareSafeguard?>, String>((ref, petId) {
       final safeguardsAsync = ref.watch(petCareSafeguardsProvider(petId));
-      final policy = ref.watch(petCarePresentationPolicyProvider);
+      final policy = ref.watch(
+        petCarePresentationPolicyProvider,
+      );
       return safeguardsAsync.whenData(
         (safeguards) => policy.profileSafeguard(safeguards),
       );
@@ -53,7 +51,9 @@ final petProfileCareSuggestionProvider =
     Provider.family<AsyncValue<CareRecommendation?>, String>((ref, petId) {
       final recsAsync = ref.watch(petCareRecommendationsProvider(petId));
       final safeguardAsync = ref.watch(petProfileCareSafeguardProvider(petId));
-      final policy = ref.watch(petCarePresentationPolicyProvider);
+      final policy = ref.watch(
+        petCarePresentationPolicyProvider,
+      );
       final activeSafeguard = safeguardAsync.valueOrNull;
       return recsAsync.whenData(
         (recs) =>
