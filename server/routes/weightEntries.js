@@ -7,6 +7,7 @@ import { logAuditEventSafe } from '../lib/audit.js';
 import { extractUserId } from '../lib/requireAuth.js';
 import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../lib/calendarDate.js';
 import { refreshPetWeightCache } from '../lib/petWeightSync.js';
+import { syncNextDueDateFromOccurrences } from '../lib/occurrenceScheduling.js';
 import {
   accessiblePetSql,
   userCanManageWeightEntry,
@@ -24,6 +25,7 @@ function weightEntryToMap(row) {
     date: row.date ? dateToIsoDate(row.date) : null,
     notes: row.notes || '',
     measurement_source: row.measurement_source || 'guardian',
+    health_occurrence_id: row.health_occurrence_id || null,
     created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,
   };
 }
@@ -195,20 +197,49 @@ export default function weightEntriesRoutes(pool) {
         return res.status(404).json({ error: 'Not found' });
       }
       const existing = await pool.query(
-        'SELECT pet_id FROM weight_entries WHERE id = $1',
+        'SELECT pet_id, health_occurrence_id FROM weight_entries WHERE id = $1',
         [req.params.id],
       );
-      await pool.query('DELETE FROM weight_entries WHERE id = $1', [req.params.id]);
-      const petId = existing.rows[0]?.pet_id;
-      if (petId) {
-        await refreshPetWeightCache(pool, petId);
+      if (existing.rows.length === 0) {
+        return res.status(404).json({ error: 'Not found' });
+      }
+      const row = existing.rows[0];
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        if (row.health_occurrence_id) {
+          const occResult = await client.query(
+            `UPDATE health_occurrences SET status = 'pending', completed_on = NULL,
+              marked_at = NULL, marked_by_user_id = NULL, notes = '', updated_at = NOW()
+             WHERE id = $1
+             RETURNING health_entry_id`,
+            [row.health_occurrence_id],
+          );
+          const entryId = occResult.rows[0]?.health_entry_id;
+          if (entryId) {
+            await syncNextDueDateFromOccurrences(client, entryId);
+          }
+        }
+        await client.query('DELETE FROM weight_entries WHERE id = $1', [req.params.id]);
+        await client.query('COMMIT');
+      } catch (txErr) {
+        await client.query('ROLLBACK');
+        throw txErr;
+      } finally {
+        client.release();
+      }
+      if (row.pet_id) {
+        await refreshPetWeightCache(pool, row.pet_id);
       }
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'weight_entry.deleted',
         resourceType: 'weight_entry',
         resourceId: req.params.id,
-        petId: petId || null,
+        petId: row.pet_id || null,
+        metadata: {
+          reopened_occurrence_id: row.health_occurrence_id || null,
+        },
         req,
       });
       res.json({ deleted: true });
