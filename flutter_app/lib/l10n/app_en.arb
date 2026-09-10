@@ -2108,5 +2108,72 @@
     }
   },
   "careCompletionFailed": "Could not mark this care item as done. Try again.",
-  "undoCompleteFailed": "Could not undo completion. Try again."
+  "undoCompleteFailed": "Could not undo completion. Try again.",
+  "careContextAwayEntryTitle": "I'll be away",
+  "careContextAwayEntryBody": "Preview care scheduled while you're away.",
+  "careContextAwayFlowTitle": "Away planning",
+  "careContextAwayDatesStepTitle": "When are you away?",
+  "careContextAwayDatesStepBody": "Choose the first and last day of your absence.",
+  "careContextAwayStartsOnLabel": "First day",
+  "careContextAwayEndsOnLabel": "Last day",
+  "careContextAwayDatesRequired": "Choose both the first and last day.",
+  "careContextAwayDatesInvalid": "Last day must be on or after the first day.",
+  "careContextAwayDatesHorizon": "Dates must be within the next 12 months.",
+  "careContextAwayPetsStepTitle": "Which pets?",
+  "careContextAwayPetsStepBody": "Select the pets this absence applies to.",
+  "careContextAwayPetsRequired": "Select at least one pet.",
+  "careContextAwayPreviewStepTitle": "Care during your absence",
+  "careContextAwayPreviewIntro": "Here's care for each pet during those dates.",
+  "careContextAwayPreviewDateRange": "{startDate} to {endDate}",
+  "@careContextAwayPreviewDateRange": {
+    "placeholders": {
+      "startDate": { "type": "String" },
+      "endDate": { "type": "String" }
+    }
+  },
+  "careContextAwayPreviewLoading": "Loading care preview…",
+  "careContextAwayPreviewError": "Could not load care preview. Try again.",
+  "careContextAwaySaveAction": "Save absence",
+  "careContextAwaySaveSuccess": "Absence saved.",
+  "careContextAwaySaveFailed": "Could not save absence. Try again.",
+  "careContextAwaySkipSave": "Done without saving",
+  "careContextAwayOverlapWarning": "{petName} already has an absence from {startDate} to {endDate}.",
+  "@careContextAwayOverlapWarning": {
+    "placeholders": {
+      "petName": { "type": "String" },
+      "startDate": { "type": "String" },
+      "endDate": { "type": "String" }
+    }
+  },
+  "careContextCoverageNothingScheduled": "Nothing scheduled in this period.",
+  "careContextCoverageAllCompleted": "Scheduled care in this period is already completed.",
+  "careContextCoverageNoUnresolved": "Nothing left to review in this period.",
+  "careContextCoverageHasItemsToReview": "{count, plural, =1{1 item to review} other{{count} items to review}}",
+  "@careContextCoverageHasItemsToReview": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "careContextCoverageIndeterminate": "Some dates in this period are not yet known.",
+  "careContextCoverageIndeterminateQualifier": "Shown items are confirmed; later dates may still change.",
+  "careContextPreviewItemPending": "Due {date}",
+  "@careContextPreviewItemPending": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "careContextPreviewItemCompleted": "Completed {date}",
+  "@careContextPreviewItemCompleted": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "careContextPreviewItemSkipped": "Skipped {date}",
+  "@careContextPreviewItemSkipped": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "careContextAwayContinue": "Continue",
+  "careContextAwayBack": "Back"
 }

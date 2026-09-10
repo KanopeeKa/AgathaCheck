@@ -21,15 +21,20 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | [care-foundation-roadmap.md](/docs/domains/pet_care/changes/care-foundation-roadmap.md) | Programme sequencing (v0.4) — Phases A–E |
 | [phase-d-review-relevance-plan.md](/docs/domains/pet_care/changes/phase-d-review-relevance-plan.md) | Phase D research/delivery plan |
 
-## Care Progression (next programme)
-
-Starts **after** Care Foundation Phase E merges to `main`. Architecture and delivery plan **approved**; implementation **not started** until Phase E merges.
+## Care Progression
 
 | Document | Role |
 |----------|------|
 | [care-progression.md](/docs/domains/pet_care/features/care-progression.md) | Canonical product behaviour |
-| [care-progression-delivery-plan.md](/docs/domains/pet_care/changes/care-progression-delivery-plan.md) | CP-0–CP-7 delivery plan (approved) |
+| [care-progression-delivery-plan.md](/docs/domains/pet_care/changes/care-progression-delivery-plan.md) | CP-0–CP-7 delivery plan (shipped) |
 | [care-entitlements.md](/docs/domains/pet_care/features/care-entitlements.md) | Future tier principles (no runtime in V1) |
+
+## Care Context (Care Through Change)
+
+| Document | Role |
+|----------|------|
+| [care-context.md](/docs/domains/pet_care/features/care-context.md) | Canonical product behaviour |
+| [care-through-change-delivery-plan.md](/docs/domains/pet_care/changes/care-through-change-delivery-plan.md) | CC-1–CC-4 delivery plan (active) |
 
 ## On this domain
 

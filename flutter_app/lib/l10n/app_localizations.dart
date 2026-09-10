@@ -10310,6 +10310,214 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not undo completion. Try again.'**
   String get undoCompleteFailed;
+
+  /// No description provided for @careContextAwayEntryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ll be away'**
+  String get careContextAwayEntryTitle;
+
+  /// No description provided for @careContextAwayEntryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview care scheduled while you\'re away.'**
+  String get careContextAwayEntryBody;
+
+  /// No description provided for @careContextAwayFlowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Away planning'**
+  String get careContextAwayFlowTitle;
+
+  /// No description provided for @careContextAwayDatesStepTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When are you away?'**
+  String get careContextAwayDatesStepTitle;
+
+  /// No description provided for @careContextAwayDatesStepBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the first and last day of your absence.'**
+  String get careContextAwayDatesStepBody;
+
+  /// No description provided for @careContextAwayStartsOnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'First day'**
+  String get careContextAwayStartsOnLabel;
+
+  /// No description provided for @careContextAwayEndsOnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last day'**
+  String get careContextAwayEndsOnLabel;
+
+  /// No description provided for @careContextAwayDatesRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose both the first and last day.'**
+  String get careContextAwayDatesRequired;
+
+  /// No description provided for @careContextAwayDatesInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Last day must be on or after the first day.'**
+  String get careContextAwayDatesInvalid;
+
+  /// No description provided for @careContextAwayDatesHorizon.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates must be within the next 12 months.'**
+  String get careContextAwayDatesHorizon;
+
+  /// No description provided for @careContextAwayPetsStepTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Which pets?'**
+  String get careContextAwayPetsStepTitle;
+
+  /// No description provided for @careContextAwayPetsStepBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the pets this absence applies to.'**
+  String get careContextAwayPetsStepBody;
+
+  /// No description provided for @careContextAwayPetsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one pet.'**
+  String get careContextAwayPetsRequired;
+
+  /// No description provided for @careContextAwayPreviewStepTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Care during your absence'**
+  String get careContextAwayPreviewStepTitle;
+
+  /// No description provided for @careContextAwayPreviewIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s care for each pet during those dates.'**
+  String get careContextAwayPreviewIntro;
+
+  /// No description provided for @careContextAwayPreviewDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{startDate} to {endDate}'**
+  String careContextAwayPreviewDateRange(String startDate, String endDate);
+
+  /// No description provided for @careContextAwayPreviewLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading care preview…'**
+  String get careContextAwayPreviewLoading;
+
+  /// No description provided for @careContextAwayPreviewError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load care preview. Try again.'**
+  String get careContextAwayPreviewError;
+
+  /// No description provided for @careContextAwaySaveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Save absence'**
+  String get careContextAwaySaveAction;
+
+  /// No description provided for @careContextAwaySaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Absence saved.'**
+  String get careContextAwaySaveSuccess;
+
+  /// No description provided for @careContextAwaySaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save absence. Try again.'**
+  String get careContextAwaySaveFailed;
+
+  /// No description provided for @careContextAwaySkipSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Done without saving'**
+  String get careContextAwaySkipSave;
+
+  /// No description provided for @careContextAwayOverlapWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'{petName} already has an absence from {startDate} to {endDate}.'**
+  String careContextAwayOverlapWarning(
+    String petName,
+    String startDate,
+    String endDate,
+  );
+
+  /// No description provided for @careContextCoverageNothingScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing scheduled in this period.'**
+  String get careContextCoverageNothingScheduled;
+
+  /// No description provided for @careContextCoverageAllCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled care in this period is already completed.'**
+  String get careContextCoverageAllCompleted;
+
+  /// No description provided for @careContextCoverageNoUnresolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing left to review in this period.'**
+  String get careContextCoverageNoUnresolved;
+
+  /// No description provided for @careContextCoverageHasItemsToReview.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item to review} other{{count} items to review}}'**
+  String careContextCoverageHasItemsToReview(int count);
+
+  /// No description provided for @careContextCoverageIndeterminate.
+  ///
+  /// In en, this message translates to:
+  /// **'Some dates in this period are not yet known.'**
+  String get careContextCoverageIndeterminate;
+
+  /// No description provided for @careContextCoverageIndeterminateQualifier.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown items are confirmed; later dates may still change.'**
+  String get careContextCoverageIndeterminateQualifier;
+
+  /// No description provided for @careContextPreviewItemPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {date}'**
+  String careContextPreviewItemPending(String date);
+
+  /// No description provided for @careContextPreviewItemCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed {date}'**
+  String careContextPreviewItemCompleted(String date);
+
+  /// No description provided for @careContextPreviewItemSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped {date}'**
+  String careContextPreviewItemSkipped(String date);
+
+  /// No description provided for @careContextAwayContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get careContextAwayContinue;
+
+  /// No description provided for @careContextAwayBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get careContextAwayBack;
 }
 
 class _AppLocalizationsDelegate

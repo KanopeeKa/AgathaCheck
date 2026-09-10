@@ -5769,4 +5769,141 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get undoCompleteFailed => 'Could not undo completion. Try again.';
+
+  @override
+  String get careContextAwayEntryTitle => 'I\'ll be away';
+
+  @override
+  String get careContextAwayEntryBody =>
+      'Preview care scheduled while you\'re away.';
+
+  @override
+  String get careContextAwayFlowTitle => 'Away planning';
+
+  @override
+  String get careContextAwayDatesStepTitle => 'When are you away?';
+
+  @override
+  String get careContextAwayDatesStepBody =>
+      'Choose the first and last day of your absence.';
+
+  @override
+  String get careContextAwayStartsOnLabel => 'First day';
+
+  @override
+  String get careContextAwayEndsOnLabel => 'Last day';
+
+  @override
+  String get careContextAwayDatesRequired =>
+      'Choose both the first and last day.';
+
+  @override
+  String get careContextAwayDatesInvalid =>
+      'Last day must be on or after the first day.';
+
+  @override
+  String get careContextAwayDatesHorizon =>
+      'Dates must be within the next 12 months.';
+
+  @override
+  String get careContextAwayPetsStepTitle => 'Which pets?';
+
+  @override
+  String get careContextAwayPetsStepBody =>
+      'Select the pets this absence applies to.';
+
+  @override
+  String get careContextAwayPetsRequired => 'Select at least one pet.';
+
+  @override
+  String get careContextAwayPreviewStepTitle => 'Care during your absence';
+
+  @override
+  String get careContextAwayPreviewIntro =>
+      'Here\'s care for each pet during those dates.';
+
+  @override
+  String careContextAwayPreviewDateRange(String startDate, String endDate) {
+    return '$startDate to $endDate';
+  }
+
+  @override
+  String get careContextAwayPreviewLoading => 'Loading care preview…';
+
+  @override
+  String get careContextAwayPreviewError =>
+      'Could not load care preview. Try again.';
+
+  @override
+  String get careContextAwaySaveAction => 'Save absence';
+
+  @override
+  String get careContextAwaySaveSuccess => 'Absence saved.';
+
+  @override
+  String get careContextAwaySaveFailed => 'Could not save absence. Try again.';
+
+  @override
+  String get careContextAwaySkipSave => 'Done without saving';
+
+  @override
+  String careContextAwayOverlapWarning(
+    String petName,
+    String startDate,
+    String endDate,
+  ) {
+    return '$petName already has an absence from $startDate to $endDate.';
+  }
+
+  @override
+  String get careContextCoverageNothingScheduled =>
+      'Nothing scheduled in this period.';
+
+  @override
+  String get careContextCoverageAllCompleted =>
+      'Scheduled care in this period is already completed.';
+
+  @override
+  String get careContextCoverageNoUnresolved =>
+      'Nothing left to review in this period.';
+
+  @override
+  String careContextCoverageHasItemsToReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items to review',
+      one: '1 item to review',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careContextCoverageIndeterminate =>
+      'Some dates in this period are not yet known.';
+
+  @override
+  String get careContextCoverageIndeterminateQualifier =>
+      'Shown items are confirmed; later dates may still change.';
+
+  @override
+  String careContextPreviewItemPending(String date) {
+    return 'Due $date';
+  }
+
+  @override
+  String careContextPreviewItemCompleted(String date) {
+    return 'Completed $date';
+  }
+
+  @override
+  String careContextPreviewItemSkipped(String date) {
+    return 'Skipped $date';
+  }
+
+  @override
+  String get careContextAwayContinue => 'Continue';
+
+  @override
+  String get careContextAwayBack => 'Back';
 }

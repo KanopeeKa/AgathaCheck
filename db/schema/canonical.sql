@@ -621,6 +621,23 @@ CREATE TABLE public.pets (
     CONSTRAINT pets_weight_management_context_check CHECK (((weight_management_context)::text = ANY ((ARRAY['none'::character varying, 'vet_managed'::character varying, 'care_plan'::character varying, 'treatment_related'::character varying])::text[]))),
     CONSTRAINT pets_weight_reference_authority_check CHECK (((weight_reference_authority IS NULL) OR ((weight_reference_authority)::text = ANY ((ARRAY['vet_target'::character varying, 'guardian_reference'::character varying, 'historical_baseline'::character varying])::text[]))))
 );
+CREATE TABLE public.planned_absence_pets (
+    planned_absence_id uuid NOT NULL,
+    pet_id uuid NOT NULL
+);
+CREATE TABLE public.planned_absences (
+    id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    starts_on date NOT NULL,
+    ends_on date NOT NULL,
+    provenance character varying(50) DEFAULT 'user_declared'::character varying NOT NULL,
+    source_ref text,
+    status character varying(20) DEFAULT 'active'::character varying NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    cancelled_at timestamp with time zone,
+    CONSTRAINT planned_absences_date_order CHECK ((ends_on >= starts_on))
+);
 CREATE TABLE public.prospects (
     id uuid NOT NULL,
     organization_id uuid NOT NULL,
@@ -826,6 +843,10 @@ ALTER TABLE ONLY public.pet_timeline_entries
     ADD CONSTRAINT pet_timeline_entries_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.planned_absence_pets
+    ADD CONSTRAINT planned_absence_pets_pkey PRIMARY KEY (planned_absence_id, pet_id);
+ALTER TABLE ONLY public.planned_absences
+    ADD CONSTRAINT planned_absences_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.prospects
     ADD CONSTRAINT prospects_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.refresh_sessions
@@ -911,6 +932,8 @@ CREATE INDEX idx_pet_share_links_code ON public.pet_share_links USING btree (cod
 CREATE INDEX idx_pet_share_links_expires_at ON public.pet_share_links USING btree (expires_at) WHERE ((status)::text = 'pending'::text);
 CREATE INDEX idx_pet_share_links_pet_id ON public.pet_share_links USING btree (pet_id);
 CREATE INDEX idx_pet_timeline_entries_pet_id ON public.pet_timeline_entries USING btree (pet_id, start_date);
+CREATE INDEX idx_planned_absence_pets_pet ON public.planned_absence_pets USING btree (pet_id);
+CREATE INDEX idx_planned_absences_user_starts ON public.planned_absences USING btree (user_id, starts_on);
 CREATE INDEX idx_prospects_email_lower ON public.prospects USING btree (lower((email)::text)) WHERE (email IS NOT NULL);
 CREATE INDEX idx_prospects_org_id ON public.prospects USING btree (organization_id);
 CREATE INDEX idx_refresh_sessions_family_id ON public.refresh_sessions USING btree (family_id);
@@ -1136,6 +1159,12 @@ ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_vet_id_fkey FOREIGN KEY (vet_id) REFERENCES public.vets(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.planned_absence_pets
+    ADD CONSTRAINT planned_absence_pets_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.planned_absence_pets
+    ADD CONSTRAINT planned_absence_pets_planned_absence_id_fkey FOREIGN KEY (planned_absence_id) REFERENCES public.planned_absences(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.planned_absences
+    ADD CONSTRAINT planned_absences_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.prospects
     ADD CONSTRAINT prospects_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.prospects

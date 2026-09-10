@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-through-change-v1",
+  "approved_at": "2026-09-09T23:05:00Z",
+  "approved_by": "user chat 2026-09-09 — frozen Care Through Change V1 scope + execute-plan with hold on PR 1107 (merged) and PR 1108 for CC-4/final merge",
+  "approved_until": "2026-09-11T23:05:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/care-through-change-v1-integration-6605",
+  "control_issue": 1110,
+  "artifact_branch_policy": "phase-branch",
+  "content_hash": "sha256:fdb0c737093cfacfe1bb7c2dddebf99ba7022bc7667ef4ed6c41cfa80b23ed2d",
+  "phases": [
+    {
+      "id": "cc1",
+      "title": "CC-1 — Planned absence fact + canonical docs",
+      "branch": "cursor/care-through-change-cc1-6605",
+      "allowed_paths": [
+        ".agents/plans/care-through-change-v1.*",
+        "db/migrations/060_*",
+        "docs/domains/pet_care/**",
+        "docs/architecture/api-reference.md",
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_care/context/**",
+        "server/bin/server.js",
+        "server/routes/careContext/**",
+        "server/routes/index.js",
+        "server/lib/care/**",
+        "server/test/careContext/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/lib/occurrenceScheduling.js",
+        "server/lib/recurrenceHelper.js"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1111",
+      "pr_head_sha": "c3c0a4b398216d380052bf9e5063bf431220f55c"
+    },
+    {
+      "id": "cc2",
+      "title": "CC-2 — Server-authoritative care-period projection",
+      "branch": "cursor/care-through-change-cc2-6605",
+      "allowed_paths": [
+        ".agents/plans/care-through-change-v1.*",
+        "docs/domains/pet_care/**",
+        "docs/architecture/api-reference.md",
+        "server/lib/care/**",
+        "server/lib/occurrenceScheduling.js",
+        "server/lib/recurrenceHelper.js",
+        "server/lib/occurrenceLifecycle.js",
+        "server/routes/careContext/**",
+        "server/routes/pets/**",
+        "server/routes/index.js",
+        "server/test/careContext/**",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1112",
+      "pr_head_sha": "c0b1e37a"
+    },
+    {
+      "id": "cc3",
+      "title": "CC-3 — Coverage / reassurance policy",
+      "branch": "cursor/care-through-change-cc3-6605",
+      "allowed_paths": [
+        ".agents/plans/care-through-change-v1.*",
+        "docs/domains/pet_care/**",
+        "server/lib/care/**",
+        "server/routes/careContext/**",
+        "server/test/careContext/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1113",
+      "pr_head_sha": "4a5e3040"
+    },
+    {
+      "id": "cc4",
+      "title": "CC-4 — Flutter preview + optional save (per-pet presentation)",
+      "branch": "cursor/care-through-change-cc4-6605",
+      "allowed_paths": [
+        ".agents/plans/care-through-change-v1.*",
+        "docs/domains/pet_care/**",
+        "docs/design/copy-tone.md",
+        "docs/design/true-north.md",
+        "docs/design/terminology.md",
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_care/context/**",
+        "flutter_app/test/features/experience/**",
+        "server/routes/careContext/**",
+        "server/test/careContext/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1114",
+      "pr_head_sha": "1f5ac661"
+    }
+  ]
+}
