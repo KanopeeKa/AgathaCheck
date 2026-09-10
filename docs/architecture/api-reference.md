@@ -181,6 +181,12 @@ Weight monitoring rhythms cannot use generic occurrence complete or mark-taken w
 |---|---|---|
 | GET | `/care-period-projection?starts_on&ends_on` | Server-authoritative care scheduled in an inclusive calendar window (`HEALTH_VIEW` via `userCanManagePet`); max 12-month horizon; returns `projection_status` (`complete` \| `partially_indeterminate`), `uncertainties[]`, and per-item `source` (`materialised` \| `projected`). Materialised `health_occurrences` win over simulated slots; `from_completion` rhythms do not guess dates beyond an unresolved hop. |
 
+### Care-period coverage (`/api/pets/:petId/care-period-coverage`) — CC-3
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/care-period-coverage?starts_on&ends_on` | Projection payload plus `coverage` block (`policy_version`, `coverage_state`, `reason_codes`, `reassurance_available`). States: `nothing_scheduled` (complete + zero items only), `all_completed`, `no_unresolved_items`, `has_items_to_review`, `indeterminate` (when projection is partially indeterminate — no global reassurance). |
+
 ### Planned absences (`/api/planned-absences`) — CC-1
 
 Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `POST /`, `GET /:id`, `PATCH /:id`, `POST /:id/cancel`. `POST` returns non-blocking `overlap_warnings` when active absences overlap for the same pet.
