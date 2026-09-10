@@ -9,7 +9,7 @@
   "base_branch": "cursor/care-through-change-v1-integration-6605",
   "control_issue": 1110,
   "artifact_branch_policy": "phase-branch",
-  "content_hash": "sha256:f44a13db1be940083b0e1a4adc42c88e944a4d442175082c996a0200b547f117",
+  "content_hash": "sha256:56436a5becdde176522e99601a33c7a9967268a60835d202d3daddfaa1cfdc10",
   "phases": [
     {
       "id": "cc1",
@@ -114,7 +114,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1113",
+      "pr_head_sha": "4a5e3040"
     },
     {
       "id": "cc4",

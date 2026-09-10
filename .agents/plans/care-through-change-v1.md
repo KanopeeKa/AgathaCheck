@@ -69,12 +69,12 @@ last_completed_phase: cc2
 halt_reason: null
 next_action: "continue phase cc3 on branch cursor/care-through-change-cc3-6605"
 artifact_ref:
-  branch: cursor/care-through-change-cc2-6605
+  branch: cursor/care-through-change-cc3-6605
   plan_path: .agents/plans/care-through-change-v1.md
-  plan_commit: 2d8066e48d9e785d717b184cd439a63e42889eb7
+  plan_commit: 4a5e3040cea7263023a218e0715e3d8a8b73ad28
   snapshot_path: .agents/plans/care-through-change-v1.snapshot.json
-  snapshot_commit: 2d8066e48d9e785d717b184cd439a63e42889eb7
-open_prs: []
+  snapshot_commit: 4a5e3040cea7263023a218e0715e3d8a8b73ad28
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1113"]
 merge_commits: {}
 debt_issue_refs: []
 ```
