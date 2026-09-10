@@ -40,6 +40,9 @@ class PetCarePrimaryDestinations {
     if (path == '/pc/onboarding' || path.startsWith('/pc/onboarding/')) {
       return false;
     }
+    if (path == '/pc/away' || path.startsWith('/pc/away/')) {
+      return true;
+    }
     return path.startsWith('/pc/') ||
         path.startsWith('/pet/') ||
         path == '/add' ||
