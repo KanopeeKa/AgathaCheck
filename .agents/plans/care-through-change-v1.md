@@ -64,17 +64,17 @@ See snapshot for branch names, `allowed_paths`, and exit criteria.
 
 ```yaml
 autonomy: active
-current_phase: cc2
-last_completed_phase: cc1
+current_phase: cc3
+last_completed_phase: cc2
 halt_reason: null
-next_action: "continue phase cc2 on branch cursor/care-through-change-cc2-6605"
+next_action: "start phase cc3: checkout cursor/care-through-change-cc3-6605"
 artifact_ref:
   branch: cursor/care-through-change-cc2-6605
   plan_path: .agents/plans/care-through-change-v1.md
-  plan_commit: 0d05ea5dda8eb03f2dd49302f19ab1e451c4c064
+  plan_commit: c0b1e37ad0ca63d34a20c82adc0f4399c42c218b
   snapshot_path: .agents/plans/care-through-change-v1.snapshot.json
-  snapshot_commit: 0d05ea5dda8eb03f2dd49302f19ab1e451c4c064
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1112"]
+  snapshot_commit: c0b1e37ad0ca63d34a20c82adc0f4399c42c218b
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
