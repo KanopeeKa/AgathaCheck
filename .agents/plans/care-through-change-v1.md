@@ -71,10 +71,10 @@ next_action: "continue phase cc2 on branch cursor/care-through-change-cc2-6605"
 artifact_ref:
   branch: cursor/care-through-change-cc2-6605
   plan_path: .agents/plans/care-through-change-v1.md
-  plan_commit: ecbc6a8b0f2d5aa010e2cde9e878686de563cea5
+  plan_commit: 0d05ea5dda8eb03f2dd49302f19ab1e451c4c064
   snapshot_path: .agents/plans/care-through-change-v1.snapshot.json
-  snapshot_commit: ecbc6a8b0f2d5aa010e2cde9e878686de563cea5
-open_prs: []
+  snapshot_commit: 0d05ea5dda8eb03f2dd49302f19ab1e451c4c064
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1112"]
 merge_commits: {}
 debt_issue_refs: []
 ```
