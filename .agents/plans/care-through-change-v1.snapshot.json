@@ -9,7 +9,7 @@
   "base_branch": "cursor/care-through-change-v1-integration-6605",
   "control_issue": 1110,
   "artifact_branch_policy": "phase-branch",
-  "content_hash": "sha256:2ab1541423c115142f7baa6f41f1440550d8f656ebdb32fee64e3a493c3ae7de",
+  "content_hash": "sha256:fce531e4d18fab0a51486ab4fff651c1d9277d6909667c9673ab1294dad26285",
   "phases": [
     {
       "id": "cc1",
@@ -81,13 +81,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "debt_issue_refs": []
     },
     {
       "id": "cc3",
