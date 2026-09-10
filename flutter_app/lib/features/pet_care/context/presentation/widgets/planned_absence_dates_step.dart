@@ -31,7 +31,10 @@ class PlannedAbsenceDatesStep extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(l.careContextAwayDatesStepTitle, style: theme.textTheme.titleLarge),
+        Text(
+          l.careContextAwayDatesStepTitle,
+          style: theme.textTheme.titleLarge,
+        ),
         const SizedBox(height: 8),
         Text(
           l.careContextAwayDatesStepBody,

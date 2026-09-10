@@ -4,14 +4,19 @@ class CarePeriodCoverageModel {
   static CarePeriodCoverageResult fromJson(Map<String, dynamic> json) {
     final coverageJson = json['coverage'] as Map<String, dynamic>? ?? {};
     final coverageState =
-        CarePeriodCoverageState.fromWire(coverageJson['coverage_state'] as String?) ??
+        CarePeriodCoverageState.fromWire(
+          coverageJson['coverage_state'] as String?,
+        ) ??
         CarePeriodCoverageState.indeterminate;
     final projectionStatus =
-        CarePeriodProjectionStatus.fromWire(json['projection_status'] as String?) ??
+        CarePeriodProjectionStatus.fromWire(
+          json['projection_status'] as String?,
+        ) ??
         CarePeriodProjectionStatus.partiallyIndeterminate;
 
     final itemsJson = json['items'] as List<dynamic>? ?? const [];
-    final uncertaintiesJson = json['uncertainties'] as List<dynamic>? ?? const [];
+    final uncertaintiesJson =
+        json['uncertainties'] as List<dynamic>? ?? const [];
 
     return CarePeriodCoverageResult(
       startsOn: json['starts_on'] as String? ?? '',
@@ -20,8 +25,8 @@ class CarePeriodCoverageModel {
       uncertainties: uncertaintiesJson
           .map(
             (raw) => CarePeriodUncertainty(
-              healthEntryId: (raw as Map<String, dynamic>)['health_entry_id']
-                  as String? ??
+              healthEntryId:
+                  (raw as Map<String, dynamic>)['health_entry_id'] as String? ??
                   '',
               reason: raw['reason'] as String? ?? '',
             ),
@@ -30,8 +35,8 @@ class CarePeriodCoverageModel {
       items: itemsJson
           .map(
             (raw) => CarePeriodProjectionItem(
-              healthEntryId: (raw as Map<String, dynamic>)['health_entry_id']
-                  as String? ??
+              healthEntryId:
+                  (raw as Map<String, dynamic>)['health_entry_id'] as String? ??
                   '',
               occurrenceId: raw['occurrence_id'] as String?,
               scheduledDate: raw['scheduled_date'] as String? ?? '',
@@ -47,9 +52,10 @@ class CarePeriodCoverageModel {
       coverage: CarePeriodCoverageSummary(
         policyVersion: coverageJson['policy_version'] as String? ?? '1',
         coverageState: coverageState,
-        reasonCodes: (coverageJson['reason_codes'] as List<dynamic>? ?? const [])
-            .map((code) => code.toString())
-            .toList(growable: false),
+        reasonCodes:
+            (coverageJson['reason_codes'] as List<dynamic>? ?? const [])
+                .map((code) => code.toString())
+                .toList(growable: false),
         reassuranceAvailable: coverageJson['reassurance_available'] == true,
       ),
     );

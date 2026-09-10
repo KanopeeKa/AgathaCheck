@@ -148,15 +148,15 @@ class _PlannedAbsenceFlowScreenState
       ref.invalidate(plannedAbsencesListProvider);
       if (!mounted) return;
       _showOverlapWarnings(result.overlapWarnings, allPets);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careContextAwaySaveSuccess)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careContextAwaySaveSuccess)));
       context.pop();
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careContextAwaySaveFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careContextAwaySaveFailed)));
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -168,9 +168,7 @@ class _PlannedAbsenceFlowScreenState
   ) {
     if (warnings.isEmpty) return;
     final l = AppLocalizations.of(context)!;
-    final namesById = {
-      for (final pet in allPets) pet.id: pet.name,
-    };
+    final namesById = {for (final pet in allPets) pet.id: pet.name};
     for (final warning in warnings) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -194,9 +192,7 @@ class _PlannedAbsenceFlowScreenState
     final selectablePets = _selectablePets(allPets);
     final startsOn = _startsOnWire();
     final endsOn = _endsOnWire();
-    final petNamesById = {
-      for (final pet in selectablePets) pet.id: pet.name,
-    };
+    final petNamesById = {for (final pet in selectablePets) pet.id: pet.name};
 
     return ExperienceShellScaffold(
       experience: AppExperience.petCare,
@@ -219,7 +215,9 @@ class _PlannedAbsenceFlowScreenState
                   child: PlannedAbsenceDatesStep(
                     startsOn: _startsOn,
                     endsOn: _endsOn,
-                    validationMessage: _step == 0 ? _stepValidationMessage : null,
+                    validationMessage: _step == 0
+                        ? _stepValidationMessage
+                        : null,
                     onStartsOnChanged: (date) => setState(() {
                       _startsOn = date;
                       if (_endsOn != null &&
@@ -228,8 +226,7 @@ class _PlannedAbsenceFlowScreenState
                         _endsOn = date;
                       }
                     }),
-                    onEndsOnChanged: (date) =>
-                        setState(() => _endsOn = date),
+                    onEndsOnChanged: (date) => setState(() => _endsOn = date),
                   ),
                 ),
                 SingleChildScrollView(
@@ -237,7 +234,9 @@ class _PlannedAbsenceFlowScreenState
                   child: PlannedAbsencePetsStep(
                     pets: selectablePets,
                     selectedPetIds: _selectedPetIds,
-                    validationMessage: _step == 1 ? _stepValidationMessage : null,
+                    validationMessage: _step == 1
+                        ? _stepValidationMessage
+                        : null,
                     onSelectionChanged: (next) =>
                         setState(() => _selectedPetIds = next),
                   ),
@@ -267,17 +266,13 @@ class _PlannedAbsenceFlowScreenState
                   TextButton(
                     key: const Key('planned_absence_back'),
                     onPressed: _isSaving ? null : _previousStep,
-                    child: Text(
-                      _step == 0 ? l.cancel : l.careContextAwayBack,
-                    ),
+                    child: Text(_step == 0 ? l.cancel : l.careContextAwayBack),
                   ),
                   const Spacer(),
                   if (_step < _stepCount - 1)
                     FilledButton(
                       key: const Key('planned_absence_continue'),
-                      onPressed: _isSaving
-                          ? null
-                          : () => _nextStep(allPets),
+                      onPressed: _isSaving ? null : () => _nextStep(allPets),
                       child: Text(l.careContextAwayContinue),
                     )
                   else ...[

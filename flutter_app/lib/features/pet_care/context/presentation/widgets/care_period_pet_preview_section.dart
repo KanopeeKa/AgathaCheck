@@ -14,13 +14,11 @@ class CarePeriodPetPreviewSection extends StatelessWidget {
        _errorMessage = null,
        _onRetry = null;
 
-  const CarePeriodPetPreviewSection.loading({
-    super.key,
-    required this.petName,
-  }) : result = null,
-       _loading = true,
-       _errorMessage = null,
-       _onRetry = null;
+  const CarePeriodPetPreviewSection.loading({super.key, required this.petName})
+    : result = null,
+      _loading = true,
+      _errorMessage = null,
+      _onRetry = null;
 
   const CarePeriodPetPreviewSection.error({
     super.key,
@@ -79,10 +77,7 @@ class CarePeriodPetPreviewSection extends StatelessWidget {
                       Text(message),
                       if (_onRetry != null) ...[
                         const SizedBox(height: 8),
-                        TextButton(
-                          onPressed: _onRetry,
-                          child: Text(l.retry),
-                        ),
+                        TextButton(onPressed: _onRetry, child: Text(l.retry)),
                       ],
                     ],
                   );
@@ -105,9 +100,7 @@ class CarePeriodPetPreviewSection extends StatelessWidget {
               ],
               if (result!.items.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                ...result!.items.map(
-                  (item) => _PreviewItemRow(item: item),
-                ),
+                ...result!.items.map((item) => _PreviewItemRow(item: item)),
               ],
             ],
           ],

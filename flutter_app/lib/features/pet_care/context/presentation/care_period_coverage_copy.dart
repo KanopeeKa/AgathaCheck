@@ -5,15 +5,11 @@ import '../domain/entities/care_period_coverage.dart';
 class CarePeriodCoverageCopy {
   const CarePeriodCoverageCopy._();
 
-  static String summary(
-    AppLocalizations l,
-    CarePeriodCoverageResult result,
-  ) {
+  static String summary(AppLocalizations l, CarePeriodCoverageResult result) {
     return switch (result.coverage.coverageState) {
       CarePeriodCoverageState.nothingScheduled =>
         l.careContextCoverageNothingScheduled,
-      CarePeriodCoverageState.allCompleted =>
-        l.careContextCoverageAllCompleted,
+      CarePeriodCoverageState.allCompleted => l.careContextCoverageAllCompleted,
       CarePeriodCoverageState.noUnresolvedItems =>
         l.careContextCoverageNoUnresolved,
       CarePeriodCoverageState.hasItemsToReview =>

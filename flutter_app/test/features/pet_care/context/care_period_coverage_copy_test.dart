@@ -86,24 +86,27 @@ void main() {
       expect(text, l.careContextCoverageHasItemsToReview(1));
     });
 
-    test('indeterminateQualifier only when projection partially indeterminate', () {
-      expect(
-        CarePeriodCoverageCopy.indeterminateQualifier(
-          l,
-          _result(
-            state: CarePeriodCoverageState.indeterminate,
-            partiallyIndeterminate: true,
+    test(
+      'indeterminateQualifier only when projection partially indeterminate',
+      () {
+        expect(
+          CarePeriodCoverageCopy.indeterminateQualifier(
+            l,
+            _result(
+              state: CarePeriodCoverageState.indeterminate,
+              partiallyIndeterminate: true,
+            ),
           ),
-        ),
-        l.careContextCoverageIndeterminateQualifier,
-      );
-      expect(
-        CarePeriodCoverageCopy.indeterminateQualifier(
-          l,
-          _result(state: CarePeriodCoverageState.nothingScheduled),
-        ),
-        isNull,
-      );
-    });
+          l.careContextCoverageIndeterminateQualifier,
+        );
+        expect(
+          CarePeriodCoverageCopy.indeterminateQualifier(
+            l,
+            _result(state: CarePeriodCoverageState.nothingScheduled),
+          ),
+          isNull,
+        );
+      },
+    );
   });
 }

@@ -52,12 +52,10 @@ class PlannedAbsencePreviewStep extends ConsumerWidget {
         ),
         const SizedBox(height: 20),
         ...orderedPetIds.map((petId) {
-          final previewKey = (
-            petId: petId,
-            startsOn: startsOn,
-            endsOn: endsOn,
+          final previewKey = (petId: petId, startsOn: startsOn, endsOn: endsOn);
+          final coverageAsync = ref.watch(
+            carePeriodCoverageProvider(previewKey),
           );
-          final coverageAsync = ref.watch(carePeriodCoverageProvider(previewKey));
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: coverageAsync.when(

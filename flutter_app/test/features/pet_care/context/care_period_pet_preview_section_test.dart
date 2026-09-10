@@ -62,7 +62,10 @@ void main() {
 
     expect(find.text('Agatha'), findsOneWidget);
     expect(find.text(l.careContextCoverageIndeterminate), findsOneWidget);
-    expect(find.text(l.careContextCoverageIndeterminateQualifier), findsOneWidget);
+    expect(
+      find.text(l.careContextCoverageIndeterminateQualifier),
+      findsOneWidget,
+    );
     expect(find.text('Daily tablet'), findsOneWidget);
     expect(find.textContaining('All clear'), findsNothing);
     expect(find.textContaining('All covered'), findsNothing);
@@ -77,7 +80,9 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: CarePeriodPetPreviewSection(
           petName: 'Milo',
-          result: _sampleResult(state: CarePeriodCoverageState.nothingScheduled),
+          result: _sampleResult(
+            state: CarePeriodCoverageState.nothingScheduled,
+          ),
         ),
       ),
     );

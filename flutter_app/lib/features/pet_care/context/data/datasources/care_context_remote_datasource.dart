@@ -75,9 +75,7 @@ class CareContextRemoteDataSource {
     _check(response);
     final list = json.decode(response.body) as List<dynamic>;
     return list
-        .map(
-          (raw) => PlannedAbsenceModel.fromJson(raw as Map<String, dynamic>),
-        )
+        .map((raw) => PlannedAbsenceModel.fromJson(raw as Map<String, dynamic>))
         .toList(growable: false);
   }
 }
