@@ -11,6 +11,7 @@ import '../../features/experience/presentation/screens/experience_resolve_screen
 import '../../features/experience/presentation/screens/experience_settings_screen.dart';
 import '../../features/experience/presentation/screens/pet_care_onboarding_screen.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
+import '../../features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_all_pets_screen.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_bulk_share_select_screen.dart';
 import '../../features/experience/presentation/screens/pet_care/add_event_type_picker_sheet.dart';
@@ -83,6 +84,11 @@ List<RouteBase> buildExperienceRoutes() {
           path: '/pc/events',
           name: 'petCareEvents',
           builder: (context, state) => const _PetCareEventsScreen(),
+        ),
+        GoRoute(
+          path: '/pc/away',
+          name: 'petCarePlannedAbsence',
+          builder: (context, state) => const PlannedAbsenceFlowScreen(),
         ),
         GoRoute(
           path: '/pc/fostering',
