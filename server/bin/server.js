@@ -14,6 +14,7 @@ import healthIssuesRoutes from '../routes/healthIssues.js';
 import organizationsRoutes from '../routes/organizations.js';
 import vetsRoutes from '../routes/vets.js';
 import sharingRoutes from '../routes/sharing.js';
+import careContextRoutes from '../routes/careContext/index.js';
 import fosterPlacementsRoutes from '../routes/fosterPlacements.js';
 import custodyTransfersRoutes from '../routes/custodyTransfers.js';
 import uploadsRoutes from '../routes/uploads.js';
@@ -111,6 +112,7 @@ export function createApp(customPool, comparePassword) {
     app.use('/api/custody-transfers', custodyTransfersRoutes(pool));
   }
   app.use('/api/notifications', notificationsRoutes(pool));
+  app.use('/api/planned-absences', careContextRoutes(pool));
   app.use('/api/weight-entries', weightEntriesRoutes(pool));
   app.use('/api/health-entries', healthEntriesRoutes(pool));
   app.use('/api/health-issues', healthIssuesRoutes(pool));
@@ -132,6 +134,7 @@ export function createApp(customPool, comparePassword) {
     app.use('/backend/api/custody-transfers', custodyTransfersRoutes(pool));
   }
   app.use('/backend/api/notifications', notificationsRoutes(pool));
+  app.use('/backend/api/planned-absences', careContextRoutes(pool));
   app.use('/backend/api/weight-entries', weightEntriesRoutes(pool));
   app.use('/backend/api/health-entries', healthEntriesRoutes(pool));
   app.use('/backend/api/health-issues', healthIssuesRoutes(pool));
