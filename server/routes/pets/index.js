@@ -13,10 +13,12 @@ import {
   registerCareSafeguardRoutes,
 } from '../careIntelligence/index.js';
 import { registerCareProgressionRoutes } from '../index.js';
+import { registerCareContextPetRoutes } from '../careContext/index.js';
 
 export default function petsRoutes(pool) {
   const router = express.Router();
   router.use(createApiLimiter());
+  registerCareContextPetRoutes(router, pool);
   registerTransferRoutes(router, pool);
   registerFamilyEventsRoutes(router, pool);
   registerTimelineRoutes(router, pool);
