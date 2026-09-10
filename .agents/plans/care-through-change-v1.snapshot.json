@@ -4,12 +4,12 @@
   "approved_at": "2026-09-09T23:05:00Z",
   "approved_by": "user chat 2026-09-09 — frozen Care Through Change V1 scope + execute-plan with hold on PR 1107 (merged) and PR 1108 for CC-4/final merge",
   "approved_until": "2026-09-11T23:05:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-through-change-v1-integration-6605",
   "control_issue": 1110,
   "artifact_branch_policy": "phase-branch",
-  "content_hash": "sha256:fdb0c737093cfacfe1bb7c2dddebf99ba7022bc7667ef4ed6c41cfa80b23ed2d",
+  "content_hash": "sha256:df74ffa61a11c818e0865aebc860de1959907e378ecb99d6fdfb456273a1cf10",
   "phases": [
     {
       "id": "cc1",
@@ -111,12 +111,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1113",
-      "pr_head_sha": "4a5e3040"
+      "pr_head_sha": "a4190c74"
     },
     {
       "id": "cc4",
@@ -148,12 +148,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1114",
-      "pr_head_sha": "1f5ac661"
+      "pr_head_sha": "9c8899ea"
     }
   ]
 }
