@@ -65,7 +65,8 @@
     "056_care_safeguards.sql",
     "057_weight_occurrence_link.sql",
     "058_care_establishments.sql",
-    "059_care_milestones.sql"
+    "059_care_milestones.sql",
+    "060_planned_absences.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

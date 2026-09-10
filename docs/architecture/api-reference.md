@@ -175,6 +175,16 @@ Server-authoritative Agatha suggestions (weight, dental, wellness rhythm familie
 
 Weight monitoring rhythms cannot use generic occurrence complete or mark-taken while pending — use `complete-weight`.
 
+### Care-period projection (`/api/pets/:petId/care-period-projection`) — CC-2
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/care-period-projection?starts_on&ends_on` | Server-authoritative care scheduled in an inclusive calendar window (`HEALTH_VIEW` via `userCanManagePet`); max 12-month horizon; returns `projection_status` (`complete` \| `partially_indeterminate`), `uncertainties[]`, and per-item `source` (`materialised` \| `projected`). Materialised `health_occurrences` win over simulated slots; `from_completion` rhythms do not guess dates beyond an unresolved hop. |
+
+### Planned absences (`/api/planned-absences`) — CC-1
+
+Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `POST /`, `GET /:id`, `PATCH /:id`, `POST /:id/cancel`. `POST` returns non-blocking `overlap_warnings` when active absences overlap for the same pet.
+
 ### Review relevance (Phase D — internal only)
 
 | Method | Path | Notes |
