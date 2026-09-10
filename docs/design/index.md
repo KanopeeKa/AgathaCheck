@@ -3,7 +3,7 @@ title: Design guidance (agent map)
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-23
+last_updated: 2026-09-09
 tags: [design,ui,ux]
 ---
 # Design guidance (agent map)
@@ -16,7 +16,7 @@ Lightweight by default. Go deeper only when the task needs it.
 |------|------|----------------|
 | **0 — Everyday** | Small UI fix, one widget, routine feature work | `.cursor/rules/design.mdc` + `accessibility.mdc` |
 | **1 — UI check** | Review before merge, polish pass, “does this feel right?” | Router → `.cursor/agent-kernel/protocols/accessibility.md` §Quick pass |
-| **2 — Design deep** | New flow, auth/landing refresh, theme work, multi-screen consistency | Skill `/ui-design-deep` + `principles.md` + `system.md` |
+| **2 — Design deep** | New flow, auth/landing refresh, theme work, multi-screen consistency | Skill `/ui-design-deep` + `true-north.md` + `principles.md` + `system.md` |
 | **2 — Fostering session detail** | View Session foster + shelter lenses | [session-detail-view.md](./session-detail-view.md) + domain [spec](../domains/fostering/features/session-detail-view.md) |
 
 ## Theme project
@@ -71,6 +71,15 @@ One verifiable outcome per PR (atomic PR policy).
 | Auth / landing | `flutter_app/lib/features/auth/presentation/` |
 | A11y + E2E | `.cursor/rules/accessibility.mdc`, `e2e/playwright/support/axe.ts` |
 
-## Product north star (one line)
+## Product direction and voice
 
-Dependable care coordination — calm, trustworthy, humane, efficient for all-day use.
+| Doc | Owns |
+|-----|------|
+| [`true-north.md`](./true-north.md) | Why — values and active product direction (Pet Care centre of gravity) |
+| [`copy-tone.md`](./copy-tone.md) | How the product sounds — register, patterns, examples |
+| [`terminology.md`](./terminology.md) | Pet parent, care roles, legal terms, l10n rules |
+| [`principles.md`](./principles.md) | Visual personality, layout, motion (deep reference) |
+
+**Bridge sentence:** AgathaTrack coordinates care calmly; it should feel like a trusted companion in how it speaks — not like a taskmaster or engagement app.
+
+Shelter and Fostering are frozen — preserved guidance lives under [`frozen-domains`](../engineering/frozen-domains/).

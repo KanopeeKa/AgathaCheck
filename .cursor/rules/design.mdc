@@ -5,7 +5,21 @@ globs: flutter_app/lib/**
 
 # Design (everyday)
 
-AgathaTrack is **calm care coordination** — professional for shelters, warm for carers. Not a cute pet app; not loud generic SaaS.
+AgathaTrack is **calm care coordination** for pet parents — warm in supportive moments, direct in operational flows. Not a cute pet app; not loud generic SaaS.
+
+**True North:** `docs/design/true-north.md` · **Copy tone:** `docs/design/copy-tone.md` · **Terminology:** `docs/design/terminology.md`
+
+Shelter and Fostering are frozen domains — not inputs into active Pet Care brand or tone.
+
+## Voice summary (everyday copy)
+
+1. **Assume commitment** — do not imply forgetfulness or likely failure.
+2. **Reassure when facts support it** — say care is covered and stop; when uncertain, offer support, not false certainty.
+3. **Care over engagement** — no streaks, XP, or manufactured reasons to open the app. Silence is valid.
+4. **Plain operational labels** — “Overdue” and “Due today” are fine; avoid blame or anthropomorphic panic.
+5. **Pet parent terminology** — prefer “pet parent” in brand/supportive copy; prefer **you** in operational UI unless a role label adds clarity (`terminology.md`).
+
+AgathaTrack coordinates care calmly; it should feel like a trusted companion in how it speaks.
 
 ## Priority (when tradeoffs arise)
 
@@ -22,10 +36,10 @@ AgathaTrack is **calm care coordination** — professional for shelters, warm fo
 - **Focus:** never remove or hide focus indicators.
 - **State:** color is not the only signal — pair with text, icon, or weight for status/urgency.
 - **Copy:** operational flows = direct; warmth OK in onboarding, empty states, confirmations. No cute jokes in medical/admin tasks.
-- **Context:** one product — guardian (`/g/*`) vs org (`/o/*`) differs by route/`AppExperience`, not a second visual system. See `docs/experience-split-plan.md`.
-- **Strings:** user-facing text in ARB/l10n; localize enum `.label` when touched (`.agents/memory/localization-enum-labels.md`). Copy tone: `docs/design/copy-tone.md`.
-- **Landing/auth:** keep the pre-login path role-neutral. Do not add a guardian, shelter, foster, or organisation chooser to sign-in/create-account; resolve care context after authentication.
-- **Landing direction:** use the approved AgathaTrack Operations Desk reference when working on landing/auth: deep olive story panel, warm paper auth surface, muted gold accent, and the protective shelter arch mark. See `docs/design/tokens.md`; do not treat it as a global theme replacement until the production integration is approved.
+- **Context:** Pet Care (`/pc/*`) is the active MVP experience. Frozen Shelter/Fostering routes are not maintained — see `docs/engineering/frozen-domains/`.
+- **Strings:** user-facing text in ARB/l10n; localize enum `.label` when touched (`.agents/memory/localization-enum-labels.md`).
+- **Landing/auth:** keep the pre-login path role-neutral. Do not add an audience chooser to sign-in/create-account; resolve care context after authentication.
+- **Landing direction:** use the approved AgathaTrack Care Desk reference when working on landing/auth. See `docs/design/tokens.md`; do not treat it as a global theme replacement until production integration is approved.
 - **Brand:** use AgathaTrack in new user-facing copy. AgathaCheck is legacy wording. Prefer the canonical mark in `flutter_app/assets/branding/agathatrack-care-mark.svg` and preserve existing asset filenames where compatibility requires them.
 
 ## Deeper work
@@ -34,8 +48,8 @@ AgathaTrack is **calm care coordination** — professional for shelters, warm fo
 |-----------|-----|
 | Touching a screen or widget | This rule + `accessibility.mdc` |
 | PR polish / quick review | `.cursor/agent-kernel/protocols/accessibility.md` §Quick pass (Router) |
-| New flow, theme shift, multi-screen consistency | Skill: `/ui-design-deep` → `docs/design/principles.md` |
+| New flow, theme shift, multi-screen consistency | Skill: `/ui-design-deep` → `docs/design/true-north.md` + `principles.md` |
 | Auth / landing on web | `.agents/memory/flutter-web-password-managers.md` |
-| UI rework / theme project | `docs/design/ui-rework-plan.md` |
+| UI rework / theme project | `docs/design/plans/ui-rework-plan.md` |
 
 **Theme source:** `flutter_app/lib/core/theme/app_theme.dart`

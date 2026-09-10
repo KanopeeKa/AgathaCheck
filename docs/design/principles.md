@@ -3,12 +3,14 @@ title: Design principles (deep reference)
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-23
+last_updated: 2026-09-09
 tags: [design,ui,ux]
 ---
 # Design principles (deep reference)
 
 Read when using `/ui-design-deep` or planning a UI refactor. Everyday work does **not** need this file.
+
+Product values and direction: [`true-north.md`](./true-north.md). Voice and wording: [`copy-tone.md`](./copy-tone.md) and [`terminology.md`](./terminology.md).
 
 ## Personality
 
@@ -18,12 +20,9 @@ Calm, dependable, emotionally intelligent, low-stress. Users feel oriented and i
 
 ## Audience
 
-One design system; subtle context via `AppExperience` (`/pc/*` Pet Care, `/o/*` Shelter), copy, and selective accent — not two brands. Shelter (teal) product copy rules: `copy-tone.md`.
+**Active MVP:** Pet Care (`/pc/*`). Shelter and Fostering are frozen domains — preserved in Git, not inputs into current brand, tone, or terminology. See [`frozen-domains`](../engineering/frozen-domains/README.md).
 
-The landing/auth surface is intentionally **role-neutral**. It introduces
-AgathaTrack as a shared care-coordination desk; guardian, shelter, foster, and
-organisation context is resolved after authentication rather than through a
-pre-login chooser.
+The landing/auth surface is intentionally **role-neutral**. It introduces AgathaTrack as calm care coordination for pet parents; care context is resolved after authentication rather than through a pre-login chooser. Copy rules: [`copy-tone.md`](./copy-tone.md).
 
 ## Visual direction
 
