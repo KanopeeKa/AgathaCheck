@@ -42,7 +42,7 @@ Product goal: calm, trustworthy care coordination — warm neutrals, sage operat
 | D5 | Surfaces | `neutral-100` background; white cards per [tokens.md](../tokens.md) |
 | D6 | Typography | Material 3 defaults |
 | D7 | Dark mode | Out of scope until native apps |
-| D8 | Org branding | Logo/name/photo only (`frozen-domains/shelter-branding.md` — frozen) |
+| D8 | Org branding | Logo/name/photo only ([`shelter-branding.md`](../../engineering/frozen-domains/shelter-branding.md) — frozen) |
 | D9 | Implementation | `ThemeData` + `ExperienceColors` extension |
 | D10 | Landing/auth entry | One role-neutral sign-in/create-account path; resolve guardian, shelter, foster, and organisation context after authentication |
 | D11 | Landing visual direction | Operations Desk treatment: deep olive, warm paper, muted gold, shelter-arch mark; production integration is a separate atomic slice |

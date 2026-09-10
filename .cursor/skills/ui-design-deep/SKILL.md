@@ -35,7 +35,7 @@ Inspect existing design system before proposing changes (see §Read first below)
 
 1. `docs/design/index.md` — tier and refactor phases
 2. `docs/design/true-north.md` — product values and active direction (Pet Care centre of gravity)
-3. `docs/design/ui-rework-plan.md` — if theme rework or multi-phase UI work
+3. `docs/design/plans/ui-rework-plan.md` — if theme rework or multi-phase UI work
 4. `docs/design/principles.md` — visual personality, palette target, layout
 5. `docs/design/copy-tone.md` — voice, register, copy patterns
 6. `docs/design/terminology.md` — pet parent, care roles, legal terms, l10n
@@ -74,7 +74,7 @@ Prefer theme/shared widget changes over one-off screen styling.
 
 ### 4. Phased rollout (refactors)
 
-Follow `docs/design/ui-rework-plan.md` (or `docs/design/index.md` for ad-hoc slices). One atomic PR per phase slice unless user bundles explicitly. **Phase 0** creates `docs/design/tokens.md`.
+Follow `docs/design/plans/ui-rework-plan.md` (or `docs/design/index.md` for ad-hoc slices). One atomic PR per phase slice unless user bundles explicitly. **Phase 0** creates `docs/design/tokens.md`.
 
 ### 5. Output
 

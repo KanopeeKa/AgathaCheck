@@ -33,7 +33,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 ## Design (UI/UX)
 
 - Map: `docs/design/index.md` — tier 0 everyday rules, Router `accessibility` protocol, `/ui-design-deep`
-- **UI rework plan:** `docs/design/ui-rework-plan.md` (phases 0–7)
+- **UI rework plan:** `docs/design/plans/ui-rework-plan.md` (phases 0–7)
 - True North: `docs/design/true-north.md`
 - Copy tone: `docs/design/copy-tone.md`
 - Terminology: `docs/design/terminology.md`
