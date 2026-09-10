@@ -9,7 +9,7 @@
   "base_branch": "cursor/care-through-change-v1-integration-6605",
   "control_issue": 1110,
   "artifact_branch_policy": "phase-branch",
-  "content_hash": "sha256:c78e72561869fa3ea524373f392c4a8e29d65c7d3ecc50d7f58a54b45594c5b1",
+  "content_hash": "sha256:56436a5becdde176522e99601a33c7a9967268a60835d202d3daddfaa1cfdc10",
   "phases": [
     {
       "id": "cc1",
@@ -81,12 +81,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1112",
-      "pr_head_sha": "0d05ea5dda8eb03f2dd49302f19ab1e451c4c064"
+      "pr_head_sha": "c0b1e37a"
     },
     {
       "id": "cc3",
@@ -111,13 +111,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1113",
+      "pr_head_sha": "4a5e3040"
     },
     {
       "id": "cc4",
