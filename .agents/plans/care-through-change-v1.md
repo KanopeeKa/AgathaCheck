@@ -64,16 +64,16 @@ See snapshot for branch names, `allowed_paths`, and exit criteria.
 
 ```yaml
 autonomy: active
-current_phase: cc1
-last_completed_phase: null
+current_phase: cc2
+last_completed_phase: cc1
 halt_reason: null
-next_action: "continue phase cc1 on branch cursor/care-through-change-cc1-6605"
+next_action: "start phase cc2: checkout cursor/care-through-change-cc2-6605"
 artifact_ref:
-  branch: cursor/care-through-change-v1-integration-6605
+  branch: cursor/care-through-change-cc1-6605
   plan_path: .agents/plans/care-through-change-v1.md
-  plan_commit: b1a8e9927f99b0357ddb941cc17056ba6f226dc7
+  plan_commit: c202e31fef514f0887af86de53df82dec26c6e09
   snapshot_path: .agents/plans/care-through-change-v1.snapshot.json
-  snapshot_commit: b1a8e9927f99b0357ddb941cc17056ba6f226dc7
+  snapshot_commit: c202e31fef514f0887af86de53df82dec26c6e09
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
