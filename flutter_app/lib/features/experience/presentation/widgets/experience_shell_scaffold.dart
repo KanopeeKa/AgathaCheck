@@ -115,6 +115,9 @@ class ExperienceShellScaffold extends ConsumerWidget {
     final usesLeadingNav = usesPetCareLeadingNav || usesShelterLeadingNav;
     final hideSectionDrawer = usesLeadingNav;
     final usesShelterPrimaryChrome = usesShelterPrimaryNavigation;
+    // Compact bottom nav replaces the hamburger drawer; left-align brand + title.
+    final usesCompactShellWithoutHamburger =
+        usesPetCarePrimaryNavigation || usesShelterPrimaryChrome;
     final appBarColor = usesPetCarePrimaryNavigation
         ? AppColorTokens.petCarePrimary
         : usesShelterPrimaryChrome
@@ -148,6 +151,8 @@ class ExperienceShellScaffold extends ConsumerWidget {
         screenTitle != null &&
         !hideTitleForAccessibleCompactHeader &&
         !suppressSectionRootAppBarTitle;
+    final centerAppBarTitle =
+        !usesDesktopContentHeader && !usesCompactShellWithoutHamburger;
     final titleWidget = !showTitle
         ? const SizedBox.shrink()
         : usesDesktopContentHeader
@@ -210,7 +215,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
                 scrolledUnderElevation: 0,
                 elevation: 0,
                 leading: leadingWidget,
-                centerTitle: !usesDesktopContentHeader,
+                centerTitle: centerAppBarTitle,
                 title: titleWidget,
                 actions: trailingActions,
               ),
@@ -248,7 +253,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
                             leading: leadingWidget,
                             leadingWidth: leadingWidth ?? 56,
                             title: titleWidget,
-                            centerTitle: !usesDesktopContentHeader,
+                            centerTitle: centerAppBarTitle,
                             actions: trailingActions,
                           ),
                           Expanded(child: child),

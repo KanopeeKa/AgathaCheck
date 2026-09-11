@@ -142,54 +142,65 @@ void main() {
     prefs = await SharedPreferences.getInstance();
   });
 
-  testWidgets('section root shows centered logo title when provided', (
-    tester,
-  ) async {
-    await tester.binding.setSurfaceSize(const Size(390, 844));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+  testWidgets(
+    'compact shell without hamburger left-aligns logo title when provided',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          experienceEligibilityProvider.overrideWith(
-            (ref) => AsyncValue.data(
-              ExperienceEligibilityRules.compute(
-                pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
-                orgMembershipCount: 0,
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            experienceEligibilityProvider.overrideWith(
+              (ref) => AsyncValue.data(
+                ExperienceEligibilityRules.compute(
+                  pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
+                  orgMembershipCount: 0,
+                ),
+              ),
+            ),
+            combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
+            organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+          ],
+          child: MaterialApp(
+            theme: ThemeData(splashFactory: NoSplash.splashFactory),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: MediaQuery(
+              data: const MediaQueryData(size: Size(390, 844)),
+              child: ExperienceShellScaffold(
+                experience: AppExperience.petCare,
+                currentLocation: '/pc/home',
+                screenTitle: 'My Pets dashboard',
+                child: const SizedBox.shrink(),
               ),
             ),
           ),
-          combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
-          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
-          orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
-          authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
-        ],
-        child: MaterialApp(
-          theme: ThemeData(splashFactory: NoSplash.splashFactory),
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(390, 844)),
-            child: ExperienceShellScaffold(
-              experience: AppExperience.petCare,
-              currentLocation: '/pc/home',
-              screenTitle: 'My Pets dashboard',
-              child: const SizedBox.shrink(),
-            ),
-          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('My Pets dashboard'), findsOneWidget);
-  });
+      expect(find.text('My Pets dashboard'), findsOneWidget);
+
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.centerTitle, isFalse);
+
+      // Title should follow the leading workspace toggle, not float centered in the bar.
+      final logo = tester.getRect(find.byType(Image).first);
+      final text = tester.getRect(find.text('My Pets dashboard'));
+      expect(logo.left, greaterThan(appBar.leadingWidth! - 8));
+      expect(logo.left, lessThan(appBar.leadingWidth! + 32));
+      expect(logo.left, lessThan(text.left));
+    },
+  );
 
   testWidgets('contextual actions appear before divider and bell', (
     tester,
