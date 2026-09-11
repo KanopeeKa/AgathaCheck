@@ -5885,7 +5885,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careContextAwayDatesStepBody =>
-      'Choisissez le premier et le dernier jour de votre absence.';
+      'Sélectionnez le premier et le dernier jour de votre absence.';
+
+  @override
+  String get careContextAwayDatesRangeLabel => 'Dates d\'absence';
 
   @override
   String get careContextAwayStartsOnLabel => 'Premier jour';
@@ -5895,7 +5898,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careContextAwayDatesRequired =>
-      'Choisissez le premier et le dernier jour.';
+      'Sélectionnez vos dates d\'absence.';
 
   @override
   String get careContextAwayDatesInvalid =>

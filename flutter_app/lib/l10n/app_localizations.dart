@@ -10338,8 +10338,14 @@ abstract class AppLocalizations {
   /// No description provided for @careContextAwayDatesStepBody.
   ///
   /// In en, this message translates to:
-  /// **'Choose the first and last day of your absence.'**
+  /// **'Select the first and last day of your absence.'**
   String get careContextAwayDatesStepBody;
+
+  /// No description provided for @careContextAwayDatesRangeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Absence dates'**
+  String get careContextAwayDatesRangeLabel;
 
   /// No description provided for @careContextAwayStartsOnLabel.
   ///
@@ -10356,7 +10362,7 @@ abstract class AppLocalizations {
   /// No description provided for @careContextAwayDatesRequired.
   ///
   /// In en, this message translates to:
-  /// **'Choose both the first and last day.'**
+  /// **'Select your absence dates.'**
   String get careContextAwayDatesRequired;
 
   /// No description provided for @careContextAwayDatesInvalid.
