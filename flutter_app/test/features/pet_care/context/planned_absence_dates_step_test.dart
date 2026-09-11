@@ -9,7 +9,11 @@ void main() {
     final l = lookupAppLocalizations(const Locale('en'));
 
     expect(
-      PlannedAbsenceDatesStep.formatRangeDisplay(l, startsOn: null, endsOn: null),
+      PlannedAbsenceDatesStep.formatRangeDisplay(
+        l,
+        startsOn: null,
+        endsOn: null,
+      ),
       '—',
     );
   });
