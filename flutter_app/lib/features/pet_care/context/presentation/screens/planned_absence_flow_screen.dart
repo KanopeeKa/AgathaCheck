@@ -34,6 +34,7 @@ class _PlannedAbsenceFlowScreenState
   DateTime? _startsOn;
   DateTime? _endsOn;
   Set<String> _selectedPetIds = {};
+  bool _hasInitializedPetSelection = false;
   bool _isSaving = false;
   String? _stepValidationMessage;
 
@@ -48,6 +49,12 @@ class _PlannedAbsenceFlowScreenState
         .guardianShellPets(allPets)
         .where((pet) => !pet.passedAway)
         .toList(growable: false);
+  }
+
+  void _initializePetSelection(List<Pet> selectablePets) {
+    if (_hasInitializedPetSelection || selectablePets.isEmpty) return;
+    _hasInitializedPetSelection = true;
+    _selectedPetIds = selectablePets.map((pet) => pet.id).toSet();
   }
 
   String? _startsOnWire() => PlannedAbsenceDateRules.startsOnWire(_startsOn);
@@ -194,6 +201,13 @@ class _PlannedAbsenceFlowScreenState
     final endsOn = _endsOnWire();
     final petNamesById = {for (final pet in selectablePets) pet.id: pet.name};
 
+    if (!_hasInitializedPetSelection && selectablePets.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || _hasInitializedPetSelection) return;
+        setState(() => _initializePetSelection(selectablePets));
+      });
+    }
+
     return ExperienceShellScaffold(
       experience: AppExperience.petCare,
       currentLocation: GoRouterState.of(context).uri.path,
@@ -218,15 +232,10 @@ class _PlannedAbsenceFlowScreenState
                     validationMessage: _step == 0
                         ? _stepValidationMessage
                         : null,
-                    onStartsOnChanged: (date) => setState(() {
-                      _startsOn = date;
-                      if (_endsOn != null &&
-                          date != null &&
-                          _endsOn!.isBefore(date)) {
-                        _endsOn = date;
-                      }
+                    onRangeChanged: (start, end) => setState(() {
+                      _startsOn = start;
+                      _endsOn = end;
                     }),
-                    onEndsOnChanged: (date) => setState(() => _endsOn = date),
                   ),
                 ),
                 SingleChildScrollView(

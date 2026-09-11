@@ -10,16 +10,26 @@ class PlannedAbsenceDatesStep extends StatelessWidget {
     super.key,
     required this.startsOn,
     required this.endsOn,
-    required this.onStartsOnChanged,
-    required this.onEndsOnChanged,
+    required this.onRangeChanged,
     this.validationMessage,
   });
 
   final DateTime? startsOn;
   final DateTime? endsOn;
-  final ValueChanged<DateTime?> onStartsOnChanged;
-  final ValueChanged<DateTime?> onEndsOnChanged;
+  final void Function(DateTime start, DateTime end) onRangeChanged;
   final String? validationMessage;
+
+  static String formatRangeDisplay(
+    AppLocalizations l, {
+    required DateTime? startsOn,
+    required DateTime? endsOn,
+  }) {
+    if (startsOn == null || endsOn == null) return '—';
+    return l.petTimelineDateRange(
+      formatCalendarDateDisplay(startsOn),
+      formatCalendarDateDisplay(endsOn),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +37,11 @@ class PlannedAbsenceDatesStep extends StatelessWidget {
     final theme = Theme.of(context);
     final today = PlannedAbsenceDateRules.todayCalendar();
     final maxEnd = PlannedAbsenceDateRules.maxEndDate(today);
+    final rangeLabel = formatRangeDisplay(
+      l,
+      startsOn: startsOn,
+      endsOn: endsOn,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -43,36 +58,50 @@ class PlannedAbsenceDatesStep extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        _DateField(
-          key: const Key('planned_absence_starts_on'),
-          label: l.careContextAwayStartsOnLabel,
-          date: startsOn,
-          onPick: () async {
-            final picked = await showCalendarDatePicker(
-              context: context,
-              initialDate: startsOn ?? today,
-              firstDate: today,
-              lastDate: maxEnd,
-              helpText: l.careContextAwayStartsOnLabel,
-            );
-            if (picked != null) onStartsOnChanged(picked);
-          },
-        ),
-        const SizedBox(height: 12),
-        _DateField(
-          key: const Key('planned_absence_ends_on'),
-          label: l.careContextAwayEndsOnLabel,
-          date: endsOn,
-          onPick: () async {
-            final picked = await showCalendarDatePicker(
-              context: context,
-              initialDate: endsOn ?? startsOn ?? today,
-              firstDate: startsOn ?? today,
-              lastDate: maxEnd,
-              helpText: l.careContextAwayEndsOnLabel,
-            );
-            if (picked != null) onEndsOnChanged(picked);
-          },
+        Semantics(
+          button: true,
+          label: l.careContextAwayDatesRangeLabel,
+          value: rangeLabel,
+          child: OutlinedButton(
+            key: const Key('planned_absence_date_range'),
+            onPressed: () async {
+              final picked = await showCalendarDateRangePicker(
+                context: context,
+                rangeStart: startsOn,
+                rangeEnd: endsOn,
+                firstDate: today,
+                lastDate: maxEnd,
+                helpText: l.careContextAwayDatesRangeLabel,
+              );
+              if (picked == null) return;
+              onRangeChanged(picked.start, picked.end);
+            },
+            style: OutlinedButton.styleFrom(
+              alignment: Alignment.centerLeft,
+              minimumSize: const Size.fromHeight(56),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l.careContextAwayDatesRangeLabel,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(rangeLabel, style: theme.textTheme.titleMedium),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.date_range_outlined),
+              ],
+            ),
+          ),
         ),
         if (validationMessage != null) ...[
           const SizedBox(height: 12),
@@ -84,59 +113,6 @@ class PlannedAbsenceDatesStep extends StatelessWidget {
           ),
         ],
       ],
-    );
-  }
-}
-
-class _DateField extends StatelessWidget {
-  const _DateField({
-    super.key,
-    required this.label,
-    required this.date,
-    required this.onPick,
-  });
-
-  final String label;
-  final DateTime? date;
-  final VoidCallback onPick;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final value = date == null ? '—' : formatCalendarDateDisplay(date!);
-
-    return Semantics(
-      button: true,
-      label: label,
-      value: value,
-      child: OutlinedButton(
-        onPressed: onPick,
-        style: OutlinedButton.styleFrom(
-          alignment: Alignment.centerLeft,
-          minimumSize: const Size.fromHeight(56),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(value, style: theme.textTheme.titleMedium),
-                ],
-              ),
-            ),
-            const Icon(Icons.calendar_today_outlined),
-          ],
-        ),
-      ),
     );
   }
 }
