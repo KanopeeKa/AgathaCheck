@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/presentation/widgets/care_family_icon.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/occurrence_scheduling.dart';
 import 'care_event_row_context.dart';
@@ -93,6 +94,8 @@ class CareEventRow extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            CareFamilyIcon.forEntry(entry, size: 18),
+            const SizedBox(width: 8),
             CareEventRowPetAvatar(
               pet: pet,
               petName: entry.petName,
@@ -277,6 +280,8 @@ class _CompletedCareEventRow extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            CareFamilyIcon.forEntry(entry, size: 18),
+            const SizedBox(width: 8),
             CareEventRowPetAvatar(
               pet: pet,
               petName: entry.petName,

@@ -4,7 +4,7 @@
   "approved_at": "2026-09-13T15:57:00Z",
   "approved_by": "user-chat-grant-execute-plan-2026-09-13",
   "approved_until": "2026-09-15T15:57:00Z",
-  "content_hash": "sha256:81c9473bf81b941306d4daad79860624b4b667724fac71c32b13787adeffc2da",
+  "content_hash": "sha256:93771f36f64a2a0aec257a3bd943a967e24e99e4d206aeeea63f81098075f46e",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-family-icons-agatha-palette-eea7-integration",
@@ -32,12 +32,9 @@
       "spawn_allowed": false,
       "spawn_config": null,
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "status_detail": null
     },
     {
       "id": "2",

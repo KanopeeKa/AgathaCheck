@@ -136,3 +136,24 @@ flutter_app/test/features/experience/presentation/screens/pet_care/**
 ## Final integration PR
 
 After all phases merge to integration branch, one PR integration → `main` with `/babysit-uat`.
+
+---
+
+## Runtime state (agent-updated)
+
+```yaml
+autonomy: active
+current_phase: 1
+last_completed_phase: null
+halt_reason: null
+next_action: "continue phase 1 on branch cursor/agatha-message-palette-eea7"
+artifact_ref:
+  branch: cursor/agatha-message-palette-eea7
+  plan_path: .agents/plans/care-family-icons-agatha-palette-eea7.md
+  plan_commit: 374a1ba88d43cb6673e2f8616230d04be713a688
+  snapshot_path: .agents/plans/care-family-icons-agatha-palette-eea7.snapshot.json
+  snapshot_commit: 374a1ba88d43cb6673e2f8616230d04be713a688
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```
