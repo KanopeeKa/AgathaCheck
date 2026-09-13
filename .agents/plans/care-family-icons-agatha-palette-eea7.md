@@ -150,10 +150,10 @@ next_action: "continue phase 1 on branch cursor/agatha-message-palette-eea7"
 artifact_ref:
   branch: cursor/agatha-message-palette-eea7
   plan_path: .agents/plans/care-family-icons-agatha-palette-eea7.md
-  plan_commit: 374a1ba88d43cb6673e2f8616230d04be713a688
+  plan_commit: 5aa7ce4e9693987bd850cb6da1de1c2e115202ed
   snapshot_path: .agents/plans/care-family-icons-agatha-palette-eea7.snapshot.json
-  snapshot_commit: 374a1ba88d43cb6673e2f8616230d04be713a688
-open_prs: []
+  snapshot_commit: 5aa7ce4e9693987bd850cb6da1de1c2e115202ed
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1132"]
 merge_commits: {}
 debt_issue_refs: []
 ```

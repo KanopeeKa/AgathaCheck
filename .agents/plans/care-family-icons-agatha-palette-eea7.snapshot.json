@@ -4,7 +4,7 @@
   "approved_at": "2026-09-13T15:57:00Z",
   "approved_by": "user-chat-grant-execute-plan-2026-09-13",
   "approved_until": "2026-09-15T15:57:00Z",
-  "content_hash": "sha256:93771f36f64a2a0aec257a3bd943a967e24e99e4d206aeeea63f81098075f46e",
+  "content_hash": "sha256:739d430cf0ee1c84a8a66bb4a6cd980daeb86eeeb0de8d541f14ff8aa9da6a21",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-family-icons-agatha-palette-eea7-integration",
@@ -34,7 +34,9 @@
       "exit_checklist": "default",
       "status": "in_progress",
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1132",
+      "pr_head_sha": "5aa7ce4e9693987bd850cb6da1de1c2e115202ed"
     },
     {
       "id": "2",
