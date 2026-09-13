@@ -12,10 +12,7 @@ void main() {
     test('matches pet-scoped All care and Care Item detail routes', () {
       expect(isPetCareActionsNavPath('/pet/pet-1/events'), isTrue);
       expect(isPetCareActionsNavPath('/pet/pet-1/events/entry-1'), isTrue);
-      expect(
-        isPetCareActionsNavPath('/pet/pet-1/events/entry-1/edit'),
-        isTrue,
-      );
+      expect(isPetCareActionsNavPath('/pet/pet-1/events/entry-1/edit'), isTrue);
     });
 
     test('matches legacy care-rhythms redirect source path', () {
