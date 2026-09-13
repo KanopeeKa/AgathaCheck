@@ -19,6 +19,14 @@ if grep -qE '^source .*(assert-node-modules|uat_nm)' "$OUT"; then
   echo "::error::${OUT} still sources external lib — bundle is broken for remote SSH" >&2
   exit 1
 fi
+if grep -qE 'verify-server-deps-installed\.sh|\$\(dirname "\$0"\)' "$OUT"; then
+  echo "::error::${OUT} still references external scripts — bundle is broken for remote SSH" >&2
+  exit 1
+fi
+if ! grep -qF 'uat_nm_verify_server_deps' "$OUT"; then
+  echo "::error::${OUT} missing uat_nm_verify_server_deps — dependency gate not bundled" >&2
+  exit 1
+fi
 for sentinel in PROD_SSH_DEPLOY_BEGIN PROD_SSH_DEPLOY_END; do
   if ! grep -qF "$sentinel" "$OUT"; then
     echo "::error::${OUT} missing required sentinel: ${sentinel}" >&2
