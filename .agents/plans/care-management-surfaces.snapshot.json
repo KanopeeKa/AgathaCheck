@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-management-surfaces",
+  "programme_ref": "docs/domains/pet_care/changes/care-item-model-delivery-plan.md",
+  "approved_at": "2026-09-13T12:40:00Z",
+  "approved_by": "PLACEHOLDER — awaiting approve-autonomous care-management-surfaces",
+  "approved_until": "2026-09-15T12:40:00Z",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "All care destination",
+      "branch": "cursor/care-all-care-destination-c9c6",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_manage_events_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/all_care/**",
+        "flutter_app/test/features/pet_profile/presentation/screens/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**",
+        "flutter_app/lib/core/router/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "One flat temporally ordered list. Recurrence is a row attribute, never a separate section or tab.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Care Item detail",
+      "branch": "cursor/care-item-detail-c9c6",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/**",
+        "flutter_app/lib/core/router/app_router.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/health_tracking/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "l10n scope is limited to the new Dates heading and established copy. Do not start the broader copy migration here (that is Child F).",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Retire the Care Rhythms screen",
+      "branch": "cursor/care-retire-rhythms-screen-c9c6",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_care_rhythms_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/care_rhythms/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/test/bdd/features/**",
+        "flutter_app/test/core/router/**",
+        "e2e/**",
+        "docs/domains/pet_care/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Redirect the old route to All care so existing links do not 404. careRhythm l10n keys are retired in Child F.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:e5e020b7feb6976946293578e48c307c27d021061b3e76a82d84e8ba2676b4b9"
+}

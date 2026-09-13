@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-family-taxonomy",
+  "programme_ref": "docs/domains/pet_care/changes/care-item-model-delivery-plan.md",
+  "approved_at": "2026-09-13T12:40:00Z",
+  "approved_by": "PLACEHOLDER — awaiting approve-autonomous care-family-taxonomy",
+  "approved_until": "2026-09-15T12:40:00Z",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Remove care_family inference, tolerate missing family",
+      "branch": "cursor/care-family-remove-inference-c9c6",
+      "allowed_paths": [
+        "server/routes/healthEntries/**",
+        "server/lib/care/**",
+        "server/test/healthEntries/**",
+        "server/test/care/**",
+        "server/test/careProgression/**",
+        "server/test/careIntelligence/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "db/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Delete inferCareFamilyFromType. Do not replace it with a better guess (spec 13).",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Deterministic care_family backfill migration",
+      "branch": "cursor/care-family-backfill-c9c6",
+      "allowed_paths": [
+        "db/migrations/**",
+        "db/schema/canonical.sql",
+        "server/scripts/migrate.js",
+        "server/test/migrations/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**",
+        "server/routes/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Alters production data shape — confirm on the control issue before merge. Ambiguous shapes stay uncategorised.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:01568bf295f1a9b65f21debf44f23ebd5c08b36d53d77775acc9edf4cf1a9093"
+}

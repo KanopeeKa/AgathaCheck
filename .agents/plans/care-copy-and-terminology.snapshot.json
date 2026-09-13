@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-copy-and-terminology",
+  "programme_ref": "docs/domains/pet_care/changes/care-item-model-delivery-plan.md",
+  "approved_at": "2026-09-13T12:40:00Z",
+  "approved_by": "PLACEHOLDER — awaiting approve-autonomous care-copy-and-terminology",
+  "approved_until": "2026-09-15T12:40:00Z",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Split the care vocabulary by scope; amend terminology D38",
+      "branch": "cursor/care-naming-d38-c9c6",
+      "allowed_paths": [
+        "flutter_app/lib/l10n/**",
+        "docs/design/terminology.md",
+        "flutter_app/lib/features/pet_profile/presentation/**",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/**",
+        "flutter_app/lib/core/router/experience_routes.dart",
+        "flutter_app/lib/features/health_tracking/presentation/screens/pet_event_view_screen.dart",
+        "flutter_app/test/bdd/features/**",
+        "flutter_app/test/features/pet_profile/**",
+        "e2e/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Read spec 4.0 first: allCare is one key serving both scopes and must be split. D38 amendment is additive and must land in the SAME PR as the strings. Halt if open item O4 (FR title for pet-scoped All care) is undecided.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Occurrence semantic copy migration",
+      "branch": "cursor/care-occurrence-copy-c9c6",
+      "allowed_paths": [
+        "flutter_app/lib/l10n/**",
+        "flutter_app/lib/features/health_tracking/presentation/**",
+        "flutter_app/test/features/health_tracking/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Semantic migration, not find-and-replace. Every changed string listed in the PR body with its before/after full sentence.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Navigation highlighting fix and theme wrapper removal",
+      "branch": "cursor/care-nav-highlight-fix-c9c6",
+      "allowed_paths": [
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/global_events_list.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/**",
+        "flutter_app/test/core/router/**",
+        "flutter_app/test/features/experience/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**",
+        "flutter_app/lib/l10n/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Removing _OperationsDeskTheme is not a visual change — its aliases already resolve to the main palette. Prove no visual diff.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:326dad02ca4918a0fc47a124b050c529ff454a2ff8b6c0948faf7eae0e23fa55"
+}

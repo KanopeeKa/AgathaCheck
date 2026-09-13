@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-profile-care-surface",
+  "programme_ref": "docs/domains/pet_care/changes/care-item-model-delivery-plan.md",
+  "approved_at": "2026-09-13T12:40:00Z",
+  "approved_by": "PLACEHOLDER — awaiting approve-autonomous pet-profile-care-surface",
+  "approved_until": "2026-09-15T12:40:00Z",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Pet's care section (temporal groups)",
+      "branch": "cursor/pet-profile-buddys-care-section-c9c6",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/**",
+        "flutter_app/test/features/pet_profile/presentation/widgets/pet_care_section/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**",
+        "flutter_app/lib/features/pet_profile/presentation/screens/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Temporal groups only — never grouped by type or recurring-vs-one-off. Must consume Child B primitives.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Pet Profile recomposition (attention / action / insight / destination)",
+      "branch": "cursor/pet-profile-recomposition-c9c6",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_detail_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/**",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_detail/**",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/care_status_summary_card.dart",
+        "flutter_app/lib/features/care_intelligence/presentation/widgets/**",
+        "flutter_app/test/features/pet_profile/presentation/screens/**",
+        "flutter_app/test/bdd/features/**",
+        "e2e/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Pet's care must outrank every other region at every breakpoint. Fix BDD/Playwright selectors for retired rows in this phase, not later.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:240a0a85d4fe7511029ea8d1bd13b9429a65a0c98b4c4cf58f98a40bc2e99245"
+}

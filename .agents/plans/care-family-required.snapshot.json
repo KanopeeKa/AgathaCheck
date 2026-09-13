@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-family-required",
+  "programme_ref": "docs/domains/pet_care/changes/care-item-model-delivery-plan.md",
+  "approved_at": "2026-09-13T12:40:00Z",
+  "approved_by": "PLACEHOLDER — awaiting approve-autonomous care-family-required AND breaking-change sign-off (O2)",
+  "approved_until": "2026-09-15T12:40:00Z",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Server: care_family required on create",
+      "branch": "cursor/care-family-required-server-c9c6",
+      "allowed_paths": [
+        "server/routes/healthEntries/**",
+        "server/test/healthEntries/**",
+        "docs/domains/pet_care/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "db/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "blocked",
+      "status_reason": "governance_approval_required",
+      "status_detail": "Breaking API contract change. Requires care-family-taxonomy merged plus O2 sign-off recorded on the control issue.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Client: required on add, suggest-and-confirm on edit",
+      "branch": "cursor/care-family-required-client-c9c6",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/screens/health_entry_form_screen.dart",
+        "flutter_app/lib/features/health_tracking/presentation/screens/health_entry_form/**",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/health_tracking/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "db/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Suggest-and-confirm on edit, never a forced modal (spec 7.4, 13).",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:d555f4f62b3aacd023b1318de5bfe9019264780c4455081c61558f925af6a5a8"
+}
