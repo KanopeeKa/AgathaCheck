@@ -241,16 +241,16 @@ flutter_app/test/features/experience/**
 
 ```yaml
 autonomy: halted
-current_phase: null
-last_completed_phase: null
-halt_reason: "awaiting approval; blocked on pet-profile-care-surface and care-management-surfaces"
-next_action: "confirm Child D and Child E merged, then bootstrap control issue"
+current_phase: 2
+last_completed_phase: 1
+halt_reason: halted
+next_action: "start phase 2: checkout cursor/care-occurrence-copy-c9c6"
 artifact_ref:
-  branch: cursor/care-item-model-plans-c9c6
+  branch: main
   plan_path: .agents/plans/care-copy-and-terminology.md
-  plan_commit: null
+  plan_commit: bbb66444d31f56294645b48a58f8022adbd55df4
   snapshot_path: .agents/plans/care-copy-and-terminology.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: bbb66444d31f56294645b48a58f8022adbd55df4
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
