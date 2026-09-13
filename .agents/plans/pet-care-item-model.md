@@ -160,13 +160,13 @@ autonomy: halted
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: halted
-next_action: "bootstrap and gate child plan care-family-taxonomy"
+next_action: "bootstrap and gate child plan care-copy-and-terminology"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/pet-care-item-model.md
-  plan_commit: 3e736c1daa1275888988b2a47eb4128689b3d56b
+  plan_commit: c2c4526c104104899b7405b7fbbaf5f753f88588
   snapshot_path: .agents/plans/pet-care-item-model.snapshot.json
-  snapshot_commit: 3e736c1daa1275888988b2a47eb4128689b3d56b
+  snapshot_commit: c2c4526c104104899b7405b7fbbaf5f753f88588
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

@@ -11,7 +11,7 @@
   "base_branch": "main",
   "control_issue": 1,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "care-family-taxonomy",
+  "current_child_plan_id": "care-copy-and-terminology",
   "child_plans": [
     {
       "plan_id": "care-status-consolidation",
@@ -27,18 +27,21 @@
     },
     {
       "plan_id": "care-family-taxonomy",
-      "status": "pending",
-      "pr_url": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1124",
+      "merge_commit": "9a5ea8d100df310fbef1d472bd67c962e689b807"
     },
     {
       "plan_id": "care-family-required",
-      "status": "pending",
-      "pr_url": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1130",
+      "merge_commit": "f2b82c4fc306a8399c4fc9cfb76330bc28f63e80"
     },
     {
       "plan_id": "pet-profile-care-surface",
-      "status": "pending",
-      "pr_url": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1135",
+      "merge_commit": "c7009ba5"
     },
     {
       "plan_id": "care-management-surfaces",
@@ -91,5 +94,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:2cfd03519fd293ba5f9bddf178105450b57d1cefbeb0419154075cbb6b078e90"
+  "content_hash": "sha256:e44a1db49bdf6778e49b00b11f63f009e25c99b4d0d8a7d5bd212e77306b7331"
 }
