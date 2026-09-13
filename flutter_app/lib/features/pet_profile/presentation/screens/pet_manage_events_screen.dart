@@ -35,7 +35,7 @@ class PetManageEventsScreen extends ConsumerWidget {
         return ExperienceShellScaffold(
           experience: experience,
           currentLocation: GoRouterState.of(context).uri.path,
-          screenTitle: l.manageEvents,
+          screenTitle: l.allCareTitle(pet.name),
           backPath: petDetailBackPath(context, petId),
           contextualActions: [
             IconButton(

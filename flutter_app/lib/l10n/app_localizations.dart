@@ -746,6 +746,18 @@ abstract class AppLocalizations {
   /// **'Manage events'**
   String get manageEvents;
 
+  /// No description provided for @allCareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All care'**
+  String allCareTitle(String petName);
+
+  /// No description provided for @allCareInactiveSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Other care'**
+  String get allCareInactiveSection;
+
   /// No description provided for @eventFilterClosed.
   ///
   /// In en, this message translates to:

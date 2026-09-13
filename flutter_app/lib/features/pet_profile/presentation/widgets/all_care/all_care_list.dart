@@ -6,6 +6,7 @@ import '../../../../experience/presentation/widgets/pet_care_illustrated_empty_s
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../../health_tracking/presentation/widgets/add_health_entry_navigation.dart';
+import '../../../../health_tracking/presentation/widgets/occurrence_care_actions.dart';
 import '../../../../pet_care/domain/care_temporal_group.dart';
 import '../../../../pet_care/domain/models/care_temporal_buckets.dart';
 import '../../../../pet_care/presentation/providers/care_temporal_grouping_providers.dart';
@@ -30,13 +31,26 @@ class _AllCareListState extends ConsumerState<AllCareList> {
   final Set<String> _optimisticallyCompletedIds = {};
 
   Future<void> _onMarkDone(HealthEntry entry) async {
-    final result = await HomeEventActions.showCompletionSheet(context);
+    final result = await OccurrenceCareActions.showMarkDoneFlow(
+      context,
+      ref,
+      entry,
+    );
     if (result == null || !mounted) return;
+    if (result.alreadyPersisted) return;
 
     setState(() => _optimisticallyCompletedIds.add(entry.id));
 
     try {
-      await HomeEventActions.commitCompletion(context, ref, entry, result);
+      await OccurrenceCareActions.persistCompletion(
+        ref,
+        entry,
+        result.completedOn,
+        occurrenceId: result.occurrenceId,
+        skipEarlierMissed: result.skipEarlierMissed,
+      );
+      if (!mounted) return;
+      setState(() => _optimisticallyCompletedIds.remove(entry.id));
     } catch (_) {
       if (!mounted) return;
       setState(() => _optimisticallyCompletedIds.remove(entry.id));
@@ -125,6 +139,7 @@ class _AllCareListState extends ConsumerState<AllCareList> {
                 AllCareInactiveSection(
                   entries: inactive,
                   establishedEntryIds: establishedIds,
+                  onMarkDone: _onMarkDone,
                   onViewEntry: (entry) =>
                       HomeEventActions.viewEntry(context, entry),
                 ),

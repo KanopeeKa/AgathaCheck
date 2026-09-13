@@ -19,6 +19,8 @@ class PetCareActionRowBuilder {
     required this.trailingLabel,
     this.onMarkDone,
     this.onTap,
+    this.statusLineOverride,
+    this.statusTreatmentOverride,
   });
 
   final HealthEntry entry;
@@ -28,6 +30,8 @@ class PetCareActionRowBuilder {
   final String trailingLabel;
   final VoidCallback? onMarkDone;
   final VoidCallback? onTap;
+  final String? statusLineOverride;
+  final HealthEntryStatusTreatment? statusTreatmentOverride;
 
   String _subtitle() {
     final family = entry.careFamily ?? inferCareFamily(entry);
@@ -41,8 +45,10 @@ class PetCareActionRowBuilder {
   }
 
   CareActionRow build() {
-    final statusLine = formatHealthEntryStatusLine(entry, l10n);
-    final statusTreatment = healthEntryStatusTreatment(entry, colorScheme);
+    final statusLine =
+        statusLineOverride ?? formatHealthEntryStatusLine(entry, l10n);
+    final statusTreatment =
+        statusTreatmentOverride ?? healthEntryStatusTreatment(entry, colorScheme);
     final semanticLabel = '${entry.name}, $statusLine';
 
     return CareActionRow(

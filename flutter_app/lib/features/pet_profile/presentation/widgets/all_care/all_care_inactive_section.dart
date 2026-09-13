@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../../health_tracking/presentation/widgets/health_entry_status.dart';
 import '../../../../health_tracking/presentation/widgets/pet_event_lifecycle.dart';
 import '../pet_care_section/pet_care_action_row_builder.dart';
 
@@ -12,11 +13,13 @@ class AllCareInactiveSection extends StatelessWidget {
     required this.entries,
     required this.establishedEntryIds,
     required this.onViewEntry,
+    required this.onMarkDone,
   });
 
   final List<HealthEntry> entries;
   final Set<String> establishedEntryIds;
   final void Function(HealthEntry entry) onViewEntry;
+  final Future<void> Function(HealthEntry entry) onMarkDone;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +38,7 @@ class AllCareInactiveSection extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(top: 16, bottom: 8),
             child: Text(
-              l.eventFilterClosed,
+              l.allCareInactiveSection,
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -44,17 +47,52 @@ class AllCareInactiveSection extends StatelessWidget {
         ),
         for (var i = 0; i < entries.length; i++) ...[
           if (i > 0) const SizedBox(height: 8),
-          PetCareActionRowBuilder(
+          _InactiveRow(
             entry: entries[i],
-            l10n: l,
+            l: l,
             colorScheme: colorScheme,
             isEstablished: establishedEntryIds.contains(entries[i].id),
-            trailingLabel: l.done,
-            onTap: () => onViewEntry(entries[i]),
-          ).build(),
+            onViewEntry: onViewEntry,
+            onMarkDone: onMarkDone,
+          ),
         ],
       ],
     );
+  }
+}
+
+class _InactiveRow extends StatelessWidget {
+  const _InactiveRow({
+    required this.entry,
+    required this.l,
+    required this.colorScheme,
+    required this.isEstablished,
+    required this.onViewEntry,
+    required this.onMarkDone,
+  });
+
+  final HealthEntry entry;
+  final AppLocalizations l;
+  final ColorScheme colorScheme;
+  final bool isEstablished;
+  final void Function(HealthEntry entry) onViewEntry;
+  final Future<void> Function(HealthEntry entry) onMarkDone;
+
+  @override
+  Widget build(BuildContext context) {
+    final closed = isHealthEntrySeriesClosed(entry);
+
+    return PetCareActionRowBuilder(
+      entry: entry,
+      l10n: l,
+      colorScheme: colorScheme,
+      isEstablished: isEstablished,
+      trailingLabel: l.done,
+      statusLineOverride: closed ? l.eventStatusClosed : null,
+      statusTreatmentOverride: closed ? completedStatusTreatment() : null,
+      onMarkDone: closed ? null : () => onMarkDone(entry),
+      onTap: () => onViewEntry(entry),
+    ).build();
   }
 }
 

@@ -117,6 +117,15 @@
   "allPets": "All pets",
   "managePets": "Manage pets",
   "manageEvents": "Manage events",
+  "allCareTitle": "All care",
+  "@allCareTitle": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
+  "allCareInactiveSection": "Other care",
   "eventFilterClosed": "Closed",
   "eventFilterRecurring": "Recurring",
   "eventFilterOneTime": "One-time",

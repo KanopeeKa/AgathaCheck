@@ -355,6 +355,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageEvents => 'Manage events';
 
   @override
+  String allCareTitle(String petName) {
+    return 'All care';
+  }
+
+  @override
+  String get allCareInactiveSection => 'Other care';
+
+  @override
   String get eventFilterClosed => 'Closed';
 
   @override

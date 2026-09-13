@@ -139,7 +139,7 @@ void main() {
     await tester.pumpWidget(buildScreen());
     await tester.pumpAndSettle();
 
-    expect(find.text('Manage events'), findsOneWidget);
+    expect(find.text('All care'), findsOneWidget);
     expect(find.byKey(const Key('all_care_list')), findsOneWidget);
     expect(
       find.byKey(const Key('pet_care_action_entry-overdue')),

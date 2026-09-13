@@ -114,6 +114,15 @@
   "allPets": "Tous les animaux",
   "managePets": "Gérer les animaux",
   "manageEvents": "Gérer les événements",
+  "allCareTitle": "Tous les soins de {petName}",
+  "@allCareTitle": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
+  "allCareInactiveSection": "Autres soins",
   "eventFilterClosed": "Fermé",
   "eventFilterRecurring": "Récurrent",
   "eventFilterOneTime": "Ponctuel",
