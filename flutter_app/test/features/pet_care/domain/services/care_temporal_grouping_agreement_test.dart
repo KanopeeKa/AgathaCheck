@@ -64,16 +64,23 @@ void main() {
     return buckets.groupForEntryId(entryId);
   }
 
-  test('profile, dashboard, and All-care surfaces agree on temporal grouping', () {
-    for (final entry in entries) {
-      final profile = profileGroupFor(entry.id);
-      final dashboard = dashboardGroupFor(entry.id);
-      final allCare = allCareGroupFor(entry.id);
+  test(
+    'profile, dashboard, and All-care surfaces agree on temporal grouping',
+    () {
+      for (final entry in entries) {
+        final profile = profileGroupFor(entry.id);
+        final dashboard = dashboardGroupFor(entry.id);
+        final allCare = allCareGroupFor(entry.id);
 
-      expect(dashboard, profile, reason: 'dashboard vs profile for ${entry.id}');
-      expect(allCare, profile, reason: 'all-care vs profile for ${entry.id}');
-    }
-  });
+        expect(
+          dashboard,
+          profile,
+          reason: 'dashboard vs profile for ${entry.id}',
+        );
+        expect(allCare, profile, reason: 'all-care vs profile for ${entry.id}');
+      }
+    },
+  );
 
   test('profile care status matches dashboard flags from the same buckets', () {
     final buckets = grouping.bucketsForEntries(

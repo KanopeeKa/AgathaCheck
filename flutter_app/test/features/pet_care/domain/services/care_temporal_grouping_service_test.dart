@@ -33,8 +33,16 @@ void main() {
   final now = DateTime(2030, 5, 10, 14);
 
   test('classifies overdue, today, upcoming, and outside horizon', () {
-    final overdue = _entry(id: 'overdue', petId: petId, nextDue: DateTime(2030, 5, 7));
-    final today = _entry(id: 'today', petId: petId, nextDue: DateTime(2030, 5, 10));
+    final overdue = _entry(
+      id: 'overdue',
+      petId: petId,
+      nextDue: DateTime(2030, 5, 7),
+    );
+    final today = _entry(
+      id: 'today',
+      petId: petId,
+      nextDue: DateTime(2030, 5, 10),
+    );
     final upcoming = _entry(
       id: 'upcoming',
       petId: petId,
@@ -48,7 +56,10 @@ void main() {
       remindDaysBefore: 2,
     );
 
-    expect(grouping.groupForEntry(overdue, now), CareTemporalGroup.needsAttention);
+    expect(
+      grouping.groupForEntry(overdue, now),
+      CareTemporalGroup.needsAttention,
+    );
     expect(grouping.groupForEntry(today, now), CareTemporalGroup.today);
     expect(grouping.groupForEntry(upcoming, now), CareTemporalGroup.upcoming);
     expect(grouping.groupForEntry(outside, now), isNull);
@@ -72,7 +83,11 @@ void main() {
   test('buckets sort by due date within each group', () {
     final entries = [
       _entry(id: 'overdue-later', petId: petId, nextDue: DateTime(2030, 5, 9)),
-      _entry(id: 'overdue-earlier', petId: petId, nextDue: DateTime(2030, 5, 7)),
+      _entry(
+        id: 'overdue-earlier',
+        petId: petId,
+        nextDue: DateTime(2030, 5, 7),
+      ),
       _entry(id: 'today', petId: petId, nextDue: DateTime(2030, 5, 10)),
     ];
 

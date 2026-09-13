@@ -5,17 +5,17 @@ import '../../../pet_profile/domain/entities/care_status.dart';
 import '../../domain/models/care_temporal_buckets.dart';
 import '../../domain/services/care_temporal_grouping_service.dart';
 
-final careTemporalGroupingServiceProvider = Provider<CareTemporalGroupingService>(
-  (ref) => const CareTemporalGroupingService(),
-);
+final careTemporalGroupingServiceProvider =
+    Provider<CareTemporalGroupingService>(
+      (ref) => const CareTemporalGroupingService(),
+    );
 
 /// Pet-scoped temporal buckets for the profile and All-care surfaces.
 final petCareTemporalBucketsProvider =
     Provider.family<CareTemporalBuckets, String>((ref, petId) {
       final grouping = ref.watch(careTemporalGroupingServiceProvider);
       final entries =
-          ref.watch(healthEntriesNotifierProvider).valueOrNull ??
-          const [];
+          ref.watch(healthEntriesNotifierProvider).valueOrNull ?? const [];
       return grouping.bucketsForEntries(
         entries,
         petId: petId,
@@ -24,7 +24,9 @@ final petCareTemporalBucketsProvider =
     });
 
 /// Cross-pet temporal buckets for the Pet Care dashboard.
-final dashboardCareTemporalBucketsProvider = Provider<CareTemporalBuckets>((ref) {
+final dashboardCareTemporalBucketsProvider = Provider<CareTemporalBuckets>((
+  ref,
+) {
   final grouping = ref.watch(careTemporalGroupingServiceProvider);
   final entries =
       ref.watch(healthEntriesNotifierProvider).valueOrNull ?? const [];
