@@ -1715,6 +1715,13 @@
   "occurrenceSkipped": "Skipped",
   "entryNotFound": "Entry not found",
   "nextOccurrence": "Next occurrence",
+  "careItemDatesTitle": "Dates",
+  "careItemEstablishedBody": "Part of {petName}'s regular care.",
+  "@careItemEstablishedBody": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
   "deleteEntryNamedConfirm": "Delete \"{name}\"? This cannot be undone.",
   "@deleteEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
   "deleteRecurringEntryNamedConfirm": "Delete \"{name}\"? All iterations of this recurring event will be permanently removed.",

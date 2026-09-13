@@ -4803,6 +4803,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get nextOccurrence => 'Prochaine occurrence';
 
   @override
+  String get careItemDatesTitle => 'Dates';
+
+  @override
+  String careItemEstablishedBody(String petName) {
+    return 'Fait partie des soins réguliers de $petName.';
+  }
+
+  @override
   String deleteEntryNamedConfirm(String name) {
     return 'Supprimer « $name » ? Cette action est irréversible.';
   }

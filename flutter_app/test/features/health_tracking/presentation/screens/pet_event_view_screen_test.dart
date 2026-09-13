@@ -16,7 +16,10 @@ import 'package:pet_profile_app/features/health_tracking/domain/entities/health_
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_occurrence.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/occurrence_providers.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/screens/pet_event_view_screen.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/screens/care_item_detail/care_item_detail_screen.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/care_establishment.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/providers/care_progression_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/pet_event_view_providers.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
@@ -167,7 +170,7 @@ void main() {
       routes: [
         GoRoute(
           path: '/pet/:petId/events/:entryId',
-          builder: (context, state) => PetEventViewScreen(
+          builder: (context, state) => CareItemDetailScreen(
             petId: state.pathParameters['petId']!,
             entryId: state.pathParameters['entryId']!,
           ),
@@ -228,28 +231,29 @@ void main() {
 
     expect(find.text('View Heartworm'), findsOneWidget);
     expect(find.text('Close event'), findsOneWidget);
-    expect(find.byKey(const Key('pet_event_edit_app_bar')), findsOneWidget);
+    expect(find.byKey(const Key('care_item_edit_app_bar')), findsOneWidget);
+    expect(find.text('Dates'), findsOneWidget);
     expect(find.text('Missed'), findsOneWidget);
     expect(find.text('Due today'), findsOneWidget);
     expect(find.text('Coming up'), findsOneWidget);
     expect(
-      find.byKey(const Key('pet_event_occurrence_row_occ-missed')),
+      find.byKey(const Key('care_item_occurrence_row_occ-missed')),
       findsOneWidget,
     );
     expect(
-      find.byKey(const Key('pet_event_occurrence_mark_done_occ-today')),
+      find.byKey(const Key('care_item_occurrence_mark_done_occ-today')),
       findsOneWidget,
     );
     expect(
-      find.byKey(const Key('pet_event_occurrence_skip_occ-later')),
+      find.byKey(const Key('care_item_occurrence_skip_occ-later')),
       findsOneWidget,
     );
-    expect(find.byKey(const Key('pet_event_skip_all_missed')), findsOneWidget);
+    expect(find.byKey(const Key('care_item_skip_all_missed')), findsOneWidget);
     expect(find.text('Snooze'), findsNothing);
     expect(find.text('Give with food'), findsOneWidget);
     expect(find.text('Skin allergy'), findsOneWidget);
     expect(
-      find.byKey(const Key('pet_event_health_issue_link')),
+      find.byKey(const Key('care_item_health_issue_link')),
       findsOneWidget,
     );
   });
@@ -266,7 +270,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('pet_event_close_button')));
+    await tester.tap(find.byKey(const Key('care_item_close_button')));
     await tester.pumpAndSettle();
 
     expect(find.text('Close event?'), findsOneWidget);
@@ -295,6 +299,81 @@ void main() {
     expect(find.text('Series ended'), findsOneWidget);
   });
 
+  testWidgets('established item shows badge and regular-care copy', (
+    tester,
+  ) async {
+    final establishedEntry = openEntry.copyWith(
+      careFamily: CareFamily.weightMonitoring,
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          experienceEligibilityProvider.overrideWith(
+            (ref) => AsyncValue.data(
+              ExperienceEligibilityRules.compute(
+                pets: const [],
+                orgMembershipCount: 0,
+              ),
+            ),
+          ),
+          organizationListProvider.overrideWith(
+            FakeOrganizationListNotifier.new,
+          ),
+          combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          apiBaseUrlProvider.overrideWithValue('http://test.local'),
+          allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]),
+          healthEntriesNotifierProvider.overrideWith(
+            () => _TestHealthEntriesNotifier([establishedEntry]),
+          ),
+          entryHistoryProvider.overrideWith(_openHistory),
+          healthEntryPhotosProvider.overrideWith(_emptyPhotos),
+          entryOccurrencesProvider.overrideWith(_emptyOccurrences),
+          entryPastOccurrencesProvider.overrideWith((ref, _) async => []),
+          petCareEstablishmentsProvider.overrideWith(
+            (ref, petId) async => [
+              CareEstablishment(
+                id: 'est-1',
+                healthEntryId: 'entry-1',
+                careFamily: CareFamily.weightMonitoring,
+                establishedAt: DateTime(2025, 6, 1),
+                policyVersion: '1',
+              ),
+            ],
+          ),
+        ],
+        child: MaterialApp.router(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: GoRouter(
+            initialLocation: '/pet/pet-1/events/entry-1',
+            routes: [
+              GoRoute(
+                path: '/pet/:petId/events/:entryId',
+                builder: (context, state) => CareItemDetailScreen(
+                  petId: state.pathParameters['petId']!,
+                  entryId: state.pathParameters['entryId']!,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('care_item_established_section')),
+      findsOneWidget,
+    );
+    expect(find.text('Established'), findsOneWidget);
+    expect(find.textContaining("Part of Bella's regular care"), findsOneWidget);
+  });
+
   testWidgets('open entry without occurrences falls back to legacy summary', (
     tester,
   ) async {
@@ -304,7 +383,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('pet_event_occurrence_summary_entry-1')),
+      find.byKey(const Key('care_item_dates_summary_entry-1')),
       findsOneWidget,
     );
     expect(find.text('Mark as done'), findsNothing);

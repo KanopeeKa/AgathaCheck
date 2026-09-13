@@ -4725,6 +4725,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nextOccurrence => 'Next occurrence';
 
   @override
+  String get careItemDatesTitle => 'Dates';
+
+  @override
+  String careItemEstablishedBody(String petName) {
+    return 'Part of $petName\'s regular care.';
+  }
+
+  @override
   String deleteEntryNamedConfirm(String name) {
     return 'Delete \"$name\"? This cannot be undone.';
   }
