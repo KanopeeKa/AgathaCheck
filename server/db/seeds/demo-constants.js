@@ -119,6 +119,26 @@ export const DEMO_IDS = {
 
   // Permissions
   bobManagePetsPermission: 'a8700001-0001-4001-8001-000000000001',
+
+  // Care item model fixture (Child A — docs/domains/pet_care/changes/care-item-model-delivery-plan.md §11)
+  pebblePet: 'a4000001-0001-4001-8001-000000000009',
+  careFixtureTodayPending: 'a6000001-0001-4001-8001-000000000010',
+  careFixtureTodayDone: 'a6000001-0001-4001-8001-000000000011',
+  careFixtureTodayDoneOcc: 'a6300001-0001-4001-8001-000000000010',
+  careFixtureOneOffToday: 'a6000001-0001-4001-8001-000000000012',
+  careFixtureUncategorised: 'a6000001-0001-4001-8001-000000000013',
+  careFixtureUpcomingWeek: 'a6000001-0001-4001-8001-000000000014',
+  careFixtureWeightEntry: 'a6000001-0001-4001-8001-000000000015',
+  careFixtureWeightEstablishment: 'a6100001-0001-4001-8001-000000000002',
+  careFixtureWeightOcc1: 'a6300001-0001-4001-8001-000000000001',
+  careFixtureWeightOcc2: 'a6300001-0001-4001-8001-000000000002',
+  careFixtureWeightOcc3: 'a6300001-0001-4001-8001-000000000003',
+  careFixtureWeightOcc4: 'a6300001-0001-4001-8001-000000000004',
+  careFixtureWeightOccPending: 'a6300001-0001-4001-8001-000000000005',
+  careFixtureWeightWe1: 'a6200001-0001-4001-8001-000000000010',
+  careFixtureWeightWe2: 'a6200001-0001-4001-8001-000000000011',
+  careFixtureWeightWe3: 'a6200001-0001-4001-8001-000000000012',
+  careFixtureWeightWe4: 'a6200001-0001-4001-8001-000000000013',
 };
 
 export const DEMO_USERS = {

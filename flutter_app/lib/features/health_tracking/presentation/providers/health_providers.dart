@@ -13,6 +13,7 @@ import '../../domain/usecases/get_entry_history.dart';
 import '../../domain/usecases/get_health_entries.dart';
 import '../../domain/usecases/mark_entry_taken.dart';
 import '../../domain/usecases/update_health_entry.dart';
+import '../../../pet_care/domain/services/care_temporal_grouping_service.dart';
 
 final healthRemoteDataSourceProvider = Provider<HealthRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
@@ -231,18 +232,11 @@ final petOtherEventsByIdProvider =
 
 /// Whether a health entry is due or overdue within its [remindDaysBefore] window.
 bool isEntryDueOrOverdue(HealthEntry entry) {
-  if (entry.isCompleted || entry.nextDueDate == null) return false;
-  if (entry.isOverdue || entry.isDueToday) return true;
-
-  final now = DateTime.now();
-  final today = DateTime(now.year, now.month, now.day);
-  final dueDay = DateTime(
-    entry.nextDueDate!.year,
-    entry.nextDueDate!.month,
-    entry.nextDueDate!.day,
-  );
-  final daysUntilDue = dueDay.difference(today).inDays;
-  return daysUntilDue > 0 && daysUntilDue <= entry.remindDaysBefore;
+  return const CareTemporalGroupingService().groupForEntry(
+        entry,
+        DateTime.now(),
+      ) !=
+      null;
 }
 
 /// Guardian due inbox entries for shell pets, oldest due first.

@@ -5,6 +5,8 @@ import '../../../../pet_profile/presentation/widgets/pet_card.dart'
     show sortPetsByCreatedAt;
 import '../../../../pet_profile/presentation/widgets/pet_tile_status_line.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../../pet_care/domain/care_temporal_group.dart';
+import '../../../../pet_care/domain/services/care_temporal_grouping_service.dart';
 
 /// Relationship wording is intentionally a presentation concern. Eligibility
 /// remains owned by [PetListController].
@@ -57,40 +59,22 @@ class PetCareTodayCarePriorities {
     required List<HealthEntry> entries,
     required List<Pet> pets,
     required DateTime now,
+    CareTemporalGroupingService grouping = const CareTemporalGroupingService(),
   }) {
     final petIds = pets
         .where((pet) => !pet.passedAway)
         .map((pet) => pet.id)
         .toSet();
-    final indexed = entries.indexed.where(
-      (item) => petIds.contains(item.$2.petId),
+    final buckets = grouping.bucketsForEntries(
+      entries,
+      petIds: petIds,
+      now: now,
     );
-    final buckets = <PetCareTodayCareUrgency, List<(int, HealthEntry)>>{
-      PetCareTodayCareUrgency.overdue: [],
-      PetCareTodayCareUrgency.dueToday: [],
-      PetCareTodayCareUrgency.upcoming: [],
-    };
-
-    for (final item in indexed) {
-      final urgency = petCareTodayCareUrgency(item.$2, now);
-      if (urgency != null) buckets[urgency]!.add(item);
-    }
-
-    List<HealthEntry> sorted(PetCareTodayCareUrgency urgency) {
-      final entries = buckets[urgency]!
-        ..sort((a, b) {
-          final aDate = a.$2.nextDueDate ?? DateTime(9999);
-          final bDate = b.$2.nextDueDate ?? DateTime(9999);
-          final byDate = aDate.compareTo(bDate);
-          return byDate != 0 ? byDate : a.$1.compareTo(b.$1);
-        });
-      return List<HealthEntry>.unmodifiable(entries.map((item) => item.$2));
-    }
 
     return PetCareTodayCarePriorities._(
-      overdue: sorted(PetCareTodayCareUrgency.overdue),
-      dueToday: sorted(PetCareTodayCareUrgency.dueToday),
-      upcoming: sorted(PetCareTodayCareUrgency.upcoming),
+      overdue: buckets.needsAttention,
+      dueToday: buckets.today,
+      upcoming: buckets.upcoming,
     );
   }
 }
@@ -139,26 +123,19 @@ class PetCareTodayCareSummary {
   }
 }
 
-/// Uses the existing reminder-window convention, with an injected clock so
-/// deterministic tests and future UI states share the same date boundary.
+/// Maps the canonical temporal group to dashboard urgency vocabulary.
 PetCareTodayCareUrgency? petCareTodayCareUrgency(
   HealthEntry entry,
-  DateTime now,
-) {
-  if (entry.isCompleted || entry.nextDueDate == null) return null;
-  final today = DateTime(now.year, now.month, now.day);
-  final dueDay = DateTime(
-    entry.nextDueDate!.year,
-    entry.nextDueDate!.month,
-    entry.nextDueDate!.day,
-  );
-  if (dueDay.isBefore(today)) return PetCareTodayCareUrgency.overdue;
-  if (dueDay == today) return PetCareTodayCareUrgency.dueToday;
-  final daysUntilDue = dueDay.difference(today).inDays;
-  if (daysUntilDue <= entry.remindDaysBefore) {
-    return PetCareTodayCareUrgency.upcoming;
-  }
-  return null;
+  DateTime now, {
+  CareTemporalGroupingService grouping = const CareTemporalGroupingService(),
+}) {
+  final group = grouping.groupForEntry(entry, now);
+  return switch (group) {
+    CareTemporalGroup.needsAttention => PetCareTodayCareUrgency.overdue,
+    CareTemporalGroup.today => PetCareTodayCareUrgency.dueToday,
+    CareTemporalGroup.upcoming => PetCareTodayCareUrgency.upcoming,
+    null => null,
+  };
 }
 
 PetCareTodayPetRelationship petCareTodayPetRelationship(Pet pet) {
@@ -263,15 +240,17 @@ PetCareTodayPetPreview petCareTodayPetPreview(
 }
 
 /// Returns the Care Status for a pet in the dashboard preview.
-CareStatus petCareStatusFor(Pet pet, PetCareTodayCareSummary careSummary) {
-  if (careSummary.priorities.overdue.any((entry) => entry.petId == pet.id)) {
-    return CareStatus.timeToFollowUp;
-  }
-  if (careSummary.priorities.dueToday.any((entry) => entry.petId == pet.id) ||
-      careSummary.priorities.upcoming.any((entry) => entry.petId == pet.id)) {
-    return CareStatus.worthACheck;
-  }
-  return CareStatus.allSet;
+CareStatus petCareStatusFor(
+  Pet pet,
+  PetCareTodayCareSummary careSummary, {
+  CareTemporalGroupingService grouping = const CareTemporalGroupingService(),
+}) {
+  final priorities = careSummary.priorities;
+  return grouping.careStatusFromFlags(
+    hasNeedsAttention: priorities.overdue.any((entry) => entry.petId == pet.id),
+    hasToday: priorities.dueToday.any((entry) => entry.petId == pet.id),
+    hasUpcoming: priorities.upcoming.any((entry) => entry.petId == pet.id),
+  );
 }
 
 @Deprecated('Use petCareStatusFor')
