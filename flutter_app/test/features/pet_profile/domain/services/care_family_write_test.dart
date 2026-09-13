@@ -5,7 +5,27 @@ import 'package:pet_profile_app/features/pet_profile/domain/services/care_family
 
 void main() {
   group('resolveCareFamilyForWrite', () {
-    test('returns null for one-time entries without selection', () {
+    test('create requires explicit selection', () {
+      expect(
+        resolveCareFamilyForWrite(
+          frequency: HealthFrequency.once,
+          type: HealthEntryType.other,
+          isCreate: true,
+        ),
+        isNull,
+      );
+      expect(
+        resolveCareFamilyForWrite(
+          frequency: HealthFrequency.monthly,
+          type: HealthEntryType.medication,
+          selected: CareFamily.vaccination,
+          isCreate: true,
+        ),
+        CareFamily.vaccination,
+      );
+    });
+
+    test('edit keeps null for uncategorised one-time entries', () {
       expect(
         resolveCareFamilyForWrite(
           frequency: HealthFrequency.once,
@@ -15,21 +35,32 @@ void main() {
       );
     });
 
-    test('requires explicit family for recurring entries', () {
+    test('edit keeps explicit selection for recurring entries', () {
       expect(
         resolveCareFamilyForWrite(
           frequency: HealthFrequency.monthly,
           type: HealthEntryType.medication,
+          selected: CareFamily.weightMonitoring,
         ),
-        CareFamily.medication,
+        CareFamily.weightMonitoring,
       );
       expect(
         resolveCareFamilyForWrite(
           frequency: HealthFrequency.weekly,
           type: HealthEntryType.other,
-          selected: CareFamily.weightMonitoring,
+          existing: CareFamily.grooming,
         ),
-        CareFamily.weightMonitoring,
+        CareFamily.grooming,
+      );
+    });
+
+    test('edit does not infer a default family', () {
+      expect(
+        resolveCareFamilyForWrite(
+          frequency: HealthFrequency.monthly,
+          type: HealthEntryType.medication,
+        ),
+        isNull,
       );
     });
 

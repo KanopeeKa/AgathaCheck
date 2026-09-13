@@ -261,7 +261,25 @@
     }
   },
   "careFamilyFieldLabel": "Catégorie de soins",
-  "careFamilyFieldHelper": "Choisissez le type de soins récurrents représenté par ce rythme.",
+  "careFamilyFieldHelper": "Choisissez le type de soins représenté par cette entrée.",
+  "careFamilySelectHint": "Sélectionner une catégorie",
+  "careFamilyRequiredError": "Choisissez une catégorie de soins avant d'enregistrer.",
+  "careFamilySuggestionTitle": "Catégorie de soins suggérée",
+  "careFamilySuggestionMessage": "Cette entrée n'a pas encore de catégorie. Nous suggérons {familyLabel} — acceptez-la, choisissez une autre ou ignorez pour la laisser non catégorisée.",
+  "@careFamilySuggestionMessage": {
+    "placeholders": {
+      "familyLabel": { "type": "String" }
+    }
+  },
+  "careFamilySuggestionAccept": "Utiliser la suggestion",
+  "careFamilySuggestionChooseDifferent": "Choisir autre",
+  "careFamilySuggestionDismiss": "Ignorer la suggestion",
+  "careFamilySuggestionSemanticLabel": "Catégorie de soins suggérée : {familyLabel}",
+  "@careFamilySuggestionSemanticLabel": {
+    "placeholders": {
+      "familyLabel": { "type": "String" }
+    }
+  },
   "careFamilyMedication": "Médicament",
   "careFamilyVaccination": "Vaccination",
   "careFamilyParasitePrevention": "Prévention antiparasitaire",

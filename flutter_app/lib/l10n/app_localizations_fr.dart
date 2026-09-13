@@ -711,7 +711,36 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careFamilyFieldHelper =>
-      'Choisissez le type de soins récurrents représenté par ce rythme.';
+      'Choisissez le type de soins représenté par cette entrée.';
+
+  @override
+  String get careFamilySelectHint => 'Sélectionner une catégorie';
+
+  @override
+  String get careFamilyRequiredError =>
+      'Choisissez une catégorie de soins avant d\'enregistrer.';
+
+  @override
+  String get careFamilySuggestionTitle => 'Catégorie de soins suggérée';
+
+  @override
+  String careFamilySuggestionMessage(String familyLabel) {
+    return 'Cette entrée n\'a pas encore de catégorie. Nous suggérons $familyLabel — acceptez-la, choisissez une autre ou ignorez pour la laisser non catégorisée.';
+  }
+
+  @override
+  String get careFamilySuggestionAccept => 'Utiliser la suggestion';
+
+  @override
+  String get careFamilySuggestionChooseDifferent => 'Choisir autre';
+
+  @override
+  String get careFamilySuggestionDismiss => 'Ignorer la suggestion';
+
+  @override
+  String careFamilySuggestionSemanticLabel(String familyLabel) {
+    return 'Catégorie de soins suggérée : $familyLabel';
+  }
 
   @override
   String get careFamilyMedication => 'Médicament';

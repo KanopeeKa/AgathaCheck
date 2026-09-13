@@ -29,14 +29,22 @@ bool requiresExplicitCareFamily(HealthFrequency frequency) =>
     frequency != HealthFrequency.once;
 
 /// Resolves the care family to persist on create/update.
+///
+/// Create always requires an explicit [selected] value (validated before call).
+/// Edit keeps [existing] when the carer did not choose a family (uncategorised
+/// legacy rows stay valid).
 CareFamily? resolveCareFamilyForWrite({
   required HealthFrequency frequency,
   required HealthEntryType type,
   CareFamily? selected,
   CareFamily? existing,
+  bool isCreate = false,
 }) {
+  if (isCreate) {
+    return selected;
+  }
   if (!requiresExplicitCareFamily(frequency)) {
     return selected ?? existing;
   }
-  return selected ?? existing ?? defaultCareFamilyForEntryType(type);
+  return selected ?? existing;
 }

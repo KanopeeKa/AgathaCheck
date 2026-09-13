@@ -1325,8 +1325,56 @@ abstract class AppLocalizations {
   /// No description provided for @careFamilyFieldHelper.
   ///
   /// In en, this message translates to:
-  /// **'Choose what kind of recurring care this rhythm represents.'**
+  /// **'Choose what kind of care this entry represents.'**
   String get careFamilyFieldHelper;
+
+  /// No description provided for @careFamilySelectHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a category'**
+  String get careFamilySelectHint;
+
+  /// No description provided for @careFamilyRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a care category before saving.'**
+  String get careFamilyRequiredError;
+
+  /// No description provided for @careFamilySuggestionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested care category'**
+  String get careFamilySuggestionTitle;
+
+  /// No description provided for @careFamilySuggestionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This entry has no category yet. We suggest {familyLabel} — accept it, choose another, or dismiss to keep it uncategorised.'**
+  String careFamilySuggestionMessage(String familyLabel);
+
+  /// No description provided for @careFamilySuggestionAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Use suggestion'**
+  String get careFamilySuggestionAccept;
+
+  /// No description provided for @careFamilySuggestionChooseDifferent.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose different'**
+  String get careFamilySuggestionChooseDifferent;
+
+  /// No description provided for @careFamilySuggestionDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss suggestion'**
+  String get careFamilySuggestionDismiss;
+
+  /// No description provided for @careFamilySuggestionSemanticLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested care category: {familyLabel}'**
+  String careFamilySuggestionSemanticLabel(String familyLabel);
 
   /// No description provided for @careFamilyMedication.
   ///

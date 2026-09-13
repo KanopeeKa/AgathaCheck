@@ -159,6 +159,9 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
             ? List<String>.from(entry.scheduleTimes!)
             : const ['08:00'],
         careFamily: entry.careFamily,
+        loadedUncategorised: entry.careFamily == null,
+        careFamilySuggestionDismissed: false,
+        careFamilyPickerRevealed: entry.careFamily != null,
       );
 
       return true;
@@ -173,24 +176,39 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
 
   void setNotes(String notes) => state = state.copyWith(notes: notes);
 
-  void setType(HealthEntryType type) => state = state.copyWith(
-    type: type,
-    careFamily: defaultCareFamilyForEntryType(type),
-  );
-
-  void setCareFamily(CareFamily family) =>
-      state = state.copyWith(careFamily: family);
-
-  void setFrequency(HealthFrequency frequency) {
-    if (frequency == HealthFrequency.once) {
-      state = state.copyWith(frequency: frequency, clearCareFamily: true);
+  void setType(HealthEntryType type) {
+    if (state.isEdit && !state.loadedUncategorised) {
+      state = state.copyWith(type: type);
       return;
     }
-    state = state.copyWith(
-      frequency: frequency,
-      careFamily: state.careFamily ?? defaultCareFamilyForEntryType(state.type),
-    );
+    state = state.copyWith(type: type, clearCareFamily: true);
   }
+
+  void setCareFamily(CareFamily family) => state = state.copyWith(
+    careFamily: family,
+    careFamilyPickerRevealed: true,
+    careFamilyValidationAttempted: false,
+  );
+
+  void markCareFamilyValidationAttempted() =>
+      state = state.copyWith(careFamilyValidationAttempted: true);
+
+  void dismissCareFamilySuggestion() =>
+      state = state.copyWith(careFamilySuggestionDismissed: true);
+
+  void acceptCareFamilySuggestion() => state = state.copyWith(
+    careFamily: defaultCareFamilyForEntryType(state.type),
+    careFamilyPickerRevealed: true,
+    careFamilySuggestionDismissed: true,
+  );
+
+  void revealCareFamilyPicker() => state = state.copyWith(
+    careFamilyPickerRevealed: true,
+    careFamilySuggestionDismissed: true,
+  );
+
+  void setFrequency(HealthFrequency frequency) =>
+      state = state.copyWith(frequency: frequency);
 
   void setFrequencyInterval(int interval) =>
       state = state.copyWith(frequencyInterval: interval);
@@ -304,6 +322,12 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
         HealthEntrySubmitValidation.noPetsSelected,
       );
     }
+    if (!state.isEdit && state.careFamily == null) {
+      markCareFamilyValidationAttempted();
+      return HealthEntrySubmitValidationFailed(
+        HealthEntrySubmitValidation.careFamilyRequired,
+      );
+    }
 
     if (!skipMarkCompletedCheck && !state.isEdit) {
       final prompt = markCompletedPromptIfNeeded();
@@ -333,6 +357,8 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
         frequency: state.frequency,
         type: state.type,
         selected: state.careFamily,
+        existing: state.loadedUncategorised ? null : state.careFamily,
+        isCreate: !state.isEdit,
       );
 
       if (state.isEdit) {

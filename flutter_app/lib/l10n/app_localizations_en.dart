@@ -702,7 +702,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careFamilyFieldHelper =>
-      'Choose what kind of recurring care this rhythm represents.';
+      'Choose what kind of care this entry represents.';
+
+  @override
+  String get careFamilySelectHint => 'Select a category';
+
+  @override
+  String get careFamilyRequiredError => 'Choose a care category before saving.';
+
+  @override
+  String get careFamilySuggestionTitle => 'Suggested care category';
+
+  @override
+  String careFamilySuggestionMessage(String familyLabel) {
+    return 'This entry has no category yet. We suggest $familyLabel — accept it, choose another, or dismiss to keep it uncategorised.';
+  }
+
+  @override
+  String get careFamilySuggestionAccept => 'Use suggestion';
+
+  @override
+  String get careFamilySuggestionChooseDifferent => 'Choose different';
+
+  @override
+  String get careFamilySuggestionDismiss => 'Dismiss suggestion';
+
+  @override
+  String careFamilySuggestionSemanticLabel(String familyLabel) {
+    return 'Suggested care category: $familyLabel';
+  }
 
   @override
   String get careFamilyMedication => 'Medication';
