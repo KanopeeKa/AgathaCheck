@@ -85,6 +85,11 @@ abstract final class AppColorTokens {
   static const Color warmAccentLight = Color(0xFFF4E4DD);
   static const Color warmAccentText = Color(0xFF8B5E4A);
 
+  /// Agatha / Care Intelligence suggestion surfaces (not org mode primary).
+  static const Color agathaTeal = Color(0xFF15586E);
+  static const Color agathaMessageSurface = landingTealSoft;
+  static const Color agathaMessageBorder = landingLine;
+
   // Semantic
   static const Color info = Color(0xFF5C7EA6);
   static const Color success = Color(0xFF2B7A2E);

@@ -159,6 +159,18 @@ Org-guardianship pet photo border on guardian home: **primary** teal (subtle).
 
 Empty states, onboarding, welcome — not main action buttons.
 
+## Agatha message surfaces (Care Intelligence)
+
+Used for “Suggested by Agatha” rhythm proposals and related guidance — not org-mode primary CTAs.
+
+| Token | Hex | Use |
+|-------|-----|-----|
+| agathaTeal | `#15586E` | suggestion title, accent text |
+| agathaMessageSurface | `#E6F2F2` | suggestion card fill (= `landingTealSoft`) |
+| agathaMessageBorder | `#D9E5E1` | suggestion card border (= `landingLine`) |
+
+Body copy on suggestion cards uses foundation **body** (`#374151`). Accept actions remain **petCarePrimary** plum.
+
 ## Semantic (shared across modes)
 
 | Token | Hex | Notes |
