@@ -8499,6 +8499,18 @@ abstract class AppLocalizations {
   /// **'Next occurrence'**
   String get nextOccurrence;
 
+  /// No description provided for @careItemDatesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates'**
+  String get careItemDatesTitle;
+
+  /// No description provided for @careItemEstablishedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Part of {petName}\'s regular care.'**
+  String careItemEstablishedBody(String petName);
+
   /// No description provided for @deleteEntryNamedConfirm.
   ///
   /// In en, this message translates to:
