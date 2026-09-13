@@ -126,6 +126,8 @@ describe('Health Entries API', () => {
             remind_days_before: params[16],
             schedule_times: params[17],
             status: params[18],
+            care_family: params[19],
+            care_source: params[20],
             completed_at: null,
           });
           return { rows: [lastInsertedEntry] };
@@ -540,6 +542,34 @@ describe('Health Entries API', () => {
       expect(res.body).toHaveProperty('error', 'Entry not found');
     });
 
+    it('returns null care_family when uncategorised in the database', async () => {
+      const pool = {
+        query: async (sql, params) => {
+          const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1'] });
+          if (access) return access;
+          const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
+          if (manageEntry) return manageEntry;
+          if (sql.includes('SELECT he.*') && sql.includes('WHERE he.id')) {
+            return {
+              rows: [makeHealthRow({
+                id: params[0],
+                type: 'other',
+                care_family: null,
+              })],
+            };
+          }
+          return { rows: [] };
+        },
+        end: async () => {},
+      };
+      const a = createApp(pool);
+      const res = await request(a)
+        .get('/api/health-entries/he-null-family')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.care_family).toBeNull();
+    });
+
     it('maps legacy family_event and procedure types to other on read', async () => {
       for (const legacyType of ['family_event', 'procedure']) {
         const pool = {
@@ -606,6 +636,26 @@ describe('Health Entries API', () => {
       expect(insertParams[4]).toBe('vet_visit');
       expect(insertParams[6]).toBe('once');
       expect(insertParams[10]).toBe('2025-01-01');
+      expect(insertParams[19]).toBeNull();
+      expect(res.body.care_family).toBeNull();
+    });
+
+    it('stores and returns null care_family for one-off create without family', async () => {
+      const entry = {
+        pet_id: 'pet-1',
+        name: 'Mystery visit',
+        type: 'other',
+        frequency: 'once',
+        next_due_date: '2025-03-01',
+      };
+      const res = await request(app)
+        .post('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(201);
+      expect(res.body.care_family).toBeNull();
+      const insertParams = queryLog.find((q) => q.sql.includes('INSERT INTO health_entries')).params;
+      expect(insertParams[19]).toBeNull();
     });
 
     it('normalizes legacy ISO timestamp inputs to date-only for storage', async () => {

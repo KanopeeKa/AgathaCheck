@@ -56,6 +56,23 @@ describe('care intelligence rule engine', () => {
     ], 'weight_monitoring')).toBe(false);
   });
 
+  test('does not suppress suggestions for recurring entries with null care_family', () => {
+    const candidates = evaluateCareRecommendationCandidates({
+      pet: makePet(),
+      healthEntries: [{
+        frequency: 'monthly',
+        care_family: null,
+      }],
+      existingRecommendations: [],
+      now,
+    });
+    expect(candidates.map((c) => c.care_family).sort()).toEqual([
+      'dental',
+      'weight_monitoring',
+      'wellness_review',
+    ]);
+  });
+
   test('suppresses when active recurring care exists for family', () => {
     const candidates = evaluateCareRecommendationCandidates({
       pet: makePet(),

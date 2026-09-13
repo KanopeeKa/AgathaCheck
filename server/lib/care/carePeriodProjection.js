@@ -9,8 +9,6 @@ import { dateToIsoDate } from '../calendarDate.js';
 import { isEntrySeriesClosed, isOccurrenceDateWithinSeries } from '../occurrenceLifecycle.js';
 import { advanceByFrequency } from '../recurrenceHelper.js';
 import { scheduleTimesFromEntry } from '../occurrenceScheduling.js';
-import { inferCareFamilyFromType } from '../../routes/healthEntries/shared.js';
-
 export const PROJECTION_STATUS_COMPLETE = 'complete';
 export const PROJECTION_STATUS_PARTIALLY_INDETERMINATE = 'partially_indeterminate';
 
@@ -38,7 +36,7 @@ function slotKey(dateIso, time) {
  * @param {object} entry
  */
 function entryCareFamily(entry) {
-  return entry.care_family || inferCareFamilyFromType(entry.type);
+  return entry.care_family ?? null;
 }
 
 /**

@@ -91,17 +91,6 @@ export function validateHealthEntryTypeForWrite(type) {
 
 export { CARE_FAMILIES, CARE_SOURCES };
 
-export function inferCareFamilyFromType(type) {
-  switch (normalizeHealthEntryTypeForRead(type)) {
-    case 'medication':
-      return 'medication';
-    case 'vet_visit':
-      return 'wellness_review';
-    default:
-      return 'other';
-  }
-}
-
 export function validateCareFamilyForWrite(value, { recurring = false } = {}) {
   return validateCareFamilyEnum(value, { required: recurring });
 }
@@ -111,8 +100,6 @@ export function validateCareSourceForWrite(value) {
 }
 
 export function healthEntryToMap(row) {
-  const careFamily =
-    row.care_family || inferCareFamilyFromType(row.type);
   return {
     id: row.id,
     pet_id: row.pet_id,
@@ -136,7 +123,7 @@ export function healthEntryToMap(row) {
     remind_days_before: row.remind_days_before ?? 1,
     schedule_times: row.schedule_times ?? null,
     status: row.status || 'active',
-    care_family: careFamily,
+    care_family: row.care_family ?? null,
     care_source: row.care_source || 'guardian_defined',
     completed_at: row.completed_at ? row.completed_at.toISOString?.() || String(row.completed_at) : null,
     created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,

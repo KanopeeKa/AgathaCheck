@@ -15,7 +15,6 @@ import {
   validateHealthEntryTypeForWrite,
   validateCareFamilyForWrite,
   validateCareSourceForWrite,
-  inferCareFamilyFromType,
 } from './shared.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { materialiseInitialOccurrences, parseScheduleTimesInput } from '../../lib/occurrenceScheduling.js';
@@ -140,9 +139,7 @@ export function registerCrudRoutes(router, pool) {
       if (!careSourceValidation.ok) {
         return res.status(400).json({ error: careSourceValidation.error });
       }
-      const careFamily =
-        careFamilyValidation.value ||
-        inferCareFamilyFromType(typeValidation.type);
+      const careFamily = careFamilyValidation.value;
       const result = await pool.query(
         `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, schedule_times, status, care_family, care_source)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21) RETURNING *`,
@@ -232,9 +229,7 @@ export function registerCrudRoutes(router, pool) {
       if (!careSourceValidation.ok) {
         return res.status(400).json({ error: careSourceValidation.error });
       }
-      const careFamily =
-        careFamilyValidation.value ||
-        inferCareFamilyFromType(typeValidation.type);
+      const careFamily = careFamilyValidation.value;
       const careSource =
         careSourceValidation.value || existing.care_source || 'guardian_defined';
       const result = await pool.query(
