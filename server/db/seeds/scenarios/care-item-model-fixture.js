@@ -52,7 +52,7 @@ export async function seedCareItemModelFixture(client) {
        ($1, $7, $8, 'other', 'Morning walk check-in', '', 'daily',
         $9, $10, 'active', 3, 'Due today — not done', 'exercise', NULL),
        ($2, $7, $8, 'medication', 'Evening supplement', '1 tablet', 'daily',
-        $11, $12, 'active', 3, 'Due today — already done', 'medication', $13),
+        $11, $12, 'active', 3, 'Due today — already done', 'medication', NULL),
        ($3, $7, $8, 'other', 'Grooming appointment', '', 'once',
         $14, $15, 'active', 1, 'One-off due today', NULL, NULL),
        ($4, $7, $8, 'other', 'Mystery care item', '', 'weekly',
@@ -82,7 +82,6 @@ export async function seedCareItemModelFixture(client) {
       today,
       calendarDaysFromToday(-30),
       today,
-      today,
       calendarDaysFromToday(-7),
       today,
       calendarDaysFromToday(-60),
@@ -92,6 +91,18 @@ export async function seedCareItemModelFixture(client) {
       calendarDaysFromToday(-35),
       calendarDaysFromToday(7),
     ],
+  );
+
+  await client.query(
+    `INSERT INTO health_occurrences (
+       id, health_entry_id, scheduled_date, status, completed_on, notes
+     )
+     VALUES ($1, $2, $3, 'completed', $3, 'Evening supplement done today')
+     ON CONFLICT (id) DO UPDATE SET
+       scheduled_date = EXCLUDED.scheduled_date,
+       status = EXCLUDED.status,
+       completed_on = EXCLUDED.completed_on`,
+    [DEMO_IDS.careFixtureTodayDoneOcc, DEMO_IDS.careFixtureTodayDone, today],
   );
 
   const weightOffsets = [-28, -21, -14, -7];

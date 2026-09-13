@@ -124,6 +124,7 @@ export const DEMO_IDS = {
   pebblePet: 'a4000001-0001-4001-8001-000000000009',
   careFixtureTodayPending: 'a6000001-0001-4001-8001-000000000010',
   careFixtureTodayDone: 'a6000001-0001-4001-8001-000000000011',
+  careFixtureTodayDoneOcc: 'a6300001-0001-4001-8001-000000000010',
   careFixtureOneOffToday: 'a6000001-0001-4001-8001-000000000012',
   careFixtureUncategorised: 'a6000001-0001-4001-8001-000000000013',
   careFixtureUpcomingWeek: 'a6000001-0001-4001-8001-000000000014',
