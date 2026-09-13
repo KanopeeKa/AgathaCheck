@@ -8,7 +8,7 @@ import '../../domain/entities/care_recommendation.dart';
 import '../providers/care_recommendations_provider.dart';
 import 'suggestion_why_sheet.dart';
 
-/// Warm-accent suggestion card for established-care rhythm proposals.
+/// Agatha suggestion card for established-care rhythm proposals.
 class CareSuggestionCard extends ConsumerWidget {
   const CareSuggestionCard({
     super.key,
@@ -40,7 +40,11 @@ class CareSuggestionCard extends ConsumerWidget {
     return Card(
       key: Key('care_suggestion_card_${recommendation.id}'),
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      color: AppColorTokens.warmAccentLight,
+      color: AppColorTokens.agathaMessageSurface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: AppColorTokens.agathaMessageBorder),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -49,14 +53,16 @@ class CareSuggestionCard extends ConsumerWidget {
             Text(
               l.careSuggestionTitle,
               style: theme.textTheme.titleSmall?.copyWith(
-                color: AppColorTokens.warmAccent,
+                color: AppColorTokens.agathaTeal,
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               recommendation.suggestedName,
-              style: theme.textTheme.titleMedium,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: AppColorTokens.heading,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -65,7 +71,7 @@ class CareSuggestionCard extends ConsumerWidget {
                 recommendation.suggestedFrequency,
               ),
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+                color: AppColorTokens.body,
               ),
             ),
             const SizedBox(height: 12),

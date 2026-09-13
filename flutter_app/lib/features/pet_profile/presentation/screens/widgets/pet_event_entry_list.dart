@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_status.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_type_labels.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_family_icon.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 export 'event_list_card.dart';
@@ -20,19 +21,6 @@ class PetEventEntryList extends StatelessWidget {
   final List<HealthEntry> entries;
   final String petId;
   final void Function(HealthEntry entry) onEntryTap;
-
-  static IconData iconForType(HealthEntryType type) {
-    switch (type) {
-      case HealthEntryType.medication:
-        return Icons.medication_outlined;
-      case HealthEntryType.preventive:
-        return Icons.shield_outlined;
-      case HealthEntryType.vetVisit:
-        return Icons.local_hospital_outlined;
-      case HealthEntryType.other:
-        return Icons.more_horiz_outlined;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +54,7 @@ class PetEventEntryList extends StatelessWidget {
         final statusLine = formatHealthEntryStatusLine(entry, l);
 
         return ListTile(
-          leading: Icon(iconForType(entry.type), color: colorScheme.primary),
+          leading: CareFamilyIcon.forEntry(entry, showChip: false),
           title: Text(entry.name),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

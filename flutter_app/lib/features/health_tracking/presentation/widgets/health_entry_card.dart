@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/presentation/widgets/care_family_icon.dart';
 import '../../domain/entities/health_entry.dart';
 import 'health_entry_card_actions.dart';
 import 'health_entry_card_pet_strip.dart';
@@ -77,10 +78,10 @@ class HealthEntryCard extends StatelessWidget {
                           Row(
                             children: [
                               ExcludeSemantics(
-                                child: Icon(
-                                  _typeIcon(entry.type),
-                                  color: colorScheme.primary,
+                                child: CareFamilyIcon.forEntry(
+                                  entry,
                                   size: 18,
+                                  showChip: false,
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -167,18 +168,5 @@ class HealthEntryCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  IconData _typeIcon(HealthEntryType type) {
-    switch (type) {
-      case HealthEntryType.medication:
-        return Icons.medication;
-      case HealthEntryType.preventive:
-        return Icons.shield;
-      case HealthEntryType.vetVisit:
-        return Icons.local_hospital;
-      case HealthEntryType.other:
-        return Icons.more_horiz;
-    }
   }
 }
