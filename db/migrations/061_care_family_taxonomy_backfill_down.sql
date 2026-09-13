@@ -1,0 +1,2 @@
+-- Rollback: care_family values written by 061 are left in place.
+-- Re-applying 053 type-only guesses would reintroduce wrong families; no-op down.
