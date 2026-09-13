@@ -164,9 +164,9 @@ next_action: "bootstrap and gate child plan care-family-taxonomy"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/pet-care-item-model.md
-  plan_commit: f9dd24c01340dc6330b664d60f5277c1d63aa880
+  plan_commit: 3e736c1daa1275888988b2a47eb4128689b3d56b
   snapshot_path: .agents/plans/pet-care-item-model.snapshot.json
-  snapshot_commit: f9dd24c01340dc6330b664d60f5277c1d63aa880
+  snapshot_commit: 3e736c1daa1275888988b2a47eb4128689b3d56b
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
