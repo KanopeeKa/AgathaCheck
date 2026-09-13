@@ -55,11 +55,16 @@ class PetProfileCompletenessPrompt extends ConsumerWidget {
       );
     }
 
+    final semanticsLabel = [
+      if (showNeuter) l.profilePromptNeuterMissing,
+      if (showChip) l.profilePromptChipMissing,
+    ].join('; ');
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       child: Semantics(
         container: true,
-        label: l.profilePromptChipMissing,
+        label: semanticsLabel,
         child: Material(
           key: const Key('pet_profile_completeness_prompt'),
           color: AppColorTokens.surfaceAlt,
