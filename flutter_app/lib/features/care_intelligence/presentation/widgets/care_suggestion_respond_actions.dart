@@ -57,7 +57,9 @@ class CareSuggestionRespondActions {
         _errorMessage(AppLocalizations.of(context)!, error),
       );
     } finally {
-      onLoadingChanged(false);
+      if (context.mounted) {
+        onLoadingChanged(false);
+      }
     }
   }
 

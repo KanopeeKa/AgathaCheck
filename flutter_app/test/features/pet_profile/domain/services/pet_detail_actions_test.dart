@@ -122,6 +122,33 @@ void main() {
       expect(actions, {PetDetailAction.downloadReport});
     });
 
+    test('org inventory pet in guardian experience cannot edit health', () {
+      final pet = _pet(organizationId: 'o1', organizationName: 'Shelter');
+      expect(
+        PetDetailActions.canEditHealth(
+          pet: pet,
+          role: PetViewerRole.guardian,
+        ),
+        isFalse,
+      );
+      final actions = PetDetailActions.visible(
+        pet: pet,
+        experience: AppExperience.petCare,
+        role: PetViewerRole.guardian,
+      );
+      expect(actions, isNot(contains(PetDetailAction.editHealth)));
+    });
+
+    test('personal guardian pet can edit health', () {
+      expect(
+        PetDetailActions.canEditHealth(
+          pet: _pet(),
+          role: PetViewerRole.guardian,
+        ),
+        isTrue,
+      );
+    });
+
     test('unresolved policy inputs deny all privileged actions', () {
       final actions = PetDetailActions.visible(
         pet: _pet(),
@@ -243,7 +270,6 @@ void main() {
             isOrgAdmin: false,
             expected: {
               PetDetailAction.editProfile,
-              PetDetailAction.editHealth,
               PetDetailAction.assignVet,
               PetDetailAction.manageSharing,
               PetDetailAction.downloadReport,

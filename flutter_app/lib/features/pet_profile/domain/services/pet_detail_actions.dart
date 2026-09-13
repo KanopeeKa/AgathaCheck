@@ -23,6 +23,31 @@ class PetDetailActions {
     PetDetailAction.fosterPlacement,
   };
 
+  /// Mirrors server `HEALTH_EDIT` (`userCanManagePet`): owner, shared carer, or
+  /// foster carer — not organisation view-only access to inventory pets.
+  static bool canEditHealth({
+    required Pet pet,
+    required PetViewerRole role,
+  }) {
+    switch (role) {
+      case PetViewerRole.sharedCarer:
+      case PetViewerRole.fosterCarer:
+        return true;
+      case PetViewerRole.guardian:
+        return !_isOrgInventoryPet(pet);
+      case PetViewerRole.organization:
+        return false;
+    }
+  }
+
+  static bool _isOrgInventoryPet(Pet pet) {
+    return !pet.isShared &&
+        !pet.isFoster &&
+        pet.organizationId != null &&
+        pet.organizationName != null &&
+        pet.organizationName!.isNotEmpty;
+  }
+
   static Set<PetDetailAction> visible({
     required Pet pet,
     required AppExperience experience,
@@ -40,13 +65,12 @@ class PetDetailActions {
       case PetViewerRole.guardian:
         actions.addAll({
           PetDetailAction.editProfile,
-          PetDetailAction.editHealth,
           PetDetailAction.assignVet,
           PetDetailAction.manageSharing,
         });
       case PetViewerRole.sharedCarer:
       case PetViewerRole.fosterCarer:
-        actions.add(PetDetailAction.editHealth);
+        break;
       case PetViewerRole.organization:
         if (isOrgAdmin) {
           actions.addAll({
@@ -56,6 +80,10 @@ class PetDetailActions {
             PetDetailAction.fosterPlacement,
           });
         }
+    }
+
+    if (canEditHealth(pet: pet, role: role)) {
+      actions.add(PetDetailAction.editHealth);
     }
 
     return actions;
