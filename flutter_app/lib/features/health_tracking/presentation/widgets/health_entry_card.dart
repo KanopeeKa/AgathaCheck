@@ -32,8 +32,7 @@ class HealthEntryCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final statusColor = healthEntryStatusColor(entry, colorScheme);
-
+    final statusTreatment = healthEntryStatusTreatment(entry, colorScheme);
     final statusLine = formatHealthEntryStatusLine(
       entry,
       AppLocalizations.of(context)!,
@@ -131,23 +130,12 @@ class HealthEntryCard extends StatelessWidget {
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              ExcludeSemantics(
-                                child: Icon(
-                                  Icons.schedule,
-                                  size: 13,
-                                  color: statusColor,
+                              Expanded(
+                                child: HealthEntryStatusLabel(
+                                  text: statusLine,
+                                  treatment: statusTreatment,
                                 ),
                               ),
-                              const SizedBox(width: 3),
-                              Text(
-                                statusLine,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: statusColor,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 11,
-                                ),
-                              ),
-                              const Spacer(),
                               HealthEntryFrequencyBadge(
                                 frequency: entry.frequency,
                                 interval: entry.frequencyInterval,

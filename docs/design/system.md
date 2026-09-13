@@ -740,6 +740,24 @@ looping animation beyond a loading affordance.
 
 ---
 
+## 8.1 Pet Care surface roles (Child B)
+
+Four semantic roles live in
+`flutter_app/lib/features/pet_care/presentation/widgets/care_surface/`. Screens
+consume these primitives; they must not hand-roll equivalents.
+
+| Role | Widget | Visual intent |
+|---|---|---|
+| Attention | `CareAttentionCallout` | Subtle semantic background, icon + text, compact height |
+| Action | `CareActionRow` | Neutral list row with family icon, status chip, primary affordance |
+| Insight | `CareInsightTile` | Low-emphasis card hosting `CareTrendSparkline`; whole tile tappable |
+| Destination | `CareDestinationRow` | Label + chevron only; no card chrome |
+
+Shared spacing and emphasis constants: `CareSurfaceTokens`. Status within
+Action rows uses `HealthEntryStatusLabel` (text + icon, never colour alone).
+
+---
+
 ## 9. Implementation mapping
 
 | Specification area | Flutter implementation source |
