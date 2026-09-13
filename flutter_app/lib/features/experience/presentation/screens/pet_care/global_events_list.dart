@@ -258,7 +258,7 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l.eventsNavLabel,
+                        l.allCare,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),

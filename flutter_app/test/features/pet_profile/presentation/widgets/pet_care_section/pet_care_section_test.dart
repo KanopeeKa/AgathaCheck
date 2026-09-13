@@ -137,7 +137,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Care for Buddy'), findsOneWidget);
+    expect(find.text("Buddy's care"), findsOneWidget);
     expect(
       find.byKey(const Key('pet_care_group_needsAttention')),
       findsOneWidget,

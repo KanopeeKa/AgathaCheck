@@ -116,11 +116,11 @@ void main() {
   // Screen-level widget tests (default ~800px → desktop layout)
   // ---------------------------------------------------------------------------
 
-  testWidgets('shows unified Events list without tabs', (tester) async {
+  testWidgets('shows unified All Actions list without tabs', (tester) async {
     await tester.pumpWidget(buildEventsScreen());
     await tester.pumpAndSettle();
 
-    expect(find.text('Events'), findsNWidgets(2));
+    expect(find.text('All Actions'), findsNWidgets(2));
     expect(find.byType(TabBar), findsNothing);
     expect(find.text('Flea treatment'), findsOneWidget);
     expect(find.text('Heartgard'), findsNothing);

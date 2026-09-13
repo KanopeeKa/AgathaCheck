@@ -352,12 +352,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get managePets => 'Manage pets';
 
   @override
-  String get manageEvents => 'Manage events';
-
-  @override
   String allCareTitle(String petName) {
     return 'All care';
   }
+
+  @override
+  String get viewAllCare => 'View all care';
 
   @override
   String get allCareInactiveSection => 'Other care';
@@ -679,23 +679,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dismiss => 'Dismiss';
 
   @override
-  String get careRhythmsTitle => 'Care Rhythms';
-
-  @override
-  String get careRhythmsSubtitle => 'Your recurring care routines.';
-
-  @override
   String get careActionsSubtitle =>
       'What\'s due from those routines and other scheduled care.';
-
-  @override
-  String get careRhythmsEmpty =>
-      'No recurring care routines yet. Add a recurring event to see it here.';
-
-  @override
-  String careRhythmNextDue(String date) {
-    return 'Next due $date';
-  }
 
   @override
   String get careProgressionEstablishedMarker => 'Established';
@@ -878,7 +863,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String careForPet(String petName) {
-    return 'Care for $petName';
+    return '$petName\'s care';
   }
 
   @override
@@ -4813,9 +4798,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get home => 'Home';
-
-  @override
-  String get eventsNavLabel => 'Events';
 
   @override
   String get settings => 'Settings';

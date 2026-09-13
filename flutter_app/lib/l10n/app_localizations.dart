@@ -740,17 +740,17 @@ abstract class AppLocalizations {
   /// **'Manage pets'**
   String get managePets;
 
-  /// No description provided for @manageEvents.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage events'**
-  String get manageEvents;
-
   /// No description provided for @allCareTitle.
   ///
   /// In en, this message translates to:
   /// **'All care'**
   String allCareTitle(String petName);
+
+  /// No description provided for @viewAllCare.
+  ///
+  /// In en, this message translates to:
+  /// **'View all care'**
+  String get viewAllCare;
 
   /// No description provided for @allCareInactiveSection.
   ///
@@ -1286,35 +1286,11 @@ abstract class AppLocalizations {
   /// **'Dismiss'**
   String get dismiss;
 
-  /// No description provided for @careRhythmsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Care Rhythms'**
-  String get careRhythmsTitle;
-
-  /// No description provided for @careRhythmsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Your recurring care routines.'**
-  String get careRhythmsSubtitle;
-
   /// No description provided for @careActionsSubtitle.
   ///
   /// In en, this message translates to:
   /// **'What\'s due from those routines and other scheduled care.'**
   String get careActionsSubtitle;
-
-  /// No description provided for @careRhythmsEmpty.
-  ///
-  /// In en, this message translates to:
-  /// **'No recurring care routines yet. Add a recurring event to see it here.'**
-  String get careRhythmsEmpty;
-
-  /// No description provided for @careRhythmNextDue.
-  ///
-  /// In en, this message translates to:
-  /// **'Next due {date}'**
-  String careRhythmNextDue(String date);
 
   /// No description provided for @careProgressionEstablishedMarker.
   ///
@@ -1637,7 +1613,7 @@ abstract class AppLocalizations {
   /// No description provided for @careForPet.
   ///
   /// In en, this message translates to:
-  /// **'Care for {petName}'**
+  /// **'{petName}\'s care'**
   String careForPet(String petName);
 
   /// No description provided for @dashboardNavLabel.
@@ -8642,12 +8618,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Home'**
   String get home;
-
-  /// No description provided for @eventsNavLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Events'**
-  String get eventsNavLabel;
 
   /// No description provided for @settings.
   ///

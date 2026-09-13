@@ -116,8 +116,8 @@
   "noFosteredPets": "You are not fostering any pets yet.",
   "allPets": "All pets",
   "managePets": "Manage pets",
-  "manageEvents": "Manage events",
   "allCareTitle": "All care",
+  "viewAllCare": "View all care",
   "@allCareTitle": {
     "placeholders": {
       "petName": {
@@ -245,12 +245,7 @@
     }
   },
   "dismiss": "Dismiss",
-  "careRhythmsTitle": "Care Rhythms",
-  "careRhythmsSubtitle": "Your recurring care routines.",
   "careActionsSubtitle": "What's due from those routines and other scheduled care.",
-  "careRhythmsEmpty": "No recurring care routines yet. Add a recurring event to see it here.",
-  "careRhythmNextDue": "Next due {date}",
-  "@careRhythmNextDue": { "placeholders": { "date": { "type": "String" } } },
   "careProgressionEstablishedMarker": "Established",
   "careProgressionMilestoneTitle": "A little milestone",
   "careProgressionWeightEstablishedBody": "{petName}'s regular weight monitoring is now part of her routine care.",
@@ -340,7 +335,7 @@
   "petsEyebrow": "PETS",
   "petsNavLabel": "Pets",
   "allCare": "All Actions",
-  "careForPet": "Care for {petName}",
+  "careForPet": "{petName}'s care",
   "@careForPet": {
     "placeholders": {
       "petName": {
@@ -1757,7 +1752,6 @@
   "unsupportedDocumentFormat": "Only JPG, PNG, and PDF documents are supported",
   "documentTooLarge": "Document must be 2 MB or smaller",
   "home": "Home",
-  "eventsNavLabel": "Events",
   "settings": "Settings",
   "upcomingEvents": "Upcoming events",
   "invite": "Invite",

@@ -229,7 +229,7 @@ test.describe('Guardian dashboard', () => {
     await page.goto(flutterGotoUrl('/pc/events'));
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, /^\/pc\/events(?:\?|$)/, 60_000);
-    await expect(page.getByText('Events', { exact: true }).first()).toBeVisible();
+    await expect(page.getByText('All Actions', { exact: true }).first()).toBeVisible();
     await expect(page.getByRole('tab')).toHaveCount(0);
     await expect(page.getByRole('button', { name: /Add an event/i })).toBeVisible();
     await expect(semanticsByName(page, /Due Med/i).first()).toBeVisible();

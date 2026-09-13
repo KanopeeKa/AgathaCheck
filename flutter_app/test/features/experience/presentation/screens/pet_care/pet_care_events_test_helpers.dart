@@ -215,7 +215,7 @@ Widget buildEventsScreen({
         builder: (context, state) => ExperienceShellScaffold(
           experience: AppExperience.petCare,
           currentLocation: state.uri.path,
-          screenTitle: 'Events',
+          screenTitle: 'All Actions',
           backPath: '/pc/home',
           contextualActions: [
             Builder(

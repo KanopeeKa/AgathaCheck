@@ -359,12 +359,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get managePets => 'Gérer les animaux';
 
   @override
-  String get manageEvents => 'Gérer les événements';
-
-  @override
   String allCareTitle(String petName) {
     return 'Tous les soins de $petName';
   }
+
+  @override
+  String get viewAllCare => 'Voir tous les soins';
 
   @override
   String get allCareInactiveSection => 'Autres soins';
@@ -688,23 +688,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dismiss => 'Ignorer';
 
   @override
-  String get careRhythmsTitle => 'Rythmes de soins';
-
-  @override
-  String get careRhythmsSubtitle => 'Vos routines de soins récurrentes.';
-
-  @override
   String get careActionsSubtitle =>
       'Ce qui est à faire à partir de ces routines et des soins planifiés.';
-
-  @override
-  String get careRhythmsEmpty =>
-      'Aucune routine récurrente pour l\'instant. Ajoutez un soin récurrent pour le voir ici.';
-
-  @override
-  String careRhythmNextDue(String date) {
-    return 'Prochaine échéance $date';
-  }
 
   @override
   String get careProgressionEstablishedMarker => 'Établi';
@@ -4892,9 +4877,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get home => 'Accueil';
-
-  @override
-  String get eventsNavLabel => 'Événements';
 
   @override
   String get settings => 'Paramètres';

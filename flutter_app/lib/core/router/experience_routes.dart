@@ -168,7 +168,7 @@ class _PetCareEventsScreen extends ConsumerWidget {
     return ExperienceShellScaffold(
       experience: AppExperience.petCare,
       currentLocation: GoRouterState.of(context).uri.path,
-      screenTitle: l.eventsNavLabel,
+      screenTitle: l.allCare,
       backPath: '/pc/home',
       contextualActions: [
         IconButton(
