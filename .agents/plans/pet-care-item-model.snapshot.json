@@ -15,8 +15,9 @@
   "child_plans": [
     {
       "plan_id": "care-status-consolidation",
-      "status": "pending",
-      "pr_url": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1122",
+      "merge_commit": "2481aa29da75a9d11f04cc8490e4e7d8d308b0ac"
     },
     {
       "plan_id": "care-presentation-primitives",
@@ -88,5 +89,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:4be9dc28086cc10c999f4f6fc7f33e6d06bfca99b68b862fb5df1f73aea82717"
+  "content_hash": "sha256:b2a5f119e7256d4ce5c007159f070e14f2ed9560d79acb05d43a1086cda8fd37"
 }

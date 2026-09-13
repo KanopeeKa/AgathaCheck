@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-presentation-primitives",
+  "programme_ref": "docs/domains/pet_care/changes/care-item-model-delivery-plan.md",
+  "approved_at": "2026-09-13T12:40:00Z",
+  "approved_by": "PLACEHOLDER — awaiting approve-autonomous care-presentation-primitives",
+  "approved_until": "2026-09-15T12:40:00Z",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Accessibility fix for care status treatment",
+      "branch": "cursor/care-primitives-a11y-status-c9c6",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_status.dart",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/care_event_status_line.dart",
+        "flutter_app/test/features/health_tracking/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**",
+        "flutter_app/lib/l10n/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Pre-existing contrast defect: warning colour on small light-surface text. Record measured contrast ratios in the PR body.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Four semantic-role primitives, sparkline, shared tokens",
+      "branch": "cursor/care-primitives-roles-c9c6",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/presentation/widgets/care_surface/**",
+        "flutter_app/test/features/pet_care/presentation/widgets/care_surface/**",
+        "docs/design/system.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**",
+        "flutter_app/lib/features/pet_profile/presentation/screens/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "No new raw colour literals. New files must be split, not allowlisted, if over 500 lines.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:cb8b970477751379cb025ecf289d3aad8e7f367fb376f90eb7c67920c3dc7beb"
+}
