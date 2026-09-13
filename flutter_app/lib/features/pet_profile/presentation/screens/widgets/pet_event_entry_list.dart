@@ -62,19 +62,20 @@ class PetEventEntryList extends StatelessWidget {
         final detail = entry.dosage.trim().isEmpty
             ? healthEntryTypeLabel(l, entry.type)
             : '${healthEntryTypeLabel(l, entry.type)} · ${entry.dosage}';
-        final statusColor = healthEntryStatusColor(entry, colorScheme);
+        final statusTreatment = healthEntryStatusTreatment(entry, colorScheme);
         final statusLine = formatHealthEntryStatusLine(entry, l);
 
         return ListTile(
-          leading: Icon(iconForType(entry.type), color: statusColor),
+          leading: Icon(iconForType(entry.type), color: colorScheme.primary),
           title: Text(entry.name),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(detail),
-              Text(
-                statusLine,
-                style: theme.textTheme.bodySmall?.copyWith(color: statusColor),
+              HealthEntryStatusLabel(
+                text: statusLine,
+                treatment: statusTreatment,
+                compact: false,
               ),
             ],
           ),

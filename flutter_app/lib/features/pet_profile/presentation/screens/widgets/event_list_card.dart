@@ -31,9 +31,14 @@ class EventListCard extends StatelessWidget {
         ? healthEntryTypeLabel(l, entry.type)
         : '${healthEntryTypeLabel(l, entry.type)} · ${entry.dosage}';
     final statusLine = formatManageEventStatusLine(entry, l, history);
-    final statusColor = isCurrentOccurrenceSkipped(entry, history)
-        ? colorScheme.onSurfaceVariant
-        : healthEntryStatusColor(entry, colorScheme);
+    final skipped = isCurrentOccurrenceSkipped(entry, history);
+    final statusTreatment = skipped
+        ? HealthEntryStatusTreatment(
+            kind: HealthEntryStatusKind.neutral,
+            icon: Icons.remove_circle_outline,
+            foregroundColor: colorScheme.onSurfaceVariant,
+          )
+        : healthEntryStatusTreatment(entry, colorScheme);
 
     return Semantics(
       button: true,
@@ -74,12 +79,10 @@ class EventListCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    statusLine,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: statusColor,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  HealthEntryStatusLabel(
+                    text: statusLine,
+                    treatment: statusTreatment,
+                    compact: false,
                   ),
                   const SizedBox(height: 2),
                   Icon(

@@ -254,12 +254,10 @@ class _LegacySummary extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: colorScheme.outlineVariant),
           ),
-          child: Text(
-            status.text,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: status.statusColor ?? colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-            ),
+          child: CareEventStatusLineView(
+            status: status,
+            theme: theme,
+            colorScheme: colorScheme,
           ),
         ),
       ],
