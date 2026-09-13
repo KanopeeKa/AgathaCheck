@@ -114,6 +114,15 @@
   "allPets": "Tous les animaux",
   "managePets": "Gérer les animaux",
   "manageEvents": "Gérer les événements",
+  "allCareTitle": "Tous les soins de {petName}",
+  "@allCareTitle": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
+  "allCareInactiveSection": "Autres soins",
   "eventFilterClosed": "Fermé",
   "eventFilterRecurring": "Récurrent",
   "eventFilterOneTime": "Ponctuel",
@@ -1650,6 +1659,13 @@
   "occurrenceSkipped": "Ignoré",
   "entryNotFound": "Entrée introuvable",
   "nextOccurrence": "Prochaine occurrence",
+  "careItemDatesTitle": "Dates",
+  "careItemEstablishedBody": "Fait partie des soins réguliers de {petName}.",
+  "@careItemEstablishedBody": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
   "deleteEntryNamedConfirm": "Supprimer « {name} » ? Cette action est irréversible.",
   "@deleteEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
   "deleteRecurringEntryNamedConfirm": "Supprimer « {name} » ? Toutes les itérations de cet événement récurrent seront définitivement supprimées.",

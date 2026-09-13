@@ -8,12 +8,17 @@ import 'health_entry_form/health_entry_frequency_labels.dart';
 
 /// Whether the event series is closed (W15 close or one-time completed).
 bool isHealthEntrySeriesClosed(HealthEntry entry) {
+  return isHealthEntrySeriesClosedAt(entry, DateTime.now());
+}
+
+/// Closed-series check using an explicit evaluation instant (tests, grouping).
+bool isHealthEntrySeriesClosedAt(HealthEntry entry, DateTime now) {
   if (entry.status == 'completed') return true;
   if (entry.frequency == HealthFrequency.once) {
     return entry.isCompleted;
   }
   if (entry.repeatEndDate == null) return false;
-  final today = calendarDateOnly(DateTime.now());
+  final today = calendarDateOnly(now);
   final end = calendarDateOnly(entry.repeatEndDate!);
   return end.isBefore(today);
 }

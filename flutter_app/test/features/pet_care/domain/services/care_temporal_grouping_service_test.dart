@@ -65,6 +65,21 @@ void main() {
     expect(grouping.groupForEntry(outside, now), isNull);
   });
 
+  test('closed recurring series leaves all buckets immediately', () {
+    final entry = _entry(
+      id: 'closed-series',
+      petId: petId,
+      nextDue: DateTime(2030, 5, 7),
+      frequency: HealthFrequency.monthly,
+    ).copyWith(repeatEndDate: DateTime(2030, 5, 1));
+
+    expect(grouping.groupForEntry(entry, now), isNull);
+    expect(
+      grouping.bucketsForEntries([entry], petId: petId, now: now).isEmpty,
+      isTrue,
+    );
+  });
+
   test('completed entry leaves all buckets immediately', () {
     final entry = _entry(
       id: 'done',

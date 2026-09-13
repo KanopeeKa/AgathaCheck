@@ -355,6 +355,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageEvents => 'Manage events';
 
   @override
+  String allCareTitle(String petName) {
+    return 'All care';
+  }
+
+  @override
+  String get allCareInactiveSection => 'Other care';
+
+  @override
   String get eventFilterClosed => 'Closed';
 
   @override
@@ -4723,6 +4731,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nextOccurrence => 'Next occurrence';
+
+  @override
+  String get careItemDatesTitle => 'Dates';
+
+  @override
+  String careItemEstablishedBody(String petName) {
+    return 'Part of $petName\'s regular care.';
+  }
 
   @override
   String deleteEntryNamedConfirm(String name) {

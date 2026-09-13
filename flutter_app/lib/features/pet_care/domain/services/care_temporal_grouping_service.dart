@@ -1,5 +1,6 @@
 import '../../../../core/utils/calendar_date.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../health_tracking/presentation/widgets/pet_event_lifecycle.dart';
 import '../../../health_tracking/domain/entities/health_occurrence.dart';
 import '../../../health_tracking/domain/occurrence_missed.dart';
 import '../../../pet_profile/domain/entities/care_status.dart';
@@ -17,7 +18,7 @@ class CareTemporalGroupingService {
   /// Returns null when the entry is completed, has no due date, or is outside the
   /// reminder horizon.
   CareTemporalGroup? groupForEntry(HealthEntry entry, DateTime now) {
-    if (!_entryAffectsGrouping(entry)) return null;
+    if (!_entryAffectsGrouping(entry, now)) return null;
 
     final today = calendarDateOnly(now);
     final dueDay = calendarDateOnly(entry.nextDueDate!);
@@ -133,9 +134,10 @@ class CareTemporalGroupingService {
     );
   }
 
-  bool _entryAffectsGrouping(HealthEntry entry) {
+  bool _entryAffectsGrouping(HealthEntry entry, DateTime now) {
     if (entry.status == 'completed') return false;
     if (entry.isCompleted) return false;
+    if (isHealthEntrySeriesClosedAt(entry, now)) return false;
     if (entry.nextDueDate == null) return false;
     return true;
   }

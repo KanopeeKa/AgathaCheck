@@ -746,6 +746,18 @@ abstract class AppLocalizations {
   /// **'Manage events'**
   String get manageEvents;
 
+  /// No description provided for @allCareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All care'**
+  String allCareTitle(String petName);
+
+  /// No description provided for @allCareInactiveSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Other care'**
+  String get allCareInactiveSection;
+
   /// No description provided for @eventFilterClosed.
   ///
   /// In en, this message translates to:
@@ -8498,6 +8510,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Next occurrence'**
   String get nextOccurrence;
+
+  /// No description provided for @careItemDatesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates'**
+  String get careItemDatesTitle;
+
+  /// No description provided for @careItemEstablishedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Part of {petName}\'s regular care.'**
+  String careItemEstablishedBody(String petName);
 
   /// No description provided for @deleteEntryNamedConfirm.
   ///

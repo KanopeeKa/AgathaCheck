@@ -117,6 +117,15 @@
   "allPets": "All pets",
   "managePets": "Manage pets",
   "manageEvents": "Manage events",
+  "allCareTitle": "All care",
+  "@allCareTitle": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
+  "allCareInactiveSection": "Other care",
   "eventFilterClosed": "Closed",
   "eventFilterRecurring": "Recurring",
   "eventFilterOneTime": "One-time",
@@ -1715,6 +1724,13 @@
   "occurrenceSkipped": "Skipped",
   "entryNotFound": "Entry not found",
   "nextOccurrence": "Next occurrence",
+  "careItemDatesTitle": "Dates",
+  "careItemEstablishedBody": "Part of {petName}'s regular care.",
+  "@careItemEstablishedBody": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
   "deleteEntryNamedConfirm": "Delete \"{name}\"? This cannot be undone.",
   "@deleteEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
   "deleteRecurringEntryNamedConfirm": "Delete \"{name}\"? All iterations of this recurring event will be permanently removed.",
