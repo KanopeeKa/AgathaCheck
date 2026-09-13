@@ -11,7 +11,7 @@
   "base_branch": "main",
   "control_issue": 1,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": null,
+  "current_child_plan_id": "care-family-taxonomy",
   "child_plans": [
     {
       "plan_id": "care-status-consolidation",
@@ -21,8 +21,9 @@
     },
     {
       "plan_id": "care-presentation-primitives",
-      "status": "pending",
-      "pr_url": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1123",
+      "merge_commit": "eb5cfe76ee62fe2d18e899b1aa9769ab4f5f4f4c"
     },
     {
       "plan_id": "care-family-taxonomy",
@@ -89,5 +90,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:b2a5f119e7256d4ce5c007159f070e14f2ed9560d79acb05d43a1086cda8fd37"
+  "content_hash": "sha256:8630141197cea81874a8d30823c32b36bd16bf8e27d1d46cd8a5c5d5b8476887"
 }

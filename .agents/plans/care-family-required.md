@@ -147,17 +147,17 @@ flutter_app/test/features/health_tracking/**
 
 ```yaml
 autonomy: halted
-current_phase: null
-last_completed_phase: null
-halt_reason: "awaiting approval; blocked on care-family-taxonomy merge and breaking-change sign-off (O2)"
-next_action: "confirm care-family-taxonomy merged, obtain O2 sign-off, then bootstrap control issue"
+current_phase: 2
+last_completed_phase: 1
+halt_reason: halted
+next_action: "start phase 2: checkout cursor/care-family-required-client-c9c6"
 artifact_ref:
-  branch: cursor/care-item-model-plans-c9c6
+  branch: main
   plan_path: .agents/plans/care-family-required.md
-  plan_commit: null
+  plan_commit: f9dd24c01340dc6330b664d60f5277c1d63aa880
   snapshot_path: .agents/plans/care-family-required.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: f9dd24c01340dc6330b664d60f5277c1d63aa880
 open_prs: []
-merge_commits: {}
+merge_commits: {"1":"f9dd24c01340dc6330b664d60f5277c1d63aa880"}
 debt_issue_refs: []
 ```

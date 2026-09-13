@@ -157,16 +157,16 @@ as each slice lands. It must not touch `flutter_app/**` or `server/**`.
 
 ```yaml
 autonomy: halted
-current_phase: null
+current_phase: orchestrate
 last_completed_phase: null
-halt_reason: "awaiting approval — approve-autonomous pet-care-item-model"
-next_action: "product owner approval, then bootstrap control issues for the roadmap and child A"
+halt_reason: halted
+next_action: "bootstrap and gate child plan care-family-taxonomy"
 artifact_ref:
-  branch: cursor/care-item-model-plans-c9c6
+  branch: main
   plan_path: .agents/plans/pet-care-item-model.md
-  plan_commit: null
+  plan_commit: f9dd24c01340dc6330b664d60f5277c1d63aa880
   snapshot_path: .agents/plans/pet-care-item-model.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: f9dd24c01340dc6330b664d60f5277c1d63aa880
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
