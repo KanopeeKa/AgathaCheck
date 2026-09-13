@@ -103,14 +103,14 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Removing _OperationsDeskTheme is not a visual change — its aliases already resolve to the main palette. Prove no visual diff.",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1147",
+      "pr_head_sha": "0c084caf2c830b26d840acd31b9bcc0b1a63b696",
+      "merge_commit": "d4b7768e204e86f6bf62833cf9f60cb66eb70d9c",
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:47e8e2064e59be35c784c489b109aadb91a930d11476d1b7f8a8d5578214b540"
+  "content_hash": "sha256:a1c85c9d2afdc122a4d9129c2bcbffca0f908546d58c9b2d9b4e473d1827d329"
 }
