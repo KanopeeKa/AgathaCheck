@@ -25,10 +25,7 @@ class PetDetailActions {
 
   /// Mirrors server `HEALTH_EDIT` (`userCanManagePet`): owner, shared carer, or
   /// foster carer — not organisation view-only access to inventory pets.
-  static bool canEditHealth({
-    required Pet pet,
-    required PetViewerRole role,
-  }) {
+  static bool canEditHealth({required Pet pet, required PetViewerRole role}) {
     switch (role) {
       case PetViewerRole.sharedCarer:
       case PetViewerRole.fosterCarer:

@@ -25,8 +25,7 @@ class _FakeCareIntelligenceRepository implements CareIntelligenceRepository {
   onRespond;
 
   @override
-  Future<List<CareRecommendation>> getRecommendations(String petId) async =>
-      [];
+  Future<List<CareRecommendation>> getRecommendations(String petId) async => [];
 
   @override
   Future<List<CareSafeguard>> getSafeguards(String petId) async => [];
@@ -85,10 +84,7 @@ Widget _wrap({
     child: MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(
-        body: child,
-        bottomNavigationBar: const SizedBox.shrink(),
-      ),
+      home: Scaffold(body: child, bottomNavigationBar: const SizedBox.shrink()),
     ),
   );
 }
@@ -116,10 +112,11 @@ void main() {
     tester,
   ) async {
     final repository = _FakeCareIntelligenceRepository(
-      onRespond: ({required petId, required recommendationId, required action}) async {
-        expect(action, CareRecommendationResponseAction.accept);
-        return _recommendation;
-      },
+      onRespond:
+          ({required petId, required recommendationId, required action}) async {
+            expect(action, CareRecommendationResponseAction.accept);
+            return _recommendation;
+          },
     );
 
     await tester.pumpWidget(
@@ -139,19 +136,15 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('Weight check rhythm added'),
-      findsOneWidget,
-    );
+    expect(find.text('Weight check rhythm added'), findsOneWidget);
   });
 
-  testWidgets('accept shows error snackbar when respond fails', (
-    tester,
-  ) async {
+  testWidgets('accept shows error snackbar when respond fails', (tester) async {
     final repository = _FakeCareIntelligenceRepository(
-      onRespond: ({required petId, required recommendationId, required action}) async {
-        throw const CareIntelligenceException(500);
-      },
+      onRespond:
+          ({required petId, required recommendationId, required action}) async {
+            throw const CareIntelligenceException(500);
+          },
     );
 
     await tester.pumpWidget(
@@ -202,9 +195,10 @@ void main() {
 
   testWidgets('403 error shows forbidden snackbar', (tester) async {
     final repository = _FakeCareIntelligenceRepository(
-      onRespond: ({required petId, required recommendationId, required action}) async {
-        throw const CareIntelligenceException(403);
-      },
+      onRespond:
+          ({required petId, required recommendationId, required action}) async {
+            throw const CareIntelligenceException(403);
+          },
     );
 
     await tester.pumpWidget(

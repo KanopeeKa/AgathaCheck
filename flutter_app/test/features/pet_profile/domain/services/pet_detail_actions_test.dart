@@ -125,10 +125,7 @@ void main() {
     test('org inventory pet in guardian experience cannot edit health', () {
       final pet = _pet(organizationId: 'o1', organizationName: 'Shelter');
       expect(
-        PetDetailActions.canEditHealth(
-          pet: pet,
-          role: PetViewerRole.guardian,
-        ),
+        PetDetailActions.canEditHealth(pet: pet, role: PetViewerRole.guardian),
         isFalse,
       );
       final actions = PetDetailActions.visible(
