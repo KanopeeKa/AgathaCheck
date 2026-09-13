@@ -19,7 +19,6 @@ PR_URL=""
 REF_LABEL=""
 MAX_ATTEMPTS="${UAT_BABYSIT_MAX_ATTEMPTS:-3}"
 LOCK_DIR="${UAT_BABYSIT_LOCK_DIR:-/tmp/agatha-uat-babysit}"
-SHARD_TOTAL="$("${ROOT}/scripts/e2e_shard_total.sh")"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -71,6 +70,9 @@ Another UAT babysit is active (pid ${holder}). Latest \`main\` will be picked up
 }
 
 run_localhost_e2e() {
+  local shard_total
+  shard_total="$("${ROOT}/scripts/e2e_shard_total.sh")"
+
   echo "==> Bootstrapping stack for E2E"
   sudo pg_ctlcluster 16 main start 2>/dev/null || true
   chmod +x "${ROOT}/e2e/scripts/bootstrap-db.sh"
@@ -100,11 +102,11 @@ run_localhost_e2e() {
   trap 'kill $SERVER_PID 2>/dev/null || true; rm -f "${LOCK_DIR}/active.lock"' EXIT
   sleep 3
 
-  echo "==> Running ${SHARD_TOTAL} localhost E2E shards"
+  echo "==> Running ${shard_total} localhost E2E shards"
   cd "${ROOT}/e2e"
   local shard
-  for shard in $(seq 1 "$SHARD_TOTAL"); do
-    echo "--- shard ${shard}/${SHARD_TOTAL} ---"
+  for shard in $(seq 1 "$shard_total"); do
+    echo "--- shard ${shard}/${shard_total} ---"
     npm run test:ci-shard -- "$shard"
   done
 }

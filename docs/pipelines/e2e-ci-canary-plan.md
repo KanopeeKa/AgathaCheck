@@ -44,10 +44,10 @@ flowchart TD
 
 | Stage | Tests | Retries | Blocking? |
 |-------|-------|---------|-----------|
-| PR CI | `@smoke-ci` (~3 journeys) | **0** | Yes (new `ci-gate` input) |
-| UAT deploy | HTTP smoke script | n/a | Yes |
-| UAT deploy | `@smoke-uat` live Playwright | **0** | Yes |
-| UAT deploy | Full localhost E2E shards | 0→1 during transition | Yes |
+| PR CI | `@smoke-ci` (~3 journeys) | **0** | Yes (`ci-gate`) |
+| Merge → `main` | `pre-uat-e2e.yml` — 9 Pet Care shards | **0** | Yes (async; gates promote) |
+| UAT deploy | HTTP smoke script | n/a | Yes (`prod-ready`) |
+| Advisory | `uat-live-e2e.yml` — `@smoke-uat` live | **0** | No |
 | Prod (future) | Security / attestation | TBD | TBD |
 
 **Invariant:** `@smoke-ci ⊂ @smoke-uat` — every CI canary test is also a UAT smoke test.

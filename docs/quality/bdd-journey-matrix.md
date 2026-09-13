@@ -223,7 +223,9 @@ feed.
 
 ### J7b — Organisation v2 profile & permissions (2026-08)
 
-| Feature | Scenarios | Mapped | Playwright | Pre-UAT executed |
+**Historical (pre-freeze):** Shelter/Fostering specs below are frozen — `Pre-UAT executed` was **yes** before the domain freeze; they are **not** in the active 9-shard manifest (`frozen-e2e-specs.mjs`).
+
+| Feature | Scenarios | Mapped | Playwright | Pre-UAT (pre-freeze) |
 |---------|----------:|-------:|------------|------------------|
 | `organisation_profile.feature` | 4 | 4 | `organisation.profile.spec.ts` (`@smoke-ci` anonymous profile) | yes |
 | `organisation_discovery.feature` | 5 | 5 | `organisation.discovery.spec.ts` | yes |
