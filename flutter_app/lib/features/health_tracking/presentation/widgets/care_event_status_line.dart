@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
@@ -12,7 +11,7 @@ class CareEventStatusLine {
   const CareEventStatusLine({
     required this.text,
     this.statusSuffix,
-    this.statusColor,
+    this.suffixTreatment,
   });
 
   final String text;
@@ -20,8 +19,8 @@ class CareEventStatusLine {
   /// Localized status word appended after the date separator, e.g. "Overdue".
   final String? statusSuffix;
 
-  /// Applied to [statusSuffix] only — date portion stays neutral.
-  final Color? statusColor;
+  /// Accessible treatment for [statusSuffix] — date portion stays neutral.
+  final HealthEntryStatusTreatment? suffixTreatment;
 }
 
 CareEventStatusLine formatCareEventStatusLine(
@@ -32,7 +31,7 @@ CareEventStatusLine formatCareEventStatusLine(
   if (entry.isCompleted) {
     return CareEventStatusLine(
       text: formatHealthEntryStatusLine(entry, l),
-      statusColor: AppColorTokens.success,
+      suffixTreatment: completedStatusTreatment(),
     );
   }
 
@@ -43,12 +42,16 @@ CareEventStatusLine formatCareEventStatusLine(
     return CareEventStatusLine(
       text: '$date · ${l.urgencyOverdue}',
       statusSuffix: l.urgencyOverdue,
-      statusColor: colorScheme.error,
+      suffixTreatment: overdueStatusTreatment(colorScheme),
     );
   }
 
   if (entry.isDueToday) {
-    return CareEventStatusLine(text: l.urgencyDueToday);
+    return CareEventStatusLine(
+      text: l.urgencyDueToday,
+      statusSuffix: l.urgencyDueToday,
+      suffixTreatment: dueTodayStatusTreatment(),
+    );
   }
 
   if (entry.nextDueDate != null) {
@@ -120,7 +123,7 @@ CareEventStatusLine formatOccurrenceCareEventStatusLine(
       return CareEventStatusLine(
         text: '$instant$openSuffix$missedSuffix · $suffix',
         statusSuffix: suffix,
-        statusColor: colorScheme.error,
+        suffixTreatment: overdueStatusTreatment(colorScheme),
       );
     case OccurrenceZone.dueToday:
       if (headline.scheduledTime != null &&
@@ -130,16 +133,77 @@ CareEventStatusLine formatOccurrenceCareEventStatusLine(
         return CareEventStatusLine(
           text: '$instant$openSuffix · $suffix',
           statusSuffix: suffix,
-          statusColor: AppColorTokens.warning,
+          suffixTreatment: dueTodayStatusTreatment(),
         );
       }
       return CareEventStatusLine(
         text: '${l.urgencyDueToday}$openSuffix',
         statusSuffix: summary.openCount == 1 ? l.urgencyDueToday : null,
-        statusColor: summary.openCount == 1 ? AppColorTokens.warning : null,
+        suffixTreatment:
+            summary.openCount == 1 ? dueTodayStatusTreatment() : null,
       );
     case OccurrenceZone.comingUp:
       final instant = formatOccurrenceInstant(headline, l, context: context);
       return CareEventStatusLine(text: '$instant$openSuffix');
+  }
+}
+
+/// Renders [CareEventStatusLine] with neutral date text and accessible suffix chip.
+class CareEventStatusLineView extends StatelessWidget {
+  const CareEventStatusLineView({
+    super.key,
+    required this.status,
+    required this.theme,
+    required this.colorScheme,
+  });
+
+  final CareEventStatusLine status;
+  final ThemeData theme;
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    final suffix = status.statusSuffix;
+    final treatment = status.suffixTreatment;
+    if (suffix == null && treatment != null) {
+      return HealthEntryStatusLabel(
+        text: status.text,
+        treatment: treatment,
+        style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500),
+      );
+    }
+    if (suffix == null || treatment == null) {
+      return Text(
+        status.text,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: colorScheme.onSurfaceVariant,
+          fontWeight: FontWeight.w500,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+
+    final prefix = status.text.substring(0, status.text.length - suffix.length);
+    return Row(
+      children: [
+        Flexible(
+          child: Text(
+            prefix,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        HealthEntryStatusLabel(
+          text: suffix,
+          treatment: treatment,
+          style: theme.textTheme.bodySmall,
+        ),
+      ],
+    );
   }
 }

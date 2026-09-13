@@ -90,7 +90,9 @@ abstract final class AppColorTokens {
   static const Color success = Color(0xFF2B7A2E);
   static const Color successLight = Color(0xFFE8F5E9);
   static const Color warning = Color(0xFFD6A63A);
+  static const Color warningLight = Color(0xFFFFF4D8);
   static const Color danger = Color(0xFFC65B58);
+  static const Color dangerLight = Color(0xFFFBE9E8);
 
   /// Memorial overlay on passed-away pet photos (lighten blend).
   static const Color passedAwayPhotoOverlay = Color(0xDDFFFFFF);

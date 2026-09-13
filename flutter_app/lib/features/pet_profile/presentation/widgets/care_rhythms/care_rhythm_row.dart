@@ -41,15 +41,20 @@ class CareRhythmRow extends StatelessWidget {
         children: [
           Text(cadence),
           if (nextDue != null)
-            Text(
-              nextDue,
-              key: const Key('care_rhythm_next_due'),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: closed
-                    ? colorScheme.onSurfaceVariant
-                    : healthEntryStatusColor(entry, colorScheme),
-              ),
-            ),
+            closed
+                ? Text(
+                    nextDue,
+                    key: const Key('care_rhythm_next_due'),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  )
+                : HealthEntryStatusLabel(
+                    key: const Key('care_rhythm_next_due'),
+                    text: nextDue,
+                    treatment: healthEntryStatusTreatment(entry, colorScheme),
+                    compact: false,
+                  ),
           if (isEstablished)
             Text(
               l.careProgressionEstablishedMarker,

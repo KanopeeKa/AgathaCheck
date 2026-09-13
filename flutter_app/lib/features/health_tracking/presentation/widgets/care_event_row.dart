@@ -176,41 +176,10 @@ class _StatusLineText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final suffix = status.statusSuffix;
-    if (suffix == null || status.statusColor == null) {
-      return Text(
-        status.text,
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: colorScheme.onSurfaceVariant,
-          fontWeight: FontWeight.w500,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      );
-    }
-
-    final prefix = status.text.substring(0, status.text.length - suffix.length);
-    return Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(
-            text: prefix,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          TextSpan(
-            text: suffix,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: status.statusColor,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
+    return CareEventStatusLineView(
+      status: status,
+      theme: theme,
+      colorScheme: colorScheme,
     );
   }
 }
