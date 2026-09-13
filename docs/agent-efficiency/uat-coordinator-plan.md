@@ -416,7 +416,7 @@ Addresses Jul 23 queue pile-up. **Not in original plan; required for merge-rate 
 
 ## Non-goals
 
-- Replacing the 10-shard UAT E2E contract or `prod-ready` gates
+- Replacing the 9-shard Pre-UAT E2E contract or `prod-ready` gates
 - Weakening gates to pass UAT
 - Project board writes from Cloud Agents
 - Coordinator as substitute for `UAT_SSH_ENABLED` / `UAT_AUTO_MIGRATE` (CI HTTP IP whitelist is not available)

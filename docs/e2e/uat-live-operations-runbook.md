@@ -25,7 +25,7 @@ GitHub Actions deploy-uat.yml
   │    └─ migrate.js up (when UAT_AUTO_MIGRATE=true)
   ├─ UAT post-deploy smoke (HTTP)
   ├─ UAT live smoke E2E (@smoke on https://uat.agathatrack.com)
-  └─ UAT full E2E localhost (10 shards — not live UAT)
+  └─ UAT full E2E localhost (9 shards — not live UAT)
 ```
 
 | Layer | Typical symptoms | First log / file |

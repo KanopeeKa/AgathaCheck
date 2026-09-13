@@ -19,7 +19,7 @@ Single source of truth for the UAT release pipeline (CI-driven, Jul 2026).
 ```mermaid
 flowchart TD
   PR["PR CI (@smoke-ci + unit tests)"] --> MERGE[merge to main]
-  MERGE --> PRE["pre-uat-e2e.yml — 11-shard localhost E2E"]
+  MERGE --> PRE["pre-uat-e2e.yml — 9-shard localhost E2E"]
   PRE -->|green + HEAD match| PROMOTE[promote-uat.yml — uat-* tag]
   PROMOTE --> DEPLOY["deploy-uat.yml — deploy + HTTP smoke"]
   DEPLOY --> READY[prod-ready]
@@ -45,7 +45,7 @@ flowchart TD
 
 **Trigger:** every push to `main` (queued via `concurrency: pre-uat-e2e`).
 
-**Steps:** resolve `origin/main` HEAD → build web → 11-shard Playwright → gate-summary.
+**Steps:** resolve `origin/main` HEAD → build web → 9-shard Playwright → gate-summary.
 
 **On green + HEAD match:** `promote-uat.yml` runs via `workflow_run` → `uat-*` tag → `deploy-uat.yml`.
 

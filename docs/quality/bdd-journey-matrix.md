@@ -256,7 +256,7 @@ feed.
 
 **E2E fixtures:** `seedDiscoverableOrganization`, `getMemberPrivacySettings`, `updateMemberPrivacySettings` in `e2e/playwright/support/api.ts`; UAT seed `org-v3-demo` in `server/scripts/seed.js`.
 
-**Note:** **Pre-UAT executed** = listed in `e2e/scripts/shard-files.mjs` (12-shard manifest, Aug 2026).
+**Note:** **Pre-UAT executed** = listed in `e2e/scripts/shard-files.mjs` (9-shard Pet Care manifest; frozen Shelter specs excluded).
 
 ---
 

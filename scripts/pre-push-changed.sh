@@ -5,7 +5,7 @@
 # Usage:
 #   ./scripts/pre-push-changed.sh           # vs origin/main
 #   ./scripts/pre-push-changed.sh --full    # delegate to pre-push.sh
-#   ./scripts/pre-push-changed.sh --e2e-shards 3,12   # run listed pre-UAT shards (stack must be up)
+#   ./scripts/pre-push-changed.sh --e2e-shards 3,8   # run listed pre-UAT shards (stack must be up)
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

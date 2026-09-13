@@ -21,7 +21,7 @@ tags: [e2e, ci, canary, plan, pipeline]
 
 1. **Fast PR CI** — catch cross-cutting regressions in ~3–4 min without running full Playwright shards.
 2. **Fail fast on UAT live smoke** — `retries: 0` on `@smoke-uat`; fix flakes with in-test polling, not whole-test retries.
-3. **Keep prod-ready contract** — UAT deploy still runs **live `@smoke-uat` + full localhost E2E (10 shards)** before `Deploy UAT / Prod ready`.
+3. **Keep prod-ready contract** — **`pre-uat-e2e.yml`** runs full localhost E2E (**9 Pet Care shards**) on merge to `main`; UAT deploy runs HTTP smoke (live `@smoke-uat` is advisory via `uat-live-e2e.yml`).
 4. **Post-merge autonomy** (later phase) — extend babysit+ to watch UAT deploy through prod-ready.
 5. **Prod promotion enrichment** (future) — security scans after prod-ready; not in this initiative’s first delivery.
 
@@ -33,16 +33,13 @@ tags: [e2e, ci, canary, plan, pipeline]
 flowchart TD
   PR[PR → main] --> CI["CI: @smoke-ci (retries 0)"]
   CI --> MERGE[merge]
-  MERGE --> PROMOTE[promote-uat tag]
+  MERGE --> PRE["pre-uat-e2e.yml — 9 shards"]
+  PRE -->|green + HEAD match| PROMOTE[promote-uat tag]
   PROMOTE --> DEPLOY[deploy-uat.yml]
   DEPLOY --> HTTP[HTTP smoke]
-  DEPLOY --> LIVE["@smoke-uat live (retries 0)"]
-  DEPLOY --> FULL["full E2E 10 shards"]
   HTTP --> PR_READY[prod-ready]
-  LIVE --> PR_READY
-  FULL --> PR_READY
   PR_READY --> PROD[deploy-prod.yml]
-  PROD --> FUTURE["future: DAST / headers / prod smoke"]
+  NIGHTLY["uat-live-e2e.yml — @smoke-uat advisory"] -.-> WARN[warning only]
 ```
 
 | Stage | Tests | Retries | Blocking? |
@@ -124,7 +121,7 @@ flowchart TD
 | Slim `@smoke-uat` | Drop signup from UAT smoke if login covers routing; keep domain smokes (pet, weight) on UAT only |
 | `weight.tracking` `@smoke` | Fix or demote — currently fails both attempts on live UAT in sampled runs |
 
-**Unchanged:** `uat-e2e-full` (10 shards) remains blocking for `prod-ready`.
+**Current:** `pre-uat-e2e.yml` (9 shards) gates UAT promotion on merge to `main`.
 
 **Exit:** Live smoke job ≤5 min on green; no pass-on-retry in steady state.
 
@@ -142,7 +139,7 @@ flowchart TD
 | Hardening | Apply `toPass` pattern to top flake specs (auth.profile, org.management — passed on retry in logs) |
 | Optional | Staged deploy-uat: run affected shard(s) before remaining 9 (separate from smoke tiers) |
 
-**Exit:** Median failed deploy no longer waits for 10× retry-doubled shards on cascade failures.
+**Exit:** Median failed pre-UAT run no longer waits for 9× retry-doubled shards on cascade failures.
 
 **Risk:** Medium — tune per-shard before global `retries: 0`.
 
@@ -201,7 +198,7 @@ Track in [ci-cd-gates.md](./ci-cd-gates.md) § follow-up when scheduled.
 
 ## Non-goals (this initiative)
 
-- Replacing full 10-shard E2E on UAT deploy
+- Replacing full 9-shard Pre-UAT E2E on merge to `main`
 - Running domain shards on every PR (use `@smoke-ci` + existing Flutter/Jest shards instead)
 - Prod security scans in Phase 1–4
 

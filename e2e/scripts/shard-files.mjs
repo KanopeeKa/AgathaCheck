@@ -3,7 +3,8 @@
  * File-balanced Playwright shards for Pre-UAT E2E (active Pet Care specs only).
  *
  * Frozen Shelter/Fostering specs are listed in frozen-e2e-specs.mjs and validated
- * via validate-shard-manifest.mjs allowlist — not run in CI shards.
+ * via validate-shard-manifest.mjs allowlist — not run in CI shards (9 active shards
+ * since Shelter domain freeze; was 12–13 when org/foster specs were in the matrix).
  *
  * Usage:
  *   node e2e/scripts/shard-files.mjs           # print manifest summary

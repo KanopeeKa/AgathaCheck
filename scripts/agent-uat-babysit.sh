@@ -19,7 +19,7 @@ PR_URL=""
 REF_LABEL=""
 MAX_ATTEMPTS="${UAT_BABYSIT_MAX_ATTEMPTS:-3}"
 LOCK_DIR="${UAT_BABYSIT_LOCK_DIR:-/tmp/agatha-uat-babysit}"
-SHARD_TOTAL=11
+SHARD_TOTAL="$("${ROOT}/scripts/e2e_shard_total.sh")"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
