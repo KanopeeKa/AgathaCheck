@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_status.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_rhythms/care_rhythm_row.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -85,10 +86,13 @@ void main() {
     expect(dueFinder, findsOneWidget);
     expect(markerFinder, findsOneWidget);
 
-    final dueWidget = tester.widget<Text>(dueFinder);
+    final dueWidget = tester.widget<HealthEntryStatusLabel>(dueFinder);
     final markerWidget = tester.widget<Text>(markerFinder);
-    expect(dueWidget.style?.color, isNot(equals(markerWidget.style?.color)));
-    expect(dueWidget.data, contains('Next due'));
+    expect(
+      dueWidget.treatment.foregroundColor,
+      isNot(equals(markerWidget.style?.color)),
+    );
+    expect(dueWidget.text, contains('Next due'));
     expect(markerWidget.data, 'Established');
   });
 }
