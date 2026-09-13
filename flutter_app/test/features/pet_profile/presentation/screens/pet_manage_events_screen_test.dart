@@ -141,9 +141,15 @@ void main() {
 
     expect(find.text('Manage events'), findsOneWidget);
     expect(find.byKey(const Key('all_care_list')), findsOneWidget);
-    expect(find.byKey(const Key('pet_care_action_entry-overdue')), findsOneWidget);
+    expect(
+      find.byKey(const Key('pet_care_action_entry-overdue')),
+      findsOneWidget,
+    );
     expect(find.text('Heartgard'), findsOneWidget);
-    expect(find.byKey(const Key('pet_manage_events_collection_filter_bar')), findsNothing);
+    expect(
+      find.byKey(const Key('pet_manage_events_collection_filter_bar')),
+      findsNothing,
+    );
   });
 
   testWidgets('care action row navigates to view entry', (tester) async {
