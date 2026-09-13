@@ -66,6 +66,20 @@ describe('weightEstablishmentPolicy', () => {
     expect(result.reasonCodes).toContain('insufficient_evidence');
   });
 
+  it('silences entries with missing care_family', () => {
+    const result = evaluateWeightEstablishment(petId, healthEntryId, {
+      entry: makeEntry({ care_family: null }),
+      completedEvidence: makeEvidence([
+        '2026-06-01',
+        '2026-06-08',
+        '2026-06-15',
+        '2026-06-22',
+      ]),
+    });
+    expect(result.maturity).toBeNull();
+    expect(result.reasonCodes).toContain('ambiguous_family');
+  });
+
   it('silences ambiguous family entries', () => {
     const result = evaluateWeightEstablishment(petId, healthEntryId, {
       entry: makeEntry({ care_family: 'other' }),
