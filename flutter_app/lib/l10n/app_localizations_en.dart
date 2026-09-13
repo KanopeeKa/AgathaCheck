@@ -1140,7 +1140,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter a due date, a completed date, or both';
 
   @override
-  String get recurrenceAnchorTitle => 'Next occurrence';
+  String get recurrenceAnchorTitle => 'Next due date';
 
   @override
   String get recurrenceFromCompletion => 'From completion';
@@ -4004,7 +4004,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqHealthA4 =>
-      'When creating a health entry, you can set a frequency (e.g., daily, weekly, monthly, yearly, or a custom number of days). The app will automatically schedule the next occurrence and notify you when it is due.';
+      'When creating a health entry, you can set a frequency (e.g., daily, weekly, monthly, yearly, or a custom number of days). The app will automatically schedule the next due date and notify you when it is due.';
 
   @override
   String get faqHealthQ5 => 'What are Health Issues?';
@@ -4686,11 +4686,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get closeEventConfirmMessage =>
-      'Closing this event will also close all associated occurrences. They will no longer appear in your care lists.';
+      'Closing this event will also close all scheduled dates. They will no longer appear in your care lists.';
 
   @override
   String closeEventConfirmMessageWithCount(int count) {
-    return 'Closing this event will also close $count open occurrence(s). They will no longer appear in your care lists.';
+    return 'Closing this event will also close $count open date(s). They will no longer appear in your care lists.';
   }
 
   @override
@@ -4703,7 +4703,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get relatesToHealthIssue => 'Relates to health issue';
 
   @override
-  String get pastIterations => 'Past iterations';
+  String get pastIterations => 'Past dates';
 
   @override
   String get skipOccurrence => 'Skip';
@@ -4728,7 +4728,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get entryNotFound => 'Entry not found';
 
   @override
-  String get nextOccurrence => 'Next occurrence';
+  String get nextOccurrence => 'Next due date';
 
   @override
   String get careItemDatesTitle => 'Dates';
