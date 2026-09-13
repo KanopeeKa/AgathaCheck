@@ -48,7 +48,8 @@ class PetCareActionRowBuilder {
     final statusLine =
         statusLineOverride ?? formatHealthEntryStatusLine(entry, l10n);
     final statusTreatment =
-        statusTreatmentOverride ?? healthEntryStatusTreatment(entry, colorScheme);
+        statusTreatmentOverride ??
+        healthEntryStatusTreatment(entry, colorScheme);
     final semanticLabel = '${entry.name}, $statusLine';
 
     return CareActionRow(
