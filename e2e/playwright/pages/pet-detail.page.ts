@@ -142,6 +142,22 @@ export class PetDetailPage {
     ).toHaveCount(0);
   }
 
+  async expectCareSection(petName: string): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    const careTitle = new RegExp(`Care for ${escapeRegExp(petName)}`, 'i');
+    await this.page
+      .getByRole('group', { name: careTitle })
+      .or(this.page.getByText(careTitle))
+      .first()
+      .waitFor({ timeout: 15_000 });
+  }
+
+  async expectNoCareRhythmsNav(): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    const pattern = /Care Rhythms|Rythmes de soins/i;
+    await expect(this.page.getByText(pattern)).toHaveCount(0);
+  }
+
   async expectPetPhotoVisible(petName: string): Promise<void> {
     await this.page
       .getByRole('img', { name: new RegExp(`Photo of ${petName}`, 'i') })

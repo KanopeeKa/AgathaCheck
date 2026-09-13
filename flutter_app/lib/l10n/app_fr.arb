@@ -215,6 +215,14 @@
   "careStatusViewAction": "Voir l'action",
   "profilePromptChipMissing": "Puce non renseignée",
   "profilePromptNeuterMissing": "Stérilisation non renseignée",
+  "petHealthAndHistoryTitle": "Santé et historique",
+  "weightInsightLastRecorded": "{weight} · dernier relevé le {date}",
+  "@weightInsightLastRecorded": {
+    "placeholders": {
+      "weight": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
   "dismiss": "Ignorer",
   "careRhythmsTitle": "Rythmes de soins",
   "careRhythmsSubtitle": "Vos routines de soins récurrentes.",

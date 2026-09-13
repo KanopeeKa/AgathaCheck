@@ -660,6 +660,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilePromptNeuterMissing => 'Neutering status not recorded';
 
   @override
+  String get petHealthAndHistoryTitle => 'Health & history';
+
+  @override
+  String weightInsightLastRecorded(String weight, String date) {
+    return '$weight · last recorded $date';
+  }
+
+  @override
   String get dismiss => 'Dismiss';
 
   @override

@@ -669,6 +669,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get profilePromptNeuterMissing => 'Stérilisation non renseignée';
 
   @override
+  String get petHealthAndHistoryTitle => 'Santé et historique';
+
+  @override
+  String weightInsightLastRecorded(String weight, String date) {
+    return '$weight · dernier relevé le $date';
+  }
+
+  @override
   String get dismiss => 'Ignorer';
 
   @override
