@@ -158,6 +158,17 @@ export class PetDetailPage {
     await expect(this.page.getByText(pattern)).toHaveCount(0);
   }
 
+  async expectAllCareLoaded(petName: string): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    const title = new RegExp(`All care|Tous les soins`, 'i');
+    await this.page
+      .getByText(title)
+      .or(this.page.getByRole('heading', { name: title }))
+      .first()
+      .waitFor({ timeout: 15_000 });
+    await expect(this.page.getByText(new RegExp(petName, 'i'))).toBeVisible();
+  }
+
   async expectPetPhotoVisible(petName: string): Promise<void> {
     await this.page
       .getByRole('img', { name: new RegExp(`Photo of ${petName}`, 'i') })

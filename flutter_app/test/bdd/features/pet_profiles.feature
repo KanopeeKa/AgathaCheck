@@ -64,6 +64,12 @@ Feature: Pet Profiles
     Then the user should see Bella's care section on the profile
     And the user should not see the Care Rhythms navigation row
 
+  @P1
+  Scenario: Legacy Care Rhythms URL redirects to All care
+    Given a pet "Bella" exists
+    When the user opens the legacy Care Rhythms URL for "Bella"
+    Then the user should land on All care for "Bella"
+
   @P0
   Scenario: Empty pet list shows prompt on guardian dashboard
     Given the user has no pets
