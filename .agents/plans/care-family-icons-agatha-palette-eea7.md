@@ -142,18 +142,18 @@ After all phases merge to integration branch, one PR integration → `main` with
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/agatha-message-palette-eea7"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/agatha-message-palette-eea7
+  branch: cursor/care-family-icons-agatha-palette-eea7-integration
   plan_path: .agents/plans/care-family-icons-agatha-palette-eea7.md
-  plan_commit: 5aa7ce4e9693987bd850cb6da1de1c2e115202ed
+  plan_commit: e6245ddbbe1d9a5cfd7770533f2e7cb229083dda
   snapshot_path: .agents/plans/care-family-icons-agatha-palette-eea7.snapshot.json
-  snapshot_commit: 5aa7ce4e9693987bd850cb6da1de1c2e115202ed
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1132"]
+  snapshot_commit: e6245ddbbe1d9a5cfd7770533f2e7cb229083dda
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```

@@ -4,8 +4,8 @@
   "approved_at": "2026-09-13T15:57:00Z",
   "approved_by": "user-chat-grant-execute-plan-2026-09-13",
   "approved_until": "2026-09-15T15:57:00Z",
-  "content_hash": "sha256:739d430cf0ee1c84a8a66bb4a6cd980daeb86eeeb0de8d541f14ff8aa9da6a21",
-  "autonomy": "active",
+  "content_hash": "sha256:33a88f42f15235addd02478515ffe6abe867b9e598fc83277b85c67c23e16213",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-family-icons-agatha-palette-eea7-integration",
   "control_issue": 1131,
@@ -32,11 +32,11 @@
       "spawn_allowed": false,
       "spawn_config": null,
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1132",
-      "pr_head_sha": "5aa7ce4e9693987bd850cb6da1de1c2e115202ed"
+      "pr_head_sha": "e6245ddbbe1d9a5cfd7770533f2e7cb229083dda"
     },
     {
       "id": "2",
@@ -59,12 +59,11 @@
       "spawn_allowed": false,
       "spawn_config": null,
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1132",
+      "pr_head_sha": "e6245ddbbe1d9a5cfd7770533f2e7cb229083dda"
     },
     {
       "id": "3",
@@ -89,12 +88,11 @@
       "spawn_allowed": false,
       "spawn_config": null,
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1132",
+      "pr_head_sha": "e6245ddbbe1d9a5cfd7770533f2e7cb229083dda"
     }
   ]
 }
