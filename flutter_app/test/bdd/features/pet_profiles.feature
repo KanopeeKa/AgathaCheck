@@ -57,6 +57,13 @@ Feature: Pet Profiles
     Then the user should see the pet detail screen for "Bella"
     And the screen should display species "Dog" and breed "Labrador"
 
+  @P1
+  Scenario: Pet profile shows care section instead of legacy care preview
+    Given a pet "Bella" exists
+    When the user views the profile of "Bella"
+    Then the user should see Bella's care section on the profile
+    And the user should not see the Care Rhythms navigation row
+
   @P0
   Scenario: Empty pet list shows prompt on guardian dashboard
     Given the user has no pets

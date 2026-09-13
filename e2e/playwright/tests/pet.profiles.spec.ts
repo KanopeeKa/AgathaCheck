@@ -19,6 +19,7 @@
  * Scenario: Edit form prefills existing pet details
  * Scenario: Cancelling unsaved edit changes
  * Scenario: Linking a veterinarian to a pet
+ * Scenario: Pet profile shows care section instead of legacy care preview
  */
 import path from 'node:path';
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
@@ -387,6 +388,22 @@ test.describe('Pet profiles', () => {
     const record = await getPetRecord(baseURL, testUser.accessToken, pet.id);
     expect(record.photoPath).toBeTruthy();
     expect(record.photoPath).toMatch(/^\/uploads\//);
+  });
+
+  test('pet profile shows care section instead of legacy care preview', async ({
+    page,
+    testUser,
+  }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
+
+    const petList = await loginAs(page, testUser);
+    await petList.openPet('Bella', pet.id);
+
+    const detail = new PetDetailPage(page);
+    await detail.expectLoaded('Bella');
+    await detail.expectCareSection('Bella');
+    await detail.expectNoCareRhythmsNav();
   });
 
   test('user can link a veterinarian to a pet from the edit form', async ({ page, testUser }) => {

@@ -155,6 +155,21 @@ void main() {
     expect(find.text('Sharing'), findsWidgets);
   });
 
+  testWidgets('pet detail shows care section and health history destinations', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildApp(pet: ownedPet, initialLocation: '/pet/pet-1'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('pet_care_section')), findsOneWidget);
+    expect(find.byKey(const Key('pet_profile_health_history')), findsOneWidget);
+    expect(find.byKey(const Key('pet_profile_weight_insight')), findsOneWidget);
+    expect(find.text('Care Rhythms'), findsNothing);
+    expect(find.text('Time to Follow Up'), findsNothing);
+  });
+
   testWidgets('export menu item opens section picker dialog', (tester) async {
     await tester.pumpWidget(
       buildApp(pet: ownedPet, initialLocation: '/pet/pet-1'),

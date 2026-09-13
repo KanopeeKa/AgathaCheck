@@ -227,6 +227,14 @@
   "careStatusViewAction": "View action",
   "profilePromptChipMissing": "Microchip details not added",
   "profilePromptNeuterMissing": "Neutering status not recorded",
+  "petHealthAndHistoryTitle": "Health & history",
+  "weightInsightLastRecorded": "{weight} · last recorded {date}",
+  "@weightInsightLastRecorded": {
+    "placeholders": {
+      "weight": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
   "dismiss": "Dismiss",
   "careRhythmsTitle": "Care Rhythms",
   "careRhythmsSubtitle": "Your recurring care routines.",

@@ -1256,6 +1256,18 @@ abstract class AppLocalizations {
   /// **'Neutering status not recorded'**
   String get profilePromptNeuterMissing;
 
+  /// No description provided for @petHealthAndHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Health & history'**
+  String get petHealthAndHistoryTitle;
+
+  /// No description provided for @weightInsightLastRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'{weight} · last recorded {date}'**
+  String weightInsightLastRecorded(String weight, String date);
+
   /// No description provided for @dismiss.
   ///
   /// In en, this message translates to:
