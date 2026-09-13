@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../care_intelligence_exception.dart';
 import '../models/care_recommendation_model.dart';
 import '../models/care_safeguard_model.dart';
 import '../../domain/entities/care_recommendation.dart';
@@ -26,9 +27,7 @@ class CareIntelligenceRemoteDataSource {
 
   void _check(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode < 300) return;
-    throw Exception(
-      'Care intelligence request failed (${response.statusCode})',
-    );
+    throw CareIntelligenceException(response.statusCode);
   }
 
   Future<List<CareRecommendationModel>> fetchRecommendations(

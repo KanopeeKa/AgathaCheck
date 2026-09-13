@@ -798,6 +798,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careSuggestionAccept => 'Ajouter le rythme';
 
   @override
+  String careSuggestionRhythmAdded(String name) {
+    return 'Rythme « $name » ajouté';
+  }
+
+  @override
+  String get careSuggestionRespondFailed =>
+      'Impossible de mettre à jour cette suggestion. Réessayez.';
+
+  @override
+  String get careSuggestionEditForbidden =>
+      'Vous pouvez consulter les soins de cet animal, mais pas ajouter de rythmes.';
+
+  @override
   String get careSuggestionDismiss => 'Ignorer';
 
   @override

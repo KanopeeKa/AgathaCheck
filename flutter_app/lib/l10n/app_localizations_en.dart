@@ -788,6 +788,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careSuggestionAccept => 'Add rhythm';
 
   @override
+  String careSuggestionRhythmAdded(String name) {
+    return '$name rhythm added';
+  }
+
+  @override
+  String get careSuggestionRespondFailed =>
+      'Could not update this suggestion. Try again.';
+
+  @override
+  String get careSuggestionEditForbidden =>
+      'You can view this pet\'s care but cannot add rhythms.';
+
+  @override
   String get careSuggestionDismiss => 'Dismiss';
 
   @override

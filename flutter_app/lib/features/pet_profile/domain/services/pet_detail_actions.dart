@@ -5,6 +5,7 @@ import '../entities/pet_viewer_role.dart';
 /// Actions that may appear on the pet detail screen.
 enum PetDetailAction {
   editProfile,
+  editHealth,
   assignVet,
   downloadReport,
   manageSharing,
@@ -21,6 +22,28 @@ class PetDetailActions {
     PetDetailAction.manageSharing,
     PetDetailAction.fosterPlacement,
   };
+
+  /// Mirrors server `HEALTH_EDIT` (`userCanManagePet`): owner, shared carer, or
+  /// foster carer — not organisation view-only access to inventory pets.
+  static bool canEditHealth({required Pet pet, required PetViewerRole role}) {
+    switch (role) {
+      case PetViewerRole.sharedCarer:
+      case PetViewerRole.fosterCarer:
+        return true;
+      case PetViewerRole.guardian:
+        return !_isOrgInventoryPet(pet);
+      case PetViewerRole.organization:
+        return false;
+    }
+  }
+
+  static bool _isOrgInventoryPet(Pet pet) {
+    return !pet.isShared &&
+        !pet.isFoster &&
+        pet.organizationId != null &&
+        pet.organizationName != null &&
+        pet.organizationName!.isNotEmpty;
+  }
 
   static Set<PetDetailAction> visible({
     required Pet pet,
@@ -54,6 +77,10 @@ class PetDetailActions {
             PetDetailAction.fosterPlacement,
           });
         }
+    }
+
+    if (canEditHealth(pet: pet, role: role)) {
+      actions.add(PetDetailAction.editHealth);
     }
 
     return actions;
