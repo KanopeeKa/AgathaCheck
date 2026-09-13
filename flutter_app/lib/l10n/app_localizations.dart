@@ -1484,6 +1484,24 @@ abstract class AppLocalizations {
   /// **'Add rhythm'**
   String get careSuggestionAccept;
 
+  /// No description provided for @careSuggestionRhythmAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} rhythm added'**
+  String careSuggestionRhythmAdded(String name);
+
+  /// No description provided for @careSuggestionRespondFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update this suggestion. Try again.'**
+  String get careSuggestionRespondFailed;
+
+  /// No description provided for @careSuggestionEditForbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'You can view this pet\'s care but cannot add rhythms.'**
+  String get careSuggestionEditForbidden;
+
   /// No description provided for @careSuggestionDismiss.
   ///
   /// In en, this message translates to:

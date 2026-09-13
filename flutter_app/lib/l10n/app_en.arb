@@ -298,6 +298,14 @@
   "careSourceSystemDefault": "Default schedule",
   "careSuggestionTitle": "Suggested by Agatha",
   "careSuggestionAccept": "Add rhythm",
+  "careSuggestionRhythmAdded": "{name} rhythm added",
+  "@careSuggestionRhythmAdded": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "careSuggestionRespondFailed": "Could not update this suggestion. Try again.",
+  "careSuggestionEditForbidden": "You can view this pet's care but cannot add rhythms.",
   "careSuggestionDismiss": "Dismiss",
   "careSuggestionNotRelevant": "Not relevant",
   "careSuggestionWhy": "Why?",

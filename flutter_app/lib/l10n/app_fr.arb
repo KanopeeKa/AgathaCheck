@@ -257,6 +257,14 @@
   "careSourceSystemDefault": "Calendrier par défaut",
   "careSuggestionTitle": "Suggestion d'Agatha",
   "careSuggestionAccept": "Ajouter le rythme",
+  "careSuggestionRhythmAdded": "Rythme « {name} » ajouté",
+  "@careSuggestionRhythmAdded": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "careSuggestionRespondFailed": "Impossible de mettre à jour cette suggestion. Réessayez.",
+  "careSuggestionEditForbidden": "Vous pouvez consulter les soins de cet animal, mais pas ajouter de rythmes.",
   "careSuggestionDismiss": "Ignorer",
   "careSuggestionNotRelevant": "Pas pertinent",
   "careSuggestionWhy": "Pourquoi ?",

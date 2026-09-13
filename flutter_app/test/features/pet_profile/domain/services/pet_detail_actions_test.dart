@@ -72,29 +72,32 @@ void main() {
         role: PetViewerRole.guardian,
       );
       expect(actions, contains(PetDetailAction.editProfile));
+      expect(actions, contains(PetDetailAction.editHealth));
       expect(actions, contains(PetDetailAction.assignVet));
       expect(actions, contains(PetDetailAction.manageSharing));
       expect(actions, isNot(contains(PetDetailAction.fosterPlacement)));
     });
 
-    test('shared carer can download but not edit or assign vet', () {
+    test('shared carer can edit health and download but not edit profile', () {
       final actions = PetDetailActions.visible(
         pet: _pet(isShared: true),
         experience: AppExperience.petCare,
         role: PetViewerRole.sharedCarer,
       );
       expect(actions, contains(PetDetailAction.downloadReport));
+      expect(actions, contains(PetDetailAction.editHealth));
       expect(actions, isNot(contains(PetDetailAction.editProfile)));
       expect(actions, isNot(contains(PetDetailAction.assignVet)));
     });
 
-    test('foster carer can download but not manage sharing', () {
+    test('foster carer can edit health but not manage sharing', () {
       final actions = PetDetailActions.visible(
         pet: _pet(isFoster: true, organizationName: 'Shelter'),
         experience: AppExperience.petCare,
         role: PetViewerRole.fosterCarer,
       );
       expect(actions, contains(PetDetailAction.downloadReport));
+      expect(actions, contains(PetDetailAction.editHealth));
       expect(actions, isNot(contains(PetDetailAction.manageSharing)));
     });
 
@@ -168,6 +171,7 @@ void main() {
             isOrgAdmin: false,
             expected: {
               PetDetailAction.editProfile,
+              PetDetailAction.editHealth,
               PetDetailAction.assignVet,
               PetDetailAction.manageSharing,
               PetDetailAction.downloadReport,
@@ -179,7 +183,10 @@ void main() {
             experience: AppExperience.petCare,
             role: PetViewerRole.sharedCarer,
             isOrgAdmin: false,
-            expected: {PetDetailAction.downloadReport},
+            expected: {
+              PetDetailAction.downloadReport,
+              PetDetailAction.editHealth,
+            },
           ),
           (
             label: 'guardian / fosterCarer',
@@ -187,7 +194,10 @@ void main() {
             experience: AppExperience.petCare,
             role: PetViewerRole.fosterCarer,
             isOrgAdmin: false,
-            expected: {PetDetailAction.downloadReport},
+            expected: {
+              PetDetailAction.downloadReport,
+              PetDetailAction.editHealth,
+            },
           ),
           (
             label: 'organization / org admin',
@@ -219,6 +229,7 @@ void main() {
             isOrgAdmin: false,
             expected: {
               PetDetailAction.editProfile,
+              PetDetailAction.editHealth,
               PetDetailAction.assignVet,
               PetDetailAction.manageSharing,
               PetDetailAction.downloadReport,
@@ -232,6 +243,7 @@ void main() {
             isOrgAdmin: false,
             expected: {
               PetDetailAction.editProfile,
+              PetDetailAction.editHealth,
               PetDetailAction.assignVet,
               PetDetailAction.manageSharing,
               PetDetailAction.downloadReport,

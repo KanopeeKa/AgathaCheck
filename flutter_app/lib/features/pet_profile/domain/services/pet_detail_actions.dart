@@ -5,6 +5,7 @@ import '../entities/pet_viewer_role.dart';
 /// Actions that may appear on the pet detail screen.
 enum PetDetailAction {
   editProfile,
+  editHealth,
   assignVet,
   downloadReport,
   manageSharing,
@@ -39,12 +40,13 @@ class PetDetailActions {
       case PetViewerRole.guardian:
         actions.addAll({
           PetDetailAction.editProfile,
+          PetDetailAction.editHealth,
           PetDetailAction.assignVet,
           PetDetailAction.manageSharing,
         });
       case PetViewerRole.sharedCarer:
       case PetViewerRole.fosterCarer:
-        break;
+        actions.add(PetDetailAction.editHealth);
       case PetViewerRole.organization:
         if (isOrgAdmin) {
           actions.addAll({
