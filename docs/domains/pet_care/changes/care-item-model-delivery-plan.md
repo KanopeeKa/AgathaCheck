@@ -302,7 +302,9 @@ of a bad inference propagates the error into the interface.
 1. **Remove the inference.** Do not replace it with a better guess.
 2. **Backfill deterministically** — only where the mapping is unambiguous. Rows that cannot be
    determined become explicitly uncategorised.
-3. **Make `care_family` required on create** at the API boundary.
+3. **Make `care_family` required on create** at the API boundary (enforced in
+   `POST /api/health-entries` — missing value returns `400` with `care_family is required`; updates
+   may still omit family for pre-existing uncategorised rows).
 4. **On edit of an uncategorised item:** *suggest and confirm*, never force. Pre-select the most
    likely family, show it as a suggestion, let the carer accept or change it. A forced modal on an
    unrelated edit is hostile.

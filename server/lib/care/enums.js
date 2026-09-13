@@ -29,9 +29,14 @@ export const CARE_SOURCES = new Set([
   'system_default',
 ]);
 
-export function validateCareFamily(value, { required = false } = {}) {
+export function validateCareFamily(value, { required = false, requiredMessage } = {}) {
   if (value == null || value === '') {
-    if (required) return { ok: false, error: 'care_family is required for recurring care' };
+    if (required) {
+      return {
+        ok: false,
+        error: requiredMessage || 'care_family is required for recurring care',
+      };
+    }
     return { ok: true, value: null };
   }
   if (!CARE_FAMILIES.has(value)) {

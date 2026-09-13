@@ -128,7 +128,7 @@ export function registerCrudRoutes(router, pool) {
       const isRecurring = frequency && frequency !== 'once';
       const careFamilyValidation = validateCareFamilyForWrite(
         data.care_family || data.careFamily,
-        { recurring: isRecurring },
+        { requiredOnCreate: true },
       );
       if (!careFamilyValidation.ok) {
         return res.status(400).json({ error: careFamilyValidation.error });
