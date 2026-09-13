@@ -22,20 +22,22 @@ void main() {
       });
     }
 
-    testWidgets('chip uses surfaceAlt background and unified ink', (tester) async {
+    testWidgets('chip uses surfaceAlt background and unified ink', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: CareFamilyIcon(family: CareFamily.medication),
-          ),
+          home: Scaffold(body: CareFamilyIcon(family: CareFamily.medication)),
         ),
       );
 
       final container = tester.widget<Container>(
-        find.descendant(
-          of: find.byType(CareFamilyIcon),
-          matching: find.byType(Container),
-        ).first,
+        find
+            .descendant(
+              of: find.byType(CareFamilyIcon),
+              matching: find.byType(Container),
+            )
+            .first,
       );
       final decoration = container.decoration! as BoxDecoration;
       expect(decoration.color, AppColorTokens.surfaceAlt);
@@ -47,9 +49,7 @@ void main() {
     testWidgets('nail care uses scissors icon', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: CareFamilyIcon(family: CareFamily.nailCare),
-          ),
+          home: Scaffold(body: CareFamilyIcon(family: CareFamily.nailCare)),
         ),
       );
 
@@ -73,7 +73,9 @@ void main() {
       expect(find.byType(CareFamilyCustomGlyph), findsNWidgets(2));
     });
 
-    testWidgets('forEntry infers family from health entry type', (tester) async {
+    testWidgets('forEntry infers family from health entry type', (
+      tester,
+    ) async {
       final entry = HealthEntry(
         id: 'e1',
         petId: 'p1',
@@ -85,11 +87,7 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CareFamilyIcon.forEntry(entry),
-          ),
-        ),
+        MaterialApp(home: Scaffold(body: CareFamilyIcon.forEntry(entry))),
       );
 
       expect(find.byIcon(Icons.shield_outlined), findsOneWidget);

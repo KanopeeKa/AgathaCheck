@@ -51,7 +51,11 @@ class CareFamilyIcon extends StatelessWidget {
     final glyph = _glyph(iconColor);
 
     if (!showChip) {
-      return SizedBox(width: size, height: size, child: Center(child: glyph));
+      return SizedBox(
+        width: size,
+        height: size,
+        child: Center(child: glyph),
+      );
     }
 
     return Container(
