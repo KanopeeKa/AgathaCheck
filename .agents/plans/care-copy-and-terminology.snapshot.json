@@ -40,12 +40,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Read spec 4.0 first: allCare is one key serving both scopes and must be split. D38 amendment is additive and must land in the SAME PR as the strings. Halt if open item O4 (FR title for pet-scoped All care) is undecided.",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1143",
+      "pr_head_sha": "bbb66444d31f56294645b48a58f8022adbd55df4",
       "debt_issue_refs": []
     },
     {
@@ -114,5 +113,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:326dad02ca4918a0fc47a124b050c529ff454a2ff8b6c0948faf7eae0e23fa55"
+  "content_hash": "sha256:732dc9159628202a1be0e7d15dac9949417ed40078f7f508f7ff1f46d8d2608f"
 }
