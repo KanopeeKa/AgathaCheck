@@ -1153,7 +1153,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Indiquez une date d\'échéance, une date de fin, ou les deux';
 
   @override
-  String get recurrenceAnchorTitle => 'Prochaine occurrence';
+  String get recurrenceAnchorTitle => 'Prochaine échéance';
 
   @override
   String get recurrenceFromCompletion => 'Depuis la complétion';
@@ -4073,7 +4073,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqHealthA4 =>
-      'Lors de la création d\'une entrée de santé, vous pouvez définir une fréquence (quotidienne, hebdomadaire, mensuelle, annuelle ou un nombre de jours personnalisé). L\'application planifiera automatiquement la prochaine occurrence et vous notifiera.';
+      'Lors de la création d\'une entrée de santé, vous pouvez définir une fréquence (quotidienne, hebdomadaire, mensuelle, annuelle ou un nombre de jours personnalisé). L\'application planifiera automatiquement la prochaine échéance et vous notifiera.';
 
   @override
   String get faqHealthQ5 => 'Que sont les Problèmes de santé ?';
@@ -4764,11 +4764,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get closeEventConfirmMessage =>
-      'La fermeture de cet événement fermera aussi toutes les occurrences associées. Elles n\'apparaîtront plus dans vos listes de soins.';
+      'La fermeture de cet événement fermera aussi toutes les dates planifiées. Elles n\'apparaîtront plus dans vos listes de soins.';
 
   @override
   String closeEventConfirmMessageWithCount(int count) {
-    return 'La fermeture de cet événement fermera aussi $count occurrence(s) ouverte(s). Elles n\'apparaîtront plus dans vos listes de soins.';
+    return 'La fermeture de cet événement fermera aussi $count date(s) ouverte(s). Elles n\'apparaîtront plus dans vos listes de soins.';
   }
 
   @override
@@ -4781,7 +4781,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get relatesToHealthIssue => 'Lié à un problème de santé';
 
   @override
-  String get pastIterations => 'Occurrences passées';
+  String get pastIterations => 'Dates passées';
 
   @override
   String get skipOccurrence => 'Ignorer';
@@ -4806,7 +4806,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get entryNotFound => 'Entrée introuvable';
 
   @override
-  String get nextOccurrence => 'Prochaine occurrence';
+  String get nextOccurrence => 'Prochaine échéance';
 
   @override
   String get careItemDatesTitle => 'Dates';

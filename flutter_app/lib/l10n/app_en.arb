@@ -437,7 +437,7 @@
   "dueDate": "Due date",
   "completedOn": "Completed on",
   "dueOrCompletedRequired": "Enter a due date, a completed date, or both",
-  "recurrenceAnchorTitle": "Next occurrence",
+  "recurrenceAnchorTitle": "Next due date",
   "recurrenceFromCompletion": "From completion",
   "recurrenceFromDueDate": "Fixed schedule",
   "recurrenceAnchorInfoTitle": "How does scheduling work?",
@@ -1478,7 +1478,7 @@
   "faqHealthQ3": "What is the Health Dashboard?",
   "faqHealthA3": "The Health Dashboard is a global view of all health events across all your pets. It is organised into tabs by type (medications, preventives, vet visits, etc.) and shows upcoming, due, and overdue entries. You can filter by organisation to focus on specific groups of pets.",
   "faqHealthQ4": "How do recurring health entries work?",
-  "faqHealthA4": "When creating a health entry, you can set a frequency (e.g., daily, weekly, monthly, yearly, or a custom number of days). The app will automatically schedule the next occurrence and notify you when it is due.",
+  "faqHealthA4": "When creating a health entry, you can set a frequency (e.g., daily, weekly, monthly, yearly, or a custom number of days). The app will automatically schedule the next due date and notify you when it is due.",
   "faqHealthQ5": "What are Health Issues?",
   "faqHealthA5": "Health Issues let you track ongoing medical conditions (e.g., allergies, chronic illness). Each issue can have a start date, optional end date, and can be linked to related health entries for a complete medical history.",
   "faqHealthQ6": "Can I attach photos to health entries?",
@@ -1696,8 +1696,8 @@
   "seeHistory": "See history",
   "closeEventAction": "Close event",
   "closeEventConfirmTitle": "Close event?",
-  "closeEventConfirmMessage": "Closing this event will also close all associated occurrences. They will no longer appear in your care lists.",
-  "closeEventConfirmMessageWithCount": "Closing this event will also close {count} open occurrence(s). They will no longer appear in your care lists.",
+  "closeEventConfirmMessage": "Closing this event will also close all scheduled dates. They will no longer appear in your care lists.",
+  "closeEventConfirmMessageWithCount": "Closing this event will also close {count} open date(s). They will no longer appear in your care lists.",
   "@closeEventConfirmMessageWithCount": {
     "placeholders": {
       "count": { "type": "int" }
@@ -1706,7 +1706,7 @@
   "reopenEventAction": "Reopen event",
   "eventStatusClosed": "Closed",
   "relatesToHealthIssue": "Relates to health issue",
-  "pastIterations": "Past iterations",
+  "pastIterations": "Past dates",
   "skipOccurrence": "Skip",
   "unmarkDone": "Unmark done",
   "remindedDaysBefore": "You will be reminded {count} {dayLabel} before",
@@ -1726,7 +1726,7 @@
   },
   "occurrenceSkipped": "Skipped",
   "entryNotFound": "Entry not found",
-  "nextOccurrence": "Next occurrence",
+  "nextOccurrence": "Next due date",
   "careItemDatesTitle": "Dates",
   "careItemEstablishedBody": "Part of {petName}'s regular care.",
   "@careItemEstablishedBody": {

@@ -2099,7 +2099,7 @@ abstract class AppLocalizations {
   /// No description provided for @recurrenceAnchorTitle.
   ///
   /// In en, this message translates to:
-  /// **'Next occurrence'**
+  /// **'Next due date'**
   String get recurrenceAnchorTitle;
 
   /// No description provided for @recurrenceFromCompletion.
@@ -7260,7 +7260,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqHealthA4.
   ///
   /// In en, this message translates to:
-  /// **'When creating a health entry, you can set a frequency (e.g., daily, weekly, monthly, yearly, or a custom number of days). The app will automatically schedule the next occurrence and notify you when it is due.'**
+  /// **'When creating a health entry, you can set a frequency (e.g., daily, weekly, monthly, yearly, or a custom number of days). The app will automatically schedule the next due date and notify you when it is due.'**
   String get faqHealthA4;
 
   /// No description provided for @faqHealthQ5.
@@ -8430,13 +8430,13 @@ abstract class AppLocalizations {
   /// No description provided for @closeEventConfirmMessage.
   ///
   /// In en, this message translates to:
-  /// **'Closing this event will also close all associated occurrences. They will no longer appear in your care lists.'**
+  /// **'Closing this event will also close all scheduled dates. They will no longer appear in your care lists.'**
   String get closeEventConfirmMessage;
 
   /// No description provided for @closeEventConfirmMessageWithCount.
   ///
   /// In en, this message translates to:
-  /// **'Closing this event will also close {count} open occurrence(s). They will no longer appear in your care lists.'**
+  /// **'Closing this event will also close {count} open date(s). They will no longer appear in your care lists.'**
   String closeEventConfirmMessageWithCount(int count);
 
   /// No description provided for @reopenEventAction.
@@ -8460,7 +8460,7 @@ abstract class AppLocalizations {
   /// No description provided for @pastIterations.
   ///
   /// In en, this message translates to:
-  /// **'Past iterations'**
+  /// **'Past dates'**
   String get pastIterations;
 
   /// No description provided for @skipOccurrence.
@@ -8502,7 +8502,7 @@ abstract class AppLocalizations {
   /// No description provided for @nextOccurrence.
   ///
   /// In en, this message translates to:
-  /// **'Next occurrence'**
+  /// **'Next due date'**
   String get nextOccurrence;
 
   /// No description provided for @careItemDatesTitle.
