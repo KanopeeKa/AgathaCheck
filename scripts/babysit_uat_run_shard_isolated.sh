@@ -4,10 +4,11 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SHARD="${1:?usage: babysit_uat_run_shard_isolated.sh <1-13>}"
+SHARD_MAX="$("${ROOT}/scripts/e2e_shard_total.sh")"
+SHARD="${1:?usage: babysit_uat_run_shard_isolated.sh <1-${SHARD_MAX}>}"
 
-if ! [[ "$SHARD" =~ ^[0-9]+$ ]] || (( SHARD < 1 || SHARD > 13 )); then
-  echo "shard must be 1-13" >&2
+if ! [[ "$SHARD" =~ ^[0-9]+$ ]] || (( SHARD < 1 || SHARD > SHARD_MAX )); then
+  echo "shard must be 1-${SHARD_MAX}" >&2
   exit 1
 fi
 

@@ -104,7 +104,7 @@ npm run report       # open HTML report after a run
 
 ## CI
 
-Shard count for full localhost E2E is **thirteen** — update `matrix.shard`, `shard_total: 13`, and `e2e/scripts/shard-files.mjs` together in `pre-uat-e2e.yml`, `e2e.yml`, and `_reusable-e2e-local.yml`.
+Shard count for full localhost E2E is **nine** (active Pet Care specs only; frozen Shelter/Fostering specs are in `frozen-e2e-specs.mjs`) — update `matrix.shard`, `shard_total`, and `e2e/scripts/shard-files.mjs` together in `pre-uat-e2e.yml`, `e2e.yml`, and `_reusable-e2e-local.yml`.
 
 ```bash
 cd e2e && npm run shard:plan    # list file groups per shard
@@ -115,9 +115,9 @@ cd e2e && npm run test:ci-shard -- 3   # run one shard locally (stack must be ru
 |----------|---------|------|
 | `ci.yml` | PR → `main` (+ manual dispatch) | Flutter analyze + unit/widget tests + web build; backend Jest |
 | `codeql.yml` | PR → `main` (+ weekly schedule) | Static security analysis (JavaScript/TypeScript) |
-| `e2e.yml` | manual + weekly cron (non-blocking) | Full Playwright against **localhost** (11 file-balanced shards) |
+| `e2e.yml` | manual + weekly cron (non-blocking) | Full Playwright against **localhost** (9 file-balanced shards) |
 | `promote-uat.yml` | after Pre-UAT E2E green (`workflow_run`) + manual dispatch | Create `uat-YYMMDD-PR#` tag (see `docs/pipelines/promotion-contract.md`) |
-| `pre-uat-e2e.yml` | `push` → `main` + `workflow_dispatch` | Full localhost Playwright (11 shards) — async post-merge, does not block merges |
+| `pre-uat-e2e.yml` | `push` → `main` + `workflow_dispatch` | Full localhost Playwright (9 shards) — async post-merge, does not block merges |
 | `deploy-uat.yml` | push → `uat-*` tag | FTP deploy → HTTP post-deploy smoke → `prod-ready` gate |
 | `uat-live-e2e.yml` | nightly + manual (advisory) | Live `@smoke-uat` with WAF warmup — does not block promotion |
 | `deploy-prod.yml` | auto after UAT `prod-ready` (+ manual dispatch / release) | Stub `vX.Y.Z-rc.N` tag or live FTP + SSH deploy; post-deploy HTTP smoke |

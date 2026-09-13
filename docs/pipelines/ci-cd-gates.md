@@ -112,7 +112,7 @@ the merge gate `flutter-coverage / Flutter domain coverage` covers shard failure
 **Blocking via `ci-gate`:** `ci-e2e-canary / Playwright @smoke-ci canary (localhost)` —
 PR Playwright canary (`@smoke-ci`, retries 0), including three org journeys (discovery, profile, dashboard). Required when `flutter-build-web` succeeds; skipped when build fails (gate still fails on build). Enforced in `scripts/ci/assert-ci-gate.sh`. See [e2e-ci-canary-plan.md](./e2e-ci-canary-plan.md).
 
-**Full org journey E2E** (13 specs) runs in **`ci-full-audit.yml`** and **`pre-uat-e2e.yml`**, not on every PR. Governance still runs `check-org-e2e-locators.mjs` when org Flutter changes without a matching E2E touch.
+**Full org journey E2E** (frozen Shelter specs; 13 specs in `org-e2e-specs.mjs`) runs in **`ci-full-audit.yml`** only (scheduled/manual), **not** in active `pre-uat-e2e.yml` (9 Pet Care shards). Governance still runs `check-org-e2e-locators.mjs` when org Flutter changes without a matching E2E touch.
 
 #### Path-scoped PR CI (`ci-scope`)
 

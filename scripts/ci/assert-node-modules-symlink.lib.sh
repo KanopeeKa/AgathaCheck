@@ -213,7 +213,7 @@ uat_nm_verify_server_deps() {
     return 1
   fi
 
-  cd "${appdir}"
+  cd "${appdir}" || return 1
 
   if ! uat_nm_use_node; then
     echo "::error::node not found in PATH or CloudLinux nodevenv — cannot verify dependencies" >&2

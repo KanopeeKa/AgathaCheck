@@ -127,12 +127,12 @@ cd e2e && npx playwright install chromium --with-deps   # fresh pods only
 **Full batch (default — Flutter or e2e deps touched):**
 
 ```bash
-for s in $(seq 1 13); do
+for s in $(seq 1 "$(./scripts/e2e_shard_total.sh)"); do
   ./scripts/babysit_uat_run_shard.sh "$s" || exit 1
 done
 ```
 
-**Server-only batch** (only `server/package*.json` changed): minimum shards `1,3,9,11,12,13` plus any CI `@smoke-ci` failures.
+**Server-only batch** (only `server/package*.json` changed): minimum shards `1,5,7,9` plus any CI `@smoke-ci` failures.
 
 On failure: fix on the **same batch branch** (test/locator drift first; rollback a dep only when proven cause).
 
@@ -181,7 +181,7 @@ Recommended snapshot:
 
 | Do first (cheap) | Defer (expensive) |
 |------------------|-------------------|
-| Inventory + drop bad PRs | Full 13-shard replay |
+| Inventory + drop bad PRs | Full 9-shard replay |
 | Batch assembly + PR CI | Bootstrap stack |
 | `pre-push-changed.sh` | Remedial loop on `main` |
 

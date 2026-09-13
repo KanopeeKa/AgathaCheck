@@ -53,7 +53,7 @@ When you need localhost E2E outside CI:
 
 The script:
 
-1. Runs full localhost E2E (11 shards) on the merge commit.
+1. Runs full localhost E2E (9 shards) on the merge commit.
 2. On green → dispatches `promote-uat.yml` via `scripts/ci/trigger-promote-uat.sh`.
 3. Waits for deploy + HTTP smoke; comments on the PR.
 

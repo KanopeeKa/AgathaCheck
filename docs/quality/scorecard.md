@@ -21,7 +21,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | Flutter unit/widget | 449 | CI on `main` |
 | Flutter integration | 1 flow | CI on `main` (blocking) |
 | Node Jest | 544 | CI on `main` |
-| Playwright E2E | 79+ | Pre-UAT E2E (12-shard, post-merge) |
+| Playwright E2E | 79+ | Pre-UAT E2E (9-shard Pet Care, post-merge) |
 | BDD Gherkin scenarios | 266 | Spec (hybrid — Playwright executor) |
 | BDD → Playwright coverage | **70.7% (188/266)** | CI gate **180/266** — `e2e/scripts/check_bdd_coverage.js` |
 | Test quality scorecard | D1–D6 metrics | `node e2e/scripts/check_test_quality.js --report-only` (CI governance) |

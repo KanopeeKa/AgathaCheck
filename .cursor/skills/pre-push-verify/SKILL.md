@@ -10,7 +10,7 @@ description: Run the correct pre-push verification before git push — changed-f
 | Situation | Command |
 |-----------|---------|
 | **During agent iteration** (most pushes) | `./scripts/pre-push-changed.sh` |
-| **E2E remedial shard replay** (`/e2e-debug`) | `./scripts/pre-push-changed.sh --e2e-shards 3,12` (stack must be up) |
+| **E2E remedial shard replay** (`/e2e-debug`) | `./scripts/pre-push-changed.sh --e2e-shards 3,8` (stack must be up) |
 | **Before integration→main PR** or single-agent merge | `./scripts/pre-push.sh` |
 | **Unsure / touched many domains** | `./scripts/pre-push.sh` |
 

@@ -41,7 +41,7 @@ echo "main HEAD: $COMMIT  last merged PR: $PR"
 ```bash
 git checkout "$COMMIT"
 ./e2e/scripts/run-local.sh
-# Or all shards: for i in $(seq 1 11); do (cd e2e && npm run test:ci-shard -- $i) || exit 1; done
+# Or all shards: for i in $(seq 1 "$(./scripts/e2e_shard_total.sh)"); do (cd e2e && npm run test:ci-shard -- $i) || exit 1; done
 ```
 
 ### 3. Promote (create tag)

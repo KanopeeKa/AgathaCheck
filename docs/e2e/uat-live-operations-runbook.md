@@ -17,15 +17,19 @@ Institutional knowledge from UAT `@smoke` / deploy hardening (July 2026). Use th
 ## Failure layers (where to look first)
 
 ```
+pre-uat-e2e.yml (on merge to main — gates UAT promotion)
+  └─ Full localhost E2E (9 Pet Care shards — not live UAT)
+
 GitHub Actions deploy-uat.yml
   ├─ Build / FTP / cPanel restart
   ├─ SSH backend deploy (uat-ssh-backend-deploy.sh)
   │    ├─ Passenger .htaccess merge
   │    ├─ node_modules symlink invariant
   │    └─ migrate.js up (when UAT_AUTO_MIGRATE=true)
-  ├─ UAT post-deploy smoke (HTTP)
-  ├─ UAT live smoke E2E (@smoke on https://uat.agathatrack.com)
-  └─ UAT full E2E localhost (10 shards — not live UAT)
+  └─ UAT post-deploy smoke (HTTP)
+
+uat-live-e2e.yml (nightly / manual — advisory)
+  └─ Live @smoke-uat on https://uat.agathatrack.com (does not block deploy)
 ```
 
 | Layer | Typical symptoms | First log / file |

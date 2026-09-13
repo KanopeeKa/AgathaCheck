@@ -223,7 +223,9 @@ feed.
 
 ### J7b — Organisation v2 profile & permissions (2026-08)
 
-| Feature | Scenarios | Mapped | Playwright | Pre-UAT executed |
+**Historical (pre-freeze):** Shelter/Fostering specs below are frozen — `Pre-UAT executed` was **yes** before the domain freeze; they are **not** in the active 9-shard manifest (`frozen-e2e-specs.mjs`).
+
+| Feature | Scenarios | Mapped | Playwright | Pre-UAT (pre-freeze) |
 |---------|----------:|-------:|------------|------------------|
 | `organisation_profile.feature` | 4 | 4 | `organisation.profile.spec.ts` (`@smoke-ci` anonymous profile) | yes |
 | `organisation_discovery.feature` | 5 | 5 | `organisation.discovery.spec.ts` | yes |
@@ -256,7 +258,7 @@ feed.
 
 **E2E fixtures:** `seedDiscoverableOrganization`, `getMemberPrivacySettings`, `updateMemberPrivacySettings` in `e2e/playwright/support/api.ts`; UAT seed `org-v3-demo` in `server/scripts/seed.js`.
 
-**Note:** **Pre-UAT executed** = listed in `e2e/scripts/shard-files.mjs` (12-shard manifest, Aug 2026).
+**Note:** **Pre-UAT executed** = listed in `e2e/scripts/shard-files.mjs` (9-shard Pet Care manifest; frozen Shelter specs excluded).
 
 ---
 
