@@ -26,6 +26,7 @@
     "Viewing the pet list": "P1",
     "Viewing pet details": "P0",
     "Pet profile shows care section instead of legacy care preview": "P1",
+    "Legacy Care Rhythms URL redirects to All care": "P1",
     "Empty pet list shows prompt on guardian dashboard": "P0",
     "Editing a pet's name": "P1",
     "Editing a pet's breed": "P1",

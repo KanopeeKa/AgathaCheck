@@ -11,7 +11,7 @@ import '../../../../pet_care/domain/care_temporal_group.dart';
 import '../../../../pet_care/presentation/providers/care_temporal_grouping_providers.dart';
 import '../../../domain/entities/pet.dart';
 import '../../providers/care_progression_providers.dart';
-import '../../widgets/care_rhythms/care_rhythm_helpers.dart';
+import '../care_establishment_helpers.dart';
 import '../../widgets/pet_list/home_event_actions.dart';
 import 'pet_care_buckets_filter.dart';
 import 'pet_care_temporal_group_section.dart';

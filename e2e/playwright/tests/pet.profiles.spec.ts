@@ -20,6 +20,7 @@
  * Scenario: Cancelling unsaved edit changes
  * Scenario: Linking a veterinarian to a pet
  * Scenario: Pet profile shows care section instead of legacy care preview
+ * Scenario: Legacy Care Rhythms URL redirects to All care
  */
 import path from 'node:path';
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
@@ -32,6 +33,10 @@ import {
   PET_COLOR_PALETTE,
   updatePetFields,
 } from '../pages/pet-profile.seed';
+import {
+  flutterGotoUrl,
+  waitForFlutterRoutePattern,
+} from '../support/flutter';
 
 const TINY_PET_PHOTO = path.join(process.cwd(), 'playwright/fixtures/tiny-pet.png');
 
@@ -404,6 +409,25 @@ test.describe('Pet profiles', () => {
     await detail.expectLoaded('Bella');
     await detail.expectCareSection('Bella');
     await detail.expectNoCareRhythmsNav();
+  });
+
+  test('legacy Care Rhythms URL redirects to All care', async ({
+    page,
+    testUser,
+  }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
+
+    await loginAs(page, testUser);
+    await page.goto(flutterGotoUrl(`/pet/${pet.id}/care-rhythms`));
+    await waitForFlutterRoutePattern(
+      page,
+      new RegExp(`/pet/${pet.id}/events(?:\\?|$)`),
+      30_000,
+    );
+
+    const detail = new PetDetailPage(page);
+    await detail.expectAllCareLoaded('Bella');
   });
 
   test('user can link a veterinarian to a pet from the edit form', async ({ page, testUser }) => {

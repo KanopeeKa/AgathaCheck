@@ -12,7 +12,7 @@ import '../../features/health_tracking/presentation/screens/care_item_detail/car
 import '../../features/notifications/presentation/screens/notification_settings_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/notifications/presentation/screens/pending_actions_screen.dart';
-import '../../features/pet_profile/presentation/screens/pet_care_rhythms_screen.dart';
+import 'pet_care_route_redirects.dart';
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_health_issues_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_manage_events_screen.dart';
@@ -256,11 +256,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/pet/:petId/care-rhythms',
-        name: 'petCareRhythms',
-        builder: (context, state) {
-          final petId = state.pathParameters['petId']!;
-          return PetCareRhythmsScreen(petId: petId);
-        },
+        name: 'petLegacyAllCare',
+        redirect: (context, state) =>
+            legacyPetAllCareRedirectForPath(state.uri.path),
       ),
       GoRoute(
         path: '/pet/:petId/health-issues',
