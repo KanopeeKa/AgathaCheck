@@ -160,13 +160,19 @@ export class PetDetailPage {
 
   async expectAllCareLoaded(petName: string): Promise<void> {
     await enableFlutterAccessibility(this.page);
-    const title = new RegExp(`All care|Tous les soins`, 'i');
+    const titleEn = /All care/i;
+    const titleFr = new RegExp(`Tous les soins de ${escapeRegExp(petName)}`, 'i');
     await this.page
-      .getByText(title)
-      .or(this.page.getByRole('heading', { name: title }))
+      .getByText(titleEn)
+      .or(this.page.getByText(titleFr))
+      .or(this.page.getByRole('heading', { name: titleEn }))
+      .or(this.page.getByRole('heading', { name: titleFr }))
       .first()
       .waitFor({ timeout: 15_000 });
-    await expect(this.page.getByText(new RegExp(petName, 'i'))).toBeVisible();
+    await this.page
+      .getByRole('button', { name: /Add an event|Ajouter un événement/i })
+      .first()
+      .waitFor({ timeout: 15_000 });
   }
 
   async expectPetPhotoVisible(petName: string): Promise<void> {

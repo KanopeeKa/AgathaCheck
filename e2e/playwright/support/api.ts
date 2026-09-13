@@ -1015,6 +1015,8 @@ function inferCareFamilyFromType(type: string): string {
   switch (type) {
     case 'medication':
       return 'medication';
+    case 'preventive':
+      return 'parasite_prevention';
     case 'vet_visit':
       return 'wellness_review';
     default:
@@ -1048,10 +1050,8 @@ export async function createHealthEntry(
     frequency_days: frequency === 'once' ? null : (options.frequencyDays ?? 30),
     next_due_date: options.nextDueDate,
     status: 'active',
+    care_family: options.careFamily ?? inferCareFamilyFromType(type),
   };
-  if (frequency !== 'once') {
-    body.care_family = options.careFamily ?? inferCareFamilyFromType(type);
-  }
   if (options.scheduleTimes != null) {
     body.schedule_times = options.scheduleTimes;
   }
@@ -1097,10 +1097,8 @@ export async function updateHealthEntry(
     frequency_days: frequency === 'once' ? null : (options.frequencyDays ?? 30),
     next_due_date: options.nextDueDate,
     status: 'active',
+    care_family: options.careFamily ?? inferCareFamilyFromType(type),
   };
-  if (frequency !== 'once') {
-    payload.care_family = options.careFamily ?? inferCareFamilyFromType(type);
-  }
   const res = await apiFetch(apiUrl(`/health-entries/${entryId}`, baseURL), {
     method: 'PUT',
     headers: {
