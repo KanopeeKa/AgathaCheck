@@ -223,14 +223,17 @@ uat_nm_verify_server_deps() {
   missing="$(
     node --input-type=module - <<'NODE'
 import fs from 'fs';
+import path from 'path';
 import { createRequire } from 'module';
 
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-const req = createRequire(import.meta.url);
+// Anchor resolution to the deployed backend package (stdin has no node_modules).
+const req = createRequire(path.join(process.cwd(), 'package.json'));
 const missing = [];
 for (const name of Object.keys(pkg.dependencies || {})) {
   try {
-    req.resolve(`${name}/package.json`);
+    // Resolve the package entry — not package.json (helmet/rate-limit omit exports).
+    req.resolve(name);
   } catch {
     missing.push(name);
   }
