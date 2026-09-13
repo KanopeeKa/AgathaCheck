@@ -85,7 +85,10 @@ void main() {
     expect(find.byKey(const Key('pet_care_action_overdue')), findsOneWidget);
     expect(find.byKey(const Key('pet_care_action_today')), findsOneWidget);
     expect(find.byKey(const Key('all_care_inactive_section')), findsOneWidget);
-    expect(find.byKey(const Key('pet_care_action_one-off-done')), findsOneWidget);
+    expect(
+      find.byKey(const Key('pet_care_action_one-off-done')),
+      findsOneWidget,
+    );
     expect(find.text('Done'), findsWidgets);
     expect(
       find.byKey(const Key('pet_manage_events_collection_filter_bar')),
