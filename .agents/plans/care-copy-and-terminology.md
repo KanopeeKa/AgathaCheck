@@ -241,16 +241,16 @@ flutter_app/test/features/experience/**
 
 ```yaml
 autonomy: halted
-current_phase: 2
-last_completed_phase: 1
+current_phase: 3
+last_completed_phase: 2
 halt_reason: halted
-next_action: "start phase 2: checkout cursor/care-occurrence-copy-c9c6"
+next_action: "start phase 3: checkout cursor/care-nav-highlight-fix-c9c6"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/care-copy-and-terminology.md
-  plan_commit: bbb66444d31f56294645b48a58f8022adbd55df4
+  plan_commit: 9a362b8d687911ddc7d0730711475d9508233d2b
   snapshot_path: .agents/plans/care-copy-and-terminology.snapshot.json
-  snapshot_commit: bbb66444d31f56294645b48a58f8022adbd55df4
+  snapshot_commit: 9a362b8d687911ddc7d0730711475d9508233d2b
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

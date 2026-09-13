@@ -70,12 +70,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Semantic migration, not find-and-replace. Every changed string listed in the PR body with its before/after full sentence.",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1145",
+      "pr_head_sha": "9a362b8d687911ddc7d0730711475d9508233d2b",
       "debt_issue_refs": []
     },
     {
@@ -113,5 +112,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:732dc9159628202a1be0e7d15dac9949417ed40078f7f508f7ff1f46d8d2608f"
+  "content_hash": "sha256:47e8e2064e59be35c784c489b109aadb91a930d11476d1b7f8a8d5578214b540"
 }
