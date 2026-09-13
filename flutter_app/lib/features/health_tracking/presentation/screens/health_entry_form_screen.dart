@@ -20,7 +20,7 @@ import '../widgets/health_entry_form/health_entry_pet_selector.dart';
 import '../widgets/health_entry_form/health_entry_photos_section.dart';
 import '../widgets/health_entry_form/health_entry_remind_field.dart';
 import '../widgets/health_entry_form/health_entry_text_fields.dart';
-import '../widgets/care_family_picker_field.dart';
+import '../widgets/health_entry_form/health_entry_form_care_family_section.dart';
 
 import '../controllers/health_entry_form_controller.dart';
 import '../controllers/health_entry_form_outcomes.dart';
@@ -197,14 +197,11 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       recurrenceAnchor: form.recurrenceAnchor,
                       controller: _controller,
                     ),
-                    if (form.frequency != HealthFrequency.once &&
-                        form.careFamily != null) ...[
-                      const SizedBox(height: 16),
-                      CareFamilyPickerField(
-                        value: form.careFamily!,
-                        onChanged: _controller.setCareFamily,
-                      ),
-                    ],
+                    const SizedBox(height: 16),
+                    HealthEntryFormCareFamilySection(
+                      form: form,
+                      controller: _controller,
+                    ),
                     if (form.frequency != HealthFrequency.once) ...[
                       const SizedBox(height: 16),
                       HealthEntryScheduleTimesSection(
@@ -332,8 +329,11 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
 
     final l = AppLocalizations.of(context)!;
     switch (outcome) {
-      case HealthEntrySubmitValidationFailed():
-        // Validation errors are shown inline via FormState.validate().
+      case HealthEntrySubmitValidationFailed(:final reason):
+        if (reason == HealthEntrySubmitValidation.careFamilyRequired) {
+          _controller.markCareFamilyValidationAttempted();
+        }
+        _formKey.currentState!.validate();
         break;
       case HealthEntrySubmitError(:final error):
         ScaffoldMessenger.of(

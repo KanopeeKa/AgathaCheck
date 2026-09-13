@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/care_family.dart';
 import '../../../pet_profile/domain/services/care_family_write.dart';
 import '../../data/datasources/health_remote_datasource.dart';
@@ -63,9 +64,12 @@ class HealthEntryFormState {
     this.allowedTypes,
     this.scheduleAtSpecificTimes = false,
     this.scheduleTimes = const ['08:00'],
-    CareFamily? careFamily,
-  }) : startDate = startDate ?? DateTime.now(),
-       careFamily = careFamily ?? defaultCareFamilyForEntryType(type);
+    this.careFamily,
+    this.loadedUncategorised = false,
+    this.careFamilySuggestionDismissed = false,
+    this.careFamilyPickerRevealed = false,
+    this.careFamilyValidationAttempted = false,
+  }) : startDate = startDate ?? DateTime.now();
 
   final String name;
   final String dosage;
@@ -90,8 +94,31 @@ class HealthEntryFormState {
   final bool scheduleAtSpecificTimes;
   final List<String> scheduleTimes;
   final CareFamily? careFamily;
+  final bool loadedUncategorised;
+  final bool careFamilySuggestionDismissed;
+  final bool careFamilyPickerRevealed;
+  final bool careFamilyValidationAttempted;
 
   int get totalPhotoCount => photos.length + pendingPhotos.length;
+
+  String? careFamilyRequiredError(AppLocalizations l10n) {
+    if (!careFamilyValidationAttempted || careFamily != null) {
+      return null;
+    }
+    return l10n.careFamilyRequiredError;
+  }
+
+  CareFamily suggestedCareFamilyForType() =>
+      defaultCareFamilyForEntryType(type);
+
+  bool get showCareFamilySuggestion =>
+      isEdit &&
+      loadedUncategorised &&
+      careFamily == null &&
+      !careFamilySuggestionDismissed;
+
+  bool get showCareFamilyPicker =>
+      !isEdit || careFamily != null || careFamilyPickerRevealed;
 
   List<HealthEntryType> get selectableTypes {
     if (allowedTypes != null && allowedTypes!.isNotEmpty) {
@@ -124,6 +151,10 @@ class HealthEntryFormState {
     bool? scheduleAtSpecificTimes,
     List<String>? scheduleTimes,
     CareFamily? careFamily,
+    bool? loadedUncategorised,
+    bool? careFamilySuggestionDismissed,
+    bool? careFamilyPickerRevealed,
+    bool? careFamilyValidationAttempted,
     bool clearDueDate = false,
     bool clearCareFamily = false,
     bool clearCompletedOn = false,
@@ -159,6 +190,13 @@ class HealthEntryFormState {
           scheduleAtSpecificTimes ?? this.scheduleAtSpecificTimes,
       scheduleTimes: scheduleTimes ?? this.scheduleTimes,
       careFamily: clearCareFamily ? null : (careFamily ?? this.careFamily),
+      loadedUncategorised: loadedUncategorised ?? this.loadedUncategorised,
+      careFamilySuggestionDismissed:
+          careFamilySuggestionDismissed ?? this.careFamilySuggestionDismissed,
+      careFamilyPickerRevealed:
+          careFamilyPickerRevealed ?? this.careFamilyPickerRevealed,
+      careFamilyValidationAttempted:
+          careFamilyValidationAttempted ?? this.careFamilyValidationAttempted,
     );
   }
 }

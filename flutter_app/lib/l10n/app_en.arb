@@ -249,7 +249,25 @@
     }
   },
   "careFamilyFieldLabel": "Care category",
-  "careFamilyFieldHelper": "Choose what kind of recurring care this rhythm represents.",
+  "careFamilyFieldHelper": "Choose what kind of care this entry represents.",
+  "careFamilySelectHint": "Select a category",
+  "careFamilyRequiredError": "Choose a care category before saving.",
+  "careFamilySuggestionTitle": "Suggested care category",
+  "careFamilySuggestionMessage": "This entry has no category yet. We suggest {familyLabel} — accept it, choose another, or dismiss to keep it uncategorised.",
+  "@careFamilySuggestionMessage": {
+    "placeholders": {
+      "familyLabel": { "type": "String" }
+    }
+  },
+  "careFamilySuggestionAccept": "Use suggestion",
+  "careFamilySuggestionChooseDifferent": "Choose different",
+  "careFamilySuggestionDismiss": "Dismiss suggestion",
+  "careFamilySuggestionSemanticLabel": "Suggested care category: {familyLabel}",
+  "@careFamilySuggestionSemanticLabel": {
+    "placeholders": {
+      "familyLabel": { "type": "String" }
+    }
+  },
   "careFamilyMedication": "Medication",
   "careFamilyVaccination": "Vaccination",
   "careFamilyParasitePrevention": "Parasite prevention",

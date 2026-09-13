@@ -4,6 +4,7 @@ enum HealthEntrySubmitValidation {
   nameRequired,
   dueOrCompletedRequired,
   noPetsSelected,
+  careFamilyRequired,
 }
 
 /// When creating a one-off entry with a due date on or before today.

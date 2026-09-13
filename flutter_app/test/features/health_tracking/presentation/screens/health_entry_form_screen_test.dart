@@ -5,6 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/repositories/health_repository.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/usecases/create_health_entry.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/usecases/get_health_entries.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/usecases/update_health_entry.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/controllers/health_entry_form_constants.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/screens/health_entry_form_screen.dart';
@@ -14,9 +18,10 @@ import 'package:pet_profile_app/features/pet_profile/presentation/screens/widget
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 class _FakeHealthRepository implements HealthRepository {
-  _FakeHealthRepository(this.entry);
+  _FakeHealthRepository(this.entry, {this.onUpdate});
 
   final HealthEntry entry;
+  final void Function(HealthEntry entry)? onUpdate;
 
   @override
   Future<HealthEntry?> getEntry(String id) async => entry;
@@ -26,6 +31,12 @@ class _FakeHealthRepository implements HealthRepository {
     String? petId,
     HealthEntryType? type,
   }) async => [entry];
+
+  @override
+  Future<HealthEntry> updateEntry(HealthEntry entry) async {
+    onUpdate?.call(entry);
+    return entry;
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -50,11 +61,47 @@ class _EmptyHealthEntriesNotifier extends HealthEntriesNotifier {
 }
 
 class _TestHealthEntriesNotifier extends HealthEntriesNotifier {
+  static HealthEntry? lastUpdated;
+
   @override
   Future<List<HealthEntry>> build() async => [];
 
   @override
-  Future<void> updateEntry(HealthEntry entry) async {}
+  Future<void> updateEntry(HealthEntry entry) async {
+    lastUpdated = entry;
+  }
+}
+
+class _RecordingHealthRepository implements HealthRepository {
+  _RecordingHealthRepository(this.seed);
+
+  final HealthEntry seed;
+  HealthEntry? lastCreated;
+  HealthEntry? lastUpdated;
+
+  @override
+  Future<HealthEntry> createEntry(HealthEntry entry) async {
+    lastCreated = entry;
+    return entry.copyWith(id: 'created-entry');
+  }
+
+  @override
+  Future<HealthEntry?> getEntry(String id) async => seed;
+
+  @override
+  Future<List<HealthEntry>> getEntries({
+    String? petId,
+    HealthEntryType? type,
+  }) async => [seed];
+
+  @override
+  Future<HealthEntry> updateEntry(HealthEntry entry) async {
+    lastUpdated = entry;
+    return entry;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 Widget _wrap(PetListNotifier Function() notifier, {Locale? locale}) {
@@ -117,6 +164,7 @@ Widget _wrapPetProfileHealthEventFlow() {
 HealthEntry _sampleEntry({
   HealthEntryType type = HealthEntryType.preventive,
   HealthFrequency frequency = HealthFrequency.monthly,
+  CareFamily? careFamily = CareFamily.parasitePrevention,
 }) {
   return HealthEntry(
     id: 'entry-1',
@@ -128,13 +176,92 @@ HealthEntry _sampleEntry({
     frequencyInterval: 1,
     startDate: DateTime(2025, 1, 1),
     nextDueDate: DateTime(2025, 8, 1),
+    careFamily: careFamily,
   );
+}
+
+Widget _wrapAddFlow({required _RecordingHealthRepository repository}) {
+  final router = GoRouter(
+    initialLocation: '/pet/p1/health/add',
+    routes: [
+      GoRoute(
+        path: '/pet/:petId/health/add',
+        builder: (context, state) =>
+            HealthEntryFormScreen(petId: state.pathParameters['petId']),
+      ),
+      GoRoute(
+        path: '/pet/:petId',
+        builder: (context, state) =>
+            Scaffold(body: Text('Pet ${state.pathParameters['petId']}')),
+      ),
+    ],
+  );
+
+  return ProviderScope(
+    overrides: [
+      petListProvider.overrideWith(_TwoPetsNotifier.new),
+      healthEntriesNotifierProvider.overrideWith(
+        _EmptyHealthEntriesNotifier.new,
+      ),
+      createHealthEntryProvider.overrideWithValue(
+        CreateHealthEntry(repository),
+      ),
+      getHealthEntriesProvider.overrideWithValue(GetHealthEntries(repository)),
+      apiBaseUrlProvider.overrideWithValue('http://test.local'),
+    ],
+    child: MaterialApp.router(
+      routerConfig: router,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+    ),
+  );
+}
+
+Future<void> _scrollTo(WidgetTester tester, Finder finder) async {
+  await tester.scrollUntilVisible(
+    finder,
+    120,
+    scrollable: find.byType(Scrollable).first,
+  );
+  await tester.pumpAndSettle();
+}
+
+Future<void> _fillMinimalAddForm(WidgetTester tester) async {
+  await tester.enterText(
+    find.byKey(const Key('health_name_field')),
+    'Evening pill',
+  );
+  final completedField = find.bySemanticsLabel(RegExp(r'Completed on:'));
+  await _scrollTo(tester, completedField);
+  await tester.tap(completedField);
+  await tester.pumpAndSettle();
+  final ok = find.widgetWithText(TextButton, 'OK');
+  if (ok.evaluate().isNotEmpty) {
+    await tester.tap(ok);
+  } else {
+    await tester.tap(find.text('OK'));
+  }
+  await tester.pumpAndSettle();
+}
+
+Future<void> _selectCareFamily(WidgetTester tester, String label) async {
+  await _scrollTo(tester, find.byKey(const Key('care_family_picker')));
+  await tester.tap(find.byKey(const Key('care_family_picker')));
+  await tester.pumpAndSettle();
+  final option = find.text(label).last;
+  await _scrollTo(tester, option);
+  await tester.tap(option);
+  await tester.pumpAndSettle();
 }
 
 Widget _wrapEditFlow({
   required HealthEntry entry,
   String initialLocation = '/pet/p1/events/entry-1/edit',
+  void Function(HealthEntry entry)? onUpdate,
 }) {
+  final repository = onUpdate == null
+      ? _FakeHealthRepository(entry)
+      : _FakeHealthRepository(entry, onUpdate: onUpdate);
   final router = GoRouter(
     initialLocation: initialLocation,
     routes: [
@@ -161,9 +288,13 @@ Widget _wrapEditFlow({
   return ProviderScope(
     overrides: [
       petListProvider.overrideWith(_TwoPetsNotifier.new),
-      healthRepositoryProvider.overrideWithValue(_FakeHealthRepository(entry)),
+      healthRepositoryProvider.overrideWithValue(repository),
       healthEntriesNotifierProvider.overrideWith(
         _TestHealthEntriesNotifier.new,
+      ),
+      getHealthEntriesProvider.overrideWithValue(GetHealthEntries(repository)),
+      updateHealthEntryProvider.overrideWithValue(
+        UpdateHealthEntry(repository),
       ),
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
     ],
@@ -299,6 +430,94 @@ void main() {
       l.deleteRecurringEntryNamedConfirm('Heartworm'),
       contains('iterations'),
     );
+  });
+
+  testWidgets('add flow blocks submit until care family is chosen', (
+    WidgetTester tester,
+  ) async {
+    final repository = _RecordingHealthRepository(
+      HealthEntry(
+        id: '',
+        petId: 'p1',
+        name: '',
+        type: HealthEntryType.medication,
+        dosage: '',
+        frequency: HealthFrequency.once,
+        frequencyInterval: 1,
+        startDate: DateTime(2025, 1, 1),
+      ),
+    );
+    await tester.pumpWidget(_wrapAddFlow(repository: repository));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('care_family_picker')), findsOneWidget);
+
+    await _fillMinimalAddForm(tester);
+    await _scrollTo(tester, find.byKey(const Key('save_health_entry_button')));
+    await tester.tap(find.byKey(const Key('save_health_entry_button')));
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Choose a care category before saving.'), findsOneWidget);
+    expect(repository.lastCreated, isNull);
+
+    await _selectCareFamily(tester, 'Medication');
+    await _scrollTo(tester, find.byKey(const Key('save_health_entry_button')));
+    await tester.tap(find.byKey(const Key('save_health_entry_button')));
+    await tester.pumpAndSettle();
+
+    if (find.byType(AlertDialog).evaluate().isNotEmpty) {
+      await tester.tap(find.text('Keep active'));
+      await tester.pumpAndSettle();
+    }
+
+    expect(repository.lastCreated, isNotNull);
+    expect(repository.lastCreated!.careFamily, CareFamily.medication);
+  });
+
+  testWidgets(
+    'editing uncategorised entry shows dismissible suggestion banner',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        _wrapEditFlow(entry: _sampleEntry(careFamily: null)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('care_family_suggestion_banner')),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('care_family_picker')), findsNothing);
+
+      await _scrollTo(
+        tester,
+        find.byKey(const Key('care_family_suggestion_dismiss')),
+      );
+      await tester.tap(find.byKey(const Key('care_family_suggestion_dismiss')));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('care_family_suggestion_banner')),
+        findsNothing,
+      );
+    },
+  );
+
+  testWidgets('editing categorised entry shows picker without suggestion', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrapEditFlow(
+        entry: _sampleEntry(careFamily: CareFamily.parasitePrevention),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('care_family_suggestion_banner')),
+      findsNothing,
+    );
+    expect(find.byKey(const Key('care_family_picker')), findsOneWidget);
   });
 
   testWidgets('legacy health edit path redirects to unified edit route', (
