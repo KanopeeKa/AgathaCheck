@@ -78,7 +78,10 @@ void main() {
 
       expect(find.text('Weight'), findsOneWidget);
       expect(find.text('Stable over 4 weeks'), findsOneWidget);
-      expect(find.byKey(const Key('care_trend_sparkline_chart')), findsOneWidget);
+      expect(
+        find.byKey(const Key('care_trend_sparkline_chart')),
+        findsOneWidget,
+      );
     });
   });
 
@@ -143,11 +146,16 @@ void main() {
         ),
       );
 
-      expect(find.byKey(const Key('care_trend_sparkline_chart')), findsOneWidget);
+      expect(
+        find.byKey(const Key('care_trend_sparkline_chart')),
+        findsOneWidget,
+      );
     });
   });
 
-  testWidgets('four roles render side by side for visual review', (tester) async {
+  testWidgets('four roles render side by side for visual review', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _host(
         Column(

@@ -44,8 +44,9 @@ class CareInsightTile extends StatelessWidget {
             width: double.infinity,
             padding: CareSurfaceTokens.insightPadding,
             decoration: BoxDecoration(
-              borderRadius:
-                  BorderRadius.circular(CareSurfaceTokens.insightRadius),
+              borderRadius: BorderRadius.circular(
+                CareSurfaceTokens.insightRadius,
+              ),
               border: Border.all(
                 color: CareSurfaceTokens.insightBorder(colorScheme),
               ),

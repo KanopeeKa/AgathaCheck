@@ -139,8 +139,9 @@ CareEventStatusLine formatOccurrenceCareEventStatusLine(
       return CareEventStatusLine(
         text: '${l.urgencyDueToday}$openSuffix',
         statusSuffix: summary.openCount == 1 ? l.urgencyDueToday : null,
-        suffixTreatment:
-            summary.openCount == 1 ? dueTodayStatusTreatment() : null,
+        suffixTreatment: summary.openCount == 1
+            ? dueTodayStatusTreatment()
+            : null,
       );
     case OccurrenceZone.comingUp:
       final instant = formatOccurrenceInstant(headline, l, context: context);

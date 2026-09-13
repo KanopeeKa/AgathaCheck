@@ -9,13 +9,19 @@ abstract final class CareSurfaceTokens {
   static const double insightRadius = 12;
   static const double rowMinHeight = 48;
 
-  static const EdgeInsets attentionPadding =
-      EdgeInsets.symmetric(horizontal: 12, vertical: 10);
-  static const EdgeInsets actionPadding =
-      EdgeInsets.symmetric(horizontal: 12, vertical: 8);
+  static const EdgeInsets attentionPadding = EdgeInsets.symmetric(
+    horizontal: 12,
+    vertical: 10,
+  );
+  static const EdgeInsets actionPadding = EdgeInsets.symmetric(
+    horizontal: 12,
+    vertical: 8,
+  );
   static const EdgeInsets insightPadding = EdgeInsets.all(12);
-  static const EdgeInsets destinationPadding =
-      EdgeInsets.symmetric(horizontal: 16, vertical: 12);
+  static const EdgeInsets destinationPadding = EdgeInsets.symmetric(
+    horizontal: 16,
+    vertical: 12,
+  );
 
   static Color attentionBackground(ColorScheme colorScheme) =>
       AppColorTokens.dangerLight;

@@ -60,8 +60,9 @@ class CareAttentionCallout extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 onTap: onTap,
-                borderRadius:
-                    BorderRadius.circular(CareSurfaceTokens.attentionRadius),
+                borderRadius: BorderRadius.circular(
+                  CareSurfaceTokens.attentionRadius,
+                ),
                 child: child,
               ),
             ),

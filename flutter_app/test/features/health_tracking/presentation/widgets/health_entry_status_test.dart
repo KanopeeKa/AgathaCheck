@@ -50,10 +50,7 @@ void main() {
   });
 
   group('healthEntryStatusTreatment', () {
-    HealthEntry entry({
-      DateTime? nextDue,
-      DateTime? completedOn,
-    }) {
+    HealthEntry entry({DateTime? nextDue, DateTime? completedOn}) {
       return HealthEntry(
         id: '1',
         petId: 'pet-1',
@@ -165,35 +162,37 @@ void main() {
       }
     });
 
-    testWidgets('semantic status treatments meet contrast on subtle backgrounds',
-        (tester) async {
-      final pairs = [
-        (
-          completedStatusTreatment(),
-          AppColorTokens.body,
-          AppColorTokens.successLight,
-        ),
-        (
-          overdueStatusTreatment(colorScheme),
-          AppColorTokens.body,
-          AppColorTokens.dangerLight,
-        ),
-        (
-          dueTodayStatusTreatment(),
-          AppColorTokens.body,
-          AppColorTokens.warningLight,
-        ),
-      ];
+    testWidgets(
+      'semantic status treatments meet contrast on subtle backgrounds',
+      (tester) async {
+        final pairs = [
+          (
+            completedStatusTreatment(),
+            AppColorTokens.body,
+            AppColorTokens.successLight,
+          ),
+          (
+            overdueStatusTreatment(colorScheme),
+            AppColorTokens.body,
+            AppColorTokens.dangerLight,
+          ),
+          (
+            dueTodayStatusTreatment(),
+            AppColorTokens.body,
+            AppColorTokens.warningLight,
+          ),
+        ];
 
-      for (final (treatment, foreground, background) in pairs) {
-        final ratio = _contrastRatio(foreground, background);
-        expect(
-          ratio,
-          greaterThanOrEqualTo(4.5),
-          reason: '${treatment.kind} foreground/background contrast',
-        );
-      }
-    });
+        for (final (treatment, foreground, background) in pairs) {
+          final ratio = _contrastRatio(foreground, background);
+          expect(
+            ratio,
+            greaterThanOrEqualTo(4.5),
+            reason: '${treatment.kind} foreground/background contrast',
+          );
+        }
+      },
+    );
   });
 }
 

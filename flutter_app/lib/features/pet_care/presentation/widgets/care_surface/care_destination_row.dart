@@ -48,10 +48,7 @@ class CareDestinationRow extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
               ],
-              Icon(
-                Icons.chevron_right,
-                color: colorScheme.onSurfaceVariant,
-              ),
+              Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant),
             ],
           ),
         ),
