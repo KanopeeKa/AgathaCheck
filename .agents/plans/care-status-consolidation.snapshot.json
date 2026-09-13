@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-status-consolidation",
+  "programme_ref": "docs/domains/pet_care/changes/care-item-model-delivery-plan.md",
+  "approved_at": "2026-09-13T12:40:00Z",
+  "approved_by": "PLACEHOLDER — awaiting approve-autonomous care-status-consolidation",
+  "approved_until": "2026-09-15T12:40:00Z",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Consolidated care-status service and providers",
+      "branch": "cursor/care-status-consolidation-service-c9c6",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/domain/**",
+        "flutter_app/lib/features/pet_care/presentation/providers/**",
+        "flutter_app/lib/features/pet_profile/domain/**",
+        "flutter_app/lib/features/health_tracking/domain/**",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart",
+        "flutter_app/test/features/pet_care/**",
+        "flutter_app/test/features/pet_profile/domain/**",
+        "flutter_app/test/features/health_tracking/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "db/**",
+        "server/**",
+        "flutter_app/lib/l10n/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "No visual change. Exit evidence is the cross-surface grouping agreement test (spec 6).",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Shared seed fixture for care surfaces",
+      "branch": "cursor/care-status-consolidation-seed-c9c6",
+      "allowed_paths": [
+        "server/scripts/seed.js",
+        "server/test/helpers/**",
+        "docs/domains/pet_care/changes/care-item-model-delivery-plan.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "db/migrations/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Fixture recipe is spec 11. Seeded dates must be relative to run date.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:c53311da58ab7504daffcab8d87dd3883303e6087e5eaae4ad0d2e24cf408678"
+}

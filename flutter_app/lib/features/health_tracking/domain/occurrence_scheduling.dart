@@ -1,31 +1,22 @@
-import '../../../../core/utils/calendar_date.dart';
+import '../../../pet_care/domain/care_temporal_group.dart';
+import '../../../pet_care/domain/services/care_temporal_grouping_service.dart';
 import 'entities/health_occurrence.dart';
+import 'occurrence_missed.dart';
 
-/// Whether [occ] is missed relative to [now] (device local calendar).
-bool isOccurrenceMissed(HealthOccurrence occ, DateTime now) {
-  if (!occ.isPending) return false;
-  final today = calendarDateOnly(now);
-  final dueDay = calendarDateOnly(occ.scheduledDate);
-  if (dueDay.isBefore(today)) return true;
-  if (dueDay.isAfter(today)) return false;
-  final time = occ.scheduledTime;
-  if (time == null || time.isEmpty) return false;
-  final parts = time.split(':');
-  if (parts.length < 2) return false;
-  final hour = int.tryParse(parts[0]) ?? 0;
-  final minute = int.tryParse(parts[1]) ?? 0;
-  final dueInstant = DateTime(today.year, today.month, today.day, hour, minute);
-  return now.isAfter(dueInstant);
-}
+export 'occurrence_missed.dart' show isOccurrenceMissed;
 
 enum OccurrenceZone { missed, dueToday, comingUp }
 
+const _grouping = CareTemporalGroupingService();
+
 OccurrenceZone occurrenceZone(HealthOccurrence occ, DateTime now) {
-  final today = calendarDateOnly(now);
-  final dueDay = calendarDateOnly(occ.scheduledDate);
-  if (isOccurrenceMissed(occ, now)) return OccurrenceZone.missed;
-  if (dueDay == today) return OccurrenceZone.dueToday;
-  return OccurrenceZone.comingUp;
+  final group = _grouping.groupForOccurrence(occ, now);
+  return switch (group) {
+    CareTemporalGroup.needsAttention => OccurrenceZone.missed,
+    CareTemporalGroup.today => OccurrenceZone.dueToday,
+    CareTemporalGroup.upcoming => OccurrenceZone.comingUp,
+    null => OccurrenceZone.comingUp,
+  };
 }
 
 int compareOccurrencesForZone(

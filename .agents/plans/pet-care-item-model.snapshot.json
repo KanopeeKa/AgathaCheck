@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-care-item-model",
+  "plan_kind": "roadmap",
+  "programme_ref": "docs/domains/pet_care/changes/care-item-model-delivery-plan.md",
+  "approved_at": "2026-09-13T12:40:00Z",
+  "approved_by": "PLACEHOLDER — awaiting approve-autonomous pet-care-item-model",
+  "approved_until": "2026-09-15T12:40:00Z",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "current_child_plan_id": null,
+  "child_plans": [
+    {
+      "plan_id": "care-status-consolidation",
+      "status": "pending",
+      "pr_url": null
+    },
+    {
+      "plan_id": "care-presentation-primitives",
+      "status": "pending",
+      "pr_url": null
+    },
+    {
+      "plan_id": "care-family-taxonomy",
+      "status": "pending",
+      "pr_url": null
+    },
+    {
+      "plan_id": "care-family-required",
+      "status": "pending",
+      "pr_url": null
+    },
+    {
+      "plan_id": "pet-profile-care-surface",
+      "status": "pending",
+      "pr_url": null
+    },
+    {
+      "plan_id": "care-management-surfaces",
+      "status": "pending",
+      "pr_url": null
+    },
+    {
+      "plan_id": "care-copy-and-terminology",
+      "status": "pending",
+      "pr_url": null
+    }
+  ],
+  "phases": [
+    {
+      "id": "orchestrate",
+      "title": "Roadmap orchestration (child plan bootstrap + tracking)",
+      "branch": "cursor/care-item-model-orchestrate-c9c6",
+      "allowed_paths": [
+        ".agents/plans/pet-care-item-model.*",
+        ".agents/plans/care-status-consolidation.*",
+        ".agents/plans/care-presentation-primitives.*",
+        ".agents/plans/care-family-taxonomy.*",
+        ".agents/plans/care-family-required.*",
+        ".agents/plans/pet-profile-care-surface.*",
+        ".agents/plans/care-management-surfaces.*",
+        ".agents/plans/care-copy-and-terminology.*",
+        "docs/domains/pet_care/changes/care-item-model-delivery-plan.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "flutter_app/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:4be9dc28086cc10c999f4f6fc7f33e6d06bfca99b68b862fb5df1f73aea82717"
+}
