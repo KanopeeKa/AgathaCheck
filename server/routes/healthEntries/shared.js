@@ -91,8 +91,15 @@ export function validateHealthEntryTypeForWrite(type) {
 
 export { CARE_FAMILIES, CARE_SOURCES };
 
-export function validateCareFamilyForWrite(value, { recurring = false } = {}) {
-  return validateCareFamilyEnum(value, { required: recurring });
+export function validateCareFamilyForWrite(
+  value,
+  { recurring = false, requiredOnCreate = false } = {},
+) {
+  const required = requiredOnCreate || recurring;
+  const requiredMessage = requiredOnCreate
+    ? 'care_family is required'
+    : 'care_family is required for recurring care';
+  return validateCareFamilyEnum(value, { required, requiredMessage });
 }
 
 export function validateCareSourceForWrite(value) {

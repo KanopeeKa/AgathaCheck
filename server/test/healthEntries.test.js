@@ -89,6 +89,11 @@ describe('Health Entries API', () => {
 
         if (sql.includes('SELECT care_family, care_source FROM health_entries WHERE id')) {
           if (params && params[0] === 'nonexistent') return { rows: [] };
+          if (params && params[0] === 'he-uncat') {
+            return {
+              rows: [{ care_family: null, care_source: 'guardian_defined' }],
+            };
+          }
           return {
             rows: [{
               care_family: makeHealthRow({ id: params[0] }).care_family,
@@ -625,8 +630,13 @@ describe('Health Entries API', () => {
       expect(res.body).toHaveProperty('status', 'active');
     });
 
-    it('defaults type to vet_visit and frequency to once', async () => {
-      const entry = { pet_id: 'pet-1', name: 'Simple', next_due_date: '2025-01-01' };
+    it('defaults type to vet_visit and frequency to once when care_family is provided', async () => {
+      const entry = {
+        pet_id: 'pet-1',
+        name: 'Simple',
+        next_due_date: '2025-01-01',
+        care_family: 'wellness_review',
+      };
       const res = await request(app)
         .post('/api/health-entries')
         .set('Authorization', `Bearer ${token}`)
@@ -636,11 +646,11 @@ describe('Health Entries API', () => {
       expect(insertParams[4]).toBe('vet_visit');
       expect(insertParams[6]).toBe('once');
       expect(insertParams[10]).toBe('2025-01-01');
-      expect(insertParams[19]).toBeNull();
-      expect(res.body.care_family).toBeNull();
+      expect(insertParams[19]).toBe('wellness_review');
+      expect(res.body.care_family).toBe('wellness_review');
     });
 
-    it('stores and returns null care_family for one-off create without family', async () => {
+    it('rejects one-off create without care_family', async () => {
       const entry = {
         pet_id: 'pet-1',
         name: 'Mystery visit',
@@ -652,10 +662,25 @@ describe('Health Entries API', () => {
         .post('/api/health-entries')
         .set('Authorization', `Bearer ${token}`)
         .send(entry);
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/care_family is required/i);
+    });
+
+    it('accepts one-off create with explicit care_family', async () => {
+      const entry = {
+        pet_id: 'pet-1',
+        name: 'Grooming visit',
+        type: 'other',
+        frequency: 'once',
+        next_due_date: '2025-03-01',
+        care_family: 'grooming',
+      };
+      const res = await request(app)
+        .post('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
       expect(res.statusCode).toBe(201);
-      expect(res.body.care_family).toBeNull();
-      const insertParams = queryLog.find((q) => q.sql.includes('INSERT INTO health_entries')).params;
-      expect(insertParams[19]).toBeNull();
+      expect(res.body.care_family).toBe('grooming');
     });
 
     it('normalizes legacy ISO timestamp inputs to date-only for storage', async () => {
@@ -664,6 +689,7 @@ describe('Health Entries API', () => {
         name: 'Legacy',
         next_due_date: '2026-06-30T09:00:00.000Z',
         start_date: '2026-06-30T00:00:00.000Z',
+        care_family: 'wellness_review',
       };
       const res = await request(app)
         .post('/api/health-entries')
@@ -677,7 +703,14 @@ describe('Health Entries API', () => {
     });
 
     it('accepts camelCase field aliases', async () => {
-      const entry = { petId: 'pet-2', name: 'Test', startDate: '2025-01-01', nextDueDate: '2025-02-01', healthIssueId: 'hi-1' };
+      const entry = {
+        petId: 'pet-2',
+        name: 'Test',
+        startDate: '2025-01-01',
+        nextDueDate: '2025-02-01',
+        healthIssueId: 'hi-1',
+        careFamily: 'wellness_review',
+      };
       const res = await request(app)
         .post('/api/health-entries')
         .set('Authorization', `Bearer ${token}`)
@@ -712,6 +745,7 @@ describe('Health Entries API', () => {
         name: 'Grooming',
         type: 'other',
         next_due_date: '2025-01-01',
+        care_family: 'grooming',
       };
       const res = await request(app)
         .post('/api/health-entries')
@@ -761,6 +795,7 @@ describe('Health Entries API', () => {
         name: 'Legacy care',
         type: 'family_event',
         next_due_date: '2025-01-01',
+        care_family: 'other',
       };
       const res = await request(app)
         .post('/api/health-entries')
@@ -776,6 +811,7 @@ describe('Health Entries API', () => {
         name: 'Legacy other',
         type: 'procedure',
         next_due_date: '2025-01-01',
+        care_family: 'other',
       };
       const res = await request(app)
         .post('/api/health-entries')
@@ -826,6 +862,20 @@ describe('Health Entries API', () => {
         .send({ name: 'Legacy', type: 'family_event', next_due_date: '2026-01-01' });
       expect(res.statusCode).toBe(400);
       expect(res.body.error).toMatch(/Deprecated entry type/i);
+    });
+
+    it('updates an uncategorised one-off entry without supplying care_family', async () => {
+      const res = await request(app)
+        .put('/api/health-entries/he-uncat')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          name: 'Still uncategorised',
+          type: 'other',
+          frequency: 'once',
+          next_due_date: '2026-02-01',
+        });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.care_family).toBeNull();
     });
   });
 
