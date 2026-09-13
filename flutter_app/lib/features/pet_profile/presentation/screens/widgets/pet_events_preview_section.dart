@@ -139,7 +139,7 @@ class _PetEventsPreviewSectionState
                         key: const Key('pet_detail_empty_care'),
                         title: l.petCareEmptyCareClearTitle,
                         body: l.homeNoDueEvents,
-                        actionLabel: l.allCare,
+                        actionLabel: l.viewAllCare,
                         actionIcon: Icons.calendar_month_outlined,
                         onAction: () =>
                             context.push('/pet/${widget.petId}/events'),
@@ -157,7 +157,7 @@ class _PetEventsPreviewSectionState
               if (showAllCare)
                 PetCareDashboardSectionLink(
                   linkKey: const Key('pet_detail_care_view_all'),
-                  label: l.allCare,
+                  label: l.viewAllCare,
                   onPressed: () => context.push('/pet/${widget.petId}/events'),
                 ),
             ],

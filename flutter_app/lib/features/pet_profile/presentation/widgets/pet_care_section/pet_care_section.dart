@@ -124,7 +124,7 @@ class _PetCareSectionState extends ConsumerState<PetCareSection> {
                   key: const Key('pet_care_section_empty'),
                   title: l.petCareEmptyCareClearTitle,
                   body: l.homeNoDueEvents,
-                  actionLabel: l.allCare,
+                  actionLabel: l.viewAllCare,
                   actionIcon: Icons.calendar_month_outlined,
                   onAction: () => context.push('/pet/${widget.petId}/events'),
                 )
@@ -133,7 +133,7 @@ class _PetCareSectionState extends ConsumerState<PetCareSection> {
               if (!buckets.isEmpty)
                 PetCareDashboardSectionLink(
                   linkKey: const Key('pet_care_view_all'),
-                  label: l.allCare,
+                  label: l.viewAllCare,
                   onPressed: () => context.push('/pet/${widget.petId}/events'),
                 ),
             ],

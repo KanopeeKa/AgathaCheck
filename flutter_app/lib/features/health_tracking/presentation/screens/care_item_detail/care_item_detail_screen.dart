@@ -52,13 +52,13 @@ class CareItemDetailScreen extends ConsumerWidget {
           loading: () => ExperienceShellScaffold(
             experience: experience,
             currentLocation: GoRouterState.of(context).uri.path,
-            screenTitle: l.manageEvents,
+            screenTitle: l.allCareTitle(pet.name),
             child: const Center(child: CircularProgressIndicator()),
           ),
           error: (error, _) => ExperienceShellScaffold(
             experience: experience,
             currentLocation: GoRouterState.of(context).uri.path,
-            screenTitle: l.manageEvents,
+            screenTitle: l.allCareTitle(pet.name),
             child: Center(child: Text(l.errorWithMessage('$error'))),
           ),
           data: (entry) {
@@ -66,7 +66,7 @@ class CareItemDetailScreen extends ConsumerWidget {
               return ExperienceShellScaffold(
                 experience: experience,
                 currentLocation: GoRouterState.of(context).uri.path,
-                screenTitle: l.manageEvents,
+                screenTitle: l.allCareTitle(pet.name),
                 child: Center(child: Text(l.entryNotFound)),
               );
             }

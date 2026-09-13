@@ -144,7 +144,7 @@ export class PetDetailPage {
 
   async expectCareSection(petName: string): Promise<void> {
     await enableFlutterAccessibility(this.page);
-    const careTitle = new RegExp(`Care for ${escapeRegExp(petName)}`, 'i');
+    const careTitle = new RegExp(`${escapeRegExp(petName)}'s care`, 'i');
     await this.page
       .getByRole('group', { name: careTitle })
       .or(this.page.getByText(careTitle))

@@ -30,7 +30,7 @@ export class HealthDashboardPage {
   private guardianGlobalEventsLoadedLocator() {
     return this.page
       .getByRole('button', { name: /Add an event|Ajouter un événement/i })
-      .or(this.page.getByText(/^Events$|^Événements$/i))
+      .or(this.page.getByText(/^All Actions$|^Tous les soins$/i))
       .or(this.page.getByText(/Due and Overdue|À faire et en retard/i))
       .or(this.page.getByText(/No entries yet|Aucun événement/i));
   }

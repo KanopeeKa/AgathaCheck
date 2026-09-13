@@ -76,14 +76,21 @@ Legal or technical **guardianship** is separate from Pet Care relationship langu
 
 Keep these EN/FR labels distinct in copy and l10n:
 
-| Surface | EN | FR | ARB keys (target) |
-|---------|----|----|-------------------|
+| Surface | EN | FR | ARB key |
+|---------|----|----|---------|
 | Workspace | Pet Care | Suivi | `drawerPetCare`, `experiencePetCareView`, … |
 | Dashboard pet rail | My Pets | Mes animaux | `myPets` — **do not repurpose for workspace** |
-| Due-items block | CARE ACTIONS (eyebrow) | SOINS | `careActionsEyebrow` or `careEyebrow` |
-| Full due list link | All Actions | Tous les soins | `allActions` |
-| Bottom nav | Actions | Soins | `actionsNavLabel` |
+| Due-items block | CARE ACTIONS (eyebrow) | SOINS | `careEyebrow` |
+| Full due list link | All Actions | Tous les soins | `allCare` |
+| Global queue screen (`/pc/events`) | All Actions | Tous les soins | `allCare` |
+| Bottom nav | Actions | Soins | `careNavLabel` |
+| Profile operational section | {Pet}'s care | Soins pour {petName} | `careForPet` |
+| Profile preview trailing link | View all care | Voir tous les soins | `viewAllCare` |
+| Pet-scoped All care list | All care | Tous les soins de {petName} | `allCareTitle` |
 | Passed-away pets section | Rainbow bridge | Au-delà des nuages | `rainbowBridge` — collapsed expansion on full pets list |
+
+Pet-scoped care surfaces use `viewAllCare` / `allCareTitle`; global surfaces keep `allCare` and
+`careNavLabel`. Do not reuse global keys on pet-scoped UI.
 
 ## Known terminology debt (active code)
 
