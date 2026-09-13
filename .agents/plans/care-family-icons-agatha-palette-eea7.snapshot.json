@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-family-icons-agatha-palette-eea7",
+  "approved_at": "2026-09-13T15:57:00Z",
+  "approved_by": "user-chat-grant-execute-plan-2026-09-13",
+  "approved_until": "2026-09-15T15:57:00Z",
+  "content_hash": "sha256:81c9473bf81b941306d4daad79860624b4b667724fac71c32b13787adeffc2da",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/care-family-icons-agatha-palette-eea7-integration",
+  "control_issue": 1131,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Agatha message tokens and suggestion card",
+      "branch": "cursor/agatha-message-palette-eea7",
+      "allowed_paths": [
+        "flutter_app/lib/core/theme/**",
+        "docs/design/tokens.md",
+        "flutter_app/lib/features/care_intelligence/presentation/widgets/care_suggestion_card.dart",
+        "flutter_app/test/features/care_intelligence/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "2",
+      "title": "Care family icon set (unified ink)",
+      "branch": "cursor/care-family-icons-eea7",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/widgets/care_family_icon.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/care_rhythms/**",
+        "flutter_app/test/features/pet_profile/presentation/widgets/care_family_icon_test.dart"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "3",
+      "title": "Due rows and icon consolidation",
+      "branch": "cursor/care-event-row-icons-eea7",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/widgets/care_event_row*.dart",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_card.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_event_entry_list.dart",
+        "flutter_app/test/features/health_tracking/presentation/widgets/care_event_row_test.dart",
+        "flutter_app/test/features/experience/presentation/screens/pet_care/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    }
+  ]
+}
