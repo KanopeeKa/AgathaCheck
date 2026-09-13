@@ -38,7 +38,7 @@ if [[ "$PKG_CHANGED" == "true" ]]; then
 fi
 
 echo "=== Verify runtime dependencies in node_modules ==="
-bash "$(cd "$(dirname "$0")" && pwd)/verify-server-deps-installed.sh"
+uat_nm_verify_server_deps
 
 echo "=== node_modules check (pre-migrate) ==="
 if [[ -L "${APPDIR}/node_modules" ]]; then

@@ -201,3 +201,51 @@ uat_nm_assert() {
     return "$code"
   done
 }
+
+# Verify runtime dependencies from server/package.json resolve in node_modules.
+# Used by SSH deploy bundles — must not shell out to sibling scripts on remote.
+uat_nm_verify_server_deps() {
+  local appdir missing
+  appdir="${UAT_APP_DIR:-${PROD_APP_DIR:-}}"
+
+  if [[ -z "$appdir" || ! -f "${appdir}/package.json" ]]; then
+    echo "::error::verify-server-deps: APPDIR missing or no package.json (set UAT_APP_DIR or PROD_APP_DIR)" >&2
+    return 1
+  fi
+
+  cd "${appdir}"
+
+  if ! uat_nm_use_node; then
+    echo "::error::node not found in PATH or CloudLinux nodevenv — cannot verify dependencies" >&2
+    return 1
+  fi
+
+  missing="$(
+    node --input-type=module - <<'NODE'
+import fs from 'fs';
+import { createRequire } from 'module';
+
+const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const req = createRequire(import.meta.url);
+const missing = [];
+for (const name of Object.keys(pkg.dependencies || {})) {
+  try {
+    req.resolve(`${name}/package.json`);
+  } catch {
+    missing.push(name);
+  }
+}
+if (missing.length) {
+  process.stdout.write(missing.join(' '));
+  process.exit(1);
+}
+NODE
+  )" || {
+    echo "::error title=Missing npm dependencies::Runtime packages not installed in node_modules: ${missing}"
+    echo "::error::cPanel → Setup Node.js App → Run NPM Install → Restart (CloudLinux nodevenv symlink)."
+    echo "::error::See docs/pipelines/uat-backend-node-modules-runbook.md"
+    return 1
+  }
+
+  echo "OK: all server/package.json dependencies resolve in node_modules"
+}

@@ -82,7 +82,7 @@ echo "=== node_modules invariant (pre-restart) ==="
 uat_nm_assert pre 1 0
 
 echo "=== Verify runtime dependencies in node_modules ==="
-bash "$(cd "$(dirname "$0")" && pwd)/verify-server-deps-installed.sh"
+uat_nm_verify_server_deps
 
 echo "=== Database migrations ==="
 cd "${APPDIR}"
