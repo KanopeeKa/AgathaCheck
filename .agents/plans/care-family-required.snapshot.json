@@ -34,12 +34,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "blocked",
-      "status_reason": "governance_approval_required",
-      "status_detail": "Breaking API contract change. Requires care-family-taxonomy merged plus O2 sign-off recorded on the control issue.",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1128",
+      "merge_commit": "f9dd24c01340dc6330b664d60f5277c1d63aa880",
       "debt_issue_refs": []
     },
     {
@@ -77,5 +76,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:d555f4f62b3aacd023b1318de5bfe9019264780c4455081c61558f925af6a5a8"
+  "content_hash": "sha256:7823a0e5278c7176f3b0eecb1cba2989f8c75e0503a746a6bde9e9af7b3f5c93"
 }
