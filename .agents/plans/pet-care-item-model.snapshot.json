@@ -42,8 +42,9 @@
     },
     {
       "plan_id": "care-management-surfaces",
-      "status": "pending",
-      "pr_url": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1140",
+      "merge_commit": "3e736c1daa1275888988b2a47eb4128689b3d56b"
     },
     {
       "plan_id": "care-copy-and-terminology",
@@ -90,5 +91,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:8630141197cea81874a8d30823c32b36bd16bf8e27d1d46cd8a5c5d5b8476887"
+  "content_hash": "sha256:2cfd03519fd293ba5f9bddf178105450b57d1cefbeb0419154075cbb6b078e90"
 }

@@ -192,17 +192,17 @@ docs/domains/pet_care/**
 ## Runtime state
 
 ```yaml
-autonomy: halted
+autonomy: completed
 current_phase: null
-last_completed_phase: null
-halt_reason: "awaiting approval; blocked on care-presentation-primitives and pet-profile-care-surface"
-next_action: "confirm Child B and Child D merged, then bootstrap control issue"
+last_completed_phase: 3
+halt_reason: null
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/care-item-model-plans-c9c6
+  branch: main
   plan_path: .agents/plans/care-management-surfaces.md
-  plan_commit: null
+  plan_commit: 3e736c1daa1275888988b2a47eb4128689b3d56b
   snapshot_path: .agents/plans/care-management-surfaces.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 3e736c1daa1275888988b2a47eb4128689b3d56b
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
