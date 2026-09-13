@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/router/pet_care_nav_paths.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// Shared Guardian primary navigation destinations for compact bottom bar,
@@ -59,11 +60,7 @@ class PetCarePrimaryDestinations {
     return 0;
   }
 
-  static bool _isCarePath(String path) {
-    if (path == '/pc/events' || path.startsWith('/pc/events/')) return true;
-    if (path.startsWith('/health')) return true;
-    return RegExp(r'^/pet/[^/]+/(events|health|other)(?:/|$)').hasMatch(path);
-  }
+  static bool _isCarePath(String path) => isPetCareActionsNavPath(path);
 
   static bool _isPetsPath(String path) {
     if (path == '/pc/pets' || path.startsWith('/pc/pets/')) return true;
