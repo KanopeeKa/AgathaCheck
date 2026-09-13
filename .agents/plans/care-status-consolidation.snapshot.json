@@ -55,6 +55,8 @@
       "branch": "cursor/care-status-consolidation-seed-c9c6",
       "allowed_paths": [
         "server/scripts/seed.js",
+        "server/db/seeds/**",
+        "server/test/db/seeds/**",
         "server/test/helpers/**",
         "docs/domains/pet_care/changes/care-item-model-delivery-plan.md"
       ],

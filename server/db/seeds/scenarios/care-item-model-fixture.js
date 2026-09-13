@@ -1,5 +1,3 @@
-import { randomUUID } from 'crypto';
-
 import { WEIGHT_ESTABLISHMENT_POLICY_VERSION } from '../../../lib/care/progression/weightEstablishmentPolicy.js';
 import { DEMO_IDS } from '../demo-constants.js';
 import { calendarDaysFromToday, upsertPersonalPet } from '../helpers.js';
