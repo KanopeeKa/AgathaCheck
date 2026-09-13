@@ -5,7 +5,7 @@
   "approved_at": "2026-09-13T12:40:00Z",
   "approved_by": "PLACEHOLDER — awaiting approve-autonomous care-copy-and-terminology",
   "approved_until": "2026-09-15T12:40:00Z",
-  "autonomy": "halted",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1,
@@ -112,5 +112,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:a1c85c9d2afdc122a4d9129c2bcbffca0f908546d58c9b2d9b4e473d1827d329"
+  "content_hash": "sha256:9bdffb115fb674462927125d2b29d56cd5094331c3982ccdd6bac872b27a8071"
 }
