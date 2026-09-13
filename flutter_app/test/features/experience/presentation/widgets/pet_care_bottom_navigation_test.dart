@@ -86,6 +86,13 @@ void main() {
       expect(PetCareBottomNavigation.indexFor('/pet/pet-1/health-issues'), 1);
       expect(PetCareBottomNavigation.indexFor('/pet/pet-1/events'), 2);
       expect(PetCareBottomNavigation.indexFor('/pet/pet-1/events/entry-1'), 2);
+      expect(
+        PetCareBottomNavigation.indexFor('/pet/pet-1/events/entry-1/edit'),
+        2,
+      );
+      expect(PetCareBottomNavigation.indexFor('/pet/pet-1/care-rhythms'), 2);
+      expect(PetCareBottomNavigation.indexFor('/pet/pet-1/health/add'), 2);
+      expect(PetCareBottomNavigation.indexFor('/health/add'), 2);
       expect(PetCareBottomNavigation.indexFor('/add'), 1);
       expect(PetCareBottomNavigation.indexFor('/account/orgs/org-1'), 3);
     });

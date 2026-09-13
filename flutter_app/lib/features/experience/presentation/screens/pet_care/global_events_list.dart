@@ -240,54 +240,52 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
         ? orgGlobalEventsPets(widget.shellPets, _orgFilters)
         : guardianGlobalEventsPets(widget.shellPets, _petCareFilters);
 
-    return _OperationsDeskTheme(
-      child: ColoredBox(
-        color: AppColorTokens.operationsDeskCanvas,
-        child: RefreshIndicator(
-          onRefresh: () async => _invalidateBoth(),
-          child: SingleChildScrollView(
-            key: const Key('global_events_scroll'),
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(bottom: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l.allCare,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+    return ColoredBox(
+      color: AppColorTokens.operationsDeskCanvas,
+      child: RefreshIndicator(
+        onRefresh: () async => _invalidateBoth(),
+        child: SingleChildScrollView(
+          key: const Key('global_events_scroll'),
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(bottom: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l.allCare,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        l.careActionsSubtitle,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l.careActionsSubtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                if (!_isOrg)
-                  PetCareGlobalEventsCollectionFilterBar(
-                    shellPets: widget.shellPets,
-                    filters: _petCareFilters,
-                    onChanged: (f) => setState(() => _petCareFilters = f),
-                  )
-                else
-                  OrgGlobalEventsCollectionFilterBar(
-                    shellPets: widget.shellPets,
-                    filters: _orgFilters,
-                    onChanged: (f) => setState(() => _orgFilters = f),
-                  ),
-                _buildBody(l, entriesAsync, historiesAsync, scopedPets),
-              ],
-            ),
+              ),
+              if (!_isOrg)
+                PetCareGlobalEventsCollectionFilterBar(
+                  shellPets: widget.shellPets,
+                  filters: _petCareFilters,
+                  onChanged: (f) => setState(() => _petCareFilters = f),
+                )
+              else
+                OrgGlobalEventsCollectionFilterBar(
+                  shellPets: widget.shellPets,
+                  filters: _orgFilters,
+                  onChanged: (f) => setState(() => _orgFilters = f),
+                ),
+              _buildBody(l, entriesAsync, historiesAsync, scopedPets),
+            ],
           ),
         ),
       ),
@@ -360,43 +358,6 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
 // ---------------------------------------------------------------------------
 // Shared presentation helpers
 // ---------------------------------------------------------------------------
-
-/// Operations Desk colour theme wrapper — same tokens as the home content.
-class _OperationsDeskTheme extends StatelessWidget {
-  const _OperationsDeskTheme({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final base = Theme.of(context);
-    final desk = base.copyWith(
-      colorScheme: base.colorScheme.copyWith(
-        primary: AppColorTokens.petCareCarePrimary,
-        onPrimary: AppColorTokens.inverse,
-        primaryContainer: AppColorTokens.operationsPaper,
-        onPrimaryContainer: AppColorTokens.petCareCareActive,
-        surface: AppColorTokens.operationsSurface,
-        onSurface: AppColorTokens.operationsInk,
-        surfaceContainerHighest: AppColorTokens.operationsPaper,
-        outlineVariant: AppColorTokens.operationsOlive.withValues(alpha: 0.18),
-      ),
-      scaffoldBackgroundColor: AppColorTokens.operationsDeskCanvas,
-      cardTheme: base.cardTheme.copyWith(
-        color: AppColorTokens.operationsSurface,
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: AppColorTokens.petCareCarePrimary,
-          minimumSize: const Size(48, 48),
-        ),
-      ),
-    );
-    return Theme(data: desk, child: child);
-  }
-}
 
 /// Inline error icon + retryable action.
 class _ErrorRetryView extends StatelessWidget {
