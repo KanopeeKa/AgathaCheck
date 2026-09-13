@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/pet_care/domain/care_temporal_group.dart';
 import 'package:pet_profile_app/features/pet_care/domain/services/care_temporal_grouping_service.dart';
-import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/care_progression_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/all_care/all_care_list.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -67,10 +65,7 @@ void main() {
       _wrap([
         _entry(id: 'overdue', nextDue: today.subtract(const Duration(days: 1))),
         _entry(id: 'today', nextDue: today),
-        _entry(
-          id: 'upcoming',
-          nextDue: today.add(const Duration(days: 2)),
-        ),
+        _entry(id: 'upcoming', nextDue: today.add(const Duration(days: 2))),
         _entry(
           id: 'one-off-done',
           nextDue: DateTime(9999),
@@ -81,13 +76,19 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('all_care_list')), findsOneWidget);
-    expect(find.byKey(const Key('pet_care_group_needsAttention')), findsOneWidget);
+    expect(
+      find.byKey(const Key('pet_care_group_needsAttention')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('pet_care_group_today')), findsOneWidget);
     expect(find.byKey(const Key('pet_care_group_upcoming')), findsOneWidget);
     expect(find.byKey(const Key('pet_care_action_overdue')), findsOneWidget);
     expect(find.byKey(const Key('pet_care_action_today')), findsOneWidget);
     expect(find.text('Done'), findsWidgets);
-    expect(find.byKey(const Key('pet_manage_events_collection_filter_bar')), findsNothing);
+    expect(
+      find.byKey(const Key('pet_manage_events_collection_filter_bar')),
+      findsNothing,
+    );
     expect(find.text('Recurring'), findsNothing);
     expect(find.text('One-time'), findsNothing);
   });
