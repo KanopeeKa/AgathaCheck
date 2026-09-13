@@ -240,17 +240,17 @@ flutter_app/test/features/experience/**
 ## Runtime state
 
 ```yaml
-autonomy: halted
+autonomy: completed
 current_phase: null
 last_completed_phase: 3
-halt_reason: halted
+halt_reason: null
 next_action: "plan complete"
 artifact_ref:
-  branch: cursor/care-copy-phase3-snapshot-2dfd
+  branch: main
   plan_path: .agents/plans/care-copy-and-terminology.md
-  plan_commit: d4b7768e204e86f6bf62833cf9f60cb66eb70d9c
+  plan_commit: c127fb4d93ee709ce845ceb0be41106313327c80
   snapshot_path: .agents/plans/care-copy-and-terminology.snapshot.json
-  snapshot_commit: d4b7768e204e86f6bf62833cf9f60cb66eb70d9c
+  snapshot_commit: c127fb4d93ee709ce845ceb0be41106313327c80
 open_prs: []
 merge_commits: {"3":"d4b7768e204e86f6bf62833cf9f60cb66eb70d9c"}
 debt_issue_refs: []

@@ -6,12 +6,12 @@
   "approved_at": "2026-09-13T12:40:00Z",
   "approved_by": "PLACEHOLDER — awaiting approve-autonomous pet-care-item-model",
   "approved_until": "2026-09-15T12:40:00Z",
-  "autonomy": "halted",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "care-copy-and-terminology",
+  "current_child_plan_id": null,
   "child_plans": [
     {
       "plan_id": "care-status-consolidation",
@@ -51,8 +51,9 @@
     },
     {
       "plan_id": "care-copy-and-terminology",
-      "status": "pending",
-      "pr_url": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1147",
+      "merge_commit": "d4b7768e204e86f6bf62833cf9f60cb66eb70d9c"
     }
   ],
   "phases": [
@@ -94,5 +95,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:e44a1db49bdf6778e49b00b11f63f009e25c99b4d0d8a7d5bd212e77306b7331"
+  "content_hash": "sha256:159baf3190ccb36a354a27d0689658340ff874dcf157e370996baea8c21c3fce"
 }
