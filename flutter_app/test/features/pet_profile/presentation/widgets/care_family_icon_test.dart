@@ -22,9 +22,7 @@ void main() {
       });
     }
 
-    testWidgets('chip uses surfaceAlt background and plum ink', (
-      tester,
-    ) async {
+    testWidgets('chip uses surfaceAlt background and plum ink', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(body: CareFamilyIcon(family: CareFamily.medication)),

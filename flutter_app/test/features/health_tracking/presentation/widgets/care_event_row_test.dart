@@ -50,7 +50,9 @@ Widget _buildRow(
       apiBaseUrlProvider.overrideWith((ref) => 'http://localhost:3000'),
     ],
     child: MaterialApp(
-      theme: AppTheme.lightTheme.copyWith(splashFactory: NoSplash.splashFactory),
+      theme: AppTheme.lightTheme.copyWith(
+        splashFactory: NoSplash.splashFactory,
+      ),
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
