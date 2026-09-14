@@ -143,7 +143,7 @@ void main() {
   });
 
   testWidgets(
-    'compact shell without hamburger centers logo and title as one block',
+    'compact shell without hamburger left-aligns logo title when provided',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -190,13 +190,78 @@ void main() {
 
       expect(find.text('My Pets dashboard'), findsOneWidget);
 
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.centerTitle, isFalse);
+
       final logo = tester.getRect(find.byType(Image).first);
       final text = tester.getRect(find.text('My Pets dashboard'));
-      final blockCenter = (logo.left + text.right) / 2;
-
+      expect(logo.left, lessThan(80));
       expect(logo.left, lessThan(text.left));
-      expect(blockCenter, greaterThan(120));
-      expect(blockCenter, lessThan(320));
+      expect(text.width, greaterThan(40));
+    },
+  );
+
+  testWidgets(
+    'compact drill-down shows bell without implicit endDrawer button',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            experienceEligibilityProvider.overrideWith(
+              (ref) => AsyncValue.data(
+                ExperienceEligibilityRules.compute(
+                  pets: const [Pet(id: '1', name: 'Buddy', species: 'Dog')],
+                  orgMembershipCount: 0,
+                ),
+              ),
+            ),
+            combinedUnreadNotificationCountProvider.overrideWith((ref) => 12),
+            guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
+            organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+          ],
+          child: MaterialApp(
+            theme: ThemeData(splashFactory: NoSplash.splashFactory),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: MediaQuery(
+              data: const MediaQueryData(size: Size(390, 844)),
+              child: ExperienceShellScaffold(
+                experience: AppExperience.petCare,
+                currentLocation: '/pet/buddy-id',
+                screenTitle: 'Buddy',
+                contextualActions: [
+                  IconButton(
+                    key: const Key('contextual_test_action'),
+                    onPressed: () {},
+                    icon: const Icon(Icons.share_outlined),
+                  ),
+                ],
+                child: const SizedBox.shrink(),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.menu), findsNothing);
+      expect(
+        find.byKey(const Key('experience_notification_bell')),
+        findsOneWidget,
+      );
+
+      final text = tester.getRect(find.text('Buddy'));
+      expect(text.width, greaterThan(20));
     },
   );
 

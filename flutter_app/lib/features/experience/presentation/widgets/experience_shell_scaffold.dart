@@ -129,10 +129,10 @@ class ExperienceShellScaffold extends ConsumerWidget {
         ? AppColorTokens.inverse
         : null;
     const showShelterWorkspace = true;
-    const workspaceToggleWidth = 184.0;
-    final leadingWidth = usesPetCareLeadingNav
+    // Workspace toggle is frozen (zero-size); reserve only real leading chrome.
+    final leadingWidth = usesLeadingNav
         ? (isRoot ? null : 56.0)
-        : (isRoot ? workspaceToggleWidth : workspaceToggleWidth + 48);
+        : (isRoot ? 0.0 : 56.0);
     final hideTitleForAccessibleCompactHeader =
         isRoot &&
         MediaQuery.sizeOf(context).width < 360 &&
@@ -154,7 +154,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
         !suppressSectionRootAppBarTitle;
     final centerAppBarTitle =
         !usesDesktopContentHeader && !usesCompactShellWithoutHamburger;
-    final usesBrandedLogoTitle = showTitle && !usesDesktopContentHeader;
     final titleWidget = !showTitle
         ? const SizedBox.shrink()
         : usesDesktopContentHeader
@@ -216,22 +215,12 @@ class ExperienceShellScaffold extends ConsumerWidget {
                 surfaceTintColor: Colors.transparent,
                 scrolledUnderElevation: 0,
                 elevation: 0,
-                leading: usesBrandedLogoTitle ? null : leadingWidget,
-                centerTitle: usesBrandedLogoTitle ? false : centerAppBarTitle,
-                title: usesBrandedLogoTitle
-                    ? const SizedBox.shrink()
-                    : titleWidget,
-                actions: usesBrandedLogoTitle ? null : trailingActions,
-                flexibleSpace: usesBrandedLogoTitle
-                    ? ExperienceBrandedToolbarChrome(
-                        toolbarHeight: _toolbarHeight,
-                        foregroundColor: appBarForeground,
-                        leading: leadingWidget,
-                        leadingWidth: leadingWidth,
-                        title: titleWidget,
-                        actions: trailingActions,
-                      )
-                    : null,
+                leading: usesCompactShellWithoutHamburger && isRoot
+                    ? null
+                    : leadingWidget,
+                centerTitle: centerAppBarTitle,
+                title: titleWidget,
+                actions: trailingActions,
               ),
         drawer: hideSectionDrawer ? null : const ExperienceSectionDrawer(),
         endDrawer: const NotificationPanel(),
@@ -269,7 +258,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
                             leadingWidth: leadingWidth ?? 56,
                             title: titleWidget,
                             centerTitle: centerAppBarTitle,
-                            centerBrandedTitle: usesBrandedLogoTitle,
                             actions: trailingActions,
                           ),
                           Expanded(child: child),
@@ -348,7 +336,9 @@ class ExperienceShellScaffold extends ConsumerWidget {
       ),
     );
 
-    if (isRoot) return toggle;
+    if (isRoot) {
+      return toggle;
+    }
 
     return Row(
       mainAxisSize: MainAxisSize.min,
