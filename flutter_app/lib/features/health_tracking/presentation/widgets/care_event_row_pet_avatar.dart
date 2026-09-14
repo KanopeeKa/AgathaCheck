@@ -9,16 +9,10 @@ import '../../domain/entities/health_entry.dart';
 
 /// Lightweight circular pet photo for [CareEventRow] leading slot.
 class CareEventRowPetAvatar extends ConsumerWidget {
-  const CareEventRowPetAvatar({
-    super.key,
-    this.pet,
-    this.petName,
-    required this.colorScheme,
-  });
+  const CareEventRowPetAvatar({super.key, this.pet, this.petName});
 
   final Pet? pet;
   final String? petName;
-  final ColorScheme colorScheme;
 
   static const size = 32.0;
 

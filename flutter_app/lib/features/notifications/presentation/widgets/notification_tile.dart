@@ -96,7 +96,7 @@ class NotificationTile extends ConsumerWidget {
     final pet = notification.petId != null
         ? pets.where((p) => p.id == notification.petId).firstOrNull
         : null;
-    final petColor = pet != null ? resolvePetAccentColor(context, pet!) : null;
+    final petColor = pet != null ? resolvePetAccentColor(context, pet) : null;
 
     final tileColor = isUnread ? accent.unreadSurface : null;
     final stripColor = petColor ?? accent.primary.withAlpha(180);

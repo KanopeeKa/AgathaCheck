@@ -100,7 +100,6 @@ class CareEventRow extends StatelessWidget {
               CareEventRowPetAvatar(
                 pet: pet,
                 petName: entry.petName,
-                colorScheme: colorScheme,
               ),
               const SizedBox(width: 12),
             ] else
@@ -289,7 +288,6 @@ class _CompletedCareEventRow extends StatelessWidget {
               CareEventRowPetAvatar(
                 pet: pet,
                 petName: entry.petName,
-                colorScheme: colorScheme,
               ),
               const SizedBox(width: 12),
             ] else

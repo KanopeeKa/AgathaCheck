@@ -27,9 +27,7 @@ class PetPhotoSection extends StatelessWidget {
                 ? MemoryImage(base64Decode(photoBase64!))
                 : null,
             child: photoBase64 == null
-                ? const ClipOval(
-                    child: PetPhotoPlaceholder(fit: BoxFit.cover),
-                  )
+                ? const ClipOval(child: PetPhotoPlaceholder(fit: BoxFit.cover))
                 : null,
           ),
           Positioned(

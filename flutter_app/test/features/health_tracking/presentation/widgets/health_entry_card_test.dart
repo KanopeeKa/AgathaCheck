@@ -14,15 +14,9 @@ void main() {
   group('HealthEntryCard', () {
     final dateFormat = DateFormat('dd MMM yy');
 
-    Widget buildCard(
-      HealthEntry entry, {
-      VoidCallback? onMarkTaken,
-      Pet? pet,
-    }) {
+    Widget buildCard(HealthEntry entry, {VoidCallback? onMarkTaken, Pet? pet}) {
       return ProviderScope(
-        overrides: [
-          apiBaseUrlProvider.overrideWith((ref) => '/backend'),
-        ],
+        overrides: [apiBaseUrlProvider.overrideWith((ref) => '/backend')],
         child: MaterialApp(
           localizationsDelegates: const [
             AppLocalizations.delegate,
@@ -74,9 +68,7 @@ void main() {
       tester,
     ) async {
       final entryWithPetName = futureEntry.copyWith(petName: 'Rex');
-      await tester.pumpWidget(
-        buildCard(entryWithPetName, onMarkTaken: () {}),
-      );
+      await tester.pumpWidget(buildCard(entryWithPetName, onMarkTaken: () {}));
       await tester.pumpAndSettle();
       expect(find.text('Rex'), findsOneWidget);
     });

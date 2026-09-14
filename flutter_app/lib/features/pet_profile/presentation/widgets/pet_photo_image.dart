@@ -58,7 +58,10 @@ Widget buildPetPhotoOrPlaceholder({
   required BoxFit fit,
   String? semanticLabel,
 }) {
-  final placeholder = PetPhotoPlaceholder(fit: fit, semanticLabel: semanticLabel);
+  final placeholder = PetPhotoPlaceholder(
+    fit: fit,
+    semanticLabel: semanticLabel,
+  );
   final image = buildPetPhotoImage(
     photoPath: photoPath,
     apiBaseUrl: apiBaseUrl,

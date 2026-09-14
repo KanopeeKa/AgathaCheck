@@ -7,11 +7,7 @@ void main() {
     await tester.pumpWidget(
       const MaterialApp(
         home: Scaffold(
-          body: SizedBox(
-            width: 120,
-            height: 120,
-            child: PetPhotoPlaceholder(),
-          ),
+          body: SizedBox(width: 120, height: 120, child: PetPhotoPlaceholder()),
         ),
       ),
     );
