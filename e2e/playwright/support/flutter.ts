@@ -550,6 +550,18 @@ export async function isExperienceShellVisible(page: Page): Promise<boolean> {
     .catch(() => false);
 }
 
+/**
+ * Left section-switcher drawer (Pet Care / Account), not the notification endDrawer.
+ * Requires the section drawer to be open (see [openExperienceDrawer]).
+ */
+export function experienceSectionDrawerLocator(page: Page): Locator {
+  return page
+    .locator('[flt-semantics-identifier="drawer_pet_care"]')
+    .locator(
+      'xpath=ancestor::*[.//*[@flt-semantics-identifier="drawer_account"]][1]',
+    );
+}
+
 /** Open the experience shell drawer (hamburger or edge swipe when hamburger is hidden). */
 export async function openExperienceDrawer(page: Page): Promise<void> {
   await dismissConsentBannerIfPresent(page);

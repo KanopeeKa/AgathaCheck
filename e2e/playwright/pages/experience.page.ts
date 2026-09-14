@@ -5,6 +5,7 @@ import {
   flutterGotoUrl,
   guardianAccountTabLocator,
   openAccountFromShell,
+  experienceSectionDrawerLocator,
   openExperienceDrawer,
   refreshFlutterAccessibility,
   skipOrgOnboardingIfPresent,
@@ -215,10 +216,17 @@ export class ExperiencePage {
     await expect(
       this.page.locator('[flt-semantics-identifier="drawer_organisation"]'),
     ).toHaveCount(0);
-    await expect(this.page.getByText('Events', { exact: true })).not.toBeVisible();
-    await expect(this.page.getByText('My vets', { exact: true })).not.toBeVisible();
-    await expect(this.page.getByText('Notifications', { exact: true })).not.toBeVisible();
-    await expect(this.page.getByText('Settings', { exact: true })).not.toBeVisible();
+
+    // Scope legacy drawer-row checks to the section drawer — the notification
+    // endDrawer header also exposes "Notifications" in the a11y tree.
+    const sectionDrawer = experienceSectionDrawerLocator(this.page);
+    await expect(sectionDrawer.getByText('Events', { exact: true })).not.toBeVisible();
+    await expect(sectionDrawer.getByText('My vets', { exact: true })).not.toBeVisible();
+    await expect(sectionDrawer.getByText('Notifications', { exact: true })).not.toBeVisible();
+    await expect(sectionDrawer.getByText('Settings', { exact: true })).not.toBeVisible();
+    await expect(
+      this.page.getByRole('button', { name: /open notifications/i }),
+    ).toBeVisible();
   }
 
   /** Assert bell badge shows the expected count. */
