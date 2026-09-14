@@ -4,7 +4,7 @@
   "approved_at": "2026-09-14T07:40:00Z",
   "approved_by": "user-chat-grant-2026-09-14",
   "approved_until": "2026-09-16T07:40:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1152,
@@ -40,12 +40,12 @@
       "spawn_allowed": false,
       "spawn_config": null,
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1151",
-      "pr_head_sha": "33508bced7088e0201a08da83e8b032b7cc45762"
+      "pr_head_sha": "6531200a"
     }
   ],
-  "content_hash": "sha256:53417886f21f9b36b7ceebbc153fa23298317c70a66bb603d69b6242aa248727"
+  "content_hash": "sha256:b125119dca9da4c27ca6ab1bf075781f3bbeab25e85c4a29f53ccc8ba9e16c8d"
 }
