@@ -43,7 +43,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text("Bella's care"), findsOneWidget);
-    expect(find.byKey(const Key('pet_detail_care_section')), findsOneWidget);
+    expect(find.byKey(const Key('pet_detail_empty_care')), findsOneWidget);
     expect(find.text('All caught up'), findsOneWidget);
   });
 
