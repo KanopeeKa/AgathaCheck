@@ -43,15 +43,17 @@ class ExperienceBrandedToolbarChrome extends StatelessWidget {
                 Expanded(child: Center(child: title)),
                 Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: actions.map(
-                    (action) => IconTheme.merge(
-                      data: IconThemeData(
-                        color:
-                            foregroundColor ?? theme.colorScheme.onSurface,
-                      ),
-                      child: action,
-                    ),
-                  ).toList(),
+                  children: actions
+                      .map(
+                        (action) => IconTheme.merge(
+                          data: IconThemeData(
+                            color:
+                                foregroundColor ?? theme.colorScheme.onSurface,
+                          ),
+                          child: action,
+                        ),
+                      )
+                      .toList(),
                 ),
               ],
             ),
@@ -131,7 +133,8 @@ class ExperienceContentChromeBar extends StatelessWidget {
                         ...actions.map(
                           (action) => IconTheme.merge(
                             data: IconThemeData(
-                              color: foregroundColor ??
+                              color:
+                                  foregroundColor ??
                                   theme.colorScheme.onSurface,
                             ),
                             child: action,
