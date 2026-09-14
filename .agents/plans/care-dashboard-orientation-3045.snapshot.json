@@ -7,7 +7,7 @@
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
-  "control_issue": null,
+  "control_issue": 1152,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
@@ -40,8 +40,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1151",
+      "pr_head_sha": "33508bced7088e0201a08da83e8b032b7cc45762"
     }
-  ]
+  ],
+  "content_hash": "sha256:0002e62299dfa47d460b72cee93dfdb279b9e376c6ebd60a3d2cc43daecc521f"
 }
