@@ -2,29 +2,20 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../core/widgets/app_logo_title.dart';
+import '../../../../core/widgets/form/app_form_breakpoints.dart';
+import '../../../../core/widgets/form/app_form_discard_dialog.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import '../../domain/entities/health_entry.dart';
-import '../providers/health_providers.dart';
-import '../widgets/health_entry_type_labels.dart';
-import '../widgets/entry_due_completed_row.dart';
-import '../widgets/health_entry_form/health_entry_document_handler.dart';
-import '../widgets/health_entry_form/health_entry_frequency_section.dart';
-import '../widgets/health_entry_form/health_entry_schedule_times_section.dart';
-import '../widgets/health_entry_form/health_entry_health_issue_dropdown.dart';
-import '../widgets/health_entry_form/health_entry_pet_selector.dart';
-import '../widgets/health_entry_form/health_entry_photos_section.dart';
-import '../widgets/health_entry_form/health_entry_remind_field.dart';
-import '../widgets/health_entry_form/health_entry_text_fields.dart';
-import '../widgets/health_entry_form/health_entry_form_care_family_section.dart';
-
 import '../controllers/health_entry_form_controller.dart';
 import '../controllers/health_entry_form_outcomes.dart';
-import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+import '../providers/health_providers.dart';
+import '../widgets/health_entry_form/health_entry_document_handler.dart';
+import '../widgets/health_entry_form/health_entry_form_actions_bar.dart';
+import '../widgets/health_entry_form/health_entry_form_screen_body.dart';
 
 /// All pet event types on the unified edit form (W18).
 const kAllPetEventTypes = HealthEntryType.values;
@@ -73,6 +64,7 @@ class HealthEntryFormScreen extends ConsumerStatefulWidget {
 class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late final HealthEntryFormParams _params;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -86,10 +78,15 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     if (widget.entryId != null) {
       Future.microtask(() async {
         try {
-          await _controller.loadEntry(widget.entryId!);
-          await _controller.loadPhotos();
+          final loaded = await _controller.loadEntry(widget.entryId!);
+          if (loaded) {
+            await _controller.loadPhotos();
+          } else if (mounted) {
+            _controller.captureBaseline();
+          }
         } catch (e) {
           if (mounted) {
+            _controller.captureBaseline();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -99,6 +96,10 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
             );
           }
         }
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _controller.captureBaseline();
       });
     }
   }
@@ -114,188 +115,85 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     isMounted: () => mounted,
   );
 
+  Future<bool> _confirmDiscard() async {
+    if (!_controller.isDirty || !mounted) return true;
+    return confirmDiscardFormChanges(context);
+  }
+
+  Future<void> _handleBack() async {
+    final form = ref.read(healthEntryFormControllerProvider(_params));
+    if (!form.isEdit || !_controller.isDirty) {
+      _navigateBack(context, form.isEdit);
+      return;
+    }
+    if (await _confirmDiscard() && mounted) {
+      _navigateBack(context, form.isEdit);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final form = ref.watch(healthEntryFormControllerProvider(_params));
-    final petListAsync = ref.watch(petListProvider);
-    final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: AppLogoTitle(
-          title: form.isEdit ? l.editEntry : l.addHealthEntry2,
+    final isPhone =
+        AppFormBreakpoints.layoutForWidth(MediaQuery.sizeOf(context).width) ==
+        AppFormLayoutSize.phone;
+
+    return PopScope(
+      canPop: !form.isEdit || !_controller.isDirty,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        if (await _confirmDiscard() && context.mounted) {
+          _navigateBack(context, form.isEdit);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: AppLogoTitle(
+            title: form.isEdit ? l.editEntry : l.addHealthEntry2,
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            tooltip: l.goBack,
+            onPressed: _handleBack,
+          ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: l.goBack,
-          onPressed: () => _navigateBack(context, form.isEdit),
-        ),
-      ),
-      body: form.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    petListAsync.when(
-                      loading: () => const LinearProgressIndicator(),
-                      error: (e, _) => Text(l.failedToLoadPets('$e')),
-                      data: (pets) {
-                        if (pets.isEmpty) {
-                          return Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.errorContainer,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              l.noPetsFoundAddFirst,
-                              style: TextStyle(color: theme.colorScheme.error),
-                            ),
-                          );
-                        }
-                        return HealthEntryPetSelector(
-                          pets: pets,
-                          selectedPetIds: form.selectedPetIds,
-                          isEdit: form.isEdit,
-                          onChanged: _controller.setSelectedPetIds,
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<HealthEntryType>(
-                      initialValue: form.type,
-                      decoration: InputDecoration(labelText: l.entryType),
-                      items: form.selectableTypes.map((t) {
-                        return DropdownMenuItem(
-                          value: t,
-                          child: Text(healthEntryTypeLabel(l, t)),
-                        );
-                      }).toList(),
-                      onChanged: (val) {
-                        if (val != null) _controller.setType(val);
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    HealthEntryNameDosageFields(
-                      key: ValueKey(
-                        'name-dosage-${form.isEdit}-${widget.entryId ?? 'new'}',
-                      ),
-                      name: form.name,
-                      dosage: form.dosage,
-                      onNameChanged: _controller.setName,
-                      onDosageChanged: _controller.setDosage,
-                    ),
-                    const SizedBox(height: 16),
-                    HealthEntryFrequencySection(
-                      frequency: form.frequency,
-                      frequencyInterval: form.frequencyInterval,
-                      repeatEndDate: form.repeatEndDate,
-                      recurrenceAnchor: form.recurrenceAnchor,
-                      controller: _controller,
-                    ),
-                    const SizedBox(height: 16),
-                    HealthEntryFormCareFamilySection(
-                      form: form,
-                      controller: _controller,
-                    ),
-                    if (form.frequency != HealthFrequency.once) ...[
-                      const SizedBox(height: 16),
-                      HealthEntryScheduleTimesSection(
-                        scheduleAtSpecificTimes: form.scheduleAtSpecificTimes,
-                        scheduleTimes: form.scheduleTimes,
-                        controller: _controller,
-                      ),
-                    ],
-                    const SizedBox(height: 16),
-                    EntryDueCompletedRow(
-                      dueDate: form.dueDate,
-                      completedOn: form.completedOn,
-                      onDueDateChanged: _controller.setDueDate,
-                      onCompletedOnChanged: _controller.setCompletedOn,
-                    ),
-                    const SizedBox(height: 16),
-                    HealthEntryRemindField(
-                      remindDaysBefore: form.remindDaysBefore,
-                      onChanged: _controller.setRemindDaysBefore,
-                    ),
-                    const SizedBox(height: 16),
-                    if (form.selectedPetIds.length == 1)
-                      HealthEntryHealthIssueDropdown(
-                        petId: form.selectedPetIds.first,
-                        selectedHealthIssueId: form.selectedHealthIssueId,
-                        onChanged: _controller.setSelectedHealthIssueId,
-                      ),
-                    if (form.selectedPetIds.length == 1)
-                      const SizedBox(height: 16),
-                    HealthEntryNotesField(
-                      key: ValueKey(
-                        'notes-${form.isEdit}-${widget.entryId ?? 'new'}',
-                      ),
-                      notes: form.notes,
-                      onChanged: _controller.setNotes,
-                    ),
-                    const SizedBox(height: 24),
-                    HealthEntryPhotosSection(
-                      photos: form.photos,
-                      pendingPhotos: form.pendingPhotos,
-                      isUploading: form.isUploadingPhoto,
-                      baseUrl: ref.watch(apiBaseUrlProvider),
-                      onPickCamera: () =>
-                          _documents.pickPhoto(ImageSource.camera),
-                      onPickGallery: _documents.pickDocument,
-                      onDelete: _documents.deletePhoto,
-                      onRemovePending: _controller.removePendingPhoto,
-                    ),
-                    const SizedBox(height: 24),
-                    FilledButton.icon(
-                      key: const Key('save_health_entry_button'),
-                      onPressed: _submit,
-                      icon: Icon(form.isEdit ? Icons.save : Icons.add),
-                      label: Text(
-                        form.isEdit
-                            ? l.save
-                            : form.selectedPetIds.length > 1
-                            ? l.addEntryForPets(form.selectedPetIds.length)
-                            : l.addEntry,
-                      ),
-                    ),
-                    if (form.isEdit)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: OutlinedButton.icon(
-                          key: const Key('delete_health_entry_button'),
-                          onPressed: _confirmDelete,
-                          icon: Icon(
-                            Icons.delete_outline,
-                            color: theme.colorScheme.error,
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: theme.colorScheme.error,
-                            side: BorderSide(
-                              color: theme.colorScheme.error.withValues(
-                                alpha: 0.5,
-                              ),
-                            ),
-                          ),
-                          label: Text(l.deleteEntry),
-                        ),
-                      ),
-                  ],
+        body: form.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : HealthEntryFormScreenBody(
+                formKey: _formKey,
+                params: _params,
+                documents: _documents,
+                baseUrl: ref.watch(apiBaseUrlProvider),
+                actionsBar: HealthEntryFormActionsBar(
+                  params: _params,
+                  isLoading: _isSubmitting,
+                  onSave: _submit,
+                  onCancel: _handleBack,
                 ),
+                onDelete: form.isEdit ? _confirmDelete : null,
               ),
-            ),
+        bottomNavigationBar: isPhone && !form.isLoading
+            ? HealthEntryFormStickyActionsBar(
+                params: _params,
+                isLoading: _isSubmitting,
+                onSave: _submit,
+                onCancel: _handleBack,
+              )
+            : null,
+      ),
     );
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    setState(() => _isSubmitting = true);
     var outcome = await _controller.submit();
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
+    setState(() => _isSubmitting = false);
 
     if (outcome is HealthEntrySubmitNeedsMarkCompleted) {
       final prompt = outcome.prompt;
@@ -320,11 +218,13 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
         ),
       );
       if (result == null) return;
+      setState(() => _isSubmitting = true);
       outcome = await _controller.submit(
         markCompleted: result,
         skipMarkCompletedCheck: true,
       );
       if (!mounted) return;
+      setState(() => _isSubmitting = false);
     }
 
     final l = AppLocalizations.of(context)!;
@@ -334,7 +234,6 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
           _controller.markCareFamilyValidationAttempted();
         }
         _formKey.currentState!.validate();
-        break;
       case HealthEntrySubmitError(:final error):
         ScaffoldMessenger.of(
           context,

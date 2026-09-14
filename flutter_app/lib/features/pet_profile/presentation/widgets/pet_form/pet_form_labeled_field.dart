@@ -1,42 +1,10 @@
-import 'package:flutter/material.dart';
+import '../../../../../core/widgets/form/app_form_labeled_field.dart';
 
-/// Persistent label above a pet-form field (scoped styling, not global theme).
-class PetFormLabeledField extends StatelessWidget {
+class PetFormLabeledField extends AppFormLabeledField {
   const PetFormLabeledField({
     super.key,
-    required this.label,
-    required this.child,
-    this.subtitle,
+    required super.label,
+    required super.child,
+    super.subtitle,
   });
-
-  final String label;
-  final String? subtitle;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          label,
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        if (subtitle != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            subtitle!,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-        const SizedBox(height: 8),
-        child,
-      ],
-    );
-  }
 }

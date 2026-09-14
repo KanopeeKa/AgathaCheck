@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/screens/other_event_form_screen.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/screens/health_entry_form_screen.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/other_events_section.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -77,8 +77,11 @@ void main() {
         ),
         GoRoute(
           path: '/pet/:petId/other/add',
-          builder: (context, state) =>
-              OtherEventFormScreen(petId: state.pathParameters['petId']!),
+          builder: (context, state) => HealthEntryFormScreen(
+            petId: state.pathParameters['petId']!,
+            initialType: HealthEntryType.other,
+            allowedTypes: kOtherEventTypes.toList(),
+          ),
         ),
       ],
     );
@@ -105,7 +108,7 @@ void main() {
     await tester.tap(find.byKey(const Key('add_other_event_button')));
     await tester.pumpAndSettle();
 
-    expect(find.byType(OtherEventFormScreen), findsOneWidget);
+    expect(find.byType(HealthEntryFormScreen), findsOneWidget);
     expect(find.text('Other'), findsOneWidget);
     expect(find.text('Medication'), findsNothing);
   });

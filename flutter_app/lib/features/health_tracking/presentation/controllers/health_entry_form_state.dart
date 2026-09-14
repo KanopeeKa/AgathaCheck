@@ -127,6 +127,28 @@ class HealthEntryFormState {
     return HealthEntryType.values;
   }
 
+  /// Compare editable fields for dirty-guard (excludes loading/validation UI flags).
+  bool matchesEditableFields(HealthEntryFormState other) {
+    return name == other.name &&
+        dosage == other.dosage &&
+        notes == other.notes &&
+        type == other.type &&
+        frequency == other.frequency &&
+        frequencyInterval == other.frequencyInterval &&
+        startDate == other.startDate &&
+        dueDate == other.dueDate &&
+        completedOn == other.completedOn &&
+        recurrenceAnchor == other.recurrenceAnchor &&
+        repeatEndDate == other.repeatEndDate &&
+        remindDaysBefore == other.remindDaysBefore &&
+        selectedHealthIssueId == other.selectedHealthIssueId &&
+        setEquals(selectedPetIds, other.selectedPetIds) &&
+        scheduleAtSpecificTimes == other.scheduleAtSpecificTimes &&
+        listEquals(scheduleTimes, other.scheduleTimes) &&
+        careFamily == other.careFamily &&
+        pendingPhotos.length == other.pendingPhotos.length;
+  }
+
   HealthEntryFormState copyWith({
     String? name,
     String? dosage,

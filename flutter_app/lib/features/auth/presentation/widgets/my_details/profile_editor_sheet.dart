@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../../core/widgets/form/app_form_actions_bar.dart';
+import '../../../../../core/widgets/form/app_form_labeled_field.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../profile_photo_avatar.dart';
 
@@ -40,6 +42,7 @@ class _ProfileEditorSheetState extends State<ProfileEditorSheet> {
   Uint8List? _selectedPhotoBytes;
   String? _selectedPhotoFilename;
   bool _isSaving = false;
+  late Map<String, String> _baseline;
 
   @override
   void initState() {
@@ -52,7 +55,25 @@ class _ProfileEditorSheetState extends State<ProfileEditorSheet> {
     );
     _bioController = TextEditingController(text: widget.user.bio ?? '');
     _category = widget.user.category ?? 'pet_carer';
+    _baseline = _snapshot();
+    for (final controller in [
+      _firstNameController,
+      _lastNameController,
+      _bioController,
+    ]) {
+      controller.addListener(() => setState(() {}));
+    }
   }
+
+  Map<String, String> _snapshot() => {
+    'firstName': _firstNameController.text,
+    'lastName': _lastNameController.text,
+    'bio': _bioController.text,
+    'category': _category,
+    'photo': _selectedPhotoFilename ?? '',
+  };
+
+  bool get _isDirty => _snapshot().toString() != _baseline.toString();
 
   @override
   void dispose() {
@@ -181,51 +202,50 @@ class _ProfileEditorSheetState extends State<ProfileEditorSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  TextField(
-                    controller: _firstNameController,
-                    decoration: InputDecoration(
-                      labelText: l10n.firstName,
-                      prefixIcon: const Icon(Icons.person_outlined),
+                  AppFormLabeledField(
+                    label: l10n.firstName,
+                    child: TextField(
+                      controller: _firstNameController,
+                      decoration: const InputDecoration(),
+                      textCapitalization: TextCapitalization.words,
+                      autofillHints: const [AutofillHints.givenName],
                     ),
-                    textCapitalization: TextCapitalization.words,
-                    autofillHints: const [AutofillHints.givenName],
                   ),
                   const SizedBox(height: 16),
-                  TextField(
-                    controller: _lastNameController,
-                    decoration: InputDecoration(
-                      labelText: l10n.lastName,
-                      prefixIcon: const Icon(Icons.person_outlined),
+                  AppFormLabeledField(
+                    label: l10n.lastName,
+                    child: TextField(
+                      controller: _lastNameController,
+                      decoration: const InputDecoration(),
+                      textCapitalization: TextCapitalization.words,
+                      autofillHints: const [AutofillHints.familyName],
                     ),
-                    textCapitalization: TextCapitalization.words,
-                    autofillHints: const [AutofillHints.familyName],
                   ),
                   const SizedBox(height: 16),
-                  TextField(
-                    controller: _bioController,
-                    decoration: InputDecoration(
-                      labelText: l10n.bio,
-                      prefixIcon: const Icon(Icons.edit_note),
-                      hintText: 'Tell others about yourself...',
+                  AppFormLabeledField(
+                    label: l10n.bio,
+                    child: TextField(
+                      controller: _bioController,
+                      decoration: const InputDecoration(
+                        hintText: 'Tell others about yourself...',
+                      ),
+                      maxLines: 3,
+                      maxLength: 200,
+                      textCapitalization: TextCapitalization.sentences,
                     ),
-                    maxLines: 3,
-                    maxLength: 200,
-                    textCapitalization: TextCapitalization.sentences,
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            FilledButton(
-              key: const Key('save_profile_button'),
-              onPressed: _isSaving ? null : _save,
-              child: _isSaving
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.save),
+            AppFormActionsBar(
+              isLoading: _isSaving,
+              isDirty: _isDirty,
+              onSave: _save,
+              onCancel: () => Navigator.of(context).pop(),
+              saveLabel: l10n.save,
+              cancelKey: const Key('cancel_profile_button'),
+              saveKey: const Key('save_profile_button'),
             ),
             const SizedBox(height: 8),
           ],

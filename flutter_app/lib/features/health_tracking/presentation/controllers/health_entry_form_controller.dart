@@ -21,6 +21,12 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
 
   final Ref ref;
   String? _entryId;
+  HealthEntryFormState? _baseline;
+
+  bool get isDirty =>
+      _baseline != null && !state.matchesEditableFields(_baseline!);
+
+  void captureBaseline() => _baseline = state;
 
   static HealthEntryFormState _initialState(HealthEntryFormParams params) {
     var type = HealthEntryType.medication;
@@ -164,6 +170,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
         careFamilyPickerRevealed: entry.careFamily != null,
       );
 
+      captureBaseline();
       return true;
     } finally {
       state = state.copyWith(isLoading: false);

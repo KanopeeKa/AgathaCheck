@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../core/widgets/form/app_form_actions_bar.dart';
+import '../../../../../core/widgets/form/app_form_labeled_field.dart';
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../core/utils/calendar_date_picker.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -48,67 +50,68 @@ Future<void> showAddWeightEntrySheet({
                 ),
               ),
               const SizedBox(height: 20),
-              Semantics(
-                label: 'Select date for weight entry',
-                button: true,
-                child: InkWell(
-                  onTap: () async {
-                    final picked = await showCalendarDatePicker(
-                      context: ctx,
-                      initialDate: selectedDate,
-                      firstDate: DateTime(2000),
-                      lastDate: calendarDateOnly(DateTime.now()),
-                    );
-                    if (picked != null) {
-                      setSheetState(() => selectedDate = picked);
-                    }
-                  },
-                  child: InputDecorator(
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.of(ctx)!.date,
-                      prefixIcon: const Icon(Icons.calendar_today),
-                      border: const OutlineInputBorder(),
-                    ),
-                    child: Text(
-                      DateFormat.yMMMd().format(calendarDateOnly(selectedDate)),
+              AppFormLabeledField(
+                label: AppLocalizations.of(ctx)!.date,
+                child: Semantics(
+                  label: AppLocalizations.of(ctx)!.selectDate,
+                  button: true,
+                  child: InkWell(
+                    onTap: () async {
+                      final picked = await showCalendarDatePicker(
+                        context: ctx,
+                        initialDate: selectedDate,
+                        firstDate: DateTime(2000),
+                        lastDate: calendarDateOnly(DateTime.now()),
+                      );
+                      if (picked != null) {
+                        setSheetState(() => selectedDate = picked);
+                      }
+                    },
+                    child: InputDecorator(
+                      decoration: const InputDecoration(),
+                      child: Text(
+                        DateFormat.yMMMd().format(
+                          calendarDateOnly(selectedDate),
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              TextField(
-                controller: weightController,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
+              AppFormLabeledField(
+                label: AppLocalizations.of(ctx)!.weightWithUnit(unitLabel),
+                subtitle: AppLocalizations.of(ctx)!.weightFormatHint,
+                child: TextField(
+                  controller: weightController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: InputDecoration(errorText: weightError),
+                  onChanged: (_) {
+                    if (weightError != null) {
+                      setSheetState(() => weightError = null);
+                    }
+                  },
                 ),
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(
-                    ctx,
-                  )!.weightWithUnit(unitLabel),
-                  prefixIcon: const Icon(Icons.monitor_weight),
-                  border: const OutlineInputBorder(),
-                  helperText: AppLocalizations.of(ctx)!.weightFormatHint,
-                  errorText: weightError,
-                ),
-                onChanged: (_) {
-                  if (weightError != null) {
-                    setSheetState(() => weightError = null);
-                  }
-                },
               ),
               const SizedBox(height: 16),
-              TextField(
-                controller: notesController,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(ctx)!.notesOptional,
-                  prefixIcon: const Icon(Icons.notes),
-                  border: const OutlineInputBorder(),
+              AppFormLabeledField(
+                label: AppLocalizations.of(ctx)!.notesOptional,
+                child: TextField(
+                  controller: notesController,
+                  decoration: const InputDecoration(),
+                  maxLines: 2,
                 ),
-                maxLines: 2,
               ),
               const SizedBox(height: 20),
-              FilledButton(
-                onPressed: () async {
+              AppFormActionsBar(
+                isLoading: false,
+                isDirty: true,
+                requireDirtyToSave: false,
+                onCancel: () => Navigator.pop(ctx),
+                saveLabel: AppLocalizations.of(ctx)!.save,
+                onSave: () async {
                   final weightText = weightController.text.trim();
                   final inputWeight = double.tryParse(weightText);
                   if (inputWeight == null || inputWeight <= 0) {
@@ -142,7 +145,6 @@ Future<void> showAddWeightEntrySheet({
 
                   if (ctx.mounted) Navigator.pop(ctx);
                 },
-                child: Text(AppLocalizations.of(ctx)!.save),
               ),
             ],
           ),

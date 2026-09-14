@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../../../core/widgets/form/app_form_labeled_field.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -166,39 +168,39 @@ class OwnerSharingContent extends ConsumerWidget {
                 style: Theme.of(ctx).textTheme.bodySmall,
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                key: const Key('transfer_recipient_email'),
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: l.recipientEmail,
-                  border: const OutlineInputBorder(),
+              AppFormLabeledField(
+                label: l.recipientEmail,
+                child: TextFormField(
+                  key: const Key('transfer_recipient_email'),
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(),
+                  validator: (value) {
+                    final email = value?.trim() ?? '';
+                    if (email.isEmpty) return l.orgInviteEmailRequired;
+                    if (!email.contains('@')) return l.orgInviteEmailInvalid;
+                    return null;
+                  },
                 ),
-                validator: (value) {
-                  final email = value?.trim() ?? '';
-                  if (email.isEmpty) return l.orgInviteEmailRequired;
-                  if (!email.contains('@')) return l.orgInviteEmailInvalid;
-                  return null;
-                },
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                key: const Key('transfer_confirmation_name'),
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: l.transferNameConfirmationHint,
-                  border: const OutlineInputBorder(),
+              AppFormLabeledField(
+                label: l.transferNameConfirmationHint,
+                child: TextFormField(
+                  key: const Key('transfer_confirmation_name'),
+                  controller: nameController,
+                  decoration: const InputDecoration(),
+                  validator: (value) {
+                    if ((value?.trim() ?? '').isEmpty) {
+                      return l.transferNameConfirmationHint;
+                    }
+                    if (value!.trim().toLowerCase() !=
+                        pet.name.trim().toLowerCase()) {
+                      return l.transferNameMismatch;
+                    }
+                    return null;
+                  },
                 ),
-                validator: (value) {
-                  if ((value?.trim() ?? '').isEmpty) {
-                    return l.transferNameConfirmationHint;
-                  }
-                  if (value!.trim().toLowerCase() !=
-                      pet.name.trim().toLowerCase()) {
-                    return l.transferNameMismatch;
-                  }
-                  return null;
-                },
               ),
             ],
           ),

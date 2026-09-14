@@ -1,19 +1,18 @@
-/// Layout breakpoints for the add/edit pet form.
-enum PetFormLayoutSize { phone, tablet, desktop }
+import '../../../../../core/widgets/form/app_form_breakpoints.dart';
 
-/// Width thresholds and max-width constraints for responsive pet form layouts.
+typedef PetFormLayoutSize = AppFormLayoutSize;
+
 abstract final class PetFormBreakpoints {
-  static const double phoneMax = 599;
-  static const double tabletMin = 600;
-  static const double desktopMin = 1024;
+  static const double phoneMax = AppFormBreakpoints.phoneMax;
+  static const double tabletMin = AppFormBreakpoints.tabletMin;
+  static const double desktopMin = AppFormBreakpoints.desktopMin;
+  static const double tabletContentMaxWidth =
+      AppFormBreakpoints.tabletContentMaxWidth;
+  static const double desktopPageMaxWidth =
+      AppFormBreakpoints.desktopPageMaxWidth;
+  static const double desktopFormMaxWidth =
+      AppFormBreakpoints.desktopFormMaxWidth;
 
-  static const double tabletContentMaxWidth = 720;
-  static const double desktopPageMaxWidth = 1100;
-  static const double desktopFormMaxWidth = 560;
-
-  static PetFormLayoutSize layoutForWidth(double width) {
-    if (width >= desktopMin) return PetFormLayoutSize.desktop;
-    if (width >= tabletMin) return PetFormLayoutSize.tablet;
-    return PetFormLayoutSize.phone;
-  }
+  static PetFormLayoutSize layoutForWidth(double width) =>
+      AppFormBreakpoints.layoutForWidth(width);
 }

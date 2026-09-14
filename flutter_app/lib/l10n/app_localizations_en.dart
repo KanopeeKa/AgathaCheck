@@ -1533,6 +1533,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petFormPetSaved => 'Pet saved';
 
   @override
+  String get formUnsavedTitle => 'Discard changes?';
+
+  @override
+  String get formUnsavedBody =>
+      'You have unsaved changes. Leave without saving?';
+
+  @override
+  String get formDiscard => 'Discard';
+
+  @override
   String get petFormUnsavedTitle => 'Discard changes?';
 
   @override
@@ -1544,6 +1554,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get petFormDangerZone => 'Danger zone';
+
+  @override
+  String get healthEntryFormWhatAndWho => 'What & who';
+
+  @override
+  String get healthEntryFormSchedule => 'Schedule';
+
+  @override
+  String get healthEntryFormDatesReminders => 'Dates & reminders';
+
+  @override
+  String get healthEntryFormNotesDocuments => 'Notes & documents';
+
+  @override
+  String get healthEntryFormSaveChanges => 'Save changes';
+
+  @override
+  String get vetFormContactDetails => 'Contact details';
+
+  @override
+  String get vetFormNotesSection => 'Notes';
+
+  @override
+  String get vetFormSaveChanges => 'Save changes';
 
   @override
   String get clearDate => 'Clear date';

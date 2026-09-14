@@ -13,6 +13,7 @@ import '../controllers/pet_form_outcomes.dart';
 import '../providers/pet_providers.dart';
 import '../widgets/pet_form/pet_form_actions_bar.dart';
 import '../widgets/pet_form/pet_form_breakpoints.dart';
+import '../../../../core/widgets/form/app_form_discard_dialog.dart';
 import '../widgets/pet_form/pet_form_confirm_dialogs.dart';
 import '../widgets/pet_form/pet_form_screen_body.dart';
 
@@ -102,24 +103,12 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   Future<bool> _confirmDiscard() async {
     if (!_controller.isDirty || !mounted) return true;
     final l = AppLocalizations.of(context)!;
-    final discard = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l.petFormUnsavedTitle),
-        content: Text(l.petFormUnsavedBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l.petFormDiscard),
-          ),
-        ],
-      ),
+    return confirmDiscardFormChanges(
+      context,
+      title: l.petFormUnsavedTitle,
+      body: l.petFormUnsavedBody,
+      discardLabel: l.petFormDiscard,
     );
-    return discard ?? false;
   }
 
   Future<void> _handleBack() async {

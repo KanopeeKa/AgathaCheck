@@ -1552,6 +1552,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get petFormPetSaved => 'Animal enregistré';
 
   @override
+  String get formUnsavedTitle => 'Abandonner les modifications ?';
+
+  @override
+  String get formUnsavedBody =>
+      'Vous avez des modifications non enregistrées. Quitter sans enregistrer ?';
+
+  @override
+  String get formDiscard => 'Abandonner';
+
+  @override
   String get petFormUnsavedTitle => 'Abandonner les modifications ?';
 
   @override
@@ -1563,6 +1573,30 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get petFormDangerZone => 'Zone de danger';
+
+  @override
+  String get healthEntryFormWhatAndWho => 'Quoi et pour qui';
+
+  @override
+  String get healthEntryFormSchedule => 'Planification';
+
+  @override
+  String get healthEntryFormDatesReminders => 'Dates et rappels';
+
+  @override
+  String get healthEntryFormNotesDocuments => 'Notes et documents';
+
+  @override
+  String get healthEntryFormSaveChanges => 'Enregistrer les modifications';
+
+  @override
+  String get vetFormContactDetails => 'Coordonnées';
+
+  @override
+  String get vetFormNotesSection => 'Notes';
+
+  @override
+  String get vetFormSaveChanges => 'Enregistrer les modifications';
 
   @override
   String get clearDate => 'Effacer la date';
