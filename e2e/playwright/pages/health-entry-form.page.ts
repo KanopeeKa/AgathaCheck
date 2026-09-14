@@ -40,14 +40,14 @@ export class HealthEntryFormPage {
   async save(): Promise<void> {
     await this.page
       .getByRole('button', { name: /add health event/i })
-      .or(this.page.getByRole('button', { name: 'Save' }))
+      .or(this.page.getByRole('button', { name: /Save changes|Save/i }))
       .first()
       .click();
     await this.page.getByRole('button', { name: 'Add Health Event' }).waitFor({ timeout: 30_000 });
   }
 
   async saveEdit(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Save' }).click();
+    await this.page.getByRole('button', { name: /Save changes|Save/i }).click();
     await this.page.getByRole('button', { name: 'Add Health Event' }).waitFor({ timeout: 30_000 });
   }
 }
