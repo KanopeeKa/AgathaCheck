@@ -26,6 +26,12 @@ abstract final class AppColorTokens {
   static const Color petCareLight = Color(0xFFE8E1E3);
   static const Color petCareSoft = Color(0xFFE7DCE2);
 
+  /// Soft plum-neutral fill for grouped care lists and profile prompts.
+  static const Color petCareCollection = Color(0xFFF5F1F2);
+
+  /// Hairline divider on [petCareCollection] inset lists.
+  static const Color petCareCollectionDivider = Color(0xFFFFFFFF);
+
   @Deprecated('Use petCareHover')
   static const Color guardianHover = petCareHover;
   @Deprecated('Use petCareActive')

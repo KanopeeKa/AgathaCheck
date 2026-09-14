@@ -9,6 +9,7 @@ import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../../pet_care/domain/care_temporal_group.dart';
 import '../../../../pet_care/presentation/providers/care_temporal_grouping_providers.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart';
 import '../../../domain/entities/pet.dart';
 import '../../providers/care_progression_providers.dart';
 import '../care_establishment_helpers.dart';
@@ -94,22 +95,20 @@ class _PetCareSectionState extends ConsumerState<PetCareSection> {
           ],
         ),
         data: (_) {
-          final groups = <Widget>[];
-          for (final group in CareTemporalGroup.values) {
-            final entries = buckets.entriesIn(group);
-            if (entries.isEmpty) continue;
-            groups.add(
-              PetCareTemporalGroupSection(
-                group: group,
-                entries: entries,
-                establishedEntryIds: establishedIds,
-                trailingLabel: l.done,
-                onMarkDone: _onMarkDone,
-                onViewEntry: (entry) =>
-                    HomeEventActions.viewEntry(context, entry),
-              ),
-            );
-          }
+          final bucketMap = {
+            for (final group in CareTemporalGroup.values)
+              group: buckets.entriesIn(group),
+          };
+          final collectionItems = PetCareTemporalGroupSection.buildInsetItems(
+            context: context,
+            groups: CareTemporalGroup.values,
+            buckets: bucketMap,
+            establishedEntryIds: establishedIds,
+            trailingLabel: l.done,
+            onMarkDone: _onMarkDone,
+            onViewEntry: (entry) =>
+                HomeEventActions.viewEntry(context, entry),
+          );
 
           return Column(
             key: const Key('pet_care_section'),
@@ -119,7 +118,7 @@ class _PetCareSectionState extends ConsumerState<PetCareSection> {
                 title: l.careForPet(widget.pet.name),
               ),
               const SizedBox(height: 10),
-              if (groups.isEmpty)
+              if (collectionItems.isEmpty)
                 PetCareIllustratedEmptyState(
                   key: const Key('pet_care_section_empty'),
                   title: l.petCareEmptyCareClearTitle,
@@ -129,7 +128,7 @@ class _PetCareSectionState extends ConsumerState<PetCareSection> {
                   onAction: () => context.push('/pet/${widget.petId}/events'),
                 )
               else
-                ...groups,
+                CareCollectionInsetList(children: collectionItems),
               if (!buckets.isEmpty)
                 PetCareDashboardSectionLink(
                   linkKey: const Key('pet_care_view_all'),

@@ -6,7 +6,8 @@ import '../../../../../core/theme/app_color_tokens.dart';
 abstract final class CareSurfaceTokens {
   static const double attentionRadius = 12;
   static const double actionRadius = 12;
-  static const double insightRadius = 12;
+  static const double insightRadius = 16;
+  static const double collectionRadius = 16;
   static const double rowMinHeight = 48;
 
   static const EdgeInsets attentionPadding = EdgeInsets.symmetric(
@@ -17,10 +18,16 @@ abstract final class CareSurfaceTokens {
     horizontal: 12,
     vertical: 8,
   );
-  static const EdgeInsets insightPadding = EdgeInsets.all(12);
+  static const EdgeInsets insightPadding = EdgeInsets.all(16);
   static const EdgeInsets destinationPadding = EdgeInsets.symmetric(
     horizontal: 16,
     vertical: 12,
+  );
+  static const EdgeInsets collectionHeaderPadding = EdgeInsets.fromLTRB(
+    12,
+    12,
+    12,
+    4,
   );
 
   static Color attentionBackground(ColorScheme colorScheme) =>
@@ -29,8 +36,9 @@ abstract final class CareSurfaceTokens {
       AppColorTokens.body;
   static Color attentionIcon(ColorScheme colorScheme) => AppColorTokens.danger;
 
-  static Color insightBackground(ColorScheme colorScheme) =>
-      colorScheme.surfaceContainerHighest.withValues(alpha: 0.35);
-  static Color insightBorder(ColorScheme colorScheme) =>
-      colorScheme.outlineVariant;
+  static Color collectionBackground() => AppColorTokens.petCareCollection;
+  static Color collectionDivider() => AppColorTokens.petCareCollectionDivider;
+
+  static Color moduleBackground() => AppColorTokens.surface;
+  static Color moduleBorder() => AppColorTokens.border;
 }

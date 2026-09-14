@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart';
 import '../../../../experience/presentation/screens/pet_care/pet_care_upcoming_events_section.dart';
 import '../../../../experience/presentation/widgets/pet_care_preview/pet_care_preview_optimistic.dart';
 import '../../../../experience/presentation/widgets/pet_care_dashboard_section_header.dart';
 import '../../../../experience/presentation/widgets/pet_care_illustrated_empty_state.dart';
-import '../../../../experience/presentation/widgets/pet_care_operations_desk_layout.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../../health_tracking/presentation/widgets/care_event_row_context.dart';
@@ -98,14 +97,20 @@ class _PetEventsPreviewSectionState
           children: [
             PetCareDashboardSectionHeader(title: l.careForPet(widget.pet.name)),
             const SizedBox(height: 10),
-            PetCareDeskSectionCard(
-              tint: AppColorTokens.guardianLight,
-              child: Text(
-                l.errorLoadingEntries(error.toString()),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.error,
+            CareCollectionInsetList(
+              children: [
+                CareCollectionInsetItem(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Text(
+                      l.errorLoadingEntries(error.toString()),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         ),
@@ -131,29 +136,26 @@ class _PetEventsPreviewSectionState
                 title: l.careForPet(widget.pet.name),
               ),
               const SizedBox(height: 10),
-              PetCareDeskSectionCard(
-                key: const Key('pet_detail_care_section'),
-                tint: AppColorTokens.guardianLight,
-                child: items.isEmpty
-                    ? PetCareIllustratedEmptyState(
-                        key: const Key('pet_detail_empty_care'),
-                        title: l.petCareEmptyCareClearTitle,
-                        body: l.homeNoDueEvents,
-                        actionLabel: l.viewAllCare,
-                        actionIcon: Icons.calendar_month_outlined,
-                        onAction: () =>
-                            context.push('/pet/${widget.petId}/events'),
-                      )
-                    : PetCareCarePreviewEventList(
-                        items: items,
-                        petMap: {widget.pet.id: widget.pet},
-                        onMarkDone: _onMarkDone,
-                        onUndo: _onUndo,
-                        onView: (entry) =>
-                            HomeEventActions.viewEntry(context, entry),
-                        rowContext: CareEventRowContext.pet,
-                      ),
-              ),
+              if (items.isEmpty)
+                PetCareIllustratedEmptyState(
+                  key: const Key('pet_detail_empty_care'),
+                  title: l.petCareEmptyCareClearTitle,
+                  body: l.homeNoDueEvents,
+                  actionLabel: l.viewAllCare,
+                  actionIcon: Icons.calendar_month_outlined,
+                  onAction: () => context.push('/pet/${widget.petId}/events'),
+                )
+              else
+                PetCareCarePreviewEventList(
+                  key: const Key('pet_detail_care_section'),
+                  items: items,
+                  petMap: {widget.pet.id: widget.pet},
+                  onMarkDone: _onMarkDone,
+                  onUndo: _onUndo,
+                  onView: (entry) =>
+                      HomeEventActions.viewEntry(context, entry),
+                  rowContext: CareEventRowContext.pet,
+                ),
               if (showAllCare)
                 PetCareDashboardSectionLink(
                   linkKey: const Key('pet_detail_care_view_all'),

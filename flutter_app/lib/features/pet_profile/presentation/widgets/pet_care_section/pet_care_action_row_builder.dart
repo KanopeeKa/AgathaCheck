@@ -44,7 +44,7 @@ class PetCareActionRowBuilder {
     return parts.join(' · ');
   }
 
-  CareActionRow build() {
+  CareActionRow build({bool inset = false}) {
     final statusLine =
         statusLineOverride ?? formatHealthEntryStatusLine(entry, l10n);
     final statusTreatment =
@@ -54,6 +54,7 @@ class PetCareActionRowBuilder {
 
     return CareActionRow(
       key: Key('pet_care_action_${entry.id}'),
+      inset: inset,
       title: entry.name,
       subtitle: _subtitle(),
       statusLabel: statusLine,

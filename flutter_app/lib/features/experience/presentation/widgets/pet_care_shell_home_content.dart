@@ -45,12 +45,6 @@ class PetCareShellHomeContent extends ConsumerWidget {
       colorScheme: baseTheme.colorScheme.copyWith(
         primary: AppColorTokens.petCareCarePrimary,
         onPrimary: AppColorTokens.inverse,
-        primaryContainer: AppColorTokens.petCareLight,
-        onPrimaryContainer: AppColorTokens.petCareCareActive,
-        surface: AppColorTokens.surface,
-        onSurface: AppColorTokens.heading,
-        surfaceContainerHighest: AppColorTokens.petCareLight,
-        outlineVariant: AppColorTokens.petCareSoft,
       ),
       scaffoldBackgroundColor: AppColorTokens.background,
       cardTheme: baseTheme.cardTheme.copyWith(

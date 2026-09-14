@@ -16,6 +16,7 @@ class CareActionRow extends StatelessWidget {
     required this.trailingLabel,
     this.onPressed,
     this.onTap,
+    this.inset = false,
   });
 
   final String title;
@@ -28,20 +29,26 @@ class CareActionRow extends StatelessWidget {
   final VoidCallback? onPressed;
   final VoidCallback? onTap;
 
+  /// When true, renders flat on a [CareCollectionInsetList] background (no card chrome).
+  final bool inset;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final radius = inset ? BorderRadius.zero : BorderRadius.circular(
+      CareSurfaceTokens.actionRadius,
+    );
 
     return Semantics(
       label: semanticLabel,
       button: onTap != null || onPressed != null,
       child: Material(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(CareSurfaceTokens.actionRadius),
+        color: inset ? Colors.transparent : colorScheme.surface,
+        borderRadius: radius,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(CareSurfaceTokens.actionRadius),
+          borderRadius: radius,
           child: ConstrainedBox(
             constraints: const BoxConstraints(
               minHeight: CareSurfaceTokens.rowMinHeight,
