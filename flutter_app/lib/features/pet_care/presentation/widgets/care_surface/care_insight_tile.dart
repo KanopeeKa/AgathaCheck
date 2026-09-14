@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'care_surface_tokens.dart';
 import 'care_trend_sparkline.dart';
 
-/// Insight role — low-emphasis tappable card for derived facts (e.g. weight trend).
+/// Module role — white tappable card for derived facts (e.g. weight trend).
 class CareInsightTile extends StatelessWidget {
   const CareInsightTile({
     super.key,
@@ -35,7 +35,7 @@ class CareInsightTile extends StatelessWidget {
       label: semanticLabel,
       button: true,
       child: Material(
-        color: CareSurfaceTokens.insightBackground(colorScheme),
+        color: CareSurfaceTokens.moduleBackground(),
         borderRadius: BorderRadius.circular(CareSurfaceTokens.insightRadius),
         child: InkWell(
           onTap: onTap,
@@ -47,9 +47,7 @@ class CareInsightTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(
                 CareSurfaceTokens.insightRadius,
               ),
-              border: Border.all(
-                color: CareSurfaceTokens.insightBorder(colorScheme),
-              ),
+              border: Border.all(color: CareSurfaceTokens.moduleBorder()),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

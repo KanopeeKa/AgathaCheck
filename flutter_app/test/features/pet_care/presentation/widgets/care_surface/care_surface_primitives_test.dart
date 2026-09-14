@@ -5,7 +5,9 @@ import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_status.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_action_row.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_attention_callout.dart';
+import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_destination_row.dart';
+import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_surface_tokens.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_insight_tile.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_trend_sparkline.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_family_icon.dart';
@@ -19,6 +21,39 @@ Widget _host(Widget child) {
 }
 
 void main() {
+  group('CareCollectionInsetList', () {
+    testWidgets('renders collection background and inset dividers', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(
+          CareCollectionInsetList(
+            key: const Key('collection_demo'),
+            children: [
+              const CareCollectionInsetItem(child: Text('First row')),
+              const CareCollectionInsetItem(
+                showDividerBefore: true,
+                child: Text('Second row'),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      expect(find.text('First row'), findsOneWidget);
+      expect(find.text('Second row'), findsOneWidget);
+      expect(find.byType(Divider), findsOneWidget);
+
+      final collection = tester.widget<Material>(
+        find.descendant(
+          of: find.byKey(const Key('collection_demo')),
+          matching: find.byType(Material),
+        ),
+      );
+      expect(collection.color, AppColorTokens.petCareCollection);
+    });
+  });
+
   group('CareAttentionCallout', () {
     testWidgets('renders message with semantic label', (tester) async {
       await tester.pumpWidget(
@@ -204,7 +239,11 @@ void main() {
   });
 
   test('care surface widgets use token colours only', () {
+    expect(
+      CareSurfaceTokens.collectionBackground(),
+      AppColorTokens.petCareCollection,
+    );
+    expect(CareSurfaceTokens.moduleBackground(), AppColorTokens.surface);
     expect(AppColorTokens.dangerLight, isNotNull);
-    expect(AppColorTokens.warningLight, isNotNull);
   });
 }

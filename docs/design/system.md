@@ -748,9 +748,10 @@ consume these primitives; they must not hand-roll equivalents.
 
 | Role | Widget | Visual intent |
 |---|---|---|
+| Collection | `CareCollectionInsetList` | Soft plum-neutral `#F5F1F2` group; inset rows with white hairline dividers |
+| Module | `CareInsightTile` | White `#FFFDFC` card hosting `CareTrendSparkline`; whole tile tappable |
 | Attention | `CareAttentionCallout` | Subtle semantic background, icon + text, compact height |
-| Action | `CareActionRow` | Neutral list row with family icon, status chip, primary affordance |
-| Insight | `CareInsightTile` | Low-emphasis card hosting `CareTrendSparkline`; whole tile tappable |
+| Action | `CareActionRow` | Care item row; `inset: true` on collection background, white card when standalone |
 | Destination | `CareDestinationRow` | Label + chevron only; no card chrome |
 
 Shared spacing and emphasis constants: `CareSurfaceTokens`. Status within

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../core/utils/constants.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart';
 import '../../../domain/entities/pet.dart';
 import '../../controllers/chip_reminder_controller.dart';
 import '../../controllers/neuter_reminder_controller.dart';
@@ -27,30 +28,33 @@ class PetProfileCompletenessPrompt extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    final rows = <Widget>[];
+    final items = <CareCollectionInsetItem>[];
     if (showNeuter) {
-      rows.add(
-        _PromptLine(
-          key: const Key('pet_profile_prompt_neuter'),
-          message: l.profilePromptNeuterMissing,
-          icon: Icons.info_outline,
-          dismissLabel: l.dismiss,
-          onDismiss: () =>
-              NeuterReminderController(ref).dismissNeuterReminder(pet),
+      items.add(
+        CareCollectionInsetItem(
+          child: _PromptLine(
+            key: const Key('pet_profile_prompt_neuter'),
+            message: l.profilePromptNeuterMissing,
+            icon: Icons.info_outline,
+            dismissLabel: l.dismiss,
+            onDismiss: () =>
+                NeuterReminderController(ref).dismissNeuterReminder(pet),
+          ),
         ),
       );
     }
     if (showChip) {
-      if (rows.isNotEmpty) {
-        rows.add(const Divider(height: 1));
-      }
-      rows.add(
-        _PromptLine(
-          key: const Key('pet_profile_prompt_chip'),
-          message: l.profilePromptChipMissing,
-          icon: Icons.memory_outlined,
-          dismissLabel: l.dismiss,
-          onDismiss: () => ChipReminderController(ref).dismissChipReminder(pet),
+      items.add(
+        CareCollectionInsetItem(
+          showDividerBefore: items.isNotEmpty,
+          child: _PromptLine(
+            key: const Key('pet_profile_prompt_chip'),
+            message: l.profilePromptChipMissing,
+            icon: Icons.memory_outlined,
+            dismissLabel: l.dismiss,
+            onDismiss: () =>
+                ChipReminderController(ref).dismissChipReminder(pet),
+          ),
         ),
       );
     }
@@ -62,18 +66,10 @@ class PetProfileCompletenessPrompt extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: Semantics(
-        container: true,
-        label: semanticsLabel,
-        child: Material(
-          key: const Key('pet_profile_completeness_prompt'),
-          color: AppColorTokens.surfaceAlt,
-          borderRadius: BorderRadius.circular(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: rows,
-          ),
-        ),
+      child: CareCollectionInsetList(
+        key: const Key('pet_profile_completeness_prompt'),
+        semanticLabel: semanticsLabel,
+        children: items,
       ),
     );
   }

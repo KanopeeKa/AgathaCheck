@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
@@ -12,7 +13,6 @@ import '../../../../health_tracking/presentation/widgets/occurrence_care_actions
 import '../../widgets/pet_care_preview/pet_care_preview_optimistic.dart';
 import '../../widgets/pet_care_dashboard_section_header.dart';
 import '../../widgets/pet_care_illustrated_empty_state.dart';
-import '../../widgets/pet_care_operations_desk_layout.dart';
 import 'pet_care_dashboard_helpers.dart';
 
 /// Guardian Care dashboard preview with one combined, date-ordered list.
@@ -109,11 +109,10 @@ class _PetCareUpcomingEventsSectionState
     setState(() => _completed.remove(entry.id));
   }
 
-  Widget _careSectionCard(Widget child) {
-    return PetCareDeskSectionCard(
+  Widget _careCollection(Widget child) {
+    return CareCollectionInsetList(
       key: const Key('pet_care_dashboard_care_block'),
-      tint: AppColorTokens.petCareLight,
-      child: child,
+      children: [CareCollectionInsetItem(child: child)],
     );
   }
 
@@ -152,6 +151,7 @@ class _PetCareUpcomingEventsSectionState
       );
     }
     return PetCareCarePreviewEventList(
+      collectionKey: const Key('pet_care_dashboard_care_block'),
       items: items,
       petMap: petMap,
       onMarkDone: _onMarkDone,
@@ -209,7 +209,7 @@ class _PetCareUpcomingEventsSectionState
         children: [
           PetCareDashboardSectionHeader(title: l.careEyebrow),
           const SizedBox(height: 10),
-          _careSectionCard(
+          _careCollection(
             const SizedBox(
               height: 56,
               child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
@@ -254,15 +254,13 @@ class _PetCareUpcomingEventsSectionState
         const SizedBox(height: 10),
         KeyedSubtree(
           key: const Key('pet_care_dashboard_care_section'),
-          child: _careSectionCard(
-            _buildMobileContent(
-              context,
-              careEntries,
-              petMap,
-              l,
-              l.noCareDue,
-              priorities.all.isNotEmpty,
-            ),
+          child: _buildMobileContent(
+            context,
+            careEntries,
+            petMap,
+            l,
+            l.noCareDue,
+            priorities.all.isNotEmpty,
           ),
         ),
         if (showAllCare)
@@ -281,7 +279,7 @@ class _PetCareUpcomingEventsSectionState
       children: [
         PetCareDashboardSectionHeader(title: l.careEyebrow),
         const SizedBox(height: 10),
-        _careSectionCard(
+        _careCollection(
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

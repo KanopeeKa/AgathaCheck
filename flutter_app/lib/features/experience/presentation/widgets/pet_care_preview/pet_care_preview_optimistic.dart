@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../health_tracking/presentation/widgets/care_event_row_context.dart';
 import '../../../../health_tracking/presentation/widgets/care_event_row_host.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_surface_tokens.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 
 /// A single item in the merged mobile preview: due or optimistically completed.
@@ -87,6 +89,7 @@ class PetCareCarePreviewEventList extends ConsumerWidget {
     required this.onUndo,
     required this.onView,
     this.rowContext = CareEventRowContext.dashboard,
+    this.collectionKey,
   });
 
   final List<PetCareCarePreviewItem> items;
@@ -95,24 +98,30 @@ class PetCareCarePreviewEventList extends ConsumerWidget {
   final void Function(HealthEntry entry) onUndo;
   final void Function(HealthEntry entry) onView;
   final CareEventRowContext rowContext;
+  final Key? collectionKey;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      key: const Key('care_event_row_list'),
-      mainAxisSize: MainAxisSize.min,
+    return CareCollectionInsetList(
+      key: collectionKey ?? const Key('care_event_row_list'),
       children: [
         for (var i = 0; i < items.length; i++)
-          CareEventRowHost(
-            key: Key('care_event_row_${items[i].entry.id}'),
-            entry: items[i].entry,
-            pet: petMap[items[i].entry.petId],
-            rowContext: rowContext,
-            isCompleted: items[i].isCompleted,
-            showTopDivider: i > 0,
-            onMarkDone: () async => onMarkDone(items[i].entry, i),
-            onUndo: () => onUndo(items[i].entry),
-            onView: () => onView(items[i].entry),
+          CareCollectionInsetItem(
+            showDividerBefore: i > 0,
+            child: Padding(
+              padding: CareSurfaceTokens.collectionRowPadding,
+              child: CareEventRowHost(
+                key: Key('care_event_row_${items[i].entry.id}'),
+                entry: items[i].entry,
+                pet: petMap[items[i].entry.petId],
+                rowContext: rowContext,
+                isCompleted: items[i].isCompleted,
+                showTopDivider: false,
+                onMarkDone: () async => onMarkDone(items[i].entry, i),
+                onUndo: () => onUndo(items[i].entry),
+                onView: () => onView(items[i].entry),
+              ),
+            ),
           ),
       ],
     );

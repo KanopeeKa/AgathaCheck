@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/pet_care_upcoming_events_section.dart';
-import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_operations_desk_layout.dart';
+import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row.dart';
@@ -234,10 +234,10 @@ void main() {
 
     expect(find.text('CARE ACTIONS'), findsOneWidget);
     expect(
-      find.byKey(const Key('pet_care_dashboard_care_block')),
+      find.byKey(const Key('pet_care_dashboard_empty_care')),
       findsOneWidget,
     );
-    expect(find.byType(PetCareDeskSectionCard), findsOneWidget);
+    expect(find.byType(CareCollectionInsetList), findsNothing);
     expect(find.textContaining('Due'), findsNothing);
     expect(find.text('Soon'), findsNothing);
   });
@@ -270,7 +270,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('care_event_row_list')), findsOneWidget);
+      expect(
+        find.byKey(const Key('pet_care_dashboard_care_block')),
+        findsOneWidget,
+      );
       expect(
         find.byKey(const Key('care_event_row_due-entry-1')),
         findsOneWidget,
