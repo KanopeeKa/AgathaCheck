@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@babel/core": "^8.0.5",
-    "@babel/preset-env": "^8.0.0",
+    "@babel/preset-env": "^8.0.5",
     "@eslint/js": "^9.39.5",
     "babel-jest": "^30.5.0",
     "babel-plugin-transform-import-meta": "^3.0.0",
