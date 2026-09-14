@@ -115,11 +115,9 @@ export class PetFormPage {
     }
     if (expected.breed) {
       await expect(this.page.getByText(expected.breed, { exact: true }).first()).toBeVisible();
-    }
-    if (expected.species) {
-      await expect(
-        this.page.getByRole('button', { name: expected.species, exact: true }),
-      ).toBeVisible();
+    } else if (expected.species && !expected.sex) {
+      // Selected primary species renders as PetInfoChip (not a button).
+      await expect(this.page.getByText(expected.species, { exact: true }).first()).toBeVisible();
     }
     if (expected.sex) {
       await expect(this.page.getByRole('button', { name: expected.sex, exact: true })).toBeVisible();
