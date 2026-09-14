@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 
+import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_card.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
@@ -12,18 +14,31 @@ void main() {
   group('HealthEntryCard', () {
     final dateFormat = DateFormat('dd MMM yy');
 
-    Widget buildCard(HealthEntry entry, {VoidCallback? onMarkTaken}) {
-      return MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
+    Widget buildCard(
+      HealthEntry entry, {
+      VoidCallback? onMarkTaken,
+      Pet? pet,
+    }) {
+      return ProviderScope(
+        overrides: [
+          apiBaseUrlProvider.overrideWith((ref) => '/backend'),
         ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('en'),
-        home: Scaffold(
-          body: HealthEntryCard(entry: entry, onMarkTaken: onMarkTaken),
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+          home: Scaffold(
+            body: HealthEntryCard(
+              entry: entry,
+              pet: pet,
+              onMarkTaken: onMarkTaken,
+            ),
+          ),
         ),
       );
     }
@@ -49,23 +64,7 @@ void main() {
         colorValue: 0xFF2196F3,
       );
       await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: Scaffold(
-            body: HealthEntryCard(
-              entry: futureEntry,
-              pet: pet,
-              onMarkTaken: () {},
-            ),
-          ),
-        ),
+        buildCard(futureEntry, pet: pet, onMarkTaken: () {}),
       );
       await tester.pumpAndSettle();
       expect(find.text('Bella'), findsOneWidget);
@@ -76,19 +75,7 @@ void main() {
     ) async {
       final entryWithPetName = futureEntry.copyWith(petName: 'Rex');
       await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: Scaffold(
-            body: HealthEntryCard(entry: entryWithPetName, onMarkTaken: () {}),
-          ),
-        ),
+        buildCard(entryWithPetName, onMarkTaken: () {}),
       );
       await tester.pumpAndSettle();
       expect(find.text('Rex'), findsOneWidget);

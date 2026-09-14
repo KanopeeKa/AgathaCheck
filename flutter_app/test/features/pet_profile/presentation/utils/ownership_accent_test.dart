@@ -86,6 +86,38 @@ void main() {
     );
   });
 
+  testWidgets('legacy colorValue does not override plum accent', (
+    tester,
+  ) async {
+    const pet = Pet(
+      id: 'p-legacy',
+      name: 'Whiskers',
+      species: 'Cat',
+      colorValue: 0xFF7E57C2,
+    );
+
+    late PetOwnershipAccent accent;
+    await tester.pumpWidget(
+      _wrap(
+        Builder(
+          builder: (context) {
+            accent = resolvePetOwnershipAccent(
+              context,
+              pet,
+              AppLocalizations.of(context)!,
+            );
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+
+    expect(
+      accent.accentColor,
+      AppTheme.lightTheme.extension<ExperienceColors>()!.petCarePrimary,
+    );
+  });
+
   testWidgets('foster flag is treated like guardian-owned in MVP', (
     tester,
   ) async {

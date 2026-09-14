@@ -193,7 +193,7 @@ Semantic **background fill only** — no borders on menu rows.
 
 Shell top bar uses experience primary (plum on `/pc/*`, teal on `/o/*`). Utility group never uses mode primary as row background.
 
-**Ownership accents** (pets, vets, notifications): plum = guardian/personal; green = fostered/org-linked. Pair with text + icon (`docs/archived/navigation-v2.md`).
+**Pet surface accents** (tiles, avatars, notification strips): canonical **petCarePrimary** plum for guardian-owned pets; **organizationPrimary** teal when `organizationId` is set. Legacy per-pet `colorValue` rainbow colours are not used for UI chrome. Default no-photo art: `assets/pets/pet-photo-placeholder.jpg`. Pair ownership context with text + icon (`docs/archived/navigation-v2.md`).
 
 **Super admin** tag: warm coral (`orgSuperUserBg` / `orgSuperUserFg`) — distinct from ownership colors.
 

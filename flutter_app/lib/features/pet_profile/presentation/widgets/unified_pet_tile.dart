@@ -3,12 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/theme/app_color_tokens.dart';
-import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/care_status.dart';
 import '../../domain/entities/pet.dart';
-import '../utils/ownership_accent.dart';
-import '../utils/pet_accent_color.dart';
 import '../utils/pet_tile_dimensions.dart';
 import 'pet_photo_image.dart';
 import 'pet_tile_status_line.dart';
@@ -25,7 +22,7 @@ String resolveApiBaseUrlForPetPhoto(BuildContext context) {
   }
 }
 
-/// Cross-domain pet tile: photo-forward card with ownership stripe and two text lines.
+/// Cross-domain pet tile: photo-forward card with name and status line.
 class UnifiedPetTile extends StatelessWidget {
   const UnifiedPetTile({
     super.key,
@@ -50,12 +47,8 @@ class UnifiedPetTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final ownership = resolvePetOwnershipAccent(context, pet, l);
     final resolvedApiBaseUrl =
         apiBaseUrl ?? resolveApiBaseUrlForPetPhoto(context);
-    final statusBarColor = pet.isFoster
-        ? fosterOwnershipAccentColor(context)
-        : ownership.accentColor;
     final resolvedStatus =
         statusLine ??
         resolvePetTileStatusLine(
@@ -96,48 +89,39 @@ class UnifiedPetTile extends StatelessWidget {
                 ),
                 child: InkWell(
                   onTap: onTap,
-                  child: Row(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Container(width: 4, color: statusBarColor),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(
-                              flex: flex.photo,
-                              child: _PhotoArea(
-                                pet: pet,
-                                apiBaseUrl: resolvedApiBaseUrl,
-                              ),
-                            ),
-                            Expanded(
-                              flex: flex.text,
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(8, 2, 8, 4),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      pet.name,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: theme.textTheme.titleSmall
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                    ),
-                                    if (resolvedStatus.label.isNotEmpty) ...[
-                                      const SizedBox(height: 2),
-                                      _StatusRow(status: resolvedStatus),
-                                    ],
-                                  ],
+                        flex: flex.photo,
+                        child: _PhotoArea(
+                          pet: pet,
+                          apiBaseUrl: resolvedApiBaseUrl,
+                        ),
+                      ),
+                      Expanded(
+                        flex: flex.text,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 2, 8, 4),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                pet.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
-                            ),
-                          ],
+                              if (resolvedStatus.label.isNotEmpty) ...[
+                                const SizedBox(height: 2),
+                                _StatusRow(status: resolvedStatus),
+                              ],
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -202,8 +186,12 @@ class _PhotoArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final petColor = resolvePetAccentColor(context, pet);
-    Widget image = _photoOrPlaceholder(petColor);
+    Widget image = buildPetPhotoOrPlaceholder(
+      photoPath: pet.photoPath,
+      apiBaseUrl: apiBaseUrl,
+      fit: BoxFit.cover,
+      semanticLabel: 'Photo of ${pet.name}',
+    );
 
     if (pet.passedAway) {
       image = Stack(
@@ -234,28 +222,5 @@ class _PhotoArea extends StatelessWidget {
     }
 
     return image;
-  }
-
-  Widget _photoOrPlaceholder(Color petColor) {
-    final image = buildPetPhotoImage(
-      photoPath: pet.photoPath,
-      apiBaseUrl: apiBaseUrl,
-      fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => _placeholder(petColor),
-    );
-    return image ?? _placeholder(petColor);
-  }
-
-  Widget _placeholder(Color petColor) {
-    return ColoredBox(
-      color: petColor.withValues(alpha: 0.12),
-      child: Center(
-        child: AppConstants.speciesIconWidget(
-          pet.species,
-          size: 32,
-          color: petColor,
-        ),
-      ),
-    );
   }
 }

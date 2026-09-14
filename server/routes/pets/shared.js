@@ -81,27 +81,9 @@ export function petRowToMap(row) {
   };
 }
 
-export async function autoAssignColors(pool, pets) {
-  const usedColors = new Set();
-  for (const p of pets) {
-    if (p.colorValue != null) usedColors.add(p.colorValue);
-  }
-  for (const p of pets) {
-    if (p.colorValue == null) {
-      let color = PET_COLOR_PALETTE[0];
-      for (const c of PET_COLOR_PALETTE) {
-        if (!usedColors.has(c)) {
-          color = c;
-          break;
-        }
-      }
-      usedColors.add(color);
-      p.colorValue = color;
-      try {
-        await pool.query('UPDATE pets SET color_index = $1 WHERE id = $2', [color, p.id]);
-      } catch (_) {}
-    }
-  }
+/** @deprecated Pet UI no longer uses per-pet rainbow colors; kept for API compat. */
+export async function autoAssignColors(_pool, pets) {
+  return pets;
 }
 
 export async function userInOrg(pool, orgId, userId) {

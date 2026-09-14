@@ -4,6 +4,7 @@ import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/utils/pet_tile_dimensions.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_tile_status_line.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_photo_placeholder.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/unified_pet_tile.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -92,9 +93,16 @@ void main() {
     expect(find.text('Passed Away'), findsOneWidget);
   });
 
-  testWidgets('ownership stripe is present', (tester) async {
+  testWidgets('shows default illustration when pet has no photo', (
+    tester,
+  ) async {
     await tester.pumpWidget(wrap(UnifiedPetTile(pet: pet, onTap: () {})));
+    await tester.pump();
 
-    expect(find.byType(ColoredBox), findsWidgets);
+    final image = tester.widget<Image>(find.byType(Image).first);
+    expect(
+      (image.image as AssetImage).assetName,
+      PetPhotoPlaceholderAssets.defaultPhoto,
+    );
   });
 }

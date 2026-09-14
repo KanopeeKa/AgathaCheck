@@ -78,27 +78,25 @@ class Pet {
     return '${a.toStringAsFixed(1)} yrs';
   }
 
-  static const List<int> palette = [
-    0xFF7E57C2, // violet (primary accent)
-    0xFF9575CD, // soft purple
-    0xFF5C6BC0, // indigo
-    0xFF7986CB, // periwinkle
-    0xFF4DB6AC, // muted teal
-    0xFF81C784, // sage green
-    0xFF4FC3F7, // sky blue
-    0xFFBA68C8, // orchid
-    0xFFF06292, // dusty rose
-    0xFFE57373, // soft coral
-    0xFFFFB74D, // warm apricot
-    0xFFA1887F, // taupe
-    0xFF90A4AE, // slate
-    0xFF64B5F6, // powder blue
-    0xFFAED581, // soft lime
+  /// Legacy rainbow palette — no longer assigned to new pets or used for UI.
+  @Deprecated('Per-pet colorValue is deprecated; pet surfaces use brand plum.')
+  static const List<int> legacyPalette = [
+    0xFF7E57C2,
+    0xFF9575CD,
+    0xFF5C6BC0,
+    0xFF7986CB,
+    0xFF4DB6AC,
+    0xFF81C784,
+    0xFF4FC3F7,
+    0xFFBA68C8,
+    0xFFF06292,
+    0xFFE57373,
+    0xFFFFB74D,
+    0xFFA1887F,
+    0xFF90A4AE,
+    0xFF64B5F6,
+    0xFFAED581,
   ];
-
-  static int pickColor(int index) {
-    return palette[index % palette.length];
-  }
 
   Pet copyWith({
     String? id,

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
 import '../../../pet_profile/presentation/widgets/pet_detail/pet_info_chip.dart';
 import '../../../pet_profile/presentation/widgets/pet_photo_image.dart';
 
@@ -18,7 +17,6 @@ class PetEventPetCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final petColor = resolvePetAccentColor(context, pet);
     final apiBaseUrl = ref.watch(apiBaseUrlProvider);
 
     return Card(
@@ -29,7 +27,18 @@ class PetEventPetCard extends ConsumerWidget {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            _PetAvatar(pet: pet, petColor: petColor, apiBaseUrl: apiBaseUrl),
+            SizedBox(
+              width: 48,
+              height: 48,
+              child: ClipOval(
+                child: buildPetPhotoOrPlaceholder(
+                  photoPath: pet.photoPath,
+                  apiBaseUrl: apiBaseUrl,
+                  fit: BoxFit.cover,
+                  semanticLabel: 'Photo of ${pet.name}',
+                ),
+              ),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -57,66 +66,6 @@ class PetEventPetCard extends ConsumerWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _PetAvatar extends StatelessWidget {
-  const _PetAvatar({
-    required this.pet,
-    required this.petColor,
-    required this.apiBaseUrl,
-  });
-
-  final Pet pet;
-  final Color petColor;
-  final String apiBaseUrl;
-
-  static const _size = 48.0;
-
-  @override
-  Widget build(BuildContext context) {
-    final image = buildPetPhotoImage(
-      photoPath: pet.photoPath,
-      apiBaseUrl: apiBaseUrl,
-      fit: BoxFit.cover,
-      semanticLabel: 'Photo of ${pet.name}',
-      errorBuilder: (_, __, ___) => _placeholder(),
-    );
-
-    if (image != null) {
-      return Container(
-        width: _size,
-        height: _size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: petColor, width: 2),
-        ),
-        child: ClipOval(child: image),
-      );
-    }
-
-    return _placeholder();
-  }
-
-  Widget _placeholder() {
-    return Container(
-      width: _size,
-      height: _size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: petColor.withValues(alpha: 0.2),
-        border: Border.all(color: petColor, width: 2),
-      ),
-      child: pet.species.isNotEmpty
-          ? Center(
-              child: AppConstants.speciesIconWidget(
-                pet.species,
-                size: 24,
-                color: petColor,
-              ),
-            )
-          : Icon(Icons.pets, color: petColor),
     );
   }
 }

@@ -90,7 +90,7 @@ From `tokens.md` — these are intentional, not tokenization gaps:
 | Token / value | Reason |
 |---------------|--------|
 | `AppColorTokens.petRainbowIconGradient` | Passed-away memorial icon — a literal rainbow, not a brand color |
-| `Pet.palette` (`flutter_app/lib/features/pet_profile/domain/entities/pet.dart`) | Per-pet, user-chosen identification colors — not a system/brand color |
+| `Pet.legacyPalette` (`flutter_app/lib/features/pet_profile/domain/entities/pet.dart`) | Deprecated per-pet rainbow colours — not used for UI; pet surfaces use brand plum |
 | `AppColorTokens.orgSuperAdminBorder` / `orgAdminBorder` | Role-badge ring accents, deliberately distinct from the primary palette |
 
 ## 5. Verifying a re-skin

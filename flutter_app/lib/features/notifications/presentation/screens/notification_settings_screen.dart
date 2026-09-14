@@ -8,6 +8,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/notification_preferences.dart';
 import '../providers/notification_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
 
 class NotificationSettingsScreen extends ConsumerStatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -215,9 +216,7 @@ class _NotificationSettingsScreenState
     return Column(
       children: pets.map((pet) {
         final isMuted = _mutedPetIds.contains(pet.id);
-        final petColor = pet.colorValue != null
-            ? Color(pet.colorValue!)
-            : theme.colorScheme.primary;
+        final petColor = resolvePetAccentColor(context, pet);
         return SwitchListTile(
           title: Row(
             children: [
