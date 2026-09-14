@@ -49,6 +49,7 @@ flutter:
     - assets/dashboard/
     - assets/landing/
     - assets/demo_pets/
+    - assets/pets/pet-photo-placeholder.jpg
     - assets/logo-plum.png
     - assets/logo-plum-light.png
     - assets/logo-plum.jpg

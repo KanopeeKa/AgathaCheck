@@ -4,6 +4,7 @@ import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_card.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_photo_placeholder.dart';
 
 void main() {
   const testPet = Pet(
@@ -59,10 +60,15 @@ void main() {
       expect(find.text('Cat'), findsNothing);
     });
 
-    testWidgets('shows placeholder icon when no photo', (tester) async {
+    testWidgets('shows default illustration when no photo', (tester) async {
       await tester.pumpWidget(createTestWidget(PetCard(pet: testPet)));
+      await tester.pump();
 
-      expect(find.byIcon(Icons.pets), findsOneWidget);
+      final image = tester.widget<Image>(find.byType(Image).first);
+      expect(
+        (image.image as AssetImage).assetName,
+        PetPhotoPlaceholderAssets.defaultPhoto,
+      );
     });
 
     testWidgets('org pets include organization in semantics label', (
@@ -131,12 +137,6 @@ void main() {
       await tester.pumpWidget(createTestWidget(PetCard(pet: testPet)));
 
       expect(find.byIcon(Icons.home_work_outlined), findsNothing);
-    });
-
-    testWidgets('shows ownership status bar', (tester) async {
-      await tester.pumpWidget(createTestWidget(PetCard(pet: testPet)));
-
-      expect(find.byType(Container), findsWidgets);
     });
 
     testWidgets('calls onTap when tapped', (tester) async {

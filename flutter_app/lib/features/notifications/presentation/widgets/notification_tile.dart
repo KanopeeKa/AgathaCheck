@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
 import '../../domain/entities/app_notification.dart';
 import '../../domain/entities/notification_kind.dart';
 import '../../domain/entities/notification_scope.dart';
@@ -95,7 +96,7 @@ class NotificationTile extends ConsumerWidget {
     final pet = notification.petId != null
         ? pets.where((p) => p.id == notification.petId).firstOrNull
         : null;
-    final petColor = pet?.colorValue != null ? Color(pet!.colorValue!) : null;
+    final petColor = pet != null ? resolvePetAccentColor(context, pet) : null;
 
     final tileColor = isUnread ? accent.unreadSurface : null;
     final stripColor = petColor ?? accent.primary.withAlpha(180);

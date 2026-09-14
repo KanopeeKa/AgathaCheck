@@ -1,12 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/router/shell_return_navigation.dart';
-import '../../../../core/utils/constants.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
+import '../../../pet_profile/presentation/widgets/pet_photo_image.dart';
 
 /// Flat, tappable pet row for the care team detail screen.
 class CareTeamPetRow extends StatelessWidget {
@@ -73,53 +71,24 @@ class CareTeamPetRow extends StatelessWidget {
   }
 }
 
-class _PetAvatar extends StatelessWidget {
+class _PetAvatar extends ConsumerWidget {
   const _PetAvatar({required this.pet});
 
   final Pet pet;
 
   @override
-  Widget build(BuildContext context) {
-    final petColor = resolvePetAccentColor(context, pet);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final apiBaseUrl = ref.watch(apiBaseUrlProvider);
 
     return SizedBox(
       width: CareTeamPetRow._avatarSize,
       height: CareTeamPetRow._avatarSize,
-      child: ClipOval(child: _buildImage(petColor)),
-    );
-  }
-
-  Widget _buildImage(Color petColor) {
-    if (pet.photoPath?.startsWith('asset://') ?? false) {
-      return Image.asset(
-        pet.photoPath!.substring('asset://'.length),
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _placeholder(petColor),
-      );
-    }
-    if (pet.photoPath != null && pet.photoPath!.isNotEmpty) {
-      try {
-        var data = pet.photoPath!;
-        if (data.contains(',')) {
-          data = data.split(',').last;
-        }
-        final bytes = base64Decode(data);
-        return Image.memory(bytes, fit: BoxFit.cover);
-      } catch (_) {
-        return _placeholder(petColor);
-      }
-    }
-    return _placeholder(petColor);
-  }
-
-  Widget _placeholder(Color petColor) {
-    return ColoredBox(
-      color: petColor.withValues(alpha: 0.12),
-      child: Center(
-        child: AppConstants.speciesIconWidget(
-          pet.species,
-          size: 22,
-          color: petColor,
+      child: ClipOval(
+        child: buildPetPhotoOrPlaceholder(
+          photoPath: pet.photoPath,
+          apiBaseUrl: apiBaseUrl,
+          fit: BoxFit.cover,
+          semanticLabel: pet.name,
         ),
       ),
     );

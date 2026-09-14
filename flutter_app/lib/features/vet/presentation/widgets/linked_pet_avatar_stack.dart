@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
-import '../../../../core/utils/constants.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
 import '../../../pet_profile/presentation/widgets/pet_photo_image.dart';
 
 /// Compact overlapping pet avatars for care-team relationship previews.
@@ -78,39 +76,20 @@ class _PetMiniAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = resolvePetAccentColor(context, pet);
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: Theme.of(context).colorScheme.surface,
-        border: Border.all(color: color.withValues(alpha: 0.7), width: 1.5),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       clipBehavior: Clip.antiAlias,
-      child: _photo(color),
-    );
-  }
-
-  Widget _photo(Color color) {
-    final image = buildPetPhotoImage(
-      photoPath: pet.photoPath,
-      apiBaseUrl: apiBaseUrl,
-      fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => _placeholder(color),
-    );
-    return image ?? _placeholder(color);
-  }
-
-  Widget _placeholder(Color color) {
-    return ColoredBox(
-      color: color.withValues(alpha: 0.12),
-      child: Center(
-        child: AppConstants.speciesIconWidget(
-          pet.species,
-          size: size * 0.55,
-          color: color,
-        ),
+      child: buildPetPhotoOrPlaceholder(
+        photoPath: pet.photoPath,
+        apiBaseUrl: apiBaseUrl,
+        fit: BoxFit.cover,
+        semanticLabel: pet.name,
       ),
     );
   }

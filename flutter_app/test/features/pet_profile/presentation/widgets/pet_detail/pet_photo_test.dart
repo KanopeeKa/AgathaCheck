@@ -45,7 +45,7 @@ void main() {
       );
 
       expect(find.byType(ColorFiltered), findsOneWidget);
-      expect(find.byType(Image), findsOneWidget);
+      expect(find.byType(Image), findsNWidgets(2));
     },
   );
 

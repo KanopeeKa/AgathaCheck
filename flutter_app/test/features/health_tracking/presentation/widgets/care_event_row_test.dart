@@ -10,6 +10,7 @@ import 'package:pet_profile_app/features/health_tracking/domain/occurrence_sched
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row_context.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_photo_placeholder.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 final _overdueEntry = HealthEntry(
@@ -107,7 +108,11 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.pets), findsOneWidget);
+      final image = tester.widget<Image>(find.byType(Image));
+      expect(
+        (image.image as AssetImage).assetName,
+        PetPhotoPlaceholderAssets.defaultPhoto,
+      );
     });
 
     testWidgets('does not show snooze or open actions', (tester) async {

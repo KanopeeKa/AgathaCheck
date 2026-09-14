@@ -30,14 +30,13 @@ class PetOwnershipAccent {
 bool _isOrganizationLinked(Pet pet) =>
     pet.organizationId != null && pet.organizationId!.isNotEmpty;
 
-/// Photo ring / avatar accent: plum for guardian-owned, green for org-linked.
+/// Pet surface accent: plum for guardian-owned, org teal when org-linked.
+///
+/// Legacy per-pet [Pet.colorValue] is ignored for UI chrome — brand tokens only.
 Color resolvePetOwnershipAccentColor(BuildContext context, Pet pet) {
   final xp = context.experienceColors;
   if (_isOrganizationLinked(pet)) {
     return xp.organizationPrimary;
-  }
-  if (pet.colorValue != null) {
-    return Color(pet.colorValue!);
   }
   return xp.petCarePrimary;
 }

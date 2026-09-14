@@ -1,5 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
+
+import '../../widgets/pet_photo_placeholder.dart';
 
 class PetPhotoSection extends StatelessWidget {
   final String? photoBase64;
@@ -24,7 +27,7 @@ class PetPhotoSection extends StatelessWidget {
                 ? MemoryImage(base64Decode(photoBase64!))
                 : null,
             child: photoBase64 == null
-                ? const Icon(Icons.pets, size: 48, color: Colors.grey)
+                ? const ClipOval(child: PetPhotoPlaceholder(fit: BoxFit.cover))
                 : null,
           ),
           Positioned(

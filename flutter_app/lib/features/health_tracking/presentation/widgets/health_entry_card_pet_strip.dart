@@ -1,12 +1,15 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/providers/api_base_url_provider.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
+import '../../../pet_profile/presentation/widgets/pet_photo_image.dart';
 import '../../domain/entities/health_entry.dart';
 
-class HealthEntryPetStrip extends StatelessWidget {
+class HealthEntryPetStrip extends ConsumerWidget {
   const HealthEntryPetStrip({
     super.key,
     this.pet,
@@ -27,19 +30,31 @@ class HealthEntryPetStrip extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final petColor = pet?.colorValue != null
-        ? Color(pet!.colorValue!)
-        : colorScheme.surfaceContainerHighest;
+    final stripColor = pet != null
+        ? resolvePetAccentColor(context, pet!)
+        : AppColorTokens.petCarePrimary;
+    final apiBaseUrl = ref.watch(apiBaseUrlProvider);
 
     return Container(
       width: 52,
-      decoration: BoxDecoration(color: petColor.withValues(alpha: 0.18)),
+      decoration: BoxDecoration(color: stripColor.withValues(alpha: 0.12)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildAvatar(petColor),
+          SizedBox(
+            width: 30,
+            height: 30,
+            child: ClipOval(
+              child: buildPetPhotoOrPlaceholder(
+                photoPath: pet?.photoPath,
+                apiBaseUrl: apiBaseUrl,
+                fit: BoxFit.cover,
+                semanticLabel: pet?.name,
+              ),
+            ),
+          ),
           const SizedBox(height: 2),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 2),
@@ -57,44 +72,6 @@ class HealthEntryPetStrip extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildAvatar(Color petColor) {
-    if (pet?.photoPath != null && pet!.photoPath!.isNotEmpty) {
-      try {
-        var data = pet!.photoPath!;
-        if (data.contains(',')) {
-          data = data.split(',').last;
-        }
-        final bytes = base64Decode(data);
-        return Container(
-          width: 30,
-          height: 30,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: petColor, width: 2),
-          ),
-          child: ClipOval(
-            child: Image.memory(
-              bytes,
-              width: 26,
-              height: 26,
-              fit: BoxFit.cover,
-            ),
-          ),
-        );
-      } catch (_) {}
-    }
-    return Container(
-      width: 30,
-      height: 30,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: petColor.withValues(alpha: 0.25),
-        border: Border.all(color: petColor, width: 2),
-      ),
-      child: Icon(Icons.pets, size: 14, color: petColor),
     );
   }
 }
