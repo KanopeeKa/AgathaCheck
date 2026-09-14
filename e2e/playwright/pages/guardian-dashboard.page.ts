@@ -307,7 +307,11 @@ export class GuardianDashboardPage {
     await expect(this.bottomNavigation()).toBeVisible();
     await expect(this.leadingNavRail()).not.toBeVisible();
     await expect(this.leadingNavSidebar()).not.toBeVisible();
-    await expect(this.mobileAppBarBrand()).toBeVisible();
+    // Centered compact chrome exposes logo + title text (no banner semantics).
+    await expect(this.page.getByText('AgathaTrack', { exact: true })).toBeVisible();
+    await expect(
+      this.page.getByRole('img', { name: /AgathaTrack logo/i }),
+    ).toBeVisible();
     await expect(this.brandGroups()).toHaveCount(0);
   }
 
