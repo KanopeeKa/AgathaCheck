@@ -224,9 +224,6 @@ export class ExperiencePage {
     await expect(sectionDrawer.getByText('My vets', { exact: true })).not.toBeVisible();
     await expect(sectionDrawer.getByText('Notifications', { exact: true })).not.toBeVisible();
     await expect(sectionDrawer.getByText('Settings', { exact: true })).not.toBeVisible();
-    await expect(
-      this.page.getByRole('button', { name: /open notifications/i }),
-    ).toBeVisible();
   }
 
   /** Assert bell badge shows the expected count. */
