@@ -7,11 +7,17 @@ class AppFormLabeledField extends StatelessWidget {
     required this.label,
     required this.child,
     this.subtitle,
+    this.isTextField = true,
   });
 
   final String label;
   final String? subtitle;
   final Widget child;
+
+  /// When true (default), associates [label] with a single text-field semantics
+  /// node. Set false for controls that supply their own semantics (e.g. date
+  /// pickers exposed as buttons).
+  final bool isTextField;
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +41,13 @@ class AppFormLabeledField extends StatelessWidget {
           ),
         ],
         const SizedBox(height: 8),
-        Semantics(
-          label: subtitle == null ? label : '$label. $subtitle',
-          textField: true,
-          child: child,
-        ),
+        if (isTextField)
+          Semantics(
+            label: subtitle == null ? label : '$label. $subtitle',
+            child: child,
+          )
+        else
+          child,
       ],
     );
   }

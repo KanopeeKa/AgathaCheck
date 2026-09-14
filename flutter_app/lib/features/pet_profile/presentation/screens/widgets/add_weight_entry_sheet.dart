@@ -52,6 +52,7 @@ Future<void> showAddWeightEntrySheet({
               const SizedBox(height: 20),
               AppFormLabeledField(
                 label: AppLocalizations.of(ctx)!.date,
+                isTextField: false,
                 child: Semantics(
                   label: AppLocalizations.of(ctx)!.selectDate,
                   button: true,
