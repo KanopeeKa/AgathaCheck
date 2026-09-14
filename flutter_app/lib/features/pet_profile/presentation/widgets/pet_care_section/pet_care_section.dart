@@ -106,8 +106,7 @@ class _PetCareSectionState extends ConsumerState<PetCareSection> {
             establishedEntryIds: establishedIds,
             trailingLabel: l.done,
             onMarkDone: _onMarkDone,
-            onViewEntry: (entry) =>
-                HomeEventActions.viewEntry(context, entry),
+            onViewEntry: (entry) => HomeEventActions.viewEntry(context, entry),
           );
 
           return Column(

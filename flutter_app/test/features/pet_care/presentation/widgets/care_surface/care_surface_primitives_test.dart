@@ -239,7 +239,10 @@ void main() {
   });
 
   test('care surface widgets use token colours only', () {
-    expect(CareSurfaceTokens.collectionBackground(), AppColorTokens.petCareCollection);
+    expect(
+      CareSurfaceTokens.collectionBackground(),
+      AppColorTokens.petCareCollection,
+    );
     expect(CareSurfaceTokens.moduleBackground(), AppColorTokens.surface);
     expect(AppColorTokens.dangerLight, isNotNull);
   });

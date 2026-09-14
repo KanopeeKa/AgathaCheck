@@ -255,13 +255,13 @@ class _PetCareUpcomingEventsSectionState
         KeyedSubtree(
           key: const Key('pet_care_dashboard_care_section'),
           child: _buildMobileContent(
-              context,
-              careEntries,
-              petMap,
-              l,
-              l.noCareDue,
-              priorities.all.isNotEmpty,
-            ),
+            context,
+            careEntries,
+            petMap,
+            l,
+            l.noCareDue,
+            priorities.all.isNotEmpty,
+          ),
         ),
         if (showAllCare)
           PetCareDashboardSectionLink(

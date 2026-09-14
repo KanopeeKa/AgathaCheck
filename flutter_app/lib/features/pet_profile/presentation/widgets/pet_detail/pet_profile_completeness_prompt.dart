@@ -52,7 +52,8 @@ class PetProfileCompletenessPrompt extends ConsumerWidget {
             message: l.profilePromptChipMissing,
             icon: Icons.memory_outlined,
             dismissLabel: l.dismiss,
-            onDismiss: () => ChipReminderController(ref).dismissChipReminder(pet),
+            onDismiss: () =>
+                ChipReminderController(ref).dismissChipReminder(pet),
           ),
         ),
       );

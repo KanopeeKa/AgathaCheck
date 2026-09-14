@@ -36,9 +36,9 @@ class CareActionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final radius = inset ? BorderRadius.zero : BorderRadius.circular(
-      CareSurfaceTokens.actionRadius,
-    );
+    final radius = inset
+        ? BorderRadius.zero
+        : BorderRadius.circular(CareSurfaceTokens.actionRadius);
 
     return Semantics(
       label: semanticLabel,

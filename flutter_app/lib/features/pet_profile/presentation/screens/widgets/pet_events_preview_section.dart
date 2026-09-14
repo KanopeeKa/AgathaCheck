@@ -152,8 +152,7 @@ class _PetEventsPreviewSectionState
                   petMap: {widget.pet.id: widget.pet},
                   onMarkDone: _onMarkDone,
                   onUndo: _onUndo,
-                  onView: (entry) =>
-                      HomeEventActions.viewEntry(context, entry),
+                  onView: (entry) => HomeEventActions.viewEntry(context, entry),
                   rowContext: CareEventRowContext.pet,
                 ),
               if (showAllCare)
