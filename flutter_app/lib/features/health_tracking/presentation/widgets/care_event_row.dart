@@ -97,10 +97,7 @@ class CareEventRow extends StatelessWidget {
             CareFamilyIcon.forEntry(entry, size: 20),
             if (rowContext == CareEventRowContext.pet) ...[
               const SizedBox(width: 8),
-              CareEventRowPetAvatar(
-                pet: pet,
-                petName: entry.petName,
-              ),
+              CareEventRowPetAvatar(pet: pet, petName: entry.petName),
               const SizedBox(width: 12),
             ] else
               const SizedBox(width: 12),
@@ -285,10 +282,7 @@ class _CompletedCareEventRow extends StatelessWidget {
             CareFamilyIcon.forEntry(entry, size: 20),
             if (rowContext == CareEventRowContext.pet) ...[
               const SizedBox(width: 8),
-              CareEventRowPetAvatar(
-                pet: pet,
-                petName: entry.petName,
-              ),
+              CareEventRowPetAvatar(pet: pet, petName: entry.petName),
               const SizedBox(width: 12),
             ] else
               const SizedBox(width: 12),
