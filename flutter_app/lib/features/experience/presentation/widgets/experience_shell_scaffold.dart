@@ -19,6 +19,7 @@ import '../config/shelter_primary_destinations.dart';
 import 'pet_care_bottom_navigation.dart';
 import 'pet_care_navigation_rail.dart';
 import 'pet_care_navigation_sidebar.dart';
+import 'experience_shell_chrome_bar.dart';
 import 'shelter_bottom_navigation.dart';
 import 'shelter_navigation_rail.dart';
 import 'shelter_navigation_sidebar.dart';
@@ -222,7 +223,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
                     : titleWidget,
                 actions: usesBrandedLogoTitle ? null : trailingActions,
                 flexibleSpace: usesBrandedLogoTitle
-                    ? _BrandedToolbarChrome(
+                    ? ExperienceBrandedToolbarChrome(
                         toolbarHeight: _toolbarHeight,
                         foregroundColor: appBarForeground,
                         leading: leadingWidget,
@@ -260,7 +261,8 @@ class ExperienceShellScaffold extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _ContentChromeBar(
+                          ExperienceContentChromeBar(
+                            toolbarHeight: _toolbarHeight,
                             backgroundColor: appBarColor,
                             foregroundColor: appBarForeground,
                             leading: leadingWidget,
@@ -359,149 +361,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
         ),
         toggle,
       ],
-    );
-  }
-}
-
-/// Centers [AppLogoTitle] on the full toolbar while pinning leading/actions.
-class _BrandedToolbarChrome extends StatelessWidget {
-  const _BrandedToolbarChrome({
-    required this.toolbarHeight,
-    required this.foregroundColor,
-    required this.leading,
-    required this.leadingWidth,
-    required this.title,
-    required this.actions,
-  });
-
-  final double toolbarHeight;
-  final Color? foregroundColor;
-  final Widget? leading;
-  final double? leadingWidth;
-  final Widget title;
-  final List<Widget> actions;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return SafeArea(
-      bottom: false,
-      child: IconTheme.merge(
-        data: IconThemeData(color: foregroundColor),
-        child: DefaultTextStyle.merge(
-          style: TextStyle(color: foregroundColor),
-          child: SizedBox(
-            height: toolbarHeight,
-            child: Row(
-              children: [
-                if (leading != null)
-                  SizedBox(
-                    width: leadingWidth,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: leading,
-                    ),
-                  ),
-                Expanded(child: Center(child: title)),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: actions.map(
-                    (action) => IconTheme.merge(
-                      data: IconThemeData(
-                        color:
-                            foregroundColor ?? theme.colorScheme.onSurface,
-                      ),
-                      child: action,
-                    ),
-                  ).toList(),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Top chrome for the main content column when leading navigation is visible.
-class _ContentChromeBar extends StatelessWidget {
-  const _ContentChromeBar({
-    required this.backgroundColor,
-    required this.foregroundColor,
-    required this.leading,
-    required this.leadingWidth,
-    required this.title,
-    required this.centerTitle,
-    required this.centerBrandedTitle,
-    required this.actions,
-  });
-
-  final Color backgroundColor;
-  final Color? foregroundColor;
-  final Widget? leading;
-  final double leadingWidth;
-  final Widget title;
-  final bool centerTitle;
-  final bool centerBrandedTitle;
-  final List<Widget> actions;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Material(
-      key: const Key('experience_content_chrome'),
-      color: backgroundColor,
-      child: centerBrandedTitle
-          ? _BrandedToolbarChrome(
-              toolbarHeight: ExperienceShellScaffold._toolbarHeight,
-              foregroundColor: foregroundColor,
-              leading: leading,
-              leadingWidth: leadingWidth,
-              title: title,
-              actions: actions,
-            )
-          : SafeArea(
-              bottom: false,
-              child: IconTheme.merge(
-                data: IconThemeData(color: foregroundColor),
-                child: DefaultTextStyle.merge(
-                  style: TextStyle(color: foregroundColor),
-                  child: SizedBox(
-                    height: ExperienceShellScaffold._toolbarHeight,
-                    child: Row(
-                      children: [
-                        if (leading != null)
-                          SizedBox(
-                            width: leadingWidth,
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: leading,
-                            ),
-                          ),
-                        Expanded(
-                          child: centerTitle
-                              ? Center(child: title)
-                              : Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: title,
-                                ),
-                        ),
-                        ...actions.map(
-                          (action) => IconTheme.merge(
-                            data: IconThemeData(
-                              color: foregroundColor ??
-                                  theme.colorScheme.onSurface,
-                            ),
-                            child: action,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
     );
   }
 }
