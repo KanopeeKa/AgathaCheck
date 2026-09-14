@@ -77,12 +77,11 @@ void main() {
         ),
         GoRoute(
           path: '/pet/:petId/other/add',
-          builder: (context, state) =>
-              HealthEntryFormScreen(
-                petId: state.pathParameters['petId']!,
-                initialType: HealthEntryType.other,
-                allowedTypes: kOtherEventTypes.toList(),
-              ),
+          builder: (context, state) => HealthEntryFormScreen(
+            petId: state.pathParameters['petId']!,
+            initialType: HealthEntryType.other,
+            allowedTypes: kOtherEventTypes.toList(),
+          ),
         ),
       ],
     );
