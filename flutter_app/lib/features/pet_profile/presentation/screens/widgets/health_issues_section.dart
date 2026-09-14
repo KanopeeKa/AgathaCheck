@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../../../../core/widgets/form/app_form_labeled_field.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../../health_tracking/domain/entities/health_issue.dart';
 import '../../../../health_tracking/presentation/providers/health_issue_providers.dart';
@@ -35,18 +37,24 @@ class _HealthIssuesSectionState extends ConsumerState<HealthIssuesSection> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextFormField(
-                controller: titleController,
-                decoration: InputDecoration(labelText: l.issueTitle),
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? l.issueTitleRequired
-                    : null,
+              AppFormLabeledField(
+                label: l.issueTitle,
+                child: TextFormField(
+                  controller: titleController,
+                  decoration: const InputDecoration(),
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? l.issueTitleRequired
+                      : null,
+                ),
               ),
               const SizedBox(height: 8),
-              TextFormField(
-                controller: descController,
-                decoration: InputDecoration(labelText: l.issueDescription),
-                maxLines: 3,
+              AppFormLabeledField(
+                label: l.issueDescription,
+                child: TextFormField(
+                  controller: descController,
+                  decoration: const InputDecoration(),
+                  maxLines: 3,
+                ),
               ),
             ],
           ),

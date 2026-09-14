@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "plan_id": "form-harmonisation-c656",
+  "approved_at": "2026-09-14T12:00:00Z",
+  "approved_by": "user-chat-standing-grant-2026-09-14-form-harmonisation",
+  "approved_until": "2026-09-16T12:00:00Z",
+  "content_hash": "sha256:fbfeeff26074df1abd39adb7ba9adbdcfef858e14ee234248a72df81eee3223f",
+  "autonomy": "completed",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/form-harmonisation-c656-integration",
+  "control_issue": 1160,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Core form primitives",
+      "branch": "cursor/form-primitives-c656",
+      "allowed_paths": [
+        "flutter_app/lib/core/widgets/form/**",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_labeled_field.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_actions_bar.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_breakpoints.dart",
+        "flutter_app/lib/features/pet_profile/presentation/**",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/core/widgets/form/**",
+        ".agents/plans/form-harmonisation-c656.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/lib/features/organization/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Health entry form harmonisation",
+      "branch": "cursor/health-entry-form-c656",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/**",
+        "flutter_app/lib/features/health_tracking/presentation/controllers/**",
+        "flutter_app/test/features/health_tracking/**",
+        ".agents/plans/form-harmonisation-c656.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Vet form harmonisation",
+      "branch": "cursor/vet-form-c656",
+      "allowed_paths": [
+        "flutter_app/lib/features/vet/presentation/**",
+        "flutter_app/test/features/vet/**",
+        ".agents/plans/form-harmonisation-c656.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Compact forms harmonisation",
+      "branch": "cursor/compact-forms-c656",
+      "allowed_paths": [
+        "flutter_app/lib/features/auth/presentation/**",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/add_weight_entry_sheet.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/health_issues_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_timeline/**",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/sharing/**",
+        "flutter_app/test/features/auth/**",
+        "flutter_app/test/features/pet_profile/**",
+        ".agents/plans/form-harmonisation-c656.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "Dead code cleanup and integration to main",
+      "branch": "cursor/form-cleanup-c656",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/screens/other_event_form_screen.dart",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/other_event_form/**",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_form_screen_body.dart",
+        "flutter_app/test/**",
+        ".agents/plans/form-harmonisation-c656.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

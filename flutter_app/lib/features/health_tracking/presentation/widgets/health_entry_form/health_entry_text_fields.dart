@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/widgets/form/app_form_labeled_field.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 /// Name and dosage fields bound to controller state via callbacks.
@@ -23,26 +24,26 @@ class HealthEntryNameDosageFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        TextFormField(
-          key: const Key('health_name_field'),
-          initialValue: name,
-          decoration: InputDecoration(
-            labelText: l.entryName,
-            hintText: l.entryNameHint,
+        AppFormLabeledField(
+          label: l.entryName,
+          child: TextFormField(
+            key: const Key('health_name_field'),
+            initialValue: name,
+            decoration: InputDecoration(hintText: l.entryNameHint),
+            validator: (val) =>
+                val == null || val.trim().isEmpty ? l.entryNameRequired : null,
+            onChanged: onNameChanged,
           ),
-          validator: (val) =>
-              val == null || val.trim().isEmpty ? l.entryNameRequired : null,
-          onChanged: onNameChanged,
         ),
         const SizedBox(height: 16),
-        TextFormField(
-          key: const Key('health_dosage_field'),
-          initialValue: dosage,
-          decoration: InputDecoration(
-            labelText: l.dosage,
-            hintText: l.dosageHint,
+        AppFormLabeledField(
+          label: l.dosage,
+          child: TextFormField(
+            key: const Key('health_dosage_field'),
+            initialValue: dosage,
+            decoration: InputDecoration(hintText: l.dosageHint),
+            onChanged: onDosageChanged,
           ),
-          onChanged: onDosageChanged,
         ),
       ],
     );
@@ -63,12 +64,15 @@ class HealthEntryNotesField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    return TextFormField(
-      key: const Key('health_notes_field'),
-      initialValue: notes,
-      decoration: InputDecoration(labelText: l.notes, hintText: l.notesHint),
-      maxLines: 3,
-      onChanged: onChanged,
+    return AppFormLabeledField(
+      label: l.notes,
+      child: TextFormField(
+        key: const Key('health_notes_field'),
+        initialValue: notes,
+        decoration: InputDecoration(hintText: l.notesHint),
+        maxLines: 3,
+        onChanged: onChanged,
+      ),
     );
   }
 }

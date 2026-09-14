@@ -3,11 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
+import '../../../../core/widgets/form/app_form_actions_bar.dart';
+import '../../../../core/widgets/form/app_form_breakpoints.dart';
+import '../../../../core/widgets/form/app_form_destructive_button.dart';
+import '../../../../core/widgets/form/app_form_discard_dialog.dart';
+import '../../../../core/widgets/form/app_form_labeled_field.dart';
+import '../../../../core/widgets/form/app_form_section.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/vet.dart';
 import '../providers/vet_providers.dart';
+import '../widgets/vet_linked_pets_section.dart';
 
 class VetFormScreen extends ConsumerStatefulWidget {
   const VetFormScreen({
@@ -37,16 +42,45 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
   bool _isLoading = false;
   bool _isEdit = false;
   String? _organizationId;
+  Map<String, String>? _baseline;
 
   @override
   void initState() {
     super.initState();
     _organizationId = widget.defaultOrganizationId;
+    for (final controller in [
+      _nameController,
+      _phoneController,
+      _emailController,
+      _websiteController,
+      _addressController,
+      _notesController,
+    ]) {
+      controller.addListener(_onFieldChanged);
+    }
     if (widget.vetId != null) {
       _isEdit = true;
       _loadVet();
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _captureBaseline());
     }
   }
+
+  void _onFieldChanged() => setState(() {});
+
+  Map<String, String> _snapshot() => {
+    'name': _nameController.text,
+    'phone': _phoneController.text,
+    'email': _emailController.text,
+    'website': _websiteController.text,
+    'address': _addressController.text,
+    'notes': _notesController.text,
+  };
+
+  void _captureBaseline() => _baseline = _snapshot();
+
+  bool get _isDirty =>
+      _baseline != null && _snapshot().toString() != _baseline!.toString();
 
   Future<void> _loadVet() async {
     setState(() => _isLoading = true);
@@ -54,15 +88,14 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
       final repo = ref.read(vetRepositoryProvider);
       final vet = await repo.getVet(widget.vetId!);
       if (vet != null && mounted) {
-        setState(() {
-          _nameController.text = vet.name;
-          _phoneController.text = vet.phone;
-          _emailController.text = vet.email;
-          _websiteController.text = vet.website;
-          _addressController.text = vet.address;
-          _notesController.text = vet.notes;
-          _organizationId = vet.organizationId;
-        });
+        _nameController.text = vet.name;
+        _phoneController.text = vet.phone;
+        _emailController.text = vet.email;
+        _websiteController.text = vet.website;
+        _addressController.text = vet.address;
+        _notesController.text = vet.notes;
+        _organizationId = vet.organizationId;
+        _captureBaseline();
       }
     } catch (e) {
       if (mounted) {
@@ -86,125 +119,196 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
     super.dispose();
   }
 
+  Future<void> _handleBack() async {
+    if (!_isEdit || !_isDirty) {
+      context.go(widget.listPath);
+      return;
+    }
+    if (await confirmDiscardFormChanges(context) && mounted) {
+      context.go(widget.listPath);
+    }
+  }
+
+  Widget _actionsBar(AppLocalizations l) {
+    return AppFormActionsBar(
+      isLoading: _isLoading,
+      isDirty: _isEdit ? _isDirty : true,
+      onSave: _submit,
+      onCancel: _handleBack,
+      saveLabel: _isEdit ? l.vetFormSaveChanges : l.addVet,
+      cancelKey: const Key('cancel_vet_button'),
+      saveKey: const Key('save_vet_button'),
+      requireDirtyToSave: _isEdit,
+    );
+  }
+
+  Widget _formContent(AppLocalizations l, {required bool includeActions}) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AppFormSection(
+            title: l.vetFormContactDetails,
+            children: [
+              AppFormLabeledField(
+                label: l.vetName,
+                child: TextFormField(
+                  key: const Key('vet_name_field'),
+                  controller: _nameController,
+                  decoration: const InputDecoration(),
+                  autofillHints: const [AutofillHints.name],
+                  validator: (val) => val == null || val.trim().isEmpty
+                      ? l.vetNameRequired
+                      : null,
+                ),
+              ),
+              const SizedBox(height: 16),
+              AppFormLabeledField(
+                label: l.phone,
+                child: TextFormField(
+                  key: const Key('vet_phone_field'),
+                  controller: _phoneController,
+                  decoration: const InputDecoration(),
+                  keyboardType: TextInputType.phone,
+                  autofillHints: const [AutofillHints.telephoneNumber],
+                ),
+              ),
+              const SizedBox(height: 16),
+              AppFormLabeledField(
+                label: l.vetEmail,
+                child: TextFormField(
+                  key: const Key('vet_email_field'),
+                  controller: _emailController,
+                  decoration: const InputDecoration(),
+                  keyboardType: TextInputType.emailAddress,
+                  autofillHints: const [AutofillHints.email],
+                ),
+              ),
+              const SizedBox(height: 16),
+              AppFormLabeledField(
+                label: l.website,
+                child: TextFormField(
+                  key: const Key('vet_website_field'),
+                  controller: _websiteController,
+                  decoration: const InputDecoration(),
+                  keyboardType: TextInputType.url,
+                  autofillHints: const [AutofillHints.url],
+                ),
+              ),
+              const SizedBox(height: 16),
+              AppFormLabeledField(
+                label: l.address,
+                child: TextFormField(
+                  key: const Key('vet_address_field'),
+                  controller: _addressController,
+                  decoration: const InputDecoration(),
+                  autofillHints: const [AutofillHints.fullStreetAddress],
+                  maxLines: 2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          AppFormSection(
+            title: l.vetFormNotesSection,
+            children: [
+              AppFormLabeledField(
+                label: l.vetNotes,
+                child: TextFormField(
+                  key: const Key('vet_notes_field'),
+                  controller: _notesController,
+                  decoration: const InputDecoration(),
+                  maxLines: 3,
+                ),
+              ),
+            ],
+          ),
+          if (_isEdit) ...[
+            const SizedBox(height: 16),
+            VetLinkedPetsSection(vetId: widget.vetId!),
+            const SizedBox(height: 16),
+            AppFormDestructiveButton(
+              buttonKey: const Key('delete_vet_button'),
+              label: l.deleteVet,
+              onPressed: _isLoading ? null : () => _confirmDelete(context, l),
+            ),
+          ],
+          if (includeActions) ...[const SizedBox(height: 24), _actionsBar(l)],
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: AppLogoTitle(title: _isEdit ? l.editVet : l.addVet),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: l.backToVets,
-          onPressed: () => context.go(widget.listPath),
+    final isPhone =
+        AppFormBreakpoints.layoutForWidth(MediaQuery.sizeOf(context).width) ==
+        AppFormLayoutSize.phone;
+
+    return PopScope(
+      canPop: !_isEdit || !_isDirty,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        if (await confirmDiscardFormChanges(context) && context.mounted) {
+          context.go(widget.listPath);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: AppLogoTitle(title: _isEdit ? l.editVet : l.addVet),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            tooltip: l.backToVets,
+            onPressed: _handleBack,
+          ),
         ),
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: AutofillGroup(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextFormField(
-                        key: const Key('vet_name_field'),
-                        controller: _nameController,
-                        decoration: InputDecoration(
-                          labelText: l.vetName,
-                          prefixIcon: const Icon(Icons.person),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : LayoutBuilder(
+                builder: (context, constraints) {
+                  final layout = AppFormBreakpoints.layoutForWidth(
+                    constraints.maxWidth,
+                  );
+                  final includeActions = layout != AppFormLayoutSize.phone;
+                  final form = AutofillGroup(
+                    child: _formContent(l, includeActions: includeActions),
+                  );
+                  if (layout == AppFormLayoutSize.phone) {
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+                      child: form,
+                    );
+                  }
+                  return Align(
+                    alignment: Alignment.topCenter,
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(24),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: AppFormBreakpoints.tabletContentMaxWidth,
                         ),
-                        autofillHints: const [AutofillHints.name],
-                        validator: (val) => val == null || val.trim().isEmpty
-                            ? l.vetNameRequired
-                            : null,
+                        child: form,
                       ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        key: const Key('vet_phone_field'),
-                        controller: _phoneController,
-                        decoration: InputDecoration(
-                          labelText: l.phone,
-                          prefixIcon: const Icon(Icons.phone),
-                        ),
-                        keyboardType: TextInputType.phone,
-                        autofillHints: const [AutofillHints.telephoneNumber],
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        key: const Key('vet_email_field'),
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                          labelText: l.vetEmail,
-                          prefixIcon: const Icon(Icons.email),
-                        ),
-                        keyboardType: TextInputType.emailAddress,
-                        autofillHints: const [AutofillHints.email],
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        key: const Key('vet_website_field'),
-                        controller: _websiteController,
-                        decoration: InputDecoration(
-                          labelText: l.website,
-                          prefixIcon: const Icon(Icons.language),
-                        ),
-                        keyboardType: TextInputType.url,
-                        autofillHints: const [AutofillHints.url],
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        key: const Key('vet_address_field'),
-                        controller: _addressController,
-                        decoration: InputDecoration(
-                          labelText: l.address,
-                          prefixIcon: const Icon(Icons.location_on),
-                        ),
-                        autofillHints: const [AutofillHints.fullStreetAddress],
-                        maxLines: 2,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        key: const Key('vet_notes_field'),
-                        controller: _notesController,
-                        decoration: InputDecoration(
-                          labelText: l.vetNotes,
-                          prefixIcon: const Icon(Icons.notes),
-                          alignLabelWithHint: true,
-                        ),
-                        maxLines: 3,
-                      ),
-                      if (_isEdit) ...[
-                        const SizedBox(height: 24),
-                        _LinkedPetsSection(vetId: widget.vetId!),
-                        const SizedBox(height: 16),
-                        OutlinedButton.icon(
-                          key: const Key('delete_vet_button'),
-                          onPressed: _isLoading
-                              ? null
-                              : () => _confirmDelete(context, l),
-                          icon: const Icon(Icons.delete_outline),
-                          label: Text(l.deleteVet),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Theme.of(
-                              context,
-                            ).colorScheme.error,
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 24),
-                      FilledButton.icon(
-                        key: const Key('save_vet_button'),
-                        onPressed: _isLoading ? null : _submit,
-                        icon: Icon(_isEdit ? Icons.save : Icons.add),
-                        label: Text(_isEdit ? l.save : l.addVet),
-                      ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
-            ),
+        bottomNavigationBar: isPhone && !_isLoading
+            ? AppFormStickyActionsBar(
+                stickyKey: const Key('vet_form_sticky_actions'),
+                isLoading: _isLoading,
+                isDirty: _isEdit ? _isDirty : true,
+                onSave: _submit,
+                onCancel: _handleBack,
+                saveLabel: _isEdit ? l.vetFormSaveChanges : l.addVet,
+                cancelKey: const Key('cancel_vet_button'),
+                saveKey: const Key('save_vet_button'),
+                requireDirtyToSave: _isEdit,
+              )
+            : null,
+      ),
     );
   }
 
@@ -280,124 +384,5 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
-  }
-}
-
-class _LinkedPetsSection extends ConsumerWidget {
-  const _LinkedPetsSection({required this.vetId});
-
-  final String vetId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final petsAsync = ref.watch(petListProvider);
-    final theme = Theme.of(context);
-    final l = AppLocalizations.of(context)!;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(Icons.pets, color: theme.colorScheme.primary, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              l.linkedPets,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        petsAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Text('Could not load pets: $e'),
-          data: (pets) {
-            if (pets.isEmpty) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  l.noPetsAddFirst,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              );
-            }
-
-            final linked = pets.where((p) => p.vetId == vetId).toList();
-            final unlinked = pets.where((p) => p.vetId != vetId).toList();
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (linked.isNotEmpty) ...[
-                  ...linked.map(
-                    (pet) => Card(
-                      margin: const EdgeInsets.only(bottom: 4),
-                      child: ListTile(
-                        dense: true,
-                        leading: Icon(
-                          Icons.pets,
-                          color: theme.colorScheme.primary,
-                        ),
-                        title: Text(pet.name),
-                        subtitle: Text(pet.species),
-                        trailing: TextButton.icon(
-                          icon: const Icon(Icons.link_off, size: 18),
-                          label: Text(l.unlink),
-                          onPressed: () => _unlinkPet(ref, pet),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-                if (unlinked.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    l.availablePets,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  ...unlinked.map(
-                    (pet) => Card(
-                      margin: const EdgeInsets.only(bottom: 4),
-                      color: theme.colorScheme.surfaceContainerLow,
-                      child: ListTile(
-                        dense: true,
-                        leading: Icon(
-                          Icons.pets,
-                          color: theme.colorScheme.outline,
-                        ),
-                        title: Text(pet.name),
-                        subtitle: Text(pet.species),
-                        trailing: TextButton.icon(
-                          icon: const Icon(Icons.link, size: 18),
-                          label: Text(l.link),
-                          onPressed: () => _linkPet(ref, pet),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  Future<void> _linkPet(WidgetRef ref, Pet pet) async {
-    final updated = pet.copyWith(vetId: vetId);
-    await ref.read(petListProvider.notifier).updatePet(updated);
-  }
-
-  Future<void> _unlinkPet(WidgetRef ref, Pet pet) async {
-    final updated = pet.copyWith(clearVetId: true);
-    await ref.read(petListProvider.notifier).updatePet(updated);
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../core/widgets/form/app_form_actions_bar.dart';
+import '../../../../../core/widgets/form/app_form_labeled_field.dart';
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../core/utils/calendar_date_picker.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -68,58 +70,65 @@ Future<void> showPetTimelineFillSheet(
                 style: Theme.of(ctx).textTheme.titleMedium,
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                key: const Key('timeline_fill_title'),
-                controller: titleController,
-                decoration: InputDecoration(
-                  labelText: l.petTimelineFillTitleLabel,
-                  border: const OutlineInputBorder(),
+              AppFormLabeledField(
+                label: l.petTimelineFillTitleLabel,
+                child: TextFormField(
+                  key: const Key('timeline_fill_title'),
+                  controller: titleController,
+                  decoration: const InputDecoration(),
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? l.petTimelineFillTitleRequired
+                      : null,
                 ),
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? l.petTimelineFillTitleRequired
-                    : null,
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                key: const Key('timeline_fill_description'),
-                controller: descriptionController,
-                decoration: InputDecoration(
-                  labelText: l.petTimelineFillDescriptionLabel,
-                  border: const OutlineInputBorder(),
+              AppFormLabeledField(
+                label: l.petTimelineFillDescriptionLabel,
+                child: TextFormField(
+                  key: const Key('timeline_fill_description'),
+                  controller: descriptionController,
+                  decoration: const InputDecoration(),
+                  maxLines: 3,
                 ),
-                maxLines: 3,
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                key: const Key('timeline_fill_start_date'),
-                controller: startController,
-                readOnly: true,
-                decoration: InputDecoration(
-                  labelText: l.petTimelineFillStartDateLabel,
-                  border: const OutlineInputBorder(),
-                  suffixIcon: const Icon(Icons.calendar_today),
+              AppFormLabeledField(
+                label: l.petTimelineFillStartDateLabel,
+                child: TextFormField(
+                  key: const Key('timeline_fill_start_date'),
+                  controller: startController,
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                  onTap: () => pickDate(startController),
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? l.petTimelineFillStartDateRequired
+                      : null,
                 ),
-                onTap: () => pickDate(startController),
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? l.petTimelineFillStartDateRequired
-                    : null,
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                key: const Key('timeline_fill_end_date'),
-                controller: endController,
-                readOnly: true,
-                decoration: InputDecoration(
-                  labelText: l.petTimelineFillEndDateLabel,
-                  border: const OutlineInputBorder(),
-                  suffixIcon: const Icon(Icons.calendar_today),
+              AppFormLabeledField(
+                label: l.petTimelineFillEndDateLabel,
+                child: TextFormField(
+                  key: const Key('timeline_fill_end_date'),
+                  controller: endController,
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                  onTap: () => pickDate(endController),
                 ),
-                onTap: () => pickDate(endController),
               ),
               const SizedBox(height: 16),
-              FilledButton(
-                key: const Key('timeline_fill_submit'),
-                onPressed: () async {
+              AppFormActionsBar(
+                isLoading: false,
+                isDirty: true,
+                requireDirtyToSave: false,
+                saveKey: const Key('timeline_fill_submit'),
+                onCancel: () => Navigator.pop(ctx),
+                saveLabel: l.save,
+                onSave: () async {
                   if (!formKey.currentState!.validate()) return;
                   try {
                     final end = endController.text.trim();
@@ -152,7 +161,6 @@ Future<void> showPetTimelineFillSheet(
                     }
                   }
                 },
-                child: Text(l.save),
               ),
             ],
           ),

@@ -1565,6 +1565,30 @@ class AppLocalizationsFr extends AppLocalizations {
   String get petFormDangerZone => 'Zone de danger';
 
   @override
+  String get healthEntryFormWhatAndWho => 'Quoi et pour qui';
+
+  @override
+  String get healthEntryFormSchedule => 'Planification';
+
+  @override
+  String get healthEntryFormDatesReminders => 'Dates et rappels';
+
+  @override
+  String get healthEntryFormNotesDocuments => 'Notes et documents';
+
+  @override
+  String get healthEntryFormSaveChanges => 'Enregistrer les modifications';
+
+  @override
+  String get vetFormContactDetails => 'Coordonnées';
+
+  @override
+  String get vetFormNotesSection => 'Notes';
+
+  @override
+  String get vetFormSaveChanges => 'Enregistrer les modifications';
+
+  @override
   String get clearDate => 'Effacer la date';
 
   @override

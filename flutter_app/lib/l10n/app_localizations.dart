@@ -2827,6 +2827,54 @@ abstract class AppLocalizations {
   /// **'Danger zone'**
   String get petFormDangerZone;
 
+  /// No description provided for @healthEntryFormWhatAndWho.
+  ///
+  /// In en, this message translates to:
+  /// **'What & who'**
+  String get healthEntryFormWhatAndWho;
+
+  /// No description provided for @healthEntryFormSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get healthEntryFormSchedule;
+
+  /// No description provided for @healthEntryFormDatesReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates & reminders'**
+  String get healthEntryFormDatesReminders;
+
+  /// No description provided for @healthEntryFormNotesDocuments.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes & documents'**
+  String get healthEntryFormNotesDocuments;
+
+  /// No description provided for @healthEntryFormSaveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get healthEntryFormSaveChanges;
+
+  /// No description provided for @vetFormContactDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact details'**
+  String get vetFormContactDetails;
+
+  /// No description provided for @vetFormNotesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get vetFormNotesSection;
+
+  /// No description provided for @vetFormSaveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get vetFormSaveChanges;
+
   /// No description provided for @clearDate.
   ///
   /// In en, this message translates to:
