@@ -3,7 +3,7 @@
  * Scenario: Empty pet list shows prompt on guardian dashboard
  * Scenario: Creating a new pet with required fields
  * Scenario: Creating a pet with all fields populated
- * Scenario: Pet is assigned a unique color on creation
+ * Scenario: New pets no longer assign legacy per-pet palette colors
  * Scenario: Age is dynamically calculated from date of birth
  * Scenario: Viewing the pet list
  * Scenario: Viewing pet details
@@ -28,11 +28,7 @@ import { createPet, createVet, getAllPets, getPet } from '../support/api';
 import { PetFormPage } from '../pages/pet-form.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
-import {
-  getPetRecord,
-  PET_COLOR_PALETTE,
-  updatePetFields,
-} from '../pages/pet-profile.seed';
+import { getPetRecord, updatePetFields } from '../pages/pet-profile.seed';
 import {
   flutterGotoUrl,
   waitForFlutterRoutePattern,
@@ -228,15 +224,14 @@ test.describe('Pet profiles', () => {
     await petList.expectLoaded();
   });
 
-  test('new pet is assigned a color from the 15-color palette', async ({ testUser }) => {
+  test('new pets no longer assign legacy per-pet palette colors', async ({ testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Luna', 'Dog');
     await getAllPets(baseURL, testUser.accessToken);
 
     const record = await getPetRecord(baseURL, testUser.accessToken, pet.id);
-    expect(record.colorValue).toBeDefined();
-    expect(record.colorValue).not.toBeNull();
-    expect(PET_COLOR_PALETTE).toContain(record.colorValue);
+    // Brand plum accents replaced the legacy 15-color palette; color_index stays null.
+    expect(record.colorValue).toBeNull();
   });
 
   test('pet age is calculated from date of birth on the profile', async ({ page, testUser }) => {
