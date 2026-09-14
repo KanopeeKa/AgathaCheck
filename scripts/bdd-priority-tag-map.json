@@ -21,7 +21,7 @@
   "pet_profiles.feature": {
     "Creating a new pet with required fields": "P0",
     "Creating a pet with all fields populated": "P1",
-    "Pet is assigned a unique color on creation": "P1",
+    "New pets no longer assign legacy per-pet palette colors": "P1",
     "Age is dynamically calculated from date of birth": "P1",
     "Viewing the pet list": "P1",
     "Viewing pet details": "P0",
