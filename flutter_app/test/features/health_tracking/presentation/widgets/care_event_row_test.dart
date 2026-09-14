@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_occurrence.dart';
@@ -43,20 +45,25 @@ Widget _buildRow(
   VoidCallback? onView,
   Locale locale = const Locale('en'),
 }) {
-  return MaterialApp(
-    theme: AppTheme.lightTheme.copyWith(splashFactory: NoSplash.splashFactory),
-    locale: locale,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
-    home: Scaffold(
-      body: CareEventRow(
-        entry: entry,
-        pet: includeDefaultPet ? petArg ?? _pet : null,
-        rowContext: rowContext,
-        isCompleted: isCompleted,
-        onMarkDone: onMarkDone ?? () {},
-        onUndo: onUndo ?? () {},
-        onView: onView ?? () {},
+  return ProviderScope(
+    overrides: [
+      apiBaseUrlProvider.overrideWith((ref) => 'http://localhost:3000'),
+    ],
+    child: MaterialApp(
+      theme: AppTheme.lightTheme.copyWith(splashFactory: NoSplash.splashFactory),
+      locale: locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(
+        body: CareEventRow(
+          entry: entry,
+          pet: includeDefaultPet ? petArg ?? _pet : null,
+          rowContext: rowContext,
+          isCompleted: isCompleted,
+          onMarkDone: onMarkDone ?? () {},
+          onUndo: onUndo ?? () {},
+          onView: onView ?? () {},
+        ),
       ),
     ),
   );
@@ -81,6 +88,24 @@ void main() {
 
       expect(find.text('Preventive'), findsOneWidget);
       expect(find.textContaining('Miso ·'), findsNothing);
+    });
+
+    testWidgets('dashboard context omits pet avatar leading slot', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_buildRow(_overdueEntry));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.pets), findsNothing);
+    });
+
+    testWidgets('pet context shows pet avatar leading slot', (tester) async {
+      await tester.pumpWidget(
+        _buildRow(_overdueEntry, rowContext: CareEventRowContext.pet),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.pets), findsOneWidget);
     });
 
     testWidgets('does not show snooze or open actions', (tester) async {

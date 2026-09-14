@@ -153,6 +153,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
         !suppressSectionRootAppBarTitle;
     final centerAppBarTitle =
         !usesDesktopContentHeader && !usesCompactShellWithoutHamburger;
+    final usesBrandedLogoTitle = showTitle && !usesDesktopContentHeader;
     final titleWidget = !showTitle
         ? const SizedBox.shrink()
         : usesDesktopContentHeader
@@ -214,10 +215,22 @@ class ExperienceShellScaffold extends ConsumerWidget {
                 surfaceTintColor: Colors.transparent,
                 scrolledUnderElevation: 0,
                 elevation: 0,
-                leading: leadingWidget,
-                centerTitle: centerAppBarTitle,
-                title: titleWidget,
-                actions: trailingActions,
+                leading: usesBrandedLogoTitle ? null : leadingWidget,
+                centerTitle: usesBrandedLogoTitle ? false : centerAppBarTitle,
+                title: usesBrandedLogoTitle
+                    ? const SizedBox.shrink()
+                    : titleWidget,
+                actions: usesBrandedLogoTitle ? null : trailingActions,
+                flexibleSpace: usesBrandedLogoTitle
+                    ? _BrandedToolbarChrome(
+                        toolbarHeight: _toolbarHeight,
+                        foregroundColor: appBarForeground,
+                        leading: leadingWidget,
+                        leadingWidth: leadingWidth,
+                        title: titleWidget,
+                        actions: trailingActions,
+                      )
+                    : null,
               ),
         drawer: hideSectionDrawer ? null : const ExperienceSectionDrawer(),
         endDrawer: const NotificationPanel(),
@@ -254,6 +267,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
                             leadingWidth: leadingWidth ?? 56,
                             title: titleWidget,
                             centerTitle: centerAppBarTitle,
+                            centerBrandedTitle: usesBrandedLogoTitle,
                             actions: trailingActions,
                           ),
                           Expanded(child: child),
@@ -349,6 +363,70 @@ class ExperienceShellScaffold extends ConsumerWidget {
   }
 }
 
+/// Centers [AppLogoTitle] on the full toolbar while pinning leading/actions.
+class _BrandedToolbarChrome extends StatelessWidget {
+  const _BrandedToolbarChrome({
+    required this.toolbarHeight,
+    required this.foregroundColor,
+    required this.leading,
+    required this.leadingWidth,
+    required this.title,
+    required this.actions,
+  });
+
+  final double toolbarHeight;
+  final Color? foregroundColor;
+  final Widget? leading;
+  final double? leadingWidth;
+  final Widget title;
+  final List<Widget> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SafeArea(
+      bottom: false,
+      child: IconTheme.merge(
+        data: IconThemeData(color: foregroundColor),
+        child: DefaultTextStyle.merge(
+          style: TextStyle(color: foregroundColor),
+          child: SizedBox(
+            height: toolbarHeight,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Row(
+                  children: [
+                    if (leading != null)
+                      SizedBox(
+                        width: leadingWidth,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: leading,
+                        ),
+                      ),
+                    const Spacer(),
+                    ...actions.map(
+                      (action) => IconTheme.merge(
+                        data: IconThemeData(
+                          color:
+                              foregroundColor ?? theme.colorScheme.onSurface,
+                        ),
+                        child: action,
+                      ),
+                    ),
+                  ],
+                ),
+                title,
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Top chrome for the main content column when leading navigation is visible.
 class _ContentChromeBar extends StatelessWidget {
   const _ContentChromeBar({
@@ -358,6 +436,7 @@ class _ContentChromeBar extends StatelessWidget {
     required this.leadingWidth,
     required this.title,
     required this.centerTitle,
+    required this.centerBrandedTitle,
     required this.actions,
   });
 
@@ -367,6 +446,7 @@ class _ContentChromeBar extends StatelessWidget {
   final double leadingWidth;
   final Widget title;
   final bool centerTitle;
+  final bool centerBrandedTitle;
   final List<Widget> actions;
 
   @override
@@ -375,43 +455,56 @@ class _ContentChromeBar extends StatelessWidget {
     return Material(
       key: const Key('experience_content_chrome'),
       color: backgroundColor,
-      child: SafeArea(
-        bottom: false,
-        child: IconTheme.merge(
-          data: IconThemeData(color: foregroundColor),
-          child: DefaultTextStyle.merge(
-            style: TextStyle(color: foregroundColor),
-            child: SizedBox(
-              height: ExperienceShellScaffold._toolbarHeight,
-              child: Row(
-                children: [
-                  if (leading != null)
-                    SizedBox(
-                      width: leadingWidth,
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: leading,
-                      ),
+      child: centerBrandedTitle
+          ? _BrandedToolbarChrome(
+              toolbarHeight: ExperienceShellScaffold._toolbarHeight,
+              foregroundColor: foregroundColor,
+              leading: leading,
+              leadingWidth: leadingWidth,
+              title: title,
+              actions: actions,
+            )
+          : SafeArea(
+              bottom: false,
+              child: IconTheme.merge(
+                data: IconThemeData(color: foregroundColor),
+                child: DefaultTextStyle.merge(
+                  style: TextStyle(color: foregroundColor),
+                  child: SizedBox(
+                    height: ExperienceShellScaffold._toolbarHeight,
+                    child: Row(
+                      children: [
+                        if (leading != null)
+                          SizedBox(
+                            width: leadingWidth,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: leading,
+                            ),
+                          ),
+                        Expanded(
+                          child: centerTitle
+                              ? Center(child: title)
+                              : Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: title,
+                                ),
+                        ),
+                        ...actions.map(
+                          (action) => IconTheme.merge(
+                            data: IconThemeData(
+                              color: foregroundColor ??
+                                  theme.colorScheme.onSurface,
+                            ),
+                            child: action,
+                          ),
+                        ),
+                      ],
                     ),
-                  Expanded(
-                    child: centerTitle
-                        ? Center(child: title)
-                        : Align(alignment: Alignment.centerLeft, child: title),
                   ),
-                  ...actions.map(
-                    (action) => IconTheme.merge(
-                      data: IconThemeData(
-                        color: foregroundColor ?? theme.colorScheme.onSurface,
-                      ),
-                      child: action,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }

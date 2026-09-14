@@ -143,7 +143,7 @@ void main() {
   });
 
   testWidgets(
-    'compact shell without hamburger left-aligns logo title when provided',
+    'compact shell without hamburger centers logo and title as one block',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -190,14 +190,12 @@ void main() {
 
       expect(find.text('My Pets dashboard'), findsOneWidget);
 
-      final appBar = tester.widget<AppBar>(find.byType(AppBar));
-      expect(appBar.centerTitle, isFalse);
-
-      // Title should follow the leading workspace toggle, not float centered in the bar.
       final logo = tester.getRect(find.byType(Image).first);
       final text = tester.getRect(find.text('My Pets dashboard'));
-      expect(logo.left, greaterThan(appBar.leadingWidth! - 8));
-      expect(logo.left, lessThan(appBar.leadingWidth! + 32));
+      final blockCenter = (logo.left + text.right) / 2;
+      final screenCenter = 390 / 2;
+
+      expect((blockCenter - screenCenter).abs(), lessThan(24));
       expect(logo.left, lessThan(text.left));
     },
   );

@@ -47,7 +47,7 @@ class CareFamilyIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const iconColor = AppColorTokens.body;
+    const iconColor = AppColorTokens.petCarePrimary;
     final glyph = _glyph(iconColor);
 
     if (!showChip) {

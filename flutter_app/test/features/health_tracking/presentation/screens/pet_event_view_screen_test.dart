@@ -230,6 +230,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('View Heartworm'), findsOneWidget);
+    expect(find.byKey(const Key('pet_event_pet_card')), findsOneWidget);
+    expect(find.text('Bella'), findsOneWidget);
+    expect(find.text('Dog'), findsOneWidget);
     expect(find.text('Close event'), findsOneWidget);
     expect(find.byKey(const Key('care_item_edit_app_bar')), findsOneWidget);
     expect(find.text('Dates'), findsOneWidget);

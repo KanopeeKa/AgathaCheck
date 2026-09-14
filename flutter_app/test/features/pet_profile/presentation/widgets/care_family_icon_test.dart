@@ -22,7 +22,7 @@ void main() {
       });
     }
 
-    testWidgets('chip uses surfaceAlt background and unified ink', (
+    testWidgets('chip uses surfaceAlt background and plum ink', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -43,7 +43,7 @@ void main() {
       expect(decoration.color, AppColorTokens.surfaceAlt);
 
       final icon = tester.widget<Icon>(find.byIcon(Icons.medication_outlined));
-      expect(icon.color, AppColorTokens.body);
+      expect(icon.color, AppColorTokens.petCarePrimary);
     });
 
     testWidgets('nail care uses scissors icon', (tester) async {
