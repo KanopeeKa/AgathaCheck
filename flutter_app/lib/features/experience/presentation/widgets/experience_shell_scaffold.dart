@@ -392,32 +392,29 @@ class _BrandedToolbarChrome extends StatelessWidget {
           style: TextStyle(color: foregroundColor),
           child: SizedBox(
             height: toolbarHeight,
-            child: Stack(
-              alignment: Alignment.center,
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    if (leading != null)
-                      SizedBox(
-                        width: leadingWidth,
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: leading,
-                        ),
-                      ),
-                    const Spacer(),
-                    ...actions.map(
-                      (action) => IconTheme.merge(
-                        data: IconThemeData(
-                          color:
-                              foregroundColor ?? theme.colorScheme.onSurface,
-                        ),
-                        child: action,
-                      ),
+                if (leading != null)
+                  SizedBox(
+                    width: leadingWidth,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: leading,
                     ),
-                  ],
+                  ),
+                Expanded(child: Center(child: title)),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: actions.map(
+                    (action) => IconTheme.merge(
+                      data: IconThemeData(
+                        color:
+                            foregroundColor ?? theme.colorScheme.onSurface,
+                      ),
+                      child: action,
+                    ),
+                  ).toList(),
                 ),
-                title,
               ],
             ),
           ),

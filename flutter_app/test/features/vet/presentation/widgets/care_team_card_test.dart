@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
@@ -28,21 +30,26 @@ void main() {
     TextScaler textScaler = TextScaler.noScaling,
     VoidCallback? onTap,
   }) {
-    return MaterialApp(
-      locale: locale,
-      theme: AppTheme.lightTheme.copyWith(
-        splashFactory: NoSplash.splashFactory,
-      ),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(
-        body: MediaQuery(
-          data: MediaQueryData(textScaler: textScaler),
-          child: CareTeamCard(
-            vet: cardVet,
-            linkedPets: pets,
-            linkedPetCount: linkedPetCount,
-            onTap: onTap ?? () {},
+    return ProviderScope(
+      overrides: [
+        apiBaseUrlProvider.overrideWith((ref) => 'http://localhost:3000'),
+      ],
+      child: MaterialApp(
+        locale: locale,
+        theme: AppTheme.lightTheme.copyWith(
+          splashFactory: NoSplash.splashFactory,
+        ),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: MediaQuery(
+            data: MediaQueryData(textScaler: textScaler),
+            child: CareTeamCard(
+              vet: cardVet,
+              linkedPets: pets,
+              linkedPetCount: linkedPetCount,
+              onTap: onTap ?? () {},
+            ),
           ),
         ),
       ),

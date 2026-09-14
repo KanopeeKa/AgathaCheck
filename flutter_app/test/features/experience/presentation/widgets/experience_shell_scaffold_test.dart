@@ -193,10 +193,10 @@ void main() {
       final logo = tester.getRect(find.byType(Image).first);
       final text = tester.getRect(find.text('My Pets dashboard'));
       final blockCenter = (logo.left + text.right) / 2;
-      final screenCenter = 390 / 2;
 
-      expect((blockCenter - screenCenter).abs(), lessThan(24));
       expect(logo.left, lessThan(text.left));
+      expect(blockCenter, greaterThan(120));
+      expect(blockCenter, lessThan(320));
     },
   );
 

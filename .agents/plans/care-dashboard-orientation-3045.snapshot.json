@@ -19,6 +19,8 @@
         "flutter_app/lib/features/pet_profile/presentation/widgets/care_family_icon.dart",
         "flutter_app/lib/features/pet_profile/presentation/widgets/care_family_custom_glyph.dart",
         "flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
+        "flutter_app/lib/features/vet/presentation/widgets/linked_pet_avatar_stack.dart",
+        "flutter_app/test/features/vet/presentation/widgets/care_team_card_test.dart",
         "flutter_app/lib/core/widgets/app_logo_title.dart",
         "flutter_app/test/features/health_tracking/**",
         "flutter_app/test/features/experience/presentation/widgets/experience_shell_scaffold_test.dart",
@@ -44,5 +46,5 @@
       "pr_head_sha": "33508bced7088e0201a08da83e8b032b7cc45762"
     }
   ],
-  "content_hash": "sha256:0002e62299dfa47d460b72cee93dfdb279b9e376c6ebd60a3d2cc43daecc521f"
+  "content_hash": "sha256:f0af6fe79227d324079a56ad2ed496322dcddbc1496f17fd5f3606e27e15e7ee"
 }
