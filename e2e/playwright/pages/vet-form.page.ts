@@ -34,7 +34,11 @@ export class VetFormPage {
 
   async save(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await this.page.getByRole('button', { name: /^Add Vet$|^Save$/ }).click();
+    await this.page
+      .getByRole('button', {
+        name: /^(Add Vet|Save changes|Save)$/i,
+      })
+      .click();
   }
 
   async expectSaved(mode: 'create' | 'edit' = 'create'): Promise<void> {
