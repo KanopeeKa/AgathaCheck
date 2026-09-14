@@ -31,9 +31,9 @@ Feature: Pet Profiles
     And "Max" should have breed "Siamese"
 
   @P1
-  Scenario: Pet is assigned a unique color on creation
+  Scenario: New pets no longer assign legacy per-pet palette colors
     When the user creates a pet named "Luna"
-    Then "Luna" should have a color assigned from the 15-color palette
+    Then "Luna" should not have a legacy palette color assigned
 
   @P1
   Scenario: Age is dynamically calculated from date of birth
