@@ -107,7 +107,10 @@ export class PetFormPage {
     ).toBeVisible();
     if (expected.species && expected.sex) {
       await expect(
-        this.page.getByText(`${expected.name} ${expected.species} ${expected.sex}`).first(),
+        semanticsByName(
+          this.page,
+          `${expected.name} ${expected.species} ${expected.sex}`,
+        ),
       ).toBeVisible();
     }
     if (expected.breed) {
