@@ -115,8 +115,11 @@ export class PetFormPage {
     }
     if (expected.breed) {
       await expect(this.page.getByText(expected.breed, { exact: true }).first()).toBeVisible();
-    } else if (expected.species) {
-      await expect(this.page.getByText(expected.species, { exact: true }).first()).toBeVisible();
+    }
+    if (expected.species) {
+      await expect(
+        this.page.getByRole('button', { name: expected.species, exact: true }),
+      ).toBeVisible();
     }
     if (expected.sex) {
       await expect(this.page.getByRole('button', { name: expected.sex, exact: true })).toBeVisible();
