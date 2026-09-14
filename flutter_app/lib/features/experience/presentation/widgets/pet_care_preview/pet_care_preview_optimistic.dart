@@ -5,6 +5,7 @@ import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../health_tracking/presentation/widgets/care_event_row_context.dart';
 import '../../../../health_tracking/presentation/widgets/care_event_row_host.dart';
 import '../../../../pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_surface_tokens.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 
 /// A single item in the merged mobile preview: due or optimistically completed.
@@ -107,16 +108,19 @@ class PetCareCarePreviewEventList extends ConsumerWidget {
         for (var i = 0; i < items.length; i++)
           CareCollectionInsetItem(
             showDividerBefore: i > 0,
-            child: CareEventRowHost(
-              key: Key('care_event_row_${items[i].entry.id}'),
-              entry: items[i].entry,
-              pet: petMap[items[i].entry.petId],
-              rowContext: rowContext,
-              isCompleted: items[i].isCompleted,
-              showTopDivider: false,
-              onMarkDone: () async => onMarkDone(items[i].entry, i),
-              onUndo: () => onUndo(items[i].entry),
-              onView: () => onView(items[i].entry),
+            child: Padding(
+              padding: CareSurfaceTokens.collectionRowPadding,
+              child: CareEventRowHost(
+                key: Key('care_event_row_${items[i].entry.id}'),
+                entry: items[i].entry,
+                pet: petMap[items[i].entry.petId],
+                rowContext: rowContext,
+                isCompleted: items[i].isCompleted,
+                showTopDivider: false,
+                onMarkDone: () async => onMarkDone(items[i].entry, i),
+                onUndo: () => onUndo(items[i].entry),
+                onView: () => onView(items[i].entry),
+              ),
             ),
           ),
       ],

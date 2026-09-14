@@ -24,10 +24,22 @@ abstract final class CareSurfaceTokens {
     vertical: 12,
   );
   static const EdgeInsets collectionHeaderPadding = EdgeInsets.fromLTRB(
+    16,
     12,
-    12,
-    12,
+    16,
     4,
+  );
+
+  /// Horizontal inset for rows inside a collection (matches legacy desk card padding).
+  static const EdgeInsets collectionRowPadding = EdgeInsets.symmetric(
+    horizontal: 16,
+  );
+
+  static const EdgeInsets collectionInsetRowPadding = EdgeInsets.fromLTRB(
+    16,
+    8,
+    16,
+    8,
   );
 
   static Color attentionBackground(ColorScheme colorScheme) =>

@@ -54,7 +54,9 @@ class CareActionRow extends StatelessWidget {
               minHeight: CareSurfaceTokens.rowMinHeight,
             ),
             child: Padding(
-              padding: CareSurfaceTokens.actionPadding,
+              padding: inset
+                  ? CareSurfaceTokens.collectionInsetRowPadding
+                  : CareSurfaceTokens.actionPadding,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
