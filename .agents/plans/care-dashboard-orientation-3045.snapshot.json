@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-dashboard-orientation-3045",
+  "approved_at": "2026-09-14T07:40:00Z",
+  "approved_by": "user-chat-grant-2026-09-14",
+  "approved_until": "2026-09-16T07:40:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1152,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Care row, detail pet context, shell title centering",
+      "branch": "cursor/care-dashboard-orientation-3045",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/**",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/care_family_icon.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/care_family_custom_glyph.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/experience_shell_chrome_bar.dart",
+        "flutter_app/lib/features/vet/presentation/widgets/linked_pet_avatar_stack.dart",
+        "flutter_app/test/features/vet/presentation/widgets/care_team_card_test.dart",
+        "flutter_app/lib/core/widgets/app_logo_title.dart",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/features/experience/presentation/widgets/experience_shell_scaffold_test.dart",
+        "flutter_app/test/core/widgets/app_logo_title_test.dart",
+        ".agents/plans/care-dashboard-orientation-3045.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1151",
+      "pr_head_sha": "33508bced7088e0201a08da83e8b032b7cc45762"
+    }
+  ],
+  "content_hash": "sha256:53417886f21f9b36b7ceebbc153fa23298317c70a66bb603d69b6242aa248727"
+}

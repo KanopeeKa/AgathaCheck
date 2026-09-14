@@ -1,13 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
+import '../../../pet_profile/presentation/widgets/pet_photo_image.dart';
 
 /// Compact overlapping pet avatars for care-team relationship previews.
-class LinkedPetAvatarStack extends StatelessWidget {
+class LinkedPetAvatarStack extends ConsumerWidget {
   const LinkedPetAvatarStack({
     super.key,
     required this.pets,
@@ -23,11 +24,12 @@ class LinkedPetAvatarStack extends StatelessWidget {
   static const overlap = 8.0;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (pets.isEmpty && overflowCount <= 0) {
       return const SizedBox.shrink();
     }
 
+    final apiBaseUrl = ref.watch(apiBaseUrlProvider);
     final visible = pets.take(maxVisible).toList(growable: false);
     final stackWidth = visible.isEmpty
         ? avatarSize
@@ -45,7 +47,11 @@ class LinkedPetAvatarStack extends StatelessWidget {
             for (var i = 0; i < visible.length; i++)
               Positioned(
                 left: i * (avatarSize - overlap),
-                child: _PetMiniAvatar(pet: visible[i], size: avatarSize),
+                child: _PetMiniAvatar(
+                  pet: visible[i],
+                  size: avatarSize,
+                  apiBaseUrl: apiBaseUrl,
+                ),
               ),
             if (overflowCount > 0)
               Positioned(
@@ -60,10 +66,15 @@ class LinkedPetAvatarStack extends StatelessWidget {
 }
 
 class _PetMiniAvatar extends StatelessWidget {
-  const _PetMiniAvatar({required this.pet, required this.size});
+  const _PetMiniAvatar({
+    required this.pet,
+    required this.size,
+    required this.apiBaseUrl,
+  });
 
   final Pet pet;
   final double size;
+  final String apiBaseUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -82,21 +93,13 @@ class _PetMiniAvatar extends StatelessWidget {
   }
 
   Widget _photo(Color color) {
-    if (pet.photoPath?.startsWith('asset://') ?? false) {
-      return Image.asset(
-        pet.photoPath!.substring('asset://'.length),
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _placeholder(color),
-      );
-    }
-    if (pet.photoPath?.isNotEmpty ?? false) {
-      try {
-        return Image.memory(base64Decode(pet.photoPath!), fit: BoxFit.cover);
-      } catch (_) {
-        return _placeholder(color);
-      }
-    }
-    return _placeholder(color);
+    final image = buildPetPhotoImage(
+      photoPath: pet.photoPath,
+      apiBaseUrl: apiBaseUrl,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => _placeholder(color),
+    );
+    return image ?? _placeholder(color);
   }
 
   Widget _placeholder(Color color) {

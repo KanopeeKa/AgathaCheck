@@ -35,7 +35,7 @@ class _CareFamilyGlyphPainter extends CustomPainter {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = size.width * 0.08
+      ..strokeWidth = size.width * 0.11
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
 

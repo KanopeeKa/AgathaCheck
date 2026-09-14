@@ -19,6 +19,7 @@ import '../config/shelter_primary_destinations.dart';
 import 'pet_care_bottom_navigation.dart';
 import 'pet_care_navigation_rail.dart';
 import 'pet_care_navigation_sidebar.dart';
+import 'experience_shell_chrome_bar.dart';
 import 'shelter_bottom_navigation.dart';
 import 'shelter_navigation_rail.dart';
 import 'shelter_navigation_sidebar.dart';
@@ -153,6 +154,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
         !suppressSectionRootAppBarTitle;
     final centerAppBarTitle =
         !usesDesktopContentHeader && !usesCompactShellWithoutHamburger;
+    final usesBrandedLogoTitle = showTitle && !usesDesktopContentHeader;
     final titleWidget = !showTitle
         ? const SizedBox.shrink()
         : usesDesktopContentHeader
@@ -214,10 +216,22 @@ class ExperienceShellScaffold extends ConsumerWidget {
                 surfaceTintColor: Colors.transparent,
                 scrolledUnderElevation: 0,
                 elevation: 0,
-                leading: leadingWidget,
-                centerTitle: centerAppBarTitle,
-                title: titleWidget,
-                actions: trailingActions,
+                leading: usesBrandedLogoTitle ? null : leadingWidget,
+                centerTitle: usesBrandedLogoTitle ? false : centerAppBarTitle,
+                title: usesBrandedLogoTitle
+                    ? const SizedBox.shrink()
+                    : titleWidget,
+                actions: usesBrandedLogoTitle ? null : trailingActions,
+                flexibleSpace: usesBrandedLogoTitle
+                    ? ExperienceBrandedToolbarChrome(
+                        toolbarHeight: _toolbarHeight,
+                        foregroundColor: appBarForeground,
+                        leading: leadingWidget,
+                        leadingWidth: leadingWidth,
+                        title: titleWidget,
+                        actions: trailingActions,
+                      )
+                    : null,
               ),
         drawer: hideSectionDrawer ? null : const ExperienceSectionDrawer(),
         endDrawer: const NotificationPanel(),
@@ -247,13 +261,15 @@ class ExperienceShellScaffold extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _ContentChromeBar(
+                          ExperienceContentChromeBar(
+                            toolbarHeight: _toolbarHeight,
                             backgroundColor: appBarColor,
                             foregroundColor: appBarForeground,
                             leading: leadingWidget,
                             leadingWidth: leadingWidth ?? 56,
                             title: titleWidget,
                             centerTitle: centerAppBarTitle,
+                            centerBrandedTitle: usesBrandedLogoTitle,
                             actions: trailingActions,
                           ),
                           Expanded(child: child),
@@ -345,73 +361,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
         ),
         toggle,
       ],
-    );
-  }
-}
-
-/// Top chrome for the main content column when leading navigation is visible.
-class _ContentChromeBar extends StatelessWidget {
-  const _ContentChromeBar({
-    required this.backgroundColor,
-    required this.foregroundColor,
-    required this.leading,
-    required this.leadingWidth,
-    required this.title,
-    required this.centerTitle,
-    required this.actions,
-  });
-
-  final Color backgroundColor;
-  final Color? foregroundColor;
-  final Widget? leading;
-  final double leadingWidth;
-  final Widget title;
-  final bool centerTitle;
-  final List<Widget> actions;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Material(
-      key: const Key('experience_content_chrome'),
-      color: backgroundColor,
-      child: SafeArea(
-        bottom: false,
-        child: IconTheme.merge(
-          data: IconThemeData(color: foregroundColor),
-          child: DefaultTextStyle.merge(
-            style: TextStyle(color: foregroundColor),
-            child: SizedBox(
-              height: ExperienceShellScaffold._toolbarHeight,
-              child: Row(
-                children: [
-                  if (leading != null)
-                    SizedBox(
-                      width: leadingWidth,
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: leading,
-                      ),
-                    ),
-                  Expanded(
-                    child: centerTitle
-                        ? Center(child: title)
-                        : Align(alignment: Alignment.centerLeft, child: title),
-                  ),
-                  ...actions.map(
-                    (action) => IconTheme.merge(
-                      data: IconThemeData(
-                        color: foregroundColor ?? theme.colorScheme.onSurface,
-                      ),
-                      child: action,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

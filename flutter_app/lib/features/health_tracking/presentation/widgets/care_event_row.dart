@@ -94,14 +94,17 @@ class CareEventRow extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CareFamilyIcon.forEntry(entry, size: 18),
-            const SizedBox(width: 8),
-            CareEventRowPetAvatar(
-              pet: pet,
-              petName: entry.petName,
-              colorScheme: colorScheme,
-            ),
-            const SizedBox(width: 12),
+            CareFamilyIcon.forEntry(entry, size: 20),
+            if (rowContext == CareEventRowContext.pet) ...[
+              const SizedBox(width: 8),
+              CareEventRowPetAvatar(
+                pet: pet,
+                petName: entry.petName,
+                colorScheme: colorScheme,
+              ),
+              const SizedBox(width: 12),
+            ] else
+              const SizedBox(width: 12),
             Expanded(
               child: Semantics(
                 identifier: 'care_event_row_view_${entry.id}',
@@ -280,14 +283,17 @@ class _CompletedCareEventRow extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CareFamilyIcon.forEntry(entry, size: 18),
-            const SizedBox(width: 8),
-            CareEventRowPetAvatar(
-              pet: pet,
-              petName: entry.petName,
-              colorScheme: colorScheme,
-            ),
-            const SizedBox(width: 12),
+            CareFamilyIcon.forEntry(entry, size: 20),
+            if (rowContext == CareEventRowContext.pet) ...[
+              const SizedBox(width: 8),
+              CareEventRowPetAvatar(
+                pet: pet,
+                petName: entry.petName,
+                colorScheme: colorScheme,
+              ),
+              const SizedBox(width: 12),
+            ] else
+              const SizedBox(width: 12),
             Expanded(
               child: Semantics(
                 identifier: 'care_event_row_view_${entry.id}',

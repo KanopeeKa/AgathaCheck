@@ -12,6 +12,7 @@ import '../../widgets/pet_event_documents_strip.dart';
 import '../../widgets/pet_event_past_occurrences_section.dart';
 import '../../widgets/pet_event_past_iterations_section.dart';
 import '../../widgets/pet_event_lifecycle.dart';
+import '../../widgets/pet_event_pet_card.dart';
 import 'care_item_dates_section.dart';
 import 'care_item_established_section.dart';
 import 'care_item_info_section.dart';
@@ -53,6 +54,8 @@ class CareItemDetailBody extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          PetEventPetCard(pet: pet),
+          const SizedBox(height: 16),
           CareItemInfoSection(entry: entry, muted: muted),
           CareItemEstablishedSection(pet: pet, isEstablished: isEstablished),
           _StatusRow(isClosed: isClosed),
