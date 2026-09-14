@@ -1552,6 +1552,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get petFormPetSaved => 'Animal enregistré';
 
   @override
+  String get formUnsavedTitle => 'Abandonner les modifications ?';
+
+  @override
+  String get formUnsavedBody =>
+      'Vous avez des modifications non enregistrées. Quitter sans enregistrer ?';
+
+  @override
+  String get formDiscard => 'Abandonner';
+
+  @override
   String get petFormUnsavedTitle => 'Abandonner les modifications ?';
 
   @override

@@ -2803,6 +2803,24 @@ abstract class AppLocalizations {
   /// **'Pet saved'**
   String get petFormPetSaved;
 
+  /// No description provided for @formUnsavedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get formUnsavedTitle;
+
+  /// No description provided for @formUnsavedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes. Leave without saving?'**
+  String get formUnsavedBody;
+
+  /// No description provided for @formDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get formDiscard;
+
   /// No description provided for @petFormUnsavedTitle.
   ///
   /// In en, this message translates to:

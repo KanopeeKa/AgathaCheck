@@ -47,7 +47,9 @@ class HealthEntryFormContent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final form = ref.watch(healthEntryFormControllerProvider(params));
-    final controller = ref.read(healthEntryFormControllerProvider(params).notifier);
+    final controller = ref.read(
+      healthEntryFormControllerProvider(params).notifier,
+    );
     final petListAsync = ref.watch(petListProvider);
     final theme = Theme.of(context);
 

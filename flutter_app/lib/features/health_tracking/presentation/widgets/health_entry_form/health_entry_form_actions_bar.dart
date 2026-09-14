@@ -24,7 +24,9 @@ class HealthEntryFormActionsBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final form = ref.watch(healthEntryFormControllerProvider(params));
-    final controller = ref.read(healthEntryFormControllerProvider(params).notifier);
+    final controller = ref.read(
+      healthEntryFormControllerProvider(params).notifier,
+    );
 
     final saveLabel = form.isEdit
         ? l.healthEntryFormSaveChanges
@@ -63,7 +65,9 @@ class HealthEntryFormStickyActionsBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final form = ref.watch(healthEntryFormControllerProvider(params));
-    final controller = ref.read(healthEntryFormControllerProvider(params).notifier);
+    final controller = ref.read(
+      healthEntryFormControllerProvider(params).notifier,
+    );
 
     final saveLabel = form.isEdit
         ? l.healthEntryFormSaveChanges

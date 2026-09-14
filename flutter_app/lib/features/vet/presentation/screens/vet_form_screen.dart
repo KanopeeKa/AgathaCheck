@@ -95,7 +95,6 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
         _addressController.text = vet.address;
         _notesController.text = vet.notes;
         _organizationId = vet.organizationId;
-        _captureBaseline();
       }
     } catch (e) {
       if (mounted) {
@@ -104,7 +103,10 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
         ).showSnackBar(SnackBar(content: Text('Failed to load vet: $e')));
       }
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        _captureBaseline();
+        setState(() => _isLoading = false);
+      }
     }
   }
 

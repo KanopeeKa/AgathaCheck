@@ -10,9 +10,7 @@ void main() {
         home: Scaffold(
           body: AppFormSection(
             title: 'Details',
-            children: [
-              const Text('Field content'),
-            ],
+            children: [const Text('Field content')],
           ),
         ),
       ),
@@ -36,5 +34,23 @@ void main() {
 
     expect(find.text('Name'), findsOneWidget);
     expect(find.byType(TextFormField), findsOneWidget);
+  });
+
+  testWidgets('AppFormLabeledField associates label with child semantics', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: AppFormLabeledField(
+            label: 'Email',
+            subtitle: 'Optional',
+            child: TextFormField(decoration: const InputDecoration()),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.bySemanticsLabel('Email. Optional'), findsOneWidget);
   });
 }

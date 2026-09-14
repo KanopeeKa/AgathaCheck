@@ -102,7 +102,13 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
 
   Future<bool> _confirmDiscard() async {
     if (!_controller.isDirty || !mounted) return true;
-    return confirmDiscardFormChanges(context);
+    final l = AppLocalizations.of(context)!;
+    return confirmDiscardFormChanges(
+      context,
+      title: l.petFormUnsavedTitle,
+      body: l.petFormUnsavedBody,
+      discardLabel: l.petFormDiscard,
+    );
   }
 
   Future<void> _handleBack() async {

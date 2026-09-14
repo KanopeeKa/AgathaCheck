@@ -1533,6 +1533,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petFormPetSaved => 'Pet saved';
 
   @override
+  String get formUnsavedTitle => 'Discard changes?';
+
+  @override
+  String get formUnsavedBody =>
+      'You have unsaved changes. Leave without saving?';
+
+  @override
+  String get formDiscard => 'Discard';
+
+  @override
   String get petFormUnsavedTitle => 'Discard changes?';
 
   @override

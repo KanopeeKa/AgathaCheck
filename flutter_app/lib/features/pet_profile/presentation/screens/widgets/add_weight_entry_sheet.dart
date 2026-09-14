@@ -53,7 +53,7 @@ Future<void> showAddWeightEntrySheet({
               AppFormLabeledField(
                 label: AppLocalizations.of(ctx)!.date,
                 child: Semantics(
-                  label: 'Select date for weight entry',
+                  label: AppLocalizations.of(ctx)!.selectDate,
                   button: true,
                   child: InkWell(
                     onTap: () async {

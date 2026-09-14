@@ -35,7 +35,11 @@ class AppFormLabeledField extends StatelessWidget {
           ),
         ],
         const SizedBox(height: 8),
-        child,
+        Semantics(
+          label: subtitle == null ? label : '$label. $subtitle',
+          textField: true,
+          child: child,
+        ),
       ],
     );
   }

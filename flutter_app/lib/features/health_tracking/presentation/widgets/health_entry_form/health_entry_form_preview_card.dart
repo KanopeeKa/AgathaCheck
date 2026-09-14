@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
+import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/health_entry.dart';
 import '../health_entry_type_labels.dart';
@@ -88,7 +88,7 @@ class HealthEntryFormPreviewCard extends StatelessWidget {
               _PreviewRow(
                 icon: Icons.event,
                 label: l.dueDate,
-                value: DateFormat.yMMMd().format(dueDate!),
+                value: formatCalendarDateDisplay(calendarDateOnly(dueDate!)),
               ),
             ],
             if (completedOn != null) ...[
@@ -96,7 +96,9 @@ class HealthEntryFormPreviewCard extends StatelessWidget {
               _PreviewRow(
                 icon: Icons.check_circle_outline,
                 label: l.completedOn,
-                value: DateFormat.yMMMd().format(completedOn!),
+                value: formatCalendarDateDisplay(
+                  calendarDateOnly(completedOn!),
+                ),
               ),
             ],
           ],
@@ -125,10 +127,7 @@ class _PreviewRow extends StatelessWidget {
         Icon(icon, size: 18, color: theme.colorScheme.primary),
         const SizedBox(width: 8),
         Expanded(
-          child: Text(
-            '$label: $value',
-            style: theme.textTheme.bodyMedium,
-          ),
+          child: Text('$label: $value', style: theme.textTheme.bodyMedium),
         ),
       ],
     );

@@ -24,9 +24,7 @@ class AppFormDestructiveButton extends StatelessWidget {
       icon: Icon(icon, color: theme.colorScheme.error),
       style: OutlinedButton.styleFrom(
         foregroundColor: theme.colorScheme.error,
-        side: BorderSide(
-          color: theme.colorScheme.error.withValues(alpha: 0.5),
-        ),
+        side: BorderSide(color: theme.colorScheme.error.withValues(alpha: 0.5)),
         minimumSize: const Size.fromHeight(48),
       ),
       label: Text(label),

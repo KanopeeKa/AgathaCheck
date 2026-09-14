@@ -78,10 +78,15 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     if (widget.entryId != null) {
       Future.microtask(() async {
         try {
-          await _controller.loadEntry(widget.entryId!);
-          await _controller.loadPhotos();
+          final loaded = await _controller.loadEntry(widget.entryId!);
+          if (loaded) {
+            await _controller.loadPhotos();
+          } else if (mounted) {
+            _controller.captureBaseline();
+          }
         } catch (e) {
           if (mounted) {
+            _controller.captureBaseline();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(

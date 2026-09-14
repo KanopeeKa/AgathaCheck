@@ -18,8 +18,8 @@ Shelter/Fostering org forms.
 |-------|-------|
 | approved_by | user-chat-standing-grant-2026-09-14-form-harmonisation |
 | approved_until | 2026-09-16T12:00:00Z |
-| control_issue | TBD |
-| autonomy | active |
+| control_issue | 1160 |
+| autonomy | completed |
 
 ## Phases
 

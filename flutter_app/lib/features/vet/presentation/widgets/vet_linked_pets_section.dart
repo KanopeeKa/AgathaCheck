@@ -21,7 +21,7 @@ class VetLinkedPetsSection extends ConsumerWidget {
       children: [
         petsAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Text('Could not load pets: $e'),
+          error: (e, _) => Text(l.couldNotLoadPets('$e')),
           data: (pets) {
             if (pets.isEmpty) {
               return Text(
