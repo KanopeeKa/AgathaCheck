@@ -158,7 +158,10 @@ class _PlannedAbsenceFlowScreenState
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l.careContextAwaySaveSuccess)));
-      context.pop();
+      context.goNamed(
+        'petCarePlannedAbsenceDetail',
+        pathParameters: {'id': result.absence.id},
+      );
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -208,11 +211,15 @@ class _PlannedAbsenceFlowScreenState
       });
     }
 
+    final backPath = GoRouterState.of(context).uri.path == '/pc/away/new'
+        ? '/pc/away'
+        : '/pc/home';
+
     return ExperienceShellScaffold(
       experience: AppExperience.petCare,
       currentLocation: GoRouterState.of(context).uri.path,
       screenTitle: l.careContextAwayFlowTitle,
-      backPath: '/pc/home',
+      backPath: backPath,
       child: Column(
         children: [
           LinearProgressIndicator(

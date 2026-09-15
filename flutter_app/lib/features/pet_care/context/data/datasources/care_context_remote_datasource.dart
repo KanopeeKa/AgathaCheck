@@ -67,9 +67,13 @@ class CareContextRemoteDataSource {
     );
   }
 
-  Future<List<PlannedAbsence>> listPlannedAbsences() async {
+  Future<List<PlannedAbsence>> listPlannedAbsences({
+    String scope = 'all',
+  }) async {
     final response = await _client.get(
-      Uri.parse('$baseUrl/api/planned-absences'),
+      Uri.parse(
+        '$baseUrl/api/planned-absences?scope=\${Uri.encodeQueryComponent(scope)}',
+      ),
       headers: _headers(),
     );
     _check(response);

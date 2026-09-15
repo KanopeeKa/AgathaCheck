@@ -41,5 +41,7 @@ final carePeriodCoverageProvider =
 final plannedAbsencesListProvider = FutureProvider<List<PlannedAbsence>>((
   ref,
 ) async {
-  return ref.read(careContextRepositoryProvider).listPlannedAbsences();
+  return ref
+      .read(careContextRepositoryProvider)
+      .listPlannedAbsences(scope: 'all');
 });
