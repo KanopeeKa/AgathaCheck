@@ -280,6 +280,27 @@ void main() {
     test('petCareAddVet resolves to /pc/vets/add', () {
       expect(router.namedLocation('petCareAddVet'), '/pc/vets/add');
     });
+
+    test('petCarePlannedAbsence resolves to /pc/away', () {
+      expect(router.namedLocation('petCarePlannedAbsence'), '/pc/away');
+    });
+
+    test('petCarePlannedAbsenceNew resolves to /pc/away/new', () {
+      expect(
+        router.namedLocation('petCarePlannedAbsenceNew'),
+        '/pc/away/new',
+      );
+    });
+
+    test('petCarePlannedAbsenceDetail resolves to /pc/away/:id', () {
+      expect(
+        router.namedLocation(
+          'petCarePlannedAbsenceDetail',
+          pathParameters: {'id': 'abs-1'},
+        ),
+        '/pc/away/abs-1',
+      );
+    });
   });
 
   group('legacy guardian named route registration', () {
