@@ -139,6 +139,7 @@ export function occurrenceToMap(row) {
     marked_by_user_id: row.marked_by_user_id || null,
     marked_by_name: row.marked_by_name?.trim() || null,
     notes: row.notes || '',
+    completion_timing: row.completion_timing ?? null,
   };
 }
 

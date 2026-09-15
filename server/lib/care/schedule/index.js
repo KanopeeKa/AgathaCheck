@@ -7,3 +7,11 @@ export {
   resolveRecurrenceAnchorForWrite,
 } from './recurrenceAnchorDefaults.js';
 export { advanceSeries, resolveNextSeriesDate } from './advanceSeries.js';
+export { completeOccurrence } from './completeOccurrence.js';
+export {
+  COMPLETION_TIMING_EARLY,
+  COMPLETION_TIMING_LATE,
+  COMPLETION_TIMING_ON_TIME,
+  deriveCompletionTiming,
+  isValidCompletionTiming,
+} from './completionTiming.js';

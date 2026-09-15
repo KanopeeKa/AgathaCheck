@@ -6,8 +6,8 @@ import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { accessiblePetSql, userCanManageHealthEntry } from '../../lib/petAccess.js';
 import { refreshPetWeightCache } from '../../lib/petWeightSync.js';
+import { completeOccurrence } from '../../lib/care/schedule/completeOccurrence.js';
 import {
-  materialiseAfterOccurrenceClose,
   occurrenceToMap,
   resolveCompletedOn,
 } from '../../lib/occurrenceScheduling.js';
@@ -147,28 +147,22 @@ export async function completeWeightOccurrence(pool, {
       ],
     );
 
-    const occResult = await client.query(
-      `UPDATE health_occurrences SET status = 'completed', completed_on = $1,
-        marked_at = $2, marked_by_user_id = $3, notes = $4, updated_at = NOW()
-       WHERE id = $5 AND health_entry_id = $6 AND status = 'pending'
-       RETURNING *`,
-      [completedOn, markedAt, userId, payload.notes, occurrenceId, entryId],
-    );
-    if (occResult.rows.length === 0) {
+    const completion = await completeOccurrence(client, {
+      entry,
+      occurrenceId,
+      userId,
+      completedOn,
+      notes: payload.notes,
+      markedAt,
+    });
+    if (!completion) {
       await client.query('ROLLBACK');
       return { status: 404, body: { error: 'Occurrence not found' } };
     }
 
-    await materialiseAfterOccurrenceClose(client, entry);
-
     await client.query('COMMIT');
 
     await refreshPetWeightCache(pool, petId);
-
-    const refreshedEntry = await pool.query(
-      'SELECT next_due_date FROM health_entries WHERE id = $1',
-      [entryId],
-    );
 
     logAuditEventSafe(pool, {
       actorUserId: userId,
@@ -195,8 +189,8 @@ export async function completeWeightOccurrence(pool, {
       status: 201,
       body: buildCompletionResponse(
         weightResult.rows[0],
-        occResult.rows[0],
-        refreshedEntry.rows[0]?.next_due_date,
+        completion.occurrence,
+        completion.nextDueDate,
       ),
     };
   } catch (err) {

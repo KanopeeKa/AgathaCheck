@@ -3,6 +3,7 @@ import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
+import { completeOccurrence } from '../../lib/care/schedule/completeOccurrence.js';
 import {
   listMissedOccurrenceIds,
   listOpenOccurrences,
@@ -112,15 +113,18 @@ export function registerOccurrenceRoutes(router, pool) {
         }
       }
 
-      const result = await pool.query(
-        `UPDATE health_occurrences SET status = 'completed', completed_on = $1,
-          marked_at = $2, marked_by_user_id = $3, notes = $4, updated_at = NOW()
-         WHERE id = $5 AND health_entry_id = $6 AND status = 'pending'
-         RETURNING *`,
-        [completedOn, markedAt, userId, notes, occ.id, entryId]
-      );
-      await materialiseAfterOccurrenceClose(pool, entry);
-      const refreshed = await loadEntry(pool, entryId, userId);
+      const completion = await completeOccurrence(pool, {
+        entry,
+        occurrenceId: occ.id,
+        userId,
+        completedOn,
+        notes,
+        markedAt,
+        todayIso: asOfFromRequest(req),
+      });
+      if (!completion) {
+        return res.status(404).json({ error: 'Occurrence not found' });
+      }
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'health_occurrence.completed',
@@ -136,11 +140,11 @@ export function registerOccurrenceRoutes(router, pool) {
         eventType: 'health_log',
         metadata: { action: 'complete_occurrence', entry_type: entry.type },
       });
-      const row = result.rows[0];
+      const row = completion.occurrence;
       row.marked_by_name = null;
       res.json({
         occurrence: occurrenceToMap(row),
-        next_due_date: dateToIsoDate(refreshed.next_due_date),
+        next_due_date: completion.nextDueDate,
       });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -268,14 +272,19 @@ export async function completeOldestPendingOccurrence(pool, entryId, userId, bod
   const completedOn = resolveCompletedOn(body.completed_on || body.completedOn);
   const notes = body.notes || '';
   const markedAt = new Date();
-  const result = await pool.query(
-    `UPDATE health_occurrences SET status = 'completed', completed_on = $1,
-      marked_at = $2, marked_by_user_id = $3, notes = $4, updated_at = NOW()
-     WHERE id = $5 AND status = 'pending'
-     RETURNING *`,
-    [completedOn, markedAt, userId, notes, occId]
-  );
-  await materialiseAfterOccurrenceClose(pool, entry);
+  const todayIso = req?.query?.as_of
+    ? normalizeCalendarDateInput(req.query.as_of) || todayCalendarIso()
+    : todayCalendarIso();
+  const completion = await completeOccurrence(pool, {
+    entry,
+    occurrenceId: occId,
+    userId,
+    completedOn,
+    notes,
+    markedAt,
+    todayIso,
+  });
+  if (!completion) return null;
   if (req) {
     logAuditEventSafe(pool, {
       actorUserId: userId,
@@ -287,5 +296,5 @@ export async function completeOldestPendingOccurrence(pool, entryId, userId, bod
       req,
     });
   }
-  return result.rows[0];
+  return completion.occurrence;
 }
