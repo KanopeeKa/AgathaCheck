@@ -12,6 +12,8 @@ export { completeOccurrence } from './completeOccurrence.js';
 export { rescheduleOccurrence } from './rescheduleOccurrence.js';
 export { skipMissedOccurrences, skipOccurrence } from './skipOccurrence.js';
 export { pauseSeries, resumeSeries } from './pauseResumeSeries.js';
+export { undoLastAction } from './undoLastAction.js';
+export { explainGap, scheduleEventToFact } from './explainGap.js';
 export {
   insertCareScheduleEvent,
   SCHEDULE_EVENT_CADENCE_ADJUSTED,
@@ -27,3 +29,15 @@ export {
   deriveCompletionTiming,
   isValidCompletionTiming,
 } from './completionTiming.js';
+export {
+  CERTAINTY_COMPLETE,
+  CERTAINTY_CONDITIONAL_ON_FUTURE_COMPLETION,
+  PROJECTION_STATUS_COMPLETE,
+  PROJECTION_STATUS_PARTIALLY_INDETERMINATE,
+  UNCERTAINTY_REASON_FROM_COMPLETION_CHAIN,
+  UNCERTAINTY_REASON_FROM_COMPLETION_PENDING,
+  isDateInCareWindow,
+  projectCareForPeriod,
+  projectEntryForPeriod,
+  projectSchedule,
+} from './projectSchedule.js';
