@@ -17,6 +17,15 @@ files, not this one, unless you're adding a Claude-Code-only note below.
 
 ## Cursor policy rules (imported live from `.cursor/rules/`)
 
+Each imported file below keeps its own Cursor frontmatter (`globs: …` or
+`alwaysApply: true`). Claude Code has no equivalent of Cursor's glob-based
+conditional loading — every file here is always present in context — so
+**apply a glob-scoped rule only to the surface its `globs:` line names**
+(e.g. `security.mdc`'s `globs: server/**,server/lib/**` means its content
+governs `server/**` changes, not a Flutter-only or docs-only diff). Rules
+marked `alwaysApply: true` genuinely apply to every change regardless of
+surface.
+
 @.cursor/rules/agent-core.mdc
 @.cursor/rules/merge-policy.mdc
 @.cursor/rules/atomic-pr.mdc
