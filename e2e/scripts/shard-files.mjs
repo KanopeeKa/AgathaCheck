@@ -25,6 +25,7 @@ export const SHARDS = [
   [
     'playwright/tests/guardian.navigation.spec.ts',
     'playwright/tests/guardian.dashboard.spec.ts',
+    'playwright/tests/away.planning.spec.ts',
   ],
   ['playwright/tests/experience.navigation.spec.ts'],
   [
