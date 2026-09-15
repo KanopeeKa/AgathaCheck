@@ -89,5 +89,8 @@ describe('care-period projection API', () => {
     expect(res.body.projection_status).toBe('complete');
     expect(res.body.items.length).toBeGreaterThanOrEqual(1);
     expect(res.body.items[0].source).toBe('projected');
+    expect(res.body.routine_items).toEqual([]);
+    expect(res.body.dated_items.length).toBeGreaterThanOrEqual(1);
+    expect(res.body.uncertainties).toEqual([]);
   });
 });

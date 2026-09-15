@@ -1,5 +1,5 @@
 import { publicError } from '../../config/security.js';
-import { loadAndProjectSchedule } from '../../lib/care/schedule/projectSchedule.js';
+import { loadAwayPlanProjection } from '../../lib/care/awayPlan/index.js';
 import { validateAbsenceDateWindow } from '../../lib/care/plannedAbsence.js';
 import { todayCalendarIso } from '../../lib/calendarDate.js';
 import { userCanManagePet } from '../../lib/petAccess.js';
@@ -24,7 +24,7 @@ export function registerCarePeriodProjectionRoutes(router, pool) {
         return res.status(403).json({ error: 'Forbidden' });
       }
 
-      const projection = await loadAndProjectSchedule(
+      const projection = await loadAwayPlanProjection(
         pool,
         petId,
         window.starts_on,
