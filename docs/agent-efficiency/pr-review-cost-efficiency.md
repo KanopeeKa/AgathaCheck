@@ -29,6 +29,8 @@ Single source of truth for **pre-PR self-review**, **Bugbot configuration**, **C
 
 ## Bugbot dashboard settings (confirmed for Agatha Track)
 
+**Current status: Bugbot is disabled for this repo** (see §Review stack below) — Copilot is the primary automatic reviewer. The settings below are kept for reference if Bugbot is re-enabled; do not configure or wait on Bugbot until that happens.
+
 Configure at [cursor.com/dashboard/bugbot](https://cursor.com/dashboard/bugbot) after connecting GitHub.
 
 | Setting | Recommended | Notes |
@@ -40,9 +42,9 @@ Configure at [cursor.com/dashboard/bugbot](https://cursor.com/dashboard/bugbot) 
 | **Autofix** | **Off** | Babysit+ owns fixes; Autofix bills the same Cloud Agent pool and duplicates work. |
 | **Incremental review** | **Off** while “once per PR” | Turn **On** only if you switch to review-on-every-push. |
 
-Enable Bugbot on **AgathaCheck** in the repository list. Optional: require the **`Cursor Bugbot`** status check in GitHub branch protection.
+If re-enabling: turn Bugbot on for **AgathaCheck** in the repository list. Optional: require the **`Cursor Bugbot`** status check in GitHub branch protection.
 
-Manual re-review: comment `cursor review` or `bugbot run` on the PR.
+Manual re-review (only while Bugbot is enabled): comment `cursor review` or `bugbot run` on the PR.
 
 ---
 

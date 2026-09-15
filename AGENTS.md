@@ -98,7 +98,7 @@ See `docs/agent-efficiency/github-issue-workflow.md` for the full issue lifecycl
 
 ### Policies (details in `.cursor/rules/` + Skills)
 
-- **PR hygiene:** mandatory pre-PR self-review, Bugbot-first review, `composer-2.5` for babysit — `docs/agent-efficiency/pr-review-cost-efficiency.md`
+- **PR hygiene:** mandatory pre-PR self-review, Copilot-first review (Bugbot disabled for this repo), `composer-2.5` for babysit — `docs/agent-efficiency/pr-review-cost-efficiency.md`
 - **Atomic PRs:** one verifiable outcome per PR; cross-domain OK when serving that outcome. Snag ladder + zero untracked debt → `docs/agent-efficiency/atomic-pr-policy.md`
 - Modularity ≤500 lines · BDD gate: `node e2e/scripts/check_bdd_coverage.js --report-only` (currently ≥150 mapped of 241 total; totals drift)
 - Single-agent PRs → `main`; multi-agent → integration branch (`/spawn-sprint-agents`)
