@@ -9,7 +9,7 @@
   "base_branch": "cursor/away-planning-v1-integration-5176",
   "control_issue": 1198,
   "artifact_branch_policy": "phase-branch",
-  "content_hash": "sha256:88d84ba92b163e044b7aa3bdfd57ade111f8fe0269600be00328c165500c3bb7",
+  "content_hash": "sha256:1ca387443025dd30e2b98c4de7b55e21cbc0811f3c67aaf14e13d4325b823af0",
   "phases": [
     {
       "id": "aw-emergency",
@@ -133,12 +133,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1202",
+      "pr_head_sha": "b52310a75f55ebf3611018204e004a23cb07ba2f"
     },
     {
       "id": "aw-2",
@@ -161,12 +161,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1203",
+      "pr_head_sha": "4c30bf30"
     },
     {
       "id": "aw-3",
@@ -193,12 +193,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1204",
+      "pr_head_sha": "a923cb68"
     },
     {
       "id": "aw-5a",
