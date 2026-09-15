@@ -9,6 +9,7 @@ export {
 export { advanceSeries, resolveNextSeriesDate } from './advanceSeries.js';
 export { completeOccurrence } from './completeOccurrence.js';
 export { skipMissedOccurrences, skipOccurrence } from './skipOccurrence.js';
+export { pauseSeries, resumeSeries } from './pauseResumeSeries.js';
 export {
   insertCareScheduleEvent,
   SCHEDULE_EVENT_CADENCE_ADJUSTED,
