@@ -10,28 +10,34 @@ import {
   PLANNED_ABSENCE_STATUS_ACTIVE,
   PLANNED_ABSENCE_STATUS_CANCELLED,
   validateAbsenceDateWindow,
+  validateCarerInput,
 } from '../../lib/care/plannedAbsence.js';
-import { userCanManagePet } from '../../lib/petAccess.js';
+import { COLLABORATOR_ROLES, userCanManagePet } from '../../lib/petAccess.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 
-async function loadPetIds(pool, absenceId) {
+const COLLABORATOR_ROLES_SQL = COLLABORATOR_ROLES.map((role) => `'${role}'`).join(', ');
+
+async function loadAbsencePets(pool, absenceId) {
   const result = await pool.query(
-    'SELECT pet_id FROM planned_absence_pets WHERE planned_absence_id = $1 ORDER BY pet_id',
+    `SELECT pet_id, carer_kind, carer_user_id, carer_name, carer_note
+     FROM planned_absence_pets
+     WHERE planned_absence_id = $1
+     ORDER BY pet_id`,
     [absenceId]
   );
-  return result.rows.map((r) => r.pet_id);
+  return result.rows;
 }
 
 /**
  * @param {import('pg').Pool|import('pg').PoolClient} pool
  * @param {string[]} absenceIds
- * @returns {Promise<Map<string, string[]>>}
+ * @returns {Promise<Map<string, object[]>>}
  */
-async function loadPetIdsByAbsenceIds(pool, absenceIds) {
+async function loadPetsByAbsenceIds(pool, absenceIds) {
   const map = new Map();
   if (!absenceIds.length) return map;
   const result = await pool.query(
-    `SELECT planned_absence_id, pet_id
+    `SELECT planned_absence_id, pet_id, carer_kind, carer_user_id, carer_name, carer_note
      FROM planned_absence_pets
      WHERE planned_absence_id = ANY($1::uuid[])
      ORDER BY pet_id`,
@@ -39,7 +45,7 @@ async function loadPetIdsByAbsenceIds(pool, absenceIds) {
   );
   for (const row of result.rows) {
     const list = map.get(row.planned_absence_id) || [];
-    list.push(row.pet_id);
+    list.push(row);
     map.set(row.planned_absence_id, list);
   }
   return map;
@@ -64,6 +70,18 @@ async function assertManageablePets(pool, userId, petIds) {
     }
   }
   return { ok: true, petIds: unique };
+}
+
+async function isCarerCandidate(pool, petId, carerUserId) {
+  const result = await pool.query(
+    `SELECT 1 FROM pet_access
+     WHERE pet_id = $1 AND user_id = $2
+       AND role IN (${COLLABORATOR_ROLES_SQL})
+       AND COALESCE(hidden, false) = false
+     LIMIT 1`,
+    [petId, carerUserId]
+  );
+  return result.rows.length > 0;
 }
 
 /**
@@ -99,13 +117,67 @@ async function findOverlapWarnings(pool, userId, petIds, startsOn, endsOn, exclu
 }
 
 async function replaceAbsencePets(pool, absenceId, petIds) {
-  await pool.query('DELETE FROM planned_absence_pets WHERE planned_absence_id = $1', [absenceId]);
+  await pool.query(
+    `DELETE FROM planned_absence_pets
+     WHERE planned_absence_id = $1
+       AND NOT (pet_id = ANY($2::uuid[]))`,
+    [absenceId, petIds]
+  );
   if (petIds.length === 0) return;
   await pool.query(
     `INSERT INTO planned_absence_pets (planned_absence_id, pet_id)
-     SELECT $1, unnest($2::uuid[])`,
+     SELECT $1, unnest($2::uuid[])
+     ON CONFLICT (planned_absence_id, pet_id) DO NOTHING`,
     [absenceId, petIds]
   );
+}
+
+/**
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {string} absenceId
+ * @param {object[]} petCarersInput
+ * @param {string[]} allowedPetIds
+ */
+async function updateAbsenceCarers(pool, absenceId, petCarersInput, allowedPetIds) {
+  if (!Array.isArray(petCarersInput)) {
+    return { ok: false, status: 400, error: 'pet_carers must be an array' };
+  }
+  const allowed = new Set(allowedPetIds);
+  for (const item of petCarersInput) {
+    const petId = item.pet_id || item.petId;
+    if (!petId) {
+      return { ok: false, status: 400, error: 'Each pet_carer entry requires pet_id' };
+    }
+    if (!allowed.has(petId)) {
+      return { ok: false, status: 400, error: 'pet_id is not on this absence' };
+    }
+    const validated = validateCarerInput(item);
+    if (!validated.ok) {
+      return { ok: false, status: 400, error: validated.error };
+    }
+    if (validated.carer_kind === 'shared_user') {
+      if (!(await isCarerCandidate(pool, petId, validated.carer_user_id))) {
+        return { ok: false, status: 403, error: 'Forbidden' };
+      }
+    }
+    await pool.query(
+      `UPDATE planned_absence_pets
+       SET carer_kind = $1,
+           carer_user_id = $2,
+           carer_name = $3,
+           carer_note = $4
+       WHERE planned_absence_id = $5 AND pet_id = $6`,
+      [
+        validated.carer_kind,
+        validated.carer_user_id,
+        validated.carer_name,
+        validated.carer_note,
+        absenceId,
+        petId,
+      ]
+    );
+  }
+  return { ok: true };
 }
 
 export function registerPlannedAbsenceRoutes(router, pool) {
@@ -123,10 +195,10 @@ export function registerPlannedAbsenceRoutes(router, pool) {
         [userId, PLANNED_ABSENCE_STATUS_CANCELLED, todayIso]
       );
       const absenceIds = result.rows.map((row) => row.id);
-      const petIdsByAbsence = await loadPetIdsByAbsenceIds(pool, absenceIds);
+      const petsByAbsence = await loadPetsByAbsenceIds(pool, absenceIds);
       const items = result.rows.map((row) => absenceToMap(
         row,
-        petIdsByAbsence.get(row.id) || []
+        petsByAbsence.get(row.id) || []
       ));
       res.json(items);
     } catch (err) {
@@ -173,8 +245,9 @@ export function registerPlannedAbsenceRoutes(router, pool) {
         await replaceAbsencePets(client, id, petsCheck.petIds);
         return result.rows[0];
       });
+      const petRows = petsCheck.petIds.map((petId) => ({ pet_id: petId }));
       res.status(201).json({
-        absence: absenceToMap(row, petsCheck.petIds),
+        absence: absenceToMap(row, petRows),
         overlap_warnings: overlapWarnings,
       });
     } catch (err) {
@@ -188,8 +261,8 @@ export function registerPlannedAbsenceRoutes(router, pool) {
     try {
       const row = await loadAbsenceForUser(pool, req.params.id, userId);
       if (!row) return res.status(404).json({ error: 'Not found' });
-      const petIds = await loadPetIds(pool, row.id);
-      res.json(absenceToMap(row, petIds));
+      const petRows = await loadAbsencePets(pool, row.id);
+      res.json(absenceToMap(row, petRows));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -211,12 +284,19 @@ export function registerPlannedAbsenceRoutes(router, pool) {
       const window = validateAbsenceDateWindow(startsOn, endsOn);
       if (!window.ok) return res.status(400).json({ error: window.error });
 
-      let petIds = await loadPetIds(pool, existing.id);
+      let petRows = await loadAbsencePets(pool, existing.id);
+      let petIds = petRows.map((row) => row.pet_id);
       if (body.pet_ids != null || body.petIds != null) {
         const petsCheck = await assertManageablePets(pool, userId, body.pet_ids || body.petIds);
         if (!petsCheck.ok) return res.status(petsCheck.status).json({ error: petsCheck.error });
         petIds = petsCheck.petIds;
+        petRows = petIds.map((petId) => {
+          const existingRow = petRows.find((row) => row.pet_id === petId);
+          return existingRow || { pet_id: petId };
+        });
       }
+
+      const petCarersInput = body.pet_carers ?? body.petCarers ?? null;
 
       const overlapWarnings = await findOverlapWarnings(
         pool,
@@ -228,6 +308,12 @@ export function registerPlannedAbsenceRoutes(router, pool) {
       );
 
       const updated = await withOptionalTransaction(pool, async (client) => {
+        if (petCarersInput != null) {
+          const carerResult = await updateAbsenceCarers(client, existing.id, petCarersInput, petIds);
+          if (!carerResult.ok) {
+            throw Object.assign(new Error(carerResult.error), { status: carerResult.status });
+          }
+        }
         const result = await client.query(
           `UPDATE planned_absences
            SET starts_on = $1::date, ends_on = $2::date, updated_at = NOW()
@@ -238,11 +324,15 @@ export function registerPlannedAbsenceRoutes(router, pool) {
         await replaceAbsencePets(client, existing.id, petIds);
         return result.rows[0];
       });
+      petRows = await loadAbsencePets(pool, existing.id);
       res.json({
-        absence: absenceToMap(updated, petIds),
+        absence: absenceToMap(updated, petRows),
         overlap_warnings: overlapWarnings,
       });
     } catch (err) {
+      if (err.status) {
+        return res.status(err.status).json({ error: err.message });
+      }
       res.status(500).json({ error: publicError(err) });
     }
   });
@@ -263,8 +353,8 @@ export function registerPlannedAbsenceRoutes(router, pool) {
         if (!row) return res.status(404).json({ error: 'Not found' });
         return res.status(400).json({ error: 'Absence is already cancelled' });
       }
-      const petIds = await loadPetIds(pool, req.params.id);
-      res.json(absenceToMap(result.rows[0], petIds));
+      const petRows = await loadAbsencePets(pool, req.params.id);
+      res.json(absenceToMap(result.rows[0], petRows));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
