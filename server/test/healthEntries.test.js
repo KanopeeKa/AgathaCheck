@@ -87,17 +87,23 @@ describe('Health Entries API', () => {
           return { rows: [makeHealthRow(), makeHealthRow({ id: 'he-2', name: 'Vaccination' })] };
         }
 
-        if (sql.includes('SELECT care_family, care_source FROM health_entries WHERE id')) {
+        if (sql.includes('SELECT care_family, care_source, recurrence_anchor FROM health_entries WHERE id')) {
           if (params && params[0] === 'nonexistent') return { rows: [] };
           if (params && params[0] === 'he-uncat') {
             return {
-              rows: [{ care_family: null, care_source: 'guardian_defined' }],
+              rows: [{
+                care_family: null,
+                care_source: 'guardian_defined',
+                recurrence_anchor: null,
+              }],
             };
           }
+          const row = makeHealthRow({ id: params[0] });
           return {
             rows: [{
-              care_family: makeHealthRow({ id: params[0] }).care_family,
-              care_source: makeHealthRow({ id: params[0] }).care_source,
+              care_family: row.care_family,
+              care_source: row.care_source,
+              recurrence_anchor: row.recurrence_anchor,
             }],
           };
         }
@@ -133,6 +139,7 @@ describe('Health Entries API', () => {
             status: params[18],
             care_family: params[19],
             care_source: params[20],
+            schedule_policy_version: params[21],
             completed_at: null,
           });
           return { rows: [lastInsertedEntry] };
@@ -192,16 +199,17 @@ describe('Health Entries API', () => {
         }
 
         if (sql.includes('UPDATE health_entries SET name')) {
-          if (params && params[17] === 'nonexistent') return { rows: [] };
+          if (params && params[18] === 'nonexistent') return { rows: [] };
           return {
             rows: [makeHealthRow({
-              id: params[17],
+              id: params[18],
               name: params[0],
               type: params[1],
               dosage: params[2],
               frequency: params[3],
               care_family: params[15],
               care_source: params[16],
+              schedule_policy_version: params[17],
             })],
           };
         }
@@ -628,6 +636,27 @@ describe('Health Entries API', () => {
       expect(res.body).toHaveProperty('dosage', '0.5ml');
       expect(res.body).toHaveProperty('frequency', 'monthly');
       expect(res.body).toHaveProperty('status', 'active');
+      expect(res.body.recurrence_anchor).toBe('from_due_date');
+      const insertParams = queryLog.find(q => q.sql.includes('INSERT INTO health_entries')).params;
+      expect(insertParams[12]).toBe('from_due_date');
+      expect(insertParams[21]).toBe('1.0.0');
+    });
+
+    it('defaults medication care_family to from_completion when anchor omitted', async () => {
+      const entry = {
+        pet_id: 'pet-1',
+        name: 'Daily tablet',
+        type: 'medication',
+        frequency: 'daily',
+        next_due_date: '2025-07-01',
+        care_family: 'medication',
+      };
+      const res = await request(app)
+        .post('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(201);
+      expect(res.body.recurrence_anchor).toBe('from_completion');
     });
 
     it('defaults type to vet_visit and frequency to once when care_family is provided', async () => {
@@ -852,7 +881,7 @@ describe('Health Entries API', () => {
       );
       const updateQuery = queryLog.find(q => q.sql.includes('UPDATE health_entries SET name'));
       expect(accessQuery).toBeDefined();
-      expect(updateQuery.params[17]).toBe('he-1');
+      expect(updateQuery.params[18]).toBe('he-1');
     });
 
     it('rejects deprecated types on update', async () => {

@@ -30,7 +30,7 @@ care_context  care_progression  care_intelligence
 
 **Dependency rule:** Everything above reads from CSM. CSM depends on nothing above it.
 
-**Delivery status:** Architecture approved; runtime implementation in progress. See [care-schedule-management-delivery-plan.md](../changes/care-schedule-management-delivery-plan.md) and [decision log](../changes/care-schedule-management-decisions.md).
+**Delivery status:** Runtime implementation in progress (CSM-1 schema landed; CSM-2 per-family anchor defaults on create). See [care-schedule-management-delivery-plan.md](../changes/care-schedule-management-delivery-plan.md) and [decision log](../changes/care-schedule-management-decisions.md).
 
 ---
 

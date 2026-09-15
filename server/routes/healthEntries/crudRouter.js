@@ -18,6 +18,10 @@ import {
 } from './shared.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { materialiseInitialOccurrences, parseScheduleTimesInput } from '../../lib/occurrenceScheduling.js';
+import {
+  SCHEDULE_POLICY_VERSION,
+  resolveRecurrenceAnchorForWrite,
+} from '../../lib/care/schedule/index.js';
 
 export function registerCrudRoutes(router, pool) {
   router.get('/', async (req, res) => {
@@ -112,7 +116,6 @@ export function registerCrudRoutes(router, pool) {
       const nextDueDate = normalizeCalendarDateInput(data.next_due_date || data.nextDueDate);
       const completedOn = normalizeCalendarDateInput(data.completed_on || data.completedOn);
       const repeatEndDate = normalizeCalendarDateInput(data.repeat_end_date || data.repeatEndDate);
-      const recurrenceAnchor = data.recurrence_anchor || data.recurrenceAnchor || 'from_completion';
       const healthIssueId = data.health_issue_id || data.healthIssueId || null;
       try {
         assertAtLeastOneDate(nextDueDate, completedOn);
@@ -140,9 +143,18 @@ export function registerCrudRoutes(router, pool) {
         return res.status(400).json({ error: careSourceValidation.error });
       }
       const careFamily = careFamilyValidation.value;
+      let recurrenceAnchor;
+      try {
+        recurrenceAnchor = resolveRecurrenceAnchorForWrite({
+          careFamily,
+          explicitAnchor: data.recurrence_anchor ?? data.recurrenceAnchor,
+        });
+      } catch (e) {
+        return res.status(400).json({ error: e.message });
+      }
       const result = await pool.query(
-        `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, schedule_times, status, care_family, care_source)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21) RETURNING *`,
+        `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, schedule_times, status, care_family, care_source, schedule_policy_version)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22) RETURNING *`,
         [
           id, petId, userId,
           data.name || '',
@@ -160,6 +172,7 @@ export function registerCrudRoutes(router, pool) {
           completedOn ? 'completed' : (data.status || 'active'),
           careFamily,
           careSourceValidation.value,
+          SCHEDULE_POLICY_VERSION,
         ]
       );
       const entry = result.rows[0];
@@ -193,7 +206,6 @@ export function registerCrudRoutes(router, pool) {
       const nextDueDate = normalizeCalendarDateInput(data.next_due_date || data.nextDueDate);
       const completedOn = normalizeCalendarDateInput(data.completed_on || data.completedOn);
       const repeatEndDate = normalizeCalendarDateInput(data.repeat_end_date || data.repeatEndDate);
-      const recurrenceAnchor = data.recurrence_anchor || data.recurrenceAnchor || 'from_completion';
       const healthIssueId = data.health_issue_id || data.healthIssueId || null;
       try {
         assertAtLeastOneDate(nextDueDate, completedOn);
@@ -205,7 +217,7 @@ export function registerCrudRoutes(router, pool) {
         return res.status(400).json({ error: typeValidation.error });
       }
       const existingResult = await pool.query(
-        'SELECT care_family, care_source FROM health_entries WHERE id = $1',
+        'SELECT care_family, care_source, recurrence_anchor FROM health_entries WHERE id = $1',
         [req.params.id],
       );
       if (existingResult.rows.length === 0) {
@@ -232,13 +244,37 @@ export function registerCrudRoutes(router, pool) {
       const careFamily = careFamilyValidation.value;
       const careSource =
         careSourceValidation.value || existing.care_source || 'guardian_defined';
+      const explicitAnchorProvided = (
+        data.recurrence_anchor !== undefined
+        || data.recurrenceAnchor !== undefined
+      );
+      const careFamilyChanged = careFamily !== existing.care_family;
+      let recurrenceAnchor;
+      try {
+        if (explicitAnchorProvided) {
+          recurrenceAnchor = resolveRecurrenceAnchorForWrite({
+            careFamily,
+            explicitAnchor: data.recurrence_anchor ?? data.recurrenceAnchor,
+          });
+        } else if (!careFamilyChanged && existing.recurrence_anchor) {
+          recurrenceAnchor = existing.recurrence_anchor;
+        } else {
+          recurrenceAnchor = resolveRecurrenceAnchorForWrite({
+            careFamily,
+            explicitAnchor: null,
+          });
+        }
+      } catch (e) {
+        return res.status(400).json({ error: e.message });
+      }
       const result = await pool.query(
         `UPDATE health_entries SET name = $1, type = $2, dosage = $3, frequency = $4, frequency_days = $5,
           frequency_interval = $6, start_date = $7, next_due_date = $8, completed_on = $9,
           recurrence_anchor = $10, repeat_end_date = $11, notes = $12,
           health_issue_id = $13, remind_days_before = $14, status = $15,
-          care_family = $16, care_source = $17, updated_at = NOW()
-         WHERE id = $18 RETURNING *`,
+          care_family = $16, care_source = $17, schedule_policy_version = $18,
+          updated_at = NOW()
+         WHERE id = $19 RETURNING *`,
         [
           data.name || '',
           typeValidation.type,
@@ -254,6 +290,7 @@ export function registerCrudRoutes(router, pool) {
           completedOn ? 'completed' : (data.status || 'active'),
           careFamily,
           careSource,
+          SCHEDULE_POLICY_VERSION,
           req.params.id,
         ]
       );
