@@ -9,7 +9,7 @@
   "base_branch": "cursor/care-schedule-management-v1-integration-csm1",
   "control_issue": 1173,
   "artifact_branch_policy": "phase-branch",
-  "content_hash": "sha256:03306fa997c901a29a67fc85d1d7b23121b88fcee91886476d6f21c896efc677",
+  "content_hash": "sha256:0838500fb3d955b2405f5c5f003396e76b57319ec7e1d3b772d0cf7ff187e3b1",
   "phases": [
     {
       "id": "csm-0",
@@ -256,12 +256,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     },
     {
       "id": "csm-8",
