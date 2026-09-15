@@ -646,7 +646,13 @@ CREATE TABLE public.pets (
 );
 CREATE TABLE public.planned_absence_pets (
     planned_absence_id uuid NOT NULL,
-    pet_id uuid NOT NULL
+    pet_id uuid NOT NULL,
+    carer_kind text,
+    carer_user_id uuid,
+    carer_name text,
+    carer_note text,
+    CONSTRAINT planned_absence_pets_carer_fields_check CHECK ((((carer_kind IS NULL) AND (carer_user_id IS NULL) AND (carer_name IS NULL) AND (carer_note IS NULL)) OR ((carer_kind = 'shared_user'::text) AND (carer_name IS NULL) AND (carer_note IS NULL)) OR ((carer_kind = 'note_only'::text) AND (carer_user_id IS NULL) AND (carer_name IS NOT NULL)))),
+    CONSTRAINT planned_absence_pets_carer_kind_check CHECK (((carer_kind IS NULL) OR (carer_kind = ANY (ARRAY['shared_user'::text, 'note_only'::text]))))
 );
 CREATE TABLE public.planned_absences (
     id uuid NOT NULL,
@@ -1193,6 +1199,8 @@ ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_vet_id_fkey FOREIGN KEY (vet_id) REFERENCES public.vets(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.planned_absence_pets
+    ADD CONSTRAINT planned_absence_pets_carer_user_id_fkey FOREIGN KEY (carer_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.planned_absence_pets
     ADD CONSTRAINT planned_absence_pets_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.planned_absence_pets
