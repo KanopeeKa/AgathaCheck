@@ -33,6 +33,7 @@ class PlannedAbsenceModel {
       status: json['status'] as String? ?? 'active',
       petIds: petIds,
       petCarers: petCarers,
+      handoverNote: json['handover_note'] as String?,
     );
   }
 

@@ -69,7 +69,8 @@
     "060_planned_absences.sql",
     "061_care_family_taxonomy_backfill.sql",
     "062_care_schedule_management.sql",
-    "063_planned_absence_carers.sql"
+    "063_planned_absence_carers.sql",
+    "064_planned_absence_handover.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

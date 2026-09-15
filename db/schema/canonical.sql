@@ -665,6 +665,8 @@ CREATE TABLE public.planned_absences (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     cancelled_at timestamp with time zone,
+    handover_note text,
+    last_handover_downloaded_at timestamp with time zone,
     CONSTRAINT planned_absences_date_order CHECK ((ends_on >= starts_on))
 );
 CREATE TABLE public.prospects (
