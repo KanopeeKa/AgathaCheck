@@ -92,18 +92,17 @@ void main() {
     datedItems: const [],
   );
 
-  const pet = Pet(
-    id: 'pet-1',
-    name: 'Luna',
-    species: 'dog',
-    breed: 'Mixed',
-  );
+  const pet = Pet(id: 'pet-1', name: 'Luna', species: 'dog', breed: 'Mixed');
 
   Widget buildScreen() {
     return ProviderScope(
       overrides: [
-        plannedAbsenceDetailProvider('abs-1').overrideWith((ref) async => absence),
-        awayPlanReadinessProvider('abs-1').overrideWith((ref) async => readiness),
+        plannedAbsenceDetailProvider(
+          'abs-1',
+        ).overrideWith((ref) async => absence),
+        awayPlanReadinessProvider(
+          'abs-1',
+        ).overrideWith((ref) async => readiness),
         allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]),
         carePeriodCoverageProvider((
           petId: 'pet-1',

@@ -286,10 +286,7 @@ void main() {
     });
 
     test('petCarePlannedAbsenceNew resolves to /pc/away/new', () {
-      expect(
-        router.namedLocation('petCarePlannedAbsenceNew'),
-        '/pc/away/new',
-      );
+      expect(router.namedLocation('petCarePlannedAbsenceNew'), '/pc/away/new');
     });
 
     test('petCarePlannedAbsenceDetail resolves to /pc/away/:id', () {

@@ -1,5 +1,38 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/planned_absence.dart';
 import 'package:pet_profile_app/features/pet_care/context/presentation/planned_absence_hub_partition.dart';
-PlannedAbsence _a({required String id, required String s, required String e, String status='active'}) => PlannedAbsence(id:id,userId:'u',startsOn:s,endsOn:e,provenance:'user_declared',status:status,petIds:const['p']);
-void main(){test('cancelled hidden',(){final r=PlannedAbsenceHubPartition.partition([_a(id:'a',s:'2026-09-20',e:'2026-09-25'),_a(id:'b',s:'2026-09-10',e:'2026-09-12',status:'cancelled')],today:DateTime(2026,9,15));expect(r.upcoming.map((a)=>a.id),['a']);expect(r.past,isEmpty);});test('sort',(){final r=PlannedAbsenceHubPartition.partition([_a(id:'pl',s:'2026-08-20',e:'2026-08-22'),_a(id:'pe',s:'2026-07-01',e:'2026-07-03'),_a(id:'ul',s:'2026-10-01',e:'2026-10-05'),_a(id:'ue',s:'2026-09-16',e:'2026-09-18')],today:DateTime(2026,9,15));expect(r.upcoming.map((a)=>a.id),['ue','ul']);expect(r.past.map((a)=>a.id),['pl','pe']);});}
+
+PlannedAbsence _a({
+  required String id,
+  required String s,
+  required String e,
+  String status = 'active',
+}) => PlannedAbsence(
+  id: id,
+  userId: 'u',
+  startsOn: s,
+  endsOn: e,
+  provenance: 'user_declared',
+  status: status,
+  petIds: const ['p'],
+);
+void main() {
+  test('cancelled hidden', () {
+    final r = PlannedAbsenceHubPartition.partition([
+      _a(id: 'a', s: '2026-09-20', e: '2026-09-25'),
+      _a(id: 'b', s: '2026-09-10', e: '2026-09-12', status: 'cancelled'),
+    ], today: DateTime(2026, 9, 15));
+    expect(r.upcoming.map((a) => a.id), ['a']);
+    expect(r.past, isEmpty);
+  });
+  test('sort', () {
+    final r = PlannedAbsenceHubPartition.partition([
+      _a(id: 'pl', s: '2026-08-20', e: '2026-08-22'),
+      _a(id: 'pe', s: '2026-07-01', e: '2026-07-03'),
+      _a(id: 'ul', s: '2026-10-01', e: '2026-10-05'),
+      _a(id: 'ue', s: '2026-09-16', e: '2026-09-18'),
+    ], today: DateTime(2026, 9, 15));
+    expect(r.upcoming.map((a) => a.id), ['ue', 'ul']);
+    expect(r.past.map((a) => a.id), ['pl', 'pe']);
+  });
+}
