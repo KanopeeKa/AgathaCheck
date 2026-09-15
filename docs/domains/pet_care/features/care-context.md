@@ -152,13 +152,14 @@ Care Context does **not** own scheduling. When structured pause/reschedule/skip 
 
 **No absence pointer on projection calls.** `planned_absences.source_ref` means what declared the absence externally. Which absence overlapped a schedule event is answerable from `planned_absences` by `(user_id, date window)` — see D-AWAY-011.
 
-## Away Planning V1 (in delivery)
+## Away Planning V1
 
-Hub at `/pc/away`, plan page at `/pc/away/:id`, per-pet carer model, handover PDF. Per-pet coverage on the plan page issues **one request per pet** (acceptable V1; not a bug). See [away-planning-delivery-plan.md](../changes/away-planning-delivery-plan.md).
+Hub at `/pc/away`, plan page at `/pc/away/:id`, wizard at `/pc/away/new`, per-pet [carer model](./away-planning-carer-model.md), server-derived readiness (two facts), printable handover (AW-9). Per-pet coverage on the plan page issues **one request per pet** (acceptable V1; not a bug).
 
 ## Related
 
 - [care-schedule-management.md](care-schedule-management.md) — authoritative scheduling core (`projectSchedule`, `explainGap`)
+- [away-planning-carer-model.md](./away-planning-carer-model.md) — per-pet carer schema and API
 - [away-planning-delivery-plan.md](../changes/away-planning-delivery-plan.md)
 - [away-planning-decisions.md](../changes/away-planning-decisions.md)
 - [care-through-change-delivery-plan.md](../changes/care-through-change-delivery-plan.md)
