@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../models/away_plan_readiness_model.dart';
 import '../models/care_period_coverage_model.dart';
 import '../models/planned_absence_model.dart';
+import '../../domain/entities/away_plan_readiness.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../../domain/entities/planned_absence.dart';
 
@@ -81,5 +83,11 @@ class CareContextRemoteDataSource {
     return list
         .map((raw) => PlannedAbsenceModel.fromJson(raw as Map<String, dynamic>))
         .toList(growable: false);
+  }
+
+  Future<AwayPlanReadiness> fetchAwayPlanReadiness(String absenceId) async {
+    final response = await _client.get(Uri.parse('$baseUrl/api/planned-absences/$absenceId/readiness'), headers: _headers());
+    _check(response);
+    return AwayPlanReadinessModel.fromJson(json.decode(response.body) as Map<String, dynamic>);
   }
 }

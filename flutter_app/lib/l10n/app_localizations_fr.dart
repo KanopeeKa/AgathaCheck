@@ -5963,6 +5963,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Prévisualisez les soins prévus pendant votre absence.';
 
   @override
+  String get awayPlanningTileCarerNone =>
+      'Choisissez qui s\'occupera de vos animaux.';
+
+  @override
+  String get awayPlanningTileCarerSome =>
+      'Certains animaux n\'ont pas encore de soignant.';
+
+  @override
   String get careContextAwayFlowTitle => 'Planifier une absence';
 
   @override

@@ -2167,6 +2167,8 @@
   "undoCompleteFailed": "Could not undo completion. Try again.",
   "careContextAwayEntryTitle": "I'll be away",
   "careContextAwayEntryBody": "Preview care scheduled while you're away.",
+  "awayPlanningTileCarerNone": "Choose who will care for your pets.",
+  "awayPlanningTileCarerSome": "Some pets still need a carer assigned.",
   "careContextAwayFlowTitle": "Away planning",
   "careContextAwayDatesStepTitle": "When are you away?",
   "careContextAwayDatesStepBody": "Select the first and last day of your absence.",
