@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { publicError } from '../../config/security.js';
 import { dateToIsoDate, todayCalendarIso } from '../../lib/calendarDate.js';
+import { loadAwayPlanReadinessForAbsence } from '../../lib/care/awayPlan/index.js';
 import { withOptionalTransaction } from '../../lib/db/withOptionalTransaction.js';
 import {
   absenceToMap,
@@ -356,6 +357,20 @@ export function registerPlannedAbsenceRoutes(router, pool) {
         absence: absenceToMap(row, petRows),
         overlap_warnings: overlapWarnings,
       });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.get('/:id/readiness', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const row = await loadAbsenceForUser(pool, req.params.id, userId);
+      if (!row) return res.status(404).json({ error: 'Not found' });
+      const petRows = await loadAbsencePets(pool, row.id);
+      const readiness = await loadAwayPlanReadinessForAbsence(pool, row, petRows);
+      res.json(readiness);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
