@@ -1,0 +1,468 @@
+{
+  "schema_version": 1,
+  "plan_id": "away-planning-v1",
+  "approved_at": "2026-09-15T19:24:54.636Z",
+  "approved_by": "user chat 2026-09-15 — confirmed plan review #1196; proceed autonomously with /execute-plan; do not ask between phases",
+  "approved_until": "2026-09-17T19:24:54.636Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/away-planning-v1-integration-5176",
+  "control_issue": 1198,
+  "artifact_branch_policy": "phase-branch",
+  "content_hash": "sha256:15b2ceca78a2e1da3add7329d79c5b922385e69b8796dd867f887cb2c42b446b",
+  "phases": [
+    {
+      "id": "aw-emergency",
+      "title": "AW-EMERGENCY — Hang-on-error fix (main)",
+      "branch": "cursor/away-planning-emergency-5176",
+      "allowed_paths": [
+        "server/routes/careContext/carePeriodCoverageRouter.js",
+        "server/routes/careContext/carePeriodProjectionRouter.js",
+        "server/test/careContext/carePeriodCoverageApi.test.js",
+        "server/test/careContext/carePeriodProjectionApi.test.js"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1197",
+      "pr_head_sha": null,
+      "merge_target": "main"
+    },
+    {
+      "id": "aw-doc-0",
+      "title": "AW-DOC-0 — Plan bootstrap",
+      "branch": "cursor/away-planning-v1-plan-5176",
+      "allowed_paths": [
+        ".agents/plans/away-planning-v1.*",
+        "docs/domains/pet_care/**",
+        "docs/design/terminology.md",
+        "docs/debt/debt.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1196",
+      "pr_head_sha": null
+    },
+    {
+      "id": "aw-0",
+      "title": "AW-0 — Backend hygiene",
+      "branch": "cursor/away-planning-aw0-5176",
+      "allowed_paths": [
+        "server/routes/careContext/plannedAbsencesRouter.js",
+        "server/lib/care/plannedAbsence.js",
+        "server/lib/calendarDate.js",
+        "server/lib/db/**",
+        "server/test/careContext/**",
+        "server/test/pets/helpers.js"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "aw-1",
+      "title": "AW-1 — Terminology rename",
+      "branch": "cursor/away-planning-aw1-terminology-5176",
+      "allowed_paths": [
+        "flutter_app/lib/l10n/**",
+        "flutter_app/lib/features/vet/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/core/widgets/collection_filter/**",
+        "flutter_app/test/**",
+        "flutter_app/test/bdd/features/guardian_dashboard.feature",
+        "e2e/playwright/**",
+        "docs/design/terminology.md",
+        "docs/domains/pet_profile/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "aw-2",
+      "title": "AW-2 — Routing (additive)",
+      "branch": "cursor/away-planning-aw2-routing-5176",
+      "allowed_paths": [
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/test/core/router/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "aw-3",
+      "title": "AW-3 — Projection read contract",
+      "branch": "cursor/away-planning-aw3-projection-5176",
+      "allowed_paths": [
+        "server/lib/care/schedule/projectSchedule.js",
+        "server/lib/care/awayPlan/**",
+        "server/routes/careContext/carePeriodCoverageRouter.js",
+        "server/routes/careContext/carePeriodProjectionRouter.js",
+        "server/test/careContext/**",
+        "server/test/careSchedule/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "aw-5a",
+      "title": "AW-5a — List API scope + overlap",
+      "branch": "cursor/away-planning-aw5a-list-api-5176",
+      "allowed_paths": [
+        "server/routes/careContext/plannedAbsencesRouter.js",
+        "server/test/careContext/plannedAbsences.test.js",
+        "docs/architecture/api-reference.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "aw-4",
+      "title": "AW-4 — Carer schema + API",
+      "branch": "cursor/away-planning-aw4-carer-5176",
+      "allowed_paths": [
+        "db/migrations/**",
+        "db/schema/**",
+        "server/routes/careContext/**",
+        "server/routes/pets/**",
+        "server/lib/care/plannedAbsence.js",
+        "server/test/careContext/**",
+        "server/test/migrations/**",
+        "docs/architecture/api-reference.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "aw-8",
+      "title": "AW-8 — Readiness derivation",
+      "branch": "cursor/away-planning-aw8-readiness-5176",
+      "allowed_paths": [
+        "server/lib/care/awayPlan/**",
+        "server/routes/careContext/**",
+        "server/test/careContext/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "aw-5b",
+      "title": "AW-5b — Hub UI",
+      "branch": "cursor/away-planning-aw5b-hub-5176",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/test/features/pet_care/context/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "aw-6",
+      "title": "AW-6 — Stateful dashboard tile",
+      "branch": "cursor/away-planning-aw6-tile-5176",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/test/**",
+        "docs/domains/pet_profile/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "aw-7",
+      "title": "AW-7 — Plan page",
+      "branch": "cursor/away-planning-aw7-plan-page-5176",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/test/features/pet_care/context/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "aw-9",
+      "title": "AW-9 — Handover document",
+      "branch": "cursor/away-planning-aw9-handover-5176",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/**",
+        "server/routes/careContext/**",
+        "db/migrations/**",
+        "db/schema/**",
+        "server/test/careContext/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "aw-seed",
+      "title": "AW-SEED — away-planning seed",
+      "branch": "cursor/away-planning-aw-seed-5176",
+      "allowed_paths": [
+        "server/db/seeds/**",
+        "server/scripts/seed.js",
+        "server/test/seed.test.js",
+        "docs/e2e/uat-demo-data.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "aw-10",
+      "title": "AW-10 — Docs + journey",
+      "branch": "cursor/away-planning-aw10-docs-5176",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        "docs/architecture/api-reference.md",
+        "flutter_app/test/bdd/**",
+        "e2e/playwright/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    }
+  ]
+}
