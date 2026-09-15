@@ -13,10 +13,7 @@ export { rescheduleOccurrence } from './rescheduleOccurrence.js';
 export { skipMissedOccurrences, skipOccurrence } from './skipOccurrence.js';
 export { pauseSeries, resumeSeries } from './pauseResumeSeries.js';
 export { undoLastAction } from './undoLastAction.js';
-<<<<<<< HEAD
 export { explainGap, scheduleEventToFact } from './explainGap.js';
-=======
->>>>>>> 4090edcb (phase(csm-8/18): feat: undoLastAction primitive)
 export {
   insertCareScheduleEvent,
   SCHEDULE_EVENT_CADENCE_ADJUSTED,
@@ -40,6 +37,7 @@ export {
   UNCERTAINTY_REASON_FROM_COMPLETION_CHAIN,
   UNCERTAINTY_REASON_FROM_COMPLETION_PENDING,
   isDateInCareWindow,
+  loadAndProjectSchedule,
   projectCareForPeriod,
   projectEntryForPeriod,
   projectSchedule,
