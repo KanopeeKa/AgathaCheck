@@ -12,6 +12,7 @@ export { completeOccurrence } from './completeOccurrence.js';
 export { rescheduleOccurrence } from './rescheduleOccurrence.js';
 export { skipMissedOccurrences, skipOccurrence } from './skipOccurrence.js';
 export { pauseSeries, resumeSeries } from './pauseResumeSeries.js';
+export { undoLastAction } from './undoLastAction.js';
 export { explainGap, scheduleEventToFact } from './explainGap.js';
 export {
   insertCareScheduleEvent,
