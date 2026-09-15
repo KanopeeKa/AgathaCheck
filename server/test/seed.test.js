@@ -63,6 +63,21 @@ describe('seed demo constants', () => {
     );
     expect(DEMO_USERS[MAIN_DEMO_USER_KEY].first_name).toBe('Frederique');
   });
+
+  it('exposes stable CSM fixture IDs for scheduling edge cases', () => {
+    expect(DEMO_IDS.csmWeeklyCourse).toMatch(
+      /^a6000001-0001-4001-8001-000000000020$/,
+    );
+    expect(DEMO_IDS.csmVaccinationDueDate).toMatch(
+      /^a6000001-0001-4001-8001-000000000021$/,
+    );
+    expect(DEMO_IDS.csmWeightFarFuture).toMatch(
+      /^a6000001-0001-4001-8001-000000000025$/,
+    );
+    expect(DEMO_IDS.csmWeightOccPending).toMatch(
+      /^a6300001-0001-4001-8001-000000000025$/,
+    );
+  });
 });
 
 describe('demo credentials documentation', () => {
