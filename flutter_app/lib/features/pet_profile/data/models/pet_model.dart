@@ -31,6 +31,9 @@ class PetModel {
     this.fosterName,
     this.primaryHolderName,
     this.createdAt,
+    this.weightReferenceValue,
+    this.weightReferenceAuthority,
+    this.weightManagementContext = 'none',
   });
 
   static DateTime? _parseTimestamp(dynamic raw) {
@@ -70,6 +73,12 @@ class PetModel {
           json['primary_holder_name'] as String? ??
           json['guardian_name'] as String?,
       createdAt: _parseTimestamp(json['createdAt'] ?? json['created_at']),
+      weightReferenceValue:
+          (json['weight_reference_value'] as num?)?.toDouble(),
+      weightReferenceAuthority:
+          json['weight_reference_authority'] as String?,
+      weightManagementContext:
+          (json['weight_management_context'] as String?) ?? 'none',
     );
   }
 
@@ -100,6 +109,9 @@ class PetModel {
       fosterName: pet.fosterName,
       primaryHolderName: pet.primaryHolderName,
       createdAt: pet.createdAt,
+      weightReferenceValue: pet.weightReferenceValue,
+      weightReferenceAuthority: pet.weightReferenceAuthority,
+      weightManagementContext: pet.weightManagementContext,
     );
   }
 
@@ -132,6 +144,9 @@ class PetModel {
   final String? fosterName;
   final String? primaryHolderName;
   final DateTime? createdAt;
+  final double? weightReferenceValue;
+  final String? weightReferenceAuthority;
+  final String weightManagementContext;
 
   Map<String, dynamic> toJson({bool includeWeightEntryDate = false}) {
     return {
@@ -154,6 +169,9 @@ class PetModel {
       'passedAway': passedAway,
       'organization_id': organizationId,
       'organization_name': organizationName,
+      'weight_reference_value': weightReferenceValue,
+      'weight_reference_authority': weightReferenceAuthority,
+      'weight_management_context': weightManagementContext,
       if (includeWeightEntryDate && weight != null)
         'weightEntryDate': toCalendarDateString(
           calendarDateOnly(DateTime.now()),
@@ -190,6 +208,9 @@ class PetModel {
       fosterName: fosterName,
       primaryHolderName: primaryHolderName,
       createdAt: createdAt,
+      weightReferenceValue: weightReferenceValue,
+      weightReferenceAuthority: weightReferenceAuthority,
+      weightManagementContext: weightManagementContext,
     );
   }
 }

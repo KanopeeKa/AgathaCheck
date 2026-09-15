@@ -15,6 +15,7 @@ import 'pet_form_labeled_field.dart';
 import 'pet_form_neutered_section.dart';
 import 'pet_form_section.dart';
 import 'pet_form_vet_section.dart';
+import 'pet_form_weight_context_section.dart';
 import 'pet_form_weight_section.dart';
 
 /// Shared form fields for add/edit pet — layout-aware row grouping for tablet+.
@@ -300,9 +301,29 @@ class PetFormContent extends StatelessWidget {
     );
 
     if (!_usePairedRows) {
-      return [weightField, const SizedBox(height: 16), neuteredField];
+      return [
+        weightField,
+        const SizedBox(height: 16),
+        neuteredField,
+        if (isEditing) ...[
+          const SizedBox(height: 16),
+          PetFormWeightContextSection(
+            controller: controller,
+            onMarkDirty: onMarkDirty,
+          ),
+        ],
+      ];
     }
 
-    return [neuteredField];
+    return [
+      neuteredField,
+      if (isEditing) ...[
+        const SizedBox(height: 16),
+        PetFormWeightContextSection(
+          controller: controller,
+          onMarkDirty: onMarkDirty,
+        ),
+      ],
+    ];
   }
 }

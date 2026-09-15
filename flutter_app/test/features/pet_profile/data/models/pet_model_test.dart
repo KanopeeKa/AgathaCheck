@@ -348,4 +348,78 @@ void main() {
       expect(restored.passedAway, fullModel.passedAway);
     });
   });
+
+  group('weight-context fields', () {
+    test('fromJson parses weight_reference_* and weight_management_context', () {
+      final model = PetModel.fromJson({
+        'id': 'test-id',
+        'name': 'Buddy',
+        'species': 'Dog',
+        'weight_reference_value': 5.0,
+        'weight_reference_authority': 'vet_target',
+        'weight_management_context': 'vet_managed',
+      });
+
+      expect(model.weightReferenceValue, 5.0);
+      expect(model.weightReferenceAuthority, 'vet_target');
+      expect(model.weightManagementContext, 'vet_managed');
+    });
+
+    test('fromJson defaults weight_management_context to none when absent', () {
+      final model = PetModel.fromJson({'id': 'test-id', 'name': 'Buddy', 'species': 'Dog'});
+
+      expect(model.weightManagementContext, 'none');
+      expect(model.weightReferenceValue, isNull);
+      expect(model.weightReferenceAuthority, isNull);
+    });
+
+    test('toJson serializes weight-context fields', () {
+      final model = PetModel(
+        id: 'test-id',
+        name: 'Buddy',
+        species: 'Dog',
+        weightReferenceValue: 5.0,
+        weightReferenceAuthority: 'vet_target',
+        weightManagementContext: 'vet_managed',
+      );
+      final json = model.toJson();
+
+      expect(json['weight_reference_value'], 5.0);
+      expect(json['weight_reference_authority'], 'vet_target');
+      expect(json['weight_management_context'], 'vet_managed');
+    });
+  });
+
+  group('Pet.copyWith weight-context clear flags', () {
+    test('clearWeightReferenceAuthority sets the field to null', () {
+      final pet = Pet(
+        id: 'test-id',
+        name: 'Buddy',
+        species: 'Dog',
+        weightReferenceValue: 5.0,
+        weightReferenceAuthority: 'vet_target',
+        weightManagementContext: 'vet_managed',
+      );
+      final cleared = pet.copyWith(clearWeightReferenceAuthority: true);
+
+      expect(cleared.weightReferenceAuthority, isNull);
+      expect(cleared.weightReferenceValue, 5.0);
+      expect(cleared.weightManagementContext, 'vet_managed');
+    });
+
+    test('clearWeightReferenceValue sets the field to null', () {
+      final pet = Pet(
+        id: 'test-id',
+        name: 'Buddy',
+        species: 'Dog',
+        weightReferenceValue: 5.0,
+        weightReferenceAuthority: 'vet_target',
+        weightManagementContext: 'vet_managed',
+      );
+      final cleared = pet.copyWith(clearWeightReferenceValue: true);
+
+      expect(cleared.weightReferenceValue, isNull);
+      expect(cleared.weightReferenceAuthority, 'vet_target');
+    });
+  });
 }

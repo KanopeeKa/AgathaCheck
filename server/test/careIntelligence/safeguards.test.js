@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { createApp } from '../../bin/server.js';
 import { handlePetAccessQuery } from '../helpers/petAccessMocks.js';
 import { evaluateWeightSafeguard } from '../../routes/careIntelligence/weightSafeguardEvaluator.js';
+import { weightContextFromPetRow } from '../../routes/careIntelligence/provenance.js';
 import {
   evidenceFingerprint,
   magnitudeBucket,
@@ -56,6 +57,24 @@ describe('weightSafeguardEvaluator', () => {
       pet: { id: 'pet-1', date_of_birth: '2018-01-01' },
       measurements: decliningSeries.slice(0, 1),
       weightContext: { management_context: 'none' },
+    });
+    expect(result).toBeNull();
+  });
+
+  it('suppresses when management context is set via pet row (production path)', () => {
+    const petRow = {
+      id: 'pet-1',
+      date_of_birth: '2018-01-01',
+      weight_reference_value: 5.0,
+      weight_reference_authority: 'vet_target',
+      weight_management_context: 'vet_managed',
+    };
+    const weightContext = weightContextFromPetRow(petRow);
+    expect(weightContext.management_context).toBe('vet_managed');
+    const result = evaluateWeightSafeguard({
+      pet: petRow,
+      measurements: decliningSeries,
+      weightContext,
     });
     expect(result).toBeNull();
   });

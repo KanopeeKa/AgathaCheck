@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/weight_provenance.dart';
 
-/// D3 — progressive weight management context capture (pet profile integration point).
+/// Weight management context capture (pet profile edit form integration point).
 class WeightManagementContextSelector extends StatelessWidget {
   const WeightManagementContextSelector({
     required this.value,
@@ -15,14 +16,17 @@ class WeightManagementContextSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return DropdownButtonFormField<ManagementContext>(
       value: value,
-      decoration: const InputDecoration(
-        labelText: 'Weight management',
-        helperText: 'Is this weight change already being managed?',
+      decoration: InputDecoration(
+        labelText: l.weightManagementContextLabel,
+        helperText: l.weightManagementContextHelper,
       ),
       items: ManagementContext.values
-          .map((ctx) => DropdownMenuItem(value: ctx, child: Text(_label(ctx))))
+          .map(
+            (ctx) => DropdownMenuItem(value: ctx, child: Text(_label(ctx, l))),
+          )
           .toList(),
       onChanged: (v) {
         if (v != null) onChanged(v);
@@ -30,10 +34,11 @@ class WeightManagementContextSelector extends StatelessWidget {
     );
   }
 
-  String _label(ManagementContext ctx) => switch (ctx) {
-    ManagementContext.none => 'Not sure / not managed',
-    ManagementContext.vetManaged => 'Yes, with my vet',
-    ManagementContext.carePlan => 'Yes, as part of a care plan',
-    ManagementContext.treatmentRelated => 'Related to treatment',
+  String _label(ManagementContext ctx, AppLocalizations l) => switch (ctx) {
+    ManagementContext.none => l.weightManagementContextNone,
+    ManagementContext.vetManaged => l.weightManagementContextVetManaged,
+    ManagementContext.carePlan => l.weightManagementContextCarePlan,
+    ManagementContext.treatmentRelated =>
+      l.weightManagementContextTreatmentRelated,
   };
 }
