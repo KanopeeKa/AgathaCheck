@@ -5,6 +5,7 @@
 import {
   addCalendarDaysIso,
   normalizeCalendarDateInput,
+  timestampToIso,
   todayCalendarIso,
 } from '../calendarDate.js';
 
@@ -63,11 +64,9 @@ export function absenceToMap(row, petIds = []) {
     source_ref: row.source_ref || null,
     status: row.status || PLANNED_ABSENCE_STATUS_ACTIVE,
     pet_ids: petIds,
-    created_at: row.created_at?.toISOString?.() || String(row.created_at),
-    updated_at: row.updated_at?.toISOString?.() || String(row.updated_at),
-    cancelled_at: row.cancelled_at
-      ? row.cancelled_at.toISOString?.() || String(row.cancelled_at)
-      : null,
+    created_at: timestampToIso(row.created_at),
+    updated_at: timestampToIso(row.updated_at),
+    cancelled_at: timestampToIso(row.cancelled_at),
   };
 }
 
