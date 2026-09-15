@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { publicError } from '../../config/security.js';
-import { todayCalendarIso } from '../../lib/calendarDate.js';
+import { dateToIsoDate, todayCalendarIso } from '../../lib/calendarDate.js';
+import { withOptionalTransaction } from '../../lib/db/withOptionalTransaction.js';
 import {
   absenceToMap,
   dateRangesOverlap,
@@ -19,6 +20,29 @@ async function loadPetIds(pool, absenceId) {
     [absenceId]
   );
   return result.rows.map((r) => r.pet_id);
+}
+
+/**
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {string[]} absenceIds
+ * @returns {Promise<Map<string, string[]>>}
+ */
+async function loadPetIdsByAbsenceIds(pool, absenceIds) {
+  const map = new Map();
+  if (!absenceIds.length) return map;
+  const result = await pool.query(
+    `SELECT planned_absence_id, pet_id
+     FROM planned_absence_pets
+     WHERE planned_absence_id = ANY($1::uuid[])
+     ORDER BY pet_id`,
+    [absenceIds]
+  );
+  for (const row of result.rows) {
+    const list = map.get(row.planned_absence_id) || [];
+    list.push(row.pet_id);
+    map.set(row.planned_absence_id, list);
+  }
+  return map;
 }
 
 async function loadAbsenceForUser(pool, absenceId, userId) {
@@ -60,10 +84,9 @@ async function findOverlapWarnings(pool, userId, petIds, startsOn, endsOn, exclu
   const warnings = [];
   for (const row of result.rows) {
     if (excludeAbsenceId && row.id === excludeAbsenceId) continue;
-    const otherStart = row.starts_on.toISOString?.().slice(0, 10)
-      || String(row.starts_on).slice(0, 10);
-    const otherEnd = row.ends_on.toISOString?.().slice(0, 10)
-      || String(row.ends_on).slice(0, 10);
+    const otherStart = dateToIsoDate(row.starts_on);
+    const otherEnd = dateToIsoDate(row.ends_on);
+    if (!otherStart || !otherEnd) continue;
     if (!dateRangesOverlap(startsOn, endsOn, otherStart, otherEnd)) continue;
     warnings.push({
       pet_id: row.pet_id,
@@ -77,12 +100,12 @@ async function findOverlapWarnings(pool, userId, petIds, startsOn, endsOn, exclu
 
 async function replaceAbsencePets(pool, absenceId, petIds) {
   await pool.query('DELETE FROM planned_absence_pets WHERE planned_absence_id = $1', [absenceId]);
-  for (const petId of petIds) {
-    await pool.query(
-      'INSERT INTO planned_absence_pets (planned_absence_id, pet_id) VALUES ($1, $2)',
-      [absenceId, petId]
-    );
-  }
+  if (petIds.length === 0) return;
+  await pool.query(
+    `INSERT INTO planned_absence_pets (planned_absence_id, pet_id)
+     SELECT $1, unnest($2::uuid[])`,
+    [absenceId, petIds]
+  );
 }
 
 export function registerPlannedAbsenceRoutes(router, pool) {
@@ -99,11 +122,12 @@ export function registerPlannedAbsenceRoutes(router, pool) {
          ORDER BY starts_on ASC`,
         [userId, PLANNED_ABSENCE_STATUS_CANCELLED, todayIso]
       );
-      const items = [];
-      for (const row of result.rows) {
-        const petIds = await loadPetIds(pool, row.id);
-        items.push(absenceToMap(row, petIds));
-      }
+      const absenceIds = result.rows.map((row) => row.id);
+      const petIdsByAbsence = await loadPetIdsByAbsenceIds(pool, absenceIds);
+      const items = result.rows.map((row) => absenceToMap(
+        row,
+        petIdsByAbsence.get(row.id) || []
+      ));
       res.json(items);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -130,24 +154,27 @@ export function registerPlannedAbsenceRoutes(router, pool) {
       );
       const id = uuidv4();
       const provenance = body.provenance || PLANNED_ABSENCE_PROVENANCE_USER_DECLARED;
-      const result = await pool.query(
-        `INSERT INTO planned_absences
-           (id, user_id, starts_on, ends_on, provenance, source_ref, status)
-         VALUES ($1, $2, $3::date, $4::date, $5, $6, $7)
-         RETURNING *`,
-        [
-          id,
-          userId,
-          window.starts_on,
-          window.ends_on,
-          provenance,
-          body.source_ref || body.sourceRef || null,
-          PLANNED_ABSENCE_STATUS_ACTIVE,
-        ]
-      );
-      await replaceAbsencePets(pool, id, petsCheck.petIds);
+      const row = await withOptionalTransaction(pool, async (client) => {
+        const result = await client.query(
+          `INSERT INTO planned_absences
+             (id, user_id, starts_on, ends_on, provenance, source_ref, status)
+           VALUES ($1, $2, $3::date, $4::date, $5, $6, $7)
+           RETURNING *`,
+          [
+            id,
+            userId,
+            window.starts_on,
+            window.ends_on,
+            provenance,
+            body.source_ref || body.sourceRef || null,
+            PLANNED_ABSENCE_STATUS_ACTIVE,
+          ]
+        );
+        await replaceAbsencePets(client, id, petsCheck.petIds);
+        return result.rows[0];
+      });
       res.status(201).json({
-        absence: absenceToMap(result.rows[0], petsCheck.petIds),
+        absence: absenceToMap(row, petsCheck.petIds),
         overlap_warnings: overlapWarnings,
       });
     } catch (err) {
@@ -200,16 +227,19 @@ export function registerPlannedAbsenceRoutes(router, pool) {
         existing.id
       );
 
-      const result = await pool.query(
-        `UPDATE planned_absences
-         SET starts_on = $1::date, ends_on = $2::date, updated_at = NOW()
-         WHERE id = $3 AND user_id = $4
-         RETURNING *`,
-        [window.starts_on, window.ends_on, existing.id, userId]
-      );
-      await replaceAbsencePets(pool, existing.id, petIds);
+      const updated = await withOptionalTransaction(pool, async (client) => {
+        const result = await client.query(
+          `UPDATE planned_absences
+           SET starts_on = $1::date, ends_on = $2::date, updated_at = NOW()
+           WHERE id = $3 AND user_id = $4
+           RETURNING *`,
+          [window.starts_on, window.ends_on, existing.id, userId]
+        );
+        await replaceAbsencePets(client, existing.id, petIds);
+        return result.rows[0];
+      });
       res.json({
-        absence: absenceToMap(result.rows[0], petIds),
+        absence: absenceToMap(updated, petIds),
         overlap_warnings: overlapWarnings,
       });
     } catch (err) {

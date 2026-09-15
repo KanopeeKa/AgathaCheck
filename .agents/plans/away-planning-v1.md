@@ -22,15 +22,13 @@ Evolve `care_context` into Away Planning: hub, plan page, per-pet carer model, d
 
 ## Autonomy
 
-**NOT APPROVED for full `/execute-plan`.** AW-DOC-0 and AW-EMERGENCY proceed per human confirmation ([#1196](https://github.com/KanopeeKa/AgathaCheck/pull/1196)). Remaining phases need control issue + snapshot before autonomous gate.
-
 | Field | Value |
 |-------|-------|
-| **approved_at** | — |
-| **approved_until** | — |
-| **approved_by** | Human confirmed plan 2026-09-15 (chat); full `approve-autonomous` pending |
-| **autonomy** | not requested |
-| **control_issue** | not created |
+| **approved_at** | 2026-09-15T19:24:54Z |
+| **approved_until** | 2026-09-17T19:24:54Z |
+| **approved_by** | User chat 2026-09-15 — confirmed plan review #1196; proceed autonomously with `/execute-plan` |
+| **autonomy** | `active` |
+| **control_issue** | [#1198](https://github.com/KanopeeKa/AgathaCheck/issues/1198) |
 
 ## Phases
 
@@ -174,3 +172,22 @@ AW-DOC-0, AW-0, AW-1, AW-2, AW-3 parallel. AW-5a parallel with AW-4 after AW-0. 
 | **branch** | `cursor/away-planning-aw10-docs-5176` |
 
 **allowed_paths:** `docs/domains/pet_care/**`, `docs/architecture/api-reference.md`, `flutter_app/test/bdd/**`, `e2e/playwright/**`
+
+## Runtime state
+
+```yaml
+autonomy: active
+current_phase: aw-0
+last_completed_phase: aw-doc-0
+halt_reason: null
+next_action: "continue phase aw-0 on branch cursor/away-planning-aw0-5176"
+artifact_ref:
+  branch: cursor/away-planning-aw0-5176
+  plan_path: .agents/plans/away-planning-v1.md
+  plan_commit: 70d021677d290f32e19a2656e37f0955a05a32cc
+  snapshot_path: .agents/plans/away-planning-v1.snapshot.json
+  snapshot_commit: 70d021677d290f32e19a2656e37f0955a05a32cc
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1201"]
+merge_commits: {"aw-emergency":"48082deb88660705c32c93a22c22ebb0e73e350b"}
+debt_issue_refs: []
+```
