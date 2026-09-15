@@ -15,7 +15,7 @@ import 'health_entry_type_labels.dart';
 /// global `/g/events` lists.
 ///
 /// Information-first layout: pet avatar, three metadata lines, one Done action.
-/// Row tap opens the event view screen; snooze and edit live on view only.
+/// Row tap opens the event view screen; edit lives on view only.
 class CareEventRow extends StatelessWidget {
   const CareEventRow({
     super.key,
