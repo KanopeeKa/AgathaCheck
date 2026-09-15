@@ -3,7 +3,7 @@ title: Calendar dates in Agatha Track
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-21
+last_updated: 2026-09-15
 tags: [documentation]
 ---
 # Calendar dates in Agatha Track
@@ -40,8 +40,11 @@ All Node DB connections set `TIME ZONE 'UTC'` on connect (`server/bin/server.js`
 | `neutered_date` | `pets` | `PetModel`, `pet_form_screen` |
 | `start_date` | `health_entries` | `HealthEntryModel`, health entry forms |
 | `next_due_date` | `health_entries` | `HealthEntryModel`, due-date pickers |
-| `completed_on` | `health_entries`, `health_history` | `HealthEntryModel`, `HealthHistoryModel` |
+| `completed_on` | `health_entries`, `health_history`, `health_occurrences` | `HealthEntryModel`, `HealthHistoryModel`, occurrence complete |
 | `repeat_end_date` | `health_entries` | `HealthEntryModel`, repeat-end picker |
+| `paused_since` | `health_entries` | CSM pause cache — see [care-schedule-management.md](../domains/pet_care/features/care-schedule-management.md) |
+| `scheduled_date` | `health_occurrences` | Occurrence materialisation (CSM) |
+| `from_date` / `to_date` / `effective_from` | `care_schedule_events` | CSM ledger — reschedule, pause, cadence events |
 | `start_date` / `end_date` | `health_issues` | `HealthIssueModel`, health issues section |
 | `due_date` | `health_history` | `HealthHistoryModel` |
 | `date` | `weight_entries` | `WeightEntryModel`, weight tracking section |

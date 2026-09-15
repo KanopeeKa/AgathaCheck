@@ -8,7 +8,7 @@ import '../../domain/entities/health_history_entry.dart';
 import '../providers/health_providers.dart';
 import 'pet_event_lifecycle.dart';
 
-/// Collapsible past iterations list with skip / unmark actions.
+/// Collapsible past iterations list with unmark actions.
 class PetEventPastIterationsSection extends ConsumerStatefulWidget {
   const PetEventPastIterationsSection({
     super.key,
@@ -66,8 +66,6 @@ class _PetEventPastIterationsSectionState
                           !muted &&
                           lastCompleted?.id == row.id &&
                           row.isCompleted,
-                      canSkip: !muted && !row.isCompleted && !row.isSkipped,
-                      onSkip: row.dueDate == null ? null : () => _skip(row),
                       onUnmark: () => _unmarkDone(),
                     ),
                 ],
@@ -76,15 +74,6 @@ class _PetEventPastIterationsSectionState
         ],
       ),
     );
-  }
-
-  Future<void> _skip(HealthHistoryEntry row) async {
-    final dueDate = row.dueDate;
-    if (dueDate == null) return;
-    await ref
-        .read(healthEntriesNotifierProvider.notifier)
-        .skipIteration(widget.entry.id, dueDate: dueDate);
-    ref.invalidate(entryHistoryProvider(widget.entry.id));
   }
 
   Future<void> _unmarkDone() async {
@@ -101,17 +90,13 @@ class _PastIterationCard extends StatelessWidget {
     required this.dateFormat,
     required this.muted,
     required this.canUnmark,
-    required this.canSkip,
     required this.onUnmark,
-    this.onSkip,
   });
 
   final HealthHistoryEntry row;
   final DateFormat dateFormat;
   final bool muted;
   final bool canUnmark;
-  final bool canSkip;
-  final VoidCallback? onSkip;
   final VoidCallback onUnmark;
 
   @override
@@ -145,24 +130,12 @@ class _PastIterationCard extends StatelessWidget {
               statusLabel,
               style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
             ),
-            if (!muted && (canSkip || canUnmark)) ...[
+            if (!muted && canUnmark) ...[
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: [
-                  if (canSkip && onSkip != null)
-                    OutlinedButton(
-                      key: Key('skip_iteration_${row.id}'),
-                      onPressed: onSkip,
-                      child: Text(l.skipOccurrence),
-                    ),
-                  if (canUnmark)
-                    OutlinedButton(
-                      key: Key('unmark_done_${row.id}'),
-                      onPressed: onUnmark,
-                      child: Text(l.unmarkDone),
-                    ),
-                ],
+              OutlinedButton(
+                key: Key('unmark_done_${row.id}'),
+                onPressed: onUnmark,
+                child: Text(l.unmarkDone),
               ),
             ],
           ],

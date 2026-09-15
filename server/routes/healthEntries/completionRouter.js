@@ -1,19 +1,18 @@
-import { v4 as uuidv4 } from 'uuid';
-
 import { publicError } from '../../config/security.js';
-import { nextOccurrence } from '../../lib/recurrenceHelper.js';
-import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../../lib/calendarDate.js';
+import { dateToIsoDate } from '../../lib/calendarDate.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { extractUserId, healthEntryToMap, historyToMap } from './shared.js';
 import { completeOldestPendingOccurrence } from './occurrencesRouter.js';
 import { closeHealthEntrySeries } from '../../lib/occurrenceLifecycle.js';
-import { syncNextDueDateFromOccurrences } from '../../lib/occurrenceScheduling.js';
+import { undoLastAction } from '../../lib/care/schedule/undoLastAction.js';
 import {
   isWeightMonitoringEntry,
   WEIGHT_GENERIC_COMPLETE_ERROR,
 } from './weightOccurrenceCompletion.js';
+
+const NO_PENDING_OCCURRENCE_ERROR = 'No pending occurrence; use occurrence complete API';
 
 export function registerCompletionRoutes(router, pool) {
   router.post('/:id/mark-taken', async (req, res) => {
@@ -35,78 +34,26 @@ export function registerCompletionRoutes(router, pool) {
         `SELECT id FROM health_occurrences WHERE health_entry_id = $1 AND status = 'pending' LIMIT 1`,
         [entryId]
       );
-      if (occPending.rows.length > 0 && isWeightMonitoringEntry(row)) {
+      if (occPending.rows.length === 0) {
+        return res.status(400).json({ error: NO_PENDING_OCCURRENCE_ERROR });
+      }
+      if (isWeightMonitoringEntry(row)) {
         return res.status(400).json({ error: WEIGHT_GENERIC_COMPLETE_ERROR });
       }
-      if (occPending.rows.length > 0) {
-        await completeOldestPendingOccurrence(pool, entryId, userId, body, req);
-        const updated = await pool.query('SELECT * FROM health_entries WHERE id = $1', [entryId]);
-        const entry = updated.rows[0];
-        entry.pet_name = null;
-        return res.json(healthEntryToMap(entry));
+      const closed = await completeOldestPendingOccurrence(pool, entryId, userId, body, req);
+      if (!closed) {
+        return res.status(400).json({ error: NO_PENDING_OCCURRENCE_ERROR });
       }
-      const dueDateIso = dateToIsoDate(row.next_due_date);
-      const completedOnIso = normalizeCalendarDateInput(body.completed_on || body.completedOn)
-        || todayCalendarIso();
-      const anchor = row.recurrence_anchor || 'from_completion';
-      if (anchor === 'from_due_date' && !dueDateIso && (row.frequency || 'once') !== 'once') {
-        return res.status(400).json({ error: 'Due date is required for fixed-schedule recurring entries' });
-      }
-      const newDueDate = nextOccurrence(row, completedOnIso);
-      const notes = body.notes || '';
-      const histId = uuidv4();
-      const markedAt = new Date();
-
-      if ((row.frequency || 'once') === 'once') {
-        const result = await pool.query(
-          `UPDATE health_entries SET status = 'completed', completed_on = $1, completed_at = $2,
-            next_due_date = NULL, updated_at = NOW()
-           WHERE id = $3 RETURNING *`,
-          [completedOnIso, markedAt, entryId]
-        );
-        await pool.query(
-          `INSERT INTO health_history (id, health_entry_id, status, notes, due_date, completed_on, marked_by_user_id, changed_at)
-           VALUES ($1, $2, 'completed', $3, $4, $5, $6, $7)`,
-          [histId, entryId, notes, dueDateIso, completedOnIso, userId, markedAt]
-        );
-        logAuditEventSafe(pool, {
-          actorUserId: userId,
-          action: 'health_entry.marked_complete',
-          resourceType: 'health_entry',
-          resourceId: entryId,
-          petId: row.pet_id,
-          metadata: { entry_type: row.type, frequency: row.frequency || 'once' },
-          req,
-        });
-        recordPetActivityForPet(pool, {
-          petId: row.pet_id,
-          actorUserId: userId,
-          eventType: 'health_log',
-          metadata: { action: 'complete', entry_type: row.type },
-        });
-        const entry = result.rows[0];
-        entry.pet_name = null;
-        return res.json(healthEntryToMap(entry));
-      }
-
-      const result = await pool.query(
-        `UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at = $1,
-          next_due_date = $2, updated_at = NOW()
-         WHERE id = $3 RETURNING *`,
-        [markedAt, newDueDate, entryId]
-      );
-      await pool.query(
-        `INSERT INTO health_history (id, health_entry_id, status, notes, due_date, completed_on, marked_by_user_id, changed_at)
-         VALUES ($1, $2, 'completed', $3, $4, $5, $6, $7)`,
-        [histId, entryId, notes, dueDateIso, completedOnIso, userId, markedAt]
-      );
+      const updated = await pool.query('SELECT * FROM health_entries WHERE id = $1', [entryId]);
+      const entry = updated.rows[0];
+      entry.pet_name = null;
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'health_entry.marked_complete',
         resourceType: 'health_entry',
         resourceId: entryId,
         petId: row.pet_id,
-        metadata: { entry_type: row.type, frequency: row.frequency || 'once' },
+        metadata: { entry_type: row.type, frequency: row.frequency || 'once', via: 'mark-taken' },
         req,
       });
       recordPetActivityForPet(pool, {
@@ -115,9 +62,67 @@ export function registerCompletionRoutes(router, pool) {
         eventType: 'health_log',
         metadata: { action: 'complete', entry_type: row.type },
       });
-      const entry = result.rows[0];
+      return res.json(healthEntryToMap(entry));
+    } catch (err) {
+      if (err.statusCode === 400) {
+        return res.status(400).json({ error: err.message });
+      }
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.post('/:id/schedule/undo', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const entryId = req.params.id;
+      if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
+        return res.status(404).json({ error: 'Entry not found' });
+      }
+      const existing = await pool.query(
+        'SELECT * FROM health_entries WHERE id = $1',
+        [entryId],
+      );
+      if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
+      const row = existing.rows[0];
+
+      const undone = await undoLastAction(pool, { entry: row, userId });
+      if (!undone) {
+        return res.status(400).json({ error: 'No schedule action to undo' });
+      }
+
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'health_entry.schedule_undone',
+        resourceType: 'health_entry',
+        resourceId: entryId,
+        petId: row.pet_id,
+        metadata: {
+          entry_type: row.type,
+          action_type: undone.actionType,
+          occurrence_id: undone.occurrence?.id ?? null,
+        },
+        req,
+      });
+      recordPetActivityForPet(pool, {
+        petId: row.pet_id,
+        actorUserId: userId,
+        eventType: 'health_log',
+        metadata: { action: 'schedule_undo', entry_type: row.type },
+      });
+
+      const entry = undone.entry;
       entry.pet_name = null;
-      res.json(healthEntryToMap(entry));
+      return res.json({
+        action_type: undone.actionType,
+        entry: healthEntryToMap(entry),
+        occurrence: undone.occurrence ? {
+          id: undone.occurrence.id,
+          status: undone.occurrence.status,
+          scheduled_date: dateToIsoDate(undone.occurrence.scheduled_date),
+        } : null,
+        next_due_date: undone.nextDueDate ?? dateToIsoDate(entry.next_due_date),
+      });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -131,84 +136,30 @@ export function registerCompletionRoutes(router, pool) {
       if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
         return res.status(404).json({ error: 'Entry not found' });
       }
-      const latestHist = await pool.query(
-        `SELECT * FROM health_history WHERE health_entry_id = $1
-         ORDER BY changed_at DESC LIMIT 1`,
-        [entryId]
-      );
       const existing = await pool.query(
         'SELECT * FROM health_entries WHERE id = $1',
-        [entryId]
+        [entryId],
       );
       if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
       const row = existing.rows[0];
 
-      if (latestHist.rows.length === 0 || latestHist.rows[0].status !== 'completed') {
-        const closedOcc = await pool.query(
-          `SELECT * FROM health_occurrences
-           WHERE health_entry_id = $1 AND status = 'completed'
-           ORDER BY marked_at DESC NULLS LAST LIMIT 1`,
-          [entryId]
-        );
-        if (closedOcc.rows.length === 0) {
-          return res.status(400).json({ error: 'No completed occurrence to unmark' });
-        }
-        const occ = closedOcc.rows[0];
-        await pool.query(
-          `UPDATE health_occurrences SET status = 'pending', completed_on = NULL,
-            marked_at = NULL, marked_by_user_id = NULL, notes = '', updated_at = NOW()
-           WHERE id = $1`,
-          [occ.id]
-        );
-        const restoreDue = dateToIsoDate(occ.scheduled_date || row.start_date);
-        const result = await pool.query(
-          `UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at = NULL,
-            next_due_date = CASE WHEN frequency = 'once' THEN $1 ELSE COALESCE($1, next_due_date) END,
-            updated_at = NOW()
-           WHERE id = $2 RETURNING *`,
-          [restoreDue, entryId]
-        );
-        await syncNextDueDateFromOccurrences(pool, entryId);
-        logAuditEventSafe(pool, {
-          actorUserId: userId,
-          action: 'health_entry.completion_undone',
-          resourceType: 'health_entry',
-          resourceId: entryId,
-          petId: row.pet_id,
-          metadata: { entry_type: row.type, via: 'occurrence' },
-          req,
+      const undone = await undoLastAction(pool, { entry: row, userId });
+      if (!undone) {
+        return res.status(400).json({ error: 'No schedule action to undo' });
+      }
+      if (undone.actionType !== 'complete') {
+        return res.status(400).json({
+          error: 'Last action is not a completion; use POST /:id/schedule/undo instead',
         });
-        recordPetActivityForPet(pool, {
-          petId: row.pet_id,
-          actorUserId: userId,
-          eventType: 'health_log',
-          metadata: { action: 'undo_complete', entry_type: row.type },
-        });
-        const entry = result.rows[0];
-        entry.pet_name = null;
-        return res.json(healthEntryToMap(entry));
       }
 
-      const lastCompleted = latestHist.rows[0];
-      await pool.query(
-        "UPDATE health_history SET status = 'undone' WHERE id = $1",
-        [lastCompleted.id]
-      );
-      const restoreDue = dateToIsoDate(lastCompleted.due_date || row.start_date);
-      const result = await pool.query(
-        `UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at = NULL,
-          next_due_date = CASE WHEN frequency = 'once' THEN $1 ELSE COALESCE($1, next_due_date) END,
-          updated_at = NOW()
-         WHERE id = $2 RETURNING *`,
-        [restoreDue, entryId]
-      );
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'health_entry.completion_undone',
         resourceType: 'health_entry',
         resourceId: entryId,
         petId: row.pet_id,
-        metadata: { entry_type: row.type },
+        metadata: { entry_type: row.type, via: 'undoLastAction' },
         req,
       });
       recordPetActivityForPet(pool, {
@@ -217,9 +168,9 @@ export function registerCompletionRoutes(router, pool) {
         eventType: 'health_log',
         metadata: { action: 'undo_complete', entry_type: row.type },
       });
-      const entry = result.rows[0];
+      const entry = undone.entry;
       entry.pet_name = null;
-      res.json(healthEntryToMap(entry));
+      return res.json(healthEntryToMap(entry));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -297,121 +248,6 @@ export function registerCompletionRoutes(router, pool) {
       });
       row.pet_name = null;
       res.json(healthEntryToMap(row));
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
-  });
-
-  router.post('/:id/skip', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const entryId = req.params.id;
-      const body = req.body || {};
-      if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
-        return res.status(404).json({ error: 'Entry not found' });
-      }
-      const dueDateIso = normalizeCalendarDateInput(body.due_date || body.dueDate);
-      if (!dueDateIso) {
-        return res.status(400).json({ error: 'due_date is required' });
-      }
-      const existing = await pool.query(
-        'SELECT he.* FROM health_entries he WHERE he.id = $1',
-        [entryId]
-      );
-      if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
-      const row = existing.rows[0];
-      const dup = await pool.query(
-        `SELECT id FROM health_history WHERE health_entry_id = $1 AND due_date = $2
-         AND status IN ('completed', 'skipped') LIMIT 1`,
-        [entryId, dueDateIso]
-      );
-      if (dup.rows.length > 0) {
-        return res.status(400).json({ error: 'Occurrence already recorded for this due date' });
-      }
-      const histId = uuidv4();
-      const markedAt = new Date();
-      const notes = body.notes || '';
-      await pool.query(
-        `INSERT INTO health_history (id, health_entry_id, status, notes, due_date, completed_on, marked_by_user_id, changed_at)
-         VALUES ($1, $2, 'skipped', $3, $4, NULL, $5, $6)`,
-        [histId, entryId, notes, dueDateIso, userId, markedAt]
-      );
-      logAuditEventSafe(pool, {
-        actorUserId: userId,
-        action: 'health_entry.iteration_skipped',
-        resourceType: 'health_entry',
-        resourceId: entryId,
-        petId: row.pet_id,
-        metadata: { entry_type: row.type, due_date: dueDateIso },
-        req,
-      });
-      recordPetActivityForPet(pool, {
-        petId: row.pet_id,
-        actorUserId: userId,
-        eventType: 'health_log',
-        metadata: { action: 'skip', entry_type: row.type },
-      });
-      const histRow = await pool.query(
-        `SELECT hh.*,
-          TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS marked_by_name
-         FROM health_history hh
-         LEFT JOIN users u ON u.id = hh.marked_by_user_id
-         WHERE hh.id = $1`,
-        [histId]
-      );
-      res.status(201).json(historyToMap(histRow.rows[0]));
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
-  });
-
-  router.post('/:id/unskip', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const entryId = req.params.id;
-      const body = req.body || {};
-      const historyId = body.history_id || body.historyId;
-      if (!historyId) {
-        return res.status(400).json({ error: 'history_id is required' });
-      }
-      if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
-        return res.status(404).json({ error: 'Entry not found' });
-      }
-      const hist = await pool.query(
-        `SELECT * FROM health_history WHERE id = $1 AND health_entry_id = $2`,
-        [historyId, entryId]
-      );
-      if (hist.rows.length === 0) {
-        return res.status(404).json({ error: 'History record not found' });
-      }
-      if (hist.rows[0].status !== 'skipped') {
-        return res.status(400).json({ error: 'Only skipped occurrences can be unskipped' });
-      }
-      const existing = await pool.query(
-        'SELECT * FROM health_entries WHERE id = $1',
-        [entryId]
-      );
-      if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
-      const row = existing.rows[0];
-      await pool.query('DELETE FROM health_history WHERE id = $1', [historyId]);
-      logAuditEventSafe(pool, {
-        actorUserId: userId,
-        action: 'health_entry.iteration_unskipped',
-        resourceType: 'health_entry',
-        resourceId: entryId,
-        petId: row.pet_id,
-        metadata: { history_id: historyId, due_date: dateToIsoDate(hist.rows[0].due_date) },
-        req,
-      });
-      recordPetActivityForPet(pool, {
-        petId: row.pet_id,
-        actorUserId: userId,
-        eventType: 'health_log',
-        metadata: { action: 'unskip', entry_type: row.type },
-      });
-      res.json({ deleted: true, history_id: historyId });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }

@@ -67,20 +67,6 @@ class HealthRepositoryImpl implements HealthRepository {
   }
 
   @override
-  Future<HealthHistoryEntry> skipIteration(
-    String id, {
-    required DateTime dueDate,
-    String notes = '',
-  }) {
-    return dataSource.skipIteration(id, dueDate: dueDate, notes: notes);
-  }
-
-  @override
-  Future<void> unskipIteration(String id, {required String historyId}) {
-    return dataSource.unskipIteration(id, historyId: historyId);
-  }
-
-  @override
   Future<HealthEntry> unmarkDone(String id) {
     return dataSource.unmarkDone(id);
   }

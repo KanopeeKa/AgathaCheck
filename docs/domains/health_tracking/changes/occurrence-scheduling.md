@@ -3,7 +3,7 @@ title: Health occurrence scheduling
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-02
+last_updated: 2026-09-15
 tags: [domain, health_tracking, occurrences]
 domain: health_tracking
 ---
@@ -11,6 +11,8 @@ domain: health_tracking
 # Health occurrence scheduling
 
 Canonical spec for timestamp-aware care occurrences. Implements multi-dose-per-day tracking as first-class `health_occurrences` rows.
+
+> **CSM ownership:** Write behaviour (complete, skip, rollover, pause, reschedule, cadence) is owned by [Care Schedule Management](/docs/domains/pet_care/features/care-schedule-management.md). This document covers **materialisation**, **missed predicates**, and **UI zones**. Use occurrence HTTP APIs — not legacy entry-level complete/skip paths.
 
 ## Goals
 
@@ -30,6 +32,7 @@ Canonical spec for timestamp-aware care occurrences. Implements multi-dose-per-d
 | `scheduled_time` | TIME | Local wall-clock; `NULL` = all-day |
 | `status` | VARCHAR | `pending` \| `completed` \| `skipped` |
 | `completed_on` | DATE | When given (calendar day) |
+| `completion_timing` | VARCHAR | `early` \| `on_time` \| `late` — set on complete (CSM-5) |
 | `marked_at` | TIMESTAMPTZ | Audit instant |
 | `marked_by_user_id` | UUID | FK → `users` |
 | `notes` | TEXT | Optional |
@@ -41,6 +44,9 @@ Unique pending constraint per entry + instant: `(health_entry_id, scheduled_date
 | Column | Type | Notes |
 |--------|------|-------|
 | `schedule_times` | JSONB | Ordered `["08:00","18:00"]`; empty/null with checkbox off → all-day (`NULL` time) |
+| `recurrence_anchor` | VARCHAR | `from_completion` \| `from_due_date` — default from care family on create (D-CSM-001) |
+| `paused_since` | DATE | Set when series paused (CSM-9) |
+| `schedule_policy_version` | VARCHAR | CSM policy tag on entry |
 
 ## Timezone & overdue
 
@@ -74,10 +80,12 @@ Anchor: `materialisation_anchor = max(start_date, today_local)` — no backfill 
 | Series type | At creation | Next batch |
 |-------------|-------------|------------|
 | **Once** | Single occurrence | — |
-| **Repeating ≤1×/day** | First occurrence on anchor day | Next day when previous **closes** (done/skipped) **OR** calendar **T−1** for target day — whichever is first |
-| **Repeating >1×/day** | All slots on anchor day | Next day batch when **all anchor-day occurrences close** **OR** calendar **T−1** for target day — whichever is first |
+| **Repeating ≤1×/day** | First occurrence on anchor day | Next series date when previous **closes** (done/skipped) via `advanceSeries`, **OR** calendar **T−1** for target day — whichever is first |
+| **Repeating >1×/day** | All slots on anchor day only (no `anchor+1` pre-batch) | Next series date batch when **all anchor-day occurrences close** via `advanceSeries`, **OR** calendar **T−1** for target day — whichever is first |
 
 **T−1** means `today_local >= scheduled_date - 1 calendar day`.
+
+**Create-time rule (D-CSM-004):** multi-per-day entries materialise **only** the anchor day at create. The next calendar day is never pre-materialised early; rollover is unified in `advanceSeries()` (`server/lib/care/schedule/advanceSeries.js`).
 
 **Once** series may keep explicit past `scheduled_date` when user sets a historical appointment.
 
@@ -110,19 +118,28 @@ Anchor: `materialisation_anchor = max(start_date, today_local)` — no backfill 
 
 - Open occurrences (full zoned list), per-row Mark done / Skip, footer Skip all missed.
 - Past occurrences collapsed (completed + skipped, LIFO).
-- Series edit / close; **no snooze**.
+- Series edit / close; **no snooze** (client `snooze()` removed in CSM-15).
 
-## API (summary)
+## API
+
+**Canonical reference:** [care-schedule-management.md](/docs/domains/pet_care/features/care-schedule-management.md) and [api-reference.md](/docs/architecture/api-reference.md).
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| GET | `/api/health-entries/:id/occurrences` | List open (+ optional past) |
-| POST | `/api/health-entries/:id/occurrences/:occId/complete` | Complete one occurrence |
-| POST | `/api/health-entries/:id/occurrences/:occId/skip` | Skip one |
+| GET | `/api/health-entries/:id/occurrences` | List open (`status=open`) or past (`status=past`) |
+| POST | `/api/health-entries/:id/occurrences/:occId/complete` | Complete one occurrence via `completeOccurrence` |
+| POST | `/api/health-entries/:id/occurrences/:occId/skip` | Skip one via `skipOccurrence` |
 | POST | `/api/health-entries/:id/occurrences/skip-missed` | Bulk skip missed |
-| POST | `/api/health-entries/:id/occurrences/:occId/undo` | Undo last close on occurrence |
+| POST | `/api/health-entries/:id/occurrences/:occId/undo` | Legacy per-occurrence undo (superseded by CSM-8) |
 
-Legacy `mark-taken` on entry delegates to oldest pending occurrence during transition.
+### Deprecated / removed paths
+
+| Path | Status |
+|------|--------|
+| `POST /:id/mark-taken` | **Deprecated** — completes oldest pending occurrence only; no `health_history` write. Prefer `…/occurrences/:occId/complete`. |
+| `POST /:id/skip`, `POST /:id/unskip` | **Removed** (CSM-7) — use occurrence skip APIs. |
+| `POST /:id/undo-complete` | **Legacy** — replaced by `undoLastAction` (CSM-8). |
+| `GET /:id/history` | **Read-only** legacy `health_history` rows (D-CSM-003); not written on new completes/skips. |
 
 ### E2E seeding (Playwright `api.ts`)
 
@@ -158,3 +175,5 @@ POST /api/health-entries/<entryId>/occurrences/<occId>/complete
 ## Removed
 
 - Entry-level **snooze** (UI and new occurrence flows).
+- Entry-level **skip** / **unskip** (CSM-7).
+- **`health_history` writes** on complete/skip (D-CSM-003).

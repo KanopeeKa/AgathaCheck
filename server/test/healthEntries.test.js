@@ -87,17 +87,23 @@ describe('Health Entries API', () => {
           return { rows: [makeHealthRow(), makeHealthRow({ id: 'he-2', name: 'Vaccination' })] };
         }
 
-        if (sql.includes('SELECT care_family, care_source FROM health_entries WHERE id')) {
+        if (sql.includes('SELECT care_family, care_source, recurrence_anchor FROM health_entries WHERE id')) {
           if (params && params[0] === 'nonexistent') return { rows: [] };
           if (params && params[0] === 'he-uncat') {
             return {
-              rows: [{ care_family: null, care_source: 'guardian_defined' }],
+              rows: [{
+                care_family: null,
+                care_source: 'guardian_defined',
+                recurrence_anchor: null,
+              }],
             };
           }
+          const row = makeHealthRow({ id: params[0] });
           return {
             rows: [{
-              care_family: makeHealthRow({ id: params[0] }).care_family,
-              care_source: makeHealthRow({ id: params[0] }).care_source,
+              care_family: row.care_family,
+              care_source: row.care_source,
+              recurrence_anchor: row.recurrence_anchor,
             }],
           };
         }
@@ -133,6 +139,7 @@ describe('Health Entries API', () => {
             status: params[18],
             care_family: params[19],
             care_source: params[20],
+            schedule_policy_version: params[21],
             completed_at: null,
           });
           return { rows: [lastInsertedEntry] };
@@ -153,7 +160,130 @@ describe('Health Entries API', () => {
         }
 
         if (sql.includes('SELECT id FROM health_occurrences') && sql.includes('status = \'pending\'')) {
+          if (sql.includes('LIMIT 1')) {
+            if (params && params[0] === 'he-no-pending') return { rows: [] };
+            return { rows: [{ id: 'occ-pending-1' }] };
+          }
           return { rows: [] };
+        }
+
+        if (
+          sql.includes('SELECT * FROM health_occurrences')
+          && sql.includes("status = 'pending'")
+          && sql.includes('WHERE id = $1')
+        ) {
+          return {
+            rows: [{
+              id: params[0],
+              health_entry_id: params[1],
+              scheduled_date: new Date('2026-01-01'),
+              scheduled_time: null,
+              status: 'pending',
+            }],
+          };
+        }
+
+        if (
+          sql.includes('UPDATE health_occurrences SET status = \'completed\'')
+          && sql.includes('completion_timing')
+        ) {
+          return {
+            rows: [{
+              id: params[5],
+              health_entry_id: params[6],
+              scheduled_date: new Date('2026-01-01'),
+              status: 'completed',
+              completed_on: new Date(params[0]),
+              completion_timing: params[4],
+            }],
+          };
+        }
+
+        if (sql.includes('SELECT scheduled_date FROM health_occurrences') && sql.includes("status = 'pending'")) {
+          return { rows: [] };
+        }
+
+        if (sql.includes('SELECT scheduled_date, completed_on FROM health_occurrences')) {
+          return {
+            rows: [{
+              scheduled_date: new Date('2026-01-01'),
+              completed_on: new Date('2026-01-01'),
+            }],
+          };
+        }
+
+        if (sql.includes('SELECT 1 FROM health_occurrences WHERE health_entry_id = $1 AND status = \'pending\'')) {
+          return { rows: [] };
+        }
+
+        if (sql.includes('INSERT INTO care_schedule_events')) {
+          return { rows: [] };
+        }
+
+        if (
+          sql.includes('SELECT * FROM health_occurrences')
+          && sql.includes("status IN ('completed', 'skipped')")
+          && sql.includes('ORDER BY marked_at DESC')
+        ) {
+          const entryId = params[0];
+          if (entryId === 'he-no-history') return { rows: [] };
+          if (entryId === 'he-skipped-last') {
+            return {
+              rows: [{
+                id: 'occ-skipped',
+                health_entry_id: entryId,
+                status: 'skipped',
+                scheduled_date: new Date('2026-01-01'),
+                marked_at: new Date('2026-01-02'),
+              }],
+            };
+          }
+          return {
+            rows: [{
+              id: 'occ-completed-1',
+              health_entry_id: entryId,
+              status: 'completed',
+              scheduled_date: new Date('2026-01-01'),
+              completed_on: new Date('2026-01-01'),
+              marked_at: new Date('2026-01-02'),
+            }],
+          };
+        }
+
+        if (
+          sql.includes('SELECT * FROM care_schedule_events')
+          && sql.includes('ORDER BY occurred_at DESC')
+        ) {
+          const entryId = params[0];
+          if (entryId === 'he-skipped-last') {
+            return {
+              rows: [{
+                id: 'evt-skipped',
+                health_entry_id: entryId,
+                health_occurrence_id: 'occ-skipped',
+                event_type: 'skipped',
+                from_date: '2026-01-01',
+                occurred_at: new Date('2026-01-02'),
+              }],
+            };
+          }
+          return { rows: [] };
+        }
+
+        if (
+          sql.includes('UPDATE health_occurrences SET status = \'pending\'')
+          && sql.includes('completion_timing = NULL')
+        ) {
+          return {
+            rows: [{
+              id: params[0],
+              health_entry_id: params[1],
+              status: 'pending',
+              scheduled_date: new Date('2026-01-01'),
+              completed_on: null,
+              completion_timing: null,
+            }],
+          };
         }
 
         if (sql.includes('SELECT scheduled_date, scheduled_time FROM health_occurrences')) {
@@ -192,16 +322,17 @@ describe('Health Entries API', () => {
         }
 
         if (sql.includes('UPDATE health_entries SET name')) {
-          if (params && params[17] === 'nonexistent') return { rows: [] };
+          if (params && params[18] === 'nonexistent') return { rows: [] };
           return {
             rows: [makeHealthRow({
-              id: params[17],
+              id: params[18],
               name: params[0],
               type: params[1],
               dosage: params[2],
               frequency: params[3],
               care_family: params[15],
               care_source: params[16],
+              schedule_policy_version: params[17],
             })],
           };
         }
@@ -401,15 +532,6 @@ describe('Health Entries API', () => {
       expect(res.statusCode).toBe(401);
     });
 
-    it('POST /api/health-entries/:id/skip returns 401 without token', async () => {
-      const res = await request(app).post('/api/health-entries/he-1/skip');
-      expect(res.statusCode).toBe(401);
-    });
-
-    it('POST /api/health-entries/:id/unskip returns 401 without token', async () => {
-      const res = await request(app).post('/api/health-entries/he-1/unskip');
-      expect(res.statusCode).toBe(401);
-    });
   });
 
   describe('GET /api/health-entries (list)', () => {
@@ -628,6 +750,27 @@ describe('Health Entries API', () => {
       expect(res.body).toHaveProperty('dosage', '0.5ml');
       expect(res.body).toHaveProperty('frequency', 'monthly');
       expect(res.body).toHaveProperty('status', 'active');
+      expect(res.body.recurrence_anchor).toBe('from_due_date');
+      const insertParams = queryLog.find(q => q.sql.includes('INSERT INTO health_entries')).params;
+      expect(insertParams[12]).toBe('from_due_date');
+      expect(insertParams[21]).toBe('1.0.0');
+    });
+
+    it('defaults medication care_family to from_completion when anchor omitted', async () => {
+      const entry = {
+        pet_id: 'pet-1',
+        name: 'Daily tablet',
+        type: 'medication',
+        frequency: 'daily',
+        next_due_date: '2025-07-01',
+        care_family: 'medication',
+      };
+      const res = await request(app)
+        .post('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(201);
+      expect(res.body.recurrence_anchor).toBe('from_completion');
     });
 
     it('defaults type to vet_visit and frequency to once when care_family is provided', async () => {
@@ -852,7 +995,7 @@ describe('Health Entries API', () => {
       );
       const updateQuery = queryLog.find(q => q.sql.includes('UPDATE health_entries SET name'));
       expect(accessQuery).toBeDefined();
-      expect(updateQuery.params[17]).toBe('he-1');
+      expect(updateQuery.params[18]).toBe('he-1');
     });
 
     it('rejects deprecated types on update', async () => {
@@ -898,50 +1041,26 @@ describe('Health Entries API', () => {
   });
 
   describe('POST /api/health-entries/:id/mark-taken', () => {
-    it('marks entry as completed and inserts history', async () => {
+    it('completes oldest pending occurrence without health_history writes', async () => {
       const res = await request(app)
         .post('/api/health-entries/he-1/mark-taken')
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('completed_at');
-      expect(res.body.completed_at).not.toBeNull();
 
+      const completeUpdate = queryLog.find(q =>
+        q.sql.includes('UPDATE health_occurrences SET status = \'completed\'')
+        && q.sql.includes('completion_timing'));
+      expect(completeUpdate).toBeDefined();
       const historyInsert = queryLog.find(q => q.sql.includes('INSERT INTO health_history'));
-      expect(historyInsert).toBeDefined();
-      expect(historyInsert.params[1]).toBe('he-1');
+      expect(historyInsert).toBeUndefined();
     });
 
-    it('advances next_due_date to a future date for recurring entries', async () => {
-      await request(app)
-        .post('/api/health-entries/he-1/mark-taken')
-        .set('Authorization', `Bearer ${token}`);
-
-      const update = queryLog.find(q =>
-        q.sql.includes("UPDATE health_entries SET status = 'active', completed_on = NULL"));
-      expect(update).toBeDefined();
-      expect(update.params[1]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-      expect(update.params[1]).not.toMatch(/T/);
-    });
-
-    it('does not hang and still advances when interval is zero', async () => {
+    it('returns 400 when no pending occurrence exists', async () => {
       const res = await request(app)
-        .post('/api/health-entries/he-zero/mark-taken')
+        .post('/api/health-entries/he-no-pending/mark-taken')
         .set('Authorization', `Bearer ${token}`);
-      expect(res.statusCode).toBe(200);
-      const update = queryLog.find(q =>
-        q.sql.includes("UPDATE health_entries SET status = 'active', completed_on = NULL"));
-      expect(update.params[1]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-    });
-
-    it('sets next_due_date to null for once entries', async () => {
-      await request(app)
-        .post('/api/health-entries/he-once/mark-taken')
-        .set('Authorization', `Bearer ${token}`);
-
-      const update = queryLog.find(q =>
-        q.sql.includes("UPDATE health_entries SET status = 'completed', completed_on"));
-      expect(update).toBeDefined();
-      expect(update.sql).toContain('next_due_date = NULL');
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/pending occurrence/i);
     });
 
     it('returns 404 for nonexistent entry', async () => {
@@ -962,15 +1081,18 @@ describe('Health Entries API', () => {
       expect(res.body.completed_at).toBeNull();
     });
 
-    it('restores next_due_date to start_date for once entries', async () => {
+    it('syncs next_due_date from reopened occurrence via undoLastAction', async () => {
       await request(app)
         .post('/api/health-entries/he-1/undo-complete')
         .set('Authorization', `Bearer ${token}`);
 
-      const update = queryLog.find(q =>
-        q.sql.includes("UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at ="));
-      expect(update).toBeDefined();
-      expect(update.sql).toContain('next_due_date = CASE WHEN frequency');
+      const sync = queryLog.find((q) =>
+        q.sql.includes('UPDATE health_entries SET next_due_date'));
+      expect(sync).toBeDefined();
+      const reopen = queryLog.find((q) =>
+        q.sql.includes('UPDATE health_occurrences SET status = \'pending\'')
+        && q.sql.includes('completion_timing = NULL'));
+      expect(reopen).toBeDefined();
     });
 
     it('returns 404 for nonexistent entry', async () => {
@@ -980,12 +1102,12 @@ describe('Health Entries API', () => {
       expect(res.statusCode).toBe(404);
     });
 
-    it('returns 400 when latest history is not completed', async () => {
+    it('returns 400 when last action is not a completion', async () => {
       const res = await request(app)
         .post('/api/health-entries/he-skipped-last/undo-complete')
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(400);
-      expect(res.body.error).toMatch(/unmark/i);
+      expect(res.body.error).toMatch(/schedule\/undo/i);
     });
 
     it('returns 400 when no history exists', async () => {
@@ -1040,86 +1162,6 @@ describe('Health Entries API', () => {
       const res = await request(app)
         .post('/api/health-entries/nonexistent/reopen')
         .set('Authorization', `Bearer ${token}`);
-      expect(res.statusCode).toBe(404);
-    });
-  });
-
-  describe('POST /api/health-entries/:id/skip', () => {
-    it('inserts skipped history row without updating entry', async () => {
-      const res = await request(app)
-        .post('/api/health-entries/he-1/skip')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ due_date: '2025-06-01' });
-      expect(res.statusCode).toBe(201);
-      expect(res.body).toHaveProperty('status', 'skipped');
-      expect(res.body).toHaveProperty('due_date', '2025-06-01');
-
-      const insert = queryLog.find(q =>
-        q.sql.includes('INSERT INTO health_history') && q.sql.includes("'skipped'"));
-      expect(insert).toBeDefined();
-      expect(insert.params[3]).toBe('2025-06-01');
-
-      const entryUpdate = queryLog.find(q =>
-        q.sql.includes('UPDATE health_entries') && !q.sql.includes('repeat_end_date'));
-      expect(entryUpdate).toBeUndefined();
-    });
-
-    it('requires due_date', async () => {
-      const res = await request(app)
-        .post('/api/health-entries/he-1/skip')
-        .set('Authorization', `Bearer ${token}`)
-        .send({});
-      expect(res.statusCode).toBe(400);
-      expect(res.body.error).toMatch(/due_date/i);
-    });
-
-    it('returns 404 for nonexistent entry', async () => {
-      const res = await request(app)
-        .post('/api/health-entries/nonexistent/skip')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ due_date: '2025-06-01' });
-      expect(res.statusCode).toBe(404);
-    });
-  });
-
-  describe('POST /api/health-entries/:id/unskip', () => {
-    it('deletes skipped history row', async () => {
-      const res = await request(app)
-        .post('/api/health-entries/he-1/unskip')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ history_id: 'hh-skipped' });
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('deleted', true);
-      expect(res.body).toHaveProperty('history_id', 'hh-skipped');
-
-      const del = queryLog.find(q => q.sql.includes('DELETE FROM health_history WHERE id'));
-      expect(del).toBeDefined();
-      expect(del.params[0]).toBe('hh-skipped');
-    });
-
-    it('requires history_id', async () => {
-      const res = await request(app)
-        .post('/api/health-entries/he-1/unskip')
-        .set('Authorization', `Bearer ${token}`)
-        .send({});
-      expect(res.statusCode).toBe(400);
-      expect(res.body.error).toMatch(/history_id/i);
-    });
-
-    it('rejects non-skipped history rows', async () => {
-      const res = await request(app)
-        .post('/api/health-entries/he-1/unskip')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ history_id: 'hh-completed' });
-      expect(res.statusCode).toBe(400);
-      expect(res.body.error).toMatch(/skipped/i);
-    });
-
-    it('returns 404 for missing history row', async () => {
-      const res = await request(app)
-        .post('/api/health-entries/he-1/unskip')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ history_id: 'hh-missing' });
       expect(res.statusCode).toBe(404);
     });
   });

@@ -3,7 +3,7 @@ title: API reference (docs index)
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-09-15
 tags: [api, reference]
 ---
 # Agatha Track API — Endpoint Reference
@@ -105,12 +105,47 @@ Validate with `node scripts/validate_openapi.js`; Jest contract tests in
 | GET | `/invites/pending`, POST `/invites/:id/accept|decline` | invitee |
 
 ### Health entries (`/api/health-entries`)
-`GET /` (optional `?pet_id=`), `GET /export` (CSV), `GET /:id`, `POST /` (verifies
-pet ownership), `PUT /:id`, `DELETE /:id`, `POST /:id/mark-taken`,
-`POST /:id/undo-complete`, `GET /:id/history`, `GET|POST /:id/photos`,
-`DELETE /:entryId/photos/:photoId`. Nested history/photos verify entry ownership.
-`POST /:id/photos` accepts one multipart `photo` document: JPG/JPEG, PNG, or PDF,
-up to 2 MB.
+
+CRUD: `GET /` (optional `?pet_id=`), `GET /export` (CSV), `GET /:id`, `POST /` (verifies pet ownership), `PUT /:id`, `DELETE /:id`, `GET|POST /:id/photos`, `DELETE /:entryId/photos/:photoId`. `POST /:id/photos` accepts one multipart `photo` document: JPG/JPEG, PNG, or PDF, up to 2 MB.
+
+**Care Schedule Management (CSM)** — canonical behaviour: [care-schedule-management.md](../domains/pet_care/features/care-schedule-management.md). Calendar dates on the wire: `YYYY-MM-DD` ([calendar-dates.md](calendar-dates.md)).
+
+#### Occurrence APIs (shipped — CSM-5–7)
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/:id/occurrences` | Query `status=open` (default) or `status=past`; optional `as_of` calendar day |
+| POST | `/:id/occurrences/:occId/complete` | Body `{ completed_on?, notes?, skip_earlier_missed? }`; returns `{ occurrence, next_due_date }`; sets `completion_timing` |
+| POST | `/:id/occurrences/:occId/skip` | Body `{ notes? }`; writes `care_schedule_events` ledger row |
+| POST | `/:id/occurrences/skip-missed` | Body `{ as_of? }`; returns `{ skipped[], count }` |
+| POST | `/:id/occurrences/:occId/undo` | Legacy per-occurrence reopen — superseded by `schedule/undo` (CSM-8) |
+
+Weight monitoring rhythms: generic complete and `mark-taken` return `400` — use `POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight` (see Care progression below).
+
+#### Legacy / deprecated complete paths
+
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/:id/mark-taken` | **Deprecated** — completes oldest pending occurrence via `completeOccurrence`; **no `health_history` write**; prefer occurrence complete |
+| POST | `/:id/undo-complete` | **Legacy** — replaced by `POST /:id/schedule/undo` (CSM-8) |
+| GET | `/:id/history` | Read-only legacy `health_history` rows (no new writes after CSM-7) |
+
+**Removed (CSM-7):** `POST /:id/skip`, `POST /:id/unskip` — use occurrence skip APIs.
+
+#### Schedule change APIs (planned — CSM-8–11)
+
+Routes mount in parallel PRs; shapes are frozen:
+
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/:id/pause` | Body `{ paused_since?, reason_note? }`; `status = paused`, ledger `paused` event |
+| POST | `/:id/resume` | Body `{ resume_from?, reason_note? }`; resume with **no catch-up** (D-CSM-005) |
+| POST | `/:id/occurrences/:occId/reschedule` | Body `{ new_scheduled_date, new_scheduled_time?, reason_note? }`; one-instance move; ledger preserves original `from_date` |
+| POST | `/:id/adjust-cadence` | Body `{ effective_from, frequency?, frequency_interval?, recurrence_anchor?, reason_note? }`; series-forward only |
+| POST | `/:id/schedule/undo` | Timestamp-aware `undoLastAction` (CSM-8) |
+| GET | `/:id/schedule-explain` | Read-only `explainGap` facts for CIM (CSM-13) |
+
+**Create defaults (CSM-2):** when `recurrence_anchor` is omitted, server applies per-family default (`vaccination` / `parasite_prevention` → `from_due_date`; others → `from_completion`) — D-CSM-001.
 
 ### Health issues (`/api/health-issues`)
 `GET /` (optional `?pet_id=`), `GET /:id`, `POST /` (verifies pet ownership),

@@ -108,6 +108,17 @@ describe('POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/
           return { rows: [] };
         }
 
+        if (
+          sql.includes('SELECT * FROM health_occurrences')
+          && sql.includes("status = 'pending'")
+          && sql.includes('health_entry_id = $2')
+        ) {
+          if (params[0] === occurrenceId && params[1] === entryId && occurrence.status === 'pending') {
+            return { rows: [occurrence] };
+          }
+          return { rows: [] };
+        }
+
         if (sql.includes('FROM weight_entries WHERE health_occurrence_id = $1')) {
           return { rows: linkedWeight ? [linkedWeight] : [] };
         }
@@ -133,12 +144,41 @@ describe('POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/
             marked_at: params[1],
             marked_by_user_id: params[2],
             notes: params[3],
+            completion_timing: params[4] ?? null,
           };
           return { rows: [occurrence] };
         }
 
         if (sql.includes('SELECT next_due_date FROM health_entries WHERE id = $1')) {
           return { rows: [{ next_due_date: entry.next_due_date }] };
+        }
+
+        if (sql.includes('UPDATE health_entries SET next_due_date')) {
+          return { rows: [] };
+        }
+
+        if (sql.includes('SELECT scheduled_date FROM health_occurrences') && sql.includes("status = 'pending'")) {
+          return { rows: [] };
+        }
+
+        if (sql.includes('SELECT scheduled_date, completed_on FROM health_occurrences')) {
+          return {
+            rows: occurrence.status === 'completed'
+              ? [{ scheduled_date: occurrence.scheduled_date, completed_on: occurrence.completed_on }]
+              : [],
+          };
+        }
+
+        if (sql.includes('INSERT INTO health_occurrences')) {
+          return { rows: [] };
+        }
+
+        if (sql.includes('SELECT scheduled_date, scheduled_time FROM health_occurrences') && sql.includes("status = 'pending'")) {
+          return { rows: [] };
+        }
+
+        if (sql.includes('SELECT 1 FROM health_occurrences WHERE health_entry_id = $1 AND status = \'pending\'')) {
+          return { rows: [] };
         }
 
         if (sql.includes('UPDATE pets SET weight = (')) {

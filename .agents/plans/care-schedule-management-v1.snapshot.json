@@ -1,0 +1,544 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-schedule-management-v1",
+  "approved_at": "2026-09-15T15:10:00Z",
+  "approved_by": "user chat 2026-09-15 — CSM verification confirmed; per-family anchor defaults; proceed CSM-0 onward; /execute-plan",
+  "approved_until": "2026-09-17T15:10:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/care-schedule-management-v1-integration-csm1",
+  "control_issue": 1173,
+  "artifact_branch_policy": "phase-branch",
+  "content_hash": "sha256:a803267d7267e7674d326a921080e4a38e702b35b4836b28e63e80dbd6f02345",
+  "phases": [
+    {
+      "id": "csm-0",
+      "title": "CSM-0 — Decision log + plan bootstrap",
+      "branch": "cursor/care-schedule-management-csm0-csm1",
+      "allowed_paths": [
+        ".agents/plans/care-schedule-management-v1.*",
+        "docs/domains/pet_care/changes/care-schedule-management-*",
+        "docs/domains/pet_care/features/care-schedule-management.md",
+        "docs/domains/pet_care/README.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/routes/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1174",
+      "pr_head_sha": "1b0c278b"
+    },
+    {
+      "id": "csm-1",
+      "title": "CSM-1 — Schema migration",
+      "branch": "cursor/care-schedule-management-csm1-csm1",
+      "allowed_paths": [
+        "db/migrations/**",
+        "db/schema/canonical.sql",
+        "db/schema/migration-manifest.json",
+        "server/test/migrations/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1175",
+      "pr_head_sha": "5439b823"
+    },
+    {
+      "id": "csm-seed",
+      "title": "CSM-SEED — Rich demo seed data",
+      "branch": "cursor/care-schedule-management-csm-seed-csm1",
+      "allowed_paths": [
+        "server/db/seeds/**",
+        "server/scripts/seed.js",
+        "server/test/seed.test.js",
+        "docs/e2e/uat-demo-data.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1176",
+      "pr_head_sha": "4ee182f9"
+    },
+    {
+      "id": "csm-2",
+      "title": "CSM-2 — schedule module shell + anchor defaults",
+      "branch": "cursor/care-schedule-management-csm2-csm1",
+      "allowed_paths": [
+        "server/lib/care/schedule/**",
+        "server/routes/healthEntries/crudRouter.js",
+        "server/test/careSchedule/**",
+        "docs/domains/pet_care/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1177",
+      "pr_head_sha": "312daf57"
+    },
+    {
+      "id": "csm-3",
+      "title": "CSM-3 — Unified advanceSeries",
+      "branch": "cursor/care-schedule-management-csm3-csm1",
+      "allowed_paths": [
+        "server/lib/care/schedule/**",
+        "server/lib/occurrenceScheduling.js",
+        "server/test/careSchedule/advanceSeries.test.js",
+        "server/test/occurrenceScheduling.test.js"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1178",
+      "pr_head_sha": "801707df"
+    },
+    {
+      "id": "csm-4",
+      "title": "CSM-4 — Remove anchor+1 pre-materialization",
+      "branch": "cursor/care-schedule-management-csm4-csm1",
+      "allowed_paths": [
+        "server/lib/occurrenceScheduling.js",
+        "server/test/careSchedule/**",
+        "server/test/occurrenceScheduling.test.js",
+        "docs/domains/health_tracking/changes/occurrence-scheduling.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1179",
+      "pr_head_sha": "e2419ccd"
+    },
+    {
+      "id": "csm-5",
+      "title": "CSM-5 — completeOccurrence primitive",
+      "branch": "cursor/care-schedule-management-csm5-csm1",
+      "allowed_paths": [
+        "server/lib/care/schedule/**",
+        "server/routes/healthEntries/**",
+        "server/test/careSchedule/completeOccurrence.test.js",
+        "server/test/healthEntries/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1180",
+      "pr_head_sha": "60a1943e"
+    },
+    {
+      "id": "csm-6",
+      "title": "CSM-6 — skipOccurrence primitive",
+      "branch": "cursor/care-schedule-management-csm6-csm1",
+      "allowed_paths": [
+        "server/lib/care/schedule/**",
+        "server/routes/healthEntries/**",
+        "server/test/careSchedule/skipOccurrence.test.js"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1181",
+      "pr_head_sha": "1b3cd73b"
+    },
+    {
+      "id": "csm-7",
+      "title": "CSM-7 — Retire legacy complete/skip paths",
+      "branch": "cursor/care-schedule-management-csm7-csm1",
+      "allowed_paths": [
+        "server/routes/healthEntries/completionRouter.js",
+        "server/test/healthEntries.test.js",
+        "flutter_app/lib/features/health_tracking/**",
+        "docs/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1182",
+      "pr_head_sha": "e992c6cb",
+      "merge_commit": "12e12529"
+    },
+    {
+      "id": "csm-8",
+      "title": "CSM-8 — undoLastAction primitive",
+      "branch": "cursor/care-schedule-management-csm8-csm1",
+      "allowed_paths": [
+        "server/lib/care/schedule/**",
+        "server/routes/healthEntries/**",
+        "server/test/careSchedule/**",
+        "flutter_app/lib/features/health_tracking/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "csm-9",
+      "title": "CSM-9 — pauseSeries / resumeSeries",
+      "branch": "cursor/care-schedule-management-csm9-csm1",
+      "allowed_paths": [
+        "server/lib/care/schedule/**",
+        "server/routes/healthEntries/**",
+        "server/test/careSchedule/pauseResumeSeries.test.js"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1184",
+      "pr_head_sha": "d6531001",
+      "merge_commit": "76dd3440"
+    },
+    {
+      "id": "csm-10",
+      "title": "CSM-10 — rescheduleOccurrence",
+      "branch": "cursor/care-schedule-management-csm10-csm1",
+      "allowed_paths": [
+        "server/lib/care/schedule/**",
+        "server/routes/healthEntries/**",
+        "server/test/careSchedule/rescheduleOccurrence.test.js"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1185",
+      "pr_head_sha": "832c880e",
+      "merge_commit": "c95d68d2"
+    },
+    {
+      "id": "csm-11",
+      "title": "CSM-11 — adjustCadence",
+      "branch": "cursor/care-schedule-management-csm11-csm1",
+      "allowed_paths": [
+        "server/lib/care/schedule/**",
+        "server/routes/healthEntries/**",
+        "server/test/careSchedule/adjustCadence.test.js"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1186",
+      "pr_head_sha": "76d7c1e2",
+      "merge_commit": "0567a1b9"
+    },
+    {
+      "id": "csm-12",
+      "title": "CSM-12 — projectSchedule refactor",
+      "branch": "cursor/care-schedule-management-csm12-csm1",
+      "allowed_paths": [
+        "server/lib/care/schedule/**",
+        "server/lib/care/carePeriodProjection.js",
+        "server/test/careSchedule/projectSchedule.test.js",
+        "server/test/careContext/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "csm-13",
+      "title": "CSM-13 — explainGap read API",
+      "branch": "cursor/care-schedule-management-csm13-csm1",
+      "allowed_paths": [
+        "server/lib/care/schedule/**",
+        "server/routes/healthEntries/**",
+        "server/test/careSchedule/explainGap.test.js"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "csm-14",
+      "title": "CSM-14 — Care Context thin caller",
+      "branch": "cursor/care-schedule-management-csm14-csm1",
+      "allowed_paths": [
+        "server/routes/careContext/**",
+        "server/lib/care/**",
+        "server/test/careContext/**",
+        "docs/domains/pet_care/features/care-context.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1191",
+      "pr_head_sha": "938d59d7",
+      "merge_commit": "e56ac471"
+    },
+    {
+      "id": "csm-15",
+      "title": "CSM-15 — Flutter remove snooze",
+      "branch": "cursor/care-schedule-management-csm15-csm1",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/test/features/health_tracking/**",
+        "docs/debt/refactoring-log.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1187",
+      "pr_head_sha": "49b7866d",
+      "merge_commit": "581ceb10"
+    },
+    {
+      "id": "csm-17",
+      "title": "CSM-17 — Integration gate",
+      "branch": "cursor/care-schedule-management-csm17-csm1",
+      "allowed_paths": [
+        "server/test/careSchedule/**",
+        "server/test/careContext/**",
+        "server/test/care/progression/**",
+        "server/test/careIntelligence/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1192",
+      "pr_head_sha": "b5ac56a0",
+      "merge_commit": "d8b9f06e"
+    },
+    {
+      "id": "csm-18",
+      "title": "CSM-18 — Canonical docs",
+      "branch": "cursor/care-schedule-management-csm18-csm1",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        "docs/domains/health_tracking/changes/occurrence-scheduling.md",
+        "docs/architecture/api-reference.md",
+        "docs/architecture/calendar-dates.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1183",
+      "pr_head_sha": "69a4a29a",
+      "merge_commit": "b0fb0439"
+    }
+  ]
+}

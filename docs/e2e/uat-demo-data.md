@@ -79,6 +79,7 @@ node server/scripts/sync-demo-credentials-doc.js
 | **Owned pets** | Buddy (dog) and Whiskers (cat) — Frederique; Pip (dog) — Dave |
 | **Org pets** | Clinic Cat (Happy Paws); Max, Luna, Rocky, Mittens (Rescue Hearts) |
 | **Health** | Vaccinations, medications, overdue preventives, vet visits, active health issue |
+| **Care scheduling (CSM)** | Multi-per-day weekly course, per-family anchors, weight occurrence links, far-future weight series, `from_completion` pending hop |
 | **Weight** | Weight history for Buddy and Whiskers |
 | **Vets** | Dr. Sarah Mitchell linked to Buddy |
 | **Timeline & family** | Buddy adoption milestone; Frederique holiday family event |
@@ -107,6 +108,7 @@ Run individually with `node server/scripts/seed.js --scenario=<name>`:
 | `org-v3-demo` | Minimal org UX v3 subset: clinic + Rescue Hearts shell + connection |
 | `rescue-hearts` | Rescue Hearts charity, Eve, Dave, Grace, org pets |
 | `health-care` | Vets, health entries, weight, timeline, family events |
+| `care-schedule-fixture` | CSM edge-case rhythms: multi-per-day non-daily, anchor defaults, weight paths |
 | `fostering` | Foster profiles, placements, requests |
 | `adoption` | Journeys, prospects, visits, custody transfers |
 | `sharing-notifications` | Pet sharing, notifications, preferences |
