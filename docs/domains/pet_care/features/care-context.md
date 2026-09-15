@@ -76,6 +76,8 @@ Distinct from `CareSource` on health rhythms (`guardian_defined`, etc.).
 
 Owned by **care_planning**, not Care Context. Answers: “What existing care is scheduled in this window?”
 
+**CSM dependency:** Projection logic refactors to `projectSchedule` in Care Schedule Management (CSM-12); Care Context remains a thin caller. Scheduling semantics (anchors, pause, materialisation): [care-schedule-management.md](./care-schedule-management.md).
+
 ### Request horizon vs certainty horizon
 
 | Concept | V1 rule |
@@ -137,6 +139,7 @@ Pet Sitting workflow, environmental context, calendar integrations, AI interpret
 
 ## Related
 
+- [care-schedule-management.md](care-schedule-management.md) — authoritative scheduling core (`projectSchedule`)
 - [care-through-change-delivery-plan.md](../changes/care-through-change-delivery-plan.md)
 - [care-progression.md](care-progression.md) — domain map
 - [care-entitlements.md](care-entitlements.md) — assistance gating principles
