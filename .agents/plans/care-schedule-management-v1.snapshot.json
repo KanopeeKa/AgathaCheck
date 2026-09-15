@@ -9,7 +9,7 @@
   "base_branch": "cursor/care-schedule-management-v1-integration-csm1",
   "control_issue": 1173,
   "artifact_branch_policy": "phase-branch",
-  "content_hash": "sha256:c782b2420414d010123cad277bd4601dda1686eb5652aafe5b8bbad0ec408c27",
+  "content_hash": "sha256:a803267d7267e7674d326a921080e4a38e702b35b4836b28e63e80dbd6f02345",
   "phases": [
     {
       "id": "csm-0",
@@ -448,12 +448,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1191",
+      "pr_head_sha": "938d59d7",
+      "merge_commit": "e56ac471"
     },
     {
       "id": "csm-15",
@@ -503,12 +504,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1192",
+      "pr_head_sha": "b5ac56a0",
+      "merge_commit": "d8b9f06e"
     },
     {
       "id": "csm-18",
