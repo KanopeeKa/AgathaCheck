@@ -70,9 +70,7 @@ class _CarerRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Text(petName, style: theme.textTheme.titleSmall),
-        ),
+        Expanded(child: Text(petName, style: theme.textTheme.titleSmall)),
         Expanded(
           child: Text(
             carerLabel,

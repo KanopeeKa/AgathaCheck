@@ -18,10 +18,9 @@ class AwayPlanReadinessModel {
       careCoverage: CareCoverageFact(
         policyVersion: careJson['policy_version'] as String? ?? '1',
         coverageState: careJson['coverage_state'] as String? ?? '',
-        reasonCodes:
-            (careJson['reason_codes'] as List<dynamic>? ?? const [])
-                .map((code) => code.toString())
-                .toList(growable: false),
+        reasonCodes: (careJson['reason_codes'] as List<dynamic>? ?? const [])
+            .map((code) => code.toString())
+            .toList(growable: false),
         reassuranceAvailable: careJson['reassurance_available'] == true,
         copyKey: careJson['copy_key'] as String? ?? '',
         copyCount: copyParams?['count'] as int?,

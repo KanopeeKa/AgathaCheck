@@ -15,27 +15,86 @@ class PlannedAbsenceEntryTile extends ConsumerWidget {
     final tileAsync = ref.watch(awayPlanningDashboardTileProvider);
     final l = AppLocalizations.of(context)!;
     return tileAsync.when(
-      loading: () => _card(l.careContextAwayEntryTitle, l.careContextAwayEntryBody, () => context.push('/pc/away')),
-      error: (_,__) => _card(l.careContextAwayEntryTitle, l.careContextAwayEntryBody, () => context.push('/pc/away')),
+      loading: () => _card(
+        l.careContextAwayEntryTitle,
+        l.careContextAwayEntryBody,
+        () => context.push('/pc/away'),
+      ),
+      error: (_, __) => _card(
+        l.careContextAwayEntryTitle,
+        l.careContextAwayEntryBody,
+        () => context.push('/pc/away'),
+      ),
       data: (s) {
-        if (s.mode == AwayPlanningDashboardTileMode.stateful && s.absence != null && s.tileCopy != null) {
-          final a = s.absence!; final body = AwayPlanningTileCopy.resolve(l, s.tileCopy!);
-          final st = parseCalendarDate(a.startsOn); final en = parseCalendarDate(a.endsOn);
-          final title = st != null && en != null ? l.careContextAwayPreviewDateRange(formatCalendarDateDisplay(st), formatCalendarDateDisplay(en)) : l.careContextAwayEntryTitle;
+        if (s.mode == AwayPlanningDashboardTileMode.stateful &&
+            s.absence != null &&
+            s.tileCopy != null) {
+          final a = s.absence!;
+          final body = AwayPlanningTileCopy.resolve(l, s.tileCopy!);
+          final st = parseCalendarDate(a.startsOn);
+          final en = parseCalendarDate(a.endsOn);
+          final title = st != null && en != null
+              ? l.careContextAwayPreviewDateRange(
+                  formatCalendarDateDisplay(st),
+                  formatCalendarDateDisplay(en),
+                )
+              : l.careContextAwayEntryTitle;
           return _card(title, body, () => context.push('/pc/away'));
         }
-        return _card(l.careContextAwayEntryTitle, l.careContextAwayEntryBody, () => context.push('/pc/away'));
+        return _card(
+          l.careContextAwayEntryTitle,
+          l.careContextAwayEntryBody,
+          () => context.push('/pc/away'),
+        );
       },
     );
   }
-  Widget _card(String title, String body, VoidCallback onTap) => Semantics(button: true, label: '$title. $body', child: Card(margin: EdgeInsets.zero, child: InkWell(
-    key: const Key('planned_absence_entry_tile'), borderRadius: BorderRadius.circular(16), onTap: onTap,
-    child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [
-      DecoratedBox(decoration: BoxDecoration(color: AppColorTokens.petCareLight, borderRadius: BorderRadius.circular(12)),
-        child: const Padding(padding: EdgeInsets.all(10), child: Icon(Icons.event_busy_outlined, color: AppColorTokens.petCareCarePrimary))),
-      const SizedBox(width: 16), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.w700)), const SizedBox(height: 2), Text(body),
-      ])), const Icon(Icons.chevron_right),
-    ])),
-  )));
+
+  Widget _card(String title, String body, VoidCallback onTap) => Semantics(
+    button: true,
+    label: '$title. $body',
+    child: Card(
+      margin: EdgeInsets.zero,
+      child: InkWell(
+        key: const Key('planned_absence_entry_tile'),
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: AppColorTokens.petCareLight,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Icon(
+                    Icons.event_busy_outlined,
+                    color: AppColorTokens.petCareCarePrimary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(body),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }

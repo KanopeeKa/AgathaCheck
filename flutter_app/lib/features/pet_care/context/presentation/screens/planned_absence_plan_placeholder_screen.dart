@@ -24,9 +24,7 @@ class PlannedAbsencePlanPlaceholderScreen extends StatelessWidget {
       currentLocation: GoRouterState.of(context).uri.path,
       screenTitle: l.careContextAwayFlowTitle,
       backPath: '/pc/away',
-      child: Center(
-        child: Text('Away plan $absenceId'),
-      ),
+      child: Center(child: Text('Away plan $absenceId')),
     );
   }
 }

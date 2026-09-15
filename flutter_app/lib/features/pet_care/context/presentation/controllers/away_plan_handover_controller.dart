@@ -90,35 +90,44 @@ class AwayPlanHandoverController {
         title: l.careContextAwayPlanTitle,
         dateRangeLabel: dateRangeLabel,
         petNamesLabel: petNames,
-        carerCoverageSummary: AwayPlanCopy.carerCoverageSummary(l, readiness.carerCoverage),
-        careCoverageSummary: AwayPlanCopy.careCoverageSummary(l, readiness.careCoverage),
+        carerCoverageSummary: AwayPlanCopy.carerCoverageSummary(
+          l,
+          readiness.carerCoverage,
+        ),
+        careCoverageSummary: AwayPlanCopy.careCoverageSummary(
+          l,
+          readiness.careCoverage,
+        ),
         handoverNote: absence.handoverNote,
         petSections: petSections,
       );
 
       final service = AwayPlanHandoverService();
-      final pdfBytes = await service.generateHandoverPdf(document: document, l: l);
+      final pdfBytes = await service.generateHandoverPdf(
+        document: document,
+        l: l,
+      );
       await repository.recordHandoverDownload(absence.id);
 
       if (context.mounted) {
         Navigator.of(context).pop();
       }
 
-      final filename =
-          'away_plan_${absence.startsOn}_${absence.endsOn}.pdf'.replaceAll(':', '-');
+      final filename = 'away_plan_${absence.startsOn}_${absence.endsOn}.pdf'
+          .replaceAll(':', '-');
       await pdf_saver.savePdf(pdfBytes, filename);
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.reportGenerated)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.reportGenerated)));
       }
     } catch (e) {
       if (context.mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.pdfExportFailed('$e'))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.pdfExportFailed('$e'))));
       }
     }
   }

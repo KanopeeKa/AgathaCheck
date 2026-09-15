@@ -26,10 +26,9 @@ class AwayPlanDetailsSection extends StatelessWidget {
             formatCalendarDateDisplay(end),
           )
         : '${absence.startsOn} – ${absence.endsOn}';
-    final petNames = [...absence.petIds]
-        .map((petId) => petNamesById[petId] ?? petId)
-        .toList()
-      ..sort();
+    final petNames = [
+      ...absence.petIds,
+    ].map((petId) => petNamesById[petId] ?? petId).toList()..sort();
     final statusLabel = absence.isCancelled
         ? l.careContextAwayPlanStatusCancelled
         : l.careContextAwayPlanStatusActive;
@@ -58,7 +57,10 @@ class AwayPlanDetailsSection extends StatelessWidget {
                   value: petNames.join(', '),
                 ),
                 const SizedBox(height: 12),
-                _DetailRow(label: l.careContextAwayPlanStatusLabel, value: statusLabel),
+                _DetailRow(
+                  label: l.careContextAwayPlanStatusLabel,
+                  value: statusLabel,
+                ),
               ],
             ),
           ),

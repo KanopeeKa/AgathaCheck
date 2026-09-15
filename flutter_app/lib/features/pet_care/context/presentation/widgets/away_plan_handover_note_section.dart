@@ -6,10 +6,7 @@ import '../../domain/entities/planned_absence.dart';
 import '../providers/care_context_providers.dart';
 
 class AwayPlanHandoverNoteSection extends ConsumerStatefulWidget {
-  const AwayPlanHandoverNoteSection({
-    super.key,
-    required this.absence,
-  });
+  const AwayPlanHandoverNoteSection({super.key, required this.absence});
 
   final PlannedAbsence absence;
 
@@ -26,7 +23,9 @@ class _AwayPlanHandoverNoteSectionState
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.absence.handoverNote ?? '');
+    _controller = TextEditingController(
+      text: widget.absence.handoverNote ?? '',
+    );
   }
 
   @override
@@ -39,7 +38,9 @@ class _AwayPlanHandoverNoteSectionState
     final l = AppLocalizations.of(context)!;
     setState(() => _saving = true);
     try {
-      await ref.read(careContextRepositoryProvider).updateHandoverNote(
+      await ref
+          .read(careContextRepositoryProvider)
+          .updateHandoverNote(
             absenceId: widget.absence.id,
             handoverNote: _controller.text.trim().isEmpty
                 ? null
@@ -47,15 +48,15 @@ class _AwayPlanHandoverNoteSectionState
           );
       ref.invalidate(plannedAbsenceDetailProvider(widget.absence.id));
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.careContextAwaySaveSuccess)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.careContextAwaySaveSuccess)));
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.careContextAwaySaveFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.careContextAwaySaveFailed)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -70,10 +71,7 @@ class _AwayPlanHandoverNoteSectionState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          l.pdfNotesLabel,
-          style: theme.textTheme.titleLarge,
-        ),
+        Text(l.pdfNotesLabel, style: theme.textTheme.titleLarge),
         const SizedBox(height: 12),
         Card(
           child: Padding(

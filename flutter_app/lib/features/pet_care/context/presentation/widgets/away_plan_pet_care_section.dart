@@ -27,7 +27,11 @@ class AwayPlanPetCareSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final coverageAsync = ref.watch(
-      carePeriodCoverageProvider((petId: petId, startsOn: startsOn, endsOn: endsOn)),
+      carePeriodCoverageProvider((
+        petId: petId,
+        startsOn: startsOn,
+        endsOn: endsOn,
+      )),
     );
 
     return Card(
@@ -117,7 +121,8 @@ class _PetCareBody extends StatelessWidget {
           CarePeriodCoverageCopy.summary(l, result),
           style: theme.textTheme.bodyLarge,
         ),
-        if (CarePeriodCoverageCopy.indeterminateQualifier(l, result) != null) ...[
+        if (CarePeriodCoverageCopy.indeterminateQualifier(l, result) !=
+            null) ...[
           const SizedBox(height: 8),
           Text(
             CarePeriodCoverageCopy.indeterminateQualifier(l, result)!,
@@ -133,9 +138,7 @@ class _PetCareBody extends StatelessWidget {
             style: theme.textTheme.titleSmall,
           ),
           const SizedBox(height: 8),
-          ...result.routineItems.map(
-            (item) => _RoutineRow(item: item),
-          ),
+          ...result.routineItems.map((item) => _RoutineRow(item: item)),
         ],
         if (result.datedItems.isNotEmpty) ...[
           const SizedBox(height: 16),
@@ -144,9 +147,7 @@ class _PetCareBody extends StatelessWidget {
             style: theme.textTheme.titleSmall,
           ),
           const SizedBox(height: 8),
-          ...result.datedItems.map(
-            (item) => _DatedRow(item: item),
-          ),
+          ...result.datedItems.map((item) => _DatedRow(item: item)),
         ],
         if (result.uncertainties.isNotEmpty) ...[
           const SizedBox(height: 16),
@@ -178,11 +179,7 @@ class _RoutineRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.repeat,
-            size: 18,
-            color: theme.colorScheme.primary,
-          ),
+          Icon(Icons.repeat, size: 18, color: theme.colorScheme.primary),
           const SizedBox(width: 8),
           Expanded(
             child: Column(

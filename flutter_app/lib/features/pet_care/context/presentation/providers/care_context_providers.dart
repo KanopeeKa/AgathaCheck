@@ -48,7 +48,9 @@ final plannedAbsencesListProvider = FutureProvider<List<PlannedAbsence>>((
 
 final plannedAbsenceDetailProvider =
     FutureProvider.family<PlannedAbsence, String>((ref, absenceId) async {
-      return ref.read(careContextRepositoryProvider).getPlannedAbsence(absenceId);
+      return ref
+          .read(careContextRepositoryProvider)
+          .getPlannedAbsence(absenceId);
     });
 
 final awayPlanReadinessProvider =
@@ -58,18 +60,24 @@ final awayPlanReadinessProvider =
           .getAwayPlanReadiness(absenceId);
     });
 
-final awayPlanningDashboardTileProvider = FutureProvider<AwayPlanningDashboardTileState>((ref) async {
-  try {
-    final absences = await ref.watch(plannedAbsencesListProvider.future);
-    if (absences.isEmpty) return AwayPlanningDashboardTileState.prompt;
-    final upcoming = absences.first;
-    try {
-      final readiness = await ref.read(careContextRepositoryProvider).getAwayPlanReadiness(upcoming.id);
-      return AwayPlanningDashboardTileState.stateful(absence: upcoming, tileCopy: readiness.tileCopy);
-    } catch (_) {
-      return AwayPlanningDashboardTileState.prompt;
-    }
-  } catch (_) {
-    return AwayPlanningDashboardTileState.prompt;
-  }
-});
+final awayPlanningDashboardTileProvider =
+    FutureProvider<AwayPlanningDashboardTileState>((ref) async {
+      try {
+        final absences = await ref.watch(plannedAbsencesListProvider.future);
+        if (absences.isEmpty) return AwayPlanningDashboardTileState.prompt;
+        final upcoming = absences.first;
+        try {
+          final readiness = await ref
+              .read(careContextRepositoryProvider)
+              .getAwayPlanReadiness(upcoming.id);
+          return AwayPlanningDashboardTileState.stateful(
+            absence: upcoming,
+            tileCopy: readiness.tileCopy,
+          );
+        } catch (_) {
+          return AwayPlanningDashboardTileState.prompt;
+        }
+      } catch (_) {
+        return AwayPlanningDashboardTileState.prompt;
+      }
+    });

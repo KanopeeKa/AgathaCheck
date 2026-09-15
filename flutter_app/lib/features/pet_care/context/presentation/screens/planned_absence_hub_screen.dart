@@ -51,9 +51,15 @@ class PlannedAbsenceHubScreen extends ConsumerWidget {
         data: (absences) {
           final grouped = PlannedAbsenceHubPartition.partition(absences);
           if (grouped.upcoming.isEmpty && grouped.past.isEmpty) {
-            return _HubEmptyState(onPlanAbsence: () => context.push('/pc/away/new'));
+            return _HubEmptyState(
+              onPlanAbsence: () => context.push('/pc/away/new'),
+            );
           }
-          return _HubList(upcoming: grouped.upcoming, past: grouped.past, petsById: petsById);
+          return _HubList(
+            upcoming: grouped.upcoming,
+            past: grouped.past,
+            petsById: petsById,
+          );
         },
       ),
     );
@@ -61,7 +67,11 @@ class PlannedAbsenceHubScreen extends ConsumerWidget {
 }
 
 class _HubList extends StatelessWidget {
-  const _HubList({required this.upcoming, required this.past, required this.petsById});
+  const _HubList({
+    required this.upcoming,
+    required this.past,
+    required this.petsById,
+  });
   final List<PlannedAbsence> upcoming;
   final List<PlannedAbsence> past;
   final Map<String, Pet> petsById;
@@ -74,13 +84,23 @@ class _HubList extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 96),
       children: [
         if (upcoming.isNotEmpty) ...[
-          Text(l.upcomingEvents, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            l.upcomingEvents,
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 8),
           ..._cards(upcoming, false),
         ],
         if (past.isNotEmpty) ...[
           if (upcoming.isNotEmpty) const SizedBox(height: 24),
-          Text(l.pastIterations, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            l.pastIterations,
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 8),
           ..._cards(past, true),
         ],
@@ -91,7 +111,11 @@ class _HubList extends StatelessWidget {
   List<Widget> _cards(List<PlannedAbsence> absences, bool subdued) => [
     for (var i = 0; i < absences.length; i++) ...[
       if (i > 0) const SizedBox(height: 8),
-      PlannedAbsenceHubCard(absence: absences[i], petsById: petsById, subdued: subdued),
+      PlannedAbsenceHubCard(
+        absence: absences[i],
+        petsById: petsById,
+        subdued: subdued,
+      ),
     ],
   ];
 }
@@ -106,15 +130,37 @@ class _HubEmptyState extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(Icons.event_busy_outlined, size: 48, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(height: 16),
-          Text(l.careContextAwayEntryTitle, style: theme.textTheme.titleMedium, textAlign: TextAlign.center),
-          const SizedBox(height: 8),
-          Text(l.careContextAwayEntryBody, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant), textAlign: TextAlign.center),
-          const SizedBox(height: 20),
-          FilledButton.icon(key: const Key('planned_absence_hub_empty_action'), onPressed: onPlanAbsence, icon: const Icon(Icons.add), label: Text(l.careContextAwayContinue)),
-        ]),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.event_busy_outlined,
+              size: 48,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l.careContextAwayEntryTitle,
+              style: theme.textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l.careContextAwayEntryBody,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            FilledButton.icon(
+              key: const Key('planned_absence_hub_empty_action'),
+              onPressed: onPlanAbsence,
+              icon: const Icon(Icons.add),
+              label: Text(l.careContextAwayContinue),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -127,10 +173,22 @@ class _HubError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    return Center(child: Padding(padding: const EdgeInsets.all(24), child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(message, textAlign: TextAlign.center),
-      const SizedBox(height: 16),
-      FilledButton(key: const Key('planned_absence_hub_retry'), onPressed: onRetry, child: Text(l.retry)),
-    ])));
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(message, textAlign: TextAlign.center),
+            const SizedBox(height: 16),
+            FilledButton(
+              key: const Key('planned_absence_hub_retry'),
+              onPressed: onRetry,
+              child: Text(l.retry),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

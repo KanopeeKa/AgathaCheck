@@ -36,7 +36,10 @@ class AwayPlanCopy {
     };
   }
 
-  static String petCarerLabel(AppLocalizations l, PlannedAbsencePetCarer carer) {
+  static String petCarerLabel(
+    AppLocalizations l,
+    PlannedAbsencePetCarer carer,
+  ) {
     if (carer.carerRemoved) return l.awayPlanningCarerRemoved;
     if (!carer.hasCarer) return l.awayPlanningCarerUnset;
     return switch (carer.carerKind) {

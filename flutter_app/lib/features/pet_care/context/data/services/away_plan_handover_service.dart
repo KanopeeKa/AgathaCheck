@@ -53,10 +53,7 @@ class AwayPlanHandoverService {
     required AwayPlanHandoverDocument document,
     required AppLocalizations l,
   }) async {
-    final pdf = pw.Document(
-      title: document.title,
-      author: 'AgathaTrack',
-    );
+    final pdf = pw.Document(title: document.title, author: 'AgathaTrack');
     final dateFormat = DateFormat('MMM d, yyyy');
     final generatedAt = DateTime.now();
 
@@ -75,7 +72,10 @@ class AwayPlanHandoverService {
     return pdf.save();
   }
 
-  List<pw.Widget> _buildBody(AwayPlanHandoverDocument document, AppLocalizations l) {
+  List<pw.Widget> _buildBody(
+    AwayPlanHandoverDocument document,
+    AppLocalizations l,
+  ) {
     final widgets = <pw.Widget>[
       _sectionTitle(l.careContextAwayPlanCarerCoverageTitle),
       pw.Text(document.carerCoverageSummary),
@@ -114,10 +114,17 @@ class AwayPlanHandoverService {
           style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12),
         ),
       );
-      widgets.addAll(_petCareLines(l.awayPlanningScheduleRoutineTitle, section.routineLines));
-      widgets.addAll(_petCareLines(l.awayPlanningScheduleDatedTitle, section.datedLines));
       widgets.addAll(
-        _petCareLines(l.awayPlanningScheduleIndeterminateTitle, section.indeterminateLines),
+        _petCareLines(l.awayPlanningScheduleRoutineTitle, section.routineLines),
+      );
+      widgets.addAll(
+        _petCareLines(l.awayPlanningScheduleDatedTitle, section.datedLines),
+      );
+      widgets.addAll(
+        _petCareLines(
+          l.awayPlanningScheduleIndeterminateTitle,
+          section.indeterminateLines,
+        ),
       );
     }
 
@@ -144,10 +151,12 @@ class AwayPlanHandoverService {
           color: PdfReportTokens.muted,
         ),
       ),
-      ...lines.map((line) => pw.Padding(
-            padding: const pw.EdgeInsets.only(left: 8, top: 2),
-            child: pw.Text(line, style: const pw.TextStyle(fontSize: 10)),
-          )),
+      ...lines.map(
+        (line) => pw.Padding(
+          padding: const pw.EdgeInsets.only(left: 8, top: 2),
+          child: pw.Text(line, style: const pw.TextStyle(fontSize: 10)),
+        ),
+      ),
     ];
   }
 
@@ -182,7 +191,10 @@ class AwayPlanHandoverService {
     );
   }
 
-  pw.Widget _buildHeader(AwayPlanHandoverDocument document, AppLocalizations l) {
+  pw.Widget _buildHeader(
+    AwayPlanHandoverDocument document,
+    AppLocalizations l,
+  ) {
     return pw.Container(
       margin: const pw.EdgeInsets.only(bottom: 14),
       padding: const pw.EdgeInsets.all(12),
@@ -215,7 +227,10 @@ class AwayPlanHandoverService {
               ),
               pw.Text(
                 document.dateRangeLabel,
-                style: pw.TextStyle(fontSize: 8, color: PdfReportTokens.primarySoft),
+                style: pw.TextStyle(
+                  fontSize: 8,
+                  color: PdfReportTokens.primarySoft,
+                ),
               ),
             ],
           ),

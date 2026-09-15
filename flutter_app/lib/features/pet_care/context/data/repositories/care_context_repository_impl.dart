@@ -53,8 +53,10 @@ class CareContextRepositoryImpl implements CareContextRepository {
   Future<PlannedAbsence> updateHandoverNote({
     required String absenceId,
     String? handoverNote,
-  }) =>
-      _remote.updateHandoverNote(absenceId: absenceId, handoverNote: handoverNote);
+  }) => _remote.updateHandoverNote(
+    absenceId: absenceId,
+    handoverNote: handoverNote,
+  );
 
   @override
   Future<void> recordHandoverDownload(String absenceId) =>

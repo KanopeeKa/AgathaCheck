@@ -38,7 +38,20 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
     }
 
     return absenceAsync.when(
-        loading: () => shell(child: const Center(child: CircularProgressIndicator())),
+      loading: () =>
+          shell(child: const Center(child: CircularProgressIndicator())),
+      error: (_, __) => shell(
+        child: _ErrorBody(
+          message: l.careContextAwayPlanLoadError,
+          onRetry: () {
+            ref.invalidate(plannedAbsenceDetailProvider(absenceId));
+            ref.invalidate(awayPlanReadinessProvider(absenceId));
+          },
+        ),
+      ),
+      data: (absence) => readinessAsync.when(
+        loading: () =>
+            shell(child: const Center(child: CircularProgressIndicator())),
         error: (_, __) => shell(
           child: _ErrorBody(
             message: l.careContextAwayPlanLoadError,
@@ -48,94 +61,85 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
             },
           ),
         ),
-        data: (absence) => readinessAsync.when(
-          loading: () => shell(child: const Center(child: CircularProgressIndicator())),
-          error: (_, __) => shell(
-            child: _ErrorBody(
-              message: l.careContextAwayPlanLoadError,
-              onRetry: () {
-                ref.invalidate(plannedAbsenceDetailProvider(absenceId));
-                ref.invalidate(awayPlanReadinessProvider(absenceId));
-              },
-            ),
-          ),
-          data: (readiness) => petsAsync.when(
-            loading: () => shell(child: const Center(child: CircularProgressIndicator())),
-            error: (error, _) => shell(
-              child: Center(child: Text(l.errorWithMessage('$error'))),
-            ),
-            data: (pets) {
-              final petNamesById = {for (final pet in pets) pet.id: pet.name};
-              final orderedPetIds = [...absence.petIds]..sort();
-              void retryPetCoverage() {
-                for (final petId in orderedPetIds) {
-                  ref.invalidate(carePeriodCoverageProvider((
+        data: (readiness) => petsAsync.when(
+          loading: () =>
+              shell(child: const Center(child: CircularProgressIndicator())),
+          error: (error, _) =>
+              shell(child: Center(child: Text(l.errorWithMessage('$error')))),
+          data: (pets) {
+            final petNamesById = {for (final pet in pets) pet.id: pet.name};
+            final orderedPetIds = [...absence.petIds]..sort();
+            void retryPetCoverage() {
+              for (final petId in orderedPetIds) {
+                ref.invalidate(
+                  carePeriodCoverageProvider((
                     petId: petId,
                     startsOn: absence.startsOn,
                     endsOn: absence.endsOn,
-                  )));
-                }
+                  )),
+                );
               }
+            }
 
-              Future<void> downloadHandover() => AwayPlanHandoverController(ref)
-                  .downloadHandover(
-                    context: context,
+            Future<void> downloadHandover() =>
+                AwayPlanHandoverController(ref).downloadHandover(
+                  context: context,
+                  absence: absence,
+                  readiness: readiness,
+                  petNamesById: petNamesById,
+                );
+
+            return shell(
+              actions: [
+                IconButton(
+                  key: const Key('away_plan_download_handover'),
+                  tooltip: l.downloadReport,
+                  icon: const Icon(Icons.picture_as_pdf_outlined),
+                  onPressed: absence.isCancelled ? null : downloadHandover,
+                ),
+              ],
+              child: ListView(
+                key: const Key('away_plan_page'),
+                padding: const EdgeInsets.all(16),
+                children: [
+                  AwayPlanHeaderSection(absence: absence, readiness: readiness),
+                  const SizedBox(height: 24),
+                  AwayPlanCarersSection(
                     absence: absence,
-                    readiness: readiness,
                     petNamesById: petNamesById,
-                  );
-
-              return shell(
-                actions: [
-                  IconButton(
-                    key: const Key('away_plan_download_handover'),
-                    tooltip: l.downloadReport,
-                    icon: const Icon(Icons.picture_as_pdf_outlined),
-                    onPressed: absence.isCancelled ? null : downloadHandover,
                   ),
-                ],
-                child: ListView(
-                  key: const Key('away_plan_page'),
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    AwayPlanHeaderSection(absence: absence, readiness: readiness),
-                    const SizedBox(height: 24),
-                    AwayPlanCarersSection(
-                      absence: absence,
-                      petNamesById: petNamesById,
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      l.careContextAwayPlanCareDuringTitle,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 12),
-                    ...orderedPetIds.map(
-                      (petId) => Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: AwayPlanPetCareSection(
-                          petId: petId,
-                          petName: petNamesById[petId] ?? '',
-                          startsOn: absence.startsOn,
-                          endsOn: absence.endsOn,
-                          onRetry: retryPetCoverage,
-                        ),
+                  const SizedBox(height: 24),
+                  Text(
+                    l.careContextAwayPlanCareDuringTitle,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 12),
+                  ...orderedPetIds.map(
+                    (petId) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: AwayPlanPetCareSection(
+                        petId: petId,
+                        petName: petNamesById[petId] ?? '',
+                        startsOn: absence.startsOn,
+                        endsOn: absence.endsOn,
+                        onRetry: retryPetCoverage,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    AwayPlanHandoverNoteSection(absence: absence),
-                    const SizedBox(height: 24),
-                    AwayPlanDetailsSection(
-                      absence: absence,
-                      petNamesById: petNamesById,
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+                  ),
+                  const SizedBox(height: 8),
+                  AwayPlanHandoverNoteSection(absence: absence),
+                  const SizedBox(height: 24),
+                  AwayPlanDetailsSection(
+                    absence: absence,
+                    petNamesById: petNamesById,
+                  ),
+                ],
+              ),
+            );
+          },
         ),
-      );
+      ),
+    );
   }
 }
 

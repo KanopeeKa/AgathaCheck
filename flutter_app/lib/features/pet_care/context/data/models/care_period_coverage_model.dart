@@ -46,7 +46,8 @@ class CarePeriodCoverageModel {
         CarePeriodProjectionStatus.partiallyIndeterminate;
 
     final itemsJson = json['items'] as List<dynamic>? ?? const [];
-    final routineItemsJson = json['routine_items'] as List<dynamic>? ?? const [];
+    final routineItemsJson =
+        json['routine_items'] as List<dynamic>? ?? const [];
     final datedItemsJson = json['dated_items'] as List<dynamic>? ?? const [];
     final uncertaintiesJson =
         json['uncertainties'] as List<dynamic>? ?? const [];
@@ -59,8 +60,8 @@ class CarePeriodCoverageModel {
         .toList(growable: false);
     final datedItems = datedItemsJson.isNotEmpty
         ? datedItemsJson
-            .map((raw) => projectionItemFromJson(raw as Map<String, dynamic>))
-            .toList(growable: false)
+              .map((raw) => projectionItemFromJson(raw as Map<String, dynamic>))
+              .toList(growable: false)
         : items;
 
     return CarePeriodCoverageResult(
@@ -68,18 +69,16 @@ class CarePeriodCoverageModel {
       endsOn: json['ends_on'] as String? ?? '',
       projectionStatus: projectionStatus,
       uncertainties: uncertaintiesJson
-          .map(
-            (raw) {
-              final map = raw as Map<String, dynamic>;
-              return CarePeriodUncertainty(
-                healthEntryId: map['health_entry_id'] as String? ?? '',
-                reason: map['reason'] as String? ?? '',
-                name: map['name'] as String? ?? '',
-                type: map['type'] as String?,
-                careFamily: map['care_family'] as String?,
-              );
-            },
-          )
+          .map((raw) {
+            final map = raw as Map<String, dynamic>;
+            return CarePeriodUncertainty(
+              healthEntryId: map['health_entry_id'] as String? ?? '',
+              reason: map['reason'] as String? ?? '',
+              name: map['name'] as String? ?? '',
+              type: map['type'] as String?,
+              careFamily: map['care_family'] as String?,
+            );
+          })
           .toList(growable: false),
       items: items,
       routineItems: routineItems,

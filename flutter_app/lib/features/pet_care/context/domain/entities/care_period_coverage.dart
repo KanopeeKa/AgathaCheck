@@ -102,8 +102,7 @@ class CarePeriodRoutineItem {
   final String firstScheduledDate;
   final String lastScheduledDate;
 
-  bool get isConditional =>
-      certainty == 'conditional_on_future_completion';
+  bool get isConditional => certainty == 'conditional_on_future_completion';
 }
 
 class CarePeriodCoverageSummary {
