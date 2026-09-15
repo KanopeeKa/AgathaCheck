@@ -42,7 +42,6 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | Document | Role |
 |----------|------|
 | [care-context.md](/docs/domains/pet_care/features/care-context.md) | Canonical product behaviour |
-| [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md) | Per-pet carer schema, API, and UI surfaces |
 | [care-through-change-delivery-plan.md](/docs/domains/pet_care/changes/care-through-change-delivery-plan.md) | CC-1–CC-4 delivery plan (active) |
 | [away-planning-delivery-plan.md](/docs/domains/pet_care/changes/away-planning-delivery-plan.md) | AW-EMERGENCY–AW-10 delivery plan (active) |
 | [away-planning-decisions.md](/docs/domains/pet_care/changes/away-planning-decisions.md) | Frozen Away Planning decisions (D-AWAY-001–013) |

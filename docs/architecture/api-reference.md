@@ -251,33 +251,26 @@ Each list item includes `overlap_warnings` **recomputed on read** (not persisted
 
 `PATCH /:id` accepts optional `pet_carers: [{ pet_id, carer_kind, ... }]`. Carer writes bump `planned_absences.updated_at`. `shared_user` assignments return `403` when `carer_user_id` is not a `shared`/`guardian` collaborator on that pet.
 
-**Readiness (`GET /:id/readiness`)** — AW-8
+### Carer candidates (`GET /api/pets/:id/carer-candidates`) — AW-4
 
-Server-authoritative two-fact readiness for hub, plan page, and dashboard tile (D-AWAY-002). Declarer-scoped; `404` when absence is not owned by caller.
+Scoped to `userCanManagePet` (same as absence declaration). Returns minimal collaborator list for assigning `shared_user` carers:
 
 ```json
-{
-  "carer_coverage": {
-    "state": "none_have_carers | some_have_carers | all_have_carers",
-    "pets_with_carer": 0,
-    "pets_total": 1,
-    "copy_key": "awayPlanningCarerCoverageNoneHaveCarers"
-  },
-  "care_coverage": {
-    "coverage_state": "nothing_scheduled | all_completed | …",
-    "reason_codes": [],
-    "reassurance_available": false,
-    "copy_key": "careContextCoverageNothingScheduled"
-  },
-  "tile_copy": {
-    "source": "carer_coverage | care_coverage",
-    "copy_key": "awayPlanningTileCarerNone",
-    "copy_params": {}
-  }
-}
+[{ "user_id": "…", "display_name": "Sarah M." }]
 ```
 
-Tile copy uses fixed actionability priority: carer gap first, else coverage sentence. See [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md).
+No email, photo, or bio. Does not change `GET /api/pets/:id/access` (`userOwnsPet` guard unchanged).
+
+**Carers (AW-4)** — each absence includes `pet_ids` and `pet_carers` (per-pet facts on `planned_absence_pets`):
+
+| Field | Notes |
+|---|---|
+| `pet_carers[].carer_kind` | `shared_user`, `note_only`, or `null` (unset) |
+| `pet_carers[].carer_user_id` | Required on write for `shared_user`; must be a collaborator on that pet |
+| `pet_carers[].carer_name` / `carer_note` | `note_only` only — name + note; no access implied |
+| `pet_carers[].carer_removed` | Read-only: `shared_user` with `carer_user_id` null (deleted user) |
+
+`PATCH /:id` accepts optional `pet_carers: [{ pet_id, carer_kind, ... }]`. Carer writes bump `planned_absences.updated_at`. `shared_user` assignments return `403` when `carer_user_id` is not a `shared`/`guardian` collaborator on that pet.
 
 ### Carer candidates (`GET /api/pets/:id/carer-candidates`) — AW-4
 

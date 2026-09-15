@@ -157,21 +157,6 @@ feed.
 
 ---
 
-### J3b — Away Planning (Care Context)
-
-**Goal:** Plan absences, assign per-pet carers, and review care scheduled during dates away.
-
-| Pri | Behaviour | Gherkin scenario | Playwright | Status |
-|-----|-----------|------------------|------------|--------|
-| P0 | Dashboard entry | Dashboard away planning tile opens the hub | `away.planning.spec.ts` | ✅ |
-| P0 | Save absence | Guardian can save a planned absence from the wizard | `away.planning.spec.ts` | ✅ |
-| P1 | Hub list | Away planning hub lists a saved upcoming absence | `away.planning.spec.ts` | ✅ |
-| P1 | Plan page carers | Away plan page shows who is caring for each pet | `away.planning.spec.ts` | ✅ |
-
-**Feature:** `away_planning.feature` (4) — **4/4 (100%)**
-
----
-
 ### J4 — Notifications
 
 **Goal:** Surface due/overdue work and manage read state.
