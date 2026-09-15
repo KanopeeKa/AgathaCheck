@@ -5,6 +5,10 @@ import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
 import { completeOccurrence } from '../../lib/care/schedule/completeOccurrence.js';
 import {
+  pauseSeries,
+  resumeSeries,
+} from '../../lib/care/schedule/pauseResumeSeries.js';
+import {
   skipMissedOccurrences,
   skipOccurrence,
 } from '../../lib/care/schedule/skipOccurrence.js';
@@ -15,7 +19,7 @@ import {
   resolveCompletedOn,
 } from '../../lib/occurrenceScheduling.js';
 import { tryAutoCloseRecurringWithEndDate } from '../../lib/occurrenceLifecycle.js';
-import { extractUserId } from './shared.js';
+import { extractUserId, healthEntryToMap } from './shared.js';
 import {
   isWeightMonitoringEntry,
   WEIGHT_GENERIC_COMPLETE_ERROR,
@@ -224,6 +228,73 @@ export function registerOccurrenceRoutes(router, pool) {
         req,
       });
       res.json({ skipped: batch.skipped, count: batch.count });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.post('/:id/pause', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const entryId = req.params.id;
+      const entry = await loadEntry(pool, entryId, userId);
+      if (!entry) return res.status(404).json({ error: 'Entry not found' });
+      const body = req.body || {};
+      const paused = await pauseSeries(pool, {
+        entry,
+        userId,
+        pausedFrom: body.paused_from || body.pausedFrom,
+        reasonCode: body.reason_code || body.reasonCode || null,
+        reasonNote: body.reason_note || body.reasonNote || body.notes || null,
+      });
+      if (!paused) {
+        return res.status(400).json({ error: 'Entry cannot be paused' });
+      }
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'health_entry.paused',
+        resourceType: 'health_entry',
+        resourceId: entryId,
+        petId: entry.pet_id,
+        metadata: { paused_since: paused.pausedSince },
+        req,
+      });
+      paused.entry.pet_name = null;
+      res.json(healthEntryToMap(paused.entry));
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.post('/:id/resume', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const entryId = req.params.id;
+      const entry = await loadEntry(pool, entryId, userId);
+      if (!entry) return res.status(404).json({ error: 'Entry not found' });
+      const body = req.body || {};
+      const resumed = await resumeSeries(pool, {
+        entry,
+        userId,
+        reasonCode: body.reason_code || body.reasonCode || null,
+        reasonNote: body.reason_note || body.reasonNote || body.notes || null,
+      });
+      if (!resumed) {
+        return res.status(400).json({ error: 'Entry cannot be resumed' });
+      }
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'health_entry.resumed',
+        resourceType: 'health_entry',
+        resourceId: entryId,
+        petId: entry.pet_id,
+        metadata: {},
+        req,
+      });
+      resumed.entry.pet_name = null;
+      res.json(healthEntryToMap(resumed.entry));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
