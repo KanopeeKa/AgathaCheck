@@ -14,5 +14,5 @@ abstract class CareContextRepository {
     required List<String> petIds,
   });
 
-  Future<List<PlannedAbsence>> listPlannedAbsences();
+  Future<List<PlannedAbsence>> listPlannedAbsences({String scope = 'all'});
 }
