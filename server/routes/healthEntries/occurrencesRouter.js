@@ -5,9 +5,12 @@ import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
 import { completeOccurrence } from '../../lib/care/schedule/completeOccurrence.js';
 import {
+  skipMissedOccurrences,
+  skipOccurrence,
+} from '../../lib/care/schedule/skipOccurrence.js';
+import {
   listMissedOccurrenceIds,
   listOpenOccurrences,
-  materialiseAfterOccurrenceClose,
   occurrenceToMap,
   resolveCompletedOn,
 } from '../../lib/occurrenceScheduling.js';
@@ -104,12 +107,13 @@ export function registerOccurrenceRoutes(router, pool) {
         const missedIds = await listMissedOccurrenceIds(pool, entryId, asOfFromRequest(req));
         const earlier = missedIds.filter((id) => id !== occ.id);
         if (earlier.length > 0) {
-          await pool.query(
-            `UPDATE health_occurrences SET status = 'skipped', marked_at = $1,
-              marked_by_user_id = $2, updated_at = NOW()
-             WHERE id = ANY($3::uuid[]) AND health_entry_id = $4 AND status = 'pending'`,
-            [markedAt, userId, earlier, entryId]
-          );
+          await skipMissedOccurrences(pool, {
+            entry,
+            userId,
+            occurrenceIds: earlier,
+            markedAt,
+            todayIso: asOfFromRequest(req),
+          });
         }
       }
 
@@ -164,14 +168,17 @@ export function registerOccurrenceRoutes(router, pool) {
       }
       const notes = (req.body || {}).notes || '';
       const markedAt = new Date();
-      const result = await pool.query(
-        `UPDATE health_occurrences SET status = 'skipped', marked_at = $1,
-          marked_by_user_id = $2, notes = $3, updated_at = NOW()
-         WHERE id = $4 AND health_entry_id = $5 AND status = 'pending'
-         RETURNING *`,
-        [markedAt, userId, notes, occ.id, entryId]
-      );
-      await materialiseAfterOccurrenceClose(pool, entry);
+      const skipped = await skipOccurrence(pool, {
+        entry,
+        occurrenceId: occ.id,
+        userId,
+        notes,
+        markedAt,
+        todayIso: asOfFromRequest(req),
+      });
+      if (!skipped) {
+        return res.status(404).json({ error: 'Occurrence not found' });
+      }
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'health_occurrence.skipped',
@@ -181,7 +188,7 @@ export function registerOccurrenceRoutes(router, pool) {
         metadata: { occurrence_id: occ.id },
         req,
       });
-      res.json(occurrenceToMap(result.rows[0]));
+      res.json(occurrenceToMap(skipped.occurrence));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -200,23 +207,23 @@ export function registerOccurrenceRoutes(router, pool) {
         return res.json({ skipped: [], count: 0 });
       }
       const markedAt = new Date();
-      await pool.query(
-        `UPDATE health_occurrences SET status = 'skipped', marked_at = $1,
-          marked_by_user_id = $2, updated_at = NOW()
-         WHERE id = ANY($3::uuid[]) AND health_entry_id = $4 AND status = 'pending'`,
-        [markedAt, userId, missedIds, entryId]
-      );
-      await materialiseAfterOccurrenceClose(pool, entry);
+      const batch = await skipMissedOccurrences(pool, {
+        entry,
+        userId,
+        occurrenceIds: missedIds,
+        markedAt,
+        todayIso: asOf,
+      });
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'health_occurrence.skip_missed',
         resourceType: 'health_entry',
         resourceId: entryId,
         petId: entry.pet_id,
-        metadata: { count: missedIds.length },
+        metadata: { count: batch.count },
         req,
       });
-      res.json({ skipped: missedIds, count: missedIds.length });
+      res.json({ skipped: batch.skipped, count: batch.count });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
