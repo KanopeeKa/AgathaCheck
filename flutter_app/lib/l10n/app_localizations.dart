@@ -10467,6 +10467,18 @@ abstract class AppLocalizations {
   /// **'Preview care scheduled while you\'re away.'**
   String get careContextAwayEntryBody;
 
+  /// No description provided for @awayPlanningTileCarerNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose who will care for your pets.'**
+  String get awayPlanningTileCarerNone;
+
+  /// No description provided for @awayPlanningTileCarerSome.
+  ///
+  /// In en, this message translates to:
+  /// **'Some pets still need a carer assigned.'**
+  String get awayPlanningTileCarerSome;
+
   /// No description provided for @careContextAwayFlowTitle.
   ///
   /// In en, this message translates to:

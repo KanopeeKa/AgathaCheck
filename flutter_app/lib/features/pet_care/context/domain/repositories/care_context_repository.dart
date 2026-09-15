@@ -1,3 +1,4 @@
+import '../entities/away_plan_readiness.dart';
 import '../entities/care_period_coverage.dart';
 import '../entities/planned_absence.dart';
 
@@ -15,4 +16,6 @@ abstract class CareContextRepository {
   });
 
   Future<List<PlannedAbsence>> listPlannedAbsences({String scope = 'all'});
+
+  Future<AwayPlanReadiness> getAwayPlanReadiness(String absenceId);
 }

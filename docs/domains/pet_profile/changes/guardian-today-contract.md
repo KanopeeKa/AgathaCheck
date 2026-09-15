@@ -26,8 +26,12 @@ domains:
 2. **Care Actions** (eyebrow CARE ACTIONS; legacy label Due and Overdue)
 3. **Care team** (user-facing; vet routes unchanged)
 
-**Today** is a compact orientation and prioritisation layer above those three
-domains. It is not a fourth section, a replacement route, or a second management
+**Away planning** is a fourth dashboard element — a compact entry tile above
+those three management domains. It links to `/pc/away` and is not a management
+screen or replacement route.
+
+**Today** is a compact orientation and prioritisation layer when shown. It is
+not a fifth management section, a replacement route, or a second management
 screen. It may summarise counts, urgency, and next actions, but every action
 continues to the existing domain destination.
 

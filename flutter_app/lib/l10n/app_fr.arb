@@ -2101,6 +2101,8 @@
   "undoCompleteFailed": "Impossible d'annuler la complétion. Réessayez.",
   "careContextAwayEntryTitle": "Je serai absent",
   "careContextAwayEntryBody": "Prévisualisez les soins prévus pendant votre absence.",
+  "awayPlanningTileCarerNone": "Choisissez qui s'occupera de vos animaux.",
+  "awayPlanningTileCarerSome": "Certains animaux n'ont pas encore de soignant.",
   "careContextAwayFlowTitle": "Planifier une absence",
   "careContextAwayDatesStepTitle": "Quand serez-vous absent ?",
   "careContextAwayDatesStepBody": "Sélectionnez le premier et le dernier jour de votre absence.",
