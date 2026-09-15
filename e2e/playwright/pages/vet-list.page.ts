@@ -79,11 +79,11 @@ export class VetListPage {
 
   private async openCareTeamEditFromDetail(): Promise<void> {
     const optionsButton = this.page.getByRole('button', {
-      name: /care team options/i,
+      name: /veterinary team options/i,
     });
     await optionsButton.click();
     await this.page
-      .getByRole('menuitem', { name: /edit care team/i })
+      .getByRole('menuitem', { name: /edit veterinary team/i })
       .click();
   }
 

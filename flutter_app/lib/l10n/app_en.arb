@@ -1806,10 +1806,11 @@
   "drawerCreateOrg": "Create an organisation",
   "orgNotificationsDrawer": "Organisation notifications",
   "petCareNotificationsDrawer": "Pet Care notifications",
-  "myVets": "Care team",
-  "careTeamEyebrow": "CARE TEAM",
+  "myVets": "Veterinary team",
+  "careTeamEyebrow": "VETERINARY TEAM",
   "careTeamClinicSubtitle": "Veterinary clinic",
-  "allCareTeams": "All care teams",
+  "allCareTeams": "All veterinary teams",
+  "collectionFilterPersonal": "Personal",
   "petCareDashboardTitle": "Pet Care dashboard",
   "upcomingPetEvents": "Upcoming Pet Events",
   "dueAndOverdue": "Due and Overdue",
@@ -1823,12 +1824,12 @@
   "careTeamCaringForPets": "{count, plural, =1{Caring for 1 pet} other{Caring for {count} pets}}",
   "@careTeamCaringForPets": { "placeholders": { "count": { "type": "int" } } },
   "vetLinkedPets": "Linked pets",
-  "careTeam": "Care Team",
+  "careTeam": "Veterinary team",
   "careTeamPetsCaredFor": "Pets cared for",
-  "careTeamNoLinkedPets": "No pets are currently linked to this care team.",
+  "careTeamNoLinkedPets": "No pets are currently linked to this veterinary team.",
   "careTeamClinicType": "Veterinary clinic",
-  "careTeamOptions": "Care team options",
-  "editCareTeam": "Edit care team",
+  "careTeamOptions": "Veterinary team options",
+  "editCareTeam": "Edit veterinary team",
   "vetNotFound": "Veterinarian not found",
   "selectPetForWeight": "Select a pet for weight entry",
   "selectPetForEvent": "Select a pet for this event",
@@ -2166,6 +2167,8 @@
   "undoCompleteFailed": "Could not undo completion. Try again.",
   "careContextAwayEntryTitle": "I'll be away",
   "careContextAwayEntryBody": "Preview care scheduled while you're away.",
+  "awayPlanningTileCarerNone": "Choose who will care for your pets.",
+  "awayPlanningTileCarerSome": "Some pets still need a carer assigned.",
   "careContextAwayFlowTitle": "Away planning",
   "careContextAwayDatesStepTitle": "When are you away?",
   "careContextAwayDatesStepBody": "Select the first and last day of your absence.",
@@ -2231,5 +2234,63 @@
     }
   },
   "careContextAwayContinue": "Continue",
-  "careContextAwayBack": "Back"
+  "careContextAwayBack": "Back",
+  "careContextAwayPlanTitle": "Away plan",
+  "careContextAwayPlanLoadError": "Could not load this away plan. Try again.",
+  "careContextAwayPlanCareDuringTitle": "Care during your absence",
+  "careContextAwayPlanWhoIsCaringTitle": "Who's caring",
+  "careContextAwayPlanDetailsTitle": "Plan details",
+  "careContextAwayPlanDatesLabel": "Dates",
+  "careContextAwayPlanPetsLabel": "Pets",
+  "careContextAwayPlanStatusLabel": "Status",
+  "careContextAwayPlanStatusActive": "Active",
+  "careContextAwayPlanStatusCancelled": "Cancelled",
+  "careContextAwayPlanCarerCoverageTitle": "Carer coverage",
+  "careContextAwayPlanCareCoverageTitle": "Care coverage",
+  "awayPlanningCarerCoverageAllHaveCarers": "Every pet has a carer assigned.",
+  "awayPlanningCarerCoverageSomeHaveCarers": "{assigned} of {total} pets have a carer assigned.",
+  "@awayPlanningCarerCoverageSomeHaveCarers": {
+    "placeholders": {
+      "assigned": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "awayPlanningCarerCoverageNoneHaveCarers": "No pets have a carer assigned yet.",
+  "awayPlanningCarerRemoved": "Carer removed",
+  "awayPlanningCarerUnset": "No carer assigned",
+  "awayPlanningCarerSharedAccess": "{name} · Shared access",
+  "@awayPlanningCarerSharedAccess": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "awayPlanningCarerNoteOnly": "{name} · No AgathaTrack access",
+  "@awayPlanningCarerNoteOnly": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "awayPlanningCarerNoteOnlyWithNote": "{name} · {note} · No AgathaTrack access",
+  "@awayPlanningCarerNoteOnlyWithNote": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "note": { "type": "String" }
+    }
+  },
+  "awayPlanningCarerSharedUserFallback": "Shared user",
+  "awayPlanningRoutineAllDay": "All day",
+  "awayPlanningRoutineRowSubtitle": "{time} · {count, plural, =1{1 occurrence} other{{count} occurrences}} · {dateRange}",
+  "@awayPlanningRoutineRowSubtitle": {
+    "placeholders": {
+      "time": { "type": "String" },
+      "count": { "type": "int" },
+      "dateRange": { "type": "String" }
+    }
+  },
+  "awayPlanningScheduleRoutineTitle": "Routine care",
+  "awayPlanningScheduleDatedTitle": "Dated care",
+  "awayPlanningScheduleIndeterminateTitle": "Indeterminate care",
+  "awayPlanningIndeterminatePending": "Waiting on a prior dose",
+  "awayPlanningIndeterminateChain": "Depends on earlier care in the chain",
+  "awayPlanningIndeterminateGeneric": "Timing not yet known"
 }

@@ -65,10 +65,44 @@ class CarePeriodUncertainty {
   const CarePeriodUncertainty({
     required this.healthEntryId,
     required this.reason,
+    this.name = '',
+    this.type,
+    this.careFamily,
   });
 
   final String healthEntryId;
   final String reason;
+  final String name;
+  final String? type;
+  final String? careFamily;
+}
+
+class CarePeriodRoutineItem {
+  const CarePeriodRoutineItem({
+    required this.healthEntryId,
+    required this.name,
+    required this.type,
+    required this.careFamily,
+    this.scheduledTime,
+    required this.certainty,
+    required this.occurrenceCount,
+    required this.status,
+    required this.firstScheduledDate,
+    required this.lastScheduledDate,
+  });
+
+  final String healthEntryId;
+  final String name;
+  final String type;
+  final String careFamily;
+  final String? scheduledTime;
+  final String certainty;
+  final int occurrenceCount;
+  final String status;
+  final String firstScheduledDate;
+  final String lastScheduledDate;
+
+  bool get isConditional => certainty == 'conditional_on_future_completion';
 }
 
 class CarePeriodCoverageSummary {
@@ -93,6 +127,8 @@ class CarePeriodCoverageResult {
     required this.uncertainties,
     required this.items,
     required this.coverage,
+    this.routineItems = const [],
+    this.datedItems = const [],
   });
 
   final String startsOn;
@@ -101,6 +137,8 @@ class CarePeriodCoverageResult {
   final List<CarePeriodUncertainty> uncertainties;
   final List<CarePeriodProjectionItem> items;
   final CarePeriodCoverageSummary coverage;
+  final List<CarePeriodRoutineItem> routineItems;
+  final List<CarePeriodProjectionItem> datedItems;
 
   bool get isPartiallyIndeterminate =>
       projectionStatus == CarePeriodProjectionStatus.partiallyIndeterminate;

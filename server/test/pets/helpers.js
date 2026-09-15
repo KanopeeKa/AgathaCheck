@@ -42,6 +42,36 @@ export function makePetRow(overrides = {}) {
   };
 }
 
+/**
+ * Mock pool with connect() for transaction-aware route tests.
+ *
+ * @param {(sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }>} [queryHandler]
+ */
+export function createTransactionalMockPool(queryHandler) {
+  let txDepth = 0;
+  const baseQuery = queryHandler || (async () => ({ rows: [] }));
+
+  const client = {
+    query: async (sql, params) => {
+      if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
+        if (sql === 'BEGIN') txDepth += 1;
+        if (sql === 'COMMIT' || sql === 'ROLLBACK') txDepth = Math.max(0, txDepth - 1);
+        return { rows: [] };
+      }
+      return baseQuery(sql, params);
+    },
+    release: async () => {},
+  };
+
+  const pool = {
+    query: (sql, params) => client.query(sql, params),
+    connect: async () => client,
+    end: async () => {},
+    getTxDepth: () => txDepth,
+  };
+  return pool;
+}
+
 export function createMockPool(queryHandler) {
   return {
     query: queryHandler || (async (sql, params) => {

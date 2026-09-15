@@ -6,7 +6,7 @@
  * Scenario: Care preview orders overdue, due today, and upcoming items
  * Scenario: Care preview row opens the event view screen
  * Scenario: Care preview supports completion and undo
- * Scenario: Care team preview reaches linked vet details
+ * Scenario: Veterinary team preview reaches linked vet details
  * Scenario: Empty Pet Care dashboard shows first-use guidance without false alerts
  * Scenario: Global events screen shows unified list without tabs
  */
@@ -173,7 +173,7 @@ test.describe('Guardian dashboard', () => {
     ).toBeVisible();
   });
 
-  test('Care team preview reaches linked vet details', async ({ page, testUser }) => {
+  test('Veterinary team preview reaches linked vet details', async ({ page, testUser }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     const vet = await createVetFull(baseURL(), testUser.accessToken, { name: 'Dr. Desk' });
     const pet = await createPet(baseURL(), testUser.accessToken, 'VetLinkedPet');

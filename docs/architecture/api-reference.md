@@ -224,7 +224,70 @@ Weight monitoring rhythms cannot use generic occurrence complete or mark-taken w
 
 ### Planned absences (`/api/planned-absences`) — CC-1
 
-Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `POST /`, `GET /:id`, `PATCH /:id`, `POST /:id/cancel`. `POST` returns non-blocking `overlap_warnings` when active absences overlap for the same pet.
+Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `POST /`, `GET /:id`, `PATCH /:id`, `POST /:id/cancel`.
+
+**List (`GET /`)**
+
+| Query | Values | Default |
+|---|---|---|
+| `scope` | `upcoming`, `past`, `all` | `upcoming` |
+
+- `upcoming` — non-cancelled where `ends_on >= today`, ordered by `starts_on` ascending (wizard invalidate shape: top-level JSON array).
+- `past` — non-cancelled where `ends_on < today`, ordered by `starts_on` descending.
+- `all` — all non-cancelled absences; upcoming first (`starts_on` asc), then past (`starts_on` desc).
+
+Each list item includes `overlap_warnings` **recomputed on read** (not persisted): non-blocking conflicts with other active absences (`status != cancelled` and `ends_on >= today`) for the same pet. Same shape as `POST`/`PATCH` overlap entries.
+
+`POST` and `PATCH` also return non-blocking `overlap_warnings` when active absences overlap for the same pet.
+
+**Carers (AW-4)** — each absence includes `pet_ids` and `pet_carers` (per-pet facts on `planned_absence_pets`):
+
+| Field | Notes |
+|---|---|
+| `pet_carers[].carer_kind` | `shared_user`, `note_only`, or `null` (unset) |
+| `pet_carers[].carer_user_id` | Required on write for `shared_user`; must be a collaborator on that pet |
+| `pet_carers[].carer_name` / `carer_note` | `note_only` only — name + note; no access implied |
+| `pet_carers[].carer_removed` | Read-only: `shared_user` with `carer_user_id` null (deleted user) |
+
+`PATCH /:id` accepts optional `pet_carers: [{ pet_id, carer_kind, ... }]`. Carer writes bump `planned_absences.updated_at`. `shared_user` assignments return `403` when `carer_user_id` is not a `shared`/`guardian` collaborator on that pet.
+
+**Readiness (`GET /:id/readiness`)** — AW-8
+
+Server-authoritative two-fact readiness for hub, plan page, and dashboard tile (D-AWAY-002). Declarer-scoped; `404` when absence is not owned by caller.
+
+```json
+{
+  "carer_coverage": {
+    "state": "none_have_carers | some_have_carers | all_have_carers",
+    "pets_with_carer": 0,
+    "pets_total": 1,
+    "copy_key": "awayPlanningCarerCoverageNoneHaveCarers"
+  },
+  "care_coverage": {
+    "coverage_state": "nothing_scheduled | all_completed | …",
+    "reason_codes": [],
+    "reassurance_available": false,
+    "copy_key": "careContextCoverageNothingScheduled"
+  },
+  "tile_copy": {
+    "source": "carer_coverage | care_coverage",
+    "copy_key": "awayPlanningTileCarerNone",
+    "copy_params": {}
+  }
+}
+```
+
+Tile copy uses fixed actionability priority: carer gap first, else coverage sentence. See [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md).
+
+### Carer candidates (`GET /api/pets/:id/carer-candidates`) — AW-4
+
+Scoped to `userCanManagePet` (same as absence declaration). Returns minimal collaborator list for assigning `shared_user` carers:
+
+```json
+[{ "user_id": "…", "display_name": "Sarah M." }]
+```
+
+No email, photo, or bio. Does not change `GET /api/pets/:id/access` (`userOwnsPet` guard unchanged).
 
 ### Review relevance (Phase D — internal only)
 

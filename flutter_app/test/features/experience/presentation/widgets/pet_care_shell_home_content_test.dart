@@ -80,14 +80,14 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('CARE ACTIONS'), findsOneWidget);
-    expect(find.text('CARE TEAM'), findsOneWidget);
+    expect(find.text('VETERINARY TEAM'), findsOneWidget);
     expect(find.byKey(const Key('pet_care_dashboard_add_care')), findsNothing);
     expect(find.byKey(const Key('pet_care_dashboard_add_vet')), findsNothing);
     expect(
       find.byKey(const Key('pet_care_dashboard_empty_care_action')),
       findsOneWidget,
     );
-    expect(find.text('All care teams'), findsOneWidget);
+    expect(find.text('All veterinary teams'), findsOneWidget);
     expect(
       find.byKey(const Key('pet_care_dashboard_care_section')),
       findsOneWidget,
@@ -256,7 +256,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
-        find.text('Toutes les équipes de soins'),
+        find.text('Toutes les équipes vétérinaires'),
         120,
         scrollable: find.byWidgetPredicate(
           (widget) =>
@@ -269,7 +269,7 @@ void main() {
         find.byKey(const Key('pet_care_dashboard_add_care')),
         findsNothing,
       );
-      expect(find.text('Toutes les équipes de soins'), findsOneWidget);
+      expect(find.text('Toutes les équipes vétérinaires'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
