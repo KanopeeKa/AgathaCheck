@@ -18,6 +18,11 @@ function sortedMeasurements(measurements) {
   return [...measurements].sort((a, b) => parseDateMs(a.date) - parseDateMs(b.date));
 }
 
+function roundDeltaPct(value) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
+  return Math.round(value * 1000) / 1000;
+}
+
 function isLifeStageGrowthOrdinary(pet, direction, asOf) {
   if (!pet?.date_of_birth) return false;
   const ageMonths = monthsBetween(pet.date_of_birth, asOf);
@@ -60,6 +65,7 @@ export function evaluateWeightChangeSpec(measurements, context, pet = null, asOf
       direction: null,
       persistent: false,
       reasons: ['measurement_count_below_minimum'],
+      delta_pct: null,
     };
   }
 
@@ -71,6 +77,7 @@ export function evaluateWeightChangeSpec(measurements, context, pet = null, asOf
   const last = sorted[sorted.length - 1].weight;
   const deltaKg = last - first;
   const deltaPct = first > 0 ? deltaKg / first : 0;
+  const deltaPctRounded = roundDeltaPct(deltaPct);
   let direction = 'flat';
   if (deltaPct > 0.02) direction = 'up';
   else if (deltaPct < -0.02) direction = 'down';
@@ -82,6 +89,7 @@ export function evaluateWeightChangeSpec(measurements, context, pet = null, asOf
       direction,
       persistent: false,
       reasons: [`management_context:${managementContext}`],
+      delta_pct: deltaPctRounded,
     };
   }
 
@@ -92,6 +100,7 @@ export function evaluateWeightChangeSpec(measurements, context, pet = null, asOf
         direction,
         persistent: false,
         reasons: [`reference_authority:${context.reference_authority}`],
+        delta_pct: deltaPctRounded,
       };
     }
   }
@@ -102,6 +111,7 @@ export function evaluateWeightChangeSpec(measurements, context, pet = null, asOf
       direction,
       persistent: false,
       reasons: ['change_below_material_threshold'],
+      delta_pct: deltaPctRounded,
     };
   }
 
@@ -111,6 +121,7 @@ export function evaluateWeightChangeSpec(measurements, context, pet = null, asOf
       direction,
       persistent: true,
       reasons: ['life_stage_growth'],
+      delta_pct: deltaPctRounded,
     };
   }
 
@@ -120,6 +131,7 @@ export function evaluateWeightChangeSpec(measurements, context, pet = null, asOf
       direction,
       persistent: false,
       reasons: ['short_term_fluctuation'],
+      delta_pct: deltaPctRounded,
     };
   }
 
@@ -135,6 +147,7 @@ export function evaluateWeightChangeSpec(measurements, context, pet = null, asOf
       direction,
       persistent: false,
       reasons: ['not_persistent'],
+      delta_pct: deltaPctRounded,
     };
   }
 
@@ -143,5 +156,6 @@ export function evaluateWeightChangeSpec(measurements, context, pet = null, asOf
     direction,
     persistent: true,
     reasons: ['material_persistent_change'],
+    delta_pct: deltaPctRounded,
   };
 }

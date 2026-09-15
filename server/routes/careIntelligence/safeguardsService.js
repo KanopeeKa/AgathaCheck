@@ -7,11 +7,31 @@ import { evaluateWeightSafeguard } from './weightSafeguardEvaluator.js';
 
 export const SAFEGUARD_STATUSES = new Set(['active', 'dismissed']);
 
+export const MAGNITUDE_BUCKET_SIZE = 0.05;
+export const REACTIVATION_BUCKET_HYSTERESIS = 2;
+
+function roundTo01pp(value) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
+  return Math.round(value * 1000) / 1000;
+}
+
+/**
+ * Coarse 5%-band bucket of the weight delta_pct, rounded to 0.1pp first so
+ * IEEE-754 jitter cannot shift the bucket on its own. Returns an integer band
+ * index (negative for declines) or null when no magnitude is present.
+ */
+export function magnitudeBucket(evidence) {
+  const deltaPct = roundTo01pp(evidence?.delta_pct);
+  if (deltaPct == null) return null;
+  return Math.round(deltaPct / MAGNITUDE_BUCKET_SIZE);
+}
+
 export function evidenceFingerprint(evidence) {
   const payload = {
     measurement_count: evidence?.measurement_count ?? null,
     direction: evidence?.direction ?? null,
     classification: evidence?.classification ?? null,
+    magnitude_bucket: magnitudeBucket(evidence),
   };
   return createHash('sha256').update(JSON.stringify(payload)).digest('hex');
 }
@@ -94,6 +114,15 @@ export async function syncPetSafeguards(pool, userId, petId) {
     if (existing.status === 'dismissed') {
       const dismissedFingerprint = existing.evidence_json?._dismiss_fingerprint;
       if (dismissedFingerprint === fingerprint) {
+        return [];
+      }
+      const dismissedBucket = existing.evidence_json?._dismiss_magnitude_bucket;
+      const candidateBucket = magnitudeBucket(candidate.evidence);
+      if (
+        dismissedBucket == null
+        || candidateBucket == null
+        || Math.abs(candidateBucket - dismissedBucket) < REACTIVATION_BUCKET_HYSTERESIS
+      ) {
         return [];
       }
       const reactivated = await pool.query(
@@ -180,6 +209,7 @@ export async function dismissSafeguard(pool, userId, petId, safeguardId) {
   const evidence = {
     ...(row.evidence_json || {}),
     _dismiss_fingerprint: evidenceFingerprint(row.evidence_json || {}),
+    _dismiss_magnitude_bucket: magnitudeBucket(row.evidence_json || {}),
   };
 
   const result = await pool.query(
