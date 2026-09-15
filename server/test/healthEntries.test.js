@@ -220,6 +220,72 @@ describe('Health Entries API', () => {
           return { rows: [] };
         }
 
+        if (
+          sql.includes('SELECT * FROM health_occurrences')
+          && sql.includes("status IN ('completed', 'skipped')")
+          && sql.includes('ORDER BY marked_at DESC')
+        ) {
+          const entryId = params[0];
+          if (entryId === 'he-no-history') return { rows: [] };
+          if (entryId === 'he-skipped-last') {
+            return {
+              rows: [{
+                id: 'occ-skipped',
+                health_entry_id: entryId,
+                status: 'skipped',
+                scheduled_date: new Date('2026-01-01'),
+                marked_at: new Date('2026-01-02'),
+              }],
+            };
+          }
+          return {
+            rows: [{
+              id: 'occ-completed-1',
+              health_entry_id: entryId,
+              status: 'completed',
+              scheduled_date: new Date('2026-01-01'),
+              completed_on: new Date('2026-01-01'),
+              marked_at: new Date('2026-01-02'),
+            }],
+          };
+        }
+
+        if (
+          sql.includes('SELECT * FROM care_schedule_events')
+          && sql.includes('ORDER BY occurred_at DESC')
+        ) {
+          const entryId = params[0];
+          if (entryId === 'he-skipped-last') {
+            return {
+              rows: [{
+                id: 'evt-skipped',
+                health_entry_id: entryId,
+                health_occurrence_id: 'occ-skipped',
+                event_type: 'skipped',
+                from_date: '2026-01-01',
+                occurred_at: new Date('2026-01-02'),
+              }],
+            };
+          }
+          return { rows: [] };
+        }
+
+        if (
+          sql.includes('UPDATE health_occurrences SET status = \'pending\'')
+          && sql.includes('completion_timing = NULL')
+        ) {
+          return {
+            rows: [{
+              id: params[0],
+              health_entry_id: params[1],
+              status: 'pending',
+              scheduled_date: new Date('2026-01-01'),
+              completed_on: null,
+              completion_timing: null,
+            }],
+          };
+        }
+
         if (sql.includes('SELECT scheduled_date, scheduled_time FROM health_occurrences')) {
           return { rows: [{ scheduled_date: new Date('2026-06-30'), scheduled_time: null }] };
         }
@@ -1015,15 +1081,18 @@ describe('Health Entries API', () => {
       expect(res.body.completed_at).toBeNull();
     });
 
-    it('restores next_due_date to start_date for once entries', async () => {
+    it('syncs next_due_date from reopened occurrence via undoLastAction', async () => {
       await request(app)
         .post('/api/health-entries/he-1/undo-complete')
         .set('Authorization', `Bearer ${token}`);
 
-      const update = queryLog.find(q =>
-        q.sql.includes("UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at ="));
-      expect(update).toBeDefined();
-      expect(update.sql).toContain('next_due_date = CASE WHEN frequency');
+      const sync = queryLog.find((q) =>
+        q.sql.includes('UPDATE health_entries SET next_due_date'));
+      expect(sync).toBeDefined();
+      const reopen = queryLog.find((q) =>
+        q.sql.includes('UPDATE health_occurrences SET status = \'pending\'')
+        && q.sql.includes('completion_timing = NULL'));
+      expect(reopen).toBeDefined();
     });
 
     it('returns 404 for nonexistent entry', async () => {
@@ -1033,12 +1102,12 @@ describe('Health Entries API', () => {
       expect(res.statusCode).toBe(404);
     });
 
-    it('returns 400 when latest history is not completed', async () => {
+    it('returns 400 when last action is not a completion', async () => {
       const res = await request(app)
         .post('/api/health-entries/he-skipped-last/undo-complete')
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(400);
-      expect(res.body.error).toMatch(/unmark/i);
+      expect(res.body.error).toMatch(/schedule\/undo/i);
     });
 
     it('returns 400 when no history exists', async () => {
