@@ -3,6 +3,7 @@ import { seedConnections } from './connections.js';
 import { seedFostering } from './fostering.js';
 import { seedGuardian } from './guardian.js';
 import { seedCareItemModelFixture } from './care-item-model-fixture.js';
+import { seedAwayPlanning } from './away-planning.js';
 import { seedCareScheduleFixture } from './care-schedule-fixture.js';
 import { seedHealthCare } from './health-care.js';
 import { seedOrgClinic } from './org-clinic.js';
@@ -18,12 +19,16 @@ export const SCENARIOS = {
   'rescue-hearts': seedRescueHearts,
   'health-care': seedHealthCare,
   'care-schedule-fixture': seedCareScheduleFixture,
+  'away-planning': seedAwayPlanning,
   'care-item-model-fixture': seedCareItemModelFixture,
   fostering: seedFostering,
   adoption: seedAdoption,
   'sharing-notifications': seedSharingNotifications,
   connections: seedConnections,
 };
+
+/** Composite scenarios excluded from ALL_SCENARIOS. */
+export const ALL_SCENARIOS_EXCLUSIONS = ['org-v3-demo'];
 
 /** Full rich demo dataset for UAT and demos. */
 export const ALL_SCENARIOS = [
@@ -32,6 +37,7 @@ export const ALL_SCENARIOS = [
   'rescue-hearts',
   'health-care',
   'care-schedule-fixture',
+  'away-planning',
   'care-item-model-fixture',
   'fostering',
   'adoption',

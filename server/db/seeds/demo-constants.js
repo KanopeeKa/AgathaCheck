@@ -157,6 +157,19 @@ export const DEMO_IDS = {
   csmFromCompletionOccPending: 'a6300001-0001-4001-8001-000000000026',
   csmWeightLinkedWe1: 'a6200001-0001-4001-8001-000000000020',
   csmWeightLinkedWe2: 'a6200001-0001-4001-8001-000000000021',
+
+  // Away Planning fixture (AW-SEED)
+  awPastAllCompletedAbsence: 'a9000001-0001-4001-8001-000000000001',
+  awUpcomingCarerMixAbsence: 'a9000001-0001-4001-8001-000000000002',
+  awActiveMultiTimeAbsence: 'a9000001-0001-4001-8001-000000000003',
+  awCancelledAbsence: 'a9000001-0001-4001-8001-000000000004',
+  awFutureNothingScheduledAbsence: 'a9000001-0001-4001-8001-000000000005',
+  awIndeterminateAbsence: 'a9000001-0001-4001-8001-000000000006',
+  awNoUnresolvedAbsence: 'a9000001-0001-4001-8001-000000000007',
+  awDownloadedEditedAbsence: 'a9000001-0001-4001-8001-000000000008',
+  awNoUnresolvedEntry: 'a6000001-0001-4001-8001-000000000030',
+  awNoUnresolvedOccCompleted: 'a6300001-0001-4001-8001-000000000030',
+  awNoUnresolvedOccSkipped: 'a6300001-0001-4001-8001-000000000031',
 };
 
 export const DEMO_USERS = {
