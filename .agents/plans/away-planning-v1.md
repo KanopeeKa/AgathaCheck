@@ -176,18 +176,18 @@ AW-DOC-0, AW-0, AW-1, AW-2, AW-3 parallel. AW-5a parallel with AW-4 after AW-0. 
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: aw-0
-last_completed_phase: aw-3
+autonomy: completed
+current_phase: null
+last_completed_phase: aw-10
 halt_reason: null
-next_action: "continue phase aw-0 on branch cursor/away-planning-aw0-5176"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/away-planning-v1-integration-5176
+  branch: main
   plan_path: .agents/plans/away-planning-v1.md
-  plan_commit: 5053f9c77dd7c0522121230b72268d96947fcbed
+  plan_commit: f637e0ee69e9c62c2d905b8c16d176c056aad031
   snapshot_path: .agents/plans/away-planning-v1.snapshot.json
-  snapshot_commit: 5053f9c77dd7c0522121230b72268d96947fcbed
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1201"]
+  snapshot_commit: f637e0ee69e9c62c2d905b8c16d176c056aad031
+open_prs: []
 merge_commits: {"aw-emergency":"48082deb88660705c32c93a22c22ebb0e73e350b"}
 debt_issue_refs: []
 ```

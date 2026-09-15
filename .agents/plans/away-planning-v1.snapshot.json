@@ -4,12 +4,12 @@
   "approved_at": "2026-09-15T19:24:54.636Z",
   "approved_by": "user chat 2026-09-15 — confirmed plan review #1196; proceed autonomously with /execute-plan; do not ask between phases",
   "approved_until": "2026-09-17T19:24:54.636Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/away-planning-v1-integration-5176",
   "control_issue": 1198,
   "artifact_branch_policy": "phase-branch",
-  "content_hash": "sha256:1ca387443025dd30e2b98c4de7b55e21cbc0811f3c67aaf14e13d4325b823af0",
+  "content_hash": "sha256:30fcedbe459efaba26a11b46049d61a40414f4072bc0e410bbd8bb484a5facd6",
   "phases": [
     {
       "id": "aw-emergency",
@@ -99,12 +99,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1201",
-      "pr_head_sha": "70d021677d290f32e19a2656e37f0955a05a32cc"
+      "debt_issue_refs": []
     },
     {
       "id": "aw-1",
@@ -222,12 +220,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     },
     {
       "id": "aw-4",
@@ -256,12 +252,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     },
     {
       "id": "aw-8",
@@ -285,12 +279,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     },
     {
       "id": "aw-5b",
@@ -313,12 +305,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     },
     {
       "id": "aw-6",
@@ -342,12 +332,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     },
     {
       "id": "aw-7",
@@ -369,12 +357,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     },
     {
       "id": "aw-9",
@@ -399,12 +385,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     },
     {
       "id": "aw-seed",
@@ -429,12 +413,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     },
     {
       "id": "aw-10",
@@ -458,12 +440,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     }
   ]
 }
