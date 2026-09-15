@@ -37,10 +37,11 @@ When multiple people are involved, use precise care-role language:
 
 | Term | Use when |
 |------|----------|
-| **care team** | Collective carers for one pet |
+| **care team** | Collective carers for one pet (Away Planning carer concept) |
 | **carer** / **caregiver** | General non-owner helper |
 | **sitter** | Temporary care arrangement |
 | **shared carer** | Someone with shared access (not owner) |
+| **Veterinary team** | Pet Care dashboard section and vet detail surfaces — the guardian's veterinary clinics (EN label; FR: *Équipe vétérinaire*). Not the same as **care team** (carers). |
 | **veterinary professional** / **vet** | Clinical context |
 
 ## Legal, technical, and permission terms

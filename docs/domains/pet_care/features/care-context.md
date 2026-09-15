@@ -137,9 +137,30 @@ Pet Sitting workflow, environmental context, calendar integrations, AI interpret
 
 > Read-only care summary for dates = Pet Care. Sending to a sitter with permissions = Pet Sitting (future).
 
+## Schedule facts (`explainGap`) — read contract
+
+Care Context does **not** own scheduling. When structured pause/reschedule/skip context is needed beyond raw occurrences, read **`explainGap`** from [Care Schedule Management](care-schedule-management.md) (CSM-13).
+
+| Input | Shape |
+|-------|--------|
+| `entry` | `health_entries` row |
+| `fromDate`, `toDate` | Optional calendar window (`YYYY-MM-DD`) |
+
+| Output | Shape |
+|--------|--------|
+| `events[]` | Facts from `care_schedule_events` — `event_type`, dates, anchors, `reason_code`, `policy_version`. **No** explained/unexplained vocabulary (CIM owns interpretation). |
+
+**No absence pointer on projection calls.** `planned_absences.source_ref` means what declared the absence externally. Which absence overlapped a schedule event is answerable from `planned_absences` by `(user_id, date window)` — see D-AWAY-011.
+
+## Away Planning V1 (in delivery)
+
+Hub at `/pc/away`, plan page at `/pc/away/:id`, per-pet carer model, handover PDF. Per-pet coverage on the plan page issues **one request per pet** (acceptable V1; not a bug). See [away-planning-delivery-plan.md](../changes/away-planning-delivery-plan.md).
+
 ## Related
 
-- [care-schedule-management.md](care-schedule-management.md) — authoritative scheduling core (`projectSchedule`)
+- [care-schedule-management.md](care-schedule-management.md) — authoritative scheduling core (`projectSchedule`, `explainGap`)
+- [away-planning-delivery-plan.md](../changes/away-planning-delivery-plan.md)
+- [away-planning-decisions.md](../changes/away-planning-decisions.md)
 - [care-through-change-delivery-plan.md](../changes/care-through-change-delivery-plan.md)
 - [care-progression.md](care-progression.md) — domain map
 - [care-entitlements.md](care-entitlements.md) — assistance gating principles
