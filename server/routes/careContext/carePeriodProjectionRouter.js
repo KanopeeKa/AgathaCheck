@@ -34,7 +34,7 @@ export function registerCarePeriodProjectionRoutes(router, pool) {
 
       return res.json(projection);
     } catch (err) {
-      return publicError(res, err, 'Failed to load care-period projection');
+      return res.status(500).json({ error: publicError(err, 'Failed to load care-period projection') });
     }
   });
 }
