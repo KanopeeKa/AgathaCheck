@@ -14,8 +14,8 @@ import '../health_dashboard_actions.dart' show GroupMode;
 /// A single tab's grouped list of [HealthEntry] items.
 ///
 /// Extracted from `health_dashboard_screen.dart`; keeps the loading/error/empty
-/// states, grouping (by due date / pet / species), and the mark-taken / snooze /
-/// undo actions for each entry card.
+/// states, grouping (by due date / pet / species), and the mark-taken / undo
+/// actions for each entry card.
 class HealthDashboardEntryList extends ConsumerWidget {
   const HealthDashboardEntryList({
     super.key,
@@ -159,7 +159,6 @@ class HealthDashboardEntryList extends ConsumerWidget {
               healthIssueName: item.entry.healthIssueName,
               onTap: () => context.go(editRoute),
               onMarkTaken: () => _markTaken(context, ref, item.entry),
-              onSnooze: (days) => _snooze(context, ref, item.entry, days),
               onUndoComplete: () => _undoComplete(context, ref, item.entry),
             ),
           );
@@ -349,27 +348,6 @@ class HealthDashboardEntryList extends ConsumerWidget {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l.undoCompleteDone(entry.name))));
-    }
-  }
-
-  Future<void> _snooze(
-    BuildContext context,
-    WidgetRef ref,
-    HealthEntry entry,
-    int days,
-  ) async {
-    await ref
-        .read(healthEntriesNotifierProvider.notifier)
-        .snooze(entry.id, days);
-    if (context.mounted) {
-      final l = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            l.snoozedForDays(entry.name, days, days == 1 ? l.day : l.days),
-          ),
-        ),
-      );
     }
   }
 
