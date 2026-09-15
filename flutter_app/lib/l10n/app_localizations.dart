@@ -10680,6 +10680,178 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back'**
   String get careContextAwayBack;
+
+  /// No description provided for @careContextAwayPlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Away plan'**
+  String get careContextAwayPlanTitle;
+
+  /// No description provided for @careContextAwayPlanLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this away plan. Try again.'**
+  String get careContextAwayPlanLoadError;
+
+  /// No description provided for @careContextAwayPlanCareDuringTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Care during your absence'**
+  String get careContextAwayPlanCareDuringTitle;
+
+  /// No description provided for @careContextAwayPlanWhoIsCaringTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who\'s caring'**
+  String get careContextAwayPlanWhoIsCaringTitle;
+
+  /// No description provided for @careContextAwayPlanDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan details'**
+  String get careContextAwayPlanDetailsTitle;
+
+  /// No description provided for @careContextAwayPlanDatesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates'**
+  String get careContextAwayPlanDatesLabel;
+
+  /// No description provided for @careContextAwayPlanPetsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets'**
+  String get careContextAwayPlanPetsLabel;
+
+  /// No description provided for @careContextAwayPlanStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get careContextAwayPlanStatusLabel;
+
+  /// No description provided for @careContextAwayPlanStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get careContextAwayPlanStatusActive;
+
+  /// No description provided for @careContextAwayPlanStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get careContextAwayPlanStatusCancelled;
+
+  /// No description provided for @careContextAwayPlanCarerCoverageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Carer coverage'**
+  String get careContextAwayPlanCarerCoverageTitle;
+
+  /// No description provided for @careContextAwayPlanCareCoverageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Care coverage'**
+  String get careContextAwayPlanCareCoverageTitle;
+
+  /// No description provided for @awayPlanningCarerCoverageAllHaveCarers.
+  ///
+  /// In en, this message translates to:
+  /// **'Every pet has a carer assigned.'**
+  String get awayPlanningCarerCoverageAllHaveCarers;
+
+  /// No description provided for @awayPlanningCarerCoverageSomeHaveCarers.
+  ///
+  /// In en, this message translates to:
+  /// **'{assigned} of {total} pets have a carer assigned.'**
+  String awayPlanningCarerCoverageSomeHaveCarers(int assigned, int total);
+
+  /// No description provided for @awayPlanningCarerCoverageNoneHaveCarers.
+  ///
+  /// In en, this message translates to:
+  /// **'No pets have a carer assigned yet.'**
+  String get awayPlanningCarerCoverageNoneHaveCarers;
+
+  /// No description provided for @awayPlanningCarerRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Carer removed'**
+  String get awayPlanningCarerRemoved;
+
+  /// No description provided for @awayPlanningCarerUnset.
+  ///
+  /// In en, this message translates to:
+  /// **'No carer assigned'**
+  String get awayPlanningCarerUnset;
+
+  /// No description provided for @awayPlanningCarerSharedAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · Shared access'**
+  String awayPlanningCarerSharedAccess(String name);
+
+  /// No description provided for @awayPlanningCarerNoteOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · No AgathaTrack access'**
+  String awayPlanningCarerNoteOnly(String name);
+
+  /// No description provided for @awayPlanningCarerSharedUserFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared user'**
+  String get awayPlanningCarerSharedUserFallback;
+
+  /// No description provided for @awayPlanningRoutineAllDay.
+  ///
+  /// In en, this message translates to:
+  /// **'All day'**
+  String get awayPlanningRoutineAllDay;
+
+  /// No description provided for @awayPlanningRoutineRowSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} · {count, plural, =1{1 occurrence} other{{count} occurrences}} · {dateRange}'**
+  String awayPlanningRoutineRowSubtitle(
+    String time,
+    int count,
+    String dateRange,
+  );
+
+  /// No description provided for @awayPlanningScheduleRoutineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Routine care'**
+  String get awayPlanningScheduleRoutineTitle;
+
+  /// No description provided for @awayPlanningScheduleDatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dated care'**
+  String get awayPlanningScheduleDatedTitle;
+
+  /// No description provided for @awayPlanningScheduleIndeterminateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Indeterminate care'**
+  String get awayPlanningScheduleIndeterminateTitle;
+
+  /// No description provided for @awayPlanningIndeterminatePending.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting on a prior dose'**
+  String get awayPlanningIndeterminatePending;
+
+  /// No description provided for @awayPlanningIndeterminateChain.
+  ///
+  /// In en, this message translates to:
+  /// **'Depends on earlier care in the chain'**
+  String get awayPlanningIndeterminateChain;
+
+  /// No description provided for @awayPlanningIndeterminateGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Timing not yet known'**
+  String get awayPlanningIndeterminateGeneric;
 }
 
 class _AppLocalizationsDelegate

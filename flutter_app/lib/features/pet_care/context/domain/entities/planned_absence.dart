@@ -1,3 +1,5 @@
+import 'planned_absence_pet_carer.dart';
+
 class PlannedAbsence {
   const PlannedAbsence({
     required this.id,
@@ -8,6 +10,7 @@ class PlannedAbsence {
     this.sourceRef,
     required this.status,
     required this.petIds,
+    this.petCarers = const [],
   });
 
   final String id;
@@ -18,6 +21,9 @@ class PlannedAbsence {
   final String? sourceRef;
   final String status;
   final List<String> petIds;
+  final List<PlannedAbsencePetCarer> petCarers;
+
+  bool get isCancelled => status == 'cancelled';
 }
 
 class PlannedAbsenceOverlapWarning {

@@ -2234,5 +2234,56 @@
     }
   },
   "careContextAwayContinue": "Continue",
-  "careContextAwayBack": "Back"
+  "careContextAwayBack": "Back",
+  "careContextAwayPlanTitle": "Away plan",
+  "careContextAwayPlanLoadError": "Could not load this away plan. Try again.",
+  "careContextAwayPlanCareDuringTitle": "Care during your absence",
+  "careContextAwayPlanWhoIsCaringTitle": "Who's caring",
+  "careContextAwayPlanDetailsTitle": "Plan details",
+  "careContextAwayPlanDatesLabel": "Dates",
+  "careContextAwayPlanPetsLabel": "Pets",
+  "careContextAwayPlanStatusLabel": "Status",
+  "careContextAwayPlanStatusActive": "Active",
+  "careContextAwayPlanStatusCancelled": "Cancelled",
+  "careContextAwayPlanCarerCoverageTitle": "Carer coverage",
+  "careContextAwayPlanCareCoverageTitle": "Care coverage",
+  "awayPlanningCarerCoverageAllHaveCarers": "Every pet has a carer assigned.",
+  "awayPlanningCarerCoverageSomeHaveCarers": "{assigned} of {total} pets have a carer assigned.",
+  "@awayPlanningCarerCoverageSomeHaveCarers": {
+    "placeholders": {
+      "assigned": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "awayPlanningCarerCoverageNoneHaveCarers": "No pets have a carer assigned yet.",
+  "awayPlanningCarerRemoved": "Carer removed",
+  "awayPlanningCarerUnset": "No carer assigned",
+  "awayPlanningCarerSharedAccess": "{name} · Shared access",
+  "@awayPlanningCarerSharedAccess": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "awayPlanningCarerNoteOnly": "{name} · No AgathaTrack access",
+  "@awayPlanningCarerNoteOnly": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "awayPlanningCarerSharedUserFallback": "Shared user",
+  "awayPlanningRoutineAllDay": "All day",
+  "awayPlanningRoutineRowSubtitle": "{time} · {count, plural, =1{1 occurrence} other{{count} occurrences}} · {dateRange}",
+  "@awayPlanningRoutineRowSubtitle": {
+    "placeholders": {
+      "time": { "type": "String" },
+      "count": { "type": "int" },
+      "dateRange": { "type": "String" }
+    }
+  },
+  "awayPlanningScheduleRoutineTitle": "Routine care",
+  "awayPlanningScheduleDatedTitle": "Dated care",
+  "awayPlanningScheduleIndeterminateTitle": "Indeterminate care",
+  "awayPlanningIndeterminatePending": "Waiting on a prior dose",
+  "awayPlanningIndeterminateChain": "Depends on earlier care in the chain",
+  "awayPlanningIndeterminateGeneric": "Timing not yet known"
 }

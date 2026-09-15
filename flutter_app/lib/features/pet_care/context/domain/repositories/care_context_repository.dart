@@ -17,5 +17,7 @@ abstract class CareContextRepository {
 
   Future<List<PlannedAbsence>> listPlannedAbsences({String scope = 'all'});
 
+  Future<PlannedAbsence> getPlannedAbsence(String absenceId);
+
   Future<AwayPlanReadiness> getAwayPlanReadiness(String absenceId);
 }

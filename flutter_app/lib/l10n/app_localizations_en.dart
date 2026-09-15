@@ -5999,4 +5999,110 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careContextAwayBack => 'Back';
+
+  @override
+  String get careContextAwayPlanTitle => 'Away plan';
+
+  @override
+  String get careContextAwayPlanLoadError =>
+      'Could not load this away plan. Try again.';
+
+  @override
+  String get careContextAwayPlanCareDuringTitle => 'Care during your absence';
+
+  @override
+  String get careContextAwayPlanWhoIsCaringTitle => 'Who\'s caring';
+
+  @override
+  String get careContextAwayPlanDetailsTitle => 'Plan details';
+
+  @override
+  String get careContextAwayPlanDatesLabel => 'Dates';
+
+  @override
+  String get careContextAwayPlanPetsLabel => 'Pets';
+
+  @override
+  String get careContextAwayPlanStatusLabel => 'Status';
+
+  @override
+  String get careContextAwayPlanStatusActive => 'Active';
+
+  @override
+  String get careContextAwayPlanStatusCancelled => 'Cancelled';
+
+  @override
+  String get careContextAwayPlanCarerCoverageTitle => 'Carer coverage';
+
+  @override
+  String get careContextAwayPlanCareCoverageTitle => 'Care coverage';
+
+  @override
+  String get awayPlanningCarerCoverageAllHaveCarers =>
+      'Every pet has a carer assigned.';
+
+  @override
+  String awayPlanningCarerCoverageSomeHaveCarers(int assigned, int total) {
+    return '$assigned of $total pets have a carer assigned.';
+  }
+
+  @override
+  String get awayPlanningCarerCoverageNoneHaveCarers =>
+      'No pets have a carer assigned yet.';
+
+  @override
+  String get awayPlanningCarerRemoved => 'Carer removed';
+
+  @override
+  String get awayPlanningCarerUnset => 'No carer assigned';
+
+  @override
+  String awayPlanningCarerSharedAccess(String name) {
+    return '$name · Shared access';
+  }
+
+  @override
+  String awayPlanningCarerNoteOnly(String name) {
+    return '$name · No AgathaTrack access';
+  }
+
+  @override
+  String get awayPlanningCarerSharedUserFallback => 'Shared user';
+
+  @override
+  String get awayPlanningRoutineAllDay => 'All day';
+
+  @override
+  String awayPlanningRoutineRowSubtitle(
+    String time,
+    int count,
+    String dateRange,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count occurrences',
+      one: '1 occurrence',
+    );
+    return '$time · $_temp0 · $dateRange';
+  }
+
+  @override
+  String get awayPlanningScheduleRoutineTitle => 'Routine care';
+
+  @override
+  String get awayPlanningScheduleDatedTitle => 'Dated care';
+
+  @override
+  String get awayPlanningScheduleIndeterminateTitle => 'Indeterminate care';
+
+  @override
+  String get awayPlanningIndeterminatePending => 'Waiting on a prior dose';
+
+  @override
+  String get awayPlanningIndeterminateChain =>
+      'Depends on earlier care in the chain';
+
+  @override
+  String get awayPlanningIndeterminateGeneric => 'Timing not yet known';
 }
