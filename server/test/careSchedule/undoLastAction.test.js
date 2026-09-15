@@ -106,6 +106,16 @@ function createHarness(entry, initialOccurrences = [], ledgerEvents = []) {
         return { rows: [] };
       }
 
+      if (
+        sql.includes("UPDATE health_entries SET status = 'active'")
+        && sql.includes('completed_on = NULL')
+      ) {
+        entry.status = 'active';
+        entry.completed_on = null;
+        entry.completed_at = null;
+        return { rows: [] };
+      }
+
       if (sql.includes('SELECT * FROM health_entries WHERE id = $1')) {
         return {
           rows: [{
@@ -142,8 +152,14 @@ describe('undoLastAction', () => {
     expect(result).toBeNull();
   });
 
-  it('undoes the most recent completion and syncs next_due_date', async () => {
-    const entry = makeEntry();
+  it('undoes the most recent completion and reactivates a once-entry parent', async () => {
+    const entry = makeEntry({
+      frequency: 'once',
+      status: 'completed',
+      completed_on: new Date('2026-09-01'),
+      completed_at: new Date('2026-09-01T12:00:00Z'),
+      next_due_date: null,
+    });
     const completed = makeOccurrence({
       status: 'completed',
       completed_on: new Date('2026-09-01'),
@@ -165,6 +181,8 @@ describe('undoLastAction', () => {
     expect(result.occurrence.completed_on).toBeNull();
     expect(result.occurrence.completion_timing).toBeNull();
     expect(harness.occurrences[0].status).toBe('pending');
+    expect(result.entry.status).toBe('active');
+    expect(result.entry.completed_on).toBeNull();
     expect(result.nextDueDate).toBe('2026-09-01');
   });
 
