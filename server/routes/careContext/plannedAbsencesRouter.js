@@ -180,26 +180,132 @@ async function updateAbsenceCarers(pool, absenceId, petCarersInput, allowedPetId
   return { ok: true };
 }
 
+const LIST_SCOPES = new Set(['upcoming', 'past', 'all']);
+
+/**
+ * @param {import('express').Request} req
+ * @returns {{ ok: true, scope: string } | { ok: false, error: string }}
+ */
+function parseListScope(req) {
+  const raw = req.query.scope;
+  const scope = raw == null || raw === '' ? 'upcoming' : String(raw).trim().toLowerCase();
+  if (!LIST_SCOPES.has(scope)) {
+    return { ok: false, error: 'scope must be upcoming, past, or all' };
+  }
+  return { ok: true, scope };
+}
+
+/**
+ * @param {string} scope
+ * @param {string} todayIso
+ */
+function listAbsencesSql(scope, todayIso) {
+  const base = `SELECT * FROM planned_absences
+     WHERE user_id = $1
+       AND status != $2`;
+  if (scope === 'upcoming') {
+    return {
+      sql: `${base}
+         AND ends_on >= $3::date
+         ORDER BY starts_on ASC`,
+      params: [PLANNED_ABSENCE_STATUS_CANCELLED, todayIso],
+    };
+  }
+  if (scope === 'past') {
+    return {
+      sql: `${base}
+         AND ends_on < $3::date
+         ORDER BY starts_on DESC`,
+      params: [PLANNED_ABSENCE_STATUS_CANCELLED, todayIso],
+    };
+  }
+  return {
+    sql: `${base}
+       ORDER BY CASE WHEN ends_on >= $3::date THEN 0 ELSE 1 END, starts_on ASC`,
+    params: [PLANNED_ABSENCE_STATUS_CANCELLED, todayIso],
+  };
+}
+
+/**
+ * Batch-load overlap candidates for list items (recomputed on read, not persisted).
+ *
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {string} userId
+ * @param {object[]} absences
+ */
+async function loadOverlapCandidatesForAbsences(pool, userId, absences, petsByAbsence) {
+  if (!absences.length) return [];
+  const petIds = [...new Set(
+    absences.flatMap((row) => (petsByAbsence.get(row.id) || []).map((pet) => pet.pet_id))
+  )];
+  if (!petIds.length) return [];
+  const todayIso = todayCalendarIso();
+  const result = await pool.query(
+    `SELECT pa.id, pa.starts_on, pa.ends_on, pap.pet_id
+     FROM planned_absences pa
+     INNER JOIN planned_absence_pets pap ON pap.planned_absence_id = pa.id
+     WHERE pa.user_id = $1
+       AND pa.status != $2
+       AND pa.ends_on >= $3::date
+       AND pap.pet_id = ANY($4::uuid[])`,
+    [userId, PLANNED_ABSENCE_STATUS_CANCELLED, todayIso, petIds]
+  );
+  return result.rows;
+}
+
+/**
+ * @param {object} absence
+ * @param {object[]} petRows
+ * @param {object[]} candidates
+ */
+function overlapWarningsForAbsence(absence, petRows, candidates) {
+  const startsOn = dateToIsoDate(absence.starts_on);
+  const endsOn = dateToIsoDate(absence.ends_on);
+  if (!startsOn || !endsOn) return [];
+  const petIds = new Set(petRows.map((row) => row.pet_id));
+  const warnings = [];
+  for (const row of candidates) {
+    if (row.id === absence.id) continue;
+    if (!petIds.has(row.pet_id)) continue;
+    const otherStart = dateToIsoDate(row.starts_on);
+    const otherEnd = dateToIsoDate(row.ends_on);
+    if (!otherStart || !otherEnd) continue;
+    if (!dateRangesOverlap(startsOn, endsOn, otherStart, otherEnd)) continue;
+    warnings.push({
+      pet_id: row.pet_id,
+      conflicting_absence_id: row.id,
+      conflicting_starts_on: otherStart,
+      conflicting_ends_on: otherEnd,
+    });
+  }
+  return warnings;
+}
+
 export function registerPlannedAbsenceRoutes(router, pool) {
   router.get('/', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const scopeResult = parseListScope(req);
+    if (!scopeResult.ok) return res.status(400).json({ error: scopeResult.error });
     try {
       const todayIso = todayCalendarIso();
-      const result = await pool.query(
-        `SELECT * FROM planned_absences
-         WHERE user_id = $1
-           AND status != $2
-           AND ends_on >= $3::date
-         ORDER BY starts_on ASC`,
-        [userId, PLANNED_ABSENCE_STATUS_CANCELLED, todayIso]
-      );
+      const { sql, params } = listAbsencesSql(scopeResult.scope, todayIso);
+      const result = await pool.query(sql, [userId, ...params]);
       const absenceIds = result.rows.map((row) => row.id);
       const petsByAbsence = await loadPetsByAbsenceIds(pool, absenceIds);
-      const items = result.rows.map((row) => absenceToMap(
-        row,
-        petsByAbsence.get(row.id) || []
-      ));
+      const overlapCandidates = await loadOverlapCandidatesForAbsences(
+        pool,
+        userId,
+        result.rows,
+        petsByAbsence
+      );
+      const items = result.rows.map((row) => {
+        const petRows = petsByAbsence.get(row.id) || [];
+        return {
+          ...absenceToMap(row, petRows),
+          overlap_warnings: overlapWarningsForAbsence(row, petRows, overlapCandidates),
+        };
+      });
       res.json(items);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
