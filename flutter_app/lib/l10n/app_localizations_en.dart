@@ -5862,6 +5862,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Preview care scheduled while you\'re away.';
 
   @override
+  String get awayPlanningTileCarerNone => 'Choose who will care for your pets.';
+
+  @override
+  String get awayPlanningTileCarerSome =>
+      'Some pets still need a carer assigned.';
+
+  @override
   String get careContextAwayFlowTitle => 'Away planning';
 
   @override
