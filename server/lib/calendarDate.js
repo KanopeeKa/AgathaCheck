@@ -13,6 +13,20 @@
  * @param {Date|string|null|undefined} value
  * @returns {string|null}
  */
+export function timestampToIso(value) {
+  if (value == null || value === '') return null;
+  if (value instanceof Date) return value.toISOString();
+  const s = String(value).trim();
+  if (!s) return null;
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return s;
+  return d.toISOString();
+}
+
+/**
+ * @param {Date|string|null|undefined} value
+ * @returns {string|null}
+ */
 export function dateToIsoDate(value) {
   if (value == null || value === '') return null;
   const s = String(value).trim();
