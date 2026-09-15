@@ -217,14 +217,6 @@ export async function materialiseInitialOccurrences(pool, entry, todayIso = toda
     return;
   }
   await insertOccurrencesForDay(pool, entry, anchor);
-
-  if (isMultiPerDayEntry(entry)) {
-    const nextDay = addCalendarDaysIso(anchor, 1);
-    if (isWithinMaterialisationWindow(nextDay, todayIso)) {
-      await insertOccurrencesForDay(pool, entry, nextDay);
-    }
-  }
-
   await syncNextDueDateFromOccurrences(pool, entry.id);
 }
 

@@ -3,7 +3,7 @@ title: Health occurrence scheduling
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-02
+last_updated: 2026-09-15
 tags: [domain, health_tracking, occurrences]
 domain: health_tracking
 ---
@@ -74,10 +74,12 @@ Anchor: `materialisation_anchor = max(start_date, today_local)` — no backfill 
 | Series type | At creation | Next batch |
 |-------------|-------------|------------|
 | **Once** | Single occurrence | — |
-| **Repeating ≤1×/day** | First occurrence on anchor day | Next day when previous **closes** (done/skipped) **OR** calendar **T−1** for target day — whichever is first |
-| **Repeating >1×/day** | All slots on anchor day | Next day batch when **all anchor-day occurrences close** **OR** calendar **T−1** for target day — whichever is first |
+| **Repeating ≤1×/day** | First occurrence on anchor day | Next series date when previous **closes** (done/skipped) via `advanceSeries`, **OR** calendar **T−1** for target day — whichever is first |
+| **Repeating >1×/day** | All slots on anchor day only (no `anchor+1` pre-batch) | Next series date batch when **all anchor-day occurrences close** via `advanceSeries`, **OR** calendar **T−1** for target day — whichever is first |
 
 **T−1** means `today_local >= scheduled_date - 1 calendar day`.
+
+**Create-time rule (D-CSM-004):** multi-per-day entries materialise **only** the anchor day at create. The next calendar day is never pre-materialised early; rollover is unified in `advanceSeries()` (`server/lib/care/schedule/advanceSeries.js`).
 
 **Once** series may keep explicit past `scheduled_date` when user sets a historical appointment.
 
