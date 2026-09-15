@@ -54,6 +54,8 @@ describe('care-period coverage API', () => {
     expect(res.body.coverage.coverage_state).toBe('has_items_to_review');
     expect(res.body.projection_status).toBe('complete');
     expect(res.body.items.length).toBeGreaterThanOrEqual(1);
+    expect(res.body.dated_items.length).toBeGreaterThanOrEqual(1);
+    expect(res.body.routine_items).toEqual([]);
   });
 
   it('GET returns 500 when the database layer throws (does not hang)', async () => {

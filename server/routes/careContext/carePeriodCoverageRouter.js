@@ -1,5 +1,6 @@
 import { publicError } from '../../config/security.js';
-import { loadCarePeriodCoverage } from '../../lib/care/carePeriodCoverage.js';
+import { loadAwayPlanProjection } from '../../lib/care/awayPlan/index.js';
+import { evaluateCarePeriodCoverage } from '../../lib/care/carePeriodCoverage.js';
 import { validateAbsenceDateWindow } from '../../lib/care/plannedAbsence.js';
 import { todayCalendarIso } from '../../lib/calendarDate.js';
 import { userCanManagePet } from '../../lib/petAccess.js';
@@ -24,15 +25,19 @@ export function registerCarePeriodCoverageRoutes(router, pool) {
         return res.status(403).json({ error: 'Forbidden' });
       }
 
-      const payload = await loadCarePeriodCoverage(
+      const projection = await loadAwayPlanProjection(
         pool,
         petId,
         window.starts_on,
         window.ends_on,
         todayCalendarIso()
       );
+      const coverage = evaluateCarePeriodCoverage(projection);
 
-      return res.json(payload);
+      return res.json({
+        ...projection,
+        coverage,
+      });
     } catch (err) {
       return res.status(500).json({ error: publicError(err, 'Failed to load care-period coverage') });
     }
