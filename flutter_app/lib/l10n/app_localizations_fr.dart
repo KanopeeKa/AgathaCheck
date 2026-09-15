@@ -6173,6 +6173,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String awayPlanningCarerNoteOnlyWithNote(String name, String note) {
+    return '$name · $note · Pas d\'accès AgathaTrack';
+  }
+
+  @override
   String get awayPlanningCarerSharedUserFallback => 'Utilisateur partagé';
 
   @override

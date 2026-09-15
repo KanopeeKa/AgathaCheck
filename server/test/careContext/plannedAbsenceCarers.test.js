@@ -6,7 +6,6 @@ import {
   createMockPool,
   createTransactionalMockPool,
   petId,
-  petId2,
   token,
   userId,
 } from '../pets/helpers.js';

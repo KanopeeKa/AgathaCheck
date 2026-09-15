@@ -6,7 +6,6 @@ import {
   createMockPool,
   createTransactionalMockPool,
   petId,
-  petId2,
   token,
   userId,
 } from '../pets/helpers.js';
@@ -223,7 +222,7 @@ describe('planned absences API', () => {
       if (sql.includes('FROM planned_absences pa') && sql.includes('INNER JOIN planned_absence_pets')) {
         return { rows: [] };
       }
-      if (sql.includes('FROM planned_absences') && sql.includes('CASE WHEN ends_on')) {
+      if (sql.includes('FROM planned_absences') && sql.includes('(ends_on < $3::date)::int')) {
         return {
           rows: [
             {

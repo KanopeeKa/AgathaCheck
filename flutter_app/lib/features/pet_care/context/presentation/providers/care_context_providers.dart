@@ -63,7 +63,9 @@ final awayPlanReadinessProvider =
 final awayPlanningDashboardTileProvider =
     FutureProvider<AwayPlanningDashboardTileState>((ref) async {
       try {
-        final absences = await ref.watch(plannedAbsencesListProvider.future);
+        final absences = await ref
+            .read(careContextRepositoryProvider)
+            .listPlannedAbsences(scope: 'upcoming');
         if (absences.isEmpty) return AwayPlanningDashboardTileState.prompt;
         final upcoming = absences.first;
         try {

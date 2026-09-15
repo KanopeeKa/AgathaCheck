@@ -66,6 +66,18 @@ void main() {
     expect(
       AwayPlanCopy.petCarerLabel(
         l,
+        const PlannedAbsencePetCarer(
+          petId: 'pet-4',
+          carerKind: 'note_only',
+          carerName: 'Tom',
+          carerNote: 'Neighbour',
+        ),
+      ),
+      l.awayPlanningCarerNoteOnlyWithNote('Tom', 'Neighbour'),
+    );
+    expect(
+      AwayPlanCopy.petCarerLabel(
+        l,
         const PlannedAbsencePetCarer(petId: 'pet-3', carerRemoved: true),
       ),
       l.awayPlanningCarerRemoved,

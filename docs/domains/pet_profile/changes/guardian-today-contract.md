@@ -24,7 +24,7 @@ domains:
 
 1. **My Pets** (pet-rail section — not the workspace label)
 2. **Care Actions** (eyebrow CARE ACTIONS; legacy label Due and Overdue)
-3. **Care team** (user-facing; vet routes unchanged)
+3. **Veterinary team** (user-facing; vet routes unchanged)
 
 **Away planning** is a fourth dashboard element — a compact entry tile above
 those three management domains. It links to `/pc/away` and is not a management

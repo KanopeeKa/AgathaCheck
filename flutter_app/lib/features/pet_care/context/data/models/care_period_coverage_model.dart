@@ -48,6 +48,7 @@ class CarePeriodCoverageModel {
     final itemsJson = json['items'] as List<dynamic>? ?? const [];
     final routineItemsJson =
         json['routine_items'] as List<dynamic>? ?? const [];
+    final hasDatedItemsKey = json.containsKey('dated_items');
     final datedItemsJson = json['dated_items'] as List<dynamic>? ?? const [];
     final uncertaintiesJson =
         json['uncertainties'] as List<dynamic>? ?? const [];
@@ -58,7 +59,7 @@ class CarePeriodCoverageModel {
     final routineItems = routineItemsJson
         .map((raw) => routineItemFromJson(raw as Map<String, dynamic>))
         .toList(growable: false);
-    final datedItems = datedItemsJson.isNotEmpty
+    final datedItems = hasDatedItemsKey
         ? datedItemsJson
               .map((raw) => projectionItemFromJson(raw as Map<String, dynamic>))
               .toList(growable: false)

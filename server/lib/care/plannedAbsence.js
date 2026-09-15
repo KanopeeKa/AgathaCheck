@@ -62,7 +62,7 @@ export function formatCarerCandidateDisplayName(row) {
   if (first && last) {
     return `${first} ${last.charAt(0)}.`;
   }
-  return first || last || row.email || 'User';
+  return first || last || 'User';
 }
 
 /**

@@ -1,7 +1,7 @@
 import request from 'supertest';
 
 import { createApp } from '../../bin/server.js';
-import { createMockPool, petId, token, userId } from './helpers.js';
+import { createMockPool, petId, token } from './helpers.js';
 
 function authHeader() {
   return { Authorization: `Bearer ${token}` };

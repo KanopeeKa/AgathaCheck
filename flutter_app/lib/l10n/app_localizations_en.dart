@@ -6067,6 +6067,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String awayPlanningCarerNoteOnlyWithNote(String name, String note) {
+    return '$name · $note · No AgathaTrack access';
+  }
+
+  @override
   String get awayPlanningCarerSharedUserFallback => 'Shared user';
 
   @override

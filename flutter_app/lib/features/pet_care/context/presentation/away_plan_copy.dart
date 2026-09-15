@@ -46,7 +46,14 @@ class AwayPlanCopy {
       'shared_user' => l.awayPlanningCarerSharedAccess(
         carer.carerName ?? l.awayPlanningCarerSharedUserFallback,
       ),
-      'note_only' => l.awayPlanningCarerNoteOnly(carer.carerName ?? ''),
+      'note_only' => () {
+        final name = carer.carerName ?? '';
+        final note = (carer.carerNote ?? '').trim();
+        if (note.isNotEmpty) {
+          return l.awayPlanningCarerNoteOnlyWithNote(name, note);
+        }
+        return l.awayPlanningCarerNoteOnly(name);
+      }(),
       _ => l.awayPlanningCarerUnset,
     };
   }

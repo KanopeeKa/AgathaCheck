@@ -198,7 +198,9 @@ function listAbsencesSql(scope, todayIso) {
   }
   return {
     sql: `${base}
-       ORDER BY CASE WHEN ends_on >= $3::date THEN 0 ELSE 1 END, starts_on ASC`,
+       ORDER BY (ends_on < $3::date)::int,
+                CASE WHEN ends_on >= $3::date THEN starts_on END ASC NULLS LAST,
+                CASE WHEN ends_on < $3::date THEN starts_on END DESC NULLS LAST`,
     params: [PLANNED_ABSENCE_STATUS_CANCELLED, todayIso],
   };
 }
@@ -358,12 +360,6 @@ export function registerPlannedAbsenceRoutes(router, pool) {
       );
 
       const updated = await withOptionalTransaction(pool, async (client) => {
-        if (petCarersInput != null) {
-          const carerResult = await updateAbsenceCarers(client, existing.id, petCarersInput, petIds);
-          if (!carerResult.ok) {
-            throw Object.assign(new Error(carerResult.error), { status: carerResult.status });
-          }
-        }
         const setClauses = ['starts_on = $1::date', 'ends_on = $2::date', 'updated_at = NOW()'];
         const updateParams = [window.starts_on, window.ends_on];
         if (handoverNote !== undefined) {
@@ -379,6 +375,12 @@ export function registerPlannedAbsenceRoutes(router, pool) {
           updateParams
         );
         await replaceAbsencePets(client, existing.id, petIds);
+        if (petCarersInput != null) {
+          const carerResult = await updateAbsenceCarers(client, existing.id, petCarersInput, petIds);
+          if (!carerResult.ok) {
+            throw Object.assign(new Error(carerResult.error), { status: carerResult.status });
+          }
+        }
         return result.rows[0];
       });
       petRows = await loadAbsencePets(pool, existing.id);

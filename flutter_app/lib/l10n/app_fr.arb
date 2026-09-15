@@ -2171,6 +2171,13 @@
       "name": { "type": "String" }
     }
   },
+  "awayPlanningCarerNoteOnlyWithNote": "{name} · {note} · Pas d'accès AgathaTrack",
+  "@awayPlanningCarerNoteOnlyWithNote": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "note": { "type": "String" }
+    }
+  },
   "awayPlanningCarerSharedUserFallback": "Utilisateur partagé",
   "awayPlanningRoutineAllDay": "Toute la journée",
   "awayPlanningRoutineRowSubtitle": "{time} · {count, plural, =1{1 occurrence} other{{count} occurrences}} · {dateRange}",

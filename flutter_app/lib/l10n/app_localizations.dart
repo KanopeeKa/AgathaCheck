@@ -10795,6 +10795,12 @@ abstract class AppLocalizations {
   /// **'{name} · No AgathaTrack access'**
   String awayPlanningCarerNoteOnly(String name);
 
+  /// No description provided for @awayPlanningCarerNoteOnlyWithNote.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · {note} · No AgathaTrack access'**
+  String awayPlanningCarerNoteOnlyWithNote(String name, String note);
+
   /// No description provided for @awayPlanningCarerSharedUserFallback.
   ///
   /// In en, this message translates to:
