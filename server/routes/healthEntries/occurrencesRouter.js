@@ -3,6 +3,7 @@ import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
+import { adjustCadence } from '../../lib/care/schedule/adjustCadence.js';
 import { completeOccurrence } from '../../lib/care/schedule/completeOccurrence.js';
 import { rescheduleOccurrence } from '../../lib/care/schedule/rescheduleOccurrence.js';
 import {
@@ -277,6 +278,64 @@ export function registerOccurrenceRoutes(router, pool) {
         req,
       });
       res.json({ skipped: batch.skipped, count: batch.count });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.post('/:id/adjust-cadence', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const entryId = req.params.id;
+      const entry = await loadEntry(pool, entryId, userId);
+      if (!entry) return res.status(404).json({ error: 'Entry not found' });
+      const body = req.body || {};
+      const effectiveFrom = normalizeCalendarDateInput(
+        body.effective_from || body.effectiveFrom,
+      );
+      if (!effectiveFrom) {
+        return res.status(400).json({ error: 'effective_from is required' });
+      }
+      const adjusted = await adjustCadence(pool, {
+        entry,
+        userId,
+        effectiveFrom,
+        frequency: body.frequency,
+        frequencyInterval: body.frequency_interval ?? body.frequencyInterval,
+        frequencyDays: body.frequency_days ?? body.frequencyDays,
+        recurrenceAnchor: body.recurrence_anchor ?? body.recurrenceAnchor,
+        reasonCode: body.reason_code || body.reasonCode || null,
+        reasonNote: body.reason_note || body.reasonNote || body.notes || null,
+        todayIso: asOfFromRequest(req),
+      });
+      if (!adjusted) {
+        return res.status(400).json({ error: 'Entry cadence cannot be adjusted' });
+      }
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'health_entry.cadence_adjusted',
+        resourceType: 'health_entry',
+        resourceId: entryId,
+        petId: entry.pet_id,
+        metadata: {
+          effective_from: effectiveFrom,
+          schedule_event_id: adjusted.scheduleEventId,
+        },
+        req,
+      });
+      recordPetActivityForPet(pool, {
+        petId: entry.pet_id,
+        actorUserId: userId,
+        eventType: 'health_log',
+        metadata: { action: 'adjust_cadence', entry_type: entry.type },
+      });
+      adjusted.entry.pet_name = null;
+      res.json({
+        entry: healthEntryToMap(adjusted.entry),
+        next_due_date: adjusted.nextDueDate,
+        schedule_event_id: adjusted.scheduleEventId,
+      });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }

@@ -7,6 +7,7 @@ export {
   resolveRecurrenceAnchorForWrite,
 } from './recurrenceAnchorDefaults.js';
 export { advanceSeries, resolveNextSeriesDate } from './advanceSeries.js';
+export { adjustCadence } from './adjustCadence.js';
 export { completeOccurrence } from './completeOccurrence.js';
 export { rescheduleOccurrence } from './rescheduleOccurrence.js';
 export { skipMissedOccurrences, skipOccurrence } from './skipOccurrence.js';
