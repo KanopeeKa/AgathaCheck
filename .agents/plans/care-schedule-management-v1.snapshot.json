@@ -9,7 +9,7 @@
   "base_branch": "cursor/care-schedule-management-v1-integration-csm1",
   "control_issue": 1173,
   "artifact_branch_policy": "phase-branch",
-  "content_hash": "sha256:68e9180f0fd02255585a736b9c916faf626fc7ed7fceb820afbe71115c9bc63c",
+  "content_hash": "sha256:03306fa997c901a29a67fc85d1d7b23121b88fcee91886476d6f21c896efc677",
   "phases": [
     {
       "id": "csm-0",
