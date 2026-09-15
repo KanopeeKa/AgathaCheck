@@ -34,7 +34,7 @@ export function registerCarePeriodCoverageRoutes(router, pool) {
 
       return res.json(payload);
     } catch (err) {
-      return publicError(res, err, 'Failed to load care-period coverage');
+      return res.status(500).json({ error: publicError(err, 'Failed to load care-period coverage') });
     }
   });
 }
