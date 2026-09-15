@@ -6,7 +6,7 @@ import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { extractUserId, healthEntryToMap, historyToMap } from './shared.js';
 import { completeOldestPendingOccurrence } from './occurrencesRouter.js';
 import { closeHealthEntrySeries } from '../../lib/occurrenceLifecycle.js';
-import { syncNextDueDateFromOccurrences } from '../../lib/occurrenceScheduling.js';
+import { undoLastAction } from '../../lib/care/schedule/undoLastAction.js';
 import {
   isWeightMonitoringEntry,
   WEIGHT_GENERIC_COMPLETE_ERROR,
@@ -71,6 +71,63 @@ export function registerCompletionRoutes(router, pool) {
     }
   });
 
+  router.post('/:id/schedule/undo', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const entryId = req.params.id;
+      if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
+        return res.status(404).json({ error: 'Entry not found' });
+      }
+      const existing = await pool.query(
+        'SELECT * FROM health_entries WHERE id = $1',
+        [entryId],
+      );
+      if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
+      const row = existing.rows[0];
+
+      const undone = await undoLastAction(pool, { entry: row, userId });
+      if (!undone) {
+        return res.status(400).json({ error: 'No schedule action to undo' });
+      }
+
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'health_entry.schedule_undone',
+        resourceType: 'health_entry',
+        resourceId: entryId,
+        petId: row.pet_id,
+        metadata: {
+          entry_type: row.type,
+          action_type: undone.actionType,
+          occurrence_id: undone.occurrence?.id ?? null,
+        },
+        req,
+      });
+      recordPetActivityForPet(pool, {
+        petId: row.pet_id,
+        actorUserId: userId,
+        eventType: 'health_log',
+        metadata: { action: 'schedule_undo', entry_type: row.type },
+      });
+
+      const entry = undone.entry;
+      entry.pet_name = null;
+      return res.json({
+        action_type: undone.actionType,
+        entry: healthEntryToMap(entry),
+        occurrence: undone.occurrence ? {
+          id: undone.occurrence.id,
+          status: undone.occurrence.status,
+          scheduled_date: dateToIsoDate(undone.occurrence.scheduled_date),
+        } : null,
+        next_due_date: undone.nextDueDate ?? dateToIsoDate(entry.next_due_date),
+      });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
   router.post('/:id/undo-complete', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -79,84 +136,30 @@ export function registerCompletionRoutes(router, pool) {
       if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
         return res.status(404).json({ error: 'Entry not found' });
       }
-      const latestHist = await pool.query(
-        `SELECT * FROM health_history WHERE health_entry_id = $1
-         ORDER BY changed_at DESC LIMIT 1`,
-        [entryId]
-      );
       const existing = await pool.query(
         'SELECT * FROM health_entries WHERE id = $1',
-        [entryId]
+        [entryId],
       );
       if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
       const row = existing.rows[0];
 
-      if (latestHist.rows.length === 0 || latestHist.rows[0].status !== 'completed') {
-        const closedOcc = await pool.query(
-          `SELECT * FROM health_occurrences
-           WHERE health_entry_id = $1 AND status = 'completed'
-           ORDER BY marked_at DESC NULLS LAST LIMIT 1`,
-          [entryId]
-        );
-        if (closedOcc.rows.length === 0) {
-          return res.status(400).json({ error: 'No completed occurrence to unmark' });
-        }
-        const occ = closedOcc.rows[0];
-        await pool.query(
-          `UPDATE health_occurrences SET status = 'pending', completed_on = NULL,
-            marked_at = NULL, marked_by_user_id = NULL, notes = '', updated_at = NOW()
-           WHERE id = $1`,
-          [occ.id]
-        );
-        const restoreDue = dateToIsoDate(occ.scheduled_date || row.start_date);
-        const result = await pool.query(
-          `UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at = NULL,
-            next_due_date = CASE WHEN frequency = 'once' THEN $1 ELSE COALESCE($1, next_due_date) END,
-            updated_at = NOW()
-           WHERE id = $2 RETURNING *`,
-          [restoreDue, entryId]
-        );
-        await syncNextDueDateFromOccurrences(pool, entryId);
-        logAuditEventSafe(pool, {
-          actorUserId: userId,
-          action: 'health_entry.completion_undone',
-          resourceType: 'health_entry',
-          resourceId: entryId,
-          petId: row.pet_id,
-          metadata: { entry_type: row.type, via: 'occurrence' },
-          req,
+      const undone = await undoLastAction(pool, { entry: row, userId });
+      if (!undone) {
+        return res.status(400).json({ error: 'No schedule action to undo' });
+      }
+      if (undone.actionType !== 'complete') {
+        return res.status(400).json({
+          error: 'Last action is not a completion; use POST /:id/schedule/undo instead',
         });
-        recordPetActivityForPet(pool, {
-          petId: row.pet_id,
-          actorUserId: userId,
-          eventType: 'health_log',
-          metadata: { action: 'undo_complete', entry_type: row.type },
-        });
-        const entry = result.rows[0];
-        entry.pet_name = null;
-        return res.json(healthEntryToMap(entry));
       }
 
-      const lastCompleted = latestHist.rows[0];
-      await pool.query(
-        "UPDATE health_history SET status = 'undone' WHERE id = $1",
-        [lastCompleted.id]
-      );
-      const restoreDue = dateToIsoDate(lastCompleted.due_date || row.start_date);
-      const result = await pool.query(
-        `UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at = NULL,
-          next_due_date = CASE WHEN frequency = 'once' THEN $1 ELSE COALESCE($1, next_due_date) END,
-          updated_at = NOW()
-         WHERE id = $2 RETURNING *`,
-        [restoreDue, entryId]
-      );
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'health_entry.completion_undone',
         resourceType: 'health_entry',
         resourceId: entryId,
         petId: row.pet_id,
-        metadata: { entry_type: row.type },
+        metadata: { entry_type: row.type, via: 'undoLastAction' },
         req,
       });
       recordPetActivityForPet(pool, {
@@ -165,9 +168,9 @@ export function registerCompletionRoutes(router, pool) {
         eventType: 'health_log',
         metadata: { action: 'undo_complete', entry_type: row.type },
       });
-      const entry = result.rows[0];
+      const entry = undone.entry;
       entry.pet_name = null;
-      res.json(healthEntryToMap(entry));
+      return res.json(healthEntryToMap(entry));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }

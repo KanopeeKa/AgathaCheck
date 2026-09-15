@@ -14,6 +14,7 @@ import {
   skipMissedOccurrences,
   skipOccurrence,
 } from '../../lib/care/schedule/skipOccurrence.js';
+import { undoLastAction } from '../../lib/care/schedule/undoLastAction.js';
 import {
   listMissedOccurrenceIds,
   listOpenOccurrences,
@@ -415,20 +416,31 @@ export function registerOccurrenceRoutes(router, pool) {
       const entryId = req.params.id;
       const entry = await loadEntry(pool, entryId, userId);
       if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      const occ = await loadOccurrence(pool, entryId, req.params.occId);
-      if (!occ || !['completed', 'skipped'].includes(occ.status)) {
-        return res.status(400).json({ error: 'Only closed occurrences can be undone' });
+      const occId = req.params.occId;
+
+      const undone = await undoLastAction(pool, {
+        entry,
+        userId,
+        occurrenceId: occId,
+      });
+      if (!undone || !undone.occurrence) {
+        return res.status(400).json({
+          error: 'No matching schedule action to undo for this occurrence; use POST /:id/schedule/undo',
+        });
       }
-      const result = await pool.query(
-        `UPDATE health_occurrences SET status = 'pending', completed_on = NULL,
-          marked_at = NULL, marked_by_user_id = NULL, notes = '', updated_at = NOW()
-         WHERE id = $1 AND health_entry_id = $2
-         RETURNING *`,
-        [occ.id, entryId]
-      );
-      const { syncNextDueDateFromOccurrences } = await import('../../lib/occurrenceScheduling.js');
-      await syncNextDueDateFromOccurrences(pool, entryId);
-      res.json(occurrenceToMap(result.rows[0]));
+
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'health_occurrence.undone',
+        resourceType: 'health_entry',
+        resourceId: entryId,
+        petId: entry.pet_id,
+        metadata: { occurrence_id: occId, action_type: undone.actionType },
+        req,
+      });
+      const row = undone.occurrence;
+      row.marked_by_name = null;
+      res.json(occurrenceToMap(row));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
