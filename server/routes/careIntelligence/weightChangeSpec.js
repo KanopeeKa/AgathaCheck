@@ -3,6 +3,7 @@
  */
 
 import { monthsBetween } from './shared.js';
+import { parseDateMs } from '../../lib/care/observations/weightPrimitives.js';
 
 export const CHANGE_THRESHOLDS = {
   MIN_MEASUREMENTS: 3,
@@ -12,10 +13,6 @@ export const CHANGE_THRESHOLDS = {
   PUPPY_KITTEN_MONTHS: 12,
   REFERENCE_TOLERANCE_PCT: 0.05,
 };
-
-function parseDateMs(dateStr) {
-  return Date.parse(`${dateStr}T00:00:00Z`);
-}
 
 function sortedMeasurements(measurements) {
   return [...measurements].sort((a, b) => parseDateMs(a.date) - parseDateMs(b.date));

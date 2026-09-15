@@ -3,10 +3,7 @@
  */
 
 import { classifyWeightSeriesQuality } from './weightQualityClassifier.js';
-
-function parseDateMs(dateStr) {
-  return Date.parse(`${dateStr}T00:00:00Z`);
-}
+import { parseDateMs } from '../../lib/care/observations/weightPrimitives.js';
 
 /**
  * @param {{ date: string, weight: number, unit?: string, measurement_source?: string }[]} measurements
