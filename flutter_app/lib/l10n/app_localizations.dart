@@ -8916,13 +8916,13 @@ abstract class AppLocalizations {
   /// No description provided for @myVets.
   ///
   /// In en, this message translates to:
-  /// **'Care team'**
+  /// **'Veterinary team'**
   String get myVets;
 
   /// No description provided for @careTeamEyebrow.
   ///
   /// In en, this message translates to:
-  /// **'CARE TEAM'**
+  /// **'VETERINARY TEAM'**
   String get careTeamEyebrow;
 
   /// No description provided for @careTeamClinicSubtitle.
@@ -8934,8 +8934,14 @@ abstract class AppLocalizations {
   /// No description provided for @allCareTeams.
   ///
   /// In en, this message translates to:
-  /// **'All care teams'**
+  /// **'All veterinary teams'**
   String get allCareTeams;
+
+  /// No description provided for @collectionFilterPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal'**
+  String get collectionFilterPersonal;
 
   /// No description provided for @petCareDashboardTitle.
   ///
@@ -9006,7 +9012,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTeam.
   ///
   /// In en, this message translates to:
-  /// **'Care Team'**
+  /// **'Veterinary team'**
   String get careTeam;
 
   /// No description provided for @careTeamPetsCaredFor.
@@ -9018,7 +9024,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTeamNoLinkedPets.
   ///
   /// In en, this message translates to:
-  /// **'No pets are currently linked to this care team.'**
+  /// **'No pets are currently linked to this veterinary team.'**
   String get careTeamNoLinkedPets;
 
   /// No description provided for @careTeamClinicType.
@@ -9030,13 +9036,13 @@ abstract class AppLocalizations {
   /// No description provided for @careTeamOptions.
   ///
   /// In en, this message translates to:
-  /// **'Care team options'**
+  /// **'Veterinary team options'**
   String get careTeamOptions;
 
   /// No description provided for @editCareTeam.
   ///
   /// In en, this message translates to:
-  /// **'Edit care team'**
+  /// **'Edit veterinary team'**
   String get editCareTeam;
 
   /// No description provided for @vetNotFound.

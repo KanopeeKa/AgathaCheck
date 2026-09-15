@@ -100,7 +100,7 @@ List<CollectionFilterDimension> buildVetOrgContextDimensions({
           ),
         CollectionFilterChoice(
           id: OrgContextCollectionFilterIds.personal,
-          label: l.myVets,
+          label: l.collectionFilterPersonal,
         ),
         for (final org in orgs)
           CollectionFilterChoice(
