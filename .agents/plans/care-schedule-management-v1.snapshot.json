@@ -9,7 +9,7 @@
   "base_branch": "cursor/care-schedule-management-v1-integration-csm1",
   "control_issue": 1173,
   "artifact_branch_policy": "phase-branch",
-  "content_hash": "sha256:7b89803046edada107f79ab1ce1d4db021153320c97f0d8430cfcd5b5203ccc1",
+  "content_hash": "sha256:68e9180f0fd02255585a736b9c916faf626fc7ed7fceb820afbe71115c9bc63c",
   "phases": [
     {
       "id": "csm-0",
@@ -41,6 +41,34 @@
       "pr_head_sha": "1b0c278b"
     },
     {
+      "id": "csm-1",
+      "title": "CSM-1 — Schema migration",
+      "branch": "cursor/care-schedule-management-csm1-csm1",
+      "allowed_paths": [
+        "db/migrations/**",
+        "db/schema/canonical.sql",
+        "db/schema/migration-manifest.json",
+        "server/test/migrations/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1175",
+      "pr_head_sha": "5439b823"
+    },
+    {
       "id": "csm-seed",
       "title": "CSM-SEED — Rich demo seed data",
       "branch": "cursor/care-schedule-management-csm-seed-csm1",
@@ -61,39 +89,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
-    },
-    {
-      "id": "csm-1",
-      "title": "CSM-1 — Schema migration",
-      "branch": "cursor/care-schedule-management-csm1-csm1",
-      "allowed_paths": [
-        "db/migrations/**",
-        "db/schema/canonical.sql",
-        "server/test/migrations/**"
-      ],
-      "forbidden_paths": [
-        ".github/workflows/**",
-        "flutter_app/**"
-      ],
-      "allowed_exceptions": [
-        "tests"
-      ],
-      "spawn_allowed": false,
-      "spawn_config": null,
-      "merge_method": "squash",
-      "exit_checklist": "default",
-      "status": "pending",
-      "status_reason": null,
-      "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1176",
+      "pr_head_sha": "4ee182f9"
     },
     {
       "id": "csm-2",
