@@ -307,3 +307,51 @@ export function projectSchedule(entries, occurrencesByEntryId, startsOn, endsOn,
 export function projectCareForPeriod(entries, occurrencesByEntryId, startsOn, endsOn, todayIso) {
   return projectSchedule(entries, occurrencesByEntryId, startsOn, endsOn, todayIso);
 }
+
+/**
+ * Load health entries and occurrences from the DB, then project the care schedule.
+ *
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {string} petId
+ * @param {string} startsOn
+ * @param {string} endsOn
+ * @param {string} [todayIso]
+ */
+export async function loadAndProjectSchedule(pool, petId, startsOn, endsOn, todayIso) {
+  const entriesResult = await pool.query(
+    'SELECT * FROM health_entries WHERE pet_id = $1 ORDER BY created_at ASC',
+    [petId]
+  );
+
+  const occurrencesResult = await pool.query(
+    `SELECT ho.*
+     FROM health_occurrences ho
+     INNER JOIN health_entries he ON he.id = ho.health_entry_id
+     WHERE he.pet_id = $1
+       AND (
+         (ho.scheduled_date >= $2::date AND ho.scheduled_date <= $3::date)
+         OR ho.status = 'pending'
+       )`,
+    [petId, startsOn, endsOn]
+  );
+
+  const occurrencesByEntryId = new Map();
+  for (const row of occurrencesResult.rows) {
+    const list = occurrencesByEntryId.get(row.health_entry_id) || [];
+    list.push(row);
+    occurrencesByEntryId.set(row.health_entry_id, list);
+  }
+
+  const projection = projectSchedule(
+    entriesResult.rows,
+    occurrencesByEntryId,
+    startsOn,
+    endsOn,
+    todayIso
+  );
+
+  return {
+    pet_id: petId,
+    ...projection,
+  };
+}
