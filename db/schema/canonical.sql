@@ -145,6 +145,19 @@ CREATE TABLE public.care_recommendations (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
+CREATE TABLE public.care_safeguards (
+    id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    safeguard_type character varying(50) NOT NULL,
+    safeguard_key character varying(100) NOT NULL,
+    status character varying(30) DEFAULT 'active'::character varying NOT NULL,
+    policy_version character varying(20) NOT NULL,
+    copy_key character varying(100) NOT NULL,
+    evidence_json jsonb DEFAULT '{}'::jsonb NOT NULL,
+    dismissed_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
 CREATE TABLE public.care_schedule_events (
     id uuid NOT NULL,
     health_entry_id uuid NOT NULL,
@@ -163,19 +176,6 @@ CREATE TABLE public.care_schedule_events (
     policy_version character varying(20) NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT care_schedule_events_event_type_check CHECK (((event_type)::text = ANY ((ARRAY['rescheduled'::character varying, 'skipped'::character varying, 'paused'::character varying, 'resumed'::character varying, 'cadence_adjusted'::character varying])::text[])))
-);
-CREATE TABLE public.care_safeguards (
-    id uuid NOT NULL,
-    pet_id uuid NOT NULL,
-    safeguard_type character varying(50) NOT NULL,
-    safeguard_key character varying(100) NOT NULL,
-    status character varying(30) DEFAULT 'active'::character varying NOT NULL,
-    policy_version character varying(20) NOT NULL,
-    copy_key character varying(100) NOT NULL,
-    evidence_json jsonb DEFAULT '{}'::jsonb NOT NULL,
-    dismissed_at timestamp with time zone,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 CREATE TABLE public.custody_transfers (
     id uuid NOT NULL,
@@ -772,10 +772,10 @@ ALTER TABLE ONLY public.care_milestones
     ADD CONSTRAINT care_milestones_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.care_recommendations
     ADD CONSTRAINT care_recommendations_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY public.care_schedule_events
-    ADD CONSTRAINT care_schedule_events_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.care_safeguards
     ADD CONSTRAINT care_safeguards_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.care_schedule_events
+    ADD CONSTRAINT care_schedule_events_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.document_templates
@@ -912,12 +912,12 @@ CREATE INDEX idx_audit_events_resource ON public.audit_events USING btree (resou
 CREATE INDEX idx_audit_events_retention_tier ON public.audit_events USING btree (retention_tier, occurred_at);
 CREATE INDEX idx_care_establishments_pet_family ON public.care_establishments USING btree (pet_id, care_family);
 CREATE INDEX idx_care_establishments_pet_id ON public.care_establishments USING btree (pet_id);
-CREATE INDEX idx_care_schedule_events_entry_occurred ON public.care_schedule_events USING btree (health_entry_id, occurred_at DESC);
-CREATE UNIQUE INDEX idx_care_schedule_events_idempotency ON public.care_schedule_events USING btree (idempotency_key) WHERE (idempotency_key IS NOT NULL);
-CREATE INDEX idx_care_schedule_events_occurrence ON public.care_schedule_events USING btree (health_occurrence_id) WHERE (health_occurrence_id IS NOT NULL);
 CREATE INDEX idx_care_milestone_presentations_user ON public.care_milestone_presentations USING btree (user_id, shown_at DESC);
 CREATE INDEX idx_care_milestones_pet_bundle ON public.care_milestones USING btree (pet_id, bundle_id);
 CREATE INDEX idx_care_milestones_pet_id ON public.care_milestones USING btree (pet_id);
+CREATE INDEX idx_care_schedule_events_entry_occurred ON public.care_schedule_events USING btree (health_entry_id, occurred_at DESC);
+CREATE UNIQUE INDEX idx_care_schedule_events_idempotency ON public.care_schedule_events USING btree (idempotency_key) WHERE (idempotency_key IS NOT NULL);
+CREATE INDEX idx_care_schedule_events_occurrence ON public.care_schedule_events USING btree (health_occurrence_id) WHERE (health_occurrence_id IS NOT NULL);
 CREATE INDEX idx_custody_transfers_pet_status ON public.custody_transfers USING btree (pet_id, status);
 CREATE INDEX idx_custody_transfers_to_org ON public.custody_transfers USING btree (to_org_id, status);
 CREATE INDEX idx_document_templates_org_type ON public.document_templates USING btree (organization_id, template_type);
@@ -1013,14 +1013,14 @@ ALTER TABLE ONLY public.care_recommendations
     ADD CONSTRAINT care_recommendations_health_entry_id_fkey FOREIGN KEY (health_entry_id) REFERENCES public.health_entries(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.care_recommendations
     ADD CONSTRAINT care_recommendations_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.care_safeguards
+    ADD CONSTRAINT care_safeguards_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.care_schedule_events
     ADD CONSTRAINT care_schedule_events_actor_user_id_fkey FOREIGN KEY (actor_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.care_schedule_events
     ADD CONSTRAINT care_schedule_events_health_entry_id_fkey FOREIGN KEY (health_entry_id) REFERENCES public.health_entries(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.care_schedule_events
     ADD CONSTRAINT care_schedule_events_health_occurrence_id_fkey FOREIGN KEY (health_occurrence_id) REFERENCES public.health_occurrences(id) ON DELETE SET NULL;
-ALTER TABLE ONLY public.care_safeguards
-    ADD CONSTRAINT care_safeguards_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_from_org_id_fkey FOREIGN KEY (from_org_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.custody_transfers
