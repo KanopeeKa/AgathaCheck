@@ -106,4 +106,30 @@ class CareContextRemoteDataSource {
       json.decode(response.body) as Map<String, dynamic>,
     );
   }
+
+  Future<PlannedAbsence> updateHandoverNote({
+    required String absenceId,
+    String? handoverNote,
+  }) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId'),
+      headers: _headers(jsonBody: true),
+      body: json.encode({'handover_note': handoverNote}),
+    );
+    _check(response);
+    final body = json.decode(response.body) as Map<String, dynamic>;
+    final absenceJson = body['absence'] as Map<String, dynamic>? ?? body;
+    return PlannedAbsenceModel.fromJson(absenceJson);
+  }
+
+  Future<void> recordHandoverDownload(String absenceId) async {
+    final response = await _client.post(
+      Uri.parse(
+        '$baseUrl/api/planned-absences/$absenceId/record-handover-download',
+      ),
+      headers: _headers(jsonBody: true),
+      body: '{}',
+    );
+    _check(response);
+  }
 }

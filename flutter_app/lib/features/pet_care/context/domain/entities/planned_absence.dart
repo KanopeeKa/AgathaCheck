@@ -11,6 +11,7 @@ class PlannedAbsence {
     required this.status,
     required this.petIds,
     this.petCarers = const [],
+    this.handoverNote,
   });
 
   final String id;
@@ -22,6 +23,7 @@ class PlannedAbsence {
   final String status;
   final List<String> petIds;
   final List<PlannedAbsencePetCarer> petCarers;
+  final String? handoverNote;
 
   bool get isCancelled => status == 'cancelled';
 }

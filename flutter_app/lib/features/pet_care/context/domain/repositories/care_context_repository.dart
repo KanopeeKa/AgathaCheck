@@ -20,4 +20,11 @@ abstract class CareContextRepository {
   Future<PlannedAbsence> getPlannedAbsence(String absenceId);
 
   Future<AwayPlanReadiness> getAwayPlanReadiness(String absenceId);
+
+  Future<PlannedAbsence> updateHandoverNote({
+    required String absenceId,
+    String? handoverNote,
+  });
+
+  Future<void> recordHandoverDownload(String absenceId);
 }

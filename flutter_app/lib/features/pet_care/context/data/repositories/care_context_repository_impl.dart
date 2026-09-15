@@ -48,4 +48,15 @@ class CareContextRepositoryImpl implements CareContextRepository {
   @override
   Future<AwayPlanReadiness> getAwayPlanReadiness(String absenceId) =>
       _remote.fetchAwayPlanReadiness(absenceId);
+
+  @override
+  Future<PlannedAbsence> updateHandoverNote({
+    required String absenceId,
+    String? handoverNote,
+  }) =>
+      _remote.updateHandoverNote(absenceId: absenceId, handoverNote: handoverNote);
+
+  @override
+  Future<void> recordHandoverDownload(String absenceId) =>
+      _remote.recordHandoverDownload(absenceId);
 }
