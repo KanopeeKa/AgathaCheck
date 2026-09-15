@@ -8,7 +8,7 @@ Feature: Pet Care dashboard
   Scenario: Dashboard shows exactly three sections
     Given I am signed in as a guardian with pets, due health entries, and vets
     When I view the Pet Care dashboard
-    Then I should see "My Pets", "CARE ACTIONS", and "Care team" sections only
+    Then I should see "My Pets", "CARE ACTIONS", and "Veterinary team" sections only
 
   @implemented
   @P0
@@ -52,7 +52,7 @@ Feature: Pet Care dashboard
 
   @implemented
   @P1
-  Scenario: Care team preview reaches linked vet details
+  Scenario: Veterinary team preview reaches linked vet details
     Given I am signed in as a guardian with a linked veterinarian
     When I view the Pet Care dashboard
     Then I should see the veterinarian and linked-pet count

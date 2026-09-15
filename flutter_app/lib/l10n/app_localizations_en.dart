@@ -4960,16 +4960,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petCareNotificationsDrawer => 'Pet Care notifications';
 
   @override
-  String get myVets => 'Care team';
+  String get myVets => 'Veterinary team';
 
   @override
-  String get careTeamEyebrow => 'CARE TEAM';
+  String get careTeamEyebrow => 'VETERINARY TEAM';
 
   @override
   String get careTeamClinicSubtitle => 'Veterinary clinic';
 
   @override
-  String get allCareTeams => 'All care teams';
+  String get allCareTeams => 'All veterinary teams';
+
+  @override
+  String get collectionFilterPersonal => 'Personal';
 
   @override
   String get petCareDashboardTitle => 'Pet Care dashboard';
@@ -5021,23 +5024,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vetLinkedPets => 'Linked pets';
 
   @override
-  String get careTeam => 'Care Team';
+  String get careTeam => 'Veterinary team';
 
   @override
   String get careTeamPetsCaredFor => 'Pets cared for';
 
   @override
   String get careTeamNoLinkedPets =>
-      'No pets are currently linked to this care team.';
+      'No pets are currently linked to this veterinary team.';
 
   @override
   String get careTeamClinicType => 'Veterinary clinic';
 
   @override
-  String get careTeamOptions => 'Care team options';
+  String get careTeamOptions => 'Veterinary team options';
 
   @override
-  String get editCareTeam => 'Edit care team';
+  String get editCareTeam => 'Edit veterinary team';
 
   @override
   String get vetNotFound => 'Veterinarian not found';

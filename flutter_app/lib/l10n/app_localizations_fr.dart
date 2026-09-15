@@ -5040,16 +5040,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get petCareNotificationsDrawer => 'Notifications Suivi';
 
   @override
-  String get myVets => 'Équipe de soins';
+  String get myVets => 'Équipe vétérinaire';
 
   @override
-  String get careTeamEyebrow => 'ÉQUIPE DE SOINS';
+  String get careTeamEyebrow => 'ÉQUIPE VÉTÉRINAIRE';
 
   @override
   String get careTeamClinicSubtitle => 'Clinique vétérinaire';
 
   @override
-  String get allCareTeams => 'Toutes les équipes de soins';
+  String get allCareTeams => 'Toutes les équipes vétérinaires';
+
+  @override
+  String get collectionFilterPersonal => 'Personnel';
 
   @override
   String get petCareDashboardTitle => 'Tableau de bord Suivi';
@@ -5101,23 +5104,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String get vetLinkedPets => 'Animaux associés';
 
   @override
-  String get careTeam => 'Équipe de soins';
+  String get careTeam => 'Équipe vétérinaire';
 
   @override
   String get careTeamPetsCaredFor => 'Animaux pris en charge';
 
   @override
   String get careTeamNoLinkedPets =>
-      'Aucun animal n\'est actuellement associé à cette équipe de soins.';
+      'Aucun animal n\'est actuellement associé à cette équipe vétérinaire.';
 
   @override
   String get careTeamClinicType => 'Clinique vétérinaire';
 
   @override
-  String get careTeamOptions => 'Options de l\'équipe de soins';
+  String get careTeamOptions => 'Options de l\'équipe vétérinaire';
 
   @override
-  String get editCareTeam => 'Modifier l\'équipe de soins';
+  String get editCareTeam => 'Modifier l\'équipe vétérinaire';
 
   @override
   String get vetNotFound => 'Vétérinaire introuvable';

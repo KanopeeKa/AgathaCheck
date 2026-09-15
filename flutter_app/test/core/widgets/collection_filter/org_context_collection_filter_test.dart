@@ -40,4 +40,17 @@ void main() {
       contains(l.myFosteredPets),
     );
   });
+
+  test('buildVetOrgContextDimensions uses Personal for personal scope chip', () {
+    final dimensions = buildVetOrgContextDimensions(
+      l: l,
+      orgs: const [(id: 'org-1', name: 'Shelter A')],
+      organizationScope: false,
+    );
+    final personalChoice = dimensions.single.choices.firstWhere(
+      (choice) => choice.id == OrgContextCollectionFilterIds.personal,
+    );
+    expect(personalChoice.label, l.collectionFilterPersonal);
+    expect(personalChoice.label, isNot(l.myVets));
+  });
 }
