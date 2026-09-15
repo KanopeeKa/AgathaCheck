@@ -9,7 +9,7 @@
   "base_branch": "cursor/away-planning-v1-integration-5176",
   "control_issue": 1198,
   "artifact_branch_policy": "phase-branch",
-  "content_hash": "sha256:c005a077092720517b98c7d3a724b41ec60590c68a0411e113f75eafac77cef8",
+  "content_hash": "sha256:88d84ba92b163e044b7aa3bdfd57ade111f8fe0269600be00328c165500c3bb7",
   "phases": [
     {
       "id": "aw-emergency",
@@ -102,7 +102,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1201",
+      "pr_head_sha": "70d021677d290f32e19a2656e37f0955a05a32cc"
     },
     {
       "id": "aw-1",

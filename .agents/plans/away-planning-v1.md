@@ -184,10 +184,10 @@ next_action: "continue phase aw-0 on branch cursor/away-planning-aw0-5176"
 artifact_ref:
   branch: cursor/away-planning-aw0-5176
   plan_path: .agents/plans/away-planning-v1.md
-  plan_commit: 5b1c9a6b8c6f965922654ff5bfca338dcd7c1b20
+  plan_commit: 70d021677d290f32e19a2656e37f0955a05a32cc
   snapshot_path: .agents/plans/away-planning-v1.snapshot.json
-  snapshot_commit: 5b1c9a6b8c6f965922654ff5bfca338dcd7c1b20
-open_prs: []
+  snapshot_commit: 70d021677d290f32e19a2656e37f0955a05a32cc
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1201"]
 merge_commits: {"aw-emergency":"48082deb88660705c32c93a22c22ebb0e73e350b"}
 debt_issue_refs: []
 ```
