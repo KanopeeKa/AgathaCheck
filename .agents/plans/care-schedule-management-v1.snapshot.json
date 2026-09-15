@@ -9,7 +9,7 @@
   "base_branch": "cursor/care-schedule-management-v1-integration-csm1",
   "control_issue": 1173,
   "artifact_branch_policy": "phase-branch",
-  "content_hash": "sha256:0838500fb3d955b2405f5c5f003396e76b57319ec7e1d3b772d0cf7ff187e3b1",
+  "content_hash": "sha256:d63e25d9e5629e648ae9b8992fc4c4dc10da5f6b1899deec2f81118d8966f8db",
   "phases": [
     {
       "id": "csm-0",
@@ -310,12 +310,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1184",
+      "pr_head_sha": "d6531001",
+      "merge_commit": "76dd3440"
     },
     {
       "id": "csm-10",
@@ -336,12 +337,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1185",
+      "pr_head_sha": "832c880e",
+      "merge_commit": "c95d68d2"
     },
     {
       "id": "csm-11",
@@ -362,12 +364,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1186",
+      "pr_head_sha": "76d7c1e2",
+      "merge_commit": "0567a1b9"
     },
     {
       "id": "csm-12",
@@ -472,12 +475,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1187",
+      "pr_head_sha": "49b7866d",
+      "merge_commit": "581ceb10"
     },
     {
       "id": "csm-17",
