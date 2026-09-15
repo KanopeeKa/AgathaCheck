@@ -37,16 +37,6 @@ abstract class HealthRepository {
   /// Reopens a closed event (clears repeat end and next due date).
   Future<HealthEntry> reopenEvent(String id);
 
-  /// Marks an occurrence as skipped without advancing the series.
-  Future<HealthHistoryEntry> skipIteration(
-    String id, {
-    required DateTime dueDate,
-    String notes = '',
-  });
-
-  /// Reverses a skipped occurrence.
-  Future<void> unskipIteration(String id, {required String historyId});
-
   /// Unmarks the last completed occurrence (alias for undoComplete).
   Future<HealthEntry> unmarkDone(String id);
 
