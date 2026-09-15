@@ -93,6 +93,9 @@ describe('planned absences API', () => {
 
   it('GET list returns only declarer upcoming absences', async () => {
     const app = createTestApp(async (sql) => {
+      if (sql.includes('FROM planned_absences pa') && sql.includes('INNER JOIN planned_absence_pets')) {
+        return { rows: [] };
+      }
       if (sql.includes('FROM planned_absences') && sql.includes('ORDER BY starts_on')) {
         return {
           rows: [{
@@ -119,8 +122,10 @@ describe('planned absences API', () => {
       .get('/api/planned-absences')
       .set(authHeader());
     expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
     expect(res.body).toHaveLength(1);
     expect(res.body[0].id).toBe('abs-1');
+    expect(res.body[0].overlap_warnings).toEqual([]);
   });
 
   it('GET list batches pet id lookup (no N+1)', async () => {
@@ -128,6 +133,9 @@ describe('planned absences API', () => {
     const absenceIds = ['abs-1', 'abs-2', 'abs-3'];
     const app = createTestApp(async (sql) => {
       queryCount += 1;
+      if (sql.includes('FROM planned_absences pa') && sql.includes('INNER JOIN planned_absence_pets')) {
+        return { rows: [] };
+      }
       if (sql.includes('FROM planned_absences') && sql.includes('ORDER BY starts_on')) {
         return {
           rows: absenceIds.map((id) => ({
@@ -158,7 +166,166 @@ describe('planned absences API', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveLength(3);
-    expect(queryCount).toBe(2);
+    expect(queryCount).toBe(3);
+  });
+
+  it('GET list rejects invalid scope', async () => {
+    const app = createTestApp(async () => ({ rows: [] }));
+    const res = await request(app)
+      .get('/api/planned-absences?scope=invalid')
+      .set(authHeader());
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toMatch(/scope must be upcoming, past, or all/);
+  });
+
+  it('GET list scope=past filters ended absences', async () => {
+    const pastEndsOn = addCalendarDaysIso(today, -1);
+    const pastStartsOn = addCalendarDaysIso(today, -7);
+    const app = createTestApp(async (sql) => {
+      if (sql.includes('FROM planned_absences pa') && sql.includes('INNER JOIN planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM planned_absences') && sql.includes('ends_on <')) {
+        return {
+          rows: [{
+            id: 'past-abs',
+            user_id: userId,
+            starts_on: pastStartsOn,
+            ends_on: pastEndsOn,
+            provenance: 'user_declared',
+            source_ref: null,
+            status: 'active',
+            created_at: new Date(),
+            updated_at: new Date(),
+            cancelled_at: null,
+          }],
+        };
+      }
+      if (sql.includes('planned_absence_id = ANY')) {
+        return { rows: [{ planned_absence_id: 'past-abs', pet_id: petId }] };
+      }
+      return { rows: [] };
+    });
+
+    const res = await request(app)
+      .get('/api/planned-absences?scope=past')
+      .set(authHeader());
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].id).toBe('past-abs');
+  });
+
+  it('GET list scope=all includes upcoming and past absences', async () => {
+    const pastEndsOn = addCalendarDaysIso(today, -1);
+    const pastStartsOn = addCalendarDaysIso(today, -7);
+    const app = createTestApp(async (sql) => {
+      if (sql.includes('FROM planned_absences pa') && sql.includes('INNER JOIN planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM planned_absences') && sql.includes('CASE WHEN ends_on')) {
+        return {
+          rows: [
+            {
+              id: 'upcoming-abs',
+              user_id: userId,
+              starts_on: startsOn,
+              ends_on: endsOn,
+              provenance: 'user_declared',
+              source_ref: null,
+              status: 'active',
+              created_at: new Date(),
+              updated_at: new Date(),
+              cancelled_at: null,
+            },
+            {
+              id: 'past-abs',
+              user_id: userId,
+              starts_on: pastStartsOn,
+              ends_on: pastEndsOn,
+              provenance: 'user_declared',
+              source_ref: null,
+              status: 'active',
+              created_at: new Date(),
+              updated_at: new Date(),
+              cancelled_at: null,
+            },
+          ],
+        };
+      }
+      if (sql.includes('planned_absence_id = ANY')) {
+        return {
+          rows: [
+            { planned_absence_id: 'upcoming-abs', pet_id: petId },
+            { planned_absence_id: 'past-abs', pet_id: petId },
+          ],
+        };
+      }
+      return { rows: [] };
+    });
+
+    const res = await request(app)
+      .get('/api/planned-absences?scope=all')
+      .set(authHeader());
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveLength(2);
+    expect(res.body.map((item) => item.id)).toEqual(['upcoming-abs', 'past-abs']);
+  });
+
+  it('GET list recomputes overlap_warnings on read', async () => {
+    const app = createTestApp(async (sql) => {
+      if (sql.includes('FROM planned_absences pa') && sql.includes('INNER JOIN planned_absence_pets')) {
+        return {
+          rows: [
+            {
+              id: 'abs-1',
+              starts_on: startsOn,
+              ends_on: endsOn,
+              pet_id: petId,
+            },
+            {
+              id: 'abs-2',
+              starts_on: startsOn,
+              ends_on: endsOn,
+              pet_id: petId,
+            },
+          ],
+        };
+      }
+      if (sql.includes('FROM planned_absences') && sql.includes('ORDER BY starts_on')) {
+        return {
+          rows: [{
+            id: 'abs-1',
+            user_id: userId,
+            starts_on: startsOn,
+            ends_on: endsOn,
+            provenance: 'user_declared',
+            source_ref: null,
+            status: 'active',
+            created_at: new Date(),
+            updated_at: new Date(),
+            cancelled_at: null,
+          }],
+        };
+      }
+      if (sql.includes('planned_absence_id = ANY')) {
+        return { rows: [{ planned_absence_id: 'abs-1', pet_id: petId }] };
+      }
+      return { rows: [] };
+    });
+
+    const res = await request(app)
+      .get('/api/planned-absences')
+      .set(authHeader());
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body[0].overlap_warnings).toEqual([{
+      pet_id: petId,
+      conflicting_absence_id: 'abs-2',
+      conflicting_starts_on: startsOn,
+      conflicting_ends_on: endsOn,
+    }]);
   });
 
   it('POST rolls back when pet link insert fails', async () => {
