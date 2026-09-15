@@ -143,7 +143,7 @@ The dashboard version should:
 
 The existing Events screen already exists and does not need a major redesign as part of this brief. The immediate goal is consistency with the dashboard preview and the addition of a clear create action.
 
-## Care team
+## Veterinary team
 
 ### Purpose
 
@@ -151,14 +151,14 @@ This section provides quick access to veterinary clinics and care teams associat
 
 ### List format
 
-Display care teams as warm, tappable cards showing:
+Display veterinary teams as warm, tappable cards showing:
 
 - Clinic initials avatar (monogram from the clinic name)
-- Clinic / care team name
+- Clinic / veterinary team name
 - “Veterinary clinic · {town}” when location is available
 - Up to three linked-pet avatars with “+N” overflow and “Caring for N pets” when pet data is loaded
 
-The section uses a **CARE TEAM** eyebrow label and an **All care teams** link in the **header row** (when vets exist) to the full vet list.
+The section uses a **VETERINARY TEAM** eyebrow label and an **All veterinary teams** link in the **header row** (when vets exist) to the full vet list.
 
 ### Detail model
 

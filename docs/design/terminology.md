@@ -3,7 +3,7 @@ title: AgathaTrack terminology
 owner: Documentation Team
 audience: product, design, engineering, content
 status: active
-last_updated: 2026-09-09
+last_updated: 2026-09-15
 tags: [design, brand, copy, l10n]
 ---
 
