@@ -18,6 +18,12 @@
     "Navigating from login to signup": "P2",
     "Navigating from signup to login": "P2"
   },
+  "away_planning.feature": {
+    "Dashboard away planning tile opens the hub": "P0",
+    "Guardian can save a planned absence from the wizard": "P0",
+    "Away planning hub lists a saved upcoming absence": "P1",
+    "Away plan page shows who is caring for each pet": "P1"
+  },
   "pet_profiles.feature": {
     "Creating a new pet with required fields": "P0",
     "Creating a pet with all fields populated": "P1",

@@ -1,12 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { publicError } from '../../config/security.js';
-import { dateToIsoDate, todayCalendarIso } from '../../lib/calendarDate.js';
+import { todayCalendarIso } from '../../lib/calendarDate.js';
 import { loadAwayPlanReadinessForAbsence } from '../../lib/care/awayPlan/index.js';
 import { withOptionalTransaction } from '../../lib/db/withOptionalTransaction.js';
 import {
-  absenceToMap,
-  dateRangesOverlap,
   PLANNED_ABSENCE_PROVENANCE_USER_DECLARED,
   PLANNED_ABSENCE_STATUS_ACTIVE,
   PLANNED_ABSENCE_STATUS_CANCELLED,
@@ -20,6 +18,11 @@ import {
   normalizeHandoverNoteInput,
 } from './plannedAbsenceHandoverFields.js';
 import { registerPlannedAbsenceHandoverRoutes } from './plannedAbsenceHandoverRoutes.js';
+import {
+  findOverlapWarnings,
+  loadOverlapCandidatesForAbsences,
+  overlapWarningsForAbsence,
+} from './plannedAbsenceOverlap.js';
 
 const COLLABORATOR_ROLES_SQL = COLLABORATOR_ROLES.map((role) => `'${role}'`).join(', ');
 
@@ -88,38 +91,6 @@ async function isCarerCandidate(pool, petId, carerUserId) {
     [petId, carerUserId]
   );
   return result.rows.length > 0;
-}
-
-/**
- * Non-blocking overlap warnings for same pet on other active absences.
- */
-async function findOverlapWarnings(pool, userId, petIds, startsOn, endsOn, excludeAbsenceId = null) {
-  const todayIso = todayCalendarIso();
-  const result = await pool.query(
-    `SELECT pa.id, pa.starts_on, pa.ends_on, pap.pet_id
-     FROM planned_absences pa
-     INNER JOIN planned_absence_pets pap ON pap.planned_absence_id = pa.id
-     WHERE pa.user_id = $1
-       AND pa.status != $2
-       AND pa.ends_on >= $3::date
-       AND pap.pet_id = ANY($4::uuid[])`,
-    [userId, PLANNED_ABSENCE_STATUS_CANCELLED, todayIso, petIds]
-  );
-  const warnings = [];
-  for (const row of result.rows) {
-    if (excludeAbsenceId && row.id === excludeAbsenceId) continue;
-    const otherStart = dateToIsoDate(row.starts_on);
-    const otherEnd = dateToIsoDate(row.ends_on);
-    if (!otherStart || !otherEnd) continue;
-    if (!dateRangesOverlap(startsOn, endsOn, otherStart, otherEnd)) continue;
-    warnings.push({
-      pet_id: row.pet_id,
-      conflicting_absence_id: row.id,
-      conflicting_starts_on: otherStart,
-      conflicting_ends_on: otherEnd,
-    });
-  }
-  return warnings;
 }
 
 async function replaceAbsencePets(pool, absenceId, petIds) {
@@ -230,61 +201,6 @@ function listAbsencesSql(scope, todayIso) {
        ORDER BY CASE WHEN ends_on >= $3::date THEN 0 ELSE 1 END, starts_on ASC`,
     params: [PLANNED_ABSENCE_STATUS_CANCELLED, todayIso],
   };
-}
-
-/**
- * Batch-load overlap candidates for list items (recomputed on read, not persisted).
- *
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {string} userId
- * @param {object[]} absences
- */
-async function loadOverlapCandidatesForAbsences(pool, userId, absences, petsByAbsence) {
-  if (!absences.length) return [];
-  const petIds = [...new Set(
-    absences.flatMap((row) => (petsByAbsence.get(row.id) || []).map((pet) => pet.pet_id))
-  )];
-  if (!petIds.length) return [];
-  const todayIso = todayCalendarIso();
-  const result = await pool.query(
-    `SELECT pa.id, pa.starts_on, pa.ends_on, pap.pet_id
-     FROM planned_absences pa
-     INNER JOIN planned_absence_pets pap ON pap.planned_absence_id = pa.id
-     WHERE pa.user_id = $1
-       AND pa.status != $2
-       AND pa.ends_on >= $3::date
-       AND pap.pet_id = ANY($4::uuid[])`,
-    [userId, PLANNED_ABSENCE_STATUS_CANCELLED, todayIso, petIds]
-  );
-  return result.rows;
-}
-
-/**
- * @param {object} absence
- * @param {object[]} petRows
- * @param {object[]} candidates
- */
-function overlapWarningsForAbsence(absence, petRows, candidates) {
-  const startsOn = dateToIsoDate(absence.starts_on);
-  const endsOn = dateToIsoDate(absence.ends_on);
-  if (!startsOn || !endsOn) return [];
-  const petIds = new Set(petRows.map((row) => row.pet_id));
-  const warnings = [];
-  for (const row of candidates) {
-    if (row.id === absence.id) continue;
-    if (!petIds.has(row.pet_id)) continue;
-    const otherStart = dateToIsoDate(row.starts_on);
-    const otherEnd = dateToIsoDate(row.ends_on);
-    if (!otherStart || !otherEnd) continue;
-    if (!dateRangesOverlap(startsOn, endsOn, otherStart, otherEnd)) continue;
-    warnings.push({
-      pet_id: row.pet_id,
-      conflicting_absence_id: row.id,
-      conflicting_starts_on: otherStart,
-      conflicting_ends_on: otherEnd,
-    });
-  }
-  return warnings;
 }
 
 export function registerPlannedAbsenceRoutes(router, pool) {
