@@ -1,3 +1,11 @@
+---
+title: CLAUDE.md
+owner: Documentation Team
+audience: agent
+status: active
+last_updated: 2026-09-15
+tags: [agent,workflow]
+---
 # CLAUDE.md
 
 This project's actual policies live in `AGENTS.md` and `.cursor/rules/*.mdc`
