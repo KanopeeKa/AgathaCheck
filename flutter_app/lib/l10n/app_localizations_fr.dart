@@ -1637,6 +1637,50 @@ class AppLocalizationsFr extends AppLocalizations {
   String get weight => 'Poids';
 
   @override
+  String get weightReferenceValueLabel => 'Poids de référence';
+
+  @override
+  String get weightReferenceValueHelper =>
+      'Poids cible ou de référence pour un plan suivi par un vétérinaire (kg)';
+
+  @override
+  String get weightReferenceAuthorityLabel => 'Source de référence';
+
+  @override
+  String get weightReferenceAuthorityNone => 'Aucune';
+
+  @override
+  String get weightReferenceAuthorityVetTarget => 'Cible vétérinaire';
+
+  @override
+  String get weightReferenceAuthorityGuardianReference =>
+      'Référence du gardien';
+
+  @override
+  String get weightReferenceAuthorityHistoricalBaseline =>
+      'Référence historique';
+
+  @override
+  String get weightManagementContextLabel => 'Gestion du poids';
+
+  @override
+  String get weightManagementContextHelper =>
+      'Ce changement de poids est-il déjà pris en charge ?';
+
+  @override
+  String get weightManagementContextNone => 'Incertain / non pris en charge';
+
+  @override
+  String get weightManagementContextVetManaged => 'Oui, avec mon vétérinaire';
+
+  @override
+  String get weightManagementContextCarePlan =>
+      'Oui, dans le cadre d\'un plan de soins';
+
+  @override
+  String get weightManagementContextTreatmentRelated => 'Lié à un traitement';
+
+  @override
   String get petBio => 'Biographie';
 
   @override

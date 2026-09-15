@@ -151,6 +151,33 @@ Per-user presentation state — records when a prominent milestone card was rend
 | `evidence_json` | JSONB | Facts-only evidence trace |
 | `dismissed_at` | TIMESTAMPTZ | When guardian dismissed |
 
+### 1.6e Care Recommendations (care_recommendations table) — Phase C
+
+Pet-scoped care-intelligence state: server-authored care rhythm suggestions
+("Suggested by Agatha"). Retained with the pet (`ON DELETE CASCADE`). A suggestion
+alone never changes Care Status; accepting/adjusting creates a recurring
+`health_entry` linked via `health_entry_id`. Unique per
+`(pet_id, care_family, suggestion_key)`.
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `id` | UUID | Recommendation identifier |
+| `pet_id` | UUID | Associated pet (`ON DELETE CASCADE`) |
+| `care_family` | VARCHAR(50) | Care family (e.g. `weight_monitoring`) |
+| `suggestion_key` | VARCHAR(100) | Catalogue key (e.g. `weight_monitoring_rhythm`) |
+| `status` | VARCHAR(30) | `pending` / `accepted` / `adjusted` / `dismissed` / `not_relevant` |
+| `engine_version` | VARCHAR(20) | Engine that produced the suggestion |
+| `knowledge_version` | VARCHAR(20) | Knowledge base version |
+| `suggested_name` | VARCHAR(255) | Suggested rhythm name |
+| `suggested_frequency` | VARCHAR(30) | Cadence label (e.g. `monthly`) |
+| `suggested_frequency_interval` | INTEGER | Cadence interval |
+| `suggested_health_entry_type` | VARCHAR(30) | Health entry type if accepted |
+| `rationale_key` | VARCHAR(100) | l10n key for the "Why?" rationale |
+| `health_entry_id` | UUID | Linked rhythm once accepted/adjusted (`ON DELETE SET NULL`) |
+| `responded_at` | TIMESTAMPTZ | When the guardian responded |
+| `created_at` | TIMESTAMPTZ | Row creation time |
+| `updated_at` | TIMESTAMPTZ | Last update time |
+
 ### 1.7 Veterinarian Data (stored in shared_pets / pet data)
 
 Veterinarian contact information stored includes: name, clinic, phone, email, address, and notes.

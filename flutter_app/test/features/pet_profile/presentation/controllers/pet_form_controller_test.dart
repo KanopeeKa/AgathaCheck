@@ -88,6 +88,19 @@ void main() {
       expect(copy.name, 'Rex');
       expect(copy.selectedSpecies, 'dog');
     });
+
+    test('clears weightReferenceAuthority via clear flag', () {
+      final original = PetFormState(
+        weightReferenceAuthority: 'vet_target',
+        weightReferenceValue: '5.0',
+        weightManagementContext: 'vet_managed',
+      );
+      final cleared = original.copyWith(clearWeightReferenceAuthority: true);
+
+      expect(cleared.weightReferenceAuthority, isNull);
+      expect(cleared.weightReferenceValue, '5.0');
+      expect(cleared.weightManagementContext, 'vet_managed');
+    });
   });
 
   group('PetFormController.submit', () {
