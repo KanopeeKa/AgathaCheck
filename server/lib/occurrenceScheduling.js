@@ -11,13 +11,7 @@ import {
   normalizeCalendarDateInput,
   todayCalendarIso,
 } from './calendarDate.js';
-import { advanceByFrequency } from './recurrenceHelper.js';
-import {
-  finalizeOnceEntryIfNoPending,
-  isEntrySeriesClosed,
-  isOccurrenceDateWithinSeries,
-  tryAutoCloseRecurringWithEndDate,
-} from './occurrenceLifecycle.js';
+import { advanceSeries } from './care/schedule/advanceSeries.js';
 
 /**
  * @param {object|null|undefined} row health_entries row or body
@@ -242,89 +236,7 @@ export async function materialiseInitialOccurrences(pool, entry, todayIso = toda
  * @param {string} [todayIso]
  */
 export async function materialiseAfterOccurrenceClose(pool, entry, todayIso = todayCalendarIso()) {
-  if (isEntrySeriesClosed(entry, todayIso)) {
-    await syncNextDueDateFromOccurrences(pool, entry.id);
-    return;
-  }
-
-  if (isOnceEntry(entry)) {
-    await syncNextDueDateFromOccurrences(pool, entry.id);
-    await finalizeOnceEntryIfNoPending(pool, entry);
-    return;
-  }
-
-  const openDay = await pool.query(
-    `SELECT DISTINCT scheduled_date FROM health_occurrences
-     WHERE health_entry_id = $1 AND status = 'pending'
-     ORDER BY scheduled_date ASC`,
-    [entry.id]
-  );
-  const openDates = openDay.rows.map((r) => dateToIsoDate(r.scheduled_date));
-
-  if (openDates.length === 0) {
-    const lastClosed = await pool.query(
-      `SELECT scheduled_date FROM health_occurrences
-       WHERE health_entry_id = $1 AND status IN ('completed', 'skipped')
-       ORDER BY scheduled_date DESC,
-         COALESCE(scheduled_time, '00:00:00'::time) DESC
-       LIMIT 1`,
-      [entry.id]
-    );
-    const base = lastClosed.rows[0]
-      ? dateToIsoDate(lastClosed.rows[0].scheduled_date)
-      : materialisationAnchor(dateToIsoDate(entry.start_date), todayIso);
-    const nextDay = addCalendarDaysIso(base, 1);
-    if (
-      isOccurrenceDateWithinSeries(entry, nextDay)
-      && (isWithinMaterialisationWindow(nextDay, todayIso) || nextDay <= todayIso)
-    ) {
-      await insertOccurrencesForDay(pool, entry, nextDay);
-    } else {
-      const freqNext = advanceByFrequency(base, entry);
-      if (
-        freqNext
-        && isOccurrenceDateWithinSeries(entry, freqNext)
-        && isWithinMaterialisationWindow(freqNext, todayIso)
-      ) {
-        await insertOccurrencesForDay(pool, entry, freqNext);
-      }
-    }
-  } else if (!isMultiPerDayEntry(entry)) {
-    const earliest = openDates[0];
-    const pendingOnEarliest = await pool.query(
-      `SELECT COUNT(*)::int AS c FROM health_occurrences
-       WHERE health_entry_id = $1 AND scheduled_date = $2 AND status = 'pending'`,
-      [entry.id, earliest]
-    );
-    if (pendingOnEarliest.rows[0].c === 0) {
-      const nextDay = addCalendarDaysIso(earliest, 1);
-      if (
-        isOccurrenceDateWithinSeries(entry, nextDay)
-        && isWithinMaterialisationWindow(nextDay, todayIso)
-      ) {
-        await insertOccurrencesForDay(pool, entry, nextDay);
-      }
-    }
-  } else {
-    for (const dateIso of [...openDates]) {
-      const remaining = await pool.query(
-        `SELECT COUNT(*)::int AS c FROM health_occurrences
-         WHERE health_entry_id = $1 AND scheduled_date = $2 AND status = 'pending'`,
-        [entry.id, dateIso]
-      );
-      if (remaining.rows[0].c > 0) continue;
-      const nextDay = addCalendarDaysIso(dateIso, 1);
-      if (
-        isOccurrenceDateWithinSeries(entry, nextDay)
-        && isWithinMaterialisationWindow(nextDay, todayIso)
-      ) {
-        await insertOccurrencesForDay(pool, entry, nextDay);
-      }
-    }
-  }
-
-  await syncNextDueDateFromOccurrences(pool, entry.id);
-  await tryAutoCloseRecurringWithEndDate(pool, entry, todayIso);
+  await advanceSeries(pool, entry, todayIso);
 }
 
 /**
