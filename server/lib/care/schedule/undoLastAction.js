@@ -141,6 +141,12 @@ export async function undoLastAction(pool, {
       const reopened = await reopenOccurrence(pool, action.occurrence.id, entry.id);
       if (!reopened) return null;
       const nextDueDate = await syncNextDueDateFromOccurrences(pool, entry.id);
+      await pool.query(
+        `UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at = NULL,
+          updated_at = NOW()
+         WHERE id = $1`,
+        [entry.id],
+      );
       const refreshed = await pool.query(
         'SELECT * FROM health_entries WHERE id = $1',
         [entry.id],
