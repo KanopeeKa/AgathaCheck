@@ -2135,5 +2135,56 @@
   "careContextPreviewItemCompleted": "Terminé le {date}",
   "careContextPreviewItemSkipped": "Ignoré le {date}",
   "careContextAwayContinue": "Continuer",
-  "careContextAwayBack": "Retour"
+  "careContextAwayBack": "Retour",
+  "careContextAwayPlanTitle": "Plan d'absence",
+  "careContextAwayPlanLoadError": "Impossible de charger ce plan d'absence. Réessayez.",
+  "careContextAwayPlanCareDuringTitle": "Soins pendant votre absence",
+  "careContextAwayPlanWhoIsCaringTitle": "Qui s'en occupe",
+  "careContextAwayPlanDetailsTitle": "Détails du plan",
+  "careContextAwayPlanDatesLabel": "Dates",
+  "careContextAwayPlanPetsLabel": "Animaux",
+  "careContextAwayPlanStatusLabel": "Statut",
+  "careContextAwayPlanStatusActive": "Actif",
+  "careContextAwayPlanStatusCancelled": "Annulé",
+  "careContextAwayPlanCarerCoverageTitle": "Couverture des soignants",
+  "careContextAwayPlanCareCoverageTitle": "Couverture des soins",
+  "awayPlanningCarerCoverageAllHaveCarers": "Chaque animal a un soignant assigné.",
+  "awayPlanningCarerCoverageSomeHaveCarers": "{assigned} sur {total} animaux ont un soignant assigné.",
+  "@awayPlanningCarerCoverageSomeHaveCarers": {
+    "placeholders": {
+      "assigned": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "awayPlanningCarerCoverageNoneHaveCarers": "Aucun animal n'a encore de soignant assigné.",
+  "awayPlanningCarerRemoved": "Soignant retiré",
+  "awayPlanningCarerUnset": "Aucun soignant assigné",
+  "awayPlanningCarerSharedAccess": "{name} · Accès partagé",
+  "@awayPlanningCarerSharedAccess": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "awayPlanningCarerNoteOnly": "{name} · Pas d'accès AgathaTrack",
+  "@awayPlanningCarerNoteOnly": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "awayPlanningCarerSharedUserFallback": "Utilisateur partagé",
+  "awayPlanningRoutineAllDay": "Toute la journée",
+  "awayPlanningRoutineRowSubtitle": "{time} · {count, plural, =1{1 occurrence} other{{count} occurrences}} · {dateRange}",
+  "@awayPlanningRoutineRowSubtitle": {
+    "placeholders": {
+      "time": { "type": "String" },
+      "count": { "type": "int" },
+      "dateRange": { "type": "String" }
+    }
+  },
+  "awayPlanningScheduleRoutineTitle": "Soins de routine",
+  "awayPlanningScheduleDatedTitle": "Soins datés",
+  "awayPlanningScheduleIndeterminateTitle": "Soins indéterminés",
+  "awayPlanningIndeterminatePending": "En attente d'une dose précédente",
+  "awayPlanningIndeterminateChain": "Dépend de soins antérieurs dans la chaîne",
+  "awayPlanningIndeterminateGeneric": "Horaire pas encore connu"
 }

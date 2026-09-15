@@ -2,20 +2,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/pet_care/context/data/models/away_plan_readiness_model.dart';
 
 void main() {
-  test('parses tile_copy from readiness response', () {
+  test('parses carer_coverage, care_coverage, and tile_copy', () {
     final readiness = AwayPlanReadinessModel.fromJson({
-      'tile_copy': {
-        'source': 'carer_coverage',
-        'copy_key': 'awayPlanningTileCarerNone',
+      'carer_coverage': {
+        'state': 'some_have_carers',
+        'pets_with_carer': 1,
+        'pets_total': 2,
+        'copy_key': 'awayPlanningCarerCoverageSomeHaveCarers',
       },
-    });
-
-    expect(readiness.tileCopy.source, 'carer_coverage');
-    expect(readiness.tileCopy.copyKey, 'awayPlanningTileCarerNone');
-  });
-
-  test('parses tile_copy params for care coverage copy', () {
-    final readiness = AwayPlanReadinessModel.fromJson({
+      'care_coverage': {
+        'policy_version': '1',
+        'coverage_state': 'has_items_to_review',
+        'reason_codes': [],
+        'reassurance_available': true,
+        'copy_key': 'careContextCoverageHasItemsToReview',
+        'copy_params': {'count': 3},
+      },
       'tile_copy': {
         'source': 'care_coverage',
         'copy_key': 'careContextCoverageHasItemsToReview',
@@ -23,6 +25,10 @@ void main() {
       },
     });
 
+    expect(readiness.carerCoverage.petsWithCarer, 1);
+    expect(readiness.carerCoverage.petsTotal, 2);
+    expect(readiness.careCoverage.copyCount, 3);
+    expect(readiness.tileCopy.source, 'care_coverage');
     expect(readiness.tileCopy.copyParams?['count'], 3);
   });
 }

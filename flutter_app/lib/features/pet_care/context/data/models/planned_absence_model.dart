@@ -1,8 +1,28 @@
 import '../../domain/entities/planned_absence.dart';
+import '../../domain/entities/planned_absence_pet_carer.dart';
 
 class PlannedAbsenceModel {
+  static PlannedAbsencePetCarer petCarerFromJson(Map<String, dynamic> json) {
+    return PlannedAbsencePetCarer(
+      petId: json['pet_id'] as String? ?? '',
+      carerKind: json['carer_kind'] as String?,
+      carerUserId: json['carer_user_id'] as String?,
+      carerName: json['carer_name'] as String?,
+      carerNote: json['carer_note'] as String?,
+      carerRemoved: json['carer_removed'] == true,
+    );
+  }
+
   static PlannedAbsence fromJson(Map<String, dynamic> json) {
+    final petCarersRaw = json['pet_carers'] as List<dynamic>? ?? const [];
+    final petCarers = petCarersRaw
+        .map((raw) => petCarerFromJson(raw as Map<String, dynamic>))
+        .toList(growable: false);
     final petIdsRaw = json['pet_ids'] as List<dynamic>? ?? const [];
+    final petIds = petIdsRaw.isNotEmpty
+        ? petIdsRaw.map((id) => id.toString()).toList(growable: false)
+        : petCarers.map((carer) => carer.petId).toList(growable: false);
+
     return PlannedAbsence(
       id: json['id'] as String? ?? '',
       userId: json['user_id'] as String? ?? '',
@@ -11,7 +31,8 @@ class PlannedAbsenceModel {
       provenance: json['provenance'] as String? ?? 'user_declared',
       sourceRef: json['source_ref'] as String?,
       status: json['status'] as String? ?? 'active',
-      petIds: petIdsRaw.map((id) => id.toString()).toList(growable: false),
+      petIds: petIds,
+      petCarers: petCarers,
     );
   }
 

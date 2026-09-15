@@ -1,6 +1,37 @@
 import '../../domain/entities/care_period_coverage.dart';
 
 class CarePeriodCoverageModel {
+  static CarePeriodProjectionItem projectionItemFromJson(
+    Map<String, dynamic> raw,
+  ) {
+    return CarePeriodProjectionItem(
+      healthEntryId: raw['health_entry_id'] as String? ?? '',
+      occurrenceId: raw['occurrence_id'] as String?,
+      scheduledDate: raw['scheduled_date'] as String? ?? '',
+      scheduledTime: raw['scheduled_time'] as String?,
+      status: raw['status'] as String? ?? 'pending',
+      source: raw['source'] as String? ?? 'projected',
+      name: raw['name'] as String? ?? '',
+      type: raw['type'] as String? ?? '',
+      careFamily: raw['care_family'] as String? ?? '',
+    );
+  }
+
+  static CarePeriodRoutineItem routineItemFromJson(Map<String, dynamic> raw) {
+    return CarePeriodRoutineItem(
+      healthEntryId: raw['health_entry_id'] as String? ?? '',
+      name: raw['name'] as String? ?? '',
+      type: raw['type'] as String? ?? '',
+      careFamily: raw['care_family'] as String? ?? '',
+      scheduledTime: raw['scheduled_time'] as String?,
+      certainty: raw['certainty'] as String? ?? 'complete',
+      occurrenceCount: raw['occurrence_count'] as int? ?? 0,
+      status: raw['status'] as String? ?? 'pending',
+      firstScheduledDate: raw['first_scheduled_date'] as String? ?? '',
+      lastScheduledDate: raw['last_scheduled_date'] as String? ?? '',
+    );
+  }
+
   static CarePeriodCoverageResult fromJson(Map<String, dynamic> json) {
     final coverageJson = json['coverage'] as Map<String, dynamic>? ?? {};
     final coverageState =
@@ -15,8 +46,22 @@ class CarePeriodCoverageModel {
         CarePeriodProjectionStatus.partiallyIndeterminate;
 
     final itemsJson = json['items'] as List<dynamic>? ?? const [];
+    final routineItemsJson = json['routine_items'] as List<dynamic>? ?? const [];
+    final datedItemsJson = json['dated_items'] as List<dynamic>? ?? const [];
     final uncertaintiesJson =
         json['uncertainties'] as List<dynamic>? ?? const [];
+
+    final items = itemsJson
+        .map((raw) => projectionItemFromJson(raw as Map<String, dynamic>))
+        .toList(growable: false);
+    final routineItems = routineItemsJson
+        .map((raw) => routineItemFromJson(raw as Map<String, dynamic>))
+        .toList(growable: false);
+    final datedItems = datedItemsJson.isNotEmpty
+        ? datedItemsJson
+            .map((raw) => projectionItemFromJson(raw as Map<String, dynamic>))
+            .toList(growable: false)
+        : items;
 
     return CarePeriodCoverageResult(
       startsOn: json['starts_on'] as String? ?? '',
@@ -24,31 +69,21 @@ class CarePeriodCoverageModel {
       projectionStatus: projectionStatus,
       uncertainties: uncertaintiesJson
           .map(
-            (raw) => CarePeriodUncertainty(
-              healthEntryId:
-                  (raw as Map<String, dynamic>)['health_entry_id'] as String? ??
-                  '',
-              reason: raw['reason'] as String? ?? '',
-            ),
+            (raw) {
+              final map = raw as Map<String, dynamic>;
+              return CarePeriodUncertainty(
+                healthEntryId: map['health_entry_id'] as String? ?? '',
+                reason: map['reason'] as String? ?? '',
+                name: map['name'] as String? ?? '',
+                type: map['type'] as String?,
+                careFamily: map['care_family'] as String?,
+              );
+            },
           )
           .toList(growable: false),
-      items: itemsJson
-          .map(
-            (raw) => CarePeriodProjectionItem(
-              healthEntryId:
-                  (raw as Map<String, dynamic>)['health_entry_id'] as String? ??
-                  '',
-              occurrenceId: raw['occurrence_id'] as String?,
-              scheduledDate: raw['scheduled_date'] as String? ?? '',
-              scheduledTime: raw['scheduled_time'] as String?,
-              status: raw['status'] as String? ?? 'pending',
-              source: raw['source'] as String? ?? 'projected',
-              name: raw['name'] as String? ?? '',
-              type: raw['type'] as String? ?? '',
-              careFamily: raw['care_family'] as String? ?? '',
-            ),
-          )
-          .toList(growable: false),
+      items: items,
+      routineItems: routineItems,
+      datedItems: datedItems,
       coverage: CarePeriodCoverageSummary(
         policyVersion: coverageJson['policy_version'] as String? ?? '1',
         coverageState: coverageState,
