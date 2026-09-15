@@ -9,11 +9,8 @@ import { test, loginAs } from '../fixtures/auth.fixture';
 import { AwayPlanningPage } from '../pages/away-planning.page';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { createPet, createPlannedAbsence, signupUser } from '../support/api';
-import {
-  flutterGotoUrl,
-  refreshFlutterAccessibility,
-  semanticsByName,
-} from '../support/flutter';
+import { flutterGotoUrl, refreshFlutterAccessibility } from '../support/flutter';
+
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
 const dateOffset = (days: number): string => {
@@ -30,11 +27,9 @@ test.describe('Away planning', () => {
 
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.open();
-    await refreshFlutterAccessibility(page);
-    await semanticsByName(page, /I'll be away|Je serai absent/i).first().click();
-    await waitForAwayHub(page);
 
     const away = new AwayPlanningPage(page);
+    await away.openFromDashboardTile();
     await away.expectHubLoaded();
     await away.expectEmptyHub();
   });
@@ -45,8 +40,7 @@ test.describe('Away planning', () => {
     await loginAs(page, testUser, { experience: 'guardian' });
 
     const away = new AwayPlanningPage(page);
-    await page.goto(flutterGotoUrl('/pc/away/new'));
-    await refreshFlutterAccessibility(page);
+    await away.openWizard();
 
     const startsOn = dateOffset(7);
     const endsOn = dateOffset(14);
@@ -97,8 +91,3 @@ test.describe('Away planning', () => {
     await away.expectPetCarerRow('PlanPet', 'No carer assigned');
   });
 });
-
-async function waitForAwayHub(page: import('@playwright/test').Page): Promise<void> {
-  const { waitForFlutterRoutePattern } = await import('../support/flutter');
-  await waitForFlutterRoutePattern(page, /\/pc\/away(?:\?|$)/, 60_000);
-}

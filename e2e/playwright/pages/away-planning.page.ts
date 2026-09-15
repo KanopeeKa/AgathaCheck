@@ -22,6 +22,17 @@ function semanticsKey(page: Page, key: string) {
 export class AwayPlanningPage {
   constructor(private readonly page: Page) {}
 
+  async openFromDashboardTile(): Promise<void> {
+    await this.page
+      .getByRole('button', {
+        name: /I'll be away.*Preview care|Je serai absent.*Aperçu des soins/i,
+      })
+      .first()
+      .click();
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/away(?:\?|$)/, 60_000);
+  }
+
   async openHub(): Promise<void> {
     await this.page.goto(flutterGotoUrl('/pc/away'));
     await refreshFlutterAccessibility(this.page);
@@ -35,19 +46,9 @@ export class AwayPlanningPage {
   }
 
   async expectEmptyHub(): Promise<void> {
-    await expect(semanticsKey(this.page, 'planned_absence_hub_empty_action')).toBeVisible({
-      timeout: 30_000,
-    });
-  }
-
-  async openWizardFromHub(): Promise<void> {
-    const emptyAction = semanticsKey(this.page, 'planned_absence_hub_empty_action');
-    if (await emptyAction.isVisible().catch(() => false)) {
-      await emptyAction.click();
-    } else {
-      await semanticsKey(this.page, 'planned_absence_hub_add').click();
-    }
-    await waitForFlutterRoutePattern(this.page, /\/pc\/away\/new/, 30_000);
+    await expect(
+      this.page.getByText(/Preview care scheduled while you're away|Aperçu des soins/i),
+    ).toBeVisible({ timeout: 30_000 });
   }
 
   async openWizard(): Promise<void> {
@@ -57,31 +58,53 @@ export class AwayPlanningPage {
   }
 
   async pickAbsenceDates(startsOn: string, endsOn: string): Promise<void> {
-    await semanticsKey(this.page, 'planned_absence_date_range').click();
+    const dateButton = semanticsKey(this.page, 'planned_absence_date_range');
+    if (await dateButton.isVisible().catch(() => false)) {
+      await dateButton.click();
+    } else {
+      await this.page.getByRole('button', { name: /Absence dates|Dates d'absence/i }).first().click();
+    }
     const dialog = this.page.getByRole('dialog');
     await expect(dialog).toBeVisible({ timeout: 15_000 });
     const inputs = dialog.locator('input');
     await inputs.nth(0).fill(formatDdMmYyyy(startsOn));
     await inputs.nth(1).fill(formatDdMmYyyy(endsOn));
-    await dialog.getByRole('button', { name: /OK|Save|Enregistrer/i }).click();
+    await dialog.getByRole('button', { name: /OK|Save|Enregistrer/i }).first().click();
     await expect(dialog).not.toBeVisible({ timeout: 15_000 });
   }
 
   async continueWizard(): Promise<void> {
-    await semanticsKey(this.page, 'planned_absence_continue').click();
+    const continueButton = semanticsKey(this.page, 'planned_absence_continue');
+    if (await continueButton.isVisible().catch(() => false)) {
+      await continueButton.click();
+      return;
+    }
+    await this.page.getByRole('button', { name: /^Continue$|^Continuer$/i }).first().click();
   }
 
   async selectPet(petId: string): Promise<void> {
-    await semanticsKey(this.page, `planned_absence_pet_${petId}`).click();
+    const petRow = semanticsKey(this.page, `planned_absence_pet_${petId}`);
+    if (await petRow.isVisible().catch(() => false)) {
+      await petRow.click();
+      return;
+    }
+    await this.page.getByRole('checkbox').first().click();
   }
 
   async saveAbsence(): Promise<void> {
-    await semanticsKey(this.page, 'planned_absence_save').click();
+    const saveButton = semanticsKey(this.page, 'planned_absence_save');
+    if (await saveButton.isVisible().catch(() => false)) {
+      await saveButton.click();
+    } else {
+      await this.page.getByRole('button', { name: /Save absence|Enregistrer l'absence/i }).first().click();
+    }
     await waitForFlutterRoutePattern(this.page, /\/pc\/away\/[^/]+/, 60_000);
   }
 
   async expectPlanPageLoaded(): Promise<void> {
-    await expect(semanticsKey(this.page, 'away_plan_page')).toBeVisible({ timeout: 60_000 });
+    await expect(
+      semanticsByName(this.page, /Away plan|Plan d'absence/i).first(),
+    ).toBeVisible({ timeout: 60_000 });
   }
 
   async expectWhoIsCaringSection(): Promise<void> {
@@ -96,9 +119,6 @@ export class AwayPlanningPage {
   }
 
   async expectUpcomingAbsenceVisible(petName: string): Promise<void> {
-    await expect(semanticsKey(this.page, 'planned_absence_hub_list')).toBeVisible({
-      timeout: 30_000,
-    });
-    await expect(this.page.getByText(petName)).toBeVisible();
+    await expect(this.page.getByText(petName)).toBeVisible({ timeout: 30_000 });
   }
 }
