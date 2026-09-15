@@ -309,15 +309,15 @@ export function projectCareForPeriod(entries, occurrencesByEntryId, startsOn, en
 }
 
 /**
- * Load health entries and occurrences from the DB, then project the care schedule.
+ * Load health entries and occurrences for a care-period projection window.
  *
  * @param {import('pg').Pool|import('pg').PoolClient} pool
  * @param {string} petId
  * @param {string} startsOn
  * @param {string} endsOn
- * @param {string} [todayIso]
+ * @returns {Promise<{ entries: object[], occurrencesByEntryId: Map<string, object[]> }>}
  */
-export async function loadAndProjectSchedule(pool, petId, startsOn, endsOn, todayIso) {
+export async function loadScheduleDataForProjection(pool, petId, startsOn, endsOn) {
   const entriesResult = await pool.query(
     'SELECT * FROM health_entries WHERE pet_id = $1 ORDER BY created_at ASC',
     [petId]
@@ -342,8 +342,31 @@ export async function loadAndProjectSchedule(pool, petId, startsOn, endsOn, toda
     occurrencesByEntryId.set(row.health_entry_id, list);
   }
 
+  return {
+    entries: entriesResult.rows,
+    occurrencesByEntryId,
+  };
+}
+
+/**
+ * Load health entries and occurrences from the DB, then project the care schedule.
+ *
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {string} petId
+ * @param {string} startsOn
+ * @param {string} endsOn
+ * @param {string} [todayIso]
+ */
+export async function loadAndProjectSchedule(pool, petId, startsOn, endsOn, todayIso) {
+  const { entries, occurrencesByEntryId } = await loadScheduleDataForProjection(
+    pool,
+    petId,
+    startsOn,
+    endsOn
+  );
+
   const projection = projectSchedule(
-    entriesResult.rows,
+    entries,
     occurrencesByEntryId,
     startsOn,
     endsOn,
