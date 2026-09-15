@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../../features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart';
+import '../../features/pet_care/context/presentation/screens/planned_absence_hub_screen.dart';
 import '../../features/pet_care/context/presentation/screens/planned_absence_plan_placeholder_screen.dart';
 
 List<RouteBase> buildAwayPlanningRoutes() {
@@ -8,7 +9,7 @@ List<RouteBase> buildAwayPlanningRoutes() {
     GoRoute(
       path: '/pc/away',
       name: 'petCarePlannedAbsence',
-      builder: (context, state) => const PlannedAbsenceFlowScreen(),
+      builder: (context, state) => const PlannedAbsenceHubScreen(),
       routes: [
         GoRoute(
           path: 'new',

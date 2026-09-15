@@ -35,7 +35,7 @@ class CareContextRepositoryImpl implements CareContextRepository {
   }
 
   @override
-  Future<List<PlannedAbsence>> listPlannedAbsences() {
-    return _remote.listPlannedAbsences();
+  Future<List<PlannedAbsence>> listPlannedAbsences({String scope = 'all'}) {
+    return _remote.listPlannedAbsences(scope: scope);
   }
 }
