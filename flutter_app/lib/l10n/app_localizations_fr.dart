@@ -6103,4 +6103,113 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careContextAwayBack => 'Retour';
+
+  @override
+  String get careContextAwayPlanTitle => 'Plan d\'absence';
+
+  @override
+  String get careContextAwayPlanLoadError =>
+      'Impossible de charger ce plan d\'absence. Réessayez.';
+
+  @override
+  String get careContextAwayPlanCareDuringTitle =>
+      'Soins pendant votre absence';
+
+  @override
+  String get careContextAwayPlanWhoIsCaringTitle => 'Qui s\'en occupe';
+
+  @override
+  String get careContextAwayPlanDetailsTitle => 'Détails du plan';
+
+  @override
+  String get careContextAwayPlanDatesLabel => 'Dates';
+
+  @override
+  String get careContextAwayPlanPetsLabel => 'Animaux';
+
+  @override
+  String get careContextAwayPlanStatusLabel => 'Statut';
+
+  @override
+  String get careContextAwayPlanStatusActive => 'Actif';
+
+  @override
+  String get careContextAwayPlanStatusCancelled => 'Annulé';
+
+  @override
+  String get careContextAwayPlanCarerCoverageTitle =>
+      'Couverture des soignants';
+
+  @override
+  String get careContextAwayPlanCareCoverageTitle => 'Couverture des soins';
+
+  @override
+  String get awayPlanningCarerCoverageAllHaveCarers =>
+      'Chaque animal a un soignant assigné.';
+
+  @override
+  String awayPlanningCarerCoverageSomeHaveCarers(int assigned, int total) {
+    return '$assigned sur $total animaux ont un soignant assigné.';
+  }
+
+  @override
+  String get awayPlanningCarerCoverageNoneHaveCarers =>
+      'Aucun animal n\'a encore de soignant assigné.';
+
+  @override
+  String get awayPlanningCarerRemoved => 'Soignant retiré';
+
+  @override
+  String get awayPlanningCarerUnset => 'Aucun soignant assigné';
+
+  @override
+  String awayPlanningCarerSharedAccess(String name) {
+    return '$name · Accès partagé';
+  }
+
+  @override
+  String awayPlanningCarerNoteOnly(String name) {
+    return '$name · Pas d\'accès AgathaTrack';
+  }
+
+  @override
+  String get awayPlanningCarerSharedUserFallback => 'Utilisateur partagé';
+
+  @override
+  String get awayPlanningRoutineAllDay => 'Toute la journée';
+
+  @override
+  String awayPlanningRoutineRowSubtitle(
+    String time,
+    int count,
+    String dateRange,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count occurrences',
+      one: '1 occurrence',
+    );
+    return '$time · $_temp0 · $dateRange';
+  }
+
+  @override
+  String get awayPlanningScheduleRoutineTitle => 'Soins de routine';
+
+  @override
+  String get awayPlanningScheduleDatedTitle => 'Soins datés';
+
+  @override
+  String get awayPlanningScheduleIndeterminateTitle => 'Soins indéterminés';
+
+  @override
+  String get awayPlanningIndeterminatePending =>
+      'En attente d\'une dose précédente';
+
+  @override
+  String get awayPlanningIndeterminateChain =>
+      'Dépend de soins antérieurs dans la chaîne';
+
+  @override
+  String get awayPlanningIndeterminateGeneric => 'Horaire pas encore connu';
 }

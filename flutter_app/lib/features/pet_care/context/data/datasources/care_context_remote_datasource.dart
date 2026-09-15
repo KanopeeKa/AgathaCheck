@@ -74,7 +74,7 @@ class CareContextRemoteDataSource {
   }) async {
     final response = await _client.get(
       Uri.parse(
-        '$baseUrl/api/planned-absences?scope=\${Uri.encodeQueryComponent(scope)}',
+        '$baseUrl/api/planned-absences?scope=${Uri.encodeQueryComponent(scope)}',
       ),
       headers: _headers(),
     );
@@ -85,9 +85,25 @@ class CareContextRemoteDataSource {
         .toList(growable: false);
   }
 
-  Future<AwayPlanReadiness> fetchAwayPlanReadiness(String absenceId) async {
-    final response = await _client.get(Uri.parse('$baseUrl/api/planned-absences/$absenceId/readiness'), headers: _headers());
+  Future<PlannedAbsence> fetchPlannedAbsence(String absenceId) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId'),
+      headers: _headers(),
+    );
     _check(response);
-    return AwayPlanReadinessModel.fromJson(json.decode(response.body) as Map<String, dynamic>);
+    return PlannedAbsenceModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<AwayPlanReadiness> fetchAwayPlanReadiness(String absenceId) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId/readiness'),
+      headers: _headers(),
+    );
+    _check(response);
+    return AwayPlanReadinessModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 }
