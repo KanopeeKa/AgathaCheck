@@ -6,3 +6,4 @@ export {
   defaultRecurrenceAnchorForCareFamily,
   resolveRecurrenceAnchorForWrite,
 } from './recurrenceAnchorDefaults.js';
+export { advanceSeries, resolveNextSeriesDate } from './advanceSeries.js';
