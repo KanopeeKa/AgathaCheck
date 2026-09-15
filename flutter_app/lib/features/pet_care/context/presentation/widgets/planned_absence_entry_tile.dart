@@ -50,11 +50,14 @@ class PlannedAbsenceEntryTile extends ConsumerWidget {
     );
   }
 
-  Widget _card(String title, String body, VoidCallback onTap) => Semantics(
-    button: true,
-    label: '$title. $body',
-    child: Card(
-      margin: EdgeInsets.zero,
+  Widget _card(String title, String body, VoidCallback onTap) => Card(
+    margin: EdgeInsets.zero,
+    child: Semantics(
+      button: true,
+      identifier: 'planned_absence_entry_tile',
+      label: '$title. $body',
+      excludeSemantics: true,
+      onTap: onTap,
       child: InkWell(
         key: const Key('planned_absence_entry_tile'),
         borderRadius: BorderRadius.circular(16),

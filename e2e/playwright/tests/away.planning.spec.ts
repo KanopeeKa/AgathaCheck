@@ -46,7 +46,7 @@ test.describe('Away planning', () => {
     const endsOn = dateOffset(14);
     await away.pickAbsenceDates(startsOn, endsOn);
     await away.continueWizard();
-    await away.selectPet(pet.id);
+    await away.selectPet(pet.id, pet.name);
     await away.continueWizard();
     await away.saveAbsence();
 
