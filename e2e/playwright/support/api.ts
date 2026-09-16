@@ -320,6 +320,7 @@ export async function updatePetProfile(
     weight?: number | null;
     breed?: string;
     weightEntryDate?: string;
+    dateOfBirth?: string;
   },
 ): Promise<TestPet & { weight?: number | null }> {
   const res = await apiFetch(apiUrl(`/pets/${petId}`, baseURL), {
