@@ -7,7 +7,7 @@ import path from 'path';
 import { logAuditEventSafe } from './audit.js';
 import { createNotification, userDisplayName } from './notificationHelper.js';
 import {
-  COLLABORATOR_ROLES,
+  PET_ACCESS_ROLES,
   FOSTER_PET_ACCESS_ROLE,
 } from './petAccess.js';
 import { removePrivateHealthFile } from './privateHealthStorage.js';
@@ -154,7 +154,7 @@ export async function notifyPassedAwayCollaborators(pool, {
   ownerId,
   petName,
 }) {
-  const notifyRoles = [...COLLABORATOR_ROLES, FOSTER_PET_ACCESS_ROLE];
+  const notifyRoles = [...PET_ACCESS_ROLES, FOSTER_PET_ACCESS_ROLE];
   const access = await pool.query(
     `SELECT pa.user_id
      FROM pet_access pa

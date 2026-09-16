@@ -1,7 +1,8 @@
 /** Pet capability policy — maps discovery capability seeds to access helpers. */
 import {
   userCanAccessPet,
-  userCanManagePet,
+  userCanManageCare,
+  userCanManageProfile,
   userCanSharePet,
   userOwnsPet,
 } from './petAccess.js';
@@ -52,13 +53,14 @@ export async function hasPetCapability(pool, userId, petId, capability) {
     case PET_CAPABILITIES.LIFECYCLE_MANAGE:
       return userOwnsPet(pool, petId, userId);
     case PET_CAPABILITIES.PROFILE_EDIT:
+    case PET_CAPABILITIES.VET_EDIT:
+      return userCanManageProfile(pool, petId, userId);
     case PET_CAPABILITIES.HEALTH_EDIT:
     case PET_CAPABILITIES.HEALTH_DOCUMENTS_MANAGE:
     case PET_CAPABILITIES.WEIGHT_EDIT:
-    case PET_CAPABILITIES.VET_EDIT:
     case PET_CAPABILITIES.NOTIFICATIONS_MANAGE:
     case PET_CAPABILITIES.TIMELINE_OWN_NOTES:
-      return userCanManagePet(pool, petId, userId);
+      return userCanManageCare(pool, petId, userId);
     default:
       return false;
   }

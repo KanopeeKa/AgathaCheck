@@ -18,7 +18,7 @@ import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import {
   userCanAccessPet,
   userOwnsPet,
-  COLLABORATOR_ROLES,
+  PET_ACCESS_ROLES,
   FOSTER_PET_ACCESS_ROLE,
 } from '../../lib/petAccess.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
@@ -35,7 +35,7 @@ import {
   FOSTER_PLACEMENT_SELECT_SQL,
   petRowToMap,
   userInOrg,
-  PRIMARY_HOLDER_NAME_SELECT_SQL,
+  PET_PARENT_NAME_SELECT_SQL,
 } from './shared.js';
 
 export function registerCoreRoutes(router, pool) {
@@ -46,7 +46,8 @@ export function registerCoreRoutes(router, pool) {
       const result = await pool.query(
         `SELECT p.*, false AS is_shared, false AS is_foster, o.name AS organization_name,
                 ${FOSTER_PLACEMENT_SELECT_SQL},
-                ${PRIMARY_HOLDER_NAME_SELECT_SQL}
+                ${PET_PARENT_NAME_SELECT_SQL},
+                NULL::varchar AS access_role
          FROM pets p
          LEFT JOIN organizations o ON o.id = p.organization_id
          WHERE p.user_id = $1
@@ -57,7 +58,8 @@ export function registerCoreRoutes(router, pool) {
          UNION ALL
          SELECT p.*, true AS is_shared, false AS is_foster, o.name AS organization_name,
                 ${FOSTER_PLACEMENT_SELECT_SQL},
-                ${PRIMARY_HOLDER_NAME_SELECT_SQL}
+                ${PET_PARENT_NAME_SELECT_SQL},
+                pa.role AS access_role
          FROM pets p
          JOIN pet_access pa ON pa.pet_id = p.id
          LEFT JOIN organizations o ON o.id = p.organization_id
@@ -65,7 +67,8 @@ export function registerCoreRoutes(router, pool) {
          UNION ALL
          SELECT p.*, false AS is_shared, true AS is_foster, o.name AS organization_name,
                 ${FOSTER_PLACEMENT_SELECT_SQL},
-                ${PRIMARY_HOLDER_NAME_SELECT_SQL}
+                ${PET_PARENT_NAME_SELECT_SQL},
+                pa.role AS access_role
          FROM pets p
          JOIN pet_access pa ON pa.pet_id = p.id
          LEFT JOIN organizations o ON o.id = p.organization_id
@@ -73,7 +76,8 @@ export function registerCoreRoutes(router, pool) {
          UNION ALL
          SELECT p.*, false AS is_shared, false AS is_foster, o.name AS organization_name,
                 ${FOSTER_PLACEMENT_SELECT_SQL},
-                ${PRIMARY_HOLDER_NAME_SELECT_SQL}
+                ${PET_PARENT_NAME_SELECT_SQL},
+                NULL::varchar AS access_role
          FROM pets p
          JOIN organization_users ou ON ou.organization_id = p.organization_id
          LEFT JOIN organizations o ON o.id = p.organization_id
@@ -96,7 +100,7 @@ export function registerCoreRoutes(router, pool) {
              WHERE oh.pet_id = p.id AND oh.user_id = $1
            )
          ORDER BY created_at`,
-        [userId, COLLABORATOR_ROLES, FOSTER_PET_ACCESS_ROLE, OPEN_PLACEMENT_STATUSES]
+        [userId, PET_ACCESS_ROLES, FOSTER_PET_ACCESS_ROLE, OPEN_PLACEMENT_STATUSES]
       );
       const pets = result.rows.map(petRowToMap);
       await autoAssignColors(pool, pets);
@@ -139,7 +143,7 @@ export function registerCoreRoutes(router, pool) {
                 EXISTS (
                   SELECT 1 FROM pet_access pa
                   WHERE pa.pet_id = p.id AND pa.user_id = $2
-                    AND pa.role IN ('shared', 'guardian')
+                    AND pa.role = ANY($4::text[])
                     AND COALESCE(pa.hidden, false) = false
                 ) AS is_shared,
                 EXISTS (
@@ -147,11 +151,18 @@ export function registerCoreRoutes(router, pool) {
                   WHERE pa.pet_id = p.id AND pa.user_id = $2
                     AND pa.role = $3
                     AND COALESCE(pa.hidden, false) = false
-                ) AS is_foster
+                ) AS is_foster,
+                (
+                  SELECT pa.role FROM pet_access pa
+                  WHERE pa.pet_id = p.id AND pa.user_id = $2
+                    AND COALESCE(pa.hidden, false) = false
+                  LIMIT 1
+                ) AS access_role,
+                ${PET_PARENT_NAME_SELECT_SQL}
          FROM pets p
          LEFT JOIN organizations o ON o.id = p.organization_id
          WHERE p.id = $1`,
-        [id, userId, FOSTER_PET_ACCESS_ROLE]
+        [id, userId, FOSTER_PET_ACCESS_ROLE, PET_ACCESS_ROLES]
       );
       if (result.rows.length === 0) {
         return res.status(404).json({ error: 'Pet not found' });
