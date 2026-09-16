@@ -13,6 +13,7 @@ class PetCareOperationsDeskLayout extends StatelessWidget {
     required this.petsSection,
     required this.eventsSection,
     required this.vetsSection,
+    this.absenceSection,
     this.fosteringSection,
   });
 
@@ -26,6 +27,7 @@ class PetCareOperationsDeskLayout extends StatelessWidget {
   final Widget petsSection;
   final Widget eventsSection;
   final Widget vetsSection;
+  final Widget? absenceSection;
   final Widget? fosteringSection;
 
   @override
@@ -65,10 +67,18 @@ class PetCareOperationsDeskLayout extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       eventsSection,
+                      if (absenceSection != null) ...[
+                        const SizedBox(height: 28),
+                        absenceSection!,
+                      ],
                       const SizedBox(height: 28),
                       vetsSection,
                     ],
                   ),
+                if (isWide && absenceSection != null) ...[
+                  const SizedBox(height: 28),
+                  absenceSection!,
+                ],
                 if (fosteringSection != null) ...[
                   const SizedBox(height: 28),
                   fosteringSection!,

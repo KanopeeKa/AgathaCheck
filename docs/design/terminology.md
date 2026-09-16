@@ -82,6 +82,8 @@ Keep these EN/FR labels distinct in copy and l10n:
 | Workspace | Pet Care | Suivi | `drawerPetCare`, `experiencePetCareView`, … |
 | Dashboard pet rail | My Pets | Mes animaux | `myPets` — **do not repurpose for workspace** |
 | Due-items block | CARE ACTIONS (eyebrow) | SOINS | `careEyebrow` |
+| Away-planning block | AWAY PLANNING (eyebrow) | PLANIFICATION D'ABSENCE | `awayPlanningEyebrow` |
+| Away-planning hub link | All absences | Toutes les absences | `allAbsences` |
 | Full due list link | All Actions | Tous les soins | `allCare` |
 | Global queue screen (`/pc/events`) | All Actions | Tous les soins | `allCare` |
 | Bottom nav | Actions | Soins | `careNavLabel` |

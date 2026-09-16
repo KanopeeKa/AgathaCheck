@@ -4972,6 +4972,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allCareTeams => 'All veterinary teams';
 
   @override
+  String get allAbsences => 'All absences';
+
+  @override
   String get collectionFilterPersonal => 'Personal';
 
   @override
@@ -5870,6 +5873,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careContextAwayFlowTitle => 'Away planning';
+
+  @override
+  String get awayPlanningEyebrow => 'AWAY PLANNING';
 
   @override
   String get careContextAwayDatesStepTitle => 'When are you away?';
