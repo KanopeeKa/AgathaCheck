@@ -7,12 +7,9 @@
  * Scenario: Viewing owner first name on shared pet page
  * Scenario: Accepting a share into personal pet list
  * Scenario: Opening an expired or invalid share link
- * Scenario: Hiding a shared pet via swipe
- * Scenario: Pending share appears in pet list
- * Scenario: Accepting a pending share into personal list
- * Scenario: Accepting a pending share into an organisation
- * Scenario: Declining a pending share
+ * Scenario: Hiding a shared pet
  * Scenario: Unhiding a shared pet
+ * Scenario: Revoking collaborator access (owner)
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {

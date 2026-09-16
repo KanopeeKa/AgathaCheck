@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-sharing-consolidation-8cf0",
+  "approved_at": "2026-09-16T10:05:00Z",
+  "approved_by": "standing grant — user chat 2026-09-16 execute-plan autonomous",
+  "approved_until": "2026-09-18T10:05:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/pet-sharing-consolidation-integration-8cf0",
+  "control_issue": 1218,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Server foundation",
+      "branch": "cursor/pet-sharing-server-8cf0",
+      "allowed_paths": [
+        ".agents/plans/pet-sharing-consolidation-8cf0.*",
+        "docs/design/terminology.md",
+        "docs/domains/sharing/**",
+        "docs/architecture/api-reference.md",
+        "docs/domains/pet_care/README.md",
+        "server/lib/petAccess.js",
+        "server/lib/petSharing/**",
+        "server/lib/petCapabilityPolicy.js",
+        "server/lib/sharePreview.js",
+        "server/routes/sharing/**",
+        "server/routes/sharing.js",
+        "server/routes/pets/accessRouter.js",
+        "server/routes/pets/shared.js",
+        "server/routes/pets/coreRouter.js",
+        "server/routes/pets/index.js",
+        "server/routes/pets/carerCandidatesRouter.js",
+        "server/routes/careContext/plannedAbsencesRouter.js",
+        "server/lib/gdprUserExport.js",
+        "server/db/seeds/scenarios/sharing-notifications.js",
+        "server/scripts/migrations/065_pet_access_roles.js",
+        "db/migrations/065_pet_access_roles.sql",
+        "db/migrations/065_pet_access_roles_down.sql",
+        "db/schema/canonical.sql",
+        "db/schema/migration-manifest.json",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "single-backend-route",
+      "status": "pending"
+    },
+    {
+      "id": "2",
+      "title": "Flutter consolidation roles hide",
+      "branch": "cursor/pet-sharing-flutter-8cf0",
+      "allowed_paths": [
+        ".agents/plans/pet-sharing-consolidation-8cf0.*",
+        "flutter_app/lib/features/sharing/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/sharing/**",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/bdd/features/sharing.feature"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "default",
+      "status": "pending"
+    },
+    {
+      "id": "3",
+      "title": "Tests BDD OpenAPI E2E",
+      "branch": "cursor/pet-sharing-tests-8cf0",
+      "allowed_paths": [
+        ".agents/plans/pet-sharing-consolidation-8cf0.*",
+        "e2e/playwright/tests/sharing.spec.ts",
+        "e2e/playwright/pages/**",
+        "server/lib/openapi/**",
+        "docs/architecture/openapi/**",
+        "flutter_app/test/**",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "default",
+      "status": "pending"
+    }
+  ],
+  "content_hash": "sha256:798ce3d36faddd5ccae2ab2fad3b8fbc198d212d8d1da92d32a395ca9f377ae0"
+}
