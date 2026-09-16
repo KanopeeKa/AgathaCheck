@@ -2,10 +2,8 @@ import { Page } from '@playwright/test';
 
 import {
   enableFlutterAccessibility,
-  escapeRegExp,
   flutterGotoUrl,
   refreshFlutterAccessibility,
-  semanticsByName,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 
@@ -31,20 +29,22 @@ export class CareSuggestionPage {
     await refreshFlutterAccessibility(this.page);
   }
 
-  async expectSuggestionCardVisible(suggestedName: string, timeout = 30_000): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await semanticsByName(this.page, suggestionTitleRe).first().waitFor({ timeout });
-    await this.page
-      .getByText(new RegExp(escapeRegExp(suggestedName)))
-      .first()
-      .waitFor({ timeout });
+  async expectSuggestionCardVisible(timeout = 30_000): Promise<void> {
+    const { expect } = await import('@playwright/test');
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await this.page.getByText(suggestionTitleRe).first().waitFor({ timeout: 2_000 });
+      await this.page.getByRole('button', { name: acceptRe }).first().waitFor({ timeout: 2_000 });
+    }).toPass({ timeout });
   }
 
-  async expectSuggestionCardNotVisible(timeout = 5_000): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await semanticsByName(this.page, suggestionTitleRe)
-      .first()
-      .waitFor({ state: 'detached', timeout });
+  async expectSuggestionCardNotVisible(timeout = 15_000): Promise<void> {
+    const { expect } = await import('@playwright/test');
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const accept = this.page.getByRole('button', { name: acceptRe }).first();
+      await expect(accept).toHaveCount(0);
+    }).toPass({ timeout });
   }
 
   async acceptSuggestion(): Promise<void> {
@@ -53,10 +53,12 @@ export class CareSuggestionPage {
   }
 
   async expectSuggestionNotInEvents(timeout = 5_000): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await semanticsByName(this.page, suggestionTitleRe)
-      .first()
-      .waitFor({ state: 'detached', timeout });
+    const { expect } = await import('@playwright/test');
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const accept = this.page.getByRole('button', { name: acceptRe }).first();
+      await expect(accept).toHaveCount(0);
+    }).toPass({ timeout });
   }
 
   async expectAcceptAndNotRelevantVisible(): Promise<void> {

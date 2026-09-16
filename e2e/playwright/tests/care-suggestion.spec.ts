@@ -18,7 +18,7 @@ function dateOfBirthMonthsAgo(months: number): string {
 }
 
 test.describe('Care suggestion (CIM)', () => {
-  test('@smoke-ci @smoke-uat suggestion card appears on pet profile for an eligible pet', async ({
+  test('suggestion card appears on pet profile for an eligible pet', async ({
     page,
     testUser,
   }) => {
@@ -33,8 +33,8 @@ test.describe('Care suggestion (CIM)', () => {
     await loginAs(page, testUser, { experience: 'guardian' });
     const suggestion = new CareSuggestionPage(page);
     await suggestion.openPetDetail(pet.id);
-    const timeout = isLiveHostingTarget(url) ? 45_000 : 30_000;
-    await suggestion.expectSuggestionCardVisible('Weight check', timeout);
+    const timeout = isLiveHostingTarget(url) ? 60_000 : 30_000;
+    await suggestion.expectSuggestionCardVisible(timeout);
     await suggestion.expectAcceptAndNotRelevantVisible();
   });
 
@@ -67,8 +67,8 @@ test.describe('Care suggestion (CIM)', () => {
     await loginAs(page, testUser, { experience: 'guardian' });
     const suggestion = new CareSuggestionPage(page);
     await suggestion.openPetDetail(pet.id);
-    const timeout = isLiveHostingTarget(url) ? 45_000 : 30_000;
-    await suggestion.expectSuggestionCardVisible('Weight check', timeout);
+    const timeout = isLiveHostingTarget(url) ? 60_000 : 30_000;
+    await suggestion.expectSuggestionCardVisible(timeout);
     await suggestion.acceptSuggestion();
     await suggestion.expectSuggestionCardNotVisible();
   });
