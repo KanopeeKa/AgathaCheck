@@ -119,9 +119,11 @@ describe('Care recommendations API', () => {
   let recommendations;
   let healthEntries;
   let pets;
+  let auditEvents;
 
   beforeAll(() => {
     recommendations = [];
+    auditEvents = [];
     healthEntries = [];
     pets = [makePet()];
 
@@ -217,6 +219,11 @@ describe('Care recommendations API', () => {
           return { rows: [] };
         }
 
+        if (sql.includes('INSERT INTO audit_events')) {
+          auditEvents.push({ action: params[3], resourceType: params[4], petId: params[7], metadata: params[9] });
+          return { rows: [{ id: 'audit-1' }] };
+        }
+
         return { rows: [] };
       },
     };
@@ -254,5 +261,38 @@ describe('Care recommendations API', () => {
       .send({ action: 'accept' });
     expect(again.status).toBe(200);
     expect(healthEntries.length).toBe(1);
+  });
+
+  test('POST accept writes an audit event', async () => {
+    const list = await request(app)
+      .get('/api/pets/pet-1/care-recommendations')
+      .set('Authorization', `Bearer ${token}`);
+    const pending = list.body.find((r) => r.status === 'pending');
+    const before = auditEvents.length;
+    const res = await request(app)
+      .post(`/api/pets/pet-1/care-recommendations/${pending.id}/respond`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ action: 'accept' });
+    expect(res.status).toBe(200);
+    expect(auditEvents.length).toBe(before + 1);
+    const event = auditEvents[auditEvents.length - 1];
+    expect(event.action).toBe('care_recommendation.accepted');
+    expect(event.resourceType).toBe('care_recommendation');
+    expect(event.petId).toBe('pet-1');
+  });
+
+  test('POST not_relevant writes an audit event', async () => {
+    const list = await request(app)
+      .get('/api/pets/pet-1/care-recommendations')
+      .set('Authorization', `Bearer ${token}`);
+    const pending = list.body.find((r) => r.status === 'pending');
+    const before = auditEvents.length;
+    const res = await request(app)
+      .post(`/api/pets/pet-1/care-recommendations/${pending.id}/respond`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ action: 'not_relevant' });
+    expect(res.status).toBe(200);
+    expect(auditEvents.length).toBe(before + 1);
+    expect(auditEvents[auditEvents.length - 1].action).toBe('care_recommendation.not_relevant');
   });
 });

@@ -187,9 +187,11 @@ describe('Care safeguards API', () => {
   let safeguards;
   let weightEntries;
   let pets;
+  let auditEvents;
 
   beforeAll(() => {
     safeguards = [];
+    auditEvents = [];
     weightEntries = [];
     pets = [{
       id: 'pet-1',
@@ -290,6 +292,17 @@ describe('Care safeguards API', () => {
           return { rows: row ? [row] : [] };
         }
 
+        if (sql.includes('INSERT INTO audit_events')) {
+          auditEvents.push({
+            action: params[3],
+            resourceType: params[4],
+            resourceId: params[5],
+            petId: params[7],
+            metadata: params[9],
+          });
+          return { rows: [{ id: 'audit-1' }] };
+        }
+
         return { rows: [] };
       },
     };
@@ -322,12 +335,17 @@ describe('Care safeguards API', () => {
       .set('Authorization', `Bearer ${token}`);
     const safeguardId = list.body[0].id;
 
+    const before = auditEvents.length;
     const dismiss = await request(app)
       .post(`/api/pets/pet-1/care-safeguards/${safeguardId}/dismiss`)
       .set('Authorization', `Bearer ${token}`)
       .send({});
     expect(dismiss.status).toBe(200);
     expect(dismiss.body.status).toBe('dismissed');
+    expect(auditEvents.length).toBe(before + 1);
+    expect(auditEvents[auditEvents.length - 1].action).toBe('care_safeguard.dismissed');
+    expect(auditEvents[auditEvents.length - 1].resourceType).toBe('care_safeguard');
+    expect(auditEvents[auditEvents.length - 1].petId).toBe('pet-1');
 
     const after = await request(app)
       .get('/api/pets/pet-1/care-safeguards')
