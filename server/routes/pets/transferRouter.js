@@ -124,9 +124,9 @@ export function registerTransferRoutes(router, pool) {
         const formerAccessId = uuidv4();
         await db.query(
           `INSERT INTO pet_access (id, pet_id, user_id, role, invited_by, hidden)
-           VALUES ($1, $2, $3, 'shared', $4, false)
+           VALUES ($1, $2, $3, 'carer', $4, false)
            ON CONFLICT (pet_id, user_id)
-           DO UPDATE SET role = 'shared', hidden = false, invited_by = $4, updated_at = NOW()`,
+           DO UPDATE SET role = 'carer', hidden = false, invited_by = $4, updated_at = NOW()`,
           [formerAccessId, petId, ownerId, recipient.id],
         );
 

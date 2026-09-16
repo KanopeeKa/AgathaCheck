@@ -20,7 +20,7 @@ List<PetTimelineSegment> buildPetTimelineList({
     entries.add(
       PetTimelineSegment.joinedAgatha(
         createdAt: pet!.createdAt!,
-        primaryHolderName: pet.primaryHolderName,
+        primaryHolderName: pet.petParentName,
       ),
     );
   }

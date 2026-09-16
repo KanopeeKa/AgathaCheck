@@ -47,9 +47,7 @@ class PetAccessModel extends PetAccess {
       id: json['id']?.toString() ?? '',
       petId: json['pet_id']?.toString() ?? '',
       userId: json['user_id']?.toString() ?? '',
-      role: json['role'] == 'guardian'
-          ? PetAccessRole.guardian
-          : PetAccessRole.shared,
+      role: PetAccessRoleWire.fromWire(json['role']?.toString()),
       invitedBy: json['invited_by']?.toString(),
       shareCode: json['share_code']?.toString(),
       createdAt:
@@ -66,7 +64,7 @@ class PetAccessModel extends PetAccess {
       'id': id,
       'pet_id': petId,
       'user_id': userId,
-      'role': role == PetAccessRole.guardian ? 'guardian' : 'shared',
+      'role': role.toWire(),
       'invited_by': invitedBy,
       'share_code': shareCode,
       'created_at': createdAt.toIso8601String(),

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/widgets/form/app_form_labeled_field.dart';
-import 'package:flutter/services.dart';
+import '../../../../core/widgets/form/app_form_labeled_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../l10n/app_localizations.dart';
-import '../../../../sharing/domain/entities/pet_access.dart';
-import '../../../../sharing/domain/entities/share_link.dart';
-import '../../../../sharing/presentation/providers/sharing_providers.dart';
-import '../../../domain/entities/pet.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../pet_profile/domain/entities/pet.dart';
+import '../../domain/entities/pet_access.dart';
+import '../../domain/entities/share_link.dart';
+import '../providers/sharing_providers.dart';
 import 'access_tile.dart';
+import 'share_link_created_dialog.dart';
 import 'share_link_tile.dart';
 
 class OwnerSharingContent extends ConsumerWidget {
@@ -19,12 +19,14 @@ class OwnerSharingContent extends ConsumerWidget {
     required this.pet,
     required this.accessList,
     required this.shareLinks,
+    this.canTransferOwnership = true,
   });
 
   final String petId;
   final Pet pet;
   final List<PetAccess> accessList;
   final List<ShareLink> shareLinks;
+  final bool canTransferOwnership;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -66,7 +68,7 @@ class OwnerSharingContent extends ConsumerWidget {
             label: Text(l.shareLinkTitle),
           ),
         ),
-        if (pet.organizationId == null) ...[
+        if (canTransferOwnership) ...[
           const SizedBox(height: 8),
           SizedBox(
             width: double.infinity,
@@ -78,19 +80,33 @@ class OwnerSharingContent extends ConsumerWidget {
             ),
           ),
         ],
+        if (pet.isShared && pet.accessRole == PetAccessRole.coParent) ...[
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => _confirmHide(context, ref, l),
+              icon: const Icon(Icons.visibility_off),
+              label: Text(l.hideFromMyPets),
+            ),
+          ),
+        ],
         const SizedBox(height: 8),
       ],
     );
   }
 
   Future<void> _generateShareLink(BuildContext context, WidgetRef ref) async {
-    final l = AppLocalizations.of(context)!;
     try {
       final code = await ref
           .read(petShareLinksNotifierProvider(petId).notifier)
           .createLink();
       if (context.mounted) {
-        _showLinkDialog(context, l, code);
+        await ShareLinkCreatedDialog.show(
+          context,
+          petName: pet.name,
+          shareCode: code,
+        );
       }
     } catch (e) {
       if (context.mounted) {
@@ -101,43 +117,34 @@ class OwnerSharingContent extends ConsumerWidget {
     }
   }
 
-  void _showLinkDialog(BuildContext context, AppLocalizations l, String code) {
-    final baseUrl = Uri.base.origin;
-    final link = '$baseUrl/#/shared/$code';
+  void _confirmHide(BuildContext context, WidgetRef ref, AppLocalizations l) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(l.shareLinkTitle),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(l.shareLinkDescription(pet.name)),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(ctx).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: SelectableText(link, style: const TextStyle(fontSize: 13)),
-            ),
-          ],
-        ),
+        title: Text(l.hideFromMyPets),
+        content: Text(l.hideSharedPetConfirm(pet.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(MaterialLocalizations.of(ctx).closeButtonLabel),
+            child: Text(MaterialLocalizations.of(ctx).cancelButtonLabel),
           ),
-          FilledButton.icon(
-            onPressed: () {
-              Clipboard.setData(ClipboardData(text: link));
-              ScaffoldMessenger.of(
-                ctx,
-              ).showSnackBar(SnackBar(content: Text(l.linkCopied)));
+          FilledButton(
+            onPressed: () async {
               Navigator.pop(ctx);
+              try {
+                await ref
+                    .read(hiddenSharedPetsProvider.notifier)
+                    .hideSharedPet(petId);
+                if (context.mounted) context.go('/');
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                }
+              }
             },
-            icon: const Icon(Icons.copy, size: 18),
-            label: Text(l.copyLinkAgain),
+            child: Text(l.hideFromMyPets),
           ),
         ],
       ),

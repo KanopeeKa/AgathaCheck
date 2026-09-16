@@ -119,7 +119,7 @@ export function buildMockPool(overrides = {}) {
         || sql.includes('FROM notifications') || sql.includes('FROM notification_preferences')
         || sql.includes('FROM organization_users') || sql.includes('FROM organizations o')
         || sql.includes('FROM pet_access') || sql.includes('FROM pet_share_links')
-        || sql.includes('FROM shared_pets') || sql.includes('FROM archived_pets')
+        || sql.includes('FROM archived_pets')
         || sql.includes('FROM family_events') || sql.includes('FROM foster_placements')
         || sql.includes('FROM org_foster_parents')) {
         return handlers.selectExportSection(sql, params);

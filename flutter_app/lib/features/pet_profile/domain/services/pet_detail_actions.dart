@@ -23,11 +23,12 @@ class PetDetailActions {
     PetDetailAction.fosterPlacement,
   };
 
-  /// Mirrors server `HEALTH_EDIT` (`userCanManagePet`): owner, shared carer, or
-  /// foster carer — not organisation view-only access to inventory pets.
+  /// Mirrors server `HEALTH_EDIT` (`userCanManagePet`): owner, co-parent, shared
+  /// carer, or foster carer — not organisation view-only access to inventory pets.
   static bool canEditHealth({required Pet pet, required PetViewerRole role}) {
     switch (role) {
       case PetViewerRole.sharedCarer:
+      case PetViewerRole.coParent:
       case PetViewerRole.fosterCarer:
         return true;
       case PetViewerRole.guardian:
@@ -60,6 +61,7 @@ class PetDetailActions {
 
     switch (role) {
       case PetViewerRole.guardian:
+      case PetViewerRole.coParent:
         actions.addAll({
           PetDetailAction.editProfile,
           PetDetailAction.assignVet,

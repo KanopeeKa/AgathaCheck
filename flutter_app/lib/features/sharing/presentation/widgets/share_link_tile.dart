@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../l10n/app_localizations.dart';
-import '../../../../sharing/domain/entities/share_link.dart';
-import '../../../../sharing/presentation/providers/sharing_providers.dart';
-import '../../../domain/entities/pet.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../pet_profile/domain/entities/pet.dart';
+import '../../domain/entities/share_link.dart';
+import '../providers/sharing_providers.dart';
 
 class ShareLinkTile extends ConsumerWidget {
   const ShareLinkTile({

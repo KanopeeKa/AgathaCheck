@@ -112,7 +112,7 @@ class PetListController {
   }
 
   String _sharedGroupLabel(Pet pet) {
-    final guardian = pet.primaryHolderName?.trim();
+    final guardian = pet.petParentName?.trim();
     if (guardian != null && guardian.isNotEmpty) return guardian;
     final org = pet.organizationName?.trim();
     if (org != null && org.isNotEmpty) return org;

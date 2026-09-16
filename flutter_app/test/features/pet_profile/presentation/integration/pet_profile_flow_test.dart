@@ -77,7 +77,6 @@ void main() {
       notificationPreferencesProvider.overrideWith(
         () => FakeNotificationPreferencesNotifier(),
       ),
-      pendingSharesProvider.overrideWith(() => FakePendingSharesNotifier()),
       ...experienceOverrides,
     ];
 

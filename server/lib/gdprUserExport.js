@@ -20,7 +20,6 @@ export async function buildUserDataExport(pool, userId) {
     organizationsResult,
     petAccessResult,
     shareLinksResult,
-    sharedPetsResult,
     archivedPetsResult,
     familyEventsResult,
     fosterPlacementsResult,
@@ -64,7 +63,6 @@ export async function buildUserDataExport(pool, userId) {
     ),
     pool.query('SELECT * FROM pet_access WHERE user_id = $1', [userId]),
     pool.query('SELECT * FROM pet_share_links WHERE created_by = $1', [userId]),
-    pool.query('SELECT * FROM shared_pets WHERE user_id = $1', [userId]),
     pool.query(
       `SELECT * FROM archived_pets
        WHERE user_id = $1 OR transferred_to_user_id = $1`,
@@ -99,7 +97,6 @@ export async function buildUserDataExport(pool, userId) {
     organizations: organizationsResult.rows,
     pet_access: petAccessResult.rows,
     pet_share_links: shareLinksResult.rows,
-    shared_pets: sharedPetsResult.rows,
     archived_pets: archivedPetsResult.rows,
     family_events: familyEventsResult.rows,
     foster_placements: fosterPlacementsResult.rows,

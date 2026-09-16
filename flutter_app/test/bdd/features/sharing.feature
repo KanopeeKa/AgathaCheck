@@ -54,32 +54,21 @@ Feature: Pet Sharing
     And "Bob" taps "Accept & Add"
     Then "Bella" should appear in "Bob"'s pet list as a shared pet
 
-  @P2
-  Scenario: Pending share appears in pet list
-    Given "Bob" has a pending share for "Bella"
-    When "Bob" views the pet list
-    Then a pending share card for "Bella" should appear
-    And the card should have "Accept" and "Decline" buttons
+  # ── Revoking and hiding shared access ──────────────────────────
 
   @P2
-  Scenario: Accepting a pending share into personal list
-    Given "Bob" has a pending share for "Bella"
-    When "Bob" accepts the pending share into their personal list
-    Then "Bella" should appear under "My Pets" for "Bob"
+  Scenario: Carer stops following a shared pet
+    Given "Bob" has a shared pet "Bella" in their pet list
+    When "Bob" opens sharing for "Bella"
+    And "Bob" taps "Stop following"
+    Then "Bella" should no longer appear in "Bob"'s pet list
 
   @P2
-  Scenario: Accepting a pending share into an organisation
-    Given "Bob" is a member of organisation "Pet Care Team"
-    And "Bob" has a pending share for "Bella"
-    When "Bob" accepts the pending share into "Pet Care Team"
-    Then "Bella" should appear under "Pet Care Team" for "Bob"
-
-  @P2
-  Scenario: Declining a pending share
-    Given "Bob" has a pending share for "Bella"
-    When "Bob" declines the pending share for "Bella"
-    Then the pending share card should disappear
-    And "Bella" should not appear in "Bob"'s pet list
+  Scenario: Carer hides a shared pet from their list
+    Given "Bob" has a shared pet "Bella" in their pet list
+    When "Bob" opens sharing for "Bella"
+    And "Bob" taps "Hide from my pets"
+    Then "Bella" should no longer appear in "Bob"'s pet list
 
   # ── Hiding Shared Pets ───────────────────────────────────────
 

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
 import '../models/pet_access_model.dart';
+import '../../domain/entities/share_preview.dart';
 
 class SharingRemoteDataSource {
   final String baseUrl;
@@ -15,16 +16,16 @@ class SharingRemoteDataSource {
 
   Future<String> createShare(
     String petId,
-    Map<String, dynamic> petJson,
-    String token,
-  ) async {
+    String token, {
+    String accessRole = 'carer',
+  }) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/share'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: json.encode({'pet': petJson, 'pet_id': petId}),
+      body: json.encode({'pet_id': petId, 'access_role': accessRole}),
     );
     if (response.statusCode >= 400) {
       final data = json.decode(response.body);
@@ -48,6 +49,20 @@ class SharingRemoteDataSource {
     }
     final data = json.decode(response.body) as Map<String, dynamic>;
     return data['pet_id']?.toString() ?? '';
+  }
+
+  Future<SharePreview> getSharePreview(String code) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/share/$code'),
+    );
+    if (response.statusCode == 410) {
+      throw SharePreviewExpiredException();
+    }
+    if (response.statusCode >= 400) {
+      throw SharePreviewNotFoundException();
+    }
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    return SharePreview.fromJson(data);
   }
 
   Future<List<PetAccessModel>> getAccess(String petId, String token) async {
@@ -151,42 +166,6 @@ class SharingRemoteDataSource {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getPendingShares(String token) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/share/pending'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    if (response.statusCode >= 400) {
-      return [];
-    }
-    final decoded = json.decode(response.body);
-    if (decoded is List) {
-      return decoded.cast<Map<String, dynamic>>();
-    }
-    return [];
-  }
-
-  Future<void> acceptPendingShare(
-    String petId,
-    String token, {
-    String? organizationId,
-  }) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/share/pending/$petId/accept'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: json.encode({
-        if (organizationId != null) 'organization_id': organizationId,
-      }),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to accept share');
-    }
-  }
-
   Future<void> hideSharedPet(
     String petId,
     String token, {
@@ -221,20 +200,6 @@ class SharingRemoteDataSource {
     return [];
   }
 
-  Future<void> declinePendingShare(String petId, String token) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/share/pending/$petId/decline'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to decline share');
-    }
-  }
-
   Future<void> transferOwnership(
     String petId, {
     required String recipientEmail,
@@ -258,3 +223,7 @@ class SharingRemoteDataSource {
     }
   }
 }
+
+class SharePreviewExpiredException implements Exception {}
+
+class SharePreviewNotFoundException implements Exception {}

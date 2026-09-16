@@ -2,7 +2,7 @@ import express from 'express';
 import { createApiLimiter } from '../../config/rateLimit.js';
 import { registerTransferRoutes } from './transferRouter.js';
 import { registerFamilyEventsRoutes } from './familyEventsRouter.js';
-import { registerAccessRoutes } from './accessRouter.js';
+import { registerPetAccessRoutes } from '../sharing/petAccessRoutes.js';
 import { registerCarerCandidatesRoutes } from './carerCandidatesRouter.js';
 import { registerLifecycleRoutes } from './lifecycleRouter.js';
 import { registerCoreRoutes } from './coreRouter.js';
@@ -28,7 +28,7 @@ export default function petsRoutes(pool) {
   registerCareIntelligenceReviewRoutes(router, pool);
   registerCareSafeguardRoutes(router, pool);
   registerCareProgressionRoutes(router, pool);
-  registerAccessRoutes(router, pool);
+  registerPetAccessRoutes(router, pool);
   registerLifecycleRoutes(router, pool);
   registerPhotoRoutes(router, pool);
   registerCoreRoutes(router, pool);

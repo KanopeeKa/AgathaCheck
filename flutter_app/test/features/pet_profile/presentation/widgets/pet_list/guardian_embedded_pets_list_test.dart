@@ -19,7 +19,7 @@ void main() {
         name: 'Shared',
         species: 'Dog',
         isShared: true,
-        primaryHolderName: 'Alex',
+        petParentName: 'Alex',
       ),
       const Pet(
         id: 'foster',

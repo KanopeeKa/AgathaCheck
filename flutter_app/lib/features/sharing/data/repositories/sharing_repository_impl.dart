@@ -1,5 +1,6 @@
 import '../../domain/entities/pet_access.dart';
 import '../../domain/entities/share_link.dart';
+import '../../domain/entities/share_preview.dart';
 import '../../domain/repositories/sharing_repository.dart';
 import '../datasources/sharing_remote_datasource.dart';
 
@@ -13,15 +14,20 @@ class SharingRepositoryImpl implements SharingRepository {
   @override
   Future<String> createShare(
     String petId,
-    Map<String, dynamic> petJson,
-    String token,
-  ) {
-    return _dataSource.createShare(petId, petJson, token);
+    String token, {
+    String accessRole = 'carer',
+  }) {
+    return _dataSource.createShare(petId, token, accessRole: accessRole);
   }
 
   @override
   Future<String> acceptShare(String code, String token) {
     return _dataSource.acceptShare(code, token);
+  }
+
+  @override
+  Future<SharePreview> getSharePreview(String code) {
+    return _dataSource.getSharePreview(code);
   }
 
   @override
@@ -58,29 +64,6 @@ class SharingRepositoryImpl implements SharingRepository {
   @override
   Future<void> stopFollowing(String petId, String token) {
     return _dataSource.stopFollowing(petId, token);
-  }
-
-  @override
-  Future<List<Map<String, dynamic>>> getPendingShares(String token) {
-    return _dataSource.getPendingShares(token);
-  }
-
-  @override
-  Future<void> acceptPendingShare(
-    String petId,
-    String token, {
-    String? organizationId,
-  }) {
-    return _dataSource.acceptPendingShare(
-      petId,
-      token,
-      organizationId: organizationId,
-    );
-  }
-
-  @override
-  Future<void> declinePendingShare(String petId, String token) {
-    return _dataSource.declinePendingShare(petId, token);
   }
 
   @override
