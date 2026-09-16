@@ -1313,6 +1313,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get guardian => 'Gardien';
 
   @override
+  String get coParent => 'Co-parent';
+
+  @override
+  String get hideFromMyPets => 'Masquer de mes animaux';
+
+  @override
   String get viewOnly => 'Lecture seule';
 
   @override
@@ -2155,6 +2161,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pdfShared => 'Partagé';
+
+  @override
+  String get pdfCarer => 'Soignant';
+
+  @override
+  String get pdfCoParent => 'Co-parent';
 
   @override
   String pdfUserNumber(String id) {

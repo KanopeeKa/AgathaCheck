@@ -40,7 +40,7 @@ void main() {
     species: 'Dog',
     dateOfBirth: DateTime(2020, 3, 15),
     createdAt: DateTime(2024, 1, 10),
-    primaryHolderName: 'Jane Doe',
+    petParentName: 'Jane Doe',
   );
 
   Widget buildApp({

@@ -113,7 +113,6 @@ List<Override> _guardianShellOverrides({
       () => FakeHealthEntriesNotifier(),
     ),
     notificationsProvider.overrideWith(() => FakeNotificationsNotifier()),
-    pendingSharesProvider.overrideWith(() => FakePendingSharesNotifier()),
     revenueCatServiceProvider.overrideWithValue(_FakeRevenueCatService()),
     analyticsRouteObserverProvider.overrideWith(
       (_) => AnalyticsRouteObserver((_) {}),

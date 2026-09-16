@@ -171,24 +171,22 @@ POST/PUT accept optional `measurement_source`. Pet weight reference/context fiel
 ### Sharing (`/api/share`)
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/` | Owner or active foster parent creates a share link; body `{ pet_id }`; returns `{ share_code, link_id }` |
+| POST | `/` | Owner or active foster parent creates a share link; body `{ pet_id, access_role? }` (`carer` default, or `co_parent`); returns `{ share_code, link_id }` |
 | GET | `/:code` | Public preview of shared pet; includes `link_status` (`pending`, `active`, `revoked`) |
-| POST | `/:code/accept` | Auth required; single-use — creates `shared` access immediately, marks link `active` |
+| POST | `/:code/accept` | Auth required; single-use — creates `pet_access` with link `access_role`, marks link `active` |
 | DELETE | `/links/:linkId` | Owner deletes any share link; foster may delete only links they created |
-| GET | `/pending` | Deprecated — always returns `[]` (one-step flow) |
-| POST | `/pending/:petId/accept` | Deprecated — returns `410` |
-| POST | `/pending/:petId/decline` | Deprecated — returns `410` |
 | GET | `/hidden` | Hidden shared pets |
 | PUT | `/:petId/hide` | Hide or unhide a shared pet (`{ hidden: true\|false }`) |
 
 Pet access management on `/api/pets/:id/...` (owner unless noted):
 - `GET /:id/share-links` — list share links with status and claimed user (owner: all links; foster: own links only)
-- `GET /:id/access` — list users the pet is shared with (owner only)
-- `DELETE /:id/access/:userId` — remove access and notify the user (owner only)
-- `DELETE /:id/follow` — shared user stops following (self-remove access)
-- `POST /:id/transfer` — transfer ownership to another user (owner only); body `{ recipient_email, confirmation_name }` (pet name must match, case-insensitive); former owner receives `shared` access automatically; writes `archived_pets` audit row (`transfer_type: user_to_user`)
+- `GET /:id/access` — list users the pet is shared with (owner or co-parent)
+- `PUT /:id/access/:userId/role` — promote/demote between `carer` and `co_parent` (owner or co-parent)
+- `DELETE /:id/access/:userId` — remove access and notify the user (owner or co-parent)
+- `DELETE /:id/follow` — carer/co-parent stops following (self-remove access)
+- `POST /:id/transfer` — transfer ownership to another user (owner only); body `{ recipient_email, confirmation_name }` (pet name must match, case-insensitive); former owner receives `carer` access automatically; writes `archived_pets` audit row (`transfer_type: user_to_user`)
 
-Shared pets appear in `GET /api/pets/all` with `is_shared: true`. Fostered pets use `is_foster: true` (and `is_shared: false`). Shared and org-visible pets may include `primary_holder_name` (display name of the pet's primary holder) when the viewer is permitted to see it.
+Shared pets appear in `GET /api/pets/all` with `is_shared: true` and `access_role` (`carer` or `co_parent`). Fostered pets use `is_foster: true` (and `is_shared: false`). Shared and org-visible pets include `pet_parent_name` (display name of the pet parent); `primary_holder_name` is a deprecated alias.
 
 Share links are **single-use**: once accepted, the same link cannot be used by another user (`410`).
 
@@ -319,7 +317,6 @@ These endpoints are placeholders. They return `501` with
 | Endpoint | Notes | Planned |
 |---|---|---|
 | `POST /api/organizations/join/:code` | Join-by-code retired; use email invite + accept | — |
-| `PUT /api/pets/:id/access/:userId/role` | Promote shared → guardian | Inc 5 |
 
 Lifecycle stubs (acknowledge without full side effects):
 `DELETE /api/pets/:id/data`, `POST /api/pets/:id/passed-away` (use `DELETE`/`PUT /api/pets/:id` for real changes).
@@ -536,13 +533,14 @@ POST /backend/api/auth/login
 - **PUT** `/api/pets/{id}/family-events/{eventId}` — No-op stub.
 - **DELETE** `/api/pets/{id}/family-events/{eventId}` — No-op stub.
 
-### Pet Access — STUB
+### Pet Access
 
-> **Status:** auth-gated (returns `401` without a valid token) but currently stubs — they return the static responses below without reading or writing the `pet_access` table. Real shared-access management lives in the sharing routes.
+Implemented in `server/routes/sharing/petAccessRoutes.js` (mounted on `/api/pets`).
 
-- **GET** `/api/pets/{id}/access` — Returns `[]`.
-- **PUT** `/api/pets/{id}/access/{userId}/role` — No-op stub returning `{ "updated": true, "user_id": "{userId}" }`.
-- **DELETE** `/api/pets/{id}/access/{userId}` — No-op stub returning `{ "deleted": true, "user_id": "{userId}" }`.
+- **GET** `/api/pets/{id}/access` — List collaborators (`carer`, `co_parent`).
+- **PUT** `/api/pets/{id}/access/{userId}/role` — Body `{ role: "carer" | "co_parent" }`; returns `{ user_id, role }`.
+- **DELETE** `/api/pets/{id}/access/{userId}` — Revoke access; returns `{ message: "Access removed" }`.
+- **DELETE** `/api/pets/{id}/follow` — Self-revoke carer/co-parent access.
 
 ### Delete Pet Data
 

@@ -23,87 +23,6 @@ final sharingRepositoryProvider = Provider<SharingRepository>((ref) {
   return SharingRepositoryImpl(ref.watch(sharingDataSourceProvider));
 });
 
-class PendingShare {
-  final String id;
-  final String petId;
-  final String petName;
-  final String petSpecies;
-  final String petBreed;
-  final String? petPhotoPath;
-  final int? petColorValue;
-  final String primaryHolderName;
-  final String? invitedBy;
-  final DateTime? createdAt;
-
-  const PendingShare({
-    required this.id,
-    required this.petId,
-    required this.petName,
-    required this.petSpecies,
-    required this.petBreed,
-    this.petPhotoPath,
-    this.petColorValue,
-    required this.primaryHolderName,
-    this.invitedBy,
-    this.createdAt,
-  });
-
-  factory PendingShare.fromJson(Map<String, dynamic> json) {
-    return PendingShare(
-      id: json['id']?.toString() ?? '',
-      petId: json['pet_id']?.toString() ?? '',
-      petName: (json['pet_name'] ?? '').toString(),
-      petSpecies: (json['pet_species'] ?? '').toString(),
-      petBreed: (json['pet_breed'] ?? '').toString(),
-      petPhotoPath: json['pet_photo_path']?.toString(),
-      petColorValue: json['pet_color_value'] is int
-          ? json['pet_color_value'] as int
-          : int.tryParse(json['pet_color_value']?.toString() ?? ''),
-      primaryHolderName:
-          (json['primary_holder_name'] ?? json['guardian_name'] ?? '')
-              .toString(),
-      invitedBy: json['invited_by']?.toString(),
-      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
-    );
-  }
-}
-
-class PendingSharesNotifier extends AsyncNotifier<List<PendingShare>> {
-  @override
-  Future<List<PendingShare>> build() async {
-    final token = await ref.read(authProvider.notifier).getValidAccessToken();
-    if (token == null) return [];
-    final repo = ref.read(sharingRepositoryProvider);
-    final rawList = await repo.getPendingShares(token);
-    return rawList.map((m) => PendingShare.fromJson(m)).toList();
-  }
-
-  Future<void> acceptShare(String petId, {String? organizationId}) async {
-    final token = await ref.read(authProvider.notifier).getValidAccessToken();
-    if (token == null) return;
-    final repo = ref.read(sharingRepositoryProvider);
-    await repo.acceptPendingShare(petId, token, organizationId: organizationId);
-    ref.invalidateSelf();
-    // Invalidate then await so the accepted shared pet appears as soon as the
-    // pending card disappears (not on a later manual refresh).
-    ref.invalidate(allPetsIncludingOrgProvider);
-    await ref.read(allPetsIncludingOrgProvider.future);
-  }
-
-  Future<void> declineShare(String petId) async {
-    final token = await ref.read(authProvider.notifier).getValidAccessToken();
-    if (token == null) return;
-    final repo = ref.read(sharingRepositoryProvider);
-    await repo.declinePendingShare(petId, token);
-    ref.invalidateSelf();
-  }
-}
-
-final pendingSharesProvider =
-    AsyncNotifierProvider<PendingSharesNotifier, List<PendingShare>>(
-      PendingSharesNotifier.new,
-    );
-
 class HiddenSharedPet {
   final String id;
   final String name;
@@ -224,8 +143,7 @@ class PetAccessNotifier extends StateNotifier<AsyncValue<List<PetAccess>>> {
     final token = await _getToken();
     if (token == null) return;
     final repo = _ref.read(sharingRepositoryProvider);
-    final roleStr = role == PetAccessRole.guardian ? 'guardian' : 'shared';
-    await repo.updateRole(petId, userId, roleStr, token);
+    await repo.updateRole(petId, userId, role.toWire(), token);
     await refresh();
   }
 
@@ -305,11 +223,11 @@ class PetShareLinksNotifier extends StateNotifier<AsyncValue<List<ShareLink>>> {
     await refresh();
   }
 
-  Future<String> createLink() async {
+  Future<String> createLink({String accessRole = 'carer'}) async {
     final token = await _getToken();
     if (token == null) throw Exception('Not authenticated');
     final repo = _ref.read(sharingRepositoryProvider);
-    final code = await repo.createShare(petId, {}, token);
+    final code = await repo.createShare(petId, token, accessRole: accessRole);
     await refresh();
     return code;
   }

@@ -39,9 +39,9 @@ class PetSharingSectionBuilder {
         data: accessList.map((a) {
           final name =
               a.user?.displayName ?? l.pdfUserNumber(a.userId.toString());
-          final role = a.role == PetAccessRole.guardian
-              ? l.pdfGuardian
-              : l.pdfShared;
+          final role = a.role == PetAccessRole.coParent
+              ? l.pdfCoParent
+              : l.pdfCarer;
           final since = a.createdAt.toLocal().toString().split(' ')[0];
           return [name, role, since];
         }).toList(),

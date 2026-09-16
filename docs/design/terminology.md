@@ -40,7 +40,8 @@ When multiple people are involved, use precise care-role language:
 | **care team** | Collective carers for one pet (Away Planning carer concept) |
 | **carer** / **caregiver** | General non-owner helper |
 | **sitter** | Temporary care arrangement |
-| **shared carer** | Someone with shared access (not owner) |
+| **carer** | Someone with care-only shared access (`pet_access.role = carer`) — not the pet parent |
+| **co-parent** | Shared access with profile/vet/sharing admin (`pet_access.role = co_parent`) — owner minus transfer |
 | **Veterinary team** | Pet Care dashboard section and vet detail surfaces — the guardian's veterinary clinics (EN label; FR: *Équipe vétérinaire*). Not the same as **care team** (carers). |
 | **veterinary professional** / **vet** | Clinical context |
 
@@ -54,7 +55,8 @@ Keep these where required — do not rename technical entities purely for brandi
 | **custody** | Custody segments, org/legal docs |
 | **account holder** | Auth, billing, account management |
 | **legal guardian** | Legal guardianship (distinct from Pet Care workspace) |
-| **permission role** | API, authorization, sharing ACLs |
+| **permission role** | API, authorization, sharing ACLs (`carer`, `co_parent`, `foster`) |
+| **PetViewerRole.guardian** | Flutter viewer enum for owner viewing own pet — **not** `pet_access.role`; rename to `petParent` deferred |
 
 Legal or technical **guardianship** is separate from Pet Care relationship language. See [pet_care README](../domains/pet_care/README.md).
 

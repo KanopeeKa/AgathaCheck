@@ -34,6 +34,7 @@ function buildMockPool(overrides = {}) {
           status: 'pending',
           claimed_by: null,
           expires_at: futureExpiry,
+          access_role: 'carer',
         }],
       };
     }
@@ -48,6 +49,7 @@ function buildMockPool(overrides = {}) {
           status: 'pending',
           claimed_by: null,
           expires_at: futureExpiry,
+          access_role: 'carer',
         }],
       };
     }
@@ -86,7 +88,7 @@ function buildMockPool(overrides = {}) {
     if (sql.includes('SELECT first_name, last_name, email FROM users WHERE id = $1')) {
       return { rows: [{ first_name: 'Alice', last_name: 'Owner', email: 'alice@example.com' }] };
     }
-    if (sql.includes('SELECT role FROM pet_access') && sql.includes("role IN ('shared', 'foster')")) {
+    if (sql.includes('SELECT role FROM pet_access') && sql.includes("role IN ('carer', 'co_parent', 'foster')")) {
       return { rows: [{ role: 'foster' }] };
     }
     if (sql.includes('SELECT role FROM pet_access WHERE pet_id = $1 AND user_id = $2')) {
@@ -117,7 +119,13 @@ function buildMockPool(overrides = {}) {
         }],
       };
     }
-    if (sql.includes("DELETE FROM pet_access WHERE pet_id = $1 AND user_id = $2 AND role = 'shared'")) {
+    if (
+      sql.includes('DELETE FROM pet_access')
+      && sql.includes('pet_id = $1')
+      && sql.includes('user_id = $2')
+      && sql.includes('role IN')
+      && sql.includes('RETURNING id')
+    ) {
       return { rows: [{ id: 'pa-1' }] };
     }
     if (sql.includes("SELECT pa.*, p.name as pet_name FROM pet_access pa JOIN pets p") && sql.includes('hidden = true')) {
@@ -126,7 +134,7 @@ function buildMockPool(overrides = {}) {
           id: 'pa-2',
           pet_id: 'pet-2',
           user_id: userId,
-          role: 'shared',
+          role: 'carer',
           hidden: true,
           pet_name: 'Max',
         }],
@@ -177,8 +185,6 @@ describe('Sharing API', () => {
       ['POST', '/api/share'],
       ['POST', `/api/share/${shareCode}/accept`],
       ['DELETE', `/api/share/links/${linkId}`],
-      ['POST', `/api/share/pending/${petId}/accept`],
-      ['POST', `/api/share/pending/${petId}/decline`],
       ['PUT', `/api/share/${petId}/hide`],
     ];
 
@@ -299,7 +305,8 @@ describe('Sharing API', () => {
         .set('Authorization', `Bearer ${otherToken}`);
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('pet_id', petId);
-      expect(res.body).toHaveProperty('status', 'shared');
+      expect(res.body).toHaveProperty('status', 'carer');
+      expect(res.body).toHaveProperty('access_role', 'carer');
     });
 
     it('returns 410 when link is already used by another user', async () => {
@@ -337,40 +344,6 @@ describe('Sharing API', () => {
     });
   });
 
-  describe('GET /pending', () => {
-    it('returns empty array (deprecated flow)', async () => {
-      const res = await request(app)
-        .get('/api/share/pending')
-        .set('Authorization', `Bearer ${token}`);
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual([]);
-    });
-
-    it('returns 401 without token', async () => {
-      const res = await request(app).get('/api/share/pending');
-      expect(res.statusCode).toBe(401);
-    });
-  });
-
-  describe('POST /pending/:petId/accept', () => {
-    it('returns 410 (deprecated)', async () => {
-      const res = await request(app)
-        .post(`/api/share/pending/${petId}/accept`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({});
-      expect(res.statusCode).toBe(410);
-    });
-  });
-
-  describe('POST /pending/:petId/decline', () => {
-    it('returns 410 (deprecated)', async () => {
-      const res = await request(app)
-        .post(`/api/share/pending/${petId}/decline`)
-        .set('Authorization', `Bearer ${token}`);
-      expect(res.statusCode).toBe(410);
-    });
-  });
-
   describe('PUT /:petId/hide', () => {
     it('hides a fostered pet for the fosterer', async () => {
       const res = await request(app)
@@ -393,11 +366,11 @@ describe('Sharing API', () => {
     it('hides a shared pet for the collaborator', async () => {
       const pool = buildMockPool({
         query: async (sql, params) => {
-          if (sql.includes("role IN ('shared', 'foster')")) {
-            return { rows: [{ role: 'shared' }] };
+          if (sql.includes("role IN ('carer', 'co_parent', 'foster')")) {
+            return { rows: [{ role: 'carer' }] };
           }
           if (sql.includes('UPDATE pet_access SET hidden')) {
-            expect(params[3]).toBe('shared');
+            expect(params[3]).toBe('carer');
             return { rows: [] };
           }
           return buildMockPool().query(sql, params);

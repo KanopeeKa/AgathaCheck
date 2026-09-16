@@ -47,7 +47,7 @@ void main() {
     name: 'Milo',
     species: 'Cat',
     isShared: true,
-    primaryHolderName: 'Alex',
+    petParentName: 'Alex',
   );
 
   Widget buildApp({required Pet pet, required String initialLocation}) {

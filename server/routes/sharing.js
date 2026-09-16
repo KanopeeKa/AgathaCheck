@@ -12,7 +12,16 @@ import {
   shareExpiryFromNow,
 } from '../lib/shareLinkPolicy.js';
 import { buildSharePreviewResponse } from '../lib/sharePreview.js';
-import { userCanSharePet, userOwnsPet } from '../lib/petAccess.js';
+import { normalizeShareAccessRole } from '../lib/petSharing/permissions.js';
+import {
+  CARER_ROLE,
+  CO_PARENT_ROLE,
+  FOSTER_PET_ACCESS_ROLE,
+  PET_ACCESS_ROLES,
+  userCanSharePet,
+} from '../lib/petAccess.js';
+
+const PET_ACCESS_ROLES_SQL = PET_ACCESS_ROLES.map((r) => `'${r}'`).join(', ');
 
 function generateShareCode() {
   return crypto.randomBytes(6).toString('base64url').slice(0, 8);
@@ -59,14 +68,17 @@ export default function sharingRoutes(pool) {
         req.body?.expires_in_days ?? req.body?.expiresInDays
       );
       const expiresAt = shareExpiryFromNow(expiresInDays);
+      const accessRole = normalizeShareAccessRole(
+        req.body?.access_role ?? req.body?.accessRole ?? CARER_ROLE
+      );
       for (let attempt = 0; attempt < 5 && !inserted; attempt++) {
         code = generateShareCode();
         linkId = uuidv4();
         try {
           await pool.query(
-            `INSERT INTO pet_share_links (id, pet_id, code, created_by, status, expires_at)
-             VALUES ($1, $2, $3, $4, 'pending', $5)`,
-            [linkId, petId, code, userId, expiresAt]
+            `INSERT INTO pet_share_links (id, pet_id, code, created_by, status, expires_at, access_role)
+             VALUES ($1, $2, $3, $4, 'pending', $5, $6)`,
+            [linkId, petId, code, userId, expiresAt, accessRole]
           );
           inserted = true;
         } catch (err) {
@@ -81,6 +93,7 @@ export default function sharingRoutes(pool) {
         link_id: linkId,
         expires_at: expiresAt.toISOString(),
         expires_in_days: expiresInDays,
+        access_role: accessRole,
       });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -98,6 +111,12 @@ export default function sharingRoutes(pool) {
            AND sl.status IN ('pending', 'active', 'revoked')
            AND (
              p.user_id = $2
+             OR EXISTS (
+               SELECT 1 FROM pet_access pa
+               WHERE pa.pet_id = p.id AND pa.user_id = $2
+                 AND pa.role = '${CO_PARENT_ROLE}'
+                 AND COALESCE(pa.hidden, false) = false
+             )
              OR (
                sl.created_by = $2
                AND EXISTS (
@@ -105,7 +124,7 @@ export default function sharingRoutes(pool) {
                  INNER JOIN foster_placements fp
                    ON fp.pet_id = pa.pet_id AND fp.foster_user_id = pa.user_id
                  WHERE pa.pet_id = p.id AND pa.user_id = $2
-                   AND pa.role = 'foster'
+                   AND pa.role = '${FOSTER_PET_ACCESS_ROLE}'
                    AND fp.status = 'in_progress'
                    AND COALESCE(pa.hidden, false) = false
                )
@@ -123,13 +142,6 @@ export default function sharingRoutes(pool) {
     }
   });
 
-  router.get('/pending', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    // Link-based sharing is one-step; no pending queue.
-    res.json([]);
-  });
-
   router.get('/hidden', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -144,18 +156,6 @@ export default function sharingRoutes(pool) {
     }
   });
 
-  router.post('/pending/:petId/accept', (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    return res.status(410).json({ error: 'Pending share flow is no longer used; accept via the share link instead' });
-  });
-
-  router.post('/pending/:petId/decline', (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    return res.status(410).json({ error: 'Pending share flow is no longer used' });
-  });
-
   router.put('/:petId/hide', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -163,7 +163,8 @@ export default function sharingRoutes(pool) {
       const { hidden } = req.body;
       const accessResult = await pool.query(
         `SELECT role FROM pet_access
-         WHERE pet_id = $1 AND user_id = $2 AND role IN ('shared', 'foster')
+         WHERE pet_id = $1 AND user_id = $2
+           AND role IN (${PET_ACCESS_ROLES_SQL}, '${FOSTER_PET_ACCESS_ROLE}')
          LIMIT 1`,
         [req.params.petId, userId],
       );
@@ -183,7 +184,7 @@ export default function sharingRoutes(pool) {
 
   router.get('/:code', async (req, res) => {
     const { code } = req.params;
-    if (code === 'pending' || code === 'hidden') {
+    if (code === 'hidden') {
       return res.status(404).json({ error: 'Not found' });
     }
     try {
@@ -218,7 +219,7 @@ export default function sharingRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { code } = req.params;
-    if (code === 'pending' || code === 'hidden' || code === 'links') {
+    if (code === 'hidden' || code === 'links') {
       return res.status(404).json({ error: 'Not found' });
     }
     const client = await pool.connect();
@@ -257,24 +258,30 @@ export default function sharingRoutes(pool) {
         const role = existing.rows[0].role;
         return res.json({
           pet_id: link.pet_id,
-          status: role === 'shared' || role === 'guardian' ? 'shared' : role,
+          access_role: PET_ACCESS_ROLES.includes(role) ? role : role,
+          status: role,
         });
       }
 
       if (link.status === 'active') {
         if (link.claimed_by === userId) {
           await client.query('COMMIT');
-          return res.json({ pet_id: link.pet_id, status: 'shared' });
+          return res.json({
+            pet_id: link.pet_id,
+            access_role: link.access_role || CARER_ROLE,
+            status: link.access_role || CARER_ROLE,
+          });
         }
         await client.query('ROLLBACK');
         return res.status(410).json({ error: 'This share link has already been used' });
       }
 
       const accessId = uuidv4();
+      const grantedRole = link.access_role || CARER_ROLE;
       await client.query(
         `INSERT INTO pet_access (id, pet_id, user_id, role, invited_by, share_link_id)
-         VALUES ($1, $2, $3, 'shared', $4, $5)`,
-        [accessId, link.pet_id, userId, link.created_by, link.id]
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [accessId, link.pet_id, userId, grantedRole, link.created_by, link.id]
       );
 
       await client.query(
@@ -300,7 +307,11 @@ export default function sharingRoutes(pool) {
       });
 
       await client.query('COMMIT');
-      res.json({ pet_id: link.pet_id, status: 'shared' });
+      res.json({
+        pet_id: link.pet_id,
+        access_role: grantedRole,
+        status: grantedRole,
+      });
     } catch (err) {
       await client.query('ROLLBACK');
       if (err.code === '23505') {

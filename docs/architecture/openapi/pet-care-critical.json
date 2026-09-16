@@ -256,7 +256,9 @@
           "is_foster": { "type": "boolean" },
           "foster_placement_status": { "type": ["string", "null"] },
           "foster_name": { "type": ["string", "null"] },
-          "primary_holder_name": { "type": ["string", "null"] },
+          "primary_holder_name": { "type": ["string", "null"], "description": "Deprecated alias for pet_parent_name" },
+          "pet_parent_name": { "type": ["string", "null"] },
+          "access_role": { "type": ["string", "null"], "enum": ["carer", "co_parent", null] },
           "created_at": { "type": "string" },
           "updated_at": { "type": "string" }
         }

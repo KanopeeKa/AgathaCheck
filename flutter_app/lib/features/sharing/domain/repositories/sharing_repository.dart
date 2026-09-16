@@ -1,15 +1,13 @@
 import '../entities/pet_access.dart';
 import '../entities/share_link.dart';
+import '../entities/share_preview.dart';
 
 /// Data seam for the pet-sharing feature. The presentation layer depends on this
 /// abstraction rather than the remote datasource directly (clean architecture).
 abstract class SharingRepository {
-  Future<String> createShare(
-    String petId,
-    Map<String, dynamic> petJson,
-    String token,
-  );
+  Future<String> createShare(String petId, String token, {String accessRole});
   Future<String> acceptShare(String code, String token);
+  Future<SharePreview> getSharePreview(String code);
 
   Future<List<PetAccess>> getAccess(String petId, String token);
   Future<void> updateRole(
@@ -23,14 +21,6 @@ abstract class SharingRepository {
   Future<List<ShareLink>> getShareLinks(String petId, String token);
   Future<void> deleteShareLink(String linkId, String token);
   Future<void> stopFollowing(String petId, String token);
-
-  Future<List<Map<String, dynamic>>> getPendingShares(String token);
-  Future<void> acceptPendingShare(
-    String petId,
-    String token, {
-    String? organizationId,
-  });
-  Future<void> declinePendingShare(String petId, String token);
 
   Future<void> hideSharedPet(
     String petId,

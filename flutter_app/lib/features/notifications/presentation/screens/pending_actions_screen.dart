@@ -5,7 +5,6 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/widgets/pet_list/pending_adoption_placements_section.dart';
 import '../../../pet_profile/presentation/widgets/pet_list/pending_custody_transfers_section.dart';
 import '../../../pet_profile/presentation/widgets/pet_list/pending_foster_placements_section.dart';
-import '../../../pet_profile/presentation/widgets/pet_list/pending_shares_section.dart';
 
 /// Cross-experience surface for administrative actions (accept/decline, etc.).
 ///
@@ -13,10 +12,10 @@ import '../../../pet_profile/presentation/widgets/pet_list/pending_shares_sectio
 class PendingActionsScreen extends ConsumerWidget {
   const PendingActionsScreen({super.key, this.focus});
 
-  /// Optional section focus from query param (`foster`, `adoption`, `custody`, `share`).
+  /// Optional section focus from query param (`foster`, `adoption`, `custody`).
   final String? focus;
 
-  static const _validFocus = {'share', 'foster', 'adoption', 'custody'};
+  static const _validFocus = {'foster', 'adoption', 'custody'};
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,7 +28,6 @@ class PendingActionsScreen extends ConsumerWidget {
         key: const Key('pending_actions_screen'),
         padding: const EdgeInsets.all(16),
         children: [
-          if (_showsSection('share', effectiveFocus)) PendingSharesSection(),
           if (_showsSection('foster', effectiveFocus))
             PendingFosterPlacementsSection(),
           if (_showsSection('adoption', effectiveFocus))
