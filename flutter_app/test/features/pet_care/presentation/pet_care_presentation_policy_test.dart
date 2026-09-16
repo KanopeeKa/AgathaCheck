@@ -26,13 +26,17 @@ CareRecommendation _rec({
   );
 }
 
-CareSafeguard _safeguard({required String id, String petId = 'pet-1'}) {
+CareSafeguard _safeguard({
+  required String id,
+  String petId = 'pet-1',
+  String status = 'active',
+}) {
   return CareSafeguard(
     id: id,
     petId: petId,
     safeguardType: 'weight_trend_down',
     safeguardKey: 'weight_trend_down:$petId',
-    status: 'active',
+    status: status,
     policyVersion: '1.0.0',
     copyKey: 'careSafeguardWeightTrendDown',
     evidence: const {'measurement_count': 4},
@@ -142,5 +146,49 @@ void main() {
     );
     expect(suggestion, isNull);
     expect(moment, isNull);
+  });
+
+  test('profileSafeguard returns first active safeguard', () {
+    final safeguard = policy.profileSafeguard([
+      _safeguard(id: 'sg-1'),
+      _safeguard(id: 'sg-2'),
+    ]);
+    expect(safeguard?.id, 'sg-1');
+  });
+
+  test('profileSafeguard ignores dismissed safeguards', () {
+    final safeguard = policy.profileSafeguard([
+      _safeguard(id: 'sg-1', status: 'dismissed'),
+      _safeguard(id: 'sg-2'),
+    ]);
+    expect(safeguard?.id, 'sg-2');
+  });
+
+  test('profileSafeguard returns null when all dismissed', () {
+    final safeguard = policy.profileSafeguard([
+      _safeguard(id: 'sg-1', status: 'dismissed'),
+      _safeguard(id: 'sg-2', status: 'dismissed'),
+    ]);
+    expect(safeguard, isNull);
+  });
+
+  test('profileSafeguard returns null for empty list', () {
+    expect(policy.profileSafeguard([]), isNull);
+  });
+
+  test('dashboardSafeguard ignores dismissed and returns first active', () {
+    final safeguard = policy.dashboardSafeguard({
+      'pet-1': [_safeguard(id: 'sg-1', petId: 'pet-1', status: 'dismissed')],
+      'pet-2': [_safeguard(id: 'sg-2', petId: 'pet-2')],
+    });
+    expect(safeguard?.id, 'sg-2');
+  });
+
+  test('dashboardSafeguard returns null when no active safeguard exists', () {
+    final safeguard = policy.dashboardSafeguard({
+      'pet-1': [_safeguard(id: 'sg-1', status: 'dismissed')],
+      'pet-2': [_safeguard(id: 'sg-2', status: 'dismissed')],
+    });
+    expect(safeguard, isNull);
   });
 }
