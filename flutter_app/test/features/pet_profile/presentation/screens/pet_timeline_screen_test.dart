@@ -169,7 +169,7 @@ void main() {
             kind: 'custody',
             id: 'custody-1',
             startDate: '2024-06-01',
-            petParentName: 'Bob',
+            primaryHolderName: 'Bob',
           ),
         ],
       ),
