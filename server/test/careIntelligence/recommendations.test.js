@@ -281,6 +281,19 @@ describe('Care recommendations API', () => {
     expect(event.petId).toBe('pet-1');
   });
 
+  test('POST adjust is rejected with 400 (action not available yet)', async () => {
+    const list = await request(app)
+      .get('/api/pets/pet-1/care-recommendations')
+      .set('Authorization', `Bearer ${token}`);
+    const pending = list.body.find((r) => r.status === 'pending');
+    const res = await request(app)
+      .post(`/api/pets/pet-1/care-recommendations/${pending.id}/respond`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ action: 'adjust' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/adjust is not available yet/i);
+  });
+
   test('POST not_relevant writes an audit event', async () => {
     const list = await request(app)
       .get('/api/pets/pet-1/care-recommendations')

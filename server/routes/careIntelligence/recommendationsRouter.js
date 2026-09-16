@@ -138,6 +138,9 @@ export function registerCareIntelligenceRoutes(router, pool) {
       return res.status(400).json({ error: 'Invalid action' });
     }
     try {
+      if (action === 'adjust') {
+        return res.status(400).json({ error: 'Adjust is not available yet' });
+      }
       if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.HEALTH_EDIT))) {
         return res.status(403).json({ error: 'Forbidden' });
       }

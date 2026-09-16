@@ -45,4 +45,10 @@ class CareRecommendation {
   bool get isPending => status == CareRecommendationStatus.pending;
 }
 
+/// Response actions for a care recommendation.
+///
+/// [adjust] is intentionally not surfaced in V1: there is no UI to capture the
+/// adjustment, and the backend returns 400 until the CareRhythmAdjustSheet
+/// ships. It is kept in the enum so the sheet can re-enable it later without
+/// touching the data layer.
 enum CareRecommendationResponseAction { accept, adjust, dismiss, notRelevant }
