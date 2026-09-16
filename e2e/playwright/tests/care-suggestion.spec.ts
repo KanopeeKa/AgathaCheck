@@ -18,7 +18,7 @@ function dateOfBirthMonthsAgo(months: number): string {
 }
 
 test.describe('Care suggestion (CIM)', () => {
-  test('@smoke-ci suggestion card appears on pet profile for an eligible pet', async ({
+  test('@smoke-ci @smoke-uat suggestion card appears on pet profile for an eligible pet', async ({
     page,
     testUser,
   }) => {
