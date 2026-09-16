@@ -1,4 +1,27 @@
-enum PetAccessRole { guardian, shared }
+enum PetAccessRole { carer, coParent }
+
+extension PetAccessRoleWire on PetAccessRole {
+  static PetAccessRole fromWire(String? value) {
+    switch (value) {
+      case 'co_parent':
+      case 'guardian':
+        return PetAccessRole.coParent;
+      case 'carer':
+      case 'shared':
+      default:
+        return PetAccessRole.carer;
+    }
+  }
+
+  String toWire() {
+    switch (this) {
+      case PetAccessRole.carer:
+        return 'carer';
+      case PetAccessRole.coParent:
+        return 'co_parent';
+    }
+  }
+}
 
 class PetAccessUser {
   final String firstName;

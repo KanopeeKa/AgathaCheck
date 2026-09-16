@@ -21,7 +21,6 @@ import '../widgets/pet_list/due_events_section.dart';
 import '../widgets/pet_list/pending_custody_transfers_section.dart';
 import '../widgets/pet_list/pending_adoption_placements_section.dart';
 import '../widgets/pet_list/pending_foster_placements_section.dart';
-import '../widgets/pet_list/pending_shares_section.dart';
 import '../widgets/pet_list/guardian_embedded_pets_list.dart';
 import '../widgets/pet_list/pet_list_section_header.dart';
 
@@ -176,7 +175,6 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                 l: l,
               ),
             if (!widget.embeddedInShell) ...[
-              PendingSharesSection(),
               PendingFosterPlacementsSection(),
               PendingAdoptionPlacementsSection(),
               const PendingCustodyTransfersSection(),

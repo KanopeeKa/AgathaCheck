@@ -3,10 +3,12 @@ import 'package:pet_profile_app/features/experience/domain/entities/app_experien
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_viewer_role.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/services/pet_detail_actions.dart';
+import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
 
 Pet _pet({
   bool isShared = false,
   bool isFoster = false,
+  PetAccessRole? accessRole,
   String? organizationId,
   String? organizationName,
 }) {
@@ -16,6 +18,7 @@ Pet _pet({
     species: 'Dog',
     isShared: isShared,
     isFoster: isFoster,
+    accessRole: accessRole,
     organizationId: organizationId,
     organizationName: organizationName,
   );
@@ -40,6 +43,19 @@ void main() {
           experience: AppExperience.petCare,
         ),
         PetViewerRole.sharedCarer,
+      );
+    });
+
+    test('co-parent access role resolves to coParent', () {
+      expect(
+        PetViewerRoleResolver.resolve(
+          pet: _pet(
+            isShared: true,
+            accessRole: PetAccessRole.coParent,
+          ),
+          experience: AppExperience.petCare,
+        ),
+        PetViewerRole.coParent,
       );
     });
 
@@ -75,6 +91,18 @@ void main() {
       expect(actions, contains(PetDetailAction.editHealth));
       expect(actions, contains(PetDetailAction.assignVet));
       expect(actions, contains(PetDetailAction.manageSharing));
+      expect(actions, isNot(contains(PetDetailAction.fosterPlacement)));
+    });
+
+    test('co-parent gets owner actions without foster placement', () {
+      final actions = PetDetailActions.visible(
+        pet: _pet(isShared: true, accessRole: PetAccessRole.coParent),
+        experience: AppExperience.petCare,
+        role: PetViewerRole.coParent,
+      );
+      expect(actions, contains(PetDetailAction.editProfile));
+      expect(actions, contains(PetDetailAction.manageSharing));
+      expect(actions, contains(PetDetailAction.editHealth));
       expect(actions, isNot(contains(PetDetailAction.fosterPlacement)));
     });
 

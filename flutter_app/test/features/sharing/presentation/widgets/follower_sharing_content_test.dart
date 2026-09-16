@@ -3,11 +3,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/widgets/sharing/follower_sharing_content.dart';
+import 'package:pet_profile_app/features/sharing/presentation/widgets/follower_sharing_content.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('FollowerSharingContent shows stop following button', (
+  testWidgets('FollowerSharingContent shows stop following and hide buttons', (
     tester,
   ) async {
     const pet = Pet(id: 'p1', name: 'Buddy', species: 'dog', breed: 'Lab');
@@ -31,6 +31,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byIcon(Icons.person_remove), findsOneWidget);
+    expect(find.byIcon(Icons.visibility_off), findsOneWidget);
     expect(find.textContaining('Buddy'), findsWidgets);
   });
 }

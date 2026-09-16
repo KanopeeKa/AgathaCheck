@@ -114,7 +114,6 @@ List<Override> _overrides(SharedPreferences prefs) => [
   organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
   healthEntriesNotifierProvider.overrideWith(() => FakeHealthEntriesNotifier()),
   notificationsProvider.overrideWith(() => FakeNotificationsNotifier()),
-  pendingSharesProvider.overrideWith(() => FakePendingSharesNotifier()),
   revenueCatServiceProvider.overrideWithValue(_FakeRevenueCatService()),
   analyticsRouteObserverProvider.overrideWith(
     (_) => AnalyticsRouteObserver((_) {}),

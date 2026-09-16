@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/features/pet_profile/data/models/pet_model.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
 
 void main() {
   final fullJson = {
@@ -150,6 +151,30 @@ void main() {
       final model = PetModel.fromJson(json);
       expect(model.isFoster, isTrue);
       expect(model.isShared, isFalse);
+    });
+
+    test('parses access_role and pet_parent_name wire fields', () {
+      final json = {
+        'id': 'p1',
+        'name': 'Max',
+        'species': 'Dog',
+        'access_role': 'co_parent',
+        'pet_parent_name': 'Alice',
+      };
+      final model = PetModel.fromJson(json);
+      expect(model.accessRole, PetAccessRole.coParent);
+      expect(model.petParentName, 'Alice');
+    });
+
+    test('falls back to primary_holder_name for pet parent name', () {
+      final json = {
+        'id': 'p1',
+        'name': 'Max',
+        'species': 'Dog',
+        'primary_holder_name': 'Bob',
+      };
+      final model = PetModel.fromJson(json);
+      expect(model.petParentName, 'Bob');
     });
 
     test('organization_id as int is coerced to string', () {

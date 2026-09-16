@@ -4,17 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/utils/calendar_date.dart';
-import '../../../../core/providers/http_client_provider.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
-import '../providers/sharing_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
-import '../widgets/shared_pet_profile_card.dart';
+import '../../data/datasources/sharing_remote_datasource.dart';
+import '../providers/sharing_providers.dart';
 import '../widgets/shared_pet_accept_section.dart';
 import '../widgets/shared_pet_owner_card.dart';
+import '../widgets/shared_pet_profile_card.dart';
 
 class SharedPetScreen extends ConsumerStatefulWidget {
   const SharedPetScreen({super.key, required this.shareCode});
@@ -32,8 +31,6 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
   String? _errorKey;
   bool _accepting = false;
 
-  String get _baseUrl => ref.read(apiBaseUrlProvider);
-
   @override
   void initState() {
     super.initState();
@@ -42,29 +39,24 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
 
   Future<void> _loadSharedPet() async {
     try {
-      final client = ref.read(httpClientProvider);
-      final response = await client.get(
-        Uri.parse('$_baseUrl/api/share/${widget.shareCode}'),
-      );
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          _petData = data['pet'] as Map<String, dynamic>?;
-          _ownerData = data['owner'] as Map<String, dynamic>?;
-          _loading = false;
-        });
-      } else if (response.statusCode == 410) {
-        setState(() {
-          _errorKey = 'expired';
-          _loading = false;
-        });
-      } else {
-        setState(() {
-          _errorKey = 'not_found';
-          _loading = false;
-        });
-      }
-    } catch (e) {
+      final repo = ref.read(sharingRepositoryProvider);
+      final preview = await repo.getSharePreview(widget.shareCode);
+      setState(() {
+        _petData = preview.pet;
+        _ownerData = preview.owner;
+        _loading = false;
+      });
+    } on SharePreviewExpiredException {
+      setState(() {
+        _errorKey = 'expired';
+        _loading = false;
+      });
+    } on SharePreviewNotFoundException {
+      setState(() {
+        _errorKey = 'not_found';
+        _loading = false;
+      });
+    } catch (_) {
       setState(() {
         _errorKey = 'load_failed';
         _loading = false;
@@ -127,7 +119,8 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
     } else if (pet['age'] != null) {
       ageDisplay = '${pet['age']} yrs';
     }
-    final photoPath = pet['photoPath'] as String?;
+    final photoPath =
+        (pet['photoPath'] ?? pet['photo_path']) as String?;
 
     return Scaffold(
       appBar: AppBar(
