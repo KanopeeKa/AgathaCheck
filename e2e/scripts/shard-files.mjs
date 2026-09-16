@@ -33,7 +33,10 @@ export const SHARDS = [
     'playwright/tests/auth.signup.spec.ts',
     'playwright/tests/auth.profile.spec.ts',
   ],
-  ['playwright/tests/weight.tracking.spec.ts'],
+  [
+    'playwright/tests/weight.tracking.spec.ts',
+    'playwright/tests/care-suggestion.spec.ts',
+  ],
   [
     'playwright/tests/sharing.spec.ts',
     'playwright/tests/account.area.spec.ts',
