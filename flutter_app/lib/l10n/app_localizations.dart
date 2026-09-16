@@ -8937,6 +8937,12 @@ abstract class AppLocalizations {
   /// **'All veterinary teams'**
   String get allCareTeams;
 
+  /// No description provided for @allAbsences.
+  ///
+  /// In en, this message translates to:
+  /// **'All absences'**
+  String get allAbsences;
+
   /// No description provided for @collectionFilterPersonal.
   ///
   /// In en, this message translates to:
@@ -10484,6 +10490,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Away planning'**
   String get careContextAwayFlowTitle;
+
+  /// No description provided for @awayPlanningEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'AWAY PLANNING'**
+  String get awayPlanningEyebrow;
 
   /// No description provided for @careContextAwayDatesStepTitle.
   ///

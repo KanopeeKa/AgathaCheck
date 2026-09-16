@@ -9,12 +9,12 @@ import '../screens/pet_care/pet_care_dashboard_helpers.dart';
 import '../screens/pet_care/add_event_type_picker_sheet.dart';
 import '../screens/pet_care/pet_care_my_pets_section.dart';
 import '../screens/pet_care/pet_care_my_vets_section.dart';
+import '../screens/pet_care/pet_care_planned_absence_section.dart';
 import '../screens/pet_care/pet_care_upcoming_events_section.dart';
-import '../../../pet_care/context/presentation/widgets/planned_absence_entry_tile.dart';
 import '../../../pet_care/presentation/widgets/pet_care_dashboard_contextual_slot_section.dart';
 import 'pet_care_operations_desk_layout.dart';
 
-/// Guardian dashboard body: My Pets, Upcoming Pet Events, My Vets (phase 2.1).
+/// Guardian dashboard body: My Pets, Care Actions, Away Planning, My Vets.
 class PetCareShellHomeContent extends ConsumerWidget {
   const PetCareShellHomeContent({
     super.key,
@@ -85,14 +85,13 @@ class PetCareShellHomeContent extends ConsumerWidget {
                     pets: shellPets,
                     petIds: shellPetIds,
                   ),
-                  if (shellPetIds.isNotEmpty) ...[
-                    const PlannedAbsenceEntryTile(),
-                    const SizedBox(height: 16),
-                  ],
                   PetCareOperationsDeskLayout(
                     useWideLayout:
                         constraints.maxWidth >=
                         PetCareOperationsDeskLayout.wideBreakpoint,
+                    absenceSection: shellPetIds.isNotEmpty
+                        ? const PetCarePlannedAbsenceSection()
+                        : null,
                     petsSection: PetCareMyPetsSection(
                       allPets: allPets,
                       controller: controller,
