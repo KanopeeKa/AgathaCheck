@@ -392,4 +392,27 @@ describe('Care safeguards API', () => {
     expect(after.body).toHaveLength(1);
     expect(after.body[0].status).toBe('active');
   });
+
+  it('deletes the active safeguard when the trend no longer qualifies (no-candidate path)', async () => {
+    // Declining series seeds an active safeguard.
+    const seeded = await request(app).get('/api/pets/pet-1/care-safeguards')
+      .set('Authorization', `Bearer ${token}`);
+    expect(seeded.body).toHaveLength(1);
+    expect(safeguards.filter((s) => s.pet_id === 'pet-1' && s.status === 'active')).toHaveLength(1);
+
+    // Swap to a stable (non-declining) series: evaluateWeightSafeguard returns null,
+    // so syncPetSafeguards issues DELETE ... WHERE status = 'active'.
+    weightEntries = [
+      { pet_id: 'pet-1', weight: 5.0, unit: 'kg', date: '2026-01-01', measurement_source: 'guardian' },
+      { pet_id: 'pet-1', weight: 5.0, unit: 'kg', date: '2026-01-20', measurement_source: 'guardian' },
+      { pet_id: 'pet-1', weight: 5.0, unit: 'kg', date: '2026-02-10', measurement_source: 'guardian' },
+      { pet_id: 'pet-1', weight: 5.0, unit: 'kg', date: '2026-03-01', measurement_source: 'guardian' },
+    ];
+
+    const after = await request(app).get('/api/pets/pet-1/care-safeguards')
+      .set('Authorization', `Bearer ${token}`);
+    expect(after.status).toBe(200);
+    expect(after.body).toHaveLength(0);
+    expect(safeguards.filter((s) => s.pet_id === 'pet-1' && s.status === 'active')).toHaveLength(0);
+  });
 });
