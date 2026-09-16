@@ -1,26 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-async function withOptionalTransaction(pool, fn) {
-  if (typeof pool.connect === 'function') {
-    const client = await pool.connect();
-    try {
-      await client.query('BEGIN');
-      const result = await fn(client);
-      await client.query('COMMIT');
-      return result;
-    } catch (err) {
-      try {
-        await client.query('ROLLBACK');
-      } catch (_) {
-        /* ignore */
-      }
-      throw err;
-    } finally {
-      client.release();
-    }
-  }
-  return fn(pool);
-}
+import { withOptionalTransaction } from '../../db/withOptionalTransaction.js';
 
 export const MILESTONE_POLICY_VERSION = '1.0.0';
 

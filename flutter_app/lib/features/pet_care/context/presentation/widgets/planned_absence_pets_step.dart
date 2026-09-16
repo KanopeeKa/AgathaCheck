@@ -45,21 +45,45 @@ class PlannedAbsencePetsStep extends StatelessWidget {
         else
           ...selectablePets.map((pet) {
             final selected = selectedPetIds.contains(pet.id);
-            return CheckboxListTile(
-              key: Key('planned_absence_pet_${pet.id}'),
-              value: selected,
-              onChanged: (checked) {
-                final next = Set<String>.from(selectedPetIds);
-                if (checked == true) {
-                  next.add(pet.id);
-                } else {
-                  next.remove(pet.id);
-                }
-                onSelectionChanged(next);
-              },
-              controlAffinity: ListTileControlAffinity.leading,
-              title: Text(pet.name),
-              subtitle: Text(pet.species),
+            void toggleSelected() {
+              final next = Set<String>.from(selectedPetIds);
+              if (selected) {
+                next.remove(pet.id);
+              } else {
+                next.add(pet.id);
+              }
+              onSelectionChanged(next);
+            }
+
+            return Semantics(
+              identifier: 'planned_absence_pet_${pet.id}',
+              label: '${pet.name} ${pet.species}',
+              checked: selected,
+              button: true,
+              excludeSemantics: true,
+              onTap: toggleSelected,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: toggleSelected,
+                  child: CheckboxListTile(
+                    key: Key('planned_absence_pet_${pet.id}'),
+                    value: selected,
+                    onChanged: (checked) {
+                      final next = Set<String>.from(selectedPetIds);
+                      if (checked == true) {
+                        next.add(pet.id);
+                      } else {
+                        next.remove(pet.id);
+                      }
+                      onSelectionChanged(next);
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,
+                    title: Text(pet.name),
+                    subtitle: Text(pet.species),
+                  ),
+                ),
+              ),
             );
           }),
         if (validationMessage != null) ...[

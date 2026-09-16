@@ -1,3 +1,4 @@
+import '../entities/away_plan_readiness.dart';
 import '../entities/care_period_coverage.dart';
 import '../entities/planned_absence.dart';
 
@@ -14,5 +15,16 @@ abstract class CareContextRepository {
     required List<String> petIds,
   });
 
-  Future<List<PlannedAbsence>> listPlannedAbsences();
+  Future<List<PlannedAbsence>> listPlannedAbsences({String scope = 'all'});
+
+  Future<PlannedAbsence> getPlannedAbsence(String absenceId);
+
+  Future<AwayPlanReadiness> getAwayPlanReadiness(String absenceId);
+
+  Future<PlannedAbsence> updateHandoverNote({
+    required String absenceId,
+    String? handoverNote,
+  });
+
+  Future<void> recordHandoverDownload(String absenceId);
 }

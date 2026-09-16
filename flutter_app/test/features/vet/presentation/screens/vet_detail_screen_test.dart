@@ -199,7 +199,7 @@ void main() {
 
       expect(find.text('Pets cared for'), findsOneWidget);
       expect(
-        find.text('No pets are currently linked to this care team.'),
+        find.text('No pets are currently linked to this veterinary team.'),
         findsOneWidget,
       );
       expect(

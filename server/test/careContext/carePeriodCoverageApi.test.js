@@ -54,5 +54,27 @@ describe('care-period coverage API', () => {
     expect(res.body.coverage.coverage_state).toBe('has_items_to_review');
     expect(res.body.projection_status).toBe('complete');
     expect(res.body.items.length).toBeGreaterThanOrEqual(1);
+    expect(res.body.dated_items.length).toBeGreaterThanOrEqual(1);
+    expect(res.body.routine_items).toEqual([]);
+  });
+
+  it('GET returns 500 when the database layer throws (does not hang)', async () => {
+    const app = createTestApp(async (sql) => {
+      if (sql.includes('FROM pets WHERE id = $1 AND user_id = $2')) {
+        return { rows: [{ id: petId, user_id: userId }] };
+      }
+      if (sql.includes('FROM health_entries WHERE pet_id = $1')) {
+        throw new Error('boom: simulated DB failure');
+      }
+      return { rows: [] };
+    });
+
+    const res = await request(app)
+      .get(`/api/pets/${petId}/care-period-coverage?starts_on=${startsOn}&ends_on=${endsOn}`)
+      .set(authHeader())
+      .timeout({ deadline: 4000 });
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBeTruthy();
   });
 });

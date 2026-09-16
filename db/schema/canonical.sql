@@ -158,6 +158,25 @@ CREATE TABLE public.care_safeguards (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
+CREATE TABLE public.care_schedule_events (
+    id uuid NOT NULL,
+    health_entry_id uuid NOT NULL,
+    health_occurrence_id uuid,
+    event_type character varying(50) NOT NULL,
+    from_date date,
+    to_date date,
+    from_anchor character varying(50),
+    to_anchor character varying(50),
+    reason_code character varying(100),
+    reason_note text,
+    actor_user_id uuid,
+    occurred_at timestamp with time zone DEFAULT now() NOT NULL,
+    effective_from date,
+    idempotency_key character varying(255),
+    policy_version character varying(20) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT care_schedule_events_event_type_check CHECK (((event_type)::text = ANY ((ARRAY['rescheduled'::character varying, 'skipped'::character varying, 'paused'::character varying, 'resumed'::character varying, 'cadence_adjusted'::character varying])::text[])))
+);
 CREATE TABLE public.custody_transfers (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -322,7 +341,9 @@ CREATE TABLE public.health_entries (
     repeat_end_date date,
     schedule_times jsonb,
     care_family character varying(50),
-    care_source character varying(50) DEFAULT 'guardian_defined'::character varying
+    care_source character varying(50) DEFAULT 'guardian_defined'::character varying,
+    paused_since date,
+    schedule_policy_version character varying(20)
 );
 CREATE TABLE public.health_event_photos (
     id uuid NOT NULL,
@@ -379,6 +400,8 @@ CREATE TABLE public.health_occurrences (
     notes text DEFAULT ''::text NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    completion_timing character varying(20),
+    CONSTRAINT health_occurrences_completion_timing_check CHECK (((completion_timing IS NULL) OR ((completion_timing)::text = ANY ((ARRAY['early'::character varying, 'on_time'::character varying, 'late'::character varying])::text[])))),
     CONSTRAINT health_occurrences_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'completed'::character varying, 'skipped'::character varying])::text[])))
 );
 CREATE TABLE public.notification_preferences (
@@ -623,7 +646,13 @@ CREATE TABLE public.pets (
 );
 CREATE TABLE public.planned_absence_pets (
     planned_absence_id uuid NOT NULL,
-    pet_id uuid NOT NULL
+    pet_id uuid NOT NULL,
+    carer_kind text,
+    carer_user_id uuid,
+    carer_name text,
+    carer_note text,
+    CONSTRAINT planned_absence_pets_carer_fields_check CHECK ((((carer_kind IS NULL) AND (carer_user_id IS NULL) AND (carer_name IS NULL) AND (carer_note IS NULL)) OR ((carer_kind = 'shared_user'::text) AND (carer_name IS NULL) AND (carer_note IS NULL)) OR ((carer_kind = 'note_only'::text) AND (carer_user_id IS NULL) AND (carer_name IS NOT NULL)))),
+    CONSTRAINT planned_absence_pets_carer_kind_check CHECK (((carer_kind IS NULL) OR (carer_kind = ANY (ARRAY['shared_user'::text, 'note_only'::text]))))
 );
 CREATE TABLE public.planned_absences (
     id uuid NOT NULL,
@@ -636,6 +665,8 @@ CREATE TABLE public.planned_absences (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     cancelled_at timestamp with time zone,
+    handover_note text,
+    last_handover_downloaded_at timestamp with time zone,
     CONSTRAINT planned_absences_date_order CHECK ((ends_on >= starts_on))
 );
 CREATE TABLE public.prospects (
@@ -751,6 +782,8 @@ ALTER TABLE ONLY public.care_recommendations
     ADD CONSTRAINT care_recommendations_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.care_safeguards
     ADD CONSTRAINT care_safeguards_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.care_schedule_events
+    ADD CONSTRAINT care_schedule_events_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.document_templates
@@ -890,6 +923,9 @@ CREATE INDEX idx_care_establishments_pet_id ON public.care_establishments USING 
 CREATE INDEX idx_care_milestone_presentations_user ON public.care_milestone_presentations USING btree (user_id, shown_at DESC);
 CREATE INDEX idx_care_milestones_pet_bundle ON public.care_milestones USING btree (pet_id, bundle_id);
 CREATE INDEX idx_care_milestones_pet_id ON public.care_milestones USING btree (pet_id);
+CREATE INDEX idx_care_schedule_events_entry_occurred ON public.care_schedule_events USING btree (health_entry_id, occurred_at DESC);
+CREATE UNIQUE INDEX idx_care_schedule_events_idempotency ON public.care_schedule_events USING btree (idempotency_key) WHERE (idempotency_key IS NOT NULL);
+CREATE INDEX idx_care_schedule_events_occurrence ON public.care_schedule_events USING btree (health_occurrence_id) WHERE (health_occurrence_id IS NOT NULL);
 CREATE INDEX idx_custody_transfers_pet_status ON public.custody_transfers USING btree (pet_id, status);
 CREATE INDEX idx_custody_transfers_to_org ON public.custody_transfers USING btree (to_org_id, status);
 CREATE INDEX idx_document_templates_org_type ON public.document_templates USING btree (organization_id, template_type);
@@ -987,6 +1023,12 @@ ALTER TABLE ONLY public.care_recommendations
     ADD CONSTRAINT care_recommendations_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.care_safeguards
     ADD CONSTRAINT care_safeguards_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.care_schedule_events
+    ADD CONSTRAINT care_schedule_events_actor_user_id_fkey FOREIGN KEY (actor_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.care_schedule_events
+    ADD CONSTRAINT care_schedule_events_health_entry_id_fkey FOREIGN KEY (health_entry_id) REFERENCES public.health_entries(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.care_schedule_events
+    ADD CONSTRAINT care_schedule_events_health_occurrence_id_fkey FOREIGN KEY (health_occurrence_id) REFERENCES public.health_occurrences(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_from_org_id_fkey FOREIGN KEY (from_org_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.custody_transfers
@@ -1159,6 +1201,8 @@ ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_vet_id_fkey FOREIGN KEY (vet_id) REFERENCES public.vets(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.planned_absence_pets
+    ADD CONSTRAINT planned_absence_pets_carer_user_id_fkey FOREIGN KEY (carer_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.planned_absence_pets
     ADD CONSTRAINT planned_absence_pets_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.planned_absence_pets

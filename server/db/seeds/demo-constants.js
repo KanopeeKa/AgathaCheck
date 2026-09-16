@@ -139,6 +139,37 @@ export const DEMO_IDS = {
   careFixtureWeightWe2: 'a6200001-0001-4001-8001-000000000011',
   careFixtureWeightWe3: 'a6200001-0001-4001-8001-000000000012',
   careFixtureWeightWe4: 'a6200001-0001-4001-8001-000000000013',
+
+  // Care Schedule Management fixture (CSM-SEED)
+  csmWeeklyCourse: 'a6000001-0001-4001-8001-000000000020',
+  csmVaccinationDueDate: 'a6000001-0001-4001-8001-000000000021',
+  csmParasiteDueDate: 'a6000001-0001-4001-8001-000000000022',
+  csmMedFromCompletion: 'a6000001-0001-4001-8001-000000000023',
+  csmWeightLinked: 'a6000001-0001-4001-8001-000000000024',
+  csmWeightFarFuture: 'a6000001-0001-4001-8001-000000000025',
+  csmFromCompletionDaily: 'a6000001-0001-4001-8001-000000000026',
+  csmWeeklyOccMorning: 'a6300001-0001-4001-8001-000000000020',
+  csmWeeklyOccEvening: 'a6300001-0001-4001-8001-000000000021',
+  csmWeeklyOccTomorrowMorning: 'a6300001-0001-4001-8001-000000000022',
+  csmWeightOccCompleted1: 'a6300001-0001-4001-8001-000000000023',
+  csmWeightOccCompleted2: 'a6300001-0001-4001-8001-000000000024',
+  csmWeightOccPending: 'a6300001-0001-4001-8001-000000000025',
+  csmFromCompletionOccPending: 'a6300001-0001-4001-8001-000000000026',
+  csmWeightLinkedWe1: 'a6200001-0001-4001-8001-000000000020',
+  csmWeightLinkedWe2: 'a6200001-0001-4001-8001-000000000021',
+
+  // Away Planning fixture (AW-SEED)
+  awPastAllCompletedAbsence: 'a9000001-0001-4001-8001-000000000001',
+  awUpcomingCarerMixAbsence: 'a9000001-0001-4001-8001-000000000002',
+  awActiveMultiTimeAbsence: 'a9000001-0001-4001-8001-000000000003',
+  awCancelledAbsence: 'a9000001-0001-4001-8001-000000000004',
+  awFutureNothingScheduledAbsence: 'a9000001-0001-4001-8001-000000000005',
+  awIndeterminateAbsence: 'a9000001-0001-4001-8001-000000000006',
+  awNoUnresolvedAbsence: 'a9000001-0001-4001-8001-000000000007',
+  awDownloadedEditedAbsence: 'a9000001-0001-4001-8001-000000000008',
+  awNoUnresolvedEntry: 'a6000001-0001-4001-8001-000000000030',
+  awNoUnresolvedOccCompleted: 'a6300001-0001-4001-8001-000000000030',
+  awNoUnresolvedOccSkipped: 'a6300001-0001-4001-8001-000000000031',
 };
 
 export const DEMO_USERS = {

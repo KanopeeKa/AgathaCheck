@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../models/away_plan_readiness_model.dart';
 import '../models/care_period_coverage_model.dart';
 import '../models/planned_absence_model.dart';
+import '../../domain/entities/away_plan_readiness.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../../domain/entities/planned_absence.dart';
 
@@ -67,9 +69,13 @@ class CareContextRemoteDataSource {
     );
   }
 
-  Future<List<PlannedAbsence>> listPlannedAbsences() async {
+  Future<List<PlannedAbsence>> listPlannedAbsences({
+    String scope = 'all',
+  }) async {
     final response = await _client.get(
-      Uri.parse('$baseUrl/api/planned-absences'),
+      Uri.parse(
+        '$baseUrl/api/planned-absences?scope=${Uri.encodeQueryComponent(scope)}',
+      ),
       headers: _headers(),
     );
     _check(response);
@@ -77,5 +83,53 @@ class CareContextRemoteDataSource {
     return list
         .map((raw) => PlannedAbsenceModel.fromJson(raw as Map<String, dynamic>))
         .toList(growable: false);
+  }
+
+  Future<PlannedAbsence> fetchPlannedAbsence(String absenceId) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId'),
+      headers: _headers(),
+    );
+    _check(response);
+    return PlannedAbsenceModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<AwayPlanReadiness> fetchAwayPlanReadiness(String absenceId) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId/readiness'),
+      headers: _headers(),
+    );
+    _check(response);
+    return AwayPlanReadinessModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<PlannedAbsence> updateHandoverNote({
+    required String absenceId,
+    String? handoverNote,
+  }) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId'),
+      headers: _headers(jsonBody: true),
+      body: json.encode({'handover_note': handoverNote}),
+    );
+    _check(response);
+    final body = json.decode(response.body) as Map<String, dynamic>;
+    final absenceJson = body['absence'] as Map<String, dynamic>? ?? body;
+    return PlannedAbsenceModel.fromJson(absenceJson);
+  }
+
+  Future<void> recordHandoverDownload(String absenceId) async {
+    final response = await _client.post(
+      Uri.parse(
+        '$baseUrl/api/planned-absences/$absenceId/record-handover-download',
+      ),
+      headers: _headers(jsonBody: true),
+      body: '{}',
+    );
+    _check(response);
   }
 }

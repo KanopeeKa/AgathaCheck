@@ -71,6 +71,8 @@ Integration branch: `cursor/care-through-change-v1-integration-6605`
 - Copy per merged `docs/design/copy-tone.md` (#1108)
 - Pull-only; no dashboard slot / notifications
 
+> **Superseded (2026-09-15):** "Pull-only; no dashboard slot" — `PlannedAbsenceEntryTile` ships on `/pc/home` today. Away Planning V1 ([away-planning-delivery-plan.md](./away-planning-delivery-plan.md)) replaces preview-first flow with hub + plan page; wizard moves to `/pc/away/new`.
+
 ## Supersedes
 
 Care Foundation roadmap appendix “Seasonal Care” remains deferred; environmental context is a future Care Context provider, not V1.

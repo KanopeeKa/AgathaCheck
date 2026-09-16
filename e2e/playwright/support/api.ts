@@ -272,6 +272,44 @@ export async function createPet(
   return { id: json.id, name: json.name };
 }
 
+export interface TestPlannedAbsence {
+  id: string;
+  starts_on: string;
+  ends_on: string;
+  pet_ids: string[];
+}
+
+export async function createPlannedAbsence(
+  baseURL: string,
+  token: string,
+  options: {
+    startsOn: string;
+    endsOn: string;
+    petIds: string[];
+  },
+): Promise<TestPlannedAbsence> {
+  const res = await apiFetch(apiUrl('/planned-absences', baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      starts_on: options.startsOn,
+      ends_on: options.endsOn,
+      pet_ids: options.petIds,
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`createPlannedAbsence failed (${res.status}): ${body}`);
+  }
+
+  const json = await res.json<{ absence: TestPlannedAbsence }>();
+  return json.absence;
+}
+
 export async function updatePetProfile(
   baseURL: string,
   token: string,

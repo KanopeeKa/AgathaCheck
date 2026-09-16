@@ -516,6 +516,41 @@ Decisions: [shell-hierarchy-decisions.md](/docs/domains/navigation/changes/shell
 
 ---
 
+## CSM programme — parallel wave (2026-09-15)
+
+**Integration branch:** `cursor/care-schedule-management-v1-integration-csm1`  
+**Control issue:** #1173 · **execute-plan:** `care-schedule-management-v1`
+
+### Wave 0 — foundation (merge first)
+
+| Agent | Branch | Owns | Avoid |
+|-------|--------|------|-------|
+| **csm-7** | `cursor/care-schedule-management-csm7-csm1` | `completionRouter.js`, `healthEntries.test.js`, Flutter `skipIteration` removal | `server/lib/care/schedule/**` |
+
+### Wave A — parallel after Wave 0 merges
+
+| Agent | Branch | Owns | Avoid |
+|-------|--------|------|-------|
+| **csm-18-docs** | `cursor/care-schedule-management-csm18-csm1` | `docs/domains/pet_care/**`, `docs/architecture/api-reference.md`, `occurrence-scheduling.md` | server, flutter |
+| **csm-15-flutter** | `cursor/care-schedule-management-csm15-csm1` | Flutter snooze removal: `health_providers.dart`, `health_dashboard_entry_list.dart`, `health_entry_card_actions.dart`, tests | `completionRouter.js`, schedule server |
+| **csm-9-pause** | `cursor/care-schedule-management-csm9-csm1` | `pauseResumeSeries.js`, `pauseResumeSeries.test.js`, pause/resume routes | `rescheduleOccurrence.js`, `adjustCadence.js` |
+| **csm-10-reschedule** | `cursor/care-schedule-management-csm10-csm1` | `rescheduleOccurrence.js`, `rescheduleOccurrence.test.js`, reschedule route | pause, adjustCadence files |
+| **csm-11-cadence** | `cursor/care-schedule-management-csm11-csm1` | `adjustCadence.js`, `adjustCadence.test.js`, cadence route | pause, reschedule files |
+
+**Shared merge order for Wave A server agents:** each adds one export line to `server/lib/care/schedule/index.js` and one route block in `occurrencesRouter.js` or dedicated router — coordinator rebases if conflict.
+
+### Wave B — after Wave A primitives land
+
+| Agent | Branch | Owns |
+|-------|--------|------|
+| **csm-8-undo** | `cursor/care-schedule-management-csm8-csm1` | `undoLastAction.js`, retire `undo-complete` guessing |
+| **csm-12-project** | `cursor/care-schedule-management-csm12-csm1` | `projectSchedule.js`, `carePeriodProjection.js` |
+| **csm-13-explain** | `cursor/care-schedule-management-csm13-csm1` | `explainGap.js` read API |
+
+**Never parallelise:** same `index.js` route registration without coordinator rebase; `healthEntries.test.js` across agents.
+
+---
+
 ## Parallel-agent ownership matrix (reference)
 
 Use this template when spawning agents on an integration branch:

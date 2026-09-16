@@ -113,7 +113,7 @@ void main() {
     await tester.pumpWidget(buildSection(vetNotifier: _FixedVetNotifier(vets)));
     await tester.pumpAndSettle();
 
-    expect(find.text('CARE TEAM'), findsOneWidget);
+    expect(find.text('VETERINARY TEAM'), findsOneWidget);
   });
 
   testWidgets('waits for authentication without showing a false empty state', (
@@ -257,7 +257,7 @@ void main() {
     await tester.pumpWidget(buildSection(vetNotifier: _FixedVetNotifier(vets)));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('All care teams'));
+    await tester.tap(find.text('All veterinary teams'));
     await tester.pumpAndSettle();
 
     expect(find.text('manage-vets-route'), findsOneWidget);

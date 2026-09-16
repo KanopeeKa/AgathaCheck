@@ -13,6 +13,8 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_list_controller.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/pet_care_my_pets_section.dart';
+import 'package:pet_profile_app/features/pet_care/context/presentation/away_planning_dashboard_tile_state.dart';
+import 'package:pet_profile_app/features/pet_care/context/presentation/providers/care_context_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
@@ -48,6 +50,9 @@ void main() {
         healthEntriesNotifierProvider.overrideWith(
           () => resolvedHealthNotifier,
         ),
+        awayPlanningDashboardTileProvider.overrideWith(
+          (ref) async => AwayPlanningDashboardTileState.prompt,
+        ),
       ],
       child: MaterialApp(
         locale: locale,
@@ -80,14 +85,18 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('CARE ACTIONS'), findsOneWidget);
-    expect(find.text('CARE TEAM'), findsOneWidget);
+    expect(find.text('AWAY PLANNING'), findsOneWidget);
+    expect(find.text('VETERINARY TEAM'), findsOneWidget);
+    expect(find.text('All absences'), findsOneWidget);
+    expect(find.byKey(const Key('planned_absence_entry_tile')), findsOneWidget);
+    expect(find.text("I'll be away"), findsOneWidget);
     expect(find.byKey(const Key('pet_care_dashboard_add_care')), findsNothing);
     expect(find.byKey(const Key('pet_care_dashboard_add_vet')), findsNothing);
     expect(
       find.byKey(const Key('pet_care_dashboard_empty_care_action')),
       findsOneWidget,
     );
-    expect(find.text('All care teams'), findsOneWidget);
+    expect(find.text('All veterinary teams'), findsOneWidget);
     expect(
       find.byKey(const Key('pet_care_dashboard_care_section')),
       findsOneWidget,
@@ -128,6 +137,57 @@ void main() {
       findsOneWidget,
     );
     expect(find.byKey(const Key('pet_care_dashboard_add_pet')), findsOneWidget);
+    expect(find.text('AWAY PLANNING'), findsNothing);
+    expect(find.byKey(const Key('planned_absence_entry_tile')), findsNothing);
+  });
+
+  testWidgets(
+    'places away planning between care actions and veterinary team on narrow',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(375, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(buildDashboard());
+      await tester.pumpAndSettle();
+
+      final careY = tester.getTopLeft(find.text('CARE ACTIONS')).dy;
+      final awayY = tester.getTopLeft(find.text('AWAY PLANNING')).dy;
+      final vetsY = tester.getTopLeft(find.text('VETERINARY TEAM')).dy;
+
+      expect(careY, lessThan(awayY));
+      expect(awayY, lessThan(vetsY));
+    },
+  );
+
+  testWidgets('renders away planning full width below desk row on wide', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1280, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(buildDashboard());
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('pet_care_desk_secondary_sections_wide')),
+      findsOneWidget,
+    );
+
+    final rowBottom = tester
+        .getBottomLeft(
+          find.byKey(const Key('pet_care_desk_secondary_sections_wide')),
+        )
+        .dy;
+    final awayY = tester.getTopLeft(find.text('AWAY PLANNING')).dy;
+    final careY = tester.getTopLeft(find.text('CARE ACTIONS')).dy;
+    final vetsY = tester.getTopLeft(find.text('VETERINARY TEAM')).dy;
+
+    expect(careY, vetsY);
+    expect(awayY, greaterThan(rowBottom));
   });
 
   testWidgets('uses a two-column desk layout on wide screens', (tester) async {
@@ -256,7 +316,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
-        find.text('Toutes les équipes de soins'),
+        find.text('Toutes les équipes vétérinaires'),
         120,
         scrollable: find.byWidgetPredicate(
           (widget) =>
@@ -269,7 +329,7 @@ void main() {
         find.byKey(const Key('pet_care_dashboard_add_care')),
         findsNothing,
       );
-      expect(find.text('Toutes les équipes de soins'), findsOneWidget);
+      expect(find.text('Toutes les équipes vétérinaires'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

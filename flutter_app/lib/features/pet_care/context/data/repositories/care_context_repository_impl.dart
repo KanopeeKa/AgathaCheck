@@ -1,3 +1,4 @@
+import '../../domain/entities/away_plan_readiness.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../../domain/entities/planned_absence.dart';
 import '../../domain/repositories/care_context_repository.dart';
@@ -35,7 +36,29 @@ class CareContextRepositoryImpl implements CareContextRepository {
   }
 
   @override
-  Future<List<PlannedAbsence>> listPlannedAbsences() {
-    return _remote.listPlannedAbsences();
+  Future<List<PlannedAbsence>> listPlannedAbsences({String scope = 'all'}) {
+    return _remote.listPlannedAbsences(scope: scope);
   }
+
+  @override
+  Future<PlannedAbsence> getPlannedAbsence(String absenceId) {
+    return _remote.fetchPlannedAbsence(absenceId);
+  }
+
+  @override
+  Future<AwayPlanReadiness> getAwayPlanReadiness(String absenceId) =>
+      _remote.fetchAwayPlanReadiness(absenceId);
+
+  @override
+  Future<PlannedAbsence> updateHandoverNote({
+    required String absenceId,
+    String? handoverNote,
+  }) => _remote.updateHandoverNote(
+    absenceId: absenceId,
+    handoverNote: handoverNote,
+  );
+
+  @override
+  Future<void> recordHandoverDownload(String absenceId) =>
+      _remote.recordHandoverDownload(absenceId);
 }

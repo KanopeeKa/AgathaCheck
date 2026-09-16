@@ -3,7 +3,7 @@ title: AgathaTrack terminology
 owner: Documentation Team
 audience: product, design, engineering, content
 status: active
-last_updated: 2026-09-09
+last_updated: 2026-09-15
 tags: [design, brand, copy, l10n]
 ---
 
@@ -37,10 +37,11 @@ When multiple people are involved, use precise care-role language:
 
 | Term | Use when |
 |------|----------|
-| **care team** | Collective carers for one pet |
+| **care team** | Collective carers for one pet (Away Planning carer concept) |
 | **carer** / **caregiver** | General non-owner helper |
 | **sitter** | Temporary care arrangement |
 | **shared carer** | Someone with shared access (not owner) |
+| **Veterinary team** | Pet Care dashboard section and vet detail surfaces — the guardian's veterinary clinics (EN label; FR: *Équipe vétérinaire*). Not the same as **care team** (carers). |
 | **veterinary professional** / **vet** | Clinical context |
 
 ## Legal, technical, and permission terms
@@ -81,6 +82,8 @@ Keep these EN/FR labels distinct in copy and l10n:
 | Workspace | Pet Care | Suivi | `drawerPetCare`, `experiencePetCareView`, … |
 | Dashboard pet rail | My Pets | Mes animaux | `myPets` — **do not repurpose for workspace** |
 | Due-items block | CARE ACTIONS (eyebrow) | SOINS | `careEyebrow` |
+| Away-planning block | AWAY PLANNING (eyebrow) | PLANIFICATION D'ABSENCE | `awayPlanningEyebrow` |
+| Away-planning hub link | All absences | Toutes les absences | `allAbsences` |
 | Full due list link | All Actions | Tous les soins | `allCare` |
 | Global queue screen (`/pc/events`) | All Actions | Tous les soins | `allCare` |
 | Bottom nav | Actions | Soins | `careNavLabel` |

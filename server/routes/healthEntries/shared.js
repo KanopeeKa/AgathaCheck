@@ -132,6 +132,7 @@ export function healthEntryToMap(row) {
     status: row.status || 'active',
     care_family: row.care_family ?? null,
     care_source: row.care_source || 'guardian_defined',
+    schedule_policy_version: row.schedule_policy_version ?? null,
     completed_at: row.completed_at ? row.completed_at.toISOString?.() || String(row.completed_at) : null,
     created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,
     updated_at: row.updated_at ? row.updated_at.toISOString?.() || String(row.updated_at) : null,

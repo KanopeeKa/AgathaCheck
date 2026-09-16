@@ -1,5 +1,5 @@
 import { publicError } from '../../config/security.js';
-import { loadAndProjectCareForPeriod } from '../../lib/care/carePeriodProjection.js';
+import { loadAwayPlanProjection } from '../../lib/care/awayPlan/index.js';
 import { validateAbsenceDateWindow } from '../../lib/care/plannedAbsence.js';
 import { todayCalendarIso } from '../../lib/calendarDate.js';
 import { userCanManagePet } from '../../lib/petAccess.js';
@@ -24,7 +24,7 @@ export function registerCarePeriodProjectionRoutes(router, pool) {
         return res.status(403).json({ error: 'Forbidden' });
       }
 
-      const projection = await loadAndProjectCareForPeriod(
+      const projection = await loadAwayPlanProjection(
         pool,
         petId,
         window.starts_on,
@@ -34,7 +34,7 @@ export function registerCarePeriodProjectionRoutes(router, pool) {
 
       return res.json(projection);
     } catch (err) {
-      return publicError(res, err, 'Failed to load care-period projection');
+      return res.status(500).json({ error: publicError(err, 'Failed to load care-period projection') });
     }
   });
 }

@@ -15,6 +15,8 @@ tags: [debt, deferred, tech-debt]
 
 | Domain | PR | Type | Priority | Description |
 |--------|-----|------|----------|-------------|
+| pet_care | — | tech debt | P2 | `publicError(err, msg)` returns a string — add `sendPublicError(res, err, msg)` wrapper or ESLint ban on `publicError(res` (D-AWAY-013; AW-EMERGENCY fixed the two `careContext` call sites) |
+| pet_care | — | tech debt | P3 | `timestampToIso()` helper in `calendarDate.js` — adopt repo-wide (17 call sites across 10 files); AW-0 scopes to `plannedAbsence.js` only |
 | platform | — | tech debt | P1 | PostHog authorized URLs for prod (`https://prod.agathatrack.com`) |
 | platform | — | tech debt | P2 | PostHog authorized URLs for UAT — confirm `https://uat.agathatrack.com` listed |
 | platform | — | tech debt | P2 | Server PostHog person deletion on account erase (needs cPanel env vars) |

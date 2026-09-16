@@ -36,7 +36,7 @@ export const PET_ACTIVITY_HOOK_MANIFEST = Object.freeze([
     id: 'health-entry-completion',
     file: 'server/routes/healthEntries/completionRouter.js',
     eventType: 'health_log',
-    minCalls: 7,
+    minCalls: 5,
   },
   {
     id: 'health-document-upload',

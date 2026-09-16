@@ -14,7 +14,6 @@ class HealthEntryCard extends StatelessWidget {
     required this.entry,
     this.pet,
     this.onMarkTaken,
-    this.onSnooze,
     this.onTap,
     this.onUndoComplete,
     this.healthIssueName,
@@ -23,7 +22,6 @@ class HealthEntryCard extends StatelessWidget {
   final HealthEntry entry;
   final Pet? pet;
   final VoidCallback? onMarkTaken;
-  final void Function(int days)? onSnooze;
   final VoidCallback? onTap;
   final VoidCallback? onUndoComplete;
   final String? healthIssueName;
@@ -149,8 +147,6 @@ class HealthEntryCard extends StatelessWidget {
                   ),
                 ),
                 if (showActions && onMarkTaken != null) ...[
-                  if (onSnooze != null)
-                    HealthEntrySnoozeButton(onSnooze: onSnooze),
                   HealthEntryMarkDoneButton(
                     onPressed: onMarkTaken,
                     petStripWidth: 52,

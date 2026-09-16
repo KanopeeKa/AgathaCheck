@@ -3,7 +3,7 @@ title: API reference (docs index)
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-09-15
 tags: [api, reference]
 ---
 # Agatha Track API — Endpoint Reference
@@ -105,12 +105,47 @@ Validate with `node scripts/validate_openapi.js`; Jest contract tests in
 | GET | `/invites/pending`, POST `/invites/:id/accept|decline` | invitee |
 
 ### Health entries (`/api/health-entries`)
-`GET /` (optional `?pet_id=`), `GET /export` (CSV), `GET /:id`, `POST /` (verifies
-pet ownership), `PUT /:id`, `DELETE /:id`, `POST /:id/mark-taken`,
-`POST /:id/undo-complete`, `GET /:id/history`, `GET|POST /:id/photos`,
-`DELETE /:entryId/photos/:photoId`. Nested history/photos verify entry ownership.
-`POST /:id/photos` accepts one multipart `photo` document: JPG/JPEG, PNG, or PDF,
-up to 2 MB.
+
+CRUD: `GET /` (optional `?pet_id=`), `GET /export` (CSV), `GET /:id`, `POST /` (verifies pet ownership), `PUT /:id`, `DELETE /:id`, `GET|POST /:id/photos`, `DELETE /:entryId/photos/:photoId`. `POST /:id/photos` accepts one multipart `photo` document: JPG/JPEG, PNG, or PDF, up to 2 MB.
+
+**Care Schedule Management (CSM)** — canonical behaviour: [care-schedule-management.md](../domains/pet_care/features/care-schedule-management.md). Calendar dates on the wire: `YYYY-MM-DD` ([calendar-dates.md](calendar-dates.md)).
+
+#### Occurrence APIs (shipped — CSM-5–7)
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/:id/occurrences` | Query `status=open` (default) or `status=past`; optional `as_of` calendar day |
+| POST | `/:id/occurrences/:occId/complete` | Body `{ completed_on?, notes?, skip_earlier_missed? }`; returns `{ occurrence, next_due_date }`; sets `completion_timing` |
+| POST | `/:id/occurrences/:occId/skip` | Body `{ notes? }`; writes `care_schedule_events` ledger row |
+| POST | `/:id/occurrences/skip-missed` | Body `{ as_of? }`; returns `{ skipped[], count }` |
+| POST | `/:id/occurrences/:occId/undo` | Legacy per-occurrence reopen — superseded by `schedule/undo` (CSM-8) |
+
+Weight monitoring rhythms: generic complete and `mark-taken` return `400` — use `POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight` (see Care progression below).
+
+#### Legacy / deprecated complete paths
+
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/:id/mark-taken` | **Deprecated** — completes oldest pending occurrence via `completeOccurrence`; **no `health_history` write**; prefer occurrence complete |
+| POST | `/:id/undo-complete` | **Legacy** — replaced by `POST /:id/schedule/undo` (CSM-8) |
+| GET | `/:id/history` | Read-only legacy `health_history` rows (no new writes after CSM-7) |
+
+**Removed (CSM-7):** `POST /:id/skip`, `POST /:id/unskip` — use occurrence skip APIs.
+
+#### Schedule change APIs (planned — CSM-8–11)
+
+Routes mount in parallel PRs; shapes are frozen:
+
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/:id/pause` | Body `{ paused_since?, reason_note? }`; `status = paused`, ledger `paused` event |
+| POST | `/:id/resume` | Body `{ resume_from?, reason_note? }`; resume with **no catch-up** (D-CSM-005) |
+| POST | `/:id/occurrences/:occId/reschedule` | Body `{ new_scheduled_date, new_scheduled_time?, reason_note? }`; one-instance move; ledger preserves original `from_date` |
+| POST | `/:id/adjust-cadence` | Body `{ effective_from, frequency?, frequency_interval?, recurrence_anchor?, reason_note? }`; series-forward only |
+| POST | `/:id/schedule/undo` | Timestamp-aware `undoLastAction` (CSM-8) |
+| GET | `/:id/schedule-explain` | Read-only `explainGap` facts for CIM (CSM-13) |
+
+**Create defaults (CSM-2):** when `recurrence_anchor` is omitted, server applies per-family default (`vaccination` / `parasite_prevention` → `from_due_date`; others → `from_completion`) — D-CSM-001.
 
 ### Health issues (`/api/health-issues`)
 `GET /` (optional `?pet_id=`), `GET /:id`, `POST /` (verifies pet ownership),
@@ -189,7 +224,70 @@ Weight monitoring rhythms cannot use generic occurrence complete or mark-taken w
 
 ### Planned absences (`/api/planned-absences`) — CC-1
 
-Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `POST /`, `GET /:id`, `PATCH /:id`, `POST /:id/cancel`. `POST` returns non-blocking `overlap_warnings` when active absences overlap for the same pet.
+Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `POST /`, `GET /:id`, `PATCH /:id`, `POST /:id/cancel`.
+
+**List (`GET /`)**
+
+| Query | Values | Default |
+|---|---|---|
+| `scope` | `upcoming`, `past`, `all` | `upcoming` |
+
+- `upcoming` — non-cancelled where `ends_on >= today`, ordered by `starts_on` ascending (wizard invalidate shape: top-level JSON array).
+- `past` — non-cancelled where `ends_on < today`, ordered by `starts_on` descending.
+- `all` — all non-cancelled absences; upcoming first (`starts_on` asc), then past (`starts_on` desc).
+
+Each list item includes `overlap_warnings` **recomputed on read** (not persisted): non-blocking conflicts with other active absences (`status != cancelled` and `ends_on >= today`) for the same pet. Same shape as `POST`/`PATCH` overlap entries.
+
+`POST` and `PATCH` also return non-blocking `overlap_warnings` when active absences overlap for the same pet.
+
+**Carers (AW-4)** — each absence includes `pet_ids` and `pet_carers` (per-pet facts on `planned_absence_pets`):
+
+| Field | Notes |
+|---|---|
+| `pet_carers[].carer_kind` | `shared_user`, `note_only`, or `null` (unset) |
+| `pet_carers[].carer_user_id` | Required on write for `shared_user`; must be a collaborator on that pet |
+| `pet_carers[].carer_name` / `carer_note` | `note_only` only — name + note; no access implied |
+| `pet_carers[].carer_removed` | Read-only: `shared_user` with `carer_user_id` null (deleted user) |
+
+`PATCH /:id` accepts optional `pet_carers: [{ pet_id, carer_kind, ... }]`. Carer writes bump `planned_absences.updated_at`. `shared_user` assignments return `403` when `carer_user_id` is not a `shared`/`guardian` collaborator on that pet.
+
+**Readiness (`GET /:id/readiness`)** — AW-8
+
+Server-authoritative two-fact readiness for hub, plan page, and dashboard tile (D-AWAY-002). Declarer-scoped; `404` when absence is not owned by caller.
+
+```json
+{
+  "carer_coverage": {
+    "state": "none_have_carers | some_have_carers | all_have_carers",
+    "pets_with_carer": 0,
+    "pets_total": 1,
+    "copy_key": "awayPlanningCarerCoverageNoneHaveCarers"
+  },
+  "care_coverage": {
+    "coverage_state": "nothing_scheduled | all_completed | …",
+    "reason_codes": [],
+    "reassurance_available": false,
+    "copy_key": "careContextCoverageNothingScheduled"
+  },
+  "tile_copy": {
+    "source": "carer_coverage | care_coverage",
+    "copy_key": "awayPlanningTileCarerNone",
+    "copy_params": {}
+  }
+}
+```
+
+Tile copy uses fixed actionability priority: carer gap first, else coverage sentence. See [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md).
+
+### Carer candidates (`GET /api/pets/:id/carer-candidates`) — AW-4
+
+Scoped to `userCanManagePet` (same as absence declaration). Returns minimal collaborator list for assigning `shared_user` carers:
+
+```json
+[{ "user_id": "…", "display_name": "Sarah M." }]
+```
+
+No email, photo, or bio. Does not change `GET /api/pets/:id/access` (`userOwnsPet` guard unchanged).
 
 ### Review relevance (Phase D — internal only)
 

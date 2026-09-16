@@ -5,6 +5,11 @@ import { fileURLToPath } from 'url';
 import { assertNonProduction, isProductionEnv } from '../../scripts/db/guard-non-prod.js';
 import { DEMO_IDS, DEMO_PASSWORD } from '../scripts/seed.js';
 import {
+  ALL_SCENARIOS,
+  ALL_SCENARIOS_EXCLUSIONS,
+  SCENARIOS,
+} from '../db/seeds/scenarios/index.js';
+import {
   MAIN_DEMO_USER_KEY,
   buildDemoCredentialsMarkdownTable,
   buildDemoCredentialsTableRows,
@@ -62,6 +67,47 @@ describe('seed demo constants', () => {
       'frederique.prevost@gmail.com',
     );
     expect(DEMO_USERS[MAIN_DEMO_USER_KEY].first_name).toBe('Frederique');
+  });
+
+  it('exposes stable Away Planning fixture IDs', () => {
+    expect(DEMO_IDS.awPastAllCompletedAbsence).toMatch(
+      /^a9000001-0001-4001-8001-000000000001$/,
+    );
+    expect(DEMO_IDS.awActiveMultiTimeAbsence).toMatch(
+      /^a9000001-0001-4001-8001-000000000003$/,
+    );
+    expect(DEMO_IDS.awDownloadedEditedAbsence).toMatch(
+      /^a9000001-0001-4001-8001-000000000008$/,
+    );
+  });
+
+  it('exposes stable CSM fixture IDs for scheduling edge cases', () => {
+    expect(DEMO_IDS.csmWeeklyCourse).toMatch(
+      /^a6000001-0001-4001-8001-000000000020$/,
+    );
+    expect(DEMO_IDS.csmVaccinationDueDate).toMatch(
+      /^a6000001-0001-4001-8001-000000000021$/,
+    );
+    expect(DEMO_IDS.csmWeightFarFuture).toMatch(
+      /^a6000001-0001-4001-8001-000000000025$/,
+    );
+    expect(DEMO_IDS.csmWeightOccPending).toMatch(
+      /^a6300001-0001-4001-8001-000000000025$/,
+    );
+  });
+});
+
+describe('ALL_SCENARIOS registry', () => {
+  it('lists every SCENARIOS key except the explicit exclusion list', () => {
+    const expected = Object.keys(SCENARIOS).filter(
+      (name) => !ALL_SCENARIOS_EXCLUSIONS.includes(name),
+    );
+    expect(ALL_SCENARIOS).toEqual(expected);
+    expect(ALL_SCENARIOS).toContain('away-planning');
+    expect(ALL_SCENARIOS).not.toContain('org-v3-demo');
+    expect(ALL_SCENARIOS.indexOf('away-planning')).toBe(
+      ALL_SCENARIOS.indexOf('care-schedule-fixture') + 1,
+    );
   });
 });
 

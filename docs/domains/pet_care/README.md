@@ -29,12 +29,23 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | [care-progression-delivery-plan.md](/docs/domains/pet_care/changes/care-progression-delivery-plan.md) | CP-0–CP-7 delivery plan (shipped) |
 | [care-entitlements.md](/docs/domains/pet_care/features/care-entitlements.md) | Future tier principles (no runtime in V1) |
 
+## Care Schedule Management
+
+| Document | Role |
+|----------|------|
+| [care-schedule-management.md](/docs/domains/pet_care/features/care-schedule-management.md) | Canonical scheduling semantics (CSM) |
+| [care-schedule-management-delivery-plan.md](/docs/domains/pet_care/changes/care-schedule-management-delivery-plan.md) | CSM-0–CSM-18 delivery plan (active) |
+| [care-schedule-management-decisions.md](/docs/domains/pet_care/changes/care-schedule-management-decisions.md) | Frozen CSM decisions |
+
 ## Care Context (Care Through Change)
 
 | Document | Role |
 |----------|------|
 | [care-context.md](/docs/domains/pet_care/features/care-context.md) | Canonical product behaviour |
+| [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md) | Per-pet carer schema, API, and UI surfaces |
 | [care-through-change-delivery-plan.md](/docs/domains/pet_care/changes/care-through-change-delivery-plan.md) | CC-1–CC-4 delivery plan (active) |
+| [away-planning-delivery-plan.md](/docs/domains/pet_care/changes/away-planning-delivery-plan.md) | AW-EMERGENCY–AW-10 delivery plan (active) |
+| [away-planning-decisions.md](/docs/domains/pet_care/changes/away-planning-decisions.md) | Frozen Away Planning decisions (D-AWAY-001–013) |
 
 ## On this domain
 

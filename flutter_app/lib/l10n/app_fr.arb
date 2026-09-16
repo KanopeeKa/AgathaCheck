@@ -1754,10 +1754,12 @@
   "drawerCreateOrg": "Créer une organisation",
   "orgNotificationsDrawer": "Notifications organisation",
   "petCareNotificationsDrawer": "Notifications Suivi",
-  "myVets": "Équipe de soins",
-  "careTeamEyebrow": "ÉQUIPE DE SOINS",
+  "myVets": "Équipe vétérinaire",
+  "careTeamEyebrow": "ÉQUIPE VÉTÉRINAIRE",
   "careTeamClinicSubtitle": "Clinique vétérinaire",
-  "allCareTeams": "Toutes les équipes de soins",
+  "allCareTeams": "Toutes les équipes vétérinaires",
+  "allAbsences": "Toutes les absences",
+  "collectionFilterPersonal": "Personnel",
   "petCareDashboardTitle": "Tableau de bord Suivi",
   "upcomingPetEvents": "Événements à venir",
   "dueAndOverdue": "À faire et en retard",
@@ -1771,12 +1773,12 @@
   "careTeamCaringForPets": "{count, plural, =1{Soigne 1 animal} other{Soigne {count} animaux}}",
   "@careTeamCaringForPets": { "placeholders": { "count": { "type": "int" } } },
   "vetLinkedPets": "Animaux associés",
-  "careTeam": "Équipe de soins",
+  "careTeam": "Équipe vétérinaire",
   "careTeamPetsCaredFor": "Animaux pris en charge",
-  "careTeamNoLinkedPets": "Aucun animal n'est actuellement associé à cette équipe de soins.",
+  "careTeamNoLinkedPets": "Aucun animal n'est actuellement associé à cette équipe vétérinaire.",
   "careTeamClinicType": "Clinique vétérinaire",
-  "careTeamOptions": "Options de l'équipe de soins",
-  "editCareTeam": "Modifier l'équipe de soins",
+  "careTeamOptions": "Options de l'équipe vétérinaire",
+  "editCareTeam": "Modifier l'équipe vétérinaire",
   "vetNotFound": "Vétérinaire introuvable",
   "selectPetForWeight": "Choisir un animal pour une entrée de poids",
   "selectPetForEvent": "Choisir un animal pour cet événement",
@@ -2113,7 +2115,10 @@
   "undoCompleteFailed": "Impossible d'annuler la complétion. Réessayez.",
   "careContextAwayEntryTitle": "Je serai absent",
   "careContextAwayEntryBody": "Prévisualisez les soins prévus pendant votre absence.",
+  "awayPlanningTileCarerNone": "Choisissez qui s'occupera de vos animaux.",
+  "awayPlanningTileCarerSome": "Certains animaux n'ont pas encore de soignant.",
   "careContextAwayFlowTitle": "Planifier une absence",
+  "awayPlanningEyebrow": "PLANIFICATION D'ABSENCE",
   "careContextAwayDatesStepTitle": "Quand serez-vous absent ?",
   "careContextAwayDatesStepBody": "Sélectionnez le premier et le dernier jour de votre absence.",
   "careContextAwayDatesRangeLabel": "Dates d'absence",
@@ -2145,5 +2150,63 @@
   "careContextPreviewItemCompleted": "Terminé le {date}",
   "careContextPreviewItemSkipped": "Ignoré le {date}",
   "careContextAwayContinue": "Continuer",
-  "careContextAwayBack": "Retour"
+  "careContextAwayBack": "Retour",
+  "careContextAwayPlanTitle": "Plan d'absence",
+  "careContextAwayPlanLoadError": "Impossible de charger ce plan d'absence. Réessayez.",
+  "careContextAwayPlanCareDuringTitle": "Soins pendant votre absence",
+  "careContextAwayPlanWhoIsCaringTitle": "Qui s'en occupe",
+  "careContextAwayPlanDetailsTitle": "Détails du plan",
+  "careContextAwayPlanDatesLabel": "Dates",
+  "careContextAwayPlanPetsLabel": "Animaux",
+  "careContextAwayPlanStatusLabel": "Statut",
+  "careContextAwayPlanStatusActive": "Actif",
+  "careContextAwayPlanStatusCancelled": "Annulé",
+  "careContextAwayPlanCarerCoverageTitle": "Couverture des soignants",
+  "careContextAwayPlanCareCoverageTitle": "Couverture des soins",
+  "awayPlanningCarerCoverageAllHaveCarers": "Chaque animal a un soignant assigné.",
+  "awayPlanningCarerCoverageSomeHaveCarers": "{assigned} sur {total} animaux ont un soignant assigné.",
+  "@awayPlanningCarerCoverageSomeHaveCarers": {
+    "placeholders": {
+      "assigned": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "awayPlanningCarerCoverageNoneHaveCarers": "Aucun animal n'a encore de soignant assigné.",
+  "awayPlanningCarerRemoved": "Soignant retiré",
+  "awayPlanningCarerUnset": "Aucun soignant assigné",
+  "awayPlanningCarerSharedAccess": "{name} · Accès partagé",
+  "@awayPlanningCarerSharedAccess": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "awayPlanningCarerNoteOnly": "{name} · Pas d'accès AgathaTrack",
+  "@awayPlanningCarerNoteOnly": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "awayPlanningCarerNoteOnlyWithNote": "{name} · {note} · Pas d'accès AgathaTrack",
+  "@awayPlanningCarerNoteOnlyWithNote": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "note": { "type": "String" }
+    }
+  },
+  "awayPlanningCarerSharedUserFallback": "Utilisateur partagé",
+  "awayPlanningRoutineAllDay": "Toute la journée",
+  "awayPlanningRoutineRowSubtitle": "{time} · {count, plural, =1{1 occurrence} other{{count} occurrences}} · {dateRange}",
+  "@awayPlanningRoutineRowSubtitle": {
+    "placeholders": {
+      "time": { "type": "String" },
+      "count": { "type": "int" },
+      "dateRange": { "type": "String" }
+    }
+  },
+  "awayPlanningScheduleRoutineTitle": "Soins de routine",
+  "awayPlanningScheduleDatedTitle": "Soins datés",
+  "awayPlanningScheduleIndeterminateTitle": "Soins indéterminés",
+  "awayPlanningIndeterminatePending": "En attente d'une dose précédente",
+  "awayPlanningIndeterminateChain": "Dépend de soins antérieurs dans la chaîne",
+  "awayPlanningIndeterminateGeneric": "Horaire pas encore connu"
 }

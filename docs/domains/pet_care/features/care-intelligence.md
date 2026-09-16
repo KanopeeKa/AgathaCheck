@@ -18,6 +18,8 @@ Care Intelligence helps guardians **understand** longitudinal pet-care data and 
 
 **Related domains:** weight and health data live under [health_tracking](/docs/domains/health_tracking/README.md). Care rhythm provenance uses `CareSource` on recurring `health_entries` — see [Care Foundation roadmap](../changes/care-foundation-roadmap.md) Phases A–C.
 
+**Schedule facts (CSM):** When CIM needs structured pause/reschedule/skip context beyond raw occurrences, it reads `explainGap` from [Care Schedule Management](./care-schedule-management.md) (CSM-13) — CSM supplies facts only; explained/unexplained vocabulary stays in CIM.
+
 ---
 
 ## Purpose
@@ -236,5 +238,6 @@ Benchmark curation, evidence traces, and any production safeguard persistence mu
 | [Phase D Review Relevance plan](../changes/phase-d-review-relevance-plan.md) | Phase D research/delivery mechanics (D0–D7) |
 | Execute-plan `care-foundation-c7a1` | Autonomous implementation state — control issue [#1082](https://github.com/KanopeeKa/AgathaCheck/issues/1082) |
 | [Care Progression](/docs/domains/pet_care/features/care-progression.md) | **Next programme** (after Phase E) — not part of CIM |
+| [Care Schedule Management](./care-schedule-management.md) | Scheduling primitives; CIM reads `explainGap` for pause/reschedule facts |
 
 Phase mechanics, gates, and completion criteria belong in the delivery plan, not in this document.
