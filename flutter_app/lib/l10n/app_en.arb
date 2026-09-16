@@ -305,6 +305,7 @@
     }
   },
   "careSuggestionRespondFailed": "Could not update this suggestion. Try again.",
+  "careSafeguardDismissFailed": "Could not dismiss this. Try again.",
   "careSuggestionEditForbidden": "You can view this pet's care but cannot add rhythms.",
   "careSuggestionDismiss": "Dismiss",
   "careSuggestionNotRelevant": "Not relevant",

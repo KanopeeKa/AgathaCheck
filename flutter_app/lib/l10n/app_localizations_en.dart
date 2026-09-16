@@ -797,6 +797,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not update this suggestion. Try again.';
 
   @override
+  String get careSafeguardDismissFailed => 'Could not dismiss this. Try again.';
+
+  @override
   String get careSuggestionEditForbidden =>
       'You can view this pet\'s care but cannot add rhythms.';
 

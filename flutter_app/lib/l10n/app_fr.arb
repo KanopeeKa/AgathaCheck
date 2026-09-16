@@ -264,6 +264,7 @@
     }
   },
   "careSuggestionRespondFailed": "Impossible de mettre à jour cette suggestion. Réessayez.",
+  "careSafeguardDismissFailed": "Impossible d'ignorer. Réessayez.",
   "careSuggestionEditForbidden": "Vous pouvez consulter les soins de cet animal, mais pas ajouter de rythmes.",
   "careSuggestionDismiss": "Ignorer",
   "careSuggestionNotRelevant": "Pas pertinent",

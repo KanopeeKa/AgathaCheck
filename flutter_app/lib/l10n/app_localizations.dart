@@ -1496,6 +1496,12 @@ abstract class AppLocalizations {
   /// **'Could not update this suggestion. Try again.'**
   String get careSuggestionRespondFailed;
 
+  /// No description provided for @careSafeguardDismissFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not dismiss this. Try again.'**
+  String get careSafeguardDismissFailed;
+
   /// No description provided for @careSuggestionEditForbidden.
   ///
   /// In en, this message translates to:

@@ -807,6 +807,9 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de mettre à jour cette suggestion. Réessayez.';
 
   @override
+  String get careSafeguardDismissFailed => 'Impossible d\'ignorer. Réessayez.';
+
+  @override
   String get careSuggestionEditForbidden =>
       'Vous pouvez consulter les soins de cet animal, mais pas ajouter de rythmes.';
 
