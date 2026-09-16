@@ -1637,7 +1637,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weightReferenceAuthorityGuardianReference => 'Guardian reference';
 
   @override
-  String get weightReferenceAuthorityHistoricalBaseline => 'Historical baseline';
+  String get weightReferenceAuthorityHistoricalBaseline =>
+      'Historical baseline';
 
   @override
   String get weightManagementContextLabel => 'Weight management';
