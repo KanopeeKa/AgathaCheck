@@ -49,10 +49,7 @@ void main() {
     test('co-parent access role resolves to coParent', () {
       expect(
         PetViewerRoleResolver.resolve(
-          pet: _pet(
-            isShared: true,
-            accessRole: PetAccessRole.coParent,
-          ),
+          pet: _pet(isShared: true, accessRole: PetAccessRole.coParent),
           experience: AppExperience.petCare,
         ),
         PetViewerRole.coParent,

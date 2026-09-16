@@ -119,8 +119,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
     } else if (pet['age'] != null) {
       ageDisplay = '${pet['age']} yrs';
     }
-    final photoPath =
-        (pet['photoPath'] ?? pet['photo_path']) as String?;
+    final photoPath = (pet['photoPath'] ?? pet['photo_path']) as String?;
 
     return Scaffold(
       appBar: AppBar(

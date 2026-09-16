@@ -20,8 +20,7 @@ class RecordingSharingRepository implements SharingRepository {
     String petId,
     String token, {
     String accessRole = 'carer',
-  }) async =>
-      'code';
+  }) async => 'code';
 
   @override
   Future<String> acceptShare(String code, String token) async => 'pet-1';
@@ -92,18 +91,21 @@ ProviderContainer makeContainer(RecordingSharingRepository repo) {
 }
 
 void main() {
-  test('hiddenSharedPetsProvider hideSharedPet delegates to repository', () async {
-    final repo = RecordingSharingRepository();
-    final container = makeContainer(repo);
-    addTearDown(container.dispose);
+  test(
+    'hiddenSharedPetsProvider hideSharedPet delegates to repository',
+    () async {
+      final repo = RecordingSharingRepository();
+      final container = makeContainer(repo);
+      addTearDown(container.dispose);
 
-    await container.read(hiddenSharedPetsProvider.future);
-    await container
-        .read(hiddenSharedPetsProvider.notifier)
-        .hideSharedPet('pet-1');
+      await container.read(hiddenSharedPetsProvider.future);
+      await container
+          .read(hiddenSharedPetsProvider.notifier)
+          .hideSharedPet('pet-1');
 
-    expect(repo.hiddenPets, ['pet-1']);
-  });
+      expect(repo.hiddenPets, ['pet-1']);
+    },
+  );
 
   test('petAccessNotifier removeAccess delegates to repository', () async {
     final repo = RecordingSharingRepository();

@@ -101,8 +101,7 @@ class SharingSectionContent extends ConsumerWidget {
 
     final accessAsync = ref.watch(petAccessNotifierProvider(petId));
     final linksAsync = ref.watch(petShareLinksNotifierProvider(petId));
-    final canTransferOwnership =
-        !pet.isShared && pet.organizationId == null;
+    final canTransferOwnership = !pet.isShared && pet.organizationId == null;
 
     return accessAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),

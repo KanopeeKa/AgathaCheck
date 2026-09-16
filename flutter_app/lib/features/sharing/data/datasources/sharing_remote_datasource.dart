@@ -52,9 +52,7 @@ class SharingRemoteDataSource {
   }
 
   Future<SharePreview> getSharePreview(String code) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/share/$code'),
-    );
+    final response = await _client.get(Uri.parse('$baseUrl/api/share/$code'));
     if (response.statusCode == 410) {
       throw SharePreviewExpiredException();
     }

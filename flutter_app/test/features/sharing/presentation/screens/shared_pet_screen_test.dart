@@ -34,8 +34,7 @@ class FakeSharingRepository implements SharingRepository {
     String petId,
     String token, {
     String accessRole = 'carer',
-  }) async =>
-      'code';
+  }) async => 'code';
 
   @override
   Future<String> acceptShare(String code, String token) async => 'pet-1';

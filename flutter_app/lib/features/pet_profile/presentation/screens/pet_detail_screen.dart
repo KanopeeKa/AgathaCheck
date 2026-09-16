@@ -63,13 +63,12 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               semanticsIdentifier: 'pet_detail_sharing_menu_item',
               label: l.sharingSection,
               icon: Icons.people_outline,
-              onPressed: () =>
-                  showPetSharingPanel(
-                    context,
-                    ref,
-                    petId: widget.petId,
-                    pet: pet,
-                  ),
+              onPressed: () => showPetSharingPanel(
+                context,
+                ref,
+                petId: widget.petId,
+                pet: pet,
+              ),
             ),
           if (showExport)
             ScreenOverflowAction(

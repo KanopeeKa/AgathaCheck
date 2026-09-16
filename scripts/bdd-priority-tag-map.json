@@ -121,10 +121,8 @@
     "Scoped share preview hides veterinarian": "P1",
     "Viewing owner first name on shared pet page": "P1",
     "Accepting a share into personal pet list": "P1",
-    "Pending share appears in pet list": "P2",
-    "Accepting a pending share into personal list": "P2",
-    "Accepting a pending share into an organisation": "P2",
-    "Declining a pending share": "P2",
+    "Carer stops following a shared pet": "P2",
+    "Carer hides a shared pet from their list": "P2",
     "Hiding a shared pet via swipe": "P2",
     "Unhiding a shared pet": "P2",
     "Opening an expired or invalid share link": "P1"

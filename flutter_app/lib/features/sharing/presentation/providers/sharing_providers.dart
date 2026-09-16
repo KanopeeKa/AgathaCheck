@@ -227,11 +227,7 @@ class PetShareLinksNotifier extends StateNotifier<AsyncValue<List<ShareLink>>> {
     final token = await _getToken();
     if (token == null) throw Exception('Not authenticated');
     final repo = _ref.read(sharingRepositoryProvider);
-    final code = await repo.createShare(
-      petId,
-      token,
-      accessRole: accessRole,
-    );
+    final code = await repo.createShare(petId, token, accessRole: accessRole);
     await refresh();
     return code;
   }
