@@ -75,8 +75,7 @@ class PetModel {
       createdAt: _parseTimestamp(json['createdAt'] ?? json['created_at']),
       weightReferenceValue:
           (json['weight_reference_value'] as num?)?.toDouble(),
-      weightReferenceAuthority:
-          json['weight_reference_authority'] as String?,
+      weightReferenceAuthority: json['weight_reference_authority'] as String?,
       weightManagementContext:
           (json['weight_management_context'] as String?) ?? 'none',
     );

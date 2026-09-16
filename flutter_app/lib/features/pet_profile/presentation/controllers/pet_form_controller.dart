@@ -143,8 +143,7 @@ class PetFormController {
           weightReferenceAuthority: state.weightReferenceAuthority,
           weightManagementContext: state.weightManagementContext,
           clearWeightReferenceValue: referenceValue == null,
-          clearWeightReferenceAuthority:
-              state.weightReferenceAuthority == null,
+          clearWeightReferenceAuthority: state.weightReferenceAuthority == null,
           clearVetId: state.selectedVetId == null,
           clearGender: state.selectedGender == null,
           clearNeuteredDate: state.neuteredDate == null,

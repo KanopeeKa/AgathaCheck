@@ -1,3 +1,12 @@
+---
+title: CIM Fix Plan
+owner: Documentation Team
+audience: agent
+status: active
+last_updated: 2026-09-15
+tags: [cim,fix-plan,agent]
+---
+
 # CIM Fix Plan
 
 Owner: engineering (agent-executable unless flagged). All changes target the

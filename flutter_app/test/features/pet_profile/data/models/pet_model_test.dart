@@ -350,7 +350,7 @@ void main() {
   });
 
   group('weight-context fields', () {
-    test('fromJson parses weight_reference_* and weight_management_context', () {
+    test('fromJson parses weight_reference_* and management_context', () {
       final model = PetModel.fromJson({
         'id': 'test-id',
         'name': 'Buddy',
@@ -366,7 +366,11 @@ void main() {
     });
 
     test('fromJson defaults weight_management_context to none when absent', () {
-      final model = PetModel.fromJson({'id': 'test-id', 'name': 'Buddy', 'species': 'Dog'});
+      final model = PetModel.fromJson({
+        'id': 'test-id',
+        'name': 'Buddy',
+        'species': 'Dog',
+      });
 
       expect(model.weightManagementContext, 'none');
       expect(model.weightReferenceValue, isNull);
