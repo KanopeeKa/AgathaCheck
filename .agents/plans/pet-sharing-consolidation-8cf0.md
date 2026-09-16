@@ -27,3 +27,22 @@ Move sharing UI, role-aware viewer, co-parent/carer labels, hide affordance, rep
 ### Phase 3 — Tests, BDD, OpenAPI
 
 Jest/Flutter tests, sharing.feature, api-reference, integration PR to main.
+
+## Runtime state
+
+```yaml
+autonomy: active
+current_phase: 1
+last_completed_phase: null
+halt_reason: null
+next_action: babysit+ phase PR to integration
+artifact_ref:
+  branch: cursor/pet-sharing-server-8cf0
+  plan_path: .agents/plans/pet-sharing-consolidation-8cf0.md
+  plan_commit: null
+  snapshot_path: .agents/plans/pet-sharing-consolidation-8cf0.snapshot.json
+  snapshot_commit: null
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```

@@ -51,7 +51,9 @@
       "spawn_allowed": false,
       "merge_mode": "auto",
       "exit_checklist": "single-backend-route",
-      "status": "pending"
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "2",
@@ -76,7 +78,9 @@
       "spawn_allowed": false,
       "merge_mode": "auto",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "3",
@@ -104,5 +108,5 @@
       "status": "pending"
     }
   ],
-  "content_hash": "sha256:798ce3d36faddd5ccae2ab2fad3b8fbc198d212d8d1da92d32a395ca9f377ae0"
+  "content_hash": "sha256:4015cc141fbb1576f9de1fadfdd1add1ced37f8b9020a41d3fad7d8f38f70e2a"
 }
