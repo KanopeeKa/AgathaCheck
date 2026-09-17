@@ -16,6 +16,7 @@ import '../../features/experience/presentation/screens/pet_care/pet_care_all_pet
 import '../../features/experience/presentation/screens/pet_care/pet_care_bulk_share_select_screen.dart';
 import '../../features/experience/presentation/screens/pet_care/add_event_type_picker_sheet.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart';
+import '../../features/pet_tags/presentation/screens/manage_pet_tags_screen.dart';
 import '../../features/pet_profile/domain/entities/pet.dart';
 import '../../features/pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../features/pet_profile/presentation/providers/pet_providers.dart';
@@ -57,6 +58,11 @@ List<RouteBase> buildExperienceRoutes() {
       name: 'account',
       builder: (context, state) => const AccountScreen(),
       routes: [
+        GoRoute(
+          path: 'pet-tags',
+          name: 'accountPetTags',
+          builder: (context, state) => const ManagePetTagsScreen(),
+        ),
         GoRoute(path: 'orgs/:orgId', redirect: (context, state) => '/account'),
       ],
     ),

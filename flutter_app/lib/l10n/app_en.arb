@@ -2335,5 +2335,26 @@
   "awayPlanningScheduleIndeterminateTitle": "Indeterminate care",
   "awayPlanningIndeterminatePending": "Waiting on a prior dose",
   "awayPlanningIndeterminateChain": "Depends on earlier care in the chain",
-  "awayPlanningIndeterminateGeneric": "Timing not yet known"
+  "awayPlanningIndeterminateGeneric": "Timing not yet known",
+  "petTagsTitle": "Pet tags",
+  "petTagsSubtitle": "Private labels to organize your pet list. Only you can see them.",
+  "petTagsManage": "Manage tags",
+  "petTagsAdd": "Add tag",
+  "petTagsRename": "Rename",
+  "petTagsDelete": "Delete tag",
+  "petTagsDeleteConfirm": "Remove \"{name}\" from all pets?",
+  "@petTagsDeleteConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "petTagsEmpty": "No tags yet. Create one to group pets on your All Pets screen.",
+  "petTagsNameHint": "Tag name",
+  "petTagsMyTags": "My tags",
+  "petTagsFilterDimension": "Tags",
+  "petTagsMatchAny": "Match any",
+  "petTagsMatchAll": "Match all",
+  "petTagsNoMatch": "No pets match these tags",
+  "petTagsAssign": "Add tag",
+  "petTagsCreateInSettings": "Create tags in Settings before assigning them here."
 }

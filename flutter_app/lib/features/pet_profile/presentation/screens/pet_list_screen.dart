@@ -26,10 +26,17 @@ import '../widgets/pet_list/pet_list_section_header.dart';
 
 /// Screen that displays the list of all pets owned by the user.
 class PetListScreen extends ConsumerStatefulWidget {
-  const PetListScreen({super.key, this.embeddedInShell = false});
+  const PetListScreen({
+    super.key,
+    this.embeddedInShell = false,
+    this.visiblePetIds,
+  });
 
   /// When true, renders list body only (guardian shell provides top nav).
   final bool embeddedInShell;
+
+  /// When set, only pets whose ids are in this set are shown.
+  final Set<String>? visiblePetIds;
 
   @override
   ConsumerState<PetListScreen> createState() => _PetListScreenState();
@@ -82,7 +89,12 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
         ),
       ),
       data: (allPets) {
-        if (allPets.isEmpty) {
+        final scopedPets = widget.visiblePetIds == null
+            ? allPets
+            : allPets
+                  .where((pet) => widget.visiblePetIds!.contains(pet.id))
+                  .toList();
+        if (scopedPets.isEmpty) {
           return Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -95,14 +107,18 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(l.noPetsYet, style: theme.textTheme.headlineSmall),
-                const SizedBox(height: 8),
                 Text(
-                  l.addFirstPet,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  allPets.isEmpty ? l.noPetsYet : l.petTagsNoMatch,
+                  style: theme.textTheme.headlineSmall,
                 ),
+                const SizedBox(height: 8),
+                if (allPets.isEmpty)
+                  Text(
+                    l.addFirstPet,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
               ],
             ),
           );
@@ -110,7 +126,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
 
         if (widget.embeddedInShell) {
           return PetCareEmbeddedPetsList(
-            allPets: allPets,
+            allPets: scopedPets,
             controller: _controller,
             careSummary: careSummary,
             l: l,
@@ -118,10 +134,10 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
           );
         }
 
-        final orgNames = _controller.getOrgNames(allPets);
-        final hasFosteredPets = _controller.hasFosteredPets(allPets);
+        final orgNames = _controller.getOrgNames(scopedPets);
+        final hasFosteredPets = _controller.hasFosteredPets(scopedPets);
         _controller.syncOrgFilter(orgNames);
-        final filteredPets = _controller.filterPets(allPets);
+        final filteredPets = _controller.filterPets(scopedPets);
 
         if (filteredPets.isEmpty) {
           return Center(

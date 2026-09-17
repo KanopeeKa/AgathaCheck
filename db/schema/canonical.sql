@@ -600,6 +600,18 @@ CREATE TABLE public.pet_share_links (
     access_role character varying(32) DEFAULT 'carer'::character varying NOT NULL,
     CONSTRAINT pet_share_links_access_role_check CHECK (((access_role)::text = ANY ((ARRAY['carer'::character varying, 'co_parent'::character varying])::text[])))
 );
+CREATE TABLE public.pet_tag_assignments (
+    pet_tag_id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+CREATE TABLE public.pet_tags (
+    id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    name character varying(64) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
 CREATE TABLE public.pet_timeline_entries (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -865,6 +877,10 @@ ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_code_key UNIQUE (code);
 ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.pet_tag_assignments
+    ADD CONSTRAINT pet_tag_assignments_pkey PRIMARY KEY (pet_tag_id, pet_id);
+ALTER TABLE ONLY public.pet_tags
+    ADD CONSTRAINT pet_tags_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pet_timeline_entries
     ADD CONSTRAINT pet_timeline_entries_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pets
@@ -956,6 +972,8 @@ CREATE INDEX idx_pet_activity_events_pet_id ON public.pet_activity_events USING 
 CREATE INDEX idx_pet_share_links_code ON public.pet_share_links USING btree (code);
 CREATE INDEX idx_pet_share_links_expires_at ON public.pet_share_links USING btree (expires_at) WHERE ((status)::text = 'pending'::text);
 CREATE INDEX idx_pet_share_links_pet_id ON public.pet_share_links USING btree (pet_id);
+CREATE INDEX idx_pet_tag_assignments_pet_id ON public.pet_tag_assignments USING btree (pet_id);
+CREATE UNIQUE INDEX idx_pet_tags_user_name_lower ON public.pet_tags USING btree (user_id, lower((name)::text));
 CREATE INDEX idx_pet_timeline_entries_pet_id ON public.pet_timeline_entries USING btree (pet_id, start_date);
 CREATE INDEX idx_planned_absence_pets_pet ON public.planned_absence_pets USING btree (pet_id);
 CREATE INDEX idx_planned_absences_user_starts ON public.planned_absences USING btree (user_id, starts_on);
@@ -1178,6 +1196,12 @@ ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_tag_assignments
+    ADD CONSTRAINT pet_tag_assignments_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_tag_assignments
+    ADD CONSTRAINT pet_tag_assignments_pet_tag_id_fkey FOREIGN KEY (pet_tag_id) REFERENCES public.pet_tags(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_tags
+    ADD CONSTRAINT pet_tags_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pet_timeline_entries
     ADD CONSTRAINT pet_timeline_entries_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.pet_timeline_entries
