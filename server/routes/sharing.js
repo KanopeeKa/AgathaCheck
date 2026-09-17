@@ -1,54 +1,18 @@
 import express from 'express';
-import crypto from 'crypto';
-import { v4 as uuidv4 } from 'uuid';
 
 import { createApiLimiter } from '../config/rateLimit.js';
 import { publicError } from '../config/security.js';
 import { extractUserId } from '../lib/requireAuth.js';
-import { createNotification, userDisplayName } from '../lib/notificationHelper.js';
 import {
-  isShareLinkExpired,
-  normalizeShareExpiryDays,
-  shareExpiryFromNow,
-} from '../lib/shareLinkPolicy.js';
-import { buildSharePreviewResponse } from '../lib/sharePreview.js';
-import { normalizeShareAccessRole } from '../lib/petSharing/permissions.js';
-import {
-  CARER_ROLE,
-  CO_PARENT_ROLE,
-  FOSTER_PET_ACCESS_ROLE,
-  PET_ACCESS_ROLES,
-  userCanSharePet,
-} from '../lib/petAccess.js';
+  acceptLink,
+  createLink,
+  getPreview,
+  hidePet,
+  listHidden,
+  revokeLink,
+} from '../services/sharing/shareLinkService.js';
 import { registerInviteRoutes } from './sharing/inviteRoutes.js';
 import { registerShareAccessAggregateRoutes } from './sharing/shareAccessAggregateRoutes.js';
-
-const PET_ACCESS_ROLES_SQL = PET_ACCESS_ROLES.map((r) => `'${r}'`).join(', ');
-
-function generateShareCode() {
-  return crypto.randomBytes(6).toString('base64url').slice(0, 8);
-}
-
-function shareLinkBlockedResponse(link) {
-  if (link.status === 'revoked') {
-    return { status: 410, error: 'Share link is no longer valid' };
-  }
-  if (isShareLinkExpired(link.expires_at)) {
-    return { status: 410, error: 'Share link has expired' };
-  }
-  return null;
-}
-
-async function loadShareLink(pool, code) {
-  const result = await pool.query(
-    `SELECT sl.*, p.user_id as owner_id
-     FROM pet_share_links sl
-     JOIN pets p ON p.id = sl.pet_id
-     WHERE sl.code = $1`,
-    [code]
-  );
-  return result.rows[0] || null;
-}
 
 export default function sharingRoutes(pool) {
   const router = express.Router();
@@ -60,45 +24,20 @@ export default function sharingRoutes(pool) {
   router.post('/', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    const petId = req.body?.pet_id || req.body?.petId;
-    if (!petId) return res.status(400).json({ error: 'pet_id is required' });
     try {
-      if (!(await userCanSharePet(pool, petId, userId))) {
-        return res.status(404).json({ error: 'Pet not found' });
-      }
-      let code;
-      let linkId;
-      let inserted = false;
-      const expiresInDays = normalizeShareExpiryDays(
-        req.body?.expires_in_days ?? req.body?.expiresInDays
-      );
-      const expiresAt = shareExpiryFromNow(expiresInDays);
-      const accessRole = normalizeShareAccessRole(
-        req.body?.access_role ?? req.body?.accessRole ?? CARER_ROLE
-      );
-      for (let attempt = 0; attempt < 5 && !inserted; attempt++) {
-        code = generateShareCode();
-        linkId = uuidv4();
-        try {
-          await pool.query(
-            `INSERT INTO pet_share_links (id, pet_id, code, created_by, status, expires_at, access_role)
-             VALUES ($1, $2, $3, $4, 'pending', $5, $6)`,
-            [linkId, petId, code, userId, expiresAt, accessRole]
-          );
-          inserted = true;
-        } catch (err) {
-          if (err.code !== '23505') throw err;
-        }
-      }
-      if (!inserted) {
-        return res.status(500).json({ error: 'Could not generate share code' });
-      }
-      res.status(201).json({
-        share_code: code,
-        link_id: linkId,
-        expires_at: expiresAt.toISOString(),
-        expires_in_days: expiresInDays,
-        access_role: accessRole,
+      const result = await createLink(pool, {
+        userId,
+        petId: req.body?.pet_id || req.body?.petId,
+        expiresInDays: req.body?.expires_in_days ?? req.body?.expiresInDays,
+        accessRole: req.body?.access_role ?? req.body?.accessRole,
+      });
+      if (result.error) return res.status(result.status).json({ error: result.error });
+      return res.status(result.status).json({
+        share_code: result.share_code,
+        link_id: result.link_id,
+        expires_at: result.expires_at,
+        expires_in_days: result.expires_in_days,
+        access_role: result.access_role,
       });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -109,39 +48,9 @@ export default function sharingRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const result = await pool.query(
-        `DELETE FROM pet_share_links sl
-         USING pets p
-         WHERE sl.id = $1 AND sl.pet_id = p.id
-           AND sl.status IN ('pending', 'active', 'revoked')
-           AND (
-             p.user_id = $2
-             OR EXISTS (
-               SELECT 1 FROM pet_access pa
-               WHERE pa.pet_id = p.id AND pa.user_id = $2
-                 AND pa.role = '${CO_PARENT_ROLE}'
-                 AND COALESCE(pa.hidden, false) = false
-             )
-             OR (
-               sl.created_by = $2
-               AND EXISTS (
-                 SELECT 1 FROM pet_access pa
-                 INNER JOIN foster_placements fp
-                   ON fp.pet_id = pa.pet_id AND fp.foster_user_id = pa.user_id
-                 WHERE pa.pet_id = p.id AND pa.user_id = $2
-                   AND pa.role = '${FOSTER_PET_ACCESS_ROLE}'
-                   AND fp.status = 'in_progress'
-                   AND COALESCE(pa.hidden, false) = false
-               )
-             )
-           )
-         RETURNING sl.id, sl.status`,
-        [req.params.linkId, userId]
-      );
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'Share link not found' });
-      }
-      res.json({ message: 'Share link deleted' });
+      const result = await revokeLink(pool, { userId, linkId: req.params.linkId });
+      if (result.error) return res.status(result.status).json({ error: result.error });
+      return res.json({ message: result.message });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -151,11 +60,8 @@ export default function sharingRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const result = await pool.query(
-        'SELECT pa.*, p.name as pet_name FROM pet_access pa JOIN pets p ON p.id = pa.pet_id WHERE pa.user_id = $1 AND pa.hidden = true',
-        [userId]
-      );
-      res.json(result.rows);
+      const rows = await listHidden(pool, userId);
+      res.json(rows);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -165,23 +71,13 @@ export default function sharingRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const { hidden } = req.body;
-      const accessResult = await pool.query(
-        `SELECT role FROM pet_access
-         WHERE pet_id = $1 AND user_id = $2
-           AND role IN (${PET_ACCESS_ROLES_SQL}, '${FOSTER_PET_ACCESS_ROLE}')
-         LIMIT 1`,
-        [req.params.petId, userId],
-      );
-      if (accessResult.rows.length === 0) {
-        return res.status(403).json({ error: 'Only shared or fostered pets can be hidden' });
-      }
-      const role = accessResult.rows[0].role;
-      await pool.query(
-        'UPDATE pet_access SET hidden = $1 WHERE pet_id = $2 AND user_id = $3 AND role = $4',
-        [hidden, req.params.petId, userId, role],
-      );
-      res.json({ message: hidden ? 'Pet hidden' : 'Pet unhidden' });
+      const result = await hidePet(pool, {
+        userId,
+        petId: req.params.petId,
+        hidden: req.body?.hidden,
+      });
+      if (result.error) return res.status(result.status).json({ error: result.error });
+      return res.json({ message: result.message });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -193,28 +89,9 @@ export default function sharingRoutes(pool) {
       return res.status(404).json({ error: 'Not found' });
     }
     try {
-      const link = await loadShareLink(pool, code);
-      if (!link) {
-        return res.status(404).json({ error: 'Share link not found or expired' });
-      }
-      const blocked = shareLinkBlockedResponse(link);
-      if (blocked) {
-        return res.status(blocked.status).json({ error: blocked.error });
-      }
-
-      const petResult = await pool.query('SELECT * FROM pets WHERE id = $1', [link.pet_id]);
-      if (petResult.rows.length === 0) {
-        return res.status(404).json({ error: 'Pet not found' });
-      }
-      const petRow = petResult.rows[0];
-
-      const ownerResult = await pool.query(
-        'SELECT first_name FROM users WHERE id = $1',
-        [petRow.user_id]
-      );
-      const owner = ownerResult.rows[0] || {};
-
-      res.json(buildSharePreviewResponse(link, petRow, owner));
+      const result = await getPreview(pool, code);
+      if (result.error) return res.status(result.status).json({ error: result.error });
+      return res.json(result);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -227,104 +104,12 @@ export default function sharingRoutes(pool) {
     if (code === 'hidden' || code === 'links') {
       return res.status(404).json({ error: 'Not found' });
     }
-    const client = await pool.connect();
     try {
-      await client.query('BEGIN');
-
-      const linkResult = await client.query(
-        `SELECT sl.*, p.user_id as owner_id, p.name as pet_name
-         FROM pet_share_links sl
-         JOIN pets p ON p.id = sl.pet_id
-         WHERE sl.code = $1
-         FOR UPDATE OF sl`,
-        [code]
-      );
-      const link = linkResult.rows[0];
-      if (!link) {
-        await client.query('ROLLBACK');
-        return res.status(404).json({ error: 'Share link not found or expired' });
-      }
-      const blocked = shareLinkBlockedResponse(link);
-      if (blocked) {
-        await client.query('ROLLBACK');
-        return res.status(blocked.status).json({ error: blocked.error });
-      }
-      if (link.owner_id === userId) {
-        await client.query('ROLLBACK');
-        return res.status(400).json({ error: 'You already own this pet' });
-      }
-
-      const existing = await client.query(
-        'SELECT role FROM pet_access WHERE pet_id = $1 AND user_id = $2',
-        [link.pet_id, userId]
-      );
-      if (existing.rows.length > 0) {
-        await client.query('COMMIT');
-        const role = existing.rows[0].role;
-        return res.json({
-          pet_id: link.pet_id,
-          access_role: PET_ACCESS_ROLES.includes(role) ? role : role,
-          status: role,
-        });
-      }
-
-      if (link.status === 'active') {
-        if (link.claimed_by === userId) {
-          await client.query('COMMIT');
-          return res.json({
-            pet_id: link.pet_id,
-            access_role: link.access_role || CARER_ROLE,
-            status: link.access_role || CARER_ROLE,
-          });
-        }
-        await client.query('ROLLBACK');
-        return res.status(410).json({ error: 'This share link has already been used' });
-      }
-
-      const accessId = uuidv4();
-      const grantedRole = link.access_role || CARER_ROLE;
-      await client.query(
-        `INSERT INTO pet_access (id, pet_id, user_id, role, invited_by, share_link_id)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [accessId, link.pet_id, userId, grantedRole, link.created_by, link.id]
-      );
-
-      await client.query(
-        `UPDATE pet_share_links
-         SET status = 'active', claimed_by = $1, claimed_at = NOW()
-         WHERE id = $2`,
-        [userId, link.id]
-      );
-
-      const accepterResult = await client.query(
-        'SELECT first_name, last_name, email FROM users WHERE id = $1',
-        [userId]
-      );
-      const accepterName = userDisplayName(accepterResult.rows[0] || {});
-
-      await createNotification(client, {
-        userId: link.owner_id,
-        petId: link.pet_id,
-        petName: link.pet_name,
-        title: 'Share accepted',
-        message: `${accepterName} is now following ${link.pet_name}. You can remove them at any time from the Sharing section.`,
-        type: 'general',
-      });
-
-      await client.query('COMMIT');
-      res.json({
-        pet_id: link.pet_id,
-        access_role: grantedRole,
-        status: grantedRole,
-      });
+      const result = await acceptLink(pool, { userId, code });
+      if (result.error) return res.status(result.status).json({ error: result.error });
+      return res.json(result);
     } catch (err) {
-      await client.query('ROLLBACK');
-      if (err.code === '23505') {
-        return res.status(409).json({ error: 'You already have access to this pet' });
-      }
       res.status(500).json({ error: publicError(err) });
-    } finally {
-      client.release();
     }
   });
 

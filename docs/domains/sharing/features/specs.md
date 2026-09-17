@@ -51,7 +51,7 @@ Server splits management checks in `server/lib/petAccess.js`:
 | GET | `/api/pets/:id/invites` | Pending invites for one pet |
 | GET | `/api/share/access?pet_ids=` | Aggregate access + pending invites (max 20 ids) |
 
-Services: `server/services/sharing/shareInviteService.js`, `shareAccessService.js`
+Services: `server/services/sharing/shareInviteService.js`, `shareLinkService.js`, `shareAccessService.js`
 
 Jest: `server/test/sharing/invites/`, `sharing.test.js`
 
@@ -76,4 +76,4 @@ Viewer matrix:
 
 - `PetViewerRole.guardian` → `petParent` rename (viewer enum only)
 - Audit logging extension for share routes — see [changes/deferred.md](../changes/deferred.md)
-- PR2: retrofit `sharing.js` / `petAccessRoutes.js` into service/query modules
+- PR2 (done): `shareLinkService.js` / `shareLinkQueries.js` + extended `shareAccessService` / `shareAccessQueries`; routes are thin HTTP layers. Link creation returns **403** (not 404) when `userCanSharePet` fails — aligned with access routes.
