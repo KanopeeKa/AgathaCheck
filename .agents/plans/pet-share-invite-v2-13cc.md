@@ -29,15 +29,15 @@ Extract sharing.js and petAccessRoutes.js into shareLinkService/shareAccessServi
 ```yaml
 autonomy: active
 current_phase: 1
-last_completed_phase: null
+last_completed_phase: 2
 halt_reason: null
 next_action: "continue phase 1 on branch cursor/pet-share-invite-pr1-13cc"
 artifact_ref:
-  branch: cursor/pet-share-invite-pr1-13cc
+  branch: cursor/pet-share-invite-integration-13cc
   plan_path: .agents/plans/pet-share-invite-v2-13cc.md
-  plan_commit: bdeefc7a15046ead372f4aa1c6aa6ad4a17ef28d
+  plan_commit: 6eb28211b4bce10cce726aeb12106a05856a0d06
   snapshot_path: .agents/plans/pet-share-invite-v2-13cc.snapshot.json
-  snapshot_commit: bdeefc7a15046ead372f4aa1c6aa6ad4a17ef28d
+  snapshot_commit: 6eb28211b4bce10cce726aeb12106a05856a0d06
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
