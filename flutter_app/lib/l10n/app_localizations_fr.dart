@@ -3993,6 +3993,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sharedPets => 'Animaux partagés';
 
   @override
+  String get petsImCaringFor => 'Animaux dont je m\'occupe';
+
+  @override
   String get sharedPetTitle => 'Animal partagé';
 
   @override

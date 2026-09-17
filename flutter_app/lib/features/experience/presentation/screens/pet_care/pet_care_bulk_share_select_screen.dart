@@ -27,7 +27,7 @@ class _PetCareBulkShareSelectScreenState
   final _selectedPetIds = <String>{};
 
   List<Pet> _eligiblePets(List<Pet> allPets) {
-    return petCareDashboardPersonalPets(allPets, _controller);
+    return petCareDashboardShareablePets(allPets, _controller);
   }
 
   void _toggleSelectAll(List<Pet> eligible) {

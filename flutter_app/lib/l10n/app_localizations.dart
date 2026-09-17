@@ -7137,6 +7137,12 @@ abstract class AppLocalizations {
   /// **'Shared Pets'**
   String get sharedPets;
 
+  /// No description provided for @petsImCaringFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets I\'m caring for'**
+  String get petsImCaringFor;
+
   /// No description provided for @sharedPetTitle.
   ///
   /// In en, this message translates to:
