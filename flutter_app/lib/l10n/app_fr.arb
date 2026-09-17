@@ -107,6 +107,7 @@
   "french": "Français",
 
   "myPets": "Mes animaux",
+  "myPetsEyebrow": "MES ANIMAUX",
   "workspaceShelter": "Refuge",
   "workspaceSwitcherLabel": "Choisir votre espace de travail",
   "myFosteredPets": "Mes animaux en famille d'accueil",
@@ -1794,7 +1795,7 @@
   "myVets": "Équipe vétérinaire",
   "vetTeamEyebrow": "ÉQUIPE VÉTÉRINAIRE",
   "vetTeamClinicSubtitle": "Clinique vétérinaire",
-  "allVetTeams": "Toutes les équipes vétérinaires",
+  "allVetTeams": "Tous mes vétérinaires",
   "allAbsences": "Toutes les absences",
   "collectionFilterPersonal": "Personnel",
   "petCareDashboardTitle": "Tableau de bord Suivi",

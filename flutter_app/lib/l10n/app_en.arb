@@ -110,6 +110,7 @@
   "french": "Français",
 
   "myPets": "My Pets",
+  "myPetsEyebrow": "MY PETS",
   "workspaceShelter": "Shelter",
   "workspaceSwitcherLabel": "Choose your workspace",
   "myFosteredPets": "My Fostered Pets",
@@ -1859,7 +1860,7 @@
   "myVets": "Veterinary team",
   "vetTeamEyebrow": "VETERINARY TEAM",
   "vetTeamClinicSubtitle": "Veterinary clinic",
-  "allVetTeams": "All veterinary teams",
+  "allVetTeams": "All Vets",
   "allAbsences": "All absences",
   "collectionFilterPersonal": "Personal",
   "petCareDashboardTitle": "Pet Care dashboard",

@@ -5,7 +5,6 @@ abstract final class PetCareDashboardDecoAssets {
   static const cat = 'assets/dashboard/dashboard-deco-cat.png';
   static const yarnSegment = 'assets/dashboard/dashboard-deco-yarn-segment.png';
   static const yarnBall = 'assets/dashboard/dashboard-deco-yarn-ball.png';
-  static const puppyBowl = 'assets/dashboard/dashboard-deco-puppy-bowl.png';
 }
 
 /// Space- and viewport-gated thresholds for ambient dashboard decorations.
@@ -30,9 +29,6 @@ abstract final class PetCareDashboardDecoThresholds {
 
   /// Reference composition height used inside [FittedBox] scaling.
   static const compositionHeight = 72.0;
-
-  /// Puppy watermark height on wide layouts.
-  static const puppyHeight = 88.0;
 }
 
 enum PetCarePetRailDecoMode { catOnly, catAndBall, full }
@@ -54,14 +50,6 @@ PetCarePetRailDecoMode? petCarePetRailDecoModeForLeftover(double leftover) {
 /// Whether ambient dashboard art is allowed for the current viewport width.
 bool petCareDashboardDecoAllowedForWidth(double viewportWidth) {
   return viewportWidth >= PetCareDashboardDecoThresholds.mobileMaxWidth;
-}
-
-/// Whether the vet-team puppy watermark may appear.
-bool petCareVetTeamPuppyDecoAllowed({
-  required bool useWideDeskLayout,
-  required bool hasVetTeamCards,
-}) {
-  return useWideDeskLayout && hasVetTeamCards;
 }
 
 /// Non-interactive, non-semantic wrapper for ambient dashboard illustrations.
@@ -177,31 +165,6 @@ class PetCarePetRailYarnDeco extends StatelessWidget {
       fit: BoxFit.contain,
       alignment: Alignment.center,
       filterQuality: FilterQuality.medium,
-    );
-  }
-}
-
-/// Lower-right puppy watermark for the vet-team column on wide layouts.
-class PetCareVetTeamPuppyDeco extends StatelessWidget {
-  const PetCareVetTeamPuppyDeco({super.key});
-
-  static const _puppyAspect = 1386 / 758;
-
-  @override
-  Widget build(BuildContext context) {
-    final height = PetCareDashboardDecoThresholds.puppyHeight;
-    final width = height * _puppyAspect;
-
-    return PetCareDashboardAmbientDeco(
-      child: Image.asset(
-        PetCareDashboardDecoAssets.puppyBowl,
-        key: const Key('pet_care_dashboard_vet_team_puppy_deco'),
-        width: width,
-        height: height,
-        fit: BoxFit.contain,
-        alignment: Alignment.bottomRight,
-        filterQuality: FilterQuality.medium,
-      ),
     );
   }
 }

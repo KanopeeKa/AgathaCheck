@@ -387,7 +387,7 @@ void main() {
       );
     });
 
-    testWidgets('places All Actions below the care block when entries exist', (
+    testWidgets('places All Actions on the section chrome row when entries exist', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -398,13 +398,23 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      final chromeRow = find.ancestor(
+        of: find.text('CARE ACTIONS'),
+        matching: find.byType(Row),
+      );
+      expect(chromeRow, findsOneWidget);
+      expect(
+        find.descendant(
+          of: chromeRow,
+          matching: find.byKey(const Key('pet_care_dashboard_care_view_all')),
+        ),
+        findsOneWidget,
+      );
       final blockY = tester
           .getTopLeft(find.byKey(const Key('pet_care_dashboard_care_block')))
           .dy;
-      final linkY = tester
-          .getTopLeft(find.byKey(const Key('pet_care_dashboard_care_view_all')))
-          .dy;
-      expect(linkY, greaterThan(blockY));
+      final chromeY = tester.getTopLeft(chromeRow).dy;
+      expect(chromeY, lessThan(blockY));
     });
   });
 

@@ -30,7 +30,6 @@ void main() {
     AuthState? authState,
     required VetListNotifier vetNotifier,
     PetListNotifier? petNotifier,
-    bool useWideDeskLayout = false,
   }) {
     final resolvedAuthState = authState ?? loggedInAuthState;
     final router = GoRouter(
@@ -39,7 +38,7 @@ void main() {
         GoRoute(
           path: '/pc/home',
           builder: (_, __) => Scaffold(
-            body: PetCareMyVetsSection(useWideDeskLayout: useWideDeskLayout),
+            body: const PetCareMyVetsSection(),
           ),
         ),
         GoRoute(
@@ -78,36 +77,6 @@ void main() {
       ),
     );
   }
-
-  testWidgets('shows puppy watermark only on wide desk layout', (tester) async {
-    await tester.pumpWidget(
-      buildSection(
-        vetNotifier: _FixedVetNotifier(vets),
-        useWideDeskLayout: true,
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(
-      find.byKey(const Key('pet_care_dashboard_vet_team_puppy_deco')),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('hides puppy watermark on narrow desk layout', (tester) async {
-    await tester.pumpWidget(
-      buildSection(
-        vetNotifier: _FixedVetNotifier(vets),
-        useWideDeskLayout: false,
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(
-      find.byKey(const Key('pet_care_dashboard_vet_team_puppy_deco')),
-      findsNothing,
-    );
-  });
 
   testWidgets('shows the care team eyebrow label', (tester) async {
     await tester.pumpWidget(buildSection(vetNotifier: _FixedVetNotifier(vets)));
@@ -257,7 +226,7 @@ void main() {
     await tester.pumpWidget(buildSection(vetNotifier: _FixedVetNotifier(vets)));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('All veterinary teams'));
+    await tester.tap(find.text('All Vets'));
     await tester.pumpAndSettle();
 
     expect(find.text('manage-vets-route'), findsOneWidget);

@@ -63,7 +63,7 @@ class PetCareMyPetsSection extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             PetCareDashboardSectionChrome(
-              title: l.myPets,
+              title: l.myPetsEyebrow,
               linkLabel: l.allPets,
               linkKey: const Key('dashboard_manage_pets_link'),
               onLinkPressed: () => context.go('/pc/pets'),
