@@ -72,7 +72,8 @@
     "063_planned_absence_carers.sql",
     "064_planned_absence_handover.sql",
     "065_pet_access_roles.sql",
-    "066_pet_tags.sql"
+    "066_pet_tags.sql",
+    "067_pet_share_invites.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
