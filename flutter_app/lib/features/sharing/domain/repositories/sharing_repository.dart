@@ -1,4 +1,6 @@
+import '../entities/invite_preview.dart';
 import '../entities/pet_access.dart';
+import '../entities/pet_share_access.dart';
 import '../entities/share_link.dart';
 import '../entities/share_preview.dart';
 
@@ -34,4 +36,25 @@ abstract class SharingRepository {
     required String token,
   });
   Future<List<Map<String, dynamic>>> getHiddenSharedPets(String token);
+
+  Future<CreateShareInviteResult> createInvite({
+    required String inviteeEmail,
+    required List<String> petIds,
+    required String role,
+    required String token,
+    String? locale,
+  });
+
+  Future<List<PetShareAccess>> listAccessForPets(
+    List<String> petIds,
+    String token,
+  );
+
+  Future<InvitePreview> getInvitePreview(String code);
+
+  Future<AcceptShareInviteResult> acceptInviteByCode(String code, String token);
+
+  Future<void> declineInvite(String inviteId, String token);
+
+  Future<void> cancelInvite(String inviteId, String token);
 }

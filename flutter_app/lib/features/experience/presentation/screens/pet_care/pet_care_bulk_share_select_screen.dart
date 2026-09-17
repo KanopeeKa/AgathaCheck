@@ -10,7 +10,6 @@ import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../widgets/experience_shell_scaffold.dart';
 import '../../widgets/pet_care_pets_tile_grid.dart';
 import '../../../domain/entities/app_experience.dart';
-import 'pet_care_bulk_share.dart';
 import 'pet_care_dashboard_helpers.dart';
 
 /// Multi-select screen for bulk-sharing owned guardian pets.
@@ -58,12 +57,11 @@ class _PetCareBulkShareSelectScreenState
       ).showSnackBar(SnackBar(content: Text(l.bulkShareNoneSelected)));
       return;
     }
-    await runBulkShareForPets(context, ref, selected);
     if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l.bulkShareDone)));
-    context.pop();
+    context.push(
+      '/pc/pets/share',
+      extra: selected.map((pet) => pet.id).toList(),
+    );
   }
 
   @override

@@ -178,6 +178,7 @@ export async function createShareInvite(pool, {
         userId: inviteeUser.id,
         petId: pet.pet_id,
         petName: pet.pet_name,
+        healthEntryId: code,
         title: 'Pet sharing invitation',
         message: `${inviterName} invited you to follow ${pet.pet_name}.`,
         type: 'shareInviteReceived',
