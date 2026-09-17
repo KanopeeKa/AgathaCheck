@@ -1384,6 +1384,7 @@
   "acceptShareToHint": "Choisissez où cet animal partagé doit apparaître.",
   "shareDeclined": "Partage refusé",
   "sharedPets": "Animaux partagés",
+  "petsImCaringFor": "Animaux dont je m'occupe",
   "sharedPetTitle": "Animal partagé",
   "sharedPetNotFound": "Animal introuvable ou lien de partage expiré",
   "sharedPetLoadFailed": "Impossible de charger l'animal partagé",

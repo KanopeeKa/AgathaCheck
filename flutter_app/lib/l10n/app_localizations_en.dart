@@ -3926,6 +3926,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sharedPets => 'Shared Pets';
 
   @override
+  String get petsImCaringFor => 'Pets I\'m caring for';
+
+  @override
   String get sharedPetTitle => 'Shared Pet';
 
   @override

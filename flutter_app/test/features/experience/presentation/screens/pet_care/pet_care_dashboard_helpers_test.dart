@@ -1,6 +1,7 @@
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_list_controller.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart';
+import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -76,18 +77,27 @@ void main() {
     },
   );
 
-  test('petCareDashboardSharedPets returns shared pets only', () {
+  test('petCareDashboardCarerPets returns carer pets only', () {
     final pets = [
       const Pet(id: '1', name: 'Mine', species: 'Dog', breed: ''),
       const Pet(
         id: '2',
-        name: 'Shared',
+        name: 'Carer',
         species: 'Cat',
         breed: '',
         isShared: true,
+        accessRole: PetAccessRole.carer,
       ),
       const Pet(
         id: '3',
+        name: 'CoParent',
+        species: 'Dog',
+        breed: '',
+        isShared: true,
+        accessRole: PetAccessRole.coParent,
+      ),
+      const Pet(
+        id: '4',
         name: 'Fostered',
         species: 'Cat',
         breed: '',
@@ -95,8 +105,53 @@ void main() {
       ),
     ];
 
-    final shared = petCareDashboardSharedPets(pets, controller);
-    expect(shared.map((p) => p.name).toList(), ['Shared']);
+    final carer = petCareDashboardCarerPets(pets, controller);
+    expect(carer.map((p) => p.name).toList(), ['Carer']);
+  });
+
+  test('co-parent is personal but not carer or shareable', () {
+    const coParent = Pet(
+      id: 'co',
+      name: 'FamilyDog',
+      species: 'Dog',
+      breed: '',
+      isShared: true,
+      accessRole: PetAccessRole.coParent,
+    );
+    const carer = Pet(
+      id: 'carer',
+      name: 'NeighbourCat',
+      species: 'Cat',
+      breed: '',
+      isShared: true,
+      accessRole: PetAccessRole.carer,
+    );
+    const owned = Pet(id: 'owned', name: 'Mine', species: 'Dog', breed: '');
+    final pets = [coParent, carer, owned];
+
+    expect(
+      petCareDashboardPersonalPets(pets, controller).map((p) => p.id),
+      containsAll(['co', 'owned']),
+    );
+    expect(petCareDashboardCarerPets(pets, controller).map((p) => p.id), [
+      'carer',
+    ]);
+    expect(petCareDashboardShareablePets(pets, controller).map((p) => p.id), [
+      'owned',
+    ]);
+  });
+
+  test('shared pet with null accessRole lands in carer bucket', () {
+    const legacyShared = Pet(
+      id: 'legacy',
+      name: 'Legacy',
+      species: 'Cat',
+      breed: '',
+      isShared: true,
+    );
+
+    expect(petCareDashboardCarerPets([legacyShared], controller), hasLength(1));
+    expect(petCareDashboardPersonalPets([legacyShared], controller), isEmpty);
   });
 
   test('petCareDashboardFosterPets returns foster pets only', () {
@@ -252,9 +307,22 @@ void main() {
             name: 'Shared',
             species: 'Cat',
             isShared: true,
+            accessRole: PetAccessRole.carer,
           ),
         ),
         PetCareTodayPetRelationship.shared,
+      );
+      expect(
+        petCareTodayPetRelationship(
+          const Pet(
+            id: 'co-parent',
+            name: 'Family',
+            species: 'Dog',
+            isShared: true,
+            accessRole: PetAccessRole.coParent,
+          ),
+        ),
+        PetCareTodayPetRelationship.owned,
       );
       expect(
         petCareTodayPetRelationship(

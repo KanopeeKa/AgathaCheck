@@ -1449,6 +1449,7 @@
   "acceptShareToHint": "Choose where this shared pet should appear.",
   "shareDeclined": "Share declined",
   "sharedPets": "Shared Pets",
+  "petsImCaringFor": "Pets I'm caring for",
   "sharedPetTitle": "Shared Pet",
   "sharedPetNotFound": "Pet not found or share link expired",
   "sharedPetLoadFailed": "Failed to load shared pet",
