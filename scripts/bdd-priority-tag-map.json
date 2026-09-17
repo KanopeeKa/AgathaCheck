@@ -22,7 +22,8 @@
     "Dashboard away planning tile opens the hub": "P0",
     "Guardian can save a planned absence from the wizard": "P0",
     "Away planning hub lists a saved upcoming absence": "P1",
-    "Away plan page shows who is caring for each pet": "P1"
+    "Away plan page shows who is caring for each pet": "P1",
+    "Guardian assigns a shared carer on the away plan page": "P2"
   },
   "care_suggestion.feature": {
     "A care suggestion surfaces on the pet profile contextual slot": "P1",
