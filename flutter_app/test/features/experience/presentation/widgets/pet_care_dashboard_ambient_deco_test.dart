@@ -78,5 +78,4 @@ void main() {
       expect(PetCareDashboardDecoThresholds.opacity, 0.8);
     });
   });
-
 }

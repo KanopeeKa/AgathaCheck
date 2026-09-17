@@ -37,9 +37,7 @@ void main() {
       routes: [
         GoRoute(
           path: '/pc/home',
-          builder: (_, __) => Scaffold(
-            body: const PetCareMyVetsSection(),
-          ),
+          builder: (_, __) => Scaffold(body: const PetCareMyVetsSection()),
         ),
         GoRoute(
           path: '/pc/vets/add',
