@@ -97,8 +97,9 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
                       key: Key('care_suggestion_accept_${recommendation.id}'),
                       onPressed: _responding || !canEditHealth
                           ? null
-                          : () =>
-                              _respond(CareRecommendationResponseAction.accept),
+                          : () => _respond(
+                              CareRecommendationResponseAction.accept,
+                            ),
                       child: _responding
                           ? SizedBox(
                               width: 18,
@@ -131,8 +132,9 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
                   TextButton(
                     onPressed: _responding || !canEditHealth
                         ? null
-                        : () =>
-                            _respond(CareRecommendationResponseAction.dismiss),
+                        : () => _respond(
+                            CareRecommendationResponseAction.dismiss,
+                          ),
                     child: Text(l.careSuggestionDismiss),
                   ),
                 ],
