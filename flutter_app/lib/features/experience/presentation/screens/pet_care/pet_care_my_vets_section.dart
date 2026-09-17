@@ -42,7 +42,9 @@ class PetCareMyVetsSection extends ConsumerWidget {
               ? const SizedBox(
                   key: Key('pet_care_vets_auth_waiting'),
                   height: 24,
-                  child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                  child: Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
                 )
               : vetListAsync.when(
                   loading: () => const SizedBox(
@@ -92,12 +94,10 @@ class PetCareMyVetsSection extends ConsumerWidget {
                                 linkedPetsByVetId?[vet.id] ?? const <Pet>[],
                             linkedPetCount: pets == null
                                 ? null
-                                : (linkedPetsByVetId?[vet.id] ??
-                                          const <Pet>[])
+                                : (linkedPetsByVetId?[vet.id] ?? const <Pet>[])
                                       .length,
                             onTap: () {
-                              final returnTo =
-                                  Uri.encodeComponent('/pc/home');
+                              final returnTo = Uri.encodeComponent('/pc/home');
                               context.go(
                                 '/pc/vets/${vet.id}?returnTo=$returnTo',
                               );

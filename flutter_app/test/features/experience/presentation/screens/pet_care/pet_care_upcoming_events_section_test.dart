@@ -387,35 +387,36 @@ void main() {
       );
     });
 
-    testWidgets('places All Actions on the section chrome row when entries exist', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        _buildSection(
-          pets: const [_pet],
-          notifierFactory: () => _FixedHealthEntriesNotifier([_dueEntry]),
-        ),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      'places All Actions on the section chrome row when entries exist',
+      (tester) async {
+        await tester.pumpWidget(
+          _buildSection(
+            pets: const [_pet],
+            notifierFactory: () => _FixedHealthEntriesNotifier([_dueEntry]),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      final chromeRow = find.ancestor(
-        of: find.text('CARE ACTIONS'),
-        matching: find.byType(Row),
-      );
-      expect(chromeRow, findsOneWidget);
-      expect(
-        find.descendant(
-          of: chromeRow,
-          matching: find.byKey(const Key('pet_care_dashboard_care_view_all')),
-        ),
-        findsOneWidget,
-      );
-      final blockY = tester
-          .getTopLeft(find.byKey(const Key('pet_care_dashboard_care_block')))
-          .dy;
-      final chromeY = tester.getTopLeft(chromeRow).dy;
-      expect(chromeY, lessThan(blockY));
-    });
+        final chromeRow = find.ancestor(
+          of: find.text('CARE ACTIONS'),
+          matching: find.byType(Row),
+        );
+        expect(chromeRow, findsOneWidget);
+        expect(
+          find.descendant(
+            of: chromeRow,
+            matching: find.byKey(const Key('pet_care_dashboard_care_view_all')),
+          ),
+          findsOneWidget,
+        );
+        final blockY = tester
+            .getTopLeft(find.byKey(const Key('pet_care_dashboard_care_block')))
+            .dy;
+        final chromeY = tester.getTopLeft(chromeRow).dy;
+        expect(chromeY, lessThan(blockY));
+      },
+    );
   });
 
   testWidgets('error state is retryable and not shown as the empty state', (
