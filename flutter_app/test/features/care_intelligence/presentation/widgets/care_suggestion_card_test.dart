@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart' show SemanticsAction;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/care_intelligence/data/care_intelligence_exception.dart';
@@ -225,7 +226,7 @@ void main() {
   });
 
   testWidgets(
-    'exposes a merged semantics group labelled with the suggestion title',
+    'exposes a named group with the suggestion title and reachable action buttons',
     (tester) async {
       final repository = _FakeCareIntelligenceRepository();
 
@@ -241,24 +242,30 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final semantics = tester.getSemantics(
-        find
-            .descendant(
-              of: find.byKey(const Key('care_suggestion_card_rec-1')),
-              matching: find.byType(MergeSemantics),
-            )
-            .first,
+      final groupSemantics = tester.getSemantics(
+        find.byKey(const ValueKey('care_suggestion_group')),
       );
       expect(
-        semantics.label,
+        groupSemantics.getSemanticsData().label,
         'Suggested by Agatha\nWeight check\nEvery 1 monthly',
       );
+
+      final acceptSemantics = tester.getSemantics(
+        find.byKey(const Key('care_suggestion_accept_rec-1')),
+      );
+      expect(acceptSemantics.getSemanticsData().label, 'Add rhythm');
       expect(
-        find.descendant(
-          of: find.byKey(const Key('care_suggestion_card_rec-1')),
-          matching: find.byKey(const Key('care_suggestion_accept_rec-1')),
-        ),
-        findsOneWidget,
+        acceptSemantics.getSemanticsData().hasAction(SemanticsAction.tap),
+        isTrue,
+      );
+
+      expect(
+        tester.getSemantics(find.text('Not relevant')).getSemanticsData().label,
+        'Not relevant',
+      );
+      expect(
+        tester.getSemantics(find.text('Dismiss')).getSemanticsData().label,
+        'Dismiss',
       );
     },
   );
