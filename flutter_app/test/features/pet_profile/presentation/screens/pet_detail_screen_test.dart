@@ -77,9 +77,8 @@ void main() {
           routes: [
             GoRoute(
               path: 'share',
-              builder: (context, state) => SharePetScreen(
-                petId: state.pathParameters['petId'],
-              ),
+              builder: (context, state) =>
+                  SharePetScreen(petId: state.pathParameters['petId']),
             ),
           ],
         ),
@@ -111,8 +110,9 @@ void main() {
           (ref) => _FakeSharingRepository(),
         ),
         petShareLinksNotifierProvider('pet-1').overrideWith(
-          (ref) => PetShareLinksNotifier(ref, 'pet-1')
-            ..state = const AsyncValue.data([]),
+          (ref) =>
+              PetShareLinksNotifier(ref, 'pet-1')
+                ..state = const AsyncValue.data([]),
         ),
         vetListProvider.overrideWith(FakeVetListNotifier.new),
         latestWeightProvider.overrideWith((ref, arg) => null),
