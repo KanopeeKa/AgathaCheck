@@ -7,6 +7,7 @@ import '../../data/repositories/care_context_repository_impl.dart';
 import '../away_planning_dashboard_tile_state.dart';
 import '../../domain/entities/away_plan_readiness.dart';
 import '../../domain/entities/care_period_coverage.dart';
+import '../../domain/entities/carer_candidate.dart';
 import '../../domain/entities/planned_absence.dart';
 import '../../domain/repositories/care_context_repository.dart';
 
@@ -58,6 +59,11 @@ final awayPlanReadinessProvider =
       return ref
           .read(careContextRepositoryProvider)
           .getAwayPlanReadiness(absenceId);
+    });
+
+final carerCandidatesProvider =
+    FutureProvider.family<List<CarerCandidate>, String>((ref, petId) async {
+      return ref.read(careContextRepositoryProvider).getCarerCandidates(petId);
     });
 
 final awayPlanningDashboardTileProvider =

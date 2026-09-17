@@ -10927,6 +10927,78 @@ abstract class AppLocalizations {
   /// **'Shared user'**
   String get awayPlanningCarerSharedUserFallback;
 
+  /// No description provided for @awayPlanningCarerEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who\'s caring for {petName}'**
+  String awayPlanningCarerEditTitle(String petName);
+
+  /// No description provided for @awayPlanningCarerEditSharedUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from people with shared access'**
+  String get awayPlanningCarerEditSharedUser;
+
+  /// No description provided for @awayPlanningCarerEditNoteOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Add someone without shared access'**
+  String get awayPlanningCarerEditNoteOnly;
+
+  /// No description provided for @awayPlanningCarerEditClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear carer'**
+  String get awayPlanningCarerEditClear;
+
+  /// No description provided for @awayPlanningCarerEditCandidatesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No one else has shared access to this pet yet.'**
+  String get awayPlanningCarerEditCandidatesEmpty;
+
+  /// No description provided for @awayPlanningCarerEditNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get awayPlanningCarerEditNameLabel;
+
+  /// No description provided for @awayPlanningCarerEditNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get awayPlanningCarerEditNoteLabel;
+
+  /// No description provided for @awayPlanningCarerEditCandidatesLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading people with shared access…'**
+  String get awayPlanningCarerEditCandidatesLoading;
+
+  /// No description provided for @awayPlanningCarerEditCandidatesFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load people with shared access.'**
+  String get awayPlanningCarerEditCandidatesFailed;
+
+  /// No description provided for @awayPlanningCarerEditSaveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Save carer'**
+  String get awayPlanningCarerEditSaveAction;
+
+  /// No description provided for @awayPlanningCarerEditSaveFailedForbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'That person no longer has shared access. Pick another or add a name.'**
+  String get awayPlanningCarerEditSaveFailedForbidden;
+
+  /// No description provided for @awayPlanningCarerEditSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the carer. Try again.'**
+  String get awayPlanningCarerEditSaveFailed;
+
   /// No description provided for @awayPlanningRoutineAllDay.
   ///
   /// In en, this message translates to:
