@@ -208,7 +208,7 @@ class _PetCareUpcomingEventsSectionState
           const SizedBox(height: 10),
           KeyedSubtree(
             key: const Key('pet_care_dashboard_care_section'),
-            child: _buildBody(context, entriesAsync, pets, l, careEntries),
+            child: _buildBody(context, entriesAsync, pets, l),
           ),
         ],
       ),
