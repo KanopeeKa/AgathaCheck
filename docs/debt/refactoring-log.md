@@ -21,8 +21,8 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 | Phase | Outcome | Branch | Status |
 |-------|---------|--------|--------|
-| 1 | Invite API + SharePetScreen + invite landing | `cursor/pet-share-invite-pr1-13cc` | in progress |
-| 2 | Retrofit sharing.js / petAccessRoutes layering | `cursor/pet-share-invite-pr2-13cc` | pending |
+| 1 | Invite API + SharePetScreen + invite landing | `cursor/pet-share-invite-pr1-13cc` | done |
+| 2 | Retrofit sharing.js / petAccessRoutes layering | `cursor/pet-share-invite-pr2-13cc` | done |
 
 ---
 
