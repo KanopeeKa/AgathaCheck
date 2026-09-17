@@ -416,7 +416,7 @@ CREATE TABLE public.notifications (
     user_id uuid NOT NULL,
     pet_id uuid,
     pet_name character varying(255),
-    health_entry_id uuid,
+    health_entry_id character varying(255),
     organization_id uuid,
     title character varying(255) DEFAULT ''::character varying,
     type character varying(50) DEFAULT 'general'::character varying,
