@@ -13,9 +13,11 @@
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
+  acceptPetShareInviteByCode,
   acceptShareByCode,
   createHealthEntry,
   createPet,
+  createPetShareInvite,
   createShareLink,
   createVet,
   hideFosteredPet,
@@ -119,6 +121,31 @@ test.describe('Pet sharing', () => {
     await sharedPet.goto(link.share_code);
     await sharedPet.expectLoaded('Bella');
     await sharedPet.expectNoVetSection();
+  });
+
+  test('@smoke-ci logged-in user can accept an email share invite', async ({ page }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const owner = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
+    const pet = await createPet(baseURL, owner.accessToken, 'Bella', 'Dog');
+    const bob = await signupUser(baseURL, { firstName: 'Bob', lastName: 'Follower' });
+    const invite = await createPetShareInvite(
+      baseURL,
+      owner.accessToken,
+      [pet.id],
+      bob.email,
+      'carer',
+    );
+
+    await loginAs(page, bob);
+    await flutterGotoUrl(page, `${baseURL}/#/invite/${invite.code}`);
+    await page.getByRole('button', { name: /Accept|Accepter/i }).click();
+    await expect(page.getByText(/Share accepted|Invitation accepted/i)).toBeVisible({
+      timeout: 15_000,
+    });
+
+    const petList = new PetListPage(page);
+    await petList.expectLoaded();
+    await petList.expectPetVisible('Bella');
   });
 
   test('logged-in user can accept a share into their pet list', async ({ page }) => {

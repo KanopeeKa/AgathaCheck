@@ -10,6 +10,7 @@ import {
   NOTIFICATION_PRIORITY_NORMAL,
   NOTIFICATION_PRIORITY_URGENT,
   NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
+  NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED,
   NOTIFICATION_KIND_ADMINISTRATIVE,
 } from '../lib/notificationKind.js';
 
@@ -32,6 +33,8 @@ describe('notificationKind', () => {
 
   it('maps pending inbox types to administrative kind', () => {
     expect(defaultKindForType(NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED))
+      .toBe(NOTIFICATION_KIND_ADMINISTRATIVE);
+    expect(defaultKindForType(NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED))
       .toBe(NOTIFICATION_KIND_ADMINISTRATIVE);
   });
 

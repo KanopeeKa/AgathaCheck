@@ -16,6 +16,20 @@ void navigateFromNotification(
   final wireType = notification.wireType;
 
   switch (wireType) {
+    case 'shareInviteReceived':
+      final code = notification.healthEntryId;
+      if (code != null && code.isNotEmpty) {
+        context.go('/invite/$code');
+        return;
+      }
+      break;
+    case 'shareInviteAccepted':
+      final petId = notification.petId;
+      if (petId != null && petId.isNotEmpty) {
+        context.go('/pet/$petId/share');
+        return;
+      }
+      break;
     case 'pendingFosterPlacementReceived':
       context.go('/pending-actions?focus=foster');
       return;
@@ -24,9 +38,6 @@ void navigateFromNotification(
       return;
     case 'pendingCustodyTransferReceived':
       context.go('/pending-actions?focus=custody');
-      return;
-    case 'pendingShareReceived':
-      context.go('/pending-actions?focus=share');
       return;
     case 'fosterRequestReceived':
       final orgId = notification.organizationId;
