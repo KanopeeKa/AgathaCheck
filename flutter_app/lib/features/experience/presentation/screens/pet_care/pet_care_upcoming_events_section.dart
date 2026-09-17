@@ -220,7 +220,6 @@ class _PetCareUpcomingEventsSectionState
     AsyncValue<List<HealthEntry>> entriesAsync,
     List<Pet> pets,
     AppLocalizations l,
-    List<HealthEntry> careEntries,
   ) {
     if (entriesAsync is AsyncData<List<HealthEntry>>) {
       return _careData(context, entriesAsync.value, pets, l);
