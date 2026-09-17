@@ -1,5 +1,6 @@
 import '../../domain/entities/away_plan_readiness.dart';
 import '../../domain/entities/care_period_coverage.dart';
+import '../../domain/entities/carer_candidate.dart';
 import '../../domain/entities/planned_absence.dart';
 import '../../domain/repositories/care_context_repository.dart';
 import '../datasources/care_context_remote_datasource.dart';
@@ -61,4 +62,14 @@ class CareContextRepositoryImpl implements CareContextRepository {
   @override
   Future<void> recordHandoverDownload(String absenceId) =>
       _remote.recordHandoverDownload(absenceId);
+
+  @override
+  Future<List<CarerCandidate>> getCarerCandidates(String petId) =>
+      _remote.fetchCarerCandidates(petId);
+
+  @override
+  Future<PlannedAbsence> updatePetCarers({
+    required String absenceId,
+    required List<Map<String, dynamic>> petCarers,
+  }) => _remote.updatePetCarers(absenceId: absenceId, petCarers: petCarers);
 }

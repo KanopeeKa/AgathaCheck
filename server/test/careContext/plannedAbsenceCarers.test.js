@@ -87,6 +87,15 @@ describe('planned absence carers', () => {
           }],
         };
       }
+      if (sql.includes('FROM users') && sql.includes('id = ANY')) {
+        return {
+          rows: [{
+            id: carerUserId,
+            first_name: 'Sarah',
+            last_name: 'Miller',
+          }],
+        };
+      }
       return { rows: [] };
     });
 
@@ -107,7 +116,7 @@ describe('planned absence carers', () => {
       pet_id: petId,
       carer_kind: 'shared_user',
       carer_user_id: carerUserId,
-      carer_name: null,
+      carer_name: 'Sarah M.',
       carer_note: null,
       carer_removed: false,
     }]);

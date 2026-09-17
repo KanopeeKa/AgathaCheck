@@ -7,7 +7,18 @@ import '../models/care_period_coverage_model.dart';
 import '../models/planned_absence_model.dart';
 import '../../domain/entities/away_plan_readiness.dart';
 import '../../domain/entities/care_period_coverage.dart';
+import '../../domain/entities/carer_candidate.dart';
 import '../../domain/entities/planned_absence.dart';
+
+class CareContextApiException implements Exception {
+  CareContextApiException(this.statusCode, this.message);
+
+  final int statusCode;
+  final String message;
+
+  @override
+  String toString() => 'CareContextApiException($statusCode): $message';
+}
 
 class CareContextRemoteDataSource {
   CareContextRemoteDataSource({required this.baseUrl, http.Client? client})
@@ -29,7 +40,10 @@ class CareContextRemoteDataSource {
 
   void _check(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode < 300) return;
-    throw Exception('Care context request failed (${response.statusCode})');
+    throw CareContextApiException(
+      response.statusCode,
+      'Care context request failed (${response.statusCode})',
+    );
   }
 
   Future<CarePeriodCoverageResult> fetchCarePeriodCoverage({
@@ -131,5 +145,37 @@ class CareContextRemoteDataSource {
       body: '{}',
     );
     _check(response);
+  }
+
+  Future<List<CarerCandidate>> fetchCarerCandidates(String petId) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/pets/$petId/carer-candidates'),
+      headers: _headers(),
+    );
+    _check(response);
+    final list = json.decode(response.body) as List<dynamic>;
+    return list
+        .map(
+          (raw) => CarerCandidate(
+            userId: (raw as Map<String, dynamic>)['user_id'] as String? ?? '',
+            displayName: raw['display_name'] as String? ?? '',
+          ),
+        )
+        .toList(growable: false);
+  }
+
+  Future<PlannedAbsence> updatePetCarers({
+    required String absenceId,
+    required List<Map<String, dynamic>> petCarers,
+  }) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId'),
+      headers: _headers(jsonBody: true),
+      body: json.encode({'pet_carers': petCarers}),
+    );
+    _check(response);
+    final body = json.decode(response.body) as Map<String, dynamic>;
+    final absenceJson = body['absence'] as Map<String, dynamic>? ?? body;
+    return PlannedAbsenceModel.fromJson(absenceJson);
   }
 }

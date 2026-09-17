@@ -2298,6 +2298,29 @@
     }
   },
   "awayPlanningCarerSharedUserFallback": "Shared user",
+  "awayPlanningCarerEditTitle": "Who's caring for {petName}",
+  "@awayPlanningCarerEditTitle": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "awayPlanningCarerEditButtonLabel": "Edit carer for {petName}",
+  "@awayPlanningCarerEditButtonLabel": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "awayPlanningCarerEditSharedUser": "Choose from people with shared access",
+  "awayPlanningCarerEditNoteOnly": "Add someone without shared access",
+  "awayPlanningCarerEditClear": "Clear carer",
+  "awayPlanningCarerEditCandidatesEmpty": "No one else has shared access to this pet yet.",
+  "awayPlanningCarerEditNameLabel": "Name",
+  "awayPlanningCarerEditNoteLabel": "Note (optional)",
+  "awayPlanningCarerEditCandidatesLoading": "Loading people with shared access…",
+  "awayPlanningCarerEditCandidatesFailed": "Could not load people with shared access.",
+  "awayPlanningCarerEditSaveAction": "Save carer",
+  "awayPlanningCarerEditSaveFailedForbidden": "That person no longer has shared access. Pick another or add a name.",
+  "awayPlanningCarerEditSaveFailed": "Could not save the carer. Try again.",
   "awayPlanningRoutineAllDay": "All day",
   "awayPlanningRoutineRowSubtitle": "{time} · {count, plural, =1{1 occurrence} other{{count} occurrences}} · {dateRange}",
   "@awayPlanningRoutineRowSubtitle": {

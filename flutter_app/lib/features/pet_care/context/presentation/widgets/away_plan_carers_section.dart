@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../domain/entities/planned_absence.dart';
 import '../../domain/entities/planned_absence_pet_carer.dart';
 import '../away_plan_copy.dart';
+import 'away_plan_carer_edit_dialog.dart';
 
-class AwayPlanCarersSection extends StatelessWidget {
+class AwayPlanCarersSection extends ConsumerWidget {
   const AwayPlanCarersSection({
     super.key,
     required this.absence,
@@ -16,13 +18,14 @@ class AwayPlanCarersSection extends StatelessWidget {
   final Map<String, String> petNamesById;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final carersByPetId = {
       for (final carer in absence.petCarers) carer.petId: carer,
     };
     final orderedPetIds = [...absence.petIds]..sort();
+    final canEdit = !absence.isCancelled;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -40,12 +43,15 @@ class AwayPlanCarersSection extends StatelessWidget {
               children: [
                 for (final petId in orderedPetIds) ...[
                   _CarerRow(
+                    petId: petId,
                     petName: petNamesById[petId] ?? '',
                     carerLabel: AwayPlanCopy.petCarerLabel(
                       l,
                       carersByPetId[petId] ??
                           PlannedAbsencePetCarer(petId: petId),
                     ),
+                    canEdit: canEdit,
+                    onEdit: () => _openEditDialog(context, petId),
                   ),
                   if (petId != orderedPetIds.last) const Divider(height: 24),
                 ],
@@ -56,17 +62,43 @@ class AwayPlanCarersSection extends StatelessWidget {
       ],
     );
   }
+
+  Future<void> _openEditDialog(BuildContext context, String petId) async {
+    final carer = absence.petCarers.firstWhere(
+      (row) => row.petId == petId,
+      orElse: () => PlannedAbsencePetCarer(petId: petId),
+    );
+    await showDialog<bool>(
+      context: context,
+      builder: (_) => AwayPlanCarerEditDialog(
+        absenceId: absence.id,
+        petId: petId,
+        petName: petNamesById[petId] ?? '',
+        currentCarer: carer,
+      ),
+    );
+  }
 }
 
 class _CarerRow extends StatelessWidget {
-  const _CarerRow({required this.petName, required this.carerLabel});
+  const _CarerRow({
+    required this.petId,
+    required this.petName,
+    required this.carerLabel,
+    required this.canEdit,
+    required this.onEdit,
+  });
 
+  final String petId;
   final String petName;
   final String carerLabel;
+  final bool canEdit;
+  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -77,6 +109,16 @@ class _CarerRow extends StatelessWidget {
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
+          ),
+        ),
+        SizedBox(
+          width: 48,
+          height: 48,
+          child: IconButton(
+            key: Key('away_plan_carer_edit_$petId'),
+            tooltip: l.awayPlanningCarerEditButtonLabel(petName),
+            icon: const Icon(Icons.edit_outlined),
+            onPressed: canEdit ? onEdit : null,
           ),
         ),
       ],

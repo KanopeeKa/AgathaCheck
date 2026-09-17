@@ -66,6 +66,50 @@ export function formatCarerCandidateDisplayName(row) {
 }
 
 /**
+ * Enrich `shared_user` absence pet rows with the collaborator's display name
+ * (`carer_name`), sourced from `users` so reads (GET detail, PATCH response,
+ * list, handover PDF) show the person's name instead of falling back to
+ * "Shared user". `note_only` rows already carry their `carer_name`; rows whose
+ * `carer_user_id` can no longer be resolved are left untouched (the client
+ * renders those as `carer_removed`).
+ *
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {object[]} petRows
+ * @returns {Promise<object[]>}
+ */
+export async function enrichSharedUserCarerNames(pool, petRows) {
+  if (!Array.isArray(petRows) || petRows.length === 0) return petRows;
+  const userIds = [
+    ...new Set(
+      petRows
+        .filter(
+          (row) =>
+            row.carer_kind === CARER_KIND_SHARED_USER && row.carer_user_id,
+        )
+        .map((row) => row.carer_user_id),
+    ),
+  ];
+  if (userIds.length === 0) return petRows;
+  const result = await pool.query(
+    `SELECT id, first_name, last_name
+     FROM users
+     WHERE id = ANY($1::uuid[])`,
+    [userIds],
+  );
+  const namesById = new Map(
+    result.rows.map((row) => [row.id, formatCarerCandidateDisplayName(row)]),
+  );
+  return petRows.map((row) => {
+    if (row.carer_kind !== CARER_KIND_SHARED_USER || !row.carer_user_id) {
+      return row;
+    }
+    const display = namesById.get(row.carer_user_id);
+    if (!display) return row;
+    return { ...row, carer_name: display };
+  });
+}
+
+/**
  * @param {object} row
  */
 export function carerRowToMap(row) {

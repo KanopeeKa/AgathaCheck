@@ -4,6 +4,7 @@
  * Scenario: Guardian can save a planned absence from the wizard
  * Scenario: Away planning hub lists a saved upcoming absence
  * Scenario: Away plan page shows who is caring for each pet
+ * Scenario: Guardian assigns a shared carer on the away plan page
  */
 import { test, loginAs } from '../fixtures/auth.fixture';
 import { AwayPlanningPage } from '../pages/away-planning.page';
@@ -89,5 +90,9 @@ test.describe('Away planning', () => {
     await away.expectPlanPageLoaded();
     await away.expectWhoIsCaringSection();
     await away.expectPetCarerRow('PlanPet', 'No carer assigned');
+  });
+
+  test.skip('Guardian assigns a shared carer on the away plan page', async () => {
+    // TODO: implement when e2e has pet-sharing API helpers (share collaborator, assign carer, assert label).
   });
 });

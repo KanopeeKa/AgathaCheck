@@ -6138,6 +6138,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get awayPlanningCarerSharedUserFallback => 'Shared user';
 
   @override
+  String awayPlanningCarerEditTitle(String petName) {
+    return 'Who\'s caring for $petName';
+  }
+
+  @override
+  String awayPlanningCarerEditButtonLabel(String petName) {
+    return 'Edit carer for $petName';
+  }
+
+  @override
+  String get awayPlanningCarerEditSharedUser =>
+      'Choose from people with shared access';
+
+  @override
+  String get awayPlanningCarerEditNoteOnly =>
+      'Add someone without shared access';
+
+  @override
+  String get awayPlanningCarerEditClear => 'Clear carer';
+
+  @override
+  String get awayPlanningCarerEditCandidatesEmpty =>
+      'No one else has shared access to this pet yet.';
+
+  @override
+  String get awayPlanningCarerEditNameLabel => 'Name';
+
+  @override
+  String get awayPlanningCarerEditNoteLabel => 'Note (optional)';
+
+  @override
+  String get awayPlanningCarerEditCandidatesLoading =>
+      'Loading people with shared access…';
+
+  @override
+  String get awayPlanningCarerEditCandidatesFailed =>
+      'Could not load people with shared access.';
+
+  @override
+  String get awayPlanningCarerEditSaveAction => 'Save carer';
+
+  @override
+  String get awayPlanningCarerEditSaveFailedForbidden =>
+      'That person no longer has shared access. Pick another or add a name.';
+
+  @override
+  String get awayPlanningCarerEditSaveFailed =>
+      'Could not save the carer. Try again.';
+
+  @override
   String get awayPlanningRoutineAllDay => 'All day';
 
   @override

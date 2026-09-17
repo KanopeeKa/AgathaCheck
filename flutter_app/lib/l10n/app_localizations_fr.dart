@@ -6246,6 +6246,56 @@ class AppLocalizationsFr extends AppLocalizations {
   String get awayPlanningCarerSharedUserFallback => 'Utilisateur partagé';
 
   @override
+  String awayPlanningCarerEditTitle(String petName) {
+    return 'Qui s\'occupe de $petName';
+  }
+
+  @override
+  String awayPlanningCarerEditButtonLabel(String petName) {
+    return 'Modifier le soignant de $petName';
+  }
+
+  @override
+  String get awayPlanningCarerEditSharedUser =>
+      'Choisir parmi les personnes avec accès partagé';
+
+  @override
+  String get awayPlanningCarerEditNoteOnly =>
+      'Ajouter quelqu\'un sans accès partagé';
+
+  @override
+  String get awayPlanningCarerEditClear => 'Effacer le soignant';
+
+  @override
+  String get awayPlanningCarerEditCandidatesEmpty =>
+      'Personne d\'autre n\'a encore d\'accès partagé à cet animal.';
+
+  @override
+  String get awayPlanningCarerEditNameLabel => 'Nom';
+
+  @override
+  String get awayPlanningCarerEditNoteLabel => 'Note (facultatif)';
+
+  @override
+  String get awayPlanningCarerEditCandidatesLoading =>
+      'Chargement des personnes avec accès partagé…';
+
+  @override
+  String get awayPlanningCarerEditCandidatesFailed =>
+      'Impossible de charger les personnes avec accès partagé.';
+
+  @override
+  String get awayPlanningCarerEditSaveAction => 'Enregistrer le soignant';
+
+  @override
+  String get awayPlanningCarerEditSaveFailedForbidden =>
+      'Cette personne n\'a plus d\'accès partagé. Choisissez-en une autre ou ajoutez un nom.';
+
+  @override
+  String get awayPlanningCarerEditSaveFailed =>
+      'Impossible d\'enregistrer le soignant. Réessayez.';
+
+  @override
   String get awayPlanningRoutineAllDay => 'Toute la journée';
 
   @override

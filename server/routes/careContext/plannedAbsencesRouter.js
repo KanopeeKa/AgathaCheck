@@ -8,6 +8,7 @@ import {
   PLANNED_ABSENCE_PROVENANCE_USER_DECLARED,
   PLANNED_ABSENCE_STATUS_ACTIVE,
   PLANNED_ABSENCE_STATUS_CANCELLED,
+  enrichSharedUserCarerNames,
   validateAbsenceDateWindow,
   validateCarerInput,
 } from '../../lib/care/plannedAbsence.js';
@@ -34,7 +35,7 @@ async function loadAbsencePets(pool, absenceId) {
      ORDER BY pet_id`,
     [absenceId]
   );
-  return result.rows;
+  return enrichSharedUserCarerNames(pool, result.rows);
 }
 
 /**
@@ -52,7 +53,9 @@ async function loadPetsByAbsenceIds(pool, absenceIds) {
      ORDER BY pet_id`,
     [absenceIds]
   );
-  for (const row of result.rows) {
+  if (result.rows.length === 0) return map;
+  const enriched = await enrichSharedUserCarerNames(pool, result.rows);
+  for (const row of enriched) {
     const list = map.get(row.planned_absence_id) || [];
     list.push(row);
     map.set(row.planned_absence_id, list);

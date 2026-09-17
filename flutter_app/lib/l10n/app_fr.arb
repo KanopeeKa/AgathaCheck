@@ -2199,6 +2199,29 @@
     }
   },
   "awayPlanningCarerSharedUserFallback": "Utilisateur partagé",
+  "awayPlanningCarerEditTitle": "Qui s'occupe de {petName}",
+  "@awayPlanningCarerEditTitle": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "awayPlanningCarerEditButtonLabel": "Modifier le soignant de {petName}",
+  "@awayPlanningCarerEditButtonLabel": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "awayPlanningCarerEditSharedUser": "Choisir parmi les personnes avec accès partagé",
+  "awayPlanningCarerEditNoteOnly": "Ajouter quelqu'un sans accès partagé",
+  "awayPlanningCarerEditClear": "Effacer le soignant",
+  "awayPlanningCarerEditCandidatesEmpty": "Personne d'autre n'a encore d'accès partagé à cet animal.",
+  "awayPlanningCarerEditNameLabel": "Nom",
+  "awayPlanningCarerEditNoteLabel": "Note (facultatif)",
+  "awayPlanningCarerEditCandidatesLoading": "Chargement des personnes avec accès partagé…",
+  "awayPlanningCarerEditCandidatesFailed": "Impossible de charger les personnes avec accès partagé.",
+  "awayPlanningCarerEditSaveAction": "Enregistrer le soignant",
+  "awayPlanningCarerEditSaveFailedForbidden": "Cette personne n'a plus d'accès partagé. Choisissez-en une autre ou ajoutez un nom.",
+  "awayPlanningCarerEditSaveFailed": "Impossible d'enregistrer le soignant. Réessayez.",
   "awayPlanningRoutineAllDay": "Toute la journée",
   "awayPlanningRoutineRowSubtitle": "{time} · {count, plural, =1{1 occurrence} other{{count} occurrences}} · {dateRange}",
   "@awayPlanningRoutineRowSubtitle": {
