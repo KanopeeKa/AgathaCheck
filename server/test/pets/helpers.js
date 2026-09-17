@@ -90,10 +90,22 @@ export function createMockPool(queryHandler) {
       if (sql.includes('false AS is_shared') || sql.includes('UNION ALL')) {
         return { rows: [makePetRow({ is_shared: false })] };
       }
-      if (sql.includes('FROM pet_access pa') && sql.includes("role IN ('shared', 'guardian')")) {
+      if (sql.includes('FROM pet_access pa') && sql.includes("role IN ('carer', 'co_parent')")) {
         return { rows: [] };
       }
-      if (sql.includes('DELETE FROM pet_access WHERE pet_id')) {
+      if (sql.includes('UPDATE pet_access') && sql.includes('SET role = $1')) {
+        return { rows: [{ id: 'pa-1', role: params?.[0] || 'carer' }] };
+      }
+      if (
+        sql.includes('DELETE FROM pet_access')
+        && sql.includes('pet_id = $1')
+        && sql.includes('user_id = $2')
+        && sql.includes('role IN')
+        && sql.includes('RETURNING id')
+      ) {
+        return { rows: [{ id: 'pa-1' }] };
+      }
+      if (sql.includes('DELETE FROM pet_access WHERE pet_id = $1 AND user_id = $2')) {
         return { rows: [{ id: 'pa-1' }] };
       }
       if (sql.includes('INSERT INTO notifications')) {

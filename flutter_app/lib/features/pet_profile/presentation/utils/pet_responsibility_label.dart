@@ -7,8 +7,10 @@ String petResponsibilityLabel(AppLocalizations l, Pet pet, PetViewerRole role) {
   switch (role) {
     case PetViewerRole.guardian:
       return l.petResponsibilityGuardian;
+    case PetViewerRole.coParent:
+      return l.coParent;
     case PetViewerRole.sharedCarer:
-      return l.sharedWithGroupTitle(pet.primaryHolderName ?? l.petGuardian);
+      return l.sharedWithGroupTitle(pet.petParentName ?? l.petGuardian);
     case PetViewerRole.fosterCarer:
       return l.fosteredViaGroupTitle(pet.organizationName ?? '');
     case PetViewerRole.organization:

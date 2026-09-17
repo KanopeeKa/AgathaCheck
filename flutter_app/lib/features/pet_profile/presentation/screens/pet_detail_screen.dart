@@ -11,7 +11,7 @@ import '../controllers/download_report_controller.dart';
 import '../providers/pet_detail_viewer_context_provider.dart';
 import '../providers/pet_providers.dart';
 import '../widgets/pet_detail/pet_detail_scroll_body.dart';
-import 'widgets/sharing_section.dart';
+import '../../../sharing/presentation/pet_sharing_panel.dart';
 
 class PetDetailScreen extends ConsumerStatefulWidget {
   const PetDetailScreen({super.key, required this.petId});
@@ -63,8 +63,12 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               semanticsIdentifier: 'pet_detail_sharing_menu_item',
               label: l.sharingSection,
               icon: Icons.people_outline,
-              onPressed: () =>
-                  showSharingSheet(context, ref, petId: widget.petId, pet: pet),
+              onPressed: () => showPetSharingPanel(
+                context,
+                ref,
+                petId: widget.petId,
+                pet: pet,
+              ),
             ),
           if (showExport)
             ScreenOverflowAction(

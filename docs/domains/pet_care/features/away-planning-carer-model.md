@@ -53,7 +53,7 @@ Constraints (migration `063`):
 
 - `PATCH /api/planned-absences/:id` accepts `pet_carers: [{ pet_id, carer_kind, … }]`.
 - Each `pet_id` must already be on the absence.
-- `shared_user`: `carer_user_id` must reference a user with `pet_access` on **that pet** in `COLLABORATOR_ROLES` (`shared`, `guardian`). `foster` excluded. Returns `403` when invalid.
+- `shared_user`: `carer_user_id` must reference a user with `pet_access` on **that pet** in `PET_ACCESS_ROLES` (`carer`, `co_parent`). `foster` excluded. Returns `403` when invalid.
 - Carer writes bump `planned_absences.updated_at`.
 - Dates + pets alone are a valid save — carers are optional (D-AWAY-010).
 

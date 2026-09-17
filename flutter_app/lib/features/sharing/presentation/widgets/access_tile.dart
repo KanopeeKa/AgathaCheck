@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/providers/api_base_url_provider.dart';
-import '../../../../../core/utils/resolve_static_asset_url.dart';
-import '../../../../../l10n/app_localizations.dart';
-import '../../../../sharing/domain/entities/pet_access.dart';
-import '../../../../sharing/presentation/providers/sharing_providers.dart';
+import '../../../../core/providers/api_base_url_provider.dart';
+import '../../../../core/utils/resolve_static_asset_url.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/pet_access.dart';
+import '../providers/sharing_providers.dart';
 
 class AccessTile extends ConsumerWidget {
   const AccessTile({required this.petId, required this.access});
@@ -20,8 +20,9 @@ class AccessTile extends ConsumerWidget {
     final user = access.user;
     final displayName = user?.displayName ?? 'User #${access.userId}';
     final initials = user?.initials ?? '?';
-    final isGuardian = access.role == PetAccessRole.guardian;
-    final roleLabel = isGuardian ? l.guardian : l.sharing;
+    final roleLabel = access.role == PetAccessRole.coParent
+        ? l.coParent
+        : l.sharing;
 
     final resolvedPhotoUrl = resolveStaticAssetUrl(
       user?.photoUrl ?? '',

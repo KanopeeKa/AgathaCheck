@@ -1,3 +1,5 @@
+import '../../../sharing/domain/entities/pet_access.dart';
+
 /// Represents a pet entity in the domain layer.
 ///
 /// This is the core business object that holds all information
@@ -30,7 +32,8 @@ class Pet {
     this.fosterPlacementStatus,
     this.fosterName,
     this.fosterEndDate,
-    this.primaryHolderName,
+    this.petParentName,
+    this.accessRole,
     this.createdAt,
     this.weightReferenceValue,
     this.weightReferenceAuthority,
@@ -61,7 +64,8 @@ class Pet {
   final String? fosterPlacementStatus;
   final String? fosterName;
   final DateTime? fosterEndDate;
-  final String? primaryHolderName;
+  final String? petParentName;
+  final PetAccessRole? accessRole;
   final DateTime? createdAt;
   final double? weightReferenceValue;
   final String? weightReferenceAuthority;
@@ -129,7 +133,8 @@ class Pet {
     String? fosterPlacementStatus,
     String? fosterName,
     DateTime? fosterEndDate,
-    String? primaryHolderName,
+    String? petParentName,
+    PetAccessRole? accessRole,
     DateTime? createdAt,
     double? weightReferenceValue,
     String? weightReferenceAuthority,
@@ -169,7 +174,8 @@ class Pet {
           fosterPlacementStatus ?? this.fosterPlacementStatus,
       fosterName: fosterName ?? this.fosterName,
       fosterEndDate: fosterEndDate ?? this.fosterEndDate,
-      primaryHolderName: primaryHolderName ?? this.primaryHolderName,
+      petParentName: petParentName ?? this.petParentName,
+      accessRole: accessRole ?? this.accessRole,
       createdAt: createdAt ?? this.createdAt,
       weightReferenceValue: clearWeightReferenceValue
           ? null

@@ -23,4 +23,15 @@ void main() {
       expect(user.initials, 'CH');
     });
   });
+
+  group('PetAccessRoleWire', () {
+    test('maps server roles to domain roles', () {
+      expect(PetAccessRoleWire.fromWire('carer'), PetAccessRole.carer);
+      expect(PetAccessRoleWire.fromWire('co_parent'), PetAccessRole.coParent);
+      expect(PetAccessRoleWire.fromWire('shared'), PetAccessRole.carer);
+      expect(PetAccessRoleWire.fromWire('guardian'), PetAccessRole.coParent);
+      expect(PetAccessRole.carer.toWire(), 'carer');
+      expect(PetAccessRole.coParent.toWire(), 'co_parent');
+    });
+  });
 }

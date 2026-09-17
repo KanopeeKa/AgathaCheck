@@ -11,7 +11,7 @@ import {
   validateAbsenceDateWindow,
   validateCarerInput,
 } from '../../lib/care/plannedAbsence.js';
-import { COLLABORATOR_ROLES, userCanManagePet } from '../../lib/petAccess.js';
+import { PET_ACCESS_ROLES, userCanManageCare } from '../../lib/petAccess.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 import {
   absenceResponse,
@@ -24,7 +24,7 @@ import {
   overlapWarningsForAbsence,
 } from './plannedAbsenceOverlap.js';
 
-const COLLABORATOR_ROLES_SQL = COLLABORATOR_ROLES.map((role) => `'${role}'`).join(', ');
+const PET_ACCESS_ROLES_SQL = PET_ACCESS_ROLES.map((role) => `'${role}'`).join(', ');
 
 async function loadAbsencePets(pool, absenceId) {
   const result = await pool.query(
@@ -74,7 +74,7 @@ async function assertManageablePets(pool, userId, petIds) {
   }
   const unique = [...new Set(petIds)];
   for (const petId of unique) {
-    if (!(await userCanManagePet(pool, petId, userId))) {
+    if (!(await userCanManageCare(pool, petId, userId))) {
       return { ok: false, status: 403, error: 'Forbidden' };
     }
   }
@@ -85,7 +85,7 @@ async function isCarerCandidate(pool, petId, carerUserId) {
   const result = await pool.query(
     `SELECT 1 FROM pet_access
      WHERE pet_id = $1 AND user_id = $2
-       AND role IN (${COLLABORATOR_ROLES_SQL})
+       AND role IN (${PET_ACCESS_ROLES_SQL})
        AND COALESCE(hidden, false) = false
      LIMIT 1`,
     [petId, carerUserId]

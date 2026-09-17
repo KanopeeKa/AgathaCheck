@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import '../../../sharing/domain/entities/pet_access.dart';
 import '../../domain/entities/pet.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../utils/pet_profile_normalize.dart';
@@ -29,7 +30,8 @@ class PetModel {
     this.organizationName,
     this.fosterPlacementStatus,
     this.fosterName,
-    this.primaryHolderName,
+    this.petParentName,
+    this.accessRole,
     this.createdAt,
     this.weightReferenceValue,
     this.weightReferenceAuthority,
@@ -69,9 +71,13 @@ class PetModel {
       organizationName: json['organization_name'] as String?,
       fosterPlacementStatus: json['foster_placement_status'] as String?,
       fosterName: json['foster_name'] as String?,
-      primaryHolderName:
+      petParentName:
+          json['pet_parent_name'] as String? ??
           json['primary_holder_name'] as String? ??
           json['guardian_name'] as String?,
+      accessRole: json['access_role'] != null
+          ? PetAccessRoleWire.fromWire(json['access_role']?.toString())
+          : null,
       createdAt: _parseTimestamp(json['createdAt'] ?? json['created_at']),
       weightReferenceValue: (json['weight_reference_value'] as num?)
           ?.toDouble(),
@@ -106,7 +112,8 @@ class PetModel {
       organizationName: pet.organizationName,
       fosterPlacementStatus: pet.fosterPlacementStatus,
       fosterName: pet.fosterName,
-      primaryHolderName: pet.primaryHolderName,
+      petParentName: pet.petParentName,
+      accessRole: pet.accessRole,
       createdAt: pet.createdAt,
       weightReferenceValue: pet.weightReferenceValue,
       weightReferenceAuthority: pet.weightReferenceAuthority,
@@ -141,7 +148,8 @@ class PetModel {
   final String? organizationName;
   final String? fosterPlacementStatus;
   final String? fosterName;
-  final String? primaryHolderName;
+  final String? petParentName;
+  final PetAccessRole? accessRole;
   final DateTime? createdAt;
   final double? weightReferenceValue;
   final String? weightReferenceAuthority;
@@ -205,7 +213,8 @@ class PetModel {
       organizationName: organizationName,
       fosterPlacementStatus: fosterPlacementStatus,
       fosterName: fosterName,
-      primaryHolderName: primaryHolderName,
+      petParentName: petParentName,
+      accessRole: accessRole,
       createdAt: createdAt,
       weightReferenceValue: weightReferenceValue,
       weightReferenceAuthority: weightReferenceAuthority,

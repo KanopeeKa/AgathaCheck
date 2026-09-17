@@ -7,12 +7,9 @@
  * Scenario: Viewing owner first name on shared pet page
  * Scenario: Accepting a share into personal pet list
  * Scenario: Opening an expired or invalid share link
- * Scenario: Hiding a shared pet via swipe
- * Scenario: Pending share appears in pet list
- * Scenario: Accepting a pending share into personal list
- * Scenario: Accepting a pending share into an organisation
- * Scenario: Declining a pending share
+ * Scenario: Hiding a shared pet
  * Scenario: Unhiding a shared pet
+ * Scenario: Revoking collaborator access (owner)
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
@@ -26,11 +23,6 @@ import {
   signupUser,
   updatePetVet,
 } from '../support/api';
-import {
-  acceptPendingShareApi,
-  declinePendingShareApi,
-  fetchPendingShares,
-} from '../pages/pet-profile.seed';
 import { checkA11y } from '../support/axe';
 import { clearLiveApiAccess, prepareLiveApiAccess } from '../support/waf';
 import { clearBrowserSessionState } from '../support/session';
@@ -155,20 +147,13 @@ test.describe('Pet sharing', () => {
     await sharedPet.expectInvalidLink();
   });
 
-  test('@legacy pending share API returns empty and pet list has no pending section', async ({
-    page,
-    testUser,
-  }) => {
-    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const pending = await fetchPendingShares(baseURL, testUser.accessToken);
-    expect(pending).toEqual([]);
-
+  test('pet list has no pending shares section', async ({ page, testUser }) => {
     const petList = await loginAs(page, testUser);
     await petList.openManagePets();
     await petList.expectNoPendingSharesSection();
   });
 
-  test('accepting a share link adds pet to personal list (pending-flow equivalent)', async ({
+  test('accepting a share link adds pet to personal list', async ({
     page,
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
@@ -185,29 +170,6 @@ test.describe('Pet sharing', () => {
     const petList = new PetListPage(page);
     await petList.expectLoaded();
     await petList.expectPetVisible('Bella');
-  });
-
-  test.skip('@legacy accepting pending share into organisation returns deprecated status', async () => {
-    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const owner = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
-    const bob = await signupUser(baseURL, { firstName: 'Bob', lastName: 'Member' });
-    const org = await seedOrgWithMember(baseURL, owner, bob, 'Pet Care Team');
-    const pet = await createPet(baseURL, owner.accessToken, 'Bella', 'Dog');
-
-    const status = await acceptPendingShareApi(baseURL, bob.accessToken, pet.id, org.id);
-    expect(status).toBe(410);
-  });
-
-  test('@legacy declining pending share returns deprecated status', async () => {
-    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const owner = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
-    const bob = await signupUser(baseURL, { firstName: 'Bob', lastName: 'Follower' });
-    const pet = await createPet(baseURL, owner.accessToken, 'Bella', 'Dog');
-
-    const status = await declinePendingShareApi(baseURL, bob.accessToken, pet.id);
-    expect(status).toBe(410);
-    const pending = await fetchPendingShares(baseURL, bob.accessToken);
-    expect(pending).toEqual([]);
   });
 
   test('user can unhide a previously hidden shared pet', async ({ page }) => {

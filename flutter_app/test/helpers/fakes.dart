@@ -11,7 +11,6 @@ import 'package:pet_profile_app/features/health_tracking/presentation/providers/
 import 'package:pet_profile_app/features/notifications/domain/entities/app_notification.dart';
 import 'package:pet_profile_app/features/notifications/domain/entities/notification_preferences.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
-import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';
 import 'package:pet_profile_app/features/subscription/data/services/revenuecat_service.dart';
 import 'package:pet_profile_app/features/subscription/domain/entities/subscription_status.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
@@ -201,11 +200,6 @@ class TestNotificationPreferencesNotifier
     lastSaved = preferences;
     state = AsyncValue.data(preferences);
   }
-}
-
-class FakePendingSharesNotifier extends PendingSharesNotifier {
-  @override
-  Future<List<PendingShare>> build() async => [];
 }
 
 /// Test double for [RevenueCatService] — avoids native Purchases SDK in widget tests.

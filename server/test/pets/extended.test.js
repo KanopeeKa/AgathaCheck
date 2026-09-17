@@ -108,12 +108,13 @@ describe('Pets API', () => {
       expect(Array.isArray(res.body)).toBe(true);
     });
 
-    it('PUT /:id/access/:userId/role returns 501 (not implemented)', async () => {
+    it('PUT /:id/access/:userId/role updates carer/co_parent role', async () => {
       const res = await request(app)
         .put(`/api/pets/${petId}/access/user-42/role`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ role: 'editor' });
-      expect(res.statusCode).toBe(501);
+        .send({ role: 'co_parent' });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('role', 'co_parent');
     });
 
     it('DELETE /:id/access/:userId removes access and notifies user', async () => {

@@ -2383,6 +2383,18 @@ abstract class AppLocalizations {
   /// **'Guardian'**
   String get guardian;
 
+  /// No description provided for @coParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Co-parent'**
+  String get coParent;
+
+  /// No description provided for @hideFromMyPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide from my pets'**
+  String get hideFromMyPets;
+
   /// No description provided for @viewOnly.
   ///
   /// In en, this message translates to:
@@ -4002,6 +4014,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Shared'**
   String get pdfShared;
+
+  /// No description provided for @pdfCarer.
+  ///
+  /// In en, this message translates to:
+  /// **'Carer'**
+  String get pdfCarer;
+
+  /// No description provided for @pdfCoParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Co-parent'**
+  String get pdfCoParent;
 
   /// No description provided for @pdfUserNumber.
   ///

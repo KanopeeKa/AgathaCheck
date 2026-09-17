@@ -14,21 +14,12 @@ export async function seedSharingNotifications(client) {
   // Carol has shared access to Buddy
   await client.query(
     `INSERT INTO pet_access (id, pet_id, user_id, role, invited_by)
-     VALUES ($1, $2, $3, 'shared', $4)
+     VALUES ($1, $2, $3, 'carer', $4)
      ON CONFLICT (pet_id, user_id) DO UPDATE SET
        role = EXCLUDED.role,
        hidden = false,
        updated_at = NOW()`,
     [DEMO_IDS.carolPetAccess, DEMO_IDS.buddyPet, DEMO_IDS.carol, DEMO_IDS.alice],
-  );
-
-  await client.query(
-    `INSERT INTO shared_pets (id, pet_id, user_id, role, invited_by)
-     VALUES ($1, $2, $3, 'shared', $4)
-     ON CONFLICT (pet_id, user_id) DO UPDATE SET
-       role = EXCLUDED.role,
-       updated_at = NOW()`,
-    [DEMO_IDS.carolSharedPet, DEMO_IDS.buddyPet, DEMO_IDS.carol, DEMO_IDS.alice],
   );
 
   // Overdue health notification for Buddy flea treatment

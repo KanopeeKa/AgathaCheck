@@ -92,7 +92,7 @@ No inline "invite" affordance on `note_only` assignment.
 
 **Status:** Frozen
 
-`carer_user_id` must reference a user with `pet_access` on **that pet** in `COLLABORATOR_ROLES` (`shared`, `guardian`). Validate at write time; `403` otherwise. `foster` excluded (consistent with `userCanManagePet`).
+`carer_user_id` must reference a user with `pet_access` on **that pet** in `PET_ACCESS_ROLES` (`carer`, `co_parent`). Validate at write time; `403` otherwise. `foster` excluded.
 
 **Do not** relax `GET /api/pets/:id/access` (`userOwnsPet` guard).
 

@@ -596,7 +596,9 @@ CREATE TABLE public.pet_share_links (
     status character varying(20) DEFAULT 'pending'::character varying NOT NULL,
     claimed_by uuid,
     claimed_at timestamp with time zone,
-    expires_at timestamp with time zone
+    expires_at timestamp with time zone,
+    access_role character varying(32) DEFAULT 'carer'::character varying NOT NULL,
+    CONSTRAINT pet_share_links_access_role_check CHECK (((access_role)::text = ANY ((ARRAY['carer'::character varying, 'co_parent'::character varying])::text[])))
 );
 CREATE TABLE public.pet_timeline_entries (
     id uuid NOT NULL,
@@ -704,15 +706,6 @@ CREATE TABLE public.refresh_tokens (
     token character varying(255) NOT NULL,
     expires_at timestamp with time zone NOT NULL,
     created_at timestamp with time zone DEFAULT now()
-);
-CREATE TABLE public.shared_pets (
-    id uuid NOT NULL,
-    pet_id uuid NOT NULL,
-    user_id uuid NOT NULL,
-    role character varying(50) DEFAULT 'shared'::character varying,
-    invited_by uuid,
-    created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now()
 );
 CREATE TABLE public.users (
     id uuid NOT NULL,
@@ -888,10 +881,6 @@ ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_token_key UNIQUE (token);
-ALTER TABLE ONLY public.shared_pets
-    ADD CONSTRAINT shared_pets_pet_id_user_id_key UNIQUE (pet_id, user_id);
-ALTER TABLE ONLY public.shared_pets
-    ADD CONSTRAINT shared_pets_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_email_key UNIQUE (email);
 ALTER TABLE ONLY public.users
@@ -1223,12 +1212,6 @@ ALTER TABLE ONLY public.refresh_sessions
     ADD CONSTRAINT refresh_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
-ALTER TABLE ONLY public.shared_pets
-    ADD CONSTRAINT shared_pets_invited_by_fkey FOREIGN KEY (invited_by) REFERENCES public.users(id);
-ALTER TABLE ONLY public.shared_pets
-    ADD CONSTRAINT shared_pets_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
-ALTER TABLE ONLY public.shared_pets
-    ADD CONSTRAINT shared_pets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pinned_organization_id_fkey FOREIGN KEY (pinned_organization_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.vets

@@ -13,7 +13,7 @@ void main() {
       species: 'Dog',
       dateOfBirth: DateTime(2020, 1, 1),
       createdAt: DateTime(2024, 6, 1),
-      primaryHolderName: 'Jane',
+      petParentName: 'Jane',
     );
 
     test('includes DOB and joined markers plus API segments', () {
