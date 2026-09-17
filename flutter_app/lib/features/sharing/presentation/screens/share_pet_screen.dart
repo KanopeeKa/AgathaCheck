@@ -108,7 +108,9 @@ class _SharePetScreenState extends ConsumerState<SharePetScreen> {
                   padding: const EdgeInsets.only(bottom: 12),
                   child: Text(
                     l.couldNotLoadSharingInfo,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                 ),
               _SharePetBody(
@@ -118,11 +120,11 @@ class _SharePetScreenState extends ConsumerState<SharePetScreen> {
                 shareNotifier: ref.read(
                   sharePetNotifierProvider(_petIds).notifier,
                 ),
-                pendingInvites: shareState.accessByPet[selectedId]
-                        ?.pendingInvites ??
+                pendingInvites:
+                    shareState.accessByPet[selectedId]?.pendingInvites ??
                     const [],
-                accessList: shareState.accessByPet[selectedId]?.access ??
-                    const [],
+                accessList:
+                    shareState.accessByPet[selectedId]?.access ?? const [],
               ),
             ],
           );
@@ -156,7 +158,8 @@ class _SharePetBody extends ConsumerWidget {
         final linksAsync = ref.watch(petShareLinksNotifierProvider(pet.id));
         return linksAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Text(AppLocalizations.of(context)!.couldNotLoadSharingInfo),
+          error: (e, _) =>
+              Text(AppLocalizations.of(context)!.couldNotLoadSharingInfo),
           data: (links) =>
               FosterSharingContent(petId: pet.id, pet: pet, shareLinks: links),
         );
@@ -169,7 +172,8 @@ class _SharePetBody extends ConsumerWidget {
             viewerRole == PetViewerRole.guardian && pet.organizationId == null;
         return linksAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Text(AppLocalizations.of(context)!.couldNotLoadSharingInfo),
+          error: (e, _) =>
+              Text(AppLocalizations.of(context)!.couldNotLoadSharingInfo),
           data: (links) => SharePetOwnerBody(
             pet: pet,
             allPetIds: allPetIds,

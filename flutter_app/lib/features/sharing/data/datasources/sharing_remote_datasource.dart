@@ -257,9 +257,7 @@ class SharingRemoteDataSource {
     String token,
   ) async {
     final response = await _client.get(
-      Uri.parse(
-        '$baseUrl/api/share/access?pet_ids=${petIds.join(',')}',
-      ),
+      Uri.parse('$baseUrl/api/share/access?pet_ids=${petIds.join(',')}'),
       headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode >= 400) {

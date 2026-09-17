@@ -20,36 +20,32 @@ class PetShareAccess {
     return PetShareAccess(
       petId: json['pet_id']?.toString() ?? '',
       access: accessJson is List
-          ? accessJson
-                .whereType<Map<String, dynamic>>()
-                .map((row) {
-                  // Aggregate API nests user under `user`; map to PetAccessModel shape.
-                  return PetAccess(
-                    id: row['id']?.toString() ?? '',
-                    petId: row['pet_id']?.toString() ?? json['pet_id']?.toString() ?? '',
-                    userId: row['user_id']?.toString() ?? '',
-                    role: PetAccessRoleWire.fromWire(row['role']?.toString()),
-                    invitedBy: row['invited_by']?.toString(),
-                    createdAt:
-                        DateTime.tryParse(row['created_at']?.toString() ?? '') ??
-                        DateTime.now(),
-                    user: row['user'] is Map<String, dynamic>
-                        ? PetAccessUser(
-                            firstName:
-                                row['user']['first_name']?.toString() ?? '',
-                            lastName:
-                                row['user']['last_name']?.toString() ?? '',
-                            category:
-                                row['user']['category']?.toString() ??
-                                'pet_carer',
-                            bio: row['user']['bio']?.toString() ?? '',
-                            photoUrl:
-                                row['user']['photo_url']?.toString() ?? '',
-                          )
-                        : null,
-                  );
-                })
-                .toList()
+          ? accessJson.whereType<Map<String, dynamic>>().map((row) {
+              // Aggregate API nests user under `user`; map to PetAccessModel shape.
+              return PetAccess(
+                id: row['id']?.toString() ?? '',
+                petId:
+                    row['pet_id']?.toString() ??
+                    json['pet_id']?.toString() ??
+                    '',
+                userId: row['user_id']?.toString() ?? '',
+                role: PetAccessRoleWire.fromWire(row['role']?.toString()),
+                invitedBy: row['invited_by']?.toString(),
+                createdAt:
+                    DateTime.tryParse(row['created_at']?.toString() ?? '') ??
+                    DateTime.now(),
+                user: row['user'] is Map<String, dynamic>
+                    ? PetAccessUser(
+                        firstName: row['user']['first_name']?.toString() ?? '',
+                        lastName: row['user']['last_name']?.toString() ?? '',
+                        category:
+                            row['user']['category']?.toString() ?? 'pet_carer',
+                        bio: row['user']['bio']?.toString() ?? '',
+                        photoUrl: row['user']['photo_url']?.toString() ?? '',
+                      )
+                    : null,
+              );
+            }).toList()
           : const [],
       pendingInvites: invitesJson is List
           ? invitesJson
@@ -113,7 +109,9 @@ class AcceptShareInviteResult {
           ? PetAccessRoleWire.fromWire(json['access_role']?.toString())
           : null,
       petIds:
-          (json['pet_ids'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+          (json['pet_ids'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
           const [],
     );
   }

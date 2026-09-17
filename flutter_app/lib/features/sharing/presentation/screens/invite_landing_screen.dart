@@ -83,7 +83,11 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.mark_email_unread, size: 64, color: colorScheme.outline),
+              Icon(
+                Icons.mark_email_unread,
+                size: 64,
+                color: colorScheme.outline,
+              ),
               const SizedBox(height: 16),
               Text(errorMessage, style: theme.textTheme.titleMedium),
               const SizedBox(height: 24),
@@ -205,11 +209,7 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e.toString().replaceFirst('Exception: ', ''),
-          ),
-        ),
+        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
       );
     } finally {
       if (mounted) setState(() => _accepting = false);

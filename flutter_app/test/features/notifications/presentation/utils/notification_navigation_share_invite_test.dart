@@ -66,9 +66,7 @@ void main() {
     expect(location, '/invite/invite01');
   });
 
-  testWidgets('shareInviteAccepted navigates to share screen', (
-    tester,
-  ) async {
+  testWidgets('shareInviteAccepted navigates to share screen', (tester) async {
     late String location;
 
     await tester.pumpWidget(

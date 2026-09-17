@@ -49,9 +49,9 @@ class SharePetOwnerBody extends ConsumerWidget {
                   .read(sharePetNotifierProvider(allPetIds).notifier)
                   .sendInvite(inviteeEmail: email, role: role);
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l.shareInviteSent)),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l.shareInviteSent)));
                 onInviteSent();
               }
             } catch (e) {

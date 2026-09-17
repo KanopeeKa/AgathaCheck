@@ -126,10 +126,7 @@ class _FakeSharingRepository implements SharingRepository {
     String code,
     String token,
   ) async {
-    return const AcceptShareInviteResult(
-      inviteId: 'inv-1',
-      status: 'accepted',
-    );
+    return const AcceptShareInviteResult(inviteId: 'inv-1', status: 'accepted');
   }
 
   @override
@@ -176,12 +173,7 @@ void main() {
 
   test('sharePetViewerRole resolves guardian and carer roles', () {
     const owner = Pet(id: 'p1', name: 'A', species: 'dog');
-    const carer = Pet(
-      id: 'p2',
-      name: 'B',
-      species: 'cat',
-      isShared: true,
-    );
+    const carer = Pet(id: 'p2', name: 'B', species: 'cat', isShared: true);
     const foster = Pet(id: 'p3', name: 'C', species: 'dog', isFoster: true);
 
     expect(sharePetViewerRole(owner), PetViewerRole.guardian);

@@ -115,10 +115,7 @@ class FakeSharingRepository implements SharingRepository {
     String code,
     String token,
   ) async {
-    return const AcceptShareInviteResult(
-      inviteId: 'inv-1',
-      status: 'accepted',
-    );
+    return const AcceptShareInviteResult(inviteId: 'inv-1', status: 'accepted');
   }
 
   @override

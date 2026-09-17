@@ -5,10 +5,7 @@ import '../../domain/entities/pet_access.dart';
 import '../../domain/entities/share_invite.dart';
 
 class PendingInviteTile extends StatelessWidget {
-  const PendingInviteTile({
-    required this.invite,
-    required this.onCancel,
-  });
+  const PendingInviteTile({required this.invite, required this.onCancel});
 
   final ShareInvite invite;
   final VoidCallback onCancel;

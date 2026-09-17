@@ -11,10 +11,7 @@ import 'sharing_providers.dart';
 
 /// Route extra for bulk share: pet IDs or [SharePetRouteArgs].
 class SharePetRouteArgs {
-  const SharePetRouteArgs({
-    required this.petIds,
-    this.initialPetId,
-  });
+  const SharePetRouteArgs({required this.petIds, this.initialPetId});
 
   final List<String> petIds;
   final String? initialPetId;
@@ -167,9 +164,6 @@ final sharePetListProvider = Provider.autoDispose
       final petsAsync = ref.watch(allPetsIncludingOrgProvider);
       return petsAsync.whenData((pets) {
         final byId = {for (final pet in pets) pet.id: pet};
-        return petIds
-            .map((id) => byId[id])
-            .whereType<Pet>()
-            .toList();
+        return petIds.map((id) => byId[id]).whereType<Pet>().toList();
       });
     });
