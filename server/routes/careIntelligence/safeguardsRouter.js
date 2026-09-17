@@ -1,4 +1,5 @@
 import { publicError } from '../../config/security.js';
+import { logAuditEventSafe } from '../../lib/audit.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { extractUserId } from '../pets/shared.js';
 import { dismissSafeguard, listActiveSafeguards } from './safeguardsService.js';
@@ -33,6 +34,15 @@ export function registerSafeguardRoutes(router, pool) {
       if (dismissed === undefined) {
         return res.status(404).json({ error: 'Safeguard not found' });
       }
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'care_safeguard.dismissed',
+        resourceType: 'care_safeguard',
+        resourceId: safeguardId,
+        petId,
+        metadata: { safeguard_type: dismissed?.safeguard_type ?? null },
+        req,
+      });
       return res.json(dismissed);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });

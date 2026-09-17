@@ -3,13 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../data/care_intelligence_exception.dart';
 import '../../domain/entities/care_safeguard.dart';
 import '../providers/care_recommendations_provider.dart';
 import '../../../pet_care/presentation/providers/pet_care_presentation_providers.dart';
 import 'cim_evidence_view.dart';
 
 /// Calm info-blue safeguard card (Phase E).
-class CareSafeguardCard extends ConsumerWidget {
+class CareSafeguardCard extends ConsumerStatefulWidget {
   const CareSafeguardCard({
     super.key,
     required this.petId,
@@ -22,19 +23,47 @@ class CareSafeguardCard extends ConsumerWidget {
   final CareSafeguard safeguard;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
+  ConsumerState<CareSafeguardCard> createState() => _CareSafeguardCardState();
+}
 
-    Future<void> dismiss() async {
+class _CareSafeguardCardState extends ConsumerState<CareSafeguardCard> {
+  bool _dismissing = false;
+
+  Future<void> _dismiss() async {
+    if (_dismissing) return;
+    setState(() => _dismissing = true);
+    try {
       await ref
           .read(careIntelligenceRepositoryProvider)
-          .dismissSafeguard(petId: petId, safeguardId: safeguard.id);
-      ref.invalidate(petCareSafeguardsProvider(petId));
-      ref.invalidate(petProfileCareSafeguardProvider(petId));
-      ref.invalidate(petProfileCareSuggestionProvider(petId));
-      ref.invalidate(petProfileCareMilestoneProvider(petId));
+          .dismissSafeguard(
+            petId: widget.petId,
+            safeguardId: widget.safeguard.id,
+          );
+      ref.invalidate(petCareSafeguardsProvider(widget.petId));
+      ref.invalidate(petProfileCareSafeguardProvider(widget.petId));
+      ref.invalidate(petProfileCareSuggestionProvider(widget.petId));
+      ref.invalidate(petProfileCareMilestoneProvider(widget.petId));
+    } catch (error) {
+      if (!mounted) return;
+      final l = AppLocalizations.of(context)!;
+      final message = (error is CareIntelligenceException && error.isForbidden)
+          ? l.careSuggestionEditForbidden
+          : l.careSafeguardDismissFailed;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      if (mounted) {
+        setState(() => _dismissing = false);
+      }
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final safeguard = widget.safeguard;
 
     return Card(
       key: Key('care_safeguard_card_${safeguard.id}'),
@@ -54,7 +83,7 @@ class CareSafeguardCard extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              l.careSafeguardWeightTrendDown(petName),
+              l.careSafeguardWeightTrendDown(widget.petName),
               style: theme.textTheme.bodyMedium,
             ),
             const SizedBox(height: 12),
@@ -66,13 +95,19 @@ class CareSafeguardCard extends ConsumerWidget {
               children: [
                 OutlinedButton(
                   key: Key('care_safeguard_view_changes_${safeguard.id}'),
-                  onPressed: () => context.push('/pet/$petId/weight'),
+                  onPressed: () => context.push('/pet/${widget.petId}/weight'),
                   child: Text(l.careSafeguardViewChanges),
                 ),
                 TextButton(
                   key: Key('care_safeguard_dismiss_${safeguard.id}'),
-                  onPressed: dismiss,
-                  child: Text(l.careSafeguardDismiss),
+                  onPressed: _dismissing ? null : _dismiss,
+                  child: _dismissing
+                      ? SizedBox(
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(l.careSafeguardDismiss),
                 ),
               ],
             ),

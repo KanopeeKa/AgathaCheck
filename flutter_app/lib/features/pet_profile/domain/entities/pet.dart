@@ -35,6 +35,9 @@ class Pet {
     this.petParentName,
     this.accessRole,
     this.createdAt,
+    this.weightReferenceValue,
+    this.weightReferenceAuthority,
+    this.weightManagementContext = 'none',
   });
 
   final String id;
@@ -64,6 +67,9 @@ class Pet {
   final String? petParentName;
   final PetAccessRole? accessRole;
   final DateTime? createdAt;
+  final double? weightReferenceValue;
+  final String? weightReferenceAuthority;
+  final String weightManagementContext;
 
   double? get age {
     if (dateOfBirth == null) return null;
@@ -130,10 +136,15 @@ class Pet {
     String? petParentName,
     PetAccessRole? accessRole,
     DateTime? createdAt,
+    double? weightReferenceValue,
+    String? weightReferenceAuthority,
+    String? weightManagementContext,
     bool clearVetId = false,
     bool clearGender = false,
     bool clearNeuteredDate = false,
     bool clearDateOfBirth = false,
+    bool clearWeightReferenceAuthority = false,
+    bool clearWeightReferenceValue = false,
   }) {
     return Pet(
       id: id ?? this.id,
@@ -166,6 +177,14 @@ class Pet {
       petParentName: petParentName ?? this.petParentName,
       accessRole: accessRole ?? this.accessRole,
       createdAt: createdAt ?? this.createdAt,
+      weightReferenceValue: clearWeightReferenceValue
+          ? null
+          : (weightReferenceValue ?? this.weightReferenceValue),
+      weightReferenceAuthority: clearWeightReferenceAuthority
+          ? null
+          : (weightReferenceAuthority ?? this.weightReferenceAuthority),
+      weightManagementContext:
+          weightManagementContext ?? this.weightManagementContext,
     );
   }
 

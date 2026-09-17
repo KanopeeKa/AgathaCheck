@@ -57,6 +57,7 @@ export function evaluateWeightSafeguard({ pet, measurements, weightContext = nul
       measurement_count: measurements.length,
       direction: changeSpec.direction,
       classification: changeSpec.classification,
+      delta_pct: changeSpec.delta_pct ?? null,
       reasons: changeSpec.reasons,
       rules_fired: result.trace?.rules_fired || [],
       suppression_reasons: result.suppression_reasons || [],

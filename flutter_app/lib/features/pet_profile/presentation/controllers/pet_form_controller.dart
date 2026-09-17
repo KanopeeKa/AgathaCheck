@@ -42,6 +42,9 @@ class PetFormController {
       passedAway: pet.passedAway,
       isShared: pet.isShared,
       selectedOrgId: pet.organizationId,
+      weightReferenceValue: pet.weightReferenceValue?.toString() ?? '',
+      weightReferenceAuthority: pet.weightReferenceAuthority,
+      weightManagementContext: pet.weightManagementContext,
     );
   }
 
@@ -118,6 +121,7 @@ class PetFormController {
           );
         }
 
+        final referenceValue = _parsedReferenceValue();
         final updated = existing.copyWith(
           name: state.name.trim(),
           species: state.selectedSpecies,
@@ -135,6 +139,11 @@ class PetFormController {
           vetId: state.selectedVetId,
           passedAway: state.passedAway,
           organizationId: state.selectedOrgId,
+          weightReferenceValue: referenceValue,
+          weightReferenceAuthority: state.weightReferenceAuthority,
+          weightManagementContext: state.weightManagementContext,
+          clearWeightReferenceValue: referenceValue == null,
+          clearWeightReferenceAuthority: state.weightReferenceAuthority == null,
           clearVetId: state.selectedVetId == null,
           clearGender: state.selectedGender == null,
           clearNeuteredDate: state.neuteredDate == null,
@@ -191,6 +200,14 @@ class PetFormController {
     if (weightStr.isEmpty) return null;
     return double.tryParse(weightStr);
   }
+
+  double? _parsedReferenceValue() {
+    final value = state.weightReferenceValue.trim();
+    if (value.isEmpty) return null;
+    final parsed = double.tryParse(value);
+    if (parsed == null || parsed <= 0) return null;
+    return parsed;
+  }
 }
 
 class PetFormState {
@@ -216,6 +233,9 @@ class PetFormState {
   final bool passedAway;
   final bool isShared;
   final String? selectedOrgId;
+  final String weightReferenceValue;
+  final String? weightReferenceAuthority;
+  final String weightManagementContext;
 
   PetFormState({
     this.name = '',
@@ -240,6 +260,9 @@ class PetFormState {
     this.passedAway = false,
     this.isShared = false,
     this.selectedOrgId,
+    this.weightReferenceValue = '',
+    this.weightReferenceAuthority,
+    this.weightManagementContext = 'none',
   });
 
   bool matchesEditableFields(PetFormState other) {
@@ -259,7 +282,10 @@ class PetFormState {
         isNeutered == other.isNeutered &&
         neuterDismissed == other.neuterDismissed &&
         chipDismissed == other.chipDismissed &&
-        selectedOrgId == other.selectedOrgId;
+        selectedOrgId == other.selectedOrgId &&
+        weightReferenceValue == other.weightReferenceValue &&
+        weightReferenceAuthority == other.weightReferenceAuthority &&
+        weightManagementContext == other.weightManagementContext;
   }
 
   PetFormState copyWith({
@@ -285,6 +311,10 @@ class PetFormState {
     bool? passedAway,
     bool? isShared,
     String? selectedOrgId,
+    String? weightReferenceValue,
+    String? weightReferenceAuthority,
+    String? weightManagementContext,
+    bool clearWeightReferenceAuthority = false,
   }) {
     return PetFormState(
       name: name ?? this.name,
@@ -309,6 +339,12 @@ class PetFormState {
       passedAway: passedAway ?? this.passedAway,
       isShared: isShared ?? this.isShared,
       selectedOrgId: selectedOrgId ?? this.selectedOrgId,
+      weightReferenceValue: weightReferenceValue ?? this.weightReferenceValue,
+      weightReferenceAuthority: clearWeightReferenceAuthority
+          ? null
+          : (weightReferenceAuthority ?? this.weightReferenceAuthority),
+      weightManagementContext:
+          weightManagementContext ?? this.weightManagementContext,
     );
   }
 }

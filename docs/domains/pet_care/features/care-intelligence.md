@@ -105,6 +105,15 @@ Do not surface when:
 
 A suggestion alone **cannot** change Care Status. Safeguards are **informational**, not alarms.
 
+### Safeguard resurface policy
+
+A dismissed weight safeguard resurfaces only when the trend **materially**
+worsens, not on every new measurement. Magnitude is bucketed into 5% bands and
+a dismissed safeguard reactivates only when the trend crosses **two** bucket
+boundaries (≈10pp worsening) past the dismissed magnitude; a single-bucket
+wobble or sub-band jitter does not resurrect it. `delta_pct` is rounded to 0.1pp
+before bucketing so IEEE-754 jitter cannot shift a bucket on its own.
+
 ---
 
 ## Provenance model (frozen concepts)

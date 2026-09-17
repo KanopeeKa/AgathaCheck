@@ -1496,6 +1496,12 @@ abstract class AppLocalizations {
   /// **'Could not update this suggestion. Try again.'**
   String get careSuggestionRespondFailed;
 
+  /// No description provided for @careSafeguardDismissFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not dismiss this. Try again.'**
+  String get careSafeguardDismissFailed;
+
   /// No description provided for @careSuggestionEditForbidden.
   ///
   /// In en, this message translates to:
@@ -2976,6 +2982,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Weight'**
   String get weight;
+
+  /// No description provided for @weightReferenceValueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference weight'**
+  String get weightReferenceValueLabel;
+
+  /// No description provided for @weightReferenceValueHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Target or baseline weight for a vet-supervised plan (kg)'**
+  String get weightReferenceValueHelper;
+
+  /// No description provided for @weightReferenceAuthorityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference source'**
+  String get weightReferenceAuthorityLabel;
+
+  /// No description provided for @weightReferenceAuthorityNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get weightReferenceAuthorityNone;
+
+  /// No description provided for @weightReferenceAuthorityVetTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet target'**
+  String get weightReferenceAuthorityVetTarget;
+
+  /// No description provided for @weightReferenceAuthorityGuardianReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian reference'**
+  String get weightReferenceAuthorityGuardianReference;
+
+  /// No description provided for @weightReferenceAuthorityHistoricalBaseline.
+  ///
+  /// In en, this message translates to:
+  /// **'Historical baseline'**
+  String get weightReferenceAuthorityHistoricalBaseline;
+
+  /// No description provided for @weightManagementContextLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight management'**
+  String get weightManagementContextLabel;
+
+  /// No description provided for @weightManagementContextHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Is this weight change already being managed?'**
+  String get weightManagementContextHelper;
+
+  /// No description provided for @weightManagementContextNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sure / not managed'**
+  String get weightManagementContextNone;
+
+  /// No description provided for @weightManagementContextVetManaged.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, with my vet'**
+  String get weightManagementContextVetManaged;
+
+  /// No description provided for @weightManagementContextCarePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, as part of a care plan'**
+  String get weightManagementContextCarePlan;
+
+  /// No description provided for @weightManagementContextTreatmentRelated.
+  ///
+  /// In en, this message translates to:
+  /// **'Related to treatment'**
+  String get weightManagementContextTreatmentRelated;
 
   /// No description provided for @petBio.
   ///

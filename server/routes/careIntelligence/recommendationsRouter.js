@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { publicError } from '../../config/security.js';
+import { logAuditEventSafe } from '../../lib/audit.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { accessiblePetSql } from '../../lib/petAccess.js';
@@ -137,6 +138,9 @@ export function registerCareIntelligenceRoutes(router, pool) {
       return res.status(400).json({ error: 'Invalid action' });
     }
     try {
+      if (action === 'adjust') {
+        return res.status(400).json({ error: 'Adjust is not available yet' });
+      }
       if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.HEALTH_EDIT))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
@@ -167,7 +171,21 @@ export function registerCareIntelligenceRoutes(router, pool) {
            RETURNING *`,
           [status, healthEntryId, recommendationId],
         );
-        return res.json(recommendationToMap(updated.rows[0]));
+        const updatedRow = updated.rows[0];
+        logAuditEventSafe(pool, {
+          actorUserId: userId,
+          action: `care_recommendation.${status}`,
+          resourceType: 'care_recommendation',
+          resourceId: recommendationId,
+          petId,
+          metadata: {
+            care_family: updatedRow.care_family,
+            suggestion_key: updatedRow.suggestion_key,
+            health_entry_id: healthEntryId,
+          },
+          req,
+        });
+        return res.json(recommendationToMap(updatedRow));
       }
 
       const status = action === 'not_relevant' ? 'not_relevant' : 'dismissed';
@@ -178,7 +196,20 @@ export function registerCareIntelligenceRoutes(router, pool) {
          RETURNING *`,
         [status, recommendationId],
       );
-      return res.json(recommendationToMap(updated.rows[0]));
+      const updatedRow = updated.rows[0];
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: `care_recommendation.${status}`,
+        resourceType: 'care_recommendation',
+        resourceId: recommendationId,
+        petId,
+        metadata: {
+          care_family: updatedRow.care_family,
+          suggestion_key: updatedRow.suggestion_key,
+        },
+        req,
+      });
+      return res.json(recommendationToMap(updatedRow));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }

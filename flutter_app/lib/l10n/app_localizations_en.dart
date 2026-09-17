@@ -797,6 +797,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not update this suggestion. Try again.';
 
   @override
+  String get careSafeguardDismissFailed => 'Could not dismiss this. Try again.';
+
+  @override
   String get careSuggestionEditForbidden =>
       'You can view this pet\'s care but cannot add rhythms.';
 
@@ -1622,6 +1625,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weight => 'Weight';
+
+  @override
+  String get weightReferenceValueLabel => 'Reference weight';
+
+  @override
+  String get weightReferenceValueHelper =>
+      'Target or baseline weight for a vet-supervised plan (kg)';
+
+  @override
+  String get weightReferenceAuthorityLabel => 'Reference source';
+
+  @override
+  String get weightReferenceAuthorityNone => 'None';
+
+  @override
+  String get weightReferenceAuthorityVetTarget => 'Vet target';
+
+  @override
+  String get weightReferenceAuthorityGuardianReference => 'Guardian reference';
+
+  @override
+  String get weightReferenceAuthorityHistoricalBaseline =>
+      'Historical baseline';
+
+  @override
+  String get weightManagementContextLabel => 'Weight management';
+
+  @override
+  String get weightManagementContextHelper =>
+      'Is this weight change already being managed?';
+
+  @override
+  String get weightManagementContextNone => 'Not sure / not managed';
+
+  @override
+  String get weightManagementContextVetManaged => 'Yes, with my vet';
+
+  @override
+  String get weightManagementContextCarePlan => 'Yes, as part of a care plan';
+
+  @override
+  String get weightManagementContextTreatmentRelated => 'Related to treatment';
 
   @override
   String get petBio => 'Bio';

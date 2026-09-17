@@ -3,9 +3,14 @@ import jwt from 'jsonwebtoken';
 import { createApp } from '../../bin/server.js';
 import { handlePetAccessQuery } from '../helpers/petAccessMocks.js';
 import { evaluateWeightSafeguard } from '../../routes/careIntelligence/weightSafeguardEvaluator.js';
+import { weightContextFromPetRow } from '../../routes/careIntelligence/provenance.js';
 import {
   evidenceFingerprint,
+  magnitudeBucket,
+  MAGNITUDE_BUCKET_SIZE,
+  REACTIVATION_BUCKET_HYSTERESIS,
   safeguardToMap,
+  shouldResurfaceDismissedWeightSafeguard,
 } from '../../routes/careIntelligence/safeguardsService.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
@@ -56,6 +61,24 @@ describe('weightSafeguardEvaluator', () => {
     });
     expect(result).toBeNull();
   });
+
+  it('suppresses when management context is set via pet row (production path)', () => {
+    const petRow = {
+      id: 'pet-1',
+      date_of_birth: '2018-01-01',
+      weight_reference_value: 5.0,
+      weight_reference_authority: 'vet_target',
+      weight_management_context: 'vet_managed',
+    };
+    const weightContext = weightContextFromPetRow(petRow);
+    expect(weightContext.management_context).toBe('vet_managed');
+    const result = evaluateWeightSafeguard({
+      pet: petRow,
+      measurements: decliningSeries,
+      weightContext,
+    });
+    expect(result).toBeNull();
+  });
 });
 
 describe('safeguardToMap', () => {
@@ -93,6 +116,85 @@ describe('evidenceFingerprint', () => {
     });
     expect(a).toBe(b);
   });
+
+  it('differs when delta_pct crosses a magnitude bucket boundary', () => {
+    const base = { measurement_count: 4, direction: 'down', classification: 'unexplained_material' };
+    // -5% and -10% land in adjacent buckets (−1 and −2).
+    expect(evidenceFingerprint({ ...base, delta_pct: -0.05 }))
+      .not.toBe(evidenceFingerprint({ ...base, delta_pct: -0.1 }));
+  });
+
+  it('does NOT flap across a bucket edge: deltas within the same 5% band share a fingerprint', () => {
+    // 24.9% ↔ 25.1% of a 5% band edge both round into the same bucket — the
+    // boundary-flapping risk the bucketing guards against.
+    const base = { measurement_count: 4, direction: 'down', classification: 'unexplained_material' };
+    const justBelow = evidenceFingerprint({ ...base, delta_pct: -0.249 });
+    const justAbove = evidenceFingerprint({ ...base, delta_pct: -0.251 });
+    expect(justBelow).toBe(justAbove);
+  });
+
+  it('is immune to IEEE-754 jitter near a bucket edge', () => {
+    // -0.05 expressed with float tail wobble must not shift the bucket/fingerprint.
+    const base = { measurement_count: 4, direction: 'down', classification: 'unexplained_material' };
+    expect(evidenceFingerprint({ ...base, delta_pct: -0.05000000001 }))
+      .toBe(evidenceFingerprint({ ...base, delta_pct: -0.04999999999 }));
+  });
+});
+
+describe('magnitudeBucket', () => {
+  it('rounds delta_pct to 0.1pp then buckets into 5% bands', () => {
+    const base = { measurement_count: 4, direction: 'down', classification: 'unexplained_material' };
+    expect(magnitudeBucket({ ...base, delta_pct: -0.05 })).toBe(-1);
+    expect(magnitudeBucket({ ...base, delta_pct: -0.1 })).toBe(-2);
+    expect(magnitudeBucket({ ...base, delta_pct: -0.15 })).toBe(-3);
+    expect(magnitudeBucket({ ...base, delta_pct: 0.05 })).toBe(1);
+  });
+
+  it('collapses values on either side of a band edge into one bucket (no flapping)', () => {
+    const base = { measurement_count: 4, direction: 'down', classification: 'unexplained_material' };
+    expect(magnitudeBucket({ ...base, delta_pct: -0.049 })).toBe(-1);
+    expect(magnitudeBucket({ ...base, delta_pct: -0.051 })).toBe(-1);
+    expect(magnitudeBucket({ ...base, delta_pct: -0.249 })).toBe(-5);
+    expect(magnitudeBucket({ ...base, delta_pct: -0.251 })).toBe(-5);
+  });
+
+  it('returns null when delta_pct is absent or non-finite', () => {
+    expect(magnitudeBucket({ measurement_count: 4 })).toBeNull();
+    expect(magnitudeBucket({ measurement_count: 4, delta_pct: Number.NaN })).toBeNull();
+    expect(magnitudeBucket({ measurement_count: 4, delta_pct: null })).toBeNull();
+  });
+
+  it('exposes the bucket size and reactivation hysteresis constants', () => {
+    expect(MAGNITUDE_BUCKET_SIZE).toBe(0.05);
+    expect(REACTIVATION_BUCKET_HYSTERESIS).toBe(2);
+  });
+});
+
+describe('safeguard reactivation hysteresis', () => {
+  it('requires a worsening of >=2 buckets to resurface a dismissed safeguard', () => {
+    const dismissedBucket = magnitudeBucket({ delta_pct: -0.05 });
+    const candidateBucket = magnitudeBucket({ delta_pct: -0.07 });
+    expect(
+      shouldResurfaceDismissedWeightSafeguard(dismissedBucket, candidateBucket),
+    ).toBe(false);
+    const worsenedBucket = magnitudeBucket({ delta_pct: -0.15 });
+    expect(
+      shouldResurfaceDismissedWeightSafeguard(dismissedBucket, worsenedBucket),
+    ).toBe(true);
+  });
+
+  it('does not treat recovery as worsening for weight decline safeguards', () => {
+    const dismissedBucket = magnitudeBucket({ delta_pct: -0.25 });
+    const improvedBucket = magnitudeBucket({ delta_pct: -0.15 });
+    expect(
+      shouldResurfaceDismissedWeightSafeguard(dismissedBucket, improvedBucket),
+    ).toBe(false);
+  });
+
+  it('allows legacy dismissed rows without stored magnitude buckets to resurface on fingerprint change', () => {
+    expect(shouldResurfaceDismissedWeightSafeguard(null, -3)).toBe(true);
+    expect(shouldResurfaceDismissedWeightSafeguard(-3, null)).toBe(true);
+  });
 });
 
 describe('Care safeguards API', () => {
@@ -100,9 +202,11 @@ describe('Care safeguards API', () => {
   let safeguards;
   let weightEntries;
   let pets;
+  let auditEvents;
 
   beforeAll(() => {
     safeguards = [];
+    auditEvents = [];
     weightEntries = [];
     pets = [{
       id: 'pet-1',
@@ -203,6 +307,17 @@ describe('Care safeguards API', () => {
           return { rows: row ? [row] : [] };
         }
 
+        if (sql.includes('INSERT INTO audit_events')) {
+          auditEvents.push({
+            action: params[3],
+            resourceType: params[4],
+            resourceId: params[5],
+            petId: params[7],
+            metadata: params[9],
+          });
+          return { rows: [{ id: 'audit-1' }] };
+        }
+
         return { rows: [] };
       },
     };
@@ -235,16 +350,84 @@ describe('Care safeguards API', () => {
       .set('Authorization', `Bearer ${token}`);
     const safeguardId = list.body[0].id;
 
+    const before = auditEvents.length;
     const dismiss = await request(app)
       .post(`/api/pets/pet-1/care-safeguards/${safeguardId}/dismiss`)
       .set('Authorization', `Bearer ${token}`)
       .send({});
     expect(dismiss.status).toBe(200);
     expect(dismiss.body.status).toBe('dismissed');
+    expect(auditEvents.length).toBe(before + 1);
+    expect(auditEvents[auditEvents.length - 1].action).toBe('care_safeguard.dismissed');
+    expect(auditEvents[auditEvents.length - 1].resourceType).toBe('care_safeguard');
+    expect(auditEvents[auditEvents.length - 1].petId).toBe('pet-1');
 
     const after = await request(app)
       .get('/api/pets/pet-1/care-safeguards')
       .set('Authorization', `Bearer ${token}`);
     expect(after.body).toHaveLength(0);
+  });
+
+  it('does NOT resurface a dismissed safeguard for a sub-hysteresis magnitude wobble', async () => {
+    // Original decline ~16.7% (bucket -3). Dismiss, then worsen only slightly to
+    // ~18.3% (bucket -4): a 1-bucket change, below REACTIVATION_BUCKET_HYSTERESIS.
+    const list = await request(app).get('/api/pets/pet-1/care-safeguards')
+      .set('Authorization', `Bearer ${token}`);
+    await request(app).post(`/api/pets/pet-1/care-safeguards/${list.body[0].id}/dismiss`)
+      .set('Authorization', `Bearer ${token}`).send({});
+
+    // Wobble: add one more declining point keeping the trend in an adjacent bucket.
+    weightEntries.push({
+      pet_id: 'pet-1', weight: 4.9, unit: 'kg', date: '2026-03-20', measurement_source: 'guardian',
+    });
+
+    const after = await request(app).get('/api/pets/pet-1/care-safeguards')
+      .set('Authorization', `Bearer ${token}`);
+    expect(after.status).toBe(200);
+    expect(after.body).toHaveLength(0);
+  });
+
+  it('resurfaces a dismissed safeguard when the trend worsens by >=2 magnitude buckets', async () => {
+    // Original decline ~16.7% (bucket -3). Dismiss, then worsen to ~27% (bucket -5):
+    // a 2-bucket change meets REACTIVATION_BUCKET_HYSTERESIS and reactivates.
+    const list = await request(app).get('/api/pets/pet-1/care-safeguards')
+      .set('Authorization', `Bearer ${token}`);
+    await request(app).post(`/api/pets/pet-1/care-safeguards/${list.body[0].id}/dismiss`)
+      .set('Authorization', `Bearer ${token}`).send({});
+
+    // Worsen materially: extend the monotonic decline well past the 2-bucket bar.
+    weightEntries.push(
+      { pet_id: 'pet-1', weight: 4.6, unit: 'kg', date: '2026-03-20', measurement_source: 'guardian' },
+      { pet_id: 'pet-1', weight: 4.38, unit: 'kg', date: '2026-04-10', measurement_source: 'guardian' },
+    );
+
+    const after = await request(app).get('/api/pets/pet-1/care-safeguards')
+      .set('Authorization', `Bearer ${token}`);
+    expect(after.status).toBe(200);
+    expect(after.body).toHaveLength(1);
+    expect(after.body[0].status).toBe('active');
+  });
+
+  it('deletes the active safeguard when the trend no longer qualifies (no-candidate path)', async () => {
+    // Declining series seeds an active safeguard.
+    const seeded = await request(app).get('/api/pets/pet-1/care-safeguards')
+      .set('Authorization', `Bearer ${token}`);
+    expect(seeded.body).toHaveLength(1);
+    expect(safeguards.filter((s) => s.pet_id === 'pet-1' && s.status === 'active')).toHaveLength(1);
+
+    // Swap to a stable (non-declining) series: evaluateWeightSafeguard returns null,
+    // so syncPetSafeguards issues DELETE ... WHERE status = 'active'.
+    weightEntries = [
+      { pet_id: 'pet-1', weight: 5.0, unit: 'kg', date: '2026-01-01', measurement_source: 'guardian' },
+      { pet_id: 'pet-1', weight: 5.0, unit: 'kg', date: '2026-01-20', measurement_source: 'guardian' },
+      { pet_id: 'pet-1', weight: 5.0, unit: 'kg', date: '2026-02-10', measurement_source: 'guardian' },
+      { pet_id: 'pet-1', weight: 5.0, unit: 'kg', date: '2026-03-01', measurement_source: 'guardian' },
+    ];
+
+    const after = await request(app).get('/api/pets/pet-1/care-safeguards')
+      .set('Authorization', `Bearer ${token}`);
+    expect(after.status).toBe(200);
+    expect(after.body).toHaveLength(0);
+    expect(safeguards.filter((s) => s.pet_id === 'pet-1' && s.status === 'active')).toHaveLength(0);
   });
 });
