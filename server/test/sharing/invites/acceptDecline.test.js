@@ -45,7 +45,20 @@ function buildAcceptDeclinePool(overrides = {}) {
       return { rows: [] };
     }
     if (sql.includes('FROM pet_share_invites psi') && sql.includes('FOR UPDATE')) {
-      return { rows: [state.invite] };
+      const { pets, ...inviteRow } = state.invite;
+      return { rows: [inviteRow] };
+    }
+    if (sql.includes('FROM pet_share_invite_pets psip')) {
+      return { rows: (state.invite.pets || []).map((pet) => ({
+        pet_id: pet.pet_id,
+        pet_name: pet.pet_name,
+      })) };
+    }
+    if (sql.includes('SELECT first_name, last_name FROM users WHERE id = $1')) {
+      if (params[0] === inviterId) {
+        return { rows: [{ first_name: 'Alice', last_name: 'Owner' }] };
+      }
+      return { rows: [{ first_name: 'Bob', last_name: 'Invitee' }] };
     }
     if (sql.includes('SELECT first_name, last_name, email FROM users WHERE id = $1')) {
       if (params[0] === inviteeId) {

@@ -72,58 +72,58 @@ export async function insertInvitePets(db, inviteId, petIds) {
   }
 }
 
-export async function findInviteById(db, inviteId, { forUpdate = false } = {}) {
-  const lock = forUpdate ? ' FOR UPDATE OF psi' : '';
+async function loadInvitePets(db, inviteId) {
   const result = await db.query(
-    `SELECT psi.*,
-            COALESCE(
-              json_agg(
-                json_build_object('pet_id', psip.pet_id, 'pet_name', p.name)
-                ORDER BY p.name
-              ) FILTER (WHERE psip.pet_id IS NOT NULL),
-              '[]'
-            ) AS pets
-     FROM pet_share_invites psi
-     LEFT JOIN pet_share_invite_pets psip ON psip.invite_id = psi.id
+    `SELECT psip.pet_id, p.name AS pet_name
+     FROM pet_share_invite_pets psip
      LEFT JOIN pets p ON p.id = psip.pet_id
-     WHERE psi.id = $1
-     GROUP BY psi.id${lock}`,
+     WHERE psip.invite_id = $1
+     ORDER BY p.name NULLS LAST, psip.pet_id`,
+    [inviteId],
+  );
+  return result.rows.map((row) => ({
+    pet_id: row.pet_id,
+    pet_name: row.pet_name,
+  }));
+}
+
+async function loadInviterDisplayName(db, inviterUserId) {
+  const result = await db.query(
+    'SELECT first_name, last_name FROM users WHERE id = $1',
+    [inviterUserId],
+  );
+  const row = result.rows[0] || {};
+  const full = `${row.first_name || ''} ${row.last_name || ''}`.trim();
+  return full || 'Someone';
+}
+
+export async function findInviteById(db, inviteId, { forUpdate = false } = {}) {
+  const lock = forUpdate ? ' FOR UPDATE' : '';
+  const result = await db.query(
+    `SELECT psi.*
+     FROM pet_share_invites psi
+     WHERE psi.id = $1${lock}`,
     [inviteId],
   );
   const row = result.rows[0];
   if (!row) return null;
-  return {
-    ...row,
-    pets: Array.isArray(row.pets) ? row.pets : JSON.parse(row.pets || '[]'),
-  };
+  const pets = await loadInvitePets(db, row.id);
+  return { ...row, pets };
 }
 
 export async function findInviteByCode(db, code, { forUpdate = false } = {}) {
-  const lock = forUpdate ? ' FOR UPDATE OF psi' : '';
+  const lock = forUpdate ? ' FOR UPDATE' : '';
   const result = await db.query(
-    `SELECT psi.*,
-            COALESCE(
-              json_agg(
-                json_build_object('pet_id', psip.pet_id, 'pet_name', p.name)
-                ORDER BY p.name
-              ) FILTER (WHERE psip.pet_id IS NOT NULL),
-              '[]'
-            ) AS pets,
-            TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS inviter_name
+    `SELECT psi.*
      FROM pet_share_invites psi
-     LEFT JOIN pet_share_invite_pets psip ON psip.invite_id = psi.id
-     LEFT JOIN pets p ON p.id = psip.pet_id
-     LEFT JOIN users u ON u.id = psi.inviter_user_id
-     WHERE psi.code = $1
-     GROUP BY psi.id, u.first_name, u.last_name${lock}`,
+     WHERE psi.code = $1${lock}`,
     [code],
   );
   const row = result.rows[0];
   if (!row) return null;
-  return {
-    ...row,
-    pets: Array.isArray(row.pets) ? row.pets : JSON.parse(row.pets || '[]'),
-  };
+  const pets = await loadInvitePets(db, row.id);
+  const inviter_name = await loadInviterDisplayName(db, row.inviter_user_id);
+  return { ...row, pets, inviter_name };
 }
 
 export async function updateInviteStatus(db, inviteId, status) {
