@@ -32,7 +32,7 @@ Split personal pet display buckets by `accessRole`: co-parent pets appear under 
 | **approved_at** | 2026-09-17T23:05:00Z |
 | **approved_until** | 2026-09-19T23:05:00Z |
 | **approved_by** | user chat 2026-09-17 `/execute-plan autonomously` |
-| **control_issue** | TBD |
+| **control_issue** | #1233 |
 | **autonomy** | `active` |
 
 ## Phases

@@ -56,6 +56,10 @@ class PetCareMyPetsSection extends ConsumerWidget {
         !showUnifiedPreview && personalPets.isNotEmpty && carerPets.isNotEmpty;
 
     if (showUnifiedPreview) {
+      final personalIds = personalPets.map((pet) => pet.id).toSet();
+      final personalPreview = previewPets!
+          .where((pet) => personalIds.contains(pet.id))
+          .toList();
       return Semantics(
         container: true,
         label: l.myPets,
@@ -70,7 +74,7 @@ class PetCareMyPetsSection extends ConsumerWidget {
             ),
             const SizedBox(height: 10),
             _PetCarePetRail(
-              pets: previewPets!,
+              pets: personalPreview,
               careSummary: careSummary,
               l: l,
               theme: theme,
@@ -78,6 +82,18 @@ class PetCareMyPetsSection extends ConsumerWidget {
               parentContext: context,
               onAddPet: () => context.push('/add'),
             ),
+            if (carerPets.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _PetSubgroupTitle(title: l.petsImCaringFor),
+              const SizedBox(height: 8),
+              PetTileStrip(
+                useWrap: true,
+                pets: carerPets,
+                onPetTap: (pet) => openPetDetail(context, pet.id),
+                tileBuilder: (pet, tile) =>
+                    PetCareShellSharedPetCard(pet: pet, child: tile),
+              ),
+            ],
           ],
         ),
       );

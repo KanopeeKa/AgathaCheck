@@ -207,6 +207,7 @@ void main() {
       name: 'Shared pet',
       species: 'Cat',
       isShared: true,
+      accessRole: PetAccessRole.carer,
     );
     await tester.pumpWidget(
       buildSection(
@@ -218,5 +219,34 @@ void main() {
 
     expect(find.byType(UnifiedPetTile), findsOneWidget);
     expect(find.byKey(const Key('hide_shell_shared_shared-1')), findsNothing);
+  });
+
+  testWidgets('preview rail excludes carer pets from My Pets carousel', (
+    tester,
+  ) async {
+    final pets = [
+      const Pet(id: 'owned', name: 'Owned', species: 'Dog', breed: ''),
+      const Pet(
+        id: 'carer',
+        name: 'CarerPet',
+        species: 'Cat',
+        breed: '',
+        isShared: true,
+        accessRole: PetAccessRole.carer,
+      ),
+    ];
+
+    await tester.pumpWidget(
+      buildSection(
+        pets: pets,
+        previewPets: pets,
+        previewOverflowCount: 0,
+      ),
+    );
+
+    expect(find.text('Owned'), findsOneWidget);
+    expect(find.text('CarerPet'), findsOneWidget);
+    expect(find.text("Pets I'm caring for"), findsOneWidget);
+    expect(find.byType(UnifiedPetTile), findsNWidgets(2));
   });
 }
