@@ -33,8 +33,9 @@ import { createTestUser } from '../support/ui-auth';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
 import {
+  dismissConsentBannerIfPresent,
+  enableFlutterAccessibility,
   refreshFlutterAccessibility,
-  waitForFlutterRoute,
   flutterGotoUrl,
 } from '../support/flutter';
 import { SharedPetPage } from '../pages/shared-pet.page';
@@ -142,13 +143,25 @@ test.describe('Pet sharing', () => {
     );
 
     await loginAs(page, bob);
-    await waitForFlutterRoute(page, `/invite/${invite.code}`);
+    await page.goto(`/#/invite/${invite.code}`, {
+      waitUntil: 'domcontentloaded',
+      timeout: 60_000,
+    });
+    await page.waitForSelector('flutter-view, flt-glass-pane', {
+      state: 'attached',
+      timeout: 60_000,
+    });
+    await enableFlutterAccessibility(page);
+    await dismissConsentBannerIfPresent(page);
+    await page.waitForTimeout(750);
+
     const acceptButton = page.getByRole('button', {
       name: /Accept invitation|Accepter l'invitation/i,
     });
     await expect(async () => {
       await refreshFlutterAccessibility(page);
-      await expect(page.getByText(/Alice invited you|Alice vous a invité/i)).toBeVisible();
+      await expect(page.getByText(/invited you to follow|vous a invité à suivre/i)).toBeVisible();
+      await expect(page.getByText('Bella')).toBeVisible();
       await expect(acceptButton).toBeVisible();
     }).toPass({ timeout: 45_000 });
     await acceptButton.click();
