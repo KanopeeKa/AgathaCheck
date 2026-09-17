@@ -79,40 +79,40 @@ void main() {
     });
   });
 
-  group('petCareCareTeamPuppyDecoAllowed', () {
+  group('petCareVetTeamPuppyDecoAllowed', () {
     test('requires wide desk layout and care team cards', () {
       expect(
-        petCareCareTeamPuppyDecoAllowed(
+        petCareVetTeamPuppyDecoAllowed(
           useWideDeskLayout: true,
-          hasCareTeamCards: true,
+          hasVetTeamCards: true,
         ),
         isTrue,
       );
       expect(
-        petCareCareTeamPuppyDecoAllowed(
+        petCareVetTeamPuppyDecoAllowed(
           useWideDeskLayout: false,
-          hasCareTeamCards: true,
+          hasVetTeamCards: true,
         ),
         isFalse,
       );
       expect(
-        petCareCareTeamPuppyDecoAllowed(
+        petCareVetTeamPuppyDecoAllowed(
           useWideDeskLayout: true,
-          hasCareTeamCards: false,
+          hasVetTeamCards: false,
         ),
         isFalse,
       );
     });
   });
 
-  group('PetCareCareTeamPuppyDeco', () {
+  group('PetCareVetTeamPuppyDeco', () {
     testWidgets('renders puppy asset', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(home: Scaffold(body: PetCareCareTeamPuppyDeco())),
+        const MaterialApp(home: Scaffold(body: PetCareVetTeamPuppyDeco())),
       );
 
       expect(
-        find.byKey(const Key('pet_care_dashboard_care_team_puppy_deco')),
+        find.byKey(const Key('pet_care_dashboard_vet_team_puppy_deco')),
         findsOneWidget,
       );
     });

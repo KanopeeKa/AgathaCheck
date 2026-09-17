@@ -6,8 +6,8 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../providers/vet_providers.dart';
 import '../utils/vet_accent.dart';
-import '../widgets/care_team_identity_card.dart';
-import '../widgets/care_team_pet_row.dart';
+import '../widgets/vet_team_identity_card.dart';
+import '../widgets/vet_team_pet_row.dart';
 
 /// Display-first care team detail screen. Edit is a secondary card action.
 class VetDetailScreen extends ConsumerWidget {
@@ -47,14 +47,14 @@ class VetDetailScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CareTeamIdentityCard(
+              VetTeamIdentityCard(
                 vet: vet,
                 accent: accent,
                 onEdit: () => context.go('$listPath/edit/$vetId'),
               ),
               const SizedBox(height: 24),
               Text(
-                l.careTeamPetsCaredFor,
+                l.vetTeamPetsCaredFor,
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -67,24 +67,24 @@ class VetDetailScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l.careTeamNoLinkedPets,
+                        l.vetTeamNoLinkedPets,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(height: 8),
                       TextButton(
-                        key: const Key('care_team_link_pets_button'),
+                        key: const Key('vet_team_link_pets_button'),
                         onPressed: () => context.go('$listPath/edit/$vetId'),
-                        child: Text(l.editCareTeam),
+                        child: Text(l.editVetTeam),
                       ),
                     ],
                   ),
                 )
               else
                 ...linkedPets.asMap().entries.map(
-                  (entry) => CareTeamPetRow(
-                    key: Key('care_team_pet_row_${entry.value.id}'),
+                  (entry) => VetTeamPetRow(
+                    key: Key('vet_team_pet_row_${entry.value.id}'),
                     pet: entry.value,
                     showDivider: entry.key < linkedPets.length - 1,
                   ),

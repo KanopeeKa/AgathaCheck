@@ -11,7 +11,7 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
-import 'package:pet_profile_app/features/vet/presentation/widgets/care_team_card.dart';
+import 'package:pet_profile_app/features/vet/presentation/widgets/vet_team_card.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../../helpers/fakes.dart';
@@ -89,7 +89,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('pet_care_dashboard_care_team_puppy_deco')),
+      find.byKey(const Key('pet_care_dashboard_vet_team_puppy_deco')),
       findsOneWidget,
     );
   });
@@ -104,7 +104,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('pet_care_dashboard_care_team_puppy_deco')),
+      find.byKey(const Key('pet_care_dashboard_vet_team_puppy_deco')),
       findsNothing,
     );
   });
@@ -187,7 +187,7 @@ void main() {
     expect(find.text('Caring for 2 pets'), findsOneWidget);
     expect(find.text('Caring for 1 pet'), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('care_team_card_vet-1')));
+    await tester.tap(find.byKey(const Key('vet_team_card_vet-1')));
     await tester.pumpAndSettle();
     expect(find.text('vet-detail-vet-1'), findsOneWidget);
   });
@@ -228,7 +228,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(CareTeamCard), findsNWidgets(manyVets.length));
+      expect(find.byType(VetTeamCard), findsNWidgets(manyVets.length));
       expect(find.byType(ListView), findsNothing);
       expect(tester.takeException(), isNull);
     }

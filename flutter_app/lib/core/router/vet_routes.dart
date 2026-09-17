@@ -75,7 +75,7 @@ List<RouteBase> _vetFormRoutes({required String listPath}) {
         return ExperienceShellScaffold(
           experience: AppExperience.petCare,
           currentLocation: state.uri.path,
-          screenTitle: l.careTeam,
+          screenTitle: l.vetTeam,
           backPath: listPath,
           child: VetDetailScreen(vetId: vetId, listPath: listPath),
         );

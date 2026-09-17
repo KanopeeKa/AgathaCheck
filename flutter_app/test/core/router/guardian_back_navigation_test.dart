@@ -248,9 +248,9 @@ void main() {
       );
 
       // Tap 'Edit care team' from the options menu.
-      await tester.tap(find.byKey(const Key('care_team_options_button')));
+      await tester.tap(find.byKey(const Key('vet_team_options_button')));
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('care_team_edit_menu_item')));
+      await tester.tap(find.byKey(const Key('vet_team_edit_menu_item')));
       await _settle(tester);
 
       expect(
@@ -268,9 +268,9 @@ void main() {
       await _settle(tester);
 
       // Go to edit via care team options menu.
-      await tester.tap(find.byKey(const Key('care_team_options_button')));
+      await tester.tap(find.byKey(const Key('vet_team_options_button')));
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('care_team_edit_menu_item')));
+      await tester.tap(find.byKey(const Key('vet_team_edit_menu_item')));
       await _settle(tester);
 
       expect(
@@ -328,7 +328,7 @@ void main() {
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
 
-      await tester.tap(find.byKey(const Key('care_team_card_vet-back-1')));
+      await tester.tap(find.byKey(const Key('vet_team_card_vet-back-1')));
       await _settle(tester);
 
       expect(

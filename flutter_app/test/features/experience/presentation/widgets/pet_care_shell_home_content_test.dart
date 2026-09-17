@@ -206,7 +206,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.byKey(const Key('pet_care_dashboard_care_team_puppy_deco')),
+      find.byKey(const Key('pet_care_dashboard_vet_team_puppy_deco')),
       findsOneWidget,
     );
     expect(

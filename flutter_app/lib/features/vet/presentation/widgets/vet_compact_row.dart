@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/vet.dart';
 import '../utils/vet_accent.dart';
-import 'care_team_identity_avatar.dart';
+import 'vet_team_identity_avatar.dart';
 
 /// Compact, text-first vet row for dashboard and list previews.
 class VetCompactRow extends StatelessWidget {
@@ -60,7 +60,7 @@ class VetCompactRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ExcludeSemantics(
-                    child: CareTeamIdentityAvatar(
+                    child: VetTeamIdentityAvatar(
                       name: vet.name,
                       accent: accent,
                       radius: 18,

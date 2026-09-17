@@ -187,7 +187,7 @@ void main() {
 
       expect(find.text('Pets cared for'), findsOneWidget);
       expect(find.text('Whiskers'), findsOneWidget);
-      expect(find.byKey(const Key('care_team_pet_row_pet-1')), findsOneWidget);
+      expect(find.byKey(const Key('vet_team_pet_row_pet-1')), findsOneWidget);
     });
 
     testWidgets('shows empty pets message when no pets are linked', (
@@ -203,7 +203,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.byKey(const Key('care_team_link_pets_button')),
+        find.byKey(const Key('vet_team_link_pets_button')),
         findsOneWidget,
       );
     });
@@ -343,9 +343,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const Key('care_team_options_button')));
+      await tester.tap(find.byKey(const Key('vet_team_options_button')));
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('care_team_edit_menu_item')));
+      await tester.tap(find.byKey(const Key('vet_team_edit_menu_item')));
       await tester.pumpAndSettle();
 
       expect(find.text('Edit vet-1'), findsOneWidget);

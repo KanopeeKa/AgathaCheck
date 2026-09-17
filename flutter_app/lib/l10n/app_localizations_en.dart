@@ -5020,13 +5020,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myVets => 'Veterinary team';
 
   @override
-  String get careTeamEyebrow => 'VETERINARY TEAM';
+  String get vetTeamEyebrow => 'VETERINARY TEAM';
 
   @override
-  String get careTeamClinicSubtitle => 'Veterinary clinic';
+  String get vetTeamClinicSubtitle => 'Veterinary clinic';
 
   @override
-  String get allCareTeams => 'All veterinary teams';
+  String get allVetTeams => 'All veterinary teams';
 
   @override
   String get allAbsences => 'All absences';
@@ -5070,7 +5070,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String careTeamCaringForPets(int count) {
+  String vetTeamCaringForPets(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
@@ -5084,23 +5084,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vetLinkedPets => 'Linked pets';
 
   @override
-  String get careTeam => 'Veterinary team';
+  String get vetTeam => 'Veterinary team';
 
   @override
-  String get careTeamPetsCaredFor => 'Pets cared for';
+  String get vetTeamPetsCaredFor => 'Pets cared for';
 
   @override
-  String get careTeamNoLinkedPets =>
+  String get vetTeamNoLinkedPets =>
       'No pets are currently linked to this veterinary team.';
 
   @override
-  String get careTeamClinicType => 'Veterinary clinic';
+  String get vetTeamClinicType => 'Veterinary clinic';
 
   @override
-  String get careTeamOptions => 'Veterinary team options';
+  String get vetTeamOptions => 'Veterinary team options';
 
   @override
-  String get editCareTeam => 'Edit veterinary team';
+  String get editVetTeam => 'Edit veterinary team';
 
   @override
   String get vetNotFound => 'Veterinarian not found';

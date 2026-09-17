@@ -5,7 +5,7 @@ import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
-import 'package:pet_profile_app/features/vet/presentation/widgets/care_team_card.dart';
+import 'package:pet_profile_app/features/vet/presentation/widgets/vet_team_card.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
@@ -44,7 +44,7 @@ void main() {
         home: Scaffold(
           body: MediaQuery(
             data: MediaQueryData(textScaler: textScaler),
-            child: CareTeamCard(
+            child: VetTeamCard(
               vet: cardVet,
               linkedPets: pets,
               linkedPetCount: linkedPetCount,

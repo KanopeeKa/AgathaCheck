@@ -4,11 +4,11 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/vet.dart';
 import '../utils/vet_accent.dart';
-import 'care_team_identity_avatar.dart';
+import 'vet_team_identity_avatar.dart';
 
 /// Warm identity header for a care team / veterinary clinic.
-class CareTeamIdentityCard extends StatelessWidget {
-  const CareTeamIdentityCard({
+class VetTeamIdentityCard extends StatelessWidget {
+  const VetTeamIdentityCard({
     super.key,
     required this.vet,
     required this.accent,
@@ -41,7 +41,7 @@ class CareTeamIdentityCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CareTeamIdentityAvatar(name: vet.name, accent: accent),
+                VetTeamIdentityAvatar(name: vet.name, accent: accent),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -55,7 +55,7 @@ class CareTeamIdentityCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        l.careTeamClinicType,
+                        l.vetTeamClinicType,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -64,8 +64,8 @@ class CareTeamIdentityCard extends StatelessWidget {
                   ),
                 ),
                 PopupMenuButton<String>(
-                  key: const Key('care_team_options_button'),
-                  tooltip: l.careTeamOptions,
+                  key: const Key('vet_team_options_button'),
+                  tooltip: l.vetTeamOptions,
                   icon: Icon(
                     Icons.more_vert,
                     color: theme.colorScheme.onSurfaceVariant,
@@ -75,9 +75,9 @@ class CareTeamIdentityCard extends StatelessWidget {
                   },
                   itemBuilder: (context) => [
                     PopupMenuItem<String>(
-                      key: const Key('care_team_edit_menu_item'),
+                      key: const Key('vet_team_edit_menu_item'),
                       value: 'edit',
-                      child: Text(l.editCareTeam),
+                      child: Text(l.editVetTeam),
                     ),
                   ],
                 ),

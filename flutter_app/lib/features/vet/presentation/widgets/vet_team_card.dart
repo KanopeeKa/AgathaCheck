@@ -4,12 +4,12 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../domain/entities/vet.dart';
 import '../utils/vet_accent.dart';
-import 'care_team_initials_avatar.dart';
+import 'vet_team_initials_avatar.dart';
 import 'linked_pet_avatar_stack.dart';
 
 /// Warm, relational care-team card for the guardian dashboard.
-class CareTeamCard extends StatelessWidget {
-  const CareTeamCard({
+class VetTeamCard extends StatelessWidget {
+  const VetTeamCard({
     super.key,
     required this.vet,
     required this.linkedPets,
@@ -34,11 +34,11 @@ class CareTeamCard extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final town = vetTownLabel(vet.address);
     final subtitle = town.isEmpty
-        ? l.careTeamClinicSubtitle
-        : '${l.careTeamClinicSubtitle} · $town';
+        ? l.vetTeamClinicSubtitle
+        : '${l.vetTeamClinicSubtitle} · $town';
     final caringLabel = linkedPetCount == null
         ? null
-        : l.careTeamCaringForPets(linkedPetCount!);
+        : l.vetTeamCaringForPets(linkedPetCount!);
     final semanticLabel = [
       vet.name,
       subtitle,
@@ -58,7 +58,7 @@ class CareTeamCard extends StatelessWidget {
         (previewPets.isNotEmpty || overflowCount > 0);
 
     return Semantics(
-      key: Key('care_team_card_${vet.id}'),
+      key: Key('vet_team_card_${vet.id}'),
       button: true,
       label: semanticLabel,
       onTap: onTap,
@@ -81,7 +81,7 @@ class CareTeamCard extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CareTeamInitialsAvatar(
+                    VetTeamInitialsAvatar(
                       name: vet.name,
                       organizationId: vet.organizationId,
                     ),
