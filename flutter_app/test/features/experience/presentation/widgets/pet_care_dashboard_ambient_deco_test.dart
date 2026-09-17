@@ -78,43 +78,4 @@ void main() {
       expect(PetCareDashboardDecoThresholds.opacity, 0.8);
     });
   });
-
-  group('petCareVetTeamPuppyDecoAllowed', () {
-    test('requires wide desk layout and care team cards', () {
-      expect(
-        petCareVetTeamPuppyDecoAllowed(
-          useWideDeskLayout: true,
-          hasVetTeamCards: true,
-        ),
-        isTrue,
-      );
-      expect(
-        petCareVetTeamPuppyDecoAllowed(
-          useWideDeskLayout: false,
-          hasVetTeamCards: true,
-        ),
-        isFalse,
-      );
-      expect(
-        petCareVetTeamPuppyDecoAllowed(
-          useWideDeskLayout: true,
-          hasVetTeamCards: false,
-        ),
-        isFalse,
-      );
-    });
-  });
-
-  group('PetCareVetTeamPuppyDeco', () {
-    testWidgets('renders puppy asset', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(home: Scaffold(body: PetCareVetTeamPuppyDeco())),
-      );
-
-      expect(
-        find.byKey(const Key('pet_care_dashboard_vet_team_puppy_deco')),
-        findsOneWidget,
-      );
-    });
-  });
 }

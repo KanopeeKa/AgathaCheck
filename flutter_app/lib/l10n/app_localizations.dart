@@ -704,6 +704,12 @@ abstract class AppLocalizations {
   /// **'My Pets'**
   String get myPets;
 
+  /// No description provided for @myPetsEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'MY PETS'**
+  String get myPetsEyebrow;
+
   /// No description provided for @workspaceShelter.
   ///
   /// In en, this message translates to:
@@ -9192,7 +9198,7 @@ abstract class AppLocalizations {
   /// No description provided for @allVetTeams.
   ///
   /// In en, this message translates to:
-  /// **'All veterinary teams'**
+  /// **'All Vets'**
   String get allVetTeams;
 
   /// No description provided for @allAbsences.

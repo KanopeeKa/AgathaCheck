@@ -334,6 +334,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myPets => 'My Pets';
 
   @override
+  String get myPetsEyebrow => 'MY PETS';
+
+  @override
   String get workspaceShelter => 'Shelter';
 
   @override
@@ -5117,7 +5120,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vetTeamClinicSubtitle => 'Veterinary clinic';
 
   @override
-  String get allVetTeams => 'All veterinary teams';
+  String get allVetTeams => 'All Vets';
 
   @override
   String get allAbsences => 'All absences';

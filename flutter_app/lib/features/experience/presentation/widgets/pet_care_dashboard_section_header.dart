@@ -30,6 +30,8 @@ class PetCareDashboardSectionHeader extends StatelessWidget {
 }
 
 /// Section header row: eyebrow title (optional) + optional trailing "All …" action.
+///
+/// Use for all dashboard sections with an optional All … action.
 class PetCareDashboardSectionChrome extends StatelessWidget {
   const PetCareDashboardSectionChrome({
     super.key,
@@ -61,32 +63,21 @@ class PetCareDashboardSectionChrome extends StatelessWidget {
             linkKey: linkKey,
             label: linkLabel!,
             onPressed: onLinkPressed!,
+            alignEnd: true,
           )
         : const SizedBox.shrink();
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (showTitle && showLink && constraints.maxWidth >= 360) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(child: titleWidget),
-              linkWidget,
-            ],
-          );
-        }
+    if (showTitle) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: titleWidget),
+          if (showLink) Flexible(child: linkWidget),
+        ],
+      );
+    }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (showTitle) titleWidget,
-            if (showTitle && showLink) const SizedBox(height: 4),
-            if (showLink)
-              Align(alignment: Alignment.centerLeft, child: linkWidget),
-          ],
-        );
-      },
-    );
+    return Align(alignment: Alignment.centerRight, child: linkWidget);
   }
 }
 
@@ -97,16 +88,18 @@ class PetCareDashboardSectionLink extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.linkKey,
+    this.alignEnd = false,
   });
 
   final String label;
   final VoidCallback onPressed;
   final Key? linkKey;
+  final bool alignEnd;
 
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment.centerLeft,
+      alignment: alignEnd ? Alignment.centerRight : Alignment.centerLeft,
       child: TextButton(
         key: linkKey,
         onPressed: onPressed,

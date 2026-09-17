@@ -8,7 +8,7 @@ Feature: Pet Care dashboard
   Scenario: Dashboard shows exactly three sections
     Given I am signed in as a guardian with pets, due health entries, and vets
     When I view the Pet Care dashboard
-    Then I should see "My Pets", "CARE ACTIONS", and "Veterinary team" sections only
+    Then I should see "MY PETS", "CARE ACTIONS", and "Veterinary team" sections only
 
   @implemented
   @P0

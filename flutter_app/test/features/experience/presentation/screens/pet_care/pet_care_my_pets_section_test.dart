@@ -119,7 +119,7 @@ void main() {
       );
 
       expect(find.byType(UnifiedPetTile), findsNWidgets(count));
-      expect(find.text('My Pets'), findsOneWidget);
+      expect(find.text('MY PETS'), findsOneWidget);
       expect(find.text('All pets'), findsOneWidget);
       expect(find.text('Add Pet'), findsOneWidget);
       expect(tester.takeException(), isNull);
