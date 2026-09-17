@@ -10933,6 +10933,12 @@ abstract class AppLocalizations {
   /// **'Who\'s caring for {petName}'**
   String awayPlanningCarerEditTitle(String petName);
 
+  /// No description provided for @awayPlanningCarerEditButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit carer for {petName}'**
+  String awayPlanningCarerEditButtonLabel(String petName);
+
   /// No description provided for @awayPlanningCarerEditSharedUser.
   ///
   /// In en, this message translates to:

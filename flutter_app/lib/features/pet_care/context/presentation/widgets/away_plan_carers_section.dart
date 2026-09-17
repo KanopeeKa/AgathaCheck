@@ -43,6 +43,7 @@ class AwayPlanCarersSection extends ConsumerWidget {
               children: [
                 for (final petId in orderedPetIds) ...[
                   _CarerRow(
+                    petId: petId,
                     petName: petNamesById[petId] ?? '',
                     carerLabel: AwayPlanCopy.petCarerLabel(
                       l,
@@ -81,12 +82,14 @@ class AwayPlanCarersSection extends ConsumerWidget {
 
 class _CarerRow extends StatelessWidget {
   const _CarerRow({
+    required this.petId,
     required this.petName,
     required this.carerLabel,
     required this.canEdit,
     required this.onEdit,
   });
 
+  final String petId;
   final String petName;
   final String carerLabel;
   final bool canEdit;
@@ -112,8 +115,8 @@ class _CarerRow extends StatelessWidget {
           width: 48,
           height: 48,
           child: IconButton(
-            key: const Key('away_plan_carer_edit'),
-            tooltip: l.awayPlanningCarerEditSharedUser,
+            key: Key('away_plan_carer_edit_$petId'),
+            tooltip: l.awayPlanningCarerEditButtonLabel(petName),
             icon: const Icon(Icons.edit_outlined),
             onPressed: canEdit ? onEdit : null,
           ),

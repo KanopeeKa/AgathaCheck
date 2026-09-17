@@ -53,14 +53,12 @@ async function loadPetsByAbsenceIds(pool, absenceIds) {
      ORDER BY pet_id`,
     [absenceIds]
   );
-  for (const row of result.rows) {
+  if (result.rows.length === 0) return map;
+  const enriched = await enrichSharedUserCarerNames(pool, result.rows);
+  for (const row of enriched) {
     const list = map.get(row.planned_absence_id) || [];
     list.push(row);
     map.set(row.planned_absence_id, list);
-  }
-  if (map.size === 0) return map;
-  for (const [absenceId, petRows] of map) {
-    map.set(absenceId, await enrichSharedUserCarerNames(pool, petRows));
   }
   return map;
 }

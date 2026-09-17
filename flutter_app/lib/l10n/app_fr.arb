@@ -2205,6 +2205,12 @@
       "petName": { "type": "String" }
     }
   },
+  "awayPlanningCarerEditButtonLabel": "Modifier le soignant de {petName}",
+  "@awayPlanningCarerEditButtonLabel": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
   "awayPlanningCarerEditSharedUser": "Choisir parmi les personnes avec accès partagé",
   "awayPlanningCarerEditNoteOnly": "Ajouter quelqu'un sans accès partagé",
   "awayPlanningCarerEditClear": "Effacer le soignant",

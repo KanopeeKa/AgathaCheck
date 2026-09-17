@@ -61,8 +61,8 @@ final awayPlanReadinessProvider =
           .getAwayPlanReadiness(absenceId);
     });
 
-final carerCandidatesProvider =
-    FutureProvider.family<List<CarerCandidate>, String>((ref, petId) async {
+final carerCandidatesProvider = FutureProvider.autoDispose
+    .family<List<CarerCandidate>, String>((ref, petId) async {
       return ref.read(careContextRepositoryProvider).getCarerCandidates(petId);
     });
 

@@ -6251,6 +6251,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String awayPlanningCarerEditButtonLabel(String petName) {
+    return 'Modifier le soignant de $petName';
+  }
+
+  @override
   String get awayPlanningCarerEditSharedUser =>
       'Choisir parmi les personnes avec accès partagé';
 

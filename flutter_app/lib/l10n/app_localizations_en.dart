@@ -6143,6 +6143,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String awayPlanningCarerEditButtonLabel(String petName) {
+    return 'Edit carer for $petName';
+  }
+
+  @override
   String get awayPlanningCarerEditSharedUser =>
       'Choose from people with shared access';
 

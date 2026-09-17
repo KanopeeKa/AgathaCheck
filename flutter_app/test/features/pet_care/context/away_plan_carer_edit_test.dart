@@ -194,7 +194,7 @@ void main() {
     await tester.pumpWidget(buildScreen(repo));
     await tester.pumpAndSettle();
 
-    final editButton = find.byKey(const Key('away_plan_carer_edit'));
+    final editButton = find.byKey(const Key('away_plan_carer_edit_pet-1'));
     expect(editButton, findsOneWidget);
 
     await tester.tap(editButton);
@@ -224,7 +224,7 @@ void main() {
     await tester.pumpWidget(buildScreen(repo));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('away_plan_carer_edit')));
+    await tester.tap(find.byKey(const Key('away_plan_carer_edit_pet-1')));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('away_plan_carer_mode_note_only')));
@@ -269,7 +269,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('away_plan_carer_edit')));
+    await tester.tap(find.byKey(const Key('away_plan_carer_edit_pet-1')));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('away_plan_carer_mode_clear')));
@@ -297,7 +297,7 @@ void main() {
     await tester.pumpWidget(buildScreen(repo));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('away_plan_carer_edit')));
+    await tester.tap(find.byKey(const Key('away_plan_carer_edit_pet-1')));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('away_plan_carer_candidate_user-2')));
@@ -317,7 +317,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final editButton = tester.widget<IconButton>(
-      find.byKey(const Key('away_plan_carer_edit')),
+      find.byKey(const Key('away_plan_carer_edit_pet-1')),
     );
     expect(editButton.onPressed, isNull);
   });
