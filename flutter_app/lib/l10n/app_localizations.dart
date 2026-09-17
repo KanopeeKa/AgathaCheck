@@ -9027,23 +9027,23 @@ abstract class AppLocalizations {
   /// **'Veterinary team'**
   String get myVets;
 
-  /// No description provided for @careTeamEyebrow.
+  /// No description provided for @vetTeamEyebrow.
   ///
   /// In en, this message translates to:
   /// **'VETERINARY TEAM'**
-  String get careTeamEyebrow;
+  String get vetTeamEyebrow;
 
-  /// No description provided for @careTeamClinicSubtitle.
+  /// No description provided for @vetTeamClinicSubtitle.
   ///
   /// In en, this message translates to:
   /// **'Veterinary clinic'**
-  String get careTeamClinicSubtitle;
+  String get vetTeamClinicSubtitle;
 
-  /// No description provided for @allCareTeams.
+  /// No description provided for @allVetTeams.
   ///
   /// In en, this message translates to:
   /// **'All veterinary teams'**
-  String get allCareTeams;
+  String get allVetTeams;
 
   /// No description provided for @allAbsences.
   ///
@@ -9111,11 +9111,11 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 pet} other{{count} pets}}'**
   String vetLinkedPetCount(int count);
 
-  /// No description provided for @careTeamCaringForPets.
+  /// No description provided for @vetTeamCaringForPets.
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{Caring for 1 pet} other{Caring for {count} pets}}'**
-  String careTeamCaringForPets(int count);
+  String vetTeamCaringForPets(int count);
 
   /// No description provided for @vetLinkedPets.
   ///
@@ -9123,41 +9123,41 @@ abstract class AppLocalizations {
   /// **'Linked pets'**
   String get vetLinkedPets;
 
-  /// No description provided for @careTeam.
+  /// No description provided for @vetTeam.
   ///
   /// In en, this message translates to:
   /// **'Veterinary team'**
-  String get careTeam;
+  String get vetTeam;
 
-  /// No description provided for @careTeamPetsCaredFor.
+  /// No description provided for @vetTeamPetsCaredFor.
   ///
   /// In en, this message translates to:
   /// **'Pets cared for'**
-  String get careTeamPetsCaredFor;
+  String get vetTeamPetsCaredFor;
 
-  /// No description provided for @careTeamNoLinkedPets.
+  /// No description provided for @vetTeamNoLinkedPets.
   ///
   /// In en, this message translates to:
   /// **'No pets are currently linked to this veterinary team.'**
-  String get careTeamNoLinkedPets;
+  String get vetTeamNoLinkedPets;
 
-  /// No description provided for @careTeamClinicType.
+  /// No description provided for @vetTeamClinicType.
   ///
   /// In en, this message translates to:
   /// **'Veterinary clinic'**
-  String get careTeamClinicType;
+  String get vetTeamClinicType;
 
-  /// No description provided for @careTeamOptions.
+  /// No description provided for @vetTeamOptions.
   ///
   /// In en, this message translates to:
   /// **'Veterinary team options'**
-  String get careTeamOptions;
+  String get vetTeamOptions;
 
-  /// No description provided for @editCareTeam.
+  /// No description provided for @editVetTeam.
   ///
   /// In en, this message translates to:
   /// **'Edit veterinary team'**
-  String get editCareTeam;
+  String get editVetTeam;
 
   /// No description provided for @vetNotFound.
   ///

@@ -21,7 +21,7 @@ const _fillerWords = {'and', 'de', 'des', 'du', 'la', 'le', 'les', 'of', 'the'};
 ///
 /// Multi-word names use the first letters of the first two significant words.
 /// Single-word names use the first letter plus the first consonant that follows.
-String careTeamInitialsFromName(String name) {
+String vetTeamInitialsFromName(String name) {
   final cleaned = name.replaceAll(RegExp(r'[^\w\s]'), ' ').trim();
   if (cleaned.isEmpty) return '?';
 

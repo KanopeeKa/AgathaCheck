@@ -8,7 +8,7 @@ import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../../auth/presentation/providers/auth_providers.dart';
 import '../../../../vet/domain/entities/vet.dart';
 import '../../../../vet/presentation/providers/vet_providers.dart';
-import '../../../../vet/presentation/widgets/care_team_card.dart';
+import '../../../../vet/presentation/widgets/vet_team_card.dart';
 import '../../widgets/pet_care_dashboard_ambient_deco.dart';
 import '../../widgets/pet_care_operations_desk_layout.dart';
 import '../../widgets/pet_care_dashboard_section_header.dart';
@@ -31,15 +31,15 @@ class PetCareMyVetsSection extends ConsumerWidget {
     final vets = vetListAsync.valueOrNull ?? const <Vet>[];
     final showAllAction = auth.accessToken != null && vets.isNotEmpty;
 
-    final showPuppyDeco = petCareCareTeamPuppyDecoAllowed(
+    final showPuppyDeco = petCareVetTeamPuppyDecoAllowed(
       useWideDeskLayout: useWideDeskLayout,
-      hasCareTeamCards: auth.accessToken != null && vets.isNotEmpty,
+      hasVetTeamCards: auth.accessToken != null && vets.isNotEmpty,
     );
 
     final sectionBody = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        PetCareDashboardSectionHeader(title: l.careTeamEyebrow),
+        PetCareDashboardSectionHeader(title: l.vetTeamEyebrow),
         const SizedBox(height: 10),
         auth.accessToken == null
             ? const SizedBox(
@@ -90,7 +90,7 @@ class PetCareMyVetsSection extends ConsumerWidget {
                   return Column(
                     children: [
                       for (final vet in resolvedVets)
-                        CareTeamCard(
+                        VetTeamCard(
                           vet: vet,
                           linkedPets:
                               linkedPetsByVetId?[vet.id] ?? const <Pet>[],
@@ -109,8 +109,8 @@ class PetCareMyVetsSection extends ConsumerWidget {
               ),
         if (showAllAction)
           PetCareDashboardSectionLink(
-            linkKey: const Key('pet_care_dashboard_all_care_teams'),
-            label: l.allCareTeams,
+            linkKey: const Key('pet_care_dashboard_all_vet_teams'),
+            label: l.allVetTeams,
             onPressed: () => context.go('/pc/vets'),
           ),
       ],
@@ -130,7 +130,7 @@ class PetCareMyVetsSection extends ConsumerWidget {
                 Positioned(
                   right: 0,
                   bottom: showAllAction ? 40 : 0,
-                  child: const PetCareCareTeamPuppyDeco(),
+                  child: const PetCareVetTeamPuppyDeco(),
                 ),
               ],
             )

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../utils/care_team_initials.dart';
+import '../utils/vet_team_initials.dart';
 import '../utils/vet_accent.dart';
 
 /// Circular initials avatar for a care team / veterinary clinic.
 ///
 /// When [imageUrl] is provided in the future, it replaces the initials monogram.
-class CareTeamInitialsAvatar extends StatelessWidget {
-  const CareTeamInitialsAvatar({
+class VetTeamInitialsAvatar extends StatelessWidget {
+  const VetTeamInitialsAvatar({
     super.key,
     required this.name,
     this.organizationId,
@@ -24,7 +24,7 @@ class CareTeamInitialsAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final accent = resolveVetAccent(context, organizationId: organizationId);
-    final initials = careTeamInitialsFromName(name);
+    final initials = vetTeamInitialsFromName(name);
     final resolvedImage = imageUrl?.trim() ?? '';
 
     Widget child;

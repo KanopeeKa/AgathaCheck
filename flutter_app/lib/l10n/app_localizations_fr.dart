@@ -5102,13 +5102,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myVets => 'Équipe vétérinaire';
 
   @override
-  String get careTeamEyebrow => 'ÉQUIPE VÉTÉRINAIRE';
+  String get vetTeamEyebrow => 'ÉQUIPE VÉTÉRINAIRE';
 
   @override
-  String get careTeamClinicSubtitle => 'Clinique vétérinaire';
+  String get vetTeamClinicSubtitle => 'Clinique vétérinaire';
 
   @override
-  String get allCareTeams => 'Toutes les équipes vétérinaires';
+  String get allVetTeams => 'Toutes les équipes vétérinaires';
 
   @override
   String get allAbsences => 'Toutes les absences';
@@ -5152,7 +5152,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String careTeamCaringForPets(int count) {
+  String vetTeamCaringForPets(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
@@ -5166,23 +5166,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String get vetLinkedPets => 'Animaux associés';
 
   @override
-  String get careTeam => 'Équipe vétérinaire';
+  String get vetTeam => 'Équipe vétérinaire';
 
   @override
-  String get careTeamPetsCaredFor => 'Animaux pris en charge';
+  String get vetTeamPetsCaredFor => 'Animaux pris en charge';
 
   @override
-  String get careTeamNoLinkedPets =>
+  String get vetTeamNoLinkedPets =>
       'Aucun animal n\'est actuellement associé à cette équipe vétérinaire.';
 
   @override
-  String get careTeamClinicType => 'Clinique vétérinaire';
+  String get vetTeamClinicType => 'Clinique vétérinaire';
 
   @override
-  String get careTeamOptions => 'Options de l\'équipe vétérinaire';
+  String get vetTeamOptions => 'Options de l\'équipe vétérinaire';
 
   @override
-  String get editCareTeam => 'Modifier l\'équipe vétérinaire';
+  String get editVetTeam => 'Modifier l\'équipe vétérinaire';
 
   @override
   String get vetNotFound => 'Vétérinaire introuvable';

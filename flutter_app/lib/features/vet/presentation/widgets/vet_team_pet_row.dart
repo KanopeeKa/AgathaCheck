@@ -7,8 +7,8 @@ import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/widgets/pet_photo_image.dart';
 
 /// Flat, tappable pet row for the care team detail screen.
-class CareTeamPetRow extends StatelessWidget {
-  const CareTeamPetRow({super.key, required this.pet, this.showDivider = true});
+class VetTeamPetRow extends StatelessWidget {
+  const VetTeamPetRow({super.key, required this.pet, this.showDivider = true});
 
   final Pet pet;
   final bool showDivider;
@@ -81,8 +81,8 @@ class _PetAvatar extends ConsumerWidget {
     final apiBaseUrl = ref.watch(apiBaseUrlProvider);
 
     return SizedBox(
-      width: CareTeamPetRow._avatarSize,
-      height: CareTeamPetRow._avatarSize,
+      width: VetTeamPetRow._avatarSize,
+      height: VetTeamPetRow._avatarSize,
       child: ClipOval(
         child: buildPetPhotoOrPlaceholder(
           photoPath: pet.photoPath,

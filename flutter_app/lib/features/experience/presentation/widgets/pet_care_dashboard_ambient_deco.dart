@@ -56,12 +56,12 @@ bool petCareDashboardDecoAllowedForWidth(double viewportWidth) {
   return viewportWidth >= PetCareDashboardDecoThresholds.mobileMaxWidth;
 }
 
-/// Whether the Care Team puppy watermark may appear.
-bool petCareCareTeamPuppyDecoAllowed({
+/// Whether the vet-team puppy watermark may appear.
+bool petCareVetTeamPuppyDecoAllowed({
   required bool useWideDeskLayout,
-  required bool hasCareTeamCards,
+  required bool hasVetTeamCards,
 }) {
-  return useWideDeskLayout && hasCareTeamCards;
+  return useWideDeskLayout && hasVetTeamCards;
 }
 
 /// Non-interactive, non-semantic wrapper for ambient dashboard illustrations.
@@ -181,9 +181,9 @@ class PetCarePetRailYarnDeco extends StatelessWidget {
   }
 }
 
-/// Lower-right puppy watermark for the Care Team column on wide layouts.
-class PetCareCareTeamPuppyDeco extends StatelessWidget {
-  const PetCareCareTeamPuppyDeco({super.key});
+/// Lower-right puppy watermark for the vet-team column on wide layouts.
+class PetCareVetTeamPuppyDeco extends StatelessWidget {
+  const PetCareVetTeamPuppyDeco({super.key});
 
   static const _puppyAspect = 1386 / 758;
 
@@ -195,7 +195,7 @@ class PetCareCareTeamPuppyDeco extends StatelessWidget {
     return PetCareDashboardAmbientDeco(
       child: Image.asset(
         PetCareDashboardDecoAssets.puppyBowl,
-        key: const Key('pet_care_dashboard_care_team_puppy_deco'),
+        key: const Key('pet_care_dashboard_vet_team_puppy_deco'),
         width: width,
         height: height,
         fit: BoxFit.contain,

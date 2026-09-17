@@ -4,8 +4,8 @@ import '../utils/vet_accent.dart';
 import '../utils/vet_initials.dart';
 
 /// Circular initials avatar for a care team / veterinary clinic.
-class CareTeamIdentityAvatar extends StatelessWidget {
-  const CareTeamIdentityAvatar({
+class VetTeamIdentityAvatar extends StatelessWidget {
+  const VetTeamIdentityAvatar({
     super.key,
     required this.name,
     required this.accent,
