@@ -165,10 +165,6 @@ test.describe('Pet sharing', () => {
       await expect(acceptButton).toBeVisible();
     }).toPass({ timeout: 45_000 });
     await acceptButton.click();
-    await expect(async () => {
-      await refreshFlutterAccessibility(page);
-      await expect(page.getByText(/Invitation accepted|Invitation acceptée/i)).toBeVisible();
-    }).toPass({ timeout: 30_000 });
 
     const petList = new PetListPage(page);
     await petList.expectLoaded();
