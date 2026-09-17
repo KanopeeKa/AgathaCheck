@@ -10,6 +10,7 @@
  * Scenario: Hiding a shared pet
  * Scenario: Unhiding a shared pet
  * Scenario: Revoking collaborator access (owner)
+ * Scenario: Accepting an email share invite into personal pet list
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
@@ -123,7 +124,7 @@ test.describe('Pet sharing', () => {
     await sharedPet.expectNoVetSection();
   });
 
-  test('@smoke-ci logged-in user can accept an email share invite', async ({ page }) => {
+  test('@smoke-ci @smoke-uat logged-in user can accept an email share invite', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const owner = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
     const pet = await createPet(baseURL, owner.accessToken, 'Bella', 'Dog');
