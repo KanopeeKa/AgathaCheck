@@ -92,8 +92,8 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
         final scopedPets = widget.visiblePetIds == null
             ? allPets
             : allPets
-                .where((pet) => widget.visiblePetIds!.contains(pet.id))
-                .toList();
+                  .where((pet) => widget.visiblePetIds!.contains(pet.id))
+                  .toList();
         if (scopedPets.isEmpty) {
           return Center(
             child: Column(

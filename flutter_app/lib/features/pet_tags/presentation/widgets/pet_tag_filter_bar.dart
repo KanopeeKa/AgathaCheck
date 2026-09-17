@@ -28,9 +28,7 @@ class PetTagFilterBar extends ConsumerWidget {
           id: dimensionId,
           label: l.petTagsFilterDimension,
           choices: tags
-              .map(
-                (tag) => CollectionFilterChoice(id: tag.id, label: tag.name),
-              )
+              .map((tag) => CollectionFilterChoice(id: tag.id, label: tag.name))
               .toList(),
           multiSelect: true,
         );

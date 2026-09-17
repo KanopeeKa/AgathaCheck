@@ -12,9 +12,7 @@ Set<String>? matchingPetIdsForTagFilter({
   if (selectedTags.isEmpty) return <String>{};
 
   if (matchMode == PetTagMatchMode.any) {
-    return selectedTags
-        .expand((tag) => tag.petIds)
-        .toSet();
+    return selectedTags.expand((tag) => tag.petIds).toSet();
   }
 
   final petIdSets = selectedTags.map((tag) => tag.petIds.toSet()).toList();

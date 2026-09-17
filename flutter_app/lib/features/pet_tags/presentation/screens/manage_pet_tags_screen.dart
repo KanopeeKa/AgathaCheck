@@ -37,10 +37,7 @@ class ManagePetTagsScreen extends ConsumerWidget {
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24),
-                    child: Text(
-                      l.petTagsEmpty,
-                      textAlign: TextAlign.center,
-                    ),
+                    child: Text(l.petTagsEmpty, textAlign: TextAlign.center),
                   ),
                 ),
               )
@@ -68,7 +65,12 @@ class ManagePetTagsScreen extends ConsumerWidget {
                           PopupMenuButton<String>(
                             onSelected: (action) async {
                               if (action == 'rename') {
-                                await _renameTag(context, ref, tag.id, tag.name);
+                                await _renameTag(
+                                  context,
+                                  ref,
+                                  tag.id,
+                                  tag.name,
+                                );
                               } else if (action == 'delete') {
                                 await _deleteTag(context, ref, tag);
                               }
@@ -113,9 +115,9 @@ class ManagePetTagsScreen extends ConsumerWidget {
       await ref.read(petTagListProvider.notifier).createTag(name);
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.errorWithMessage('$e'))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.errorWithMessage('$e'))));
       }
     }
   }
@@ -133,9 +135,9 @@ class ManagePetTagsScreen extends ConsumerWidget {
       await ref.read(petTagListProvider.notifier).renameTag(tagId, name);
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.errorWithMessage('$e'))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.errorWithMessage('$e'))));
       }
     }
   }

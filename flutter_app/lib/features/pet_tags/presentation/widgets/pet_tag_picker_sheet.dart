@@ -32,10 +32,7 @@ Future<void> showPetTagPickerSheet({
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  l.petTagsCreateInSettings,
-                  textAlign: TextAlign.center,
-                ),
+                Text(l.petTagsCreateInSettings, textAlign: TextAlign.center),
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: () {
