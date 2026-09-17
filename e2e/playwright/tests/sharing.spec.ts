@@ -32,7 +32,12 @@ import { clearBrowserSessionState } from '../support/session';
 import { createTestUser } from '../support/ui-auth';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
-import { refreshFlutterAccessibility, flutterGotoUrl } from '../support/flutter';
+import {
+  enableFlutterAccessibility,
+  refreshFlutterAccessibility,
+  waitForFlutterRoute,
+  flutterGotoUrl,
+} from '../support/flutter';
 import { SharedPetPage } from '../pages/shared-pet.page';
 
 test.describe('Pet sharing', () => {
@@ -138,9 +143,15 @@ test.describe('Pet sharing', () => {
     );
 
     await loginAs(page, bob);
-    await flutterGotoUrl(page, `${baseURL}/#/invite/${invite.code}`);
-    await page.getByRole('button', { name: /Accept|Accepter/i }).click();
-    await expect(page.getByText(/Share accepted|Invitation accepted/i)).toBeVisible({
+    await waitForFlutterRoute(page, `/invite/${invite.code}`);
+    await expect(page.getByText(/Pet sharing invitation|Invitation de partage/i)).toBeVisible({
+      timeout: 30_000,
+    });
+    await enableFlutterAccessibility(page);
+    await page
+      .getByRole('button', { name: /Accept invitation|Accepter l'invitation/i })
+      .click();
+    await expect(page.getByText(/Invitation accepted|Invitation acceptée/i)).toBeVisible({
       timeout: 15_000,
     });
 
