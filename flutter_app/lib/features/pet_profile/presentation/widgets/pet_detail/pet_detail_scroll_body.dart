@@ -33,11 +33,11 @@ class PetDetailScrollBody extends StatelessWidget {
 
         final primaryColumn = <Widget>[
           PetDetailProfileCard(pet: pet, viewerContext: viewerContext),
-          PetTagChipRow(petId: pet.id),
           PetProfileCompletenessPrompt(pet: pet),
           PetProfileCareSafeguardSection(petId: pet.id, petName: pet.name),
           PetCareSection(petId: pet.id, pet: pet),
           PetProfileCareSuggestionSection(petId: pet.id),
+          PetTagChipRow(petId: pet.id),
         ];
 
         final secondaryColumn = <Widget>[
