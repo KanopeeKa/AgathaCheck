@@ -285,7 +285,9 @@ export function registerCoreRoutes(router, pool) {
       let weightManagementContext = existingRow.weight_management_context || 'none';
       if (Object.prototype.hasOwnProperty.call(req.body, 'weight_reference_value')
           || Object.prototype.hasOwnProperty.call(req.body, 'weightReferenceValue')) {
-        const rawRef = req.body.weight_reference_value ?? req.body.weightReferenceValue;
+        const rawRef = Object.prototype.hasOwnProperty.call(req.body, 'weight_reference_value')
+          ? req.body.weight_reference_value
+          : req.body.weightReferenceValue;
         if (rawRef === null || rawRef === '') {
           weightReferenceValue = null;
         } else {

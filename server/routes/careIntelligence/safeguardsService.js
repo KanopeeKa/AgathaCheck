@@ -26,6 +26,19 @@ export function magnitudeBucket(evidence) {
   return Math.round(deltaPct / MAGNITUDE_BUCKET_SIZE);
 }
 
+/**
+ * For weight-trend-down safeguards, resurfacing requires the candidate trend to
+ * worsen by at least [REACTIVATION_BUCKET_HYSTERESIS] magnitude buckets (more
+ * negative bucket index). When no dismiss bucket was stored (legacy rows),
+ * fingerprint comparison alone governs resurfacing.
+ */
+export function shouldResurfaceDismissedWeightSafeguard(dismissedBucket, candidateBucket) {
+  if (dismissedBucket == null || candidateBucket == null) {
+    return true;
+  }
+  return dismissedBucket - candidateBucket >= REACTIVATION_BUCKET_HYSTERESIS;
+}
+
 export function evidenceFingerprint(evidence) {
   const payload = {
     measurement_count: evidence?.measurement_count ?? null,
@@ -118,11 +131,7 @@ export async function syncPetSafeguards(pool, userId, petId) {
       }
       const dismissedBucket = existing.evidence_json?._dismiss_magnitude_bucket;
       const candidateBucket = magnitudeBucket(candidate.evidence);
-      if (
-        dismissedBucket == null
-        || candidateBucket == null
-        || Math.abs(candidateBucket - dismissedBucket) < REACTIVATION_BUCKET_HYSTERESIS
-      ) {
+      if (!shouldResurfaceDismissedWeightSafeguard(dismissedBucket, candidateBucket)) {
         return [];
       }
       const reactivated = await pool.query(

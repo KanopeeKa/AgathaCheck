@@ -10,6 +10,7 @@ import {
   MAGNITUDE_BUCKET_SIZE,
   REACTIVATION_BUCKET_HYSTERESIS,
   safeguardToMap,
+  shouldResurfaceDismissedWeightSafeguard,
 } from '../../routes/careIntelligence/safeguardsService.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
@@ -171,14 +172,28 @@ describe('magnitudeBucket', () => {
 
 describe('safeguard reactivation hysteresis', () => {
   it('requires a worsening of >=2 buckets to resurface a dismissed safeguard', () => {
-    // A trend dismissed at -5% (bucket -1) that wobbles to -7% (bucket -1, same band)
-    // must NOT resurface — |(-1) - (-1)| = 0 < 2.
     const dismissedBucket = magnitudeBucket({ delta_pct: -0.05 });
     const candidateBucket = magnitudeBucket({ delta_pct: -0.07 });
-    expect(Math.abs(candidateBucket - dismissedBucket)).toBeLessThan(REACTIVATION_BUCKET_HYSTERESIS);
-    // A trend that worsens from -5% (bucket -1) to -15% (bucket -3) DOES resurface.
+    expect(
+      shouldResurfaceDismissedWeightSafeguard(dismissedBucket, candidateBucket),
+    ).toBe(false);
     const worsenedBucket = magnitudeBucket({ delta_pct: -0.15 });
-    expect(Math.abs(worsenedBucket - dismissedBucket)).toBeGreaterThanOrEqual(REACTIVATION_BUCKET_HYSTERESIS);
+    expect(
+      shouldResurfaceDismissedWeightSafeguard(dismissedBucket, worsenedBucket),
+    ).toBe(true);
+  });
+
+  it('does not treat recovery as worsening for weight decline safeguards', () => {
+    const dismissedBucket = magnitudeBucket({ delta_pct: -0.25 });
+    const improvedBucket = magnitudeBucket({ delta_pct: -0.15 });
+    expect(
+      shouldResurfaceDismissedWeightSafeguard(dismissedBucket, improvedBucket),
+    ).toBe(false);
+  });
+
+  it('allows legacy dismissed rows without stored magnitude buckets to resurface on fingerprint change', () => {
+    expect(shouldResurfaceDismissedWeightSafeguard(null, -3)).toBe(true);
+    expect(shouldResurfaceDismissedWeightSafeguard(-3, null)).toBe(true);
   });
 });
 

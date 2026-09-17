@@ -39,6 +39,15 @@ class _PetFormWeightContextSectionState
   }
 
   @override
+  void didUpdateWidget(covariant PetFormWeightContextSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final nextValue = widget.controller.state.weightReferenceValue;
+    if (_referenceValueController.text != nextValue) {
+      _referenceValueController.text = nextValue;
+    }
+  }
+
+  @override
   void dispose() {
     _referenceValueController.dispose();
     super.dispose();
@@ -120,13 +129,9 @@ class _PetFormWeightContextSectionState
       ),
     );
 
-    final managementContextField = PetFormLabeledField(
-      label: l.weightManagementContextLabel,
-      subtitle: l.weightManagementContextHelper,
-      child: WeightManagementContextSelector(
-        value: ManagementContextWire.fromWire(state.weightManagementContext),
-        onChanged: (ctx) => _updateManagementContext(ctx.wireValue),
-      ),
+    final managementContextField = WeightManagementContextSelector(
+      value: ManagementContextWire.fromWire(state.weightManagementContext),
+      onChanged: (ctx) => _updateManagementContext(ctx.wireValue),
     );
 
     return Column(

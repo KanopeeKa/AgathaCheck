@@ -343,6 +343,9 @@ void main() {
           id: 'test-id',
           name: 'Buddy',
           species: 'Dog',
+          weightReferenceValue: 5.2,
+          weightReferenceAuthority: 'vet_target',
+          weightManagementContext: 'vet_managed',
         );
         final remote = FakeRemoteDataSource(remotePets: [remotePet]);
         final repo = PetRepositoryImpl(
@@ -358,6 +361,9 @@ void main() {
           dataPhoto,
           reason: 'inline local photo must survive the remote merge',
         );
+        expect(result.single.weightReferenceValue, 5.2);
+        expect(result.single.weightReferenceAuthority, 'vet_target');
+        expect(result.single.weightManagementContext, 'vet_managed');
       },
     );
   });

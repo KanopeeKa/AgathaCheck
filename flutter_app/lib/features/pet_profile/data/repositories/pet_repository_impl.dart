@@ -53,6 +53,14 @@ class PetRepositoryImpl implements PetRepository {
                 isFoster: rp.isFoster,
                 organizationId: rp.organizationId,
                 organizationName: rp.organizationName,
+                fosterPlacementStatus: rp.fosterPlacementStatus,
+                fosterName: rp.fosterName,
+                petParentName: rp.petParentName,
+                accessRole: rp.accessRole,
+                createdAt: rp.createdAt,
+                weightReferenceValue: rp.weightReferenceValue,
+                weightReferenceAuthority: rp.weightReferenceAuthority,
+                weightManagementContext: rp.weightManagementContext,
               ),
             );
           } else {
