@@ -4,6 +4,7 @@ import '../../../../care_intelligence/presentation/widgets/pet_profile_care_safe
 import '../../../../care_intelligence/presentation/widgets/pet_profile_care_suggestion_section.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/services/pet_detail_actions.dart';
+import '../../../../pet_tags/presentation/widgets/pet_tag_chip_row.dart';
 import '../pet_care_section/pet_care_section.dart';
 import '../pet_form/pet_form_breakpoints.dart';
 import 'pet_detail_profile_card.dart';
@@ -32,6 +33,7 @@ class PetDetailScrollBody extends StatelessWidget {
 
         final primaryColumn = <Widget>[
           PetDetailProfileCard(pet: pet, viewerContext: viewerContext),
+          PetTagChipRow(petId: pet.id),
           PetProfileCompletenessPrompt(pet: pet),
           PetProfileCareSafeguardSection(petId: pet.id, petName: pet.name),
           PetCareSection(petId: pet.id, pet: pet),

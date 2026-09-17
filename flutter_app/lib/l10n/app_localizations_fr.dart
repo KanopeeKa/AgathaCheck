@@ -6282,4 +6282,57 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get awayPlanningIndeterminateGeneric => 'Horaire pas encore connu';
+
+  @override
+  String get petTagsTitle => 'Étiquettes';
+
+  @override
+  String get petTagsSubtitle =>
+      'Libellés privés pour organiser votre liste d\'animaux. Seulement vous les voyez.';
+
+  @override
+  String get petTagsManage => 'Gérer les étiquettes';
+
+  @override
+  String get petTagsAdd => 'Ajouter une étiquette';
+
+  @override
+  String get petTagsRename => 'Renommer';
+
+  @override
+  String get petTagsDelete => 'Supprimer l\'étiquette';
+
+  @override
+  String petTagsDeleteConfirm(String name) {
+    return 'Retirer « $name » de tous les animaux ?';
+  }
+
+  @override
+  String get petTagsEmpty =>
+      'Aucune étiquette. Créez-en une pour regrouper vos animaux sur la liste Tous les animaux.';
+
+  @override
+  String get petTagsNameHint => 'Nom de l\'étiquette';
+
+  @override
+  String get petTagsMyTags => 'Mes étiquettes';
+
+  @override
+  String get petTagsFilterDimension => 'Étiquettes';
+
+  @override
+  String get petTagsMatchAny => 'Au moins une';
+
+  @override
+  String get petTagsMatchAll => 'Toutes';
+
+  @override
+  String get petTagsNoMatch => 'Aucun animal ne correspond à ces étiquettes';
+
+  @override
+  String get petTagsAssign => 'Ajouter une étiquette';
+
+  @override
+  String get petTagsCreateInSettings =>
+      'Créez des étiquettes dans les paramètres avant de les assigner ici.';
 }

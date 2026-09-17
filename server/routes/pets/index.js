@@ -7,6 +7,7 @@ import { registerCarerCandidatesRoutes } from './carerCandidatesRouter.js';
 import { registerLifecycleRoutes } from './lifecycleRouter.js';
 import { registerCoreRoutes } from './coreRouter.js';
 import { registerPhotoRoutes } from './photoRouter.js';
+import { registerPetTagsRoutes } from './tagsRouter.js';
 import { registerTimelineRoutes } from '../timeline/index.js';
 import {
   registerCareIntelligenceRoutes,
@@ -31,6 +32,7 @@ export default function petsRoutes(pool) {
   registerPetAccessRoutes(router, pool);
   registerLifecycleRoutes(router, pool);
   registerPhotoRoutes(router, pool);
+  registerPetTagsRoutes(router, pool);
   registerCoreRoutes(router, pool);
   return router;
 }

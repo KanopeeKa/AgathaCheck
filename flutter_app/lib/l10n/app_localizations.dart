@@ -10978,6 +10978,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Timing not yet known'**
   String get awayPlanningIndeterminateGeneric;
+
+  /// No description provided for @petTagsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet tags'**
+  String get petTagsTitle;
+
+  /// No description provided for @petTagsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Private labels to organize your pet list. Only you can see them.'**
+  String get petTagsSubtitle;
+
+  /// No description provided for @petTagsManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage tags'**
+  String get petTagsManage;
+
+  /// No description provided for @petTagsAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add tag'**
+  String get petTagsAdd;
+
+  /// No description provided for @petTagsRename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get petTagsRename;
+
+  /// No description provided for @petTagsDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete tag'**
+  String get petTagsDelete;
+
+  /// No description provided for @petTagsDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove \"{name}\" from all pets?'**
+  String petTagsDeleteConfirm(String name);
+
+  /// No description provided for @petTagsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No tags yet. Create one to group pets on your All Pets screen.'**
+  String get petTagsEmpty;
+
+  /// No description provided for @petTagsNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag name'**
+  String get petTagsNameHint;
+
+  /// No description provided for @petTagsMyTags.
+  ///
+  /// In en, this message translates to:
+  /// **'My tags'**
+  String get petTagsMyTags;
+
+  /// No description provided for @petTagsFilterDimension.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get petTagsFilterDimension;
+
+  /// No description provided for @petTagsMatchAny.
+  ///
+  /// In en, this message translates to:
+  /// **'Match any'**
+  String get petTagsMatchAny;
+
+  /// No description provided for @petTagsMatchAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Match all'**
+  String get petTagsMatchAll;
+
+  /// No description provided for @petTagsNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No pets match these tags'**
+  String get petTagsNoMatch;
+
+  /// No description provided for @petTagsAssign.
+  ///
+  /// In en, this message translates to:
+  /// **'Add tag'**
+  String get petTagsAssign;
+
+  /// No description provided for @petTagsCreateInSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Create tags in Settings before assigning them here.'**
+  String get petTagsCreateInSettings;
 }
 
 class _AppLocalizationsDelegate
