@@ -1,4 +1,6 @@
+import '../../domain/entities/invite_preview.dart';
 import '../../domain/entities/pet_access.dart';
+import '../../domain/entities/pet_share_access.dart';
 import '../../domain/entities/share_link.dart';
 import '../../domain/entities/share_preview.dart';
 import '../../domain/repositories/sharing_repository.dart';
@@ -93,5 +95,53 @@ class SharingRepositoryImpl implements SharingRepository {
       confirmationName: confirmationName,
       token: token,
     );
+  }
+
+  @override
+  Future<CreateShareInviteResult> createInvite({
+    required String inviteeEmail,
+    required List<String> petIds,
+    required String role,
+    required String token,
+    String? locale,
+  }) {
+    return _dataSource.createInvite(
+      inviteeEmail: inviteeEmail,
+      petIds: petIds,
+      role: role,
+      token: token,
+      locale: locale,
+    );
+  }
+
+  @override
+  Future<List<PetShareAccess>> listAccessForPets(
+    List<String> petIds,
+    String token,
+  ) {
+    return _dataSource.listAccessForPets(petIds, token);
+  }
+
+  @override
+  Future<InvitePreview> getInvitePreview(String code) {
+    return _dataSource.getInvitePreviewByCode(code);
+  }
+
+  @override
+  Future<AcceptShareInviteResult> acceptInviteByCode(
+    String code,
+    String token,
+  ) {
+    return _dataSource.acceptInviteByCode(code, token);
+  }
+
+  @override
+  Future<void> declineInvite(String inviteId, String token) {
+    return _dataSource.declineInvite(inviteId, token);
+  }
+
+  @override
+  Future<void> cancelInvite(String inviteId, String token) {
+    return _dataSource.cancelInvite(inviteId, token);
   }
 }

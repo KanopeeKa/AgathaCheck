@@ -4010,6 +4010,97 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sharedPetAdding => 'Ajout en cours…';
 
   @override
+  String get sharePetSelectPet => 'Sélectionner un animal';
+
+  @override
+  String get shareInviteSectionTitle => 'Inviter par e-mail';
+
+  @override
+  String get shareInviteSinglePetHint =>
+      'Envoyez une invitation pour suivre cet animal.';
+
+  @override
+  String shareInviteMultiPetHint(int count) {
+    return 'Envoyez une invitation couvrant $count animaux sélectionnés.';
+  }
+
+  @override
+  String get shareInviteRoleLabel => 'Rôle d\'accès';
+
+  @override
+  String get shareInviteRoleCarer => 'Soignant (voir et enregistrer les soins)';
+
+  @override
+  String get shareInviteSend => 'Envoyer l\'invitation';
+
+  @override
+  String get shareInviteSent => 'Invitation envoyée';
+
+  @override
+  String get shareInvitePendingSection => 'Invitations en attente';
+
+  @override
+  String shareInvitePendingStatus(String role) {
+    return 'En attente · $role';
+  }
+
+  @override
+  String get shareInviteCancel => 'Annuler l\'invitation';
+
+  @override
+  String shareInviteCancelConfirm(String email) {
+    return 'Annuler l\'invitation à $email ?';
+  }
+
+  @override
+  String get sharePetOrgNotAvailable =>
+      'Le partage n\'est pas disponible pour les animaux d\'inventaire d\'organisation.';
+
+  @override
+  String get shareInviteTitle => 'Invitation de partage';
+
+  @override
+  String get shareInviteExpired => 'Cette invitation a expiré';
+
+  @override
+  String get shareInviteNotFound => 'Invitation introuvable';
+
+  @override
+  String shareInviteLandingHeadline(String inviterName) {
+    return '$inviterName vous a invité à suivre des animaux';
+  }
+
+  @override
+  String shareInviteLandingPets(String petNames) {
+    return 'Animaux : $petNames';
+  }
+
+  @override
+  String shareInviteLandingRole(String role) {
+    return 'Rôle : $role';
+  }
+
+  @override
+  String get shareInviteAcceptPrompt =>
+      'Acceptez cette invitation pour ajouter les animaux à votre compte.';
+
+  @override
+  String get shareInviteAccept => 'Accepter l\'invitation';
+
+  @override
+  String get shareInviteDecline => 'Refuser';
+
+  @override
+  String get shareInviteAccepted => 'Invitation acceptée';
+
+  @override
+  String get shareInviteDeclined => 'Invitation refusée';
+
+  @override
+  String get shareInviteAlreadyAccepted =>
+      'Vous avez déjà accepté cette invitation.';
+
+  @override
   String get invited => 'Invité(e)';
 
   @override

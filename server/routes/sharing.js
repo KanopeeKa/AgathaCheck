@@ -20,6 +20,8 @@ import {
   PET_ACCESS_ROLES,
   userCanSharePet,
 } from '../lib/petAccess.js';
+import { registerInviteRoutes } from './sharing/inviteRoutes.js';
+import { registerShareAccessAggregateRoutes } from './sharing/shareAccessAggregateRoutes.js';
 
 const PET_ACCESS_ROLES_SQL = PET_ACCESS_ROLES.map((r) => `'${r}'`).join(', ');
 
@@ -51,6 +53,9 @@ async function loadShareLink(pool, code) {
 export default function sharingRoutes(pool) {
   const router = express.Router();
   router.use(createApiLimiter());
+
+  registerInviteRoutes(router, pool);
+  registerShareAccessAggregateRoutes(router, pool);
 
   router.post('/', async (req, res) => {
     const userId = extractUserId(req);

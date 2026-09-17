@@ -587,6 +587,24 @@ CREATE TABLE public.pet_activity_events (
     metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
     CONSTRAINT pet_activity_events_event_type_check CHECK ((event_type = ANY (ARRAY['health_log'::text, 'foster_session'::text, 'profile_edit'::text, 'document_upload'::text])))
 );
+CREATE TABLE public.pet_share_invite_pets (
+    invite_id uuid NOT NULL,
+    pet_id uuid NOT NULL
+);
+CREATE TABLE public.pet_share_invites (
+    id uuid NOT NULL,
+    inviter_user_id uuid NOT NULL,
+    invitee_email character varying(255) NOT NULL,
+    invitee_user_id uuid,
+    role character varying(20) NOT NULL,
+    code character varying(32) NOT NULL,
+    status character varying(20) DEFAULT 'pending'::character varying NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    responded_at timestamp with time zone,
+    expires_at timestamp with time zone NOT NULL,
+    CONSTRAINT pet_share_invites_role_check CHECK (((role)::text = ANY ((ARRAY['carer'::character varying, 'co_parent'::character varying])::text[]))),
+    CONSTRAINT pet_share_invites_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'accepted'::character varying, 'declined'::character varying, 'revoked'::character varying, 'expired'::character varying])::text[])))
+);
 CREATE TABLE public.pet_share_links (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -873,6 +891,12 @@ ALTER TABLE ONLY public.pet_access
     ADD CONSTRAINT pet_access_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pet_activity_events
     ADD CONSTRAINT pet_activity_events_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.pet_share_invite_pets
+    ADD CONSTRAINT pet_share_invite_pets_pkey PRIMARY KEY (invite_id, pet_id);
+ALTER TABLE ONLY public.pet_share_invites
+    ADD CONSTRAINT pet_share_invites_code_key UNIQUE (code);
+ALTER TABLE ONLY public.pet_share_invites
+    ADD CONSTRAINT pet_share_invites_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_code_key UNIQUE (code);
 ALTER TABLE ONLY public.pet_share_links
@@ -969,6 +993,9 @@ CREATE UNIQUE INDEX idx_pet_access_pet_user ON public.pet_access USING btree (pe
 CREATE INDEX idx_pet_activity_events_occurred_at ON public.pet_activity_events USING btree (occurred_at);
 CREATE INDEX idx_pet_activity_events_org_id ON public.pet_activity_events USING btree (org_id);
 CREATE INDEX idx_pet_activity_events_pet_id ON public.pet_activity_events USING btree (pet_id);
+CREATE INDEX idx_pet_share_invite_pets_pet_id ON public.pet_share_invite_pets USING btree (pet_id);
+CREATE INDEX idx_pet_share_invites_invitee_email ON public.pet_share_invites USING btree (lower((invitee_email)::text));
+CREATE INDEX idx_pet_share_invites_invitee_user_id ON public.pet_share_invites USING btree (invitee_user_id) WHERE (invitee_user_id IS NOT NULL);
 CREATE INDEX idx_pet_share_links_code ON public.pet_share_links USING btree (code);
 CREATE INDEX idx_pet_share_links_expires_at ON public.pet_share_links USING btree (expires_at) WHERE ((status)::text = 'pending'::text);
 CREATE INDEX idx_pet_share_links_pet_id ON public.pet_share_links USING btree (pet_id);
@@ -1190,6 +1217,14 @@ ALTER TABLE ONLY public.pet_activity_events
     ADD CONSTRAINT pet_activity_events_org_id_fkey FOREIGN KEY (org_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pet_activity_events
     ADD CONSTRAINT pet_activity_events_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_share_invite_pets
+    ADD CONSTRAINT pet_share_invite_pets_invite_id_fkey FOREIGN KEY (invite_id) REFERENCES public.pet_share_invites(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_share_invite_pets
+    ADD CONSTRAINT pet_share_invite_pets_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_share_invites
+    ADD CONSTRAINT pet_share_invites_invitee_user_id_fkey FOREIGN KEY (invitee_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.pet_share_invites
+    ADD CONSTRAINT pet_share_invites_inviter_user_id_fkey FOREIGN KEY (inviter_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_claimed_by_fkey FOREIGN KEY (claimed_by) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.pet_share_links

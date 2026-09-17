@@ -75,7 +75,12 @@ export class PetDetailPage {
       .locator('[flt-semantics-identifier="pet_detail_sharing_menu_item"]')
       .or(this.page.getByRole('menuitem', { name: /^(?:Sharing\b|Partage)/i }));
     await sharingItem.first().click();
-    await this.page.getByRole('button', { name: 'Share Link' }).waitFor({ timeout: 15_000 });
+    await waitForFlutterRoutePattern(this.page, /\/pet\/[^/]+\/share/, 15_000);
+    await this.page
+      .getByRole('heading', { name: /Share Pet|Partager/i })
+      .or(this.page.getByLabel(/Email|E-mail/i))
+      .first()
+      .waitFor({ timeout: 15_000 });
   }
 
   async createShareLink(): Promise<void> {

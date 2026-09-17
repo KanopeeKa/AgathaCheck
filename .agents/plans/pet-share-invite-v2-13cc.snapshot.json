@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-share-invite-v2-13cc",
+  "approved_at": "2026-09-17T21:15:00Z",
+  "approved_by": "standing grant — user chat 2026-09-17 execute-plan autonomous (v2 final spec)",
+  "approved_until": "2026-09-19T21:15:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/pet-share-invite-integration-13cc",
+  "control_issue": 1226,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Invite feature + SharePetScreen",
+      "branch": "cursor/pet-share-invite-pr1-13cc",
+      "allowed_paths": [
+        ".agents/plans/pet-share-invite-v2-13cc.*",
+        "db/migrations/*pet_share_invite*",
+        "db/schema/canonical.sql",
+        "db/schema/migration-manifest.json",
+        "server/scripts/migrations/*pet_share_invite*",
+        "server/routes/sharing/**",
+        "server/services/sharing/**",
+        "server/db/sharing/**",
+        "server/lib/email/templates/petShareInvitationNewUser.js",
+        "server/lib/notificationKind.js",
+        "server/lib/notificationHelper.js",
+        "server/bin/server.js",
+        "server/test/sharing/**",
+        "server/test/notificationKind.test.js",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/features/sharing/**",
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_detail_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/controllers/sharing_controller.dart",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_bulk_share.dart",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_bulk_share_select_screen.dart",
+        "flutter_app/lib/features/notifications/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/sharing/**",
+        "flutter_app/test/bdd/features/sharing.feature",
+        "e2e/playwright/tests/sharing.spec.ts",
+        "e2e/playwright/pages/**",
+        "e2e/playwright/support/api.ts",
+        "docs/domains/sharing/**",
+        "docs/architecture/api-reference.md",
+        "docs/domains/cross-domain/changes/program-contract.md",
+        "docs/debt/refactoring-log.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "bdd-journey",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null
+    },
+    {
+      "id": "2",
+      "title": "Retrofit link/access service layering",
+      "branch": "cursor/pet-share-invite-pr2-13cc",
+      "allowed_paths": [
+        ".agents/plans/pet-share-invite-v2-13cc.*",
+        "server/routes/sharing.js",
+        "server/routes/sharing/**",
+        "server/services/sharing/**",
+        "server/db/sharing/**",
+        "server/test/sharing.test.js",
+        "server/test/sharing/**",
+        "docs/domains/sharing/**",
+        "docs/architecture/api-reference.md",
+        "docs/debt/refactoring-log.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null
+    }
+  ],
+  "content_hash": "sha256:4dbafc893916e573afc8d264eb0b6eb3f7c97d29be27a9b4cc8a238c18673c11"
+}

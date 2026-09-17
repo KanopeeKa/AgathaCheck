@@ -3941,6 +3941,97 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sharedPetAdding => 'Adding...';
 
   @override
+  String get sharePetSelectPet => 'Select a pet';
+
+  @override
+  String get shareInviteSectionTitle => 'Invite by email';
+
+  @override
+  String get shareInviteSinglePetHint =>
+      'Send an invitation to follow this pet.';
+
+  @override
+  String shareInviteMultiPetHint(int count) {
+    return 'Send one invitation covering $count selected pets.';
+  }
+
+  @override
+  String get shareInviteRoleLabel => 'Access role';
+
+  @override
+  String get shareInviteRoleCarer => 'Carer (view & log care)';
+
+  @override
+  String get shareInviteSend => 'Send invitation';
+
+  @override
+  String get shareInviteSent => 'Invitation sent';
+
+  @override
+  String get shareInvitePendingSection => 'Pending invitations';
+
+  @override
+  String shareInvitePendingStatus(String role) {
+    return 'Pending · $role';
+  }
+
+  @override
+  String get shareInviteCancel => 'Cancel invitation';
+
+  @override
+  String shareInviteCancelConfirm(String email) {
+    return 'Cancel the invitation to $email?';
+  }
+
+  @override
+  String get sharePetOrgNotAvailable =>
+      'Sharing is not available for organization inventory pets.';
+
+  @override
+  String get shareInviteTitle => 'Pet sharing invitation';
+
+  @override
+  String get shareInviteExpired => 'This invitation has expired';
+
+  @override
+  String get shareInviteNotFound => 'Invitation not found';
+
+  @override
+  String shareInviteLandingHeadline(String inviterName) {
+    return '$inviterName invited you to follow pets';
+  }
+
+  @override
+  String shareInviteLandingPets(String petNames) {
+    return 'Pets: $petNames';
+  }
+
+  @override
+  String shareInviteLandingRole(String role) {
+    return 'Role: $role';
+  }
+
+  @override
+  String get shareInviteAcceptPrompt =>
+      'Accept this invitation to add the pets to your account.';
+
+  @override
+  String get shareInviteAccept => 'Accept invitation';
+
+  @override
+  String get shareInviteDecline => 'Decline';
+
+  @override
+  String get shareInviteAccepted => 'Invitation accepted';
+
+  @override
+  String get shareInviteDeclined => 'Invitation declined';
+
+  @override
+  String get shareInviteAlreadyAccepted =>
+      'You have already accepted this invitation.';
+
+  @override
   String get invited => 'Invited';
 
   @override

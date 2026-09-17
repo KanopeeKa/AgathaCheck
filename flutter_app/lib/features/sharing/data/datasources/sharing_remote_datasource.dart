@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
 import '../models/pet_access_model.dart';
+import '../../domain/entities/invite_preview.dart';
+import '../../domain/entities/pet_share_access.dart';
 import '../../domain/entities/share_preview.dart';
 
 class SharingRemoteDataSource {
@@ -218,6 +220,116 @@ class SharingRemoteDataSource {
     if (response.statusCode >= 400) {
       final data = json.decode(response.body);
       throw Exception(data['error'] ?? 'Failed to transfer pet');
+    }
+  }
+
+  Future<CreateShareInviteResult> createInvite({
+    required String inviteeEmail,
+    required List<String> petIds,
+    required String role,
+    required String token,
+    String? locale,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/share/invites'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+        if (locale != null) 'Accept-Language': locale,
+      },
+      body: json.encode({
+        'invitee_email': inviteeEmail,
+        'pet_ids': petIds,
+        'role': role,
+        if (locale != null) 'locale': locale,
+      }),
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      throw Exception(data['error'] ?? 'Failed to send invitation');
+    }
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    return CreateShareInviteResult.fromJson(data);
+  }
+
+  Future<List<PetShareAccess>> listAccessForPets(
+    List<String> petIds,
+    String token,
+  ) async {
+    final response = await _client.get(
+      Uri.parse(
+        '$baseUrl/api/share/access?pet_ids=${petIds.join(',')}',
+      ),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to load sharing access');
+    }
+    final decoded = json.decode(response.body) as Map<String, dynamic>;
+    final pets = decoded['pets'];
+    if (pets is! List) return [];
+    return pets
+        .whereType<Map<String, dynamic>>()
+        .map(PetShareAccess.fromJson)
+        .toList();
+  }
+
+  Future<InvitePreview> getInvitePreviewByCode(String code) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/share/invites/code/$code'),
+    );
+    if (response.statusCode == 410) {
+      throw InvitePreviewExpiredException();
+    }
+    if (response.statusCode >= 400) {
+      throw InvitePreviewNotFoundException();
+    }
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    return InvitePreview.fromJson(data);
+  }
+
+  Future<AcceptShareInviteResult> acceptInviteByCode(
+    String code,
+    String token,
+  ) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/share/invites/code/$code/accept'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to accept invitation');
+    }
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    return AcceptShareInviteResult.fromJson(data);
+  }
+
+  Future<void> declineInvite(String inviteId, String token) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/share/invites/$inviteId/decline'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to decline invitation');
+    }
+  }
+
+  Future<void> cancelInvite(String inviteId, String token) async {
+    final response = await _client.delete(
+      Uri.parse('$baseUrl/api/share/invites/$inviteId'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to cancel invitation');
     }
   }
 }
