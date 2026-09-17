@@ -1,5 +1,6 @@
 import { publicError } from '../../config/security.js';
 import { createNotification, userDisplayName } from '../../lib/notificationHelper.js';
+import { registerPetInviteListRoute } from './inviteRoutes.js';
 import {
   CARER_ROLE,
   CO_PARENT_ROLE,
@@ -13,6 +14,8 @@ import { extractUserId, withOptionalTransaction } from '../pets/shared.js';
 const PET_ACCESS_ROLES_SQL = PET_ACCESS_ROLES.map((role) => `'${role}'`).join(', ');
 
 export function registerPetAccessRoutes(router, pool) {
+  registerPetInviteListRoute(router, pool);
+
   router.get('/:id/share-links', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
