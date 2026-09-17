@@ -6173,4 +6173,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get awayPlanningIndeterminateGeneric => 'Timing not yet known';
+
+  @override
+  String get petTagsTitle => 'Pet tags';
+
+  @override
+  String get petTagsSubtitle =>
+      'Private labels to organize your pet list. Only you can see them.';
+
+  @override
+  String get petTagsManage => 'Manage tags';
+
+  @override
+  String get petTagsAdd => 'Add tag';
+
+  @override
+  String get petTagsRename => 'Rename';
+
+  @override
+  String get petTagsDelete => 'Delete tag';
+
+  @override
+  String petTagsDeleteConfirm(String name) {
+    return 'Remove \"$name\" from all pets?';
+  }
+
+  @override
+  String get petTagsEmpty =>
+      'No tags yet. Create one to group pets on your All Pets screen.';
+
+  @override
+  String get petTagsNameHint => 'Tag name';
+
+  @override
+  String get petTagsMyTags => 'My tags';
+
+  @override
+  String get petTagsFilterDimension => 'Tags';
+
+  @override
+  String get petTagsMatchAny => 'Match any';
+
+  @override
+  String get petTagsMatchAll => 'Match all';
+
+  @override
+  String get petTagsNoMatch => 'No pets match these tags';
+
+  @override
+  String get petTagsAssign => 'Add tag';
+
+  @override
+  String get petTagsCreateInSettings =>
+      'Create tags in Settings before assigning them here.';
 }

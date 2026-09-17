@@ -2213,5 +2213,26 @@
   "awayPlanningScheduleIndeterminateTitle": "Soins indéterminés",
   "awayPlanningIndeterminatePending": "En attente d'une dose précédente",
   "awayPlanningIndeterminateChain": "Dépend de soins antérieurs dans la chaîne",
-  "awayPlanningIndeterminateGeneric": "Horaire pas encore connu"
+  "awayPlanningIndeterminateGeneric": "Horaire pas encore connu",
+  "petTagsTitle": "Étiquettes",
+  "petTagsSubtitle": "Libellés privés pour organiser votre liste d'animaux. Seulement vous les voyez.",
+  "petTagsManage": "Gérer les étiquettes",
+  "petTagsAdd": "Ajouter une étiquette",
+  "petTagsRename": "Renommer",
+  "petTagsDelete": "Supprimer l'étiquette",
+  "petTagsDeleteConfirm": "Retirer « {name} » de tous les animaux ?",
+  "@petTagsDeleteConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "petTagsEmpty": "Aucune étiquette. Créez-en une pour regrouper vos animaux sur la liste Tous les animaux.",
+  "petTagsNameHint": "Nom de l'étiquette",
+  "petTagsMyTags": "Mes étiquettes",
+  "petTagsFilterDimension": "Étiquettes",
+  "petTagsMatchAny": "Au moins une",
+  "petTagsMatchAll": "Toutes",
+  "petTagsNoMatch": "Aucun animal ne correspond à ces étiquettes",
+  "petTagsAssign": "Ajouter une étiquette",
+  "petTagsCreateInSettings": "Créez des étiquettes dans les paramètres avant de les assigner ici."
 }

@@ -45,6 +45,13 @@ Validate with `node scripts/validate_openapi.js`; Jest contract tests in
 ### Pets (`/api/pets`)
 `GET /`, `GET /all`, `GET /:id` (UUID-validated), `POST /`, `PUT /:id`, `DELETE /:id`.
 
+`POST /:petId/tags` body `{ tag_id }` — assign current user's tag to an accessible pet.  
+`DELETE /:petId/tags/:tagId` — unassign.
+
+### Pet tags (`/api/pet-tags`)
+Private per-user labels. `GET /` returns `[{ id, name, pet_ids, created_at, updated_at }]`.  
+`POST /` body `{ name }`, `PATCH /:id` body `{ name }`, `DELETE /:id`.
+
 ### Vets (`/api/vets`)
 `GET /`, `POST /`, `PUT /:id`, `DELETE /:id` — all scoped to the user.
 

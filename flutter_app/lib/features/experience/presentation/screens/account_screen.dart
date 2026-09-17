@@ -69,6 +69,13 @@ class AccountScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       const AccountOrganisationSettingsSection(embedded: true),
+                      const SizedBox(height: 8),
+                      _AccountRow(
+                        key: const Key('account_pet_tags'),
+                        icon: Icons.label_outline,
+                        label: l.petTagsTitle,
+                        onTap: () => context.push('/account/pet-tags'),
+                      ),
                     ],
                   ),
                 ),
