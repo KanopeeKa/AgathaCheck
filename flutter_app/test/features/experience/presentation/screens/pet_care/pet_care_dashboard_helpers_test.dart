@@ -133,14 +133,12 @@ void main() {
       petCareDashboardPersonalPets(pets, controller).map((p) => p.id),
       containsAll(['co', 'owned']),
     );
-    expect(
-      petCareDashboardCarerPets(pets, controller).map((p) => p.id),
-      ['carer'],
-    );
-    expect(
-      petCareDashboardShareablePets(pets, controller).map((p) => p.id),
-      ['owned'],
-    );
+    expect(petCareDashboardCarerPets(pets, controller).map((p) => p.id), [
+      'carer',
+    ]);
+    expect(petCareDashboardShareablePets(pets, controller).map((p) => p.id), [
+      'owned',
+    ]);
   });
 
   test('shared pet with null accessRole lands in carer bucket', () {
