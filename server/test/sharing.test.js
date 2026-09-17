@@ -218,7 +218,7 @@ describe('Sharing API', () => {
       expect(res.body.share_code.length).toBeGreaterThan(0);
     });
 
-    it('returns 404 when pet is not owned by the user', async () => {
+    it('returns 403 when user cannot share the pet', async () => {
       const pool = buildMockPool({
         query: async (sql) => {
           if (sql.includes('SELECT id FROM pets WHERE id = $1 AND user_id = $2')) {
@@ -232,7 +232,8 @@ describe('Sharing API', () => {
         .post('/api/share')
         .set('Authorization', `Bearer ${token}`)
         .send({ pet_id: petId });
-      expect(res.statusCode).toBe(404);
+      expect(res.statusCode).toBe(403);
+      expect(res.body).toHaveProperty('error', 'Forbidden');
     });
   });
 

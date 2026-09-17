@@ -20,7 +20,9 @@ Recipients open share URLs without logging in; health entries and vet info visib
 
 ## Accept or decline share
 
-Pending shares appear in the pet list; guardians accept into personal list or organisation, or decline.
+Share links: recipient opens `/shared/:code` and accepts into their pet list.
+
+Email invites: existing members receive `shareInviteReceived` and land on `/invite/:code`; non-members receive email with signup link to the same landing. Accept grants `pet_access`; decline notifies the inviter.
 
 ## Hide shared pet
 

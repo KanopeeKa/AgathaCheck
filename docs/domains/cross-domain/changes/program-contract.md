@@ -81,7 +81,7 @@ Extend `AppNotification` (`flutter_app/lib/features/notifications/domain/entitie
 
 `NotificationType` (existing enum: `dueSoon, overdue, reminder, completed, general`) stays for **care**-kind items. Add administrative type values aligned 1:1 with G0's existing `event_type` audit catalog where one exists (reuse the same semantic name in both places — one trigger emits both an audit row and a notification row):
 
-`fosterRequestReceived, fosterRequestResponded, fosterApprovalGranted, fosterApprovalDeclined, sessionStartingSoon, sessionEndingSoon, agreementWithdrawn (urgent), connectionRequestReceived, pendingShareReceived, pendingFosterPlacementReceived, pendingAdoptionPlacementReceived, pendingCustodyTransferReceived, adminMessageReceived`
+`fosterRequestReceived, fosterRequestResponded, fosterApprovalGranted, fosterApprovalDeclined, sessionStartingSoon, sessionEndingSoon, agreementWithdrawn (urgent), connectionRequestReceived, shareInviteReceived, pendingFosterPlacementReceived, pendingAdoptionPlacementReceived, pendingCustodyTransferReceived, adminMessageReceived`
 
 ### 3.2 UX pattern (locked, D8/D9)
 

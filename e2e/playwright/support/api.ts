@@ -777,6 +777,60 @@ export async function seedOrgWithMember(
   return org;
 }
 
+export interface PetShareInvite {
+  invite_id: string;
+  code: string;
+  included_pet_ids: string[];
+}
+
+export async function createPetShareInvite(
+  baseURL: string,
+  token: string,
+  petIds: string[],
+  inviteeEmail: string,
+  role: 'carer' | 'co_parent' = 'carer',
+): Promise<PetShareInvite> {
+  const res = await apiFetch(apiUrl('/share/invites', baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      invitee_email: inviteeEmail,
+      pet_ids: petIds,
+      role,
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`createPetShareInvite failed (${res.status}): ${body}`);
+  }
+
+  const json = await res.json<PetShareInvite>();
+  return json;
+}
+
+export async function acceptPetShareInviteByCode(
+  baseURL: string,
+  token: string,
+  code: string,
+): Promise<void> {
+  const res = await apiFetch(apiUrl(`/share/invites/code/${code}/accept`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`acceptPetShareInviteByCode failed (${res.status}): ${body}`);
+  }
+}
+
 export async function createShareLink(
   baseURL: string,
   token: string,

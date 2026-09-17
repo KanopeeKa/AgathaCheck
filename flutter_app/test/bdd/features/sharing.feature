@@ -95,3 +95,23 @@ Feature: Pet Sharing
     When a user opens an invalid share link
     Then an error message "Pet not found or share link expired" should be displayed
     And a "Go to My Pets" button should be available
+
+  # ── Email invites ─────────────────────────────────────────────
+
+  @P1
+  Scenario: Accepting an email share invite into personal pet list
+    Given a registered user "Bob"
+    And "Alice" owns a pet "Bella"
+    When "Alice" sends an email share invite for "Bella" to "Bob" as a carer
+    And "Bob" opens the invite link
+    And "Bob" accepts the invitation
+    Then "Bella" should appear in "Bob"'s pet list as a shared pet
+
+  @P2
+  Scenario: Declining an email share invite
+    Given a registered user "Bob"
+    And "Alice" owns a pet "Bella"
+    When "Alice" sends an email share invite for "Bella" to "Bob" as a carer
+    And "Bob" opens the invite link
+    And "Bob" declines the invitation
+    Then "Bella" should not appear in "Bob"'s pet list

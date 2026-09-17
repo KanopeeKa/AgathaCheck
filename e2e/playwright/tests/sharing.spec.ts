@@ -10,12 +10,15 @@
  * Scenario: Hiding a shared pet
  * Scenario: Unhiding a shared pet
  * Scenario: Revoking collaborator access (owner)
+ * Scenario: Accepting an email share invite into personal pet list
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
+  acceptPetShareInviteByCode,
   acceptShareByCode,
   createHealthEntry,
   createPet,
+  createPetShareInvite,
   createShareLink,
   createVet,
   hideFosteredPet,
@@ -29,7 +32,8 @@ import { clearBrowserSessionState } from '../support/session';
 import { createTestUser } from '../support/ui-auth';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
-import { refreshFlutterAccessibility, flutterGotoUrl } from '../support/flutter';
+import { flutterGotoUrl, waitForHomeAfterMutation } from '../support/flutter';
+import { InviteLandingPage } from '../pages/invite-landing.page';
 import { SharedPetPage } from '../pages/shared-pet.page';
 
 test.describe('Pet sharing', () => {
@@ -119,6 +123,31 @@ test.describe('Pet sharing', () => {
     await sharedPet.goto(link.share_code);
     await sharedPet.expectLoaded('Bella');
     await sharedPet.expectNoVetSection();
+  });
+
+  test('@smoke-ci @smoke-uat logged-in user can accept an email share invite', async ({ page }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const owner = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
+    const pet = await createPet(baseURL, owner.accessToken, 'Bella', 'Dog');
+    const bob = await signupUser(baseURL, { firstName: 'Bob', lastName: 'Follower' });
+    const invite = await createPetShareInvite(
+      baseURL,
+      owner.accessToken,
+      [pet.id],
+      bob.email,
+      'carer',
+    );
+
+    await loginAs(page, bob);
+
+    const inviteLanding = new InviteLandingPage(page);
+    await inviteLanding.goto(invite.code);
+    await inviteLanding.expectLoaded('Bella', 'Alice');
+    await inviteLanding.acceptInvitation();
+    await waitForHomeAfterMutation(page);
+
+    const petList = new PetListPage(page);
+    await petList.expectPetVisible('Bella');
   });
 
   test('logged-in user can accept a share into their pet list', async ({ page }) => {

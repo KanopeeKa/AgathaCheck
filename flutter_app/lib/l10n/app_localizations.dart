@@ -7167,6 +7167,156 @@ abstract class AppLocalizations {
   /// **'Adding...'**
   String get sharedPetAdding;
 
+  /// No description provided for @sharePetSelectPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a pet'**
+  String get sharePetSelectPet;
+
+  /// No description provided for @shareInviteSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite by email'**
+  String get shareInviteSectionTitle;
+
+  /// No description provided for @shareInviteSinglePetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Send an invitation to follow this pet.'**
+  String get shareInviteSinglePetHint;
+
+  /// No description provided for @shareInviteMultiPetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Send one invitation covering {count} selected pets.'**
+  String shareInviteMultiPetHint(int count);
+
+  /// No description provided for @shareInviteRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Access role'**
+  String get shareInviteRoleLabel;
+
+  /// No description provided for @shareInviteRoleCarer.
+  ///
+  /// In en, this message translates to:
+  /// **'Carer (view & log care)'**
+  String get shareInviteRoleCarer;
+
+  /// No description provided for @shareInviteSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send invitation'**
+  String get shareInviteSend;
+
+  /// No description provided for @shareInviteSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation sent'**
+  String get shareInviteSent;
+
+  /// No description provided for @shareInvitePendingSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending invitations'**
+  String get shareInvitePendingSection;
+
+  /// No description provided for @shareInvitePendingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending · {role}'**
+  String shareInvitePendingStatus(String role);
+
+  /// No description provided for @shareInviteCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel invitation'**
+  String get shareInviteCancel;
+
+  /// No description provided for @shareInviteCancelConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel the invitation to {email}?'**
+  String shareInviteCancelConfirm(String email);
+
+  /// No description provided for @sharePetOrgNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing is not available for organization inventory pets.'**
+  String get sharePetOrgNotAvailable;
+
+  /// No description provided for @shareInviteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet sharing invitation'**
+  String get shareInviteTitle;
+
+  /// No description provided for @shareInviteExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This invitation has expired'**
+  String get shareInviteExpired;
+
+  /// No description provided for @shareInviteNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation not found'**
+  String get shareInviteNotFound;
+
+  /// No description provided for @shareInviteLandingHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'{inviterName} invited you to follow pets'**
+  String shareInviteLandingHeadline(String inviterName);
+
+  /// No description provided for @shareInviteLandingPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets: {petNames}'**
+  String shareInviteLandingPets(String petNames);
+
+  /// No description provided for @shareInviteLandingRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role: {role}'**
+  String shareInviteLandingRole(String role);
+
+  /// No description provided for @shareInviteAcceptPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept this invitation to add the pets to your account.'**
+  String get shareInviteAcceptPrompt;
+
+  /// No description provided for @shareInviteAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept invitation'**
+  String get shareInviteAccept;
+
+  /// No description provided for @shareInviteDecline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get shareInviteDecline;
+
+  /// No description provided for @shareInviteAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation accepted'**
+  String get shareInviteAccepted;
+
+  /// No description provided for @shareInviteDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation declined'**
+  String get shareInviteDeclined;
+
+  /// No description provided for @shareInviteAlreadyAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'You have already accepted this invitation.'**
+  String get shareInviteAlreadyAccepted;
+
   /// No description provided for @invited.
   ///
   /// In en, this message translates to:

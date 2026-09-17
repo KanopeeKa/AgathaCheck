@@ -21,6 +21,8 @@ import '../../features/pet_profile/presentation/screens/pet_timeline_screen.dart
 import '../../features/pet_profile/presentation/screens/pet_weight_tracking_screen.dart';
 import '../../features/pet_profile/presentation/widgets/pet_edit_permission_guard.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_desk_preview_screen.dart';
+import '../../features/sharing/presentation/screens/invite_landing_screen.dart';
+import '../../features/sharing/presentation/screens/share_pet_screen.dart';
 import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
 import '../../features/about/presentation/screens/about_screen.dart';
 import '../../features/about/presentation/screens/legal_document_screen.dart';
@@ -95,6 +97,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         }
         if (path == '/forgot-password') return null;
         if (path.startsWith('/shared/')) return null;
+        if (path.startsWith('/invite/')) return null;
         if (isPublicOrganizationProfilePath(path)) return null;
         if (LegalDocumentId.publicRoutes.contains(path)) return null;
         if (path.startsWith('/legal/')) return null;
@@ -261,6 +264,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             legacyPetAllCareRedirectForPath(state.uri.path),
       ),
       GoRoute(
+        path: '/pet/:petId/share',
+        name: 'sharePet',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          return SharePetScreen(petId: petId);
+        },
+      ),
+      GoRoute(
         path: '/pet/:petId/health-issues',
         name: 'petHealthIssues',
         builder: (context, state) {
@@ -385,6 +396,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final code = state.pathParameters['code']!;
           return SharedPetScreen(shareCode: code);
+        },
+      ),
+      GoRoute(
+        path: '/invite/:code',
+        name: 'shareInviteLanding',
+        builder: (context, state) {
+          final code = state.pathParameters['code']!;
+          return InviteLandingScreen(inviteCode: code);
         },
       ),
       ...buildFrozenDomainRedirectRoutes(),

@@ -16,9 +16,11 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
+import 'package:pet_profile_app/features/sharing/domain/entities/pet_share_access.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/share_link.dart';
 import 'package:pet_profile_app/features/sharing/domain/repositories/sharing_repository.dart';
 import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';
+import 'package:pet_profile_app/features/sharing/presentation/screens/share_pet_screen.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/features/weight_tracking/presentation/providers/weight_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -31,6 +33,20 @@ class _FakeSharingRepository implements SharingRepository {
 
   @override
   Future<List<ShareLink>> getShareLinks(String petId, String token) async => [];
+
+  @override
+  Future<List<PetShareAccess>> listAccessForPets(
+    List<String> petIds,
+    String token,
+  ) async {
+    return [
+      PetShareAccess(
+        petId: petIds.first,
+        access: const [],
+        pendingInvites: const [],
+      ),
+    ];
+  }
 
   @override
   noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -58,6 +74,13 @@ void main() {
           path: '/pet/:petId',
           builder: (context, state) =>
               PetDetailScreen(petId: state.pathParameters['petId']!),
+          routes: [
+            GoRoute(
+              path: 'share',
+              builder: (context, state) =>
+                  SharePetScreen(petId: state.pathParameters['petId']),
+            ),
+          ],
         ),
       ],
     );
@@ -85,6 +108,11 @@ void main() {
         apiBaseUrlProvider.overrideWithValue('http://test.local'),
         sharingRepositoryProvider.overrideWith(
           (ref) => _FakeSharingRepository(),
+        ),
+        petShareLinksNotifierProvider('pet-1').overrideWith(
+          (ref) =>
+              PetShareLinksNotifier(ref, 'pet-1')
+                ..state = const AsyncValue.data([]),
         ),
         vetListProvider.overrideWith(FakeVetListNotifier.new),
         latestWeightProvider.overrideWith((ref, arg) => null),
@@ -141,7 +169,7 @@ void main() {
     );
   });
 
-  testWidgets('sharing menu item opens bottom sheet', (tester) async {
+  testWidgets('sharing menu item opens share pet screen', (tester) async {
     await tester.pumpWidget(
       buildApp(pet: ownedPet, initialLocation: '/pet/pet-1'),
     );
@@ -152,7 +180,7 @@ void main() {
     await tester.tap(find.byKey(const Key('pet_detail_sharing_menu_item')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Sharing'), findsWidgets);
+    expect(find.text('Share Pet'), findsWidgets);
   });
 
   testWidgets('pet detail shows care section and health history destinations', (
