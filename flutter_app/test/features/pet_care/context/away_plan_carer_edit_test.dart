@@ -28,10 +28,13 @@ class _FakeCareContextRepository implements CareContextRepository {
   Object? Function()? updateThrows;
   List<Map<String, dynamic>> savedPetCarers = [];
   int updateCallCount = 0;
+  int getCarerCandidatesCallCount = 0;
 
   @override
-  Future<List<CarerCandidate>> getCarerCandidates(String petId) async =>
-      candidates;
+  Future<List<CarerCandidate>> getCarerCandidates(String petId) async {
+    getCarerCandidatesCallCount++;
+    return candidates;
+  }
 
   @override
   Future<PlannedAbsence> updatePetCarers({
@@ -284,21 +287,19 @@ void main() {
   testWidgets('403 on save re-fetches candidates and shows forbidden copy', (
     tester,
   ) async {
-    var candidatesLoaded = 0;
     final repo = _FakeCareContextRepository(
       candidates: const [
         CarerCandidate(userId: 'user-2', displayName: 'Sarah M.'),
       ],
-      updateThrows: () {
-        candidatesLoaded++;
-        return CareContextApiException(403, 'Forbidden');
-      },
+      updateThrows: () => CareContextApiException(403, 'Forbidden'),
     );
     await tester.pumpWidget(buildScreen(repo));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('away_plan_carer_edit_pet-1')));
     await tester.pumpAndSettle();
+
+    expect(repo.getCarerCandidatesCallCount, 1);
 
     await tester.tap(find.byKey(const Key('away_plan_carer_candidate_user-2')));
     await tester.pumpAndSettle();
@@ -309,6 +310,7 @@ void main() {
     expect(find.byType(SnackBar), findsOneWidget);
     expect(find.textContaining('no longer has shared access'), findsOneWidget);
     expect(repo.updateCallCount, 1);
+    expect(repo.getCarerCandidatesCallCount, 2);
   });
 
   testWidgets('cancelled absence disables the edit affordance', (tester) async {

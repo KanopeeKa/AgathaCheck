@@ -113,10 +113,12 @@ class _AwayPlanCarerEditDialogState
             absenceId: widget.absenceId,
             petCarers: [_payloadForMode()],
           );
+      if (!mounted) return;
       ref.invalidate(plannedAbsenceDetailProvider(widget.absenceId));
       ref.invalidate(awayPlanReadinessProvider(widget.absenceId));
-      if (mounted) Navigator.of(context).pop(true);
+      Navigator.of(context).pop(true);
     } on CareContextApiException catch (err) {
+      if (!mounted) return;
       if (err.statusCode == 403) {
         ref.invalidate(carerCandidatesProvider(widget.petId));
         _showFailure(l.awayPlanningCarerEditSaveFailedForbidden);
