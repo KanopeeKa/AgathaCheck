@@ -237,11 +237,7 @@ void main() {
     ];
 
     await tester.pumpWidget(
-      buildSection(
-        pets: pets,
-        previewPets: pets,
-        previewOverflowCount: 0,
-      ),
+      buildSection(pets: pets, previewPets: pets, previewOverflowCount: 0),
     );
 
     expect(find.text('Owned'), findsOneWidget);
