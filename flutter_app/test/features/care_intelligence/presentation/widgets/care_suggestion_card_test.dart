@@ -223,4 +223,34 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('exposes a merged semantics group labelled with the suggestion title', (
+    tester,
+  ) async {
+    final repository = _FakeCareIntelligenceRepository();
+
+    await tester.pumpWidget(
+      _wrap(
+        viewerContext: _viewerContext(canEditHealth: true),
+        repository: repository,
+        child: CareSuggestionCard(
+          petId: 'pet-1',
+          recommendation: _recommendation,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final group = find.bySemanticsLabel(
+      RegExp(r'^Suggested by Agatha Weight check Every 1 monthly'),
+    );
+    expect(group, findsOneWidget);
+    expect(
+      find.descendant(
+        of: group,
+        matching: find.byKey(const Key('care_suggestion_accept_rec-1')),
+      ),
+      findsOneWidget,
+    );
+  });
 }
