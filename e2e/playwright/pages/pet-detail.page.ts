@@ -78,9 +78,13 @@ export class PetDetailPage {
     // Shell push may not sync the hash on Flutter web; assert sharing chrome instead.
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByText(/^Share Pet$|^Partager$/i).first()).toBeVisible();
       await expect(
-        this.page.getByRole('button', { name: /Share Link|Partager le lien/i }).first(),
+        this.page.getByText(/^Share Pet$|^Partager l'animal$/i).first(),
+      ).toBeVisible();
+      await expect(
+        this.page
+          .getByRole('button', { name: /Share Link|Partager le lien|Lien de partage/i })
+          .first(),
       ).toBeVisible();
     }).toPass({ timeout: 15_000 });
   }
