@@ -32,7 +32,11 @@ import { clearBrowserSessionState } from '../support/session';
 import { createTestUser } from '../support/ui-auth';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
-import { flutterGotoUrl, waitForHomeAfterMutation } from '../support/flutter';
+import {
+  flutterGotoUrl,
+  refreshFlutterAccessibility,
+  waitForHomeAfterMutation,
+} from '../support/flutter';
 import { InviteLandingPage } from '../pages/invite-landing.page';
 import { SharedPetPage } from '../pages/shared-pet.page';
 

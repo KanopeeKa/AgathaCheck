@@ -75,12 +75,14 @@ export class PetDetailPage {
       .locator('[flt-semantics-identifier="pet_detail_sharing_menu_item"]')
       .or(this.page.getByRole('menuitem', { name: /^(?:Sharing\b|Partage)/i }));
     await sharingItem.first().click();
-    await waitForFlutterRoutePattern(this.page, /\/pet\/[^/]+\/share/, 15_000);
-    await this.page
-      .getByRole('heading', { name: /Share Pet|Partager/i })
-      .or(this.page.getByLabel(/Email|E-mail/i))
-      .first()
-      .waitFor({ timeout: 15_000 });
+    // Shell push may not sync the hash on Flutter web; assert sharing chrome instead.
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(this.page.getByText(/^Share Pet$|^Partager$/i).first()).toBeVisible();
+      await expect(
+        this.page.getByRole('button', { name: /Share Link|Partager le lien/i }).first(),
+      ).toBeVisible();
+    }).toPass({ timeout: 15_000 });
   }
 
   async createShareLink(): Promise<void> {
