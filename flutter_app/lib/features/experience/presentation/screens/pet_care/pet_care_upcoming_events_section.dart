@@ -116,6 +116,31 @@ class _PetCareUpcomingEventsSectionState
     );
   }
 
+  bool _showAllCareLink(List<HealthEntry> entries) => entries.isNotEmpty;
+
+  List<HealthEntry> _entriesForAsyncState(
+    AsyncValue<List<HealthEntry>> entriesAsync,
+    List<Pet> pets,
+  ) {
+    if (entriesAsync is AsyncData<List<HealthEntry>>) {
+      final priorities = PetCareTodayCarePriorities.forPets(
+        entries: entriesAsync.value,
+        pets: pets,
+        now: DateTime.now(),
+      );
+      return priorities.all;
+    }
+    if (entriesAsync is AsyncLoading<List<HealthEntry>> &&
+        (_lastDueEntriesSnapshot.isNotEmpty || _completed.isNotEmpty)) {
+      return PetCareTodayCarePriorities.forPets(
+        entries: _lastDueEntriesSnapshot,
+        pets: pets,
+        now: DateTime.now(),
+      ).all;
+    }
+    return const [];
+  }
+
   Widget _buildMobileContent(
     BuildContext ctx,
     List<HealthEntry> dueEntries,
@@ -165,6 +190,8 @@ class _PetCareUpcomingEventsSectionState
     final l = AppLocalizations.of(context)!;
     final entriesAsync = ref.watch(healthEntriesNotifierProvider);
     final pets = widget.pets;
+    final careEntries = _entriesForAsyncState(entriesAsync, pets);
+    final showAllCare = _showAllCareLink(careEntries);
 
     return Semantics(
       container: true,
@@ -172,15 +199,35 @@ class _PetCareUpcomingEventsSectionState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (entriesAsync is AsyncData<List<HealthEntry>>)
-            _careData(context, entriesAsync.value, pets, l)
-          else if (entriesAsync is AsyncLoading)
-            _careLoading(context, pets, l)
-          else
-            _careError(context, ref, l),
+          PetCareDashboardSectionChrome(
+            title: l.careEyebrow,
+            linkLabel: showAllCare ? l.allCare : null,
+            linkKey: const Key('pet_care_dashboard_care_view_all'),
+            onLinkPressed: showAllCare ? () => context.go('/pc/events') : null,
+          ),
+          const SizedBox(height: 10),
+          KeyedSubtree(
+            key: const Key('pet_care_dashboard_care_section'),
+            child: _buildBody(context, entriesAsync, pets, l),
+          ),
         ],
       ),
     );
+  }
+
+  Widget _buildBody(
+    BuildContext context,
+    AsyncValue<List<HealthEntry>> entriesAsync,
+    List<Pet> pets,
+    AppLocalizations l,
+  ) {
+    if (entriesAsync is AsyncData<List<HealthEntry>>) {
+      return _careData(context, entriesAsync.value, pets, l);
+    }
+    if (entriesAsync is AsyncLoading<List<HealthEntry>>) {
+      return _careLoading(context, pets, l);
+    }
+    return _careError(context, ref, l);
   }
 
   Widget _careData(
@@ -204,18 +251,11 @@ class _PetCareUpcomingEventsSectionState
     AppLocalizations l,
   ) {
     if (_lastDueEntriesSnapshot.isEmpty && _completed.isEmpty) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          PetCareDashboardSectionHeader(title: l.careEyebrow),
-          const SizedBox(height: 10),
-          _careCollection(
-            const SizedBox(
-              height: 56,
-              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-            ),
-          ),
-        ],
+      return _careCollection(
+        const SizedBox(
+          height: 56,
+          child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+        ),
       );
     }
     final priorities = PetCareTodayCarePriorities.forPets(
@@ -245,57 +285,33 @@ class _PetCareUpcomingEventsSectionState
   ) {
     final careEntries = priorities.all;
     final petMap = {for (final pet in pets) pet.id: pet};
-    final showAllCare = careEntries.isNotEmpty;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        PetCareDashboardSectionHeader(title: l.careEyebrow),
-        const SizedBox(height: 10),
-        KeyedSubtree(
-          key: const Key('pet_care_dashboard_care_section'),
-          child: _buildMobileContent(
-            context,
-            careEntries,
-            petMap,
-            l,
-            l.noCareDue,
-            priorities.all.isNotEmpty,
-          ),
-        ),
-        if (showAllCare)
-          PetCareDashboardSectionLink(
-            linkKey: const Key('pet_care_dashboard_care_view_all'),
-            label: l.allCare,
-            onPressed: () => context.go('/pc/events'),
-          ),
-      ],
+    return _buildMobileContent(
+      context,
+      careEntries,
+      petMap,
+      l,
+      l.noCareDue,
+      priorities.all.isNotEmpty,
     );
   }
 
   Widget _careError(BuildContext context, WidgetRef ref, AppLocalizations l) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        PetCareDashboardSectionHeader(title: l.careEyebrow),
-        const SizedBox(height: 10),
-        _careCollection(
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(Icons.error_outline, color: AppColorTokens.danger),
-              const SizedBox(height: 8),
-              Text(l.careLoadError),
-              TextButton.icon(
-                onPressed: () =>
-                    ref.read(healthEntriesNotifierProvider.notifier).refresh(),
-                icon: const Icon(Icons.refresh, size: 18),
-                label: Text(l.retry),
-              ),
-            ],
+    return _careCollection(
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.error_outline, color: AppColorTokens.danger),
+          const SizedBox(height: 8),
+          Text(l.careLoadError),
+          TextButton.icon(
+            onPressed: () =>
+                ref.read(healthEntriesNotifierProvider.notifier).refresh(),
+            icon: const Icon(Icons.refresh, size: 18),
+            label: Text(l.retry),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

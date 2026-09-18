@@ -14,6 +14,18 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 
 ---
 
+## pet-share-invite-v2-13cc — Email invites + SharePetScreen (2026-09-17)
+
+**Goal:** Email-based share invites and unified `SharePetScreen`; PR2 will retrofit link/access routes into service/query layering.  
+**Plan:** `.agents/plans/pet-share-invite-v2-13cc.md` · **Integration:** `cursor/pet-share-invite-integration-13cc` · **Control issue:** #1226
+
+| Phase | Outcome | Branch | Status |
+|-------|---------|--------|--------|
+| 1 | Invite API + SharePetScreen + invite landing | `cursor/pet-share-invite-pr1-13cc` | done |
+| 2 | Retrofit sharing.js / petAccessRoutes layering | `cursor/pet-share-invite-pr2-13cc` | done |
+
+---
+
 ## shelter-dashboard-v2-c4e8 — Shelter dashboard v2 (nav, tasks, pin) (2026-09-03)
 
 **Goal:** Care-shaped Shelter operations desk — primary nav, Shelter tasks preview, pinned org preference, streamlined dashboard body; tile geometry via `unified-pet-tile-c4e8`.  

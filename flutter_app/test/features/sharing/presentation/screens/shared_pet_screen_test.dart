@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:pet_profile_app/features/sharing/data/datasources/sharing_remote_datasource.dart';
+import 'package:pet_profile_app/features/sharing/domain/entities/invite_preview.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
+import 'package:pet_profile_app/features/sharing/domain/entities/pet_share_access.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/share_link.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/share_preview.dart';
 import 'package:pet_profile_app/features/sharing/domain/repositories/sharing_repository.dart';
@@ -80,6 +82,47 @@ class FakeSharingRepository implements SharingRepository {
     required String confirmationName,
     required String token,
   }) async {}
+
+  @override
+  Future<CreateShareInviteResult> createInvite({
+    required String inviteeEmail,
+    required List<String> petIds,
+    required String role,
+    required String token,
+    String? locale,
+  }) async {
+    return const CreateShareInviteResult(inviteId: 'inv-1', code: 'code');
+  }
+
+  @override
+  Future<List<PetShareAccess>> listAccessForPets(
+    List<String> petIds,
+    String token,
+  ) async => [];
+
+  @override
+  Future<InvitePreview> getInvitePreview(String code) async {
+    return InvitePreview(
+      inviteId: 'inv-1',
+      code: code,
+      role: PetAccessRole.carer,
+      status: 'pending',
+    );
+  }
+
+  @override
+  Future<AcceptShareInviteResult> acceptInviteByCode(
+    String code,
+    String token,
+  ) async {
+    return const AcceptShareInviteResult(inviteId: 'inv-1', status: 'accepted');
+  }
+
+  @override
+  Future<void> declineInvite(String inviteId, String token) async {}
+
+  @override
+  Future<void> cancelInvite(String inviteId, String token) async {}
 }
 
 Widget buildTestApp(Widget child, {required List<Override> overrides}) {

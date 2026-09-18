@@ -1,4 +1,5 @@
 import '../../../../pet_profile/domain/entities/pet.dart';
+import '../../../../sharing/domain/entities/pet_access.dart';
 import '../../../../pet_profile/domain/entities/care_status.dart';
 import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../../pet_profile/presentation/widgets/pet_card.dart'
@@ -139,7 +140,9 @@ PetCareTodayCareUrgency? petCareTodayCareUrgency(
 }
 
 PetCareTodayPetRelationship petCareTodayPetRelationship(Pet pet) {
-  if (pet.isShared) return PetCareTodayPetRelationship.shared;
+  if (pet.isShared && pet.accessRole != PetAccessRole.coParent) {
+    return PetCareTodayPetRelationship.shared;
+  }
   if (pet.isFoster) return PetCareTodayPetRelationship.fostered;
   return PetCareTodayPetRelationship.owned;
 }
@@ -283,15 +286,32 @@ PetCareTodayCareUrgency? _urgencyForEntry(
   return null;
 }
 
-/// Active personal pets (owned and foster; not shared) for the guardian dashboard.
+/// Active pets for the My Pets display bucket (owned, co-parent, and foster).
 List<Pet> petCareDashboardPersonalPets(
   List<Pet> allPets,
   PetListController controller,
 ) {
   final shellPets = controller.guardianShellPets(allPets);
-  final owned = controller.getOwnedPets(shellPets);
-  sortPetsByCreatedAt(owned);
-  return owned;
+  final personal = shellPets
+      .where(
+        (p) =>
+            !p.passedAway &&
+            (!p.isShared || p.accessRole == PetAccessRole.coParent),
+      )
+      .toList();
+  sortPetsByCreatedAt(personal);
+  return personal;
+}
+
+/// Pets the user may bulk-share (owned inventory only; not co-parent or carer).
+List<Pet> petCareDashboardShareablePets(
+  List<Pet> allPets,
+  PetListController controller,
+) {
+  final shellPets = controller.guardianShellPets(allPets);
+  final shareable = controller.getOwnedPets(shellPets);
+  sortPetsByCreatedAt(shareable);
+  return shareable;
 }
 
 /// Active foster pets for the guardian dashboard, oldest first.
@@ -305,15 +325,22 @@ List<Pet> petCareDashboardFosterPets(
   return fostered;
 }
 
-/// Active shared pets for the guardian dashboard, oldest first.
-List<Pet> petCareDashboardSharedPets(
+/// Active carer-access pets for the guardian dashboard, oldest first.
+List<Pet> petCareDashboardCarerPets(
   List<Pet> allPets,
   PetListController controller,
 ) {
   final shellPets = controller.guardianShellPets(allPets);
-  final shared = shellPets.where((p) => !p.passedAway && p.isShared).toList();
-  sortPetsByCreatedAt(shared);
-  return shared;
+  final carer = shellPets
+      .where(
+        (p) =>
+            !p.passedAway &&
+            p.isShared &&
+            p.accessRole != PetAccessRole.coParent,
+      )
+      .toList();
+  sortPetsByCreatedAt(carer);
+  return carer;
 }
 
 /// Whether the guardian has any active shell pets (personal or foster).

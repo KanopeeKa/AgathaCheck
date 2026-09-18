@@ -864,11 +864,11 @@ export function activePetListCardLocator(page: Page) {
 export function postPetMutationShellLocator(page: Page) {
   const dashboardPet = page
     .getByRole('button', {
-      name: /,\s*(?:My Pets|My Fostered Pets|Shared Pets|Mes animaux|Animaux partagés)/i,
+      name: /,\s*(?:My Pets|My Fostered Pets|Shared Pets|Pets I'm caring for|Mes animaux|Animaux partagés|Animaux dont je m'occupe)/i,
     })
     .or(
       page.getByRole('group', {
-        name: /,\s*(?:My Pets|My Fostered Pets|Shared Pets|Mes animaux|Animaux partagés)/i,
+        name: /,\s*(?:My Pets|My Fostered Pets|Shared Pets|Pets I'm caring for|Mes animaux|Animaux partagés|Animaux dont je m'occupe)/i,
       }),
     );
   return homeShellLocator(page)

@@ -49,13 +49,17 @@ class PetCareMyPetsSection extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final personalPets = petCareDashboardPersonalPets(allPets, controller);
-    final sharedPets = petCareDashboardSharedPets(allPets, controller);
+    final carerPets = petCareDashboardCarerPets(allPets, controller);
     final hasAny = petCareDashboardHasAnyPets(allPets, controller);
     final showUnifiedPreview = previewPets != null;
     final showPersonalSubgroupTitle =
-        !showUnifiedPreview && personalPets.isNotEmpty && sharedPets.isNotEmpty;
+        !showUnifiedPreview && personalPets.isNotEmpty && carerPets.isNotEmpty;
 
     if (showUnifiedPreview) {
+      final personalIds = personalPets.map((pet) => pet.id).toSet();
+      final personalPreview = previewPets!
+          .where((pet) => personalIds.contains(pet.id))
+          .toList();
       return Semantics(
         container: true,
         label: l.myPets,
@@ -63,14 +67,14 @@ class PetCareMyPetsSection extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             PetCareDashboardSectionChrome(
-              title: l.myPets,
+              title: l.myPetsEyebrow,
               linkLabel: l.allPets,
               linkKey: const Key('dashboard_manage_pets_link'),
               onLinkPressed: () => context.go('/pc/pets'),
             ),
             const SizedBox(height: 10),
             _PetCarePetRail(
-              pets: previewPets!,
+              pets: personalPreview,
               careSummary: careSummary,
               l: l,
               theme: theme,
@@ -78,6 +82,18 @@ class PetCareMyPetsSection extends ConsumerWidget {
               parentContext: context,
               onAddPet: () => context.push('/add'),
             ),
+            if (carerPets.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _PetSubgroupTitle(title: l.petsImCaringFor),
+              const SizedBox(height: 8),
+              PetTileStrip(
+                useWrap: true,
+                pets: carerPets,
+                onPetTap: (pet) => openPetDetail(context, pet.id),
+                tileBuilder: (pet, tile) =>
+                    PetCareShellSharedPetCard(pet: pet, child: tile),
+              ),
+            ],
           ],
         ),
       );
@@ -100,7 +116,7 @@ class PetCareMyPetsSection extends ConsumerWidget {
                 ...[
                   if (showPersonalSubgroupTitle)
                     _PetSubgroupTitle(title: l.myPets),
-                  if (personalPets.isEmpty && sharedPets.isEmpty)
+                  if (personalPets.isEmpty && carerPets.isEmpty)
                     PetCareIllustratedEmptyState(
                       key: const Key('pet_care_dashboard_empty_pets'),
                       assetPath: 'assets/dashboard/pet-care-empty-pets.png',
@@ -116,13 +132,13 @@ class PetCareMyPetsSection extends ConsumerWidget {
                       pets: personalPets,
                       onPetTap: (pet) => openPetDetail(context, pet.id),
                     ),
-                  if (sharedPets.isNotEmpty) ...[
+                  if (carerPets.isNotEmpty) ...[
                     const SizedBox(height: 16),
-                    _PetSubgroupTitle(title: l.sharedPets),
+                    _PetSubgroupTitle(title: l.petsImCaringFor),
                     const SizedBox(height: 8),
                     PetTileStrip(
                       useWrap: true,
-                      pets: sharedPets,
+                      pets: carerPets,
                       onPetTap: (pet) => openPetDetail(context, pet.id),
                       tileBuilder: (pet, tile) =>
                           PetCareShellSharedPetCard(pet: pet, child: tile),

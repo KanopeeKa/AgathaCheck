@@ -184,9 +184,16 @@ POST/PUT accept optional `measurement_source`. Pet weight reference/context fiel
 | DELETE | `/links/:linkId` | Owner deletes any share link; foster may delete only links they created |
 | GET | `/hidden` | Hidden shared pets |
 | PUT | `/:petId/hide` | Hide or unhide a shared pet (`{ hidden: true\|false }`) |
+| POST | `/invites` | Email invite; body `{ invitee_email, pet_ids, role }` — up to 20 pets; returns `{ invite_id, code, included_pet_ids, excluded[], delivery }` |
+| GET | `/invites/code/:code` | Public invite preview (no inviter email) |
+| POST | `/invites/code/:code/accept` | Auth required; grants access per pet on invite |
+| POST | `/invites/:id/decline` | Auth required; notifies inviter |
+| DELETE | `/invites/:id` | Cancel pending invite |
+| GET | `/access?pet_ids=` | Aggregate `{ pets: [{ pet_id, access[], pending_invites[] }] }` — omits inaccessible pets |
 
 Pet access management on `/api/pets/:id/...` (owner unless noted):
 - `GET /:id/share-links` — list share links with status and claimed user (owner: all links; foster: own links only)
+- `GET /:id/invites` — pending email invites for the pet
 - `GET /:id/access` — list users the pet is shared with (owner or co-parent)
 - `PUT /:id/access/:userId/role` — promote/demote between `carer` and `co_parent` (owner or co-parent)
 - `DELETE /:id/access/:userId` — remove access and notify the user (owner or co-parent)

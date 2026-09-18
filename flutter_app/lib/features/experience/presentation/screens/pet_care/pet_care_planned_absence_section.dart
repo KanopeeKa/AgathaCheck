@@ -19,14 +19,14 @@ class PetCarePlannedAbsenceSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          PetCareDashboardSectionHeader(title: l.awayPlanningEyebrow),
+          PetCareDashboardSectionChrome(
+            title: l.awayPlanningEyebrow,
+            linkLabel: l.allAbsences,
+            linkKey: const Key('pet_care_dashboard_all_absences'),
+            onLinkPressed: () => context.push('/pc/away'),
+          ),
           const SizedBox(height: 10),
           const PlannedAbsenceEntryTile(),
-          PetCareDashboardSectionLink(
-            linkKey: const Key('pet_care_dashboard_all_absences'),
-            label: l.allAbsences,
-            onPressed: () => context.push('/pc/away'),
-          ),
         ],
       ),
     );

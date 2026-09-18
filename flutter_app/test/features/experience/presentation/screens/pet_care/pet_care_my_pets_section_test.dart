@@ -6,6 +6,8 @@ import 'package:pet_profile_app/features/experience/presentation/screens/pet_car
 import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/pet_care_my_pets_section.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/unified_pet_tile.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
+import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_shell_shared_pet_card.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_list_controller.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -82,10 +84,10 @@ void main() {
 
     expect(find.text('Who are we caring for?'), findsOneWidget);
     expect(find.text('My Fostered Pets'), findsNothing);
-    expect(find.text('Shared Pets'), findsNothing);
+    expect(find.text("Pets I'm caring for"), findsNothing);
   });
 
-  testWidgets('baseline: shows shared subgroup when shared pets exist', (
+  testWidgets('baseline: shows carer subgroup when carer pets exist', (
     tester,
   ) async {
     final pets = [
@@ -95,15 +97,39 @@ void main() {
         species: 'Dog',
         breed: '',
         isShared: true,
+        accessRole: PetAccessRole.carer,
       ),
     ];
 
     await tester.pumpWidget(buildSection(pets: pets));
     await tester.pumpAndSettle();
 
-    expect(find.text('Shared Pets'), findsOneWidget);
+    expect(find.text("Pets I'm caring for"), findsOneWidget);
     expect(find.text('Max'), findsOneWidget);
     expect(find.text('Who are we caring for?'), findsNothing);
+    expect(find.byType(PetCareShellSharedPetCard), findsOneWidget);
+  });
+
+  testWidgets('co-parent pets appear under My Pets without shared wrapper', (
+    tester,
+  ) async {
+    final pets = [
+      const Pet(
+        id: 'p1',
+        name: 'FamilyDog',
+        species: 'Dog',
+        breed: '',
+        isShared: true,
+        accessRole: PetAccessRole.coParent,
+      ),
+    ];
+
+    await tester.pumpWidget(buildSection(pets: pets));
+    await tester.pumpAndSettle();
+
+    expect(find.text("Pets I'm caring for"), findsNothing);
+    expect(find.text('FamilyDog'), findsOneWidget);
+    expect(find.byType(PetCareShellSharedPetCard), findsNothing);
   });
 
   testWidgets('compact preview handles zero, one, and exactly four pets', (
@@ -119,7 +145,7 @@ void main() {
       );
 
       expect(find.byType(UnifiedPetTile), findsNWidgets(count));
-      expect(find.text('My Pets'), findsOneWidget);
+      expect(find.text('MY PETS'), findsOneWidget);
       expect(find.text('All pets'), findsOneWidget);
       expect(find.text('Add Pet'), findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -181,6 +207,7 @@ void main() {
       name: 'Shared pet',
       species: 'Cat',
       isShared: true,
+      accessRole: PetAccessRole.carer,
     );
     await tester.pumpWidget(
       buildSection(
@@ -192,5 +219,30 @@ void main() {
 
     expect(find.byType(UnifiedPetTile), findsOneWidget);
     expect(find.byKey(const Key('hide_shell_shared_shared-1')), findsNothing);
+  });
+
+  testWidgets('preview rail excludes carer pets from My Pets carousel', (
+    tester,
+  ) async {
+    final pets = [
+      const Pet(id: 'owned', name: 'Owned', species: 'Dog', breed: ''),
+      const Pet(
+        id: 'carer',
+        name: 'CarerPet',
+        species: 'Cat',
+        breed: '',
+        isShared: true,
+        accessRole: PetAccessRole.carer,
+      ),
+    ];
+
+    await tester.pumpWidget(
+      buildSection(pets: pets, previewPets: pets, previewOverflowCount: 0),
+    );
+
+    expect(find.text('Owned'), findsOneWidget);
+    expect(find.text('CarerPet'), findsOneWidget);
+    expect(find.text("Pets I'm caring for"), findsOneWidget);
+    expect(find.byType(UnifiedPetTile), findsNWidgets(2));
   });
 }

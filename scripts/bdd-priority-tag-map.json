@@ -131,7 +131,9 @@
     "Carer hides a shared pet from their list": "P2",
     "Hiding a shared pet via swipe": "P2",
     "Unhiding a shared pet": "P2",
-    "Opening an expired or invalid share link": "P1"
+    "Opening an expired or invalid share link": "P1",
+    "Accepting an email share invite into personal pet list": "P1",
+    "Declining an email share invite": "P2"
   },
   "organisation_management.feature": {
     "Creating a Professional organisation": "P0",
