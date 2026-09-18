@@ -61,7 +61,9 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
       color: AppColorTokens.warmAccentLight,
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: MergeSemantics(
+        child: Semantics(
+          key: const ValueKey('care_suggestion_group'),
+          container: true,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
