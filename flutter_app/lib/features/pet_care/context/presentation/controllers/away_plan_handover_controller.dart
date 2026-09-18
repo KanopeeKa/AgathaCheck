@@ -27,9 +27,10 @@ class AwayPlanHandoverController {
     final l = AppLocalizations.of(context)!;
     if (!context.mounted) return;
 
-    showDialog(
+    showDialog<void>(
       context: context,
       barrierDismissible: false,
+      useRootNavigator: true,
       builder: (_) => const Center(child: CircularProgressIndicator()),
     );
 
@@ -110,7 +111,7 @@ class AwayPlanHandoverController {
       await repository.recordHandoverDownload(absence.id);
 
       if (context.mounted) {
-        Navigator.of(context).pop();
+        Navigator.of(context, rootNavigator: true).pop();
       }
 
       final filename = 'away_plan_${absence.startsOn}_${absence.endsOn}.pdf'
@@ -124,7 +125,7 @@ class AwayPlanHandoverController {
       }
     } catch (e) {
       if (context.mounted) {
-        Navigator.of(context).pop();
+        Navigator.of(context, rootNavigator: true).pop();
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(l.pdfExportFailed('$e'))));

@@ -1,6 +1,9 @@
 import 'dart:js_interop';
 import 'dart:typed_data';
+
 import 'package:web/web.dart' as web;
+
+import 'pdf_download_user_agent.dart';
 
 Future<void> savePdf(Uint8List bytes, String filename) async {
   final blob = web.Blob(
@@ -9,8 +12,20 @@ Future<void> savePdf(Uint8List bytes, String filename) async {
   );
   final url = web.URL.createObjectURL(blob);
   final anchor = web.document.createElement('a') as web.HTMLAnchorElement
-    ..href = url
-    ..download = filename;
+    ..href = url;
+
+  if (shouldOpenPdfInNewBrowserTab(web.window.navigator.userAgent)) {
+    anchor.target = '_blank';
+  } else {
+    anchor.download = filename;
+  }
+
+  web.document.body?.append(anchor);
   anchor.click();
-  web.URL.revokeObjectURL(url);
+  anchor.remove();
+
+  // Let the browser start the download or new-tab navigation before revoking.
+  Future<void>.delayed(const Duration(seconds: 1), () {
+    web.URL.revokeObjectURL(url);
+  });
 }
