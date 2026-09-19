@@ -1,6 +1,7 @@
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
+  escapeRegExp,
   flutterGotoUrl,
   refreshFlutterAccessibility,
   semanticsByName,
@@ -24,6 +25,14 @@ function calendarDayPattern(isoDate: string): RegExp {
 
 function semanticsKey(page: Page, key: string) {
   return page.locator(`[flt-semantics-identifier="${key}"]`);
+}
+
+async function fillDateField(field: Locator, isoDate: string): Promise<void> {
+  await field.click();
+  await field.press('Control+a');
+  await field.fill('');
+  await field.pressSequentially(formatDdMmYyyy(isoDate), { delay: 30 });
+  await field.press('Tab');
 }
 
 /**
@@ -74,27 +83,28 @@ export class AwayPlanningPage {
     }
     const dialog = this.page.getByRole('dialog');
     await expect(dialog).toBeVisible({ timeout: 15_000 });
-    const startDay = dialog.getByText(calendarDayPattern(startsOn)).first();
-    if (await startDay.isVisible().catch(() => false)) {
-      await startDay.click();
-      await dialog.getByText(calendarDayPattern(endsOn)).first().click();
-    } else {
-      const switchToInput = dialog.getByRole('button', {
-        name: /Switch to input|Passer en saisie/i,
-      });
-      if (await switchToInput.isVisible().catch(() => false)) {
-        await switchToInput.click();
-      }
-      const startField = dialog.getByRole('textbox', {
-        name: /Start date|Date de début/i,
-      });
+    const switchToInput = dialog.getByRole('button', {
+      name: /Switch to input|Passer en saisie/i,
+    });
+    const startField = dialog.getByRole('textbox', {
+      name: /Start date|Date de début/i,
+    });
+    if (await switchToInput.isVisible().catch(() => false)) {
+      // Calendar grid clicks are unreliable on Flutter web (semantics intercept pointers).
+      await switchToInput.click();
+      await refreshFlutterAccessibility(this.page);
+    }
+    if (await startField.isVisible().catch(() => false)) {
       const endField = dialog.getByRole('textbox', { name: /End date|Date de fin/i });
-      await startField.click();
-      await startField.press('Control+a');
-      await startField.fill(formatDdMmYyyy(startsOn));
-      await endField.click();
-      await endField.press('Control+a');
-      await endField.fill(formatDdMmYyyy(endsOn));
+      await fillDateField(startField, startsOn);
+      await fillDateField(endField, endsOn);
+      await expect(dialog.getByText(/Invalid range|Plage invalide/i)).toHaveCount(0, {
+        timeout: 5_000,
+      });
+    } else {
+      const startDay = dialog.getByText(calendarDayPattern(startsOn)).first();
+      await startDay.click({ force: true });
+      await dialog.getByText(calendarDayPattern(endsOn)).first().click({ force: true });
     }
     await dialog.getByRole('button', { name: /^OK$|^Save$|Enregistrer/i }).first().click();
     await expect(dialog).not.toBeVisible({ timeout: 15_000 });
@@ -158,10 +168,14 @@ export class AwayPlanningPage {
   }
 
   async expectPetCarerRow(petName: string, carerLabel: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    const caringGroup = semanticsByName(this.page, /Who.s caring|Qui s.en occupe/i).first();
-    await expect(caringGroup).toContainText(petName, { timeout: 30_000 });
-    await expect(caringGroup).toContainText(carerLabel, { timeout: 30_000 });
+    const rowPattern = new RegExp(
+      `${escapeRegExp(petName)}.*${escapeRegExp(carerLabel)}`,
+      'i',
+    );
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(semanticsByName(this.page, rowPattern).first()).toBeVisible();
+    }).toPass({ timeout: 30_000 });
   }
 
   async expectUpcomingAbsenceVisible(petName: string): Promise<void> {
