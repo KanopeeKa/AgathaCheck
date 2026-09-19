@@ -16,6 +16,7 @@ Future<void> savePdf(Uint8List bytes, String filename) async {
 
   if (shouldOpenPdfInNewBrowserTab(web.window.navigator.userAgent)) {
     anchor.target = '_blank';
+    anchor.rel = 'noopener';
   } else {
     anchor.download = filename;
   }

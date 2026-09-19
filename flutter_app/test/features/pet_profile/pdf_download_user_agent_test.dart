@@ -18,6 +18,13 @@ void main() {
       ),
       isTrue,
     );
+    expect(
+      shouldOpenPdfInNewBrowserTab(
+        'Mozilla/5.0 (Linux; Android 13; SM-X900) AppleWebKit/537.36 '
+        '(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      ),
+      isTrue,
+    );
   });
 
   test('uses download attribute on desktop user agents', () {
