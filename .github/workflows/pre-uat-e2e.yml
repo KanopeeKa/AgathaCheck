@@ -59,9 +59,7 @@ jobs:
       # fail-fast: false so a failing shard does not cancel the others — Pre-UAT is
       # post-merge (async) and the value is full per-shard signal (which shards
       # pass/fail) so promotion stalling is diagnosed precisely. The gate below
-      # still requires every shard green before promote-uat runs. Contrast with
-      # deploy-uat.yml's full matrix (fail-fast: true) where cross-cutting bugs
-      # make all shards fail together and retries waste promotion wall-clock.
+      # still requires every shard green before promote-uat runs.
       fail-fast: false
       # Shard count: 9 (Pet Care only) — keep in sync with e2e/scripts/shard-files.mjs and e2e.yml.
       matrix:
