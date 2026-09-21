@@ -5,13 +5,25 @@ audience: both
 status: draft
 last_updated: 2026-09-21
 tags: [pet_care, care_item, taxonomy, health_entry, spec]
+reviewed_by: [claude-review-2026-09-21]
 ---
 
 # Care classification taxonomy — product & data spec
 
-**Status:** Draft for review (product owner + engineering)  
+**Status:** Draft v2 — incorporates engineering review (2026-09-21)  
 **Supersedes (partially):** informal `type` + `care_family` dual-picker UX; §7 of [care-item-model-delivery-plan.md](./care-item-model-delivery-plan.md)  
 **Related:** [care-progression.md](../features/care-progression.md) · [care-foundation-roadmap.md](./care-foundation-roadmap.md) · [terminology.md](../../../design/terminology.md)
+
+### Dependencies (must be true before Phase A)
+
+| Prerequisite | Status (2026-09-21) |
+|--------------|------------------------|
+| [`care-family-taxonomy`](../../../.agents/plans/care-family-taxonomy.md) (Child C) — inference removed, tolerate null family | **Merged** (PR #1124) |
+| [`care-family-required`](../../../.agents/plans/care-family-required.md) (Child C2) — required on create | **Merged** (PR #1130) |
+| Server `inferCareFamilyFromType` deleted | **Done** — no matches under `server/` |
+| E2E `inferCareFamilyFromType` retired | **Phase A exit criterion** — still live in `e2e/playwright/support/api.ts` |
+
+Legacy rows with `care_family IS NULL` remain valid on read/edit; new creates require `care_family`.
 
 ---
 
@@ -139,11 +151,13 @@ essential  |  recommended  |  optional
 | `recommended` | Should stay on track | wellness_review, dental, weight_monitoring |
 | `optional` | Beneficial; low cost if delayed | grooming, nail_care, other |
 
+**UI label (settled):** **Priority** — short, matches due-list sort; avoids moral-judgment tone of “importance”.
+
 **Policy:**
 
 - **Always persisted** on create/update — default from taxonomy when client omits.
 - **Editable in both** planned and record flows (chip or compact picker).
-- Set `importance_overridden = true` when user changes away from family default (optional audit column).
+- Set `importance_overridden = true` when user changes away from family default (see §5.1 — new audit precedent).
 - Used for: due-list sort, dashboard emphasis, away-planning load hints, analytics — **not** for notification `priority=urgent`.
 
 **Distinction from notifications:**
@@ -185,7 +199,15 @@ server/lib/care/taxonomy/          # validation + deriveLegacyType
 }
 ```
 
-### 4.3 Default matrix (v1 — `OPEN` for product sign-off)
+**`filter_group` (required in v1):** `prevention` | `clinical` | `lifestyle` — drives filter chip grouping in Phase F; do not defer to a second taxonomy migration.
+
+| `filter_group` | Families |
+|----------------|----------|
+| `prevention` | medication, vaccination, parasite_prevention |
+| `clinical` | wellness_review, dental, weight_monitoring |
+| `lifestyle` | grooming, nail_care, other |
+
+### 4.3 Default matrix (v1 — product sign-off)
 
 | Family | `default_setting` | `default_importance` |
 |--------|-------------------|----------------------|
@@ -199,16 +221,29 @@ server/lib/care/taxonomy/          # validation + deriveLegacyType
 | nail_care | other | optional |
 | other | other | optional |
 
-### 4.4 Legacy `type` derivation
+### 4.4 Defaults when `care_family IS NULL` (legacy uncategorised rows)
+
+Applies to backfill and read-path defaulting only — **not** new creates.
+
+| Field | Default when family null |
+|-------|--------------------------|
+| `care_setting` | `other` |
+| `care_planning` | `planned` |
+| `care_importance` | `optional` |
+| `type` (derived) | existing row `type` column until family is set |
+
+When an uncategorised row is edited and the carer picks a family, apply that family’s defaults for setting/importance unless the user overrides.
+
+### 4.5 Legacy `type` derivation
 
 Server function: `deriveLegacyType(care_family, care_setting) → type`
 
-- Implemented **only** in taxonomy module.
-- Called on every write; stored in `health_entries.type` for compat.
-- Clients stop sending `type` in a later phase.
+- Implemented **only** in taxonomy module; full table lives in `shared/care_taxonomy.json`.
+- Called on every write; stored in `health_entries.type` for compat (column stays `NOT NULL`).
+- **Phase B:** server is authoritative — **reject** client-sent `type` with `400` (no deprecation window; no installed native client to protect).
+- **Phase B (same PR):** update in-repo callers — E2E `api.ts`, any server tests sending `type`.
+- **Phase C:** Flutter stops sending `type` and removes the `HealthEntryType` dropdown (~18 files under `health_tracking/`).
 - Lossy mapping is acceptable — `type` is deprecated.
-
-**Suggestion for reviewer:** publish the full derivation table in `shared/care_taxonomy.json` rather than ad hoc switches in CRUD handlers.
 
 ---
 
@@ -216,14 +251,16 @@ Server function: `deriveLegacyType(care_family, care_setting) → type`
 
 ### 5.1 New columns on `health_entries`
 
-| Column | Type | Nullable | Default |
-|--------|------|----------|---------|
-| `care_setting` | `VARCHAR(20)` | NOT NULL | `'home'` (backfill per family) |
-| `care_planning` | `VARCHAR(20)` | NOT NULL | `'planned'` |
-| `care_importance` | `VARCHAR(20)` | NOT NULL | from taxonomy on write |
-| `importance_overridden` | `BOOLEAN` | NOT NULL | `false` |
+| Column | Type | Nullable | Default | Notes |
+|--------|------|----------|---------|-------|
+| `care_setting` | `VARCHAR(20)` | NOT NULL after backfill | `'home'` | Apply §4.3 / §4.4 on backfill |
+| `care_planning` | `VARCHAR(20)` | NOT NULL after backfill | `'planned'` | See §5.4 — conservative backfill |
+| `care_importance` | `VARCHAR(20)` | NOT NULL after backfill | taxonomy | Server applies default if omitted on write |
+| `importance_overridden` | `BOOLEAN` | NOT NULL | `false` | **New audit precedent** — no other `health_entries` column tracks user override today (`care_source` is provenance, not override). Setting does not get a parallel flag in v1. |
 
-Existing: `care_family`, `type`, `health_issue_id`, `frequency`, `next_due_date`, `completed_on`, `remind_days_before`.
+**`NOT NULL` rollout:** add columns nullable → run backfill (§5.4) → `ALTER … SET NOT NULL`. Matches precedent of nullable `care_family` during migration, then enforced on create for new axes.
+
+Existing: `care_family` (nullable for legacy), `type`, `health_issue_id`, `frequency`, `next_due_date`, `completed_on`, `remind_days_before`.
 
 ### 5.2 Write payload (client → API)
 
@@ -239,31 +276,46 @@ Existing: `care_family`, `type`, `health_issue_id`, `frequency`, `next_due_date`
 }
 ```
 
-- `type` **optional** on write during migration; server overwrites with derived value.
-- If `care_importance` omitted → server applies family default.
+- **`type` rejected on write** — if present in body, return `400` with clear error (Phase B).
+- If `care_importance` omitted → server applies family default (§4.3 or §4.4).
 - If `care_setting` omitted → server applies family default.
 
 ### 5.3 Validation rules
 
 | Rule | Enforcement |
 |------|-------------|
-| `care_family` required on create | existing |
+| `care_family` required on create | existing (Child C2) |
 | `care_setting` ∈ {home, vet, other} | server |
 | `care_planning` ∈ {planned, unplanned} | server |
 | `care_importance` ∈ {essential, recommended, optional} | server; default if omitted |
 | `unplanned` → `completed_on` required | server |
 | `unplanned` → `next_due_date` must be null | server |
 | `unplanned` → `remind_days_before = 0` | server default |
-| `planned` + recurring → recurrence fields per existing rules | server |
+| `unplanned` + `frequency != once` → **400** | server — hard reject (no silent coercion) |
 | `frequency != once` → `care_planning` must be `planned` | server |
+| `planned` + recurring → recurrence fields per existing rules | server |
+| Client sends `type` | **400** (Phase B+) |
 
 ### 5.4 Backfill strategy
 
-1. Add columns with defaults.
-2. Set `care_setting` from family default matrix.
-3. Set `care_planning = planned` for rows with `next_due_date` or recurring frequency; `unplanned` for completed one-offs with no future due (heuristic — `OPEN` threshold).
-4. Set `care_importance` from family defaults.
-5. Recompute `type` via `deriveLegacyType`.
+**Principle:** false `unplanned` corrupts adherence stats; false `planned` is merely cosmetic. **Default ambiguous rows to `planned`.**
+
+Do **not** use “completed one-off + `next_due_date` null ⇒ unplanned” — completing a planned once-off via `PUT` or occurrence complete leaves the same snapshot as a late record.
+
+#### `care_planning` signal (in order)
+
+1. `frequency != 'once'` → **`planned`**
+2. `next_due_date IS NOT NULL` OR `status = 'active'` with open scheduling → **`planned`**
+3. **Any `health_occurrences` row** for the entry → **`planned`** (primary signal post-CSM-7; occurrence materialisation implies prior intent to schedule)
+4. **Legacy:** any `health_history` row with non-null `due_date` → **`planned`** (pre-CSM-7; table is read-only for new completes — do not rely on this alone for recent data)
+5. **Confident `unplanned` only:** `frequency = 'once'` AND `completed_on IS NOT NULL` AND no occurrences AND no history with `due_date` AND created with `completed_on` at insert (no initial occurrence materialisation) → **`unplanned`**
+6. **Else** → **`planned`**
+
+#### Other columns
+
+1. Add columns **nullable**, backfill, then `SET NOT NULL`.
+2. `care_setting` / `care_importance` from §4.3; §4.4 when `care_family IS NULL`.
+3. Recompute `type` via `deriveLegacyType` where family is known; else keep existing `type`.
 
 ---
 
@@ -288,7 +340,7 @@ CareClassificationSection
 ├── PlanningToggle          [ Plan this care | Record what happened ]
 ├── FamilyPicker            9 families (icons from taxonomy)
 ├── SettingField            home | vet | other (default on family change)
-└── ImportanceSelector      essential | recommended | optional
+└── PrioritySelector        essential | recommended | optional
                             (shown for BOTH planning modes; defaults from family)
 ```
 
@@ -309,7 +361,7 @@ CareClassificationSection
 | Route / action | Initial state |
 |----------------|---------------|
 | Add care (default) | `planned`, family from context or blank |
-| Record care | `unplanned`, completed date focused |
+| Record care (`?planning=unplanned`) | `unplanned`, completed date focused — **pet profile only in v1** (no global FAB) |
 | From health issue | `planned` or `unplanned`, family suggested from issue context (`OPEN`) |
 | CIM accept | from recommendation template |
 
@@ -347,7 +399,7 @@ CareClassificationSection
 | `care_setting` | Where | Subtitle explains options |
 | `care_planning=planned` | Plan this care | |
 | `care_planning=unplanned` | Record what happened | Not “Urgent” |
-| `care_importance` | Priority | Or “How important is staying on track?” — `OPEN` copy review |
+| `care_importance` | Priority | Chip label: Essential / Recommended / Optional |
 | `type` | *(hidden)* | Never shown |
 
 Tone: calm, operational — per [copy-tone.md](../../../design/copy-tone.md). Importance explains sorting, not moral judgement.
@@ -358,9 +410,9 @@ Tone: calm, operational — per [copy-tone.md](../../../design/copy-tone.md). Im
 
 Existing: `health_entries.health_issue_id` optional link; dropdown on form when single pet selected.
 
-### 10.1 Prompt — unplanned record (especially vet)
+### 10.1 Prompt — unplanned record (vet-setting only, v1)
 
-**When:** user saves `care_planning=unplanned` with `care_setting=vet` OR families `wellness_review`, `dental`, `vaccination`.
+**When:** user saves `care_planning=unplanned` **and** `care_setting=vet` (primary trigger per review — avoids prompt fatigue on home grooming logs).
 
 **UI:** lightweight sheet after save (dismissible):
 
@@ -427,9 +479,9 @@ Optional quick-pick chips on “Add health issue” from vet prompt:
 
 | Phase | Outcome | PR type |
 |-------|---------|---------|
-| **A** | `shared/care_taxonomy.json` + Dart/Node registry + contract tests | Foundation |
-| **B** | DB migration + API validation + derive `type` | Backend |
-| **C** | `CareClassificationSection`; hide type picker | Flutter |
+| **A** | `shared/care_taxonomy.json` + Dart/Node registry + contract tests; **retire E2E `inferCareFamilyFromType`** | Foundation |
+| **B** | DB migration + backfill (§5.4) + API validation + derive `type` + **reject client `type`** + update E2E/server tests | Backend |
+| **C** | `CareClassificationSection`; remove type picker; Flutter stops sending `type` | Flutter |
 | **D** | Record vs plan form behaviour + validation | Flutter |
 | **E** | Health-issue prompts (§10.1–10.2) | Flutter + thin API if needed |
 | **F** | Family-based filters; deprecate type filters | Flutter |
@@ -458,7 +510,7 @@ Each phase = one verifiable outcome ([atomic-pr-policy](../../../agent-efficienc
 2. **Keep setting always editable** — avoids false precision and support burden; defaults handle 95% case.
 3. **Separate planning from urgency** — use `care_planning=unplanned` for all post-hoc records; reserve future `tags` if episodic severity is ever needed for timeline analytics.
 4. **Prompts over permanent fields** — health-issue linkage at save/completion reduces form noise.
-5. **Codegen taxonomy** — prevents third inference map in Playwright (`inferCareFamilyFromType` today).
+5. **Codegen taxonomy** — **Phase A must delete** E2E `inferCareFamilyFromType` (`e2e/playwright/support/api.ts`); server inference is already gone.
 6. **Involvement score (future)** — optional derived field `estimated_effort: low|medium|high` from `(family, setting)` for away-planning; not v1 UI.
 7. **Completion → issue → re-plan chain** — treat as a small state machine in the form controller, not scattered `Navigator` calls.
 
@@ -474,7 +526,9 @@ Each phase = one verifiable outcome ([atomic-pr-policy](../../../agent-efficienc
 - [ ] Vet unplanned save shows health-issue prompt (dismissible).
 - [ ] Planned vet completion shows health-issue + optional re-plan prompt.
 - [ ] No urgent picker anywhere in care entry flows.
-- [ ] Filters use family (type chips removed or deprecated).
+- [ ] Filters use family + `filter_group` (type chips removed or deprecated).
+- [ ] Phase B rejects client-sent `type`; E2E updated in same PR.
+- [ ] Phase C: Flutter no longer sends `type`.
 
 ---
 
