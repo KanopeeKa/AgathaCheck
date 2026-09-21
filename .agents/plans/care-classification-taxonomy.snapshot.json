@@ -39,12 +39,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "shared/care_taxonomy.json + Dart/Node registry; retire E2E inferCareFamilyFromType",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": null,
       "debt_issue_refs": []
     },
     {
@@ -296,5 +293,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:79772d69351fe8273f5b7269737321d31271fd5904e384605741c52d3d64504f"
+  "content_hash": "sha256:a96d537539dc54e64085d584bba2caff5fff4364abff80d81d29191e520bffdf"
 }
