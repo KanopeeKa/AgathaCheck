@@ -165,3 +165,22 @@ Unify care entry classification on four axes (`care_family`, `care_setting`, `ca
 ## Final merge
 
 After phase H merged to integration → open PR `cursor/care-classification-taxonomy-integration-8524` → `main` → `/babysit-uat`.
+
+## Runtime state
+
+```yaml
+autonomy: active
+current_phase: a
+last_completed_phase: null
+halt_reason: null
+next_action: implement Phase A — shared/care_taxonomy.json + Dart/Node registry
+artifact_ref:
+  branch: cursor/care-taxonomy-registry-8524
+  plan_path: .agents/plans/care-classification-taxonomy.md
+  plan_commit: null
+  snapshot_path: .agents/plans/care-classification-taxonomy.snapshot.json
+  snapshot_commit: null
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```

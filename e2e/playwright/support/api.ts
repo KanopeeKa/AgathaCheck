@@ -11,6 +11,7 @@
 import { execSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { apiFetch } from './api-fetch';
+import { defaultCareFamilyForLegacyType } from './careTaxonomy';
 
 const API_PREFIX = process.env.E2E_API_PREFIX ?? '/backend/api';
 
@@ -1104,19 +1105,6 @@ export async function markHealthEntryTaken(
     throw new Error(`markHealthEntryTaken failed (${res.status}): ${body}`);
   }
 }
-function inferCareFamilyFromType(type: string): string {
-  switch (type) {
-    case 'medication':
-      return 'medication';
-    case 'preventive':
-      return 'parasite_prevention';
-    case 'vet_visit':
-      return 'wellness_review';
-    default:
-      return 'other';
-  }
-}
-
 export async function createHealthEntry(
   baseURL: string,
   token: string,
@@ -1143,7 +1131,7 @@ export async function createHealthEntry(
     frequency_days: frequency === 'once' ? null : (options.frequencyDays ?? 30),
     next_due_date: options.nextDueDate,
     status: 'active',
-    care_family: options.careFamily ?? inferCareFamilyFromType(type),
+    care_family: options.careFamily ?? defaultCareFamilyForLegacyType(type),
   };
   if (options.scheduleTimes != null) {
     body.schedule_times = options.scheduleTimes;
@@ -1190,7 +1178,7 @@ export async function updateHealthEntry(
     frequency_days: frequency === 'once' ? null : (options.frequencyDays ?? 30),
     next_due_date: options.nextDueDate,
     status: 'active',
-    care_family: options.careFamily ?? inferCareFamilyFromType(type),
+    care_family: options.careFamily ?? defaultCareFamilyForLegacyType(type),
   };
   const res = await apiFetch(apiUrl(`/health-entries/${entryId}`, baseURL), {
     method: 'PUT',
