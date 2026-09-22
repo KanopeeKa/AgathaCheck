@@ -24,7 +24,7 @@ Minimal changes — no archived GitHub workflow (D-MVP-10).
 
 ## Blocking governance (active)
 
-- `scripts/check_frozen_domain_boundaries.sh` — no active imports of frozen roots
+- `scripts/check_frozen_domain_boundaries.sh` — manifest-driven scan of all active Dart (`flutter_app/lib` minus frozen `sourceRoots`) and server production roots (`server/routes`, `server/lib`, `server/bin` minus frozen `serverRoots`); gated mount allowlist for `server/bin/server.js` only. Fixture tests: `scripts/test/check_frozen_domain_boundaries.test.sh`.
 - File size, smoke-tag invariants (active specs), `assert-ci-gate.sh`
 
 ## Not built

@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "sourceRoots": [
+    "flutter_app/lib/features/organization",
+    "flutter_app/lib/features/fostering_session"
+  ],
+  "serverRoots": [
+    "server/routes/organizations",
+    "server/routes/fosterPlacements.js",
+    "server/routes/custodyTransfers.js"
+  ],
+  "activeSurfacesToRemove": []
+}
