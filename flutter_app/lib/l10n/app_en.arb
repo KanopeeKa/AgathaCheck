@@ -156,6 +156,12 @@
   "addFirstPet": "Tap + to add your first pet",
 
   "petDetails": "Pet Details",
+  "petDetailsFor": "View pet details for {petName}",
+  "@petDetailsFor": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
   "petNotFound": "Pet not found",
   "errorWithMessage": "Error: {error}",
   "@errorWithMessage": { "placeholders": { "error": { "type": "String" } } },

@@ -18,8 +18,8 @@ class AwayPlanHandoverNoteSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final note = absence.handoverNote?.trim();
-    if (note == null || note.isEmpty) return const SizedBox.shrink();
+    final note = absence.handoverNote;
+    if (note == null || note.trim().isEmpty) return const SizedBox.shrink();
 
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);

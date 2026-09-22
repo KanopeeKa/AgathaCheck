@@ -90,7 +90,7 @@ One outcome: the coverage/projection read path returns **one array**, `planned_c
 
 | Item | Action |
 |---|---|
-| `server/lib/recurrenceHelper.js#splitRoutineAndDatedItems` | Rework into a single-array builder. Group key becomes `health_entry_id` only (drop `\|timeKey`); extend grouping to every repeating `frequency`, not just `daily`; `frequency === 'once'` stays ungrouped |
+| `server/lib/care/awayPlan/presentation.js#splitRoutineAndDatedItems` (this symbol lived here, not in `recurrenceHelper.js`) | Rework into a single-array builder. Group key becomes `health_entry_id` only (drop `\|timeKey`); extend grouping to every repeating `frequency`, not just `daily`; `frequency === 'once'` stays ungrouped |
 | `kind` discriminant | `recurring_calendar` / `recurring_chain` / `single_once` / `indeterminate_pending`, derived from `recurrence_anchor` (`RECURRENCE_ANCHOR_FROM_DUE_DATE` / `RECURRENCE_ANCHOR_FROM_COMPLETION`, `recurrenceAnchorDefaults.js`) + whether the entry has a materialised occurrence in the window. One field — do not also add a separate `anchor_kind` |
 | Group row shape (`recurring_calendar`/`recurring_chain`) | `health_entry_id`, `name`, `type`, `care_family`, `frequency`, `frequency_interval`, `times_of_day: string[]` (distinct, sorted), `certainty` (least-certain-wins, D-AWAY-006 unchanged), `occurrence_count`, `status_counts`, `first_scheduled_date`, `last_scheduled_date` |
 | `next_due_date` | Earliest pending occurrence date; computed only when `kind === 'recurring_calendar'` and `times_of_day.length <= 1`; else `null` |
@@ -133,7 +133,7 @@ One outcome: `PlannedAbsencePlanScreen` is read-only; a new edit screen owns the
 | `planned_absence_plan_screen.dart` | Add "Edit" `IconButton` in app bar (disabled when cancelled, same guard as the PDF button); remove reliance on inline note editing |
 | `away_plan_handover_note_section.dart` | Split into a read-only display variant (shows note text or nothing, no `TextField`) and reuse the existing editable variant inside the new edit screen |
 | New `planned_absence_edit_screen.dart` at route `petCarePlannedAbsenceEdit` → `/pc/away/:id/edit` | `AppFormStickyActionsBar` (Save) on phone / inline row on tablet; note field; `AppFormDestructiveButton` → confirm dialog → `cancelPlannedAbsence` → navigate to `/pc/away`; `PopScope` + `confirmDiscardFormChanges` for unsaved note edits |
-| `care_context_repository.dart` / `_impl.dart` / `care_context_remote_datasource.dart` | Add `cancelPlannedAbsence(absenceId)` calling existing `POST /api/careContext/plannedAbsences/:id/cancel` — **no backend change** |
+| `care_context_repository.dart` / `_impl.dart` / `care_context_remote_datasource.dart` | Add `cancelPlannedAbsence(absenceId)` calling existing `POST /api/planned-absences/:id/cancel` (mounted in `server/bin/server.js`; the router file lives under `routes/careContext/` but the URL prefix is `/api/planned-absences`, not `/api/careContext/...`) — **no backend change** |
 | `away_routes.dart` / `app_router.dart` | Register the new edit route, mirroring the existing `/pc/away/new`, `/pc/away/:id` pattern |
 | Widget tests | Display screen has no Save button and no editable note field; edit screen has Save + Delete, discard-guard fires on unsaved note changes, delete confirms then cancels then navigates home; **after a successful delete, the hub's absence list (`plannedAbsencesListProvider` or equivalent) is invalidated and the absence no longer shows as active there** — made an explicit exit criterion per review round 1, not just "verify at implementation" |
 

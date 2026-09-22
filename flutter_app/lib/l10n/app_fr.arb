@@ -152,6 +152,7 @@
   "addFirstPet": "Appuyez sur + pour ajouter votre premier animal",
 
   "petDetails": "Détails de l'animal",
+  "petDetailsFor": "Voir les détails de {petName}",
   "petNotFound": "Animal introuvable",
   "errorWithMessage": "Erreur : {error}",
   "goBack": "Retour",

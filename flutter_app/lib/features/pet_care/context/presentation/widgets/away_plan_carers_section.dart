@@ -130,7 +130,7 @@ class _CarerRow extends ConsumerWidget {
           child: Semantics(
             identifier: 'away_plan_carer_pet_header_$petId',
             button: true,
-            label: l.petDetails,
+            label: l.petDetailsFor(petName),
             child: Material(
               color: Colors.transparent,
               child: InkWell(

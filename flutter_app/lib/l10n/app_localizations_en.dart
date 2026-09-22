@@ -444,6 +444,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petDetails => 'Pet Details';
 
   @override
+  String petDetailsFor(String petName) {
+    return 'View pet details for $petName';
+  }
+
+  @override
   String get petNotFound => 'Pet not found';
 
   @override

@@ -896,6 +896,12 @@ abstract class AppLocalizations {
   /// **'Pet Details'**
   String get petDetails;
 
+  /// No description provided for @petDetailsFor.
+  ///
+  /// In en, this message translates to:
+  /// **'View pet details for {petName}'**
+  String petDetailsFor(String petName);
+
   /// No description provided for @petNotFound.
   ///
   /// In en, this message translates to:

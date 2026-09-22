@@ -4,7 +4,7 @@
   "approved_at": "2026-09-22T13:12:45Z",
   "approved_by": "User chat 2026-09-22 - two review rounds, no further blocking findings; proceed through merge and e2e-preUAT verification",
   "approved_until": "2026-09-24T13:12:45Z",
-  "content_hash": "sha256:0c1bfbd6edae21ea44735211ef2d53dd87321708711203b1d2b44c086609c6bb",
+  "content_hash": "sha256:309e61558de93edbee0c81af6d6718212debd46de2086ca9496caa27dfcb4db0",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/away-plan-detail-v2-integration-d4c1",
@@ -13,7 +13,7 @@
   "phases": [
     {
       "id": "awd-doc-0",
-      "title": "AWD-DOC-0 — Plan bootstrap",
+      "title": "AWD-DOC-0 \u2014 Plan bootstrap",
       "branch": "cursor/away-plan-detail-v2-doc0-d4c1",
       "allowed_paths": [
         "docs/domains/pet_care/**",
@@ -38,11 +38,12 @@
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1271",
-      "pr_head_sha": "299cb0ba"
+      "pr_head_sha": "299cb0ba",
+      "merge_commit": "3f15a00e503c628249143891c13bd7f14bee24a9"
     },
     {
       "id": "awd-1",
-      "title": "AWD-1 — Attention-only coverage summary",
+      "title": "AWD-1 \u2014 Attention-only coverage summary",
       "branch": "cursor/away-plan-detail-v2-awd1-d4c1",
       "allowed_paths": [
         "flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_header_section.dart",
@@ -66,11 +67,12 @@
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1274",
-      "pr_head_sha": "d8e526f5"
+      "pr_head_sha": "d8e526f5",
+      "merge_commit": "848da9bd32609748e541316d06a430b4bf5d913a"
     },
     {
       "id": "awd-2",
-      "title": "AWD-2 — Unified care-event contract (backend)",
+      "title": "AWD-2 \u2014 Unified care-event contract (backend)",
       "branch": "cursor/away-plan-detail-v2-awd2-d4c1",
       "allowed_paths": [
         "server/lib/recurrenceHelper.js",
@@ -100,11 +102,12 @@
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1273",
-      "pr_head_sha": "2c4ab2bf"
+      "pr_head_sha": "2c4ab2bf",
+      "merge_commit": "82cadba13b2c7bb55a1759df56c3ab8c2f3f2f23"
     },
     {
       "id": "awd-3",
-      "title": "AWD-3 — Unified Planned care list (Flutter)",
+      "title": "AWD-3 \u2014 Unified Planned care list (Flutter)",
       "branch": "cursor/away-plan-detail-v2-awd3-d4c1",
       "allowed_paths": [
         "flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_pet_care_section.dart",
@@ -137,11 +140,12 @@
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1278",
-      "pr_head_sha": "b5a8c4cd"
+      "pr_head_sha": "b5a8c4cd",
+      "merge_commit": "35154ecaa8e18336b05974c8e9c48b9cff952ad8"
     },
     {
       "id": "awd-4",
-      "title": "AWD-4 — Display/edit screen split",
+      "title": "AWD-4 \u2014 Display/edit screen split",
       "branch": "cursor/away-plan-detail-v2-awd4-d4c1",
       "allowed_paths": [
         "flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_screen.dart",
@@ -173,11 +177,12 @@
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1275",
-      "pr_head_sha": "058677b7"
+      "pr_head_sha": "058677b7",
+      "merge_commit": "e0c51f73fe5b68dbc3a2622d7e71ef959f64e250"
     },
     {
       "id": "awd-5",
-      "title": "AWD-5 — Docs + journey",
+      "title": "AWD-5 \u2014 Docs + journey",
       "branch": "cursor/away-plan-detail-v2-awd5-d4c1",
       "allowed_paths": [
         "docs/domains/pet_care/**",
@@ -202,7 +207,8 @@
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1279",
-      "pr_head_sha": "d9f4124a"
+      "pr_head_sha": "d9f4124a",
+      "merge_commit": "fddf07ea320c6137e1efa59d4fcabf807aa1dd63"
     }
   ]
 }
