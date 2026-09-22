@@ -29,18 +29,18 @@ Standing grant: user chat 2026-09-22 — agreed D1–D7 decisions; `/execute-pla
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: 4
-last_completed_phase: 3
+autonomy: completed
+current_phase: null
+last_completed_phase: 4
 halt_reason: null
-next_action: "continue phase 4 on branch cursor/active-codebase-a3-boundary-checker-cbb8"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/active-codebase-a3-boundary-checker-cbb8
+  branch: main
   plan_path: .agents/plans/active-codebase-batch-a-cbb8.md
-  plan_commit: 2809bdcebd052de137a91989a8d0d233ef600627
+  plan_commit: 2b2f690f07f65f2ea469a784c15128d9bb70b3a0
   snapshot_path: .agents/plans/active-codebase-batch-a-cbb8.snapshot.json
-  snapshot_commit: 2809bdcebd052de137a91989a8d0d233ef600627
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1284"]
+  snapshot_commit: 2b2f690f07f65f2ea469a784c15128d9bb70b3a0
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
