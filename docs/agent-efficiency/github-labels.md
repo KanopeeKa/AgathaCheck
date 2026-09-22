@@ -56,6 +56,7 @@ Remove revoke label; comment `resume-plan <plan_id>`.
 | Label | Purpose |
 |-------|---------|
 | `do-not-merge` | Babysit+ and execute-plan skip merge |
+| `merge-lease` | Mutex — one PR holds the merge slot while babysit+ runs §7 merge coordination ([autonomous-pr-policy.md](./autonomous-pr-policy.md) §Merge coordination). Create in repo settings if missing. |
 | `snag` | Optional — trivial follow-up micro-PR (see [atomic-pr-policy.md](./atomic-pr-policy.md)) |
 
 ---
