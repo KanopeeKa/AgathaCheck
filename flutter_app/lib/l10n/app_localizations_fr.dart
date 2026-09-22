@@ -6499,6 +6499,34 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible d\'enregistrer le soignant. Réessayez.';
 
   @override
+  String awayPlanningCarerEditPetNoteLabel(String petName) {
+    return 'Notes pour $petName';
+  }
+
+  @override
+  String awayPlanningPetCarerCoverageAssigned(String petName) {
+    return '$petName a un soignant assigné.';
+  }
+
+  @override
+  String awayPlanningPetCarerCoverageUnassigned(String petName) {
+    return 'Aucun soignant assigné pour $petName.';
+  }
+
+  @override
+  String awayPlanningPetCarerCoverageRemoved(String petName) {
+    return 'Soignant retiré pour $petName.';
+  }
+
+  @override
+  String get awayPlanningHandoverTripNotesTitle => 'Notes du séjour';
+
+  @override
+  String awayPlanningDownloadPetPlan(String petName) {
+    return 'Télécharger le plan de $petName';
+  }
+
+  @override
   String get awayPlanningRoutineAllDay => 'Toute la journée';
 
   @override

@@ -119,6 +119,7 @@ describe('planned absence carers', () => {
       carer_name: 'Sarah M.',
       carer_note: null,
       carer_removed: false,
+      pet_note: null,
     }]);
   });
 
@@ -222,6 +223,287 @@ describe('planned absence carers', () => {
       });
 
     expect(res.statusCode).toBe(403);
+  });
+
+  it('PATCH with pet_note only updates pet_note and leaves carer untouched', async () => {
+    let noteUpdated = false;
+    let carerColumnsTouched = false;
+    const app = createTransactionalTestApp(async (sql, params) => {
+      if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
+        return { rows: [absenceRow()] };
+      }
+      if (sql.includes('SELECT pet_id, carer_kind')) {
+        return {
+          rows: [{
+            pet_id: petId,
+            carer_kind: 'shared_user',
+            carer_user_id: carerUserId,
+            carer_name: null,
+            carer_note: null,
+            pet_note: noteUpdated ? 'Feeds twice daily' : null,
+          }],
+        };
+      }
+      if (sql.includes('UPDATE planned_absence_pets')) {
+        if (sql.includes('carer_kind')) carerColumnsTouched = true;
+        expect(sql).toMatch(/SET pet_note = \$1/);
+        expect(params[0]).toBe('Feeds twice daily');
+        noteUpdated = true;
+        return { rows: [] };
+      }
+      if (sql.includes('UPDATE planned_absences') && sql.includes('updated_at = NOW()')) {
+        return { rows: [absenceRow()] };
+      }
+      if (sql.includes('DELETE FROM planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('INSERT INTO planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM planned_absences pa')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM users') && sql.includes('id = ANY')) {
+        return { rows: [] };
+      }
+      return { rows: [] };
+    });
+
+    const res = await request(app)
+      .patch(`/api/planned-absences/${absenceId}`)
+      .set(authHeader())
+      .send({
+        pet_carers: [{ pet_id: petId, pet_note: 'Feeds twice daily' }],
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(carerColumnsTouched).toBe(false);
+    expect(res.body.absence.pet_carers[0]).toMatchObject({
+      carer_kind: 'shared_user',
+      carer_user_id: carerUserId,
+      pet_note: 'Feeds twice daily',
+    });
+  });
+
+  it('PATCH with carer_kind only updates carer and leaves pet_note untouched', async () => {
+    let carerUpdated = false;
+    let petNoteColumnTouched = false;
+    const app = createTransactionalTestApp(async (sql, params) => {
+      if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
+        return { rows: [absenceRow()] };
+      }
+      if (sql.includes('SELECT pet_id, carer_kind')) {
+        return {
+          rows: [{
+            pet_id: petId,
+            carer_kind: carerUpdated ? 'shared_user' : null,
+            carer_user_id: carerUpdated ? carerUserId : null,
+            carer_name: null,
+            carer_note: null,
+            pet_note: 'Feeds twice daily',
+          }],
+        };
+      }
+      if (sql.includes('SELECT 1 FROM pet_access') && sql.includes('role IN')) {
+        return { rows: [{ '?column?': 1 }] };
+      }
+      if (sql.includes('UPDATE planned_absence_pets')) {
+        if (sql.includes('pet_note')) petNoteColumnTouched = true;
+        expect(params[0]).toBe('shared_user');
+        expect(params[1]).toBe(carerUserId);
+        carerUpdated = true;
+        return { rows: [] };
+      }
+      if (sql.includes('UPDATE planned_absences') && sql.includes('updated_at = NOW()')) {
+        return { rows: [absenceRow()] };
+      }
+      if (sql.includes('DELETE FROM planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('INSERT INTO planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM planned_absences pa')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM users') && sql.includes('id = ANY')) {
+        return { rows: [{ id: carerUserId, first_name: 'Sarah', last_name: 'Miller' }] };
+      }
+      return { rows: [] };
+    });
+
+    const res = await request(app)
+      .patch(`/api/planned-absences/${absenceId}`)
+      .set(authHeader())
+      .send({
+        pet_carers: [{ pet_id: petId, carer_kind: 'shared_user', carer_user_id: carerUserId }],
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(petNoteColumnTouched).toBe(false);
+    expect(res.body.absence.pet_carers[0]).toMatchObject({
+      carer_kind: 'shared_user',
+      pet_note: 'Feeds twice daily',
+    });
+  });
+
+  it('PATCH clearing carer_kind preserves pet_note', async () => {
+    let cleared = false;
+    let petNoteColumnTouched = false;
+    const app = createTransactionalTestApp(async (sql, params) => {
+      if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
+        return { rows: [absenceRow()] };
+      }
+      if (sql.includes('SELECT pet_id, carer_kind')) {
+        return {
+          rows: [{
+            pet_id: petId,
+            carer_kind: cleared ? null : 'shared_user',
+            carer_user_id: cleared ? null : carerUserId,
+            carer_name: null,
+            carer_note: null,
+            pet_note: 'Feeds twice daily',
+          }],
+        };
+      }
+      if (sql.includes('UPDATE planned_absence_pets')) {
+        if (sql.includes('pet_note')) petNoteColumnTouched = true;
+        expect(params[0]).toBeNull();
+        cleared = true;
+        return { rows: [] };
+      }
+      if (sql.includes('UPDATE planned_absences') && sql.includes('updated_at = NOW()')) {
+        return { rows: [absenceRow()] };
+      }
+      if (sql.includes('DELETE FROM planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('INSERT INTO planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM planned_absences pa')) {
+        return { rows: [] };
+      }
+      return { rows: [] };
+    });
+
+    const res = await request(app)
+      .patch(`/api/planned-absences/${absenceId}`)
+      .set(authHeader())
+      .send({
+        pet_carers: [{ pet_id: petId, carer_kind: null }],
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(petNoteColumnTouched).toBe(false);
+    expect(res.body.absence.pet_carers[0]).toMatchObject({
+      carer_kind: null,
+      pet_note: 'Feeds twice daily',
+    });
+  });
+
+  it('PATCH pet_note: null clears the note without touching carer', async () => {
+    let noteCleared = false;
+    let carerColumnsTouched = false;
+    const app = createTransactionalTestApp(async (sql, params) => {
+      if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
+        return { rows: [absenceRow()] };
+      }
+      if (sql.includes('SELECT pet_id, carer_kind')) {
+        return {
+          rows: [{
+            pet_id: petId,
+            carer_kind: 'shared_user',
+            carer_user_id: carerUserId,
+            carer_name: null,
+            carer_note: null,
+            pet_note: noteCleared ? null : 'Feeds twice daily',
+          }],
+        };
+      }
+      if (sql.includes('UPDATE planned_absence_pets')) {
+        if (sql.includes('carer_kind')) carerColumnsTouched = true;
+        expect(params[0]).toBeNull();
+        noteCleared = true;
+        return { rows: [] };
+      }
+      if (sql.includes('UPDATE planned_absences') && sql.includes('updated_at = NOW()')) {
+        return { rows: [absenceRow()] };
+      }
+      if (sql.includes('DELETE FROM planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('INSERT INTO planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM planned_absences pa')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM users') && sql.includes('id = ANY')) {
+        return { rows: [{ id: carerUserId, first_name: 'Sarah', last_name: 'Miller' }] };
+      }
+      return { rows: [] };
+    });
+
+    const res = await request(app)
+      .patch(`/api/planned-absences/${absenceId}`)
+      .set(authHeader())
+      .send({
+        pet_carers: [{ pet_id: petId, pet_note: null }],
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(carerColumnsTouched).toBe(false);
+    expect(res.body.absence.pet_carers[0]).toMatchObject({
+      carer_kind: 'shared_user',
+      pet_note: null,
+    });
+  });
+
+  it('PATCH pet_note is stored and returned verbatim (D-AWAY-008)', async () => {
+    const verbatimNote = 'Feeds twice daily — **not parsed**\nline 2';
+    const app = createTransactionalTestApp(async (sql, params) => {
+      if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
+        return { rows: [absenceRow()] };
+      }
+      if (sql.includes('SELECT pet_id, carer_kind')) {
+        return {
+          rows: [{
+            pet_id: petId,
+            carer_kind: null,
+            carer_user_id: null,
+            carer_name: null,
+            carer_note: null,
+            pet_note: verbatimNote,
+          }],
+        };
+      }
+      if (sql.includes('UPDATE planned_absence_pets')) {
+        expect(params[0]).toBe(verbatimNote);
+        return { rows: [] };
+      }
+      if (sql.includes('UPDATE planned_absences') && sql.includes('updated_at = NOW()')) {
+        return { rows: [absenceRow()] };
+      }
+      if (sql.includes('DELETE FROM planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('INSERT INTO planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM planned_absences pa')) {
+        return { rows: [] };
+      }
+      return { rows: [] };
+    });
+
+    const res = await request(app)
+      .patch(`/api/planned-absences/${absenceId}`)
+      .set(authHeader())
+      .send({ pet_carers: [{ pet_id: petId, pet_note: verbatimNote }] });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.absence.pet_carers[0].pet_note).toBe(verbatimNote);
   });
 
   it('GET absence marks shared_user with null user_id as carer_removed', async () => {

@@ -686,6 +686,7 @@ CREATE TABLE public.planned_absence_pets (
     carer_user_id uuid,
     carer_name text,
     carer_note text,
+    pet_note text,
     CONSTRAINT planned_absence_pets_carer_fields_check CHECK ((((carer_kind IS NULL) AND (carer_user_id IS NULL) AND (carer_name IS NULL) AND (carer_note IS NULL)) OR ((carer_kind = 'shared_user'::text) AND (carer_name IS NULL) AND (carer_note IS NULL)) OR ((carer_kind = 'note_only'::text) AND (carer_user_id IS NULL) AND (carer_name IS NOT NULL)))),
     CONSTRAINT planned_absence_pets_carer_kind_check CHECK (((carer_kind IS NULL) OR (carer_kind = ANY (ARRAY['shared_user'::text, 'note_only'::text]))))
 );
