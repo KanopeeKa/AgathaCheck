@@ -71,6 +71,25 @@ void main() {
       expect(find.byType(CareFamilyCustomGlyph), findsNWidgets(2));
     });
 
+    testWidgets('chipSize fixes chip dimensions and scales glyph', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: CareFamilyIcon(
+              family: CareFamily.medication,
+              chipSize: 32,
+            ),
+          ),
+        ),
+      );
+
+      final icon = tester.widget<Icon>(find.byIcon(Icons.medication_outlined));
+      expect(icon.size, 22);
+      expect(tester.getSize(find.byType(CareFamilyIcon)), const Size(32, 32));
+    });
+
     testWidgets('forEntry infers family from health entry type', (
       tester,
     ) async {

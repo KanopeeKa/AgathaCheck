@@ -10,6 +10,7 @@ import 'package:pet_profile_app/features/health_tracking/domain/occurrence_sched
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row_context.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_family_icon.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_photo_placeholder.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -121,6 +122,24 @@ void main() {
 
       expect(find.text('Snooze'), findsNothing);
       expect(find.text('Open'), findsNothing);
+    });
+
+    testWidgets('care-family chip matches mark-done control size', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_buildRow(_overdueEntry));
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.getSize(find.byType(CareFamilyIcon)),
+        const Size(32, 32),
+      );
+      expect(
+        tester
+            .widget<Icon>(find.byIcon(Icons.sentiment_satisfied_outlined))
+            .size,
+        22,
+      );
     });
 
     testWidgets('mark-done button has >= 48dp touch target', (tester) async {

@@ -46,6 +46,9 @@ class CareEventRow extends StatelessWidget {
 
   static const _kMinTouchTarget = 48.0;
 
+  /// Visual square shared by the care-family chip and mark-done control.
+  static const _kActionControlSize = 32.0;
+
   @override
   Widget build(BuildContext context) {
     if (isCompleted) {
@@ -94,7 +97,10 @@ class CareEventRow extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CareFamilyIcon.forEntry(entry, size: 20),
+            CareFamilyIcon.forEntry(
+              entry,
+              chipSize: _kActionControlSize,
+            ),
             if (rowContext == CareEventRowContext.pet) ...[
               const SizedBox(width: 8),
               CareEventRowPetAvatar(pet: pet, petName: entry.petName),
@@ -205,8 +211,8 @@ class _MarkDoneButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           child: Center(
             child: Container(
-              width: 32,
-              height: 32,
+              width: CareEventRow._kActionControlSize,
+              height: CareEventRow._kActionControlSize,
               decoration: BoxDecoration(
                 color: onTap == null
                     ? AppColorTokens.guardianCareLight.withValues(alpha: 0.5)
@@ -279,7 +285,10 @@ class _CompletedCareEventRow extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CareFamilyIcon.forEntry(entry, size: 20),
+            CareFamilyIcon.forEntry(
+              entry,
+              chipSize: CareEventRow._kActionControlSize,
+            ),
             if (rowContext == CareEventRowContext.pet) ...[
               const SizedBox(width: 8),
               CareEventRowPetAvatar(pet: pet, petName: entry.petName),
