@@ -3,6 +3,9 @@
 *.pyc
 *.swp
 .DS_Store
+
+# Claude Code local session/agent-worktree scratch state (never repo content)
+.claude/
 .atom/
 .build/
 .buildlog/
