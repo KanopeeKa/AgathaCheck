@@ -14,6 +14,14 @@ on:
         description: Run e2e package npm audit
         type: boolean
         default: true
+      run_backend_integration:
+        description: Run backend integration tests on ephemeral PostgreSQL
+        type: boolean
+        default: true
+      run_lint:
+        description: Run ESLint ratchet on Pet Care policy modules
+        type: boolean
+        default: true
 
 env:
   NODE_VERSION: '22'
@@ -156,6 +164,105 @@ jobs:
           bash scripts/ci/append-summary.sh "CI E2E audit job" \
             "workflow=reusable-test" \
             "job=e2e-audit" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"
+
+  backend-integration:
+    name: Backend integration (PostgreSQL)
+    if: inputs.run_backend_integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: agatha_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U user -d agatha_db"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - name: Install backend dependencies
+        working-directory: server
+        run: npm ci
+      - name: Bootstrap database schema
+        env:
+          PGUSER: user
+          PGPASSWORD: password
+          PGHOST: localhost
+          PGPORT: 5432
+          PGDATABASE: agatha_db
+        run: |
+          chmod +x e2e/scripts/bootstrap-db.sh
+          ./e2e/scripts/bootstrap-db.sh
+      - name: Run integration tests (db/seeds suite)
+        env:
+          PGUSER: user
+          PGPASSWORD: password
+          PGHOST: localhost
+          PGPORT: 5432
+          PGDATABASE: agatha_db
+        working-directory: server
+        run: npx jest -c jest.config.active.cjs --env=node --runInBand --forceExit test/db
+      - name: Write integration job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "CI backend integration job" \
+            "workflow=reusable-test" \
+            "job=backend-integration" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"
+
+  lint:
+    name: ESLint (Pet Care policy ratchet)
+    if: inputs.run_lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - name: Install backend dependencies
+        working-directory: server
+        run: npm ci
+      - name: ESLint ratchet on policy modules (F-20)
+        run: node scripts/validate_eslint.js
+      - name: Ratchet assertion tests
+        run: node --test scripts/validate_eslint.test.js
+      - name: Write lint job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "CI lint job" \
+            "workflow=reusable-test" \
+            "job=lint" \
             "sha=${{ github.sha }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"

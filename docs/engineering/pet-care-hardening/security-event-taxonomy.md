@@ -198,7 +198,7 @@ When investigating an alert:
 | Share link create/revoke not in audit table | F-03/F-04 | Future audit hooks on `sharing.js` |
 | Static `/uploads` access not request-logged | F-01/F-16 | WAF or middleware extension |
 | No automated alert rules in repo | — | Ops/SIEM configuration outside codebase |
-| ESLint/CI observability jobs | F-17/F-20 | Debt issue #1025 |
+| ESLint/CI observability jobs | F-17/F-20 | Wired in CI: `test-suite / Backend integration (PostgreSQL)` + `test-suite / ESLint (Pet Care policy ratchet)` (#1025) |
 
 ---
 
