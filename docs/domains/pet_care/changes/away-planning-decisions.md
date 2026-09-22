@@ -46,7 +46,7 @@ Surface **two independent facts**, using existing vocabulary only:
 
 **Presentation (no cross-axis ranking):**
 
-- **Plan page and hub** — room for both facts; show both with no ranking.
+- **Plan page and hub** — room for both facts; show both with no ranking. **Amended 2026-09-22 by [D-AWD-001](/docs/domains/pet_care/changes/away-plan-detail-v2-decisions.md#d-awd-001--plan-page-readiness-becomes-attention-only-supersedes-part-of-d-away-002):** on the **plan page's `AwayPlanHeaderSection` only**, each line now renders only when it's actionable (not all carers assigned / items to review or indeterminate). Not touched: the handover PDF (unconditional, both lines), and the hub's list entries (`planned_absence_entry_tile.dart`), which as shipped already resolve through `AwayPlanningTileCopy` — the same fixed-priority mechanism as the dashboard tile below, not a "both facts" treatment. That's a pre-existing V1 implementation detail this amendment doesn't change or attempt to reconcile.
 - **Dashboard tile** — space-constrained; use a **fixed actionability priority**, not a strength comparison across axes:
   1. If any pet lacks a carer → surface that (only fact the guardian alone can resolve; concerns people).
   2. Else → surface the coverage sentence for the current `coverage_state`.
@@ -108,9 +108,11 @@ No email, photo, bio, or category. Exposes collaborator user ids only for pets t
 
 ## D-AWAY-006 — Collapsed routine rows inherit least-certain constituent (2026-09-15)
 
-**Status:** Frozen
+**Status:** Frozen (grouping key superseded — certainty rule unchanged)
 
 When N daily occurrences collapse to one routine row, certainty = **minimum** among constituents. Any `conditional_on_future_completion` → collapsed row shows `~` and expected copy. Implemented **server-side** beside the projector; plan page and PDF render only.
+
+**Amended 2026-09-22 by [D-AWD-002](/docs/domains/pet_care/changes/away-plan-detail-v2-decisions.md#d-awd-002--care-events-are-grouped-by-health-entry-not-by-time-slot-across-all-frequencies-supersedes-d-away-006s-grouping-key):** the grouping key changes from `health_entry_id + scheduled_time` (daily-only) to `health_entry_id` alone, extended to every repeating frequency. The **least-certain-wins** rule on this page stays exactly as written — it now applies to the wider grouping, not to a new one.
 
 ---
 
@@ -119,6 +121,8 @@ When N daily occurrences collapse to one routine row, certainty = **minimum** am
 **Status:** Frozen
 
 `projectEntryForPeriod` may return **no items** for `from_completion` entries with pending occurrences while recording `uncertainties[]`. Plan page and PDF must render enriched uncertainties as **named rows**, not omit care silently. Requires AW-3 enrichment (`name`, `type`, `care_family` on each uncertainty).
+
+**Extended 2026-09-22 by [D-AWD-003](/docs/domains/pet_care/changes/away-plan-detail-v2-decisions.md#d-awd-003--completion-chain-indeterminate-items-get-an-interval-description-not-just-a-reason-code-extends-d-away-007):** named rows now also carry a recurrence interval when the underlying entry has one (`recurring_chain` kind, D-AWD-002), instead of only a reason code. Still not omitted silently; still enriched with `name`/`type`/`care_family`.
 
 ---
 

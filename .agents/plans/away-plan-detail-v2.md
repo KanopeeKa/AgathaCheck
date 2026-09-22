@@ -34,6 +34,10 @@ Redesign the Away Plan detail screen from Away Planning V1: one unified, tappabl
 
 **Blocking on approval:** D-AWD-001–007 in the decisions doc must move from Proposed to Frozen first — AWD-DOC-0's own exit criteria is that review.
 
+**Hard gate (added post-review):** `approve-autonomous away-plan-detail-v2` must not be granted while `approved_by` still reads "TBD" or `control_issue` in the snapshot is still its placeholder value (`999999999` — see snapshot; deliberately out of range so it can't be mistaken for a real GitHub issue). AWD-DOC-0's own exit criteria already requires the validator to pass with real values, so this is a restatement, not a new mechanism — called out explicitly per review round 1 so a fast-moving agent doesn't treat the placeholder-passing validator run as a green light.
+
+**Branch suffix note:** `-d4c1` throughout is this draft's placeholder suffix. No fixed/reserved suffix is documented in this repo (`atomic-pr-policy.md`: "or your agent suffix") — the agent that actually executes this plan uses its own, same as every other plan in `.agents/plans/`. Re-point branch names at execution time if a different agent picks this up; the phase structure and file ownership don't depend on the exact suffix.
+
 ## Phases
 
 **AWD-1, AWD-2, AWD-4 parallel after AWD-DOC-0. AWD-3 waits on AWD-2 (needs the new wire contract). AWD-5 last.**
@@ -60,7 +64,9 @@ Redesign the Away Plan detail screen from Away Planning V1: one unified, tappabl
 |-------|-------|
 | **branch** | `cursor/away-plan-detail-v2-awd1-d4c1` |
 
-**allowed_paths:** `flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_header_section.dart`, `flutter_app/lib/features/pet_care/context/presentation/away_plan_copy.dart`, `flutter_app/lib/l10n/**`, `flutter_app/test/features/pet_care/context/**`
+**allowed_paths:** `flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_header_section.dart`, `flutter_app/test/features/pet_care/context/**`
+
+*(Revised per review round 1: `away_plan_copy.dart` and `flutter_app/lib/l10n/**` dropped — this phase wraps existing `Text` calls in a conditional, no copy-function or ARB change.)*
 
 **Exit criteria:**
 
@@ -80,12 +86,17 @@ Redesign the Away Plan detail screen from Away Planning V1: one unified, tappabl
 
 **Exit criteria:**
 
+- [ ] Response exposes a single `planned_care_items[]` array per pet; `routine_items`/`dated_items`/`uncertainties` removed (no compat shim — not in production)
+- [ ] Each item has `kind` (`recurring_calendar`/`recurring_chain`/`single_once`/`indeterminate_pending`), derived from `recurrence_anchor` + materialisation state — no separate `anchor_kind` field
 - [ ] Grouping key is `health_entry_id` only, across all repeating frequencies; `once` stays ungrouped
-- [ ] `times_of_day[]`, `frequency`, `frequency_interval`, `next_due_date`, `anchor_kind` present on the wire
-- [ ] `next_due_date` is `null` whenever `times_of_day.length > 1`
+- [ ] `times_of_day[]`, `frequency`, `frequency_interval`, `next_due_date` present on the wire
+- [ ] `next_due_date` is non-null only for `kind: recurring_calendar` with `times_of_day.length <= 1`
+- [ ] One row per `health_entry_id` — a `from_completion` entry with both materialised and pending occurrences in-window yields exactly one `recurring_chain` row, never two
+- [ ] Response is server-sorted: `kind` bucket order then `name`; Flutter must not need to re-sort
 - [ ] Certainty collapse rule (least-certain-wins) unchanged for grouped rows
+- [ ] Explicit test cases pass: twice-daily → 1 row/2 times/`next_due_date: null`; weekly ×2 occurrences → 1 row; 3× `once` entries → 3 rows; `from_completion` mixed materialised/pending → 1 row
 - [ ] CSM projection corpus byte-identical
-- [ ] `api-reference.md` documents new/changed fields
+- [ ] `api-reference.md` documents the response shape as a breaking change (old fields removed, not deprecated)
 
 ### Phase awd-3 — Unified "Planned care" list (Flutter)
 
@@ -93,15 +104,20 @@ Redesign the Away Plan detail screen from Away Planning V1: one unified, tappabl
 |-------|-------|
 | **branch** | `cursor/away-plan-detail-v2-awd3-d4c1` |
 
-**allowed_paths:** `flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_pet_care_section.dart`, `flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_carers_section.dart`, `flutter_app/lib/features/pet_care/context/presentation/away_plan_schedule_copy.dart`, `flutter_app/lib/features/pet_care/context/presentation/away_plan_copy.dart`, `flutter_app/lib/features/pet_care/context/domain/entities/care_period_coverage.dart`, `flutter_app/lib/features/pet_care/context/data/models/**`, `flutter_app/lib/features/pet_care/context/data/datasources/care_context_remote_datasource.dart`, `flutter_app/lib/features/pet_care/context/presentation/controllers/away_plan_handover_controller.dart`, `flutter_app/lib/features/pet_care/context/data/services/away_plan_handover_service.dart`, `flutter_app/lib/l10n/**`, `flutter_app/test/features/pet_care/context/**`
+**allowed_paths:** `flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_pet_care_section.dart`, `flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_carers_section.dart`, `flutter_app/lib/features/pet_care/context/presentation/away_plan_schedule_copy.dart`, `flutter_app/lib/features/pet_profile/presentation/widgets/care_family_icon.dart`, `flutter_app/lib/features/pet_care/context/domain/entities/care_period_coverage.dart`, `flutter_app/lib/features/pet_care/context/data/models/**`, `flutter_app/lib/features/pet_care/context/data/datasources/care_context_remote_datasource.dart`, `flutter_app/lib/features/pet_care/context/presentation/controllers/away_plan_handover_controller.dart`, `flutter_app/lib/features/pet_care/context/data/services/away_plan_handover_service.dart`, `flutter_app/lib/l10n/**`, `flutter_app/test/features/pet_care/context/**`
+
+*(Revised per review round 1: `away_plan_copy.dart` dropped — schedule copy lives in `away_plan_schedule_copy.dart`, this phase doesn't touch carer/care coverage summary functions. Added `care_family_icon.dart` for the new `CareFamilyIcon.forWire` constructor.)*
 
 **Exit criteria:**
 
-- [ ] Single "Planned care" heading and list per pet; `CareFamilyIcon` per row
-- [ ] Row template matches D-AWD-004 for all four branches (calendar-recurring, chain-recurring, single-care, indeterminate-fallback)
+- [ ] Single "Planned care" heading and list per pet, rendered in server-sent order (no client sort/merge)
+- [ ] `CareFamilyIcon.forWire(type:, careFamily:)` per row — not `.materialIconFor(...)` directly (must preserve custom-glyph handling `.forEntry` gets elsewhere)
+- [ ] Row template matches D-AWD-004 for all four `kind` values (`recurring_calendar`, `recurring_chain`, `single_once`, `indeterminate_pending`)
+- [ ] Chain-anchor explainer line renders once per pet section when any item is `recurring_chain`/`indeterminate_pending`, never per row
 - [ ] Row tap → `petEventView` route with correct `petId`/`entryId`
 - [ ] Pet header photo + tap → `petDetail` route, both per-pet sections
-- [ ] PDF handover lines match the same unified data (no drift between screen and PDF)
+- [ ] PDF handover lines match the same unified data (no drift between screen and PDF) — PDF delta called out explicitly in PR description
+- [ ] Carer-perspective test: a pending `single_once`/`recurring_calendar` item's due date is readable from the row alone, without opening detail
 - [ ] Touch targets ≥48×48; semantic labels on new tappable rows
 - [ ] `flutter analyze` clean; widget/golden test matrix green
 
@@ -120,7 +136,7 @@ Redesign the Away Plan detail screen from Away Planning V1: one unified, tappabl
 - [ ] Display screen: no Save button, no editable note field, note shown read-only when present, Edit icon in app bar (disabled when cancelled)
 - [ ] Edit screen at `/pc/away/:id/edit`: `AppFormStickyActionsBar` (phone) / inline actions (tablet), `AppFormDestructiveButton` + confirm dialog for delete, `PopScope` discard guard
 - [ ] `cancelPlannedAbsence` wired to existing `POST /:id/cancel`, no new backend endpoint
-- [ ] Delete confirms → cancels → navigates to `/pc/away`
+- [ ] Delete confirms → cancels → navigates to `/pc/away`, and the hub's absence list provider is invalidated so the cancelled absence no longer shows as active there
 - [ ] Carer-edit dialog and dates/pets editing untouched (diff check)
 
 ### Phase awd-5 — Docs + journey
@@ -135,7 +151,7 @@ Redesign the Away Plan detail screen from Away Planning V1: one unified, tappabl
 
 - [ ] `care-context.md` reflects unified event model + edit screen
 - [ ] Decisions doc statuses flipped Proposed → Frozen
-- [ ] BDD scenario(s) + matching Playwright spec(s) with `@bdd` header, exact title match
+- [ ] Three separate BDD scenarios (not bundled): attention-only header, unified list + tap-through, edit screen save/delete — each with matching Playwright spec, `@bdd` header, exact title match
 - [ ] `node e2e/scripts/check_bdd_coverage.js` run (report-only, no regression)
 
 ## Runtime state

@@ -15,6 +15,8 @@ tags: [pet_care, care_context, away_planning, delivery]
 
 **Status: proposed** — decisions not yet reviewed/frozen. Do not run `/execute-plan away-plan-detail-v2` until D-AWD-001–007 are confirmed and a control issue exists (see execute-plan §Before autonomy grant).
 
+**Reviewed 2026-09-22 (round 1):** contract-edge gaps in the unified list (wire shape, sort/dedupe, `anchor_kind`), draft copy, an icon-helper fix, an allowed-path overlap, and snapshot placeholder hygiene were resolved in the decisions doc and reflected below and in the execute-plan files. See the decisions doc's "Reviewed 2026-09-22" banner for the full list.
+
 ## Programme goal
 
 Redesign the Away Plan detail screen shipped in Away Planning V1: replace the Routine/Dated/Indeterminate three-way split with one unified, tappable "Planned care" list; make the carer/care coverage summary attention-only; split the screen into a read-only display view and a new edit screen (notes + delete) that follows the app's standard edit-screen convention; add pet photos with tap-through. Scheduling semantics (Care Schedule Management) are untouched — this is a read-side regrouping plus a UI/UX pass, same boundary V1 held.
@@ -39,7 +41,7 @@ Integration branch (4 phases run in parallel after AWD-DOC-0): `cursor/away-plan
 |---|---|---|
 | **AWD-DOC-0** | Decisions reviewed/frozen; this delivery plan; execute-plan files | — |
 | **AWD-1** | Plan-page carer/care coverage summary becomes attention-only (D-AWD-001) | AWD-DOC-0 |
-| **AWD-2** | Backend: unified care-event grouping by `health_entry_id` across all frequencies; `times_of_day[]`, `frequency`/`frequency_interval`, `next_due_date`, `anchor_kind` on the wire (D-AWD-002, D-AWD-003) | AWD-DOC-0 |
+| **AWD-2** | Backend: single `planned_care_items[]` array (replaces `routine_items`/`dated_items`/`uncertainties`) grouped by `health_entry_id` across all frequencies; `kind` discriminant, `times_of_day[]`, `frequency`/`frequency_interval`, `next_due_date` on the wire, server-side sorted (D-AWD-002, D-AWD-003) | AWD-DOC-0 |
 | **AWD-3** | Flutter: single "Planned care" list rendering the new contract; `CareFamilyIcon` per row; tap-through to Care Item Detail; pet photo + tap-through on both per-pet sections; PDF handover lines updated to match (shared copy layer) (D-AWD-004, D-AWD-005, D-AWD-006) | AWD-2 |
 | **AWD-4** | Display screen read-only; new edit screen (notes + delete) using `AppFormStickyActionsBar` / `AppFormDestructiveButton`; `cancelPlannedAbsence` repository method wired to existing `POST /:id/cancel` (D-AWD-007) | AWD-DOC-0 |
 | **AWD-5** | `care-context.md` updated; BDD scenario(s) for edit/delete + unified list; Playwright spec; api-reference.md updated for the new coverage/projection response fields | AWD-1, AWD-2, AWD-3, AWD-4 |
@@ -51,13 +53,17 @@ AWD-DOC-0
    └── AWD-4 ─────────────────────────┘
 ```
 
-**File ownership (parallel AWD-1 / AWD-2 / AWD-4):** AWD-1 touches only `away_plan_header_section.dart` + `away_plan_copy.dart`; AWD-2 is backend-only (`server/**`); AWD-4 touches the plan screen + a new edit screen + note-section split, not the pet-care-section files AWD-3 will later touch. AWD-3 starts only after AWD-2 merges to the integration branch, to avoid rebasing a wire-contract change mid-flight.
+**File ownership (parallel AWD-1 / AWD-2 / AWD-4):** AWD-1 touches only `away_plan_header_section.dart` — it wraps existing `Text` calls in a conditional on already-existing `readiness` fields, no copy-function change, so `away_plan_copy.dart` isn't in its path; AWD-2 is backend-only (`server/**`); AWD-4 touches the plan screen + a new edit screen + note-section split, not the pet-care-section files AWD-3 will later touch. AWD-3 starts only after AWD-2 merges to the integration branch, to avoid rebasing a wire-contract change mid-flight. **(revised per review round 1):** `away_plan_copy.dart` was originally listed in both AWD-1's and AWD-3's `allowed_paths` — neither phase actually edits it (AWD-3's copy lives in `away_plan_schedule_copy.dart`), so it's removed from both rather than resolved as an overlap.
 
 ---
 
 ## AWD-DOC-0 — Plan bootstrap
 
-Review and freeze D-AWD-001–007 in [away-plan-detail-v2-decisions.md](./away-plan-detail-v2-decisions.md); this delivery plan; `.agents/plans/away-plan-detail-v2.{md,snapshot.json}`; open control issue; confirm scope boundaries (carer-edit dialog and dates/pets editing explicitly out of scope, D-AWD-007).
+Review and freeze D-AWD-001–007 in [away-plan-detail-v2-decisions.md](./away-plan-detail-v2-decisions.md); this delivery plan; `.agents/plans/away-plan-detail-v2.{md,snapshot.json}`; open control issue; confirm scope boundaries (carer-edit dialog and dates/pets editing explicitly out of scope, D-AWD-007). Specific items this phase confirms (all drafted already, not blank):
+
+- `planned_care_items[]` wire shape, `kind` discriminant, sort/dedupe rules (D-AWD-002)
+- `[proposed]` ARB copy table in D-AWD-003, including the "Repeats" vs "Occurs" wording call and FR strings
+- The two V1 amendment blocks in [away-planning-decisions.md](./away-planning-decisions.md) (D-AWAY-002, D-AWAY-006, D-AWAY-007) read correctly once D-AWD-001–003 are frozen
 
 ---
 
@@ -77,17 +83,19 @@ One outcome: `AwayPlanHeaderSection` shows the carer-coverage line only when not
 
 ## AWD-2 — Unified care-event contract (backend)
 
-One outcome: the coverage/projection read path returns one row per care event (grouped by `health_entry_id`, all frequencies) instead of routine/dated/uncertainty buckets keyed inconsistently.
+One outcome: the coverage/projection read path returns **one array**, `planned_care_items[]` per pet, one row per care event, server-sorted — replacing `routine_items`/`dated_items`/`uncertainties` outright (no compat shim; not in production, see decisions doc §Context).
 
 | Item | Action |
 |---|---|
-| `server/lib/recurrenceHelper.js#splitRoutineAndDatedItems` | Group key becomes `health_entry_id` only (drop `\|timeKey`); extend grouping to every repeating `frequency`, not just `daily`; `frequency === 'once'` stays ungrouped |
-| Group row shape | Add `frequency`, `frequency_interval`, `times_of_day: string[]` (distinct, sorted), keep `certainty` (least-certain-wins, D-AWAY-006 unchanged), `occurrence_count`, `status_counts`, `first_scheduled_date`, `last_scheduled_date` |
-| `next_due_date` | Earliest pending occurrence date; computed only when `times_of_day.length <= 1`; else `null` |
-| `server/lib/care/awayPlan/presentation.js` (or nearest read-model boundary) | Add `anchor_kind: 'calendar' \| 'completion_chain'` per event, derived from existing certainty/reason data — **no new "how do we know" logic**, just labelling what's already computed |
-| Uncertainties enrichment | Extend `enrichUncertainties` to carry `frequency`/`frequency_interval` when the underlying entry has a repeating cadence, so D-AWD-003's "every N days from the last occurrence" can render without a second lookup |
-| `server/test/careContext/**`, `server/test/careSchedule/**` | New matrix: frequency × single-vs-multiple-times-of-day × calendar-vs-chain-anchor |
-| `docs/architecture/api-reference.md` | Document the new/changed response fields on the coverage and projection endpoints |
+| `server/lib/recurrenceHelper.js#splitRoutineAndDatedItems` | Rework into a single-array builder. Group key becomes `health_entry_id` only (drop `\|timeKey`); extend grouping to every repeating `frequency`, not just `daily`; `frequency === 'once'` stays ungrouped |
+| `kind` discriminant | `recurring_calendar` / `recurring_chain` / `single_once` / `indeterminate_pending`, derived from `recurrence_anchor` (`RECURRENCE_ANCHOR_FROM_DUE_DATE` / `RECURRENCE_ANCHOR_FROM_COMPLETION`, `recurrenceAnchorDefaults.js`) + whether the entry has a materialised occurrence in the window. One field — do not also add a separate `anchor_kind` |
+| Group row shape (`recurring_calendar`/`recurring_chain`) | `health_entry_id`, `name`, `type`, `care_family`, `frequency`, `frequency_interval`, `times_of_day: string[]` (distinct, sorted), `certainty` (least-certain-wins, D-AWAY-006 unchanged), `occurrence_count`, `status_counts`, `first_scheduled_date`, `last_scheduled_date` |
+| `next_due_date` | Earliest pending occurrence date; computed only when `kind === 'recurring_calendar'` and `times_of_day.length <= 1`; else `null` |
+| Dedupe | One row per `health_entry_id`. A `from_completion` entry with both materialised and pending occurrences in-window → one `recurring_chain` row, never split |
+| Sort | Server-side: `kind` bucket order (`recurring_calendar` → `recurring_chain` → `single_once` → `indeterminate_pending`), then `name.localeCompare()` within bucket — screen and PDF both consume this order, neither re-sorts |
+| `server/lib/care/awayPlan/presentation.js` (or nearest read-model boundary) | Merge former `routine_items`/`dated_items`/`uncertainties` builders into the single `planned_care_items[]` builder; enrichment (`name`/`type`/`care_family`, plus `frequency`/`frequency_interval` for `recurring_chain` rows) happens here, feeding D-AWD-003's "repeats every N, from completion" copy without a second lookup |
+| `server/test/careContext/**`, `server/test/careSchedule/**` | Explicit cases, not just a fuzz matrix: (1) twice-daily med → one row, `times_of_day: ['08:00','20:00']`, `next_due_date: null`; (2) weekly entry spanning 2 occurrences in-window → one `recurring_calendar` row, not two; (3) `frequency: 'once'` × 3 distinct entries → 3 rows, never grouped; (4) `from_completion` entry with 1 materialised + 1 pending occurrence in-window → exactly one `recurring_chain` row; (5) sort order asserted across a mixed-kind fixture |
+| `docs/architecture/api-reference.md` | Document `planned_care_items[]` replacing the three old fields — this is a breaking response shape change, called out explicitly, not folded into a changelog line |
 
 **Not AWD-2:** any change to `projectSchedule.js` occurrence materialisation, CSM ledger, or write paths. Projection corpus byte-identical (verify with existing corpus test).
 
@@ -99,13 +107,14 @@ One outcome: `AwayPlanPetCareSection` renders one "Planned care" list from the A
 
 | Item | Action |
 |---|---|
-| `care_period_coverage.dart` (domain) + data model | Add `frequency`, `frequencyInterval`, `timesOfDay`, `nextDueDate`, `anchorKind` fields matching AWD-2's wire shape |
-| `away_plan_schedule_copy.dart` | Replace `routineRowTitle/Subtitle`, `datedRowStatus`, `indeterminateRowSubtitle` with one formatter producing the D-AWD-004 row template (recurring/calendar, recurring/chain, single-care, indeterminate-fallback branches) |
-| `away_plan_pet_care_section.dart` | Single list, single "Planned care" heading (`awayPlanningScheduleDatedTitle` repurposed); `CareFamilyIcon.materialIconFor(...)` per row (retire hardcoded `Icons.repeat`/`check_circle_outline`/`help_outline`); one chain-anchor explainer line per pet section when applicable (D-AWD-003); row wrapped in `InkWell`/`ListTile` → `context.goNamed('petEventView', pathParameters: {petId, entryId: item.healthEntryId})` |
+| `care_period_coverage.dart` (domain) + data model | Replace the routine/dated/uncertainty entity split with one `PlannedCareItem` type carrying `kind`, `healthEntryId`, `name`, `type`, `careFamily`, `frequency`, `frequencyInterval`, `timesOfDay`, `nextDueDate`, plus the existing date/status/reason fields per `kind` — matches AWD-2's single-array wire shape |
+| `away_plan_schedule_copy.dart` | Replace `routineRowTitle/Subtitle`, `datedRowStatus`, `indeterminateRowSubtitle` with one formatter switching on `item.kind`, producing the D-AWD-004 row template using the ARB keys drafted in D-AWD-003 |
+| `away_plan_pet_care_section.dart` | Single list, single "Planned care" heading (`awayPlanningScheduleDatedTitle` repurposed); render `planned_care_items[]` in the order the server sent it (**no client-side sort or merge**); `CareFamilyIcon.forWire(type: item.type, careFamily: item.careFamily)` per row (new named constructor, see below — retires hardcoded `Icons.repeat`/`check_circle_outline`/`help_outline`); one `awayPlanningChainAnchorExplainer` line per pet section when any item is `recurring_chain`/`indeterminate_pending` (D-AWD-003); row wrapped in `InkWell`/`ListTile` → `context.goNamed('petEventView', pathParameters: {petId, entryId: item.healthEntryId})` |
+| `care_family_icon.dart` | Add `CareFamilyIcon.forWire({required String? type, required String? careFamily, double size, bool showChip})` — mirrors `.forEntry`'s inference/custom-glyph logic from wire strings instead of a `HealthEntry`. **Do not** use `.materialIconFor(...)` directly on this screen — it skips custom glyphs `.forEntry` gets elsewhere (dental/wellness) |
 | Pet header (both `away_plan_pet_care_section.dart` and `away_plan_carers_section.dart`) | `CareEventRowPetAvatar`-pattern 32px photo + tap → `context.goNamed('petDetail', pathParameters: {petId})` |
-| `away_plan_handover_controller.dart` / `away_plan_handover_service.dart` | Update line-building to consume the unified event list (drop separate routine/dated/indeterminate PDF sections; keep per-pet grouping) — same data, same copy layer as the screen, so PDF and screen cannot drift |
-| ARB (`app_en.arb`, `app_fr.arb`) | New keys: occurs-every (calendar), occurs-every (chain), single-care, next-due-date, time-of-day, chain-anchor explainer; retire `awayPlanningScheduleRoutineTitle`/`…IndeterminateTitle` as section headings (may keep as internal identifiers if still referenced elsewhere — check before deleting) |
-| Widget/golden tests | New row-template matrix (mirrors AWD-2's backend matrix); tap targets ≥48×48; semantic labels on the new tappable rows (accessibility.mdc) |
+| `away_plan_handover_controller.dart` / `away_plan_handover_service.dart` | Update line-building to consume `planned_care_items[]` directly (drop separate routine/dated/indeterminate PDF sections; keep per-pet grouping) — same data, same copy layer as the screen, so PDF and screen cannot drift. **Call this out explicitly in the AWD-3 PR description** — it's a PDF content change riding inside a "Flutter UI" phase and reviewers should not assume UI-only |
+| ARB (`app_en.arb`, `app_fr.arb`) | Add the 6 keys drafted in D-AWD-003 (EN + FR); retire `awayPlanningScheduleRoutineTitle`/`…IndeterminateTitle` as section headings (check for other call sites before deleting) |
+| Widget/golden tests | Row-template matrix for all 4 `kind` values (mirrors AWD-2's backend matrix); **carer-perspective test:** a pending `single_once`/`recurring_calendar` item's due date is readable from the row alone, without tapping through (D-AWD-004, strengthened per review); tap targets ≥48×48; semantic labels on the new tappable rows (accessibility.mdc) |
 
 **Not AWD-3:** removing per-occurrence completion visibility entirely — it moves one tap away (Care Item Detail), not gone; flag in PR description as the accepted trade-off from the review.
 
@@ -122,7 +131,7 @@ One outcome: `PlannedAbsencePlanScreen` is read-only; a new edit screen owns the
 | New `planned_absence_edit_screen.dart` at route `petCarePlannedAbsenceEdit` → `/pc/away/:id/edit` | `AppFormStickyActionsBar` (Save) on phone / inline row on tablet; note field; `AppFormDestructiveButton` → confirm dialog → `cancelPlannedAbsence` → navigate to `/pc/away`; `PopScope` + `confirmDiscardFormChanges` for unsaved note edits |
 | `care_context_repository.dart` / `_impl.dart` / `care_context_remote_datasource.dart` | Add `cancelPlannedAbsence(absenceId)` calling existing `POST /api/careContext/plannedAbsences/:id/cancel` — **no backend change** |
 | `away_routes.dart` / `app_router.dart` | Register the new edit route, mirroring the existing `/pc/away/new`, `/pc/away/:id` pattern |
-| Widget tests | Display screen has no Save button and no editable note field; edit screen has Save + Delete, discard-guard fires on unsaved note changes, delete confirms then cancels then navigates home |
+| Widget tests | Display screen has no Save button and no editable note field; edit screen has Save + Delete, discard-guard fires on unsaved note changes, delete confirms then cancels then navigates home; **after a successful delete, the hub's absence list (`plannedAbsencesListProvider` or equivalent) is invalidated and the absence no longer shows as active there** — made an explicit exit criterion per review round 1, not just "verify at implementation" |
 
 **Explicitly not AWD-4:** carer-edit dialog (`away_plan_carer_edit_dialog.dart`) stays on the display screen, unchanged; no absence dates/pets editing added (doesn't exist today, wasn't requested).
 
@@ -130,4 +139,12 @@ One outcome: `PlannedAbsencePlanScreen` is read-only; a new edit screen owns the
 
 ## AWD-5 — Docs + journey
 
-`care-context.md` updated for the unified event model and the new edit screen; `away-plan-detail-v2-decisions.md` statuses flipped from Proposed to Frozen (post-merge); BDD scenario(s) added/updated in `flutter_app/test/bdd/features/` for: unified list rendering, tap-through to Care Item Detail, edit screen save/delete flow; matching Playwright spec(s) with `@bdd` header; `docs/architecture/api-reference.md` finalised for the AWD-2 contract fields (draft written in AWD-2, confirmed here against the shipped shape).
+`care-context.md` updated for the unified event model and the new edit screen; `away-plan-detail-v2-decisions.md` statuses flipped from Proposed to Frozen (post-merge); `docs/architecture/api-reference.md` finalised for the AWD-2 contract fields (draft written in AWD-2, confirmed here against the shipped shape).
+
+**BDD: three separate scenarios, not one bundled one** (per review round 1 — atomic BDD, mirrors atomic-pr.mdc's "one outcome" principle applied to test scenarios):
+
+1. Attention-only coverage header (AWD-1 behaviour) — carer/care lines present/absent per state.
+2. Unified Planned care list + tap-through to Care Item Detail (AWD-2/AWD-3 behaviour).
+3. Edit screen save/delete flow (AWD-4 behaviour).
+
+Each gets its own Gherkin scenario in `flutter_app/test/bdd/features/` and matching Playwright spec with `@bdd` header, exact title match to the Gherkin `Scenario:` line, per `bdd-journey` exit checklist.

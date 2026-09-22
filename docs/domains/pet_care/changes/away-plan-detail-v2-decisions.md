@@ -13,6 +13,8 @@ Proposed product and engineering decisions for **Away Plan Detail V2** — a red
 
 **Status: Proposed — pending review.** Nothing below is Frozen yet. This document is the artifact to review before `approve-autonomous away-plan-detail-v2` (see [execute-plan schema](/docs/agent-efficiency/execute-plan-schema.md)). Decisions that supersede a V1 decision are called out explicitly; V1 decisions not mentioned here are unchanged.
 
+**Reviewed 2026-09-22 (round 1):** external review confirmed the plan is grounded and phase-ready, and flagged contract-edge gaps — wire shape for the unified list, `anchor_kind` derivation, chain-explainer copy, an icon-helper mismatch, one allowed-path overlap, and snapshot placeholder hygiene. All addressed below; changed subsections are marked **(revised)**. [away-planning-decisions.md](./away-planning-decisions.md) has matching amendment blocks under D-AWAY-002 and D-AWAY-006.
+
 **Context:** AgathaTrack is not in production; no real user data exists. Verified against `main` (post Away Planning V1, all AW-phases merged, plus Care Schedule Management V1 and Care Family icon work).
 
 ---
@@ -40,14 +42,22 @@ Proposed product and engineering decisions for **Away Plan Detail V2** — a red
 
 **Origin:** user request to replace the "Dated care" vs "Indeterminate care" split with one "Planned care" list: icon + title, then `Occurs every X (or single care) from A until B`, `Next due date` (only for once-per-day events), and a `Time of day` line per distinct time.
 
-**Current state (`server/lib/recurrenceHelper.js#splitRoutineAndDatedItems`):** only `frequency === 'daily'` entries collapse, keyed by `health_entry_id + scheduled_time` — a twice-daily medication produces **two** routine rows today, not one row with two times. Every other frequency (`weekly`, `monthly`, `yearly`, `custom`) is left as individual per-occurrence "dated" rows, with no recurrence metadata surfaced.
+**Current state (`server/lib/recurrenceHelper.js#splitRoutineAndDatedItems`):** only `frequency === 'daily'` entries collapse, keyed by `health_entry_id + scheduled_time` — a twice-daily medication produces **two** routine rows today, not one row with two times. Every other frequency (`weekly`, `monthly`, `yearly`, `custom`) is left as individual per-occurrence "dated" rows, with no recurrence metadata surfaced. `uncertainties[]` is a third, separately-shaped array.
 
-**New rule:**
+**(revised) Wire contract: one array, not three.** Review round 1 flagged that AWD-2 originally still shaped `routine_items` / `dated_items` / `uncertainties` separately and left merge order, dedupe, and the mixed-type row model to be improvised client-side in AWD-3. Fixed by moving the merge server-side, consistent with D-AWAY-001's "facts computed server-side at read time" principle:
 
-- Group by `health_entry_id` **only** (drop the time-slot key), for **every** repeating frequency (`daily`, `weekly`, `monthly`, `yearly`, `custom`) — not just `daily`.
-- A group carries: `name`, `type`, `care_family`, `frequency`, `frequency_interval`, distinct `times_of_day: string[]` (sorted, deduped across constituents; empty array = all-day/untimed), `occurrence_count`, `status_counts`, `first_scheduled_date`, `last_scheduled_date`, and `certainty` — **unchanged from D-AWAY-006:** minimum certainty among constituents (`conditional_on_future_completion` anywhere in the group ⇒ group renders as `~`).
-- **`frequency === 'once'` entries are never grouped.** Each stays its own row, one per occurrence — user's explicit call: *"for dated occurrence -> show them all in a list."* These map 1:1 to today's individual dated rows; only their on-screen template changes (D-AWD-003).
-- `next_due_date` (earliest **pending** occurrence date in the projected window) is computed **only when `times_of_day.length <= 1`** — i.e. the event fires at most once per calendar day. Omitted (`null`) when `times_of_day.length > 1`, per the user's explicit rule: *"if it's an event that happens multiple times a day every day, don't show that line."*
+- The coverage/projection response exposes a single array per pet, **`planned_care_items[]`**, replacing `routine_items`, `dated_items`, and `uncertainties` outright. Not a deprecation/compat shim — AgathaTrack has no production traffic (per this doc's Context line), so the old fields are removed, not versioned alongside the new one.
+- Each item carries an explicit discriminant, **`kind`**, one of:
+  - `recurring_calendar` — repeating frequency, `recurrence_anchor = 'from_due_date'`
+  - `recurring_chain` — repeating frequency, `recurrence_anchor = 'from_completion'`
+  - `single_once` — `frequency = 'once'`, concrete scheduled date
+  - `indeterminate_pending` — no materialised occurrence yet in the window and no calendar date to show (today's `uncertainties[]` case)
+- `kind` is computed server-side from **`recurrence_anchor`** (D-CSM-001; `RECURRENCE_ANCHOR_FROM_COMPLETION` / `RECURRENCE_ANCHOR_FROM_DUE_DATE`, `server/lib/care/schedule/recurrenceAnchorDefaults.js`) plus whether the entry has a materialised occurrence in the window — **not** a separate `anchor_kind` field. (Round 1 proposed `anchor_kind` as its own field derived from `recurrence_anchor` **or** occurrence certainty; collapsing it into `kind` removes a second field that would otherwise have to stay consistent with the first, and uses the authoritative per-entry attribute instead of an occurrence-level flag that can legitimately vary across a group's constituents.)
+- **Dedupe rule:** exactly one row per `health_entry_id` in a pet's `planned_care_items[]`. When a `from_completion`-anchored entry has *both* materialised (dated) occurrences and a pending not-yet-materialised one in the same window, it is **one row** with `kind: recurring_chain` — never split into a separate indeterminate row for the same entry. The least-certain-wins rule (D-AWAY-006, unchanged) already governs this at the constituent level; this just guarantees it surfaces as one row, not two.
+- **Sort order (server-side, so screen and PDF can't diverge):** `kind` bucket order `recurring_calendar` → `recurring_chain` → `single_once` → `indeterminate_pending`, then `name.localeCompare()` within each bucket. Same ordering the existing `routineItems` sort already uses (name, then time) — extended, not reinvented.
+- Group row (kind = `recurring_calendar` / `recurring_chain`) carries: `health_entry_id`, `name`, `type`, `care_family`, `frequency`, `frequency_interval`, distinct `times_of_day: string[]` (sorted, deduped across constituents; empty array = all-day/untimed), `occurrence_count`, `status_counts`, `first_scheduled_date`, `last_scheduled_date`, `certainty` (**unchanged from D-AWAY-006:** minimum among constituents; `conditional_on_future_completion` anywhere in the group ⇒ renders as `~`).
+- **`frequency === 'once'` entries are never grouped** (`kind: single_once` or `indeterminate_pending`). Each stays its own row, one per occurrence — user's explicit call: *"for dated occurrence -> show them all in a list."* These map 1:1 to today's individual dated rows; only their on-screen template changes (D-AWD-004).
+- `next_due_date` (earliest **pending** occurrence date in the projected window) is computed **only for `kind: recurring_calendar` when `times_of_day.length <= 1`** — i.e. the event fires at most once per calendar day, on a fixed schedule. `null` for every other `kind`, and `null` whenever `times_of_day.length > 1`, per the user's explicit rule: *"if it's an event that happens multiple times a day every day, don't show that line."*
 
 **Not in scope:** changing Care Schedule Management's projection engine (`server/lib/care/schedule/projectSchedule.js`) or occurrence materialisation. This is a read-side regrouping in `recurrenceHelper.js` / `server/lib/care/awayPlan/presentation.js` only — the underlying occurrence data (source of truth) is untouched. Projection corpus for CSM itself must stay byte-identical, same guarantee V1's AW-3 made.
 
@@ -61,10 +71,22 @@ Proposed product and engineering decisions for **Away Plan Detail V2** — a red
 
 **Rule:**
 
-- When an uncertain entry has a repeating `frequency` (not `once`), the unified row still shows an "occurs every" line, but anchored to the **last known occurrence** instead of a calendar date range: *"Occurs every {interval} {unit} from the last occurrence"* (exact copy in D-AWD-004's ARB keys) — never a fabricated calendar date, never `next_due_date` (omitted unconditionally for chain-anchored items, regardless of `times_of_day`).
-- When the entry is a genuinely indeterminate one-off (`frequency === 'once'`, pending on a prior chain step — no interval exists at all), fall back to today's reason copy (`awayPlanningIndeterminatePending` / `…Chain` / `…Generic`) — unchanged.
-- The plan page adds **one static explanatory line**, rendered once per pet-care section (not per row) when at least one visible event in that pet's list is chain-anchored — not per row, to avoid repeating the same caveat next to every affected event. Placement: bottom of the "Planned care" card, below the event list. Exact copy TBD at implementation (new ARB key, e.g. `awayPlanningChainAnchorExplainer`), reviewed for tone against `docs/design/copy-tone.md`.
-- **`anchor_kind: 'calendar' | 'completion_chain'`** is added to the wire contract so the client can decide which explainer/next-due rule applies without re-deriving it from `certainty`/`reasonCodes` client-side (keeps derivation server-side, consistent with D-AWAY-001's "facts computed server-side at read time" principle).
+- `kind: recurring_chain` (D-AWD-002) rows show an "occurs every" line anchored to the **last known occurrence** instead of a calendar date range — never a fabricated calendar date, never `next_due_date` (omitted unconditionally, regardless of `times_of_day`).
+- `kind: indeterminate_pending` rows (genuinely no interval — a `once` entry pending on a prior chain step) fall back to today's reason copy (`awayPlanningIndeterminatePending` / `…Chain` / `…Generic`) — unchanged.
+- The plan page adds **one static explanatory line**, rendered once per pet-care section (not per row) when at least one visible event in that pet's list has `kind: recurring_chain` or `indeterminate_pending` — not per row, to avoid repeating the same caveat next to every affected event. Placement: bottom of the "Planned care" card, below the event list.
+
+**(revised) Copy drafted, not TBD.** Review round 1 flagged that leaving exact wording to implementation invites tone drift and a second review pass mid-sprint. Drafted below, checked against `docs/design/copy-tone.md` (plain, operational, no blame) and reusing existing app vocabulary rather than inventing new terms — **`[proposed]`, confirm in AWD-DOC-0, not final until then:**
+
+| Key | EN | Notes |
+|---|---|---|
+| `awayPlanningEventRepeatsFromUntil` | "Repeats every {interval} {period} from {start} until {end}" | `kind: recurring_calendar`. Reuses "Repeats every {interval} {period}" from the existing `recurrenceRepeatsEveryUntil` key (`app_en.arb:1816`) rather than the user's literal "Occurs every" — same params (`interval: int`, `period: String`), adds a `{start}` clause `recurrenceRepeatsEveryUntil` doesn't have. **Flagging the "Repeats" vs "Occurs" swap for the user to confirm** — done for in-app copy consistency, not because "Occurs" was wrong. |
+| `awayPlanningEventRepeatsFromCompletion` | "Repeats every {interval} {period}, from completion" | `kind: recurring_chain`. Reuses the exact phrase "From completion" from `recurrenceFromCompletion` (`app_en.arb:462`) — the same term the health-entry form already uses for this anchor, so a pet parent who set the schedule up recognises it here. |
+| `awayPlanningEventSingleCareOn` | "Single care on {date}" | `kind: single_once`. No existing equivalent found. |
+| `awayPlanningEventNextDueDate` | "Next due date: {date}" | Wording matches existing `recurrenceAnchorTitle` / `nextOccurrence` (`app_en.arb:461,1826` — two keys, same EN string today). **Implementation note:** use whichever of the two `CareItemDetailScreen` itself already displays, so the term is identical across the D-AWD-005 tap-through, not just similar. |
+| `awayPlanningEventTimeOfDay` | "Time of day: {time}" | One line per distinct `times_of_day` entry. |
+| `awayPlanningChainAnchorExplainer` | "Dates for some care events depend on when the previous one is completed, and may shift." | Once per pet section, per the rule above. |
+
+FR strings drafted in AWD-DOC-0 alongside EN, same review pass — not listed here to keep this table scannable.
 
 ---
 
@@ -74,22 +96,24 @@ Proposed product and engineering decisions for **Away Plan Detail V2** — a red
 
 **Rename:** "Dated care" → **"Planned care"** (`awayPlanningScheduleDatedTitle` copy key repurposed as the single section heading; `awayPlanningScheduleRoutineTitle` and `awayPlanningScheduleIndeterminateTitle` retire as section headings — the distinction moves into per-row copy, not separate headings).
 
-**Row template** (applies uniformly to grouped-recurring, one-off dated, and chain-anchored items from D-AWD-002/003):
+**Row template** — one formatter, keyed off the server-computed `kind` discriminant (D-AWD-002), rendered in the server-computed sort order (also D-AWD-002) — no client-side type inference, no client-side merge/sort:
 
 ```
 [CareFamilyIcon]  {event title}
-                   {schedule line — one of:}
-                     "Occurs every {interval} {unit} from {first} until {last}"      (recurring, calendar-anchored)
-                     "Occurs every {interval} {unit} from the last occurrence"        (recurring, completion-chain-anchored)
-                     "Single care on {date}"                                          (frequency = once)
-                     "{indeterminate reason}"                                         (once, chain-pending, no interval)
-                   "Next due date: {date}"                                            (only when times_of_day.length <= 1 AND calendar-anchored)
-                   "Time of day: {time}"  × N                                         (one line per distinct time_of_day, only when present)
+                   {schedule line — selected by item.kind:}
+                     recurring_calendar    → "Repeats every {interval} {period} from {start} until {end}"
+                     recurring_chain       → "Repeats every {interval} {period}, from completion"
+                     single_once           → "Single care on {date}"
+                     indeterminate_pending → "{indeterminate reason}"
+                   "Next due date: {date}"                     (only when kind = recurring_calendar AND times_of_day.length <= 1)
+                   "Time of day: {time}"  × N                  (one line per distinct time_of_day, only when present)
 ```
 
-Icon: `CareFamilyIcon.materialIconFor(CareFamily.fromWire(item.careFamily))` (`flutter_app/lib/features/pet_profile/presentation/widgets/care_family_icon.dart`) — replaces the current hardcoded `Icons.repeat` / `Icons.check_circle_outline` / `Icons.help_outline` per-bucket icons. This is a **reuse**, not a new icon system.
+Exact ARB keys/copy in D-AWD-003.
 
-**Not shown per row any more:** the old per-occurrence completed/skipped/pending status glyph on dated rows. Trade-off flagged and accepted by the user: the plan page becomes a forward-looking schedule view; occurrence-level completion tracking is one tap away (D-AWD-005) rather than duplicated inline.
+**(revised) Icon factory.** `CareFamilyIcon.materialIconFor(...)` returns raw `IconData` and would be a **third** icon path alongside the app's two existing ones (`CareFamilyIcon.forEntry(...)` used by `health_entry_card.dart`/`care_event_row.dart`, which resolves custom glyphs for families like dental/wellness, not just the Material fallback). Review round 1 caught this. Fixed: AWD-3 adds a new named constructor, **`CareFamilyIcon.forWire({required String? type, required String? careFamily, double size, bool showChip})`**, mirroring `.forEntry`'s inference and custom-glyph handling but sourced from the wire's `type`/`care_family` strings instead of a full `HealthEntry` object (no synthetic/fake `HealthEntry` construction). One widget, two entry points into the same rendering logic — not a new icon system.
+
+**Not shown per row any more:** the old per-occurrence completed/skipped/pending status glyph on dated rows. Trade-off flagged and accepted by the user: the plan page becomes a forward-looking schedule view; occurrence-level completion tracking is one tap away (D-AWD-005) rather than duplicated inline. **(revised, strengthened per review round 1):** for a carer scanning "what's left this week," the row must still answer that without opening detail — the `Next due date` / `Single care on {date}` line is the discoverability mechanism, not a decoration. AWD-3 exit criteria (delivery plan) require a widget test asserting a pending once-off or once-per-day item is identifiable from the row alone, not only via tap-through.
 
 ---
 
@@ -99,7 +123,7 @@ Icon: `CareFamilyIcon.materialIconFor(CareFamily.fromWire(item.careFamily))` (`f
 
 **Origin:** user request — "clicking on one event should take you to the event itself — where carer will be able to see history and upcoming occurrences."
 
-**Rule:** each unified care-event row is a single tap target (whole row, ≥48×48, per `design.mdc` touch rule) navigating to the existing route `petEventView` → `/pet/:petId/events/:entryId` (`CareItemDetailScreen`). `petId` is already in scope in `AwayPlanPetCareSection`; `entryId` is `item.healthEntryId`, already present on every item type (`CarePeriodRoutineItem`, `CarePeriodProjectionItem`, `CarePeriodUncertainty`). **No new screen, no new route.**
+**Rule:** each unified care-event row is a single tap target (whole row, ≥48×48, per `design.mdc` touch rule) navigating to the existing route `petEventView` → `/pet/:petId/events/:entryId` (`CareItemDetailScreen`). `petId` is already in scope in `AwayPlanPetCareSection`; `entryId` is `item.healthEntryId`, present on every `planned_care_items[]` row regardless of `kind` (D-AWD-002) — was already present on all three pre-merge item types (`CarePeriodRoutineItem`, `CarePeriodProjectionItem`, `CarePeriodUncertainty`), so the field survives the merge unchanged. **No new screen, no new route.**
 
 **Authorization:** unchanged. Anyone viewing the away plan already holds the `pet_access` that `CareItemDetailScreen` itself requires. `note_only` carers have no app access at all (D-AWAY-004) and never reach either screen — this tap-through creates no new exposure.
 
@@ -145,6 +169,8 @@ Applied to `AwayPlanCarersSection`'s per-pet row too, in the same phase, since i
 - No Save button remains on the display screen (repository's "Save is only in the edit screen" requirement).
 
 **Button placement (user accepted the reviewer's recommendation):** no floating/FAB button. Sticky full-width bottom bar on phone (`AppFormStickyActionsBar`), inline row on tablet — the existing convention, not a new one.
+
+**(added per review round 1) Accepted UX asymmetry:** carers stay editable inline on the display screen (edit-icon-per-row dialog) while the note and delete require entering the new edit screen. This is a deliberate, scope-honest split — not an oversight — because carer editing wasn't part of the original request and changing it would touch an already-shipped, tested flow. Flagging it here so it reads as a documented trade-off rather than an inconsistency, should it come up in review or user feedback later.
 
 ---
 
