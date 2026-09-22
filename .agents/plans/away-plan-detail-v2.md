@@ -158,25 +158,19 @@ Redesign the Away Plan detail screen from Away Planning V1: one unified, tappabl
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: completed
 current_phase: null
 last_completed_phase: awd-5
 halt_reason: null
-next_action: "all 6 phases merged to integration; PR #1280 (integration -> main) open, addressing Copilot review findings, then merge + verify pre-UAT"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/away-plan-detail-v2-integration-d4c1
+  branch: main
   plan_path: .agents/plans/away-plan-detail-v2.md
-  plan_commit: e0b21a87bcb65e63a2107ba359f7ec91e858ed0a
+  plan_commit: ca50a5b6c7c84e08bfa439cd82139dac0c8b7857
   snapshot_path: .agents/plans/away-plan-detail-v2.snapshot.json
-  snapshot_commit: e0b21a87bcb65e63a2107ba359f7ec91e858ed0a
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1280"]
-merge_commits:
-  awd-doc-0: 3f15a00e503c628249143891c13bd7f14bee24a9
-  awd-1: 848da9bd32609748e541316d06a430b4bf5d913a
-  awd-2: 82cadba13b2c7bb55a1759df56c3ab8c2f3f2f23
-  awd-3: 35154ecaa8e18336b05974c8e9c48b9cff952ad8
-  awd-4: e0c51f73fe5b68dbc3a2622d7e71ef959f64e250
-  awd-5: fddf07ea320c6137e1efa59d4fcabf807aa1dd63
+  snapshot_commit: ca50a5b6c7c84e08bfa439cd82139dac0c8b7857
+open_prs: []
+merge_commits: {"awd-doc-0":"3f15a00e503c628249143891c13bd7f14bee24a9","awd-1":"848da9bd32609748e541316d06a430b4bf5d913a","awd-2":"82cadba13b2c7bb55a1759df56c3ab8c2f3f2f23","awd-3":"35154ecaa8e18336b05974c8e9c48b9cff952ad8","awd-4":"e0c51f73fe5b68dbc3a2622d7e71ef959f64e250","awd-5":"fddf07ea320c6137e1efa59d4fcabf807aa1dd63"}
 debt_issue_refs: []
 ```
 
