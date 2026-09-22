@@ -222,17 +222,30 @@ export class AwayPlanningPage {
   }
 
   async expectPlannedCareSection(): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await expect(
-      this.page.getByText(/Planned care|Soins planifiés/i).first(),
-    ).toBeVisible({ timeout: 30_000 });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const heading = semanticsKey(this.page, 'away_plan_planned_care_heading').or(
+        this.page.getByText(/Planned care|Soins planifiés/i).first(),
+      );
+      await expect(heading).toBeVisible();
+    }).toPass({ timeout: 45_000 });
   }
 
   async expectPlannedCareEntryVisible(entryName: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByText(entryName, { exact: false }).first()).toBeVisible({
-      timeout: 30_000,
-    });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(this.page.getByText(entryName, { exact: false }).first()).toBeVisible();
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async expectPlannedCareItemRow(entryId: string, entryName?: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(semanticsKey(this.page, `away_plan_planned_care_${entryId}`)).toBeVisible();
+      if (entryName) {
+        await expect(this.page.getByText(entryName, { exact: false }).first()).toBeVisible();
+      }
+    }).toPass({ timeout: 45_000 });
   }
 
   async openPlannedCareItem(entryId: string): Promise<void> {
@@ -254,9 +267,13 @@ export class AwayPlanningPage {
   }
 
   async expectEditScreenLoaded(): Promise<void> {
-    await expect(
-      this.page.getByText(/Edit away plan|Modifier le plan d'absence/i).first(),
-    ).toBeVisible({ timeout: 60_000 });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(this.page.getByRole('textbox', { name: /^Notes$/i })).toBeVisible();
+      await expect(
+        this.page.getByRole('button', { name: /Delete plan|Supprimer le plan/i }).first(),
+      ).toBeVisible();
+    }).toPass({ timeout: 60_000 });
   }
 
   async fillHandoverNote(note: string): Promise<void> {

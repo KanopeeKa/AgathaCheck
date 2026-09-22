@@ -186,9 +186,14 @@ class _PetCareBody extends StatelessWidget {
         ],
         if (result.plannedCareItems.isNotEmpty) ...[
           const SizedBox(height: 16),
-          Text(
-            l.awayPlanningScheduleDatedTitle,
-            style: theme.textTheme.titleSmall,
+          Semantics(
+            header: true,
+            identifier: 'away_plan_planned_care_heading',
+            label: l.awayPlanningScheduleDatedTitle,
+            child: Text(
+              l.awayPlanningScheduleDatedTitle,
+              style: theme.textTheme.titleSmall,
+            ),
           ),
           const SizedBox(height: 8),
           ...result.plannedCareItems.map(
