@@ -166,12 +166,22 @@ export class AwayPlanningPage {
     ).toBeVisible({ timeout: 30_000 });
   }
 
-  async expectPetCarerRow(petName: string, carerLabel: string): Promise<void> {
+  async expectPetCarerRow(
+    petId: string,
+    petName: string,
+    carerLabel: string,
+  ): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      // Carer rows split pet header semantics from the carer label text (AWD-4).
-      await expect(this.page.getByText(petName, { exact: false }).first()).toBeVisible();
-      await expect(this.page.getByText(carerLabel, { exact: false }).first()).toBeVisible();
+      await expect(
+        semanticsKey(this.page, `away_plan_carer_pet_header_${petId}`).or(
+          this.page.getByText(petName, { exact: false }).first(),
+        ),
+      ).toBeVisible();
+      await expect(semanticsKey(this.page, `away_plan_carer_label_${petId}`)).toBeVisible();
+      await expect(semanticsKey(this.page, `away_plan_carer_label_${petId}`)).toContainText(
+        carerLabel,
+      );
     }).toPass({ timeout: 30_000 });
   }
 

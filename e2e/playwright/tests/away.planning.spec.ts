@@ -53,7 +53,7 @@ test.describe('Away planning', () => {
 
     await away.expectPlanPageLoaded();
     await away.expectWhoIsCaringSection();
-    await away.expectPetCarerRow('WizardPet', 'No carer assigned');
+    await away.expectPetCarerRow(pet.id, 'WizardPet', 'No carer assigned');
   });
 
   test('Away planning hub lists a saved upcoming absence', async ({ page, testUser }) => {
@@ -89,7 +89,7 @@ test.describe('Away planning', () => {
 
     await away.expectPlanPageLoaded();
     await away.expectWhoIsCaringSection();
-    await away.expectPetCarerRow('PlanPet', 'No carer assigned');
+    await away.expectPetCarerRow(pet.id, 'PlanPet', 'No carer assigned');
   });
 
   test.skip('Guardian assigns a shared carer on the away plan page', async () => {
