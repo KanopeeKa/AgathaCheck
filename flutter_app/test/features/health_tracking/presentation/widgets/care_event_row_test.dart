@@ -130,10 +130,7 @@ void main() {
       await tester.pumpWidget(_buildRow(_overdueEntry));
       await tester.pumpAndSettle();
 
-      expect(
-        tester.getSize(find.byType(CareFamilyIcon)),
-        const Size(32, 32),
-      );
+      expect(tester.getSize(find.byType(CareFamilyIcon)), const Size(32, 32));
       expect(
         tester
             .widget<Icon>(find.byIcon(Icons.sentiment_satisfied_outlined))

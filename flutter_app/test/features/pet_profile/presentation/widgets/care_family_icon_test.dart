@@ -77,10 +77,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: CareFamilyIcon(
-              family: CareFamily.medication,
-              chipSize: 32,
-            ),
+            body: CareFamilyIcon(family: CareFamily.medication, chipSize: 32),
           ),
         ),
       );

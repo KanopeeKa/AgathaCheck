@@ -97,10 +97,7 @@ class CareEventRow extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CareFamilyIcon.forEntry(
-              entry,
-              chipSize: _kActionControlSize,
-            ),
+            CareFamilyIcon.forEntry(entry, chipSize: _kActionControlSize),
             if (rowContext == CareEventRowContext.pet) ...[
               const SizedBox(width: 8),
               CareEventRowPetAvatar(pet: pet, petName: entry.petName),

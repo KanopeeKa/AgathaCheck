@@ -60,8 +60,7 @@ class CareFamilyIcon extends StatelessWidget {
   double get _glyphSize =>
       showChip && chipSize != null ? chipSize! - chipGlyphInset : size;
 
-  double get _boxSize =>
-      showChip ? (chipSize ?? size + 12) : size;
+  double get _boxSize => showChip ? (chipSize ?? size + 12) : size;
 
   @override
   Widget build(BuildContext context) {
