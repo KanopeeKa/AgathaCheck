@@ -764,6 +764,66 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careFamilyOther => 'Other care';
 
   @override
+  String get careFilterGroupPrevention => 'Prevention';
+
+  @override
+  String get careFilterGroupClinical => 'Clinical';
+
+  @override
+  String get careFilterGroupLifestyle => 'Lifestyle';
+
+  @override
+  String get careSettingFieldLabel => 'Where';
+
+  @override
+  String get careSettingFieldHelper =>
+      'Where this care happens or who delivers it.';
+
+  @override
+  String get careSettingHome => 'At home';
+
+  @override
+  String get careSettingVet => 'At the vet';
+
+  @override
+  String get careSettingOther => 'Somewhere else';
+
+  @override
+  String get careImportanceFieldLabel => 'Priority';
+
+  @override
+  String get careImportanceFieldHelper =>
+      'How important this care is for your pet\'s health.';
+
+  @override
+  String get careImportanceEssential => 'Essential';
+
+  @override
+  String get careImportanceRecommended => 'Recommended';
+
+  @override
+  String get careImportanceOptional => 'Optional';
+
+  @override
+  String get carePlanningToggleLabel => 'Planning';
+
+  @override
+  String get carePlanningFieldHelper =>
+      'Plan upcoming care or record something that already happened.';
+
+  @override
+  String get carePlanningPlanned => 'Plan this care';
+
+  @override
+  String get carePlanningUnplanned => 'Record what happened';
+
+  @override
+  String get recordHealthEntry => 'Record care';
+
+  @override
+  String get completedOnRequired => 'Enter when this care was completed';
+
+  @override
   String get careSourceGuardianDefined => 'Added by you';
 
   @override
@@ -1408,6 +1468,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addHealthIssue => 'Add health issue';
+
+  @override
+  String get vetHealthIssuePromptTitle =>
+      'Was this visit related to a health issue?';
+
+  @override
+  String get vetHealthIssuePromptLinkExisting => 'Link existing issue';
+
+  @override
+  String get vetHealthIssuePromptAddNew => 'Add new issue';
+
+  @override
+  String get vetHealthIssuePromptNotRelated => 'Not related';
+
+  @override
+  String get vetPlannedCompletionHealthIssuePromptTitle =>
+      'Did the vet identify anything new to track?';
+
+  @override
+  String get vetHealthIssuePromptNo => 'No';
+
+  @override
+  String get vetHealthIssuePlanNextVisit => 'Plan the next visit';
+
+  @override
+  String get healthIssueQuickPickInjury => 'Injury or illness';
+
+  @override
+  String get healthIssueQuickPickDental => 'Dental problem';
+
+  @override
+  String get healthIssueQuickPickNeutering => 'Neutering / spay';
+
+  @override
+  String get healthIssueQuickPickOther => 'Other';
+
+  @override
+  String get healthIssueSelectTitle => 'Select a health issue';
+
+  @override
+  String get healthIssueLinked => 'Health issue linked';
+
+  @override
+  String get healthIssueLinkFailed => 'Could not link health issue';
 
   @override
   String get issueDescriptionRequired => 'Description is required';
@@ -2417,7 +2521,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get collectionFilterSkippedHidden => 'Skipped hidden';
 
   @override
-  String get eventFilterTypeLabel => 'Type';
+  String get eventFilterFamilyLabel => 'Category';
+
+  @override
+  String get eventFilterGroupLabel => 'Group';
 
   @override
   String get eventFilterStatusLabel => 'Status';

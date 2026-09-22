@@ -1,8 +1,12 @@
+import '../../../care_taxonomy/domain/care_planning_mode.dart';
+import '../../../care_taxonomy/domain/care_setting.dart';
+
 enum HealthDocumentValidationError { unsupportedFormat, tooLarge }
 
 enum HealthEntrySubmitValidation {
   nameRequired,
   dueOrCompletedRequired,
+  completedOnRequired,
   noPetsSelected,
   careFamilyRequired,
 }
@@ -33,10 +37,21 @@ class HealthEntrySubmitNeedsMarkCompleted extends HealthEntrySubmitOutcome {
 }
 
 class HealthEntrySubmitSuccess extends HealthEntrySubmitOutcome {
-  HealthEntrySubmitSuccess({required this.isEdit, required this.petIds});
+  HealthEntrySubmitSuccess({
+    required this.isEdit,
+    required this.petIds,
+    required this.entryIds,
+    required this.careSetting,
+    required this.carePlanning,
+    this.linkedHealthIssueId,
+  });
 
   final bool isEdit;
   final Set<String> petIds;
+  final List<String> entryIds;
+  final CareSetting careSetting;
+  final CarePlanningMode carePlanning;
+  final String? linkedHealthIssueId;
 
   int get createdCount => petIds.length;
 }

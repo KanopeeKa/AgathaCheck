@@ -4,7 +4,7 @@
 ///   • /g/pets, /g/events, /g/vets/:id deep-link resolution
 ///   • /g/vets/edit/:id deep-link resolution
 ///   • /g/events → add-event type picker route wiring
-///     (Events → /health/add, Weight entry → /pet/:id)
+///     (Events → /care/add, Weight entry → /pet/:id)
 ///   • Named route registration for all guardian routes
 ///   • Legacy /vets → /g/vets redirect logic
 ///
@@ -132,8 +132,8 @@ GoRouter _buildStubRouter({required String initialLocation}) {
       ...buildVetExperienceRoutes(),
       // Picker destinations.
       GoRoute(
-        path: '/health/add',
-        builder: (_, __) => const Scaffold(body: Text('health-add')),
+        path: '/care/add',
+        builder: (_, __) => const Scaffold(body: Text('care-add')),
       ),
       GoRoute(
         path: '/pet/:petId',
@@ -515,7 +515,7 @@ void main() {
       prefs = await SharedPreferences.getInstance();
     });
 
-    testWidgets('Events tile navigates to /health/add', (tester) async {
+    testWidgets('Events tile navigates to /care/add', (tester) async {
       final router = _buildStubRouter(initialLocation: '/pc/events');
       await tester.pumpWidget(_app(router: router, prefs: prefs));
       await _settle(tester);
@@ -530,10 +530,7 @@ void main() {
       await tester.tap(find.byIcon(Icons.medical_services_outlined));
       await _settle(tester);
 
-      expect(
-        router.routerDelegate.currentConfiguration.uri.path,
-        '/health/add',
-      );
+      expect(router.routerDelegate.currentConfiguration.uri.path, '/care/add');
     });
 
     testWidgets('Weight tile with single active pet navigates to /pet/:id', (

@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/utils/calendar_date.dart';
+import '../../../care_taxonomy/domain/care_importance.dart';
+import '../../../care_taxonomy/domain/care_planning_mode.dart';
+import '../../../care_taxonomy/domain/care_setting.dart';
+import '../../../care_taxonomy/domain/care_taxonomy.dart';
 import '../../../pet_profile/domain/entities/care_family.dart';
 import '../../../pet_profile/domain/services/care_family_write.dart';
 import '../../data/datasources/health_remote_datasource.dart';
@@ -10,16 +14,23 @@ import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';
 import '../providers/health_providers.dart';
 import 'health_entry_form_constants.dart';
+import 'health_entry_form_controller_base.dart';
+import 'health_entry_form_controller_photos.dart';
+import 'health_entry_form_controller_submit.dart';
 import 'health_entry_form_outcomes.dart';
 import 'health_entry_form_state.dart';
 
 export 'health_entry_form_state.dart';
 
-class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
+class HealthEntryFormController extends HealthEntryFormControllerBase
+    with HealthEntryFormPhotoMixin, HealthEntryFormSubmitMixin {
   HealthEntryFormController(this.ref, HealthEntryFormParams params)
     : super(_initialState(params));
 
   final Ref ref;
+
+  @override
+  Ref get formRef => ref;
   String? _entryId;
   HealthEntryFormState? _baseline;
 
@@ -41,94 +52,23 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
       selectedPetIds.add(params.petId!);
     }
 
+    final initialPlanning =
+        params.initialPlanningMode ?? CarePlanningMode.planned;
+    final isRecord = initialPlanning == CarePlanningMode.unplanned;
+
     return HealthEntryFormState(
       type: type,
       isEdit: params.entryId != null,
       selectedPetIds: selectedPetIds,
       allowedTypes: params.allowedTypes,
+      carePlanning: initialPlanning,
+      remindDaysBefore: isRecord ? 0 : 1,
+      completedOn: isRecord ? calendarDateOnly(DateTime.now()) : null,
     );
   }
 
+  @override
   String? get entryId => _entryId;
-
-  HealthDocumentValidationError? validateDocument(
-    String filename,
-    int byteLength,
-  ) {
-    final extension = filename.split('.').last.toLowerCase();
-    if (!healthDocumentAllowedExtensions.contains(extension)) {
-      return HealthDocumentValidationError.unsupportedFormat;
-    }
-    if (byteLength > healthDocumentMaxBytes) {
-      return HealthDocumentValidationError.tooLarge;
-    }
-    return null;
-  }
-
-  bool canAddPhoto() => state.totalPhotoCount < healthEntryMaxPhotos;
-
-  Future<HealthDocumentValidationError?> addDocument(
-    XFile picked, {
-    int? byteLength,
-  }) async {
-    if (!canAddPhoto()) {
-      return null;
-    }
-
-    final length = byteLength ?? await picked.length();
-    final validationError = validateDocument(picked.name, length);
-    if (validationError != null) {
-      return validationError;
-    }
-
-    if (state.isEdit && _entryId != null) {
-      state = state.copyWith(isUploadingPhoto: true);
-      try {
-        final bytes = await picked.readAsBytes();
-        final ds = ref.read(healthDataSourceProvider);
-        await ds.uploadPhoto(_entryId!, bytes, picked.name);
-        await loadPhotos();
-      } finally {
-        state = state.copyWith(isUploadingPhoto: false);
-      }
-    } else {
-      state = state.copyWith(pendingPhotos: [...state.pendingPhotos, picked]);
-    }
-    return null;
-  }
-
-  void removePendingPhoto(int index) {
-    final updated = List<XFile>.from(state.pendingPhotos)..removeAt(index);
-    state = state.copyWith(pendingPhotos: updated);
-  }
-
-  Future<void> loadPhotos() async {
-    if (_entryId == null) return;
-    final ds = ref.read(healthDataSourceProvider);
-    final photos = await ds.getPhotos(_entryId!);
-    state = state.copyWith(photos: photos);
-  }
-
-  Future<void> deletePhoto(EventPhoto photo) async {
-    if (_entryId == null) return;
-    final ds = ref.read(healthDataSourceProvider);
-    await ds.deletePhoto(_entryId!, photo.id);
-    await loadPhotos();
-  }
-
-  Future<void> uploadPendingPhotosToEntry(
-    String entryId,
-    List<XFile> files,
-  ) async {
-    if (files.isEmpty) return;
-    final ds = ref.read(healthDataSourceProvider);
-    for (final file in files) {
-      final bytes = await file.readAsBytes();
-      await ds.uploadPhoto(entryId, bytes, file.name);
-    }
-  }
-
-  void clearPendingPhotos() => state = state.copyWith(pendingPhotos: const []);
 
   Future<bool> loadEntry(String entryId) async {
     _entryId = entryId;
@@ -165,6 +105,14 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
             ? List<String>.from(entry.scheduleTimes!)
             : const ['08:00'],
         careFamily: entry.careFamily,
+        careSetting:
+            entry.careSetting ??
+            CareTaxonomy.defaultSettingFor(entry.careFamily),
+        carePlanning: entry.carePlanning ?? CarePlanningMode.planned,
+        careImportance:
+            entry.careImportance ??
+            CareTaxonomy.defaultImportanceFor(entry.careFamily),
+        importanceOverridden: entry.importanceOverridden,
         loadedUncategorised: entry.careFamily == null,
         careFamilySuggestionDismissed: false,
         careFamilyPickerRevealed: entry.careFamily != null,
@@ -188,26 +136,82 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
       state = state.copyWith(type: type);
       return;
     }
-    state = state.copyWith(type: type, clearCareFamily: true);
+    state = state.copyWith(
+      type: type,
+      clearCareFamily: true,
+      careSetting: CareTaxonomy.nullFamilyDefaultSetting,
+      careImportance: CareTaxonomy.nullFamilyDefaultImportance,
+      importanceOverridden: false,
+    );
   }
 
-  void setCareFamily(CareFamily family) => state = state.copyWith(
-    careFamily: family,
-    careFamilyPickerRevealed: true,
-    careFamilyValidationAttempted: false,
-  );
+  void setCareFamily(CareFamily family) {
+    state = state.copyWith(
+      careFamily: family,
+      careSetting: CareTaxonomy.defaultSettingFor(family),
+      careImportance: CareTaxonomy.defaultImportanceFor(family),
+      importanceOverridden: false,
+      careFamilyPickerRevealed: true,
+      careFamilyValidationAttempted: false,
+    );
+  }
 
+  void setCareSetting(CareSetting setting) =>
+      state = state.copyWith(careSetting: setting);
+
+  void setCareImportance(CareImportance importance) {
+    final defaultImportance = CareTaxonomy.defaultImportanceFor(
+      state.careFamily,
+    );
+    state = state.copyWith(
+      careImportance: importance,
+      importanceOverridden: importance != defaultImportance,
+    );
+  }
+
+  void setCarePlanning(CarePlanningMode mode) {
+    if (state.carePlanning == mode) return;
+
+    if (mode == CarePlanningMode.unplanned) {
+      state = state.copyWith(
+        carePlanning: mode,
+        frequency: HealthFrequency.once,
+        clearDueDate: true,
+        clearRepeatEndDate: true,
+        remindDaysBefore: 0,
+        scheduleAtSpecificTimes: false,
+        scheduleTimes: const ['08:00'],
+        completedOn: state.completedOn ?? calendarDateOnly(DateTime.now()),
+      );
+      return;
+    }
+
+    state = state.copyWith(
+      carePlanning: mode,
+      remindDaysBefore: state.remindDaysBefore == 0
+          ? 1
+          : state.remindDaysBefore,
+    );
+  }
+
+  @override
   void markCareFamilyValidationAttempted() =>
       state = state.copyWith(careFamilyValidationAttempted: true);
 
   void dismissCareFamilySuggestion() =>
       state = state.copyWith(careFamilySuggestionDismissed: true);
 
-  void acceptCareFamilySuggestion() => state = state.copyWith(
-    careFamily: defaultCareFamilyForEntryType(state.type),
-    careFamilyPickerRevealed: true,
-    careFamilySuggestionDismissed: true,
-  );
+  void acceptCareFamilySuggestion() {
+    final family = defaultCareFamilyForEntryType(state.type);
+    state = state.copyWith(
+      careFamily: family,
+      careSetting: CareTaxonomy.defaultSettingFor(family),
+      careImportance: CareTaxonomy.defaultImportanceFor(family),
+      importanceOverridden: false,
+      careFamilyPickerRevealed: true,
+      careFamilySuggestionDismissed: true,
+    );
+  }
 
   void revealCareFamilyPicker() => state = state.copyWith(
     careFamilyPickerRevealed: true,
@@ -232,7 +236,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
       state = state.copyWith(dueDate: date, startDate: date ?? state.startDate);
 
   void setCompletedOn(DateTime? date) =>
-      state = state.copyWith(completedOn: date);
+      state = state.copyWith(completedOn: date, clearCompletedOn: date == null);
 
   void setRemindDaysBefore(int days) =>
       state = state.copyWith(remindDaysBefore: days);
@@ -272,7 +276,8 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
     state = state.copyWith(scheduleTimes: updated);
   }
 
-  List<String>? _effectiveScheduleTimes() {
+  @override
+  List<String>? effectiveScheduleTimesForSubmit() {
     if (!state.scheduleAtSpecificTimes) return null;
     return _sortedScheduleTimes(state.scheduleTimes);
   }
@@ -283,8 +288,10 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
     return copy;
   }
 
+  @override
   HealthEntryMarkCompletedPrompt? markCompletedPromptIfNeeded() {
-    if (state.isEdit ||
+    if (state.isRecordMode ||
+        state.isEdit ||
         state.frequency != HealthFrequency.once ||
         state.completedOn != null ||
         state.dueDate == null) {
@@ -303,6 +310,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
     );
   }
 
+  @override
   void applyMarkCompleted(bool markCompleted) {
     if (!markCompleted) return;
     final prompt = markCompletedPromptIfNeeded();
@@ -313,142 +321,10 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
   Future<HealthEntrySubmitOutcome> submit({
     bool markCompleted = false,
     bool skipMarkCompletedCheck = false,
-  }) async {
-    if (state.name.trim().isEmpty) {
-      return HealthEntrySubmitValidationFailed(
-        HealthEntrySubmitValidation.nameRequired,
-      );
-    }
-    if (state.dueDate == null && state.completedOn == null) {
-      return HealthEntrySubmitValidationFailed(
-        HealthEntrySubmitValidation.dueOrCompletedRequired,
-      );
-    }
-    if (state.selectedPetIds.isEmpty) {
-      return HealthEntrySubmitValidationFailed(
-        HealthEntrySubmitValidation.noPetsSelected,
-      );
-    }
-    if (!state.isEdit && state.careFamily == null) {
-      markCareFamilyValidationAttempted();
-      return HealthEntrySubmitValidationFailed(
-        HealthEntrySubmitValidation.careFamilyRequired,
-      );
-    }
-
-    if (!skipMarkCompletedCheck && !state.isEdit) {
-      final prompt = markCompletedPromptIfNeeded();
-      if (prompt != null && !markCompleted) {
-        return HealthEntrySubmitNeedsMarkCompleted(prompt);
-      }
-    }
-
-    if (markCompleted) {
-      applyMarkCompleted(true);
-    }
-
-    state = state.copyWith(isLoading: true);
-    try {
-      final notifier = ref.read(healthEntriesNotifierProvider.notifier);
-      final effectiveRepeatEndDate = state.frequency == HealthFrequency.once
-          ? null
-          : state.repeatEndDate;
-      final effectiveStart =
-          state.dueDate ?? state.completedOn ?? state.startDate;
-      final effectiveDue =
-          state.frequency == HealthFrequency.once && state.completedOn != null
-          ? null
-          : state.dueDate;
-      final effectiveCompleted = state.completedOn;
-      final careFamily = resolveCareFamilyForWrite(
-        frequency: state.frequency,
-        type: state.type,
-        selected: state.careFamily,
-        existing: state.loadedUncategorised ? null : state.careFamily,
-        isCreate: !state.isEdit,
-      );
-
-      if (state.isEdit) {
-        final entry = HealthEntry(
-          id: _entryId ?? '',
-          petId: state.selectedPetIds.first,
-          name: state.name.trim(),
-          type: state.type,
-          dosage: state.dosage.trim(),
-          frequency: state.frequency,
-          frequencyInterval: state.frequency == HealthFrequency.once
-              ? 1
-              : state.frequencyInterval,
-          repeatEndDate: effectiveRepeatEndDate,
-          startDate: effectiveStart,
-          nextDueDate: effectiveDue,
-          completedOn: effectiveCompleted,
-          recurrenceAnchor: state.recurrenceAnchor,
-          notes: state.notes.trim(),
-          healthIssueId: state.selectedHealthIssueId,
-          remindDaysBefore: state.remindDaysBefore,
-          scheduleTimes: _effectiveScheduleTimes(),
-          careFamily: careFamily,
-        );
-        await notifier.updateEntry(entry);
-        if (state.pendingPhotos.isNotEmpty && _entryId != null) {
-          final filesToUpload = List<XFile>.from(state.pendingPhotos);
-          await uploadPendingPhotosToEntry(_entryId!, filesToUpload);
-          clearPendingPhotos();
-          await loadPhotos();
-        }
-      } else {
-        final createUseCase = ref.read(createHealthEntryProvider);
-        final createdEntryIds = <String>[];
-        for (final petId in state.selectedPetIds) {
-          final entry = HealthEntry(
-            id: '',
-            petId: petId,
-            name: state.name.trim(),
-            type: state.type,
-            dosage: state.dosage.trim(),
-            frequency: state.frequency,
-            frequencyInterval: state.frequency == HealthFrequency.once
-                ? 1
-                : state.frequencyInterval,
-            repeatEndDate: effectiveRepeatEndDate,
-            startDate: effectiveStart,
-            nextDueDate: markCompleted
-                ? null
-                : (state.dueDate ?? effectiveStart),
-            completedOn: markCompleted
-                ? (state.completedOn ?? effectiveStart)
-                : state.completedOn,
-            recurrenceAnchor: state.recurrenceAnchor,
-            notes: state.notes.trim(),
-            healthIssueId: state.selectedHealthIssueId,
-            remindDaysBefore: state.remindDaysBefore,
-            scheduleTimes: _effectiveScheduleTimes(),
-            careFamily: careFamily,
-          );
-          final created = await createUseCase.call(entry);
-          createdEntryIds.add(created.id);
-        }
-        if (state.pendingPhotos.isNotEmpty) {
-          final filesToUpload = List<XFile>.from(state.pendingPhotos);
-          for (final entryId in createdEntryIds) {
-            await uploadPendingPhotosToEntry(entryId, filesToUpload);
-          }
-          clearPendingPhotos();
-        }
-        await notifier.refresh();
-      }
-
-      return HealthEntrySubmitSuccess(
-        isEdit: state.isEdit,
-        petIds: Set<String>.from(state.selectedPetIds),
-      );
-    } catch (e) {
-      return HealthEntrySubmitError(e);
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
-  }
+  }) => submitForm(
+    markCompleted: markCompleted,
+    skipMarkCompletedCheck: skipMarkCompletedCheck,
+  );
 }
 
 final healthEntryFormControllerProvider = StateNotifierProvider.autoDispose

@@ -59,8 +59,8 @@ async function syncPendingRecommendations(pool, petId, candidates) {
          id, pet_id, care_family, suggestion_key, status,
          engine_version, knowledge_version, suggested_name,
          suggested_frequency, suggested_frequency_interval,
-         suggested_health_entry_type, rationale_key
-       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+         rationale_key
+       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
        RETURNING *`,
       buildRecommendationInsertValues(petId, candidate, id),
     );
@@ -83,8 +83,9 @@ async function createRhythmFromRecommendation(pool, recommendation, userId, adju
     `INSERT INTO health_entries (
        id, pet_id, user_id, name, type, dosage, frequency, frequency_interval,
        start_date, next_due_date, recurrence_anchor, remind_days_before,
-       status, care_family, care_source
-     ) VALUES ($1,$2,$3,$4,$5,'',$6,$7,$8,$9,'from_completion',7,'active',$10,$11)
+       status, care_family, care_setting, care_planning, care_importance,
+       importance_overridden, care_source
+     ) VALUES ($1,$2,$3,$4,$5,'',$6,$7,$8,$9,'from_completion',7,'active',$10,$11,$12,$13,$14,$15)
      RETURNING *`,
     [
       entryId,
@@ -97,6 +98,10 @@ async function createRhythmFromRecommendation(pool, recommendation, userId, adju
       startDate,
       nextDueDate,
       payload.careFamily,
+      payload.careSetting,
+      payload.carePlanning,
+      payload.careImportance,
+      payload.importanceOverridden,
       payload.careSource,
     ],
   );

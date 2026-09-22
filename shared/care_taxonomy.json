@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "care_settings": ["home", "vet", "other"],
+  "care_planning_modes": ["planned", "unplanned"],
+  "care_importance_levels": ["essential", "recommended", "optional"],
+  "legacy_health_entry_types": ["medication", "preventive", "vet_visit", "other"],
+  "filter_groups": ["prevention", "clinical", "lifestyle"],
+  "legacy_type_default_family": {
+    "medication": "medication",
+    "preventive": "parasite_prevention",
+    "vet_visit": "wellness_review",
+    "other": "other"
+  },
+  "null_family_defaults": {
+    "care_setting": "other",
+    "care_planning": "planned",
+    "care_importance": "optional"
+  },
+  "families": {
+    "medication": {
+      "default_setting": "home",
+      "default_importance": "essential",
+      "filter_group": "prevention",
+      "derived_legacy_type": {
+        "home": "medication",
+        "vet": "medication",
+        "other": "medication"
+      }
+    },
+    "vaccination": {
+      "default_setting": "vet",
+      "default_importance": "essential",
+      "filter_group": "prevention",
+      "derived_legacy_type": {
+        "home": "preventive",
+        "vet": "preventive",
+        "other": "preventive"
+      }
+    },
+    "parasite_prevention": {
+      "default_setting": "home",
+      "default_importance": "essential",
+      "filter_group": "prevention",
+      "derived_legacy_type": {
+        "home": "preventive",
+        "vet": "preventive",
+        "other": "preventive"
+      }
+    },
+    "wellness_review": {
+      "default_setting": "vet",
+      "default_importance": "recommended",
+      "filter_group": "clinical",
+      "derived_legacy_type": {
+        "home": "other",
+        "vet": "vet_visit",
+        "other": "other"
+      }
+    },
+    "dental": {
+      "default_setting": "vet",
+      "default_importance": "recommended",
+      "filter_group": "clinical",
+      "derived_legacy_type": {
+        "home": "other",
+        "vet": "vet_visit",
+        "other": "other"
+      }
+    },
+    "weight_monitoring": {
+      "default_setting": "home",
+      "default_importance": "recommended",
+      "filter_group": "clinical",
+      "derived_legacy_type": {
+        "home": "other",
+        "vet": "vet_visit",
+        "other": "other"
+      }
+    },
+    "grooming": {
+      "default_setting": "other",
+      "default_importance": "optional",
+      "filter_group": "lifestyle",
+      "derived_legacy_type": {
+        "home": "other",
+        "vet": "other",
+        "other": "other"
+      }
+    },
+    "nail_care": {
+      "default_setting": "other",
+      "default_importance": "optional",
+      "filter_group": "lifestyle",
+      "derived_legacy_type": {
+        "home": "other",
+        "vet": "other",
+        "other": "other"
+      }
+    },
+    "other": {
+      "default_setting": "other",
+      "default_importance": "optional",
+      "filter_group": "lifestyle",
+      "derived_legacy_type": {
+        "home": "other",
+        "vet": "other",
+        "other": "other"
+      }
+    }
+  }
+}

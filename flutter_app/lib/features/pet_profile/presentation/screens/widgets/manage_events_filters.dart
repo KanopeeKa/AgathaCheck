@@ -1,14 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
+import 'package:pet_profile_app/features/care_taxonomy/domain/care_family_definition.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_history_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_status.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/pet_event_lifecycle.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/services/care_entry_filter.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
-
-/// Type filter for the manage-events unified list.
-enum ManageEventsTypeFilter { all, medication, preventive, vetVisit, other }
 
 /// Recurring filter for the manage-events unified list.
 enum ManageEventsRecurringFilter { all, recurring, oneTime }
@@ -23,45 +23,57 @@ const defaultGlobalEventsFilters = ManageEventsFilters(
 
 /// Combined filter state for manage-events list screens.
 ///
-/// Empty [types], [statuses], and [recurring] sets mean "all" for that row.
+/// Empty [families], [filterGroups], [statuses], and [recurring] sets mean "all"
+/// for that row.
 class ManageEventsFilters {
   const ManageEventsFilters({
-    this.types = const {},
+    this.families = const {},
+    this.filterGroups = const {},
     this.recurring = const {},
     this.statuses = const {},
     this.showSkipped = true,
   });
 
-  final Set<ManageEventsTypeFilter> types;
+  final Set<CareFamily> families;
+  final Set<CareFilterGroup> filterGroups;
   final Set<ManageEventsRecurringFilter> recurring;
   final Set<ManageEventsStatusFilter> statuses;
   final bool showSkipped;
 
   ManageEventsFilters copyWith({
-    Set<ManageEventsTypeFilter>? types,
+    Set<CareFamily>? families,
+    Set<CareFilterGroup>? filterGroups,
     Set<ManageEventsRecurringFilter>? recurring,
     Set<ManageEventsStatusFilter>? statuses,
     bool? showSkipped,
   }) {
     return ManageEventsFilters(
-      types: types ?? this.types,
+      families: families ?? this.families,
+      filterGroups: filterGroups ?? this.filterGroups,
       recurring: recurring ?? this.recurring,
       statuses: statuses ?? this.statuses,
       showSkipped: showSkipped ?? this.showSkipped,
     );
   }
 
-  ManageEventsFilters toggleType(ManageEventsTypeFilter value) {
-    if (value == ManageEventsTypeFilter.all) {
-      return copyWith(types: {});
-    }
-    final next = Set<ManageEventsTypeFilter>.from(types);
+  ManageEventsFilters toggleFamily(CareFamily value) {
+    final next = Set<CareFamily>.from(families);
     if (next.contains(value)) {
       next.remove(value);
     } else {
       next.add(value);
     }
-    return copyWith(types: next);
+    return copyWith(families: next);
+  }
+
+  ManageEventsFilters toggleFilterGroup(CareFilterGroup value) {
+    final next = Set<CareFilterGroup>.from(filterGroups);
+    if (next.contains(value)) {
+      next.remove(value);
+    } else {
+      next.add(value);
+    }
+    return copyWith(filterGroups: next);
   }
 
   ManageEventsFilters toggleStatus(ManageEventsStatusFilter value) {
@@ -90,10 +102,10 @@ class ManageEventsFilters {
     return copyWith(recurring: next);
   }
 
-  bool isTypeSelected(ManageEventsTypeFilter value) =>
-      value == ManageEventsTypeFilter.all
-      ? types.isEmpty
-      : types.contains(value);
+  bool isFamilySelected(CareFamily value) => families.contains(value);
+
+  bool isFilterGroupSelected(CareFilterGroup value) =>
+      filterGroups.contains(value);
 
   bool isStatusSelected(ManageEventsStatusFilter value) =>
       value == ManageEventsStatusFilter.all
@@ -176,21 +188,6 @@ DateTime manageEventSortKey(
   return entry.nextDueDate ?? entry.startDate;
 }
 
-ManageEventsTypeFilter? _typeFilterForEntry(HealthEntry entry) {
-  return switch (entry.type) {
-    HealthEntryType.medication => ManageEventsTypeFilter.medication,
-    HealthEntryType.preventive => ManageEventsTypeFilter.preventive,
-    HealthEntryType.vetVisit => ManageEventsTypeFilter.vetVisit,
-    HealthEntryType.other => ManageEventsTypeFilter.other,
-  };
-}
-
-bool _matchesTypeFilters(HealthEntry entry, Set<ManageEventsTypeFilter> types) {
-  if (types.isEmpty) return true;
-  final filter = _typeFilterForEntry(entry);
-  return filter != null && types.contains(filter);
-}
-
 bool _matchesRecurringFilters(
   HealthEntry entry,
   Set<ManageEventsRecurringFilter> recurring,
@@ -239,7 +236,8 @@ bool matchesManageEventsFilters(
     return false;
   }
 
-  if (!_matchesTypeFilters(entry, filters.types)) return false;
+  if (!matchesCareFamilyFilters(entry, filters.families)) return false;
+  if (!matchesCareFilterGroupFilters(entry, filters.filterGroups)) return false;
   if (!_matchesRecurringFilters(entry, filters.recurring)) return false;
   if (!_matchesStatusFilters(entry, filters.statuses)) return false;
 

@@ -1,4 +1,7 @@
 import 'recurrence_anchor.dart';
+import '../../../care_taxonomy/domain/care_importance.dart';
+import '../../../care_taxonomy/domain/care_planning_mode.dart';
+import '../../../care_taxonomy/domain/care_setting.dart';
 import '../../../pet_profile/domain/entities/care_family.dart';
 import '../../../pet_profile/domain/entities/care_source.dart';
 
@@ -44,6 +47,10 @@ class HealthEntry {
     this.scheduleTimes,
     this.status = 'active',
     this.careFamily,
+    this.careSetting,
+    this.carePlanning,
+    this.careImportance,
+    this.importanceOverridden = false,
     this.careSource,
     this.createdAt,
     this.updatedAt,
@@ -111,6 +118,18 @@ class HealthEntry {
 
   /// Semantic care family (optional until backfilled).
   final CareFamily? careFamily;
+
+  /// Where / who delivers this care.
+  final CareSetting? careSetting;
+
+  /// Scheduling intent: planned vs recorded after the fact.
+  final CarePlanningMode? carePlanning;
+
+  /// Prioritisation weight (not notification urgency).
+  final CareImportance? careImportance;
+
+  /// Whether the user changed importance away from the family default.
+  final bool importanceOverridden;
 
   /// Provenance for how this care was established.
   final CareSource? careSource;
@@ -189,6 +208,13 @@ class HealthEntry {
     String? status,
     CareFamily? careFamily,
     bool clearCareFamily = false,
+    CareSetting? careSetting,
+    bool clearCareSetting = false,
+    CarePlanningMode? carePlanning,
+    bool clearCarePlanning = false,
+    CareImportance? careImportance,
+    bool clearCareImportance = false,
+    bool? importanceOverridden,
     CareSource? careSource,
     bool clearCareSource = false,
     DateTime? createdAt,
@@ -224,6 +250,14 @@ class HealthEntry {
           : (scheduleTimes ?? this.scheduleTimes),
       status: status ?? this.status,
       careFamily: clearCareFamily ? null : (careFamily ?? this.careFamily),
+      careSetting: clearCareSetting ? null : (careSetting ?? this.careSetting),
+      carePlanning: clearCarePlanning
+          ? null
+          : (carePlanning ?? this.carePlanning),
+      careImportance: clearCareImportance
+          ? null
+          : (careImportance ?? this.careImportance),
+      importanceOverridden: importanceOverridden ?? this.importanceOverridden,
       careSource: clearCareSource ? null : (careSource ?? this.careSource),
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

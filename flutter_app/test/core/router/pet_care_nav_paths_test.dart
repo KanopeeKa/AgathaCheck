@@ -20,15 +20,17 @@ void main() {
     });
 
     test('matches pet-scoped add-care form routes', () {
+      expect(isPetCareActionsNavPath('/pet/pet-1/care/add'), isTrue);
       expect(isPetCareActionsNavPath('/pet/pet-1/health/add'), isTrue);
       expect(isPetCareActionsNavPath('/pet/pet-1/other/add'), isTrue);
       expect(isPetCareActionsNavPath('/pet/pet-1/health/edit/entry-9'), isTrue);
     });
 
-    test('matches global health entry routes', () {
+    test('matches global care entry routes', () {
       expect(isPetCareActionsNavPath('/health'), isTrue);
       expect(isPetCareActionsNavPath('/health/add'), isTrue);
       expect(isPetCareActionsNavPath('/health/edit/entry-1'), isTrue);
+      expect(isPetCareActionsNavPath('/care/add'), isTrue);
     });
 
     test('does not match pet profile or quieter destinations', () {
@@ -51,8 +53,10 @@ void main() {
         '/pet/pet-1/events/entry-1',
         '/pet/pet-1/events/entry-1/edit',
         '/pet/pet-1/care-rhythms',
+        '/pet/pet-1/care/add',
         '/pet/pet-1/health/add',
         '/pet/pet-1/other/add',
+        '/care/add',
         '/health/add',
       ];
       for (final route in careRoutes) {

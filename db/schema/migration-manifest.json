@@ -74,7 +74,9 @@
     "065_pet_access_roles.sql",
     "066_pet_tags.sql",
     "067_pet_share_invites.sql",
-    "068_notifications_health_entry_id_text.sql"
+    "068_notifications_health_entry_id_text.sql",
+    "069_care_classification_columns.sql",
+    "070_cim_drop_suggested_health_entry_type.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

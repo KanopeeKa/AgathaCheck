@@ -8,6 +8,9 @@ import 'package:pet_profile_app/features/health_tracking/domain/repositories/hea
 import 'package:pet_profile_app/features/health_tracking/domain/usecases/create_health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/usecases/get_health_entries.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/usecases/update_health_entry.dart';
+import 'package:pet_profile_app/features/care_taxonomy/domain/care_importance.dart';
+import 'package:pet_profile_app/features/care_taxonomy/domain/care_planning_mode.dart';
+import 'package:pet_profile_app/features/care_taxonomy/domain/care_setting.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/controllers/health_entry_form_constants.dart';
@@ -136,7 +139,7 @@ Widget _wrapPetProfileHealthEventFlow() {
         },
       ),
       GoRoute(
-        path: '/pet/:petId/health/add',
+        path: '/pet/:petId/care/add',
         builder: (context, state) {
           final petId = state.pathParameters['petId']!;
           return HealthEntryFormScreen(petId: petId);
@@ -182,10 +185,10 @@ HealthEntry _sampleEntry({
 
 Widget _wrapAddFlow({required _RecordingHealthRepository repository}) {
   final router = GoRouter(
-    initialLocation: '/pet/p1/health/add',
+    initialLocation: '/pet/p1/care/add',
     routes: [
       GoRoute(
-        path: '/pet/:petId/health/add',
+        path: '/pet/:petId/care/add',
         builder: (context, state) =>
             HealthEntryFormScreen(petId: state.pathParameters['petId']),
       ),
@@ -330,9 +333,43 @@ void main() {
     );
     expect(healthDocumentAllowedExtensions, ['jpg', 'jpeg', 'png', 'pdf']);
     expect(healthDocumentMaxBytes, 2 * 1024 * 1024);
-    // Type/frequency dropdowns are localized (not enum.label English).
-    expect(find.text('Medication'), findsOneWidget);
+    // Classification section and frequency are localized (not enum.label English).
+    expect(find.text('Care category'), findsOneWidget);
+    expect(find.text('Where'), findsOneWidget);
+    expect(find.text('Priority'), findsOneWidget);
     expect(find.text('Does not repeat'), findsOneWidget);
+    expect(find.byKey(const Key('care_planning_toggle')), findsOneWidget);
+    expect(find.text('Plan this care'), findsOneWidget);
+    expect(find.text('Record what happened'), findsOneWidget);
+  });
+
+  testWidgets('record mode hides schedule and reminders', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          petListProvider.overrideWith(_TwoPetsNotifier.new),
+          apiBaseUrlProvider.overrideWithValue('http://test.local'),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const HealthEntryFormScreen(
+            petId: 'p1',
+            initialPlanningMode: CarePlanningMode.unplanned,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Record care'), findsOneWidget);
+    expect(find.text('Does not repeat'), findsNothing);
+    expect(find.text('Remind me'), findsNothing);
+    expect(find.bySemanticsLabel(RegExp(r'Due date:')), findsNothing);
+    expect(find.bySemanticsLabel(RegExp(r'Completed on:')), findsOneWidget);
   });
 
   testWidgets('shows localized empty-pets message when no pets exist', (
@@ -358,8 +395,10 @@ void main() {
     expect(find.text('Documents'), findsOneWidget);
     expect(find.text('Sélectionner les animaux'), findsOneWidget);
     expect(find.text('Tout sélectionner'), findsOneWidget);
-    // Dropdowns localized in French too (was English enum.label before).
-    expect(find.text('Médicament'), findsOneWidget);
+    // Classification section localized in French too.
+    expect(find.text('Catégorie de soins'), findsOneWidget);
+    expect(find.text('Où'), findsOneWidget);
+    expect(find.text('Priorité'), findsOneWidget);
     expect(find.text('Ne se répète pas'), findsOneWidget);
   });
 
@@ -395,30 +434,22 @@ void main() {
     },
   );
 
-  testWidgets(
-    'edit form omits administration history and shows all four types',
-    (WidgetTester tester) async {
-      await tester.pumpWidget(
-        _wrapEditFlow(entry: _sampleEntry(type: HealthEntryType.other)),
-      );
-      await tester.pump();
-      await tester.pumpAndSettle();
+  testWidgets('edit form omits administration history and legacy type picker', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrapEditFlow(entry: _sampleEntry(type: HealthEntryType.other)),
+    );
+    await tester.pump();
+    await tester.pumpAndSettle();
 
-      expect(find.text('Edit Entry'), findsOneWidget);
-      expect(find.text('Administration History'), findsNothing);
-      expect(
-        find.byKey(const Key('delete_health_entry_button')),
-        findsOneWidget,
-      );
-
-      await tester.tap(find.byType(DropdownButtonFormField<HealthEntryType>));
-      await tester.pumpAndSettle();
-      expect(find.text('Medication'), findsWidgets);
-      expect(find.text('Preventive'), findsWidgets);
-      expect(find.text('Vet Visit'), findsWidgets);
-      expect(find.text('Other'), findsWidgets);
-    },
-  );
+    expect(find.text('Edit Entry'), findsOneWidget);
+    expect(find.text('Administration History'), findsNothing);
+    expect(find.byKey(const Key('delete_health_entry_button')), findsOneWidget);
+    expect(find.byType(DropdownButtonFormField<HealthEntryType>), findsNothing);
+    expect(find.byKey(const Key('care_setting_picker')), findsOneWidget);
+    expect(find.byKey(const Key('care_importance_optional')), findsOneWidget);
+  });
 
   test('recurring delete copy warns all iterations are removed', () {
     final l = lookupAppLocalizations(const Locale('en'));
@@ -473,6 +504,8 @@ void main() {
 
     expect(repository.lastCreated, isNotNull);
     expect(repository.lastCreated!.careFamily, CareFamily.medication);
+    expect(repository.lastCreated!.careSetting, CareSetting.home);
+    expect(repository.lastCreated!.careImportance, CareImportance.essential);
   });
 
   testWidgets(

@@ -21,7 +21,6 @@ CareRecommendation _rec({
     suggestedName: 'Wellness review',
     suggestedFrequency: 'yearly',
     suggestedFrequencyInterval: 1,
-    suggestedHealthEntryType: 'vet_visit',
     rationaleKey: 'careSuggestionWellnessWhy',
   );
 }

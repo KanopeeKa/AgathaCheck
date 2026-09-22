@@ -76,11 +76,10 @@ void main() {
           ),
         ),
         GoRoute(
-          path: '/pet/:petId/other/add',
+          path: '/pet/:petId/care/add',
           builder: (context, state) => HealthEntryFormScreen(
             petId: state.pathParameters['petId']!,
-            initialType: HealthEntryType.other,
-            allowedTypes: kOtherEventTypes.toList(),
+            allowedTypes: kAllPetEventTypes,
           ),
         ),
       ],
@@ -109,7 +108,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(HealthEntryFormScreen), findsOneWidget);
-    expect(find.text('Other'), findsOneWidget);
-    expect(find.text('Medication'), findsNothing);
+    expect(find.byKey(const Key('care_family_picker')), findsOneWidget);
   });
 }

@@ -1,5 +1,8 @@
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';
+import '../../../care_taxonomy/domain/care_importance.dart';
+import '../../../care_taxonomy/domain/care_planning_mode.dart';
+import '../../../care_taxonomy/domain/care_setting.dart';
 import '../../../pet_profile/domain/entities/care_family.dart';
 import '../../../pet_profile/domain/entities/care_source.dart';
 import '../../../../core/utils/calendar_date.dart';
@@ -28,6 +31,10 @@ class HealthEntryModel extends HealthEntry {
     super.scheduleTimes,
     super.status,
     super.careFamily,
+    super.careSetting,
+    super.carePlanning,
+    super.careImportance,
+    super.importanceOverridden,
     super.careSource,
     super.createdAt,
     super.updatedAt,
@@ -63,6 +70,14 @@ class HealthEntryModel extends HealthEntry {
       scheduleTimes: _parseScheduleTimes(json['schedule_times']),
       status: json['status'] as String? ?? 'active',
       careFamily: CareFamilyWire.fromWire(json['care_family'] as String?),
+      careSetting: CareSettingWire.fromWire(json['care_setting'] as String?),
+      carePlanning: CarePlanningModeWire.fromWire(
+        json['care_planning'] as String?,
+      ),
+      careImportance: CareImportanceWire.fromWire(
+        json['care_importance'] as String?,
+      ),
+      importanceOverridden: json['importance_overridden'] as bool? ?? false,
       careSource: CareSourceWire.fromWire(json['care_source'] as String?),
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
@@ -96,6 +111,10 @@ class HealthEntryModel extends HealthEntry {
       scheduleTimes: entry.scheduleTimes,
       status: entry.status,
       careFamily: entry.careFamily,
+      careSetting: entry.careSetting,
+      carePlanning: entry.carePlanning,
+      careImportance: entry.careImportance,
+      importanceOverridden: entry.importanceOverridden,
       careSource: entry.careSource,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
@@ -107,7 +126,6 @@ class HealthEntryModel extends HealthEntry {
       'id': id,
       'pet_id': petId,
       'name': name,
-      'type': typeToApi(type),
       'dosage': dosage,
       'frequency': frequencyToApi(frequency),
       'frequency_days': frequencyDays,
@@ -125,6 +143,10 @@ class HealthEntryModel extends HealthEntry {
       if (scheduleTimes != null) 'schedule_times': scheduleTimes,
       'status': status,
       if (careFamily != null) 'care_family': careFamily!.wireValue,
+      if (careSetting != null) 'care_setting': careSetting!.wireValue,
+      if (carePlanning != null) 'care_planning': carePlanning!.wireValue,
+      if (careImportance != null) 'care_importance': careImportance!.wireValue,
+      if (importanceOverridden) 'importance_overridden': importanceOverridden,
       if (careSource != null) 'care_source': careSource!.wireValue,
     };
   }
