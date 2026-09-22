@@ -4,8 +4,8 @@
   "approved_at": "2026-09-22T13:12:45Z",
   "approved_by": "User chat 2026-09-22 - two review rounds, no further blocking findings; proceed through merge and e2e-preUAT verification",
   "approved_until": "2026-09-24T13:12:45Z",
-  "content_hash": "sha256:309e61558de93edbee0c81af6d6718212debd46de2086ca9496caa27dfcb4db0",
-  "autonomy": "active",
+  "content_hash": "sha256:262ae98c492bd2a1a6569e8f2fea2be859017dc86f3005aec7e40b574e835121",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/away-plan-detail-v2-integration-d4c1",
   "control_issue": 1270,
@@ -13,7 +13,7 @@
   "phases": [
     {
       "id": "awd-doc-0",
-      "title": "AWD-DOC-0 \u2014 Plan bootstrap",
+      "title": "AWD-DOC-0 — Plan bootstrap",
       "branch": "cursor/away-plan-detail-v2-doc0-d4c1",
       "allowed_paths": [
         "docs/domains/pet_care/**",
@@ -43,7 +43,7 @@
     },
     {
       "id": "awd-1",
-      "title": "AWD-1 \u2014 Attention-only coverage summary",
+      "title": "AWD-1 — Attention-only coverage summary",
       "branch": "cursor/away-plan-detail-v2-awd1-d4c1",
       "allowed_paths": [
         "flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_header_section.dart",
@@ -72,7 +72,7 @@
     },
     {
       "id": "awd-2",
-      "title": "AWD-2 \u2014 Unified care-event contract (backend)",
+      "title": "AWD-2 — Unified care-event contract (backend)",
       "branch": "cursor/away-plan-detail-v2-awd2-d4c1",
       "allowed_paths": [
         "server/lib/recurrenceHelper.js",
@@ -107,7 +107,7 @@
     },
     {
       "id": "awd-3",
-      "title": "AWD-3 \u2014 Unified Planned care list (Flutter)",
+      "title": "AWD-3 — Unified Planned care list (Flutter)",
       "branch": "cursor/away-plan-detail-v2-awd3-d4c1",
       "allowed_paths": [
         "flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_pet_care_section.dart",
@@ -145,7 +145,7 @@
     },
     {
       "id": "awd-4",
-      "title": "AWD-4 \u2014 Display/edit screen split",
+      "title": "AWD-4 — Display/edit screen split",
       "branch": "cursor/away-plan-detail-v2-awd4-d4c1",
       "allowed_paths": [
         "flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_screen.dart",
@@ -182,7 +182,7 @@
     },
     {
       "id": "awd-5",
-      "title": "AWD-5 \u2014 Docs + journey",
+      "title": "AWD-5 — Docs + journey",
       "branch": "cursor/away-plan-detail-v2-awd5-d4c1",
       "allowed_paths": [
         "docs/domains/pet_care/**",
