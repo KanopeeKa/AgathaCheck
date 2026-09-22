@@ -59,7 +59,7 @@ class _HealthEventsSectionState extends ConsumerState<HealthEventsSection> {
         entries: entries,
         petId: widget.petId,
         onEntryTap: (entry) =>
-            context.go('/pet/${widget.petId}/health/edit/${entry.id}'),
+            context.go('/pet/${widget.petId}/events/${entry.id}'),
       ),
     );
 

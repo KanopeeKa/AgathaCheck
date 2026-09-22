@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+import 'package:pet_profile_app/core/router/pet_care_route_redirects.dart';
 import 'package:pet_profile_app/features/care_taxonomy/domain/care_planning_mode.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/controllers/health_entry_form_controller.dart';
@@ -25,15 +26,15 @@ class _EmptyHealthEntriesNotifier extends HealthEntriesNotifier {
 }
 
 void main() {
-  group('pet health add route planning query', () {
+  group('pet care add route planning query', () {
     testWidgets('?planning=unplanned opens record mode', (
       WidgetTester tester,
     ) async {
       final router = GoRouter(
-        initialLocation: '/pet/p1/health/add?planning=unplanned',
+        initialLocation: '/pet/p1/care/add?planning=unplanned',
         routes: [
           GoRoute(
-            path: '/pet/:petId/health/add',
+            path: '/pet/:petId/care/add',
             builder: (context, state) {
               final planningParam = state.uri.queryParameters['planning'];
               final initialPlanningMode = planningParam == 'unplanned'
@@ -107,9 +108,34 @@ void main() {
         isNull,
       );
       expect(
-        legacyPetEventEditRedirectForPath('/pet/pet-1/health/add'),
+        legacyPetEventEditRedirectForPath('/pet/pet-1/care/add'),
         isNull,
       );
+    });
+  });
+
+  group('legacyCareAddRedirectForPath', () {
+    test('maps legacy pet health add path', () {
+      expect(
+        legacyCareAddRedirectForPath('/pet/pet-1/health/add'),
+        '/pet/pet-1/care/add',
+      );
+    });
+
+    test('maps legacy pet other add path', () {
+      expect(
+        legacyCareAddRedirectForPath('/pet/pet-2/other/add'),
+        '/pet/pet-2/care/add',
+      );
+    });
+
+    test('maps legacy global health add path', () {
+      expect(legacyCareAddRedirectForPath('/health/add'), '/care/add');
+    });
+
+    test('returns null for canonical care add paths', () {
+      expect(legacyCareAddRedirectForPath('/pet/pet-1/care/add'), isNull);
+      expect(legacyCareAddRedirectForPath('/care/add'), isNull);
     });
   });
 }

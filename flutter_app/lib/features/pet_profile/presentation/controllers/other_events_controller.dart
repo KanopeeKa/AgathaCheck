@@ -11,6 +11,6 @@ class OtherEventsController {
 
   void onAddEntry(BuildContext context, String petId, {HealthEntryType? type}) {
     final query = type != null ? '?type=${type.name}' : '';
-    context.go('/pet/$petId/other/add$query');
+    context.go('/pet/$petId/care/add$query');
   }
 }

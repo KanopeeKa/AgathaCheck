@@ -74,9 +74,9 @@ void main() {
               PetManageEventsScreen(petId: state.pathParameters['petId']!),
         ),
         GoRoute(
-          path: '/pet/:petId/health/add',
+          path: '/pet/:petId/care/add',
           builder: (context, state) =>
-              const Scaffold(body: Text('Add health entry')),
+              const Scaffold(body: Text('Add care entry')),
         ),
         GoRoute(
           path: '/pet/:petId/events/:entryId',
@@ -162,7 +162,7 @@ void main() {
     expect(find.text('View entry-open-med'), findsOneWidget);
   });
 
-  testWidgets('add app bar button navigates to unified health entry form', (
+  testWidgets('add app bar button navigates to unified care add form', (
     tester,
   ) async {
     await tester.pumpWidget(buildScreen());
@@ -171,7 +171,7 @@ void main() {
     await tester.tap(find.byKey(const Key('manage_events_add_app_bar')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Add health entry'), findsOneWidget);
+    expect(find.text('Add care entry'), findsOneWidget);
   });
 
   testWidgets('back navigates to pet profile', (tester) async {
