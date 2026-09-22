@@ -1461,6 +1461,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addHealthIssue => 'Add health issue';
 
   @override
+  String get vetHealthIssuePromptTitle =>
+      'Was this visit related to a health issue?';
+
+  @override
+  String get vetHealthIssuePromptLinkExisting => 'Link existing issue';
+
+  @override
+  String get vetHealthIssuePromptAddNew => 'Add new issue';
+
+  @override
+  String get vetHealthIssuePromptNotRelated => 'Not related';
+
+  @override
+  String get vetPlannedCompletionHealthIssuePromptTitle =>
+      'Did the vet identify anything new to track?';
+
+  @override
+  String get vetHealthIssuePromptNo => 'No';
+
+  @override
+  String get vetHealthIssuePlanNextVisit => 'Plan the next visit';
+
+  @override
+  String get healthIssueQuickPickInjury => 'Injury or illness';
+
+  @override
+  String get healthIssueQuickPickDental => 'Dental problem';
+
+  @override
+  String get healthIssueQuickPickNeutering => 'Neutering / spay';
+
+  @override
+  String get healthIssueQuickPickOther => 'Other';
+
+  @override
+  String get healthIssueSelectTitle => 'Select a health issue';
+
+  @override
+  String get healthIssueLinked => 'Health issue linked';
+
+  @override
+  String get healthIssueLinkFailed => 'Could not link health issue';
+
+  @override
   String get issueDescriptionRequired => 'Description is required';
 
   @override

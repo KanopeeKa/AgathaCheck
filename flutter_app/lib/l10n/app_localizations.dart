@@ -2671,6 +2671,90 @@ abstract class AppLocalizations {
   /// **'Add health issue'**
   String get addHealthIssue;
 
+  /// No description provided for @vetHealthIssuePromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Was this visit related to a health issue?'**
+  String get vetHealthIssuePromptTitle;
+
+  /// No description provided for @vetHealthIssuePromptLinkExisting.
+  ///
+  /// In en, this message translates to:
+  /// **'Link existing issue'**
+  String get vetHealthIssuePromptLinkExisting;
+
+  /// No description provided for @vetHealthIssuePromptAddNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Add new issue'**
+  String get vetHealthIssuePromptAddNew;
+
+  /// No description provided for @vetHealthIssuePromptNotRelated.
+  ///
+  /// In en, this message translates to:
+  /// **'Not related'**
+  String get vetHealthIssuePromptNotRelated;
+
+  /// No description provided for @vetPlannedCompletionHealthIssuePromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Did the vet identify anything new to track?'**
+  String get vetPlannedCompletionHealthIssuePromptTitle;
+
+  /// No description provided for @vetHealthIssuePromptNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get vetHealthIssuePromptNo;
+
+  /// No description provided for @vetHealthIssuePlanNextVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan the next visit'**
+  String get vetHealthIssuePlanNextVisit;
+
+  /// No description provided for @healthIssueQuickPickInjury.
+  ///
+  /// In en, this message translates to:
+  /// **'Injury or illness'**
+  String get healthIssueQuickPickInjury;
+
+  /// No description provided for @healthIssueQuickPickDental.
+  ///
+  /// In en, this message translates to:
+  /// **'Dental problem'**
+  String get healthIssueQuickPickDental;
+
+  /// No description provided for @healthIssueQuickPickNeutering.
+  ///
+  /// In en, this message translates to:
+  /// **'Neutering / spay'**
+  String get healthIssueQuickPickNeutering;
+
+  /// No description provided for @healthIssueQuickPickOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get healthIssueQuickPickOther;
+
+  /// No description provided for @healthIssueSelectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a health issue'**
+  String get healthIssueSelectTitle;
+
+  /// No description provided for @healthIssueLinked.
+  ///
+  /// In en, this message translates to:
+  /// **'Health issue linked'**
+  String get healthIssueLinked;
+
+  /// No description provided for @healthIssueLinkFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not link health issue'**
+  String get healthIssueLinkFailed;
+
   /// No description provided for @issueDescriptionRequired.
   ///
   /// In en, this message translates to:
