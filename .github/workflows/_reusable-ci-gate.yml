@@ -35,6 +35,9 @@ on:
       flutter_test_rest_b:
         required: true
         type: string
+      flutter_test_experience:
+        required: true
+        type: string
       flutter_coverage:
         required: true
         type: string
@@ -75,6 +78,7 @@ jobs:
           FLUTTER_TEST_HEALTH: ${{ inputs.flutter_test_health }}
           FLUTTER_TEST_REST_A: ${{ inputs.flutter_test_rest_a }}
           FLUTTER_TEST_REST_B: ${{ inputs.flutter_test_rest_b }}
+          FLUTTER_TEST_EXPERIENCE: ${{ inputs.flutter_test_experience }}
           FLUTTER_COVERAGE: ${{ inputs.flutter_coverage }}
           FLUTTER_INTEGRATION: ${{ inputs.flutter_integration }}
           FLUTTER_BUILD_WEB: ${{ inputs.flutter_build_web }}

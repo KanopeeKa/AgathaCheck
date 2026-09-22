@@ -5,7 +5,7 @@ set -uo pipefail
 
 SHARD="${1:-}"
 if [[ -z "$SHARD" ]]; then
-  echo "usage: run_tests_ci_shard.sh <pet-core|pet-screens|pet-widgets|health|org|rest-a|rest-b>" >&2
+  echo "usage: run_tests_ci_shard.sh <pet-core|pet-screens|pet-widgets|health|org|rest-a|rest-b|experience>" >&2
   exit 1
 fi
 
@@ -35,9 +35,11 @@ shard_paths() {
         test/features/notifications \
         test/features/subscription
       ;;
+    experience)
+      printf '%s\n' test/features/experience
+      ;;
     rest-b)
       printf '%s\n' \
-        test/features/experience \
         test/features/vet \
         test/features/weight_tracking \
         test/features/help \
@@ -45,7 +47,7 @@ shard_paths() {
         test/features/api_base_url_wiring_test.dart
       ;;
     *)
-      echo "::error::Unknown shard '${SHARD}' (expected pet-core|pet-screens|pet-widgets|health|org|rest-a|rest-b)" >&2
+      echo "::error::Unknown shard '${SHARD}' (expected pet-core|pet-screens|pet-widgets|health|org|rest-a|rest-b|experience)" >&2
       return 1
       ;;
   esac

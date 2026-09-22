@@ -114,6 +114,15 @@ jobs:
     with:
       shard: rest-b
 
+  flutter-test-experience:
+    needs: [ci-scope, flutter-analyze]
+    if: >-
+      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
+      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'experience')
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: experience
+
   flutter-coverage:
     needs:
       - ci-scope
@@ -123,6 +132,7 @@ jobs:
       - flutter-test-health
       - flutter-test-rest-a
       - flutter-test-rest-b
+      - flutter-test-experience
     if: needs.ci-scope.outputs.run_flutter_coverage == 'true'
     uses: ./.github/workflows/_reusable-flutter-coverage.yml
 
@@ -169,6 +179,7 @@ jobs:
       - flutter-test-health
       - flutter-test-rest-a
       - flutter-test-rest-b
+      - flutter-test-experience
       - flutter-coverage
       - flutter-integration
       - flutter-build-web
@@ -186,6 +197,7 @@ jobs:
       flutter_test_health: ${{ needs.flutter-test-health.result }}
       flutter_test_rest_a: ${{ needs.flutter-test-rest-a.result }}
       flutter_test_rest_b: ${{ needs.flutter-test-rest-b.result }}
+      flutter_test_experience: ${{ needs.flutter-test-experience.result }}
       flutter_coverage: ${{ needs.flutter-coverage.result }}
       flutter_integration: ${{ needs.flutter-integration.result }}
       flutter_build_web: ${{ needs.flutter-build-web.result }}
