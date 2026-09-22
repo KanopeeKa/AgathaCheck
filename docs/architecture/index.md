@@ -10,7 +10,7 @@ tags: [architecture, index]
 
 Thin map for agents — read this **before** broad codebase search.  
 Full conventions: `docs/architecture/modularity.md`.  
-**Active architecture review (2026-09-22):** [active-codebase-review.md](reviews/active-codebase-review.md) — integrity, module contracts, and phased hardening plan.
+**Accepted architecture review (2026-09-22):** [active-codebase-review.md](reviews/active-codebase-review.md) — integrity fixes, module contracts, and delivery batches A → B → C.
 
 ---
 

@@ -2,7 +2,7 @@
 title: Active codebase architecture review
 owner: Engineering
 audience: both
-status: proposed
+status: accepted
 last_updated: 2026-09-22
 peer_reviewed: 2026-09-22
 tags: [architecture, review, modularity, pet-care]
@@ -196,14 +196,72 @@ Use ADRs for significant boundary choices (canonical health state, transaction o
 
 ## Phased roadmap
 
-1. **Characterize and protect (S–M):** tests for pool transaction ownership, post-commit failure semantics, offline versus 401/403 fallback, and mutation visibility across health selectors. Record explicit frozen boundary fixtures.
-2. **Integrity fixes (M–L):** transaction runner and lifecycle/command boundaries; make committed outcomes stable and external erasure retryable. Preserve endpoint compatibility or version/deprecate intentionally.
-3. **Client state ownership (M):** canonical health store/selectors, command controller, attachment port and explicit pet cache policy. Migrate one consumer at a time.
-4. **Module contract ratchet (L):** publish entrypoints and permitted dependencies, characterize existing violations, block new ones, then break high-impact presentation-to-feature cycles. Move composition upward rather than everything into core.
-5. **Documentation and enforcement (M):** align coverage thresholds/denominators, make BDD traceability distinct from execution, expand lint/size coverage and verify docs-gate requirements.
-6. **Incremental extraction (ongoing):** address hotspots when their responsibility changes; retain simple CRUD and small features without unnecessary layers.
+The accepted initial delivery sequence is **A: protect → B: backend integrity → C: client authority**, not twelve concurrent refactors. Packages 9–12 remain a later program backlog; a narrow baseline/block-new boundary check may start in A, but full API/cycle migration waits for C. Package 5 is a separate privacy workstream with explicit infrastructure prerequisites.
 
 Success measures: fewer forbidden deep imports and strongly connected features; every mutable resource has a named owner; every transaction has a single client; committed writes have unambiguous responses; required side effects have documented replay semantics; contract documentation and checks are executable and current. Line-count reductions alone are not success.
+
+## Accepted decisions and revised delivery sequence
+
+The user accepted the peer decision-table recommendations on 2026-09-22. This section resolves D1–D7 and supersedes alternatives in the historical peer review and evidence appendices. **Accepted** means architecture direction accepted, not implementation completed, tests passed, or permission to merge to main. No runtime changes or persistent execution mission are initiated by this document update.
+
+| Decision | Accepted contract | Implementation constraint / gate |
+|---|---|---|
+| D1 | Passed-away POST is **notification-only**; pet persistence stays in the separate PUT. | Replace the misleading state claim with `notification_sent` and an explicit delivery status/count. `notification_sent` may be true only for completed delivery, not merely enqueueing. Preserve installed clients through a versioned or negotiated compatibility contract; never silently change endpoint meaning. |
+| D2 | **Hybrid offline reads:** 401/403 fail explicitly; genuine network failures may return cached pets with `isStale` and freshness metadata. | Do not classify parse errors, arbitrary 5xx, validation errors or access revocation as offline success. Cache must be scoped to the authenticated principal and invalidated on logout/account changes. |
+| D3 | Account erasure returns **202 Accepted plus a durable job**, not synchronous completion. | Return 202 only after durable acceptance; provide truthful pending/failed/completed status. Commit access/session invalidation and cleanup intent before accepting; define how existing access JWTs are rejected, not only refresh tokens. |
+| D4 | Minimal **`cleanup_jobs` table** for erasure work and required notifications; no event bus. | External account erasure (including PostHog) is necessary erasure work under D3, not a new generic job platform. Cache refresh, optional audit/telemetry and projections are excluded. Specify delivery guarantees, idempotency, worker ownership, retries and failure handling before producers switch. |
+| D5 | **DAG with explicit allowed composition edges.** Experience consumes feature public APIs; domain features do not import Experience screens or another feature's presentation internals. | Allow only named composition entrypoints in Experience and core router/wiring, not blanket `core → *` permission for foundation/domain utilities. An edge allowlist does not excuse a cycle; any temporary cycle exception is separately recorded with expiry. |
+| D6 | Baseline existing violations and **block new** violations. | Compare stable violation identities, not just total counts, so one removed violation cannot hide a different new one. |
+| D7 | Add `server/lib` size coverage **report-only first**, then ratchet. | Publish grandfathered exceptions with owner/reason/review date before blocking changed/new violations. Do not impose an immediate global split. |
+
+### Delivery batches and stop/go gates
+
+“Sprint” denotes an ordered scope batch, not a promised duration. Each batch can contain several atomic PRs; tests for known defects must land with their fix or be explicitly baseline-classified, never make the required CI suite red indefinitely.
+
+| Batch | Scope and PR boundaries | Entry / exit gate |
+|---|---|---|
+| **A — Protect** | A1: Package 1 command/compatibility baseline and characterization fixtures. A2: focused Package 2 frozen-command registration fix with its regression tests. A3: manifest-driven checker coverage, separate from the route fix if needed. | No broad refactor. Verify both API prefixes, preserve active individual-transfer/family-history behavior, and baseline current violations rather than demanding their immediate elimination. |
+| **B — Backend integrity** | B1: Package 3 transaction runner + pet deletion. B2: Package 4 stable command responses and effect classification. B3: Package 6 notification-only DTO compatibility. | A scenarios defined; real DB rollback/concurrency evidence and installed-client compatibility gate pass before cutover. If required cleanup jobs are not ready, stage them first rather than accepting nondurable cleanup. |
+| **Parallel privacy workstream** | Package 5 after D3/D4, the Package 3 transaction runner, and minimal cleanup schema/worker contract are available. Can overlap B2/B3; it is not blocked on optional notification delivery work. | Erasure authorization, immediate access rejection, durable retry and irreversible-operation runbook are required, not a bare 202 response. |
+| **C — Client authority** | C1: Package 7 cache policy. C2: Package 8 canonical health owner/controller. Design during B; runtime cutover follows stable B contracts. | Stale/auth distinctions visible in UI; cross-selector, out-of-order response, logout and command-retry tests pass. |
+| **Later program backlog** | Packages 9–10 after C validates the pattern; Package 11 ratchets introduced checks; Package 12 selective extraction/final audit. | Prioritize forbidden pet-profile-to-Experience presentation dependencies. Preserve legitimate shell-to-feature API edges; do not remove edges simply to lower a count. |
+
+### Effect classification required before Package 4
+
+| Effect | Consistency requirement | Accepted handling |
+|---|---|---|
+| Weight observation + occurrence state / required establishment invariant | Same logical command | Same transaction/client; if establishment is derived instead, document reconciliation explicitly. |
+| Weight cache refresh | Rebuildable projection | Invalidate/rebuild; separate refresh status, no cleanup job. |
+| Invite access/status + required in-app notification row | Atomic when business contract requires it | Same transaction where all data is local; use a required-notification cleanup job only for genuinely asynchronous durable delivery. Prepare names/DTO data before commit or retain a stable committed response. |
+| Required external notification/email | At-least-once, potentially duplicate external delivery | Minimal cleanup job, provider idempotency where available, explicit retry/deduplication policy. Optional invitation email remains delivery metadata unless classified required. |
+| Pet/account files and external personal-data erasure | Must survive process failure | Persist minimum cleanup identifiers before cascades; cleanup jobs with retry and verified completion. |
+| Optional audit/activity/telemetry | Best effort unless a separate obligation makes it required | Catch/report failures without changing committed response; no generic outbox. Mandatory DB audit belongs in the transaction, not an unawaited call. |
+
+### Cross-cutting implementation gates
+
+1. **Installed clients and both prefixes:** Packages 4–7 cannot merge a wire change without a matrix of supported native versions, current web client, strict/missing-field decoding, 200/201/202 handling, and both `/api` and `/backend/api`. Package 7 may keep freshness local to the repository; do not change the server DTO unnecessarily. If supported clients cannot handle a change, introduce a parallel/version-negotiated contract and release clients first. A deprecation date requires actual adoption evidence.
+2. **Unknown commit outcomes:** network loss during COMMIT or after a response is not proof of rollback. Retry/reconcile via an operation key and resource identity; do not blindly repeat destructive work. Scope idempotency to principal + operation + payload; same key/different payload is a conflict. Bound retention and define replay authorization after access changes.
+3. **Job reliability without a platform rewrite:** additive schema and indexes; atomic job claim/lease; crash recovery; bounded backoff; unique dedupe key; retry exhaustion and operational alerts. A worker crash after external success must be safe to replay. Never cascade-delete cleanup jobs with the user/pet they must erase; store only necessary identifiers, protect status access and expire completed job payloads.
+4. **Authorization and races:** transaction correctness does not by itself close access-revocation races or concurrent delete/upload/complete races. Lock or revalidate the relevant resource/access version inside the command boundary; reject writes to deleting resources. Test revocation, concurrent completions, invite expiry/revoke/accept and uploads during deletion.
+5. **Acceptance is not completion:** distinguish queued, running, retryable failure, terminal failure and completed states. Do not mark a job complete merely because helpers swallowed errors. A 202 must not cause the UI to claim successful erasure or notification delivery.
+6. **Operational rollback:** deploy backward-compatible schema/worker before switching producers. During rollback preserve pending jobs and dedupe records, prevent old synchronous paths plus new workers executing twice, and never restore erased personal data as a rollback tactic.
+
+### Second-pass risk register and required proof
+
+These are implementation design/test requirements, not claims of newly observed production incidents. Evidence refers to the locally reviewed baseline; the historical peer independently checked a later main revision. Rebase/recheck affected flows before implementation.
+
+| Risk / evidence | Required addition and owning package | Acceptance scenario |
+|---|---|---|
+| **Transaction success is not the same as a delivered response.** Weight commits before cache/establishment work; invite creation commits before lookup/delivery (`completeWeightRouter.js`, `shareInviteService.js`). | P3/P4: define transaction state and preserve original errors; reuse existing schedule idempotency conventions only after checking scope/uniqueness. `care_schedule_events.idempotency_key` already has a unique index in migration 062; do not add a second incompatible ledger by assumption. Document consistent lock order and bounded deadlock retries. | Connection lost during COMMIT; same request retried concurrently; same key with different payload; no duplicate mutation or disclosure of another principal's result. |
+| **Delayed cleanup can outlive its parent and storage instance.** Current lifecycle code collects URLs, deletes rows and attempts local filesystem deletion (`petDataLifecycle.js`, `privateHealthStorage.js`). | P3/P5: durable jobs retain stable object/file IDs, not arbitrary executable paths; validate allowed storage roots and symlink/path traversal. Ensure the worker can reach the same storage as the uploader; do not assume another process/container has the same files. No storage migration is authorized by this plan. | Missing object is idempotent success; permission/provider failure is retryable/failed, not success. Reject unsafe paths. Crash after deletion before acknowledgement; two workers; expired lease reclaimed; pending job survives parent cascade. |
+| **Minimal job infrastructure still needs ownership.** Existing best-effort helpers cannot report verified erasure. | P3/P4/P5: schema includes type, dedupe key, minimal payload, status, attempts, next attempt, lease token/expiry and redacted error. Claim atomically (e.g. `FOR UPDATE SKIP LOCKED`); only the current lease holder may acknowledge. Define runner lifecycle, alert owner and protected manual retry. | `pending → running → succeeded / retryable / dead`; worker crash at every transition; duplicate workers; retry exhaustion becomes visible. Completed payload retention is bounded. |
+| **Notification authorization can change after enqueue.** Collaborators are selected at call time in `notifyPassedAwayCollaborators`; delayed delivery changes the timing. | P4/P6: dedupe by event + recipient; revalidate recipient eligibility before sending private pet content. Define when a required notification is cancelled because access was revoked and expose accurate eligible/sent/queued/cancelled counts. Do not require that a revoked recipient receive private data to satisfy delivery. | Access revoked or account erased between enqueue and delivery; repeated/concurrent POST; zero recipients; partial delivery; no persisted passed-away state change. |
+| **202 erasure can leave a usable account or inaccessible status.** The current sequence revokes refresh sessions before deleting the user (`profileRouter.js`), while middleware verifies JWTs. | P5/P10: erasing-account rejection must be enforced on existing access tokens and refresh/login paths; define protected post-revocation status and retry access. Capture owned/shared data scope before cascades, preserving other users' data and documenting lawful retention. | Old access token and concurrent upload rejected after durable acceptance; duplicate erasure request returns the same operation; status credential cannot access other jobs; shared-pet data is not accidentally erased. |
+| **Offline reads are not an offline command queue.** Current health commands call remote operations then refresh (`health_providers.dart`). | P7/P8: no silent offline queue for destructive/auth-sensitive writes. Offline commands fail explicitly; uncertain outcomes reconcile with the original operation key after reconnect. Distinguish local intent, server commit and refresh status in UI. | Offline mutation, reconnect retry, lost response and refresh failure produce distinct user-visible outcomes; retries do not resurrect deleted pets/entries. |
+| **Canonical state can still race.** Health mutation methods refetch; separate per-pet/global views currently coexist (`health_providers.dart`). | P8: per-resource serialization/version policy, per-pet loaded/error markers, session-generation guards and safe disposal. Define whether optimistic changes are used; do not overwrite a newer server result with an older GET. Cache and local-persistence failures must not turn a committed command into failure. | Out-of-order reads, simultaneous edits to the same/different entries, late callback after logout, deletion during fetch and cache-write failure. Every selector converges on the same committed result. |
+| **Compatibility and baseline rules can silently widen scope.** Mixed transfer router registers individual and org transfer; family-events includes org-specific writes and reads (`transferRouter.js`, `familyEventsRouter.js`). | P2/P11: list routes, callers and response fields before gating. Historical/retained reads are classified, not assumed active or frozen by filename. Store baseline revision and exact violation identities; publish size exceptions, not just totals. | Both-prefix route matrix; active individual transfer preserved; forbidden org mutations unavailable; intentional historical-read policy tested. A different new violation fails even when total violation count decreases. |
+
+**Scope discipline:** complete the contract and failure tests within each owning package; do not create a generic queue framework, offline mutation ledger, new auth platform, storage migration or unrelated refactor to satisfy this register. If a listed operational guarantee cannot be met by the current environment, stop that package's cutover and document the concrete blocker.
 
 ## Detailed implementation plan to reach the target state
 
@@ -217,8 +275,8 @@ This is a proposed execution plan, not authorization to refactor or an active mi
 | 2 | Enforced active/frozen boundary | 1 | Backend + Flutter | M |
 | 3 | Correct transaction ownership and pet deletion | 1 | Backend | M |
 | 4 | Stable committed command results | 3 | Backend | M–L |
-| 5 | Retryable account and external erasure | 3, effect classification from 4 | Backend + privacy owner | L |
-| 6 | Unambiguous lifecycle wire contract | 1, 4 if command consolidated | API + Flutter | S–M |
+| 5 | Retryable account and external erasure | 3, D3/D4 and minimal job contract | Backend + privacy owner | L |
+| 6 | Notification-only lifecycle wire contract | 1, 4, D1 compatibility gate | API + Flutter | S–M |
 | 7 | Explicit pet cache and failure policy | 1 | Flutter | M |
 | 8 | Canonical health state and command orchestration | 1, 4 wire contract | Flutter | M–L |
 | 9 | Public feature APIs and reduced coupling | 2, 7, 8 for final cutover | Flutter + backend | L |
@@ -226,7 +284,7 @@ This is a proposed execution plan, not authorization to refactor or an active mi
 | 11 | Enforced standards and coverage denominators | 1; ratchet alongside 2–10 | Tooling + QA | M–L |
 | 12 | Remaining cohesive extractions and final acceptance | 2–11 | Component owners | incremental |
 
-Start with 1, then run boundary protection (2), backend integrity (3–6), and client cache work (7) independently where file ownership does not overlap. Design 8 while 4 is in progress, but cut over only against its agreed response contract. Inventory public APIs for 9 early; do not move all consumers until state ownership is settled. Documentation and focused tests accompany every package rather than waiting for 11.
+Execute the accepted A → B → C batches above. Design client work during B, but deliver 7 → 8 in C; defer full public-API/cycle work until that pattern is proven. Package 5 can overlap B after its listed prerequisites. Documentation and focused tests accompany every package rather than waiting for 11.
 
 ### 1. Freeze the measurement scope and characterize behavior
 
@@ -241,8 +299,8 @@ Start with 1, then run boundary protection (2), backend integrity (3–6), and c
 ### 2. Close active-to-frozen seams without deleting retained data
 
 1. Make boundary checks consume `docs/engineering/frozen-domains/manifest.json`, including `activeSurfacesToRemove`; scan all active Dart and server production roots, not a directory allowlist.
-2. Distinguish import-time loading from route registration. Gate prohibited org-transfer registration and imports as required by the freeze contract; review family-event operations individually rather than disabling active Pet Care behavior by filename.
-3. Isolate necessary retained-schema access behind an explicitly documented compatibility seam. Keep privacy export/erasure coverage; do not remove tables or historical data.
+2. Distinguish import-time loading from route registration. Gate prohibited org-transfer and frozen family-event operations/imports as required by the freeze contract. Inventory operations first: a whole-router switch must not disable active individual transfer or family-history behavior. Where mixed, split registration without reviewing frozen internals.
+3. Isolate necessary retained-schema access behind an explicitly documented compatibility seam. Keep privacy export/erasure coverage; do not remove tables or historical data. Track retained foster/org DTO fields and their active UI interpretation explicitly; do not silently drop fields from installed clients.
 4. Add fixtures for nested routers, re-exports, relative/package Dart imports, permitted compatibility reads and forbidden feature imports. Enumerate actual mounted routes under both API prefixes with frozen mode off.
 
 **Exit gate:** forbidden commands are not mounted when frozen mode is off; authorized active commands still work; retained-data privacy tests pass; intentional exceptions have owner/reason/review date. **Rollback:** revert a faulty boundary implementation without re-enabling frozen commands; retain regression tests and data.
@@ -251,7 +309,7 @@ Start with 1, then run boundary protection (2), backend integrity (3–6), and c
 
 1. Introduce or strengthen one mandatory checked-out-client transaction runner in `server/lib/db`. Acquire once; begin/commit/rollback/release once; preserve the original error if rollback also fails. No pool-only fallback for operations requiring atomicity.
 2. Refactor `deleteAllPetData` into application orchestration plus client-taking data operations. Collect file identifiers and delete/update DB rows through that same client.
-3. Decide audit guarantees explicitly: optional safe audit is not atomic; a required audit record must use the same transaction or durable job. Persist required file cleanup work before deleting the only references to files.
+3. Decide audit guarantees explicitly: optional safe audit is not atomic; a required DB audit record must use the same transaction. Persist required file cleanup in the minimal `cleanup_jobs` schema before deleting the only references to files; this foundational schema/worker contract is a prerequisite to deletion cutover, not deferred entirely to Package 5.
 4. Separate DB outcome from cleanup status. Deprecate the misleading interpretation of `files_removed`; count only verified deletions or expose scheduled/completed/failed counts through a compatible DTO evolution.
 5. Migrate duplicate transaction helpers incrementally after their consumers have tests; do not change frozen internals as part of the active migration.
 
@@ -261,7 +319,7 @@ Start with 1, then run boundary protection (2), backend integrity (3–6), and c
 
 1. For `completeWeightOccurrence` and `shareInviteService`, separate pre-commit failures from post-commit work. Build the authoritative command result from transaction results, not fallible post-commit display-name reads.
 2. Classify weight establishment: if it is a required invariant, persist it in the transaction; if a derived projection, make reconciliation explicit and retryable. Handle cache refresh via invalidation/rebuild without converting a committed write into “save failed.”
-3. For invitation notifications/email, specify which deliveries must survive a process crash. Enqueue only required durable effects within the transaction; keep optional telemetry best-effort with visible failure metrics.
+3. Apply the accepted effect-classification table before changing invitation notifications/email. Enqueue only required asynchronous durable notifications in `cleanup_jobs` within the transaction; keep optional telemetry best-effort with visible failure metrics. No generic event bus or projection/cache jobs.
 4. Implement worker/job retry, bounded backoff, deduplication keys and a failed-job inspection/retry path. Document at-least-once delivery rather than claiming exactly-once external delivery.
 5. Preserve existing weight replay semantics and define invite replay/conflict behavior. Validate concurrent requests and retries after a lost response; persist an idempotency result where necessary.
 
@@ -270,9 +328,9 @@ Start with 1, then run boundary protection (2), backend integrity (3–6), and c
 ### 5. Make account erasure resumable
 
 1. Map user-owned and shared records, retained frozen data, files and PostHog identifiers with the privacy owner. Define lawful retention exceptions and the minimum metadata needed to retry cleanup.
-2. Move account erasure out of `profileRouter` into an application service. Use a transaction for the chosen DB erasure/tombstone, session revocation and durable external jobs; external requests must not hold the DB transaction open.
+2. Move account erasure out of `profileRouter` into an application service. Use a transaction for DB erasure/tombstone, session/access invalidation and durable cleanup jobs; external requests must not hold the DB transaction open. Return **202 Accepted** only after this durable acceptance boundary. Reject existing access JWTs and new writes for an erasing account, not merely future refresh attempts.
 3. Preserve cleanup identifiers before cascades remove them. Replace swallowed external failure-as-success with tracked pending/failed/completed outcomes.
-4. Provide an idempotent authenticated request/result contract; if a status endpoint is needed after credentials are revoked, design limited authorization that does not expose another user's deletion status.
+4. Provide an idempotent authenticated request/result contract and pending/failed/completed status after normal credentials are revoked, using an opaque, narrowly scoped status capability or equivalent protected mechanism. Do not expose another user's deletion status or retain general-purpose access merely to poll. Cover user-facing pending/error/completed states and the installed-client 202 compatibility gate.
 5. Test already-deleted files/persons, duplicate requests, worker restarts, provider downtime, late DB failure and shared-pet ownership. Document retry exhaustion and manual remediation.
 
 **Exit gate:** the response distinguishes accepted erasure from completed erasure; failed cleanup can resume without a live account or duplicate destructive effects; privacy/export behavior covers retained data. **Rollback:** erasure cannot be undone; roll back code only while retaining durable cleanup records and a working retry path. Never promise restoration of deleted personal data.
@@ -280,16 +338,16 @@ Start with 1, then run boundary protection (2), backend integrity (3–6), and c
 ### 6. Reconcile passed-away notification and persistence contracts
 
 1. Inventory Flutter/API callers of `lifecycleRouter` and the separate pet PUT.
-2. Prefer a compatibility-preserving notification-only contract unless the product requires one atomic “mark passed away” command. Describe the former as notification delivery, not persisted state; the latter must persist state and durable required effects together.
+2. Implement D1: retain notification-only semantics and separate PUT persistence; do not consolidate into a new lifecycle mutation in this program. Return `notification_sent` plus explicit delivery/count semantics, never `passed_away: true` as a new-contract state claim. Queued required delivery is not yet sent; retries must not duplicate notifications.
 3. Remove contradictory stub text in `api-reference.md`, update OpenAPI and return a DTO whose fields match the chosen semantics. Do not silently repurpose an existing endpoint used by installed clients.
 4. Test authorization, repeat notification policy, GET after PUT/command, and failure between persistence and notification.
 
-**Exit gate:** docs, DTO and read-after-write behavior agree. **Rollback:** retain the old endpoint as a documented adapter during a defined compatibility window, without reverting to misleading success claims.
+**Exit gate:** docs, DTO and read-after-write behavior agree; POST alone leaves pet persistence unchanged; PUT followed by notification preserves that split; installed-client and both-prefix contract tests pass. **Rollback:** retain an explicit versioned compatibility adapter during the approved window, without silently reinterpreting the endpoint.
 
 ### 7. Make pet cache authority visible to clients
 
 1. Define typed fetch policy/result metadata at the pet repository boundary: source, stale state, fetched time and classified failures.
-2. Classify HTTP authentication, permission, validation and transport errors before fallback. Permit cached results only for the explicit offline/transient policy; never conceal 401/403 as a successful fresh read.
+2. Classify HTTP authentication, permission, validation, parsing and transport errors before fallback. Apply D2: only genuine network failure permits stale cached results; never conceal 401/403 or arbitrary server/decoding failures. Define a finite freshness limit, including unknown timestamps from old caches; expired data requires explicit UI policy, not implicit success.
 3. Preserve user-scoped storage and server-authoritative pruning. Do not re-upload local-only rows during reads.
 4. Migrate list/detail/dashboard consumers together with explicit stale/offline presentation and retry behavior; verify logout/user switching cannot display another user's cache.
 
@@ -300,7 +358,7 @@ Start with 1, then run boundary protection (2), backend integrity (3–6), and c
 1. Choose and document one canonical health-entry store, normalized by ID with pet-indexed selectors or pet-keyed state. Define loading/error/freshness and session disposal; do not create a second mutable cache in the new controller.
 2. Implement existing per-pet and global selectors as views of the canonical owner. Temporarily adapt old provider names so consumers can move without a flag-day rewrite.
 3. Move issue-linking, occurrence completion and related refresh orchestration from widgets into a `CareScheduleController` or application command service. Keep form focus/selection and other ephemeral UI state local.
-4. Apply server command results to canonical state, reconcile occurrences and expose refresh failure separately from command failure. Account for out-of-order reads, duplicate taps, route disposal and user switching.
+4. Apply server command results to canonical state, reconcile occurrences and expose refresh failure separately from command failure. Use request/session generations or equivalent guards so stale in-flight reads cannot overwrite newer mutations or a different user's state. Account for out-of-order reads, duplicate taps, route disposal, deletion and user switching; display per-pet loading/error state without mistaking a partially loaded store for a complete list.
 5. Migrate issue linking, profile surfaces, care dashboard and occurrence widgets; remove independent fetch paths only after all consumers and test overrides have moved.
 
 **Exit gate:** each mutation is visible across all selectors without manual widget invalidation; a committed mutation followed by failed refresh remains successful with explicit stale/retry state; repository/controller/widget tests cover each layer. **Rollback:** switch consumers through compatibility selectors, not dual writes to independent stores.
@@ -308,9 +366,9 @@ Start with 1, then run boundary protection (2), backend integrity (3–6), and c
 ### 9. Publish public APIs and remove dependency cycles deliberately
 
 1. For each component in the catalog, list owned models/state, exported queries/commands/UI entrypoints and allowed dependencies. Create narrow entrypoints without automatically exporting data implementations.
-2. Add an import checker with a baseline of existing violations; block new deep imports and new cyclic dependencies immediately, then ratchet the baseline down.
+2. Add an import checker with a baseline of existing violation identities; block new deep imports and new cyclic dependencies, then ratchet the baseline down. Allow Experience and specifically named core composition entrypoints to consume feature public APIs; no blanket exemption for all `core` files and no domain-to-Experience-screen imports.
 3. Start with taxonomy/value types, then pet/health contracts, then experience composition. Replace imports of another feature's screen/widget internals with a public model/callback or lift shared composition into the shell.
-4. Decompose the 12-feature strongly connected component edge by edge, using the measured graph to choose cuts. Keep domain logic with its owner; “move to core” is not a general cycle remedy.
+4. Decompose the 12-feature strongly connected component edge by edge after C, using the measured graph to choose cuts. Prioritize the forbidden pet-profile-to-Experience presentation direction; the 51 directives on `experience → pet_profile` include legitimate composition and are not all defects. Keep domain logic with its owner; “move to core” is not a general cycle remedy.
 5. Apply the same ownership rule to server services/query modules: routes translate HTTP, application services orchestrate, and persistence accepts the transaction client. Keep simple CRUD direct where no use-case abstraction helps.
 
 **Exit gate:** each active substantial feature has a documented public surface; no cross-feature private/data imports remain without explicit expiring exceptions; the target feature graph is acyclic. Track intermediate decreases rather than claiming success from a barrel-file count. **Rollback:** temporary forwarding exports preserve consumers while reverting a move; remove them only after usage checks.
@@ -328,7 +386,7 @@ Start with 1, then run boundary protection (2), backend integrity (3–6), and c
 
 1. Publish exact eligible source sets for size, lint, coverage and BDD traceability using the same frozen/generated policy as the baseline.
 2. Include missing eligible source files in coverage denominators instead of ignoring absent LCOV entries. Reconcile the documented 65% versus implemented 70% Flutter threshold; establish backend domain/changed-file ratchets from measured results rather than inventing a passing percentage.
-3. Expand lint and size checks to active server libraries/services and classify Flutter screens/widgets separately. Keep physical versus heuristic source lines distinct; adopt reviewed exceptions rather than mechanical splitting.
+3. Expand lint and size checks to active server libraries/services and classify Flutter screens/widgets separately. Apply D7: `server/lib` starts report-only; publish grandfathered entries and baseline offenders before ratcheting new/changed violations. Keep physical versus heuristic source lines distinct; adopt reviewed exceptions rather than mechanical splitting.
 4. Separate BDD title mapping from executed tests, skeleton/orphan quality and assertion coverage. Respect existing active/frozen E2E classification and the separate navigation-check work.
 5. Wire docs checks and boundary checks into the declared blocking CI gate; verify external branch protection separately when access is authorized. Add fixtures proving each checker fails on a deliberate violation.
 
@@ -345,6 +403,8 @@ Start with 1, then run boundary protection (2), backend integrity (3–6), and c
 **Final acceptance:** all P1 findings have passing failure-path tests and resolved or explicitly approved contracts; required transactions use one client; committed responses are stable; canonical client ownership is enforced; active feature dependencies meet the approved acyclic model; retained-data privacy is preserved; all substantial component contracts and CI universes are documented. Remaining P2/P3 exceptions require an owner, reason and review date. This review itself does not certify any of those future gates as passing.
 
 ## Independent peer review (2026-09-22)
+
+Decisions and sequencing in this historical peer review are superseded by Accepted decisions and revised delivery sequence above.
 
 **Reviewer:** Cursor Cloud agent (independent validation against `main` at `818c1d6`, spot-checking P1 claims from the reviewed baseline `a8c7db1`).
 
@@ -418,9 +478,7 @@ Package 5 (account erasure) can run parallel to Sprint B once D3/D4 are decided;
 
 ### Peer review conclusion
 
-Adopt this document as the **architecture program charter** for Pet Care hardening. Merge to `main` once decisions D1–D4 are recorded. Do **not** batch Packages 1–12 into one integration effort — the report’s own atomic-PR and rollback guidance is correct; execution should honor it.
-
-**Suggested status transition:** `proposed` → `accepted` once decisions D1–D4 are recorded (ADR or short addendum to this file).
+Adopt this document as the **architecture program charter** for Pet Care hardening. D1–D7 are recorded in **Accepted decisions and revised delivery sequence** above; document status is `accepted`. Do **not** batch Packages 1–12 into one integration effort — the report’s own atomic-PR and rollback guidance is correct; execution should honor it.
 
 ## Verification and limitations
 
@@ -936,6 +994,7 @@ python3 scripts/architecture/architecture-metrics.py \
   --repo "$(git rev-parse --show-toplevel)" \
   --output /tmp/architecture-metrics.md
 ```
+
 
 ## Appendix E — Measurement implementation
 
