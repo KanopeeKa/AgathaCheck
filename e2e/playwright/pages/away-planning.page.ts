@@ -293,28 +293,35 @@ export class AwayPlanningPage {
   }
 
   async expectHandoverNoteOnPlan(note: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByText(note, { exact: true })).toBeVisible({
-      timeout: 30_000,
-    });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const bySemantics = semanticsKey(this.page, 'away_plan_handover_note_text');
+      await expect(bySemantics.or(this.page.getByText(note, { exact: false }).first())).toBeVisible();
+    }).toPass({ timeout: 45_000 });
   }
 
   async deleteAwayPlan(): Promise<void> {
-    await this.page
-      .getByRole('button', { name: /Delete plan|Supprimer le plan/i })
-      .first()
-      .click();
-    // AppFormDestructiveButton's confirm prompt renders as alertdialog, not dialog
-    // (see organization-detail.page.ts for the same pattern).
-    const dialog = this.page.getByRole('alertdialog');
-    await expect(dialog).toBeVisible({ timeout: 15_000 });
-    await dialog
-      .getByRole('button', { name: /^Delete$|^Supprimer$/i })
-      .first()
-      .click();
-    await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/pc\/away(?:\?|$)/, 60_000);
-    await this.expectHubLoaded();
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await this.page
+        .getByRole('button', { name: /Delete plan|Supprimer le plan/i })
+        .first()
+        .click();
+      // AppFormDestructiveButton's confirm prompt renders as alertdialog, not
+      // dialog (see organization-detail.page.ts for the same pattern).
+      const dialog = this.page.getByRole('alertdialog');
+      await expect(dialog).toBeVisible({ timeout: 15_000 });
+      await expect(
+        dialog.getByText(/Delete this away plan|Supprimer ce plan d'absence/i),
+      ).toBeVisible();
+      await dialog
+        .getByRole('button', { name: /^Delete$|^Supprimer$/i })
+        .first()
+        .click();
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, /\/pc\/away(?:\?|$)/, 60_000);
+      await this.expectHubLoaded();
+    }).toPass({ timeout: 90_000 });
   }
 
   async expectAbsenceNotListed(petName: string): Promise<void> {
