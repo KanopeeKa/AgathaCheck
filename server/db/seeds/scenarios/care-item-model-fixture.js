@@ -55,13 +55,13 @@ export async function seedCareItemModelFixture(client) {
        ($2, $7, $8, 'medication', 'Evening supplement', '1 tablet', 'daily',
         $11, $12, 'active', 3, 'Due today — already done', 'medication', NULL, 'home', 'planned', 'essential'),
        ($3, $7, $8, 'other', 'Grooming appointment', '', 'once',
-        $14, $15, 'active', 1, 'One-off due today', NULL, NULL, 'other', 'planned', 'optional'),
+        $13, $14, 'active', 1, 'One-off due today', NULL, NULL, 'other', 'planned', 'optional'),
        ($4, $7, $8, 'other', 'Mystery care item', '', 'weekly',
-        $16, $17, 'active', 7, 'Uncategorised care_family', NULL, NULL, 'other', 'planned', 'optional'),
+        $15, $16, 'active', 7, 'Uncategorised care_family', NULL, NULL, 'other', 'planned', 'optional'),
        ($5, $7, $8, 'preventive', 'Nail trim', '', 'monthly',
-        $18, $19, 'active', 7, 'Upcoming later this week', 'grooming', NULL, 'other', 'planned', 'optional'),
+        $17, $18, 'active', 7, 'Upcoming later this week', 'grooming', NULL, 'other', 'planned', 'optional'),
        ($6, $7, $8, 'other', 'Weekly weight check', '', 'weekly',
-        $20, $21, 'active', 3, 'Established weight monitoring', 'weight_monitoring', NULL, 'home', 'planned', 'recommended')
+        $19, $20, 'active', 3, 'Established weight monitoring', 'weight_monitoring', NULL, 'home', 'planned', 'recommended')
      ON CONFLICT (id) DO UPDATE SET
        name = EXCLUDED.name,
        next_due_date = EXCLUDED.next_due_date,
