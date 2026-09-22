@@ -32,6 +32,10 @@ function makeHealthRow(overrides = {}) {
     remind_days_before: 7,
     status: 'active',
     care_family: 'wellness_review',
+    care_setting: 'vet',
+    care_planning: 'planned',
+    care_importance: 'recommended',
+    importance_overridden: false,
     care_source: 'guardian_defined',
     completed_at: null,
     created_at: new Date('2025-01-01'),
@@ -87,7 +91,7 @@ describe('Health Entries API', () => {
           return { rows: [makeHealthRow(), makeHealthRow({ id: 'he-2', name: 'Vaccination' })] };
         }
 
-        if (sql.includes('SELECT care_family, care_source, recurrence_anchor FROM health_entries WHERE id')) {
+        if (sql.includes('SELECT care_family, care_source, recurrence_anchor') && sql.includes('FROM health_entries WHERE id')) {
           if (params && params[0] === 'nonexistent') return { rows: [] };
           if (params && params[0] === 'he-uncat') {
             return {
@@ -95,6 +99,11 @@ describe('Health Entries API', () => {
                 care_family: null,
                 care_source: 'guardian_defined',
                 recurrence_anchor: null,
+                care_setting: 'other',
+                care_planning: 'planned',
+                care_importance: 'optional',
+                importance_overridden: false,
+                remind_days_before: 7,
               }],
             };
           }
@@ -104,6 +113,11 @@ describe('Health Entries API', () => {
               care_family: row.care_family,
               care_source: row.care_source,
               recurrence_anchor: row.recurrence_anchor,
+              care_setting: row.care_setting,
+              care_planning: row.care_planning,
+              care_importance: row.care_importance,
+              importance_overridden: row.importance_overridden,
+              remind_days_before: row.remind_days_before,
             }],
           };
         }
@@ -138,8 +152,12 @@ describe('Health Entries API', () => {
             schedule_times: params[17],
             status: params[18],
             care_family: params[19],
-            care_source: params[20],
-            schedule_policy_version: params[21],
+            care_setting: params[20],
+            care_planning: params[21],
+            care_importance: params[22],
+            importance_overridden: params[23],
+            care_source: params[24],
+            schedule_policy_version: params[25],
             completed_at: null,
           });
           return { rows: [lastInsertedEntry] };
@@ -322,17 +340,21 @@ describe('Health Entries API', () => {
         }
 
         if (sql.includes('UPDATE health_entries SET name')) {
-          if (params && params[18] === 'nonexistent') return { rows: [] };
+          if (params && params[22] === 'nonexistent') return { rows: [] };
           return {
             rows: [makeHealthRow({
-              id: params[18],
+              id: params[22],
               name: params[0],
               type: params[1],
               dosage: params[2],
               frequency: params[3],
               care_family: params[15],
-              care_source: params[16],
-              schedule_policy_version: params[17],
+              care_setting: params[16],
+              care_planning: params[17],
+              care_importance: params[18],
+              importance_overridden: params[19],
+              care_source: params[20],
+              schedule_policy_version: params[21],
             })],
           };
         }
@@ -727,7 +749,6 @@ describe('Health Entries API', () => {
       const entry = {
         pet_id: 'pet-1',
         name: 'Flea Treatment',
-        type: 'preventive',
         dosage: '0.5ml',
         frequency: 'monthly',
         frequency_days: 30,
@@ -747,20 +768,23 @@ describe('Health Entries API', () => {
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty('name', 'Flea Treatment');
       expect(res.body).toHaveProperty('type', 'preventive');
+      expect(res.body).toHaveProperty('care_setting', 'home');
+      expect(res.body).toHaveProperty('care_planning', 'planned');
+      expect(res.body).toHaveProperty('care_importance', 'essential');
       expect(res.body).toHaveProperty('dosage', '0.5ml');
       expect(res.body).toHaveProperty('frequency', 'monthly');
       expect(res.body).toHaveProperty('status', 'active');
       expect(res.body.recurrence_anchor).toBe('from_due_date');
       const insertParams = queryLog.find(q => q.sql.includes('INSERT INTO health_entries')).params;
+      expect(insertParams[4]).toBe('preventive');
       expect(insertParams[12]).toBe('from_due_date');
-      expect(insertParams[21]).toBe('1.0.0');
+      expect(insertParams[25]).toBe('1.0.0');
     });
 
     it('defaults medication care_family to from_completion when anchor omitted', async () => {
       const entry = {
         pet_id: 'pet-1',
         name: 'Daily tablet',
-        type: 'medication',
         frequency: 'daily',
         next_due_date: '2025-07-01',
         care_family: 'medication',
@@ -773,7 +797,7 @@ describe('Health Entries API', () => {
       expect(res.body.recurrence_anchor).toBe('from_completion');
     });
 
-    it('defaults type to vet_visit and frequency to once when care_family is provided', async () => {
+    it('derives type vet_visit from wellness_review family and defaults frequency to once', async () => {
       const entry = {
         pet_id: 'pet-1',
         name: 'Simple',
@@ -790,14 +814,15 @@ describe('Health Entries API', () => {
       expect(insertParams[6]).toBe('once');
       expect(insertParams[10]).toBe('2025-01-01');
       expect(insertParams[19]).toBe('wellness_review');
+      expect(insertParams[20]).toBe('vet');
       expect(res.body.care_family).toBe('wellness_review');
+      expect(res.body.type).toBe('vet_visit');
     });
 
     it('rejects one-off create without care_family', async () => {
       const entry = {
         pet_id: 'pet-1',
         name: 'Mystery visit',
-        type: 'other',
         frequency: 'once',
         next_due_date: '2025-03-01',
       };
@@ -813,7 +838,6 @@ describe('Health Entries API', () => {
       const entry = {
         pet_id: 'pet-1',
         name: 'Grooming visit',
-        type: 'other',
         frequency: 'once',
         next_due_date: '2025-03-01',
         care_family: 'grooming',
@@ -882,11 +906,10 @@ describe('Health Entries API', () => {
       expect(res.statusCode).toBe(403);
     });
 
-    it('accepts canonical other type on create', async () => {
+    it('derives other type from grooming family on create', async () => {
       const entry = {
         pet_id: 'pet-1',
         name: 'Grooming',
-        type: 'other',
         next_due_date: '2025-01-01',
         care_family: 'grooming',
       };
@@ -896,13 +919,13 @@ describe('Health Entries API', () => {
         .send(entry);
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty('type', 'other');
+      expect(res.body).toHaveProperty('care_setting', 'other');
     });
 
     it('rejects recurring create without care_family', async () => {
       const entry = {
         pet_id: 'pet-1',
         name: 'Weekly weigh-in',
-        type: 'other',
         frequency: 'weekly',
         next_due_date: '2025-07-01',
       };
@@ -918,7 +941,6 @@ describe('Health Entries API', () => {
       const entry = {
         pet_id: 'pet-1',
         name: 'Weekly weigh-in',
-        type: 'other',
         frequency: 'weekly',
         next_due_date: '2025-07-01',
         care_family: 'weight_monitoring',
@@ -932,42 +954,68 @@ describe('Health Entries API', () => {
       expect(insertParams[19]).toBe('weight_monitoring');
     });
 
-    it('rejects deprecated family_event type on create', async () => {
+    it('rejects client-sent type on create', async () => {
       const entry = {
         pet_id: 'pet-1',
         name: 'Legacy care',
-        type: 'family_event',
+        type: 'vet_visit',
         next_due_date: '2025-01-01',
-        care_family: 'other',
+        care_family: 'wellness_review',
       };
       const res = await request(app)
         .post('/api/health-entries')
         .set('Authorization', `Bearer ${token}`)
         .send(entry);
       expect(res.statusCode).toBe(400);
-      expect(res.body.error).toMatch(/Deprecated entry type/i);
+      expect(res.body.error).toMatch(/server-derived/i);
     });
 
-    it('rejects deprecated procedure type on create', async () => {
+    it('rejects unplanned recurring create', async () => {
       const entry = {
         pet_id: 'pet-1',
-        name: 'Legacy other',
-        type: 'procedure',
-        next_due_date: '2025-01-01',
-        care_family: 'other',
+        name: 'Impossible',
+        care_family: 'grooming',
+        care_planning: 'unplanned',
+        frequency: 'weekly',
+        completed_on: '2025-01-01',
       };
       const res = await request(app)
         .post('/api/health-entries')
         .set('Authorization', `Bearer ${token}`)
         .send(entry);
       expect(res.statusCode).toBe(400);
-      expect(res.body.error).toMatch(/Deprecated entry type/i);
+      expect(res.body.error).toMatch(/unplanned entries cannot recur/i);
+    });
+
+    it('accepts unplanned record create with completed_on', async () => {
+      const entry = {
+        pet_id: 'pet-1',
+        name: 'Emergency vet',
+        care_family: 'wellness_review',
+        care_planning: 'unplanned',
+        frequency: 'once',
+        completed_on: '2025-01-15',
+      };
+      const res = await request(app)
+        .post('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(201);
+      expect(res.body.care_planning).toBe('unplanned');
+      expect(res.body.completed_on).toBe('2025-01-15');
+      expect(res.body.remind_days_before).toBe(0);
     });
   });
 
   describe('PUT /api/health-entries/:id (update)', () => {
     it('updates a health entry', async () => {
-      const entry = { name: 'Updated', type: 'medication', dosage: '2ml', frequency: 'daily', next_due_date: '2026-01-01' };
+      const entry = {
+        name: 'Updated',
+        dosage: '2ml',
+        frequency: 'daily',
+        next_due_date: '2026-01-01',
+        care_family: 'medication',
+      };
       const res = await request(app)
         .put('/api/health-entries/he-1')
         .set('Authorization', `Bearer ${token}`)
@@ -995,16 +1043,16 @@ describe('Health Entries API', () => {
       );
       const updateQuery = queryLog.find(q => q.sql.includes('UPDATE health_entries SET name'));
       expect(accessQuery).toBeDefined();
-      expect(updateQuery.params[18]).toBe('he-1');
+      expect(updateQuery.params[22]).toBe('he-1');
     });
 
-    it('rejects deprecated types on update', async () => {
+    it('rejects client-sent type on update', async () => {
       const res = await request(app)
         .put('/api/health-entries/he-1')
         .set('Authorization', `Bearer ${token}`)
-        .send({ name: 'Legacy', type: 'family_event', next_due_date: '2026-01-01' });
+        .send({ name: 'Legacy', type: 'medication', next_due_date: '2026-01-01', care_family: 'medication' });
       expect(res.statusCode).toBe(400);
-      expect(res.body.error).toMatch(/Deprecated entry type/i);
+      expect(res.body.error).toMatch(/server-derived/i);
     });
 
     it('updates an uncategorised one-off entry without supplying care_family', async () => {
@@ -1013,7 +1061,6 @@ describe('Health Entries API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({
           name: 'Still uncategorised',
-          type: 'other',
           frequency: 'once',
           next_due_date: '2026-02-01',
         });

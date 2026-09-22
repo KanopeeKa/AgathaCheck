@@ -1121,17 +1121,17 @@ export async function createHealthEntry(
   },
 ): Promise<TestHealthEntry> {
   const frequency = options.frequency ?? 'monthly';
-  const type = options.type ?? 'medication';
+  const careFamily = options.careFamily
+    ?? (options.type ? defaultCareFamilyForLegacyType(options.type) : 'medication');
   const body: Record<string, unknown> = {
     pet_id: petId,
     name: options.name,
-    type,
     dosage: options.dosage ?? '1 tablet',
     frequency,
     frequency_days: frequency === 'once' ? null : (options.frequencyDays ?? 30),
     next_due_date: options.nextDueDate,
     status: 'active',
-    care_family: options.careFamily ?? defaultCareFamilyForLegacyType(type),
+    care_family: careFamily,
   };
   if (options.scheduleTimes != null) {
     body.schedule_times = options.scheduleTimes;
@@ -1169,16 +1169,16 @@ export async function updateHealthEntry(
   },
 ): Promise<TestHealthEntry> {
   const frequency = options.frequency ?? 'monthly';
-  const type = options.type ?? 'medication';
+  const careFamily = options.careFamily
+    ?? (options.type ? defaultCareFamilyForLegacyType(options.type) : 'medication');
   const payload: Record<string, unknown> = {
     name: options.name,
-    type,
     dosage: options.dosage ?? '1 tablet',
     frequency,
     frequency_days: frequency === 'once' ? null : (options.frequencyDays ?? 30),
     next_due_date: options.nextDueDate,
     status: 'active',
-    care_family: options.careFamily ?? defaultCareFamilyForLegacyType(type),
+    care_family: careFamily,
   };
   const res = await apiFetch(apiUrl(`/health-entries/${entryId}`, baseURL), {
     method: 'PUT',
@@ -1269,7 +1269,7 @@ export async function seedMultiDoseHealthEntry(
 ): Promise<TestHealthEntry> {
   const entry = await createHealthEntry(baseURL, token, petId, {
     name: options.name,
-    type: 'medication',
+    careFamily: 'medication',
     nextDueDate: options.nextDueDate,
     frequency: 'daily',
   });
