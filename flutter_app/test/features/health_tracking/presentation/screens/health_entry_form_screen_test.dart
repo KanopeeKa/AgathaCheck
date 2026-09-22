@@ -9,6 +9,7 @@ import 'package:pet_profile_app/features/health_tracking/domain/usecases/create_
 import 'package:pet_profile_app/features/health_tracking/domain/usecases/get_health_entries.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/usecases/update_health_entry.dart';
 import 'package:pet_profile_app/features/care_taxonomy/domain/care_importance.dart';
+import 'package:pet_profile_app/features/care_taxonomy/domain/care_planning_mode.dart';
 import 'package:pet_profile_app/features/care_taxonomy/domain/care_setting.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
@@ -337,6 +338,38 @@ void main() {
     expect(find.text('Where'), findsOneWidget);
     expect(find.text('Priority'), findsOneWidget);
     expect(find.text('Does not repeat'), findsOneWidget);
+    expect(find.byKey(const Key('care_planning_toggle')), findsOneWidget);
+    expect(find.text('Plan this care'), findsOneWidget);
+    expect(find.text('Record what happened'), findsOneWidget);
+  });
+
+  testWidgets('record mode hides schedule and reminders', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          petListProvider.overrideWith(_TwoPetsNotifier.new),
+          apiBaseUrlProvider.overrideWithValue('http://test.local'),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const HealthEntryFormScreen(
+            petId: 'p1',
+            initialPlanningMode: CarePlanningMode.unplanned,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Record care'), findsOneWidget);
+    expect(find.text('Does not repeat'), findsNothing);
+    expect(find.text('Remind me'), findsNothing);
+    expect(find.bySemanticsLabel(RegExp(r'Due date:')), findsNothing);
+    expect(find.bySemanticsLabel(RegExp(r'Completed on:')), findsOneWidget);
   });
 
   testWidgets('shows localized empty-pets message when no pets exist', (

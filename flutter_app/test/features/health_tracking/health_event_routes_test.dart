@@ -1,7 +1,91 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+import 'package:pet_profile_app/features/care_taxonomy/domain/care_planning_mode.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/controllers/health_entry_form_controller.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/screens/health_entry_form_screen.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
+
+class _TwoPetsNotifier extends PetListNotifier {
+  @override
+  Future<List<Pet>> build() async => const [
+    Pet(id: 'p1', name: 'Rex', species: 'Dog'),
+  ];
+}
+
+class _EmptyHealthEntriesNotifier extends HealthEntriesNotifier {
+  @override
+  Future<List<HealthEntry>> build() async => [];
+}
 
 void main() {
+  group('pet health add route planning query', () {
+    testWidgets('?planning=unplanned opens record mode', (
+      WidgetTester tester,
+    ) async {
+      final router = GoRouter(
+        initialLocation: '/pet/p1/health/add?planning=unplanned',
+        routes: [
+          GoRoute(
+            path: '/pet/:petId/health/add',
+            builder: (context, state) {
+              final planningParam = state.uri.queryParameters['planning'];
+              final initialPlanningMode = planningParam == 'unplanned'
+                  ? CarePlanningMode.unplanned
+                  : null;
+              return HealthEntryFormScreen(
+                petId: state.pathParameters['petId'],
+                initialPlanningMode: initialPlanningMode,
+              );
+            },
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            petListProvider.overrideWith(_TwoPetsNotifier.new),
+            healthEntriesNotifierProvider.overrideWith(
+              _EmptyHealthEntriesNotifier.new,
+            ),
+            apiBaseUrlProvider.overrideWithValue('http://test.local'),
+          ],
+          child: MaterialApp.router(
+            routerConfig: router,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Record care'), findsOneWidget);
+      expect(find.text('Does not repeat'), findsNothing);
+      expect(
+        find.byKey(const Key('care_planning_toggle')),
+        findsOneWidget,
+      );
+
+      final params = HealthEntryFormParams(
+        petId: 'p1',
+        initialPlanningMode: CarePlanningMode.unplanned,
+      );
+      final element = tester.element(find.byType(HealthEntryFormScreen));
+      final container = ProviderScope.containerOf(element);
+      final state = container.read(healthEntryFormControllerProvider(params));
+      expect(state.carePlanning, CarePlanningMode.unplanned);
+      expect(state.completedOn, isNotNull);
+      expect(state.remindDaysBefore, 0);
+    });
+  });
+
   group('legacyPetEventEditRedirectForPath', () {
     test('maps legacy health edit path', () {
       expect(

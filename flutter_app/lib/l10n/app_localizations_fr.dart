@@ -805,6 +805,25 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careImportanceOptional => 'Optionnel';
 
   @override
+  String get carePlanningToggleLabel => 'Planification';
+
+  @override
+  String get carePlanningFieldHelper =>
+      'Planifiez un soin à venir ou enregistrez un soin déjà effectué.';
+
+  @override
+  String get carePlanningPlanned => 'Planifier ce soin';
+
+  @override
+  String get carePlanningUnplanned => 'Enregistrer ce qui s\'est passé';
+
+  @override
+  String get recordHealthEntry => 'Enregistrer un soin';
+
+  @override
+  String get completedOnRequired => 'Indiquez quand ce soin a été effectué';
+
+  @override
   String get careSourceGuardianDefined => 'Ajouté par vous';
 
   @override

@@ -18,12 +18,14 @@ class HealthEntryFormParams {
     this.petId,
     this.initialType,
     this.allowedTypes,
+    this.initialPlanningMode,
   });
 
   final String? entryId;
   final String? petId;
   final HealthEntryType? initialType;
   final List<HealthEntryType>? allowedTypes;
+  final CarePlanningMode? initialPlanningMode;
 
   @override
   bool operator ==(Object other) =>
@@ -32,6 +34,7 @@ class HealthEntryFormParams {
           entryId == other.entryId &&
           petId == other.petId &&
           initialType == other.initialType &&
+          initialPlanningMode == other.initialPlanningMode &&
           listEquals(allowedTypes, other.allowedTypes);
 
   @override
@@ -39,6 +42,7 @@ class HealthEntryFormParams {
     entryId,
     petId,
     initialType,
+    initialPlanningMode,
     allowedTypes == null ? null : Object.hashAll(allowedTypes!),
   );
 }
@@ -130,6 +134,14 @@ class HealthEntryFormState {
 
   bool get showCareFamilyPicker =>
       !isEdit || careFamily != null || careFamilyPickerRevealed;
+
+  bool get isRecordMode => carePlanning == CarePlanningMode.unplanned;
+
+  bool get isPlannedMode => carePlanning == CarePlanningMode.planned;
+
+  bool get showScheduleSection => isPlannedMode;
+
+  bool get showReminders => isPlannedMode;
 
   List<HealthEntryType> get selectableTypes {
     if (allowedTypes != null && allowedTypes!.isNotEmpty) {
