@@ -170,17 +170,17 @@ After phase H merged to integration → open PR `cursor/care-classification-taxo
 
 ```yaml
 autonomy: active
-current_phase: a
-last_completed_phase: null
+current_phase: b
+last_completed_phase: a
 halt_reason: null
-next_action: implement Phase A — shared/care_taxonomy.json + Dart/Node registry
+next_action: "continue phase b on branch cursor/care-taxonomy-api-8524"
 artifact_ref:
-  branch: cursor/care-taxonomy-registry-8524
+  branch: cursor/care-taxonomy-api-8524
   plan_path: .agents/plans/care-classification-taxonomy.md
-  plan_commit: null
+  plan_commit: c5484130fb7338fede356ad266380e7e06c89ae5
   snapshot_path: .agents/plans/care-classification-taxonomy.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: c5484130fb7338fede356ad266380e7e06c89ae5
 open_prs: []
-merge_commits: {}
+merge_commits: {"a":"5a770bbd82befe657c80cb142eb4eb1c2cdf0be9"}
 debt_issue_refs: []
 ```
