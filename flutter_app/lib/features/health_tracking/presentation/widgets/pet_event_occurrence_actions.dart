@@ -6,6 +6,7 @@ import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../providers/health_providers.dart';
 import '../providers/occurrence_providers.dart';
+import 'health_issue_prompt/health_issue_linkage_flow.dart';
 import 'mark_complete_sheet.dart';
 import 'occurrence_care_actions.dart';
 import 'weight_occurrence_care_actions.dart';
@@ -80,6 +81,11 @@ class PetEventOccurrenceActions {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(l.markCompletedAction)));
+    await HealthIssueLinkageFlow.maybePromptAfterPlannedVetCompletion(
+      context,
+      ref,
+      entry,
+    );
   }
 
   static Future<void> skip(

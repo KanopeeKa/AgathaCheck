@@ -8,6 +8,7 @@ import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../domain/entities/health_entry.dart';
 import '../../providers/health_providers.dart';
 import '../health_entry_card.dart';
+import '../health_issue_prompt/health_issue_linkage_flow.dart';
 import '../mark_complete_sheet.dart';
 import '../health_dashboard_actions.dart' show GroupMode;
 
@@ -332,6 +333,11 @@ class HealthDashboardEntryList extends ConsumerWidget {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l.markedAsDone(entry.name))));
+      await HealthIssueLinkageFlow.maybePromptAfterPlannedVetCompletion(
+        context,
+        ref,
+        entry,
+      );
     }
   }
 

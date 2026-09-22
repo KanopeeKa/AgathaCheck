@@ -427,6 +427,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
     }
 
     state = state.copyWith(isLoading: true);
+    final createdEntryIds = <String>[];
     try {
       final notifier = ref.read(healthEntriesNotifierProvider.notifier);
       final isRecord = state.isRecordMode;
@@ -490,7 +491,6 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
         }
       } else {
         final createUseCase = ref.read(createHealthEntryProvider);
-        final createdEntryIds = <String>[];
         for (final petId in state.selectedPetIds) {
           final entry = HealthEntry(
             id: '',
@@ -539,6 +539,12 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
       return HealthEntrySubmitSuccess(
         isEdit: state.isEdit,
         petIds: Set<String>.from(state.selectedPetIds),
+        entryIds: state.isEdit
+            ? (_entryId != null ? [_entryId!] : <String>[])
+            : createdEntryIds,
+        careSetting: state.careSetting,
+        carePlanning: state.carePlanning,
+        linkedHealthIssueId: state.selectedHealthIssueId,
       );
     } catch (e) {
       return HealthEntrySubmitError(e);
