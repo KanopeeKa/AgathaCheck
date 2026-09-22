@@ -143,7 +143,7 @@ void main() {
     expect(find.text('Weight entry'), findsOneWidget);
   });
 
-  testWidgets('add picker: tapping Health routes to /health/add', (
+  testWidgets('add picker: tapping Events routes to /care/add', (
     tester,
   ) async {
     await tester.pumpWidget(buildEventsScreen());
@@ -154,7 +154,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.medical_services_outlined));
     await tester.pumpAndSettle();
 
-    expect(find.text('Add health entry'), findsOneWidget);
+    expect(find.text('Add care entry'), findsOneWidget);
   });
 
   testWidgets('row tap navigates to view entry', (tester) async {

@@ -139,7 +139,7 @@ Widget _wrapPetProfileHealthEventFlow() {
         },
       ),
       GoRoute(
-        path: '/pet/:petId/health/add',
+        path: '/pet/:petId/care/add',
         builder: (context, state) {
           final petId = state.pathParameters['petId']!;
           return HealthEntryFormScreen(petId: petId);
@@ -185,10 +185,10 @@ HealthEntry _sampleEntry({
 
 Widget _wrapAddFlow({required _RecordingHealthRepository repository}) {
   final router = GoRouter(
-    initialLocation: '/pet/p1/health/add',
+    initialLocation: '/pet/p1/care/add',
     routes: [
       GoRoute(
-        path: '/pet/:petId/health/add',
+        path: '/pet/:petId/care/add',
         builder: (context, state) =>
             HealthEntryFormScreen(petId: state.pathParameters['petId']),
       ),
