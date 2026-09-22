@@ -145,14 +145,23 @@ function listOpenPrsOnBase(baseBranch) {
   return Array.isArray(prs) ? prs : [];
 }
 
+function ghText(args) {
+  const result = spawnSync('gh', args, { cwd: repoRoot, encoding: 'utf8' });
+  if (result.status !== 0) {
+    console.error(result.stderr || result.stdout);
+    process.exit(3);
+  }
+  const text = (result.stdout || '').trim();
+  return text || null;
+}
+
 function baseTipPushedAt(baseBranch) {
-  const data = ghJson([
+  return ghText([
     'api',
     `repos/{owner}/{repo}/commits/${baseBranch}`,
     '--jq',
     '.commit.committer.date',
   ]);
-  return typeof data === 'string' ? data : null;
 }
 
 function loadContext(prRef) {
