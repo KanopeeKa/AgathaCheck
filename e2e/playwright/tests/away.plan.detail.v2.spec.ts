@@ -77,8 +77,7 @@ test.describe('Away plan detail V2', () => {
 
     const away = new AwayPlanningPage(page);
     await away.openPlan(absence.id);
-    await away.expectPlannedCareSection();
-    await away.expectPlannedCareEntryVisible('Away Window Meds');
+    await away.expectPlannedCareItemRow(entry.id, 'Away Window Meds');
     await away.openPlannedCareItem(entry.id);
 
     await waitForFlutterRoutePattern(page, /\/pet\/[^/]+\/events\/[^/?#]+/, 45_000);
