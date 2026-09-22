@@ -234,7 +234,9 @@ Weight monitoring rhythms cannot use generic occurrence complete or mark-taken w
 
 | Method | Path | Notes |
 |---|---|---|
-| GET | `/care-period-coverage?starts_on&ends_on` | Projection payload plus `coverage` block (`policy_version`, `coverage_state`, `reason_codes`, `reassurance_available`). States: `nothing_scheduled` (complete + zero items only), `all_completed`, `no_unresolved_items`, `has_items_to_review`, `indeterminate` (when projection is partially indeterminate — no global reassurance). |
+| GET | `/care-period-coverage?starts_on&ends_on` | Same projection payload as CC-2 (`projection_status`, raw `items[]`, **`planned_care_items[]`** — see CC-2 for the unified-array wire shape and breaking change from `routine_items`/`dated_items`/`uncertainties`) plus `coverage` block (`policy_version`, `coverage_state`, `reason_codes`, `reassurance_available`). States: `nothing_scheduled` (complete + zero items only), `all_completed`, `no_unresolved_items`, `has_items_to_review`, `indeterminate` (when projection is partially indeterminate — no global reassurance). |
+
+**`planned_care_items[]` row shape (D-AWD-002, finalised AWD-5):** each element includes at minimum `kind`, `health_entry_id`, `name`, `type`, `care_family`, `frequency`, `frequency_interval`, `times_of_day[]`, `next_due_date`, `certainty`. Grouped rows (`recurring_calendar`, `recurring_chain`, `indeterminate_pending`) also carry `occurrence_count`, `status_counts`, `first_scheduled_date`, `last_scheduled_date`; `indeterminate_pending` adds `reason`. `single_once` rows add `occurrence_id`, `scheduled_date`, `status` per occurrence. `next_due_date` is non-null only for `kind: recurring_calendar` when `times_of_day.length <= 1`. Sort order is server-side: `kind` bucket (`recurring_calendar` → `recurring_chain` → `single_once` → `indeterminate_pending`), then `name`. Pre-AWD-2 clients must migrate — the three legacy arrays are absent from responses.
 
 ### Planned absences (`/api/planned-absences`) — CC-1
 
