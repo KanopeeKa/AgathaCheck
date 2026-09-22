@@ -142,8 +142,8 @@ describe('care-item-model-fixture seed database rows (issue #1125)', () => {
         'completed',
         'completed',
         'completed',
-        'pending',
         'completed',
+        'pending',
       ]);
       expect(
         occRows.rows.filter((r) => r.health_entry_id === DEMO_IDS.careFixtureWeightEntry),
