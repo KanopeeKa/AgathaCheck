@@ -27,6 +27,7 @@ CI_SCOPE_SHARD_PET_WIDGETS=false
 CI_SCOPE_SHARD_HEALTH=false
 CI_SCOPE_SHARD_REST_A=false
 CI_SCOPE_SHARD_REST_B=false
+CI_SCOPE_SHARD_EXPERIENCE=false
 
 ci_scope_reset() {
   CI_SCOPE_FORCE_FULL=false
@@ -50,6 +51,7 @@ ci_scope_reset() {
   CI_SCOPE_SHARD_HEALTH=false
   CI_SCOPE_SHARD_REST_A=false
   CI_SCOPE_SHARD_REST_B=false
+  CI_SCOPE_SHARD_EXPERIENCE=false
 }
 
 ci_scope_enable_shard() {
@@ -60,6 +62,7 @@ ci_scope_enable_shard() {
     health) CI_SCOPE_SHARD_HEALTH=true ;;
     rest-a) CI_SCOPE_SHARD_REST_A=true ;;
     rest-b) CI_SCOPE_SHARD_REST_B=true ;;
+    experience) CI_SCOPE_SHARD_EXPERIENCE=true ;;
     *) ;;
   esac
 }
@@ -71,6 +74,7 @@ ci_scope_enable_all_shards() {
   CI_SCOPE_SHARD_HEALTH=true
   CI_SCOPE_SHARD_REST_A=true
   CI_SCOPE_SHARD_REST_B=true
+  CI_SCOPE_SHARD_EXPERIENCE=true
 }
 
 ci_scope_any_shard_enabled() {
@@ -79,7 +83,8 @@ ci_scope_any_shard_enabled() {
     || "$CI_SCOPE_SHARD_PET_WIDGETS" == true \
     || "$CI_SCOPE_SHARD_HEALTH" == true \
     || "$CI_SCOPE_SHARD_REST_A" == true \
-    || "$CI_SCOPE_SHARD_REST_B" == true ]]
+    || "$CI_SCOPE_SHARD_REST_B" == true \
+    || "$CI_SCOPE_SHARD_EXPERIENCE" == true ]]
 }
 
 ci_scope_finalize_flutter_shards() {
@@ -130,12 +135,13 @@ ci_scope_classify_flutter_shard() {
       |flutter_app/test/features/notifications/*|flutter_app/test/features/subscription/*)
       ci_scope_enable_shard rest-a
       ;;
-    flutter_app/lib/features/experience/*|flutter_app/lib/features/vet/* \
-      |flutter_app/lib/features/weight_tracking/*|flutter_app/lib/features/help/* \
-      |flutter_app/lib/features/about/* \
-      |flutter_app/test/features/experience/*|flutter_app/test/features/vet/* \
-      |flutter_app/test/features/weight_tracking/*|flutter_app/test/features/help/* \
-      |flutter_app/test/features/about/* \
+    flutter_app/lib/features/experience/*|flutter_app/test/features/experience/*)
+      ci_scope_enable_shard experience
+      ;;
+    flutter_app/lib/features/vet/*|flutter_app/lib/features/weight_tracking/* \
+      |flutter_app/lib/features/help/*|flutter_app/lib/features/about/* \
+      |flutter_app/test/features/vet/*|flutter_app/test/features/weight_tracking/* \
+      |flutter_app/test/features/help/*|flutter_app/test/features/about/* \
       |flutter_app/test/features/api_base_url_wiring_test.dart)
       ci_scope_enable_shard rest-b
       ;;
@@ -335,7 +341,7 @@ ci_scope_emit_json() {
 
   python3 - "$scope" "$CI_SCOPE_FORCE_FULL" "$CI_SCOPE_ESCAPE_FULL" "$run_analyze" "$run_stack" "$run_backend" "$run_e2e_audit" "$run_integration" \
     "$CI_SCOPE_SHARD_PET_CORE" "$CI_SCOPE_SHARD_PET_SCREENS" "$CI_SCOPE_SHARD_PET_WIDGETS" \
-    "$CI_SCOPE_SHARD_HEALTH" "$CI_SCOPE_SHARD_REST_A" "$CI_SCOPE_SHARD_REST_B" <<'PY'
+    "$CI_SCOPE_SHARD_HEALTH" "$CI_SCOPE_SHARD_REST_A" "$CI_SCOPE_SHARD_REST_B" "$CI_SCOPE_SHARD_EXPERIENCE" <<'PY'
 import json, sys
 
 (
@@ -353,7 +359,8 @@ import json, sys
     shard_health,
     shard_rest_a,
     shard_rest_b,
-) = sys.argv[1:15]
+    shard_experience,
+) = sys.argv[1:16]
 
 def b(v):
     return v == "true"
@@ -371,6 +378,7 @@ shard_map = {
     "health": b(shard_health),
     "rest-a": b(shard_rest_a),
     "rest-b": b(shard_rest_b),
+    "experience": b(shard_experience),
 }
 
 job_ids = {
@@ -380,6 +388,7 @@ job_ids = {
     "health": "flutter-test-health",
     "rest-a": "flutter-test-rest-a",
     "rest-b": "flutter-test-rest-b",
+    "experience": "flutter-test-experience",
 }
 
 run_shards = [name for name, enabled in shard_map.items() if enabled]

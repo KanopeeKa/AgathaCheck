@@ -106,7 +106,7 @@ but are not individually required once the ruleset is migrated.
 checks listed in **Main protection** ruleset should be removed when
 **`ci-gate / CI passed`** is added. Keep `Analyze JavaScript`.
 
-**Optional (visible, not required individually):** `flutter-test-{pet-core,pet-screens,pet-widgets,health,org,rest-a,rest-b} / Flutter tests (<shard>)` —
+**Optional (visible, not required individually):** `flutter-test-{pet-core,pet-screens,pet-widgets,health,rest-a,rest-b,experience} / Flutter tests (<shard>)` —
 the merge gate `flutter-coverage / Flutter domain coverage` covers shard failures (enforced via `ci-gate`).
 
 **Blocking via `ci-gate`:** `ci-e2e-canary / Playwright @smoke-ci canary (localhost)` —
@@ -131,9 +131,9 @@ PR Playwright canary (`@smoke-ci`, retries 0), including three org journeys (dis
 
 **Never skip (force full):** migrations, `server/config/security.js`, `flutter_app/lib/core/**`, `e2e/**`, `.github/workflows/**`, lockfiles, `scripts/ci/**`.
 
-#### Per-domain Flutter shard selection (planned F2)
+#### Per-domain Flutter shard selection
 
-Today `run_flutter_stack` in ci-scope JSON is a **boolean**: either all seven Flutter test shards run, or the entire Flutter stack is skipped. `pre-push-changed.sh` already narrows locally by running `flutter test` under `test/features/<domain>/` when only that domain changed. **Phase F2** will add a `run_shards[]` array to ci-scope JSON so PR CI can run a subset of shards (e.g. only `health` when `flutter_app/test/features/health/**` changed) instead of the all-or-nothing boolean.
+PR CI runs only the shards whose domain changed: ci-scope JSON carries `run_shards[]` alongside the `run_flutter_stack` boolean, and each `flutter-test-*` job's `if` checks its shard in that array (e.g. only `health` runs when `flutter_app/test/features/health/**` changed). When any shard is scoped out, `flutter-coverage` is skipped (merged domain coverage needs every active shard); unselected shards land in `skip_jobs` so `ci-gate` accepts them as scoped skips. `pre-push-changed.sh` narrows locally the same way by running `flutter test` under `test/features/<domain>/`.
 
 **Drift backstop:** non-blocking **`CI full audit (main)`** (`ci-full-audit.yml`) runs the **full** suite on `main` every **12 merges** (counter in Actions cache `.ci-full-audit-state`) or when the last audit is older than **7 days**. Failures open an `agent-approved` issue for `agent-dispatch.yml`. Weekly `audit-advisory.yml` runs non-blocking `npm audit` on `main`.
 
@@ -231,7 +231,7 @@ gh api repos/KanopeeKa/AgathaCheck/branches/main/protection \
 # or for rulesets: inspect the ruleset required-check list in the UI
 ```
 
-**Optional shard checks** (`flutter-test-{pet-core,pet-screens,pet-widgets,health,org,rest-a,rest-b} / Flutter tests (<shard>)`) need
+**Optional shard checks** (`flutter-test-{pet-core,pet-screens,pet-widgets,health,rest-a,rest-b,experience} / Flutter tests (<shard>)`) need
 not be required individually — `flutter-coverage` fails when any shard fails.
 
 **Codegen contract:** `flutter-analyze` runs canonical `build_runner` + legal sync once and
@@ -248,7 +248,7 @@ display strings exactly.
 | `startup-smoke / PR startup smoke` | `_reusable-pr-startup-smoke.yml` | Postgres bootstrap, `node bin/start.js`, `/backend/health` + root |
 | `test-suite / Governance (BDD + file size)` | `_reusable-test.yml` | BDD mapping gate (`check_bdd_coverage.js`; run `--report-only` for live ≥150 mapped, totals drift), priority tags, file size ≤ 500 lines |
 | `flutter-analyze / Flutter (analyze & format)` | `_reusable-flutter-analyze.yml` | format, legal sync, codegen, analyze; uploads `flutter-prep-<sha>` |
-| `flutter-test-* / Flutter tests (<shard>)` | `_reusable-flutter-test-shard.yml` | domain test shards (pet-core, pet-screens, pet-widgets, health, org, rest-a, rest-b) with per-shard coverage |
+| `flutter-test-* / Flutter tests (<shard>)` | `_reusable-flutter-test-shard.yml` | domain test shards (pet-core, pet-screens, pet-widgets, health, rest-a, rest-b, experience) with per-shard coverage |
 | `flutter-coverage / Flutter domain coverage` | `_reusable-flutter-coverage.yml` | merge shard lcov, domain coverage ≥ 65% |
 | `flutter-integration / Flutter integration` | `_reusable-flutter-integration.yml` | pet profile integration tests |
 | `flutter-build-web / Build Flutter web` | `_reusable-build-web.yml` | web release build + `web-build-<sha>` artifact |
