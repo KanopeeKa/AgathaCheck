@@ -54,8 +54,11 @@ describe('care-period coverage API', () => {
     expect(res.body.coverage.coverage_state).toBe('has_items_to_review');
     expect(res.body.projection_status).toBe('complete');
     expect(res.body.items.length).toBeGreaterThanOrEqual(1);
-    expect(res.body.dated_items.length).toBeGreaterThanOrEqual(1);
-    expect(res.body.routine_items).toEqual([]);
+    expect(res.body.planned_care_items.length).toBeGreaterThanOrEqual(1);
+    expect(res.body.planned_care_items[0].kind).toBe('recurring_calendar');
+    expect(res.body.routine_items).toBeUndefined();
+    expect(res.body.dated_items).toBeUndefined();
+    expect(res.body.uncertainties).toBeUndefined();
   });
 
   it('GET returns 500 when the database layer throws (does not hang)', async () => {
