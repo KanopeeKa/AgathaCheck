@@ -159,16 +159,16 @@ Redesign the Away Plan detail screen from Away Planning V1: one unified, tappabl
 
 ```yaml
 autonomy: active
-current_phase: awd-3
+current_phase: awd-5
 last_completed_phase: awd-4
 halt_reason: null
-next_action: "continue phase awd-3 on branch cursor/away-plan-detail-v2-awd3-d4c1"
+next_action: "continue phase awd-5 on branch cursor/away-plan-detail-v2-awd5-d4c1"
 artifact_ref:
-  branch: cursor/away-plan-detail-v2-awd3-d4c1
+  branch: cursor/away-plan-detail-v2-integration-d4c1
   plan_path: .agents/plans/away-plan-detail-v2.md
-  plan_commit: 3d7e5758aeb0843aa1cffaa549f5e13bc0a5baea
+  plan_commit: b5a8c4cdc21f13c409eb871cad953018a4ec22db
   snapshot_path: .agents/plans/away-plan-detail-v2.snapshot.json
-  snapshot_commit: 3d7e5758aeb0843aa1cffaa549f5e13bc0a5baea
+  snapshot_commit: b5a8c4cdc21f13c409eb871cad953018a4ec22db
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
