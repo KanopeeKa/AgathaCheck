@@ -31,7 +31,6 @@ export const SUGGESTION_CATALOG = {
     suggested_name: 'Weight check',
     suggested_frequency: 'monthly',
     suggested_frequency_interval: 1,
-    suggested_health_entry_type: 'other',
     rationale_key: 'careSuggestionWeightMonitoringWhy',
   },
   dental_review_rhythm: {
@@ -40,7 +39,6 @@ export const SUGGESTION_CATALOG = {
     suggested_name: 'Dental check',
     suggested_frequency: 'yearly',
     suggested_frequency_interval: 1,
-    suggested_health_entry_type: 'vet_visit',
     rationale_key: 'careSuggestionDentalWhy',
   },
   wellness_review_rhythm: {
@@ -49,7 +47,6 @@ export const SUGGESTION_CATALOG = {
     suggested_name: 'Wellness review',
     suggested_frequency: 'yearly',
     suggested_frequency_interval: 1,
-    suggested_health_entry_type: 'vet_visit',
     rationale_key: 'careSuggestionWellnessWhy',
   },
 };
@@ -66,7 +63,6 @@ export function recommendationToMap(row) {
     suggested_name: row.suggested_name,
     suggested_frequency: row.suggested_frequency,
     suggested_frequency_interval: row.suggested_frequency_interval,
-    suggested_health_entry_type: row.suggested_health_entry_type,
     rationale_key: row.rationale_key,
     health_entry_id: row.health_entry_id,
     responded_at: row.responded_at ? row.responded_at.toISOString() : null,

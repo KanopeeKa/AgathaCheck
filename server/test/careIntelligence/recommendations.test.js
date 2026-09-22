@@ -5,6 +5,7 @@ import { handlePetAccessQuery } from '../helpers/petAccessMocks.js';
 import {
   evaluateCareRecommendationCandidates,
   hasActiveRecurringCare,
+  buildAcceptedHealthEntry,
 } from '../../routes/careIntelligence/ruleEngine.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
@@ -112,6 +113,36 @@ describe('care intelligence rule engine', () => {
     });
     expect(candidates.some((c) => c.care_family === 'wellness_review')).toBe(false);
   });
+
+  test('buildAcceptedHealthEntry derives type and classification from care_family', () => {
+    const wellness = buildAcceptedHealthEntry({
+      petId: 'pet-1',
+      userId: 'user-1',
+      recommendation: {
+        care_family: 'wellness_review',
+        suggested_name: 'Wellness review',
+        suggested_frequency: 'yearly',
+        suggested_frequency_interval: 1,
+      },
+    });
+    expect(wellness.type).toBe('vet_visit');
+    expect(wellness.careSetting).toBe('vet');
+    expect(wellness.careImportance).toBe('recommended');
+    expect(wellness.carePlanning).toBe('planned');
+
+    const weight = buildAcceptedHealthEntry({
+      petId: 'pet-1',
+      userId: 'user-1',
+      recommendation: {
+        care_family: 'weight_monitoring',
+        suggested_name: 'Weight check',
+        suggested_frequency: 'monthly',
+        suggested_frequency_interval: 1,
+      },
+    });
+    expect(weight.type).toBe('other');
+    expect(weight.careSetting).toBe('home');
+  });
 });
 
 describe('Care recommendations API', () => {
@@ -175,8 +206,7 @@ describe('Care recommendations API', () => {
             suggested_name: params[7],
             suggested_frequency: params[8],
             suggested_frequency_interval: params[9],
-            suggested_health_entry_type: params[10],
-            rationale_key: params[11],
+            rationale_key: params[10],
             health_entry_id: null,
             responded_at: null,
             created_at: new Date(),
@@ -195,8 +225,12 @@ describe('Care recommendations API', () => {
           const row = {
             id: params[0],
             pet_id: params[1],
+            type: params[4],
             care_family: params[9],
-            care_source: params[10],
+            care_setting: params[10],
+            care_planning: params[11],
+            care_importance: params[12],
+            care_source: params[14],
           };
           healthEntries.push(row);
           return { rows: [row] };
@@ -238,6 +272,7 @@ describe('Care recommendations API', () => {
     expect(res.status).toBe(200);
     expect(res.body.length).toBeGreaterThanOrEqual(1);
     expect(res.body[0].status).toBe('pending');
+    expect(res.body[0]).not.toHaveProperty('suggested_health_entry_type');
   });
 
   test('POST accept creates rhythm and is idempotent', async () => {
@@ -254,6 +289,8 @@ describe('Care recommendations API', () => {
     expect(accepted.body.status).toBe('accepted');
     expect(accepted.body.health_entry_id).toBeTruthy();
     expect(healthEntries.length).toBe(1);
+    expect(healthEntries[0].type).toBeTruthy();
+    expect(healthEntries[0].care_setting).toBeTruthy();
 
     const again = await request(app)
       .post(`/api/pets/pet-1/care-recommendations/${recId}/respond`)

@@ -13,7 +13,6 @@ class CareRecommendationModel {
     required this.suggestedName,
     required this.suggestedFrequency,
     required this.suggestedFrequencyInterval,
-    required this.suggestedHealthEntryType,
     required this.rationaleKey,
     this.healthEntryId,
     this.respondedAt,
@@ -29,7 +28,6 @@ class CareRecommendationModel {
   final String suggestedName;
   final String suggestedFrequency;
   final int suggestedFrequencyInterval;
-  final String suggestedHealthEntryType;
   final String rationaleKey;
   final String? healthEntryId;
   final DateTime? respondedAt;
@@ -49,8 +47,6 @@ class CareRecommendationModel {
       suggestedFrequency: json['suggested_frequency'] as String,
       suggestedFrequencyInterval:
           (json['suggested_frequency_interval'] as num?)?.toInt() ?? 1,
-      suggestedHealthEntryType:
-          json['suggested_health_entry_type'] as String? ?? 'other',
       rationaleKey: json['rationale_key'] as String,
       healthEntryId: json['health_entry_id'] as String?,
       respondedAt: json['responded_at'] != null
@@ -70,7 +66,6 @@ class CareRecommendationModel {
     suggestedName: suggestedName,
     suggestedFrequency: suggestedFrequency,
     suggestedFrequencyInterval: suggestedFrequencyInterval,
-    suggestedHealthEntryType: suggestedHealthEntryType,
     rationaleKey: rationaleKey,
     healthEntryId: healthEntryId,
     respondedAt: respondedAt,
