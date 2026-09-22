@@ -18,6 +18,7 @@ def istest(p):
     return bool(set(PurePosixPath(p).parts)&TEST_PARTS) or bool(re.search(r'(?:^|[._-])(test|spec)\.[^.]+$',PurePosixPath(p).name.lower()))
 def lines(path):
     """Physical and heuristic nonblank/noncomment line counts."""
+    is_sql=path.suffix.lower()=='.sql'
     text=path.read_text(encoding='utf-8',errors='replace'); ls=text.splitlines(); n=0; block=False
     for raw in ls:
         s=raw.strip()
@@ -28,7 +29,7 @@ def lines(path):
                 if j<0: s=''; break
                 block=False; s=s[j+2:].strip(); continue
             if s.startswith('/*'): block=True; s=s[2:].strip(); continue
-            if s.startswith('//') or s.startswith('#') or s.startswith('*'): s=''; break
+            if s.startswith('//') or s.startswith('#') or s.startswith('*') or (is_sql and s.startswith('--')): s=''; break
             j=s.find('/*')
             if j>=0:
                 if s[:j].strip(): n+=1
@@ -188,8 +189,12 @@ def main():
     cycles=scc(graph)
     pl=lambda ps:sum(metric[p][0] for p in ps);hl=lambda ps:sum(metric[p][1] for p in ps)
     commit=git(root,'rev-parse','HEAD').strip();stamp=dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
+    repo_label=git(root,'rev-parse','--show-toplevel').strip()
+    try: repo_label=str(root.relative_to(Path(repo_label).resolve()))
+    except ValueError: repo_label=str(root)
+    script_rel='scripts/architecture/architecture-metrics.py'
     fspans=function_spans(root,prod)[:8]
-    out=['# Architecture size metrics (refined)','',f'Generated: {stamp}',f'Repository: {root}',f'Git commit: `{commit}`','',
+    out=['# Architecture size metrics (refined)','',f'Generated: {stamp} (runtime; commit-scoped counts below are stable)',f'Repository: `{repo_label}`',f'Git commit: `{commit}`','',
       '## Exact definitions','',
       '- **Review-scope production (headline):** active Flutter library after manifest/generated exclusions, including exclusion of `manifest.activeSurfacesToRemove`, plus the active server route-registration approximation from `server/bin/server.js`, minus the conservative Shelter-family server list below.',
       '- **Active server route-registration approximation:** recursive literal relative `import`, `export ... from`, and `require()` traversal from `server/bin/server.js`, with the three frozen routers whose `app.use` mounts are gated by `frozenDomainsEnabled()` suppressed as review policy: organizations, fosterPlacements, custodyTransfers. Their imports are static and therefore still load under ESM; only registration is gated. This approximation is not actual runtime import reachability or closure. External and dynamic imports are ignored.',
@@ -230,6 +235,6 @@ def main():
         er.append((reason,len(members),len(sources),f'{pl(sources):,}'))
     out+=['## Exclusions','',table(['Reason','Tracked files','Source files','Source physical lines'],er,['left','right','right','right']),
       f'Tracked files total: **{len(tracked):,}**. Eligible source files after path exclusions: **{len(code):,}**. Files outside exact headline definitions remain inventory only. Frozen CI test removals are classification removals in addition to path exclusions and are reported above.','',
-      '## Reproduce','','```sh','python3 /tmp/architecture-metrics.py --repo "$(git rev-parse --show-toplevel)" --output /tmp/architecture-metrics.md','```','']
+      '## Reproduce','','```sh',f'python3 {script_rel} --repo "$(git rev-parse --show-toplevel)" --output /tmp/architecture-metrics.md','```','']
     Path(o.output).write_text('\n'.join(out),encoding='utf-8');print(o.output)
 if __name__=='__main__':main()
