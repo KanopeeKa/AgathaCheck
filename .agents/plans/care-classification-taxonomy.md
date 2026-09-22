@@ -169,24 +169,17 @@ After phase H merged to integration → open PR `cursor/care-classification-taxo
 ## Runtime state
 
 ```yaml
-autonomy: active
-<<<<<<< HEAD
-current_phase: h
-last_completed_phase: g
-halt_reason: null
-next_action: "start phase h: checkout cursor/care-cim-taxonomy-8524"
-=======
+autonomy: completed
 current_phase: null
 last_completed_phase: h
 halt_reason: null
-next_action: "merge phase h to integration; open integration PR to main"
->>>>>>> 993ef777 (phase(h/8): feat: CIM taxonomy cleanup)
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/care-classification-taxonomy-integration-8524
+  branch: main
   plan_path: .agents/plans/care-classification-taxonomy.md
-  plan_commit: 922bafaa1cd410dc5f4131eafbbc33a0bf586968
+  plan_commit: bbc397e251181b14ba9b0a0f8cbec11c7807ae25
   snapshot_path: .agents/plans/care-classification-taxonomy.snapshot.json
-  snapshot_commit: 922bafaa1cd410dc5f4131eafbbc33a0bf586968
+  snapshot_commit: bbc397e251181b14ba9b0a0f8cbec11c7807ae25
 open_prs: []
 merge_commits: {"a":"5a770bbd82befe657c80cb142eb4eb1c2cdf0be9"}
 debt_issue_refs: []

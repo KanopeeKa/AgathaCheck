@@ -5,7 +5,7 @@
   "approved_at": "2026-09-21T14:25:00Z",
   "approved_by": "User chat 2026-09-21 — /execute-plan in full autonomy (standing grant for phases A–H)",
   "approved_until": "2026-09-23T14:25:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-classification-taxonomy-integration-8524",
   "control_issue": 1240,
@@ -76,7 +76,7 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
@@ -109,7 +109,7 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
@@ -140,12 +140,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Planning toggle; record flow; ?planning=unplanned route",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": null,
       "debt_issue_refs": []
     },
     {
@@ -173,12 +170,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Vet-setting unplanned + planned completion prompts",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": null,
       "debt_issue_refs": []
     },
     {
@@ -209,12 +203,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Replace type filter chips with family/filter_group",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": null,
       "debt_issue_refs": []
     },
     {
@@ -245,12 +236,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Single add route; deprecate health/other split",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": null,
       "debt_issue_refs": []
     },
     {
@@ -283,12 +271,9 @@
       "exit_checklist": "single-backend-route",
       "status": "merged",
       "status_reason": null,
-      "status_detail": "Drop suggested_health_entry_type from CIM; accept derives classification from care_family + taxonomy",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": null,
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:4cda355f01ed3373d33f936453d44d2c1ae7b062480aed9811f760081b4b7bc2"
+  "content_hash": "sha256:682865ece64ec7f07ed0e436a8e05f8e363e9dc11b34b15b6c08681ad15893b8"
 }
