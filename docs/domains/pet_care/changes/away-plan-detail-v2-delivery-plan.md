@@ -62,7 +62,7 @@ AWD-DOC-0
 Review and freeze D-AWD-001–007 in [away-plan-detail-v2-decisions.md](./away-plan-detail-v2-decisions.md); this delivery plan; `.agents/plans/away-plan-detail-v2.{md,snapshot.json}`; open control issue; confirm scope boundaries (carer-edit dialog and dates/pets editing explicitly out of scope, D-AWD-007). Specific items this phase confirms (all drafted already, not blank):
 
 - `planned_care_items[]` wire shape, `kind` discriminant, sort/dedupe rules (D-AWD-002)
-- `[proposed]` ARB copy table in D-AWD-003, including the "Repeats" vs "Occurs" wording call and FR strings
+- `[proposed]` ARB copy table in D-AWD-003 (wording confirmed by user 2026-09-22: "Repeats" over "Occurs") and its FR strings
 - The two V1 amendment blocks in [away-planning-decisions.md](./away-planning-decisions.md) (D-AWAY-002, D-AWAY-006, D-AWAY-007) read correctly once D-AWD-001–003 are frozen
 
 ---
