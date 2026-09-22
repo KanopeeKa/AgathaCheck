@@ -2436,8 +2436,43 @@
     }
   },
   "awayPlanningScheduleRoutineTitle": "Routine care",
-  "awayPlanningScheduleDatedTitle": "Dated care",
+  "awayPlanningScheduleDatedTitle": "Planned care",
   "awayPlanningScheduleIndeterminateTitle": "Indeterminate care",
+  "awayPlanningEventRepeatsFromUntil": "Repeats every {interval} {period} from {start} until {end}",
+  "@awayPlanningEventRepeatsFromUntil": {
+    "placeholders": {
+      "interval": { "type": "int" },
+      "period": { "type": "String" },
+      "start": { "type": "String" },
+      "end": { "type": "String" }
+    }
+  },
+  "awayPlanningEventRepeatsFromCompletion": "Repeats every {interval} {period}, from completion",
+  "@awayPlanningEventRepeatsFromCompletion": {
+    "placeholders": {
+      "interval": { "type": "int" },
+      "period": { "type": "String" }
+    }
+  },
+  "awayPlanningEventSingleCareOn": "Single care on {date}",
+  "@awayPlanningEventSingleCareOn": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "awayPlanningEventNextDueDate": "Next due date: {date}",
+  "@awayPlanningEventNextDueDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "awayPlanningEventTimeOfDay": "Time of day: {time}",
+  "@awayPlanningEventTimeOfDay": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "awayPlanningChainAnchorExplainer": "Dates for some care events depend on when the previous one is completed, and may shift.",
   "awayPlanningIndeterminatePending": "Waiting on a prior dose",
   "awayPlanningIndeterminateChain": "Depends on earlier care in the chain",
   "awayPlanningIndeterminateGeneric": "Timing not yet known",

@@ -2337,8 +2337,43 @@
     }
   },
   "awayPlanningScheduleRoutineTitle": "Soins de routine",
-  "awayPlanningScheduleDatedTitle": "Soins datés",
+  "awayPlanningScheduleDatedTitle": "Soins planifiés",
   "awayPlanningScheduleIndeterminateTitle": "Soins indéterminés",
+  "awayPlanningEventRepeatsFromUntil": "Se répète tous les {interval} {period} du {start} au {end}",
+  "@awayPlanningEventRepeatsFromUntil": {
+    "placeholders": {
+      "interval": { "type": "int" },
+      "period": { "type": "String" },
+      "start": { "type": "String" },
+      "end": { "type": "String" }
+    }
+  },
+  "awayPlanningEventRepeatsFromCompletion": "Se répète tous les {interval} {period}, depuis la complétion",
+  "@awayPlanningEventRepeatsFromCompletion": {
+    "placeholders": {
+      "interval": { "type": "int" },
+      "period": { "type": "String" }
+    }
+  },
+  "awayPlanningEventSingleCareOn": "Soin unique le {date}",
+  "@awayPlanningEventSingleCareOn": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "awayPlanningEventNextDueDate": "Prochaine échéance : {date}",
+  "@awayPlanningEventNextDueDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "awayPlanningEventTimeOfDay": "Heure : {time}",
+  "@awayPlanningEventTimeOfDay": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "awayPlanningChainAnchorExplainer": "Les dates de certains soins dépendent de la complétion du précédent et peuvent changer.",
   "awayPlanningIndeterminatePending": "En attente d'une dose précédente",
   "awayPlanningIndeterminateChain": "Dépend de soins antérieurs dans la chaîne",
   "awayPlanningIndeterminateGeneric": "Horaire pas encore connu",

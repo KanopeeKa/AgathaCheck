@@ -6418,8 +6418,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careContextAwayEditTitle => 'Modifier le plan d\'absence';
 
   @override
-  String get careContextAwayEditDeleteTitle =>
-      'Supprimer ce plan d\'absence ?';
+  String get careContextAwayEditDeleteTitle => 'Supprimer ce plan d\'absence ?';
 
   @override
   String get careContextAwayEditDeleteBody =>
@@ -6569,10 +6568,44 @@ class AppLocalizationsFr extends AppLocalizations {
   String get awayPlanningScheduleRoutineTitle => 'Soins de routine';
 
   @override
-  String get awayPlanningScheduleDatedTitle => 'Soins datés';
+  String get awayPlanningScheduleDatedTitle => 'Soins planifiés';
 
   @override
   String get awayPlanningScheduleIndeterminateTitle => 'Soins indéterminés';
+
+  @override
+  String awayPlanningEventRepeatsFromUntil(
+    int interval,
+    String period,
+    String start,
+    String end,
+  ) {
+    return 'Se répète tous les $interval $period du $start au $end';
+  }
+
+  @override
+  String awayPlanningEventRepeatsFromCompletion(int interval, String period) {
+    return 'Se répète tous les $interval $period, depuis la complétion';
+  }
+
+  @override
+  String awayPlanningEventSingleCareOn(String date) {
+    return 'Soin unique le $date';
+  }
+
+  @override
+  String awayPlanningEventNextDueDate(String date) {
+    return 'Prochaine échéance : $date';
+  }
+
+  @override
+  String awayPlanningEventTimeOfDay(String time) {
+    return 'Heure : $time';
+  }
+
+  @override
+  String get awayPlanningChainAnchorExplainer =>
+      'Les dates de certains soins dépendent de la complétion du précédent et peuvent changer.';
 
   @override
   String get awayPlanningIndeterminatePending =>

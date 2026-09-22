@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../health_tracking/presentation/widgets/care_event_row_pet_avatar.dart';
+import '../../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../../pet_profile/presentation/widgets/care_family_icon.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../away_plan_schedule_copy.dart';
 import '../care_period_coverage_copy.dart';
@@ -40,6 +45,7 @@ class AwayPlanPetCareSection extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         child: coverageAsync.when(
           loading: () => _PetCareHeader(
+            petId: petId,
             petName: petName,
             child: Row(
               children: [
@@ -54,6 +60,7 @@ class AwayPlanPetCareSection extends ConsumerWidget {
             ),
           ),
           error: (_, __) => _PetCareHeader(
+            petId: petId,
             petName: petName,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +71,11 @@ class AwayPlanPetCareSection extends ConsumerWidget {
               ],
             ),
           ),
-          data: (result) => _PetCareBody(petName: petName, result: result),
+          data: (result) => _PetCareBody(
+            petId: petId,
+            petName: petName,
+            result: result,
+          ),
         ),
       ),
     );
@@ -72,23 +83,22 @@ class AwayPlanPetCareSection extends ConsumerWidget {
 }
 
 class _PetCareHeader extends StatelessWidget {
-  const _PetCareHeader({required this.petName, required this.child});
+  const _PetCareHeader({
+    required this.petId,
+    required this.petName,
+    required this.child,
+  });
 
+  final String petId;
   final String petName;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          petName,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        _PetHeaderTapTarget(petId: petId, petName: petName),
         const SizedBox(height: 8),
         child,
       ],
@@ -96,9 +106,63 @@ class _PetCareHeader extends StatelessWidget {
   }
 }
 
-class _PetCareBody extends StatelessWidget {
-  const _PetCareBody({required this.petName, required this.result});
+class _PetHeaderTapTarget extends ConsumerWidget {
+  const _PetHeaderTapTarget({
+    required this.petId,
+    required this.petName,
+  });
 
+  final String petId;
+  final String petName;
+
+  static const _kMinTouchTarget = 48.0;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
+    final pet = ref.watch(petByIdProvider(petId)).valueOrNull;
+
+    return Semantics(
+      identifier: 'away_plan_pet_header_$petId',
+      button: true,
+      label: l.petDetails,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => openPetDetail(context, petId),
+          borderRadius: BorderRadius.circular(8),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: _kMinTouchTarget),
+            child: Row(
+              children: [
+                CareEventRowPetAvatar(pet: pet, petName: petName),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    petName,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PetCareBody extends StatelessWidget {
+  const _PetCareBody({
+    required this.petId,
+    required this.petName,
+    required this.result,
+  });
+
+  final String petId;
   final String petName;
   final CarePeriodCoverageResult result;
 
@@ -110,12 +174,7 @@ class _PetCareBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          petName,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        _PetHeaderTapTarget(petId: petId, petName: petName),
         const SizedBox(height: 8),
         Text(
           CarePeriodCoverageCopy.summary(l, result),
@@ -131,160 +190,105 @@ class _PetCareBody extends StatelessWidget {
             ),
           ),
         ],
-        if (result.routineItems.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          Text(
-            l.awayPlanningScheduleRoutineTitle,
-            style: theme.textTheme.titleSmall,
-          ),
-          const SizedBox(height: 8),
-          ...result.routineItems.map((item) => _RoutineRow(item: item)),
-        ],
-        if (result.datedItems.isNotEmpty) ...[
+        if (result.plannedCareItems.isNotEmpty) ...[
           const SizedBox(height: 16),
           Text(
             l.awayPlanningScheduleDatedTitle,
             style: theme.textTheme.titleSmall,
           ),
           const SizedBox(height: 8),
-          ...result.datedItems.map((item) => _DatedRow(item: item)),
-        ],
-        if (result.uncertainties.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          Text(
-            l.awayPlanningScheduleIndeterminateTitle,
-            style: theme.textTheme.titleSmall,
+          ...result.plannedCareItems.map(
+            (item) => _PlannedCareRow(petId: petId, item: item),
           ),
-          const SizedBox(height: 8),
-          ...result.uncertainties.map(
-            (uncertainty) => _IndeterminateRow(uncertainty: uncertainty),
-          ),
+          if (result.showsChainAnchorExplainer) ...[
+            const SizedBox(height: 8),
+            Text(
+              l.awayPlanningChainAnchorExplainer,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
         ],
       ],
     );
   }
 }
 
-class _RoutineRow extends StatelessWidget {
-  const _RoutineRow({required this.item});
+class _PlannedCareRow extends StatelessWidget {
+  const _PlannedCareRow({required this.petId, required this.item});
 
-  final CarePeriodRoutineItem item;
+  final String petId;
+  final PlannedCareItem item;
 
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.repeat, size: 18, color: theme.colorScheme.primary),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AwayPlanScheduleCopy.routineRowTitle(item),
-                  style: theme.textTheme.bodyMedium,
-                ),
-                Text(
-                  AwayPlanScheduleCopy.routineRowSubtitle(l, item),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DatedRow extends StatelessWidget {
-  const _DatedRow({required this.item});
-
-  final CarePeriodProjectionItem item;
+  static const _kMinTouchTarget = 48.0;
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            item.isPending ? Icons.circle_outlined : Icons.check_circle_outline,
-            size: 18,
-            color: item.isPending
-                ? theme.colorScheme.primary
-                : theme.colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(item.name, style: theme.textTheme.bodyMedium),
-                Text(
-                  AwayPlanScheduleCopy.datedRowStatus(l, item),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _IndeterminateRow extends StatelessWidget {
-  const _IndeterminateRow({required this.uncertainty});
-
-  final CarePeriodUncertainty uncertainty;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final title = uncertainty.name.isNotEmpty
-        ? '~ ${uncertainty.name}'
-        : l.awayPlanningIndeterminateGeneric;
+    final scheduleLine = AwayPlanScheduleCopy.plannedCareScheduleLine(l, item);
+    final detailLines = AwayPlanScheduleCopy.plannedCareDetailLines(l, item);
+    final viewLabel = '${item.name}. $scheduleLine';
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            Icons.help_outline,
-            size: 18,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: theme.textTheme.bodyMedium),
-                Text(
-                  AwayPlanScheduleCopy.indeterminateRowSubtitle(l, uncertainty),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+      child: Semantics(
+        identifier: 'away_plan_planned_care_${item.healthEntryId}',
+        button: true,
+        label: viewLabel,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => context.goNamed(
+              'petEventView',
+              pathParameters: {
+                'petId': petId,
+                'entryId': item.healthEntryId,
+              },
+            ),
+            borderRadius: BorderRadius.circular(8),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: _kMinTouchTarget),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CareFamilyIcon.forWire(
+                    type: item.type,
+                    careFamily: item.careFamily,
+                    size: 20,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AwayPlanScheduleCopy.plannedCareRowTitle(item),
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        Text(
+                          scheduleLine,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        ...detailLines.map(
+                          (line) => Text(
+                            line,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
