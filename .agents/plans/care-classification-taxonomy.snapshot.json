@@ -76,7 +76,7 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "in_progress",
+      "status": "pending",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
@@ -109,12 +109,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "Remove type dropdown; Flutter omits type on write",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": null,
       "debt_issue_refs": []
     },
     {
@@ -293,5 +290,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:b704a03729116cf9cad42ae39a09e576826e5f0b56fe4aa706b0c94e12f23fe7"
+  "content_hash": "sha256:4cda355f01ed3373d33f936453d44d2c1ae7b062480aed9811f760081b4b7bc2"
 }
