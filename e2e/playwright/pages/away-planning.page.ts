@@ -295,8 +295,9 @@ export class AwayPlanningPage {
   async expectHandoverNoteOnPlan(note: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const bySemantics = semanticsKey(this.page, 'away_plan_handover_note_text');
-      await expect(bySemantics.or(this.page.getByText(note, { exact: false }).first())).toBeVisible();
+      const noteNode = semanticsKey(this.page, 'away_plan_handover_note_text');
+      await expect(noteNode).toBeVisible();
+      await expect(noteNode).toContainText(note);
     }).toPass({ timeout: 45_000 });
   }
 
