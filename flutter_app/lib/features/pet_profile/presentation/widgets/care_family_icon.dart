@@ -12,21 +12,33 @@ class CareFamilyIcon extends StatelessWidget {
     super.key,
     required this.family,
     this.size = 20,
+    this.chipSize,
     this.showChip = true,
   });
 
   final CareFamily family;
+
+  /// Glyph size when [showChip] is false, or when [chipSize] is null.
   final double size;
+
+  /// When set with [showChip], fixes the chip to this square (e.g. care row
+  /// mark-done control). Glyph scales to [chipSize] minus [chipGlyphInset].
+  final double? chipSize;
   final bool showChip;
+
+  /// Padding around the glyph inside an explicit [chipSize] chip.
+  static const double chipGlyphInset = 10;
 
   factory CareFamilyIcon.forEntry(
     HealthEntry entry, {
     double size = 20,
+    double? chipSize,
     bool showChip = true,
   }) {
     return CareFamilyIcon(
       family: inferCareFamily(entry),
       size: size,
+      chipSize: chipSize,
       showChip: showChip,
     );
   }
@@ -45,22 +57,27 @@ class CareFamilyIcon extends StatelessWidget {
     };
   }
 
+  double get _glyphSize =>
+      showChip && chipSize != null ? chipSize! - chipGlyphInset : size;
+
+  double get _boxSize => showChip ? (chipSize ?? size + 12) : size;
+
   @override
   Widget build(BuildContext context) {
     const iconColor = AppColorTokens.petCarePrimary;
-    final glyph = _glyph(iconColor);
+    final glyph = _glyph(iconColor, _glyphSize);
 
     if (!showChip) {
       return SizedBox(
-        width: size,
-        height: size,
+        width: _boxSize,
+        height: _boxSize,
         child: Center(child: glyph),
       );
     }
 
     return Container(
-      width: size + 12,
-      height: size + 12,
+      width: _boxSize,
+      height: _boxSize,
       decoration: BoxDecoration(
         color: AppColorTokens.surfaceAlt,
         borderRadius: BorderRadius.circular(8),
@@ -69,19 +86,19 @@ class CareFamilyIcon extends StatelessWidget {
     );
   }
 
-  Widget _glyph(Color iconColor) {
+  Widget _glyph(Color iconColor, double glyphSize) {
     return switch (family) {
       CareFamily.wellnessReview => CareFamilyCustomGlyph(
         family: CareFamilyGlyph.stethoscope,
-        size: size,
+        size: glyphSize,
         color: iconColor,
       ),
       CareFamily.dental => CareFamilyCustomGlyph(
         family: CareFamilyGlyph.tooth,
-        size: size,
+        size: glyphSize,
         color: iconColor,
       ),
-      _ => Icon(materialIconFor(family), size: size, color: iconColor),
+      _ => Icon(materialIconFor(family), size: glyphSize, color: iconColor),
     };
   }
 }
