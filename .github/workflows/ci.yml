@@ -54,6 +54,8 @@ jobs:
     with:
       run_backend: ${{ needs.ci-scope.outputs.run_backend == 'true' }}
       run_e2e_audit: ${{ needs.ci-scope.outputs.run_e2e_audit == 'true' }}
+      run_backend_integration: ${{ needs.ci-scope.outputs.run_backend == 'true' }}
+      run_lint: ${{ needs.ci-scope.outputs.run_backend == 'true' }}
 
   flutter-analyze:
     needs: ci-scope

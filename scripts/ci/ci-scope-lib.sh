@@ -238,6 +238,10 @@ ci_scope_classify_path() {
       CI_SCOPE_FORCE_FULL=true
       CI_SCOPE_HAS_SCRIPTS_CI=true
       ;;
+    scripts/validate_eslint*)
+      # ESLint ratchet inputs (F-20) — must keep run_backend=true so the lint job runs
+      CI_SCOPE_HAS_SERVER_SCRIPTS=true
+      ;;
     server/package-lock.json)
       CI_SCOPE_SERVER_LOCK_CHANGED=true
       CI_SCOPE_FORCE_FULL=true

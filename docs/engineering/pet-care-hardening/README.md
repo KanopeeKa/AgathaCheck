@@ -37,6 +37,6 @@ Gold-standard security and mobile-readiness programme for the Pet Care domain.
 
 | `pet-care-terminology-rename` | F-22 Guardian → Pet Care internal rename | merged (#1041–#1045) |
 
-**Roadmap status:** `pet-care-hardening-roadmap` complete (all discovery follow-on slices through F-23 merged). Deferred: F-17/F-20 CI workflow jobs ([#1025](https://github.com/KanopeeKa/AgathaCheck/issues/1025) — escalation). **F-22** terminology rename complete via [`pet-care-terminology-rename`](../../.agents/plans/pet-care-terminology-rename.md).
+**Roadmap status:** `pet-care-hardening-roadmap` complete (all discovery follow-on slices through F-23 merged). F-17/F-20 CI workflow jobs wired ([#1025](https://github.com/KanopeeKa/AgathaCheck/issues/1025) — `Backend integration (PostgreSQL)` + `ESLint (Pet Care policy ratchet)` jobs in `_reusable-test.yml`). **F-22** terminology rename complete via [`pet-care-terminology-rename`](../../.agents/plans/pet-care-terminology-rename.md).
 
 See [security-event-taxonomy.md](./security-event-taxonomy.md) for F-23 alert taxonomy.

@@ -68,6 +68,11 @@ assert_json_field "$json" run_backend False "flutter-only skips backend"
 assert_json_field "$json" run_flutter_integration False "flutter-only without pet_profile skips integration"
 python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["rest-a"], shards' <<<"$json"
 
+# ESLint ratchet validator inputs keep backend scope so the F-20 lint job runs
+ci_scope_classify_paths $'scripts/validate_eslint.js'
+json="$(ci_scope_emit_json)"
+assert_json_field "$json" run_backend True "validate_eslint input keeps backend scope"
+
 # Experience-domain change runs only the experience shard
 ci_scope_classify_paths $'flutter_app/lib/features/experience/presentation/widgets/shelter_navigation_sidebar.dart'
 json="$(ci_scope_emit_json)"

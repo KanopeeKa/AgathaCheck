@@ -18,37 +18,38 @@ export async function seedCareScheduleFixture(client) {
     `INSERT INTO health_entries (
        id, pet_id, user_id, type, name, dosage, frequency, frequency_interval,
        start_date, next_due_date, status, remind_days_before, notes,
-       care_family, care_source, recurrence_anchor, schedule_times
+       care_family, care_source, recurrence_anchor, schedule_times,
+       care_setting, care_planning, care_importance
      )
      VALUES
        ($1, $20, $21, 'medication', 'Weekly antibiotic course', '1 capsule', 'weekly', 1,
         $2, $2, 'active', 3,
         'Twice-daily slots on a weekly cadence — exercises multi-per-day rollover',
-        'medication', 'vet_instruction', 'from_completion', $3::jsonb),
+        'medication', 'vet_instruction', 'from_completion', $3::jsonb, 'home', 'planned', 'essential'),
        ($4, $20, $21, 'preventive', 'Rabies booster', '', 'yearly', 1,
         $5, $6, 'active', 14,
         'Clinical interval — from_due_date anchor (vaccination family default)',
-        'vaccination', 'vet_instruction', 'from_due_date', NULL),
+        'vaccination', 'vet_instruction', 'from_due_date', NULL, 'vet', 'planned', 'essential'),
        ($7, $20, $21, 'preventive', 'Flea & tick prevention', '', 'monthly', 1,
         $8, $9, 'active', 7,
         'Parasite prevention — from_due_date anchor',
-        'parasite_prevention', 'guardian_defined', 'from_due_date', NULL),
+        'parasite_prevention', 'guardian_defined', 'from_due_date', NULL, 'home', 'planned', 'essential'),
        ($10, $20, $21, 'medication', 'Evening allergy tablet', '1 tablet', 'daily', 1,
         $11, $11, 'active', 3,
         'Guardian-paced daily rhythm — from_completion anchor',
-        'medication', 'guardian_defined', 'from_completion', NULL),
+        'medication', 'guardian_defined', 'from_completion', NULL, 'home', 'planned', 'essential'),
        ($12, $20, $21, 'other', 'Weekly weight check', '', 'weekly', 1,
         $13, $14, 'active', 3,
         'Weight monitoring with occurrence-linked observations',
-        'weight_monitoring', 'guardian_defined', 'from_completion', NULL),
+        'weight_monitoring', 'guardian_defined', 'from_completion', NULL, 'home', 'planned', 'recommended'),
        ($15, $20, $21, 'other', 'Future weigh-in series', '', 'weekly', 1,
         $16, $16, 'active', 3,
         'Far-future next_due — no materialised occurrences (legacy mark-taken blind spot)',
-        'weight_monitoring', 'guardian_defined', 'from_completion', NULL),
+        'weight_monitoring', 'guardian_defined', 'from_completion', NULL, 'home', 'planned', 'recommended'),
        ($17, $20, $21, 'medication', 'Morning joint supplement', '1 tablet', 'daily', 1,
         $18, $18, 'active', 3,
         'from_completion with pending occurrence for projection uncertainty',
-        'medication', 'guardian_defined', 'from_completion', NULL)
+        'medication', 'guardian_defined', 'from_completion', NULL, 'home', 'planned', 'essential')
      ON CONFLICT (id) DO UPDATE SET
        name = EXCLUDED.name,
        frequency = EXCLUDED.frequency,

@@ -46,21 +46,22 @@ export async function seedCareItemModelFixture(client) {
   await client.query(
     `INSERT INTO health_entries (
        id, pet_id, user_id, type, name, dosage, frequency,
-       start_date, next_due_date, status, remind_days_before, notes, care_family, completed_on
+       start_date, next_due_date, status, remind_days_before, notes, care_family, completed_on,
+       care_setting, care_planning, care_importance
      )
      VALUES
        ($1, $7, $8, 'other', 'Morning walk check-in', '', 'daily',
-        $9, $10, 'active', 3, 'Due today — not done', 'exercise', NULL),
+        $9, $10, 'active', 3, 'Due today — not done', 'exercise', NULL, 'other', 'planned', 'optional'),
        ($2, $7, $8, 'medication', 'Evening supplement', '1 tablet', 'daily',
-        $11, $12, 'active', 3, 'Due today — already done', 'medication', NULL),
+        $11, $12, 'active', 3, 'Due today — already done', 'medication', NULL, 'home', 'planned', 'essential'),
        ($3, $7, $8, 'other', 'Grooming appointment', '', 'once',
-        $14, $15, 'active', 1, 'One-off due today', NULL, NULL),
+        $14, $15, 'active', 1, 'One-off due today', NULL, NULL, 'other', 'planned', 'optional'),
        ($4, $7, $8, 'other', 'Mystery care item', '', 'weekly',
-        $16, $17, 'active', 7, 'Uncategorised care_family', NULL, NULL),
+        $16, $17, 'active', 7, 'Uncategorised care_family', NULL, NULL, 'other', 'planned', 'optional'),
        ($5, $7, $8, 'preventive', 'Nail trim', '', 'monthly',
-        $18, $19, 'active', 7, 'Upcoming later this week', 'grooming', NULL),
+        $18, $19, 'active', 7, 'Upcoming later this week', 'grooming', NULL, 'other', 'planned', 'optional'),
        ($6, $7, $8, 'other', 'Weekly weight check', '', 'weekly',
-        $20, $21, 'active', 3, 'Established weight monitoring', 'weight_monitoring', NULL)
+        $20, $21, 'active', 3, 'Established weight monitoring', 'weight_monitoring', NULL, 'home', 'planned', 'recommended')
      ON CONFLICT (id) DO UPDATE SET
        name = EXCLUDED.name,
        next_due_date = EXCLUDED.next_due_date,
