@@ -1436,6 +1436,66 @@ abstract class AppLocalizations {
   /// **'Other care'**
   String get careFamilyOther;
 
+  /// No description provided for @careSettingFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get careSettingFieldLabel;
+
+  /// No description provided for @careSettingFieldHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Where this care happens or who delivers it.'**
+  String get careSettingFieldHelper;
+
+  /// No description provided for @careSettingHome.
+  ///
+  /// In en, this message translates to:
+  /// **'At home'**
+  String get careSettingHome;
+
+  /// No description provided for @careSettingVet.
+  ///
+  /// In en, this message translates to:
+  /// **'At the vet'**
+  String get careSettingVet;
+
+  /// No description provided for @careSettingOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Somewhere else'**
+  String get careSettingOther;
+
+  /// No description provided for @careImportanceFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get careImportanceFieldLabel;
+
+  /// No description provided for @careImportanceFieldHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'How important this care is for your pet\'s health.'**
+  String get careImportanceFieldHelper;
+
+  /// No description provided for @careImportanceEssential.
+  ///
+  /// In en, this message translates to:
+  /// **'Essential'**
+  String get careImportanceEssential;
+
+  /// No description provided for @careImportanceRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get careImportanceRecommended;
+
+  /// No description provided for @careImportanceOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get careImportanceOptional;
+
   /// No description provided for @careSourceGuardianDefined.
   ///
   /// In en, this message translates to:

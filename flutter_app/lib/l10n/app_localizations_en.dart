@@ -764,6 +764,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careFamilyOther => 'Other care';
 
   @override
+  String get careSettingFieldLabel => 'Where';
+
+  @override
+  String get careSettingFieldHelper =>
+      'Where this care happens or who delivers it.';
+
+  @override
+  String get careSettingHome => 'At home';
+
+  @override
+  String get careSettingVet => 'At the vet';
+
+  @override
+  String get careSettingOther => 'Somewhere else';
+
+  @override
+  String get careImportanceFieldLabel => 'Priority';
+
+  @override
+  String get careImportanceFieldHelper =>
+      'How important this care is for your pet\'s health.';
+
+  @override
+  String get careImportanceEssential => 'Essential';
+
+  @override
+  String get careImportanceRecommended => 'Recommended';
+
+  @override
+  String get careImportanceOptional => 'Optional';
+
+  @override
   String get careSourceGuardianDefined => 'Added by you';
 
   @override

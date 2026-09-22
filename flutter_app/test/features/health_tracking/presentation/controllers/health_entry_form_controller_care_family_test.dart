@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/features/care_taxonomy/domain/care_importance.dart';
+import 'package:pet_profile_app/features/care_taxonomy/domain/care_setting.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/repositories/health_repository.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/usecases/create_health_entry.dart';
@@ -80,6 +82,9 @@ void main() {
     final success = await controller.submit(skipMarkCompletedCheck: true);
     expect(success, isA<HealthEntrySubmitSuccess>());
     expect(repository.created?.careFamily, CareFamily.medication);
+    expect(repository.created?.careSetting, CareSetting.home);
+    expect(repository.created?.careImportance, CareImportance.essential);
+    expect(repository.created?.importanceOverridden, isFalse);
 
     container.dispose();
   });

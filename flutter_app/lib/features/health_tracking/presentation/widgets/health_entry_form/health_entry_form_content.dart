@@ -3,17 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../../core/widgets/form/app_form_destructive_button.dart';
-import '../../../../../core/widgets/form/app_form_labeled_field.dart';
 import '../../../../../core/widgets/form/app_form_section.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../care_taxonomy/presentation/widgets/care_classification_section.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../domain/entities/health_entry.dart';
 import '../../controllers/health_entry_form_controller.dart';
 import '../../controllers/health_entry_form_state.dart';
 import '../entry_due_completed_row.dart';
-import '../health_entry_type_labels.dart';
 import 'health_entry_document_handler.dart';
-import 'health_entry_form_care_family_section.dart';
 import 'health_entry_frequency_section.dart';
 import 'health_entry_health_issue_dropdown.dart';
 import 'health_entry_pet_selector.dart';
@@ -87,21 +85,21 @@ class HealthEntryFormContent extends ConsumerWidget {
                 },
               ),
               const SizedBox(height: 16),
-              AppFormLabeledField(
-                label: l.entryType,
-                child: DropdownButtonFormField<HealthEntryType>(
-                  initialValue: form.type,
-                  decoration: const InputDecoration(),
-                  items: form.selectableTypes.map((t) {
-                    return DropdownMenuItem(
-                      value: t,
-                      child: Text(healthEntryTypeLabel(l, t)),
-                    );
-                  }).toList(),
-                  onChanged: (val) {
-                    if (val != null) controller.setType(val);
-                  },
-                ),
+              CareClassificationSection(
+                isEdit: form.isEdit,
+                careFamily: form.careFamily,
+                careSetting: form.careSetting,
+                careImportance: form.careImportance,
+                careFamilyRequiredError: form.careFamilyRequiredError(l),
+                showCareFamilySuggestion: form.showCareFamilySuggestion,
+                showCareFamilyPicker: form.showCareFamilyPicker,
+                suggestedCareFamily: form.suggestedCareFamilyForType(),
+                onCareFamilyChanged: controller.setCareFamily,
+                onCareSettingChanged: controller.setCareSetting,
+                onCareImportanceChanged: controller.setCareImportance,
+                onAcceptSuggestion: controller.acceptCareFamilySuggestion,
+                onChooseDifferentSuggestion: controller.revealCareFamilyPicker,
+                onDismissSuggestion: controller.dismissCareFamilySuggestion,
               ),
               const SizedBox(height: 16),
               HealthEntryNameDosageFields(
@@ -124,11 +122,6 @@ class HealthEntryFormContent extends ConsumerWidget {
                 frequencyInterval: form.frequencyInterval,
                 repeatEndDate: form.repeatEndDate,
                 recurrenceAnchor: form.recurrenceAnchor,
-                controller: controller,
-              ),
-              const SizedBox(height: 16),
-              HealthEntryFormCareFamilySection(
-                form: form,
                 controller: controller,
               ),
               if (form.frequency != HealthFrequency.once) ...[
