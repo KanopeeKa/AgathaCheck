@@ -1,5 +1,11 @@
 export { leastCertain } from './certainty.js';
-export { enrichUncertainties, splitRoutineAndDatedItems } from './presentation.js';
+export {
+  PLANNED_CARE_KIND_INDETERMINATE_PENDING,
+  PLANNED_CARE_KIND_RECURRING_CALENDAR,
+  PLANNED_CARE_KIND_RECURRING_CHAIN,
+  PLANNED_CARE_KIND_SINGLE_ONCE,
+  buildPlannedCareItems,
+} from './presentation.js';
 export { formatProjectionReadContract } from './formatProjectionReadContract.js';
 export { loadAwayPlanProjection } from './loadAwayPlanProjection.js';
 export {
