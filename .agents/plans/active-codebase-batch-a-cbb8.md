@@ -37,10 +37,10 @@ next_action: "continue phase 4 on branch cursor/active-codebase-a3-boundary-chec
 artifact_ref:
   branch: cursor/active-codebase-a3-boundary-checker-cbb8
   plan_path: .agents/plans/active-codebase-batch-a-cbb8.md
-  plan_commit: 6015cfd8d59c1f73adc1b630e183575b5e1bcc27
+  plan_commit: 2809bdcebd052de137a91989a8d0d233ef600627
   snapshot_path: .agents/plans/active-codebase-batch-a-cbb8.snapshot.json
-  snapshot_commit: 6015cfd8d59c1f73adc1b630e183575b5e1bcc27
-open_prs: []
+  snapshot_commit: 2809bdcebd052de137a91989a8d0d233ef600627
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1284"]
 merge_commits: {}
 debt_issue_refs: []
 ```
