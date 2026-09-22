@@ -11239,6 +11239,42 @@ abstract class AppLocalizations {
   /// **'Care coverage'**
   String get careContextAwayPlanCareCoverageTitle;
 
+  /// No description provided for @careContextAwayEditTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit away plan'**
+  String get careContextAwayEditTooltip;
+
+  /// No description provided for @careContextAwayEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit away plan'**
+  String get careContextAwayEditTitle;
+
+  /// No description provided for @careContextAwayEditDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this away plan?'**
+  String get careContextAwayEditDeleteTitle;
+
+  /// No description provided for @careContextAwayEditDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This cancels the whole absence plan for every pet, not just one pet or carer. This can't be undone from the app.'**
+  String get careContextAwayEditDeleteBody;
+
+  /// No description provided for @careContextAwayEditDeleteAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete plan'**
+  String get careContextAwayEditDeleteAction;
+
+  /// No description provided for @careContextAwayEditDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete this away plan. Try again.'**
+  String get careContextAwayEditDeleteFailed;
+
   /// No description provided for @awayPlanningCarerCoverageAllHaveCarers.
   ///
   /// In en, this message translates to:

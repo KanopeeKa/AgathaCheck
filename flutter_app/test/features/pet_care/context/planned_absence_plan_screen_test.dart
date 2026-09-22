@@ -94,12 +94,29 @@ void main() {
 
   const pet = Pet(id: 'pet-1', name: 'Luna', species: 'dog', breed: 'Mixed');
 
-  Widget buildScreen() {
+  const cancelledAbsence = PlannedAbsence(
+    id: 'abs-1',
+    userId: 'user-1',
+    startsOn: '2026-10-01',
+    endsOn: '2026-10-05',
+    provenance: 'user_declared',
+    status: 'cancelled',
+    petIds: ['pet-1'],
+    petCarers: [
+      PlannedAbsencePetCarer(
+        petId: 'pet-1',
+        carerKind: 'note_only',
+        carerName: 'Tom',
+      ),
+    ],
+  );
+
+  Widget buildScreen({PlannedAbsence? overrideAbsence}) {
     return ProviderScope(
       overrides: [
         plannedAbsenceDetailProvider(
           'abs-1',
-        ).overrideWith((ref) async => absence),
+        ).overrideWith((ref) async => overrideAbsence ?? absence),
         awayPlanReadinessProvider(
           'abs-1',
         ).overrideWith((ref) async => readiness),
@@ -118,9 +135,20 @@ void main() {
           routes: [
             GoRoute(
               path: '/pc/away/:id',
+              name: 'petCarePlannedAbsenceDetail',
               builder: (_, state) => PlannedAbsencePlanScreen(
                 absenceId: state.pathParameters['id']!,
               ),
+              routes: [
+                GoRoute(
+                  path: 'edit',
+                  name: 'petCarePlannedAbsenceEdit',
+                  builder: (_, state) => Text(
+                    'edit-screen-${state.pathParameters['id']}',
+                    key: const Key('edit_screen_marker'),
+                  ),
+                ),
+              ],
             ),
           ],
           initialLocation: '/pc/away/abs-1',
@@ -150,5 +178,91 @@ void main() {
     expect(find.text('Plan details'), findsOneWidget);
     expect(find.textContaining('Reschedule'), findsNothing);
     expect(find.textContaining('Move'), findsNothing);
+  });
+
+  testWidgets('display screen has no editable note field or save button', (
+    tester,
+  ) async {
+    await tester.pumpWidget(buildScreen());
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('away_plan_handover_note')), findsNothing);
+    expect(find.text('Save absence'), findsNothing);
+  });
+
+  testWidgets('renders nothing for the note section when there is no note', (
+    tester,
+  ) async {
+    await tester.pumpWidget(buildScreen());
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('away_plan_handover_note_text')),
+      findsNothing,
+    );
+  });
+
+  testWidgets('shows the handover note read-only when present', (
+    tester,
+  ) async {
+    const withNote = PlannedAbsence(
+      id: 'abs-1',
+      userId: 'user-1',
+      startsOn: '2026-10-01',
+      endsOn: '2026-10-05',
+      provenance: 'user_declared',
+      status: 'active',
+      petIds: ['pet-1'],
+      petCarers: [
+        PlannedAbsencePetCarer(
+          petId: 'pet-1',
+          carerKind: 'note_only',
+          carerName: 'Tom',
+        ),
+      ],
+      handoverNote: 'Feed twice a day, meds at 8am.',
+    );
+    await tester.pumpWidget(buildScreen(overrideAbsence: withNote));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('away_plan_handover_note_text')),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Feed twice a day, meds at 8am.'),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('away_plan_handover_note')), findsNothing);
+  });
+
+  testWidgets('edit icon navigates to the edit screen for an active absence', (
+    tester,
+  ) async {
+    await tester.pumpWidget(buildScreen());
+    await tester.pumpAndSettle();
+
+    final editButton = tester.widget<IconButton>(
+      find.byKey(const Key('away_plan_edit')),
+    );
+    expect(editButton.onPressed, isNotNull);
+
+    await tester.tap(find.byKey(const Key('away_plan_edit')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('edit_screen_marker')), findsOneWidget);
+    expect(find.text('edit-screen-abs-1'), findsOneWidget);
+  });
+
+  testWidgets('edit icon is disabled for a cancelled absence', (
+    tester,
+  ) async {
+    await tester.pumpWidget(buildScreen(overrideAbsence: cancelledAbsence));
+    await tester.pumpAndSettle();
+
+    final editButton = tester.widget<IconButton>(
+      find.byKey(const Key('away_plan_edit')),
+    );
+    expect(editButton.onPressed, isNull);
   });
 }

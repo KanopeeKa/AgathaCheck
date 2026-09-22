@@ -178,4 +178,16 @@ class CareContextRemoteDataSource {
     final absenceJson = body['absence'] as Map<String, dynamic>? ?? body;
     return PlannedAbsenceModel.fromJson(absenceJson);
   }
+
+  Future<PlannedAbsence> cancelPlannedAbsence(String absenceId) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId/cancel'),
+      headers: _headers(jsonBody: true),
+      body: '{}',
+    );
+    _check(response);
+    final body = json.decode(response.body) as Map<String, dynamic>;
+    final absenceJson = body['absence'] as Map<String, dynamic>? ?? body;
+    return PlannedAbsenceModel.fromJson(absenceJson);
+  }
 }

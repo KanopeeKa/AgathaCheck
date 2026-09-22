@@ -92,6 +92,17 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
             return shell(
               actions: [
                 IconButton(
+                  key: const Key('away_plan_edit'),
+                  tooltip: l.careContextAwayEditTooltip,
+                  icon: const Icon(Icons.edit_outlined),
+                  onPressed: absence.isCancelled
+                      ? null
+                      : () => context.goNamed(
+                          'petCarePlannedAbsenceEdit',
+                          pathParameters: {'id': absenceId},
+                        ),
+                ),
+                IconButton(
                   key: const Key('away_plan_download_handover'),
                   tooltip: l.downloadReport,
                   icon: const Icon(Icons.picture_as_pdf_outlined),
