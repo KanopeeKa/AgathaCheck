@@ -1,7 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
-  escapeRegExp,
   flutterGotoUrl,
   refreshFlutterAccessibility,
   semanticsByName,
@@ -168,13 +167,11 @@ export class AwayPlanningPage {
   }
 
   async expectPetCarerRow(petName: string, carerLabel: string): Promise<void> {
-    const rowPattern = new RegExp(
-      `${escapeRegExp(petName)}.*${escapeRegExp(carerLabel)}`,
-      'i',
-    );
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(semanticsByName(this.page, rowPattern).first()).toBeVisible();
+      // Carer rows split pet header semantics from the carer label text (AWD-4).
+      await expect(this.page.getByText(petName, { exact: false }).first()).toBeVisible();
+      await expect(this.page.getByText(carerLabel, { exact: false }).first()).toBeVisible();
     }).toPass({ timeout: 30_000 });
   }
 
