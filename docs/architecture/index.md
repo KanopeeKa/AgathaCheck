@@ -3,13 +3,14 @@ title: Architecture index
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-02
+last_updated: 2026-09-22
 tags: [architecture, index]
 ---
 # Architecture index (agent quick-reference)
 
 Thin map for agents — read this **before** broad codebase search.  
-Full conventions: `docs/architecture/modularity.md`.
+Full conventions: `docs/architecture/modularity.md`.  
+**Accepted architecture review (2026-09-22):** [active-codebase-review.md](reviews/active-codebase-review.md) — integrity fixes, module contracts, and delivery batches A → B → C.
 
 ---
 

@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "plan_id": "active-codebase-batch-a-cbb8",
+  "approved_at": "2026-09-22T14:40:00Z",
+  "approved_by": "standing grant — user chat 2026-09-22 (D1-D7 accepted; execute-plan autonomous)",
+  "approved_until": "2026-09-24T14:40:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1281,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Publish architecture charter (accepted review doc)",
+      "branch": "cursor/active-codebase-review-analysis-cbb8",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-a-cbb8.*",
+        "docs/architecture/reviews/**",
+        "docs/architecture/index.md",
+        "scripts/architecture/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "flutter_app/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1277",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "A1 characterization baseline and failure-path tests",
+      "branch": "cursor/active-codebase-a1-characterize-cbb8",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-a-cbb8.*",
+        "docs/engineering/active-codebase-baseline/**",
+        "docs/architecture/reviews/active-codebase-review.md",
+        "server/test/**",
+        "server/lib/petDataLifecycle.js",
+        "flutter_app/test/features/pet_profile/**",
+        "scripts/architecture/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "flutter_app/lib/**",
+        "server/routes/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "A2 frozen org-transfer route gate",
+      "branch": "cursor/active-codebase-a2-frozen-routes-cbb8",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-a-cbb8.*",
+        "server/routes/pets/**",
+        "server/lib/frozenDomains.js",
+        "server/test/pets/**",
+        "docs/architecture/api-reference.md",
+        "docs/engineering/frozen-domains/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "A3 manifest-driven frozen boundary checker",
+      "branch": "cursor/active-codebase-a3-boundary-checker-cbb8",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-a-cbb8.*",
+        "scripts/check_frozen_domain_boundaries.sh",
+        "scripts/test/**",
+        "docs/engineering/frozen-domains/**",
+        "docs/architecture/reviews/active-codebase-review.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "flutter_app/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:36f2220e65678fe28cd5c365e4e4d0c9915d27937e154be5047b32110b8c822c"
+}
