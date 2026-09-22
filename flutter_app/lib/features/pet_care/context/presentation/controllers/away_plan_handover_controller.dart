@@ -66,22 +66,9 @@ class AwayPlanHandoverController {
         AwayPlanHandoverPetSection(
           petName: petName,
           carerLabel: AwayPlanCopy.petCarerLabel(l, carer),
-          routineLines: coverage.routineItems
+          plannedCareLines: coverage.plannedCareItems
               .map(
-                (item) =>
-                    '${AwayPlanScheduleCopy.routineRowTitle(item)} — ${AwayPlanScheduleCopy.routineRowSubtitle(l, item)}',
-              )
-              .toList(growable: false),
-          datedLines: coverage.datedItems
-              .map(
-                (item) =>
-                    '${item.name} — ${AwayPlanScheduleCopy.datedRowStatus(l, item)}',
-              )
-              .toList(growable: false),
-          indeterminateLines: coverage.uncertainties
-              .map(
-                (item) =>
-                    '${item.name.isNotEmpty ? item.name : item.healthEntryId} — ${AwayPlanScheduleCopy.indeterminateRowSubtitle(l, item)}',
+                (item) => AwayPlanScheduleCopy.plannedCareHandoverLine(l, item),
               )
               .toList(growable: false),
           petNote: carer.petNote,

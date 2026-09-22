@@ -25,6 +25,11 @@
     "Away plan page shows who is caring for each pet": "P1",
     "Guardian assigns a shared carer on the away plan page": "P2"
   },
+  "away_plan_detail_v2.feature": {
+    "Away plan page hides coverage headers when carers and care are reassured": "P1",
+    "Away plan planned care row opens care item detail": "P1",
+    "Guardian can save handover note and delete away plan from edit screen": "P1"
+  },
   "care_suggestion.feature": {
     "A care suggestion surfaces on the pet profile contextual slot": "P1",
     "A care suggestion never appears in the Actions (/pc/events) list": "P1",

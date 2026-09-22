@@ -444,6 +444,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petDetails => 'Pet Details';
 
   @override
+  String petDetailsFor(String petName) {
+    return 'View pet details for $petName';
+  }
+
+  @override
   String get petNotFound => 'Pet not found';
 
   @override
@@ -6305,6 +6310,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careContextAwayPlanCareCoverageTitle => 'Care coverage';
 
   @override
+  String get careContextAwayEditTooltip => 'Edit away plan';
+
+  @override
+  String get careContextAwayEditTitle => 'Edit away plan';
+
+  @override
+  String get careContextAwayEditDeleteTitle => 'Delete this away plan?';
+
+  @override
+  String get careContextAwayEditDeleteBody =>
+      'This cancels the whole absence plan for every pet, not just one pet or carer. This can\'t be undone from the app.';
+
+  @override
+  String get careContextAwayEditDeleteAction => 'Delete plan';
+
+  @override
+  String get careContextAwayEditDeleteFailed =>
+      'Could not delete this away plan. Try again.';
+
+  @override
   String get awayPlanningCarerCoverageAllHaveCarers =>
       'Every pet has a carer assigned.';
 
@@ -6441,10 +6466,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get awayPlanningScheduleRoutineTitle => 'Routine care';
 
   @override
-  String get awayPlanningScheduleDatedTitle => 'Dated care';
+  String get awayPlanningScheduleDatedTitle => 'Planned care';
 
   @override
   String get awayPlanningScheduleIndeterminateTitle => 'Indeterminate care';
+
+  @override
+  String awayPlanningEventRepeatsFromUntil(
+    int interval,
+    String period,
+    String start,
+    String end,
+  ) {
+    return 'Repeats every $interval $period from $start until $end';
+  }
+
+  @override
+  String awayPlanningEventRepeatsFromCompletion(int interval, String period) {
+    return 'Repeats every $interval $period, from completion';
+  }
+
+  @override
+  String awayPlanningEventSingleCareOn(String date) {
+    return 'Single care on $date';
+  }
+
+  @override
+  String awayPlanningEventNextDueDate(String date) {
+    return 'Next due date: $date';
+  }
+
+  @override
+  String awayPlanningEventTimeOfDay(String time) {
+    return 'Time of day: $time';
+  }
+
+  @override
+  String get awayPlanningChainAnchorExplainer =>
+      'Dates for some care events depend on when the previous one is completed, and may shift.';
 
   @override
   String get awayPlanningIndeterminatePending => 'Waiting on a prior dose';

@@ -451,6 +451,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get petDetails => 'Détails de l\'animal';
 
   @override
+  String petDetailsFor(String petName) {
+    return 'Voir les détails de $petName';
+  }
+
+  @override
   String get petNotFound => 'Animal introuvable';
 
   @override
@@ -6412,6 +6417,26 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careContextAwayPlanCareCoverageTitle => 'Couverture des soins';
 
   @override
+  String get careContextAwayEditTooltip => 'Modifier le plan d\'absence';
+
+  @override
+  String get careContextAwayEditTitle => 'Modifier le plan d\'absence';
+
+  @override
+  String get careContextAwayEditDeleteTitle => 'Supprimer ce plan d\'absence ?';
+
+  @override
+  String get careContextAwayEditDeleteBody =>
+      'Ceci annule tout le plan d\'absence pour tous les animaux, pas seulement un animal ou un soignant. Cette action est irréversible depuis l\'application.';
+
+  @override
+  String get careContextAwayEditDeleteAction => 'Supprimer le plan';
+
+  @override
+  String get careContextAwayEditDeleteFailed =>
+      'Impossible de supprimer ce plan d\'absence. Réessayez.';
+
+  @override
   String get awayPlanningCarerCoverageAllHaveCarers =>
       'Chaque animal a un soignant assigné.';
 
@@ -6548,10 +6573,44 @@ class AppLocalizationsFr extends AppLocalizations {
   String get awayPlanningScheduleRoutineTitle => 'Soins de routine';
 
   @override
-  String get awayPlanningScheduleDatedTitle => 'Soins datés';
+  String get awayPlanningScheduleDatedTitle => 'Soins planifiés';
 
   @override
   String get awayPlanningScheduleIndeterminateTitle => 'Soins indéterminés';
+
+  @override
+  String awayPlanningEventRepeatsFromUntil(
+    int interval,
+    String period,
+    String start,
+    String end,
+  ) {
+    return 'Se répète tous les $interval $period du $start au $end';
+  }
+
+  @override
+  String awayPlanningEventRepeatsFromCompletion(int interval, String period) {
+    return 'Se répète tous les $interval $period, depuis la complétion';
+  }
+
+  @override
+  String awayPlanningEventSingleCareOn(String date) {
+    return 'Soin unique le $date';
+  }
+
+  @override
+  String awayPlanningEventNextDueDate(String date) {
+    return 'Prochaine échéance : $date';
+  }
+
+  @override
+  String awayPlanningEventTimeOfDay(String time) {
+    return 'Heure : $time';
+  }
+
+  @override
+  String get awayPlanningChainAnchorExplainer =>
+      'Les dates de certains soins dépendent de la complétion du précédent et peuvent changer.';
 
   @override
   String get awayPlanningIndeterminatePending =>

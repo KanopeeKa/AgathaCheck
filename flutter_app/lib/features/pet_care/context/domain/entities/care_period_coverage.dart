@@ -35,6 +35,29 @@ enum CarePeriodProjectionStatus {
   }
 }
 
+enum PlannedCareKind {
+  recurringCalendar('recurring_calendar'),
+  recurringChain('recurring_chain'),
+  singleOnce('single_once'),
+  indeterminatePending('indeterminate_pending');
+
+  const PlannedCareKind(this.wireValue);
+
+  final String wireValue;
+
+  static PlannedCareKind? fromWire(String? raw) {
+    if (raw == null || raw.isEmpty) return null;
+    for (final kind in values) {
+      if (kind.wireValue == raw) return kind;
+    }
+    return null;
+  }
+
+  bool get showsChainAnchorExplainer =>
+      this == PlannedCareKind.recurringChain ||
+      this == PlannedCareKind.indeterminatePending;
+}
+
 class CarePeriodProjectionItem {
   const CarePeriodProjectionItem({
     required this.healthEntryId,
@@ -61,46 +84,44 @@ class CarePeriodProjectionItem {
   bool get isPending => status == 'pending';
 }
 
-class CarePeriodUncertainty {
-  const CarePeriodUncertainty({
+class PlannedCareItem {
+  const PlannedCareItem({
+    required this.kind,
     required this.healthEntryId,
-    required this.reason,
-    this.name = '',
+    required this.name,
     this.type,
     this.careFamily,
+    this.frequency,
+    this.frequencyInterval = 1,
+    this.timesOfDay = const [],
+    this.nextDueDate,
+    this.certainty,
+    this.reason,
+    this.occurrenceId,
+    this.scheduledDate,
+    this.status,
+    this.firstScheduledDate,
+    this.lastScheduledDate,
+    this.occurrenceCount = 0,
   });
 
+  final PlannedCareKind kind;
   final String healthEntryId;
-  final String reason;
   final String name;
   final String? type;
   final String? careFamily;
-}
-
-class CarePeriodRoutineItem {
-  const CarePeriodRoutineItem({
-    required this.healthEntryId,
-    required this.name,
-    required this.type,
-    required this.careFamily,
-    this.scheduledTime,
-    required this.certainty,
-    required this.occurrenceCount,
-    required this.status,
-    required this.firstScheduledDate,
-    required this.lastScheduledDate,
-  });
-
-  final String healthEntryId;
-  final String name;
-  final String type;
-  final String careFamily;
-  final String? scheduledTime;
-  final String certainty;
+  final String? frequency;
+  final int frequencyInterval;
+  final List<String> timesOfDay;
+  final String? nextDueDate;
+  final String? certainty;
+  final String? reason;
+  final String? occurrenceId;
+  final String? scheduledDate;
+  final String? status;
+  final String? firstScheduledDate;
+  final String? lastScheduledDate;
   final int occurrenceCount;
-  final String status;
-  final String firstScheduledDate;
-  final String lastScheduledDate;
 
   bool get isConditional => certainty == 'conditional_on_future_completion';
 }
@@ -124,22 +145,21 @@ class CarePeriodCoverageResult {
     required this.startsOn,
     required this.endsOn,
     required this.projectionStatus,
-    required this.uncertainties,
     required this.items,
     required this.coverage,
-    this.routineItems = const [],
-    this.datedItems = const [],
+    this.plannedCareItems = const [],
   });
 
   final String startsOn;
   final String endsOn;
   final CarePeriodProjectionStatus projectionStatus;
-  final List<CarePeriodUncertainty> uncertainties;
   final List<CarePeriodProjectionItem> items;
   final CarePeriodCoverageSummary coverage;
-  final List<CarePeriodRoutineItem> routineItems;
-  final List<CarePeriodProjectionItem> datedItems;
+  final List<PlannedCareItem> plannedCareItems;
 
   bool get isPartiallyIndeterminate =>
       projectionStatus == CarePeriodProjectionStatus.partiallyIndeterminate;
+
+  bool get showsChainAnchorExplainer =>
+      plannedCareItems.any((item) => item.kind.showsChainAnchorExplainer);
 }

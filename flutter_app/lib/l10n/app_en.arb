@@ -156,6 +156,12 @@
   "addFirstPet": "Tap + to add your first pet",
 
   "petDetails": "Pet Details",
+  "petDetailsFor": "View pet details for {petName}",
+  "@petDetailsFor": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
   "petNotFound": "Pet not found",
   "errorWithMessage": "Error: {error}",
   "@errorWithMessage": { "placeholders": { "error": { "type": "String" } } },
@@ -2335,6 +2341,12 @@
   "careContextAwayPlanStatusCancelled": "Cancelled",
   "careContextAwayPlanCarerCoverageTitle": "Carer coverage",
   "careContextAwayPlanCareCoverageTitle": "Care coverage",
+  "careContextAwayEditTooltip": "Edit away plan",
+  "careContextAwayEditTitle": "Edit away plan",
+  "careContextAwayEditDeleteTitle": "Delete this away plan?",
+  "careContextAwayEditDeleteBody": "This cancels the whole absence plan for every pet, not just one pet or carer. This can't be undone from the app.",
+  "careContextAwayEditDeleteAction": "Delete plan",
+  "careContextAwayEditDeleteFailed": "Could not delete this away plan. Try again.",
   "awayPlanningCarerCoverageAllHaveCarers": "Every pet has a carer assigned.",
   "awayPlanningCarerCoverageSomeHaveCarers": "{assigned} of {total} pets have a carer assigned.",
   "@awayPlanningCarerCoverageSomeHaveCarers": {
@@ -2430,8 +2442,43 @@
     }
   },
   "awayPlanningScheduleRoutineTitle": "Routine care",
-  "awayPlanningScheduleDatedTitle": "Dated care",
+  "awayPlanningScheduleDatedTitle": "Planned care",
   "awayPlanningScheduleIndeterminateTitle": "Indeterminate care",
+  "awayPlanningEventRepeatsFromUntil": "Repeats every {interval} {period} from {start} until {end}",
+  "@awayPlanningEventRepeatsFromUntil": {
+    "placeholders": {
+      "interval": { "type": "int" },
+      "period": { "type": "String" },
+      "start": { "type": "String" },
+      "end": { "type": "String" }
+    }
+  },
+  "awayPlanningEventRepeatsFromCompletion": "Repeats every {interval} {period}, from completion",
+  "@awayPlanningEventRepeatsFromCompletion": {
+    "placeholders": {
+      "interval": { "type": "int" },
+      "period": { "type": "String" }
+    }
+  },
+  "awayPlanningEventSingleCareOn": "Single care on {date}",
+  "@awayPlanningEventSingleCareOn": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "awayPlanningEventNextDueDate": "Next due date: {date}",
+  "@awayPlanningEventNextDueDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "awayPlanningEventTimeOfDay": "Time of day: {time}",
+  "@awayPlanningEventTimeOfDay": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "awayPlanningChainAnchorExplainer": "Dates for some care events depend on when the previous one is completed, and may shift.",
   "awayPlanningIndeterminatePending": "Waiting on a prior dose",
   "awayPlanningIndeterminateChain": "Depends on earlier care in the chain",
   "awayPlanningIndeterminateGeneric": "Timing not yet known",

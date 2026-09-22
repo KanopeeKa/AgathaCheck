@@ -253,4 +253,90 @@ void main() {
       },
     );
   });
+
+  group('cancelPlannedAbsence', () {
+    final cancelledAbsenceJson = {
+      'id': 'abs-1',
+      'user_id': 'user-1',
+      'starts_on': '2026-10-01',
+      'ends_on': '2026-10-05',
+      'provenance': 'user_declared',
+      'status': 'cancelled',
+      'pet_carers': const [],
+    };
+
+    test('POSTs /api/planned-absences/:id/cancel with no id in body', () async {
+      String? requestedMethod;
+      String? requestedUrl;
+      String? contentType;
+
+      final client = MockClient((request) async {
+        requestedMethod = request.method;
+        requestedUrl = request.url.toString();
+        contentType = request.headers['Content-Type'];
+        return http.Response(
+          json.encode({'absence': cancelledAbsenceJson}),
+          200,
+        );
+      });
+
+      final datasource = CareContextRemoteDataSource(
+        baseUrl: baseUrl,
+        client: client,
+      );
+      final result = await datasource.cancelPlannedAbsence('abs-1');
+
+      expect(requestedMethod, 'POST');
+      expect(requestedUrl, '$baseUrl/api/planned-absences/abs-1/cancel');
+      expect(contentType, 'application/json');
+      expect(result, isA<PlannedAbsence>());
+      expect(result.id, 'abs-1');
+      expect(result.status, 'cancelled');
+      expect(result.isCancelled, isTrue);
+    });
+
+    test('unwraps absence when response body has no `absence` key', () async {
+      final client = MockClient(
+        (request) async =>
+            http.Response(json.encode(cancelledAbsenceJson), 200),
+      );
+
+      final datasource = CareContextRemoteDataSource(
+        baseUrl: baseUrl,
+        client: client,
+      );
+      final result = await datasource.cancelPlannedAbsence('abs-1');
+
+      expect(result.id, 'abs-1');
+      expect(result.isCancelled, isTrue);
+    });
+
+    test(
+      'throws CareContextApiException with status on 400 (already cancelled)',
+      () async {
+        final client = MockClient(
+          (request) async => http.Response(
+            json.encode({'error': 'Absence is already cancelled'}),
+            400,
+          ),
+        );
+
+        final datasource = CareContextRemoteDataSource(
+          baseUrl: baseUrl,
+          client: client,
+        );
+
+        expect(
+          () => datasource.cancelPlannedAbsence('abs-1'),
+          throwsA(
+            isA<CareContextApiException>().having(
+              (e) => e.statusCode,
+              'statusCode',
+              400,
+            ),
+          ),
+        );
+      },
+    );
+  });
 }

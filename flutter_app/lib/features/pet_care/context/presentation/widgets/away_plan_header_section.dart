@@ -29,6 +29,14 @@ class AwayPlanHeaderSection extends StatelessWidget {
           )
         : '${absence.startsOn} – ${absence.endsOn}';
 
+    // D-AWD-001: attention-only coverage summary. Each line renders only
+    // when it isn't already fully reassured by the per-pet cards below.
+    final showCarerCoverage =
+        readiness.carerCoverage.state != 'all_have_carers';
+    final showCareCoverage =
+        readiness.careCoverage.coverageState == 'has_items_to_review' ||
+        readiness.careCoverage.coverageState == 'indeterminate';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -42,26 +50,30 @@ class AwayPlanHeaderSection extends StatelessWidget {
             ),
           ),
         ],
-        const SizedBox(height: 16),
-        Text(
-          l.careContextAwayPlanCarerCoverageTitle,
-          style: theme.textTheme.titleMedium,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          AwayPlanCopy.carerCoverageSummary(l, readiness.carerCoverage),
-          style: theme.textTheme.bodyLarge,
-        ),
-        const SizedBox(height: 12),
-        Text(
-          l.careContextAwayPlanCareCoverageTitle,
-          style: theme.textTheme.titleMedium,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          AwayPlanCopy.careCoverageSummary(l, readiness.careCoverage),
-          style: theme.textTheme.bodyLarge,
-        ),
+        if (showCarerCoverage) ...[
+          const SizedBox(height: 16),
+          Text(
+            l.careContextAwayPlanCarerCoverageTitle,
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            AwayPlanCopy.carerCoverageSummary(l, readiness.carerCoverage),
+            style: theme.textTheme.bodyLarge,
+          ),
+        ],
+        if (showCareCoverage) ...[
+          const SizedBox(height: 12),
+          Text(
+            l.careContextAwayPlanCareCoverageTitle,
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            AwayPlanCopy.careCoverageSummary(l, readiness.careCoverage),
+            style: theme.textTheme.bodyLarge,
+          ),
+        ],
       ],
     );
   }

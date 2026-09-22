@@ -156,6 +156,45 @@ Care Context does **not** own scheduling. When structured pause/reschedule/skip 
 
 Hub at `/pc/away`, plan page at `/pc/away/:id`, wizard at `/pc/away/new`, per-pet [carer model](./away-planning-carer-model.md), server-derived readiness (two facts), printable handover (AW-9). Per-pet coverage on the plan page issues **one request per pet** (acceptable V1; not a bug).
 
+## Away Plan Detail V2 (plan page + edit screen)
+
+Shipped on the integration branch as AWD-1–AWD-5. Canonical decisions: [away-plan-detail-v2-decisions.md](../changes/away-plan-detail-v2-decisions.md).
+
+### Routes
+
+| Screen | Route | Notes |
+|--------|-------|-------|
+| Hub | `/pc/away` | unchanged |
+| Plan (read-only display) | `/pc/away/:id` | carer assignment stays inline; handover note read-only when present |
+| Edit | `/pc/away/:id/edit` | handover note + delete (cancel) only — no dates/pets editing |
+| Wizard (create) | `/pc/away/new` | unchanged |
+
+### Attention-only coverage header (D-AWD-001)
+
+On the plan page header (`AwayPlanHeaderSection`), server-derived readiness is **attention-only**:
+
+- **Carer coverage** line renders only when `readiness.carer_coverage.state != all_have_carers`.
+- **Care coverage** line renders only when `readiness.care_coverage.coverage_state` is `has_items_to_review` or `indeterminate`.
+
+Reassuring states (`nothing_scheduled`, `all_completed`, `no_unresolved_items`) render **no** care-coverage line — the per-pet Planned care cards below already carry that detail. The handover PDF keeps both lines unconditionally (reader has no “fields below”).
+
+### Unified planned care list (D-AWD-002–005)
+
+Care-period projection and coverage responses expose a single server-sorted array per pet, **`planned_care_items[]`**, replacing the pre-V2 `routine_items` / `dated_items` / `uncertainties` split (breaking wire change — not versioned alongside; see [api-reference.md](/docs/architecture/api-reference.md)).
+
+Each row is one `health_entry_id` with a `kind` discriminant:
+
+| `kind` | Meaning |
+|--------|---------|
+| `recurring_calendar` | repeating, `recurrence_anchor = from_due_date` |
+| `recurring_chain` | repeating, `recurrence_anchor = from_completion` |
+| `single_once` | `frequency = once`, one row per occurrence |
+| `indeterminate_pending` | no materialised date in the window yet |
+
+The plan page shows one **“Planned care”** section per pet (server sort order; no client merge). Rows are tappable → existing Care Item Detail route (`/pet/:petId/events/:entryId`). Pet header shows photo + tap-through to pet profile.
+
+Raw per-occurrence `items[]` stays on the wire unchanged for coverage counts and create-flow preview; only the three legacy grouped arrays were removed.
+
 ## Related
 
 - [care-schedule-management.md](care-schedule-management.md) — authoritative scheduling core (`projectSchedule`, `explainGap`)

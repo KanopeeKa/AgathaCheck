@@ -280,6 +280,53 @@ export interface TestPlannedAbsence {
   pet_ids: string[];
 }
 
+export async function updatePlannedAbsence(
+  baseURL: string,
+  token: string,
+  absenceId: string,
+  options: {
+    handoverNote?: string | null;
+    petCarers?: Array<{
+      petId: string;
+      carerKind: 'note_only' | 'shared_user' | null;
+      carerName?: string;
+      carerNote?: string;
+      carerUserId?: string;
+    }>;
+  },
+): Promise<TestPlannedAbsence> {
+  const body: Record<string, unknown> = {};
+  if (options.handoverNote !== undefined) {
+    body.handover_note = options.handoverNote;
+  }
+  if (options.petCarers != null) {
+    body.pet_carers = options.petCarers.map((carer) => ({
+      pet_id: carer.petId,
+      carer_kind: carer.carerKind,
+      ...(carer.carerName != null ? { carer_name: carer.carerName } : {}),
+      ...(carer.carerNote != null ? { carer_note: carer.carerNote } : {}),
+      ...(carer.carerUserId != null ? { carer_user_id: carer.carerUserId } : {}),
+    }));
+  }
+
+  const res = await apiFetch(apiUrl(`/planned-absences/${absenceId}`, baseURL), {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`updatePlannedAbsence failed (${res.status}): ${text}`);
+  }
+
+  const json = await res.json<{ absence: TestPlannedAbsence }>();
+  return json.absence;
+}
+
 export async function createPlannedAbsence(
   baseURL: string,
   token: string,
