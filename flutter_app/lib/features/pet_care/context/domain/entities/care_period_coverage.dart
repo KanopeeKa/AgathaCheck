@@ -123,8 +123,7 @@ class PlannedCareItem {
   final String? lastScheduledDate;
   final int occurrenceCount;
 
-  bool get isConditional =>
-      certainty == 'conditional_on_future_completion';
+  bool get isConditional => certainty == 'conditional_on_future_completion';
 }
 
 class CarePeriodCoverageSummary {

@@ -193,15 +193,10 @@ void main() {
     await tester.pumpWidget(buildScreen());
     await tester.pumpAndSettle();
 
-    expect(
-      find.byKey(const Key('away_plan_handover_note_text')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('away_plan_handover_note_text')), findsNothing);
   });
 
-  testWidgets('shows the handover note read-only when present', (
-    tester,
-  ) async {
+  testWidgets('shows the handover note read-only when present', (tester) async {
     const withNote = PlannedAbsence(
       id: 'abs-1',
       userId: 'user-1',
@@ -232,10 +227,7 @@ void main() {
       find.byKey(const Key('away_plan_handover_note_text')),
       findsOneWidget,
     );
-    expect(
-      find.text('Feed twice a day, meds at 8am.'),
-      findsOneWidget,
-    );
+    expect(find.text('Feed twice a day, meds at 8am.'), findsOneWidget);
     expect(find.byKey(const Key('away_plan_handover_note')), findsNothing);
   });
 
@@ -257,9 +249,7 @@ void main() {
     expect(find.text('edit-screen-abs-1'), findsOneWidget);
   });
 
-  testWidgets('edit icon is disabled for a cancelled absence', (
-    tester,
-  ) async {
+  testWidgets('edit icon is disabled for a cancelled absence', (tester) async {
     await tester.pumpWidget(buildScreen(overrideAbsence: cancelledAbsence));
     await tester.pumpAndSettle();
 

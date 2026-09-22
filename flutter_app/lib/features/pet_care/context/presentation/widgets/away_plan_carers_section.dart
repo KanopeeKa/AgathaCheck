@@ -145,10 +145,7 @@ class _CarerRow extends ConsumerWidget {
                       CareEventRowPetAvatar(pet: pet, petName: petName),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Text(
-                          petName,
-                          style: theme.textTheme.titleSmall,
-                        ),
+                        child: Text(petName, style: theme.textTheme.titleSmall),
                       ),
                     ],
                   ),

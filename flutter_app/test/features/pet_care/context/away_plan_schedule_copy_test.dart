@@ -87,24 +87,15 @@ void main() {
     test('recurring_chain uses repeats-from-completion copy', () {
       final text = AwayPlanScheduleCopy.plannedCareScheduleLine(
         l,
-        _item(
-          kind: PlannedCareKind.recurringChain,
-          frequency: 'weekly',
-        ),
+        _item(kind: PlannedCareKind.recurringChain, frequency: 'weekly'),
       );
-      expect(
-        text,
-        l.awayPlanningEventRepeatsFromCompletion(1, l.weekly),
-      );
+      expect(text, l.awayPlanningEventRepeatsFromCompletion(1, l.weekly));
     });
 
     test('single_once uses single-care-on copy', () {
       final text = AwayPlanScheduleCopy.plannedCareScheduleLine(
         l,
-        _item(
-          kind: PlannedCareKind.singleOnce,
-          scheduledDate: '2026-10-02',
-        ),
+        _item(kind: PlannedCareKind.singleOnce, scheduledDate: '2026-10-02'),
       );
       expect(text, l.awayPlanningEventSingleCareOn(displayDate('2026-10-02')));
     });
@@ -122,41 +113,41 @@ void main() {
   });
 
   group('plannedCareDetailLines', () {
-    test('recurring_calendar shows next due date when at most one time of day', () {
-      final lines = AwayPlanScheduleCopy.plannedCareDetailLines(
-        l,
-        _item(
-          kind: PlannedCareKind.recurringCalendar,
-          nextDueDate: '2026-10-02',
-          timesOfDay: const ['08:00'],
-        ),
-      );
-      expect(
-        lines,
-        [
+    test(
+      'recurring_calendar shows next due date when at most one time of day',
+      () {
+        final lines = AwayPlanScheduleCopy.plannedCareDetailLines(
+          l,
+          _item(
+            kind: PlannedCareKind.recurringCalendar,
+            nextDueDate: '2026-10-02',
+            timesOfDay: const ['08:00'],
+          ),
+        );
+        expect(lines, [
           l.awayPlanningEventNextDueDate(displayDate('2026-10-02')),
           l.awayPlanningEventTimeOfDay('08:00'),
-        ],
-      );
-    });
+        ]);
+      },
+    );
 
-    test('recurring_calendar omits next due date when multiple times of day', () {
-      final lines = AwayPlanScheduleCopy.plannedCareDetailLines(
-        l,
-        _item(
-          kind: PlannedCareKind.recurringCalendar,
-          nextDueDate: '2026-10-02',
-          timesOfDay: const ['08:00', '20:00'],
-        ),
-      );
-      expect(
-        lines,
-        [
+    test(
+      'recurring_calendar omits next due date when multiple times of day',
+      () {
+        final lines = AwayPlanScheduleCopy.plannedCareDetailLines(
+          l,
+          _item(
+            kind: PlannedCareKind.recurringCalendar,
+            nextDueDate: '2026-10-02',
+            timesOfDay: const ['08:00', '20:00'],
+          ),
+        );
+        expect(lines, [
           l.awayPlanningEventTimeOfDay('08:00'),
           l.awayPlanningEventTimeOfDay('20:00'),
-        ],
-      );
-    });
+        ]);
+      },
+    );
 
     test('renders one time-of-day line per distinct time', () {
       final lines = AwayPlanScheduleCopy.plannedCareDetailLines(
@@ -166,13 +157,10 @@ void main() {
           timesOfDay: const ['08:00', '20:00'],
         ),
       );
-      expect(
-        lines,
-        [
-          l.awayPlanningEventTimeOfDay('08:00'),
-          l.awayPlanningEventTimeOfDay('20:00'),
-        ],
-      );
+      expect(lines, [
+        l.awayPlanningEventTimeOfDay('08:00'),
+        l.awayPlanningEventTimeOfDay('20:00'),
+      ]);
     });
   });
 }

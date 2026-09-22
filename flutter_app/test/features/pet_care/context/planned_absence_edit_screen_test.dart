@@ -72,7 +72,9 @@ class _FakeCareContextRepository implements CareContextRepository {
   }
 
   @override
-  Future<List<PlannedAbsence>> listPlannedAbsences({String scope = 'all'}) async {
+  Future<List<PlannedAbsence>> listPlannedAbsences({
+    String scope = 'all',
+  }) async {
     listCallCount++;
     return absence.isCancelled ? const [] : [absence];
   }
@@ -235,26 +237,27 @@ void main() {
     expect(saveButtonDirty.onPressed, isNotNull);
   });
 
-  testWidgets('saving calls updateHandoverNote and returns to the plan screen', (
-    tester,
-  ) async {
-    final repo = _FakeCareContextRepository(absence: absence);
-    await tester.pumpWidget(buildScreen(repo));
-    await tester.pumpAndSettle();
+  testWidgets(
+    'saving calls updateHandoverNote and returns to the plan screen',
+    (tester) async {
+      final repo = _FakeCareContextRepository(absence: absence);
+      await tester.pumpWidget(buildScreen(repo));
+      await tester.pumpAndSettle();
 
-    await tester.enterText(
-      find.byKey(const Key('away_plan_handover_note')),
-      'Updated note.',
-    );
-    await tester.pump();
+      await tester.enterText(
+        find.byKey(const Key('away_plan_handover_note')),
+        'Updated note.',
+      );
+      await tester.pump();
 
-    await tester.tap(find.byKey(const Key('away_plan_edit_save')));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('away_plan_edit_save')));
+      await tester.pumpAndSettle();
 
-    expect(repo.updateHandoverNoteCallCount, 1);
-    expect(repo.lastSavedNote, 'Updated note.');
-    expect(find.byKey(const Key('plan_screen_marker')), findsOneWidget);
-  });
+      expect(repo.updateHandoverNoteCallCount, 1);
+      expect(repo.lastSavedNote, 'Updated note.');
+      expect(find.byKey(const Key('plan_screen_marker')), findsOneWidget);
+    },
+  );
 
   testWidgets(
     'discard guard fires on unsaved note changes and cancel keeps editing',

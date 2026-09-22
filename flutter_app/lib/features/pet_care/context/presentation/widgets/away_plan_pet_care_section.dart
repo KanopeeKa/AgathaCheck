@@ -71,11 +71,8 @@ class AwayPlanPetCareSection extends ConsumerWidget {
               ],
             ),
           ),
-          data: (result) => _PetCareBody(
-            petId: petId,
-            petName: petName,
-            result: result,
-          ),
+          data: (result) =>
+              _PetCareBody(petId: petId, petName: petName, result: result),
         ),
       ),
     );
@@ -107,10 +104,7 @@ class _PetCareHeader extends StatelessWidget {
 }
 
 class _PetHeaderTapTarget extends ConsumerWidget {
-  const _PetHeaderTapTarget({
-    required this.petId,
-    required this.petName,
-  });
+  const _PetHeaderTapTarget({required this.petId, required this.petName});
 
   final String petId;
   final String petName;
@@ -242,10 +236,7 @@ class _PlannedCareRow extends StatelessWidget {
           child: InkWell(
             onTap: () => context.goNamed(
               'petEventView',
-              pathParameters: {
-                'petId': petId,
-                'entryId': item.healthEntryId,
-              },
+              pathParameters: {'petId': petId, 'entryId': item.healthEntryId},
             ),
             borderRadius: BorderRadius.circular(8),
             child: ConstrainedBox(

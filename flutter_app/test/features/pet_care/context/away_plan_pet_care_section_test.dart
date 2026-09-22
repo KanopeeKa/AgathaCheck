@@ -68,9 +68,8 @@ void main() {
             GoRoute(
               path: '/pet/:petId/events/:entryId',
               name: 'petEventView',
-              builder: (_, state) => Text(
-                'event-${state.pathParameters['entryId']}',
-              ),
+              builder: (_, state) =>
+                  Text('event-${state.pathParameters['entryId']}'),
             ),
           ],
           initialLocation: '/',
@@ -139,39 +138,38 @@ void main() {
     expect(find.text(dueLabel), findsOneWidget);
   });
 
-  testWidgets('carer can read recurring_calendar next due date without tapping', (
-    tester,
-  ) async {
-    final l = await AppLocalizations.delegate.load(const Locale('en'));
-    final dueLabel = l.awayPlanningEventNextDueDate(
-      formatCalendarDateDisplay(parseCalendarDate('2026-10-02')!),
-    );
-    await tester.pumpWidget(
-      buildSection(
-        _coverage(
-          plannedCareItems: [
-            PlannedCareItem(
-              kind: PlannedCareKind.recurringCalendar,
-              healthEntryId: 'daily-1',
-              name: 'Morning pill',
-              frequency: 'daily',
-              firstScheduledDate: '2026-10-01',
-              lastScheduledDate: '2026-10-04',
-              nextDueDate: '2026-10-02',
-              timesOfDay: const ['08:00'],
-            ),
-          ],
+  testWidgets(
+    'carer can read recurring_calendar next due date without tapping',
+    (tester) async {
+      final l = await AppLocalizations.delegate.load(const Locale('en'));
+      final dueLabel = l.awayPlanningEventNextDueDate(
+        formatCalendarDateDisplay(parseCalendarDate('2026-10-02')!),
+      );
+      await tester.pumpWidget(
+        buildSection(
+          _coverage(
+            plannedCareItems: [
+              PlannedCareItem(
+                kind: PlannedCareKind.recurringCalendar,
+                healthEntryId: 'daily-1',
+                name: 'Morning pill',
+                frequency: 'daily',
+                firstScheduledDate: '2026-10-01',
+                lastScheduledDate: '2026-10-04',
+                nextDueDate: '2026-10-02',
+                timesOfDay: const ['08:00'],
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text(dueLabel), findsOneWidget);
-  });
+      expect(find.text(dueLabel), findsOneWidget);
+    },
+  );
 
-  testWidgets('planned care row tap navigates to petEventView', (
-    tester,
-  ) async {
+  testWidgets('planned care row tap navigates to petEventView', (tester) async {
     await tester.pumpWidget(
       buildSection(
         _coverage(

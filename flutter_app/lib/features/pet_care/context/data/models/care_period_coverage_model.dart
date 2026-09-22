@@ -21,10 +21,9 @@ class CarePeriodCoverageModel {
     final kind =
         PlannedCareKind.fromWire(raw['kind'] as String?) ??
         PlannedCareKind.singleOnce;
-    final timesOfDay =
-        (raw['times_of_day'] as List<dynamic>? ?? const [])
-            .map((value) => value.toString())
-            .toList(growable: false);
+    final timesOfDay = (raw['times_of_day'] as List<dynamic>? ?? const [])
+        .map((value) => value.toString())
+        .toList(growable: false);
 
     return PlannedCareItem(
       kind: kind,

@@ -94,141 +94,129 @@ void main() {
       final expectCareVisible =
           careState == 'has_items_to_review' || careState == 'indeterminate';
 
-      testWidgets(
-        'carer=$carerState, care=$careState -> '
-        'carer line ${expectCarerVisible ? "shown" : "hidden"}, '
-        'care line ${expectCareVisible ? "shown" : "hidden"}',
-        (tester) async {
-          final readiness = AwayPlanReadiness(
-            carerCoverage: carerEntry.value,
-            careCoverage: careEntry.value,
-            tileCopy: const AwayPlanTileCopy(
-              source: 'care_coverage',
-              copyKey: 'careContextCoverageHasItemsToReview',
-              copyParams: {'count': 3},
+      testWidgets('carer=$carerState, care=$careState -> '
+          'carer line ${expectCarerVisible ? "shown" : "hidden"}, '
+          'care line ${expectCareVisible ? "shown" : "hidden"}', (
+        tester,
+      ) async {
+        final readiness = AwayPlanReadiness(
+          carerCoverage: carerEntry.value,
+          careCoverage: careEntry.value,
+          tileCopy: const AwayPlanTileCopy(
+            source: 'care_coverage',
+            copyKey: 'careContextCoverageHasItemsToReview',
+            copyParams: {'count': 3},
+          ),
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: AwayPlanHeaderSection(
+              absence: _absence,
+              readiness: readiness,
             ),
-          );
+          ),
+        );
+        await tester.pumpAndSettle();
 
-          await tester.pumpWidget(
-            MaterialApp(
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              home: AwayPlanHeaderSection(
-                absence: _absence,
-                readiness: readiness,
-              ),
-            ),
-          );
-          await tester.pumpAndSettle();
+        final context = tester.element(find.byType(AwayPlanHeaderSection));
+        final l = AppLocalizations.of(context)!;
 
-          final context = tester.element(find.byType(AwayPlanHeaderSection));
-          final l = AppLocalizations.of(context)!;
+        final carerTitleFinder = find.text(
+          l.careContextAwayPlanCarerCoverageTitle,
+        );
+        final carerSummaryFinder = find.text(
+          AwayPlanCopy.carerCoverageSummary(l, readiness.carerCoverage),
+        );
+        final careTitleFinder = find.text(
+          l.careContextAwayPlanCareCoverageTitle,
+        );
+        final careSummaryFinder = find.text(
+          AwayPlanCopy.careCoverageSummary(l, readiness.careCoverage),
+        );
 
-          final carerTitleFinder = find.text(
-            l.careContextAwayPlanCarerCoverageTitle,
-          );
-          final carerSummaryFinder = find.text(
-            AwayPlanCopy.carerCoverageSummary(l, readiness.carerCoverage),
-          );
-          final careTitleFinder = find.text(
-            l.careContextAwayPlanCareCoverageTitle,
-          );
-          final careSummaryFinder = find.text(
-            AwayPlanCopy.careCoverageSummary(l, readiness.careCoverage),
-          );
-
-          expect(
-            carerTitleFinder,
-            expectCarerVisible ? findsOneWidget : findsNothing,
-            reason: 'carer coverage title for state=$carerState',
-          );
-          expect(
-            carerSummaryFinder,
-            expectCarerVisible ? findsOneWidget : findsNothing,
-            reason: 'carer coverage summary for state=$carerState',
-          );
-          expect(
-            careTitleFinder,
-            expectCareVisible ? findsOneWidget : findsNothing,
-            reason: 'care coverage title for state=$careState',
-          );
-          expect(
-            careSummaryFinder,
-            expectCareVisible ? findsOneWidget : findsNothing,
-            reason: 'care coverage summary for state=$careState',
-          );
-        },
-      );
+        expect(
+          carerTitleFinder,
+          expectCarerVisible ? findsOneWidget : findsNothing,
+          reason: 'carer coverage title for state=$carerState',
+        );
+        expect(
+          carerSummaryFinder,
+          expectCarerVisible ? findsOneWidget : findsNothing,
+          reason: 'carer coverage summary for state=$carerState',
+        );
+        expect(
+          careTitleFinder,
+          expectCareVisible ? findsOneWidget : findsNothing,
+          reason: 'care coverage title for state=$careState',
+        );
+        expect(
+          careSummaryFinder,
+          expectCareVisible ? findsOneWidget : findsNothing,
+          reason: 'care coverage summary for state=$careState',
+        );
+      });
     }
   }
 
-  testWidgets(
-    'renders neither coverage line when both are fully reassured',
-    (tester) async {
-      final readiness = AwayPlanReadiness(
-        carerCoverage: _carerCoverageByState['all_have_carers']!,
-        careCoverage: _careCoverageByState['nothing_scheduled']!,
-        tileCopy: const AwayPlanTileCopy(
-          source: 'carer_coverage',
-          copyKey: 'awayPlanningTileCarerNone',
-        ),
-      );
+  testWidgets('renders neither coverage line when both are fully reassured', (
+    tester,
+  ) async {
+    final readiness = AwayPlanReadiness(
+      carerCoverage: _carerCoverageByState['all_have_carers']!,
+      careCoverage: _careCoverageByState['nothing_scheduled']!,
+      tileCopy: const AwayPlanTileCopy(
+        source: 'carer_coverage',
+        copyKey: 'awayPlanningTileCarerNone',
+      ),
+    );
 
-      await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: AwayPlanHeaderSection(absence: _absence, readiness: readiness),
-        ),
-      );
-      await tester.pumpAndSettle();
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: AwayPlanHeaderSection(absence: _absence, readiness: readiness),
+      ),
+    );
+    await tester.pumpAndSettle();
 
-      final context = tester.element(find.byType(AwayPlanHeaderSection));
-      final l = AppLocalizations.of(context)!;
+    final context = tester.element(find.byType(AwayPlanHeaderSection));
+    final l = AppLocalizations.of(context)!;
 
-      expect(
-        find.text(l.careContextAwayPlanCarerCoverageTitle),
-        findsNothing,
-      );
-      expect(find.text(l.careContextAwayPlanCareCoverageTitle), findsNothing);
-      // The date range still renders — this is a conditional-rendering
-      // change, not a "hide the whole header" change.
-      expect(find.textContaining('2026'), findsOneWidget);
-    },
-  );
+    expect(find.text(l.careContextAwayPlanCarerCoverageTitle), findsNothing);
+    expect(find.text(l.careContextAwayPlanCareCoverageTitle), findsNothing);
+    // The date range still renders — this is a conditional-rendering
+    // change, not a "hide the whole header" change.
+    expect(find.textContaining('2026'), findsOneWidget);
+  });
 
-  testWidgets(
-    'renders both coverage lines when neither is reassured',
-    (tester) async {
-      final readiness = AwayPlanReadiness(
-        carerCoverage: _carerCoverageByState['none_have_carers']!,
-        careCoverage: _careCoverageByState['indeterminate']!,
-        tileCopy: const AwayPlanTileCopy(
-          source: 'care_coverage',
-          copyKey: 'careContextCoverageIndeterminate',
-        ),
-      );
+  testWidgets('renders both coverage lines when neither is reassured', (
+    tester,
+  ) async {
+    final readiness = AwayPlanReadiness(
+      carerCoverage: _carerCoverageByState['none_have_carers']!,
+      careCoverage: _careCoverageByState['indeterminate']!,
+      tileCopy: const AwayPlanTileCopy(
+        source: 'care_coverage',
+        copyKey: 'careContextCoverageIndeterminate',
+      ),
+    );
 
-      await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: AwayPlanHeaderSection(absence: _absence, readiness: readiness),
-        ),
-      );
-      await tester.pumpAndSettle();
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: AwayPlanHeaderSection(absence: _absence, readiness: readiness),
+      ),
+    );
+    await tester.pumpAndSettle();
 
-      final context = tester.element(find.byType(AwayPlanHeaderSection));
-      final l = AppLocalizations.of(context)!;
+    final context = tester.element(find.byType(AwayPlanHeaderSection));
+    final l = AppLocalizations.of(context)!;
 
-      expect(
-        find.text(l.careContextAwayPlanCarerCoverageTitle),
-        findsOneWidget,
-      );
-      expect(
-        find.text(l.careContextAwayPlanCareCoverageTitle),
-        findsOneWidget,
-      );
-    },
-  );
+    expect(find.text(l.careContextAwayPlanCarerCoverageTitle), findsOneWidget);
+    expect(find.text(l.careContextAwayPlanCareCoverageTitle), findsOneWidget);
+  });
 }

@@ -18,12 +18,13 @@ class AwayPlanScheduleCopy {
     PlannedCareItem item,
   ) {
     return switch (item.kind) {
-      PlannedCareKind.recurringCalendar =>
-        _recurringCalendarLine(l, item),
+      PlannedCareKind.recurringCalendar => _recurringCalendarLine(l, item),
       PlannedCareKind.recurringChain => _recurringChainLine(l, item),
       PlannedCareKind.singleOnce => _singleOnceLine(l, item),
-      PlannedCareKind.indeterminatePending =>
-        indeterminateReasonLine(l, item.reason),
+      PlannedCareKind.indeterminatePending => indeterminateReasonLine(
+        l,
+        item.reason,
+      ),
     };
   }
 

@@ -297,7 +297,8 @@ void main() {
 
     test('unwraps absence when response body has no `absence` key', () async {
       final client = MockClient(
-        (request) async => http.Response(json.encode(cancelledAbsenceJson), 200),
+        (request) async =>
+            http.Response(json.encode(cancelledAbsenceJson), 200),
       );
 
       final datasource = CareContextRemoteDataSource(
