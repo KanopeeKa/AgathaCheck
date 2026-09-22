@@ -35,7 +35,7 @@ Future<void> showGuardianAddEventPickerSheet(
               subtitle: Text(l.addHealthEntry),
               onTap: () {
                 Navigator.pop(ctx);
-                context.go('/health/add');
+                context.go('/care/add');
               },
             ),
             ListTile(
@@ -64,14 +64,14 @@ void _pickPetForOther(BuildContext context, List<Pet> pets) {
     return;
   }
   if (active.length == 1) {
-    context.go('/pet/${active.first.id}/other/add');
+    context.go('/pet/${active.first.id}/care/add');
     return;
   }
   _showPetPickerSheet(
     context,
     pets: active,
     title: AppLocalizations.of(context)!.selectPetForEvent,
-    onSelected: (pet) => context.go('/pet/${pet.id}/other/add'),
+    onSelected: (pet) => context.go('/pet/${pet.id}/care/add'),
   );
 }
 

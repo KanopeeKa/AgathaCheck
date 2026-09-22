@@ -1,5 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
+import 'package:pet_profile_app/features/care_taxonomy/domain/care_importance.dart';
+import 'package:pet_profile_app/features/care_taxonomy/domain/care_planning_mode.dart';
+import 'package:pet_profile_app/features/care_taxonomy/domain/care_setting.dart';
 import 'package:pet_profile_app/features/health_tracking/data/models/health_entry_model.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 
@@ -22,6 +25,10 @@ void main() {
       'health_issue_title': 'Heart condition',
       'pet_name': 'Buddy',
       'remind_days_before': 3,
+      'care_setting': 'home',
+      'care_planning': 'planned',
+      'care_importance': 'essential',
+      'importance_overridden': false,
       'created_at': '2025-01-01T00:00:00.000Z',
       'updated_at': '2025-01-15T00:00:00.000Z',
     };
@@ -49,6 +56,10 @@ void main() {
       expect(model.healthIssueName, 'Heart condition');
       expect(model.petName, 'Buddy');
       expect(model.remindDaysBefore, 3);
+      expect(model.careSetting, CareSetting.home);
+      expect(model.carePlanning, CarePlanningMode.planned);
+      expect(model.careImportance, CareImportance.essential);
+      expect(model.importanceOverridden, isFalse);
       expect(model.createdAt, isNotNull);
       expect(model.createdAt!.year, 2025);
       expect(model.updatedAt, isNotNull);
@@ -158,7 +169,7 @@ void main() {
       expect(json['id'], 'abc-123');
       expect(json['pet_id'], 'pet-1');
       expect(json['name'], 'Heartgard');
-      expect(json['type'], 'medication');
+      expect(json.containsKey('type'), isFalse);
       expect(json['dosage'], '1 tablet');
       expect(json['frequency'], 'monthly');
       expect(json['frequency_days'], 30);
@@ -167,6 +178,8 @@ void main() {
       expect(json['notes'], 'Give with food');
       expect(json['health_issue_id'], 'issue-42');
       expect(json['remind_days_before'], 3);
+      expect(json['care_setting'], 'home');
+      expect(json['care_importance'], 'essential');
     });
 
     test('toJson omits health_issue_id when null', () {
@@ -177,18 +190,24 @@ void main() {
       expect(output.containsKey('health_issue_id'), isFalse);
     });
 
-    test('toJson serializes vet_visit type correctly', () {
+    test('toJson omits legacy type and includes classification fields', () {
       final json = {...fullJson, 'type': 'vet_visit'};
       final model = HealthEntryModel.fromJson(json);
       final output = model.toJson();
-      expect(output['type'], 'vet_visit');
+      expect(output.containsKey('type'), isFalse);
+      expect(output['care_setting'], 'home');
+      expect(output['care_importance'], 'essential');
     });
 
-    test('toJson serializes other type correctly', () {
-      final json = {...fullJson, 'type': 'other'};
-      final model = HealthEntryModel.fromJson(json);
+    test('toJson includes importance_overridden when true', () {
+      final model = HealthEntryModel.fromJson({
+        ...fullJson,
+        'importance_overridden': true,
+        'care_importance': 'recommended',
+      });
       final output = model.toJson();
-      expect(output['type'], 'other');
+      expect(output['importance_overridden'], isTrue);
+      expect(output['care_importance'], 'recommended');
     });
 
     test('toJson serializes every type to its canonical API string', () {
@@ -230,8 +249,7 @@ void main() {
     });
 
     test('preventive and other types survive a toJson/fromJson round-trip', () {
-      // These previously used enum.name in toJson and would corrupt to
-      // medication after a round-trip in a release build.
+      // Write payloads omit type; reads still parse legacy type from API.
       for (final type in [HealthEntryType.preventive, HealthEntryType.other]) {
         final model = HealthEntryModel(
           id: 'r-1',
@@ -241,9 +259,17 @@ void main() {
           frequency: HealthFrequency.monthly,
           startDate: DateTime(2025, 1, 1),
           nextDueDate: DateTime(2025, 2, 1),
+          careSetting: CareSetting.vet,
+          careImportance: CareImportance.recommended,
         );
-        final restored = HealthEntryModel.fromJson(model.toJson());
+        final writeJson = model.toJson();
+        expect(writeJson.containsKey('type'), isFalse);
+        final restored = HealthEntryModel.fromJson({
+          ...writeJson,
+          'type': HealthEntryModel.typeToApi(type),
+        });
         expect(restored.type, type);
+        expect(restored.careSetting, CareSetting.vet);
       }
     });
 

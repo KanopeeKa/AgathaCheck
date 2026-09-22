@@ -138,7 +138,6 @@ CREATE TABLE public.care_recommendations (
     suggested_name character varying(255) NOT NULL,
     suggested_frequency character varying(30) NOT NULL,
     suggested_frequency_interval integer DEFAULT 1 NOT NULL,
-    suggested_health_entry_type character varying(30) DEFAULT 'other'::character varying NOT NULL,
     rationale_key character varying(100) NOT NULL,
     health_entry_id uuid,
     responded_at timestamp with time zone,
@@ -343,7 +342,11 @@ CREATE TABLE public.health_entries (
     care_family character varying(50),
     care_source character varying(50) DEFAULT 'guardian_defined'::character varying,
     paused_since date,
-    schedule_policy_version character varying(20)
+    schedule_policy_version character varying(20),
+    care_setting character varying(20) DEFAULT 'home'::character varying NOT NULL,
+    care_planning character varying(20) DEFAULT 'planned'::character varying NOT NULL,
+    care_importance character varying(20) NOT NULL,
+    importance_overridden boolean DEFAULT false NOT NULL
 );
 CREATE TABLE public.health_event_photos (
     id uuid NOT NULL,

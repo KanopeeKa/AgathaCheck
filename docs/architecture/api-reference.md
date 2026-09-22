@@ -154,6 +154,8 @@ Routes mount in parallel PRs; shapes are frozen:
 
 **Create defaults (CSM-2):** when `recurrence_anchor` is omitted, server applies per-family default (`vaccination` / `parasite_prevention` → `from_due_date`; others → `from_completion`) — D-CSM-001.
 
+**Classification (care-classification-taxonomy Phase B):** create/update accept `care_family` (required on create), optional `care_setting`, `care_planning`, `care_importance`. Responses include those fields plus `importance_overridden`. Legacy `type` is **server-derived** — clients must omit `type` on write (400 if sent). `unplanned` entries require `completed_on`, forbid `next_due_date`, use `frequency=once`, and set `remind_days_before=0`.
+
 ### Health issues (`/api/health-issues`)
 `GET /` (optional `?pet_id=`), `GET /:id`, `POST /` (verifies pet ownership),
 `PUT /:id`, `DELETE /:id`, `GET /:issueId/events`,
@@ -211,7 +213,7 @@ Server-authoritative Agatha suggestions (weight, dental, wellness rhythm familie
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/care-recommendations` | Sync pending recommendations for pet (`HEALTH_VIEW`) |
-| POST | `/care-recommendations/:recommendationId/respond` | Body `{ action: accept\|adjust\|dismiss\|not_relevant, adjust?: { frequency, frequency_interval } }`; accept/adjust creates recurring `health_entry` with `care_source` `agatha_accepted` / `agatha_adjusted` (`HEALTH_EDIT`) |
+| POST | `/care-recommendations/:recommendationId/respond` | Body `{ action: accept\|adjust\|dismiss\|not_relevant, adjust?: { frequency, frequency_interval, care_setting?, care_importance? } }`; accept/adjust creates recurring `health_entry` with classification derived from `care_family` + taxonomy defaults (optional `care_setting` / `care_importance` in adjust); `type` is server-derived (`HEALTH_EDIT`) |
 
 ### Care progression (`/api/pets/:id/care-progression`) — CP-1+
 

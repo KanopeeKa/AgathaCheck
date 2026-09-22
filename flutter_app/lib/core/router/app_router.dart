@@ -6,6 +6,7 @@ import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/landing_screen.dart';
 import '../../features/auth/presentation/screens/my_details_screen.dart';
+import '../../features/care_taxonomy/domain/care_planning_mode.dart';
 import '../../features/health_tracking/domain/entities/health_entry.dart';
 import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
 import '../../features/health_tracking/presentation/screens/care_item_detail/care_item_detail_screen.dart';
@@ -60,6 +61,27 @@ class AuthChangeNotifier extends ChangeNotifier {
   bool get isLoggedIn => _authState.isLoggedIn;
   bool get isLoading => _authState.isLoading;
   bool get hasToken => _authState.accessToken != null;
+}
+
+HealthEntryFormScreen _buildCareAddScreen(
+  GoRouterState state, {
+  String? petId,
+}) {
+  final resolvedPetId = petId ?? state.pathParameters['petId'];
+  final typeParam = state.uri.queryParameters['type'];
+  final planningParam = state.uri.queryParameters['planning'];
+  final initialType = typeParam != null
+      ? HealthEntryType.values.where((t) => t.name == typeParam).firstOrNull
+      : null;
+  final initialPlanningMode = planningParam == 'unplanned'
+      ? CarePlanningMode.unplanned
+      : null;
+  return HealthEntryFormScreen(
+    petId: resolvedPetId,
+    initialType: initialType,
+    allowedTypes: resolvedPetId != null ? kAllPetEventTypes : null,
+    initialPlanningMode: initialPlanningMode,
+  );
 }
 
 final authChangeNotifierProvider = Provider<AuthChangeNotifier>((ref) {
@@ -280,22 +302,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: '/pet/:petId/care/add',
+        name: 'addPetCareEntry',
+        builder: (context, state) =>
+            _buildCareAddScreen(state, petId: state.pathParameters['petId']),
+      ),
+      GoRoute(
         path: '/pet/:petId/health/add',
         name: 'addPetHealthEntry',
-        builder: (context, state) {
-          final petId = state.pathParameters['petId']!;
-          final typeParam = state.uri.queryParameters['type'];
-          final initialType = typeParam != null
-              ? HealthEntryType.values
-                    .where((t) => t.name == typeParam)
-                    .firstOrNull
-              : null;
-          return HealthEntryFormScreen(
-            petId: petId,
-            initialType: initialType,
-            allowedTypes: kAllPetEventTypes,
-          );
-        },
+        redirect: (context, state) => redirectLegacyCareAddPath(state),
       ),
       GoRoute(
         path: '/pet/:petId/health/edit/:id',
@@ -305,20 +320,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/pet/:petId/other/add',
         name: 'addPetOtherEvent',
-        builder: (context, state) {
-          final petId = state.pathParameters['petId']!;
-          final typeParam = state.uri.queryParameters['type'];
-          final initialType = typeParam != null
-              ? HealthEntryType.values
-                    .where((t) => t.name == typeParam)
-                    .firstOrNull
-              : HealthEntryType.other;
-          return HealthEntryFormScreen(
-            petId: petId,
-            initialType: initialType,
-            allowedTypes: kOtherEventTypes.toList(),
-          );
-        },
+        redirect: (context, state) => redirectLegacyCareAddPath(state),
       ),
       GoRoute(
         path: '/pet/:petId/other/edit/:id',
@@ -331,17 +333,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         redirect: (context, state) => '/pc/events',
       ),
       GoRoute(
+        path: '/care/add',
+        name: 'addCareEntry',
+        builder: (context, state) => _buildCareAddScreen(state),
+      ),
+      GoRoute(
         path: '/health/add',
         name: 'addHealthEntry',
-        builder: (context, state) {
-          final typeParam = state.uri.queryParameters['type'];
-          final initialType = typeParam != null
-              ? HealthEntryType.values
-                    .where((t) => t.name == typeParam)
-                    .firstOrNull
-              : null;
-          return HealthEntryFormScreen(initialType: initialType);
-        },
+        redirect: (context, state) => redirectLegacyCareAddPath(state),
       ),
       GoRoute(
         path: '/health/edit/:id',

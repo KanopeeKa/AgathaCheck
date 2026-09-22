@@ -1,0 +1,294 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-classification-taxonomy",
+  "programme_ref": "docs/domains/pet_care/changes/care-classification-taxonomy-spec.md",
+  "approved_at": "2026-09-21T14:25:00Z",
+  "approved_by": "User chat 2026-09-21 — /execute-plan in full autonomy (standing grant for phases A–H)",
+  "approved_until": "2026-09-23T14:25:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/care-classification-taxonomy-integration-8524",
+  "control_issue": 1240,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "a",
+      "title": "Taxonomy registry foundation",
+      "branch": "cursor/care-taxonomy-registry-8524",
+      "allowed_paths": [
+        ".agents/plans/care-classification-taxonomy.*",
+        "shared/care_taxonomy.json",
+        "flutter_app/lib/features/care_taxonomy/**",
+        "flutter_app/test/features/care_taxonomy/**",
+        "server/lib/care/taxonomy/**",
+        "server/test/care/taxonomy/**",
+        "scripts/care/**",
+        "e2e/playwright/support/api.ts",
+        "docs/domains/pet_care/changes/care-classification-taxonomy-spec.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "db/migrations/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1241",
+      "pr_head_sha": "b2b8ef6d4c322a2ae69cc0320eda121d00a01777",
+      "merge_commit": "5a770bbd82befe657c80cb142eb4eb1c2cdf0be9",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "b",
+      "title": "DB + API classification columns",
+      "branch": "cursor/care-taxonomy-api-8524",
+      "allowed_paths": [
+        ".agents/plans/care-classification-taxonomy.*",
+        "db/migrations/**",
+        "db/schema/canonical.sql",
+        "server/routes/healthEntries/**",
+        "server/lib/care/taxonomy/**",
+        "server/test/healthEntries/**",
+        "server/test/care/taxonomy/**",
+        "e2e/playwright/support/api.ts",
+        "shared/care_taxonomy.json",
+        "docs/domains/pet_care/changes/care-classification-taxonomy-spec.md",
+        "docs/architecture/api-reference.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "c",
+      "title": "CareClassificationSection + hide type",
+      "branch": "cursor/care-classification-picker-8524",
+      "allowed_paths": [
+        ".agents/plans/care-classification-taxonomy.*",
+        "flutter_app/lib/features/care_taxonomy/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/features/care_taxonomy/**",
+        "shared/care_taxonomy.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "d",
+      "title": "Planned vs record form behaviour",
+      "branch": "cursor/care-planning-modes-8524",
+      "allowed_paths": [
+        ".agents/plans/care-classification-taxonomy.*",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/health_tracking/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Planning toggle; record flow; ?planning=unplanned route",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "e",
+      "title": "Health-issue prompts",
+      "branch": "cursor/care-health-issue-prompts-8524",
+      "allowed_paths": [
+        ".agents/plans/care-classification-taxonomy.*",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/health_tracking/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Vet-setting unplanned + planned completion prompts",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "f",
+      "title": "Family-based filters",
+      "branch": "cursor/care-family-filters-8524",
+      "allowed_paths": [
+        ".agents/plans/care-classification-taxonomy.*",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/**",
+        "shared/care_taxonomy.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Replace type filter chips with family/filter_group",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "g",
+      "title": "Unified routing / care list",
+      "branch": "cursor/care-unified-routing-8524",
+      "allowed_paths": [
+        ".agents/plans/care-classification-taxonomy.*",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/**",
+        "e2e/playwright/tests/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Single add route; deprecate health/other split",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "h",
+      "title": "CIM template cleanup",
+      "branch": "cursor/care-cim-taxonomy-8524",
+      "allowed_paths": [
+        ".agents/plans/care-classification-taxonomy.*",
+        "server/routes/careIntelligence/**",
+        "server/lib/care/**",
+        "server/test/careIntelligence/**",
+        "db/migrations/**",
+        "db/schema/canonical.sql",
+        "flutter_app/lib/features/care_intelligence/**",
+        "flutter_app/test/features/care_intelligence/**",
+        "shared/care_taxonomy.json",
+        "docs/architecture/api-reference.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": "Drop suggested_health_entry_type from CIM; accept derives classification from care_family + taxonomy",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:4cda355f01ed3373d33f936453d44d2c1ae7b062480aed9811f760081b4b7bc2"
+}

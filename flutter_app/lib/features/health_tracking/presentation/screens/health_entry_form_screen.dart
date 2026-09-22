@@ -9,6 +9,7 @@ import '../../../../core/widgets/form/app_form_breakpoints.dart';
 import '../../../../core/widgets/form/app_form_discard_dialog.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+import '../../../care_taxonomy/domain/care_planning_mode.dart';
 import '../../domain/entities/health_entry.dart';
 import '../controllers/health_entry_form_controller.dart';
 import '../controllers/health_entry_form_outcomes.dart';
@@ -16,6 +17,7 @@ import '../providers/health_providers.dart';
 import '../widgets/health_entry_form/health_entry_document_handler.dart';
 import '../widgets/health_entry_form/health_entry_form_actions_bar.dart';
 import '../widgets/health_entry_form/health_entry_form_screen_body.dart';
+import '../widgets/health_issue_prompt/health_issue_linkage_flow.dart';
 
 /// All pet event types on the unified edit form (W18).
 const kAllPetEventTypes = HealthEntryType.values;
@@ -47,6 +49,7 @@ class HealthEntryFormScreen extends ConsumerStatefulWidget {
     this.petId,
     this.initialType,
     this.allowedTypes,
+    this.initialPlanningMode,
   });
 
   final String? entryId;
@@ -55,6 +58,9 @@ class HealthEntryFormScreen extends ConsumerStatefulWidget {
 
   /// When set, restricts the type dropdown (e.g. pet profile health events).
   final List<HealthEntryType>? allowedTypes;
+
+  /// Initial planning mode for add flows (`planned` default, `unplanned` for record).
+  final CarePlanningMode? initialPlanningMode;
 
   @override
   ConsumerState<HealthEntryFormScreen> createState() =>
@@ -74,6 +80,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       petId: widget.petId,
       initialType: widget.initialType,
       allowedTypes: widget.allowedTypes,
+      initialPlanningMode: widget.initialPlanningMode,
     );
     if (widget.entryId != null) {
       Future.microtask(() async {
@@ -150,7 +157,9 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: AppLogoTitle(
-            title: form.isEdit ? l.editEntry : l.addHealthEntry2,
+            title: form.isEdit
+                ? l.editEntry
+                : (form.isRecordMode ? l.recordHealthEntry : l.addHealthEntry2),
           ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -238,7 +247,14 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(l.errorWithMessage('$error'))));
-      case HealthEntrySubmitSuccess(:final isEdit, :final petIds):
+      case HealthEntrySubmitSuccess(
+        :final isEdit,
+        :final petIds,
+        :final entryIds,
+        :final careSetting,
+        :final carePlanning,
+        :final linkedHealthIssueId,
+      ):
         for (final petId in petIds) {
           ref.invalidate(petHealthEntriesProvider(petId));
         }
@@ -254,6 +270,18 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
             ),
           ),
         );
+        if (petIds.length == 1 && entryIds.length == 1) {
+          await HealthIssueLinkageFlow.maybePromptAfterUnplannedVetSave(
+            context,
+            ref,
+            petId: petIds.first,
+            entryId: entryIds.first,
+            careSetting: careSetting,
+            carePlanning: carePlanning,
+            healthIssueId: linkedHealthIssueId,
+          );
+          if (!mounted) return;
+        }
         if (isEdit &&
             widget.entryId != null &&
             widget.petId != null &&

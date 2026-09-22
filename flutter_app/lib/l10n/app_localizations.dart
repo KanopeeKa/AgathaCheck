@@ -1436,6 +1436,120 @@ abstract class AppLocalizations {
   /// **'Other care'**
   String get careFamilyOther;
 
+  /// No description provided for @careFilterGroupPrevention.
+  ///
+  /// In en, this message translates to:
+  /// **'Prevention'**
+  String get careFilterGroupPrevention;
+
+  /// No description provided for @careFilterGroupClinical.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical'**
+  String get careFilterGroupClinical;
+
+  /// No description provided for @careFilterGroupLifestyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifestyle'**
+  String get careFilterGroupLifestyle;
+
+  /// No description provided for @careSettingFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get careSettingFieldLabel;
+
+  /// No description provided for @careSettingFieldHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Where this care happens or who delivers it.'**
+  String get careSettingFieldHelper;
+
+  /// No description provided for @careSettingHome.
+  ///
+  /// In en, this message translates to:
+  /// **'At home'**
+  String get careSettingHome;
+
+  /// No description provided for @careSettingVet.
+  ///
+  /// In en, this message translates to:
+  /// **'At the vet'**
+  String get careSettingVet;
+
+  /// No description provided for @careSettingOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Somewhere else'**
+  String get careSettingOther;
+
+  /// No description provided for @careImportanceFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get careImportanceFieldLabel;
+
+  /// No description provided for @careImportanceFieldHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'How important this care is for your pet\'s health.'**
+  String get careImportanceFieldHelper;
+
+  /// No description provided for @careImportanceEssential.
+  ///
+  /// In en, this message translates to:
+  /// **'Essential'**
+  String get careImportanceEssential;
+
+  /// No description provided for @careImportanceRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get careImportanceRecommended;
+
+  /// No description provided for @careImportanceOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get careImportanceOptional;
+
+  /// No description provided for @carePlanningToggleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Planning'**
+  String get carePlanningToggleLabel;
+
+  /// No description provided for @carePlanningFieldHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan upcoming care or record something that already happened.'**
+  String get carePlanningFieldHelper;
+
+  /// No description provided for @carePlanningPlanned.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan this care'**
+  String get carePlanningPlanned;
+
+  /// No description provided for @carePlanningUnplanned.
+  ///
+  /// In en, this message translates to:
+  /// **'Record what happened'**
+  String get carePlanningUnplanned;
+
+  /// No description provided for @recordHealthEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Record care'**
+  String get recordHealthEntry;
+
+  /// No description provided for @completedOnRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter when this care was completed'**
+  String get completedOnRequired;
+
   /// No description provided for @careSourceGuardianDefined.
   ///
   /// In en, this message translates to:
@@ -2574,6 +2688,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add health issue'**
   String get addHealthIssue;
+
+  /// No description provided for @vetHealthIssuePromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Was this visit related to a health issue?'**
+  String get vetHealthIssuePromptTitle;
+
+  /// No description provided for @vetHealthIssuePromptLinkExisting.
+  ///
+  /// In en, this message translates to:
+  /// **'Link existing issue'**
+  String get vetHealthIssuePromptLinkExisting;
+
+  /// No description provided for @vetHealthIssuePromptAddNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Add new issue'**
+  String get vetHealthIssuePromptAddNew;
+
+  /// No description provided for @vetHealthIssuePromptNotRelated.
+  ///
+  /// In en, this message translates to:
+  /// **'Not related'**
+  String get vetHealthIssuePromptNotRelated;
+
+  /// No description provided for @vetPlannedCompletionHealthIssuePromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Did the vet identify anything new to track?'**
+  String get vetPlannedCompletionHealthIssuePromptTitle;
+
+  /// No description provided for @vetHealthIssuePromptNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get vetHealthIssuePromptNo;
+
+  /// No description provided for @vetHealthIssuePlanNextVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan the next visit'**
+  String get vetHealthIssuePlanNextVisit;
+
+  /// No description provided for @healthIssueQuickPickInjury.
+  ///
+  /// In en, this message translates to:
+  /// **'Injury or illness'**
+  String get healthIssueQuickPickInjury;
+
+  /// No description provided for @healthIssueQuickPickDental.
+  ///
+  /// In en, this message translates to:
+  /// **'Dental problem'**
+  String get healthIssueQuickPickDental;
+
+  /// No description provided for @healthIssueQuickPickNeutering.
+  ///
+  /// In en, this message translates to:
+  /// **'Neutering / spay'**
+  String get healthIssueQuickPickNeutering;
+
+  /// No description provided for @healthIssueQuickPickOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get healthIssueQuickPickOther;
+
+  /// No description provided for @healthIssueSelectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a health issue'**
+  String get healthIssueSelectTitle;
+
+  /// No description provided for @healthIssueLinked.
+  ///
+  /// In en, this message translates to:
+  /// **'Health issue linked'**
+  String get healthIssueLinked;
+
+  /// No description provided for @healthIssueLinkFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not link health issue'**
+  String get healthIssueLinkFailed;
 
   /// No description provided for @issueDescriptionRequired.
   ///
@@ -4429,11 +4627,17 @@ abstract class AppLocalizations {
   /// **'Skipped hidden'**
   String get collectionFilterSkippedHidden;
 
-  /// No description provided for @eventFilterTypeLabel.
+  /// No description provided for @eventFilterFamilyLabel.
   ///
   /// In en, this message translates to:
-  /// **'Type'**
-  String get eventFilterTypeLabel;
+  /// **'Category'**
+  String get eventFilterFamilyLabel;
+
+  /// No description provided for @eventFilterGroupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get eventFilterGroupLabel;
 
   /// No description provided for @eventFilterStatusLabel.
   ///
