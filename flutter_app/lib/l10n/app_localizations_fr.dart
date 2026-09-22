@@ -774,6 +774,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careFamilyOther => 'Autres soins';
 
   @override
+  String get careFilterGroupPrevention => 'Prévention';
+
+  @override
+  String get careFilterGroupClinical => 'Clinique';
+
+  @override
+  String get careFilterGroupLifestyle => 'Style de vie';
+
+  @override
   String get careSettingFieldLabel => 'Où';
 
   @override
@@ -2540,7 +2549,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get collectionFilterSkippedHidden => 'Ignorés masqués';
 
   @override
-  String get eventFilterTypeLabel => 'Type';
+  String get eventFilterFamilyLabel => 'Catégorie';
+
+  @override
+  String get eventFilterGroupLabel => 'Groupe';
 
   @override
   String get eventFilterStatusLabel => 'Statut';

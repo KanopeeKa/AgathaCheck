@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../../pet_profile/presentation/widgets/care_family_labels.dart';
+import '../../../../pet_profile/presentation/widgets/care_filter_group_labels.dart';
 import '../../../domain/entities/health_entry.dart';
 import '../../providers/health_providers.dart';
 import '../health_entry_card.dart';
@@ -12,7 +14,7 @@ import '../health_issue_prompt/health_issue_linkage_flow.dart';
 import '../mark_complete_sheet.dart';
 import '../health_dashboard_actions.dart' show GroupMode;
 
-/// A single tab's grouped list of [HealthEntry] items.
+/// A single grouped list of [HealthEntry] items.
 ///
 /// Extracted from `health_dashboard_screen.dart`; keeps the loading/error/empty
 /// states, grouping (by due date / pet / species), and the mark-taken / undo
@@ -20,13 +22,13 @@ import '../health_dashboard_actions.dart' show GroupMode;
 class HealthDashboardEntryList extends ConsumerWidget {
   const HealthDashboardEntryList({
     super.key,
-    this.type,
+    this.careFilter = HealthDashboardCareFilter.all,
     required this.groupMode,
     this.orgFilter,
     this.petIdFilter,
   });
 
-  final HealthEntryType? type;
+  final HealthDashboardCareFilter careFilter;
   final GroupMode groupMode;
   final String? orgFilter;
   final Set<String>? petIdFilter;
@@ -34,7 +36,7 @@ class HealthDashboardEntryList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final entriesAsync = ref.watch(filteredHealthEntriesProvider(type));
+    final entriesAsync = ref.watch(filteredHealthEntriesProvider(careFilter));
     final petsAsync = ref.watch(petListProvider);
 
     return entriesAsync.when(
@@ -88,6 +90,18 @@ class HealthDashboardEntryList extends ConsumerWidget {
     );
   }
 
+  String _emptyStateMessage(AppLocalizations l) {
+    final parts = <String>[];
+    if (careFilter.filterGroup != null) {
+      parts.add(careFilterGroupLabel(l, careFilter.filterGroup!).toLowerCase());
+    }
+    if (careFilter.family != null) {
+      parts.add(careFamilyLabel(l, careFilter.family!).toLowerCase());
+    }
+    if (parts.isEmpty) return l.noEntriesYet;
+    return l.noTypeEntriesYet(parts.join(' '));
+  }
+
   Widget _buildEntryList(
     BuildContext context,
     WidgetRef ref,
@@ -112,9 +126,7 @@ class HealthDashboardEntryList extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              type == null
-                  ? l.noEntriesYet
-                  : l.noTypeEntriesYet(type!.label.toLowerCase()),
+              _emptyStateMessage(l),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
