@@ -175,10 +175,12 @@ async function seedNoUnresolvedFixture(client, startsOn, endsOn) {
   await client.query(
     `INSERT INTO health_entries (
        id, pet_id, user_id, type, name, dosage, frequency,
-       start_date, next_due_date, status, remind_days_before, notes, care_family
+       start_date, next_due_date, status, remind_days_before, notes, care_family,
+       care_setting, care_planning, care_importance
      )
      VALUES ($1, $2, $3, 'other', 'Away-planning skipped/completed demo', '', 'once',
-             $4, $4, 'active', 0, 'AW-SEED no_unresolved_items window', NULL)
+             $4, $4, 'active', 0, 'AW-SEED no_unresolved_items window', NULL,
+             'other', 'planned', 'optional')
      ON CONFLICT (id) DO UPDATE SET
        start_date = EXCLUDED.start_date,
        next_due_date = EXCLUDED.next_due_date,

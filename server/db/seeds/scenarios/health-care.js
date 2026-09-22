@@ -34,24 +34,24 @@ export async function seedHealthCare(client) {
     `INSERT INTO health_entries (
        id, pet_id, user_id, type, name, dosage, frequency,
        start_date, next_due_date, status, remind_days_before, notes,
-       care_family, recurrence_anchor
+       care_family, recurrence_anchor, care_setting, care_planning, care_importance
      )
      VALUES
        ($1, $6, $7, 'preventive', 'Annual rabies booster', '', 'yearly',
         $8, $9, 'active', 14, 'Due soon — demo upcoming notification',
-        'vaccination', 'from_due_date'),
+        'vaccination', 'from_due_date', 'vet', 'planned', 'essential'),
        ($2, $6, $7, 'medication', 'Joint supplement', '1 tablet', 'daily',
         $10, $11, 'active', 3, 'Daily medication for arthritis support',
-        'medication', 'from_completion'),
+        'medication', 'from_completion', 'home', 'planned', 'essential'),
        ($3, $6, $7, 'preventive', 'Flea treatment', '', 'monthly',
         $12, $13, 'active', 7, 'Overdue — demo overdue notification',
-        'parasite_prevention', 'from_due_date'),
+        'parasite_prevention', 'from_due_date', 'home', 'planned', 'essential'),
        ($4, $14, $7, 'vet_visit', 'Annual wellness check', '', 'once',
         $15, NULL, 'active', 0, 'Recent vet visit for Whiskers',
-        NULL, 'from_completion'),
+        NULL, 'from_completion', 'other', 'planned', 'optional'),
        ($5, $16, $7, 'preventive', 'Flea & tick prevention', '', 'monthly',
         $17, $18, 'active', 7, 'Foster pet health tracking',
-        'parasite_prevention', 'from_due_date')
+        'parasite_prevention', 'from_due_date', 'home', 'planned', 'essential')
      ON CONFLICT (id) DO UPDATE SET
        name = EXCLUDED.name,
        next_due_date = EXCLUDED.next_due_date,
