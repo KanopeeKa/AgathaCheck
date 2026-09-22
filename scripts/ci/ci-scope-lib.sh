@@ -28,6 +28,7 @@ CI_SCOPE_SHARD_HEALTH=false
 CI_SCOPE_SHARD_REST_A=false
 CI_SCOPE_SHARD_REST_B=false
 CI_SCOPE_SHARD_EXPERIENCE=false
+CI_SCOPE_SHARD_PET_CARE=false
 
 ci_scope_reset() {
   CI_SCOPE_FORCE_FULL=false
@@ -52,6 +53,7 @@ ci_scope_reset() {
   CI_SCOPE_SHARD_REST_A=false
   CI_SCOPE_SHARD_REST_B=false
   CI_SCOPE_SHARD_EXPERIENCE=false
+  CI_SCOPE_SHARD_PET_CARE=false
 }
 
 ci_scope_enable_shard() {
@@ -63,6 +65,7 @@ ci_scope_enable_shard() {
     rest-a) CI_SCOPE_SHARD_REST_A=true ;;
     rest-b) CI_SCOPE_SHARD_REST_B=true ;;
     experience) CI_SCOPE_SHARD_EXPERIENCE=true ;;
+    pet-care) CI_SCOPE_SHARD_PET_CARE=true ;;
     *) ;;
   esac
 }
@@ -75,6 +78,7 @@ ci_scope_enable_all_shards() {
   CI_SCOPE_SHARD_REST_A=true
   CI_SCOPE_SHARD_REST_B=true
   CI_SCOPE_SHARD_EXPERIENCE=true
+  CI_SCOPE_SHARD_PET_CARE=true
 }
 
 ci_scope_any_shard_enabled() {
@@ -84,7 +88,8 @@ ci_scope_any_shard_enabled() {
     || "$CI_SCOPE_SHARD_HEALTH" == true \
     || "$CI_SCOPE_SHARD_REST_A" == true \
     || "$CI_SCOPE_SHARD_REST_B" == true \
-    || "$CI_SCOPE_SHARD_EXPERIENCE" == true ]]
+    || "$CI_SCOPE_SHARD_EXPERIENCE" == true \
+    || "$CI_SCOPE_SHARD_PET_CARE" == true ]]
 }
 
 ci_scope_finalize_flutter_shards() {
@@ -137,6 +142,10 @@ ci_scope_classify_flutter_shard() {
       ;;
     flutter_app/lib/features/experience/*|flutter_app/test/features/experience/*)
       ci_scope_enable_shard experience
+      ;;
+    flutter_app/lib/features/pet_care/*|flutter_app/lib/features/care_intelligence/*|flutter_app/lib/features/pet_tags/* \
+      |flutter_app/test/features/pet_care/*|flutter_app/test/features/care_intelligence/*|flutter_app/test/features/pet_tags/*)
+      ci_scope_enable_shard pet-care
       ;;
     flutter_app/lib/features/vet/*|flutter_app/lib/features/weight_tracking/* \
       |flutter_app/lib/features/help/*|flutter_app/lib/features/about/* \
@@ -341,7 +350,7 @@ ci_scope_emit_json() {
 
   python3 - "$scope" "$CI_SCOPE_FORCE_FULL" "$CI_SCOPE_ESCAPE_FULL" "$run_analyze" "$run_stack" "$run_backend" "$run_e2e_audit" "$run_integration" \
     "$CI_SCOPE_SHARD_PET_CORE" "$CI_SCOPE_SHARD_PET_SCREENS" "$CI_SCOPE_SHARD_PET_WIDGETS" \
-    "$CI_SCOPE_SHARD_HEALTH" "$CI_SCOPE_SHARD_REST_A" "$CI_SCOPE_SHARD_REST_B" "$CI_SCOPE_SHARD_EXPERIENCE" <<'PY'
+    "$CI_SCOPE_SHARD_HEALTH" "$CI_SCOPE_SHARD_REST_A" "$CI_SCOPE_SHARD_REST_B" "$CI_SCOPE_SHARD_EXPERIENCE" "$CI_SCOPE_SHARD_PET_CARE" <<'PY'
 import json, sys
 
 (
@@ -360,7 +369,8 @@ import json, sys
     shard_rest_a,
     shard_rest_b,
     shard_experience,
-) = sys.argv[1:16]
+    shard_pet_care,
+) = sys.argv[1:17]
 
 def b(v):
     return v == "true"
@@ -379,6 +389,7 @@ shard_map = {
     "rest-a": b(shard_rest_a),
     "rest-b": b(shard_rest_b),
     "experience": b(shard_experience),
+    "pet-care": b(shard_pet_care),
 }
 
 job_ids = {
@@ -389,6 +400,7 @@ job_ids = {
     "rest-a": "flutter-test-rest-a",
     "rest-b": "flutter-test-rest-b",
     "experience": "flutter-test-experience",
+    "pet-care": "flutter-test-pet-care",
 }
 
 run_shards = [name for name, enabled in shard_map.items() if enabled]

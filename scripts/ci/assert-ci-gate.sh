@@ -53,6 +53,7 @@ declare -A RESULTS=(
   [flutter-test-rest-a]="${FLUTTER_TEST_REST_A:-}"
   [flutter-test-rest-b]="${FLUTTER_TEST_REST_B:-}"
   [flutter-test-experience]="${FLUTTER_TEST_EXPERIENCE:-}"
+  [flutter-test-pet-care]="${FLUTTER_TEST_PET_CARE:-}"
   [flutter-coverage]="${FLUTTER_COVERAGE:-}"
   [flutter-integration]="${FLUTTER_INTEGRATION:-}"
   [flutter-build-web]="${FLUTTER_BUILD_WEB:-}"
@@ -95,7 +96,7 @@ trap 'rm -f "$SUMMARY_TMP"' EXIT
   echo "| Job | Result | Pass |"
   echo "|-----|--------|------|"
   for job in startup-smoke test-suite flutter-analyze \
-    flutter-test-pet-core flutter-test-pet-screens flutter-test-pet-widgets flutter-test-health flutter-test-rest-a flutter-test-rest-b flutter-test-experience \
+    flutter-test-pet-core flutter-test-pet-screens flutter-test-pet-widgets flutter-test-health flutter-test-rest-a flutter-test-rest-b flutter-test-experience flutter-test-pet-care \
     flutter-coverage flutter-integration flutter-build-web ci-e2e-canary; do
     result="${RESULTS[$job]}"
     if [[ "$job" == "ci-e2e-canary" ]]; then

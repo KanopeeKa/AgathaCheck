@@ -79,6 +79,17 @@ ci_scope_classify_paths $'flutter_app/test/features/vet/presentation/widgets/vet
 json="$(ci_scope_emit_json)"
 python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["rest-b"], shards' <<<"$json"
 
+# Pet Care domain change runs only the pet-care shard
+ci_scope_classify_paths $'flutter_app/lib/features/pet_care/context/away_plan_copy.dart'
+json="$(ci_scope_emit_json)"
+assert_json_field "$json" run_flutter_stack True "pet-care change runs stack"
+python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["pet-care"], shards' <<<"$json"
+
+# care-intelligence and pet-tags changes also map to the pet-care shard
+ci_scope_classify_paths $'flutter_app/test/features/care_intelligence/presentation/widgets/care_suggestion_card_test.dart\nflutter_app/test/features/pet_tags/domain/pet_tag_filter_test.dart'
+json="$(ci_scope_emit_json)"
+python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["pet-care"], shards' <<<"$json"
+
 # Frozen organisation code does not run active Flutter CI
 ci_scope_classify_paths $'flutter_app/lib/features/organization/presentation/screens/organisation_profile_screen.dart'
 json="$(ci_scope_emit_json)"

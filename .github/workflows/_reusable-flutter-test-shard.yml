@@ -7,7 +7,7 @@ on:
   workflow_call:
     inputs:
       shard:
-        description: Domain shard name (pet-core, pet-screens, pet-widgets, health, org, rest-a, rest-b, or experience)
+        description: Domain shard name (pet-core, pet-screens, pet-widgets, health, org, rest-a, rest-b, experience, or pet-care)
         type: string
         required: true
 
