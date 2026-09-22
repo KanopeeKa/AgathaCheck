@@ -43,7 +43,7 @@ echo "==> Flutter (codegen + analyze + active CI shards)"
   cd flutter_app
   dart run build_runner build --delete-conflicting-outputs
   flutter analyze --no-fatal-warnings --no-fatal-infos
-  for shard in pet-core pet-screens pet-widgets health rest-a rest-b experience; do
+  for shard in pet-core pet-screens pet-widgets health rest-a rest-b experience pet-care; do
     bash scripts/run_tests_ci_shard.sh "$shard"
   done
 )

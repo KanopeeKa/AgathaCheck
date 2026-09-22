@@ -114,6 +114,12 @@ jobs:
     uses: ./.github/workflows/_reusable-flutter-test-shard.yml
     with:
       shard: experience
+  flutter-test-pet-care:
+    needs: [decide, flutter-analyze]
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: pet-care
 
   flutter-coverage:
     needs:
@@ -125,6 +131,7 @@ jobs:
       - flutter-test-rest-a
       - flutter-test-rest-b
       - flutter-test-experience
+      - flutter-test-pet-care
     if: needs.decide.outputs.should_run == 'true'
     uses: ./.github/workflows/_reusable-flutter-coverage.yml
 
@@ -168,6 +175,7 @@ jobs:
       - flutter-test-rest-a
       - flutter-test-rest-b
       - flutter-test-experience
+      - flutter-test-pet-care
       - flutter-coverage
       - flutter-integration
       - flutter-build-web
@@ -197,6 +205,7 @@ jobs:
           FLUTTER_TEST_REST_A: ${{ needs.flutter-test-rest-a.result }}
           FLUTTER_TEST_REST_B: ${{ needs.flutter-test-rest-b.result }}
           FLUTTER_TEST_EXPERIENCE: ${{ needs.flutter-test-experience.result }}
+          FLUTTER_TEST_PET_CARE: ${{ needs.flutter-test-pet-care.result }}
           FLUTTER_COVERAGE: ${{ needs.flutter-coverage.result }}
           FLUTTER_INTEGRATION: ${{ needs.flutter-integration.result }}
           FLUTTER_BUILD_WEB: ${{ needs.flutter-build-web.result }}

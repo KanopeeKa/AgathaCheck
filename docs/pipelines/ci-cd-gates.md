@@ -106,7 +106,7 @@ but are not individually required once the ruleset is migrated.
 checks listed in **Main protection** ruleset should be removed when
 **`ci-gate / CI passed`** is added. Keep `Analyze JavaScript`.
 
-**Optional (visible, not required individually):** `flutter-test-{pet-core,pet-screens,pet-widgets,health,rest-a,rest-b,experience} / Flutter tests (<shard>)` —
+**Optional (visible, not required individually):** `flutter-test-{pet-core,pet-screens,pet-widgets,health,rest-a,rest-b,experience,pet-care} / Flutter tests (<shard>)` —
 the merge gate `flutter-coverage / Flutter domain coverage` covers shard failures (enforced via `ci-gate`).
 
 **Blocking via `ci-gate`:** `ci-e2e-canary / Playwright @smoke-ci canary (localhost)` —
@@ -231,7 +231,7 @@ gh api repos/KanopeeKa/AgathaCheck/branches/main/protection \
 # or for rulesets: inspect the ruleset required-check list in the UI
 ```
 
-**Optional shard checks** (`flutter-test-{pet-core,pet-screens,pet-widgets,health,rest-a,rest-b,experience} / Flutter tests (<shard>)`) need
+**Optional shard checks** (`flutter-test-{pet-core,pet-screens,pet-widgets,health,rest-a,rest-b,experience,pet-care} / Flutter tests (<shard>)`) need
 not be required individually — `flutter-coverage` fails when any shard fails.
 
 **Codegen contract:** `flutter-analyze` runs canonical `build_runner` + legal sync once and
@@ -248,7 +248,7 @@ display strings exactly.
 | `startup-smoke / PR startup smoke` | `_reusable-pr-startup-smoke.yml` | Postgres bootstrap, `node bin/start.js`, `/backend/health` + root |
 | `test-suite / Governance (BDD + file size)` | `_reusable-test.yml` | BDD mapping gate (`check_bdd_coverage.js`; run `--report-only` for live ≥150 mapped, totals drift), priority tags, file size ≤ 500 lines |
 | `flutter-analyze / Flutter (analyze & format)` | `_reusable-flutter-analyze.yml` | format, legal sync, codegen, analyze; uploads `flutter-prep-<sha>` |
-| `flutter-test-* / Flutter tests (<shard>)` | `_reusable-flutter-test-shard.yml` | domain test shards (pet-core, pet-screens, pet-widgets, health, rest-a, rest-b, experience) with per-shard coverage |
+| `flutter-test-* / Flutter tests (<shard>)` | `_reusable-flutter-test-shard.yml` | domain test shards (pet-core, pet-screens, pet-widgets, health, rest-a, rest-b, experience, pet-care) with per-shard coverage |
 | `flutter-coverage / Flutter domain coverage` | `_reusable-flutter-coverage.yml` | merge shard lcov, domain coverage ≥ 65% |
 | `flutter-integration / Flutter integration` | `_reusable-flutter-integration.yml` | pet profile integration tests |
 | `flutter-build-web / Build Flutter web` | `_reusable-build-web.yml` | web release build + `web-build-<sha>` artifact |
