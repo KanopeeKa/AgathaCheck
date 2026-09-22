@@ -45,11 +45,18 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
       selectedPetIds.add(params.petId!);
     }
 
+    final initialPlanning =
+        params.initialPlanningMode ?? CarePlanningMode.planned;
+    final isRecord = initialPlanning == CarePlanningMode.unplanned;
+
     return HealthEntryFormState(
       type: type,
       isEdit: params.entryId != null,
       selectedPetIds: selectedPetIds,
       allowedTypes: params.allowedTypes,
+      carePlanning: initialPlanning,
+      remindDaysBefore: isRecord ? 0 : 1,
+      completedOn: isRecord ? calendarDateOnly(DateTime.now()) : null,
     );
   }
 
@@ -231,6 +238,29 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
     );
   }
 
+  void setCarePlanning(CarePlanningMode mode) {
+    if (state.carePlanning == mode) return;
+
+    if (mode == CarePlanningMode.unplanned) {
+      state = state.copyWith(
+        carePlanning: mode,
+        frequency: HealthFrequency.once,
+        clearDueDate: true,
+        clearRepeatEndDate: true,
+        remindDaysBefore: 0,
+        scheduleAtSpecificTimes: false,
+        scheduleTimes: const ['08:00'],
+        completedOn: state.completedOn ?? calendarDateOnly(DateTime.now()),
+      );
+      return;
+    }
+
+    state = state.copyWith(
+      carePlanning: mode,
+      remindDaysBefore: state.remindDaysBefore == 0 ? 1 : state.remindDaysBefore,
+    );
+  }
+
   void markCareFamilyValidationAttempted() =>
       state = state.copyWith(careFamilyValidationAttempted: true);
 
@@ -271,8 +301,10 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
   void setDueDate(DateTime? date) =>
       state = state.copyWith(dueDate: date, startDate: date ?? state.startDate);
 
-  void setCompletedOn(DateTime? date) =>
-      state = state.copyWith(completedOn: date);
+  void setCompletedOn(DateTime? date) => state = state.copyWith(
+    completedOn: date,
+    clearCompletedOn: date == null,
+  );
 
   void setRemindDaysBefore(int days) =>
       state = state.copyWith(remindDaysBefore: days);
@@ -324,7 +356,8 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
   }
 
   HealthEntryMarkCompletedPrompt? markCompletedPromptIfNeeded() {
-    if (state.isEdit ||
+    if (state.isRecordMode ||
+        state.isEdit ||
         state.frequency != HealthFrequency.once ||
         state.completedOn != null ||
         state.dueDate == null) {
@@ -359,7 +392,13 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
         HealthEntrySubmitValidation.nameRequired,
       );
     }
-    if (state.dueDate == null && state.completedOn == null) {
+    if (state.isRecordMode) {
+      if (state.completedOn == null) {
+        return HealthEntrySubmitValidationFailed(
+          HealthEntrySubmitValidation.completedOnRequired,
+        );
+      }
+    } else if (state.dueDate == null && state.completedOn == null) {
       return HealthEntrySubmitValidationFailed(
         HealthEntrySubmitValidation.dueOrCompletedRequired,
       );
@@ -390,16 +429,24 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
     state = state.copyWith(isLoading: true);
     try {
       final notifier = ref.read(healthEntriesNotifierProvider.notifier);
-      final effectiveRepeatEndDate = state.frequency == HealthFrequency.once
+      final isRecord = state.isRecordMode;
+      final effectiveFrequency =
+          isRecord ? HealthFrequency.once : state.frequency;
+      final effectiveRepeatEndDate = isRecord || effectiveFrequency == HealthFrequency.once
           ? null
           : state.repeatEndDate;
       final effectiveStart =
           state.dueDate ?? state.completedOn ?? state.startDate;
-      final effectiveDue =
-          state.frequency == HealthFrequency.once && state.completedOn != null
+      final effectiveDue = isRecord
           ? null
-          : state.dueDate;
+          : (effectiveFrequency == HealthFrequency.once &&
+                    state.completedOn != null
+                ? null
+                : state.dueDate);
       final effectiveCompleted = state.completedOn;
+      final effectiveRemindDaysBefore = isRecord ? 0 : state.remindDaysBefore;
+      final effectiveScheduleTimes =
+          isRecord ? null : _effectiveScheduleTimes();
       final careFamily = resolveCareFamilyForWrite(
         frequency: state.frequency,
         type: state.type,
@@ -415,8 +462,8 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
           name: state.name.trim(),
           type: state.type,
           dosage: state.dosage.trim(),
-          frequency: state.frequency,
-          frequencyInterval: state.frequency == HealthFrequency.once
+          frequency: effectiveFrequency,
+          frequencyInterval: effectiveFrequency == HealthFrequency.once
               ? 1
               : state.frequencyInterval,
           repeatEndDate: effectiveRepeatEndDate,
@@ -426,8 +473,8 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
           recurrenceAnchor: state.recurrenceAnchor,
           notes: state.notes.trim(),
           healthIssueId: state.selectedHealthIssueId,
-          remindDaysBefore: state.remindDaysBefore,
-          scheduleTimes: _effectiveScheduleTimes(),
+          remindDaysBefore: effectiveRemindDaysBefore,
+          scheduleTimes: effectiveScheduleTimes,
           careFamily: careFamily,
           careSetting: state.careSetting,
           carePlanning: state.carePlanning,
@@ -451,23 +498,25 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
             name: state.name.trim(),
             type: state.type,
             dosage: state.dosage.trim(),
-            frequency: state.frequency,
-            frequencyInterval: state.frequency == HealthFrequency.once
+            frequency: effectiveFrequency,
+            frequencyInterval: effectiveFrequency == HealthFrequency.once
                 ? 1
                 : state.frequencyInterval,
             repeatEndDate: effectiveRepeatEndDate,
             startDate: effectiveStart,
-            nextDueDate: markCompleted
+            nextDueDate: isRecord
                 ? null
-                : (state.dueDate ?? effectiveStart),
-            completedOn: markCompleted
-                ? (state.completedOn ?? effectiveStart)
-                : state.completedOn,
+                : (markCompleted ? null : (state.dueDate ?? effectiveStart)),
+            completedOn: isRecord
+                ? effectiveCompleted
+                : (markCompleted
+                      ? (state.completedOn ?? effectiveStart)
+                      : state.completedOn),
             recurrenceAnchor: state.recurrenceAnchor,
             notes: state.notes.trim(),
             healthIssueId: state.selectedHealthIssueId,
-            remindDaysBefore: state.remindDaysBefore,
-            scheduleTimes: _effectiveScheduleTimes(),
+            remindDaysBefore: effectiveRemindDaysBefore,
+            scheduleTimes: effectiveScheduleTimes,
             careFamily: careFamily,
             careSetting: state.careSetting,
             carePlanning: state.carePlanning,

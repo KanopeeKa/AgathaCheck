@@ -1496,6 +1496,42 @@ abstract class AppLocalizations {
   /// **'Optional'**
   String get careImportanceOptional;
 
+  /// No description provided for @carePlanningToggleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Planning'**
+  String get carePlanningToggleLabel;
+
+  /// No description provided for @carePlanningFieldHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan upcoming care or record something that already happened.'**
+  String get carePlanningFieldHelper;
+
+  /// No description provided for @carePlanningPlanned.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan this care'**
+  String get carePlanningPlanned;
+
+  /// No description provided for @carePlanningUnplanned.
+  ///
+  /// In en, this message translates to:
+  /// **'Record what happened'**
+  String get carePlanningUnplanned;
+
+  /// No description provided for @recordHealthEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Record care'**
+  String get recordHealthEntry;
+
+  /// No description provided for @completedOnRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter when this care was completed'**
+  String get completedOnRequired;
+
   /// No description provided for @careSourceGuardianDefined.
   ///
   /// In en, this message translates to:

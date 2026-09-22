@@ -796,6 +796,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careImportanceOptional => 'Optional';
 
   @override
+  String get carePlanningToggleLabel => 'Planning';
+
+  @override
+  String get carePlanningFieldHelper =>
+      'Plan upcoming care or record something that already happened.';
+
+  @override
+  String get carePlanningPlanned => 'Plan this care';
+
+  @override
+  String get carePlanningUnplanned => 'Record what happened';
+
+  @override
+  String get recordHealthEntry => 'Record care';
+
+  @override
+  String get completedOnRequired => 'Enter when this care was completed';
+
+  @override
   String get careSourceGuardianDefined => 'Added by you';
 
   @override

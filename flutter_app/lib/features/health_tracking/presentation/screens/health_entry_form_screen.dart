@@ -9,6 +9,7 @@ import '../../../../core/widgets/form/app_form_breakpoints.dart';
 import '../../../../core/widgets/form/app_form_discard_dialog.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+import '../../../care_taxonomy/domain/care_planning_mode.dart';
 import '../../domain/entities/health_entry.dart';
 import '../controllers/health_entry_form_controller.dart';
 import '../controllers/health_entry_form_outcomes.dart';
@@ -47,6 +48,7 @@ class HealthEntryFormScreen extends ConsumerStatefulWidget {
     this.petId,
     this.initialType,
     this.allowedTypes,
+    this.initialPlanningMode,
   });
 
   final String? entryId;
@@ -55,6 +57,9 @@ class HealthEntryFormScreen extends ConsumerStatefulWidget {
 
   /// When set, restricts the type dropdown (e.g. pet profile health events).
   final List<HealthEntryType>? allowedTypes;
+
+  /// Initial planning mode for add flows (`planned` default, `unplanned` for record).
+  final CarePlanningMode? initialPlanningMode;
 
   @override
   ConsumerState<HealthEntryFormScreen> createState() =>
@@ -74,6 +79,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       petId: widget.petId,
       initialType: widget.initialType,
       allowedTypes: widget.allowedTypes,
+      initialPlanningMode: widget.initialPlanningMode,
     );
     if (widget.entryId != null) {
       Future.microtask(() async {
@@ -150,7 +156,9 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: AppLogoTitle(
-            title: form.isEdit ? l.editEntry : l.addHealthEntry2,
+            title: form.isEdit
+                ? l.editEntry
+                : (form.isRecordMode ? l.recordHealthEntry : l.addHealthEntry2),
           ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),

@@ -13,6 +13,8 @@ class EntryDueCompletedRow extends StatelessWidget {
     required this.onCompletedOnChanged,
     this.dueLabel,
     this.completedLabel,
+    this.showDueDate = true,
+    this.requireCompletedOn = false,
   });
 
   final DateTime? dueDate;
@@ -21,10 +23,18 @@ class EntryDueCompletedRow extends StatelessWidget {
   final ValueChanged<DateTime?> onCompletedOnChanged;
   final String? dueLabel;
   final String? completedLabel;
+  final bool showDueDate;
+  final bool requireCompletedOn;
 
   String? _validate(AppLocalizations l) {
-    if (dueDate == null && completedOn == null) {
+    if (requireCompletedOn && completedOn == null) {
+      return l.completedOnRequired;
+    }
+    if (showDueDate && dueDate == null && completedOn == null) {
       return l.dueOrCompletedRequired;
+    }
+    if (!showDueDate && completedOn == null) {
+      return l.completedOnRequired;
     }
     return null;
   }
@@ -40,21 +50,23 @@ class EntryDueCompletedRow extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: EntryDatePickerField(
-                label: dueLabel ?? l.dueDate,
-                date: dueDate,
-                onChanged: onDueDateChanged,
-                allowClear: true,
+            if (showDueDate) ...[
+              Expanded(
+                child: EntryDatePickerField(
+                  label: dueLabel ?? l.dueDate,
+                  date: dueDate,
+                  onChanged: onDueDateChanged,
+                  allowClear: true,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
+              const SizedBox(width: 12),
+            ],
             Expanded(
               child: EntryDatePickerField(
                 label: completedLabel ?? l.completedOn,
                 date: completedOn,
                 onChanged: onCompletedOnChanged,
-                allowClear: true,
+                allowClear: !requireCompletedOn,
               ),
             ),
           ],
