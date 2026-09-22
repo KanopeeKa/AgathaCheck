@@ -181,4 +181,125 @@ export class AwayPlanningPage {
   async expectUpcomingAbsenceVisible(petName: string): Promise<void> {
     await expect(this.page.getByText(petName)).toBeVisible({ timeout: 30_000 });
   }
+
+  async openPlan(absenceId: string): Promise<void> {
+    await this.page.goto(flutterGotoUrl(`/pc/away/${absenceId}`));
+    await refreshFlutterAccessibility(this.page);
+    await this.expectPlanPageLoaded();
+  }
+
+  async expectCarerCoverageHeaderVisible(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page.getByText(/Carer coverage|Couverture des soignants/i).first(),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectCarerCoverageHeaderHidden(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page.getByText(/Carer coverage|Couverture des soignants/i),
+    ).toHaveCount(0, { timeout: 15_000 });
+  }
+
+  async expectCareCoverageHeaderVisible(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page.getByText(/Care coverage|Couverture des soins/i).first(),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectCareCoverageHeaderHidden(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page.getByText(/Care coverage|Couverture des soins/i),
+    ).toHaveCount(0, { timeout: 15_000 });
+  }
+
+  async expectCoverageHeadersHidden(): Promise<void> {
+    await this.expectCarerCoverageHeaderHidden();
+    await this.expectCareCoverageHeaderHidden();
+  }
+
+  async expectPlannedCareSection(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page.getByText(/Planned care|Soins planifiés/i).first(),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectPlannedCareEntryVisible(entryName: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(this.page.getByText(entryName, { exact: false }).first()).toBeVisible({
+      timeout: 30_000,
+    });
+  }
+
+  async openPlannedCareItem(entryId: string): Promise<void> {
+    const row = semanticsKey(this.page, `away_plan_planned_care_${entryId}`);
+    await expect(row).toBeVisible({ timeout: 30_000 });
+    await row.click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async openEditScreen(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await this.page
+      .getByRole('button', { name: /Edit away plan|Modifier le plan d'absence/i })
+      .first()
+      .click();
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/away\/[^/]+\/edit/, 60_000);
+    await this.expectEditScreenLoaded();
+  }
+
+  async expectEditScreenLoaded(): Promise<void> {
+    await expect(
+      this.page.getByText(/Edit away plan|Modifier le plan d'absence/i).first(),
+    ).toBeVisible({ timeout: 60_000 });
+  }
+
+  async fillHandoverNote(note: string): Promise<void> {
+    const field = this.page.getByRole('textbox', { name: /^Notes$/i });
+    await expect(field).toBeVisible({ timeout: 30_000 });
+    await field.click();
+    await field.fill(note);
+  }
+
+  async saveEdit(): Promise<void> {
+    await this.page
+      .getByRole('button', { name: /Save absence|Enregistrer l'absence/i })
+      .first()
+      .click();
+    await refreshFlutterAccessibility(this.page);
+    await this.expectPlanPageLoaded();
+  }
+
+  async expectHandoverNoteOnPlan(note: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(this.page.getByText(note, { exact: true })).toBeVisible({
+      timeout: 30_000,
+    });
+  }
+
+  async deleteAwayPlan(): Promise<void> {
+    await this.page
+      .getByRole('button', { name: /Delete plan|Supprimer le plan/i })
+      .first()
+      .click();
+    const dialog = this.page.getByRole('dialog');
+    await expect(dialog).toBeVisible({ timeout: 15_000 });
+    await dialog
+      .getByRole('button', { name: /^Delete$|^Supprimer$/i })
+      .first()
+      .click();
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/away(?:\?|$)/, 60_000);
+    await this.expectHubLoaded();
+  }
+
+  async expectAbsenceNotListed(petName: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(this.page.getByText(petName)).toHaveCount(0, { timeout: 30_000 });
+  }
 }
