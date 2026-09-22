@@ -68,6 +68,17 @@ assert_json_field "$json" run_backend False "flutter-only skips backend"
 assert_json_field "$json" run_flutter_integration False "flutter-only without pet_profile skips integration"
 python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["rest-a"], shards' <<<"$json"
 
+# Experience-domain change runs only the experience shard
+ci_scope_classify_paths $'flutter_app/lib/features/experience/presentation/widgets/shelter_navigation_sidebar.dart'
+json="$(ci_scope_emit_json)"
+assert_json_field "$json" run_flutter_stack True "experience change runs stack"
+python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["experience"], shards' <<<"$json"
+
+# Vet-domain change runs only the rest-b shard
+ci_scope_classify_paths $'flutter_app/test/features/vet/presentation/widgets/vet_team_card_test.dart'
+json="$(ci_scope_emit_json)"
+python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["rest-b"], shards' <<<"$json"
+
 # Frozen organisation code does not run active Flutter CI
 ci_scope_classify_paths $'flutter_app/lib/features/organization/presentation/screens/organisation_profile_screen.dart'
 json="$(ci_scope_emit_json)"
