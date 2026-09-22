@@ -56,7 +56,11 @@ jobs:
     name: Full localhost E2E
     needs: [resolve-commit, build-web]
     strategy:
-      fail-fast: true
+      # fail-fast: false so a failing shard does not cancel the others — Pre-UAT is
+      # post-merge (async) and the value is full per-shard signal (which shards
+      # pass/fail) so promotion stalling is diagnosed precisely. The gate below
+      # still requires every shard green before promote-uat runs.
+      fail-fast: false
       # Shard count: 9 (Pet Care only) — keep in sync with e2e/scripts/shard-files.mjs and e2e.yml.
       matrix:
         shard: [1, 2, 3, 4, 5, 6, 7, 8, 9]
