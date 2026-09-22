@@ -157,10 +157,14 @@ class _CarerRow extends ConsumerWidget {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              carerLabel,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+            child: Semantics(
+              identifier: 'away_plan_carer_label_$petId',
+              label: carerLabel,
+              child: Text(
+                carerLabel,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
           ),
