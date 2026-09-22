@@ -70,11 +70,11 @@ Use **`composer-2.5` only** for steps §0–7 (sync, poll, triage, fixes, CI, me
 
 ### 0. Preflight
 
-1. **Proactive base sync** — rebase immediately when the base moved; do not wait for CI:
+1. **Base sync (check-first)** — detect staleness without rebasing on every poll:
    ```bash
-   ./scripts/babysit_sync_base.sh --pr <url> --push
+   ./scripts/babysit_sync_base.sh --pr <url> --check
    ```
-   Re-run before every push, before the CI wait loop, and after long automatic-review polls. See autonomous-pr-policy §Proactive base sync.
+   When exit `1` (behind), rebase once: `./scripts/babysit_sync_base.sh --pr <url> --push`. Re-run `--check` before every push, before the CI wait loop, and after long automatic-review polls. See autonomous-pr-policy §Proactive base sync and §Merge coordination.
 2. If execute-plan: confirm control issue has `autonomous-approved`, not `autonomous-revoked`, and `approved_until` is in the future (`node scripts/execute_plan_runtime.js gate <plan_id> --labels ...`).
 3. `gh pr view <url> --json state,isDraft,labels,headRefOid,baseRefName`
 4. Stop if: `do-not-merge`, draft (when merge intended), revoked, or expired.
@@ -157,9 +157,9 @@ Deferred debt issues that are not being worked yet need no label.
 | Caused by this PR | 5 |
 | Flaky / unrelated (after rebase on latest base) | 3 |
 
-1. **Before watching CI:** `./scripts/babysit_sync_base.sh --pr <url> --push` — if the base moved while you were fixing or polling reviews, rebase now instead of waiting for a failure.
+1. **Before watching CI:** `./scripts/babysit_sync_base.sh --pr <url> --check` — if behind, `--push` once instead of waiting for a failure.
 2. Push fixes; watch CI (`ManagePullRequest get_ci_status` or `gh pr checks`).
-3. Rebase on latest base before counting unrelated failures (`babysit_sync_base.sh` or manual rebase).
+3. Rebase on latest base before counting unrelated failures (`--check` then `--push` when behind).
 4. Exhaust budget → halt; comment on PR + control issue.
 
 ### 6. Exit checklist
@@ -172,8 +172,25 @@ Always before merge attempt: `./scripts/pre-push.sh` green locally.
 
 When all merge gates pass (autonomous-pr-policy §Merge gates), **always squash-merge** — babysit+ never stops at “merge-ready” without merging.
 
+**Merge coordination** (mandatory — see autonomous-pr-policy §Merge coordination):
+
 ```bash
+./scripts/babysit_merge_preflight.sh --pr <url> --claim
+```
+
+| Exit | Action |
+|------|--------|
+| `0` | Proceed |
+| `1` | `./scripts/babysit_sync_base.sh --pr <url> --push` once; re-run CI if checks re-triggered; `--claim` again |
+| `2` | Another PR holds `merge-lease` or FIFO yield — subscribe and end turn; do not rebase yet |
+| `3` | Halt (`do-not-merge` or error) |
+
+Then merge:
+
+```bash
+./scripts/babysit_sync_base.sh --pr <url> --push    # skip when already up to date
 gh pr merge <url> --squash
+./scripts/babysit_merge_preflight.sh --pr <url> --release
 gh pr view <url> --json state,mergedAt,mergeCommit
 ```
 
