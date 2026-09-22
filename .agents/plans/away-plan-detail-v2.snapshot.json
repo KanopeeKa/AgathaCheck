@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "plan_id": "away-plan-detail-v2",
+  "approved_at": "2026-09-22T13:12:45Z",
+  "approved_by": "User chat 2026-09-22 - two review rounds, no further blocking findings; proceed through merge and e2e-preUAT verification",
+  "approved_until": "2026-09-24T13:12:45Z",
+  "content_hash": "sha256:a234671ec070e07a8f20d036441854b8da214c87e97d57baefcc405f3cde23bf",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/away-plan-detail-v2-integration-d4c1",
+  "control_issue": 1270,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "awd-doc-0",
+      "title": "AWD-DOC-0 — Plan bootstrap",
+      "branch": "cursor/away-plan-detail-v2-doc0-d4c1",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        ".agents/plans/away-plan-detail-v2.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": "D-AWD-001-007 frozen 2026-09-22 after 2 review rounds (no further blocking findings on round 2). Control issue #1270 opened. Rebased onto AW-11 (per-pet handover, main@6d2b238) same day - see decisions doc 'Rebased 2026-09-22' banner. Remaining: commit this branch's docs, open PR into integration branch, merge.",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "awd-1",
+      "title": "AWD-1 — Attention-only coverage summary",
+      "branch": "cursor/away-plan-detail-v2-awd1-d4c1",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_header_section.dart",
+        "flutter_app/test/features/pet_care/context/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "away_plan_copy.dart and l10n/** removed from allowed_paths (review round 1) — this phase wraps existing Text calls in a conditional, no copy-function or ARB change. exit_checklist changed flutter-screen-split -> default (no widget extraction here).",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "awd-2",
+      "title": "AWD-2 — Unified care-event contract (backend)",
+      "branch": "cursor/away-plan-detail-v2-awd2-d4c1",
+      "allowed_paths": [
+        "server/lib/recurrenceHelper.js",
+        "server/lib/care/awayPlan/**",
+        "server/routes/careContext/carePeriodCoverageRouter.js",
+        "server/routes/careContext/carePeriodProjectionRouter.js",
+        "server/test/careContext/**",
+        "server/test/careSchedule/**",
+        "docs/architecture/api-reference.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**",
+        "server/lib/care/schedule/projectSchedule.js"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Must not change server/lib/care/schedule/projectSchedule.js — projection corpus stays byte-identical. Response shape is planned_care_items[] (single array, replaces routine_items/dated_items/uncertainties outright, no compat shim). Each item carries kind (recurring_calendar/recurring_chain/single_once/indeterminate_pending) derived from recurrence_anchor (recurrenceAnchorDefaults.js) + materialisation state, not a separate anchor_kind field. Server-side sort: kind bucket order then name. Dedupe: one row per health_entry_id.",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "awd-3",
+      "title": "AWD-3 — Unified Planned care list (Flutter)",
+      "branch": "cursor/away-plan-detail-v2-awd3-d4c1",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_pet_care_section.dart",
+        "flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_carers_section.dart",
+        "flutter_app/lib/features/pet_care/context/presentation/away_plan_schedule_copy.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/care_family_icon.dart",
+        "flutter_app/lib/features/pet_care/context/domain/entities/care_period_coverage.dart",
+        "flutter_app/lib/features/pet_care/context/data/models/**",
+        "flutter_app/lib/features/pet_care/context/data/datasources/care_context_remote_datasource.dart",
+        "flutter_app/lib/features/pet_care/context/presentation/controllers/away_plan_handover_controller.dart",
+        "flutter_app/lib/features/pet_care/context/data/services/away_plan_handover_service.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_care/context/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Depends on awd-2 wire contract; do not start until awd-2 merged to integration branch. away_plan_copy.dart removed from allowed_paths (review round 1) — not touched, schedule copy lives in away_plan_schedule_copy.dart. Added care_family_icon.dart for the new CareFamilyIcon.forWire constructor (mirrors .forEntry from wire strings; do not use .materialIconFor directly, it skips custom glyphs). Render planned_care_items[] in server-sent order, no client sort/merge. AW-11 rebase (2026-09-22, main@6d2b238): away_plan_handover_controller.dart/away_plan_handover_service.dart/away_plan_carers_section.dart were reworked same-day for per-pet handover export by a parallel session. Read current content before editing. Replace only routineLines/datedLines/indeterminateLines construction with unified plannedCareLines; leave petNote, petFilter, and AwayPlanCopy.petCarerCoverageSummary/petCareCoverageSummary untouched. _CarerRow now has 2 IconButtons (edit + download) -- avatar tap target covers avatar+name only, not the whole row.",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "awd-4",
+      "title": "AWD-4 — Display/edit screen split",
+      "branch": "cursor/away-plan-detail-v2-awd4-d4c1",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_screen.dart",
+        "flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_edit_screen.dart",
+        "flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_handover_note_section.dart",
+        "flutter_app/lib/features/pet_care/context/domain/repositories/care_context_repository.dart",
+        "flutter_app/lib/features/pet_care/context/data/repositories/care_context_repository_impl.dart",
+        "flutter_app/lib/features/pet_care/context/data/datasources/care_context_remote_datasource.dart",
+        "flutter_app/lib/core/router/away_routes.dart",
+        "flutter_app/lib/core/router/app_router.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_care/context/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "cancelPlannedAbsence calls existing POST /:id/cancel — no new backend endpoint. Carer-edit dialog and dates/pets editing are out of scope. After delete, invalidate the hub's absence list provider so the cancelled absence no longer shows as active there (explicit exit criterion, review round 1).",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "awd-5",
+      "title": "AWD-5 — Docs + journey",
+      "branch": "cursor/away-plan-detail-v2-awd5-d4c1",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        "docs/architecture/api-reference.md",
+        "flutter_app/test/bdd/**",
+        "e2e/playwright/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Three separate BDD scenarios, not bundled: attention-only header (awd-1), unified list + tap-through (awd-2/awd-3), edit screen save/delete (awd-4). Each with its own Playwright spec, @bdd header, exact title match.",
+      "debt_issue_refs": []
+    }
+  ]
+}
