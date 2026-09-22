@@ -15,6 +15,43 @@ void main() {
     expect(AwayPlanHandoverService.handoverNoteForPdf(null), '');
   });
 
+  test('pet note is passed to PDF verbatim (D-AWAY-008)', () {
+    const verbatimNote = 'Feeds twice daily — **not parsed**\nline 2';
+    expect(AwayPlanHandoverService.petNoteForPdf(verbatimNote), verbatimNote);
+    expect(AwayPlanHandoverService.petNoteForPdf(null), '');
+  });
+
+  test('generateHandoverPdf renders a per-pet document with pet_note and a '
+      'trip-wide note title without error', () async {
+    final l = await AppLocalizations.delegate.load(const Locale('en'));
+    final service = AwayPlanHandoverService();
+    final bytes = await service.generateHandoverPdf(
+      document: AwayPlanHandoverDocument(
+        title: l.careContextAwayPlanTitle,
+        dateRangeLabel: 'Oct 1, 2026 to Oct 5, 2026',
+        petNamesLabel: 'Luna, Milo',
+        carerCoverageSummary: l.awayPlanningPetCarerCoverageAssigned('Luna'),
+        careCoverageSummary: l.careContextCoverageNothingScheduled,
+        handoverNote: 'Gate code: 4821',
+        handoverNoteSectionTitle: l.awayPlanningHandoverTripNotesTitle,
+        petSections: [
+          AwayPlanHandoverPetSection(
+            petName: 'Luna',
+            carerLabel: 'Tom · No AgathaTrack access',
+            routineLines: const [],
+            datedLines: const [],
+            indeterminateLines: const [],
+            petNote: 'Feeds twice daily, evening walk only',
+          ),
+        ],
+      ),
+      l: l,
+    );
+
+    expect(bytes, isNotEmpty);
+    expect(bytes.length, greaterThan(500));
+  });
+
   test(
     'generateHandoverPdf includes handover note section when note is set',
     () async {

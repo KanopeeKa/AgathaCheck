@@ -15,6 +15,7 @@ class AwayPlanHandoverPetSection {
     required this.routineLines,
     required this.datedLines,
     required this.indeterminateLines,
+    this.petNote,
   });
 
   final String petName;
@@ -22,6 +23,9 @@ class AwayPlanHandoverPetSection {
   final List<String> routineLines;
   final List<String> datedLines;
   final List<String> indeterminateLines;
+
+  /// About caring for this pet — independent of carer kind (D-AWAY-014a).
+  final String? petNote;
 }
 
 class AwayPlanHandoverDocument {
@@ -33,6 +37,7 @@ class AwayPlanHandoverDocument {
     required this.careCoverageSummary,
     required this.handoverNote,
     required this.petSections,
+    this.handoverNoteSectionTitle,
   });
 
   final String title;
@@ -42,12 +47,23 @@ class AwayPlanHandoverDocument {
   final String careCoverageSummary;
   final String? handoverNote;
   final List<AwayPlanHandoverPetSection> petSections;
+
+  /// Overrides the section heading for [handoverNote]. The per-pet document
+  /// uses a trip-wide title here so it isn't confused with the pet-specific
+  /// note section (D-AWAY-014a); the full document falls back to the
+  /// generic "Notes" label when this is null.
+  final String? handoverNoteSectionTitle;
 }
 
 class AwayPlanHandoverService {
   /// D-AWAY-008: handover note is rendered verbatim — never parsed or normalized.
   @visibleForTesting
   static String handoverNoteForPdf(String? note) => note ?? '';
+
+  /// D-AWAY-008 boundary, extended to `pet_note`: rendered verbatim — never
+  /// parsed or normalized.
+  @visibleForTesting
+  static String petNoteForPdf(String? note) => note ?? '';
 
   Future<Uint8List> generateHandoverPdf({
     required AwayPlanHandoverDocument document,
@@ -126,17 +142,43 @@ class AwayPlanHandoverService {
           section.indeterminateLines,
         ),
       );
+      widgets.addAll(
+        _petNoteLines(
+          l.awayPlanningCarerEditPetNoteLabel(section.petName),
+          section.petNote,
+        ),
+      );
     }
 
     if (document.handoverNote != null && document.handoverNote!.isNotEmpty) {
       widgets.addAll([
         pw.SizedBox(height: 16),
-        _sectionTitle(l.pdfNotesLabel),
+        _sectionTitle(document.handoverNoteSectionTitle ?? l.pdfNotesLabel),
         pw.Text(handoverNoteForPdf(document.handoverNote)),
       ]);
     }
 
     return widgets;
+  }
+
+  List<pw.Widget> _petNoteLines(String heading, String? note) {
+    final text = petNoteForPdf(note);
+    if (text.isEmpty) return const [];
+    return [
+      pw.SizedBox(height: 8),
+      pw.Text(
+        heading,
+        style: pw.TextStyle(
+          fontSize: 10,
+          fontWeight: pw.FontWeight.bold,
+          color: PdfReportTokens.muted,
+        ),
+      ),
+      pw.Padding(
+        padding: const pw.EdgeInsets.only(left: 8, top: 2),
+        child: pw.Text(text, style: const pw.TextStyle(fontSize: 10)),
+      ),
+    ];
   }
 
   List<pw.Widget> _petCareLines(String heading, List<String> lines) {

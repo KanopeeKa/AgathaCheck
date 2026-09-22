@@ -2290,6 +2290,37 @@
   "awayPlanningCarerEditSaveAction": "Enregistrer le soignant",
   "awayPlanningCarerEditSaveFailedForbidden": "Cette personne n'a plus d'accès partagé. Choisissez-en une autre ou ajoutez un nom.",
   "awayPlanningCarerEditSaveFailed": "Impossible d'enregistrer le soignant. Réessayez.",
+  "awayPlanningCarerEditPetNoteLabel": "Notes pour {petName}",
+  "@awayPlanningCarerEditPetNoteLabel": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "awayPlanningPetCarerCoverageAssigned": "{petName} a un soignant assigné.",
+  "@awayPlanningPetCarerCoverageAssigned": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "awayPlanningPetCarerCoverageUnassigned": "Aucun soignant assigné pour {petName}.",
+  "@awayPlanningPetCarerCoverageUnassigned": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "awayPlanningPetCarerCoverageRemoved": "Soignant retiré pour {petName}.",
+  "@awayPlanningPetCarerCoverageRemoved": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "awayPlanningHandoverTripNotesTitle": "Notes du séjour",
+  "awayPlanningDownloadPetPlan": "Télécharger le plan de {petName}",
+  "@awayPlanningDownloadPetPlan": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
   "awayPlanningRoutineAllDay": "Toute la journée",
   "awayPlanningRoutineRowSubtitle": "{time} · {count, plural, =1{1 occurrence} other{{count} occurrences}} · {dateRange}",
   "@awayPlanningRoutineRowSubtitle": {

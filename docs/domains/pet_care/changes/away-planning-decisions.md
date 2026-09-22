@@ -3,7 +3,7 @@ title: Away Planning — Decision log
 owner: Product / Agent
 audience: both
 status: active
-last_updated: 2026-09-15
+last_updated: 2026-09-22
 tags: [pet_care, care_context, decisions]
 ---
 
@@ -191,8 +191,27 @@ AW-1 must update BDD scenario title, `@bdd` header, Playwright spec, and three p
 
 ---
 
+## D-AWAY-014a — Per-pet handover PDF content & privacy (2026-09-22)
+
+**Status:** Frozen
+
+Per-pet handover PDF includes trip context (dates, all pet **names**), absence `handover_note` (trip-wide section), this pet's carer row only in "Who's caring", this pet's schedule and `pet_note`, and per-pet (not absence-wide) coverage summaries. Other pets' carer identities are not disclosed.
+
+Spec: [away-planning-per-pet-handover-spec.md](./away-planning-per-pet-handover-spec.md).
+
+---
+
+## D-AWAY-014b — Download timestamp is full-plan only (2026-09-22)
+
+**Status:** Frozen
+
+`last_handover_downloaded_at` is updated only by the full-plan handover download (`AwayPlanHandoverController.downloadHandover`). Per-pet export does not bump it. D-AWAY-009 Part 2 change detection, when it ships, applies to full-plan download semantics only.
+
+---
+
 ## Related
 
 - [away-planning-delivery-plan.md](./away-planning-delivery-plan.md)
+- [away-planning-per-pet-handover-spec.md](./away-planning-per-pet-handover-spec.md) — AW-11 implementation
 - [care-schedule-management-decisions.md](./care-schedule-management-decisions.md) — D-CSM-008 (no reschedule on plan page)
 - [terminology.md](/docs/design/terminology.md)

@@ -2389,6 +2389,37 @@
   "awayPlanningCarerEditSaveAction": "Save carer",
   "awayPlanningCarerEditSaveFailedForbidden": "That person no longer has shared access. Pick another or add a name.",
   "awayPlanningCarerEditSaveFailed": "Could not save the carer. Try again.",
+  "awayPlanningCarerEditPetNoteLabel": "Notes for {petName}",
+  "@awayPlanningCarerEditPetNoteLabel": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "awayPlanningPetCarerCoverageAssigned": "{petName} has a carer assigned.",
+  "@awayPlanningPetCarerCoverageAssigned": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "awayPlanningPetCarerCoverageUnassigned": "No carer assigned for {petName}.",
+  "@awayPlanningPetCarerCoverageUnassigned": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "awayPlanningPetCarerCoverageRemoved": "Carer removed for {petName}.",
+  "@awayPlanningPetCarerCoverageRemoved": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "awayPlanningHandoverTripNotesTitle": "Trip notes",
+  "awayPlanningDownloadPetPlan": "Download plan for {petName}",
+  "@awayPlanningDownloadPetPlan": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
   "awayPlanningRoutineAllDay": "All day",
   "awayPlanningRoutineRowSubtitle": "{time} · {count, plural, =1{1 occurrence} other{{count} occurrences}} · {dateRange}",
   "@awayPlanningRoutineRowSubtitle": {

@@ -122,7 +122,21 @@ export function carerRowToMap(row) {
     carer_name: row.carer_name || null,
     carer_note: row.carer_note || null,
     carer_removed: removed,
+    pet_note: row.pet_note || null,
   };
+}
+
+/**
+ * D-AWAY-008 boundary, extended to `pet_note`: verbatim, never parsed.
+ *
+ * @param {unknown} value
+ * @returns {string | null | undefined}
+ */
+export function normalizePetNoteInput(value) {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  const text = String(value);
+  return text === '' ? null : text;
 }
 
 /**

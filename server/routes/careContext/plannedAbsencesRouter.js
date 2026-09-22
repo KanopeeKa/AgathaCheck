@@ -9,6 +9,7 @@ import {
   PLANNED_ABSENCE_STATUS_ACTIVE,
   PLANNED_ABSENCE_STATUS_CANCELLED,
   enrichSharedUserCarerNames,
+  normalizePetNoteInput,
   validateAbsenceDateWindow,
   validateCarerInput,
 } from '../../lib/care/plannedAbsence.js';
@@ -29,7 +30,7 @@ const PET_ACCESS_ROLES_SQL = PET_ACCESS_ROLES.map((role) => `'${role}'`).join(',
 
 async function loadAbsencePets(pool, absenceId) {
   const result = await pool.query(
-    `SELECT pet_id, carer_kind, carer_user_id, carer_name, carer_note
+    `SELECT pet_id, carer_kind, carer_user_id, carer_name, carer_note, pet_note
      FROM planned_absence_pets
      WHERE planned_absence_id = $1
      ORDER BY pet_id`,
@@ -47,7 +48,7 @@ async function loadPetsByAbsenceIds(pool, absenceIds) {
   const map = new Map();
   if (!absenceIds.length) return map;
   const result = await pool.query(
-    `SELECT planned_absence_id, pet_id, carer_kind, carer_user_id, carer_name, carer_note
+    `SELECT planned_absence_id, pet_id, carer_kind, carer_user_id, carer_name, carer_note, pet_note
      FROM planned_absence_pets
      WHERE planned_absence_id = ANY($1::uuid[])
      ORDER BY pet_id`,
@@ -118,6 +119,11 @@ async function replaceAbsencePets(pool, absenceId, petIds) {
  * @param {object[]} petCarersInput
  * @param {string[]} allowedPetIds
  */
+/**
+ * `pet_carers` entries can carry a carer change, a `pet_note` change, both, or
+ * neither field — each is written only when its key is present on the item,
+ * so a note-only save never wipes the carer and vice versa (D-AWAY-014a).
+ */
 async function updateAbsenceCarers(pool, absenceId, petCarersInput, allowedPetIds) {
   if (!Array.isArray(petCarersInput)) {
     return { ok: false, status: 400, error: 'pet_carers must be an array' };
@@ -131,30 +137,49 @@ async function updateAbsenceCarers(pool, absenceId, petCarersInput, allowedPetId
     if (!allowed.has(petId)) {
       return { ok: false, status: 400, error: 'pet_id is not on this absence' };
     }
-    const validated = validateCarerInput(item);
-    if (!validated.ok) {
-      return { ok: false, status: 400, error: validated.error };
+
+    const hasCarerKind = Object.hasOwn(item, 'carer_kind') || Object.hasOwn(item, 'carerKind');
+    const hasPetNote = Object.hasOwn(item, 'pet_note') || Object.hasOwn(item, 'petNote');
+    if (!hasCarerKind && !hasPetNote) {
+      continue;
     }
-    if (validated.carer_kind === 'shared_user') {
-      if (!(await isCarerCandidate(pool, petId, validated.carer_user_id))) {
-        return { ok: false, status: 403, error: 'Forbidden' };
+
+    const columns = [];
+    const values = [];
+
+    if (hasCarerKind) {
+      const validated = validateCarerInput(item);
+      if (!validated.ok) {
+        return { ok: false, status: 400, error: validated.error };
       }
-    }
-    await pool.query(
-      `UPDATE planned_absence_pets
-       SET carer_kind = $1,
-           carer_user_id = $2,
-           carer_name = $3,
-           carer_note = $4
-       WHERE planned_absence_id = $5 AND pet_id = $6`,
-      [
+      if (validated.carer_kind === 'shared_user') {
+        if (!(await isCarerCandidate(pool, petId, validated.carer_user_id))) {
+          return { ok: false, status: 403, error: 'Forbidden' };
+        }
+      }
+      columns.push('carer_kind', 'carer_user_id', 'carer_name', 'carer_note');
+      values.push(
         validated.carer_kind,
         validated.carer_user_id,
         validated.carer_name,
         validated.carer_note,
-        absenceId,
-        petId,
-      ]
+      );
+    }
+
+    if (hasPetNote) {
+      // Read whichever key is actually present — `??` would treat an explicit
+      // `pet_note: null` as absent and fall through to `petNote`, losing the clear.
+      const rawPetNote = Object.hasOwn(item, 'pet_note') ? item.pet_note : item.petNote;
+      columns.push('pet_note');
+      values.push(normalizePetNoteInput(rawPetNote));
+    }
+
+    const setSql = columns.map((column, index) => `${column} = $${index + 1}`).join(', ');
+    await pool.query(
+      `UPDATE planned_absence_pets
+       SET ${setSql}
+       WHERE planned_absence_id = $${values.length + 1} AND pet_id = $${values.length + 2}`,
+      [...values, absenceId, petId],
     );
   }
   return { ok: true };
