@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "plan_id": "away-plan-detail-v2",
+  "approved_at": "1970-01-01T00:00:00Z",
+  "approved_by": "TBD — not yet approved; placeholder only, see .agents/plans/away-plan-detail-v2.md",
+  "approved_until": "1970-01-01T00:00:01Z",
+  "content_hash": "sha256:2016dc480d67c257e73dc0bbc874b9131ec0b5a0c6c169f0a5bc2eee781c48a7",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/away-plan-detail-v2-integration-d4c1",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "awd-doc-0",
+      "title": "AWD-DOC-0 — Plan bootstrap",
+      "branch": "cursor/away-plan-detail-v2-doc0-d4c1",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        ".agents/plans/away-plan-detail-v2.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Blocking: D-AWD-001-007 review must land before any other phase starts.",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "awd-1",
+      "title": "AWD-1 — Attention-only coverage summary",
+      "branch": "cursor/away-plan-detail-v2-awd1-d4c1",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_header_section.dart",
+        "flutter_app/lib/features/pet_care/context/presentation/away_plan_copy.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_care/context/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "awd-2",
+      "title": "AWD-2 — Unified care-event contract (backend)",
+      "branch": "cursor/away-plan-detail-v2-awd2-d4c1",
+      "allowed_paths": [
+        "server/lib/recurrenceHelper.js",
+        "server/lib/care/awayPlan/**",
+        "server/routes/careContext/carePeriodCoverageRouter.js",
+        "server/routes/careContext/carePeriodProjectionRouter.js",
+        "server/test/careContext/**",
+        "server/test/careSchedule/**",
+        "docs/architecture/api-reference.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**",
+        "server/lib/care/schedule/projectSchedule.js"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Must not change server/lib/care/schedule/projectSchedule.js — projection corpus stays byte-identical.",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "awd-3",
+      "title": "AWD-3 — Unified Planned care list (Flutter)",
+      "branch": "cursor/away-plan-detail-v2-awd3-d4c1",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_pet_care_section.dart",
+        "flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_carers_section.dart",
+        "flutter_app/lib/features/pet_care/context/presentation/away_plan_schedule_copy.dart",
+        "flutter_app/lib/features/pet_care/context/presentation/away_plan_copy.dart",
+        "flutter_app/lib/features/pet_care/context/domain/entities/care_period_coverage.dart",
+        "flutter_app/lib/features/pet_care/context/data/models/**",
+        "flutter_app/lib/features/pet_care/context/data/datasources/care_context_remote_datasource.dart",
+        "flutter_app/lib/features/pet_care/context/presentation/controllers/away_plan_handover_controller.dart",
+        "flutter_app/lib/features/pet_care/context/data/services/away_plan_handover_service.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_care/context/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Depends on awd-2 wire contract; do not start until awd-2 merged to integration branch.",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "awd-4",
+      "title": "AWD-4 — Display/edit screen split",
+      "branch": "cursor/away-plan-detail-v2-awd4-d4c1",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_screen.dart",
+        "flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_edit_screen.dart",
+        "flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_handover_note_section.dart",
+        "flutter_app/lib/features/pet_care/context/domain/repositories/care_context_repository.dart",
+        "flutter_app/lib/features/pet_care/context/data/repositories/care_context_repository_impl.dart",
+        "flutter_app/lib/features/pet_care/context/data/datasources/care_context_remote_datasource.dart",
+        "flutter_app/lib/core/router/away_routes.dart",
+        "flutter_app/lib/core/router/app_router.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_care/context/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "cancelPlannedAbsence calls existing POST /:id/cancel — no new backend endpoint. Carer-edit dialog and dates/pets editing are out of scope.",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "awd-5",
+      "title": "AWD-5 — Docs + journey",
+      "branch": "cursor/away-plan-detail-v2-awd5-d4c1",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        "docs/architecture/api-reference.md",
+        "flutter_app/test/bdd/**",
+        "e2e/playwright/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
