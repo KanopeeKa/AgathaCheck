@@ -38,9 +38,7 @@ void main() {
           AwayPlanHandoverPetSection(
             petName: 'Luna',
             carerLabel: 'Tom · No AgathaTrack access',
-            routineLines: const [],
-            datedLines: const [],
-            indeterminateLines: const [],
+            plannedCareLines: const [],
             petNote: 'Feeds twice daily, evening walk only',
           ),
         ],
@@ -70,9 +68,7 @@ void main() {
             AwayPlanHandoverPetSection(
               petName: 'Luna',
               carerLabel: 'Tom · No AgathaTrack access',
-              routineLines: const [],
-              datedLines: const [],
-              indeterminateLines: const [],
+              plannedCareLines: const [],
             ),
           ],
         ),

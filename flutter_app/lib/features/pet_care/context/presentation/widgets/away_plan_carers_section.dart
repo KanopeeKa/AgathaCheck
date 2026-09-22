@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../health_tracking/presentation/widgets/care_event_row_pet_avatar.dart';
+import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/planned_absence.dart';
 import '../../domain/entities/planned_absence_pet_carer.dart';
 import '../away_plan_copy.dart';
@@ -95,7 +98,7 @@ class AwayPlanCarersSection extends ConsumerWidget {
   }
 }
 
-class _CarerRow extends StatelessWidget {
+class _CarerRow extends ConsumerWidget {
   const _CarerRow({
     required this.petId,
     required this.petName,
@@ -112,19 +115,56 @@ class _CarerRow extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDownload;
 
+  static const _kMinTouchTarget = 48.0;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
+    final pet = ref.watch(petByIdProvider(petId)).valueOrNull;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(child: Text(petName, style: theme.textTheme.titleSmall)),
         Expanded(
-          child: Text(
-            carerLabel,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+          child: Semantics(
+            identifier: 'away_plan_carer_pet_header_$petId',
+            button: true,
+            label: l.petDetails,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => openPetDetail(context, petId),
+                borderRadius: BorderRadius.circular(8),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minHeight: _kMinTouchTarget,
+                  ),
+                  child: Row(
+                    children: [
+                      CareEventRowPetAvatar(pet: pet, petName: petName),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          petName,
+                          style: theme.textTheme.titleSmall,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              carerLabel,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
         ),

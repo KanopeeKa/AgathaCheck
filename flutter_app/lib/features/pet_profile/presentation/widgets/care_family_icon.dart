@@ -31,6 +31,34 @@ class CareFamilyIcon extends StatelessWidget {
     );
   }
 
+  factory CareFamilyIcon.forWire({
+    required String? type,
+    required String? careFamily,
+    double size = 20,
+    bool showChip = true,
+  }) {
+    return CareFamilyIcon(
+      family: _familyFromWire(type: type, careFamily: careFamily),
+      size: size,
+      showChip: showChip,
+    );
+  }
+
+  static CareFamily _familyFromWire({
+    required String? type,
+    required String? careFamily,
+  }) {
+    final fromWire = CareFamilyWire.fromWire(careFamily);
+    if (fromWire != null) return fromWire;
+
+    return switch (type) {
+      'medication' => CareFamily.medication,
+      'vet_visit' || 'vetVisit' => CareFamily.wellnessReview,
+      'preventive' || 'vaccine' => CareFamily.other,
+      _ => CareFamily.other,
+    };
+  }
+
   static IconData materialIconFor(CareFamily family) {
     return switch (family) {
       CareFamily.medication => Icons.medication_outlined,
