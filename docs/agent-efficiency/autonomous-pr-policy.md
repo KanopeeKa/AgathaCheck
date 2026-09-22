@@ -57,12 +57,33 @@ Do **not** wait for CI to fail before rebasing when `main` (or the PR base branc
 
 | When | Command |
 |------|---------|
-| Start of babysit / babysit-plus | `./scripts/babysit_sync_base.sh --pr <url> --push` |
-| Before every push | Same (or `--check` to detect only) |
+| Start of babysit / babysit-plus | `./scripts/babysit_sync_base.sh --pr <url> --check` |
+| Before every push | `--check`; `--push` only when behind (exit `1`) |
 | Before entering CI wait loop | Same |
 | After long automatic-review poll | Same |
+| Immediately before merge (§7) | One authoritative `./scripts/babysit_sync_base.sh --pr <url> --push` after merge preflight `--claim` |
 
 Script: `scripts/babysit_sync_base.sh` — fetches `origin/<base>`, rebases when behind, optional `--push` with `--force-with-lease`. Use `--pr <url>` so integration-branch PRs rebase onto their declared base, not always `main`.
+
+**Rebase-once-at-merge (babysit+):** During triage and CI fix loops (§0–§5), prefer `--check` only — rebase when behind, not on every poll. Defer the **single** authoritative rebase to immediately before merge (§Merge coordination).
+
+---
+
+## Merge coordination
+
+Serialize merge attempts when multiple PRs reach the CI gate at the same time. Does not eliminate all rebases; reduces thundering-herd rebase + CI churn.
+
+| When | Command |
+|------|---------|
+| Before merge (babysit+ §7) | `./scripts/babysit_merge_preflight.sh --pr <url> --claim` |
+| Preflight exit `1` (behind base) | `./scripts/babysit_sync_base.sh --pr <url> --push` once; re-run CI if required checks re-triggered; then `--claim` again |
+| Preflight exit `2` (wait) | Subscribe (`cursor-subscriptions` → `subscribe_github_pr` on lease holder or `subscribe_github_ci` on base) and end turn — do **not** rebase yet |
+| After successful merge | `./scripts/babysit_merge_preflight.sh --pr <url> --release` (no-op if PR closed) |
+| Stale lease (≥45 min, holder idle) | `--claim --force` |
+
+Script: `scripts/babysit_merge_preflight.sh` — `merge-lease` label mutex + FIFO yield when base was updated within 10 minutes and a lower-numbered green PR exists on the same base. Env: `MERGE_PREFLIGHT_BASE_HOT_MINUTES`, `MERGE_PREFLIGHT_LEASE_STALE_MINUTES`.
+
+**§0–§5 sync:** `./scripts/babysit_sync_base.sh --pr <url> --check` at preflight and before push; `--push` only when `--check` exits `1` (behind). **§7:** `--claim` → one `--push` rebase if needed → `gh pr merge` → `--release`.
 
 ---
 
@@ -187,8 +208,13 @@ Do **not** merge when: `do-not-merge` label, control issue `autonomous-revoked`,
 
 ### Execution
 
+Run merge coordination first (§Merge coordination):
+
 ```bash
+./scripts/babysit_merge_preflight.sh --pr <url> --claim
+./scripts/babysit_sync_base.sh --pr <url> --push    # when behind; skip if up to date
 gh pr merge <url> --squash
+./scripts/babysit_merge_preflight.sh --pr <url> --release
 gh pr view <url> --json state,mergedAt,mergeCommit
 ```
 
