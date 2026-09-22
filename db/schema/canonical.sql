@@ -138,7 +138,6 @@ CREATE TABLE public.care_recommendations (
     suggested_name character varying(255) NOT NULL,
     suggested_frequency character varying(30) NOT NULL,
     suggested_frequency_interval integer DEFAULT 1 NOT NULL,
-    suggested_health_entry_type character varying(30) DEFAULT 'other'::character varying NOT NULL,
     rationale_key character varying(100) NOT NULL,
     health_entry_id uuid,
     responded_at timestamp with time zone,

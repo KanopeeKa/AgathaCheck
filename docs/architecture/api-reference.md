@@ -213,7 +213,7 @@ Server-authoritative Agatha suggestions (weight, dental, wellness rhythm familie
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/care-recommendations` | Sync pending recommendations for pet (`HEALTH_VIEW`) |
-| POST | `/care-recommendations/:recommendationId/respond` | Body `{ action: accept\|adjust\|dismiss\|not_relevant, adjust?: { frequency, frequency_interval } }`; accept/adjust creates recurring `health_entry` with `care_source` `agatha_accepted` / `agatha_adjusted` (`HEALTH_EDIT`) |
+| POST | `/care-recommendations/:recommendationId/respond` | Body `{ action: accept\|adjust\|dismiss\|not_relevant, adjust?: { frequency, frequency_interval, care_setting?, care_importance? } }`; accept/adjust creates recurring `health_entry` with classification derived from `care_family` + taxonomy defaults (optional `care_setting` / `care_importance` in adjust); `type` is server-derived (`HEALTH_EDIT`) |
 
 ### Care progression (`/api/pets/:id/care-progression`) — CP-1+
 

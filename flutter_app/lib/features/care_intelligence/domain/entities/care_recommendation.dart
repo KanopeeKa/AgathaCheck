@@ -21,7 +21,6 @@ class CareRecommendation {
     required this.suggestedName,
     required this.suggestedFrequency,
     required this.suggestedFrequencyInterval,
-    required this.suggestedHealthEntryType,
     required this.rationaleKey,
     this.healthEntryId,
     this.respondedAt,
@@ -37,7 +36,6 @@ class CareRecommendation {
   final String suggestedName;
   final String suggestedFrequency;
   final int suggestedFrequencyInterval;
-  final String suggestedHealthEntryType;
   final String rationaleKey;
   final String? healthEntryId;
   final DateTime? respondedAt;

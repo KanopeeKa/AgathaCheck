@@ -158,7 +158,7 @@ Unify care entry classification on four axes (`care_family`, `care_setting`, `ca
 
 **Exit criteria:**
 
-- [ ] CIM accept uses `care_family` + optional setting/importance only
+- [x] CIM accept uses `care_family` + optional setting/importance only
 
 ---
 
@@ -170,10 +170,17 @@ After phase H merged to integration → open PR `cursor/care-classification-taxo
 
 ```yaml
 autonomy: active
+<<<<<<< HEAD
 current_phase: h
 last_completed_phase: g
 halt_reason: null
 next_action: "start phase h: checkout cursor/care-cim-taxonomy-8524"
+=======
+current_phase: null
+last_completed_phase: h
+halt_reason: null
+next_action: "merge phase h to integration; open integration PR to main"
+>>>>>>> 993ef777 (phase(h/8): feat: CIM taxonomy cleanup)
 artifact_ref:
   branch: cursor/care-classification-taxonomy-integration-8524
   plan_path: .agents/plans/care-classification-taxonomy.md

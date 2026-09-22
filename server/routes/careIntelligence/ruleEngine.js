@@ -7,6 +7,10 @@ import {
   normalizeSpecies,
   todayCalendarDate,
 } from './shared.js';
+import {
+  deriveLegacyHealthEntryType,
+  defaultsForCareFamily,
+} from '../../lib/care/taxonomy/index.js';
 
 function isRecurring(entry) {
   return entry.frequency && entry.frequency !== 'once';
@@ -94,7 +98,6 @@ export function buildRecommendationInsertValues(petId, candidate, id) {
     candidate.suggested_name,
     candidate.suggested_frequency,
     candidate.suggested_frequency_interval,
-    candidate.suggested_health_entry_type,
     candidate.rationale_key,
   ];
 }
@@ -110,16 +113,28 @@ export function buildAcceptedHealthEntry({
     ?? adjust?.frequencyInterval
     ?? recommendation.suggested_frequency_interval;
   const startDate = todayCalendarDate();
+  const familyDefaults = defaultsForCareFamily(recommendation.care_family);
+  const careSetting = adjust?.care_setting
+    ?? adjust?.careSetting
+    ?? familyDefaults.care_setting;
+  const careImportance = adjust?.care_importance
+    ?? adjust?.careImportance
+    ?? familyDefaults.care_importance;
+  const legacyType = deriveLegacyHealthEntryType(recommendation.care_family, careSetting);
   return {
     petId,
     userId,
     name: recommendation.suggested_name,
-    type: recommendation.suggested_health_entry_type,
+    type: legacyType,
     frequency,
     frequencyInterval,
     startDate,
     nextDueDate: startDate,
     careFamily: recommendation.care_family,
+    careSetting,
+    carePlanning: 'planned',
+    careImportance,
+    importanceOverridden: false,
     careSource: adjust ? 'agatha_adjusted' : 'agatha_accepted',
   };
 }

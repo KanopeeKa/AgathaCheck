@@ -68,7 +68,6 @@ CareRecommendation get _recommendation => CareRecommendation(
   suggestedName: 'Weight check',
   suggestedFrequency: 'monthly',
   suggestedFrequencyInterval: 1,
-  suggestedHealthEntryType: 'other',
   rationaleKey: 'careSuggestionWeightMonitoringWhy',
 );
 
