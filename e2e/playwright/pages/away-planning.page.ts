@@ -296,7 +296,11 @@ export class AwayPlanningPage {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       const bySemantics = semanticsKey(this.page, 'away_plan_handover_note_text');
-      await expect(bySemantics.or(this.page.getByText(note, { exact: false }).first())).toBeVisible();
+      // Both sides of `.or()` can independently match (semantics node + text
+      // span), so the combined locator can resolve to 2 elements; `.first()`
+      // must wrap the whole `.or()`, not just one side, to keep strict mode happy.
+      const combined = bySemantics.or(this.page.getByText(note, { exact: false })).first();
+      await expect(combined).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
 
@@ -307,7 +311,9 @@ export class AwayPlanningPage {
         .getByRole('button', { name: /Delete plan|Supprimer le plan/i })
         .first()
         .click();
-      const dialog = this.page.getByRole('dialog');
+      // AppFormDestructiveButton's confirm prompt renders as alertdialog, not
+      // dialog (see organization-detail.page.ts for the same pattern).
+      const dialog = this.page.getByRole('alertdialog');
       await expect(dialog).toBeVisible({ timeout: 15_000 });
       await expect(
         dialog.getByText(/Delete this away plan|Supprimer ce plan d'absence/i),
