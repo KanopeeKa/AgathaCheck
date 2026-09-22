@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/utils/calendar_date.dart';
+import '../../../care_taxonomy/domain/care_importance.dart';
+import '../../../care_taxonomy/domain/care_planning_mode.dart';
+import '../../../care_taxonomy/domain/care_setting.dart';
+import '../../../care_taxonomy/domain/care_taxonomy.dart';
 import '../../../pet_profile/domain/entities/care_family.dart';
 import '../../../pet_profile/domain/services/care_family_write.dart';
 import '../../data/datasources/health_remote_datasource.dart';
@@ -165,6 +169,14 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
             ? List<String>.from(entry.scheduleTimes!)
             : const ['08:00'],
         careFamily: entry.careFamily,
+        careSetting:
+            entry.careSetting ??
+            CareTaxonomy.defaultSettingFor(entry.careFamily),
+        carePlanning: entry.carePlanning ?? CarePlanningMode.planned,
+        careImportance:
+            entry.careImportance ??
+            CareTaxonomy.defaultImportanceFor(entry.careFamily),
+        importanceOverridden: entry.importanceOverridden,
         loadedUncategorised: entry.careFamily == null,
         careFamilySuggestionDismissed: false,
         careFamilyPickerRevealed: entry.careFamily != null,
@@ -188,14 +200,36 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
       state = state.copyWith(type: type);
       return;
     }
-    state = state.copyWith(type: type, clearCareFamily: true);
+    state = state.copyWith(
+      type: type,
+      clearCareFamily: true,
+      careSetting: CareTaxonomy.nullFamilyDefaultSetting,
+      careImportance: CareTaxonomy.nullFamilyDefaultImportance,
+      importanceOverridden: false,
+    );
   }
 
-  void setCareFamily(CareFamily family) => state = state.copyWith(
-    careFamily: family,
-    careFamilyPickerRevealed: true,
-    careFamilyValidationAttempted: false,
-  );
+  void setCareFamily(CareFamily family) {
+    state = state.copyWith(
+      careFamily: family,
+      careSetting: CareTaxonomy.defaultSettingFor(family),
+      careImportance: CareTaxonomy.defaultImportanceFor(family),
+      importanceOverridden: false,
+      careFamilyPickerRevealed: true,
+      careFamilyValidationAttempted: false,
+    );
+  }
+
+  void setCareSetting(CareSetting setting) =>
+      state = state.copyWith(careSetting: setting);
+
+  void setCareImportance(CareImportance importance) {
+    final defaultImportance = CareTaxonomy.defaultImportanceFor(state.careFamily);
+    state = state.copyWith(
+      careImportance: importance,
+      importanceOverridden: importance != defaultImportance,
+    );
+  }
 
   void markCareFamilyValidationAttempted() =>
       state = state.copyWith(careFamilyValidationAttempted: true);
@@ -203,11 +237,17 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
   void dismissCareFamilySuggestion() =>
       state = state.copyWith(careFamilySuggestionDismissed: true);
 
-  void acceptCareFamilySuggestion() => state = state.copyWith(
-    careFamily: defaultCareFamilyForEntryType(state.type),
-    careFamilyPickerRevealed: true,
-    careFamilySuggestionDismissed: true,
-  );
+  void acceptCareFamilySuggestion() {
+    final family = defaultCareFamilyForEntryType(state.type);
+    state = state.copyWith(
+      careFamily: family,
+      careSetting: CareTaxonomy.defaultSettingFor(family),
+      careImportance: CareTaxonomy.defaultImportanceFor(family),
+      importanceOverridden: false,
+      careFamilyPickerRevealed: true,
+      careFamilySuggestionDismissed: true,
+    );
+  }
 
   void revealCareFamilyPicker() => state = state.copyWith(
     careFamilyPickerRevealed: true,
@@ -389,6 +429,10 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
           remindDaysBefore: state.remindDaysBefore,
           scheduleTimes: _effectiveScheduleTimes(),
           careFamily: careFamily,
+          careSetting: state.careSetting,
+          carePlanning: state.carePlanning,
+          careImportance: state.careImportance,
+          importanceOverridden: state.importanceOverridden,
         );
         await notifier.updateEntry(entry);
         if (state.pendingPhotos.isNotEmpty && _entryId != null) {
@@ -425,6 +469,10 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
             remindDaysBefore: state.remindDaysBefore,
             scheduleTimes: _effectiveScheduleTimes(),
             careFamily: careFamily,
+            careSetting: state.careSetting,
+            carePlanning: state.carePlanning,
+            careImportance: state.careImportance,
+            importanceOverridden: state.importanceOverridden,
           );
           final created = await createUseCase.call(entry);
           createdEntryIds.add(created.id);
