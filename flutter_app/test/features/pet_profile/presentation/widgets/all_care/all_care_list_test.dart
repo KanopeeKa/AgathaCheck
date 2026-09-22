@@ -6,6 +6,7 @@ import 'package:pet_profile_app/features/health_tracking/domain/entities/health_
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/pet_care/domain/care_temporal_group.dart';
 import 'package:pet_profile_app/features/pet_care/domain/services/care_temporal_grouping_service.dart';
+import 'package:pet_profile_app/features/pet_care/presentation/providers/care_temporal_grouping_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/care_progression_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/all_care/all_care_list.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -41,14 +42,10 @@ DateTime _today() {
   return DateTime(now.year, now.month, now.day);
 }
 
-Widget _wrap(List<HealthEntry> entries) {
-  return ProviderScope(
-    overrides: [
-      healthEntriesNotifierProvider.overrideWith(
-        () => _FakeHealthEntriesNotifier(entries),
-      ),
-      petCareEstablishmentsProvider.overrideWith((ref, petId) async => []),
-    ],
+Widget _wrap(List<HealthEntry> entries, {ProviderContainer? container}) {
+  final scope = container ?? _buildContainer(entries);
+  return UncontrolledProviderScope(
+    container: scope,
     child: MaterialApp(
       theme: AppTheme.lightTheme,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -56,6 +53,19 @@ Widget _wrap(List<HealthEntry> entries) {
       home: const Scaffold(body: AllCareList(petId: 'pet-1')),
     ),
   );
+}
+
+ProviderContainer _buildContainer(List<HealthEntry> entries) {
+  final container = ProviderContainer(
+    overrides: [
+      healthEntriesNotifierProvider.overrideWith(
+        () => _FakeHealthEntriesNotifier(entries),
+      ),
+      petCareEstablishmentsProvider.overrideWith((ref, petId) async => []),
+    ],
+  );
+  addTearDown(container.dispose);
+  return container;
 }
 
 void main() {
@@ -117,7 +127,8 @@ void main() {
       _entry(id: 'upcoming', nextDue: today.add(const Duration(days: 1))),
     ];
 
-    await tester.pumpWidget(_wrap(entries));
+    final container = _buildContainer(entries);
+    await tester.pumpWidget(_wrap(entries, container: container));
     await tester.pumpAndSettle();
 
     final buckets = grouping.bucketsForEntries(
@@ -125,6 +136,24 @@ void main() {
       petId: 'pet-1',
       now: DateTime.now(),
     );
+
+    // Provider agreement (issue #1139): the widget renders from
+    // petCareTemporalBucketsProvider, so its grouping must match the
+    // service result the test asserts against.
+    final providerBuckets = container.read(
+      petCareTemporalBucketsProvider('pet-1'),
+    );
+    for (final group in CareTemporalGroup.values) {
+      final providerIds = providerBuckets
+          .entriesIn(group)
+          .map((entry) => entry.id)
+          .toSet();
+      final serviceIds = buckets
+          .entriesIn(group)
+          .map((entry) => entry.id)
+          .toSet();
+      expect(providerIds, serviceIds, reason: 'provider agrees on $group');
+    }
 
     for (final group in CareTemporalGroup.values) {
       for (final entry in buckets.entriesIn(group)) {
