@@ -160,7 +160,9 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
       state = state.copyWith(careSetting: setting);
 
   void setCareImportance(CareImportance importance) {
-    final defaultImportance = CareTaxonomy.defaultImportanceFor(state.careFamily);
+    final defaultImportance = CareTaxonomy.defaultImportanceFor(
+      state.careFamily,
+    );
     state = state.copyWith(
       careImportance: importance,
       importanceOverridden: importance != defaultImportance,
@@ -186,7 +188,9 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
 
     state = state.copyWith(
       carePlanning: mode,
-      remindDaysBefore: state.remindDaysBefore == 0 ? 1 : state.remindDaysBefore,
+      remindDaysBefore: state.remindDaysBefore == 0
+          ? 1
+          : state.remindDaysBefore,
     );
   }
 
@@ -231,10 +235,8 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
   void setDueDate(DateTime? date) =>
       state = state.copyWith(dueDate: date, startDate: date ?? state.startDate);
 
-  void setCompletedOn(DateTime? date) => state = state.copyWith(
-    completedOn: date,
-    clearCompletedOn: date == null,
-  );
+  void setCompletedOn(DateTime? date) =>
+      state = state.copyWith(completedOn: date, clearCompletedOn: date == null);
 
   void setRemindDaysBefore(int days) =>
       state = state.copyWith(remindDaysBefore: days);

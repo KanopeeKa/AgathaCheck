@@ -530,10 +530,7 @@ void main() {
       await tester.tap(find.byIcon(Icons.medical_services_outlined));
       await _settle(tester);
 
-      expect(
-        router.routerDelegate.currentConfiguration.uri.path,
-        '/care/add',
-      );
+      expect(router.routerDelegate.currentConfiguration.uri.path, '/care/add');
     });
 
     testWidgets('Weight tile with single active pet navigates to /pet/:id', (

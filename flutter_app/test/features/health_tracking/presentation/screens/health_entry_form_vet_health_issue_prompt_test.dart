@@ -140,9 +140,7 @@ void main() {
     expect(repository.lastCreated?.careSetting, CareSetting.vet);
     expect(repository.lastCreated?.carePlanning, CarePlanningMode.unplanned);
 
-    await tester.tap(
-      find.byKey(const Key('vet_health_issue_prompt_dismiss')),
-    );
+    await tester.tap(find.byKey(const Key('vet_health_issue_prompt_dismiss')));
     await tester.pumpAndSettle();
 
     expect(find.text('Pet p1'), findsOneWidget);

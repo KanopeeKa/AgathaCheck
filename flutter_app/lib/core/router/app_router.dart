@@ -63,7 +63,10 @@ class AuthChangeNotifier extends ChangeNotifier {
   bool get hasToken => _authState.accessToken != null;
 }
 
-HealthEntryFormScreen _buildCareAddScreen(GoRouterState state, {String? petId}) {
+HealthEntryFormScreen _buildCareAddScreen(
+  GoRouterState state, {
+  String? petId,
+}) {
   final resolvedPetId = petId ?? state.pathParameters['petId'];
   final typeParam = state.uri.queryParameters['type'];
   final planningParam = state.uri.queryParameters['planning'];

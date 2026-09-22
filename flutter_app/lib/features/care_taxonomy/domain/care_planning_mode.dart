@@ -1,8 +1,5 @@
 /// Scheduling intent: plan ahead vs record after the fact.
-enum CarePlanningMode {
-  planned,
-  unplanned,
-}
+enum CarePlanningMode { planned, unplanned }
 
 extension CarePlanningModeWire on CarePlanningMode {
   String get wireValue {

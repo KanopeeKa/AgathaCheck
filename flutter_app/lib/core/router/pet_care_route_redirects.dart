@@ -9,9 +9,7 @@ String? legacyPetAllCareRedirectForPath(String path) {
 
 /// Maps deprecated health/other add paths to unified care add routes.
 String? legacyCareAddRedirectForPath(String path) {
-  final petHealthMatch = RegExp(
-    r'^/pet/([^/]+)/health/add$',
-  ).firstMatch(path);
+  final petHealthMatch = RegExp(r'^/pet/([^/]+)/health/add$').firstMatch(path);
   if (petHealthMatch != null) {
     return '/pet/${petHealthMatch.group(1)}/care/add';
   }

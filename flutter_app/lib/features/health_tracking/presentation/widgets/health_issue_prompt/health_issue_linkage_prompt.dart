@@ -4,20 +4,10 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/health_issue.dart';
 
 /// User choice from a vet health-issue linkage prompt.
-enum VetHealthIssuePromptChoice {
-  dismiss,
-  linkExisting,
-  addNew,
-  planNextVisit,
-}
+enum VetHealthIssuePromptChoice { dismiss, linkExisting, addNew, planNextVisit }
 
 /// Suggested quick-pick titles for new health issues (§10.4).
-enum HealthIssueQuickPick {
-  injury,
-  dental,
-  neutering,
-  other,
-}
+enum HealthIssueQuickPick { injury, dental, neutering, other }
 
 /// Lightweight sheet after unplanned vet save (§10.1).
 Future<VetHealthIssuePromptChoice?> showUnplannedVetHealthIssuePrompt(
@@ -117,7 +107,9 @@ class _VetHealthIssuePromptSheet extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             OutlinedButton(
-              key: Key('vet_health_issue_prompt_${secondaryAction.choice.name}'),
+              key: Key(
+                'vet_health_issue_prompt_${secondaryAction.choice.name}',
+              ),
               onPressed: () => Navigator.pop(context, secondaryAction.choice),
               child: Text(secondaryAction.label),
             ),
@@ -250,7 +242,8 @@ Future<({String title, String description})?> showAddHealthIssueFromVetPrompt(
                         onSelected: (selected) {
                           setState(() {
                             selectedQuickPick = selected ? pick : null;
-                            if (selected && pick != HealthIssueQuickPick.other) {
+                            if (selected &&
+                                pick != HealthIssueQuickPick.other) {
                               titleController.text = quickPickTitle(pick);
                             }
                           });
@@ -280,7 +273,10 @@ Future<({String title, String description})?> showAddHealthIssueFromVetPrompt(
                       final description = descController.text.trim().isEmpty
                           ? title
                           : descController.text.trim();
-                      Navigator.pop(context, (title: title, description: description));
+                      Navigator.pop(context, (
+                        title: title,
+                        description: description,
+                      ));
                     },
                     child: Text(l.save),
                   ),

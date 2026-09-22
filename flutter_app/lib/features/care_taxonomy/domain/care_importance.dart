@@ -1,9 +1,5 @@
 /// Prioritisation weight for planned care (not notification urgency).
-enum CareImportance {
-  essential,
-  recommended,
-  optional,
-}
+enum CareImportance { essential, recommended, optional }
 
 extension CareImportanceWire on CareImportance {
   String get wireValue {

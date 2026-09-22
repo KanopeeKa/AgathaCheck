@@ -3,11 +3,7 @@ import 'care_importance.dart';
 import 'care_setting.dart';
 
 /// Filter chip grouping for manage-events / dashboard surfaces.
-enum CareFilterGroup {
-  prevention,
-  clinical,
-  lifestyle,
-}
+enum CareFilterGroup { prevention, clinical, lifestyle }
 
 extension CareFilterGroupWire on CareFilterGroup {
   String get wireValue {

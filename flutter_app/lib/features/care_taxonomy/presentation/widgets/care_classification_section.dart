@@ -50,9 +50,7 @@ class CareClassificationSection extends StatelessWidget {
     if (!isEdit && !showCareFamilyPicker) {
       return const SizedBox.shrink();
     }
-    if (isEdit &&
-        !showCareFamilySuggestion &&
-        !showCareFamilyPicker) {
+    if (isEdit && !showCareFamilySuggestion && !showCareFamilyPicker) {
       return const SizedBox.shrink();
     }
 

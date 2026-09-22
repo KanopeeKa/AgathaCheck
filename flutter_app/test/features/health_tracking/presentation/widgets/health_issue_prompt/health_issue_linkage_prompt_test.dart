@@ -31,15 +31,15 @@ void main() {
       find.text('Was this visit related to a health issue?'),
       findsOneWidget,
     );
-    await tester.tap(
-      find.byKey(const Key('vet_health_issue_prompt_dismiss')),
-    );
+    await tester.tap(find.byKey(const Key('vet_health_issue_prompt_dismiss')));
     await tester.pumpAndSettle();
 
     expect(result, VetHealthIssuePromptChoice.dismiss);
   });
 
-  testWidgets('planned completion prompt offers re-plan action', (tester) async {
+  testWidgets('planned completion prompt offers re-plan action', (
+    tester,
+  ) async {
     late VetHealthIssuePromptChoice? result;
     await tester.pumpWidget(
       MaterialApp(
@@ -49,7 +49,9 @@ void main() {
           builder: (context) => Scaffold(
             body: ElevatedButton(
               onPressed: () async {
-                result = await showPlannedVetCompletionHealthIssuePrompt(context);
+                result = await showPlannedVetCompletionHealthIssuePrompt(
+                  context,
+                );
               },
               child: const Text('open'),
             ),
@@ -130,7 +132,9 @@ void main() {
 
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('health_issue_quick_pick_neutering')));
+    await tester.tap(
+      find.byKey(const Key('health_issue_quick_pick_neutering')),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('vet_health_issue_save_button')));
     await tester.pumpAndSettle();

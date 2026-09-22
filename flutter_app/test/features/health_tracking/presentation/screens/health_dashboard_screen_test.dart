@@ -20,8 +20,14 @@ void main() {
     await tester.pump();
 
     expect(find.byKey(const Key('health_filter_group_all')), findsOneWidget);
-    expect(find.byKey(const Key('health_filter_group_prevention')), findsOneWidget);
+    expect(
+      find.byKey(const Key('health_filter_group_prevention')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('health_filter_family_all')), findsOneWidget);
-    expect(find.byKey(const Key('health_filter_family_medication')), findsOneWidget);
+    expect(
+      find.byKey(const Key('health_filter_family_medication')),
+      findsOneWidget,
+    );
   });
 }

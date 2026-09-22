@@ -434,26 +434,22 @@ void main() {
     },
   );
 
-  testWidgets(
-    'edit form omits administration history and legacy type picker',
-    (WidgetTester tester) async {
-      await tester.pumpWidget(
-        _wrapEditFlow(entry: _sampleEntry(type: HealthEntryType.other)),
-      );
-      await tester.pump();
-      await tester.pumpAndSettle();
+  testWidgets('edit form omits administration history and legacy type picker', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrapEditFlow(entry: _sampleEntry(type: HealthEntryType.other)),
+    );
+    await tester.pump();
+    await tester.pumpAndSettle();
 
-      expect(find.text('Edit Entry'), findsOneWidget);
-      expect(find.text('Administration History'), findsNothing);
-      expect(
-        find.byKey(const Key('delete_health_entry_button')),
-        findsOneWidget,
-      );
-      expect(find.byType(DropdownButtonFormField<HealthEntryType>), findsNothing);
-      expect(find.byKey(const Key('care_setting_picker')), findsOneWidget);
-      expect(find.byKey(const Key('care_importance_optional')), findsOneWidget);
-    },
-  );
+    expect(find.text('Edit Entry'), findsOneWidget);
+    expect(find.text('Administration History'), findsNothing);
+    expect(find.byKey(const Key('delete_health_entry_button')), findsOneWidget);
+    expect(find.byType(DropdownButtonFormField<HealthEntryType>), findsNothing);
+    expect(find.byKey(const Key('care_setting_picker')), findsOneWidget);
+    expect(find.byKey(const Key('care_importance_optional')), findsOneWidget);
+  });
 
   test('recurring delete copy warns all iterations are removed', () {
     final l = lookupAppLocalizations(const Locale('en'));

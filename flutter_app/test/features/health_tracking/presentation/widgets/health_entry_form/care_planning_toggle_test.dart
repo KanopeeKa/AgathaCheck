@@ -5,7 +5,9 @@ import 'package:pet_profile_app/features/health_tracking/presentation/widgets/he
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('renders planned and record segments', (WidgetTester tester) async {
+  testWidgets('renders planned and record segments', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,

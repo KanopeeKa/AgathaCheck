@@ -105,9 +105,9 @@ class HealthIssueLinkageFlow {
     if (!context.mounted) return;
 
     if (issues.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.createHealthIssuesHint)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.createHealthIssuesHint)));
       return;
     }
 
@@ -120,14 +120,14 @@ class HealthIssueLinkageFlow {
           .linkEvent(picked.id, entryId);
       ref.invalidate(petHealthEntriesProvider(petId));
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.healthIssueLinked)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.healthIssueLinked)));
     } catch (_) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.healthIssueLinkFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.healthIssueLinkFailed)));
     }
   }
 
@@ -155,14 +155,14 @@ class HealthIssueLinkageFlow {
           .linkEvent(issue.id, entryId);
       ref.invalidate(petHealthEntriesProvider(petId));
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.healthIssueLinked)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.healthIssueLinked)));
     } catch (_) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.healthIssueLinkFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.healthIssueLinkFailed)));
     }
   }
 }

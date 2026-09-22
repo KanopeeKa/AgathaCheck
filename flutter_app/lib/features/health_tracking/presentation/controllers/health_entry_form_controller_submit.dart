@@ -58,9 +58,11 @@ mixin HealthEntryFormSubmitMixin
     try {
       final notifier = formRef.read(healthEntriesNotifierProvider.notifier);
       final isRecord = state.isRecordMode;
-      final effectiveFrequency =
-          isRecord ? HealthFrequency.once : state.frequency;
-      final effectiveRepeatEndDate = isRecord || effectiveFrequency == HealthFrequency.once
+      final effectiveFrequency = isRecord
+          ? HealthFrequency.once
+          : state.frequency;
+      final effectiveRepeatEndDate =
+          isRecord || effectiveFrequency == HealthFrequency.once
           ? null
           : state.repeatEndDate;
       final effectiveStart =
@@ -73,8 +75,9 @@ mixin HealthEntryFormSubmitMixin
                 : state.dueDate);
       final effectiveCompleted = state.completedOn;
       final effectiveRemindDaysBefore = isRecord ? 0 : state.remindDaysBefore;
-      final effectiveScheduleTimes =
-          isRecord ? null : effectiveScheduleTimesForSubmit();
+      final effectiveScheduleTimes = isRecord
+          ? null
+          : effectiveScheduleTimesForSubmit();
       final careFamily = resolveCareFamilyForWrite(
         frequency: state.frequency,
         type: state.type,

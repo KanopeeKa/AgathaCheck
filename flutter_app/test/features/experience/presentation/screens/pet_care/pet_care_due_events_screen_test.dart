@@ -143,9 +143,7 @@ void main() {
     expect(find.text('Weight entry'), findsOneWidget);
   });
 
-  testWidgets('add picker: tapping Events routes to /care/add', (
-    tester,
-  ) async {
+  testWidgets('add picker: tapping Events routes to /care/add', (tester) async {
     await tester.pumpWidget(buildEventsScreen());
     await tester.pumpAndSettle();
 

@@ -32,7 +32,10 @@ void main() {
     final roundTrip = guardianGlobalEventsFiltersFromSelections(selections);
 
     expect(roundTrip.eventFilters.families, filters.eventFilters.families);
-    expect(roundTrip.eventFilters.filterGroups, filters.eventFilters.filterGroups);
+    expect(
+      roundTrip.eventFilters.filterGroups,
+      filters.eventFilters.filterGroups,
+    );
     expect(roundTrip.eventFilters.statuses, filters.eventFilters.statuses);
     expect(roundTrip.eventFilters.recurring, filters.eventFilters.recurring);
     expect(roundTrip.eventFilters.showSkipped, isFalse);

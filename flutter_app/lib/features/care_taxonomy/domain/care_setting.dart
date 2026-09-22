@@ -1,9 +1,5 @@
 /// Where / who delivers care.
-enum CareSetting {
-  home,
-  vet,
-  other,
-}
+enum CareSetting { home, vet, other }
 
 extension CareSettingWire on CareSetting {
   String get wireValue {

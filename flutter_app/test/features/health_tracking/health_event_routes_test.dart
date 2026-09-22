@@ -69,10 +69,7 @@ void main() {
 
       expect(find.text('Record care'), findsOneWidget);
       expect(find.text('Does not repeat'), findsNothing);
-      expect(
-        find.byKey(const Key('care_planning_toggle')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('care_planning_toggle')), findsOneWidget);
 
       final params = HealthEntryFormParams(
         petId: 'p1',
@@ -107,10 +104,7 @@ void main() {
         legacyPetEventEditRedirectForPath('/pet/pet-1/events/entry-9/edit'),
         isNull,
       );
-      expect(
-        legacyPetEventEditRedirectForPath('/pet/pet-1/care/add'),
-        isNull,
-      );
+      expect(legacyPetEventEditRedirectForPath('/pet/pet-1/care/add'), isNull);
     });
   });
 

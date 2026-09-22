@@ -85,36 +85,39 @@ void main() {
       expect(state.completedOn, isNotNull);
     });
 
-    test('record submit requires completed_on and omits next_due_date', () async {
-      const params = HealthEntryFormParams(
-        petId: 'pet-1',
-        initialPlanningMode: CarePlanningMode.unplanned,
-      );
-      final c = controller(params);
+    test(
+      'record submit requires completed_on and omits next_due_date',
+      () async {
+        const params = HealthEntryFormParams(
+          petId: 'pet-1',
+          initialPlanningMode: CarePlanningMode.unplanned,
+        );
+        final c = controller(params);
 
-      c.setName('Grooming');
-      c.setCareFamily(CareFamily.grooming);
-      c.setCompletedOn(null);
+        c.setName('Grooming');
+        c.setCareFamily(CareFamily.grooming);
+        c.setCompletedOn(null);
 
-      final blocked = await c.submit(skipMarkCompletedCheck: true);
-      expect(blocked, isA<HealthEntrySubmitValidationFailed>());
-      expect(
-        (blocked as HealthEntrySubmitValidationFailed).reason,
-        HealthEntrySubmitValidation.completedOnRequired,
-      );
+        final blocked = await c.submit(skipMarkCompletedCheck: true);
+        expect(blocked, isA<HealthEntrySubmitValidationFailed>());
+        expect(
+          (blocked as HealthEntrySubmitValidationFailed).reason,
+          HealthEntrySubmitValidation.completedOnRequired,
+        );
 
-      c.setCompletedOn(DateTime(2026, 9, 15));
-      final success = await c.submit(skipMarkCompletedCheck: true);
-      expect(success, isA<HealthEntrySubmitSuccess>());
-      expect(repository.created?.carePlanning, CarePlanningMode.unplanned);
-      expect(repository.created?.completedOn, DateTime(2026, 9, 15));
-      expect(repository.created?.nextDueDate, isNull);
-      expect(repository.created?.frequency, HealthFrequency.once);
-      expect(repository.created?.remindDaysBefore, 0);
-      expect(repository.created?.careFamily, CareFamily.grooming);
-      expect(repository.created?.careSetting, CareSetting.other);
-      expect(repository.created?.careImportance, CareImportance.optional);
-    });
+        c.setCompletedOn(DateTime(2026, 9, 15));
+        final success = await c.submit(skipMarkCompletedCheck: true);
+        expect(success, isA<HealthEntrySubmitSuccess>());
+        expect(repository.created?.carePlanning, CarePlanningMode.unplanned);
+        expect(repository.created?.completedOn, DateTime(2026, 9, 15));
+        expect(repository.created?.nextDueDate, isNull);
+        expect(repository.created?.frequency, HealthFrequency.once);
+        expect(repository.created?.remindDaysBefore, 0);
+        expect(repository.created?.careFamily, CareFamily.grooming);
+        expect(repository.created?.careSetting, CareSetting.other);
+        expect(repository.created?.careImportance, CareImportance.optional);
+      },
+    );
 
     test('planned submit keeps due date and reminders', () async {
       const params = HealthEntryFormParams(petId: 'pet-1');
