@@ -4,7 +4,7 @@
   "approved_at": "2026-09-22T13:12:45Z",
   "approved_by": "User chat 2026-09-22 - two review rounds, no further blocking findings; proceed through merge and e2e-preUAT verification",
   "approved_until": "2026-09-24T13:12:45Z",
-  "content_hash": "sha256:5391ba222175967b1d43794722a771b7f7dbd5de5db1fb02fc76501787c1661b",
+  "content_hash": "sha256:1a2b6fe9a9c4528909b0d259bc693ce7baf34d8c74110b197c82d475bac68d88",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/away-plan-detail-v2-integration-d4c1",
@@ -135,7 +135,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": true,
+      "pr_head_sha": "33089df2"
     },
     {
       "id": "awd-4",

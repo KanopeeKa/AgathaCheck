@@ -166,10 +166,10 @@ next_action: "continue phase awd-3 on branch cursor/away-plan-detail-v2-awd3-d4c
 artifact_ref:
   branch: cursor/away-plan-detail-v2-awd3-d4c1
   plan_path: .agents/plans/away-plan-detail-v2.md
-  plan_commit: 3d7e5758aeb0843aa1cffaa549f5e13bc0a5baea
+  plan_commit: 33089df275a6088c546bf458c09888505a5a04f9
   snapshot_path: .agents/plans/away-plan-detail-v2.snapshot.json
-  snapshot_commit: 3d7e5758aeb0843aa1cffaa549f5e13bc0a5baea
-open_prs: []
+  snapshot_commit: 33089df275a6088c546bf458c09888505a5a04f9
+open_prs: [true]
 merge_commits: {}
 debt_issue_refs: []
 ```
