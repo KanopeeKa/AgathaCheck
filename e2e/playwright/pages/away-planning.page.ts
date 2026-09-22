@@ -304,7 +304,9 @@ export class AwayPlanningPage {
       .getByRole('button', { name: /Delete plan|Supprimer le plan/i })
       .first()
       .click();
-    const dialog = this.page.getByRole('dialog');
+    // AppFormDestructiveButton's confirm prompt renders as alertdialog, not dialog
+    // (see organization-detail.page.ts for the same pattern).
+    const dialog = this.page.getByRole('alertdialog');
     await expect(dialog).toBeVisible({ timeout: 15_000 });
     await dialog
       .getByRole('button', { name: /^Delete$|^Supprimer$/i })
