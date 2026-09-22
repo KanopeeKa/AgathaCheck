@@ -5,17 +5,21 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../care_taxonomy/domain/care_family_definition.dart';
+import '../../../pet_profile/domain/entities/care_family.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../pet_profile/presentation/widgets/care_family_labels.dart';
+import '../../../pet_profile/presentation/widgets/care_filter_group_labels.dart';
 import '../../../pet_profile/data/services/pdf_saver.dart' as pdf_saver;
 import '../../data/services/events_pdf_service.dart';
-import '../../domain/entities/health_entry.dart';
 import '../../domain/health_events_scope.dart';
 import '../providers/health_providers.dart';
 import '../widgets/health_dashboard_actions.dart'
     show HealthDashboardActions, GroupMode;
 import '../widgets/health_dashboard/health_dashboard_entry_list.dart';
+import '../widgets/health_dashboard/health_dashboard_care_filters.dart';
 import '../widgets/health_dashboard/health_dashboard_org_filter.dart';
 import '../widgets/health_dashboard/health_dashboard_pdf_groups.dart';
 
@@ -28,9 +32,8 @@ class HealthDashboardScreen extends ConsumerStatefulWidget {
     this.backPath = '/',
   });
 
-  /// When true, omits the [TabBarView] body so widget tests can assert the
-  /// app bar / tab bar without spinning up six async entry lists (Linux CI
-  /// segfault during flutter_tester teardown otherwise).
+  /// When true, omits the heavy list body so widget tests can assert filters
+  /// without spinning up async entry lists (Linux CI segfault during teardown).
   @visibleForTesting
   final bool skipHeavyBody;
 
@@ -47,31 +50,16 @@ class HealthDashboardScreen extends ConsumerStatefulWidget {
       _HealthDashboardScreenState();
 }
 
-class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen> {
   GroupMode _groupMode = GroupMode.dueDate;
   String? _orgFilter;
+  CareFilterGroup? _selectedFilterGroup;
+  CareFamily? _selectedFamily;
 
-  static const _tabs = [
-    null,
-    HealthEntryType.medication,
-    HealthEntryType.preventive,
-    HealthEntryType.vetVisit,
-    HealthEntryType.other,
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 5, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+  HealthDashboardCareFilter get _careFilter => HealthDashboardCareFilter(
+    filterGroup: _selectedFilterGroup,
+    family: _selectedFamily,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -80,59 +68,40 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
         widget.scope == HealthEventsScope.all ||
         widget.scope == HealthEventsScope.organization;
 
-    final body = widget.skipHeavyBody
+    final listBody = widget.skipHeavyBody
         ? const SizedBox.shrink()
-        : Column(
-            children: [
-              if (showOrgFilter)
-                HealthDashboardOrgFilter(
-                  selectedFilter: _orgFilter,
-                  onFilterChanged: (filter) =>
-                      setState(() => _orgFilter = filter),
-                  scope: widget.scope,
-                ),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: _tabs
-                      .map(
-                        (type) => HealthDashboardEntryList(
-                          type: type,
-                          groupMode: _groupMode,
-                          orgFilter: _effectiveOrgFilter(),
-                          petIdFilter: _scopedPetIds(),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-            ],
+        : Expanded(
+            child: HealthDashboardEntryList(
+              careFilter: _careFilter,
+              groupMode: _groupMode,
+              orgFilter: _effectiveOrgFilter(),
+              petIdFilter: _scopedPetIds(),
+            ),
           );
 
-    final tabBar = TabBar(
-      controller: _tabController,
-      tabs: [
-        Tab(key: const Key('health_tab_all'), text: l.all),
-        Tab(key: const Key('health_tab_medications'), text: l.medications),
-        Tab(key: const Key('health_tab_preventives'), text: l.preventives),
-        Tab(key: const Key('health_tab_vet_visits'), text: l.vetVisits),
-        Tab(key: const Key('health_tab_other'), text: l.other),
+    final body = Column(
+      children: [
+        HealthDashboardCareFilters(
+          selectedFilterGroup: _selectedFilterGroup,
+          selectedFamily: _selectedFamily,
+          onFilterGroupChanged: (value) =>
+              setState(() => _selectedFilterGroup = value),
+          onFamilyChanged: (value) => setState(() => _selectedFamily = value),
+        ),
+        if (showOrgFilter)
+          HealthDashboardOrgFilter(
+            selectedFilter: _orgFilter,
+            onFilterChanged: (filter) => setState(() => _orgFilter = filter),
+            scope: widget.scope,
+          ),
+        listBody,
       ],
-      isScrollable: true,
     );
 
     final fab = FloatingActionButton.extended(
       key: const Key('add_health_entry_button'),
       tooltip: l.addHealthEntry,
-      onPressed: () {
-        final tabIndex = _tabController.index;
-        final type = tabIndex < _tabs.length ? _tabs[tabIndex] : null;
-        if (type != null) {
-          context.go('/health/add?type=${type.name}');
-        } else {
-          context.go('/health/add');
-        }
-      },
+      onPressed: () => context.go('/care/add'),
       icon: const Icon(Icons.add),
       label: Text(l.addEntry),
     );
@@ -144,7 +113,16 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
             color: Theme.of(context).colorScheme.surface,
             child: Row(
               children: [
-                Expanded(child: tabBar),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Text(
+                      l.events,
+                      style: Theme.of(context).textTheme.titleMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
                 HealthDashboardActions(
                   onExportPdf: _exportPdf,
                   onExportCsv: _exportCsv,
@@ -188,7 +166,6 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
             lExportCsv: l.exportCsv,
           ),
         ],
-        bottom: tabBar,
       ),
       body: body,
       floatingActionButton: fab,
@@ -205,6 +182,18 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
   String? _effectiveOrgFilter() {
     if (widget.scope == HealthEventsScope.organization) return _orgFilter;
     return widget.scope == HealthEventsScope.all ? _orgFilter : null;
+  }
+
+  String _careFilterLabel(AppLocalizations l) {
+    final parts = <String>[];
+    if (_selectedFilterGroup != null) {
+      parts.add(careFilterGroupLabel(l, _selectedFilterGroup!));
+    }
+    if (_selectedFamily != null) {
+      parts.add(careFamilyLabel(l, _selectedFamily!));
+    }
+    if (parts.isEmpty) return l.all;
+    return parts.join(' · ');
   }
 
   Future<void> _exportCsv() async {
@@ -239,10 +228,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
   Future<void> _exportPdf() async {
     final l = AppLocalizations.of(context)!;
     try {
-      final tabIndex = _tabController.index;
-      final typeFilter = tabIndex < _tabs.length ? _tabs[tabIndex] : null;
-
-      final entriesAsync = ref.read(filteredHealthEntriesProvider(typeFilter));
+      final entriesAsync = ref.read(filteredHealthEntriesProvider(_careFilter));
       final petsAsync = ref.read(petListProvider);
       var entries = entriesAsync.valueOrNull ?? [];
       final pets = petsAsync.valueOrNull ?? <Pet>[];
@@ -270,7 +256,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
         l: l,
       );
 
-      final filterLabel = typeFilter == null ? l.all : typeFilter.label;
+      final filterLabel = _careFilterLabel(l);
       final groupLabel = switch (_groupMode) {
         GroupMode.dueDate => l.byDueDate,
         GroupMode.pet => l.byPet,

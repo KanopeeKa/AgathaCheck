@@ -2,6 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../care_taxonomy/domain/care_importance.dart';
+import '../../../care_taxonomy/domain/care_planning_mode.dart';
+import '../../../care_taxonomy/domain/care_setting.dart';
 import '../../../pet_profile/domain/entities/care_family.dart';
 import '../../../pet_profile/domain/services/care_family_write.dart';
 import '../../data/datasources/health_remote_datasource.dart';
@@ -15,12 +18,14 @@ class HealthEntryFormParams {
     this.petId,
     this.initialType,
     this.allowedTypes,
+    this.initialPlanningMode,
   });
 
   final String? entryId;
   final String? petId;
   final HealthEntryType? initialType;
   final List<HealthEntryType>? allowedTypes;
+  final CarePlanningMode? initialPlanningMode;
 
   @override
   bool operator ==(Object other) =>
@@ -29,6 +34,7 @@ class HealthEntryFormParams {
           entryId == other.entryId &&
           petId == other.petId &&
           initialType == other.initialType &&
+          initialPlanningMode == other.initialPlanningMode &&
           listEquals(allowedTypes, other.allowedTypes);
 
   @override
@@ -36,6 +42,7 @@ class HealthEntryFormParams {
     entryId,
     petId,
     initialType,
+    initialPlanningMode,
     allowedTypes == null ? null : Object.hashAll(allowedTypes!),
   );
 }
@@ -65,6 +72,10 @@ class HealthEntryFormState {
     this.scheduleAtSpecificTimes = false,
     this.scheduleTimes = const ['08:00'],
     this.careFamily,
+    this.careSetting = CareSetting.other,
+    this.carePlanning = CarePlanningMode.planned,
+    this.careImportance = CareImportance.optional,
+    this.importanceOverridden = false,
     this.loadedUncategorised = false,
     this.careFamilySuggestionDismissed = false,
     this.careFamilyPickerRevealed = false,
@@ -94,6 +105,10 @@ class HealthEntryFormState {
   final bool scheduleAtSpecificTimes;
   final List<String> scheduleTimes;
   final CareFamily? careFamily;
+  final CareSetting careSetting;
+  final CarePlanningMode carePlanning;
+  final CareImportance careImportance;
+  final bool importanceOverridden;
   final bool loadedUncategorised;
   final bool careFamilySuggestionDismissed;
   final bool careFamilyPickerRevealed;
@@ -119,6 +134,14 @@ class HealthEntryFormState {
 
   bool get showCareFamilyPicker =>
       !isEdit || careFamily != null || careFamilyPickerRevealed;
+
+  bool get isRecordMode => carePlanning == CarePlanningMode.unplanned;
+
+  bool get isPlannedMode => carePlanning == CarePlanningMode.planned;
+
+  bool get showScheduleSection => isPlannedMode;
+
+  bool get showReminders => isPlannedMode;
 
   List<HealthEntryType> get selectableTypes {
     if (allowedTypes != null && allowedTypes!.isNotEmpty) {
@@ -146,6 +169,10 @@ class HealthEntryFormState {
         scheduleAtSpecificTimes == other.scheduleAtSpecificTimes &&
         listEquals(scheduleTimes, other.scheduleTimes) &&
         careFamily == other.careFamily &&
+        careSetting == other.careSetting &&
+        carePlanning == other.carePlanning &&
+        careImportance == other.careImportance &&
+        importanceOverridden == other.importanceOverridden &&
         pendingPhotos.length == other.pendingPhotos.length;
   }
 
@@ -173,6 +200,10 @@ class HealthEntryFormState {
     bool? scheduleAtSpecificTimes,
     List<String>? scheduleTimes,
     CareFamily? careFamily,
+    CareSetting? careSetting,
+    CarePlanningMode? carePlanning,
+    CareImportance? careImportance,
+    bool? importanceOverridden,
     bool? loadedUncategorised,
     bool? careFamilySuggestionDismissed,
     bool? careFamilyPickerRevealed,
@@ -212,6 +243,10 @@ class HealthEntryFormState {
           scheduleAtSpecificTimes ?? this.scheduleAtSpecificTimes,
       scheduleTimes: scheduleTimes ?? this.scheduleTimes,
       careFamily: clearCareFamily ? null : (careFamily ?? this.careFamily),
+      careSetting: careSetting ?? this.careSetting,
+      carePlanning: carePlanning ?? this.carePlanning,
+      careImportance: careImportance ?? this.careImportance,
+      importanceOverridden: importanceOverridden ?? this.importanceOverridden,
       loadedUncategorised: loadedUncategorised ?? this.loadedUncategorised,
       careFamilySuggestionDismissed:
           careFamilySuggestionDismissed ?? this.careFamilySuggestionDismissed,

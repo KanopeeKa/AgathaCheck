@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pet_profile_app/features/care_taxonomy/domain/care_family_definition.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/services/care_family_write.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_family_labels.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_filter_group_labels.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import 'manage_events_filters.dart';
@@ -26,11 +31,15 @@ class ManageEventsFilterBar extends StatelessWidget {
         children: [
           _FilterChipRow(
             children: [
-              _typeChip(ManageEventsTypeFilter.all, l.all),
-              _typeChip(ManageEventsTypeFilter.medication, l.medication),
-              _typeChip(ManageEventsTypeFilter.preventive, l.preventive),
-              _typeChip(ManageEventsTypeFilter.vetVisit, l.vetVisit),
-              _typeChip(ManageEventsTypeFilter.other, l.other),
+              for (final group in CareFilterGroup.values)
+                _filterGroupChip(group, careFilterGroupLabel(l, group)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          _FilterChipRow(
+            children: [
+              for (final family in kRecurringCareFamilyPickerOptions)
+                _familyChip(family, careFamilyLabel(l, family)),
             ],
           ),
           const SizedBox(height: 8),
@@ -68,12 +77,21 @@ class ManageEventsFilterBar extends StatelessWidget {
     );
   }
 
-  Widget _typeChip(ManageEventsTypeFilter value, String label) {
+  Widget _familyChip(CareFamily value, String label) {
     return FilterChip(
-      key: Key('manage_events_type_${value.name}'),
+      key: Key('manage_events_family_${value.name}'),
       label: Text(label),
-      selected: filters.isTypeSelected(value),
-      onSelected: (_) => onChanged(filters.toggleType(value)),
+      selected: filters.isFamilySelected(value),
+      onSelected: (_) => onChanged(filters.toggleFamily(value)),
+    );
+  }
+
+  Widget _filterGroupChip(CareFilterGroup value, String label) {
+    return FilterChip(
+      key: Key('manage_events_filter_group_${value.name}'),
+      label: Text(label),
+      selected: filters.isFilterGroupSelected(value),
+      onSelected: (_) => onChanged(filters.toggleFilterGroup(value)),
     );
   }
 

@@ -774,6 +774,65 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careFamilyOther => 'Autres soins';
 
   @override
+  String get careFilterGroupPrevention => 'Prévention';
+
+  @override
+  String get careFilterGroupClinical => 'Clinique';
+
+  @override
+  String get careFilterGroupLifestyle => 'Style de vie';
+
+  @override
+  String get careSettingFieldLabel => 'Où';
+
+  @override
+  String get careSettingFieldHelper => 'Où ce soin a lieu ou qui le réalise.';
+
+  @override
+  String get careSettingHome => 'À la maison';
+
+  @override
+  String get careSettingVet => 'Chez le vétérinaire';
+
+  @override
+  String get careSettingOther => 'Ailleurs';
+
+  @override
+  String get careImportanceFieldLabel => 'Priorité';
+
+  @override
+  String get careImportanceFieldHelper =>
+      'Importance de ce soin pour la santé de votre animal.';
+
+  @override
+  String get careImportanceEssential => 'Essentiel';
+
+  @override
+  String get careImportanceRecommended => 'Recommandé';
+
+  @override
+  String get careImportanceOptional => 'Optionnel';
+
+  @override
+  String get carePlanningToggleLabel => 'Planification';
+
+  @override
+  String get carePlanningFieldHelper =>
+      'Planifiez un soin à venir ou enregistrez un soin déjà effectué.';
+
+  @override
+  String get carePlanningPlanned => 'Planifier ce soin';
+
+  @override
+  String get carePlanningUnplanned => 'Enregistrer ce qui s\'est passé';
+
+  @override
+  String get recordHealthEntry => 'Enregistrer un soin';
+
+  @override
+  String get completedOnRequired => 'Indiquez quand ce soin a été effectué';
+
+  @override
   String get careSourceGuardianDefined => 'Ajouté par vous';
 
   @override
@@ -1424,6 +1483,50 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get addHealthIssue => 'Ajouter un problème de santé';
+
+  @override
+  String get vetHealthIssuePromptTitle =>
+      'Cette visite était-elle liée à un problème de santé ?';
+
+  @override
+  String get vetHealthIssuePromptLinkExisting => 'Lier un problème existant';
+
+  @override
+  String get vetHealthIssuePromptAddNew => 'Ajouter un nouveau problème';
+
+  @override
+  String get vetHealthIssuePromptNotRelated => 'Sans lien';
+
+  @override
+  String get vetPlannedCompletionHealthIssuePromptTitle =>
+      'Le vétérinaire a-t-il identifié quelque chose de nouveau à suivre ?';
+
+  @override
+  String get vetHealthIssuePromptNo => 'Non';
+
+  @override
+  String get vetHealthIssuePlanNextVisit => 'Planifier la prochaine visite';
+
+  @override
+  String get healthIssueQuickPickInjury => 'Blessure ou maladie';
+
+  @override
+  String get healthIssueQuickPickDental => 'Problème dentaire';
+
+  @override
+  String get healthIssueQuickPickNeutering => 'Stérilisation';
+
+  @override
+  String get healthIssueQuickPickOther => 'Autre';
+
+  @override
+  String get healthIssueSelectTitle => 'Sélectionner un problème de santé';
+
+  @override
+  String get healthIssueLinked => 'Problème de santé lié';
+
+  @override
+  String get healthIssueLinkFailed => 'Impossible de lier le problème de santé';
 
   @override
   String get issueDescriptionRequired => 'La description est requise';
@@ -2446,7 +2549,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get collectionFilterSkippedHidden => 'Ignorés masqués';
 
   @override
-  String get eventFilterTypeLabel => 'Type';
+  String get eventFilterFamilyLabel => 'Catégorie';
+
+  @override
+  String get eventFilterGroupLabel => 'Groupe';
 
   @override
   String get eventFilterStatusLabel => 'Statut';

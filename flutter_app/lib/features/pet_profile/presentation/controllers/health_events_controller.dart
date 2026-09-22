@@ -7,6 +7,6 @@ class HealthEventsController {
   HealthEventsController(this.ref);
 
   void onAddEntry(BuildContext context, String petId) {
-    context.go('/pet/$petId/health/add');
+    context.go('/pet/$petId/care/add');
   }
 }

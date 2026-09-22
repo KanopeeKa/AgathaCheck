@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pet_profile_app/core/widgets/collection_filter/collection_filter.dart';
+import 'package:pet_profile_app/features/care_taxonomy/domain/care_family_definition.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/services/care_family_write.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_family_labels.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_filter_group_labels.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import 'manage_events_filters.dart';
@@ -9,7 +14,8 @@ import 'manage_events_filters.dart';
 /// Stable ids for global/manage events collection filter dimensions.
 abstract final class ManageEventsCollectionFilterIds {
   static const pet = 'pet';
-  static const type = 'type';
+  static const family = 'family';
+  static const filterGroup = 'filterGroup';
   static const status = 'status';
   static const recurring = 'recurring';
   static const skipped = 'skipped';
@@ -23,9 +29,9 @@ abstract final class ManageEventsCollectionFilterIds {
 
   static String petChoice(String petId) => 'pet:$petId';
 
-  static const primary = [pet, type, status];
+  static const primary = [pet, filterGroup, family, status];
   static const more = [recurring, skipped, cohort];
-  static const perPetPrimary = [type, status];
+  static const perPetPrimary = [filterGroup, family, status];
   static const perPetMore = [recurring, skipped];
   static const orgMore = [recurring, skipped, organization];
 }
@@ -47,30 +53,35 @@ List<CollectionFilterDimension> _manageEventsCoreDimensions(
 ) {
   return [
     CollectionFilterDimension(
-      id: ManageEventsCollectionFilterIds.type,
-      label: l.eventFilterTypeLabel,
+      id: ManageEventsCollectionFilterIds.filterGroup,
+      label: l.eventFilterGroupLabel,
       choices: [
         CollectionFilterChoice(
           id: ManageEventsCollectionFilterIds.all,
           label: l.all,
           isDefault: true,
         ),
+        for (final group in CareFilterGroup.values)
+          CollectionFilterChoice(
+            id: group.name,
+            label: careFilterGroupLabel(l, group),
+          ),
+      ],
+    ),
+    CollectionFilterDimension(
+      id: ManageEventsCollectionFilterIds.family,
+      label: l.eventFilterFamilyLabel,
+      choices: [
         CollectionFilterChoice(
-          id: ManageEventsTypeFilter.medication.name,
-          label: l.medication,
+          id: ManageEventsCollectionFilterIds.all,
+          label: l.all,
+          isDefault: true,
         ),
-        CollectionFilterChoice(
-          id: ManageEventsTypeFilter.preventive.name,
-          label: l.preventive,
-        ),
-        CollectionFilterChoice(
-          id: ManageEventsTypeFilter.vetVisit.name,
-          label: l.vetVisit,
-        ),
-        CollectionFilterChoice(
-          id: ManageEventsTypeFilter.other.name,
-          label: l.other,
-        ),
+        for (final family in kRecurringCareFamilyPickerOptions)
+          CollectionFilterChoice(
+            id: family.name,
+            label: careFamilyLabel(l, family),
+          ),
       ],
     ),
     CollectionFilterDimension(
@@ -164,12 +175,15 @@ ManageEventsFilters _manageEventsFiltersFromCoreSelections(
   );
 
   return ManageEventsFilters(
-    types: parseEnumSet(
-      ManageEventsCollectionFilterIds.type,
-      ManageEventsTypeFilter.values.where(
-        (value) => value != ManageEventsTypeFilter.all,
-      ),
-      (name) => ManageEventsTypeFilter.values.byName(name),
+    families: parseEnumSet(
+      ManageEventsCollectionFilterIds.family,
+      kRecurringCareFamilyPickerOptions,
+      (name) => CareFamily.values.byName(name),
+    ),
+    filterGroups: parseEnumSet(
+      ManageEventsCollectionFilterIds.filterGroup,
+      CareFilterGroup.values,
+      (name) => CareFilterGroup.values.byName(name),
     ),
     statuses: parseEnumSet(
       ManageEventsCollectionFilterIds.status,
@@ -193,7 +207,10 @@ CollectionFilterSelections _coreSelectionsFromManageEventsFilters(
   ManageEventsFilters filters,
 ) {
   return {
-    ManageEventsCollectionFilterIds.type: filters.types
+    ManageEventsCollectionFilterIds.family: filters.families
+        .map((value) => value.name)
+        .toSet(),
+    ManageEventsCollectionFilterIds.filterGroup: filters.filterGroups
         .map((value) => value.name)
         .toSet(),
     ManageEventsCollectionFilterIds.status: filters.statuses
@@ -257,7 +274,7 @@ List<CollectionFilterDimension> buildGlobalEventsFilterDimensions({
   return dimensions;
 }
 
-/// Per-pet manage events — Type, Status, Recurrence, Skipped (no pet row).
+/// Per-pet manage events — Group, Category, Status, Recurrence, Skipped.
 List<CollectionFilterDimension> buildPerPetManageEventsFilterDimensions(
   AppLocalizations l,
 ) {
@@ -269,7 +286,8 @@ List<String> primaryGlobalEventsFilterDimensionIds(List<Pet> shellPets) {
     return ManageEventsCollectionFilterIds.primary;
   }
   return [
-    ManageEventsCollectionFilterIds.type,
+    ManageEventsCollectionFilterIds.filterGroup,
+    ManageEventsCollectionFilterIds.family,
     ManageEventsCollectionFilterIds.status,
   ];
 }

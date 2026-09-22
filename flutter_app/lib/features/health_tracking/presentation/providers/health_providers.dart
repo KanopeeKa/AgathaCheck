@@ -14,6 +14,19 @@ import '../../domain/usecases/get_health_entries.dart';
 import '../../domain/usecases/mark_entry_taken.dart';
 import '../../domain/usecases/update_health_entry.dart';
 import '../../../pet_care/domain/services/care_temporal_grouping_service.dart';
+import '../../../care_taxonomy/domain/care_family_definition.dart';
+import '../../../pet_profile/domain/entities/care_family.dart';
+import '../../../pet_profile/domain/services/care_entry_filter.dart';
+
+/// Optional family / filter-group selection for dashboard care lists.
+class HealthDashboardCareFilter {
+  const HealthDashboardCareFilter({this.filterGroup, this.family});
+
+  final CareFilterGroup? filterGroup;
+  final CareFamily? family;
+
+  static const all = HealthDashboardCareFilter();
+}
 
 final healthRemoteDataSourceProvider = Provider<HealthRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
@@ -146,16 +159,25 @@ class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
   }
 }
 
-/// Provides filtered entries by type.
+/// Provides filtered entries by care family and filter group.
 final filteredHealthEntriesProvider =
-    Provider.family<AsyncValue<List<HealthEntry>>, HealthEntryType?>((
+    Provider.family<AsyncValue<List<HealthEntry>>, HealthDashboardCareFilter>((
       ref,
-      type,
+      filter,
     ) {
       final entriesAsync = ref.watch(healthEntriesNotifierProvider);
       return entriesAsync.whenData((entries) {
-        if (type == null) return entries;
-        return entries.where((e) => e.type == type).toList();
+        return entries.where((entry) {
+          if (filter.family != null &&
+              !matchesCareFamilyFilters(entry, {filter.family!})) {
+            return false;
+          }
+          if (filter.filterGroup != null &&
+              !matchesCareFilterGroupFilters(entry, {filter.filterGroup!})) {
+            return false;
+          }
+          return true;
+        }).toList();
       });
     });
 
