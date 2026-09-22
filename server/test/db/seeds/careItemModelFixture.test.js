@@ -109,8 +109,6 @@ describe('care-item-model-fixture seed database rows (issue #1125)', () => {
       const first = await countCareFixtureRows(client);
       await seedCareItemModelFixture(client);
       const second = await countCareFixtureRows(client);
-      await client.query('ROLLBACK');
-
       expect(first.entries).toBe(6);
       expect(first.occurrences).toBe(6);
       expect(first.weight_entries).toBe(4);
@@ -176,6 +174,7 @@ describe('care-item-model-fixture seed database rows (issue #1125)', () => {
         [DEMO_IDS.pebblePet],
       );
       expect(pebbleWeight.rows[0].count).toBe(0);
+      await client.query('ROLLBACK');
     } finally {
       client.release();
       await pool.end();
