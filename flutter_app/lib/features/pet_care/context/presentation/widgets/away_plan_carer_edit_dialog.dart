@@ -39,6 +39,7 @@ class _AwayPlanCarerEditDialogState
   String? _selectedUserId;
   late final TextEditingController _nameController;
   late final TextEditingController _noteController;
+  late final TextEditingController _petNoteController;
   bool _saving = false;
 
   @override
@@ -54,6 +55,10 @@ class _AwayPlanCarerEditDialogState
           ? widget.currentCarer.carerNote ?? ''
           : '',
     );
+    // Independent of carer kind — initialized and saved regardless of mode.
+    _petNoteController = TextEditingController(
+      text: widget.currentCarer.petNote ?? '',
+    );
     _selectedUserId = widget.currentCarer.carerKind == 'shared_user'
         ? widget.currentCarer.carerUserId
         : null;
@@ -68,6 +73,7 @@ class _AwayPlanCarerEditDialogState
   void dispose() {
     _nameController.dispose();
     _noteController.dispose();
+    _petNoteController.dispose();
     super.dispose();
   }
 
@@ -82,6 +88,11 @@ class _AwayPlanCarerEditDialogState
     }
   }
 
+  /// D-AWAY-008 boundary, extended to `pet_note`: verbatim content, only the
+  /// empty-vs-blank decision is normalized here — never trimmed internally.
+  String? get _normalizedPetNote =>
+      _petNoteController.text.trim().isEmpty ? null : _petNoteController.text;
+
   Map<String, dynamic> _payloadForMode() {
     switch (_mode) {
       case _CarerMode.sharedUser:
@@ -89,6 +100,7 @@ class _AwayPlanCarerEditDialogState
           'pet_id': widget.petId,
           'carer_kind': 'shared_user',
           'carer_user_id': _selectedUserId,
+          'pet_note': _normalizedPetNote,
         };
       case _CarerMode.noteOnly:
         return {
@@ -97,9 +109,14 @@ class _AwayPlanCarerEditDialogState
           'carer_name': _nameController.text.trim(),
           if (_noteController.text.trim().isNotEmpty)
             'carer_note': _noteController.text.trim(),
+          'pet_note': _normalizedPetNote,
         };
       case _CarerMode.clear:
-        return {'pet_id': widget.petId, 'carer_kind': null};
+        return {
+          'pet_id': widget.petId,
+          'carer_kind': null,
+          'pet_note': _normalizedPetNote,
+        };
     }
   }
 
@@ -151,92 +168,115 @@ class _AwayPlanCarerEditDialogState
     return AlertDialog(
       title: Text(l.awayPlanningCarerEditTitle(widget.petName)),
       content: SingleChildScrollView(
-        child: RadioGroup<_CarerMode>(
-          groupValue: _mode,
-          onChanged: (value) {
-            if (value != null) setState(() => _mode = value);
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              RadioListTile<_CarerMode>(
-                key: const Key('away_plan_carer_mode_shared_user'),
-                value: _CarerMode.sharedUser,
-                title: Text(l.awayPlanningCarerEditSharedUser),
-              ),
-              if (_mode == _CarerMode.sharedUser)
-                candidatesAsync.when(
-                  loading: () => Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: Text(
-                      l.awayPlanningCarerEditCandidatesLoading,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            RadioGroup<_CarerMode>(
+              groupValue: _mode,
+              onChanged: (value) {
+                if (value != null) setState(() => _mode = value);
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  RadioListTile<_CarerMode>(
+                    key: const Key('away_plan_carer_mode_shared_user'),
+                    value: _CarerMode.sharedUser,
+                    title: Text(l.awayPlanningCarerEditSharedUser),
                   ),
-                  error: (_, __) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: Text(
-                      l.awayPlanningCarerEditCandidatesFailed,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
+                  if (_mode == _CarerMode.sharedUser)
+                    candidatesAsync.when(
+                      loading: () => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: Text(
+                          l.awayPlanningCarerEditCandidatesLoading,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
+                      error: (_, __) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: Text(
+                          l.awayPlanningCarerEditCandidatesFailed,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                        ),
+                      ),
+                      data: (candidates) => _CandidateList(
+                        candidates: candidates,
+                        selectedUserId: _selectedUserId,
+                        hasCurrentSharedUser: hasCurrentSharedUser,
+                        currentUserId: widget.currentCarer.carerUserId,
+                        onSelected: (userId) =>
+                            setState(() => _selectedUserId = userId),
                       ),
                     ),
+                  RadioListTile<_CarerMode>(
+                    key: const Key('away_plan_carer_mode_note_only'),
+                    value: _CarerMode.noteOnly,
+                    title: Text(l.awayPlanningCarerEditNoteOnly),
                   ),
-                  data: (candidates) => _CandidateList(
-                    candidates: candidates,
-                    selectedUserId: _selectedUserId,
-                    hasCurrentSharedUser: hasCurrentSharedUser,
-                    currentUserId: widget.currentCarer.carerUserId,
-                    onSelected: (userId) =>
-                        setState(() => _selectedUserId = userId),
-                  ),
-                ),
-              RadioListTile<_CarerMode>(
-                key: const Key('away_plan_carer_mode_note_only'),
-                value: _CarerMode.noteOnly,
-                title: Text(l.awayPlanningCarerEditNoteOnly),
-              ),
-              if (_mode == _CarerMode.noteOnly) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: TextField(
-                    key: const Key('away_plan_carer_note_only_name'),
-                    controller: _nameController,
-                    decoration: InputDecoration(
-                      labelText: l.awayPlanningCarerEditNameLabel,
+                  if (_mode == _CarerMode.noteOnly) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: TextField(
+                        key: const Key('away_plan_carer_note_only_name'),
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: l.awayPlanningCarerEditNameLabel,
+                        ),
+                        textCapitalization: TextCapitalization.words,
+                        onChanged: (_) => setState(() {}),
+                      ),
                     ),
-                    textCapitalization: TextCapitalization.words,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: TextField(
-                    key: const Key('away_plan_carer_note_only_note'),
-                    controller: _noteController,
-                    decoration: InputDecoration(
-                      labelText: l.awayPlanningCarerEditNoteLabel,
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: TextField(
+                        key: const Key('away_plan_carer_note_only_note'),
+                        controller: _noteController,
+                        decoration: InputDecoration(
+                          labelText: l.awayPlanningCarerEditNoteLabel,
+                        ),
+                        textCapitalization: TextCapitalization.sentences,
+                        maxLines: 3,
+                      ),
                     ),
-                    textCapitalization: TextCapitalization.sentences,
-                    maxLines: 3,
+                  ],
+                  RadioListTile<_CarerMode>(
+                    key: const Key('away_plan_carer_mode_clear'),
+                    value: _CarerMode.clear,
+                    title: Text(l.awayPlanningCarerEditClear),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                key: const Key('away_plan_carer_pet_note'),
+                controller: _petNoteController,
+                decoration: InputDecoration(
+                  labelText: l.awayPlanningCarerEditPetNoteLabel(
+                    widget.petName,
                   ),
                 ),
-              ],
-              RadioListTile<_CarerMode>(
-                key: const Key('away_plan_carer_mode_clear'),
-                value: _CarerMode.clear,
-                title: Text(l.awayPlanningCarerEditClear),
+                textCapitalization: TextCapitalization.sentences,
+                minLines: 2,
+                maxLines: 4,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       actions: [

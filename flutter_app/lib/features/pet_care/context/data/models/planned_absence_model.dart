@@ -10,6 +10,7 @@ class PlannedAbsenceModel {
       carerName: json['carer_name'] as String?,
       carerNote: json['carer_note'] as String?,
       carerRemoved: json['carer_removed'] == true,
+      petNote: json['pet_note'] as String?,
     );
   }
 

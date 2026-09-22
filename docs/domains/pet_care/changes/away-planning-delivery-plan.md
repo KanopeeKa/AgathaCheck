@@ -54,6 +54,7 @@ Integration branch (4+ parallel phases): `cursor/away-planning-v1-integration-51
 | **AW-9** | Handover PDF; record download timestamp; surface nothing | AW-7 |
 | **AW-SEED** | `away-planning.js`; exclusion-list seed test | AW-4 |
 | **AW-10** | Remaining canonical docs, `away_planning.feature`, Playwright | AW-9 |
+| **AW-11** | Per-pet `pet_note` + per-pet handover PDF export (D-AWAY-014, proposed) | AW-9 |
 
 ```text
 AW-EMERGENCY ──> main
@@ -187,6 +188,12 @@ After `care-schedule-fixture` in `ALL_SCENARIOS`. Coverage: carer mix, five cove
 ## AW-10 — Docs + journey
 
 `api-reference.md`, carer model doc, `away_planning.feature` + Playwright with exact `@bdd` titles.
+
+---
+
+## AW-11 — Per-pet note + per-pet handover export
+
+Follow-on to AW-9, not part of original V1 scope. Migration `071` adds `planned_absence_pets.pet_note` — orthogonal to `carer_kind`/`carer_note`, usable for any carer kind. `updateAbsenceCarers` writes carer columns and `pet_note` independently, keyed on which fields are present on each `pet_carers` entry, so one never overwrites the other. New per-pet PDF export button reuses the existing client-side `AwayPlanHandoverService` pipeline via a shared `buildHandoverDocument` path; scoped to one pet's carer row and schedule, pet-scoped (not absence-aggregate) coverage copy, trip-wide `handover_note` under a distinct title, and the pet's own `pet_note`. Does not bump `last_handover_downloaded_at` — full-plan download only. Full spec: [away-planning-per-pet-handover-spec.md](./away-planning-per-pet-handover-spec.md). Decisions D-AWAY-014a/b are **Frozen** in [away-planning-decisions.md](./away-planning-decisions.md) (merged [#1266](https://github.com/KanopeeKa/AgathaCheck/pull/1266)).
 
 ---
 

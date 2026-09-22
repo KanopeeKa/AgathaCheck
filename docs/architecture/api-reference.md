@@ -260,10 +260,11 @@ Each list item includes `overlap_warnings` **recomputed on read** (not persisted
 |---|---|
 | `pet_carers[].carer_kind` | `shared_user`, `note_only`, or `null` (unset) |
 | `pet_carers[].carer_user_id` | Required on write for `shared_user`; must be a collaborator on that pet |
-| `pet_carers[].carer_name` / `carer_note` | `note_only` only — name + note; no access implied |
+| `pet_carers[].carer_name` / `carer_note` | `note_only` only — name + note about the person; no access implied |
 | `pet_carers[].carer_removed` | Read-only: `shared_user` with `carer_user_id` null (deleted user) |
+| `pet_carers[].pet_note` | Any `carer_kind` — free text about caring for this pet (feeding, meds, quirks); independent of carer identity (migration `071`, D-AWAY-014a) |
 
-`PATCH /:id` accepts optional `pet_carers: [{ pet_id, carer_kind, ... }]`. Carer writes bump `planned_absences.updated_at`. `shared_user` assignments return `403` when `carer_user_id` is not a `shared`/`guardian` collaborator on that pet.
+`PATCH /:id` accepts optional `pet_carers: [{ pet_id, carer_kind, ..., pet_note }]`. Carer writes bump `planned_absences.updated_at`. `shared_user` assignments return `403` when `carer_user_id` is not a `shared`/`guardian` collaborator on that pet. Each `pet_carers` entry writes `carer_kind`/`carer_user_id`/`carer_name`/`carer_note` only when `carer_kind` is a present key on that entry, and `pet_note` only when `pet_note` is a present key — an entry with only `pet_note` never touches the carer, and an entry with only `carer_kind` never touches `pet_note`. Send `pet_note: null` to clear it explicitly.
 
 **Readiness (`GET /:id/readiness`)** — AW-8
 

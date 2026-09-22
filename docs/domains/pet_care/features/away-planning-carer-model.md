@@ -11,7 +11,7 @@ related_bdd: [away_planning.feature]
 
 # Away Planning — Carer model
 
-Per-pet carer assignment for planned absences. Canonical product behaviour: [care-context.md](./care-context.md). Frozen decisions: [away-planning-decisions.md](../changes/away-planning-decisions.md) (D-AWAY-003 through D-AWAY-005).
+Per-pet carer assignment for planned absences. Canonical product behaviour: [care-context.md](./care-context.md). Frozen decisions: [away-planning-decisions.md](../changes/away-planning-decisions.md) (D-AWAY-003 through D-AWAY-005, D-AWAY-014a/b). Per-pet note and per-pet handover export: [away-planning-per-pet-handover-spec.md](../changes/away-planning-per-pet-handover-spec.md) (shipped AW-11).
 
 ## Scope
 
@@ -31,7 +31,8 @@ planned_absence_pets
   carer_kind           TEXT   NULL   -- 'shared_user' | 'note_only' | NULL (unset)
   carer_user_id        UUID   NULL   FK users(id) ON DELETE SET NULL
   carer_name           TEXT   NULL   -- note_only only
-  carer_note           TEXT   NULL   -- note_only only
+  carer_note           TEXT   NULL   -- note_only only, about the person
+  pet_note             TEXT   NULL   -- migration 071; any carer_kind, about caring for the pet
 ```
 
 Constraints (migration `063`):
@@ -39,6 +40,8 @@ Constraints (migration `063`):
 - `carer_kind` ∈ {`shared_user`, `note_only`, NULL}.
 - `shared_user` requires `carer_user_id`; forbids `carer_name` / `carer_note`.
 - `note_only` requires `carer_name`; forbids `carer_user_id`.
+
+`pet_note` (migration `071`) is orthogonal to these constraints — no `carer_kind` dependency, always writable/clearable independent of carer assignment. Not to be confused with `carer_note` (identifies the `note_only` person) or `planned_absences.handover_note` (whole-absence, migration `064`).
 
 ## Carer kinds
 
@@ -51,11 +54,12 @@ Constraints (migration `063`):
 
 ## Write validation
 
-- `PATCH /api/planned-absences/:id` accepts `pet_carers: [{ pet_id, carer_kind, … }]`.
+- `PATCH /api/planned-absences/:id` accepts `pet_carers: [{ pet_id, carer_kind, …, pet_note }]`.
 - Each `pet_id` must already be on the absence.
 - `shared_user`: `carer_user_id` must reference a user with `pet_access` on **that pet** in `PET_ACCESS_ROLES` (`carer`, `co_parent`). `foster` excluded. Returns `403` when invalid.
 - Carer writes bump `planned_absences.updated_at`.
 - Dates + pets alone are a valid save — carers are optional (D-AWAY-010).
+- **`carer_kind` and `pet_note` are independent per entry** — each is written only when its key is present on that `pet_carers` item, so a note-only save never touches the carer and a carer change never wipes `pet_note`. Sending `pet_note: null` clears it explicitly without a carer change.
 
 ## Carer candidates
 
@@ -85,8 +89,10 @@ Returned on `GET /api/planned-absences/:id/readiness` with `care_coverage` and `
 |---------|-----------|
 | Dashboard tile | Stateful when an upcoming absence exists; degrades to prompt on load error |
 | Hub (`/pc/away`) | Lists upcoming/past absences; FAB to `/pc/away/new` |
-| Plan page (`/pc/away/:id`) | "Who's caring" section — per-pet carer label from `pet_carers` |
+| Plan page (`/pc/away/:id`) | "Who's caring" section — per-pet carer label from `pet_carers`; per-pet edit dialog also carries the `pet_note` field and a per-pet PDF download button, independent of carer kind |
 | Wizard (`/pc/away/new`) | Dates → pets → preview; save navigates to plan page |
+
+Per-pet handover export (in addition to the existing full-plan download) produces a single-pet PDF — trip dates and pet names for context, this pet's carer row and schedule only, pet-scoped (not absence-aggregate) coverage summaries, the absence-wide `handover_note` under a "Trip notes" title, and this pet's `pet_note`. Does not bump `last_handover_downloaded_at` (full-plan download only). Full details: [away-planning-per-pet-handover-spec.md](../changes/away-planning-per-pet-handover-spec.md).
 
 ## Related
 

@@ -6392,6 +6392,34 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not save the carer. Try again.';
 
   @override
+  String awayPlanningCarerEditPetNoteLabel(String petName) {
+    return 'Notes for $petName';
+  }
+
+  @override
+  String awayPlanningPetCarerCoverageAssigned(String petName) {
+    return '$petName has a carer assigned.';
+  }
+
+  @override
+  String awayPlanningPetCarerCoverageUnassigned(String petName) {
+    return 'No carer assigned for $petName.';
+  }
+
+  @override
+  String awayPlanningPetCarerCoverageRemoved(String petName) {
+    return 'Carer removed for $petName.';
+  }
+
+  @override
+  String get awayPlanningHandoverTripNotesTitle => 'Trip notes';
+
+  @override
+  String awayPlanningDownloadPetPlan(String petName) {
+    return 'Download plan for $petName';
+  }
+
+  @override
   String get awayPlanningRoutineAllDay => 'All day';
 
   @override

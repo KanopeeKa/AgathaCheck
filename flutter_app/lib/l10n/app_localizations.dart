@@ -11371,6 +11371,42 @@ abstract class AppLocalizations {
   /// **'Could not save the carer. Try again.'**
   String get awayPlanningCarerEditSaveFailed;
 
+  /// No description provided for @awayPlanningCarerEditPetNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes for {petName}'**
+  String awayPlanningCarerEditPetNoteLabel(String petName);
+
+  /// No description provided for @awayPlanningPetCarerCoverageAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'{petName} has a carer assigned.'**
+  String awayPlanningPetCarerCoverageAssigned(String petName);
+
+  /// No description provided for @awayPlanningPetCarerCoverageUnassigned.
+  ///
+  /// In en, this message translates to:
+  /// **'No carer assigned for {petName}.'**
+  String awayPlanningPetCarerCoverageUnassigned(String petName);
+
+  /// No description provided for @awayPlanningPetCarerCoverageRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Carer removed for {petName}.'**
+  String awayPlanningPetCarerCoverageRemoved(String petName);
+
+  /// No description provided for @awayPlanningHandoverTripNotesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip notes'**
+  String get awayPlanningHandoverTripNotesTitle;
+
+  /// No description provided for @awayPlanningDownloadPetPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Download plan for {petName}'**
+  String awayPlanningDownloadPetPlan(String petName);
+
   /// No description provided for @awayPlanningRoutineAllDay.
   ///
   /// In en, this message translates to:

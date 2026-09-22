@@ -217,6 +217,37 @@ void main() {
       'pet_id': 'pet-1',
       'carer_kind': 'shared_user',
       'carer_user_id': 'user-2',
+      'pet_note': null,
+    });
+  });
+
+  testWidgets('pet note field saves independent of carer mode', (tester) async {
+    final repo = _FakeCareContextRepository(
+      candidates: const [
+        CarerCandidate(userId: 'user-2', displayName: 'Sarah M.'),
+      ],
+    );
+    await tester.pumpWidget(buildScreen(repo));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('away_plan_carer_edit_pet-1')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('away_plan_carer_candidate_user-2')));
+    await tester.enterText(
+      find.byKey(const Key('away_plan_carer_pet_note')),
+      'Feeds twice daily',
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('away_plan_carer_edit_save')));
+    await tester.pumpAndSettle();
+
+    expect(repo.savedPetCarers.single, {
+      'pet_id': 'pet-1',
+      'carer_kind': 'shared_user',
+      'carer_user_id': 'user-2',
+      'pet_note': 'Feeds twice daily',
     });
   });
 
@@ -281,7 +312,11 @@ void main() {
     await tester.tap(find.byKey(const Key('away_plan_carer_edit_save')));
     await tester.pumpAndSettle();
 
-    expect(repo.savedPetCarers.single, {'pet_id': 'pet-1', 'carer_kind': null});
+    expect(repo.savedPetCarers.single, {
+      'pet_id': 'pet-1',
+      'carer_kind': null,
+      'pet_note': null,
+    });
   });
 
   testWidgets('403 on save re-fetches candidates and shows forbidden copy', (
@@ -322,5 +357,31 @@ void main() {
       find.byKey(const Key('away_plan_carer_edit_pet-1')),
     );
     expect(editButton.onPressed, isNull);
+  });
+
+  testWidgets('cancelled absence disables the per-pet download affordance', (
+    tester,
+  ) async {
+    final repo = _FakeCareContextRepository(candidates: const []);
+    await tester.pumpWidget(buildScreen(repo, detail: cancelledAbsence));
+    await tester.pumpAndSettle();
+
+    final downloadButton = tester.widget<IconButton>(
+      find.byKey(const Key('away_plan_download_pet_pet-1')),
+    );
+    expect(downloadButton.onPressed, isNull);
+  });
+
+  testWidgets('active absence enables the per-pet download affordance', (
+    tester,
+  ) async {
+    final repo = _FakeCareContextRepository(candidates: const []);
+    await tester.pumpWidget(buildScreen(repo));
+    await tester.pumpAndSettle();
+
+    final downloadButton = tester.widget<IconButton>(
+      find.byKey(const Key('away_plan_download_pet_pet-1')),
+    );
+    expect(downloadButton.onPressed, isNotNull);
   });
 }

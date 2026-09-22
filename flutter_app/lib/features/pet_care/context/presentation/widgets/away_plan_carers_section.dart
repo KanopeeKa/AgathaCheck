@@ -5,6 +5,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../domain/entities/planned_absence.dart';
 import '../../domain/entities/planned_absence_pet_carer.dart';
 import '../away_plan_copy.dart';
+import '../controllers/away_plan_handover_controller.dart';
 import 'away_plan_carer_edit_dialog.dart';
 
 class AwayPlanCarersSection extends ConsumerWidget {
@@ -52,6 +53,7 @@ class AwayPlanCarersSection extends ConsumerWidget {
                     ),
                     canEdit: canEdit,
                     onEdit: () => _openEditDialog(context, petId),
+                    onDownload: () => _downloadPetHandover(context, ref, petId),
                   ),
                   if (petId != orderedPetIds.last) const Divider(height: 24),
                 ],
@@ -78,6 +80,19 @@ class AwayPlanCarersSection extends ConsumerWidget {
       ),
     );
   }
+
+  Future<void> _downloadPetHandover(
+    BuildContext context,
+    WidgetRef ref,
+    String petId,
+  ) {
+    return AwayPlanHandoverController(ref).downloadPetHandover(
+      context: context,
+      absence: absence,
+      petId: petId,
+      petNamesById: petNamesById,
+    );
+  }
 }
 
 class _CarerRow extends StatelessWidget {
@@ -87,6 +102,7 @@ class _CarerRow extends StatelessWidget {
     required this.carerLabel,
     required this.canEdit,
     required this.onEdit,
+    required this.onDownload,
   });
 
   final String petId;
@@ -94,6 +110,7 @@ class _CarerRow extends StatelessWidget {
   final String carerLabel;
   final bool canEdit;
   final VoidCallback onEdit;
+  final VoidCallback onDownload;
 
   @override
   Widget build(BuildContext context) {
@@ -119,6 +136,16 @@ class _CarerRow extends StatelessWidget {
             tooltip: l.awayPlanningCarerEditButtonLabel(petName),
             icon: const Icon(Icons.edit_outlined),
             onPressed: canEdit ? onEdit : null,
+          ),
+        ),
+        SizedBox(
+          width: 48,
+          height: 48,
+          child: IconButton(
+            key: Key('away_plan_download_pet_$petId'),
+            tooltip: l.awayPlanningDownloadPetPlan(petName),
+            icon: const Icon(Icons.picture_as_pdf_outlined),
+            onPressed: canEdit ? onDownload : null,
           ),
         ),
       ],
