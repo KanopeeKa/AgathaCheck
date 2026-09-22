@@ -72,4 +72,8 @@ class CareContextRepositoryImpl implements CareContextRepository {
     required String absenceId,
     required List<Map<String, dynamic>> petCarers,
   }) => _remote.updatePetCarers(absenceId: absenceId, petCarers: petCarers);
+
+  @override
+  Future<PlannedAbsence> cancelPlannedAbsence(String absenceId) =>
+      _remote.cancelPlannedAbsence(absenceId);
 }

@@ -1,70 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../domain/entities/planned_absence.dart';
-import '../providers/care_context_providers.dart';
 
-class AwayPlanHandoverNoteSection extends ConsumerStatefulWidget {
+/// Read-only display of the handover note on the Away Plan detail screen.
+///
+/// Per D-AWD-007, note editing moved to the edit screen
+/// (`AwayPlanHandoverNoteEditor`, `/pc/away/:id/edit`). This widget only
+/// shows the note when one is present — rendering nothing (not an empty
+/// "Notes" header) when there isn't one, so a returning pet parent or carer
+/// sees the note without entering edit mode, and no dangling header when
+/// there's nothing to show.
+class AwayPlanHandoverNoteSection extends StatelessWidget {
   const AwayPlanHandoverNoteSection({super.key, required this.absence});
 
   final PlannedAbsence absence;
 
   @override
-  ConsumerState<AwayPlanHandoverNoteSection> createState() =>
-      _AwayPlanHandoverNoteSectionState();
-}
-
-class _AwayPlanHandoverNoteSectionState
-    extends ConsumerState<AwayPlanHandoverNoteSection> {
-  late final TextEditingController _controller;
-  bool _saving = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(
-      text: widget.absence.handoverNote ?? '',
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<void> _save() async {
-    final l = AppLocalizations.of(context)!;
-    setState(() => _saving = true);
-    try {
-      await ref
-          .read(careContextRepositoryProvider)
-          .updateHandoverNote(
-            absenceId: widget.absence.id,
-            handoverNote: _controller.text.trim().isEmpty
-                ? null
-                : _controller.text,
-          );
-      ref.invalidate(plannedAbsenceDetailProvider(widget.absence.id));
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.careContextAwaySaveSuccess)));
-      }
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.careContextAwaySaveFailed)));
-      }
-    } finally {
-      if (mounted) setState(() => _saving = false);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final note = absence.handoverNote?.trim();
+    if (note == null || note.isEmpty) return const SizedBox.shrink();
+
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -76,35 +32,7 @@ class _AwayPlanHandoverNoteSectionState
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextField(
-                  key: const Key('away_plan_handover_note'),
-                  controller: _controller,
-                  minLines: 3,
-                  maxLines: 6,
-                  decoration: InputDecoration(
-                    labelText: l.pdfNotesLabel,
-                    alignLabelWithHint: true,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: FilledButton(
-                    onPressed: _saving ? null : _save,
-                    child: _saving
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(l.careContextAwaySaveAction),
-                  ),
-                ),
-              ],
-            ),
+            child: Text(note, key: const Key('away_plan_handover_note_text')),
           ),
         ),
       ],

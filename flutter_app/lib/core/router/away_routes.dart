@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import '../../features/pet_care/context/presentation/screens/planned_absence_edit_screen.dart';
 import '../../features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart';
 import '../../features/pet_care/context/presentation/screens/planned_absence_hub_screen.dart';
 import '../../features/pet_care/context/presentation/screens/planned_absence_plan_screen.dart';
@@ -23,6 +24,16 @@ List<RouteBase> buildAwayPlanningRoutes() {
             final absenceId = state.pathParameters['id']!;
             return PlannedAbsencePlanScreen(absenceId: absenceId);
           },
+          routes: [
+            GoRoute(
+              path: 'edit',
+              name: 'petCarePlannedAbsenceEdit',
+              builder: (context, state) {
+                final absenceId = state.pathParameters['id']!;
+                return PlannedAbsenceEditScreen(absenceId: absenceId);
+              },
+            ),
+          ],
         ),
       ],
     ),
