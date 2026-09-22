@@ -1436,6 +1436,24 @@ abstract class AppLocalizations {
   /// **'Other care'**
   String get careFamilyOther;
 
+  /// No description provided for @careFilterGroupPrevention.
+  ///
+  /// In en, this message translates to:
+  /// **'Prevention'**
+  String get careFilterGroupPrevention;
+
+  /// No description provided for @careFilterGroupClinical.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical'**
+  String get careFilterGroupClinical;
+
+  /// No description provided for @careFilterGroupLifestyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifestyle'**
+  String get careFilterGroupLifestyle;
+
   /// No description provided for @careSettingFieldLabel.
   ///
   /// In en, this message translates to:
@@ -4525,11 +4543,17 @@ abstract class AppLocalizations {
   /// **'Skipped hidden'**
   String get collectionFilterSkippedHidden;
 
-  /// No description provided for @eventFilterTypeLabel.
+  /// No description provided for @eventFilterFamilyLabel.
   ///
   /// In en, this message translates to:
-  /// **'Type'**
-  String get eventFilterTypeLabel;
+  /// **'Category'**
+  String get eventFilterFamilyLabel;
+
+  /// No description provided for @eventFilterGroupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get eventFilterGroupLabel;
 
   /// No description provided for @eventFilterStatusLabel.
   ///
