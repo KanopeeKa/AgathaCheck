@@ -9,11 +9,11 @@ tags: [pet_care, care_context, away_planning, handover, spec]
 
 # Away Planning — Per-pet note & per-pet handover export
 
-**Status:** Active — product-reviewed, ready for engineering.
+**Status:** Active — ready for engineering; D-AWAY-014 freezes on implementation PR merge.
 **Extends:** [away-planning-carer-model.md](../features/away-planning-carer-model.md), the existing carer model (migration `063`).
 **Delivery context:** Post-AW-9 follow-on; add a row to [away-planning-delivery-plan.md](./away-planning-delivery-plan.md) when implementation starts.
 **Frozen context this must not violate:** [away-planning-decisions.md](./away-planning-decisions.md) — especially D-AWAY-004 (`note_only` never implies access), D-AWAY-008 (handover note is verbatim), D-AWAY-009 (download tracking, Part 2 deferred), D-AWAY-010 (saving never requires a complete plan).
-**New frozen decisions (ship with implementation):** D-AWAY-014 — see [§11](#11-frozen-decisions-d-away-014).
+**New proposed decisions (freeze on merge):** D-AWAY-014 — see [§11](#11-proposed-decisions-d-away-014).
 
 ---
 
@@ -131,7 +131,7 @@ Section-by-section, for the single-pet export:
 | | • Has carer → "{PetName} has a carer assigned" |
 | | • Unset → "No carer assigned for {PetName}" |
 | | • `carer_removed` → "Carer removed for {PetName}" (mirror `awayPlanningCarerRemoved` tone) |
-| Care coverage summary | This pet's own `coverage_state`, from `getCarePeriodCoverage(petId, …)` (already fetched per pet in the existing download loop) — reuses `AwayPlanCopy.careCoverageSummary`'s existing state-based keys. When `coverage_state` is `has_items_to_review`, set `copyCount` from **this pet's** pending projection items (`coverage.items` where `status === 'pending'`), not from `AwayPlanReadiness` aggregates. |
+| Care coverage summary | This pet's own `coverage_state`, from `getCarePeriodCoverage(petId, …)` (already fetched per pet in the existing download loop) — reuses `AwayPlanCopy.careCoverageSummary`'s existing state-based keys. When `coverage_state` is `has_items_to_review`, set `copyCount` from **this pet's** pending projection items (`coverage.items.where((item) => item.isPending).length` in Dart), not from `AwayPlanReadiness` aggregates. |
 | "Who's caring" | **This pet's row only** — no other pet's carer is named. Resolved: privacy over completeness here, even though other sections stay trip-wide. |
 | Care during (schedule) | This pet's routine / dated / indeterminate lines only |
 | `pet_note` | New section under a **pet-specific** title (new l10n key, aligned with dialog label — e.g. "Notes for {PetName}"), verbatim, same treatment as the absence note |
@@ -143,6 +143,8 @@ Section-by-section, for the single-pet export:
 ### 5.2 Full-plan document (additive)
 
 Under each pet's block in "Care during", render that pet's non-empty `pet_note` in the same verbatim style. No other structural changes to the full PDF.
+
+**Access note (pre-existing, not introduced by this spec):** full-plan download visibility follows existing absence access (`userCanManagePet` on declaration/edit). A collaborator on one pet may already see other pets' names, schedules, and carers in the full PDF; adding `pet_note` extends that surface. Per-pet export is the privacy-trimmed alternative. Tightening full-PDF access by pet is out of scope.
 
 ### 5.3 Implementation note
 
@@ -205,7 +207,7 @@ Future growth (vet details, etc.) should land as additive fields on the per-pet 
 
 **Docs**
 - [ ] Update [away-planning-carer-model.md](../features/away-planning-carer-model.md) and [api-reference.md](/docs/architecture/api-reference.md).
-- [ ] Add D-AWAY-014 entries to [away-planning-decisions.md](./away-planning-decisions.md) (§11 below).
+- [ ] On PR merge: copy §11 into [away-planning-decisions.md](./away-planning-decisions.md) with **Status: Frozen** and bump `last_updated`.
 - [ ] Add implementation row to [away-planning-delivery-plan.md](./away-planning-delivery-plan.md).
 
 ---
@@ -220,19 +222,19 @@ One atomic PR — migration, API, entity/model, dialog field, row UI, PDF builde
 
 ---
 
-## 11. Frozen decisions (D-AWAY-014)
+## 11. Proposed decisions (D-AWAY-014)
 
-Ship these entries in `away-planning-decisions.md` with the implementation PR:
+**Status:** Proposed — freezes when the implementation PR merges.
+
+Until merge, treat §11 as **normative for implementation** but **not** as entries in the frozen decision log. If implementation discovers a conflict with D-AWAY-001–013, escalate before changing 014a/b silently.
+
+Copy these entries into `away-planning-decisions.md` with **Status: Frozen** as part of landing the implementation PR:
 
 ### D-AWAY-014a — Per-pet handover PDF content & privacy (2026-09-22)
-
-**Status:** Frozen (with this feature)
 
 Per-pet handover PDF includes trip context (dates, all pet **names**), absence `handover_note` (trip-wide section), this pet's carer row only in "Who's caring", this pet's schedule and `pet_note`, and per-pet (not absence-wide) coverage summaries. Other pets' carer identities are not disclosed.
 
 ### D-AWAY-014b — Download timestamp is full-plan only (2026-09-22)
-
-**Status:** Frozen (with this feature)
 
 `last_handover_downloaded_at` is updated only by the full-plan handover download (`AwayPlanHandoverController.downloadHandover`). Per-pet export does not bump it. D-AWAY-009 Part 2 change detection, when it ships, applies to full-plan download semantics only.
 
