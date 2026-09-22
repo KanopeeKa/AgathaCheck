@@ -17,6 +17,7 @@ import '../providers/health_providers.dart';
 import '../widgets/health_entry_form/health_entry_document_handler.dart';
 import '../widgets/health_entry_form/health_entry_form_actions_bar.dart';
 import '../widgets/health_entry_form/health_entry_form_screen_body.dart';
+import '../widgets/health_issue_prompt/health_issue_linkage_flow.dart';
 
 /// All pet event types on the unified edit form (W18).
 const kAllPetEventTypes = HealthEntryType.values;
@@ -246,7 +247,14 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(l.errorWithMessage('$error'))));
-      case HealthEntrySubmitSuccess(:final isEdit, :final petIds):
+      case HealthEntrySubmitSuccess(
+        :final isEdit,
+        :final petIds,
+        :final entryIds,
+        :final careSetting,
+        :final carePlanning,
+        :final linkedHealthIssueId,
+      ):
         for (final petId in petIds) {
           ref.invalidate(petHealthEntriesProvider(petId));
         }
@@ -262,6 +270,18 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
             ),
           ),
         );
+        if (petIds.length == 1 && entryIds.length == 1) {
+          await HealthIssueLinkageFlow.maybePromptAfterUnplannedVetSave(
+            context,
+            ref,
+            petId: petIds.first,
+            entryId: entryIds.first,
+            careSetting: careSetting,
+            carePlanning: carePlanning,
+            healthIssueId: linkedHealthIssueId,
+          );
+          if (!mounted) return;
+        }
         if (isEdit &&
             widget.entryId != null &&
             widget.petId != null &&
