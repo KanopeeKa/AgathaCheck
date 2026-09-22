@@ -158,17 +158,14 @@ class AwayPlanHandoverController {
         document: document,
         l: l,
       );
-      await repository.recordHandoverDownload(absence.id);
-
-      if (context.mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
 
       final filename = 'away_plan_${absence.startsOn}_${absence.endsOn}.pdf'
           .replaceAll(':', '-');
       await pdf_saver.savePdf(pdfBytes, filename);
+      await repository.recordHandoverDownload(absence.id);
 
       if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(l.reportGenerated)));
@@ -217,10 +214,6 @@ class AwayPlanHandoverController {
         l: l,
       );
 
-      if (context.mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
-
       final petSlug = _slugifyPetName(petNamesById[petId] ?? petId);
       final filename =
           'away_plan_${petSlug}_${absence.startsOn}_${absence.endsOn}.pdf'
@@ -228,6 +221,7 @@ class AwayPlanHandoverController {
       await pdf_saver.savePdf(pdfBytes, filename);
 
       if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(l.reportGenerated)));

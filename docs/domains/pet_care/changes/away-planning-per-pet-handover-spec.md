@@ -9,11 +9,11 @@ tags: [pet_care, care_context, away_planning, handover, spec]
 
 # Away Planning — Per-pet note & per-pet handover export
 
-**Status:** Active — ready for engineering; D-AWAY-014 freezes on implementation PR merge.
+**Status:** Shipped (AW-11, [#1266](https://github.com/KanopeeKa/AgathaCheck/pull/1266)).
 **Extends:** [away-planning-carer-model.md](../features/away-planning-carer-model.md), the existing carer model (migration `063`).
-**Delivery context:** Post-AW-9 follow-on; add a row to [away-planning-delivery-plan.md](./away-planning-delivery-plan.md) when implementation starts.
+**Delivery context:** AW-11 row in [away-planning-delivery-plan.md](./away-planning-delivery-plan.md).
 **Frozen context this must not violate:** [away-planning-decisions.md](./away-planning-decisions.md) — especially D-AWAY-004 (`note_only` never implies access), D-AWAY-008 (handover note is verbatim), D-AWAY-009 (download tracking, Part 2 deferred), D-AWAY-010 (saving never requires a complete plan).
-**New proposed decisions (freeze on merge):** D-AWAY-014 — see [§11](#11-proposed-decisions-d-away-014).
+**Frozen decisions (shipped):** D-AWAY-014a/b — see [§11](#11-frozen-decisions-d-away-014).
 
 ---
 
@@ -207,7 +207,7 @@ Future growth (vet details, etc.) should land as additive fields on the per-pet 
 
 **Docs**
 - [ ] Update [away-planning-carer-model.md](../features/away-planning-carer-model.md) and [api-reference.md](/docs/architecture/api-reference.md).
-- [ ] On PR merge: copy §11 into [away-planning-decisions.md](./away-planning-decisions.md) with **Status: Frozen** and bump `last_updated`.
+- [x] D-AWAY-014a/b copied into [away-planning-decisions.md](./away-planning-decisions.md) with **Status: Frozen** ([#1266](https://github.com/KanopeeKa/AgathaCheck/pull/1266)).
 - [ ] Add implementation row to [away-planning-delivery-plan.md](./away-planning-delivery-plan.md).
 
 ---
@@ -222,13 +222,9 @@ One atomic PR — migration, API, entity/model, dialog field, row UI, PDF builde
 
 ---
 
-## 11. Proposed decisions (D-AWAY-014)
+## 11. Frozen decisions (D-AWAY-014)
 
-**Status:** Proposed — freezes when the implementation PR merges.
-
-Until merge, treat §11 as **normative for implementation** but **not** as entries in the frozen decision log. If implementation discovers a conflict with D-AWAY-001–013, escalate before changing 014a/b silently.
-
-Copy these entries into `away-planning-decisions.md` with **Status: Frozen** as part of landing the implementation PR:
+**Status:** Frozen — copied into [away-planning-decisions.md](./away-planning-decisions.md) on merge ([#1266](https://github.com/KanopeeKa/AgathaCheck/pull/1266)).
 
 ### D-AWAY-014a — Per-pet handover PDF content & privacy (2026-09-22)
 
