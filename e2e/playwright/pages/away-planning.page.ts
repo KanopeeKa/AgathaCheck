@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
+  escapeRegExp,
   flutterGotoUrl,
   refreshFlutterAccessibility,
   semanticsByName,
@@ -169,9 +170,17 @@ export class AwayPlanningPage {
   async expectPetCarerRow(petName: string, carerLabel: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      // Carer rows split pet header semantics from the carer label text (AWD-4).
-      await expect(this.page.getByText(petName, { exact: false }).first()).toBeVisible();
-      await expect(this.page.getByText(carerLabel, { exact: false }).first()).toBeVisible();
+      // Carer rows split pet header semantics from the carer label (AWD-4).
+      // The carer label ("No carer assigned", etc.) is a semantics *group name*,
+      // not DOM text content — getByText never matches it; use role+name
+      // matching via semanticsByName instead (see error-context.md from CI:
+      // `group "No carer assigned"` with no matching text node).
+      await expect(
+        this.page.getByText(petName, { exact: false }).first(),
+      ).toBeVisible();
+      await expect(
+        semanticsByName(this.page, new RegExp(escapeRegExp(carerLabel), 'i')).first(),
+      ).toBeVisible();
     }).toPass({ timeout: 30_000 });
   }
 
