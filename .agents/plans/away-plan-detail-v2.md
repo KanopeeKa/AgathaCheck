@@ -158,17 +158,17 @@ Redesign the Away Plan detail screen from Away Planning V1: one unified, tappabl
 ## Runtime state
 
 ```yaml
-autonomy: draft
-current_phase: null
-last_completed_phase: null
+autonomy: active
+current_phase: awd-3
+last_completed_phase: awd-4
 halt_reason: null
-next_action: "awaiting decision review (AWD-DOC-0) before approval"
+next_action: "continue phase awd-3 on branch cursor/away-plan-detail-v2-awd3-d4c1"
 artifact_ref:
-  branch: null
+  branch: cursor/away-plan-detail-v2-awd3-d4c1
   plan_path: .agents/plans/away-plan-detail-v2.md
-  plan_commit: null
+  plan_commit: 3d7e5758aeb0843aa1cffaa549f5e13bc0a5baea
   snapshot_path: .agents/plans/away-plan-detail-v2.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 3d7e5758aeb0843aa1cffaa549f5e13bc0a5baea
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

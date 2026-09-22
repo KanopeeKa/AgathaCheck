@@ -12,17 +12,13 @@ class AwayPlanHandoverPetSection {
   const AwayPlanHandoverPetSection({
     required this.petName,
     required this.carerLabel,
-    required this.routineLines,
-    required this.datedLines,
-    required this.indeterminateLines,
+    required this.plannedCareLines,
     this.petNote,
   });
 
   final String petName;
   final String carerLabel;
-  final List<String> routineLines;
-  final List<String> datedLines;
-  final List<String> indeterminateLines;
+  final List<String> plannedCareLines;
 
   /// About caring for this pet — independent of carer kind (D-AWAY-014a).
   final String? petNote;
@@ -131,15 +127,9 @@ class AwayPlanHandoverService {
         ),
       );
       widgets.addAll(
-        _petCareLines(l.awayPlanningScheduleRoutineTitle, section.routineLines),
-      );
-      widgets.addAll(
-        _petCareLines(l.awayPlanningScheduleDatedTitle, section.datedLines),
-      );
-      widgets.addAll(
         _petCareLines(
-          l.awayPlanningScheduleIndeterminateTitle,
-          section.indeterminateLines,
+          l.awayPlanningScheduleDatedTitle,
+          section.plannedCareLines,
         ),
       );
       widgets.addAll(

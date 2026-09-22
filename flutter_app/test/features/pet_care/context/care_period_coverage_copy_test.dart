@@ -16,7 +16,6 @@ CarePeriodCoverageResult _result({
     projectionStatus: partiallyIndeterminate
         ? CarePeriodProjectionStatus.partiallyIndeterminate
         : CarePeriodProjectionStatus.complete,
-    uncertainties: const [],
     items: items,
     coverage: CarePeriodCoverageSummary(
       policyVersion: '1',

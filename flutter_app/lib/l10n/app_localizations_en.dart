@@ -6461,10 +6461,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get awayPlanningScheduleRoutineTitle => 'Routine care';
 
   @override
-  String get awayPlanningScheduleDatedTitle => 'Dated care';
+  String get awayPlanningScheduleDatedTitle => 'Planned care';
 
   @override
   String get awayPlanningScheduleIndeterminateTitle => 'Indeterminate care';
+
+  @override
+  String awayPlanningEventRepeatsFromUntil(
+    int interval,
+    String period,
+    String start,
+    String end,
+  ) {
+    return 'Repeats every $interval $period from $start until $end';
+  }
+
+  @override
+  String awayPlanningEventRepeatsFromCompletion(int interval, String period) {
+    return 'Repeats every $interval $period, from completion';
+  }
+
+  @override
+  String awayPlanningEventSingleCareOn(String date) {
+    return 'Single care on $date';
+  }
+
+  @override
+  String awayPlanningEventNextDueDate(String date) {
+    return 'Next due date: $date';
+  }
+
+  @override
+  String awayPlanningEventTimeOfDay(String time) {
+    return 'Time of day: $time';
+  }
+
+  @override
+  String get awayPlanningChainAnchorExplainer =>
+      'Dates for some care events depend on when the previous one is completed, and may shift.';
 
   @override
   String get awayPlanningIndeterminatePending => 'Waiting on a prior dose';

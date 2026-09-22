@@ -57,7 +57,6 @@ void main() {
     startsOn: '2026-10-01',
     endsOn: '2026-10-05',
     projectionStatus: CarePeriodProjectionStatus.complete,
-    uncertainties: const [],
     items: const [
       CarePeriodProjectionItem(
         healthEntryId: 'e1',
@@ -75,21 +74,19 @@ void main() {
       reasonCodes: const [],
       reassuranceAvailable: true,
     ),
-    routineItems: const [
-      CarePeriodRoutineItem(
+    plannedCareItems: const [
+      PlannedCareItem(
+        kind: PlannedCareKind.recurringCalendar,
         healthEntryId: 'e1',
         name: 'Daily pill',
         type: 'medication',
         careFamily: 'medication',
-        scheduledTime: '08:00',
-        certainty: 'complete',
-        occurrenceCount: 4,
-        status: 'pending',
+        frequency: 'daily',
+        timesOfDay: ['08:00'],
         firstScheduledDate: '2026-10-01',
         lastScheduledDate: '2026-10-04',
       ),
     ],
-    datedItems: const [],
   );
 
   const pet = Pet(id: 'pet-1', name: 'Luna', species: 'dog', breed: 'Mixed');
@@ -167,7 +164,7 @@ void main() {
     expect(find.text("Who's caring"), findsOneWidget);
     expect(find.text('Care during your absence'), findsOneWidget);
     expect(find.text('Luna'), findsWidgets);
-    expect(find.text('Routine care'), findsOneWidget);
+    expect(find.text('Planned care'), findsOneWidget);
     expect(find.textContaining('Tom'), findsOneWidget);
 
     await tester.scrollUntilVisible(
@@ -224,6 +221,12 @@ void main() {
     );
     await tester.pumpWidget(buildScreen(overrideAbsence: withNote));
     await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('away_plan_handover_note_text')),
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
 
     expect(
       find.byKey(const Key('away_plan_handover_note_text')),

@@ -11260,7 +11260,7 @@ abstract class AppLocalizations {
   /// No description provided for @careContextAwayEditDeleteBody.
   ///
   /// In en, this message translates to:
-  /// **'This cancels the whole absence plan for every pet, not just one pet or carer. This can't be undone from the app.'**
+  /// **'This cancels the whole absence plan for every pet, not just one pet or carer. This can\'t be undone from the app.'**
   String get careContextAwayEditDeleteBody;
 
   /// No description provided for @careContextAwayEditDeleteAction.
@@ -11468,7 +11468,7 @@ abstract class AppLocalizations {
   /// No description provided for @awayPlanningScheduleDatedTitle.
   ///
   /// In en, this message translates to:
-  /// **'Dated care'**
+  /// **'Planned care'**
   String get awayPlanningScheduleDatedTitle;
 
   /// No description provided for @awayPlanningScheduleIndeterminateTitle.
@@ -11476,6 +11476,47 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Indeterminate care'**
   String get awayPlanningScheduleIndeterminateTitle;
+
+  /// No description provided for @awayPlanningEventRepeatsFromUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeats every {interval} {period} from {start} until {end}'**
+  String awayPlanningEventRepeatsFromUntil(
+    int interval,
+    String period,
+    String start,
+    String end,
+  );
+
+  /// No description provided for @awayPlanningEventRepeatsFromCompletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeats every {interval} {period}, from completion'**
+  String awayPlanningEventRepeatsFromCompletion(int interval, String period);
+
+  /// No description provided for @awayPlanningEventSingleCareOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Single care on {date}'**
+  String awayPlanningEventSingleCareOn(String date);
+
+  /// No description provided for @awayPlanningEventNextDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Next due date: {date}'**
+  String awayPlanningEventNextDueDate(String date);
+
+  /// No description provided for @awayPlanningEventTimeOfDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Time of day: {time}'**
+  String awayPlanningEventTimeOfDay(String time);
+
+  /// No description provided for @awayPlanningChainAnchorExplainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates for some care events depend on when the previous one is completed, and may shift.'**
+  String get awayPlanningChainAnchorExplainer;
 
   /// No description provided for @awayPlanningIndeterminatePending.
   ///
