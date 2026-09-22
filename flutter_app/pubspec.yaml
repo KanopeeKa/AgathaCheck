@@ -25,7 +25,7 @@ dependencies:
   purchases_flutter: ^10.13.1
   purchases_ui_flutter: ^10.13.1
   flutter_secure_storage: ^11.2.0
-  file_picker: ^12.2.0
+  file_picker: ^13.1.0
   flutter_markdown: ^0.7.7+1
   url_launcher: ^6.3.2
   posthog_flutter: ^5.39.0
