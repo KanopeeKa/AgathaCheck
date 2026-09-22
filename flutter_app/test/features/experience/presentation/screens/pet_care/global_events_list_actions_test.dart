@@ -415,7 +415,7 @@ void main() {
     );
 
     testWidgets(
-      'completed item is hidden when event-type filter excludes its type (mobile)',
+      'completed item is hidden when family filter excludes its category (mobile)',
       (tester) async {
         await tester.binding.setSurfaceSize(const Size(390, 844));
         addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -454,11 +454,11 @@ void main() {
 
         await tapCollectionFilterChoice(
           tester,
-          dimensionId: 'type',
-          choiceId: 'preventive',
+          dimensionId: 'family',
+          choiceId: 'parasitePrevention',
         );
 
-        // Completed medication row must not appear under the preventive filter.
+        // Completed medication row must not appear under parasite prevention.
         expect(
           find.byKey(const Key('global_events_row_filter-med')),
           findsNothing,
