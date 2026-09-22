@@ -5,7 +5,7 @@
   "approved_at": "2026-09-21T14:25:00Z",
   "approved_by": "User chat 2026-09-21 — /execute-plan in full autonomy (standing grant for phases A–H)",
   "approved_until": "2026-09-23T14:25:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-classification-taxonomy-integration-8524",
   "control_issue": 1240,
@@ -76,10 +76,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1252",
+      "merge_commit": "4c9dece9e0410d0abf208ee995699d5c0c6c8fae"
     },
     {
       "id": "c",
@@ -109,10 +111,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1254",
+      "merge_commit": "922bafaa1cd410dc5f4131eafbbc33a0bf586968"
     },
     {
       "id": "d",
@@ -140,13 +144,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Planning toggle; record flow; ?planning=unplanned route",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1255",
+      "merge_commit": "dab6c760a2ba863e395d3144f9800f3fa4360558"
     },
     {
       "id": "e",
@@ -173,13 +176,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Vet-setting unplanned + planned completion prompts",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1256",
+      "merge_commit": "3007e7f90f71caa46cf21591ed565e034b6225ce"
     },
     {
       "id": "f",
@@ -209,13 +211,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Replace type filter chips with family/filter_group",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1258",
+      "merge_commit": "93f78cdbc2577f61396d75a71150f643c62f08ad"
     },
     {
       "id": "g",
@@ -245,13 +246,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Single add route; deprecate health/other split",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1260",
+      "merge_commit": "5060356c51aaf94327a6cd341e98c2215bee77cc"
     },
     {
       "id": "h",
@@ -283,12 +283,11 @@
       "exit_checklist": "single-backend-route",
       "status": "merged",
       "status_reason": null,
-      "status_detail": "Drop suggested_health_entry_type from CIM; accept derives classification from care_family + taxonomy",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1259",
+      "merge_commit": "723c145b6ab7dadc8546dd7aec0269203a395c2b"
     }
   ],
-  "content_hash": "sha256:4cda355f01ed3373d33f936453d44d2c1ae7b062480aed9811f760081b4b7bc2"
+  "content_hash": "sha256:d64f527af1755ef8d85b9a80ef95d9d8e1d3a95d9b196db680f2434337996de7"
 }

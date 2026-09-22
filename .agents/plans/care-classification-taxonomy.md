@@ -2,7 +2,7 @@
 title: Care classification taxonomy — execute plan
 owner: Agent
 audience: agent
-status: active
+status: completed
 last_updated: 2026-09-21
 tags: [pet_care, care_item, taxonomy, execute-plan]
 ---
@@ -24,7 +24,7 @@ Unify care entry classification on four axes (`care_family`, `care_setting`, `ca
 | **approved_until** | 2026-09-23T14:25:00Z |
 | **approved_by** | User chat 2026-09-21 — `/execute-plan in full autonomy` (standing grant for full taxonomy roadmap A–H) |
 | **control_issue** | TBD at bootstrap |
-| **autonomy** | active |
+| **autonomy** | completed |
 
 ## Phases
 
@@ -169,25 +169,18 @@ After phase H merged to integration → open PR `cursor/care-classification-taxo
 ## Runtime state
 
 ```yaml
-autonomy: active
-<<<<<<< HEAD
-current_phase: h
-last_completed_phase: g
-halt_reason: null
-next_action: "start phase h: checkout cursor/care-cim-taxonomy-8524"
-=======
+autonomy: completed
 current_phase: null
 last_completed_phase: h
 halt_reason: null
-next_action: "merge phase h to integration; open integration PR to main"
->>>>>>> 993ef777 (phase(h/8): feat: CIM taxonomy cleanup)
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/care-classification-taxonomy-integration-8524
+  branch: cursor/care-classification-taxonomy-plan-complete-8524
   plan_path: .agents/plans/care-classification-taxonomy.md
-  plan_commit: 922bafaa1cd410dc5f4131eafbbc33a0bf586968
+  plan_commit: 1967cd9c5686d4a818ef1265c9f814fd1b3885e4
   snapshot_path: .agents/plans/care-classification-taxonomy.snapshot.json
-  snapshot_commit: 922bafaa1cd410dc5f4131eafbbc33a0bf586968
+  snapshot_commit: 1967cd9c5686d4a818ef1265c9f814fd1b3885e4
 open_prs: []
-merge_commits: {"a":"5a770bbd82befe657c80cb142eb4eb1c2cdf0be9"}
+merge_commits: {"a":"5a770bbd82befe657c80cb142eb4eb1c2cdf0be9","b":"4c9dece9e0410d0abf208ee995699d5c0c6c8fae","c":"922bafaa1cd410dc5f4131eafbbc33a0bf586968","d":"dab6c760a2ba863e395d3144f9800f3fa4360558","e":"3007e7f90f71caa46cf21591ed565e034b6225ce","f":"93f78cdbc2577f61396d75a71150f643c62f08ad","g":"5060356c51aaf94327a6cd341e98c2215bee77cc","h":"723c145b6ab7dadc8546dd7aec0269203a395c2b"}
 debt_issue_refs: []
 ```
