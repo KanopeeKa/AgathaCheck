@@ -32,7 +32,7 @@
     "@babel/core": "^8.0.5",
     "@babel/preset-env": "^8.0.6",
     "@eslint/js": "^9.39.5",
-    "babel-jest": "^30.5.0",
+    "babel-jest": "^30.5.2",
     "babel-plugin-transform-import-meta": "^3.0.0",
     "eslint": "^9.39.5",
     "jest": "^30.5.2",
