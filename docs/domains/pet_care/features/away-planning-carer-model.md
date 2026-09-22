@@ -11,7 +11,7 @@ related_bdd: [away_planning.feature]
 
 # Away Planning — Carer model
 
-Per-pet carer assignment for planned absences. Canonical product behaviour: [care-context.md](./care-context.md). Frozen decisions: [away-planning-decisions.md](../changes/away-planning-decisions.md) (D-AWAY-003 through D-AWAY-005). Per-pet note and per-pet handover export: [away-planning-per-pet-handover-spec.md](../changes/away-planning-per-pet-handover-spec.md) (D-AWAY-014, proposed pending merge).
+Per-pet carer assignment for planned absences. Canonical product behaviour: [care-context.md](./care-context.md). Frozen decisions: [away-planning-decisions.md](../changes/away-planning-decisions.md) (D-AWAY-003 through D-AWAY-005, D-AWAY-014a/b). Per-pet note and per-pet handover export: [away-planning-per-pet-handover-spec.md](../changes/away-planning-per-pet-handover-spec.md) (shipped AW-11).
 
 ## Scope
 
@@ -32,7 +32,7 @@ planned_absence_pets
   carer_user_id        UUID   NULL   FK users(id) ON DELETE SET NULL
   carer_name           TEXT   NULL   -- note_only only
   carer_note           TEXT   NULL   -- note_only only, about the person
-  pet_note             TEXT   NULL   -- migration 069; any carer_kind, about caring for the pet
+  pet_note             TEXT   NULL   -- migration 071; any carer_kind, about caring for the pet
 ```
 
 Constraints (migration `063`):
@@ -41,7 +41,7 @@ Constraints (migration `063`):
 - `shared_user` requires `carer_user_id`; forbids `carer_name` / `carer_note`.
 - `note_only` requires `carer_name`; forbids `carer_user_id`.
 
-`pet_note` (migration `069`) is orthogonal to these constraints — no `carer_kind` dependency, always writable/clearable independent of carer assignment. Not to be confused with `carer_note` (identifies the `note_only` person) or `planned_absences.handover_note` (whole-absence, migration `064`).
+`pet_note` (migration `071`) is orthogonal to these constraints — no `carer_kind` dependency, always writable/clearable independent of carer assignment. Not to be confused with `carer_note` (identifies the `note_only` person) or `planned_absences.handover_note` (whole-absence, migration `064`).
 
 ## Carer kinds
 
