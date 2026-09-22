@@ -18,6 +18,7 @@ import 'health_entry_pet_selector.dart';
 import 'health_entry_photos_section.dart';
 import 'health_entry_remind_field.dart';
 import 'health_entry_schedule_times_section.dart';
+import 'care_planning_toggle.dart';
 import 'health_entry_text_fields.dart';
 
 /// Sectioned form fields for add/edit health entries.
@@ -84,6 +85,13 @@ class HealthEntryFormContent extends ConsumerWidget {
                   );
                 },
               ),
+              if (!form.isEdit) ...[
+                const SizedBox(height: 16),
+                CarePlanningToggle(
+                  value: form.carePlanning,
+                  onChanged: controller.setCarePlanning,
+                ),
+              ],
               const SizedBox(height: 16),
               CareClassificationSection(
                 isEdit: form.isEdit,
@@ -113,27 +121,29 @@ class HealthEntryFormContent extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          AppFormSection(
-            title: l.healthEntryFormSchedule,
-            children: [
-              HealthEntryFrequencySection(
-                frequency: form.frequency,
-                frequencyInterval: form.frequencyInterval,
-                repeatEndDate: form.repeatEndDate,
-                recurrenceAnchor: form.recurrenceAnchor,
-                controller: controller,
-              ),
-              if (form.frequency != HealthFrequency.once) ...[
-                const SizedBox(height: 16),
-                HealthEntryScheduleTimesSection(
-                  scheduleAtSpecificTimes: form.scheduleAtSpecificTimes,
-                  scheduleTimes: form.scheduleTimes,
+          if (form.showScheduleSection) ...[
+            const SizedBox(height: 16),
+            AppFormSection(
+              title: l.healthEntryFormSchedule,
+              children: [
+                HealthEntryFrequencySection(
+                  frequency: form.frequency,
+                  frequencyInterval: form.frequencyInterval,
+                  repeatEndDate: form.repeatEndDate,
+                  recurrenceAnchor: form.recurrenceAnchor,
                   controller: controller,
                 ),
+                if (form.frequency != HealthFrequency.once) ...[
+                  const SizedBox(height: 16),
+                  HealthEntryScheduleTimesSection(
+                    scheduleAtSpecificTimes: form.scheduleAtSpecificTimes,
+                    scheduleTimes: form.scheduleTimes,
+                    controller: controller,
+                  ),
+                ],
               ],
-            ],
-          ),
+            ),
+          ],
           const SizedBox(height: 16),
           AppFormSection(
             title: l.healthEntryFormDatesReminders,
@@ -143,12 +153,16 @@ class HealthEntryFormContent extends ConsumerWidget {
                 completedOn: form.completedOn,
                 onDueDateChanged: controller.setDueDate,
                 onCompletedOnChanged: controller.setCompletedOn,
+                showDueDate: form.isPlannedMode,
+                requireCompletedOn: form.isRecordMode,
               ),
-              const SizedBox(height: 16),
-              HealthEntryRemindField(
-                remindDaysBefore: form.remindDaysBefore,
-                onChanged: controller.setRemindDaysBefore,
-              ),
+              if (form.showReminders) ...[
+                const SizedBox(height: 16),
+                HealthEntryRemindField(
+                  remindDaysBefore: form.remindDaysBefore,
+                  onChanged: controller.setRemindDaysBefore,
+                ),
+              ],
               if (form.selectedPetIds.length == 1) ...[
                 const SizedBox(height: 16),
                 HealthEntryHealthIssueDropdown(

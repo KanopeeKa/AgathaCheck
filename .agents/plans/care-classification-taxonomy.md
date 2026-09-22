@@ -170,16 +170,16 @@ After phase H merged to integration → open PR `cursor/care-classification-taxo
 
 ```yaml
 autonomy: active
-current_phase: c
-last_completed_phase: a
+current_phase: e
+last_completed_phase: d
 halt_reason: null
-next_action: "continue phase c on branch cursor/care-classification-picker-8524"
+next_action: "start phase e: checkout cursor/care-health-issue-prompts-8524"
 artifact_ref:
-  branch: cursor/care-classification-picker-8524
+  branch: cursor/care-classification-taxonomy-integration-8524
   plan_path: .agents/plans/care-classification-taxonomy.md
-  plan_commit: 950740f87e0a4cb1bfe6bdd04515eef590782980
+  plan_commit: 922bafaa1cd410dc5f4131eafbbc33a0bf586968
   snapshot_path: .agents/plans/care-classification-taxonomy.snapshot.json
-  snapshot_commit: 950740f87e0a4cb1bfe6bdd04515eef590782980
+  snapshot_commit: 922bafaa1cd410dc5f4131eafbbc33a0bf586968
 open_prs: []
 merge_commits: {"a":"5a770bbd82befe657c80cb142eb4eb1c2cdf0be9"}
 debt_issue_refs: []

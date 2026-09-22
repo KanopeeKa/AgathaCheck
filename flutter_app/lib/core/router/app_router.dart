@@ -6,6 +6,7 @@ import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/landing_screen.dart';
 import '../../features/auth/presentation/screens/my_details_screen.dart';
+import '../../features/care_taxonomy/domain/care_planning_mode.dart';
 import '../../features/health_tracking/domain/entities/health_entry.dart';
 import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
 import '../../features/health_tracking/presentation/screens/care_item_detail/care_item_detail_screen.dart';
@@ -285,15 +286,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final petId = state.pathParameters['petId']!;
           final typeParam = state.uri.queryParameters['type'];
+          final planningParam = state.uri.queryParameters['planning'];
           final initialType = typeParam != null
               ? HealthEntryType.values
                     .where((t) => t.name == typeParam)
                     .firstOrNull
               : null;
+          final initialPlanningMode = planningParam == 'unplanned'
+              ? CarePlanningMode.unplanned
+              : null;
           return HealthEntryFormScreen(
             petId: petId,
             initialType: initialType,
             allowedTypes: kAllPetEventTypes,
+            initialPlanningMode: initialPlanningMode,
           );
         },
       ),

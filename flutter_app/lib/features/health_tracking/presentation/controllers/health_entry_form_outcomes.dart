@@ -3,6 +3,7 @@ enum HealthDocumentValidationError { unsupportedFormat, tooLarge }
 enum HealthEntrySubmitValidation {
   nameRequired,
   dueOrCompletedRequired,
+  completedOnRequired,
   noPetsSelected,
   careFamilyRequired,
 }
