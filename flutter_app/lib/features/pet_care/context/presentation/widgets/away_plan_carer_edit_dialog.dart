@@ -178,85 +178,86 @@ class _AwayPlanCarerEditDialogState
                 if (value != null) setState(() => _mode = value);
               },
               child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              RadioListTile<_CarerMode>(
-                key: const Key('away_plan_carer_mode_shared_user'),
-                value: _CarerMode.sharedUser,
-                title: Text(l.awayPlanningCarerEditSharedUser),
-              ),
-              if (_mode == _CarerMode.sharedUser)
-                candidatesAsync.when(
-                  loading: () => Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: Text(
-                      l.awayPlanningCarerEditCandidatesLoading,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  RadioListTile<_CarerMode>(
+                    key: const Key('away_plan_carer_mode_shared_user'),
+                    value: _CarerMode.sharedUser,
+                    title: Text(l.awayPlanningCarerEditSharedUser),
                   ),
-                  error: (_, __) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: Text(
-                      l.awayPlanningCarerEditCandidatesFailed,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
+                  if (_mode == _CarerMode.sharedUser)
+                    candidatesAsync.when(
+                      loading: () => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: Text(
+                          l.awayPlanningCarerEditCandidatesLoading,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
+                      error: (_, __) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: Text(
+                          l.awayPlanningCarerEditCandidatesFailed,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                        ),
+                      ),
+                      data: (candidates) => _CandidateList(
+                        candidates: candidates,
+                        selectedUserId: _selectedUserId,
+                        hasCurrentSharedUser: hasCurrentSharedUser,
+                        currentUserId: widget.currentCarer.carerUserId,
+                        onSelected: (userId) =>
+                            setState(() => _selectedUserId = userId),
                       ),
                     ),
+                  RadioListTile<_CarerMode>(
+                    key: const Key('away_plan_carer_mode_note_only'),
+                    value: _CarerMode.noteOnly,
+                    title: Text(l.awayPlanningCarerEditNoteOnly),
                   ),
-                  data: (candidates) => _CandidateList(
-                    candidates: candidates,
-                    selectedUserId: _selectedUserId,
-                    hasCurrentSharedUser: hasCurrentSharedUser,
-                    currentUserId: widget.currentCarer.carerUserId,
-                    onSelected: (userId) =>
-                        setState(() => _selectedUserId = userId),
-                  ),
-                ),
-              RadioListTile<_CarerMode>(
-                key: const Key('away_plan_carer_mode_note_only'),
-                value: _CarerMode.noteOnly,
-                title: Text(l.awayPlanningCarerEditNoteOnly),
-              ),
-              if (_mode == _CarerMode.noteOnly) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: TextField(
-                    key: const Key('away_plan_carer_note_only_name'),
-                    controller: _nameController,
-                    decoration: InputDecoration(
-                      labelText: l.awayPlanningCarerEditNameLabel,
+                  if (_mode == _CarerMode.noteOnly) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: TextField(
+                        key: const Key('away_plan_carer_note_only_name'),
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: l.awayPlanningCarerEditNameLabel,
+                        ),
+                        textCapitalization: TextCapitalization.words,
+                        onChanged: (_) => setState(() {}),
+                      ),
                     ),
-                    textCapitalization: TextCapitalization.words,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: TextField(
-                    key: const Key('away_plan_carer_note_only_note'),
-                    controller: _noteController,
-                    decoration: InputDecoration(
-                      labelText: l.awayPlanningCarerEditNoteLabel,
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: TextField(
+                        key: const Key('away_plan_carer_note_only_note'),
+                        controller: _noteController,
+                        decoration: InputDecoration(
+                          labelText: l.awayPlanningCarerEditNoteLabel,
+                        ),
+                        textCapitalization: TextCapitalization.sentences,
+                        maxLines: 3,
+                      ),
                     ),
-                    textCapitalization: TextCapitalization.sentences,
-                    maxLines: 3,
+                  ],
+                  RadioListTile<_CarerMode>(
+                    key: const Key('away_plan_carer_mode_clear'),
+                    value: _CarerMode.clear,
+                    title: Text(l.awayPlanningCarerEditClear),
                   ),
-                ),
-              ],
-              RadioListTile<_CarerMode>(
-                key: const Key('away_plan_carer_mode_clear'),
-                value: _CarerMode.clear,
-                title: Text(l.awayPlanningCarerEditClear),
-              ),
-            ],
+                ],
               ),
             ),
             const SizedBox(height: 8),
@@ -266,7 +267,9 @@ class _AwayPlanCarerEditDialogState
                 key: const Key('away_plan_carer_pet_note'),
                 controller: _petNoteController,
                 decoration: InputDecoration(
-                  labelText: l.awayPlanningCarerEditPetNoteLabel(widget.petName),
+                  labelText: l.awayPlanningCarerEditPetNoteLabel(
+                    widget.petName,
+                  ),
                 ),
                 textCapitalization: TextCapitalization.sentences,
                 minLines: 2,

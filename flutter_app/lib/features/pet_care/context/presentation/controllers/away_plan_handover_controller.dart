@@ -59,10 +59,7 @@ class AwayPlanHandoverController {
           carer,
           petName,
         );
-        careCoverageSummary = AwayPlanCopy.petCareCoverageSummary(
-          l,
-          coverage,
-        );
+        careCoverageSummary = AwayPlanCopy.petCareCoverageSummary(l, coverage);
       }
 
       petSections.add(

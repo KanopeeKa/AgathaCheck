@@ -221,9 +221,7 @@ void main() {
     });
   });
 
-  testWidgets('pet note field saves independent of carer mode', (
-    tester,
-  ) async {
+  testWidgets('pet note field saves independent of carer mode', (tester) async {
     final repo = _FakeCareContextRepository(
       candidates: const [
         CarerCandidate(userId: 'user-2', displayName: 'Sarah M.'),

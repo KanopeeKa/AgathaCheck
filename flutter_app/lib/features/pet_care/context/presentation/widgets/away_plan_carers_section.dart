@@ -53,8 +53,7 @@ class AwayPlanCarersSection extends ConsumerWidget {
                     ),
                     canEdit: canEdit,
                     onEdit: () => _openEditDialog(context, petId),
-                    onDownload: () =>
-                        _downloadPetHandover(context, ref, petId),
+                    onDownload: () => _downloadPetHandover(context, ref, petId),
                   ),
                   if (petId != orderedPetIds.last) const Divider(height: 24),
                 ],
