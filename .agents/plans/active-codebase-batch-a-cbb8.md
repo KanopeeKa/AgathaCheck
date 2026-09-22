@@ -30,8 +30,19 @@ Standing grant: user chat 2026-09-22 — agreed D1–D7 decisions; `/execute-pla
 
 ```yaml
 autonomy: active
-current_phase: null
-next_action: gate then phase 1
+current_phase: 1
+last_completed_phase: null
+halt_reason: null
+next_action: "continue phase 1 on branch cursor/active-codebase-review-analysis-cbb8"
+artifact_ref:
+  branch: cursor/active-codebase-review-analysis-cbb8
+  plan_path: .agents/plans/active-codebase-batch-a-cbb8.md
+  plan_commit: a24213050aca64ffa662c8a65eed1e43505686fc
+  snapshot_path: .agents/plans/active-codebase-batch-a-cbb8.snapshot.json
+  snapshot_commit: a24213050aca64ffa662c8a65eed1e43505686fc
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1277"]
+merge_commits: {}
+debt_issue_refs: []
 ```
 
 ## Phases
