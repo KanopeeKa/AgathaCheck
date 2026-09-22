@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { publicError } from '../../config/security.js';
 import { dateToIsoDate, normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
+import { rejectFrozenShelterApi } from '../../lib/frozenDomains.js';
 import { extractUserId } from './shared.js';
 
 export function registerFamilyEventsRoutes(router, pool) {
@@ -59,6 +60,7 @@ export function registerFamilyEventsRoutes(router, pool) {
   });
 
   router.post('/:id/family-events', async (req, res) => {
+    if (rejectFrozenShelterApi(res)) return;
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const petId = req.params.id;
@@ -118,6 +120,7 @@ export function registerFamilyEventsRoutes(router, pool) {
   });
 
   router.put('/:id/family-events/:eventId', async (req, res) => {
+    if (rejectFrozenShelterApi(res)) return;
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { id: petId, eventId } = req.params;
@@ -258,6 +261,7 @@ export function registerFamilyEventsRoutes(router, pool) {
   });
 
   router.delete('/:id/family-events/:eventId', async (req, res) => {
+    if (rejectFrozenShelterApi(res)) return;
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { id: petId, eventId } = req.params;

@@ -4,10 +4,12 @@ import { publicError } from '../../config/security.js';
 import { createNotification, userDisplayName } from '../../lib/notificationHelper.js';
 import { transferPetToOrganization } from '../../lib/orgPetTransfer.js';
 import { userOwnsPet } from '../../lib/petAccess.js';
+import { rejectFrozenShelterApi } from '../../lib/frozenDomains.js';
 import { extractUserId, petRowToMap, withOptionalTransaction } from './shared.js';
 
 export function registerTransferRoutes(router, pool) {
   router.post('/:id/transfer-to-org', async (req, res) => {
+    if (rejectFrozenShelterApi(res)) return;
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const petId = req.params.id;

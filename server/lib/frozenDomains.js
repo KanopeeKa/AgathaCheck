@@ -7,6 +7,18 @@ export function frozenDomainsEnabled() {
 }
 
 /**
+ * When Shelter/Fostering APIs are frozen, hide org-transfer and org-scoped family-event
+ * mutations from active Pet Care mounts. Historical reads may remain available.
+ */
+export function rejectFrozenShelterApi(res) {
+  if (frozenDomainsEnabled()) {
+    return false;
+  }
+  res.status(404).json({ error: 'Not found' });
+  return true;
+}
+
+/**
  * Reject organization linkage on Pet Care pet writes when frozen domains are off.
  */
 export function rejectFrozenOrganizationIdOnPetWrite(req, res) {

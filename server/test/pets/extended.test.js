@@ -9,13 +9,9 @@ describe('Pets API', () => {
       app = createApp(createMockPool());
     });
 
-    const extendedEndpoints = [
+    const authRequiredEndpoints = [
       ['POST', `/api/pets/${petId}/transfer`],
-      ['POST', `/api/pets/${petId}/transfer-to-org`],
       ['GET', `/api/pets/${petId}/family-events`],
-      ['POST', `/api/pets/${petId}/family-events`],
-      ['PUT', `/api/pets/${petId}/family-events/1`],
-      ['DELETE', `/api/pets/${petId}/family-events/1`],
       ['GET', `/api/pets/${petId}/access`],
       ['PUT', `/api/pets/${petId}/access/user-42/role`],
       ['DELETE', `/api/pets/${petId}/access/user-42`],
@@ -23,7 +19,14 @@ describe('Pets API', () => {
       ['POST', `/api/pets/${petId}/passed-away`],
     ];
 
-    extendedEndpoints.forEach(([method, url]) => {
+    const frozenGatedEndpoints = [
+      ['POST', `/api/pets/${petId}/transfer-to-org`],
+      ['POST', `/api/pets/${petId}/family-events`],
+      ['PUT', `/api/pets/${petId}/family-events/1`],
+      ['DELETE', `/api/pets/${petId}/family-events/1`],
+    ];
+
+    authRequiredEndpoints.forEach(([method, url]) => {
       it(`${method} ${url.replace(petId, ':id')} returns 401 without token`, async () => {
         const res = await request(app)[method.toLowerCase()](url).send({});
         expect(res.statusCode).toBe(401);
@@ -31,7 +34,17 @@ describe('Pets API', () => {
       });
     });
 
-    it('POST /:id/transfer-to-org transfers pet to organization', async () => {
+    frozenGatedEndpoints.forEach(([method, url]) => {
+      it(`${method} ${url.replace(petId, ':id')} returns 404 when frozen domains disabled`, async () => {
+        const res = await request(app)[method.toLowerCase()](url).send({});
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toEqual({ error: 'Not found' });
+      });
+    });
+
+    it('POST /:id/transfer-to-org transfers pet to organization when frozen domains enabled', async () => {
+      const prev = process.env.ENABLE_FROZEN_DOMAINS;
+      process.env.ENABLE_FROZEN_DOMAINS = 'true';
       let updatedOrgId = null;
       const pool = createMockPool(async (sql, params) => {
         if (sql.includes('SELECT id, name, species, user_id, organization_id FROM pets WHERE id = $1 AND user_id = $2')) {
@@ -56,14 +69,20 @@ describe('Pets API', () => {
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('transferred', true);
       expect(updatedOrgId).toBe('org-1');
+      if (prev === undefined) delete process.env.ENABLE_FROZEN_DOMAINS;
+      else process.env.ENABLE_FROZEN_DOMAINS = prev;
     });
 
-    it('POST /:id/transfer-to-org returns 400 without organization_id', async () => {
+    it('POST /:id/transfer-to-org returns 400 without organization_id when frozen domains enabled', async () => {
+      const prev = process.env.ENABLE_FROZEN_DOMAINS;
+      process.env.ENABLE_FROZEN_DOMAINS = 'true';
       const res = await request(app)
         .post(`/api/pets/${petId}/transfer-to-org`)
         .set('Authorization', `Bearer ${token}`)
         .send({});
       expect(res.statusCode).toBe(400);
+      if (prev === undefined) delete process.env.ENABLE_FROZEN_DOMAINS;
+      else process.env.ENABLE_FROZEN_DOMAINS = prev;
     });
 
     it('GET /:id/family-events returns an (empty) array', async () => {
@@ -74,30 +93,42 @@ describe('Pets API', () => {
       expect(Array.isArray(res.body)).toBe(true);
     });
 
-    it('POST /:id/family-events creates an event when dates are provided', async () => {
+    it('POST /:id/family-events creates an event when frozen domains enabled', async () => {
+      const prev = process.env.ENABLE_FROZEN_DOMAINS;
+      process.env.ENABLE_FROZEN_DOMAINS = 'true';
       const res = await request(app)
         .post(`/api/pets/${petId}/family-events`)
         .set('Authorization', `Bearer ${token}`)
         .send({ from_date: '2023-01-01', notes: 'Foster' });
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty('id');
+      if (prev === undefined) delete process.env.ENABLE_FROZEN_DOMAINS;
+      else process.env.ENABLE_FROZEN_DOMAINS = prev;
     });
 
-    it('PUT /:id/family-events/:eventId updates an event', async () => {
+    it('PUT /:id/family-events/:eventId updates an event when frozen domains enabled', async () => {
+      const prev = process.env.ENABLE_FROZEN_DOMAINS;
+      process.env.ENABLE_FROZEN_DOMAINS = 'true';
       const res = await request(app)
         .put(`/api/pets/${petId}/family-events/fe-1`)
         .set('Authorization', `Bearer ${token}`)
         .send({ from_date: '2023-01-01', to_date: '2023-06-01' });
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('to_date');
+      if (prev === undefined) delete process.env.ENABLE_FROZEN_DOMAINS;
+      else process.env.ENABLE_FROZEN_DOMAINS = prev;
     });
 
-    it('DELETE /:id/family-events/:eventId deletes an event', async () => {
+    it('DELETE /:id/family-events/:eventId deletes an event when frozen domains enabled', async () => {
+      const prev = process.env.ENABLE_FROZEN_DOMAINS;
+      process.env.ENABLE_FROZEN_DOMAINS = 'true';
       const res = await request(app)
         .delete(`/api/pets/${petId}/family-events/fe-1`)
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('deleted', true);
+      if (prev === undefined) delete process.env.ENABLE_FROZEN_DOMAINS;
+      else process.env.ENABLE_FROZEN_DOMAINS = prev;
     });
 
     it('GET /:id/access returns access list for owner', async () => {
