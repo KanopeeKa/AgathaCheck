@@ -230,9 +230,6 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
   void setCareSetting(CareSetting setting) =>
       state = state.copyWith(careSetting: setting);
 
-  void setCarePlanning(CarePlanningMode planning) =>
-      state = state.copyWith(carePlanning: planning);
-
   void setCareImportance(CareImportance importance) {
     final defaultImportance = CareTaxonomy.defaultImportanceFor(state.careFamily);
     state = state.copyWith(
