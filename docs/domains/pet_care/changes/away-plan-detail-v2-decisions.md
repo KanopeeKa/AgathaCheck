@@ -2,26 +2,30 @@
 title: Away Plan Detail V2 — Decision log
 owner: Product / Agent
 audience: both
-status: proposed
+status: active
 last_updated: 2026-09-22
 tags: [pet_care, care_context, away_planning, decisions]
 ---
 
 # Away Plan Detail V2 — Decision log
 
-Proposed product and engineering decisions for **Away Plan Detail V2** — a redesign of the Away Plan detail screen (`PlannedAbsencePlanScreen`, `/pc/away/:id`) shipped in **Away Planning V1** ([away-planning-decisions.md](./away-planning-decisions.md), confirmed 2026-09-15, all phases merged).
+Frozen product and engineering decisions for **Away Plan Detail V2** — a redesign of the Away Plan detail screen (`PlannedAbsencePlanScreen`, `/pc/away/:id`) shipped in **Away Planning V1** ([away-planning-decisions.md](./away-planning-decisions.md), confirmed 2026-09-15, all phases merged).
 
-**Status: Proposed — pending review.** Nothing below is Frozen yet. This document is the artifact to review before `approve-autonomous away-plan-detail-v2` (see [execute-plan schema](/docs/agent-efficiency/execute-plan-schema.md)). Decisions that supersede a V1 decision are called out explicitly; V1 decisions not mentioned here are unchanged.
+**Confirmed 2026-09-22** after two chat review rounds (no further blocking findings on round 2). All decisions below are **Frozen**. Decisions that supersede a V1 decision are called out explicitly; V1 decisions not mentioned here are unchanged.
 
 **Reviewed 2026-09-22 (round 1):** external review confirmed the plan is grounded and phase-ready, and flagged contract-edge gaps — wire shape for the unified list, `anchor_kind` derivation, chain-explainer copy, an icon-helper mismatch, one allowed-path overlap, and snapshot placeholder hygiene. All addressed below; changed subsections are marked **(revised)**. [away-planning-decisions.md](./away-planning-decisions.md) has matching amendment blocks under D-AWAY-002 and D-AWAY-006.
 
+**Reviewed 2026-09-22 (round 2):** confirmed round 1 fixes land correctly; no further blocking findings. Three optional clarifications folded in, marked **(added per review round 2)**: raw `items[]` stays on the wire (D-AWD-002), an integration-branch shipping gate for the AWD-2→AWD-3 window (delivery plan), and the "Repeats" vs "Occurs" copy call confirmed by the user.
+
 **Context:** AgathaTrack is not in production; no real user data exists. Verified against `main` (post Away Planning V1, all AW-phases merged, plus Care Schedule Management V1 and Care Family icon work).
+
+**Rebased 2026-09-22 onto AW-11 (per-pet handover, merged same day, `main@6d2b238`):** a parallel session shipped per-pet handover notes + per-pet PDF export while this plan was under review. Additive, not contradictory, but it touched four files this plan also touches — noted at each affected decision below and carried into the delivery plan's file-level detail. Implementers: **read the current file content before editing** — this doc describes the target structure, not necessarily today's exact bytes.
 
 ---
 
 ## D-AWD-001 — Plan-page readiness becomes attention-only (supersedes part of D-AWAY-002)
 
-**Status:** Proposed
+**Status:** Frozen (confirmed 2026-09-22 after 2 review rounds; user authorized implementation)
 
 **Origin:** user request — "Remove the text warning/description for Carer Coverage and Care coverage. It is not necessary as it's clear in the fields below." Reviewed and narrowed: full removal would drop the "reassure and stop" behaviour that `design.mdc` calls out as a voice principle, and that D-AWAY-002 built for exactly this reason. Compromise: keep the fact, drop the line when it isn't actionable.
 
@@ -38,7 +42,7 @@ Proposed product and engineering decisions for **Away Plan Detail V2** — a red
 
 ## D-AWD-002 — Care events are grouped by health entry, not by time slot, across all frequencies (supersedes D-AWAY-006's grouping key)
 
-**Status:** Proposed
+**Status:** Frozen (confirmed 2026-09-22 after 2 review rounds; user authorized implementation)
 
 **Origin:** user request to replace the "Dated care" vs "Indeterminate care" split with one "Planned care" list: icon + title, then `Occurs every X (or single care) from A until B`, `Next due date` (only for once-per-day events), and a `Time of day` line per distinct time.
 
@@ -61,11 +65,13 @@ Proposed product and engineering decisions for **Away Plan Detail V2** — a red
 
 **Not in scope:** changing Care Schedule Management's projection engine (`server/lib/care/schedule/projectSchedule.js`) or occurrence materialisation. This is a read-side regrouping in `recurrenceHelper.js` / `server/lib/care/awayPlan/presentation.js` only — the underlying occurrence data (source of truth) is untouched. Projection corpus for CSM itself must stay byte-identical, same guarantee V1's AW-3 made.
 
+**(added per review round 2) Raw `items[]` is untouched and stays on the wire.** `CarePeriodCoverageResult.items` (the flat per-occurrence list) feeds `CarePeriodCoverageCopy._pendingCount` (coverage summary count, D-AWD-001) and the create-flow preview (`CarePeriodPetPreviewSection`) — neither of those consumes `routine_items`/`dated_items`/`uncertainties` today, and neither should be repointed at `planned_care_items[]`. AWD-2 replaces only the three fields named above; `items[]` is out of scope and must still be present, unchanged, in the response.
+
 ---
 
 ## D-AWD-003 — Completion-chain (indeterminate) items get an interval description, not just a reason code (extends D-AWAY-007)
 
-**Status:** Proposed
+**Status:** Frozen (confirmed 2026-09-22 after 2 review rounds; user authorized implementation)
 
 **Origin:** user request — indeterminate/chain-dependent items ("waiting on a prior dose") still have a recurrence rule, e.g. "every 10 days from the last occurrence"; that's what should render, plus one explanatory line at the bottom of the plan.
 
@@ -92,7 +98,7 @@ FR strings drafted in AWD-DOC-0 alongside EN, same review pass — not listed he
 
 ## D-AWD-004 — One unified "Planned care" list replaces Routine / Dated / Indeterminate sections
 
-**Status:** Proposed
+**Status:** Frozen (confirmed 2026-09-22 after 2 review rounds; user authorized implementation)
 
 **Rename:** "Dated care" → **"Planned care"** (`awayPlanningScheduleDatedTitle` copy key repurposed as the single section heading; `awayPlanningScheduleRoutineTitle` and `awayPlanningScheduleIndeterminateTitle` retire as section headings — the distinction moves into per-row copy, not separate headings).
 
@@ -119,7 +125,7 @@ Exact ARB keys/copy in D-AWD-003.
 
 ## D-AWD-005 — Care events are tappable; navigation reuses the existing Care Item Detail screen
 
-**Status:** Proposed
+**Status:** Frozen (confirmed 2026-09-22 after 2 review rounds; user authorized implementation)
 
 **Origin:** user request — "clicking on one event should take you to the event itself — where carer will be able to see history and upcoming occurrences."
 
@@ -131,7 +137,7 @@ Exact ARB keys/copy in D-AWD-003.
 
 ## D-AWD-006 — Pet header gets a photo + tap-through to the pet profile
 
-**Status:** Proposed
+**Status:** Frozen (confirmed 2026-09-22 after 2 review rounds; user authorized implementation)
 
 **Origin:** user request — "would be nice to add the pet profile picture next to its name + link to the pet screen."
 
@@ -139,11 +145,13 @@ Exact ARB keys/copy in D-AWD-003.
 
 Applied to `AwayPlanCarersSection`'s per-pet row too, in the same phase, since it's the identical widget with no new logic — bundling avoids a near-duplicate follow-up PR for one extra call site.
 
+**(added, AW-11 rebase) That row now has two `IconButton`s** (edit carer, download per-pet PDF — AW-11), not one. Wrap only the avatar+name portion in the tap target for `petDetail`, not the whole row — a row-length `InkWell` behind two nested icon buttons is an accessibility footgun (ambiguous tap target, confusing focus order) `accessibility.mdc` would flag.
+
 ---
 
 ## D-AWD-007 — Plan page becomes read-only; a new edit screen owns writes
 
-**Status:** Proposed
+**Status:** Frozen (confirmed 2026-09-22 after 2 review rounds; user authorized implementation)
 
 **Origin:** user request — Save button relocated (sticky bottom bar, per user's acceptance of the reviewer's recommendation over a floating button); an Edit action added; handover note moves into the edit screen; edit screen has Save and Delete; edit screen follows the app's general edit-screen convention.
 

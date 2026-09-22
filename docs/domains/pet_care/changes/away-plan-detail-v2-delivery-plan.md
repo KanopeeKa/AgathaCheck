@@ -2,7 +2,7 @@
 title: Away Plan Detail V2 — Delivery Plan
 owner: Product / Agent
 audience: both
-status: proposed
+status: active
 last_updated: 2026-09-22
 tags: [pet_care, care_context, away_planning, delivery]
 ---
@@ -10,12 +10,14 @@ tags: [pet_care, care_context, away_planning, delivery]
 # Away Plan Detail V2 — Delivery Plan
 
 **Canonical product behaviour (V1):** [care-context.md](../features/care-context.md) — update in AWD-5.
-**Proposed decisions:** [away-plan-detail-v2-decisions.md](./away-plan-detail-v2-decisions.md)
-**Execute-plan:** `.agents/plans/away-plan-detail-v2.md` (draft — not yet approved)
+**Frozen decisions:** [away-plan-detail-v2-decisions.md](./away-plan-detail-v2-decisions.md)
+**Execute-plan:** `.agents/plans/away-plan-detail-v2.md`
 
-**Status: proposed** — decisions not yet reviewed/frozen. Do not run `/execute-plan away-plan-detail-v2` until D-AWD-001–007 are confirmed and a control issue exists (see execute-plan §Before autonomy grant).
+**Status: active** — decisions frozen 2026-09-22 after two chat review rounds; implementation authorized.
 
-**Reviewed 2026-09-22 (round 1):** contract-edge gaps in the unified list (wire shape, sort/dedupe, `anchor_kind`), draft copy, an icon-helper fix, an allowed-path overlap, and snapshot placeholder hygiene were resolved in the decisions doc and reflected below and in the execute-plan files. See the decisions doc's "Reviewed 2026-09-22" banner for the full list.
+**Reviewed 2026-09-22 (round 1):** contract-edge gaps in the unified list (wire shape, sort/dedupe, `anchor_kind`), draft copy, an icon-helper fix, an allowed-path overlap, and snapshot placeholder hygiene were resolved in the decisions doc and reflected below and in the execute-plan files.
+
+**Reviewed 2026-09-22 (round 2):** no further blocking findings. Added below: an integration-branch shipping gate for the AWD-2→AWD-3 window.
 
 ## Programme goal
 
@@ -30,6 +32,7 @@ Redesign the Away Plan detail screen shipped in Away Planning V1: replace the Ro
 3. **AWD-1** and **AWD-4** have no dependency on AWD-2/AWD-3 and run in parallel with them.
 4. **AWD-5** (docs + BDD/journey) ships last — it documents the shape all other phases produced.
 5. Projection corpus (Care Schedule Management) must stay byte-identical through AWD-2 — same guarantee V1's AW-3 made; this plan only regroups read-side output, never re-derives occurrences.
+6. **(added per review round 2) Integration-branch red window:** after AWD-2 merges to the integration branch and before AWD-3 merges, the Flutter client on that branch expects the old `routine_items`/`dated_items`/`uncertainties` fields AWD-2 just removed — it will fail to parse or render the pet-care section. Expected for a stacked-phase branch, not a regression to chase. Do not open the integration→`main` PR until AWD-3 (and AWD-1, AWD-4, AWD-5) are merged; this window is internal to the integration branch and never reaches `main`.
 
 Integration branch (4 phases run in parallel after AWD-DOC-0): `cursor/away-plan-detail-v2-integration-d4c1`.
 
@@ -111,8 +114,9 @@ One outcome: `AwayPlanPetCareSection` renders one "Planned care" list from the A
 | `away_plan_schedule_copy.dart` | Replace `routineRowTitle/Subtitle`, `datedRowStatus`, `indeterminateRowSubtitle` with one formatter switching on `item.kind`, producing the D-AWD-004 row template using the ARB keys drafted in D-AWD-003 |
 | `away_plan_pet_care_section.dart` | Single list, single "Planned care" heading (`awayPlanningScheduleDatedTitle` repurposed); render `planned_care_items[]` in the order the server sent it (**no client-side sort or merge**); `CareFamilyIcon.forWire(type: item.type, careFamily: item.careFamily)` per row (new named constructor, see below — retires hardcoded `Icons.repeat`/`check_circle_outline`/`help_outline`); one `awayPlanningChainAnchorExplainer` line per pet section when any item is `recurring_chain`/`indeterminate_pending` (D-AWD-003); row wrapped in `InkWell`/`ListTile` → `context.goNamed('petEventView', pathParameters: {petId, entryId: item.healthEntryId})` |
 | `care_family_icon.dart` | Add `CareFamilyIcon.forWire({required String? type, required String? careFamily, double size, bool showChip})` — mirrors `.forEntry`'s inference/custom-glyph logic from wire strings instead of a `HealthEntry`. **Do not** use `.materialIconFor(...)` directly on this screen — it skips custom glyphs `.forEntry` gets elsewhere (dental/wellness) |
-| Pet header (both `away_plan_pet_care_section.dart` and `away_plan_carers_section.dart`) | `CareEventRowPetAvatar`-pattern 32px photo + tap → `context.goNamed('petDetail', pathParameters: {petId})` |
-| `away_plan_handover_controller.dart` / `away_plan_handover_service.dart` | Update line-building to consume `planned_care_items[]` directly (drop separate routine/dated/indeterminate PDF sections; keep per-pet grouping) — same data, same copy layer as the screen, so PDF and screen cannot drift. **Call this out explicitly in the AWD-3 PR description** — it's a PDF content change riding inside a "Flutter UI" phase and reviewers should not assume UI-only |
+| Pet header (`away_plan_pet_care_section.dart`) | `CareEventRowPetAvatar`-pattern 32px photo + tap → `context.goNamed('petDetail', pathParameters: {petId})`, whole header row (no other tap targets there) |
+| Pet row (`away_plan_carers_section.dart`) | Same avatar, but **AW-11 (merged same day) added a second `IconButton` to `_CarerRow`** (edit carer + download per-pet PDF) — wrap only the avatar+name in the tap target, not the whole row |
+| `away_plan_handover_controller.dart` / `away_plan_handover_service.dart` | **Rebase note:** AW-11 already reworked these for per-pet export (`AwayPlanHandoverPetSection.petNote`, `_buildDocument(petFilter:)`, pet-scoped `carerCoverageSummary`/`careCoverageSummary` via `AwayPlanCopy.petCarerCoverageSummary`/`petCareCoverageSummary`) — read current content first. In `_buildDocument`, replace only the `routineLines`/`datedLines`/`indeterminateLines` construction (still built from `coverage.routineItems`/`datedItems`/`uncertainties`, i.e. the fields AWD-2 removes) with one `plannedCareLines` built from `coverage.plannedCareItems` via the same `item.kind` formatter AWD-3 adds to `away_plan_schedule_copy.dart`. Leave `petNote`, `petFilter`, and the pet-scoped summary calls untouched — same data, same copy layer as the screen, so PDF and screen cannot drift. **Call the PDF delta out explicitly in the AWD-3 PR description** — it's a PDF content change riding inside a "Flutter UI" phase and reviewers should not assume UI-only |
 | ARB (`app_en.arb`, `app_fr.arb`) | Add the 6 keys drafted in D-AWD-003 (EN + FR); retire `awayPlanningScheduleRoutineTitle`/`…IndeterminateTitle` as section headings (check for other call sites before deleting) |
 | Widget/golden tests | Row-template matrix for all 4 `kind` values (mirrors AWD-2's backend matrix); **carer-perspective test:** a pending `single_once`/`recurring_calendar` item's due date is readable from the row alone, without tapping through (D-AWD-004, strengthened per review); tap targets ≥48×48; semantic labels on the new tappable rows (accessibility.mdc) |
 

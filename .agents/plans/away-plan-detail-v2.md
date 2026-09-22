@@ -22,21 +22,19 @@ Redesign the Away Plan detail screen from Away Planning V1: one unified, tappabl
 
 ## Autonomy
 
-**DRAFT — not yet approved.** Do not run `/execute-plan away-plan-detail-v2`. Fields below are placeholders per execute-plan §Before autonomy grant steps 1–3; steps 4–6 (open control issue, human review, `approve-autonomous away-plan-detail-v2`) have not happened.
+**APPROVED — implementation authorized.** Decisions frozen 2026-09-22 after two chat review rounds with no further blocking findings; user granted approval in chat ("Go ahead... create PR and make sure it merges, then check it passes e2e-preUAT workflow").
 
 | Field | Value |
 |-------|-------|
-| **approved_at** | TBD |
-| **approved_until** | TBD (`approved_at + 48h` once granted) |
-| **approved_by** | TBD |
-| **autonomy** | `draft` |
-| **control_issue** | TBD — open before requesting approval |
+| **approved_at** | 2026-09-22T13:12:45Z |
+| **approved_until** | 2026-09-24T13:12:45Z |
+| **approved_by** | User chat 2026-09-22 — two review rounds, no further blocking findings; proceed through merge and e2e-preUAT verification |
+| **autonomy** | `active` |
+| **control_issue** | [#1270](https://github.com/KanopeeKa/AgathaCheck/issues/1270) |
 
-**Blocking on approval:** D-AWD-001–007 in the decisions doc must move from Proposed to Frozen first — AWD-DOC-0's own exit criteria is that review.
+**Branch suffix note:** `-d4c1` throughout. No fixed/reserved suffix is documented in this repo (`atomic-pr-policy.md`: "or your agent suffix").
 
-**Hard gate (added post-review):** `approve-autonomous away-plan-detail-v2` must not be granted while `approved_by` still reads "TBD" or `control_issue` in the snapshot is still its placeholder value (`999999999` — see snapshot; deliberately out of range so it can't be mistaken for a real GitHub issue). AWD-DOC-0's own exit criteria already requires the validator to pass with real values, so this is a restatement, not a new mechanism — called out explicitly per review round 1 so a fast-moving agent doesn't treat the placeholder-passing validator run as a green light.
-
-**Branch suffix note:** `-d4c1` throughout is this draft's placeholder suffix. No fixed/reserved suffix is documented in this repo (`atomic-pr-policy.md`: "or your agent suffix") — the agent that actually executes this plan uses its own, same as every other plan in `.agents/plans/`. Re-point branch names at execution time if a different agent picks this up; the phase structure and file ownership don't depend on the exact suffix.
+**Execution note:** this session is Claude Code, not Cursor Cloud Agents — `.cursor/agent-kernel/`'s multi-agent `/execute-plan` orchestration (babysit-plus, GitHub Projects automation) is not available here (see `CLAUDE.md` §Notes for Claude Code specifically). Phases are executed directly: background implementation agents per phase, orchestrator (this session) merges to the integration branch as phases complete, verification via the repo's own scripts (`pre-push-changed.sh`, `pre-push.sh`, `check_file_size.js`) rather than a babysit skill. Same phase boundaries, exit criteria, and merge discipline as the plan below.
 
 ## Phases
 
@@ -108,6 +106,8 @@ Redesign the Away Plan detail screen from Away Planning V1: one unified, tappabl
 
 *(Revised per review round 1: `away_plan_copy.dart` dropped — schedule copy lives in `away_plan_schedule_copy.dart`, this phase doesn't touch carer/care coverage summary functions. Added `care_family_icon.dart` for the new `CareFamilyIcon.forWire` constructor.)*
 
+*(AW-11 rebase note, 2026-09-22: `away_plan_handover_controller.dart`/`away_plan_handover_service.dart`/`away_plan_carers_section.dart` were reworked same-day by a parallel session for per-pet handover export — read current content before editing, don't restore the pre-AW-11 shape. Replace only `routineLines`/`datedLines`/`indeterminateLines` construction with unified `plannedCareLines`; leave `petNote`, `petFilter`, and pet-scoped summary calls (`AwayPlanCopy.petCarerCoverageSummary`/`petCareCoverageSummary`) untouched. `_CarerRow` now has 2 IconButtons — avatar tap target covers only avatar+name, not the whole row.)*
+
 **Exit criteria:**
 
 - [ ] Single "Planned care" heading and list per pet, rendered in server-sent order (no client sort/merge)
@@ -115,8 +115,9 @@ Redesign the Away Plan detail screen from Away Planning V1: one unified, tappabl
 - [ ] Row template matches D-AWD-004 for all four `kind` values (`recurring_calendar`, `recurring_chain`, `single_once`, `indeterminate_pending`)
 - [ ] Chain-anchor explainer line renders once per pet section when any item is `recurring_chain`/`indeterminate_pending`, never per row
 - [ ] Row tap → `petEventView` route with correct `petId`/`entryId`
-- [ ] Pet header photo + tap → `petDetail` route, both per-pet sections
-- [ ] PDF handover lines match the same unified data (no drift between screen and PDF) — PDF delta called out explicitly in PR description
+- [ ] Pet header photo + tap → `petDetail` route (full row in `away_plan_pet_care_section.dart`; avatar+name only in `away_plan_carers_section.dart`, which has two other tap targets already)
+- [ ] PDF handover lines match the same unified data for both full-plan and per-pet export (no drift between screen and PDF) — PDF delta called out explicitly in PR description
+- [ ] `petNote` and per-pet coverage summaries (AW-11) render unchanged in both PDF variants
 - [ ] Carer-perspective test: a pending `single_once`/`recurring_calendar` item's due date is readable from the row alone, without opening detail
 - [ ] Touch targets ≥48×48; semantic labels on new tappable rows
 - [ ] `flutter analyze` clean; widget/golden test matrix green
