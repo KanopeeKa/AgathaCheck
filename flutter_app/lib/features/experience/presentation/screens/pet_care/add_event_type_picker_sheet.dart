@@ -36,7 +36,7 @@ Future<void> showAddEventTypePickerSheet(
               subtitle: Text(l.addHealthEntry),
               onTap: () {
                 Navigator.pop(ctx);
-                context.go('/health/add');
+                context.go('/care/add');
               },
             ),
             ListTile(

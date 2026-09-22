@@ -91,7 +91,9 @@ void main() {
         2,
       );
       expect(PetCareBottomNavigation.indexFor('/pet/pet-1/care-rhythms'), 2);
+      expect(PetCareBottomNavigation.indexFor('/pet/pet-1/care/add'), 2);
       expect(PetCareBottomNavigation.indexFor('/pet/pet-1/health/add'), 2);
+      expect(PetCareBottomNavigation.indexFor('/care/add'), 2);
       expect(PetCareBottomNavigation.indexFor('/health/add'), 2);
       expect(PetCareBottomNavigation.indexFor('/add'), 1);
       expect(PetCareBottomNavigation.indexFor('/account/orgs/org-1'), 3);

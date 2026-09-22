@@ -230,8 +230,8 @@ Widget buildEventsScreen({
         ),
       ),
       GoRoute(
-        path: '/health/add',
-        builder: (_, __) => const Scaffold(body: Text('Add health entry')),
+        path: '/care/add',
+        builder: (_, __) => const Scaffold(body: Text('Add care entry')),
       ),
       GoRoute(
         path: '/pet/:petId/events/:entryId',

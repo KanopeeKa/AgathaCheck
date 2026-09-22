@@ -69,7 +69,7 @@ void main() {
     expect(find.text('Entry o1'), findsNothing);
   });
 
-  testWidgets('pet profile health add restricts types to health events only', (
+  testWidgets('pet profile health add routes to unified care add form', (
     WidgetTester tester,
   ) async {
     final router = GoRouter(
@@ -82,10 +82,10 @@ void main() {
           ),
         ),
         GoRoute(
-          path: '/pet/:petId/health/add',
+          path: '/pet/:petId/care/add',
           builder: (context, state) => HealthEntryFormScreen(
             petId: state.pathParameters['petId']!,
-            allowedTypes: kHealthEventTypes.toList(),
+            allowedTypes: kAllPetEventTypes,
           ),
         ),
       ],
@@ -114,8 +114,7 @@ void main() {
     await tester.tap(find.byKey(const Key('add_health_event_button')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Medication'), findsOneWidget);
-    expect(find.text('Care event'), findsNothing);
-    expect(find.text('Other'), findsNothing);
+    expect(find.byType(HealthEntryFormScreen), findsOneWidget);
+    expect(find.byKey(const Key('care_family_picker')), findsOneWidget);
   });
 }

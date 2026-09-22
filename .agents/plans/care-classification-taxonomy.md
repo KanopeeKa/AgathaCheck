@@ -170,10 +170,10 @@ After phase H merged to integration → open PR `cursor/care-classification-taxo
 
 ```yaml
 autonomy: active
-current_phase: e
-last_completed_phase: d
+current_phase: h
+last_completed_phase: g
 halt_reason: null
-next_action: "start phase e: checkout cursor/care-health-issue-prompts-8524"
+next_action: "start phase h: checkout cursor/care-cim-taxonomy-8524"
 artifact_ref:
   branch: cursor/care-classification-taxonomy-integration-8524
   plan_path: .agents/plans/care-classification-taxonomy.md

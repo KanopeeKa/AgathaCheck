@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { fillLabelledField } from '../support/flutter';
 
 /**
- * Health entry form (`/health/add` or `/health/edit/:id`).
+ * Care entry form (`/care/add`, `/pet/:petId/care/add`, or `/health/edit/:id`).
  */
 export class HealthEntryFormPage {
   constructor(private readonly page: Page) {}
