@@ -66,12 +66,14 @@ describe('POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/
   let occurrence;
   let entry;
   let txDepth;
+  let failPostCommitEstablishment;
 
   beforeAll(() => {
     linkedWeight = null;
     occurrence = makeOccurrenceRow();
     entry = makeHealthEntryRow();
     txDepth = 0;
+    failPostCommitEstablishment = false;
 
     const mockPool = {
       query: async (sql, params) => {
@@ -79,6 +81,14 @@ describe('POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/
           if (sql === 'BEGIN') txDepth += 1;
           if (sql === 'COMMIT' || sql === 'ROLLBACK') txDepth = Math.max(0, txDepth - 1);
           return { rows: [] };
+        }
+
+        if (
+          failPostCommitEstablishment
+          && txDepth === 0
+          && sql.includes('care_establishments')
+        ) {
+          throw new Error('characterization: post-commit establishment failure');
         }
 
         const access = handlePetAccessQuery(sql, params, {
@@ -210,6 +220,7 @@ describe('POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/
     occurrence = makeOccurrenceRow();
     entry = makeHealthEntryRow();
     txDepth = 0;
+    failPostCommitEstablishment = false;
   });
 
   const path = `/api/pets/${petId}/care-rhythms/${entryId}/occurrences/${occurrenceId}/complete-weight`;
@@ -224,6 +235,17 @@ describe('POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/
   it('returns 401 without auth', async () => {
     const res = await request(app).post(path).send(payload);
     expect(res.statusCode).toBe(401);
+  });
+
+  it('characterization: returns 500 when post-commit establishment fails after commit (A02)', async () => {
+    failPostCommitEstablishment = true;
+    const res = await request(app)
+      .post(path)
+      .set('Authorization', `Bearer ${token}`)
+      .send(payload);
+    expect(res.statusCode).toBe(500);
+    expect(occurrence.status).toBe('completed');
+    expect(linkedWeight).not.toBeNull();
   });
 
   it('creates linked weight and completes occurrence atomically', async () => {

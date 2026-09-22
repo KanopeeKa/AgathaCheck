@@ -1,0 +1,9 @@
+{
+  "baseline_id": "active-codebase-a1",
+  "recorded_at": "2026-09-22T15:05:00Z",
+  "git_commit": "71e0020eb0ee9b66473db976ee781af5307d5d3d",
+  "architecture_review": "docs/architecture/reviews/active-codebase-review.md",
+  "execute_plan": "active-codebase-batch-a-cbb8",
+  "batch": "A1",
+  "notes": "Refresh git_commit when merging characterization PR; run metrics script for headline inventory."
+}

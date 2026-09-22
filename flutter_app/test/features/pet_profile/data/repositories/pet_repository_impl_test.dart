@@ -19,20 +19,26 @@ class FakeRemoteDataSource implements PetRemoteDataSource {
     this.failCreate = false,
     this.failUpdate = false,
     this.failDelete = false,
+    this.fetchException,
   });
 
   List<PetModel> remotePets;
   bool failCreate;
   bool failUpdate;
   bool failDelete;
+  PetRemoteException? fetchException;
   final List<String> createdIds = [];
 
   @override
   Future<List<PetModel>> getAllPets(String token) async => remotePets;
 
   @override
-  Future<List<PetModel>> getAllPetsIncludingOrg(String token) async =>
-      remotePets;
+  Future<List<PetModel>> getAllPetsIncludingOrg(String token) async {
+    if (fetchException != null) {
+      throw fetchException!;
+    }
+    return remotePets;
+  }
 
   @override
   Future<PetModel> createPet(PetModel pet, String token) async {
@@ -366,5 +372,47 @@ void main() {
         expect(result.single.weightManagementContext, 'vet_managed');
       },
     );
+
+    group('characterization (Batch A1 — finding A06)', () {
+      test(
+        'getAllPets returns cached pets on 401 without surfacing auth failure',
+        () async {
+          await local.addPet(testModel);
+          final remote = FakeRemoteDataSource(
+            fetchException: PetRemoteException('Unauthorized', statusCode: 401),
+          );
+          final repo = PetRepositoryImpl(
+            local,
+            remoteDataSource: remote,
+            token: 'tok',
+          );
+
+          final result = await repo.getAllPets();
+
+          expect(result.length, 1);
+          expect(result.first.id, 'test-id');
+        },
+      );
+
+      test(
+        'getAllPets returns cached pets on 403 without surfacing permission failure',
+        () async {
+          await local.addPet(testModel);
+          final remote = FakeRemoteDataSource(
+            fetchException: PetRemoteException('Forbidden', statusCode: 403),
+          );
+          final repo = PetRepositoryImpl(
+            local,
+            remoteDataSource: remote,
+            token: 'tok',
+          );
+
+          final result = await repo.getAllPets();
+
+          expect(result.length, 1);
+          expect(result.first.id, 'test-id');
+        },
+      );
+    });
   });
 }
