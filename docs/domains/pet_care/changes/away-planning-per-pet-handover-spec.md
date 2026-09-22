@@ -187,7 +187,7 @@ Future growth (vet details, etc.) should land as additive fields on the per-pet 
 ## 9. Delivery checklist
 
 **Server**
-- [ ] Migration: `planned_absence_pets.pet_note TEXT NULL` (next number in `db/migrations/`, currently `069+`).
+- [ ] Migration: `planned_absence_pets.pet_note TEXT NULL` (next number in `db/migrations/` after manifest head — `071` on current `main`).
 - [ ] Migration test file (`server/test/migrations/0NN_planned_absence_pet_note.test.js`) — same pattern as `063` / `064`.
 - [ ] `updateAbsenceCarers`: conditional `SET`, keyed on field presence (`Object.hasOwn`), not just value.
 - [ ] `normalizePetNoteInput` (mirror handover-note helper).
