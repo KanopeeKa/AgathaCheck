@@ -2335,6 +2335,12 @@
   "careContextAwayPlanStatusCancelled": "Cancelled",
   "careContextAwayPlanCarerCoverageTitle": "Carer coverage",
   "careContextAwayPlanCareCoverageTitle": "Care coverage",
+  "careContextAwayEditTooltip": "Edit away plan",
+  "careContextAwayEditTitle": "Edit away plan",
+  "careContextAwayEditDeleteTitle": "Delete this away plan?",
+  "careContextAwayEditDeleteBody": "This cancels the whole absence plan for every pet, not just one pet or carer. This can't be undone from the app.",
+  "careContextAwayEditDeleteAction": "Delete plan",
+  "careContextAwayEditDeleteFailed": "Could not delete this away plan. Try again.",
   "awayPlanningCarerCoverageAllHaveCarers": "Every pet has a carer assigned.",
   "awayPlanningCarerCoverageSomeHaveCarers": "{assigned} of {total} pets have a carer assigned.",
   "@awayPlanningCarerCoverageSomeHaveCarers": {

@@ -128,6 +128,11 @@ class _FakeCareContextRepository implements CareContextRepository {
 
   @override
   Future<void> recordHandoverDownload(String absenceId) async {}
+
+  @override
+  Future<PlannedAbsence> cancelPlannedAbsence(String absenceId) async {
+    throw UnimplementedError();
+  }
 }
 
 const absence = PlannedAbsence(

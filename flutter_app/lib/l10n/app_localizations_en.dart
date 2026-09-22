@@ -6305,6 +6305,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careContextAwayPlanCareCoverageTitle => 'Care coverage';
 
   @override
+  String get careContextAwayEditTooltip => 'Edit away plan';
+
+  @override
+  String get careContextAwayEditTitle => 'Edit away plan';
+
+  @override
+  String get careContextAwayEditDeleteTitle => 'Delete this away plan?';
+
+  @override
+  String get careContextAwayEditDeleteBody =>
+      'This cancels the whole absence plan for every pet, not just one pet or carer. This can\'t be undone from the app.';
+
+  @override
+  String get careContextAwayEditDeleteAction => 'Delete plan';
+
+  @override
+  String get careContextAwayEditDeleteFailed =>
+      'Could not delete this away plan. Try again.';
+
+  @override
   String get awayPlanningCarerCoverageAllHaveCarers =>
       'Every pet has a carer assigned.';
 

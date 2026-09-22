@@ -6412,6 +6412,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careContextAwayPlanCareCoverageTitle => 'Couverture des soins';
 
   @override
+  String get careContextAwayEditTooltip => 'Modifier le plan d\'absence';
+
+  @override
+  String get careContextAwayEditTitle => 'Modifier le plan d\'absence';
+
+  @override
+  String get careContextAwayEditDeleteTitle =>
+      'Supprimer ce plan d\'absence ?';
+
+  @override
+  String get careContextAwayEditDeleteBody =>
+      'Ceci annule tout le plan d\'absence pour tous les animaux, pas seulement un animal ou un soignant. Cette action est irréversible depuis l\'application.';
+
+  @override
+  String get careContextAwayEditDeleteAction => 'Supprimer le plan';
+
+  @override
+  String get careContextAwayEditDeleteFailed =>
+      'Impossible de supprimer ce plan d\'absence. Réessayez.';
+
+  @override
   String get awayPlanningCarerCoverageAllHaveCarers =>
       'Chaque animal a un soignant assigné.';
 

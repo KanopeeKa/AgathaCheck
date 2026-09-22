@@ -2236,6 +2236,12 @@
   "careContextAwayPlanStatusCancelled": "Annulé",
   "careContextAwayPlanCarerCoverageTitle": "Couverture des soignants",
   "careContextAwayPlanCareCoverageTitle": "Couverture des soins",
+  "careContextAwayEditTooltip": "Modifier le plan d'absence",
+  "careContextAwayEditTitle": "Modifier le plan d'absence",
+  "careContextAwayEditDeleteTitle": "Supprimer ce plan d'absence ?",
+  "careContextAwayEditDeleteBody": "Ceci annule tout le plan d'absence pour tous les animaux, pas seulement un animal ou un soignant. Cette action est irréversible depuis l'application.",
+  "careContextAwayEditDeleteAction": "Supprimer le plan",
+  "careContextAwayEditDeleteFailed": "Impossible de supprimer ce plan d'absence. Réessayez.",
   "awayPlanningCarerCoverageAllHaveCarers": "Chaque animal a un soignant assigné.",
   "awayPlanningCarerCoverageSomeHaveCarers": "{assigned} sur {total} animaux ont un soignant assigné.",
   "@awayPlanningCarerCoverageSomeHaveCarers": {

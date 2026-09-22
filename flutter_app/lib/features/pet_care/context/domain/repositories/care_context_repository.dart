@@ -35,4 +35,9 @@ abstract class CareContextRepository {
     required String absenceId,
     required List<Map<String, dynamic>> petCarers,
   });
+
+  /// Cancels (soft-deletes) the whole absence plan via the existing
+  /// `POST /api/planned-absences/:id/cancel` endpoint. There is no hard
+  /// delete — this is what the edit screen's "Delete" action calls.
+  Future<PlannedAbsence> cancelPlannedAbsence(String absenceId);
 }
