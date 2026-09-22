@@ -32,7 +32,11 @@ class AwayPlanHandoverNoteSection extends StatelessWidget {
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Text(note, key: const Key('away_plan_handover_note_text')),
+            child: Semantics(
+              identifier: 'away_plan_handover_note_text',
+              label: note,
+              child: Text(note, key: const Key('away_plan_handover_note_text')),
+            ),
           ),
         ),
       ],
