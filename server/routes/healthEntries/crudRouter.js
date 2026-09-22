@@ -9,10 +9,13 @@ import {
 } from '../../lib/petAccess.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import {
+  rejectClientTypeField,
+  resolveClassificationForWrite,
+} from '../../lib/care/taxonomy/classification.js';
+import {
   extractUserId,
   healthEntryToMap,
   csvCell,
-  validateHealthEntryTypeForWrite,
   validateCareFamilyForWrite,
   validateCareSourceForWrite,
 } from './shared.js';
@@ -122,9 +125,9 @@ export function registerCrudRoutes(router, pool) {
       } catch (e) {
         return res.status(400).json({ error: e.message });
       }
-      const typeValidation = validateHealthEntryTypeForWrite(data.type || 'vet_visit');
-      if (!typeValidation.ok) {
-        return res.status(400).json({ error: typeValidation.error });
+      const typeRejection = rejectClientTypeField(data);
+      if (!typeRejection.ok) {
+        return res.status(400).json({ error: typeRejection.error });
       }
       const scheduleTimes = parseScheduleTimesInput(data);
       const frequency = data.frequency || 'once';
@@ -143,6 +146,24 @@ export function registerCrudRoutes(router, pool) {
         return res.status(400).json({ error: careSourceValidation.error });
       }
       const careFamily = careFamilyValidation.value;
+      const classification = resolveClassificationForWrite({
+        data,
+        careFamily,
+        frequency,
+        completedOn,
+        nextDueDate,
+      });
+      if (!classification.ok) {
+        return res.status(400).json({ error: classification.error });
+      }
+      const {
+        care_setting: careSetting,
+        care_planning: carePlanning,
+        care_importance: careImportance,
+        importance_overridden: importanceOverridden,
+        type: derivedType,
+        remind_days_before: remindDaysBefore,
+      } = classification.value;
       let recurrenceAnchor;
       try {
         recurrenceAnchor = resolveRecurrenceAnchorForWrite({
@@ -153,12 +174,12 @@ export function registerCrudRoutes(router, pool) {
         return res.status(400).json({ error: e.message });
       }
       const result = await pool.query(
-        `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, schedule_times, status, care_family, care_source, schedule_policy_version)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22) RETURNING *`,
+        `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, schedule_times, status, care_family, care_setting, care_planning, care_importance, importance_overridden, care_source, schedule_policy_version)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26) RETURNING *`,
         [
           id, petId, userId,
           data.name || '',
-          typeValidation.type,
+          derivedType,
           data.dosage || '',
           frequency,
           data.frequency_days || data.frequencyDays || null,
@@ -167,10 +188,14 @@ export function registerCrudRoutes(router, pool) {
           recurrenceAnchor, repeatEndDate,
           data.notes || '',
           healthIssueId,
-          data.remind_days_before || data.remindDaysBefore || 1,
+          remindDaysBefore,
           scheduleTimes !== undefined ? scheduleTimes : null,
           completedOn ? 'completed' : (data.status || 'active'),
           careFamily,
+          careSetting,
+          carePlanning,
+          careImportance,
+          importanceOverridden,
           careSourceValidation.value,
           SCHEDULE_POLICY_VERSION,
         ]
@@ -186,7 +211,7 @@ export function registerCrudRoutes(router, pool) {
         petId: petId,
         actorUserId: userId,
         eventType: 'health_log',
-        metadata: { action: 'create', entry_type: typeValidation.type },
+        metadata: { action: 'create', entry_type: derivedType },
       });
       res.status(201).json(healthEntryToMap(entry));
     } catch (err) {
@@ -212,12 +237,14 @@ export function registerCrudRoutes(router, pool) {
       } catch (e) {
         return res.status(400).json({ error: e.message });
       }
-      const typeValidation = validateHealthEntryTypeForWrite(data.type || 'vet_visit');
-      if (!typeValidation.ok) {
-        return res.status(400).json({ error: typeValidation.error });
+      const typeRejection = rejectClientTypeField(data);
+      if (!typeRejection.ok) {
+        return res.status(400).json({ error: typeRejection.error });
       }
       const existingResult = await pool.query(
-        'SELECT care_family, care_source, recurrence_anchor FROM health_entries WHERE id = $1',
+        `SELECT care_family, care_source, recurrence_anchor, care_setting, care_planning,
+          care_importance, importance_overridden, remind_days_before
+         FROM health_entries WHERE id = $1`,
         [req.params.id],
       );
       if (existingResult.rows.length === 0) {
@@ -242,6 +269,25 @@ export function registerCrudRoutes(router, pool) {
         return res.status(400).json({ error: careSourceValidation.error });
       }
       const careFamily = careFamilyValidation.value;
+      const classification = resolveClassificationForWrite({
+        data,
+        careFamily,
+        frequency,
+        completedOn,
+        nextDueDate,
+        existing,
+      });
+      if (!classification.ok) {
+        return res.status(400).json({ error: classification.error });
+      }
+      const {
+        care_setting: careSetting,
+        care_planning: carePlanning,
+        care_importance: careImportance,
+        importance_overridden: importanceOverridden,
+        type: derivedType,
+        remind_days_before: remindDaysBefore,
+      } = classification.value;
       const careSource =
         careSourceValidation.value || existing.care_source || 'guardian_defined';
       const explicitAnchorProvided = (
@@ -272,12 +318,13 @@ export function registerCrudRoutes(router, pool) {
           frequency_interval = $6, start_date = $7, next_due_date = $8, completed_on = $9,
           recurrence_anchor = $10, repeat_end_date = $11, notes = $12,
           health_issue_id = $13, remind_days_before = $14, status = $15,
-          care_family = $16, care_source = $17, schedule_policy_version = $18,
+          care_family = $16, care_setting = $17, care_planning = $18, care_importance = $19,
+          importance_overridden = $20, care_source = $21, schedule_policy_version = $22,
           updated_at = NOW()
-         WHERE id = $19 RETURNING *`,
+         WHERE id = $23 RETURNING *`,
         [
           data.name || '',
-          typeValidation.type,
+          derivedType,
           data.dosage || '',
           frequency,
           data.frequency_days || data.frequencyDays || null,
@@ -286,9 +333,13 @@ export function registerCrudRoutes(router, pool) {
           recurrenceAnchor, repeatEndDate,
           data.notes || '',
           healthIssueId,
-          data.remind_days_before || data.remindDaysBefore || 1,
+          remindDaysBefore,
           completedOn ? 'completed' : (data.status || 'active'),
           careFamily,
+          careSetting,
+          carePlanning,
+          careImportance,
+          importanceOverridden,
           careSource,
           SCHEDULE_POLICY_VERSION,
           req.params.id,
@@ -301,7 +352,7 @@ export function registerCrudRoutes(router, pool) {
         petId: entry.pet_id,
         actorUserId: userId,
         eventType: 'health_log',
-        metadata: { action: 'update', entry_type: typeValidation.type },
+        metadata: { action: 'update', entry_type: derivedType },
       });
       res.json(healthEntryToMap(entry));
     } catch (err) {

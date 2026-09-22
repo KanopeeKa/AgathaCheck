@@ -341,6 +341,10 @@ CREATE TABLE public.health_entries (
     repeat_end_date date,
     schedule_times jsonb,
     care_family character varying(50),
+    care_setting character varying(20) DEFAULT 'home'::character varying NOT NULL,
+    care_planning character varying(20) DEFAULT 'planned'::character varying NOT NULL,
+    care_importance character varying(20) NOT NULL,
+    importance_overridden boolean DEFAULT false NOT NULL,
     care_source character varying(50) DEFAULT 'guardian_defined'::character varying,
     paused_since date,
     schedule_policy_version character varying(20)
