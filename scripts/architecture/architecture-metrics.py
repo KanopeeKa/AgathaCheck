@@ -194,7 +194,7 @@ def main():
     except ValueError: repo_label=str(root)
     script_rel='scripts/architecture/architecture-metrics.py'
     fspans=function_spans(root,prod)[:8]
-    out=['# Architecture size metrics (refined)','',f'Generated: {stamp} (runtime; commit-scoped counts below are stable)',f'Repository: `{repo_label}`',f'Git commit: `{commit}`','',
+    out=['---','title: Active codebase metrics headline','owner: Engineering','audience: agent','status: active','last_updated: '+stamp[:10],'tags: [architecture, metrics, generated]','---','','# Architecture size metrics (refined)','',f'Generated: {stamp} (runtime; commit-scoped counts below are stable)',f'Repository: `{repo_label}`',f'Git commit: `{commit}`','',
       '## Exact definitions','',
       '- **Review-scope production (headline):** active Flutter library after manifest/generated exclusions, including exclusion of `manifest.activeSurfacesToRemove`, plus the active server route-registration approximation from `server/bin/server.js`, minus the conservative Shelter-family server list below.',
       '- **Active server route-registration approximation:** recursive literal relative `import`, `export ... from`, and `require()` traversal from `server/bin/server.js`, with the three frozen routers whose `app.use` mounts are gated by `frozenDomainsEnabled()` suppressed as review policy: organizations, fosterPlacements, custodyTransfers. Their imports are static and therefore still load under ESM; only registration is gated. This approximation is not actual runtime import reachability or closure. External and dynamic imports are ignored.',

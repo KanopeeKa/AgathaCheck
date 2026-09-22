@@ -1,3 +1,11 @@
+---
+title: Active codebase metrics headline
+owner: Engineering
+audience: agent
+status: active
+last_updated: 2026-09-22
+tags: [architecture, metrics, generated]
+---
 # Architecture size metrics (refined)
 
 Generated: 2026-09-22T14:50:20+00:00 (runtime; commit-scoped counts below are stable)
