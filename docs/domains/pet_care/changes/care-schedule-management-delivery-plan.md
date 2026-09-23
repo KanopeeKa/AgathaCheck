@@ -3,7 +3,7 @@ title: Care Schedule Management — Delivery Plan
 owner: Product / Agent
 audience: both
 status: active
-last_updated: 2026-09-15
+last_updated: 2026-09-23
 tags: [pet_care, care_planning, delivery]
 ---
 
@@ -23,9 +23,13 @@ Unify care timing under **Care Schedule Management (CSM)** — the authoritative
 
 ## Shipping gates
 
-1. **CSM-17** integration gate green before any Care Through Change reschedule/pause UI work (future CC tranche beyond CC-4).
+All satisfied on merge to `main` (programme integration [#1193](https://github.com/KanopeeKa/AgathaCheck/pull/1193), 2026-09-15):
+
+1. **CSM-17** integration gate green — regression suite in `server/test/careSchedule/integrationGate.test.js` ([#1192](https://github.com/KanopeeKa/AgathaCheck/pull/1192)).
 2. Care Context `care-period-projection` corpus byte-identical before/after `projectSchedule` refactor (CSM-14).
 3. Weight establishment sees only occurrence-linked completions with real weight rows (CSM-5).
+
+Care Through Change reschedule/pause UI (future CC tranche beyond CC-4) is unblocked per D-CSM-008.
 
 ---
 
@@ -202,13 +206,15 @@ Read-only structured facts from `care_schedule_events` for CIM; CSM stays ignora
 
 ---
 
-## CSM-17 — Integration gate (hard gate)
+## CSM-17 — Integration gate (hard gate) — **shipped**
 
 | Consumer | Regression |
 |----------|------------|
 | Care Context | Projection corpus identical |
 | Care Progression | Weight establishment from occurrence-linked evidence only |
-| CIM | `ruleEngine.js` unchanged for entries with no schedule events; new coverage with pause/reschedule facts via `explainGap` |
+| CIM | `ruleEngine.js` unchanged for entries with no schedule events; pause/reschedule facts via `explainGap` covered in `explainGap.test.js` |
+
+Regression suite: `server/test/careSchedule/integrationGate.test.js` (merged [#1192](https://github.com/KanopeeKa/AgathaCheck/pull/1192)).
 
 ---
 
