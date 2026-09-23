@@ -35,6 +35,23 @@ void main() {
     });
   });
 
+  group('petEventViewLocation', () {
+    test('omits query when returnTo absent', () {
+      expect(petEventViewLocation('pet-1', 'entry-1'), '/pet/pet-1/events/entry-1');
+    });
+
+    test('encodes returnTo query', () {
+      expect(
+        petEventViewLocation(
+          'pet-1',
+          'entry-1',
+          returnTo: '/pc/away/abs-1',
+        ),
+        '/pet/pet-1/events/entry-1?returnTo=%2Fpc%2Faway%2Fabs-1',
+      );
+    });
+  });
+
   group('shellFallbackReturnPath', () {
     test('prefers explicit backPath', () {
       expect(

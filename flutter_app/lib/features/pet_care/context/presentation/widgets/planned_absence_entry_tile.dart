@@ -39,7 +39,7 @@ class PlannedAbsenceEntryTile extends ConsumerWidget {
                   formatCalendarDateDisplay(en),
                 )
               : l.careContextAwayEntryTitle;
-          return _card(title, body, () => context.push('/pc/away'));
+          return _card(title, body, () => context.push('/pc/away/${a.id}'));
         }
         return _card(
           l.careContextAwayEntryTitle,

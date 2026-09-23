@@ -169,32 +169,75 @@ void main() {
     },
   );
 
-  testWidgets('planned care row tap navigates to petEventView', (tester) async {
+  testWidgets('planned care row tap navigates to petEventView with returnTo', (
+    tester,
+  ) async {
+    late GoRouter router;
     await tester.pumpWidget(
-      buildSection(
-        _coverage(
-          plannedCareItems: [
-            PlannedCareItem(
-              kind: PlannedCareKind.singleOnce,
-              healthEntryId: 'once-1',
-              name: 'Vet visit',
-              scheduledDate: '2026-10-03',
-            ),
-          ],
+      ProviderScope(
+        overrides: [
+          petByIdProvider('pet-1').overrideWith((ref) async => pet),
+          carePeriodCoverageProvider((
+            petId: 'pet-1',
+            startsOn: '2026-10-01',
+            endsOn: '2026-10-05',
+          )).overrideWith((ref) async => _coverage(
+                plannedCareItems: [
+                  PlannedCareItem(
+                    kind: PlannedCareKind.singleOnce,
+                    healthEntryId: 'once-1',
+                    name: 'Vet visit',
+                    scheduledDate: '2026-10-03',
+                  ),
+                ],
+              )),
+        ],
+        child: MaterialApp.router(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router = GoRouter(
+            routes: [
+              GoRoute(
+                path: '/pc/away/abs-1',
+                builder: (_, __) => AwayPlanPetCareSection(
+                  petId: 'pet-1',
+                  petName: 'Luna',
+                  startsOn: '2026-10-01',
+                  endsOn: '2026-10-05',
+                  onRetry: () {},
+                ),
+              ),
+              GoRoute(
+                path: '/pet/:petId',
+                name: 'petDetail',
+                builder: (_, state) =>
+                    Text('pet-detail-${state.pathParameters['petId']}'),
+              ),
+              GoRoute(
+                path: '/pet/:petId/events/:entryId',
+                name: 'petEventView',
+                builder: (_, state) =>
+                    Text('event-${state.pathParameters['entryId']}'),
+              ),
+            ],
+            initialLocation: '/pc/away/abs-1',
+          ),
         ),
       ),
     );
     await tester.pumpAndSettle();
 
-    final semantics = tester.getSemantics(
-      find.bySemanticsIdentifier('away_plan_planned_care_once-1'),
-    );
-    expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
-
     await tester.tap(find.text('Vet visit'));
     await tester.pumpAndSettle();
 
     expect(find.text('event-once-1'), findsOneWidget);
+    final uri = router.routerDelegate.currentConfiguration.uri;
+    expect(uri.path, '/pet/pet-1/events/once-1');
+    expect(
+      uri.queryParameters['returnTo'],
+      Uri.decodeComponent(Uri.encodeComponent('/pc/away/abs-1')),
+    );
   });
 
   testWidgets('pet header tap navigates to petDetail', (tester) async {

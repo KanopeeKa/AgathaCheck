@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
+import '../../widgets/pet_list/home_event_actions.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_history_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_status.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_type_labels.dart';
@@ -45,7 +45,7 @@ class EventListCard extends StatelessWidget {
       label: '${entry.name}, $detail, $statusLine',
       child: InkWell(
         key: Key('event_list_card_${entry.id}'),
-        onTap: () => context.go('/pet/$petId/events/${entry.id}'),
+        onTap: () => HomeEventActions.viewEntry(context, entry),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(

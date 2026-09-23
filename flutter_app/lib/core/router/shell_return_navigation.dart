@@ -106,3 +106,28 @@ String petDetailBackPath(BuildContext context, String petId) {
   final returnTo = shellReturnToFromState(GoRouterState.of(context));
   return petDetailLocation(petId, returnTo: returnTo);
 }
+
+/// Builds `/pet/:petId/events/:entryId` with optional encoded `returnTo`.
+String petEventViewLocation(
+  String petId,
+  String entryId, {
+  String? returnTo,
+}) {
+  final base = '/pet/$petId/events/$entryId';
+  if (returnTo == null || returnTo.isEmpty) {
+    return base;
+  }
+  return '$base?returnTo=${encodeShellReturnTo(returnTo)}';
+}
+
+/// Opens care item detail preserving the current screen as `returnTo`.
+void openPetEventView(
+  BuildContext context, {
+  required String petId,
+  required String entryId,
+}) {
+  final returnTo = currentShellLocation(context);
+  context.go(
+    petEventViewLocation(petId, entryId, returnTo: returnTo),
+  );
+}
