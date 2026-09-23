@@ -114,11 +114,7 @@ String petDetailBackPath(BuildContext context, String petId) {
 }
 
 /// Builds `/pet/:petId/events/:entryId` with optional encoded `returnTo`.
-String petEventViewLocation(
-  String petId,
-  String entryId, {
-  String? returnTo,
-}) {
+String petEventViewLocation(String petId, String entryId, {String? returnTo}) {
   final base = '/pet/$petId/events/$entryId';
   if (returnTo == null || returnTo.isEmpty) {
     return base;
@@ -133,9 +129,7 @@ void openPetEventView(
   required String entryId,
 }) {
   final returnTo = currentShellLocation(context);
-  context.push(
-    petEventViewLocation(petId, entryId, returnTo: returnTo),
-  );
+  context.push(petEventViewLocation(petId, entryId, returnTo: returnTo));
 }
 
 /// Replaces the route with care item detail, preserving `returnTo` from the
@@ -146,9 +140,7 @@ void goToPetEventView(
   required String entryId,
 }) {
   final returnTo = shellReturnToFromState(GoRouterState.of(context));
-  context.go(
-    petEventViewLocation(petId, entryId, returnTo: returnTo),
-  );
+  context.go(petEventViewLocation(petId, entryId, returnTo: returnTo));
 }
 
 /// Returns to care item detail after edit: pop when pushed; otherwise go with

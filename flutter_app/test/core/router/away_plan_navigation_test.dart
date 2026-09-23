@@ -72,7 +72,12 @@ void main() {
     testWidgets('home → plan → care item → back → back reaches home', (
       tester,
     ) async {
-      const pet = Pet(id: 'pet-1', name: 'Luna', species: 'dog', breed: 'Mixed');
+      const pet = Pet(
+        id: 'pet-1',
+        name: 'Luna',
+        species: 'dog',
+        breed: 'Mixed',
+      );
 
       late GoRouter router;
       await tester.pumpWidget(
@@ -115,10 +120,8 @@ void main() {
                 ),
                 GoRoute(
                   path: '/pc/away',
-                  builder: (_, __) => const _BackScreen(
-                    label: 'hub',
-                    backPath: '/pc/home',
-                  ),
+                  builder: (_, __) =>
+                      const _BackScreen(label: 'hub', backPath: '/pc/home'),
                   routes: [
                     GoRoute(
                       path: ':id',
