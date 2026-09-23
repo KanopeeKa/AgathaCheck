@@ -4,7 +4,7 @@
   "approved_at": "2026-09-23T15:44:00Z",
   "approved_by": "standing grant — user chat 2026-09-22/23 (D1-D7; execute-plan autonomous batches A→B→C)",
   "approved_until": "2026-09-25T15:44:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1294,
@@ -133,11 +133,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1299"
     }
   ],
-  "content_hash": "sha256:fc6b422a4df6e288e931faeaa897aa8de596894cb3e068fd837bb47d2628938e"
+  "content_hash": "sha256:a1d8437bb4e17dfa04766bf5402271308576ef84bf0db0b44a454ab36e512df3"
 }
