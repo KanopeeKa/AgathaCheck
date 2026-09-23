@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { logAuditEventSafe } from './audit.js';
+import { withTransaction } from './db/withTransaction.js';
 import { createNotification, userDisplayName } from './notificationHelper.js';
 import {
   PET_ACCESS_ROLES,
@@ -23,14 +24,14 @@ const PET_DATA_TABLES = [
   'pet_share_links',
 ];
 
-async function collectPetFileUrls(pool, petId) {
+async function collectPetFileUrls(db, petId) {
   const urls = [];
-  const photo = await pool.query('SELECT photo_path FROM pets WHERE id = $1', [petId]);
+  const photo = await db.query('SELECT photo_path FROM pets WHERE id = $1', [petId]);
   if (photo.rows[0]?.photo_path) {
     urls.push(photo.rows[0].photo_path);
   }
 
-  const entryPhotos = await pool.query(
+  const entryPhotos = await db.query(
     `SELECT hep.url
      FROM health_event_photos hep
      JOIN health_entries he ON he.id = hep.health_entry_id
@@ -41,7 +42,7 @@ async function collectPetFileUrls(pool, petId) {
     if (row.url) urls.push(row.url);
   }
 
-  const issueDocs = await pool.query(
+  const issueDocs = await db.query(
     `SELECT hid.url
      FROM health_issue_documents hid
      JOIN health_issues hi ON hi.id = hid.health_issue_id
@@ -80,52 +81,53 @@ function removeFileUrls(urls) {
   }
 }
 
+async function deletePetDataInTransaction(client, petId, { actorUserId = null, req = null } = {}) {
+  const fileUrls = await collectPetFileUrls(client, petId);
+  const rowsRemoved = {};
+
+  for (const table of PET_DATA_TABLES) {
+    const result = await client.query(`DELETE FROM ${table} WHERE pet_id = $1`, [petId]);
+    rowsRemoved[table] = result.rowCount ?? 0;
+  }
+
+  await client.query(
+    `UPDATE pets
+     SET photo_path = NULL, weight = NULL, vet_id = NULL, updated_at = NOW()
+     WHERE id = $1`,
+    [petId],
+  );
+
+  if (actorUserId) {
+    logAuditEventSafe(client, {
+      actorUserId,
+      action: 'pet.data_deleted',
+      resourceType: 'pet',
+      resourceId: petId,
+      petId,
+      req,
+      metadata: { tables: rowsRemoved, files_scheduled: fileUrls.length },
+    });
+  }
+
+  return { fileUrls, rowsRemoved };
+}
+
 /**
  * Delete pet-related rows and purge health/pet files. Pet row remains for DELETE /:id.
  */
 export async function deleteAllPetData(pool, petId, { actorUserId = null, req = null } = {}) {
-  await pool.query('BEGIN');
-  try {
-    const fileUrls = await collectPetFileUrls(pool, petId);
-    const rowsRemoved = {};
+  const { fileUrls, rowsRemoved } = await withTransaction(pool, async (client) =>
+    deletePetDataInTransaction(client, petId, { actorUserId, req }),
+  );
 
-    for (const table of PET_DATA_TABLES) {
-      const result = await pool.query(`DELETE FROM ${table} WHERE pet_id = $1`, [petId]);
-      rowsRemoved[table] = result.rowCount ?? 0;
-    }
+  removeFileUrls(fileUrls);
 
-    await pool.query(
-      `UPDATE pets
-       SET photo_path = NULL, weight = NULL, vet_id = NULL, updated_at = NOW()
-       WHERE id = $1`,
-      [petId],
-    );
-
-    if (actorUserId) {
-      logAuditEventSafe(pool, {
-        actorUserId,
-        action: 'pet.data_deleted',
-        resourceType: 'pet',
-        resourceId: petId,
-        petId,
-        req,
-        metadata: { tables: rowsRemoved, files_scheduled: fileUrls.length },
-      });
-    }
-
-    await pool.query('COMMIT');
-    removeFileUrls(fileUrls);
-
-    return {
-      deleted: true,
-      pet_id: petId,
-      rows_removed: rowsRemoved,
-      files_removed: fileUrls.length,
-    };
-  } catch (err) {
-    await pool.query('ROLLBACK');
-    throw err;
-  }
+  return {
+    deleted: true,
+    pet_id: petId,
+    rows_removed: rowsRemoved,
+    files_removed: fileUrls.length,
+  };
 }
 
 /** Purge on-disk files for a pet without deleting DB rows (used before account delete cascade). */

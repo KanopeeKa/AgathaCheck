@@ -12,7 +12,7 @@ import {
 } from '../../lib/petDataLifecycle.js';
 import { privateHealthDir, savePrivateHealthFile } from '../../lib/privateHealthStorage.js';
 import { handlePetAccessQuery } from '../helpers/petAccessMocks.js';
-import { createMockPool, petId, token, userId } from './helpers.js';
+import { createMockPool, createTransactionalMockPool, petId, token, userId } from './helpers.js';
 
 describe('petDataLifecycle', () => {
   describe('deleteAllPetData', () => {
@@ -31,33 +31,28 @@ describe('petDataLifecycle', () => {
       const healthUrl = `/api/health-files/${fileId}`;
 
       const deletedTables = [];
-      const pool = {
-        query: async (sql, params) => {
-          if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
-            return { rows: [] };
-          }
-          if (sql.includes('SELECT photo_path FROM pets')) {
-            return { rows: [{ photo_path: null }] };
-          }
-          if (sql.includes('FROM health_event_photos')) {
-            return { rows: [{ url: healthUrl }] };
-          }
-          if (sql.includes('FROM health_issue_documents')) {
-            return { rows: [] };
-          }
-          if (sql.startsWith('DELETE FROM ')) {
-            deletedTables.push(sql);
-            return { rowCount: 2 };
-          }
-          if (sql.includes('UPDATE pets')) {
-            return { rows: [] };
-          }
-          if (sql.includes('INSERT INTO audit_events')) {
-            return { rows: [] };
-          }
+      const pool = createTransactionalMockPool(async (sql) => {
+        if (sql.includes('SELECT photo_path FROM pets')) {
+          return { rows: [{ photo_path: null }] };
+        }
+        if (sql.includes('FROM health_event_photos')) {
+          return { rows: [{ url: healthUrl }] };
+        }
+        if (sql.includes('FROM health_issue_documents')) {
           return { rows: [] };
-        },
-      };
+        }
+        if (sql.startsWith('DELETE FROM ')) {
+          deletedTables.push(sql);
+          return { rowCount: 2 };
+        }
+        if (sql.includes('UPDATE pets')) {
+          return { rows: [] };
+        }
+        if (sql.includes('INSERT INTO audit_events')) {
+          return { rows: [] };
+        }
+        return { rows: [] };
+      });
 
       const result = await deleteAllPetData(pool, petId, { actorUserId: userId });
       expect(result.deleted).toBe(true);
@@ -132,10 +127,9 @@ describe('petDataLifecycle', () => {
 
 describe('Pets lifecycle routes', () => {
   it('DELETE /:id/data returns rows_removed when owner deletes pet data', async () => {
-    const pool = createMockPool(async (sql, params) => {
+    const pool = createTransactionalMockPool(async (sql, params) => {
       const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
       if (access) return access;
-      if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') return { rows: [] };
       if (sql.includes('SELECT photo_path')) return { rows: [{ photo_path: null }] };
       if (sql.includes('health_event_photos')) return { rows: [] };
       if (sql.includes('health_issue_documents')) return { rows: [] };

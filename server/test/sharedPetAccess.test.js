@@ -1,6 +1,7 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { createApp } from '../bin/server.js';
+import { createTransactionalMockPool } from './pets/helpers.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 const ownerId = 'owner-id';
@@ -13,7 +14,24 @@ function buildMockPool() {
   const sharedAccess = new Set([`${petId}:${sharedUserId}`]);
 
   const handler = async (sql, params) => {
-    if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') return { rows: [] };
+    if (sql.includes('SELECT photo_path FROM pets')) {
+      return { rows: [{ photo_path: null }] };
+    }
+    if (sql.includes('FROM health_event_photos')) {
+      return { rows: [] };
+    }
+    if (sql.includes('FROM health_issue_documents')) {
+      return { rows: [] };
+    }
+    if (sql.startsWith('DELETE FROM ') && sql.includes('pet_id = $1')) {
+      return { rowCount: 0, rows: [] };
+    }
+    if (sql.includes('UPDATE pets') && sql.includes('photo_path = NULL')) {
+      return { rows: [] };
+    }
+    if (sql.includes('INSERT INTO audit_events')) {
+      return { rows: [] };
+    }
 
     if (sql.includes('SELECT we.*') && sql.includes('FROM weight_entries we')) {
       return {
@@ -195,10 +213,7 @@ function buildMockPool() {
     return { rows: [] };
   };
 
-  return {
-    query: handler,
-    end: async () => {},
-  };
+  return createTransactionalMockPool(handler);
 }
 
 describe('Shared pet collaborator access', () => {
