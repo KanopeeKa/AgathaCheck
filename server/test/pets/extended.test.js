@@ -166,15 +166,19 @@ describe('Pets API', () => {
       expect(res.body).toHaveProperty('rows_removed');
     });
 
-    it('POST /:id/passed-away returns passed_away and notified_count', async () => {
+    it('POST /:id/passed-away returns notification_sent and notified_count', async () => {
       const res = await request(app)
         .post(`/api/pets/${petId}/passed-away`)
         .set('Authorization', `Bearer ${token}`)
         .send({});
       expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('passed_away', true);
       expect(res.body).toHaveProperty('pet_id', petId);
       expect(res.body).toHaveProperty('notified_count');
+      expect(typeof res.body.notification_sent).toBe('boolean');
+      expect(res.body.delivery_status).toBe(
+        res.body.notified_count > 0 ? 'delivered' : 'no_recipients',
+      );
+      expect(res.body.notification_sent).toBe(res.body.notified_count > 0);
     });
   });
 });

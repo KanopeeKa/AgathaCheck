@@ -567,7 +567,7 @@ Implemented in `server/routes/sharing/petAccessRoutes.js` (mounted on `/api/pets
 
 ### Mark Pet as Passed Away
 
-- **POST** `/api/pets/{id}/passed-away` — Notifies collaborators (`notified_count` in response). Pet `passedAway` flag is persisted via `PUT /api/pets/{id}`.
+- **POST** `/api/pets/{id}/passed-away` — Notification-only: creates in-app notifications for collaborators. Response: `{ notification_sent, pet_id, notified_count, delivery_status }` where `notification_sent` is true only when at least one notification row was written (`delivery_status`: `delivered` | `no_recipients`). Does **not** persist `passedAway`; use `PUT /api/pets/{id}` with `passed_away: true` for that.
 
 
 

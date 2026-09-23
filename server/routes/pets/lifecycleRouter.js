@@ -40,9 +40,10 @@ export function registerLifecycleRoutes(router, pool) {
         petName,
       });
       res.status(200).json({
-        passed_away: true,
+        notification_sent: notifiedCount > 0,
         pet_id: petId,
         notified_count: notifiedCount,
+        delivery_status: notifiedCount > 0 ? 'delivered' : 'no_recipients',
       });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
