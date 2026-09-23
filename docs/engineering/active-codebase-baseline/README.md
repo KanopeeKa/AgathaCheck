@@ -31,7 +31,7 @@ python3 scripts/architecture/architecture-metrics.py \
 
 | Command / read | AuthZ owner | Transaction owner | Commit point | Response contract (today) | Known gap (finding) | Characterization test |
 |---|---|---|---|---|---|---|
-| `deleteAllPetData` | route + `petAccess` | `pool.query` per statement | `COMMIT` via pool | `{ deleted, files_removed }` counts scheduled URLs | A01 — not one `PoolClient` | `server/test/lib/petDataLifecycle.characterization.test.js` |
+| `deleteAllPetData` | route + `petAccess` | `pool.query` per statement | `COMMIT` via pool | `{ deleted, files_removed }` counts scheduled URLs | A01 — not one `PoolClient` (fix B2; runner B1: `withTransaction`) | `server/test/lib/petDataLifecycle.characterization.test.js` |
 | `POST …/complete-weight` | capability + entry access | `pool.connect` in service | before cache/establishment | 201 or 500 after commit | A02 — post-commit 500 | `server/test/healthEntries/completeWeight.test.js` (characterization case) |
 | `POST /pets/:id/passed-away` | pet access | none (notify only) | n/a | `passed_away: true` (misleading) | A08 — DTO vs PUT persistence | documented; fix in B3 |
 | `GET` pets list (Flutter) | bearer token | n/a | n/a | returns local cache on remote error | A06 — 401/403 indistinguishable from offline | `pet_repository_impl_test.dart` characterization group |

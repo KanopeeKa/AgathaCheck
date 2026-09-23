@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "plan_id": "active-codebase-batch-b-cbb8",
+  "approved_at": "2026-09-23T15:44:00Z",
+  "approved_by": "standing grant — user chat 2026-09-22/23 (D1-D7; execute-plan autonomous batches A→B→C)",
+  "approved_until": "2026-09-25T15:44:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1294,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "B1 mandatory transaction runner",
+      "branch": "cursor/active-codebase-b1-transaction-runner-cbb8",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-b-cbb8.*",
+        "server/lib/db/**",
+        "server/test/lib/**",
+        "docs/engineering/active-codebase-baseline/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "flutter_app/**",
+        "server/routes/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "B2 deleteAllPetData single-client refactor",
+      "branch": "cursor/active-codebase-b2-pet-deletion-cbb8",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-b-cbb8.*",
+        "server/lib/petDataLifecycle.js",
+        "server/lib/db/**",
+        "server/test/lib/**",
+        "server/test/pets/**",
+        "docs/engineering/active-codebase-baseline/**",
+        "docs/architecture/api-reference.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "B3 stable committed command results",
+      "branch": "cursor/active-codebase-b3-command-results-cbb8",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-b-cbb8.*",
+        "server/routes/healthEntries/**",
+        "server/routes/sharing/**",
+        "server/services/sharing/**",
+        "server/test/healthEntries/**",
+        "server/test/sharing/**",
+        "docs/architecture/api-reference.md",
+        "docs/engineering/active-codebase-baseline/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "B4 D1 passed-away notification DTO",
+      "branch": "cursor/active-codebase-b4-lifecycle-dto-cbb8",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-b-cbb8.*",
+        "server/routes/pets/lifecycleRouter.js",
+        "server/lib/petDataLifecycle.js",
+        "server/test/pets/lifecycle.test.js",
+        "docs/architecture/api-reference.md",
+        "docs/engineering/active-codebase-baseline/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:b206d2684626fd553d6d189681cc7f22763fbc60cae4bd25a2e877adaea9a482"
+}
