@@ -73,8 +73,7 @@ export function createTransactionalMockPool(queryHandler) {
 }
 
 export function createMockPool(queryHandler) {
-  return {
-    query: queryHandler || (async (sql, params) => {
+  const handler = queryHandler || (async (sql, params) => {
       const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId, petId2] });
       if (access) return access;
 
@@ -178,7 +177,6 @@ export function createMockPool(queryHandler) {
         return { rows: [{ first_name: 'Test', last_name: 'User', email: 'test@example.com' }] };
       }
       return { rows: [] };
-    }),
-    end: async () => {},
-  };
+    });
+  return createTransactionalMockPool(handler);
 }
