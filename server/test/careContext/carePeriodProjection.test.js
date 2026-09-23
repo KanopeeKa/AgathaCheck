@@ -5,5 +5,5 @@ describe('care-period projection corpus', () => {
     fixture.run();
   });
 
-  expect(corpusCases.length).toBe(30);
+  expect(corpusCases.length).toBe(31);
 });

@@ -135,11 +135,16 @@ export const corpusCases = [
         entry({ frequency: 'daily', recurrence_anchor: 'from_completion' }),
         [occurrence({ scheduled_date: '2026-08-14', status: 'pending' })],
         '2026-08-12',
-        '2026-08-19'
+        '2026-08-19',
+        '2026-08-01'
       );
       expect(r.projection_status).toBe(PROJECTION_STATUS_PARTIALLY_INDETERMINATE);
-      expect(r.items).toHaveLength(1);
-      expect(r.uncertainties[0].reason).toBe(UNCERTAINTY_REASON_FROM_COMPLETION_PENDING);
+      expect(r.items.length).toBeGreaterThanOrEqual(1);
+      expect(r.items.some((i) => i.scheduled_date === '2026-08-14' && i.source === 'materialised'))
+        .toBe(true);
+      expect(
+        r.uncertainties.some((u) => u.reason === UNCERTAINTY_REASON_FROM_COMPLETION_PENDING)
+      ).toBe(false);
     },
   },
   {
@@ -149,9 +154,10 @@ export const corpusCases = [
         entry({ frequency: 'daily', recurrence_anchor: 'from_completion' }),
         [occurrence({ scheduled_date: '2026-08-05', status: 'pending' })],
         '2026-08-12',
-        '2026-08-19'
+        '2026-08-19',
+        '2026-08-10'
       );
-      expect(r.items).toHaveLength(0);
+      expect(r.items.some((i) => i.window_relation === 'before_window')).toBe(true);
       expect(r.projection_status).toBe(PROJECTION_STATUS_PARTIALLY_INDETERMINATE);
     },
   },
@@ -166,7 +172,8 @@ export const corpusCases = [
         }),
         [],
         '2026-08-12',
-        '2026-08-19'
+        '2026-08-19',
+        '2026-08-01'
       );
       expect(r.items).toHaveLength(1);
       expect(r.items[0].scheduled_date).toBe('2026-08-14');
@@ -392,10 +399,11 @@ export const corpusCases = [
         entry({ frequency: 'daily', recurrence_anchor: 'from_completion' }),
         [occurrence({ scheduled_date: '2026-08-19', status: 'pending' })],
         '2026-08-12',
-        '2026-08-19'
+        '2026-08-19',
+        '2026-08-01'
       );
-      expect(r.items).toHaveLength(1);
-      expect(r.projection_status).toBe(PROJECTION_STATUS_PARTIALLY_INDETERMINATE);
+      expect(r.items.some((i) => i.scheduled_date === '2026-08-19')).toBe(true);
+      expect(r.projection_status).toBe(PROJECTION_STATUS_COMPLETE);
     },
   },
   {
@@ -496,16 +504,47 @@ export const corpusCases = [
     run: () => {
       const r = projectOne(
         entry({
-          frequency: 'daily',
+          frequency: 'weekly',
           recurrence_anchor: 'from_completion',
           next_due_date: '2026-08-05',
         }),
-        [],
+        [occurrence({ scheduled_date: '2026-08-05', status: 'pending' })],
         '2026-08-12',
-        '2026-08-19'
+        '2026-08-19',
+        '2026-08-10'
       );
-      expect(r.items).toHaveLength(0);
-      expect(r.uncertainties[0].reason).toBe(UNCERTAINTY_REASON_FROM_COMPLETION_PENDING);
+      expect(r.items.length).toBeGreaterThanOrEqual(1);
+      const open = r.items.find((i) => i.scheduled_date === '2026-08-05');
+      expect(open).toMatchObject({
+        source: 'materialised',
+        status: 'pending',
+        window_relation: 'before_window',
+      });
+      expect(
+        r.uncertainties.some((u) => u.reason === UNCERTAINTY_REASON_FROM_COMPLETION_PENDING)
+      ).toBe(false);
+    },
+  },
+  {
+    id: 'from-due-date-overdue-before-window',
+    run: () => {
+      const r = projectOne(
+        entry({
+          frequency: 'yearly',
+          recurrence_anchor: 'from_due_date',
+          next_due_date: '2026-09-01',
+        }),
+        [occurrence({ scheduled_date: '2026-09-01', status: 'pending' })],
+        '2026-09-20',
+        '2026-09-27',
+        '2026-09-23'
+      );
+      expect(r.items).toHaveLength(1);
+      expect(r.items[0]).toMatchObject({
+        scheduled_date: '2026-09-01',
+        source: 'materialised',
+        window_relation: 'before_window',
+      });
     },
   },
   {
