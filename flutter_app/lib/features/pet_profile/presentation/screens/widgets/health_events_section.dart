@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
+import '../../widgets/pet_list/home_event_actions.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../domain/entities/pet.dart';
@@ -58,8 +58,7 @@ class _HealthEventsSectionState extends ConsumerState<HealthEventsSection> {
       data: (entries) => PetEventEntryList(
         entries: entries,
         petId: widget.petId,
-        onEntryTap: (entry) =>
-            context.go('/pet/${widget.petId}/events/${entry.id}'),
+        onEntryTap: (entry) => HomeEventActions.viewEntry(context, entry),
       ),
     );
 

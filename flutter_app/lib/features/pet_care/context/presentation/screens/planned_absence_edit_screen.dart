@@ -80,6 +80,10 @@ class _PlannedAbsenceEditScreenState
   }
 
   void _goToPlan() {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
     context.goNamed(
       'petCarePlannedAbsenceDetail',
       pathParameters: {'id': widget.absenceId},

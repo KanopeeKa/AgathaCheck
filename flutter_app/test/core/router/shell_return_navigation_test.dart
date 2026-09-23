@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
 
 void main() {
@@ -35,6 +37,22 @@ void main() {
     });
   });
 
+  group('petEventViewLocation', () {
+    test('omits query when returnTo absent', () {
+      expect(
+        petEventViewLocation('pet-1', 'entry-1'),
+        '/pet/pet-1/events/entry-1',
+      );
+    });
+
+    test('encodes returnTo query', () {
+      expect(
+        petEventViewLocation('pet-1', 'entry-1', returnTo: '/pc/away/abs-1'),
+        '/pet/pet-1/events/entry-1?returnTo=%2Fpc%2Faway%2Fabs-1',
+      );
+    });
+  });
+
   group('shellFallbackReturnPath', () {
     test('prefers explicit backPath', () {
       expect(
@@ -56,6 +74,68 @@ void main() {
 
     test('falls back to defaultPath', () {
       expect(shellFallbackReturnPath(defaultPath: '/g/home'), '/g/home');
+    });
+  });
+
+  group('returnToPetEventView', () {
+    testWidgets('pops when edit form was pushed on the stack', (tester) async {
+      late GoRouter router;
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router = GoRouter(
+            initialLocation:
+                '/pet/pet-1/events/entry-1?returnTo=%2Fpc%2Faway%2Fabs-1',
+            routes: [
+              GoRoute(
+                path: '/pet/:petId/events/:entryId',
+                builder: (context, state) => Scaffold(
+                  body: Center(
+                    child: FilledButton(
+                      key: const Key('open_edit'),
+                      onPressed: () => GoRouter.of(
+                        context,
+                      ).push('/pet/pet-1/events/entry-1/edit'),
+                      child: const Text('Edit'),
+                    ),
+                  ),
+                ),
+                routes: [
+                  GoRoute(
+                    path: 'edit',
+                    builder: (context, __) => Scaffold(
+                      body: Center(
+                        child: FilledButton(
+                          key: const Key('save_edit'),
+                          onPressed: () => returnToPetEventView(
+                            context,
+                            petId: 'pet-1',
+                            entryId: 'entry-1',
+                          ),
+                          child: const Text('Save'),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('open_edit')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('save_edit')), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('save_edit')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('open_edit')), findsOneWidget);
+      expect(
+        router.routerDelegate.currentConfiguration.uri.toString(),
+        contains('returnTo=%2Fpc%2Faway%2Fabs-1'),
+      );
     });
   });
 }

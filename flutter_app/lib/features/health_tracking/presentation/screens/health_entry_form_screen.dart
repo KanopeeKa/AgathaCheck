@@ -286,7 +286,11 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
             widget.entryId != null &&
             widget.petId != null &&
             widget.petId!.isNotEmpty) {
-          context.go('/pet/${widget.petId}/events/${widget.entryId}');
+          returnToPetEventView(
+            context,
+            petId: widget.petId!,
+            entryId: widget.entryId!,
+          );
         } else if (widget.petId != null && widget.petId!.isNotEmpty) {
           goToPetDetail(context, widget.petId!);
         } else {
@@ -302,7 +306,11 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
         widget.entryId != null &&
         widget.petId != null &&
         widget.petId!.isNotEmpty) {
-      context.go('/pet/${widget.petId}/events/${widget.entryId}');
+      returnToPetEventView(
+        context,
+        petId: widget.petId!,
+        entryId: widget.entryId!,
+      );
     } else if (widget.petId != null && widget.petId!.isNotEmpty) {
       goToPetDetail(context, widget.petId!);
     } else {

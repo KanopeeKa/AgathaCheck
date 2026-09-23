@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -239,9 +238,10 @@ class _PlannedCareRow extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => context.goNamed(
-              'petEventView',
-              pathParameters: {'petId': petId, 'entryId': item.healthEntryId},
+            onTap: () => openPetEventView(
+              context,
+              petId: petId,
+              entryId: item.healthEntryId,
             ),
             borderRadius: BorderRadius.circular(8),
             child: ConstrainedBox(

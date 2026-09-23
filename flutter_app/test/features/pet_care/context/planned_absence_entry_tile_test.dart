@@ -75,4 +75,55 @@ void main() {
 
     expect(find.text('Choose who will care for your pets.'), findsOneWidget);
   });
+
+  testWidgets('stateful tile navigates to plan detail', (tester) async {
+    const absence = PlannedAbsence(
+      id: 'abs-1',
+      userId: 'user-1',
+      startsOn: '2026-10-01',
+      endsOn: '2026-10-05',
+      provenance: 'user_declared',
+      status: 'active',
+      petIds: const ['pet-1'],
+    );
+    final state = AwayPlanningDashboardTileState.stateful(
+      absence: absence,
+      tileCopy: const AwayPlanTileCopy(
+        source: 'carer_coverage',
+        copyKey: 'awayPlanningTileCarerNone',
+      ),
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          awayPlanningDashboardTileProvider.overrideWith((ref) async => state),
+        ],
+        child: MaterialApp.router(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: GoRouter(
+            routes: [
+              GoRoute(
+                path: '/',
+                builder: (_, __) => const PlannedAbsenceEntryTile(),
+              ),
+              GoRoute(
+                path: '/pc/away/:id',
+                builder: (_, state) =>
+                    Text('plan-${state.pathParameters['id']}'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('planned_absence_entry_tile')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('plan-abs-1'), findsOneWidget);
+  });
 }
