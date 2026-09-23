@@ -174,32 +174,23 @@ describe('awayPlan presentation', () => {
       });
     });
 
-    it('surfaces a from_completion entry with no materialised occurrence as indeterminate_pending', () => {
+    it('surfaces a from_completion entry with no anchor as indeterminate_pending', () => {
       const entryRow = entry({
         frequency: 'weekly',
         frequency_interval: 1,
         recurrence_anchor: 'from_completion',
-        next_due_date: '2026-08-05',
+        next_due_date: null,
         schedule_times: null,
       });
-      // next_due_date is before the window and there is no pending occurrence to anchor
-      // on -> projectEntryForPeriod emits only an uncertainty, no item.
       const projection = projectOne(entryRow, [], '2026-08-12', '2026-08-19');
       const entriesById = new Map([[entryRow.id, entryRow]]);
 
       expect(projection.items).toHaveLength(0);
-      expect(projection.uncertainties).toHaveLength(1);
+      expect(projection.uncertainties).toHaveLength(0);
 
       const rows = buildPlannedCareItems(projection.items, projection.uncertainties, entriesById);
 
-      expect(rows).toHaveLength(1);
-      expect(rows[0]).toMatchObject({
-        kind: PLANNED_CARE_KIND_INDETERMINATE_PENDING,
-        health_entry_id: entryRow.id,
-        next_due_date: null,
-      });
-      expect(rows[0].reason).toBeTruthy();
-      expect(rows[0].certainty).toBe(CERTAINTY_CONDITIONAL_ON_FUTURE_COMPLETION);
+      expect(rows).toHaveLength(0);
     });
 
     // Test case 5: sort order asserted across a mixed-kind fixture.
@@ -230,11 +221,16 @@ describe('awayPlan presentation', () => {
         name: 'Anti-nausea',
         frequency: 'weekly',
         recurrence_anchor: 'from_completion',
-        next_due_date: '2026-08-05',
+        next_due_date: null,
       });
 
       const entries = [calendarEntry, chainEntry, onceEntryA, indeterminateEntry];
-      const occurrencesByEntryId = new Map(entries.map((e) => [e.id, []]));
+      const occurrencesByEntryId = new Map([
+        [calendarEntry.id, []],
+        [chainEntry.id, []],
+        [onceEntryA.id, []],
+        [indeterminateEntry.id, []],
+      ]);
       const projection = projectAll(entries, occurrencesByEntryId, '2026-08-12', '2026-08-19');
       const entriesById = new Map(entries.map((e) => [e.id, e]));
 
@@ -244,7 +240,6 @@ describe('awayPlan presentation', () => {
         [PLANNED_CARE_KIND_RECURRING_CALENDAR, 'Zebra vaccine'],
         [PLANNED_CARE_KIND_RECURRING_CHAIN, 'Amoxicillin'],
         [PLANNED_CARE_KIND_SINGLE_ONCE, 'Bath'],
-        [PLANNED_CARE_KIND_INDETERMINATE_PENDING, 'Anti-nausea'],
       ]);
     });
   });
@@ -266,20 +261,26 @@ describe('awayPlan presentation', () => {
           status: 'pending',
         }],
         '2026-08-12',
-        '2026-08-19'
+        '2026-08-19',
+        '2026-08-10'
       );
 
-      const formatted = formatProjectionReadContract(projection, [entryRow]);
+      const formatted = formatProjectionReadContract(
+        { ...projection, today_iso: '2026-08-10' },
+        [entryRow]
+      );
 
       expect(formatted.items).toEqual(projection.items);
-      expect(formatted.items).toHaveLength(0);
+      expect(formatted.items.length).toBeGreaterThan(0);
       expect(formatted.planned_care_items).toHaveLength(1);
       expect(formatted.planned_care_items[0]).toMatchObject({
-        kind: PLANNED_CARE_KIND_INDETERMINATE_PENDING,
+        kind: PLANNED_CARE_KIND_RECURRING_CHAIN,
         health_entry_id: entryRow.id,
         name: 'Daily pill',
-        type: 'medication',
-        care_family: 'medication',
+        open_occurrence: {
+          scheduled_date: '2026-08-05',
+          open_status: 'overdue',
+        },
       });
       expect(formatted.uncertainties).toBeUndefined();
       expect(formatted.routine_items).toBeUndefined();

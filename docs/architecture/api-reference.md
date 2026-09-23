@@ -236,6 +236,8 @@ Weight monitoring rhythms cannot use generic occurrence complete or mark-taken w
 
 **`planned_care_items[]` row shape (D-AWD-002, finalised AWD-5):** each element includes at minimum `kind`, `health_entry_id`, `name`, `type`, `care_family`, `frequency`, `frequency_interval`, `times_of_day[]`, `next_due_date`, `certainty`. Grouped rows (`recurring_calendar`, `recurring_chain`, `indeterminate_pending`) also carry `occurrence_count`, `status_counts`, `first_scheduled_date`, `last_scheduled_date`; `indeterminate_pending` adds `reason`. `single_once` rows add `occurrence_id`, `scheduled_date`, `status` per occurrence. `next_due_date` is non-null only for `kind: recurring_calendar` when `times_of_day.length <= 1`. Sort order is server-side: `kind` bucket (`recurring_calendar` → `recurring_chain` → `single_once` → `indeterminate_pending`), then `name`. Pre-AWD-2 clients must migrate — the three legacy arrays are absent from responses.
 
+**ACP-1 additive fields (D-ACP-002, nullable on older clients):** grouped rows may also include `open_occurrence` (`occurrence_id`, `scheduled_date`, `scheduled_time`, `open_status`: `overdue` \| `due_before_absence` \| `in_window`), `in_window` (`first_date`, `last_date`, `count`, `date_basis`: `scheduled` \| `planned` \| `estimated`), and `is_paused`. Raw `items[]` entries may include `window_relation: before_window` on materialised open occurrences. Flutter ACP-3 consumes these fields; until then legacy row copy still renders.
+
 ### Planned absences (`/api/planned-absences`) — CC-1
 
 Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `POST /`, `GET /:id`, `PATCH /:id`, `POST /:id/cancel`.
