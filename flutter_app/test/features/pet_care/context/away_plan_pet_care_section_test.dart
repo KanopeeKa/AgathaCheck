@@ -172,7 +172,6 @@ void main() {
   testWidgets('planned care row tap navigates to petEventView with returnTo', (
     tester,
   ) async {
-    late GoRouter router;
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -196,7 +195,7 @@ void main() {
           theme: AppTheme.lightTheme,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          routerConfig: router = GoRouter(
+          routerConfig: GoRouter(
             routes: [
               GoRoute(
                 path: '/pc/away/abs-1',
@@ -217,8 +216,10 @@ void main() {
               GoRoute(
                 path: '/pet/:petId/events/:entryId',
                 name: 'petEventView',
-                builder: (_, state) =>
-                    Text('event-${state.pathParameters['entryId']}'),
+                builder: (_, state) => Text(
+                  'event-${state.pathParameters['entryId']}|'
+                  '${state.uri.queryParameters['returnTo'] ?? ''}',
+                ),
               ),
             ],
             initialLocation: '/pc/away/abs-1',
@@ -231,13 +232,7 @@ void main() {
     await tester.tap(find.text('Vet visit'));
     await tester.pumpAndSettle();
 
-    expect(find.text('event-once-1'), findsOneWidget);
-    final uri = router.routerDelegate.currentConfiguration.uri;
-    expect(uri.path, '/pet/pet-1/events/once-1');
-    expect(
-      uri.queryParameters['returnTo'],
-      Uri.decodeComponent(Uri.encodeComponent('/pc/away/abs-1')),
-    );
+    expect(find.text('event-once-1|/pc/away/abs-1'), findsOneWidget);
   });
 
   testWidgets('pet header tap navigates to petDetail', (tester) async {

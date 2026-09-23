@@ -4,6 +4,12 @@ import 'package:go_router/go_router.dart';
 /// Canonical in-app `returnTo` handling for experience shell back navigation.
 ///
 /// See `docs/design/system.md` §6.6 — Sub-screen back navigation.
+///
+/// **Push-first rule:** open detail screens with [context.push] and attach
+/// `returnTo = currentShellLocation(context)`. Receiving screens pop when the
+/// stack allows; otherwise fall back to `returnTo`, then explicit `backPath` /
+/// section root. Reserve [GoRouter.go] for tab/section switches and deep-link
+/// recovery when there is no stack to pop.
 
 /// Parses a safe in-app return path from a `returnTo` query parameter.
 ///
@@ -127,7 +133,34 @@ void openPetEventView(
   required String entryId,
 }) {
   final returnTo = currentShellLocation(context);
+  context.push(
+    petEventViewLocation(petId, entryId, returnTo: returnTo),
+  );
+}
+
+/// Replaces the route with care item detail, preserving `returnTo` from the
+/// current route when present (e.g. after save on edit when the stack is empty).
+void goToPetEventView(
+  BuildContext context, {
+  required String petId,
+  required String entryId,
+}) {
+  final returnTo = shellReturnToFromState(GoRouterState.of(context));
   context.go(
     petEventViewLocation(petId, entryId, returnTo: returnTo),
   );
+}
+
+/// Returns to care item detail after edit: pop when pushed; otherwise go with
+/// forwarded `returnTo`.
+void returnToPetEventView(
+  BuildContext context, {
+  required String petId,
+  required String entryId,
+}) {
+  if (context.canPop()) {
+    context.pop();
+    return;
+  }
+  goToPetEventView(context, petId: petId, entryId: entryId);
 }

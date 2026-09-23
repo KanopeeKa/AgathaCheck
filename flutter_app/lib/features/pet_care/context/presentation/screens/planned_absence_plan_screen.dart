@@ -97,7 +97,7 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
                   icon: const Icon(Icons.edit_outlined),
                   onPressed: absence.isCancelled
                       ? null
-                      : () => context.goNamed(
+                      : () => context.pushNamed(
                           'petCarePlannedAbsenceEdit',
                           pathParameters: {'id': absenceId},
                         ),
