@@ -262,6 +262,16 @@ export class AwayPlanningPage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  async expectPlannedCareItemDetail(entryName: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      // Flutter web push from away plan may not update the hash route; assert detail UI.
+      await expect(this.page.getByRole('button', { name: /go back/i })).toBeVisible();
+      await expect(this.page.getByText(entryName, { exact: false }).first()).toBeVisible();
+      await expect(this.page.getByRole('button', { name: /close event/i })).toBeVisible();
+    }).toPass({ timeout: 45_000 });
+  }
+
   async openEditScreen(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await this.page
