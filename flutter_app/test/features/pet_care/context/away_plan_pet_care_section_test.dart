@@ -180,16 +180,18 @@ void main() {
             petId: 'pet-1',
             startsOn: '2026-10-01',
             endsOn: '2026-10-05',
-          )).overrideWith((ref) async => _coverage(
-                plannedCareItems: [
-                  PlannedCareItem(
-                    kind: PlannedCareKind.singleOnce,
-                    healthEntryId: 'once-1',
-                    name: 'Vet visit',
-                    scheduledDate: '2026-10-03',
-                  ),
-                ],
-              )),
+          )).overrideWith(
+            (ref) async => _coverage(
+              plannedCareItems: [
+                PlannedCareItem(
+                  kind: PlannedCareKind.singleOnce,
+                  healthEntryId: 'once-1',
+                  name: 'Vet visit',
+                  scheduledDate: '2026-10-03',
+                ),
+              ],
+            ),
+          ),
         ],
         child: MaterialApp.router(
           theme: AppTheme.lightTheme,
