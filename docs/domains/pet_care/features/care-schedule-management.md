@@ -89,8 +89,8 @@ All routes mount under `/api/health-entries` and `/backend/api/health-entries`. 
 | POST | `/:id/occurrences/skip-missed` | `{ as_of? }` | `{ skipped[], count }` |
 | POST | `/:id/occurrences/:occId/undo` | — | Re-opens occurrence **(superseded by `undoLastAction`)** |
 | POST | `/:id/mark-taken` | `{ completed_on?, notes? }` | **Deprecated compat** — completes oldest pending via `completeOccurrence`; returns entry map; **no `health_history` write** |
-| POST | `/:id/pause` | `{ paused_since?, reason_note? }` | `status = paused`, `paused_since` cache, ledger `paused` event (D-CSM-005) |
-| POST | `/:id/resume` | `{ resume_from?, reason_note? }` | `status = active`; ledger `resumed`; **no catch-up** for paused window |
+| POST | `/:id/pause` | `{ paused_from?, reason_note? }` | `status = paused`, `paused_since` cache (from `paused_from` calendar day), ledger `paused` event (D-CSM-005) |
+| POST | `/:id/resume` | `{ reason_note? }` | `status = active`; ledger `resumed`; **no catch-up** for paused window |
 | POST | `/:id/occurrences/:occId/reschedule` | `{ new_scheduled_date, new_scheduled_time?, reason_note? }` | Moves one pending occurrence; ledger `rescheduled` with `from_date` = original `scheduled_date` (D-CSM-006) |
 | POST | `/:id/adjust-cadence` | `{ effective_from, frequency?, frequency_interval?, recurrence_anchor?, reason_note? }` | Series-forward rule change; ledger `cadence_adjusted`; past occurrences immutable |
 | POST | `/:id/schedule/undo` | — | Timestamp-aware undo of last schedule action; retires `undo-complete` guessing |
