@@ -139,9 +139,7 @@ Weight monitoring rhythms: generic complete and `mark-taken` return `400` — us
 
 **Removed (CSM-7):** `POST /:id/skip`, `POST /:id/unskip` — use occurrence skip APIs.
 
-#### Schedule change APIs (planned — CSM-8–11)
-
-Routes mount in parallel PRs; shapes are frozen:
+#### Schedule change APIs (shipped — CSM-8–13)
 
 | Method | Path | Notes |
 |---|---|---|

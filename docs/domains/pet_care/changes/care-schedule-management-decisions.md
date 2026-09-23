@@ -103,4 +103,4 @@ Rewrite UAT/demo seed data to exercise CSM edge cases found in code review (mini
 
 **Status:** Frozen
 
-Future CC reschedule/pause UI (post–CC-4 tranche) must not start until **CSM-17** (integration gate) merges: unified write primitives, `projectSchedule`, `explainGap`, `advanceSeries`, and `care_schedule_events` ledger live.
+**Satisfied 2026-09-15.** CSM-17 integration gate merged ([#1192](https://github.com/KanopeeKa/AgathaCheck/pull/1192)) and landed on `main` via programme integration ([#1193](https://github.com/KanopeeKa/AgathaCheck/pull/1193)). Unified write primitives, `projectSchedule`, `explainGap`, `advanceSeries`, and `care_schedule_events` ledger are live. Care Through Change reschedule/pause UI (post–CC-4 tranche) may proceed.

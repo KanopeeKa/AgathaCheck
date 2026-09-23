@@ -30,7 +30,7 @@ care_context  care_progression  care_intelligence
 
 **Dependency rule:** Everything above reads from CSM. CSM depends on nothing above it.
 
-**Delivery status:** Runtime primitives **CSM-1 through CSM-7** are merged on the integration branch (`advanceSeries`, `completeOccurrence`, `skipOccurrence`, legacy path retirement). **CSM-8+** (undo, pause/resume, reschedule, cadence, projection refactor) land in parallel PRs — API shapes below are canonical even when routes are not yet mounted. See [care-schedule-management-delivery-plan.md](../changes/care-schedule-management-delivery-plan.md) and [decision log](../changes/care-schedule-management-decisions.md).
+**Delivery status:** Care Schedule Management v1 shipped to `main` via programme integration ([#1193](https://github.com/KanopeeKa/AgathaCheck/pull/1193), 2026-09-15). All primitives below are live; the CSM-17 integration gate passed before merge ([#1192](https://github.com/KanopeeKa/AgathaCheck/pull/1192)). See [care-schedule-management-delivery-plan.md](../changes/care-schedule-management-delivery-plan.md) and [decision log](../changes/care-schedule-management-decisions.md).
 
 | Phase | Status | Notes |
 |-------|--------|-------|
@@ -41,7 +41,15 @@ care_context  care_progression  care_intelligence
 | CSM-5 | Shipped | `completeOccurrence` (+ weight atomic path via `complete-weight`) |
 | CSM-6 | Shipped | `skipOccurrence` + ledger `skipped` events |
 | CSM-7 | Shipped | Entry-level `skip`/`unskip` removed; `mark-taken` delegates to oldest pending occurrence; **no new `health_history` writes** |
-| CSM-8–17 | In flight | undo, pause/resume, reschedule, cadence, projection, explain, integration gate |
+| CSM-8 | Shipped | `undoLastAction` (timestamp-aware); retires `undo-complete` guessing |
+| CSM-9 | Shipped | `pauseSeries` / `resumeSeries` (no catch-up on resume) |
+| CSM-10 | Shipped | `rescheduleOccurrence` |
+| CSM-11 | Shipped | `adjustCadence` |
+| CSM-12 | Shipped | `projectSchedule` refactor from `projectCareForPeriod` |
+| CSM-13 | Shipped | `explainGap` read API |
+| CSM-14 | Shipped | Care Context thin caller over `projectSchedule` |
+| CSM-15 | Shipped | Flutter: client `snooze()` removed |
+| CSM-17 | Shipped | Integration gate — projection corpus, CP weight evidence, CIM baseline (`integrationGate.test.js`) |
 
 ---
 
@@ -53,13 +61,13 @@ One entry point per real-world action. No primitive writes to more than one auth
 |-----------|---------|---------------------------|
 | `completeOccurrence` | Close occurrence; store `completion_timing`; call `advanceSeries()` | `POST …/occurrences/:occId/complete` **(shipped)** |
 | `skipOccurrence` | Close as skipped; write `care_schedule_events` | `POST …/occurrences/:occId/skip` **(shipped)** |
-| `rescheduleOccurrence` | Move one occurrence; preserve original `scheduled_date` on event | `POST …/occurrences/:occId/reschedule` **(CSM-10)** |
-| `pauseSeries` | Stop generation from date; `status = paused` | `POST …/:id/pause` **(CSM-9)** |
-| `resumeSeries` | Resume with **no catch-up** | `POST …/:id/resume` **(CSM-9)** |
-| `adjustCadence` | Change series rule forward from `effective_from` only | `POST …/:id/adjust-cadence` **(CSM-11)** |
-| `projectSchedule` | Read-only projection with per-item certainty | Consumed by care-period projection (CSM-12 refactor) |
-| `explainGap` | Read-only schedule facts for CIM | `GET …/:id/schedule-explain` **(CSM-13)** |
-| `undoLastAction` | Timestamp-aware reversal of last schedule action | `POST …/:id/schedule/undo` **(CSM-8)** |
+| `rescheduleOccurrence` | Move one occurrence; preserve original `scheduled_date` on event | `POST …/occurrences/:occId/reschedule` **(shipped)** |
+| `pauseSeries` | Stop generation from date; `status = paused` | `POST …/:id/pause` **(shipped)** |
+| `resumeSeries` | Resume with **no catch-up** | `POST …/:id/resume` **(shipped)** |
+| `adjustCadence` | Change series rule forward from `effective_from` only | `POST …/:id/adjust-cadence` **(shipped)** |
+| `projectSchedule` | Read-only projection with per-item certainty | Consumed by care-period projection **(shipped)** |
+| `explainGap` | Read-only schedule facts for CIM | `GET …/:id/schedule-explain` **(shipped)** |
+| `undoLastAction` | Timestamp-aware reversal of last schedule action | `POST …/:id/schedule/undo` **(shipped)** |
 
 Internal: **`advanceSeries(entryId)`** — unified rollover after all slots on the earliest open date close (`server/lib/care/schedule/advanceSeries.js`).
 
@@ -71,7 +79,7 @@ Batch helpers: `skipMissedOccurrences` backs `POST …/occurrences/skip-missed` 
 
 All routes mount under `/api/health-entries` and `/backend/api/health-entries`. Calendar dates on the wire: `YYYY-MM-DD` ([calendar-dates.md](/docs/architecture/calendar-dates.md)).
 
-### Shipped (CSM-5–7)
+### Shipped
 
 | Method | Path | Body | Response |
 |--------|------|------|----------|
@@ -79,23 +87,18 @@ All routes mount under `/api/health-entries` and `/backend/api/health-entries`. 
 | POST | `/:id/occurrences/:occId/complete` | `{ completed_on?, notes?, skip_earlier_missed? }` | `{ occurrence, next_due_date }`; sets `completion_timing` |
 | POST | `/:id/occurrences/:occId/skip` | `{ notes? }` | Skipped occurrence; ledger `skipped` event |
 | POST | `/:id/occurrences/skip-missed` | `{ as_of? }` | `{ skipped[], count }` |
-| POST | `/:id/occurrences/:occId/undo` | — | Re-opens occurrence **(superseded by CSM-8 `undoLastAction`)** |
+| POST | `/:id/occurrences/:occId/undo` | — | Re-opens occurrence **(superseded by `undoLastAction`)** |
 | POST | `/:id/mark-taken` | `{ completed_on?, notes? }` | **Deprecated compat** — completes oldest pending via `completeOccurrence`; returns entry map; **no `health_history` write** |
-
-Weight monitoring: use `POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight` — generic complete and `mark-taken` return `400`.
-
-**Removed (CSM-7):** `POST /:id/skip`, `POST /:id/unskip` — use occurrence skip APIs.
-
-### Planned (parallel PRs — canonical shape)
-
-| Method | Path | Body | Behaviour |
-|--------|------|------|-----------|
 | POST | `/:id/pause` | `{ paused_since?, reason_note? }` | `status = paused`, `paused_since` cache, ledger `paused` event (D-CSM-005) |
 | POST | `/:id/resume` | `{ resume_from?, reason_note? }` | `status = active`; ledger `resumed`; **no catch-up** for paused window |
 | POST | `/:id/occurrences/:occId/reschedule` | `{ new_scheduled_date, new_scheduled_time?, reason_note? }` | Moves one pending occurrence; ledger `rescheduled` with `from_date` = original `scheduled_date` (D-CSM-006) |
 | POST | `/:id/adjust-cadence` | `{ effective_from, frequency?, frequency_interval?, recurrence_anchor?, reason_note? }` | Series-forward rule change; ledger `cadence_adjusted`; past occurrences immutable |
-| POST | `/:id/schedule/undo` | — | Timestamp-aware undo of last schedule action (CSM-8); retires `undo-complete` guessing |
-| GET | `/:id/schedule-explain` | Query: optional window | Structured schedule facts for CIM — no explained/unexplained vocabulary (CSM-13) |
+| POST | `/:id/schedule/undo` | — | Timestamp-aware undo of last schedule action; retires `undo-complete` guessing |
+| GET | `/:id/schedule-explain` | Query: optional window | Structured schedule facts for CIM — no explained/unexplained vocabulary |
+
+Weight monitoring: use `POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight` — generic complete and `mark-taken` return `400`.
+
+**Removed (CSM-7):** `POST /:id/skip`, `POST /:id/unskip` — use occurrence skip APIs.
 
 ---
 
@@ -154,7 +157,7 @@ Moving one occurrence is **local** (`rescheduleOccurrence`). Changing the patter
 | `care_presentation` | recent schedule events | — |
 | [care_entitlements](./care-entitlements.md) | primitive gates | — |
 
-Care Through Change reschedule/pause **UI** is gated on **CSM-17** (D-CSM-008) — primitives and projection parity must land first.
+Care Through Change reschedule/pause **UI** (post–CC-4 tranche) is unblocked — the CSM-17 integration gate cleared on merge to `main` (D-CSM-008).
 
 ---
 
