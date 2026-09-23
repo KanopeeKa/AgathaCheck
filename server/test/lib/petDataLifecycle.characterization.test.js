@@ -2,19 +2,15 @@ import { deleteAllPetData } from '../../lib/petDataLifecycle.js';
 import { petId, userId } from '../pets/helpers.js';
 
 /**
- * Batch A1 characterization — documents current transaction boundary (finding A01).
- * Target state (Batch B1): single checked-out PoolClient for the whole operation.
+ * Batch B2 contract — deleteAllPetData uses one checked-out PoolClient (finding A01 fix).
  */
 describe('petDataLifecycle characterization', () => {
   describe('deleteAllPetData transaction boundary', () => {
-    it('characterization: issues BEGIN and mutations via pool.query (rotating connections)', async () => {
-      let connectionSerial = 0;
+    it('uses a single checked-out client for BEGIN through COMMIT', async () => {
       const queryLog = [];
-
-      const pool = {
+      const client = {
         query: async (sql, params) => {
-          const connectionId = connectionSerial++;
-          queryLog.push({ connectionId, sql: String(sql).trim() });
+          queryLog.push({ client: 'checked-out', sql: String(sql).trim() });
 
           if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
             return { rows: [] };
@@ -39,17 +35,27 @@ describe('petDataLifecycle characterization', () => {
           }
           return { rows: [] };
         },
+        release: jest.fn(),
+      };
+
+      const pool = {
+        connect: jest.fn(async () => client),
+        query: async () => {
+          throw new Error('pool.query must not be used during deleteAllPetData');
+        },
       };
 
       await deleteAllPetData(pool, petId, { actorUserId: userId });
 
+      expect(pool.connect).toHaveBeenCalledTimes(1);
+      expect(client.release).toHaveBeenCalledTimes(1);
       const begin = queryLog.find((q) => q.sql === 'BEGIN');
       const firstDelete = queryLog.find((q) => q.sql.startsWith('DELETE FROM '));
+      const commit = queryLog.find((q) => q.sql === 'COMMIT');
       expect(begin).toBeDefined();
       expect(firstDelete).toBeDefined();
-      // Documents A01: pool.query may use a different connection per call.
-      expect(begin.connectionId).not.toBe(firstDelete.connectionId);
-      expect(queryLog.every((q) => !q.sql.includes('connect'))).toBe(true);
+      expect(commit).toBeDefined();
+      expect(queryLog.every((q) => q.client === 'checked-out')).toBe(true);
     });
   });
 });
