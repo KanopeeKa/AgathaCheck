@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "plan_id": "away-care-planning",
+  "approved_at": "2026-09-23T23:35:00Z",
+  "approved_by": "User chat 2026-09-23 - Cursor review accepted; execute-plan full autonomy; no phase validation gates",
+  "approved_until": "2026-09-25T23:35:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/away-care-planning-integration-43b3",
+  "control_issue": 1304,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "acp-doc-0",
+      "title": "ACP-DOC-0 — Freeze + bootstrap",
+      "branch": "cursor/away-care-planning-doc0-43b3",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        ".agents/plans/away-care-planning.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "acp-1",
+      "title": "ACP-1 — Server projection + row contract",
+      "branch": "cursor/away-care-planning-acp1-43b3",
+      "allowed_paths": [
+        "server/lib/care/schedule/**",
+        "server/lib/care/awayPlan/**",
+        "server/lib/care/carePeriodCoverage.js",
+        "server/routes/careContext/**",
+        "server/test/careContext/**",
+        "docs/architecture/api-reference.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "acp-3",
+      "title": "ACP-3 — Flutter away-plan rows + PDF",
+      "branch": "cursor/away-care-planning-acp3-43b3",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_care/context/**",
+        "e2e/playwright/tests/away.care.planning*.spec.ts",
+        "e2e/playwright/pages/away-planning.page.ts"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "acp-4",
+      "title": "ACP-4 — Flexibility + reschedule hardening",
+      "branch": "cursor/away-care-planning-acp4-43b3",
+      "allowed_paths": [
+        "server/lib/care/schedule/**",
+        "server/lib/occurrenceScheduling.js",
+        "server/routes/healthEntries/**",
+        "server/test/careSchedule/**",
+        "scripts/file-size-allowlist.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "acp-5",
+      "title": "ACP-5 — Change date UI",
+      "branch": "cursor/away-care-planning-acp5-43b3",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_pet_care_section.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/features/pet_care/context/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "acp-6",
+      "title": "ACP-6 — Care Planner server + UI",
+      "branch": "cursor/away-care-planning-acp6-43b3",
+      "allowed_paths": [
+        "server/lib/care/planner/**",
+        "server/routes/careContext/absenceCarePlanRouter.js",
+        "server/routes/careContext/plannedAbsencesRouter.js",
+        "server/test/careContext/**",
+        "server/test/care/planner/**",
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_care/context/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/lib/care/intelligence/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "acp-8",
+      "title": "ACP-8 — Docs + journeys",
+      "branch": "cursor/away-care-planning-acp8-43b3",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        "docs/architecture/api-reference.md",
+        "flutter_app/test/bdd/**",
+        "e2e/playwright/**",
+        ".agents/memory/MEMORY.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    }
+  ],
+  "content_hash": "sha256:fc2cb1ed4ab3087a99db7b14ab9b993c2f395eae8f26438c74df836ea0eeb679"
+}
