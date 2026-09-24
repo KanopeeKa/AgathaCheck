@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "plan_id": "nav-returnto-followup-d71d",
+  "approved_at": "2026-09-24T12:00:00Z",
+  "approved_by": "user chat 2026-09-24 (nav returnTo debt follow-up, /execute-plan full autonomy)",
+  "approved_until": "2026-09-26T12:00:00Z",
+  "content_hash": "sha256:b8306e343fb58c525b15eda045cb4d8d5597413a60a3fcc391c9ac8ff06b200b",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1320,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Docs: returnTo fallback order",
+      "branch": "cursor/nav-returnto-docs-d71d",
+      "allowed_paths": [
+        "docs/design/system.md",
+        "docs/domains/navigation/**",
+        ".agents/plans/nav-returnto-followup-d71d.md",
+        ".agents/plans/nav-returnto-followup-d71d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "openVetDetail + absence tile returnTo",
+      "branch": "cursor/nav-returnto-vet-helper-d71d",
+      "allowed_paths": [
+        "flutter_app/lib/core/router/shell_return_navigation.dart",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_my_vets_section.dart",
+        "flutter_app/lib/features/pet_care/context/presentation/widgets/planned_absence_entry_tile.dart",
+        "flutter_app/test/core/router/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/features/pet_care/**",
+        ".agents/plans/nav-returnto-followup-d71d.md",
+        ".agents/plans/nav-returnto-followup-d71d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "3",
+      "title": "Away push-only audit",
+      "branch": "cursor/nav-returnto-away-audit-d71d",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/core/router/away_routes.dart",
+        "flutter_app/test/core/router/away_plan_navigation_test.dart",
+        "flutter_app/test/features/pet_care/**",
+        ".agents/plans/nav-returnto-followup-d71d.md",
+        ".agents/plans/nav-returnto-followup-d71d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "4",
+      "title": "Notification panel back E2E",
+      "branch": "cursor/nav-returnto-notif-e2e-d71d",
+      "allowed_paths": [
+        "e2e/**",
+        "flutter_app/test/bdd/**",
+        "docs/domains/navigation/**",
+        ".agents/plans/nav-returnto-followup-d71d.md",
+        ".agents/plans/nav-returnto-followup-d71d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "5",
+      "title": "Hardcoded returnTo ratchet",
+      "branch": "cursor/nav-returnto-ratchet-d71d",
+      "allowed_paths": [
+        "scripts/**",
+        "flutter_app/lib/**",
+        ".agents/plans/nav-returnto-followup-d71d.md",
+        ".agents/plans/nav-returnto-followup-d71d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    }
+  ]
+}
