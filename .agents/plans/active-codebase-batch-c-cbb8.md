@@ -37,9 +37,9 @@ next_action: "continue phase 1 on branch cursor/active-codebase-c1-pet-cache-cbb
 artifact_ref:
   branch: cursor/active-codebase-c1-pet-cache-cbb8
   plan_path: .agents/plans/active-codebase-batch-c-cbb8.md
-  plan_commit: 6f88b39704c400a2d057298b965a8b7b3305e494
+  plan_commit: 28b52081d7aa016863b4ee728a7241e0b4760c9d
   snapshot_path: .agents/plans/active-codebase-batch-c-cbb8.snapshot.json
-  snapshot_commit: 6f88b39704c400a2d057298b965a8b7b3305e494
+  snapshot_commit: 28b52081d7aa016863b4ee728a7241e0b4760c9d
 open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1309"]
 merge_commits: {}
 debt_issue_refs: []
