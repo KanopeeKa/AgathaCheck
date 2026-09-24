@@ -95,13 +95,15 @@ class RescheduleOccurrenceFlow {
     );
     if (newDate == null || !context.mounted) return;
 
+    final scheduledDate = calendarDateOnly(newDate);
+
     try {
       final result = await ref
           .read(healthRepositoryProvider)
           .rescheduleOccurrence(
             entry.id,
             occurrence.id,
-            newDate,
+            scheduledDate,
             reasonCode: reasonCode,
           );
       _invalidateAfterReschedule(ref, entry.id, absenceId: absenceId);
