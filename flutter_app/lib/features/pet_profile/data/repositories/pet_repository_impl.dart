@@ -5,6 +5,7 @@ import '../../domain/entities/pet_list_fetch_result.dart';
 import '../../domain/repositories/pet_repository.dart';
 import '../datasources/pet_local_datasource.dart';
 import '../datasources/pet_remote_datasource.dart';
+import '../utils/pet_list_transport_failure.dart';
 import '../models/pet_model.dart';
 import '../utils/pet_photo_bytes.dart';
 
@@ -85,7 +86,10 @@ class PetRepositoryImpl implements PetRepository {
           'PetRepository: Remote error (${e.statusCode}): ${e.message}',
         );
         rethrow;
-      } on Object catch (e) {
+      } catch (e, st) {
+        if (!isPetListTransportFailure(e)) {
+          Error.throwWithStackTrace(e, st);
+        }
         debugPrint('PetRepository: Network error, using local cache: $e');
         final cached = await _localDataSource.getAllPets();
         if (cached.isEmpty) {

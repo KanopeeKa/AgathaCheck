@@ -409,6 +409,26 @@ void main() {
       });
 
       test(
+        'fetchAllPets rethrows non-transport errors without stale cache',
+        () async {
+          await local.addPet(testModel);
+          final remote = FakeRemoteDataSource(
+            fetchException: const FormatException('Unexpected pet JSON'),
+          );
+          final repo = PetRepositoryImpl(
+            local,
+            remoteDataSource: remote,
+            token: 'tok',
+          );
+
+          await expectLater(
+            repo.fetchAllPets(),
+            throwsA(isA<FormatException>()),
+          );
+        },
+      );
+
+      test(
         'fetchAllPets returns stale cache on transport failure when cache non-empty',
         () async {
           await local.addPet(testModel);
