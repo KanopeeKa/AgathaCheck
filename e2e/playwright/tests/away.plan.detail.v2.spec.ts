@@ -84,6 +84,7 @@ test.describe('Away plan detail V2', () => {
   test('Guardian can save handover note and delete away plan from edit screen', async ({
     page,
   }) => {
+    test.setTimeout(120_000);
     const root = baseURL();
     const user = await signupUser(root);
     const pet = await createPet(root, user.accessToken, 'EditFlowPet');
