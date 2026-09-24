@@ -52,13 +52,22 @@ String currentShellLocation(BuildContext context) {
   return query.isEmpty ? path : '$path?$query';
 }
 
+/// Like [currentShellLocation] when [context] is under [GoRouter]; otherwise null.
+String? tryCurrentShellLocation(BuildContext context) {
+  try {
+    return currentShellLocation(context);
+  } on Object {
+    return null;
+  }
+}
+
 /// Resolves the fallback route when the navigation stack cannot pop.
 String shellFallbackReturnPath({
   String? explicitBackPath,
   String? returnTo,
   required String defaultPath,
 }) {
-  return explicitBackPath ?? returnTo ?? defaultPath;
+  return returnTo ?? explicitBackPath ?? defaultPath;
 }
 
 /// Shell back: pop when history exists; otherwise navigate to fallback.

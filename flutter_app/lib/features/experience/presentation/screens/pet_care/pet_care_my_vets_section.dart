@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -97,9 +98,8 @@ class PetCareMyVetsSection extends ConsumerWidget {
                                 : (linkedPetsByVetId?[vet.id] ?? const <Pet>[])
                                       .length,
                             onTap: () {
-                              final returnTo = Uri.encodeComponent('/pc/home');
-                              context.go(
-                                '/pc/vets/${vet.id}?returnTo=$returnTo',
+                              context.push(
+                                '/pc/vets/${vet.id}?returnTo=${encodeShellReturnTo(currentShellLocation(context))}',
                               );
                             },
                           ),

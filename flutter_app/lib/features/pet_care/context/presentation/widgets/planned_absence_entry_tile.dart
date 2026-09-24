@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -39,7 +40,13 @@ class PlannedAbsenceEntryTile extends ConsumerWidget {
                   formatCalendarDateDisplay(en),
                 )
               : l.careContextAwayEntryTitle;
-          return _card(title, body, () => context.push('/pc/away/${a.id}'));
+          return _card(
+            title,
+            body,
+            () => context.push(
+              '/pc/away/${a.id}?returnTo=${encodeShellReturnTo('/pc/home')}',
+            ),
+          );
         }
         return _card(
           l.careContextAwayEntryTitle,

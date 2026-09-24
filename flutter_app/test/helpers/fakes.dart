@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_list_fetch_result.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/repositories/pet_repository.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/usecases/get_all_pets.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
@@ -23,6 +24,12 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 class FakePetRepository implements PetRepository {
   @override
   Future<List<Pet>> getAllPets() async => <Pet>[];
+  @override
+  Future<PetListFetchResult> fetchAllPets() async => const PetListFetchResult(
+    pets: <Pet>[],
+    source: PetListFetchSource.remote,
+    isStale: false,
+  );
   @override
   Future<Pet?> getPetById(String id) async => null;
   @override

@@ -26,7 +26,7 @@ class FakeRemoteDataSource implements PetRemoteDataSource {
   bool failCreate;
   bool failUpdate;
   bool failDelete;
-  PetRemoteException? fetchException;
+  Object? fetchException;
   final List<String> createdIds = [];
 
   @override
@@ -373,13 +373,47 @@ void main() {
       },
     );
 
-    group('characterization (Batch A1 — finding A06)', () {
+    group('D2 pet cache policy (Batch C1)', () {
+      test('fetchAllPets rethrows 401 without returning stale cache', () async {
+        await local.addPet(testModel);
+        final remote = FakeRemoteDataSource(
+          fetchException: PetRemoteException('Unauthorized', statusCode: 401),
+        );
+        final repo = PetRepositoryImpl(
+          local,
+          remoteDataSource: remote,
+          token: 'tok',
+        );
+
+        await expectLater(
+          repo.fetchAllPets(),
+          throwsA(isA<PetRemoteException>()),
+        );
+      });
+
+      test('fetchAllPets rethrows 403 without returning stale cache', () async {
+        await local.addPet(testModel);
+        final remote = FakeRemoteDataSource(
+          fetchException: PetRemoteException('Forbidden', statusCode: 403),
+        );
+        final repo = PetRepositoryImpl(
+          local,
+          remoteDataSource: remote,
+          token: 'tok',
+        );
+
+        await expectLater(
+          repo.fetchAllPets(),
+          throwsA(isA<PetRemoteException>()),
+        );
+      });
+
       test(
-        'getAllPets returns cached pets on 401 without surfacing auth failure',
+        'fetchAllPets returns stale cache on transport failure when cache non-empty',
         () async {
           await local.addPet(testModel);
           final remote = FakeRemoteDataSource(
-            fetchException: PetRemoteException('Unauthorized', statusCode: 401),
+            fetchException: Exception('SocketException: failed host lookup'),
           );
           final repo = PetRepositoryImpl(
             local,
@@ -387,30 +421,11 @@ void main() {
             token: 'tok',
           );
 
-          final result = await repo.getAllPets();
+          final result = await repo.fetchAllPets();
 
-          expect(result.length, 1);
-          expect(result.first.id, 'test-id');
-        },
-      );
-
-      test(
-        'getAllPets returns cached pets on 403 without surfacing permission failure',
-        () async {
-          await local.addPet(testModel);
-          final remote = FakeRemoteDataSource(
-            fetchException: PetRemoteException('Forbidden', statusCode: 403),
-          );
-          final repo = PetRepositoryImpl(
-            local,
-            remoteDataSource: remote,
-            token: 'tok',
-          );
-
-          final result = await repo.getAllPets();
-
-          expect(result.length, 1);
-          expect(result.first.id, 'test-id');
+          expect(result.isStale, isTrue);
+          expect(result.pets.single.id, 'test-id');
+          expect(result.source.name, 'localCache');
         },
       );
     });
