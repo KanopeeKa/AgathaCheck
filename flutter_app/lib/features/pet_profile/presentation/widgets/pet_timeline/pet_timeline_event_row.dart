@@ -10,12 +10,10 @@ class PetTimelineNode extends StatelessWidget {
     super.key,
     required this.icon,
     required this.semanticsLabel,
-    required this.showConnectorBelow,
   });
 
   final IconData icon;
   final String semanticsLabel;
-  final bool showConnectorBelow;
 
   static const double nodeSize = 40;
   static const double spineWidth = 48;
@@ -26,42 +24,28 @@ class PetTimelineNode extends StatelessWidget {
 
     return SizedBox(
       width: spineWidth,
-      child: Column(
-        children: [
-          Semantics(
-            container: true,
-            label: semanticsLabel,
-            child: Container(
-              width: nodeSize,
-              height: nodeSize,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: colorScheme.surfaceContainerHighest,
-                border: Border.all(
-                  color: colorScheme.outlineVariant.withValues(alpha: 0.7),
-                ),
-              ),
-              child: Icon(icon, size: 20, color: colorScheme.primary),
+      child: Semantics(
+        container: true,
+        label: semanticsLabel,
+        child: Container(
+          width: nodeSize,
+          height: nodeSize,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: colorScheme.surfaceContainerHighest,
+            border: Border.all(
+              color: colorScheme.outlineVariant.withValues(alpha: 0.7),
             ),
           ),
-          if (showConnectorBelow)
-            Expanded(
-              child: Align(
-                alignment: Alignment.center,
-                child: Container(
-                  key: const Key('pet_timeline_node_connector'),
-                  width: 2,
-                  color: colorScheme.outlineVariant.withValues(alpha: 0.45),
-                ),
-              ),
-            ),
-        ],
+          child: Icon(icon, size: 20, color: colorScheme.primary),
+        ),
       ),
     );
   }
 }
 
-/// One timeline row: spine node + entry card.
+/// One timeline row: spine node + entry card, with the connector line
+/// positioned behind the spine so the row needs a single layout pass.
 class PetTimelineEventRow extends StatelessWidget {
   const PetTimelineEventRow({
     super.key,
@@ -77,20 +61,32 @@ class PetTimelineEventRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final outlineVariant = Theme.of(context).colorScheme.outlineVariant;
 
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          PetTimelineNode(
-            icon: petTimelineIcon(segment),
-            semanticsLabel: petTimelineHeadline(segment, l),
-            showConnectorBelow: showConnectorBelow,
+    return Stack(
+      children: [
+        if (showConnectorBelow)
+          Positioned(
+            left: (PetTimelineNode.spineWidth - 2) / 2,
+            top: PetTimelineNode.nodeSize,
+            bottom: 0,
+            child: Container(
+              key: const Key('pet_timeline_node_connector'),
+              width: 2,
+              color: outlineVariant.withValues(alpha: 0.45),
+            ),
           ),
-          const SizedBox(width: 8),
-          Expanded(child: child),
-        ],
-      ),
+        Row(
+          children: [
+            PetTimelineNode(
+              icon: petTimelineIcon(segment),
+              semanticsLabel: petTimelineHeadline(segment, l),
+            ),
+            const SizedBox(width: 8),
+            Expanded(child: child),
+          ],
+        ),
+      ],
     );
   }
 }
