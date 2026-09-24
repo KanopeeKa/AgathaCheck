@@ -44,7 +44,7 @@ class PlannedAbsenceEntryTile extends ConsumerWidget {
             title,
             body,
             () => context.push(
-              '/pc/away/${a.id}?returnTo=${encodeShellReturnTo('/pc/home')}',
+              '/pc/away/${a.id}?returnTo=${encodeShellReturnTo(currentShellLocation(context))}',
             ),
           );
         }
