@@ -28,6 +28,15 @@ export class CareItemPage {
     });
   }
 
+  async goBack(): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    await this.page
+      .locator('[flt-semantics-identifier="experience_back_button"]')
+      .or(this.page.getByRole('button', { name: /go back|Back|Retour/i }))
+      .first()
+      .click();
+  }
+
   async openRescheduleSheet(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const button = this.page.getByRole('button', {
