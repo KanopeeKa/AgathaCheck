@@ -2448,6 +2448,24 @@
   "rescheduleVetScheduleCaution": "Ce soin suit en général le calendrier du vétérinaire. Vérifiez avec votre vétérinaire avant de le modifier.",
   "rescheduleEarlierOnlyLaterCaution": "Ce soin se fait en général plus tôt que prévu, pas plus tard.",
   "awayPlanningPlanThis": "Planifier",
+  "plannerMoveLine": "Déplacer du {from} au {to}",
+  "@plannerMoveLine": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
+  "plannerReasonBeforeDeparture": "À faire avant votre départ, pour que votre gardien n'ait pas à s'en occuper.",
+  "plannerReasonAfterReturn": "À faire après votre retour, pour que votre gardien n'ait pas à s'en occuper.",
+  "plannerCarerTasks": "{count, plural, one{1 tâche de soin} other{{count} tâches de soin}} pour votre gardien pendant cette absence.",
+  "@plannerCarerTasks": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "plannerAccept": "Accepter",
+  "plannerNotNow": "Pas maintenant",
+  "plannerDisclaimer": "Les dates suggérées sont des aides à la planification, pas des conseils médicaux.",
   "occurrenceRescheduled": "Date modifiée",
   "snackbarUndo": "Annuler",
   "petTagsTitle": "Étiquettes",

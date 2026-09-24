@@ -20,6 +20,7 @@ import {
   normalizeHandoverNoteInput,
 } from './plannedAbsenceHandoverFields.js';
 import { registerPlannedAbsenceHandoverRoutes } from './plannedAbsenceHandoverRoutes.js';
+import { registerAbsenceCarePlanRoutes } from './absenceCarePlanRouter.js';
 import {
   findOverlapWarnings,
   loadOverlapCandidatesForAbsences,
@@ -314,6 +315,11 @@ export function registerPlannedAbsenceRoutes(router, pool) {
   });
 
   registerPlannedAbsenceHandoverRoutes(router, pool, {
+    loadAbsenceForUser,
+    loadAbsencePets,
+  });
+
+  registerAbsenceCarePlanRoutes(router, pool, {
     loadAbsenceForUser,
     loadAbsencePets,
   });

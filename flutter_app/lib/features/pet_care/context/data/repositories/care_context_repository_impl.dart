@@ -1,3 +1,4 @@
+import '../../domain/entities/absence_care_plan.dart';
 import '../../domain/entities/away_plan_readiness.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../../domain/entities/carer_candidate.dart';
@@ -49,6 +50,10 @@ class CareContextRepositoryImpl implements CareContextRepository {
   @override
   Future<AwayPlanReadiness> getAwayPlanReadiness(String absenceId) =>
       _remote.fetchAwayPlanReadiness(absenceId);
+
+  @override
+  Future<AbsenceCarePlan> getAbsenceCarePlan(String absenceId) =>
+      _remote.fetchAbsenceCarePlan(absenceId);
 
   @override
   Future<PlannedAbsence> updateHandoverNote({

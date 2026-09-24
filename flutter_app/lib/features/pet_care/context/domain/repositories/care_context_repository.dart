@@ -1,3 +1,4 @@
+import '../entities/absence_care_plan.dart';
 import '../entities/away_plan_readiness.dart';
 import '../entities/care_period_coverage.dart';
 import '../entities/carer_candidate.dart';
@@ -21,6 +22,8 @@ abstract class CareContextRepository {
   Future<PlannedAbsence> getPlannedAbsence(String absenceId);
 
   Future<AwayPlanReadiness> getAwayPlanReadiness(String absenceId);
+
+  Future<AbsenceCarePlan> getAbsenceCarePlan(String absenceId);
 
   Future<PlannedAbsence> updateHandoverNote({
     required String absenceId,

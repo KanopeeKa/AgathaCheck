@@ -2552,6 +2552,24 @@
   "rescheduleVetScheduleCaution": "This care usually follows a vet's schedule. Check with your vet before changing it.",
   "rescheduleEarlierOnlyLaterCaution": "This care is usually done earlier than scheduled, not later.",
   "awayPlanningPlanThis": "Plan this",
+  "plannerMoveLine": "Move from {from} to {to}",
+  "@plannerMoveLine": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
+  "plannerReasonBeforeDeparture": "Done before you leave, so your carer doesn't need to.",
+  "plannerReasonAfterReturn": "Done after you're back, so your carer doesn't need to.",
+  "plannerCarerTasks": "{count, plural, one{1 care task} other{{count} care tasks}} for your carer during this absence.",
+  "@plannerCarerTasks": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "plannerAccept": "Accept",
+  "plannerNotNow": "Not now",
+  "plannerDisclaimer": "Suggested dates are planning helpers, not medical advice.",
   "occurrenceRescheduled": "Date changed",
   "snackbarUndo": "Undo",
   "petTagsTitle": "Pet tags",
