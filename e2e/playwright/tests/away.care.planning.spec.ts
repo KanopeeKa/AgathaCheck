@@ -138,14 +138,14 @@ test.describe('Away care planning display', () => {
     const pet = await createPet(root, user.accessToken, 'PlannerPet');
     const startsOn = dateOffset(7);
     const endsOn = dateOffset(14);
-    const overdueDate = dateOffset(-3);
     const entry = await createHealthEntry(root, user.accessToken, pet.id, {
       name: 'Weekly Grooming',
-      nextDueDate: overdueDate,
+      nextDueDate: dateOffset(0),
       frequency: 'weekly',
       frequencyDays: 7,
       careFamily: 'grooming',
     });
+    seedPlannerOccurrenceChain(entry.id, dateOffset(0), dateOffset(-7));
     const absence = await createPlannedAbsence(root, user.accessToken, {
       startsOn,
       endsOn,

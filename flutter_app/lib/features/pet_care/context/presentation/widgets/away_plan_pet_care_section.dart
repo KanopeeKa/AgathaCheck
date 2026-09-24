@@ -221,6 +221,7 @@ class _PetCareBody extends StatelessWidget {
           const SizedBox(height: 8),
           ...result.plannedCareItems.map(
             (item) => _PlannedCareRow(
+              absenceId: absenceId,
               petId: petId,
               item: item,
               startsOn: startsOn,
@@ -252,12 +253,14 @@ class _PetCareBody extends StatelessWidget {
 
 class _PlannedCareRow extends ConsumerWidget {
   const _PlannedCareRow({
+    required this.absenceId,
     required this.petId,
     required this.item,
     required this.startsOn,
     required this.endsOn,
   });
 
+  final String absenceId;
   final String petId;
   final PlannedCareItem item;
   final String startsOn;
@@ -285,93 +288,94 @@ class _PlannedCareRow extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Semantics(
-        identifier: 'away_plan_planned_care_${item.healthEntryId}',
-        button: true,
-        label: viewLabel,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () => openPetEventView(
-              context,
-              petId: petId,
-              entryId: item.healthEntryId,
-            ),
-            borderRadius: BorderRadius.circular(8),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: _kMinTouchTarget),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CareFamilyIcon.forWire(
-                    type: item.type,
-                    careFamily: item.careFamily,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          AwayPlanScheduleCopy.plannedCareRowTitle(item),
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        Text(
-                          scheduleLine,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        if (!item.isPaused && openStatusLine != null)
-                          CareEventStatusLineView(
-                            status: openStatusLine,
-                            theme: theme,
-                            colorScheme: colorScheme,
-                          ),
-                        if (!item.isPaused && inWindowLine != null)
-                          Text(
-                            inWindowLine,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Semantics(
+            identifier: 'away_plan_planned_care_${item.healthEntryId}',
+            button: true,
+            label: viewLabel,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => openPetEventView(
+                  context,
+                  petId: petId,
+                  entryId: item.healthEntryId,
+                ),
+                borderRadius: BorderRadius.circular(8),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: _kMinTouchTarget),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CareFamilyIcon.forWire(
+                        type: item.type,
+                        careFamily: item.careFamily,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AwayPlanScheduleCopy.plannedCareRowTitle(item),
+                              style: theme.textTheme.bodyMedium,
                             ),
-                          ),
-                        ...detailLines.map(
-                          (line) => Text(
-                            line,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                        if (canPlanThis) ...[
-                          const SizedBox(height: 4),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: TextButton(
-                              key: Key(
-                                'away_plan_plan_this_${item.healthEntryId}',
+                            Text(
+                              scheduleLine,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
-                              onPressed: () =>
-                                  RescheduleOccurrenceFlow.fromAwayPlanRow(
-                                    context: context,
-                                    ref: ref,
-                                    item: item,
-                                    startsOn: startsOn,
-                                    endsOn: endsOn,
-                                  ),
-                              child: Text(l.awayPlanningPlanThis),
                             ),
-                          ),
-                        ],
-                      ],
-                    ),
+                            if (!item.isPaused && openStatusLine != null)
+                              CareEventStatusLineView(
+                                status: openStatusLine,
+                                theme: theme,
+                                colorScheme: colorScheme,
+                              ),
+                            if (!item.isPaused && inWindowLine != null)
+                              Text(
+                                inWindowLine,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ...detailLines.map(
+                              (line) => Text(
+                                line,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
+          if (canPlanThis)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                key: Key('away_plan_plan_this_${item.healthEntryId}'),
+                onPressed: () => RescheduleOccurrenceFlow.fromAwayPlanRow(
+                  context: context,
+                  ref: ref,
+                  item: item,
+                  startsOn: startsOn,
+                  endsOn: endsOn,
+                  absenceId: absenceId,
+                ),
+                child: Text(l.awayPlanningPlanThis),
+              ),
+            ),
+        ],
       ),
     );
   }

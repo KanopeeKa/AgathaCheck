@@ -54,6 +54,7 @@ class AwayPlanScheduleCopy {
       'due_before_absence' => CareEventStatusLine(
         text: l.awayPlanningOpenDueBeforeLeave(instant),
       ),
+      'in_window' => null,
       _ => CareEventStatusLine(text: instant),
     };
   }

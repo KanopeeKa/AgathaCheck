@@ -110,10 +110,10 @@ class _RescheduleOccurrenceSheetBodyState
           ),
           const SizedBox(height: 16),
           AppFormSection(
-            title: l.completedOn,
+            title: l.dueDate,
             children: [
               Semantics(
-                label: l.completedOn,
+                label: l.dueDate,
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(formatCalendarDateDisplay(_selected)),

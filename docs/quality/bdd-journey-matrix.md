@@ -173,8 +173,11 @@ feed.
 | Pri | Behaviour | Gherkin scenario | Playwright | Status |
 |-----|-----------|------------------|------------|--------|
 | P1 | Overdue on plan | Overdue open care shows its date on the away plan | `away.care.planning.spec.ts` | ✅ |
+| P1 | Estimated on plan | Completion-based care shows an estimated date on the away plan | `away.care.planning.spec.ts` | ✅ |
+| P1 | Change date | Changing a care date from the care item updates the next dates | `away.care.planning.spec.ts` | ✅ |
+| P1 | Planner accept | Accepting a planner suggestion reduces carer tasks during the absence | `away.care.planning.spec.ts` | ✅ |
 
-**Feature:** `away_care_planning.feature` (1) — **1/1 (100%)**
+**Feature:** `away_care_planning.feature` (4) — **4/4 (100%)**
 
 ---
 

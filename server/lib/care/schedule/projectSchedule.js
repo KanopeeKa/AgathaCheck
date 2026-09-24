@@ -9,6 +9,7 @@ import { dateToIsoDate } from '../../calendarDate.js';
 import { isEntrySeriesClosed, isOccurrenceDateWithinSeries } from '../../occurrenceLifecycle.js';
 import { advanceByFrequency } from '../../recurrenceHelper.js';
 import { scheduleTimesFromEntry } from '../../occurrenceScheduling.js';
+import { estimateOccurrences } from './estimateOccurrences.js';
 
 export const PROJECTION_STATUS_COMPLETE = 'complete';
 export const PROJECTION_STATUS_PARTIALLY_INDETERMINATE = 'partially_indeterminate';
@@ -190,6 +191,7 @@ export function projectEntryForPeriod(entry, occurrences, startsOn, endsOn, toda
   const anchor = entry.recurrence_anchor || 'from_completion';
 
   if (frequency === 'once') {
+    maybeMaterialiseBeforeWindowOpen(entry, occurrences, startsOn, items, knownSlots);
     const candidates = [
       dateToIsoDate(entry.next_due_date),
       dateToIsoDate(entry.start_date),
@@ -314,6 +316,33 @@ export function projectEntryForPeriod(entry, occurrences, startsOn, endsOn, toda
   }
 
   if (nextDue && nextDue < startsOn) {
+    const lastCompleted = lastCompletedDateFromOccurrences(occurrences, entry);
+    const estimate = estimateOccurrences({
+      entry,
+      openOccurrence: null,
+      lastCompletedOn: lastCompleted,
+      startsOn,
+      endsOn,
+      todayIso,
+    });
+    for (const dateIso of estimate.dates) {
+      for (const time of scheduleTimesFromEntry(entry)) {
+        const key = slotKey(dateIso, time);
+        if (!knownSlots.has(key)) {
+          items.push(buildItem(entry, dateIso, time, 'projected', 'pending'));
+          knownSlots.add(key);
+        }
+      }
+    }
+    if (estimate.dates.length > 0) {
+      if (estimate.dates.length >= 2) {
+        uncertainties.push({
+          health_entry_id: entry.id,
+          reason: UNCERTAINTY_REASON_FROM_COMPLETION_CHAIN,
+        });
+      }
+      return { items, uncertainties };
+    }
     uncertainties.push({
       health_entry_id: entry.id,
       reason: UNCERTAINTY_REASON_FROM_COMPLETION_PENDING,
@@ -321,6 +350,24 @@ export function projectEntryForPeriod(entry, occurrences, startsOn, endsOn, toda
   }
 
   return { items, uncertainties };
+}
+
+/**
+ * @param {object[]} occurrences
+ * @param {object} entry
+ * @returns {string|null}
+ */
+function lastCompletedDateFromOccurrences(occurrences, entry) {
+  const closed = (occurrences || [])
+    .filter((row) => row.status === 'completed' || row.status === 'skipped')
+    .sort((a, b) => String(b.scheduled_date).localeCompare(String(a.scheduled_date)));
+  const row = closed[0];
+  if (!row) return null;
+  const anchor = entry.recurrence_anchor || 'from_completion';
+  if (anchor === 'from_due_date') {
+    return dateToIsoDate(row.scheduled_date);
+  }
+  return dateToIsoDate(row.completed_on || row.scheduled_date);
 }
 
 /**

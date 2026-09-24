@@ -246,7 +246,15 @@ Weight monitoring rhythms cannot use generic occurrence complete or mark-taken w
 
 Raw `items[]` entries may include `window_relation: before_window` on materialised open occurrences surfaced before the window (D-ACP-001).
 
-**Reschedule response (D-ACP-009):** `{ occurrence, warnings[], next_due_date }` where each warning is `{ code, message?, params? }` (`outside_flexibility`, `earlier_only_later_move`, vet-schedule caution, gap hints). `reason_code: away_planner` is accepted on reschedule when applying a Care Planner suggestion.
+**Reschedule response (D-ACP-009):** `{ occurrence, warnings[], next_due_date }`. Each warning is a code-specific object (no shared `message`/`params` envelope):
+
+| `code` | Fields |
+|--------|--------|
+| `earlier_only_later_move` | `{ code }` |
+| `outside_flexibility` | `{ code, flexibility, max_shift_days, care_source? }` |
+| `interval_changed` | `{ code, previous_gap_days, usual_gap_days }` |
+
+`reason_code: away_planner` is accepted on reschedule when applying a Care Planner suggestion.
 
 ### Planned absences (`/api/planned-absences`) — CC-1
 

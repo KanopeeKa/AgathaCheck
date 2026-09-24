@@ -8,10 +8,6 @@ import {
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 
-function semanticsKey(page: Page, key: string) {
-  return page.locator(`[flt-semantics-identifier="${key}"]`);
-}
-
 /**
  * Care item (pet event) detail — occurrence actions and reschedule sheet.
  */
