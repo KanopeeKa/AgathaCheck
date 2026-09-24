@@ -255,6 +255,18 @@ export class AwayPlanningPage {
     }).toPass({ timeout: 45_000 });
   }
 
+  async expectPlannedCareRowShowsOverdue(
+    entryId: string,
+    overdueLabel: RegExp,
+  ): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const row = semanticsKey(this.page, `away_plan_planned_care_${entryId}`);
+      await expect(row).toBeVisible();
+      await expect(row).toContainText(overdueLabel);
+    }).toPass({ timeout: 45_000 });
+  }
+
   async openPlannedCareItem(entryId: string): Promise<void> {
     const row = semanticsKey(this.page, `away_plan_planned_care_${entryId}`);
     await expect(row).toBeVisible({ timeout: 30_000 });

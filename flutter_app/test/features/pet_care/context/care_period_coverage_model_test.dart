@@ -41,6 +41,18 @@ void main() {
           'times_of_day': ['09:00'],
           'first_scheduled_date': '2026-10-01',
           'last_scheduled_date': '2026-10-03',
+          'open_occurrence': {
+            'occurrence_id': 'occ-1',
+            'scheduled_date': '2026-09-20',
+            'open_status': 'overdue',
+          },
+          'in_window': {
+            'first_date': '2026-10-02',
+            'last_date': '2026-10-02',
+            'count': 1,
+            'date_basis': 'estimated',
+          },
+          'is_paused': false,
         },
       ],
       'coverage': {
@@ -56,6 +68,9 @@ void main() {
     expect(result.plannedCareItems, hasLength(2));
     expect(result.plannedCareItems.first.kind, PlannedCareKind.singleOnce);
     expect(result.plannedCareItems.last.kind, PlannedCareKind.recurringChain);
-    expect(result.showsChainAnchorExplainer, isTrue);
+    expect(result.plannedCareItems.last.openOccurrence?.openStatus, 'overdue');
+    expect(result.plannedCareItems.last.inWindow?.dateBasis, 'estimated');
+    expect(result.showsEstimateFootnote, isTrue);
+    expect(result.showsChainAnchorExplainer, isFalse);
   });
 }

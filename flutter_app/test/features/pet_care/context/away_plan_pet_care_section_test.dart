@@ -78,6 +78,35 @@ void main() {
     );
   }
 
+  testWidgets('shows estimate footnote instead of chain explainer', (
+    tester,
+  ) async {
+    final l = await AppLocalizations.delegate.load(const Locale('en'));
+    await tester.pumpWidget(
+      buildSection(
+        _coverage(
+          plannedCareItems: [
+            PlannedCareItem(
+              kind: PlannedCareKind.recurringChain,
+              healthEntryId: 'chain-1',
+              name: 'Weekly meds',
+              inWindow: const PlannedCareInWindow(
+                firstDate: '2026-10-03',
+                lastDate: '2026-10-03',
+                count: 1,
+                dateBasis: 'estimated',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text(l.awayPlanningEstimateFootnote), findsOneWidget);
+    expect(find.text(l.awayPlanningChainAnchorExplainer), findsNothing);
+  });
+
   testWidgets('renders unified planned care list with chain explainer once', (
     tester,
   ) async {

@@ -6624,6 +6624,33 @@ class AppLocalizationsFr extends AppLocalizations {
   String get awayPlanningIndeterminateGeneric => 'Horaire pas encore connu';
 
   @override
+  String awayPlanningOpenDueBeforeLeave(String date) {
+    return '$date · À faire avant votre départ';
+  }
+
+  @override
+  String awayPlanningPlannedOn(String date) {
+    return 'Prévu : $date';
+  }
+
+  @override
+  String awayPlanningEstimatedOn(String date) {
+    return 'Estimé : $date';
+  }
+
+  @override
+  String awayPlanningInWindowRange(int count, String first, String last) {
+    return '$count fois, $first – $last';
+  }
+
+  @override
+  String get awayPlanningEstimateFootnote =>
+      'Les dates estimées supposent que vous terminez les soins en retard aujourd\'hui, puis que vous respectez l\'intervalle habituel.';
+
+  @override
+  String get awayPlanningPaused => 'En pause';
+
+  @override
   String get petTagsTitle => 'Étiquettes';
 
   @override
