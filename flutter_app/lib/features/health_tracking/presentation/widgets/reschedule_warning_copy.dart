@@ -17,8 +17,8 @@ List<String> rescheduleWarningMessages(
         final careSource = warning['care_source'] as String? ?? '';
         if (flexibility == 'earlier_only') {
           messages.add(l.rescheduleEarlierOnlyLaterCaution);
-        } else if (careSource == 'vet_instruction'
-            || careSource == 'treatment_schedule') {
+        } else if (careSource == 'vet_instruction' ||
+            careSource == 'treatment_schedule') {
           messages.add(l.rescheduleVetScheduleCaution);
         } else {
           messages.add(l.rescheduleFlexibilityCaution);

@@ -305,7 +305,9 @@ class _PlannedCareRow extends ConsumerWidget {
                 ),
                 borderRadius: BorderRadius.circular(8),
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: _kMinTouchTarget),
+                  constraints: const BoxConstraints(
+                    minHeight: _kMinTouchTarget,
+                  ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
