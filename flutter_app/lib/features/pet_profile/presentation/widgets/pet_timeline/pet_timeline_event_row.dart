@@ -77,6 +77,7 @@ class PetTimelineEventRow extends StatelessWidget {
             ),
           ),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             PetTimelineNode(
               icon: petTimelineIcon(segment),

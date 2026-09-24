@@ -98,13 +98,19 @@ void main() {
       );
 
       final rowRect = tester.getRect(find.byType(PetTimelineEventRow));
+      final nodeRect = tester.getRect(find.byType(PetTimelineNode));
       final connectorRect = tester.getRect(
         find.byKey(const Key('pet_timeline_node_connector')),
       );
 
       expect(
+        nodeRect.top,
+        rowRect.top,
+        reason: 'node stays top-aligned when the card is taller',
+      );
+      expect(
         connectorRect.top,
-        rowRect.top + PetTimelineNode.nodeSize,
+        nodeRect.bottom,
         reason: 'connector starts just below the spine node',
       );
       expect(
