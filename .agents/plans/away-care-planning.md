@@ -123,17 +123,17 @@ Fix away-plan display honesty (overdue/open occurrences visible with real dates)
 
 ```yaml
 autonomy: active
-current_phase: acp-3
-last_completed_phase: acp-1
+current_phase: acp-4
+last_completed_phase: acp-3
 halt_reason: null
-next_action: "continue phase acp-3 on branch cursor/away-care-planning-acp3-43b3"
+next_action: "start phase acp-4: checkout cursor/away-care-planning-acp4-43b3"
 artifact_ref:
-  branch: cursor/away-care-planning-acp3-43b3
+  branch: cursor/away-care-planning-integration-43b3
   plan_path: .agents/plans/away-care-planning.md
-  plan_commit: a193b04609fea9fe71b64a1bb7bc485ceafc55f4
+  plan_commit: 2b921e4f81500f97a5e449e9bf0a98ccb1ab645f
   snapshot_path: .agents/plans/away-care-planning.snapshot.json
-  snapshot_commit: a193b04609fea9fe71b64a1bb7bc485ceafc55f4
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1310"]
+  snapshot_commit: 2b921e4f81500f97a5e449e9bf0a98ccb1ab645f
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
