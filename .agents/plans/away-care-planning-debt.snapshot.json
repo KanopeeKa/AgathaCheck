@@ -4,7 +4,7 @@
   "approved_at": "2026-09-24T12:00:00Z",
   "approved_by": "User chat 2026-09-24 — implement all review-follow-up items with /execute-plan full autonomy",
   "approved_until": "2026-09-26T12:00:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1323,
@@ -42,14 +42,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1324",
+      "pr_head_sha": "651b7120f2cd84550401c469a0bddf486f175049"
     }
   ],
-  "content_hash": "sha256:db43e74adb928edb61b1ce720069b326ab075653364b3b43ffdb9e941752641c"
+  "content_hash": "sha256:0004f96cea00a04da838d9cf2faec1ad21e9812f398b7c2b4fa33ad1c081b36e"
 }

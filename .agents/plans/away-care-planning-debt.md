@@ -21,3 +21,22 @@ Close Copilot/CodeQL review follow-ups from integration PR #1317 without changin
 Single PR to `main`: server projection/planner fixes, Flutter reschedule/away-plan UX, E2E seed hardening, docs/matrix/api-reference, hygiene.
 
 Branch: `cursor/away-care-planning-debt-43b3`
+
+## Runtime state
+
+```yaml
+autonomy: completed
+current_phase: null
+last_completed_phase: debt-1
+halt_reason: null
+next_action: "plan complete"
+artifact_ref:
+  branch: cursor/away-care-planning-debt-43b3
+  plan_path: .agents/plans/away-care-planning-debt.md
+  plan_commit: 0c0b5d493215c2806dd58f0a643bcf755f1e314f
+  snapshot_path: .agents/plans/away-care-planning-debt.snapshot.json
+  snapshot_commit: 0c0b5d493215c2806dd58f0a643bcf755f1e314f
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```
