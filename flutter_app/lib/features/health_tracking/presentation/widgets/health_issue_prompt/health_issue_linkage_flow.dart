@@ -118,7 +118,6 @@ class HealthIssueLinkageFlow {
       await ref
           .read(healthIssueNotifierProvider(petId).notifier)
           .linkEvent(picked.id, entryId);
-      ref.invalidate(petHealthEntriesProvider(petId));
       if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
@@ -153,7 +152,6 @@ class HealthIssueLinkageFlow {
       await ref
           .read(healthIssueNotifierProvider(petId).notifier)
           .linkEvent(issue.id, entryId);
-      ref.invalidate(petHealthEntriesProvider(petId));
       if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
