@@ -12,10 +12,12 @@ import '../../../../health_tracking/presentation/widgets/reschedule_occurrence_f
 import '../away_plan_schedule_copy.dart';
 import '../care_period_coverage_copy.dart';
 import '../providers/care_context_providers.dart';
+import 'away_plan_suggestions_section.dart';
 
 class AwayPlanPetCareSection extends ConsumerWidget {
   const AwayPlanPetCareSection({
     super.key,
+    required this.absenceId,
     required this.petId,
     required this.petName,
     required this.startsOn,
@@ -23,6 +25,7 @@ class AwayPlanPetCareSection extends ConsumerWidget {
     required this.onRetry,
   });
 
+  final String absenceId;
   final String petId;
   final String petName;
   final String startsOn;
@@ -73,6 +76,7 @@ class AwayPlanPetCareSection extends ConsumerWidget {
             ),
           ),
           data: (result) => _PetCareBody(
+            absenceId: absenceId,
             petId: petId,
             petName: petName,
             result: result,
@@ -157,6 +161,7 @@ class _PetHeaderTapTarget extends ConsumerWidget {
 
 class _PetCareBody extends StatelessWidget {
   const _PetCareBody({
+    required this.absenceId,
     required this.petId,
     required this.petName,
     required this.result,
@@ -164,6 +169,7 @@ class _PetCareBody extends StatelessWidget {
     required this.endsOn,
   });
 
+  final String absenceId;
   final String petId;
   final String petName;
   final CarePeriodCoverageResult result;
@@ -194,6 +200,13 @@ class _PetCareBody extends StatelessWidget {
             ),
           ),
         ],
+        AwayPlanSuggestionsSection(
+          absenceId: absenceId,
+          petId: petId,
+          startsOn: startsOn,
+          endsOn: endsOn,
+          plannedCareItems: result.plannedCareItems,
+        ),
         if (result.plannedCareItems.isNotEmpty) ...[
           const SizedBox(height: 16),
           Semantics(

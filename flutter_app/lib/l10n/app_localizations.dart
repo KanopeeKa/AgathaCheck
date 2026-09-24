@@ -11626,6 +11626,48 @@ abstract class AppLocalizations {
   /// **'Plan this'**
   String get awayPlanningPlanThis;
 
+  /// No description provided for @plannerMoveLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Move from {from} to {to}'**
+  String plannerMoveLine(String from, String to);
+
+  /// No description provided for @plannerReasonBeforeDeparture.
+  ///
+  /// In en, this message translates to:
+  /// **'Done before you leave, so your carer doesn\'t need to.'**
+  String get plannerReasonBeforeDeparture;
+
+  /// No description provided for @plannerReasonAfterReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Done after you\'re back, so your carer doesn\'t need to.'**
+  String get plannerReasonAfterReturn;
+
+  /// No description provided for @plannerCarerTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 care task} other{{count} care tasks}} for your carer during this absence.'**
+  String plannerCarerTasks(int count);
+
+  /// No description provided for @plannerAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get plannerAccept;
+
+  /// No description provided for @plannerNotNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get plannerNotNow;
+
+  /// No description provided for @plannerDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested dates are planning helpers, not medical advice.'**
+  String get plannerDisclaimer;
+
   /// No description provided for @occurrenceRescheduled.
   ///
   /// In en, this message translates to:

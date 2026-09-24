@@ -135,11 +135,15 @@ class RescheduleOccurrenceFlow {
     }
   }
 
-  static void _invalidateAfterReschedule(WidgetRef ref, String entryId) {
+  static void invalidateAfterReschedule(WidgetRef ref, String entryId) {
     ref.invalidate(entryOccurrencesProvider(entryId));
     ref.invalidate(entryPastOccurrencesProvider(entryId));
     ref.invalidate(entryHistoryProvider(entryId));
     ref.invalidate(carePeriodCoverageProvider);
+  }
+
+  static void _invalidateAfterReschedule(WidgetRef ref, String entryId) {
+    invalidateAfterReschedule(ref, entryId);
   }
 
   static Future<void> _undoReschedule(

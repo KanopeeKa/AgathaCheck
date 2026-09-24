@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
+import 'package:pet_profile_app/features/pet_care/context/domain/entities/absence_care_plan.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/care_period_coverage.dart';
 import 'package:pet_profile_app/features/pet_care/context/presentation/providers/care_context_providers.dart';
 import 'package:pet_profile_app/features/pet_care/context/presentation/widgets/away_plan_pet_care_section.dart';
@@ -33,10 +34,25 @@ CarePeriodCoverageResult _coverage({
 void main() {
   const pet = Pet(id: 'pet-1', name: 'Luna', species: 'dog', breed: 'Mixed');
 
+  AbsenceCarePlan _emptyCarePlan() => const AbsenceCarePlan(
+    absenceId: 'abs-1',
+    today: '2026-09-20',
+    startsOn: '2026-10-01',
+    endsOn: '2026-10-05',
+    pets: [
+      AbsenceCarePlanPet(
+        petId: 'pet-1',
+        suggestions: [],
+        carerTasks: CarePlannerCarerTasks(count: 0, byEntry: []),
+      ),
+    ],
+  );
+
   Widget buildSection(CarePeriodCoverageResult coverage) {
     return ProviderScope(
       overrides: [
         petByIdProvider('pet-1').overrideWith((ref) async => pet),
+        absenceCarePlanProvider('abs-1').overrideWith((ref) async => _emptyCarePlan()),
         carePeriodCoverageProvider((
           petId: 'pet-1',
           startsOn: '2026-10-01',
@@ -52,6 +68,7 @@ void main() {
             GoRoute(
               path: '/',
               builder: (_, __) => AwayPlanPetCareSection(
+                absenceId: 'abs-1',
                 petId: 'pet-1',
                 petName: 'Luna',
                 startsOn: '2026-10-01',
@@ -205,6 +222,7 @@ void main() {
       ProviderScope(
         overrides: [
           petByIdProvider('pet-1').overrideWith((ref) async => pet),
+          absenceCarePlanProvider('abs-1').overrideWith((ref) async => _emptyCarePlan()),
           carePeriodCoverageProvider((
             petId: 'pet-1',
             startsOn: '2026-10-01',
@@ -231,6 +249,7 @@ void main() {
               GoRoute(
                 path: '/pc/away/abs-1',
                 builder: (_, __) => AwayPlanPetCareSection(
+                  absenceId: 'abs-1',
                   petId: 'pet-1',
                   petName: 'Luna',
                   startsOn: '2026-10-01',

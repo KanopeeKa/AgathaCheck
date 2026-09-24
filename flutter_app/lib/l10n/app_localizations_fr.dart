@@ -6685,6 +6685,40 @@ class AppLocalizationsFr extends AppLocalizations {
   String get awayPlanningPlanThis => 'Planifier';
 
   @override
+  String plannerMoveLine(String from, String to) {
+    return 'Déplacer du $from au $to';
+  }
+
+  @override
+  String get plannerReasonBeforeDeparture =>
+      'À faire avant votre départ, pour que votre gardien n\'ait pas à s\'en occuper.';
+
+  @override
+  String get plannerReasonAfterReturn =>
+      'À faire après votre retour, pour que votre gardien n\'ait pas à s\'en occuper.';
+
+  @override
+  String plannerCarerTasks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tâches de soin',
+      one: '1 tâche de soin',
+    );
+    return '$_temp0 pour votre gardien pendant cette absence.';
+  }
+
+  @override
+  String get plannerAccept => 'Accepter';
+
+  @override
+  String get plannerNotNow => 'Pas maintenant';
+
+  @override
+  String get plannerDisclaimer =>
+      'Les dates suggérées sont des aides à la planification, pas des conseils médicaux.';
+
+  @override
   String get occurrenceRescheduled => 'Date modifiée';
 
   @override

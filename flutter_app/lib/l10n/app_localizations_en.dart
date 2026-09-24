@@ -6577,6 +6577,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get awayPlanningPlanThis => 'Plan this';
 
   @override
+  String plannerMoveLine(String from, String to) {
+    return 'Move from $from to $to';
+  }
+
+  @override
+  String get plannerReasonBeforeDeparture =>
+      'Done before you leave, so your carer doesn\'t need to.';
+
+  @override
+  String get plannerReasonAfterReturn =>
+      'Done after you\'re back, so your carer doesn\'t need to.';
+
+  @override
+  String plannerCarerTasks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count care tasks',
+      one: '1 care task',
+    );
+    return '$_temp0 for your carer during this absence.';
+  }
+
+  @override
+  String get plannerAccept => 'Accept';
+
+  @override
+  String get plannerNotNow => 'Not now';
+
+  @override
+  String get plannerDisclaimer =>
+      'Suggested dates are planning helpers, not medical advice.';
+
+  @override
   String get occurrenceRescheduled => 'Date changed';
 
   @override
