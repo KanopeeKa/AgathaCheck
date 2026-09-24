@@ -40,7 +40,7 @@ Future<OccurrenceMarkDoneResult?> showOccurrenceStackSheet(
   onRecordHead,
   required Future<void> Function() onSkipAllMissed,
 }) {
-  final returnTo = currentShellLocation(context);
+  final returnTo = tryCurrentShellLocation(context);
   return showModalBottomSheet<OccurrenceMarkDoneResult>(
     context: context,
     isScrollControlled: true,
