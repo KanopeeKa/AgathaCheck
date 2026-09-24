@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -429,11 +430,34 @@ void main() {
       );
 
       test(
+        'fetchAllPets does not treat FormatException mentioning SocketException as transport',
+        () async {
+          await local.addPet(testModel);
+          final remote = FakeRemoteDataSource(
+            fetchException: FormatException('SocketException in payload'),
+          );
+          final repo = PetRepositoryImpl(
+            local,
+            remoteDataSource: remote,
+            token: 'tok',
+          );
+
+          await expectLater(
+            repo.fetchAllPets(),
+            throwsA(isA<FormatException>()),
+          );
+        },
+      );
+
+      test(
         'fetchAllPets returns stale cache on transport failure when cache non-empty',
         () async {
           await local.addPet(testModel);
           final remote = FakeRemoteDataSource(
-            fetchException: Exception('SocketException: failed host lookup'),
+            fetchException: ClientException(
+              'Connection failed',
+              Uri.parse('http://localhost/api/pets/all'),
+            ),
           );
           final repo = PetRepositoryImpl(
             local,

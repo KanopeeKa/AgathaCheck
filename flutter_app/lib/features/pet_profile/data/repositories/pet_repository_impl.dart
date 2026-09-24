@@ -70,17 +70,9 @@ class PetRepositoryImpl implements PetRepository {
   @override
   Future<PetListFetchResult> fetchAllPets() async {
     if (remoteDataSource != null && token != null && token!.isNotEmpty) {
+      late final List<PetModel> remotePets;
       try {
-        final remotePets = await remoteDataSource!.getAllPetsIncludingOrg(
-          token!,
-        );
-        final merged = await _mergeRemoteWithLocalPhotos(remotePets);
-        return PetListFetchResult(
-          pets: merged.map((m) => m.toEntity()).toList(),
-          source: PetListFetchSource.remote,
-          isStale: false,
-          fetchedAt: DateTime.now().toUtc(),
-        );
+        remotePets = await remoteDataSource!.getAllPetsIncludingOrg(token!);
       } on PetRemoteException catch (e) {
         debugPrint(
           'PetRepository: Remote error (${e.statusCode}): ${e.message}',
@@ -102,6 +94,13 @@ class PetRepositoryImpl implements PetRepository {
           fetchedAt: DateTime.now().toUtc(),
         );
       }
+      final merged = await _mergeRemoteWithLocalPhotos(remotePets);
+      return PetListFetchResult(
+        pets: merged.map((m) => m.toEntity()).toList(),
+        source: PetListFetchSource.remote,
+        isStale: false,
+        fetchedAt: DateTime.now().toUtc(),
+      );
     }
     final models = await _localDataSource.getAllPets();
     return PetListFetchResult(
