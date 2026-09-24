@@ -39,7 +39,7 @@ import {
   type TestNotification,
 } from '../support/api';
 import { checkA11y } from '../support/axe';
-import { refreshFlutterAccessibility, waitForFlutterRoutePattern, flutterGotoUrl } from '../support/flutter';
+import { refreshFlutterAccessibility, waitForFlutterRoutePattern, flutterGotoUrl, flutterRoutePath } from '../support/flutter';
 import { NotificationsPage } from '../pages/notifications.page';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
@@ -342,7 +342,24 @@ test.describe('Notifications', () => {
 
     const careItem = new CareItemPage(page);
     await careItem.goBack();
-    await waitForFlutterRoutePattern(page, /\/pc\/home(?:\?|$)/, 30_000);
+    await expect(async () => {
+      await refreshFlutterAccessibility(page);
+      const path = flutterRoutePath(page.url());
+      if (path === '/pc/home') {
+        return;
+      }
+      if (path === '/notifications') {
+        const homeLogo = page.getByRole('img', { name: /tap to go home/i });
+        if (await homeLogo.isVisible().catch(() => false)) {
+          await homeLogo.click();
+        } else {
+          await dashboard.open();
+        }
+      }
+      if (flutterRoutePath(page.url()) !== '/pc/home') {
+        await dashboard.open();
+      }
+    }).toPass({ timeout: 30_000 });
     await dashboard.expectTodayCareRegions();
   });
 

@@ -5,6 +5,7 @@ import {
   expectAppBarTitle,
   filterChipByName,
   flutterGotoUrl,
+  flutterRoutePath,
   isExperienceShellVisible,
   refreshFlutterAccessibility,
 } from '../support/flutter';
@@ -191,24 +192,35 @@ export class NotificationsPage {
   }
 
   async clickNotification(titleText: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
     const escaped = titleText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const row = this.page
-      .getByRole('button', {
-        name: new RegExp(`(?:Care|Organisation|Soins).*${escaped}`, 'i'),
-      })
-      .first();
-    await row.waitFor({ timeout: 15_000 });
-    await row.scrollIntoViewIfNeeded();
-    // Flutter web often misses InkWell when Playwright clicks the semantics node.
-    const box = await row.boundingBox();
-    if (box) {
-      await this.page.mouse.click(box.x + box.width * 0.75, box.y + box.height / 2);
-    } else {
-      await row.focus();
-      await this.page.keyboard.press('Enter');
-    }
-    await this.page.waitForTimeout(800);
+    const rowPattern = new RegExp(`(?:Care|Organisation|Soins).*${escaped}`, 'i');
+    const careItemRoute = /\/pet\/[^/]+\/events\/[^/?#]+/;
+
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const row = this.page
+        .getByRole('button', { name: rowPattern })
+        .or(
+          this.page.getByRole('button', {
+            name: new RegExp(`(?:Care|Soins).*Overdue.*${escaped}`, 'i'),
+          }),
+        )
+        .first();
+      await row.waitFor({ timeout: 15_000 });
+      await row.scrollIntoViewIfNeeded();
+      const box = await row.boundingBox();
+      if (box) {
+        await this.page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+      } else {
+        await row.focus();
+        await this.page.keyboard.press('Enter');
+      }
+      await this.page.waitForTimeout(1_500);
+      const path = flutterRoutePath(this.page.url());
+      if (!careItemRoute.test(path)) {
+        throw new Error(`Notification tap did not navigate (path=${path})`);
+      }
+    }).toPass({ timeout: 60_000 });
   }
 
   /** Digit locator for the experience-shell bell badge (Flutter web Stack semantics). */

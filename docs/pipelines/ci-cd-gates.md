@@ -248,7 +248,7 @@ display strings exactly.
 | GitHub check name (job) | Workflow file | What it enforces |
 |-------------------------|---------------|------------------|
 | `startup-smoke / PR startup smoke` | `_reusable-pr-startup-smoke.yml` | Postgres bootstrap, `node bin/start.js`, `/backend/health` + root |
-| `test-suite / Governance (BDD + file size)` | `_reusable-test.yml` | BDD mapping gate (`check_bdd_coverage.js`; run `--report-only` for live ≥150 mapped, totals drift), priority tags, file size ≤ 500 lines |
+| `test-suite / Governance (BDD + file size)` | `_reusable-test.yml` | BDD mapping gate (`check_bdd_coverage.js`; run `--report-only` for live counts — gate is 68% of active scenarios), priority tags, file size ≤ 500 lines |
 | `flutter-analyze / Flutter (analyze & format)` | `_reusable-flutter-analyze.yml` | format, legal sync, codegen, analyze; uploads `flutter-prep-<sha>` |
 | `flutter-test-* / Flutter tests (<shard>)` | `_reusable-flutter-test-shard.yml` | domain test shards (pet-core, pet-screens, pet-widgets, health, rest-a, rest-b, experience, pet-care) with per-shard coverage |
 | `flutter-coverage / Flutter domain coverage` | `_reusable-flutter-coverage.yml` | merge shard lcov, domain coverage ≥ 65% |
@@ -478,7 +478,7 @@ Confirm **`Deploy UAT / Prod ready`** appears in the PROD environment required c
 
 Live counts: `node e2e/scripts/check_bdd_coverage.js --report-only`
 
-Gate: **≥150 mapped scenarios** (ratchet in `e2e/scripts/check_bdd_coverage.js`; run `--report-only` for live counts — currently 150/241 mapped, totals drift as features grow). Do not hard-code scenario totals in workflow comments.
+Gate: **68% of active scenarios mapped** (computed by `e2e/scripts/check_bdd_coverage.js`; run `--report-only` for live counts). Do not hard-code scenario totals in docs or workflow comments.
 
 ---
 

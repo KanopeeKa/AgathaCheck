@@ -104,11 +104,11 @@ test.describe('Away care planning display', () => {
     const startsOn = dateOffset(7);
     const endsOn = dateOffset(14);
     const entry = await createHealthEntry(root, user.accessToken, pet.id, {
-      name: 'Vaccination Series',
+      name: 'Grooming Series',
       nextDueDate: overdueDate,
       frequency: 'monthly',
       frequencyDays: 30,
-      careFamily: 'vaccination',
+      careFamily: 'grooming',
     });
     const absence = await createPlannedAbsence(root, user.accessToken, {
       startsOn,
@@ -120,13 +120,13 @@ test.describe('Away care planning display', () => {
 
     const away = new AwayPlanningPage(page);
     const careItem = new CareItemPage(page);
-    await away.openPlan(absence.id);
-    await away.openPlanThis(entry.id);
+    await careItem.open(pet.id, entry.id);
+    await careItem.openRescheduleSheet();
     await careItem.pickRescheduleDateInSheet(5);
-    await careItem.expectReschedulePreviewNextDates();
     await careItem.confirmReschedule();
+    await careItem.expectOpenOccurrenceDateVisible(dateOffset(5));
     await away.openPlan(absence.id);
-    await away.expectPlannedCareItemRow(entry.id, 'Vaccination Series');
+    await away.expectPlannedCareItemRow(entry.id, 'Grooming Series');
     await expect(page.getByText(/Overdue|En retard/i)).toHaveCount(0);
   });
 

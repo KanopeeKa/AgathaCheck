@@ -26,7 +26,7 @@ Playwright specs in `playwright/tests/` are annotated with `@bdd <feature>` comm
 
 ### Current coverage
 
-Run `node e2e/scripts/check_bdd_coverage.js --report-only` for live gate counts (currently ≥150 mapped of 241 total; totals drift as features grow).
+Run `node e2e/scripts/check_bdd_coverage.js --report-only` for live gate counts (gate is 68% of active scenarios, computed by the script).
 
 | Playwright spec | BDD feature | Scenarios mapped |
 |-----------------|-------------|-----------------|
