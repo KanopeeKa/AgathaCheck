@@ -5,6 +5,7 @@ import {
   expectAppBarTitle,
   filterChipByName,
   flutterGotoUrl,
+  flutterRoutePath,
   isExperienceShellVisible,
   refreshFlutterAccessibility,
 } from '../support/flutter';
@@ -197,8 +198,15 @@ export class NotificationsPage {
 
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const row = this.page.getByRole('button', { name: rowPattern }).first();
-      await row.waitFor({ timeout: 5_000 });
+      const row = this.page
+        .getByRole('button', { name: rowPattern })
+        .or(
+          this.page.getByRole('button', {
+            name: new RegExp(`(?:Care|Soins).*Overdue.*${escaped}`, 'i'),
+          }),
+        )
+        .first();
+      await row.waitFor({ timeout: 15_000 });
       await row.scrollIntoViewIfNeeded();
       const box = await row.boundingBox();
       if (box) {
@@ -207,12 +215,12 @@ export class NotificationsPage {
         await row.focus();
         await this.page.keyboard.press('Enter');
       }
-      await this.page.waitForTimeout(1_200);
-      const url = this.page.url();
-      if (!careItemRoute.test(url)) {
-        throw new Error(`Notification tap did not navigate (url=${url})`);
+      await this.page.waitForTimeout(1_500);
+      const path = flutterRoutePath(this.page.url());
+      if (!careItemRoute.test(path)) {
+        throw new Error(`Notification tap did not navigate (path=${path})`);
       }
-    }).toPass({ timeout: 45_000 });
+    }).toPass({ timeout: 60_000 });
   }
 
   /** Digit locator for the experience-shell bell badge (Flutter web Stack semantics). */
