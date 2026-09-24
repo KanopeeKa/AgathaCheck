@@ -10,7 +10,7 @@ tags: [quality, metrics]
 
 Living metrics for Agatha Track quality. Update when CI or test counts change materially.
 
-**Last updated:** 2026-08-04 (org-ux-v3 phase 11 hardening)
+**Last updated:** 2026-09-24 (BDD counts de-hard-coded; live values from `check_bdd_coverage.js --report-only`)
 
 ---
 
@@ -22,8 +22,8 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | Flutter integration | 1 flow | CI on `main` (blocking) |
 | Node Jest | 544 | CI on `main` |
 | Playwright E2E | 79+ | Pre-UAT E2E (9-shard Pet Care, post-merge) |
-| BDD Gherkin scenarios | 266 | Spec (hybrid — Playwright executor) |
-| BDD → Playwright coverage | **70.7% (188/266)** | CI gate **180/266** — `e2e/scripts/check_bdd_coverage.js` |
+| BDD Gherkin scenarios | live (script) | Spec (hybrid — Playwright executor) |
+| BDD → Playwright coverage | **80.2% (146/182 active)** | CI gate **123/182 active (68%)** — `e2e/scripts/check_bdd_coverage.js` |
 | Test quality scorecard | D1–D6 metrics | `node e2e/scripts/check_test_quality.js --report-only` (CI governance) |
 | Pre-UAT shard orphans | **0** | `e2e/scripts/validate-shard-manifest.mjs` |
 | @smoke-ci PR canary | **5** | `ci-e2e-canary` job |
@@ -42,7 +42,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | Check | Blocks `main`? |
 |---|---|
 | `flutter analyze` | Yes |
-| BDD scenarios mapped ≥ 180/266 | Yes |
+| BDD scenarios mapped ≥ 68% of active | Yes |
 | Hand-written file size ≤ 500 lines | Yes (grandfather ratchet) |
 
 ## Coverage

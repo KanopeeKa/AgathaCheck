@@ -7,7 +7,7 @@
  *
  * Gates (when not --report-only):
  *   - D2 mapping >= check_bdd_coverage gate (delegates)
- *   - D4 orphans == 0 (validate-shard-manifest, report-only until F3 enforces)
+ *   - D4 orphans == 0 (validate-shard-manifest, enforced in CI)
  */
 'use strict';
 
