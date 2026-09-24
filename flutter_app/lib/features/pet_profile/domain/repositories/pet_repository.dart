@@ -1,4 +1,5 @@
 import '../entities/pet.dart';
+import '../entities/pet_list_fetch_result.dart';
 
 /// Abstract repository interface for pet profile operations.
 ///
@@ -7,7 +8,12 @@ import '../entities/pet.dart';
 /// not on concrete implementations.
 abstract class PetRepository {
   /// Retrieves all stored pet profiles.
+  ///
+  /// Prefer [fetchAllPets] when UI needs stale/offline metadata.
   Future<List<Pet>> getAllPets();
+
+  /// Loads pets with explicit source/stale metadata (D2 hybrid offline reads).
+  Future<PetListFetchResult> fetchAllPets();
 
   /// Retrieves a single pet by its [id].
   ///

@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "plan_id": "active-codebase-batch-c-cbb8",
+  "approved_at": "2026-09-24T10:10:00Z",
+  "approved_by": "standing grant — user chat 2026-09-22/23 + /execute-plan Batch C 2026-09-24 (D1-D7; batches A→B→C)",
+  "approved_until": "2026-09-26T10:10:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1308,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "C1 D2 pet cache policy (Package 7)",
+      "branch": "cursor/active-codebase-c1-pet-cache-cbb8",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-c-cbb8.*",
+        "docs/engineering/active-codebase-baseline/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/features/experience/presentation/screens/experience_home_screens.dart",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_all_pets_screen.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/**",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/lib/l10n/app_en.arb",
+        "flutter_app/lib/l10n/app_fr.arb"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-mobile",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1309",
+      "pr_head_sha": "28b52081"
+    },
+    {
+      "id": "2",
+      "title": "C2 canonical health store (Package 8)",
+      "branch": "cursor/active-codebase-c2-health-store-cbb8",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-c-cbb8.*",
+        "docs/engineering/active-codebase-baseline/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_profile/presentation/controllers/**",
+        "flutter_app/test/features/health_tracking/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "e2e/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-mobile",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:791df6ddddf3ac6b63318e071bf8d245601c1963c96553f4669f35409110f6ba"
+}
