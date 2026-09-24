@@ -37,11 +37,11 @@ next_action: "plan complete"
 artifact_ref:
   branch: cursor/batch-c-plan-complete-cbb8
   plan_path: .agents/plans/active-codebase-batch-c-cbb8.md
-  plan_commit: c36ba426d6192c1cadd6e0ee37ae9541ad361021
+  plan_commit: adc304754d59daeb629730ba9901555d35f0765b
   snapshot_path: .agents/plans/active-codebase-batch-c-cbb8.snapshot.json
-  snapshot_commit: c36ba426d6192c1cadd6e0ee37ae9541ad361021
+  snapshot_commit: adc304754d59daeb629730ba9901555d35f0765b
 open_prs: []
-merge_commits: {}
+merge_commits: {"1":"ae92c4d3","2":"234ba2f8"}
 debt_issue_refs: []
 ```
 
