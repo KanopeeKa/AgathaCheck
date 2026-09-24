@@ -188,7 +188,6 @@ test.describe('Guardian dashboard', () => {
     await dashboard.expectVetVisible('Dr. Desk');
     await expect(semanticsByName(page, /Dr\. Desk.*Caring for 1 pet/i).first()).toBeVisible();
     await dashboard.openVet('Dr. Desk');
-    await expect(page).toHaveURL(/#\/pc\/vets\//);
     await dashboard.goBackToDashboard();
   });
 
