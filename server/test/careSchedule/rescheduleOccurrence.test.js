@@ -41,6 +41,7 @@ function createHarness(entry, initialOccurrences = []) {
   const insertedDates = [];
   let nextDueDate = '2026-09-01';
   let advanceSeriesCalled = false;
+  let syncNextDueCalled = false;
 
   const pool = {
     query: async (sql, params) => {
@@ -102,8 +103,19 @@ function createHarness(entry, initialOccurrences = []) {
         return { rows: [] };
       }
 
+      if (
+        sql.includes('SELECT scheduled_date, scheduled_time FROM health_occurrences')
+        && sql.includes("status = 'pending'")
+        && sql.includes('ORDER BY scheduled_date ASC')
+      ) {
+        const pending = occurrences
+          .filter((o) => o.health_entry_id === params[0] && o.status === 'pending')
+          .sort((a, b) => a.scheduled_date - b.scheduled_date);
+        return { rows: pending.length ? [pending[0]] : [] };
+      }
+
       if (sql.includes('UPDATE health_entries SET next_due_date')) {
-        advanceSeriesCalled = true;
+        syncNextDueCalled = true;
         nextDueDate = params[0];
         return { rows: [] };
       }
@@ -126,6 +138,9 @@ function createHarness(entry, initialOccurrences = []) {
     },
     get advanceSeriesCalled() {
       return advanceSeriesCalled;
+    },
+    get syncNextDueCalled() {
+      return syncNextDueCalled;
     },
   };
 }
@@ -195,7 +210,7 @@ describe('rescheduleOccurrence', () => {
     });
   });
 
-  it('does not advance series or change entry cadence', async () => {
+  it('syncs next_due_date without advancing the series', async () => {
     const entry = makeEntry({
       frequency: 'weekly',
       frequency_interval: 1,
@@ -204,7 +219,7 @@ describe('rescheduleOccurrence', () => {
     const occ = makeOccurrence({ scheduled_date: new Date('2026-09-01') });
     const harness = createHarness(entry, [occ]);
 
-    await rescheduleOccurrence(harness.pool, {
+    const result = await rescheduleOccurrence(harness.pool, {
       entry,
       occurrenceId: occ.id,
       userId: 'user-1',
@@ -213,6 +228,8 @@ describe('rescheduleOccurrence', () => {
 
     expect(harness.advanceSeriesCalled).toBe(false);
     expect(harness.insertedDates).toEqual([]);
-    expect(harness.nextDueDate).toBe('2026-09-01');
+    expect(harness.syncNextDueCalled).toBe(true);
+    expect(harness.nextDueDate).toBe('2026-09-08');
+    expect(result.nextDueDate).toBe('2026-09-08');
   });
 });

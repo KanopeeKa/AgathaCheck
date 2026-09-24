@@ -10,6 +10,14 @@ export { advanceSeries, resolveNextSeriesDate } from './advanceSeries.js';
 export { adjustCadence } from './adjustCadence.js';
 export { completeOccurrence } from './completeOccurrence.js';
 export { rescheduleOccurrence } from './rescheduleOccurrence.js';
+export {
+  resolveScheduleFlexibility,
+  intervalDaysForEntry,
+} from './scheduleFlexibility.js';
+export {
+  validateReschedule,
+  loadLastClosedOccurrenceDateIso,
+} from './validateReschedule.js';
 export { skipMissedOccurrences, skipOccurrence } from './skipOccurrence.js';
 export { pauseSeries, resumeSeries } from './pauseResumeSeries.js';
 export { undoLastAction } from './undoLastAction.js';
