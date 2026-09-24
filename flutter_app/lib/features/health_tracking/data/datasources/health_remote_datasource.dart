@@ -7,7 +7,16 @@ import '../../../../core/utils/calendar_date.dart';
 import '../models/health_entry_model.dart';
 import '../models/health_history_model.dart';
 import '../models/health_occurrence_model.dart';
-import 'health_occurrence_remote_datasource.dart';
+import 'health_occurrence_remote_datasource.dart'
+    show
+        RescheduleOccurrenceRemoteResult,
+        fetchOpenOccurrences,
+        fetchPastOccurrences,
+        postCompleteOccurrence,
+        postRescheduleOccurrence,
+        postSkipMissedOccurrences,
+        postSkipOccurrence,
+        postUndoOccurrence;
 import 'health_weight_completion_remote.dart';
 
 class EventPhoto {
@@ -80,6 +89,12 @@ abstract class HealthRemoteDataSource {
     String entryId,
     String occurrenceId,
   );
+  Future<RescheduleOccurrenceRemoteResult> rescheduleOccurrence(
+    String entryId,
+    String occurrenceId,
+    DateTime scheduledDate, {
+    String? reasonCode,
+  });
   Future<void> completeWeightOccurrence({
     required String petId,
     required String entryId,
@@ -405,6 +420,25 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       checkResponse: _checkResponse,
       entryId: entryId,
       occurrenceId: occurrenceId,
+    );
+  }
+
+  @override
+  Future<RescheduleOccurrenceRemoteResult> rescheduleOccurrence(
+    String entryId,
+    String occurrenceId,
+    DateTime scheduledDate, {
+    String? reasonCode,
+  }) {
+    return postRescheduleOccurrence(
+      client: _client,
+      baseUrl: baseUrl,
+      headers: _authHeaders(jsonBody: true),
+      checkResponse: _checkResponse,
+      entryId: entryId,
+      occurrenceId: occurrenceId,
+      scheduledDate: scheduledDate,
+      reasonCode: reasonCode,
     );
   }
 

@@ -8,6 +8,7 @@ import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../../pet_profile/presentation/widgets/care_family_icon.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../../../../health_tracking/presentation/widgets/care_event_status_line.dart';
+import '../../../../health_tracking/presentation/widgets/reschedule_occurrence_flow.dart';
 import '../away_plan_schedule_copy.dart';
 import '../care_period_coverage_copy.dart';
 import '../providers/care_context_providers.dart';
@@ -71,8 +72,13 @@ class AwayPlanPetCareSection extends ConsumerWidget {
               ],
             ),
           ),
-          data: (result) =>
-              _PetCareBody(petId: petId, petName: petName, result: result),
+          data: (result) => _PetCareBody(
+            petId: petId,
+            petName: petName,
+            result: result,
+            startsOn: startsOn,
+            endsOn: endsOn,
+          ),
         ),
       ),
     );
@@ -154,11 +160,15 @@ class _PetCareBody extends StatelessWidget {
     required this.petId,
     required this.petName,
     required this.result,
+    required this.startsOn,
+    required this.endsOn,
   });
 
   final String petId;
   final String petName;
   final CarePeriodCoverageResult result;
+  final String startsOn;
+  final String endsOn;
 
   @override
   Widget build(BuildContext context) {
@@ -197,7 +207,12 @@ class _PetCareBody extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           ...result.plannedCareItems.map(
-            (item) => _PlannedCareRow(petId: petId, item: item),
+            (item) => _PlannedCareRow(
+              petId: petId,
+              item: item,
+              startsOn: startsOn,
+              endsOn: endsOn,
+            ),
           ),
           if (result.showsEstimateFootnote) ...[
             const SizedBox(height: 8),
@@ -222,16 +237,23 @@ class _PetCareBody extends StatelessWidget {
   }
 }
 
-class _PlannedCareRow extends StatelessWidget {
-  const _PlannedCareRow({required this.petId, required this.item});
+class _PlannedCareRow extends ConsumerWidget {
+  const _PlannedCareRow({
+    required this.petId,
+    required this.item,
+    required this.startsOn,
+    required this.endsOn,
+  });
 
   final String petId;
   final PlannedCareItem item;
+  final String startsOn;
+  final String endsOn;
 
   static const _kMinTouchTarget = 48.0;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -244,6 +266,9 @@ class _PlannedCareRow extends StatelessWidget {
     );
     final inWindowLine = AwayPlanScheduleCopy.inWindowLine(l, item);
     final viewLabel = '${item.name}. $scheduleLine';
+    final canPlanThis =
+        !item.isPaused &&
+        (item.openOccurrence?.occurrenceId ?? item.occurrenceId) != null;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -306,6 +331,26 @@ class _PlannedCareRow extends StatelessWidget {
                             ),
                           ),
                         ),
+                        if (canPlanThis) ...[
+                          const SizedBox(height: 4),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: TextButton(
+                              key: Key(
+                                'away_plan_plan_this_${item.healthEntryId}',
+                              ),
+                              onPressed: () =>
+                                  RescheduleOccurrenceFlow.fromAwayPlanRow(
+                                    context: context,
+                                    ref: ref,
+                                    item: item,
+                                    startsOn: startsOn,
+                                    endsOn: endsOn,
+                                  ),
+                              child: Text(l.awayPlanningPlanThis),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),

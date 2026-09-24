@@ -11578,6 +11578,66 @@ abstract class AppLocalizations {
   /// **'Paused'**
   String get awayPlanningPaused;
 
+  /// No description provided for @rescheduleActionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Change date'**
+  String get rescheduleActionLabel;
+
+  /// No description provided for @rescheduleGapWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This will be {x} days after the last one instead of {y}.'**
+  String rescheduleGapWarning(int x, int y);
+
+  /// No description provided for @rescheduleUsualGap.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual interval: {y} days.'**
+  String rescheduleUsualGap(int y);
+
+  /// No description provided for @reschedulePreviewCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Next ones: {dates}'**
+  String reschedulePreviewCalendar(String dates);
+
+  /// No description provided for @reschedulePreviewCompletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Next one estimated around {date} if done on {newDate}.'**
+  String reschedulePreviewCompletion(String date, String newDate);
+
+  /// No description provided for @rescheduleVetScheduleCaution.
+  ///
+  /// In en, this message translates to:
+  /// **'This care usually follows a vet\'s schedule. Check with your vet before changing it.'**
+  String get rescheduleVetScheduleCaution;
+
+  /// No description provided for @rescheduleEarlierOnlyLaterCaution.
+  ///
+  /// In en, this message translates to:
+  /// **'This care is usually done earlier than scheduled, not later.'**
+  String get rescheduleEarlierOnlyLaterCaution;
+
+  /// No description provided for @awayPlanningPlanThis.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan this'**
+  String get awayPlanningPlanThis;
+
+  /// No description provided for @occurrenceRescheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Date changed'**
+  String get occurrenceRescheduled;
+
+  /// No description provided for @snackbarUndo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get snackbarUndo;
+
   /// No description provided for @petTagsTitle.
   ///
   /// In en, this message translates to:
