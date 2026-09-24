@@ -264,7 +264,8 @@ class HealthIssuesController {
     HealthIssue issue,
   ) async {
     final l = AppLocalizations.of(context)!;
-    final entries = await ref.read(petHealthEntriesProvider(petId).future);
+    await ref.read(healthEntriesNotifierProvider.future);
+    final entries = ref.read(petHealthEntriesByIdProvider(petId)).value ?? [];
     final linked = issue.eventIds.toSet();
     final available = entries.where((e) => !linked.contains(e.id)).toList();
 

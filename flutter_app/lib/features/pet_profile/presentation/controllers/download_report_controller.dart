@@ -49,9 +49,9 @@ class DownloadReportController {
       final weightEntries = await ref.read(
         weightEntriesProvider(pet.id).future,
       );
-      final healthEntries = await ref.read(
-        petHealthEntriesProvider(pet.id).future,
-      );
+      await ref.read(healthEntriesNotifierProvider.future);
+      final healthEntries =
+          ref.read(petHealthEntriesByIdProvider(pet.id)).value ?? [];
       final healthIssues = await ref.read(
         healthIssueNotifierProvider(pet.id).future,
       );
