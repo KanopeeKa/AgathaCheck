@@ -24,6 +24,7 @@ class RescheduleOccurrenceFlow {
     required PlannedCareItem item,
     required String startsOn,
     required String endsOn,
+    required String absenceId,
   }) async {
     final occId = item.openOccurrence?.occurrenceId ?? item.occurrenceId;
     final sched = item.openOccurrence?.scheduledDate ?? item.scheduledDate;
@@ -68,6 +69,7 @@ class RescheduleOccurrenceFlow {
       occurrence: occurrence,
       initialDate: prefill,
       reasonCode: 'away_planner',
+      absenceId: absenceId,
     );
   }
 
@@ -78,6 +80,7 @@ class RescheduleOccurrenceFlow {
     required HealthOccurrence occurrence,
     DateTime? initialDate,
     String? reasonCode,
+    String? absenceId,
   }) async {
     final past = await ref
         .read(entryPastOccurrencesProvider(entry.id).future)
@@ -101,7 +104,7 @@ class RescheduleOccurrenceFlow {
             newDate,
             reasonCode: reasonCode,
           );
-      _invalidateAfterReschedule(ref, entry.id);
+      _invalidateAfterReschedule(ref, entry.id, absenceId: absenceId);
       await ref.read(healthEntriesNotifierProvider.notifier).refresh();
 
       if (!context.mounted) return;
@@ -116,8 +119,13 @@ class RescheduleOccurrenceFlow {
           content: Text(message),
           action: SnackBarAction(
             label: l.snackbarUndo,
-            onPressed: () =>
-                _undoReschedule(context, ref, entry.id, occurrence.id),
+            onPressed: () => _undoReschedule(
+              context,
+              ref,
+              entry.id,
+              occurrence.id,
+              absenceId: absenceId,
+            ),
           ),
         ),
       );
@@ -130,28 +138,40 @@ class RescheduleOccurrenceFlow {
     }
   }
 
-  static void invalidateAfterReschedule(WidgetRef ref, String entryId) {
+  static void invalidateAfterReschedule(
+    WidgetRef ref,
+    String entryId, {
+    String? absenceId,
+  }) {
     ref.invalidate(entryOccurrencesProvider(entryId));
     ref.invalidate(entryPastOccurrencesProvider(entryId));
     ref.invalidate(entryHistoryProvider(entryId));
     ref.invalidate(carePeriodCoverageProvider);
+    if (absenceId != null && absenceId.isNotEmpty) {
+      ref.invalidate(absenceCarePlanProvider(absenceId));
+    }
   }
 
-  static void _invalidateAfterReschedule(WidgetRef ref, String entryId) {
-    invalidateAfterReschedule(ref, entryId);
+  static void _invalidateAfterReschedule(
+    WidgetRef ref,
+    String entryId, {
+    String? absenceId,
+  }) {
+    invalidateAfterReschedule(ref, entryId, absenceId: absenceId);
   }
 
   static Future<void> _undoReschedule(
     BuildContext context,
     WidgetRef ref,
     String entryId,
-    String occurrenceId,
-  ) async {
+    String occurrenceId, {
+    String? absenceId,
+  }) async {
     try {
       await ref
           .read(healthRepositoryProvider)
           .undoOccurrence(entryId, occurrenceId);
-      _invalidateAfterReschedule(ref, entryId);
+      _invalidateAfterReschedule(ref, entryId, absenceId: absenceId);
       await ref.read(healthEntriesNotifierProvider.notifier).refresh();
     } catch (_) {
       if (!context.mounted) return;

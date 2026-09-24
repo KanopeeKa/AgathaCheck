@@ -7,10 +7,7 @@ import {
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
-
-function semanticsKey(page: Page, key: string) {
-  return page.locator(`[flt-semantics-identifier="${key}"]`);
-}
+import { formatHealthEntryStatusDate } from '../support/healthEntryDates';
 
 /**
  * Care item (pet event) detail — occurrence actions and reschedule sheet.
@@ -30,6 +27,15 @@ export class CareItemPage {
     await expect(this.page.getByRole('button', { name: /go back/i })).toBeVisible({
       timeout: 60_000,
     });
+  }
+
+  async goBack(): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    await this.page
+      .locator('[flt-semantics-identifier="experience_back_button"]')
+      .or(this.page.getByRole('button', { name: /go back|Back|Retour/i }))
+      .first()
+      .click();
   }
 
   async openRescheduleSheet(): Promise<void> {
@@ -78,14 +84,10 @@ export class CareItemPage {
   }
 
   async expectOpenOccurrenceDateVisible(isoDate: string): Promise<void> {
-    const { year, month, day } = (() => {
-      const [y, m, d] = isoDate.split('-');
-      return { year: y, month: m, day: d };
-    })();
-    const ddMm = `${day}/${month}/${year}`;
+    const statusDate = formatHealthEntryStatusDate(isoDate);
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByText(ddMm, { exact: false }).first()).toBeVisible();
+      await expect(this.page.getByText(statusDate, { exact: false }).first()).toBeVisible();
     }).toPass({ timeout: 30_000 });
   }
 }

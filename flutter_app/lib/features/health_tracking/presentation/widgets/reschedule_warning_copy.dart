@@ -14,10 +14,14 @@ List<String> rescheduleWarningMessages(
         break;
       case 'outside_flexibility':
         final flexibility = warning['flexibility'] as String? ?? '';
+        final careSource = warning['care_source'] as String? ?? '';
         if (flexibility == 'earlier_only') {
           messages.add(l.rescheduleEarlierOnlyLaterCaution);
-        } else {
+        } else if (careSource == 'vet_instruction' ||
+            careSource == 'treatment_schedule') {
           messages.add(l.rescheduleVetScheduleCaution);
+        } else {
+          messages.add(l.rescheduleFlexibilityCaution);
         }
         break;
       case 'interval_changed':

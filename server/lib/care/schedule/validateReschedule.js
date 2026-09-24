@@ -17,21 +17,51 @@ import { RECURRENCE_ANCHOR_FROM_DUE_DATE } from './recurrenceAnchorDefaults.js';
  * @returns {Promise<string|null>}
  */
 export async function loadLastClosedOccurrenceDateIso(pool, entry) {
+  const map = await loadLastClosedOccurrenceDatesByEntryId(pool, [entry]);
+  return map.get(entry.id) ?? null;
+}
+
+/**
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {object[]} entries
+ * @returns {Promise<Map<string, string|null>>}
+ */
+export async function loadLastClosedOccurrenceDatesByEntryId(pool, entries) {
+  const ids = (entries || []).map((row) => row.id).filter(Boolean);
+  const resultMap = new Map();
+  if (ids.length === 0) return resultMap;
+
   const result = await pool.query(
-    `SELECT scheduled_date, completed_on
+    `SELECT DISTINCT ON (health_entry_id)
+       health_entry_id,
+       scheduled_date,
+       completed_on
      FROM health_occurrences
-     WHERE health_entry_id = $1 AND status IN ('completed', 'skipped')
-     ORDER BY scheduled_date DESC, COALESCE(completed_on, scheduled_date) DESC
-     LIMIT 1`,
-    [entry.id],
+     WHERE health_entry_id = ANY($1::uuid[])
+       AND status IN ('completed', 'skipped')
+     ORDER BY health_entry_id, scheduled_date DESC,
+       COALESCE(completed_on, scheduled_date) DESC`,
+    [ids],
   );
-  const row = result.rows[0];
-  if (!row) return null;
-  const anchor = entry.recurrence_anchor || 'from_completion';
-  if (anchor === RECURRENCE_ANCHOR_FROM_DUE_DATE) {
-    return dateToIsoDate(row.scheduled_date);
+
+  const entryById = new Map((entries || []).map((row) => [row.id, row]));
+  for (const id of ids) {
+    resultMap.set(id, null);
   }
-  return dateToIsoDate(row.completed_on || row.scheduled_date);
+  for (const row of result.rows) {
+    const entry = entryById.get(row.health_entry_id);
+    if (!entry) continue;
+    const anchor = entry.recurrence_anchor || 'from_completion';
+    if (anchor === RECURRENCE_ANCHOR_FROM_DUE_DATE) {
+      resultMap.set(row.health_entry_id, dateToIsoDate(row.scheduled_date));
+    } else {
+      resultMap.set(
+        row.health_entry_id,
+        dateToIsoDate(row.completed_on || row.scheduled_date),
+      );
+    }
+  }
+  return resultMap;
 }
 
 /**
@@ -96,6 +126,7 @@ export function validateReschedule({
       code: 'outside_flexibility',
       flexibility: flex.flexibility,
       max_shift_days: flex.max_shift_days,
+      care_source: entry.care_source ?? null,
     });
   }
 

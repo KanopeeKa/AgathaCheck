@@ -325,7 +325,7 @@ export class AwayPlanningPage {
     const row = this.plannedCareRow(entryId);
     await expect(row).toBeVisible({ timeout: 30_000 });
     const planThis = semanticsKey(this.page, `away_plan_plan_this_${entryId}`).or(
-      row.getByRole('button', { name: /^Plan this$|^Planifier$/i }),
+      row.getByRole('button', { name: /^Plan this$|^Planifier/i }),
     );
     await expect(planThis.first()).toBeVisible({ timeout: 15_000 });
     await planThis.first().click();

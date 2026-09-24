@@ -97,11 +97,7 @@ class PetCareMyVetsSection extends ConsumerWidget {
                                 ? null
                                 : (linkedPetsByVetId?[vet.id] ?? const <Pet>[])
                                       .length,
-                            onTap: () {
-                              context.push(
-                                '/pc/vets/${vet.id}?returnTo=${encodeShellReturnTo(currentShellLocation(context))}',
-                              );
-                            },
+                            onTap: () => openVetDetail(context, vet.id),
                           ),
                       ],
                     );

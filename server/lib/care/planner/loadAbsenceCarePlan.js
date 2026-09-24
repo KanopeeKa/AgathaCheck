@@ -1,5 +1,5 @@
 import { dateToIsoDate, todayCalendarIso } from '../../calendarDate.js';
-import { loadLastClosedOccurrenceDateIso } from '../schedule/index.js';
+import { loadLastClosedOccurrenceDatesByEntryId } from '../schedule/index.js';
 import { isDateInCareWindow, loadScheduleDataForProjection } from '../schedule/projectSchedule.js';
 import { planAbsenceCare } from './planAbsenceCare.js';
 
@@ -59,15 +59,17 @@ export async function loadAbsenceCarePlan(pool, absenceRow, petRows, todayIso) {
     );
 
     const entryPayloads = [];
+    const lastClosedByEntry = await loadLastClosedOccurrenceDatesByEntryId(pool, entries);
     for (const entry of entries) {
       const occurrences = occurrencesByEntryId.get(entry.id) || [];
       const openOccurrence = earliestPendingOccurrence(occurrences);
-      const lastClosedDate = await loadLastClosedOccurrenceDateIso(pool, entry);
+      const lastClosedDate = lastClosedByEntry.get(entry.id) ?? null;
       entryPayloads.push({
         entry,
         open_occurrence: openOccurrence,
         last_closed_date: lastClosedDate,
         materialized_in_window: countMaterializedInWindow(occurrences, startsOn, endsOn),
+        occurrences,
       });
     }
 

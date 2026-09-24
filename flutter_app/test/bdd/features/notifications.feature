@@ -98,6 +98,15 @@ Feature: Notifications
     Then the user should be navigated to the view entry screen for "Vaccination"
 
   @P1
+  Scenario: Care notification from bell panel returns to dashboard after back
+    Given a notification exists for pet "Bella" with health entry "Vaccination"
+    When the user opens the notification panel from the pet care dashboard
+    And the user opens the care notification
+    Then the user should be navigated to the view entry screen for "Vaccination"
+    When the user navigates back from the care item
+    Then the user should still be on the pet care dashboard
+
+  @P1
   Scenario: Tapping a pet notification without health entry navigates to pet detail
     Given a notification exists for pet "Bella" without a health entry
     When the user taps the notification
