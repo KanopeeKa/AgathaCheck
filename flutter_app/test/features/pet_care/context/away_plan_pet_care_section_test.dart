@@ -52,7 +52,9 @@ void main() {
     return ProviderScope(
       overrides: [
         petByIdProvider('pet-1').overrideWith((ref) async => pet),
-        absenceCarePlanProvider('abs-1').overrideWith((ref) async => _emptyCarePlan()),
+        absenceCarePlanProvider(
+          'abs-1',
+        ).overrideWith((ref) async => _emptyCarePlan()),
         carePeriodCoverageProvider((
           petId: 'pet-1',
           startsOn: '2026-10-01',
@@ -222,7 +224,9 @@ void main() {
       ProviderScope(
         overrides: [
           petByIdProvider('pet-1').overrideWith((ref) async => pet),
-          absenceCarePlanProvider('abs-1').overrideWith((ref) async => _emptyCarePlan()),
+          absenceCarePlanProvider(
+            'abs-1',
+          ).overrideWith((ref) async => _emptyCarePlan()),
           carePeriodCoverageProvider((
             petId: 'pet-1',
             startsOn: '2026-10-01',

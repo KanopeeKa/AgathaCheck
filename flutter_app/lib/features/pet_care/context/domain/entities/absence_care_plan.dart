@@ -51,10 +51,7 @@ class CarePlannerSuggestion {
 }
 
 class CarePlannerCarerTasks {
-  const CarePlannerCarerTasks({
-    required this.count,
-    required this.byEntry,
-  });
+  const CarePlannerCarerTasks({required this.count, required this.byEntry});
 
   final int count;
   final List<CarePlannerCarerTaskEntry> byEntry;

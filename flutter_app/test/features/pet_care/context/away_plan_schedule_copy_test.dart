@@ -313,7 +313,10 @@ void main() {
         ),
       );
       expect(line, contains(l.urgencyOverdue));
-      expect(line, contains(l.awayPlanningEstimatedOn(displayDate('2026-10-04'))));
+      expect(
+        line,
+        contains(l.awayPlanningEstimatedOn(displayDate('2026-10-04'))),
+      );
     });
   });
 }

@@ -26,8 +26,7 @@ class RescheduleOccurrenceFlow {
     required String endsOn,
   }) async {
     final occId = item.openOccurrence?.occurrenceId ?? item.occurrenceId;
-    final sched =
-        item.openOccurrence?.scheduledDate ?? item.scheduledDate;
+    final sched = item.openOccurrence?.scheduledDate ?? item.scheduledDate;
     if (occId == null || sched == null) return;
 
     final entry = await ref
@@ -117,12 +116,8 @@ class RescheduleOccurrenceFlow {
           content: Text(message),
           action: SnackBarAction(
             label: l.snackbarUndo,
-            onPressed: () => _undoReschedule(
-              context,
-              ref,
-              entry.id,
-              occurrence.id,
-            ),
+            onPressed: () =>
+                _undoReschedule(context, ref, entry.id, occurrence.id),
           ),
         ),
       );

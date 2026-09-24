@@ -16,9 +16,7 @@ class RescheduleGapPreview {
   final bool hasPriorDose;
 
   bool get hasComparison =>
-      hasPriorDose &&
-      actualGapDays != null &&
-      actualGapDays != usualGapDays;
+      hasPriorDose && actualGapDays != null && actualGapDays != usualGapDays;
 }
 
 /// Reference date for gap math (R-C2), aligned with server `loadLastClosedOccurrenceDateIso`.
@@ -44,10 +42,7 @@ RescheduleGapPreview computeGapPreview({
 }) {
   final usual = intervalDaysForEntry(entry, today);
   if (lastClosedDate == null) {
-    return RescheduleGapPreview(
-      usualGapDays: usual,
-      hasPriorDose: false,
-    );
+    return RescheduleGapPreview(usualGapDays: usual, hasPriorDose: false);
   }
   final actual = calendarDayDiff(lastClosedDate, newDate);
   return RescheduleGapPreview(

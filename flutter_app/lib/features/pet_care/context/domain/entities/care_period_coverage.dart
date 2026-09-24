@@ -201,9 +201,8 @@ class CarePeriodCoverageResult {
   bool get isPartiallyIndeterminate =>
       projectionStatus == CarePeriodProjectionStatus.partiallyIndeterminate;
 
-  bool get showsEstimateFootnote => plannedCareItems.any(
-    (item) => item.inWindow?.dateBasis == 'estimated',
-  );
+  bool get showsEstimateFootnote =>
+      plannedCareItems.any((item) => item.inWindow?.dateBasis == 'estimated');
 
   bool get showsChainAnchorExplainer =>
       !showsEstimateFootnote &&

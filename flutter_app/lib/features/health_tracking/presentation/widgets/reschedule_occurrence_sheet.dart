@@ -24,9 +24,7 @@ Future<DateTime?> showRescheduleOccurrenceSheet(
     today: today,
     lastClosedDate: lastClosed,
   );
-  var selected = calendarDateOnly(
-    initialDate ?? occurrence.scheduledDate,
-  );
+  var selected = calendarDateOnly(initialDate ?? occurrence.scheduledDate);
   if (selected.isBefore(bounds.firstDate)) {
     selected = bounds.firstDate;
   }

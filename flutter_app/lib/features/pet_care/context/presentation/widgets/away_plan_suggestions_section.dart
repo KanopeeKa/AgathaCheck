@@ -102,7 +102,9 @@ class _AwayPlanSuggestionsBody extends ConsumerWidget {
         const SizedBox(height: 8),
         ...visibleSuggestions.map(
           (suggestion) => _SuggestionRow(
-            key: Key('away_plan_planner_suggestion_${suggestion.healthEntryId}'),
+            key: Key(
+              'away_plan_planner_suggestion_${suggestion.healthEntryId}',
+            ),
             entryName:
                 namesByEntryId[suggestion.healthEntryId] ??
                 suggestion.healthEntryId,
@@ -190,9 +192,9 @@ class _AwayPlanSuggestionsBody extends ConsumerWidget {
     } catch (_) {
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careCompletionFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careCompletionFailed)));
       ref.invalidate(absenceCarePlanProvider(absenceId));
     }
   }
@@ -220,9 +222,9 @@ class _AwayPlanSuggestionsBody extends ConsumerWidget {
     } catch (_) {
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careCompletionFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careCompletionFailed)));
     }
   }
 }

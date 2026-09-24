@@ -125,13 +125,11 @@ class AwayPlanScheduleCopy {
     final open = item.openOccurrence;
     if (open != null) {
       final instant = _formatOpenInstant(l, open);
-      parts.add(
-        switch (open.openStatus) {
-          'overdue' => '$instant · ${l.urgencyOverdue}',
-          'due_before_absence' => l.awayPlanningOpenDueBeforeLeave(instant),
-          _ => instant,
-        },
-      );
+      parts.add(switch (open.openStatus) {
+        'overdue' => '$instant · ${l.urgencyOverdue}',
+        'due_before_absence' => l.awayPlanningOpenDueBeforeLeave(instant),
+        _ => instant,
+      });
     }
 
     final windowLine = inWindowLine(l, item);

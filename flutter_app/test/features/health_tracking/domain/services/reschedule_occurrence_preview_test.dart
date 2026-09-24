@@ -6,7 +6,9 @@ import 'package:pet_profile_app/features/health_tracking/domain/entities/recurre
 import 'package:pet_profile_app/features/health_tracking/domain/services/recurrence_advance.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/services/reschedule_occurrence_preview.dart';
 
-HealthEntry _monthlyEntry({RecurrenceAnchor anchor = RecurrenceAnchor.fromDueDate}) {
+HealthEntry _monthlyEntry({
+  RecurrenceAnchor anchor = RecurrenceAnchor.fromDueDate,
+}) {
   return HealthEntry(
     id: 'e1',
     petId: 'p1',

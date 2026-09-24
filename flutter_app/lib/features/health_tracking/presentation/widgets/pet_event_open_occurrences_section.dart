@@ -212,7 +212,9 @@ class _OccurrenceRow extends ConsumerWidget {
                     child: Text(l.skipOccurrence),
                   ),
                   OutlinedButton(
-                    key: Key('pet_event_occurrence_reschedule_${occurrence.id}'),
+                    key: Key(
+                      'pet_event_occurrence_reschedule_${occurrence.id}',
+                    ),
                     onPressed: () => PetEventOccurrenceActions.changeDate(
                       context,
                       ref,

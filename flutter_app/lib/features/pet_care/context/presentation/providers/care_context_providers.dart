@@ -62,12 +62,12 @@ final awayPlanReadinessProvider =
           .getAwayPlanReadiness(absenceId);
     });
 
-final absenceCarePlanProvider =
-    FutureProvider.family<AbsenceCarePlan, String>((ref, absenceId) async {
-      return ref
-          .read(careContextRepositoryProvider)
-          .getAbsenceCarePlan(absenceId);
-    });
+final absenceCarePlanProvider = FutureProvider.family<AbsenceCarePlan, String>((
+  ref,
+  absenceId,
+) async {
+  return ref.read(careContextRepositoryProvider).getAbsenceCarePlan(absenceId);
+});
 
 class DismissedPlannerSuggestionsNotifier extends StateNotifier<Set<String>> {
   DismissedPlannerSuggestionsNotifier() : super({});
@@ -77,12 +77,14 @@ class DismissedPlannerSuggestionsNotifier extends StateNotifier<Set<String>> {
   }
 }
 
-final dismissedPlannerSuggestionsProvider = StateNotifierProvider.family<
-    DismissedPlannerSuggestionsNotifier,
-    Set<String>,
-    String>((ref, absenceId) {
-  return DismissedPlannerSuggestionsNotifier();
-});
+final dismissedPlannerSuggestionsProvider =
+    StateNotifierProvider.family<
+      DismissedPlannerSuggestionsNotifier,
+      Set<String>,
+      String
+    >((ref, absenceId) {
+      return DismissedPlannerSuggestionsNotifier();
+    });
 
 final carerCandidatesProvider = FutureProvider.autoDispose
     .family<List<CarerCandidate>, String>((ref, petId) async {

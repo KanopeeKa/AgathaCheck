@@ -12,6 +12,7 @@ import 'package:pet_profile_app/features/pet_care/context/domain/entities/care_p
 import 'package:pet_profile_app/features/pet_care/context/presentation/providers/care_context_providers.dart';
 import 'package:pet_profile_app/features/pet_care/context/presentation/widgets/away_plan_suggestions_section.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
+
 class _PlannerTestHealthRepository implements HealthRepository {
   _PlannerTestHealthRepository(this.entry, {this.onReschedule});
 
@@ -21,7 +22,8 @@ class _PlannerTestHealthRepository implements HealthRepository {
     String occurrenceId,
     DateTime newDate, {
     String? reasonCode,
-  })? onReschedule;
+  })?
+  onReschedule;
 
   @override
   Future<HealthEntry?> getEntry(String id) async => entry;
@@ -45,13 +47,12 @@ class _PlannerTestHealthRepository implements HealthRepository {
   Future<HealthOccurrence> undoOccurrence(
     String entryId,
     String occurrenceId,
-  ) async =>
-      HealthOccurrence(
-        id: occurrenceId,
-        entryId: entryId,
-        scheduledDate: DateTime(2026, 10, 8),
-        status: 'pending',
-      );
+  ) async => HealthOccurrence(
+    id: occurrenceId,
+    entryId: entryId,
+    scheduledDate: DateTime(2026, 10, 8),
+    status: 'pending',
+  );
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -70,7 +71,9 @@ void main() {
     rationaleCode: 'move_before_departure',
   );
 
-  AbsenceCarePlan planWithSuggestion({List<CarePlannerSuggestion> suggestions = const [suggestion]}) {
+  AbsenceCarePlan planWithSuggestion({
+    List<CarePlannerSuggestion> suggestions = const [suggestion],
+  }) {
     return AbsenceCarePlan(
       absenceId: 'abs-1',
       today: '2026-09-20',
@@ -144,10 +147,7 @@ void main() {
       ],
     );
     await tester.pumpWidget(
-      buildWidget(
-        plan: emptyPlan,
-        repository: repository,
-      ),
+      buildWidget(plan: emptyPlan, repository: repository),
     );
     await tester.pumpAndSettle();
     expect(find.text('Suggested by Agatha'), findsNothing);
