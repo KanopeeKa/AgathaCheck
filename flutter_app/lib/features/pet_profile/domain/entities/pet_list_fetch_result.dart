@@ -1,10 +1,7 @@
 import 'pet.dart';
 
 /// Where the pet list payload came from after a [PetRepository.fetchAllPets] call.
-enum PetListFetchSource {
-  remote,
-  localCache,
-}
+enum PetListFetchSource { remote, localCache }
 
 /// Result of loading pets with explicit cache authority metadata (Package 7 / D2).
 class PetListFetchResult {
@@ -20,6 +17,5 @@ class PetListFetchResult {
   final bool isStale;
   final DateTime? fetchedAt;
 
-  bool get isFromRemote =>
-      source == PetListFetchSource.remote && !isStale;
+  bool get isFromRemote => source == PetListFetchSource.remote && !isStale;
 }
