@@ -245,26 +245,91 @@ export class AwayPlanningPage {
     }).toPass({ timeout: 45_000 });
   }
 
+  plannedCareRow(entryId: string, entryName?: string) {
+    if (entryName && !entryId) {
+      return this.page.getByRole('button', { name: new RegExp(entryName, 'i') }).first();
+    }
+    const bySemantics = semanticsKey(this.page, `away_plan_planned_care_${entryId}`);
+    if (entryName) {
+      return bySemantics.or(
+        this.page.getByRole('button', { name: new RegExp(entryName, 'i') }).first(),
+      );
+    }
+    return bySemantics;
+  }
+
   async expectPlannedCareItemRow(entryId: string, entryName?: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(semanticsKey(this.page, `away_plan_planned_care_${entryId}`)).toBeVisible();
-      if (entryName) {
-        await expect(this.page.getByText(entryName, { exact: false }).first()).toBeVisible();
-      }
+      await expect(this.plannedCareRow(entryId, entryName)).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
 
   async expectPlannedCareRowShowsOverdue(
     entryId: string,
+    entryName: string,
     overdueLabel: RegExp,
   ): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const row = semanticsKey(this.page, `away_plan_planned_care_${entryId}`);
-      await expect(row).toBeVisible();
-      await expect(row).toContainText(overdueLabel);
+      await expect(this.plannedCareRow(entryId, entryName)).toBeVisible();
+      await expect(this.page.getByText(overdueLabel).first()).toBeVisible();
     }).toPass({ timeout: 45_000 });
+  }
+
+  async expectPlannedCareRowShowsEstimated(entryId: string, entryName: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const row = this.plannedCareRow(entryId, entryName);
+      await expect(row).toBeVisible();
+      await expect(row).toContainText(/Estimated:|Estimé:/i);
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async expectPlannerSectionVisible(petId: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(semanticsKey(this.page, `away_plan_planner_heading_${petId}`)).toBeVisible();
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async expectCarerTaskSummaryHidden(): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page.getByText(/care tasks? for your carer|tâches? de soin pour votre soignant/i),
+      ).toHaveCount(0);
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async expectPlannerSuggestionVisible(petId: string, entryName: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(semanticsKey(this.page, `away_plan_planner_heading_${petId}`)).toBeVisible();
+      await expect(this.plannedCareRow('', entryName)).toBeVisible();
+      await expect(this.page.getByText(/Move from|Déplacer de/i).first()).toBeVisible();
+      await expect(
+        this.page.getByRole('button', { name: /^Accept$|^Accepter$/i }).first(),
+      ).toBeVisible();
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async acceptPlannerSuggestion(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await this.page.getByRole('button', { name: /^Accept$|^Accepter$/i }).first().click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async openPlanThis(entryId: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const row = this.plannedCareRow(entryId);
+    await expect(row).toBeVisible({ timeout: 30_000 });
+    const planThis = semanticsKey(this.page, `away_plan_plan_this_${entryId}`).or(
+      row.getByRole('button', { name: /^Plan this$|^Planifier$/i }),
+    );
+    await expect(planThis.first()).toBeVisible({ timeout: 15_000 });
+    await planThis.first().click();
+    await refreshFlutterAccessibility(this.page);
   }
 
   async openPlannedCareItem(entryId: string): Promise<void> {

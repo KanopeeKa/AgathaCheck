@@ -91,7 +91,7 @@ All routes mount under `/api/health-entries` and `/backend/api/health-entries`. 
 | POST | `/:id/mark-taken` | `{ completed_on?, notes? }` | **Deprecated compat** — completes oldest pending via `completeOccurrence`; returns entry map; **no `health_history` write** |
 | POST | `/:id/pause` | `{ paused_from?, reason_note? }` | `status = paused`, `paused_since` cache (from `paused_from` calendar day), ledger `paused` event (D-CSM-005) |
 | POST | `/:id/resume` | `{ reason_note? }` | `status = active`; ledger `resumed`; **no catch-up** for paused window |
-| POST | `/:id/occurrences/:occId/reschedule` | `{ new_scheduled_date, new_scheduled_time?, reason_note? }` | Moves one pending occurrence; ledger `rescheduled` with `from_date` = original `scheduled_date` (D-CSM-006) |
+| POST | `/:id/occurrences/:occId/reschedule` | `{ scheduled_date, reason_code?, reason_note? }` | Validates per D-ACP-009; moves one pending occurrence; ledger `rescheduled`; returns `warnings[]` + synced `next_due_date` |
 | POST | `/:id/adjust-cadence` | `{ effective_from, frequency?, frequency_interval?, recurrence_anchor?, reason_note? }` | Series-forward rule change; ledger `cadence_adjusted`; past occurrences immutable |
 | POST | `/:id/schedule/undo` | — | Timestamp-aware undo of last schedule action; retires `undo-complete` guessing |
 | GET | `/:id/schedule-explain` | Query: optional window | Structured schedule facts for CIM — no explained/unexplained vocabulary |
@@ -121,6 +121,34 @@ Next due date = **N frequency units after actual completion**. Late completions 
 ### Reschedule vs cadence change (D-CSM-006)
 
 Moving one occurrence is **local** (`rescheduleOccurrence`). Changing the pattern going forward is **explicit** (`adjustCadence`). Never conflate.
+
+### Schedule flexibility (D-ACP-006, read-only)
+
+`resolveScheduleFlexibility(entry)` returns `{ flexibility, max_shift_days }` on every care-item read as `schedule_flexibility`. **Not persisted in v1** — derived from `care_family`, `care_source`, `recurrence_anchor`, and `frequency` (table-tested in `scheduleFlexibility.test.js`).
+
+| `flexibility` | Planner | Manual reschedule |
+|---------------|---------|-------------------|
+| `fixed` | Never suggests a move | Allowed with non-blocking vet-schedule caution in `warnings[]` |
+| `carer_task` | Counts as carer work only | Same as `fixed` for warnings |
+| `earlier_only` | Earlier candidates only | Later moves return `earlier_only_later_move` warning |
+| `flexible` | Full shift within `max_shift_days` | Gap / flexibility warnings only |
+
+The Away Care Planner consumes flexibility strictly; guardians may still move dates from the care item (R-C4).
+
+### Reschedule validation and cache sync (D-ACP-009)
+
+`POST /:id/occurrences/:occId/reschedule` body: `{ scheduled_date, reason_code?, reason_note? }`.
+
+`validateReschedule` (repeating entries) returns **400** when:
+
+- `scheduled_date` is in the past (calendar day)
+- No-op (same date as the open occurrence)
+- Beyond the next natural hop (`advanceByFrequency` from current open date)
+- Before the last closed occurrence date (`completed_on` for `from_completion`, `scheduled_date` for `from_due_date`)
+
+`once` entries: past date and no-op only.
+
+On success: occurrence row updates, ledger `rescheduled` event, **`health_entries.next_due_date` synced** from open occurrences, response `{ occurrence, warnings[], next_due_date }`. Accepting a planner suggestion uses `reason_code: away_planner` and re-validates on the server (BR-9). Undo via `POST …/schedule/undo` (R-C7).
 
 ---
 
