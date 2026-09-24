@@ -153,8 +153,14 @@ test.describe('Away care planning display', () => {
     });
     const planBefore = await getAbsenceCarePlan(root, user.accessToken, absence.id);
     const petPlan = planBefore.pets.find((p) => p.pet_id === pet.id);
+    const suggestion = petPlan?.suggestions?.[0];
     const countBefore = petPlan?.carer_tasks.count ?? 0;
-    expect(countBefore).toBeGreaterThan(0);
+    const inWindowBefore =
+      suggestion?.in_window_before ?? countBefore;
+    expect(inWindowBefore).toBeGreaterThan(0);
+    if (suggestion) {
+      expect(suggestion.in_window_after).toBeLessThan(suggestion.in_window_before);
+    }
 
     await loginAs(page, user, { experience: 'guardian' });
 
@@ -179,9 +185,11 @@ test.describe('Away care planning display', () => {
     await away.openPlan(absence.id);
     await expect(async () => {
       const planAfter = await getAbsenceCarePlan(root, user.accessToken, absence.id);
-      const afterCount =
-        planAfter.pets.find((p) => p.pet_id === pet.id)?.carer_tasks.count ?? countBefore;
-      expect(afterCount).toBeLessThan(countBefore);
+      const afterPet = planAfter.pets.find((p) => p.pet_id === pet.id);
+      const afterCount = afterPet?.carer_tasks.count ?? 0;
+      const afterSuggestions = afterPet?.suggestions?.length ?? 0;
+      const workloadAfter = afterCount + afterSuggestions;
+      expect(workloadAfter).toBeLessThan(inWindowBefore);
     }).toPass({ timeout: 15_000 });
     await away.expectPlannedCareItemRow(entry.id, 'Weekly Grooming');
   });
