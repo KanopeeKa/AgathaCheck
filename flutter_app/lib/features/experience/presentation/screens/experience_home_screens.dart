@@ -6,6 +6,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../pet_profile/presentation/widgets/pet_list/pet_list_stale_banner.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../domain/services/pet_care_onboarding_rules.dart';
 import '../providers/experience_providers.dart';
@@ -62,8 +63,18 @@ class _PetCareHomeScreenState extends ConsumerState<PetCareHomeScreen> {
       child: petListAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('$e')),
-        data: (pets) =>
-            PetCareShellHomeContent(allPets: pets, controller: _controller),
+        data: (pets) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const PetListStaleBanner(),
+            Expanded(
+              child: PetCareShellHomeContent(
+                allPets: pets,
+                controller: _controller,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/presentation/screens/pet_list_screen.dart';
+import '../../../../pet_profile/presentation/widgets/pet_list/pet_list_stale_banner.dart';
 import '../../../../pet_tags/domain/services/pet_tag_filter.dart';
 import '../../../../pet_tags/presentation/providers/pet_tag_providers.dart';
 import '../../../../pet_tags/presentation/widgets/pet_tag_filter_bar.dart';
@@ -36,6 +37,7 @@ class PetCareAllPetsScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const PetListStaleBanner(),
           const PetTagFilterBar(),
           Expanded(
             child: PetListScreen(
