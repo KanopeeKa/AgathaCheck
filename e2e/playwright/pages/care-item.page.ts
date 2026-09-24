@@ -87,7 +87,11 @@ export class CareItemPage {
     const statusDate = formatHealthEntryStatusDate(isoDate);
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByText(statusDate, { exact: false }).first()).toBeVisible();
+      const dateLocator = this.page
+        .getByRole('group', { name: statusDate })
+        .or(this.page.getByText(statusDate, { exact: false }))
+        .first();
+      await expect(dateLocator).toBeVisible();
     }).toPass({ timeout: 30_000 });
   }
 }
