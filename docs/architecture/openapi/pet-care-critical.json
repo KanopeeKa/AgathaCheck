@@ -284,12 +284,19 @@
       },
       "PassedAwayResponse": {
         "type": "object",
-        "required": ["passed_away", "pet_id", "notified_count"],
+        "required": ["notification_sent", "pet_id", "notified_count", "delivery_status"],
         "additionalProperties": false,
         "properties": {
-          "passed_away": { "type": "boolean", "const": true },
+          "notification_sent": {
+            "type": "boolean",
+            "description": "True only when at least one in-app notification row was created (completed delivery)."
+          },
           "pet_id": { "type": "string", "format": "uuid" },
-          "notified_count": { "type": "integer", "minimum": 0 }
+          "notified_count": { "type": "integer", "minimum": 0 },
+          "delivery_status": {
+            "type": "string",
+            "enum": ["delivered", "no_recipients"]
+          }
         }
       }
     }

@@ -185,6 +185,35 @@ describe('POST /api/share/invites', () => {
     expect(pool.state.notifications.length).toBeGreaterThan(0);
   });
 
+  it('returns 201 with invite when post-commit name lookup fails after commit (A02 fixed)', async () => {
+    let txDepth = 0;
+    const pool = buildCreateInvitePool();
+    const baseQuery = pool.query;
+    pool.query = async (sql, params) => {
+      if (sql === 'BEGIN') txDepth += 1;
+      if (sql === 'COMMIT' || sql === 'ROLLBACK') txDepth = Math.max(0, txDepth - 1);
+      if (
+        txDepth === 0
+        && sql.includes('SELECT first_name, last_name, email FROM users WHERE id = $1')
+      ) {
+        throw new Error('characterization: post-commit inviter name lookup failure');
+      }
+      return baseQuery(sql, params);
+    };
+    pool.connect = async () => ({ query: pool.query, release: () => {} });
+    const app = createApp(pool);
+    const res = await request(app)
+      .post('/api/share/invites')
+      .set('Authorization', `Bearer ${inviterToken}`)
+      .send({ invitee_email: 'invitee@example.com', pet_ids: [pet1] });
+    expect(res.statusCode).toBe(201);
+    expect(res.body.invite_id).toBeTruthy();
+    expect(res.body.code).toBeTruthy();
+    expect(res.body.included_pet_ids).toEqual([pet1]);
+    expect(pool.state.insertedInvites.length).toBe(1);
+    expect(res.body.delivery.delivery_error).toBe(true);
+  });
+
   it('creates invite for new user with skipped notification', async () => {
     const pool = buildCreateInvitePool({
       state: { usersByEmail: {} },

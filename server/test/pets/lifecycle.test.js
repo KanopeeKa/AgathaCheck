@@ -166,9 +166,10 @@ describe('Pets lifecycle routes', () => {
       .send({ pet_name: 'Fluffy' });
     expect(res.statusCode).toBe(200);
     expect(res.body).toMatchObject({
-      passed_away: true,
+      notification_sent: true,
       pet_id: petId,
       notified_count: 1,
+      delivery_status: 'delivered',
     });
   });
 });

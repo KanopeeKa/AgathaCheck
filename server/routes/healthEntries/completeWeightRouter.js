@@ -101,7 +101,15 @@ export async function completeWeightOccurrence(pool, {
         'SELECT next_due_date FROM health_entries WHERE id = $1',
         [entryId],
       );
-      await maybePersistWeightEstablishment(pool, { petId, healthEntryId: entryId });
+      runPostCommitWeightCompletionSideEffects(pool, {
+        petId,
+        entryId,
+        entry,
+        occurrenceId,
+        weightId: existingWeight.id,
+        userId,
+        req,
+      });
       return {
         status: 200,
         body: buildCompletionResponse(
@@ -125,6 +133,8 @@ export async function completeWeightOccurrence(pool, {
   const markedAt = new Date();
   const weightId = newWeightEntryId();
   const client = await pool.connect();
+  let committed = false;
+  let committedResponse;
 
   try {
     await client.query('BEGIN');
@@ -161,31 +171,8 @@ export async function completeWeightOccurrence(pool, {
     }
 
     await client.query('COMMIT');
-
-    await refreshPetWeightCache(pool, petId);
-
-    logAuditEventSafe(pool, {
-      actorUserId: userId,
-      action: 'weight_occurrence.completed',
-      resourceType: 'health_entry',
-      resourceId: entryId,
-      petId,
-      metadata: {
-        occurrence_id: occurrenceId,
-        weight_entry_id: weightId,
-      },
-      req,
-    });
-    recordPetActivityForPet(pool, {
-      petId,
-      actorUserId: userId,
-      eventType: 'health_log',
-      metadata: { action: 'complete_weight_occurrence', entry_type: entry.type },
-    });
-
-    await maybePersistWeightEstablishment(pool, { petId, healthEntryId: entryId });
-
-    return {
+    committed = true;
+    committedResponse = {
       status: 201,
       body: buildCompletionResponse(
         weightResult.rows[0],
@@ -194,7 +181,13 @@ export async function completeWeightOccurrence(pool, {
       ),
     };
   } catch (err) {
-    await client.query('ROLLBACK');
+    if (!committed) {
+      try {
+        await client.query('ROLLBACK');
+      } catch {
+        // ignore rollback failure; preserve original error
+      }
+    }
     if (err.code === '23505') {
       const linked = await findLinkedWeight(pool, occurrenceId);
       if (linked && weightPayloadsSemanticallyEqual(linked, payload)) {
@@ -202,8 +195,7 @@ export async function completeWeightOccurrence(pool, {
           'SELECT next_due_date FROM health_entries WHERE id = $1',
           [entryId],
         );
-        await maybePersistWeightEstablishment(pool, { petId, healthEntryId: entryId });
-        return {
+        const idempotentResponse = {
           status: 200,
           body: buildCompletionResponse(
             linked,
@@ -211,6 +203,16 @@ export async function completeWeightOccurrence(pool, {
             refreshedEntry.rows[0]?.next_due_date,
           ),
         };
+        runPostCommitWeightCompletionSideEffects(pool, {
+          petId,
+          entryId,
+          entry,
+          occurrenceId,
+          weightId: linked.id,
+          userId,
+          req,
+        });
+        return idempotentResponse;
       }
       return {
         status: 409,
@@ -221,6 +223,55 @@ export async function completeWeightOccurrence(pool, {
   } finally {
     client.release();
   }
+
+  runPostCommitWeightCompletionSideEffects(pool, {
+    petId,
+    entryId,
+    entry,
+    occurrenceId,
+    weightId,
+    userId,
+    req,
+  });
+
+  return committedResponse;
+}
+
+function runPostCommitWeightCompletionSideEffects(pool, {
+  petId,
+  entryId,
+  entry,
+  occurrenceId,
+  weightId,
+  userId,
+  req,
+}) {
+  Promise.resolve()
+    .then(() => refreshPetWeightCache(pool, petId))
+    .then(() => {
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'weight_occurrence.completed',
+        resourceType: 'health_entry',
+        resourceId: entryId,
+        petId,
+        metadata: {
+          occurrence_id: occurrenceId,
+          weight_entry_id: weightId,
+        },
+        req,
+      });
+      recordPetActivityForPet(pool, {
+        petId,
+        actorUserId: userId,
+        eventType: 'health_log',
+        metadata: { action: 'complete_weight_occurrence', entry_type: entry.type },
+      });
+      return maybePersistWeightEstablishment(pool, { petId, healthEntryId: entryId });
+    })
+    .catch(() => {
+      // Best-effort after commit — response already reflects committed state.
+    });
 }
 
 /**

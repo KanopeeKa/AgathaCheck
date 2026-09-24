@@ -32,8 +32,8 @@ python3 scripts/architecture/architecture-metrics.py \
 | Command / read | AuthZ owner | Transaction owner | Commit point | Response contract (today) | Known gap (finding) | Characterization test |
 |---|---|---|---|---|---|---|
 | `deleteAllPetData` | route + `petAccess` | `withTransaction` / single `PoolClient` | before file purge | `{ deleted, files_removed }` counts scheduled URLs | A01 fixed in B2 | `server/test/lib/petDataLifecycle.characterization.test.js` |
-| `POST …/complete-weight` | capability + entry access | `pool.connect` in service | before cache/establishment | 201 or 500 after commit | A02 — post-commit 500 | `server/test/healthEntries/completeWeight.test.js` (characterization case) |
-| `POST /pets/:id/passed-away` | pet access | none (notify only) | n/a | `passed_away: true` (misleading) | A08 — DTO vs PUT persistence | documented; fix in B3 |
+| `POST …/complete-weight` | capability + entry access | `pool.connect` in service | before cache/establishment | 201 with committed result; post-commit best-effort | A02 fixed in B3 | `server/test/healthEntries/completeWeight.test.js` |
+| `POST /pets/:id/passed-away` | pet access | none (notify only) | n/a | `notification_sent` + `delivery_status` | A08 fixed in B4 (D1) | `server/test/openapi/petCareContract.test.js` |
 | `GET` pets list (Flutter) | bearer token | n/a | n/a | returns local cache on remote error | A06 — 401/403 indistinguishable from offline | `pet_repository_impl_test.dart` characterization group |
 | Health entry selectors | n/a | n/a | n/a | dual fetch paths | A05 — `petHealthEntriesProvider` vs global notifier | documented; fix in C2 |
 | `POST /pets/:id/transfer-to-org` | owner check | org transfer lib | varies | mounted when frozen off | A03 — boundary | fix in A2 |

@@ -139,14 +139,12 @@ Weight monitoring rhythms: generic complete and `mark-taken` return `400` — us
 
 **Removed (CSM-7):** `POST /:id/skip`, `POST /:id/unskip` — use occurrence skip APIs.
 
-#### Schedule change APIs (planned — CSM-8–11)
-
-Routes mount in parallel PRs; shapes are frozen:
+#### Schedule change APIs (shipped — CSM-8–13)
 
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/:id/pause` | Body `{ paused_since?, reason_note? }`; `status = paused`, ledger `paused` event |
-| POST | `/:id/resume` | Body `{ resume_from?, reason_note? }`; resume with **no catch-up** (D-CSM-005) |
+| POST | `/:id/pause` | Body `{ paused_from?, reason_note? }`; `status = paused`, `paused_since` cache, ledger `paused` event |
+| POST | `/:id/resume` | Body `{ reason_note? }`; resume with **no catch-up** (D-CSM-005) |
 | POST | `/:id/occurrences/:occId/reschedule` | Body `{ new_scheduled_date, new_scheduled_time?, reason_note? }`; one-instance move; ledger preserves original `from_date` |
 | POST | `/:id/adjust-cadence` | Body `{ effective_from, frequency?, frequency_interval?, recurrence_anchor?, reason_note? }`; series-forward only |
 | POST | `/:id/schedule/undo` | Timestamp-aware `undoLastAction` (CSM-8) |
@@ -567,7 +565,7 @@ Implemented in `server/routes/sharing/petAccessRoutes.js` (mounted on `/api/pets
 
 ### Mark Pet as Passed Away
 
-- **POST** `/api/pets/{id}/passed-away` — Notifies collaborators (`notified_count` in response). Pet `passedAway` flag is persisted via `PUT /api/pets/{id}`.
+- **POST** `/api/pets/{id}/passed-away` — Notification-only: creates in-app notifications for collaborators. Response: `{ notification_sent, pet_id, notified_count, delivery_status }` where `notification_sent` is true only when at least one notification row was written (`delivery_status`: `delivered` | `no_recipients`). Does **not** persist `passedAway`; use `PUT /api/pets/{id}` with `passed_away: true` for that.
 
 
 

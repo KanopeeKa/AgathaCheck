@@ -13,7 +13,6 @@ import {
   signupUser,
   updatePlannedAbsence,
 } from '../support/api';
-import { refreshFlutterAccessibility, waitForFlutterRoutePattern } from '../support/flutter';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
@@ -79,12 +78,7 @@ test.describe('Away plan detail V2', () => {
     await away.openPlan(absence.id);
     await away.expectPlannedCareItemRow(entry.id, 'Away Window Meds');
     await away.openPlannedCareItem(entry.id);
-
-    await waitForFlutterRoutePattern(page, /\/pet\/[^/]+\/events\/[^/?#]+/, 45_000);
-    await refreshFlutterAccessibility(page);
-    await expect(page.getByText('Away Window Meds', { exact: false }).first()).toBeVisible({
-      timeout: 15_000,
-    });
+    await away.expectPlannedCareItemDetail('Away Window Meds');
   });
 
   test('Guardian can save handover note and delete away plan from edit screen', async ({

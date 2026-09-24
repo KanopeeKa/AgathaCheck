@@ -237,13 +237,15 @@ describe('POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/
     expect(res.statusCode).toBe(401);
   });
 
-  it('characterization: returns 500 when post-commit establishment fails after commit (A02)', async () => {
+  it('returns 201 with committed result when post-commit establishment fails (A02 fixed)', async () => {
     failPostCommitEstablishment = true;
     const res = await request(app)
       .post(path)
       .set('Authorization', `Bearer ${token}`)
       .send(payload);
-    expect(res.statusCode).toBe(500);
+    expect(res.statusCode).toBe(201);
+    expect(res.body.weight_entry.health_occurrence_id).toBe(occurrenceId);
+    expect(res.body.occurrence.status).toBe('completed');
     expect(occurrence.status).toBe('completed');
     expect(linkedWeight).not.toBeNull();
   });

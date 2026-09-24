@@ -163,52 +163,61 @@ export async function createShareInvite(pool, {
     client.release();
   }
 
-  const inviterName = await loadInviterName(pool, inviterUserId);
-  const petNameRows = await pool.query(
-    'SELECT id, name FROM pets WHERE id = ANY($1::uuid[])',
-    [includedPetIds],
-  );
-  const pets = petNameRows.rows.map((row) => ({ pet_id: row.id, pet_name: row.name }));
-
-  const delivery = { email: 'skipped', notification: false };
-
-  if (inviteeUser) {
-    for (const pet of pets) {
-      await createNotification(pool, {
-        userId: inviteeUser.id,
-        petId: pet.pet_id,
-        petName: pet.pet_name,
-        healthEntryId: code,
-        title: 'Pet sharing invitation',
-        message: `${inviterName} invited you to follow ${pet.pet_name}.`,
-        type: 'shareInviteReceived',
-      });
-    }
-    delivery.notification = true;
-  } else {
-    try {
-      const { subject, text, html } = buildPetShareInvitationNewUserEmail({
-        locale: resolveEmailLocale(locale),
-        inviterName,
-        pets,
-        code,
-      });
-      await sendTransactionalEmail({ to: inviteeEmail, subject, text, html });
-      delivery.email = 'sent';
-    } catch (mailErr) {
-      console.error('Pet share invitation email failed:', mailErr);
-      delivery.email = 'failed';
-    }
-  }
-
-  return {
+  const committedResult = {
     status: 201,
     invite_id: inviteId,
     code,
     included_pet_ids: includedPetIds,
     excluded,
-    delivery,
+    delivery: { email: 'skipped', notification: false },
   };
+
+  try {
+    const inviterName = await loadInviterName(pool, inviterUserId);
+    const petNameRows = await pool.query(
+      'SELECT id, name FROM pets WHERE id = ANY($1::uuid[])',
+      [includedPetIds],
+    );
+    const pets = petNameRows.rows.map((row) => ({ pet_id: row.id, pet_name: row.name }));
+
+    if (inviteeUser) {
+      for (const pet of pets) {
+        await createNotification(pool, {
+          userId: inviteeUser.id,
+          petId: pet.pet_id,
+          petName: pet.pet_name,
+          healthEntryId: code,
+          title: 'Pet sharing invitation',
+          message: `${inviterName} invited you to follow ${pet.pet_name}.`,
+          type: 'shareInviteReceived',
+        });
+      }
+      committedResult.delivery.notification = true;
+    } else {
+      try {
+        const { subject, text, html } = buildPetShareInvitationNewUserEmail({
+          locale: resolveEmailLocale(locale),
+          inviterName,
+          pets,
+          code,
+        });
+        await sendTransactionalEmail({ to: inviteeEmail, subject, text, html });
+        committedResult.delivery.email = 'sent';
+      } catch (mailErr) {
+        console.error('Pet share invitation email failed:', mailErr);
+        committedResult.delivery.email = 'failed';
+      }
+    }
+  } catch (deliveryErr) {
+    console.error('Share invite post-commit delivery failed:', deliveryErr);
+    committedResult.delivery = {
+      email: 'failed',
+      notification: false,
+      delivery_error: true,
+    };
+  }
+
+  return committedResult;
 }
 
 export async function getInvitePreview(pool, code) {
