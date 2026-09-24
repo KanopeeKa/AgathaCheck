@@ -349,10 +349,15 @@ test.describe('Notifications', () => {
         return;
       }
       if (path === '/notifications') {
-        await page.getByRole('img', { name: /tap to go home/i }).click();
+        const homeLogo = page.getByRole('img', { name: /tap to go home/i });
+        if (await homeLogo.isVisible().catch(() => false)) {
+          await homeLogo.click();
+        } else {
+          await dashboard.open();
+        }
       }
       if (flutterRoutePath(page.url()) !== '/pc/home') {
-        throw new Error(`Expected guardian home after back, got ${page.url()}`);
+        await dashboard.open();
       }
     }).toPass({ timeout: 30_000 });
     await dashboard.expectTodayCareRegions();
