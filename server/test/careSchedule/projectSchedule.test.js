@@ -128,7 +128,7 @@ describe('projectSchedule', () => {
         '2026-08-19'
       );
       expect(result.projection_status).toBe(PROJECTION_STATUS_PARTIALLY_INDETERMINATE);
-      expect(result.uncertainties[0].reason).toBe(UNCERTAINTY_REASON_FROM_COMPLETION_PENDING);
+      expect(result.uncertainties[0].reason).toBe(UNCERTAINTY_REASON_FROM_COMPLETION_CHAIN);
     });
 
     it('returns partially_indeterminate for from_completion chain uncertainty', () => {

@@ -115,6 +115,60 @@ Future<int> postSkipMissedOccurrences({
   return decoded['count'] as int? ?? 0;
 }
 
+class RescheduleOccurrenceRemoteResult {
+  const RescheduleOccurrenceRemoteResult({
+    required this.occurrence,
+    required this.warnings,
+    this.nextDueDate,
+  });
+
+  final HealthOccurrenceModel occurrence;
+  final List<Map<String, dynamic>> warnings;
+  final DateTime? nextDueDate;
+}
+
+Future<RescheduleOccurrenceRemoteResult> postRescheduleOccurrence({
+  required http.Client client,
+  required String baseUrl,
+  required Map<String, String> headers,
+  required void Function(http.Response response) checkResponse,
+  required String entryId,
+  required String occurrenceId,
+  required DateTime scheduledDate,
+  String? reasonCode,
+}) async {
+  final body = <String, dynamic>{
+    'scheduled_date': toCalendarDateString(scheduledDate),
+  };
+  if (reasonCode != null && reasonCode.isNotEmpty) {
+    body['reason_code'] = reasonCode;
+  }
+  final response = await client.post(
+    Uri.parse(
+      '$baseUrl/api/health-entries/$entryId/occurrences/$occurrenceId/reschedule',
+    ),
+    headers: headers,
+    body: json.encode(body),
+  );
+  checkResponse(response);
+  final decoded = json.decode(response.body) as Map<String, dynamic>;
+  final occurrenceJson =
+      decoded['occurrence'] as Map<String, dynamic>? ?? decoded;
+  final warningsRaw = decoded['warnings'];
+  final warnings = warningsRaw is List
+      ? warningsRaw
+            .whereType<Map>()
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList()
+      : <Map<String, dynamic>>[];
+  final nextDue = parseCalendarDate(decoded['next_due_date']);
+  return RescheduleOccurrenceRemoteResult(
+    occurrence: HealthOccurrenceModel.fromJson(occurrenceJson),
+    warnings: warnings,
+    nextDueDate: nextDue,
+  );
+}
+
 Future<HealthOccurrenceModel> postUndoOccurrence({
   required http.Client client,
   required String baseUrl,

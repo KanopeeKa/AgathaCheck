@@ -30,6 +30,12 @@
     "Away plan planned care row opens care item detail": "P1",
     "Guardian can save handover note and delete away plan from edit screen": "P1"
   },
+  "away_care_planning.feature": {
+    "Overdue open care shows its date on the away plan": "P1",
+    "Completion-based care shows an estimated date on the away plan": "P1",
+    "Changing a care date from the care item updates the next dates": "P1",
+    "Accepting a planner suggestion reduces carer tasks during the absence": "P1"
+  },
   "care_suggestion.feature": {
     "A care suggestion surfaces on the pet profile contextual slot": "P1",
     "A care suggestion never appears in the Actions (/pc/events) list": "P1",

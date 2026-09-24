@@ -7,7 +7,8 @@ import {
   validateCareSource as validateCareSourceEnum,
 } from '../../lib/care/enums.js';
 import { extractUserId } from '../../lib/requireAuth.js';
-import { dateToIsoDate } from '../../lib/calendarDate.js';
+import { dateToIsoDate, todayCalendarIso } from '../../lib/calendarDate.js';
+import { resolveScheduleFlexibility } from '../../lib/care/schedule/scheduleFlexibility.js';
 import { extensionForMime } from '../../lib/safeUpload.js';
 import {
   HEALTH_DOCUMENT_EXTENSIONS,
@@ -107,6 +108,8 @@ export function validateCareSourceForWrite(value) {
 }
 
 export function healthEntryToMap(row) {
+  const todayIso = todayCalendarIso();
+  const scheduleFlexibility = resolveScheduleFlexibility(row, todayIso);
   return {
     id: row.id,
     pet_id: row.pet_id,
@@ -136,6 +139,7 @@ export function healthEntryToMap(row) {
     care_importance: row.care_importance ?? null,
     importance_overridden: row.importance_overridden ?? false,
     care_source: row.care_source || 'guardian_defined',
+    schedule_flexibility: scheduleFlexibility,
     schedule_policy_version: row.schedule_policy_version ?? null,
     completed_at: row.completed_at ? row.completed_at.toISOString?.() || String(row.completed_at) : null,
     created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,

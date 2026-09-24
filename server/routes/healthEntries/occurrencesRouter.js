@@ -5,7 +5,6 @@ import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
 import { adjustCadence } from '../../lib/care/schedule/adjustCadence.js';
 import { completeOccurrence } from '../../lib/care/schedule/completeOccurrence.js';
-import { rescheduleOccurrence } from '../../lib/care/schedule/rescheduleOccurrence.js';
 import {
   pauseSeries,
   resumeSeries,
@@ -157,54 +156,6 @@ export function registerOccurrenceRoutes(router, pool) {
         occurrence: occurrenceToMap(row),
         next_due_date: completion.nextDueDate,
       });
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
-  });
-
-  router.post('/:id/occurrences/:occId/reschedule', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const entryId = req.params.id;
-      const entry = await loadEntry(pool, entryId, userId);
-      if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      const occ = await loadOccurrence(pool, entryId, req.params.occId);
-      if (!occ || occ.status !== 'pending') {
-        return res.status(404).json({ error: 'Occurrence not found' });
-      }
-      const body = req.body || {};
-      const scheduledDate = normalizeCalendarDateInput(
-        body.scheduled_date || body.scheduledDate,
-      );
-      if (!scheduledDate) {
-        return res.status(400).json({ error: 'scheduled_date is required' });
-      }
-      const reasonCode = body.reason_code || body.reasonCode || null;
-      const reasonNote = body.reason_note || body.reasonNote || body.notes || null;
-      const rescheduledAt = new Date();
-      const result = await rescheduleOccurrence(pool, {
-        entry,
-        occurrenceId: occ.id,
-        userId,
-        newScheduledDate: scheduledDate,
-        reasonCode,
-        reasonNote,
-        rescheduledAt,
-      });
-      if (!result) {
-        return res.status(404).json({ error: 'Occurrence not found' });
-      }
-      logAuditEventSafe(pool, {
-        actorUserId: userId,
-        action: 'health_occurrence.rescheduled',
-        resourceType: 'health_entry',
-        resourceId: entryId,
-        petId: entry.pet_id,
-        metadata: { occurrence_id: occ.id, scheduled_date: scheduledDate },
-        req,
-      });
-      res.json(occurrenceToMap(result.occurrence));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }

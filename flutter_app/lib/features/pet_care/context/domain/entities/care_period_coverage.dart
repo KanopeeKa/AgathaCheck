@@ -84,6 +84,38 @@ class CarePeriodProjectionItem {
   bool get isPending => status == 'pending';
 }
 
+class PlannedCareOpenOccurrence {
+  const PlannedCareOpenOccurrence({
+    this.occurrenceId,
+    required this.scheduledDate,
+    this.scheduledTime,
+    required this.openStatus,
+  });
+
+  final String? occurrenceId;
+  final String scheduledDate;
+  final String? scheduledTime;
+
+  /// `overdue` | `due_before_absence` | `in_window`
+  final String openStatus;
+}
+
+class PlannedCareInWindow {
+  const PlannedCareInWindow({
+    required this.firstDate,
+    required this.lastDate,
+    required this.count,
+    required this.dateBasis,
+  });
+
+  final String firstDate;
+  final String lastDate;
+  final int count;
+
+  /// `scheduled` | `planned` | `estimated`
+  final String dateBasis;
+}
+
 class PlannedCareItem {
   const PlannedCareItem({
     required this.kind,
@@ -103,6 +135,9 @@ class PlannedCareItem {
     this.firstScheduledDate,
     this.lastScheduledDate,
     this.occurrenceCount = 0,
+    this.openOccurrence,
+    this.inWindow,
+    this.isPaused = false,
   });
 
   final PlannedCareKind kind;
@@ -122,8 +157,14 @@ class PlannedCareItem {
   final String? firstScheduledDate;
   final String? lastScheduledDate;
   final int occurrenceCount;
+  final PlannedCareOpenOccurrence? openOccurrence;
+  final PlannedCareInWindow? inWindow;
+  final bool isPaused;
 
   bool get isConditional => certainty == 'conditional_on_future_completion';
+
+  bool get usesAcpRowContract =>
+      isPaused || openOccurrence != null || inWindow != null;
 }
 
 class CarePeriodCoverageSummary {
@@ -160,6 +201,10 @@ class CarePeriodCoverageResult {
   bool get isPartiallyIndeterminate =>
       projectionStatus == CarePeriodProjectionStatus.partiallyIndeterminate;
 
+  bool get showsEstimateFootnote =>
+      plannedCareItems.any((item) => item.inWindow?.dateBasis == 'estimated');
+
   bool get showsChainAnchorExplainer =>
+      !showsEstimateFootnote &&
       plannedCareItems.any((item) => item.kind.showsChainAnchorExplainer);
 }

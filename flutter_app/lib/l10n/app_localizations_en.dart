@@ -6520,6 +6520,107 @@ class AppLocalizationsEn extends AppLocalizations {
   String get awayPlanningIndeterminateGeneric => 'Timing not yet known';
 
   @override
+  String awayPlanningOpenDueBeforeLeave(String date) {
+    return '$date · Due before you leave';
+  }
+
+  @override
+  String awayPlanningPlannedOn(String date) {
+    return 'Planned: $date';
+  }
+
+  @override
+  String awayPlanningEstimatedOn(String date) {
+    return 'Estimated: $date';
+  }
+
+  @override
+  String awayPlanningInWindowRange(int count, String first, String last) {
+    return '$count times, $first – $last';
+  }
+
+  @override
+  String get awayPlanningEstimateFootnote =>
+      'Estimated dates assume you complete overdue care today, then keep to the usual interval.';
+
+  @override
+  String get awayPlanningPaused => 'Paused';
+
+  @override
+  String get rescheduleActionLabel => 'Change date';
+
+  @override
+  String rescheduleGapWarning(int x, int y) {
+    return 'This will be $x days after the last one instead of $y.';
+  }
+
+  @override
+  String rescheduleUsualGap(int y) {
+    return 'Usual interval: $y days.';
+  }
+
+  @override
+  String reschedulePreviewCalendar(String dates) {
+    return 'Next ones: $dates';
+  }
+
+  @override
+  String reschedulePreviewCompletion(String date, String newDate) {
+    return 'Next one estimated around $date if done on $newDate.';
+  }
+
+  @override
+  String get rescheduleVetScheduleCaution =>
+      'This care usually follows a vet\'s schedule. Check with your vet before changing it.';
+
+  @override
+  String get rescheduleEarlierOnlyLaterCaution =>
+      'This care is usually done earlier than scheduled, not later.';
+
+  @override
+  String get awayPlanningPlanThis => 'Plan this';
+
+  @override
+  String plannerMoveLine(String from, String to) {
+    return 'Move from $from to $to';
+  }
+
+  @override
+  String get plannerReasonBeforeDeparture =>
+      'Done before you leave, so your carer doesn\'t need to.';
+
+  @override
+  String get plannerReasonAfterReturn =>
+      'Done after you\'re back, so your carer doesn\'t need to.';
+
+  @override
+  String plannerCarerTasks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count care tasks',
+      one: '1 care task',
+    );
+    return '$_temp0 for your carer during this absence.';
+  }
+
+  @override
+  String get plannerAccept => 'Accept';
+
+  @override
+  String get plannerNotNow => 'Not now';
+
+  @override
+  String get plannerDisclaimer =>
+      'Suggested dates are planning helpers, not medical advice.';
+
+  @override
+  String get occurrenceRescheduled => 'Date changed';
+
+  @override
+  String get snackbarUndo => 'Undo';
+
+  @override
   String get petTagsTitle => 'Pet tags';
 
   @override

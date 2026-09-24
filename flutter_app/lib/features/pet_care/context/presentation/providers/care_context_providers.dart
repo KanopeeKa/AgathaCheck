@@ -5,6 +5,7 @@ import '../../../../../core/providers/api_base_url_provider.dart';
 import '../../data/datasources/care_context_remote_datasource.dart';
 import '../../data/repositories/care_context_repository_impl.dart';
 import '../away_planning_dashboard_tile_state.dart';
+import '../../domain/entities/absence_care_plan.dart';
 import '../../domain/entities/away_plan_readiness.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../../domain/entities/carer_candidate.dart';
@@ -59,6 +60,30 @@ final awayPlanReadinessProvider =
       return ref
           .read(careContextRepositoryProvider)
           .getAwayPlanReadiness(absenceId);
+    });
+
+final absenceCarePlanProvider = FutureProvider.family<AbsenceCarePlan, String>((
+  ref,
+  absenceId,
+) async {
+  return ref.read(careContextRepositoryProvider).getAbsenceCarePlan(absenceId);
+});
+
+class DismissedPlannerSuggestionsNotifier extends StateNotifier<Set<String>> {
+  DismissedPlannerSuggestionsNotifier() : super({});
+
+  void dismiss(String key) {
+    state = {...state, key};
+  }
+}
+
+final dismissedPlannerSuggestionsProvider =
+    StateNotifierProvider.family<
+      DismissedPlannerSuggestionsNotifier,
+      Set<String>,
+      String
+    >((ref, absenceId) {
+      return DismissedPlannerSuggestionsNotifier();
     });
 
 final carerCandidatesProvider = FutureProvider.autoDispose

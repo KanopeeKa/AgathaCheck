@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/pet_care/context/data/datasources/care_context_remote_datasource.dart';
+import 'package:pet_profile_app/features/pet_care/context/domain/entities/absence_care_plan.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/away_plan_readiness.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/care_period_coverage.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/carer_candidate.dart';
@@ -93,6 +94,17 @@ class _FakeCareContextRepository implements CareContextRepository {
         status: 'active',
         petIds: ['pet-1'],
         petCarers: [PlannedAbsencePetCarer(petId: 'pet-1')],
+      );
+
+  @override
+  @override
+  Future<AbsenceCarePlan> getAbsenceCarePlan(String absenceId) async =>
+      const AbsenceCarePlan(
+        absenceId: 'abs-1',
+        today: '2026-09-01',
+        startsOn: '2026-10-01',
+        endsOn: '2026-10-05',
+        pets: [],
       );
 
   @override

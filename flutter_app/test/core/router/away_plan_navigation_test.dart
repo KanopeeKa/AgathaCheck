@@ -129,6 +129,7 @@ void main() {
                         label: 'plan-${state.pathParameters['id']}',
                         backPath: '/pc/away',
                         child: AwayPlanPetCareSection(
+                          absenceId: 'abs-1',
                           petId: 'pet-1',
                           petName: 'Luna',
                           startsOn: '2026-10-01',

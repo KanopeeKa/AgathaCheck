@@ -11548,6 +11548,144 @@ abstract class AppLocalizations {
   /// **'Timing not yet known'**
   String get awayPlanningIndeterminateGeneric;
 
+  /// No description provided for @awayPlanningOpenDueBeforeLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · Due before you leave'**
+  String awayPlanningOpenDueBeforeLeave(String date);
+
+  /// No description provided for @awayPlanningPlannedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned: {date}'**
+  String awayPlanningPlannedOn(String date);
+
+  /// No description provided for @awayPlanningEstimatedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated: {date}'**
+  String awayPlanningEstimatedOn(String date);
+
+  /// No description provided for @awayPlanningInWindowRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} times, {first} – {last}'**
+  String awayPlanningInWindowRange(int count, String first, String last);
+
+  /// No description provided for @awayPlanningEstimateFootnote.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated dates assume you complete overdue care today, then keep to the usual interval.'**
+  String get awayPlanningEstimateFootnote;
+
+  /// No description provided for @awayPlanningPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get awayPlanningPaused;
+
+  /// No description provided for @rescheduleActionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Change date'**
+  String get rescheduleActionLabel;
+
+  /// No description provided for @rescheduleGapWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This will be {x} days after the last one instead of {y}.'**
+  String rescheduleGapWarning(int x, int y);
+
+  /// No description provided for @rescheduleUsualGap.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual interval: {y} days.'**
+  String rescheduleUsualGap(int y);
+
+  /// No description provided for @reschedulePreviewCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Next ones: {dates}'**
+  String reschedulePreviewCalendar(String dates);
+
+  /// No description provided for @reschedulePreviewCompletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Next one estimated around {date} if done on {newDate}.'**
+  String reschedulePreviewCompletion(String date, String newDate);
+
+  /// No description provided for @rescheduleVetScheduleCaution.
+  ///
+  /// In en, this message translates to:
+  /// **'This care usually follows a vet\'s schedule. Check with your vet before changing it.'**
+  String get rescheduleVetScheduleCaution;
+
+  /// No description provided for @rescheduleEarlierOnlyLaterCaution.
+  ///
+  /// In en, this message translates to:
+  /// **'This care is usually done earlier than scheduled, not later.'**
+  String get rescheduleEarlierOnlyLaterCaution;
+
+  /// No description provided for @awayPlanningPlanThis.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan this'**
+  String get awayPlanningPlanThis;
+
+  /// No description provided for @plannerMoveLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Move from {from} to {to}'**
+  String plannerMoveLine(String from, String to);
+
+  /// No description provided for @plannerReasonBeforeDeparture.
+  ///
+  /// In en, this message translates to:
+  /// **'Done before you leave, so your carer doesn\'t need to.'**
+  String get plannerReasonBeforeDeparture;
+
+  /// No description provided for @plannerReasonAfterReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Done after you\'re back, so your carer doesn\'t need to.'**
+  String get plannerReasonAfterReturn;
+
+  /// No description provided for @plannerCarerTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 care task} other{{count} care tasks}} for your carer during this absence.'**
+  String plannerCarerTasks(int count);
+
+  /// No description provided for @plannerAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get plannerAccept;
+
+  /// No description provided for @plannerNotNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get plannerNotNow;
+
+  /// No description provided for @plannerDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested dates are planning helpers, not medical advice.'**
+  String get plannerDisclaimer;
+
+  /// No description provided for @occurrenceRescheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Date changed'**
+  String get occurrenceRescheduled;
+
+  /// No description provided for @snackbarUndo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get snackbarUndo;
+
   /// No description provided for @petTagsTitle.
   ///
   /// In en, this message translates to:
