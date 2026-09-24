@@ -146,9 +146,7 @@ void main() {
     final container = _container(entries);
     await _warmUp(container);
 
-    final summary = container.read(
-      petCareStatusFromGroupingProvider('pet-1'),
-    );
+    final summary = container.read(petCareStatusFromGroupingProvider('pet-1'));
     final serviceSummary = grouping.summarizePet(
       petId: 'pet-1',
       entries: entries,
@@ -176,9 +174,7 @@ void main() {
     await _warmUp(container);
 
     final buckets = container.read(petCareTemporalBucketsProvider('pet-1'));
-    final summary = container.read(
-      petCareStatusFromGroupingProvider('pet-1'),
-    );
+    final summary = container.read(petCareStatusFromGroupingProvider('pet-1'));
 
     expect(buckets.isEmpty, isTrue);
     expect(summary.status, CareStatus.allSet);
