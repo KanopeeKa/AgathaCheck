@@ -20,10 +20,16 @@ function entriesById(entries) {
  */
 export function formatProjectionReadContract(projection, entries) {
   const entryMap = entriesById(entries);
+  const context = {
+    startsOn: projection.starts_on,
+    endsOn: projection.ends_on,
+    todayIso: projection.today_iso,
+  };
   const plannedCareItems = buildPlannedCareItems(
     projection.items || [],
     projection.uncertainties || [],
-    entryMap
+    entryMap,
+    context
   );
 
   const rest = { ...projection };

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/pet_care/context/data/datasources/care_context_remote_datasource.dart';
+import 'package:pet_profile_app/features/pet_care/context/domain/entities/absence_care_plan.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/away_plan_readiness.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/care_period_coverage.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/carer_candidate.dart';
@@ -96,6 +97,17 @@ class _FakeCareContextRepository implements CareContextRepository {
   }) {
     throw UnimplementedError();
   }
+
+  @override
+  @override
+  Future<AbsenceCarePlan> getAbsenceCarePlan(String absenceId) async =>
+      AbsenceCarePlan(
+        absenceId: absence.id,
+        today: '2026-09-01',
+        startsOn: absence.startsOn,
+        endsOn: absence.endsOn,
+        pets: [],
+      );
 
   @override
   Future<AwayPlanReadiness> getAwayPlanReadiness(String absenceId) async =>

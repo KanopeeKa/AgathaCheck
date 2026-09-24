@@ -129,6 +129,7 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
                     (petId) => Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: AwayPlanPetCareSection(
+                        absenceId: absenceId,
                         petId: petId,
                         petName: petNamesById[petId] ?? '',
                         startsOn: absence.startsOn,

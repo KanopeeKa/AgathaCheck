@@ -15,8 +15,8 @@ import {
 
 describe('CSM-17 integration gate', () => {
   describe('Care Context — projection corpus unchanged', () => {
-    it('has exactly 30 corpus cases', () => {
-      expect(corpusCases.length).toBe(30);
+    it('has exactly 31 corpus cases', () => {
+      expect(corpusCases.length).toBe(31);
     });
 
     it.each(corpusCases.map((c) => [c.id, c]))('corpus case %s', (_id, fixture) => {

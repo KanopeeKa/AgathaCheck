@@ -2483,6 +2483,96 @@
   "awayPlanningIndeterminatePending": "Waiting on a prior dose",
   "awayPlanningIndeterminateChain": "Depends on earlier care in the chain",
   "awayPlanningIndeterminateGeneric": "Timing not yet known",
+  "awayPlanningOpenDueBeforeLeave": "{date} · Due before you leave",
+  "@awayPlanningOpenDueBeforeLeave": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningPlannedOn": "Planned: {date}",
+  "@awayPlanningPlannedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningEstimatedOn": "Estimated: {date}",
+  "@awayPlanningEstimatedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningInWindowRange": "{count} times, {first} – {last}",
+  "@awayPlanningInWindowRange": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "first": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningEstimateFootnote": "Estimated dates assume you complete overdue care today, then keep to the usual interval.",
+  "awayPlanningPaused": "Paused",
+  "rescheduleActionLabel": "Change date",
+  "rescheduleGapWarning": "This will be {x} days after the last one instead of {y}.",
+  "@rescheduleGapWarning": {
+    "placeholders": {
+      "x": { "type": "int" },
+      "y": { "type": "int" }
+    }
+  },
+  "rescheduleUsualGap": "Usual interval: {y} days.",
+  "@rescheduleUsualGap": {
+    "placeholders": {
+      "y": { "type": "int" }
+    }
+  },
+  "reschedulePreviewCalendar": "Next ones: {dates}",
+  "@reschedulePreviewCalendar": {
+    "placeholders": {
+      "dates": { "type": "String" }
+    }
+  },
+  "reschedulePreviewCompletion": "Next one estimated around {date} if done on {newDate}.",
+  "@reschedulePreviewCompletion": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "newDate": { "type": "String" }
+    }
+  },
+  "rescheduleVetScheduleCaution": "This care usually follows a vet's schedule. Check with your vet before changing it.",
+  "rescheduleEarlierOnlyLaterCaution": "This care is usually done earlier than scheduled, not later.",
+  "awayPlanningPlanThis": "Plan this",
+  "plannerMoveLine": "Move from {from} to {to}",
+  "@plannerMoveLine": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
+  "plannerReasonBeforeDeparture": "Done before you leave, so your carer doesn't need to.",
+  "plannerReasonAfterReturn": "Done after you're back, so your carer doesn't need to.",
+  "plannerCarerTasks": "{count, plural, one{1 care task} other{{count} care tasks}} for your carer during this absence.",
+  "@plannerCarerTasks": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "plannerAccept": "Accept",
+  "plannerNotNow": "Not now",
+  "plannerDisclaimer": "Suggested dates are planning helpers, not medical advice.",
+  "occurrenceRescheduled": "Date changed",
+  "snackbarUndo": "Undo",
   "petTagsTitle": "Pet tags",
   "petTagsSubtitle": "Private labels to organize your pet list. Only you can see them.",
   "petTagsManage": "Manage tags",

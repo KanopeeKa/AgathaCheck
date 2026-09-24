@@ -2379,6 +2379,96 @@
   "awayPlanningIndeterminatePending": "En attente d'une dose précédente",
   "awayPlanningIndeterminateChain": "Dépend de soins antérieurs dans la chaîne",
   "awayPlanningIndeterminateGeneric": "Horaire pas encore connu",
+  "awayPlanningOpenDueBeforeLeave": "{date} · À faire avant votre départ",
+  "@awayPlanningOpenDueBeforeLeave": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningPlannedOn": "Prévu : {date}",
+  "@awayPlanningPlannedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningEstimatedOn": "Estimé : {date}",
+  "@awayPlanningEstimatedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningInWindowRange": "{count} fois, {first} – {last}",
+  "@awayPlanningInWindowRange": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "first": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningEstimateFootnote": "Les dates estimées supposent que vous terminez les soins en retard aujourd'hui, puis que vous respectez l'intervalle habituel.",
+  "awayPlanningPaused": "En pause",
+  "rescheduleActionLabel": "Changer la date",
+  "rescheduleGapWarning": "Ce sera {x} jours après le précédent au lieu de {y}.",
+  "@rescheduleGapWarning": {
+    "placeholders": {
+      "x": { "type": "int" },
+      "y": { "type": "int" }
+    }
+  },
+  "rescheduleUsualGap": "Intervalle habituel : {y} jours.",
+  "@rescheduleUsualGap": {
+    "placeholders": {
+      "y": { "type": "int" }
+    }
+  },
+  "reschedulePreviewCalendar": "Prochaines dates : {dates}",
+  "@reschedulePreviewCalendar": {
+    "placeholders": {
+      "dates": { "type": "String" }
+    }
+  },
+  "reschedulePreviewCompletion": "Prochaine date estimée vers le {date} si fait le {newDate}.",
+  "@reschedulePreviewCompletion": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "newDate": { "type": "String" }
+    }
+  },
+  "rescheduleVetScheduleCaution": "Ce soin suit en général le calendrier du vétérinaire. Vérifiez avec votre vétérinaire avant de le modifier.",
+  "rescheduleEarlierOnlyLaterCaution": "Ce soin se fait en général plus tôt que prévu, pas plus tard.",
+  "awayPlanningPlanThis": "Planifier",
+  "plannerMoveLine": "Déplacer du {from} au {to}",
+  "@plannerMoveLine": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
+  "plannerReasonBeforeDeparture": "À faire avant votre départ, pour que votre gardien n'ait pas à s'en occuper.",
+  "plannerReasonAfterReturn": "À faire après votre retour, pour que votre gardien n'ait pas à s'en occuper.",
+  "plannerCarerTasks": "{count, plural, one{1 tâche de soin} other{{count} tâches de soin}} pour votre gardien pendant cette absence.",
+  "@plannerCarerTasks": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "plannerAccept": "Accepter",
+  "plannerNotNow": "Pas maintenant",
+  "plannerDisclaimer": "Les dates suggérées sont des aides à la planification, pas des conseils médicaux.",
+  "occurrenceRescheduled": "Date modifiée",
+  "snackbarUndo": "Annuler",
   "petTagsTitle": "Étiquettes",
   "petTagsSubtitle": "Libellés privés pour organiser votre liste d'animaux. Seulement vous les voyez.",
   "petTagsManage": "Gérer les étiquettes",

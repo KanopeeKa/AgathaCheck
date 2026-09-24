@@ -115,6 +115,49 @@ function sortOccurrences(occurrences) {
 
 /**
  * @param {object} entry
+ */
+function isEntryPaused(entry) {
+  return entry.status === 'paused';
+}
+
+/**
+ * @param {object[]} occurrences
+ * @returns {object|null}
+ */
+function findEarliestPendingOccurrence(occurrences) {
+  const pending = sortOccurrences(
+    occurrences.filter((occ) => (occ.status || 'pending') === 'pending')
+  );
+  return pending[0] ?? null;
+}
+
+/**
+ * Materialise the open occurrence when it falls before the absence window (D-ACP-001).
+ *
+ * @returns {object|null} the open occurrence row, if any
+ */
+function maybeMaterialiseBeforeWindowOpen(entry, occurrences, startsOn, items, knownSlots) {
+  if (isEntryPaused(entry)) return null;
+  const open = findEarliestPendingOccurrence(occurrences);
+  if (!open) return null;
+  const openDate = dateToIsoDate(open.scheduled_date);
+  if (!openDate || openDate >= startsOn) return null;
+
+  const time = open.scheduled_time
+    ? String(open.scheduled_time).slice(0, 5)
+    : null;
+  const key = slotKey(openDate, time);
+  if (knownSlots.has(key)) return open;
+
+  const item = materialisedItem(entry, open);
+  item.window_relation = 'before_window';
+  items.push(item);
+  knownSlots.add(key);
+  return open;
+}
+
+/**
+ * @param {object} entry
  * @param {object[]} occurrences all occurrences for this entry (in-window + pending)
  * @param {string} startsOn
  * @param {string} endsOn
@@ -164,7 +207,17 @@ export function projectEntryForPeriod(entry, occurrences, startsOn, endsOn, toda
   }
 
   if (anchor === 'from_due_date') {
-    let cursor = dateToIsoDate(entry.next_due_date) || dateToIsoDate(entry.start_date);
+    const open = maybeMaterialiseBeforeWindowOpen(
+      entry,
+      occurrences,
+      startsOn,
+      items,
+      knownSlots
+    );
+
+    let cursor = open
+      ? dateToIsoDate(open.scheduled_date)
+      : dateToIsoDate(entry.next_due_date) || dateToIsoDate(entry.start_date);
     if (!cursor) return { items, uncertainties };
 
     let guard = 0;
@@ -202,15 +255,37 @@ export function projectEntryForPeriod(entry, occurrences, startsOn, endsOn, toda
     return { items, uncertainties };
   }
 
-  const pending = sortOccurrences(
-    occurrences.filter((occ) => (occ.status || 'pending') === 'pending')
-  );
+  maybeMaterialiseBeforeWindowOpen(entry, occurrences, startsOn, items, knownSlots);
 
-  if (pending.length > 0) {
-    uncertainties.push({
-      health_entry_id: entry.id,
-      reason: UNCERTAINTY_REASON_FROM_COMPLETION_PENDING,
-    });
+  const pending = findEarliestPendingOccurrence(occurrences);
+  if (pending) {
+    const pendingDate = dateToIsoDate(pending.scheduled_date);
+    if (pendingDate) {
+      let chainBase = pendingDate;
+      if (pendingDate < startsOn) {
+        chainBase = pendingDate >= todayIso ? pendingDate : todayIso;
+        let guard = 0;
+        while (chainBase < startsOn && guard < 5000) {
+          if (!isOccurrenceDateWithinSeries(entry, chainBase)) break;
+          const next = advanceByFrequency(chainBase, entry);
+          if (!next || next <= chainBase) break;
+          chainBase = next;
+          guard += 1;
+        }
+      }
+      const secondHop = advanceByFrequency(chainBase, entry);
+      if (
+        secondHop
+        && secondHop <= endsOn
+        && isOccurrenceDateWithinSeries(entry, secondHop)
+        && isDateInCareWindow(secondHop, startsOn, endsOn)
+      ) {
+        uncertainties.push({
+          health_entry_id: entry.id,
+          reason: UNCERTAINTY_REASON_FROM_COMPLETION_CHAIN,
+        });
+      }
+    }
     return { items, uncertainties };
   }
 

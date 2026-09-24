@@ -195,6 +195,45 @@ The plan page shows one **“Planned care”** section per pet (server sort orde
 
 Raw per-occurrence `items[]` stays on the wire unchanged for coverage counts and create-flow preview; only the three legacy grouped arrays were removed.
 
+## Away care planning display (ACP — R-A*)
+
+Shipped on the integration branch as ACP-1–ACP-3. Canonical decisions: [away-care-planning-decisions.md](../changes/away-care-planning-decisions.md) (D-ACP-001 … D-ACP-010). Delivery: [away-care-planning-delivery-plan.md](../changes/away-care-planning-delivery-plan.md).
+
+### Row contract (per pet, per absence)
+
+| Req | Behaviour |
+|-----|-----------|
+| **R-A1** | Every active, non-paused item with an overdue open occurrence, an open occurrence due before absence start `S`, or any scheduled/planned/estimated occurrence in `[S, E]` appears on the plan. |
+| **R-A2** | Row shows care-family icon, title (**no** `~` prefix), recurrence line (D-AWD-003), then date lines below — not legacy `"Next due date:"` when ACP fields are present (R-A2.1). |
+| **R-A3** | Open occurrence overdue or due before `S`: real date (+ time when set) with suffix **Overdue** or **Due before you leave** (same treatment as event list). |
+| **R-A4** | In-window dates labelled by `date_basis`: scheduled = date only; `planned` → "Planned: {date}"; `estimated` → "Estimated: {date}" (D-ACP-002/003). |
+| **R-A5** | Multiple in-window dates: first date, count, and last date (`first_scheduled_date` / `last_scheduled_date` / `occurrence_count`) — not one line per hop. |
+| **R-A6** | When any row in a pet section shows an estimated date, one section footnote: estimates assume overdue care is completed today, then the usual interval. Suppresses `awayPlanningChainAnchorExplainer` for that section (R-A6.1). |
+| **R-A7** | `"Date not known"` (`indeterminate_pending`) only when no date can be computed (D-ACP-001). |
+| **R-A8** | PDF handover uses the same copy as the screen (`AwayPlanScheduleCopy`). |
+| **R-A9** | Paused series: **Paused**, no dates (D-CSM-005). |
+
+Wire fields on `planned_care_items[]`: `open_occurrence`, `in_window`, `is_paused` (see [api-reference.md](/docs/architecture/api-reference.md)). Server computes status and bases; Flutter renders only.
+
+### Care Planner suggestions (R-D*)
+
+Deterministic read model in `server/lib/care/planner/` (D-ACP-008). **Does not** write schedule state and **does not** feed Care Status, readiness, coverage, or Actions (R-D5).
+
+| Req | Behaviour |
+|-----|-----------|
+| **R-D1** | **Suggested by Agatha** block lists moves that reduce in-window occurrences, each with from → to and a one-line reason. |
+| **R-D2** | **Accept** runs `POST …/reschedule` with `reason_code: away_planner`; **Not now** hides for the session only (v1, not persisted). |
+| **R-D3** | Summarises remaining carer work: "{n} care task(s) for your carer during this absence." |
+| **R-D4** | Respects `schedule_flexibility` strictly (never `fixed` / `carer_task`; `earlier_only` → earlier only; within `max_shift_days`; not before today or inside `[S, E]`). |
+| **R-D5** | Unaccepted suggestions never change coverage or readiness. |
+| **R-D6** | No empty state when there is nothing to suggest — block omitted entirely. |
+
+Placement: under the pet header, **above** "Planned care". `GET /api/planned-absences/:id/care-plan` (declarer-scoped). Overdue open occurrences during an **in-progress** absence show on the plan (R-A3) but get **no** planner suggestion in v1 (BR-7).
+
+### Reschedule from care item (R-C*)
+
+Care Item Detail and away-plan **Plan this** open the same **Change date** sheet (ACP-5). Server validation, `warnings[]`, and `next_due_date` sync are owned by CSM (D-ACP-009) — see [care-schedule-management.md](care-schedule-management.md).
+
 ## Related
 
 - [care-schedule-management.md](care-schedule-management.md) — authoritative scheduling core (`projectSchedule`, `explainGap`)

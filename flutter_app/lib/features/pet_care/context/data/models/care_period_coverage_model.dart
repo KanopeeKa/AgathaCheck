@@ -17,6 +17,50 @@ class CarePeriodCoverageModel {
     );
   }
 
+  static PlannedCareOpenOccurrence? openOccurrenceFromJson(
+    Map<String, dynamic>? raw,
+  ) {
+    if (raw == null) return null;
+    final scheduledDate = raw['scheduled_date'] as String?;
+    final openStatus = raw['open_status'] as String?;
+    if (scheduledDate == null ||
+        scheduledDate.isEmpty ||
+        openStatus == null ||
+        openStatus.isEmpty) {
+      return null;
+    }
+    return PlannedCareOpenOccurrence(
+      occurrenceId: raw['occurrence_id'] as String?,
+      scheduledDate: scheduledDate,
+      scheduledTime: raw['scheduled_time'] as String?,
+      openStatus: openStatus,
+    );
+  }
+
+  static PlannedCareInWindow? inWindowFromJson(Map<String, dynamic>? raw) {
+    if (raw == null) return null;
+    final firstDate = raw['first_date'] as String?;
+    final lastDate = raw['last_date'] as String?;
+    final count = raw['count'] as int?;
+    final dateBasis = raw['date_basis'] as String?;
+    if (firstDate == null ||
+        firstDate.isEmpty ||
+        lastDate == null ||
+        lastDate.isEmpty ||
+        count == null ||
+        count < 1 ||
+        dateBasis == null ||
+        dateBasis.isEmpty) {
+      return null;
+    }
+    return PlannedCareInWindow(
+      firstDate: firstDate,
+      lastDate: lastDate,
+      count: count,
+      dateBasis: dateBasis,
+    );
+  }
+
   static PlannedCareItem plannedCareItemFromJson(Map<String, dynamic> raw) {
     final kind =
         PlannedCareKind.fromWire(raw['kind'] as String?) ??
@@ -43,6 +87,11 @@ class CarePeriodCoverageModel {
       firstScheduledDate: raw['first_scheduled_date'] as String?,
       lastScheduledDate: raw['last_scheduled_date'] as String?,
       occurrenceCount: raw['occurrence_count'] as int? ?? 0,
+      openOccurrence: openOccurrenceFromJson(
+        raw['open_occurrence'] as Map<String, dynamic>?,
+      ),
+      inWindow: inWindowFromJson(raw['in_window'] as Map<String, dynamic>?),
+      isPaused: raw['is_paused'] == true,
     );
   }
 

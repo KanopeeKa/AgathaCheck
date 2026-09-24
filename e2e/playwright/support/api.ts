@@ -327,6 +327,30 @@ export async function updatePlannedAbsence(
   return json.absence;
 }
 
+export interface AbsenceCarePlanResponse {
+  absence_id: string;
+  pets: Array<{
+    pet_id: string;
+    suggestions: Array<{ health_entry_id: string; to_date: string; from_date: string }>;
+    carer_tasks: { count: number };
+  }>;
+}
+
+export async function getAbsenceCarePlan(
+  baseURL: string,
+  token: string,
+  absenceId: string,
+): Promise<AbsenceCarePlanResponse> {
+  const res = await apiFetch(apiUrl(`/planned-absences/${absenceId}/care-plan`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getAbsenceCarePlan failed (${res.status}): ${body}`);
+  }
+  return res.json<AbsenceCarePlanResponse>();
+}
+
 export async function createPlannedAbsence(
   baseURL: string,
   token: string,
@@ -1352,6 +1376,56 @@ export async function seedMultiDoseHealthEntry(
   );
 
   return entry;
+}
+
+/** Seed one closed + one open occurrence for planner E2E (from_completion weekly). */
+export function seedPlannerOccurrenceChain(
+  entryId: string,
+  openDate: string,
+  lastCompletedDate: string,
+): void {
+  const host = process.env.PGHOST ?? 'localhost';
+  const port = process.env.PGPORT ?? '5432';
+  const user = process.env.PGUSER ?? 'user';
+  const password = process.env.PGPASSWORD ?? 'password';
+  const database = process.env.PGDATABASE ?? 'agatha_db';
+  const safeEntryId = entryId.replace(/'/g, "''");
+  const safeOpen = openDate.replace(/'/g, "''");
+  const safeClosed = lastCompletedDate.replace(/'/g, "''");
+  const closedId = randomUUID();
+  const openId = randomUUID();
+  execSync(
+    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${user}' -d '${database}' -v ON_ERROR_STOP=1 -c "
+      UPDATE health_entries SET next_due_date = '${safeOpen}' WHERE id = '${safeEntryId}';
+      DELETE FROM health_occurrences WHERE health_entry_id = '${safeEntryId}';
+      INSERT INTO health_occurrences (id, health_entry_id, scheduled_date, scheduled_time, status, completed_on)
+      VALUES ('${closedId}', '${safeEntryId}', '${safeClosed}', NULL, 'completed', '${safeClosed}');
+      INSERT INTO health_occurrences (id, health_entry_id, scheduled_date, scheduled_time, status)
+      VALUES ('${openId}', '${safeEntryId}', '${safeOpen}', NULL, 'pending');
+    "`,
+    { stdio: 'pipe' },
+  );
+}
+
+/** Align the open pending occurrence (and entry cache) to a calendar date for E2E planner seeds. */
+export function pinOpenOccurrenceForEntry(entryId: string, scheduledDate: string): void {
+  const host = process.env.PGHOST ?? 'localhost';
+  const port = process.env.PGPORT ?? '5432';
+  const user = process.env.PGUSER ?? 'user';
+  const password = process.env.PGPASSWORD ?? 'password';
+  const database = process.env.PGDATABASE ?? 'agatha_db';
+  const safeDate = scheduledDate.replace(/'/g, "''");
+  const safeEntryId = entryId.replace(/'/g, "''");
+  const occId = randomUUID();
+  execSync(
+    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${user}' -d '${database}' -v ON_ERROR_STOP=1 -c "
+      UPDATE health_entries SET next_due_date = '${safeDate}' WHERE id = '${safeEntryId}';
+      DELETE FROM health_occurrences WHERE health_entry_id = '${safeEntryId}';
+      INSERT INTO health_occurrences (id, health_entry_id, scheduled_date, scheduled_time, status)
+      VALUES ('${occId}', '${safeEntryId}', '${safeDate}', NULL, 'pending');
+    "`,
+    { stdio: 'pipe' },
+  );
 }
 
 export async function getHealthEntryOccurrences(

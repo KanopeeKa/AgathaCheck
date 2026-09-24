@@ -32,6 +32,7 @@ export async function loadAwayPlanProjection(pool, petId, startsOn, endsOn, toda
   return formatProjectionReadContract(
     {
       pet_id: petId,
+      today_iso: todayIso,
       ...projection,
     },
     entries

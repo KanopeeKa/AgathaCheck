@@ -43,6 +43,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 
 ## Domain semantics (memories)
 
+- **D-ACP-001:** Care-period projection now materialises pre-window open occurrences on the away plan (overdue / due before absence) instead of `indeterminate_pending` or silent omission — see [away-care-planning-decisions.md](/docs/domains/pet_care/changes/away-care-planning-decisions.md#d-acp-001--an-open-occurrence-with-a-known-date-is-always-visible-on-the-away-plan-amends-d-away-007-corpus-case-from-completion-overdue-before-window).
 - [Auth token refresh + retry](auth-token-refresh.md) — authed API calls must use authHttpClientProvider (refresh+retry on 401); AuthService stays unwrapped; AppLocalizations.of(ctx) is nullable.
 - [Local-first cache & remote sync](local-first-sync.md) — server is source of truth; never re-push local-only rows on read (resurrects deleted data); create rolls back + rethrows on remote failure.
 - [Flutter web password-manager autofill](flutter-web-password-managers.md) — CanvasKit paints fields on canvas so extensions (Proton Pass) can't autofill; fix is a native HTML form in index.html bridged to Dart.

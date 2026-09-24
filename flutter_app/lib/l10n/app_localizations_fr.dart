@@ -6628,6 +6628,107 @@ class AppLocalizationsFr extends AppLocalizations {
   String get awayPlanningIndeterminateGeneric => 'Horaire pas encore connu';
 
   @override
+  String awayPlanningOpenDueBeforeLeave(String date) {
+    return '$date · À faire avant votre départ';
+  }
+
+  @override
+  String awayPlanningPlannedOn(String date) {
+    return 'Prévu : $date';
+  }
+
+  @override
+  String awayPlanningEstimatedOn(String date) {
+    return 'Estimé : $date';
+  }
+
+  @override
+  String awayPlanningInWindowRange(int count, String first, String last) {
+    return '$count fois, $first – $last';
+  }
+
+  @override
+  String get awayPlanningEstimateFootnote =>
+      'Les dates estimées supposent que vous terminez les soins en retard aujourd\'hui, puis que vous respectez l\'intervalle habituel.';
+
+  @override
+  String get awayPlanningPaused => 'En pause';
+
+  @override
+  String get rescheduleActionLabel => 'Changer la date';
+
+  @override
+  String rescheduleGapWarning(int x, int y) {
+    return 'Ce sera $x jours après le précédent au lieu de $y.';
+  }
+
+  @override
+  String rescheduleUsualGap(int y) {
+    return 'Intervalle habituel : $y jours.';
+  }
+
+  @override
+  String reschedulePreviewCalendar(String dates) {
+    return 'Prochaines dates : $dates';
+  }
+
+  @override
+  String reschedulePreviewCompletion(String date, String newDate) {
+    return 'Prochaine date estimée vers le $date si fait le $newDate.';
+  }
+
+  @override
+  String get rescheduleVetScheduleCaution =>
+      'Ce soin suit en général le calendrier du vétérinaire. Vérifiez avec votre vétérinaire avant de le modifier.';
+
+  @override
+  String get rescheduleEarlierOnlyLaterCaution =>
+      'Ce soin se fait en général plus tôt que prévu, pas plus tard.';
+
+  @override
+  String get awayPlanningPlanThis => 'Planifier';
+
+  @override
+  String plannerMoveLine(String from, String to) {
+    return 'Déplacer du $from au $to';
+  }
+
+  @override
+  String get plannerReasonBeforeDeparture =>
+      'À faire avant votre départ, pour que votre gardien n\'ait pas à s\'en occuper.';
+
+  @override
+  String get plannerReasonAfterReturn =>
+      'À faire après votre retour, pour que votre gardien n\'ait pas à s\'en occuper.';
+
+  @override
+  String plannerCarerTasks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tâches de soin',
+      one: '1 tâche de soin',
+    );
+    return '$_temp0 pour votre gardien pendant cette absence.';
+  }
+
+  @override
+  String get plannerAccept => 'Accepter';
+
+  @override
+  String get plannerNotNow => 'Pas maintenant';
+
+  @override
+  String get plannerDisclaimer =>
+      'Les dates suggérées sont des aides à la planification, pas des conseils médicaux.';
+
+  @override
+  String get occurrenceRescheduled => 'Date modifiée';
+
+  @override
+  String get snackbarUndo => 'Annuler';
+
+  @override
   String get petTagsTitle => 'Étiquettes';
 
   @override
