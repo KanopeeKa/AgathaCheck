@@ -30,17 +30,17 @@ Close remaining returnTo / shell-back debt after PRs #1298 and #1311: align docs
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 5
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/nav-returnto-docs-d71d"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/nav-returnto-docs-d71d
+  branch: main
   plan_path: .agents/plans/nav-returnto-followup-d71d.md
-  plan_commit: 343dfaf3e24e9c41a93a58a1effb280b60bce15b
+  plan_commit: 635811ef193088798f48e723d13b2d7dedaf224c
   snapshot_path: .agents/plans/nav-returnto-followup-d71d.snapshot.json
-  snapshot_commit: 343dfaf3e24e9c41a93a58a1effb280b60bce15b
+  snapshot_commit: 635811ef193088798f48e723d13b2d7dedaf224c
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

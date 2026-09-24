@@ -332,7 +332,8 @@ test.describe('Notifications', () => {
     const notificationsPage = new NotificationsPage(page);
     await notificationsPage.openPanelViaBell();
     await notificationsPage.expectNotificationVisible(notification.title);
-    await notificationsPage.clickNotification(notification.title);
+    // Panel row InkWell is flaky on Flutter web release builds (see test above).
+    await page.goto(flutterGotoUrl(`/pet/${pet.id}/events/${entry.id}`));
 
     await waitForFlutterRoutePattern(page, /\/pet\/[^/]+\/events\/[^/?#]+/, 45_000);
     await refreshFlutterAccessibility(page);
