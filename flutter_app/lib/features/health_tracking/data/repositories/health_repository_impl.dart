@@ -1,6 +1,7 @@
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_history_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
+import '../../domain/entities/reschedule_occurrence_result.dart';
 import '../../domain/repositories/health_repository.dart';
 import '../datasources/health_remote_datasource.dart';
 import '../models/health_entry_model.dart';
@@ -125,6 +126,26 @@ class HealthRepositoryImpl implements HealthRepository {
   @override
   Future<HealthOccurrence> undoOccurrence(String entryId, String occurrenceId) {
     return dataSource.undoOccurrence(entryId, occurrenceId);
+  }
+
+  @override
+  Future<RescheduleOccurrenceResult> rescheduleOccurrence(
+    String entryId,
+    String occurrenceId,
+    DateTime scheduledDate, {
+    String? reasonCode,
+  }) async {
+    final result = await dataSource.rescheduleOccurrence(
+      entryId,
+      occurrenceId,
+      scheduledDate,
+      reasonCode: reasonCode,
+    );
+    return RescheduleOccurrenceResult(
+      occurrence: result.occurrence,
+      warnings: result.warnings,
+      nextDueDate: result.nextDueDate,
+    );
   }
 
   @override

@@ -6651,6 +6651,46 @@ class AppLocalizationsFr extends AppLocalizations {
   String get awayPlanningPaused => 'En pause';
 
   @override
+  String get rescheduleActionLabel => 'Changer la date';
+
+  @override
+  String rescheduleGapWarning(int x, int y) {
+    return 'Ce sera $x jours après le précédent au lieu de $y.';
+  }
+
+  @override
+  String rescheduleUsualGap(int y) {
+    return 'Intervalle habituel : $y jours.';
+  }
+
+  @override
+  String reschedulePreviewCalendar(String dates) {
+    return 'Prochaines dates : $dates';
+  }
+
+  @override
+  String reschedulePreviewCompletion(String date, String newDate) {
+    return 'Prochaine date estimée vers le $date si fait le $newDate.';
+  }
+
+  @override
+  String get rescheduleVetScheduleCaution =>
+      'Ce soin suit en général le calendrier du vétérinaire. Vérifiez avec votre vétérinaire avant de le modifier.';
+
+  @override
+  String get rescheduleEarlierOnlyLaterCaution =>
+      'Ce soin se fait en général plus tôt que prévu, pas plus tard.';
+
+  @override
+  String get awayPlanningPlanThis => 'Planifier';
+
+  @override
+  String get occurrenceRescheduled => 'Date modifiée';
+
+  @override
+  String get snackbarUndo => 'Annuler';
+
+  @override
   String get petTagsTitle => 'Étiquettes';
 
   @override

@@ -2418,6 +2418,38 @@
   },
   "awayPlanningEstimateFootnote": "Les dates estimées supposent que vous terminez les soins en retard aujourd'hui, puis que vous respectez l'intervalle habituel.",
   "awayPlanningPaused": "En pause",
+  "rescheduleActionLabel": "Changer la date",
+  "rescheduleGapWarning": "Ce sera {x} jours après le précédent au lieu de {y}.",
+  "@rescheduleGapWarning": {
+    "placeholders": {
+      "x": { "type": "int" },
+      "y": { "type": "int" }
+    }
+  },
+  "rescheduleUsualGap": "Intervalle habituel : {y} jours.",
+  "@rescheduleUsualGap": {
+    "placeholders": {
+      "y": { "type": "int" }
+    }
+  },
+  "reschedulePreviewCalendar": "Prochaines dates : {dates}",
+  "@reschedulePreviewCalendar": {
+    "placeholders": {
+      "dates": { "type": "String" }
+    }
+  },
+  "reschedulePreviewCompletion": "Prochaine date estimée vers le {date} si fait le {newDate}.",
+  "@reschedulePreviewCompletion": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "newDate": { "type": "String" }
+    }
+  },
+  "rescheduleVetScheduleCaution": "Ce soin suit en général le calendrier du vétérinaire. Vérifiez avec votre vétérinaire avant de le modifier.",
+  "rescheduleEarlierOnlyLaterCaution": "Ce soin se fait en général plus tôt que prévu, pas plus tard.",
+  "awayPlanningPlanThis": "Planifier",
+  "occurrenceRescheduled": "Date modifiée",
+  "snackbarUndo": "Annuler",
   "petTagsTitle": "Étiquettes",
   "petTagsSubtitle": "Libellés privés pour organiser votre liste d'animaux. Seulement vous les voyez.",
   "petTagsManage": "Gérer les étiquettes",

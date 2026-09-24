@@ -9,6 +9,7 @@ import '../providers/occurrence_providers.dart';
 import 'health_issue_prompt/health_issue_linkage_flow.dart';
 import 'mark_complete_sheet.dart';
 import 'occurrence_care_actions.dart';
+import 'reschedule_occurrence_flow.dart';
 import 'weight_occurrence_care_actions.dart';
 import 'pet_event_view_providers.dart';
 
@@ -85,6 +86,24 @@ class PetEventOccurrenceActions {
       context,
       ref,
       entry,
+    );
+  }
+
+  static Future<void> changeDate(
+    BuildContext context,
+    WidgetRef ref,
+    HealthEntry entry,
+    HealthOccurrence occurrence, {
+    DateTime? initialDate,
+    String? reasonCode,
+  }) {
+    return RescheduleOccurrenceFlow.openSheetAndReschedule(
+      context: context,
+      ref: ref,
+      entry: entry,
+      occurrence: occurrence,
+      initialDate: initialDate,
+      reasonCode: reasonCode,
     );
   }
 

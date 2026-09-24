@@ -1,6 +1,7 @@
 import '../entities/health_entry.dart';
 import '../entities/health_history_entry.dart';
 import '../entities/health_occurrence.dart';
+import '../entities/reschedule_occurrence_result.dart';
 
 /// Abstract repository for health tracking operations.
 ///
@@ -67,6 +68,13 @@ abstract class HealthRepository {
   Future<int> skipMissedOccurrences(String entryId);
 
   Future<HealthOccurrence> undoOccurrence(String entryId, String occurrenceId);
+
+  Future<RescheduleOccurrenceResult> rescheduleOccurrence(
+    String entryId,
+    String occurrenceId,
+    DateTime scheduledDate, {
+    String? reasonCode,
+  });
 
   Future<void> completeWeightOccurrence({
     required String petId,
