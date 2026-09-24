@@ -63,12 +63,15 @@ Future<DateTime?> showCalendarDatePicker({
   String? helpText,
 }) {
   final appLocale = Localizations.localeOf(context);
+  final normalizedFirst = calendarDateOnly(firstDate);
+  final normalizedLast = calendarDateOnly(lastDate);
+  final normalizedInitial = calendarDateOnly(initialDate ?? DateTime.now());
   return showDatePicker(
     context: context,
     locale: calendarDatePickerLocale(appLocale),
-    initialDate: initialDate ?? DateTime.now(),
-    firstDate: firstDate,
-    lastDate: lastDate,
+    initialDate: normalizedInitial,
+    firstDate: normalizedFirst,
+    lastDate: normalizedLast,
     helpText: helpText,
     fieldHintText: 'dd/mm/yyyy',
   ).then((picked) => picked != null ? calendarDateOnly(picked) : null);
