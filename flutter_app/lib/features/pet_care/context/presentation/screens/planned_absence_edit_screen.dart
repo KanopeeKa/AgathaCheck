@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../core/widgets/form/app_form_actions_bar.dart';
 import '../../../../../core/widgets/form/app_form_breakpoints.dart';
@@ -84,10 +85,8 @@ class _PlannedAbsenceEditScreenState
       context.pop();
       return;
     }
-    context.goNamed(
-      'petCarePlannedAbsenceDetail',
-      pathParameters: {'id': widget.absenceId},
-    );
+    final returnTo = shellReturnToFromState(GoRouterState.of(context));
+    context.go(awayPlanDetailLocation(widget.absenceId, returnTo: returnTo));
   }
 
   Future<void> _handleBack() async {

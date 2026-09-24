@@ -50,6 +50,15 @@ void main() {
     });
   });
 
+  group('awayPlanDetailLocation', () {
+    test('encodes returnTo query', () {
+      expect(
+        awayPlanDetailLocation('abs-1', returnTo: '/pc/home'),
+        '/pc/away/abs-1?returnTo=%2Fpc%2Fhome',
+      );
+    });
+  });
+
   group('petEventViewLocation', () {
     test('omits query when returnTo absent', () {
       expect(

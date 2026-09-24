@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
@@ -48,7 +49,7 @@ class PlannedAbsenceHubCard extends StatelessWidget {
         child: InkWell(
           key: Key('planned_absence_hub_card_${absence.id}'),
           borderRadius: BorderRadius.circular(12),
-          onTap: () => context.push('/pc/away/${absence.id}'),
+          onTap: () => openAwayPlanDetail(context, absence.id),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
