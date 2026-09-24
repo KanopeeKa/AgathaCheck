@@ -7,6 +7,7 @@ import {
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
+import { formatHealthEntryStatusDate } from '../support/healthEntryDates';
 
 /**
  * Care item (pet event) detail — occurrence actions and reschedule sheet.
@@ -83,14 +84,10 @@ export class CareItemPage {
   }
 
   async expectOpenOccurrenceDateVisible(isoDate: string): Promise<void> {
-    const { year, month, day } = (() => {
-      const [y, m, d] = isoDate.split('-');
-      return { year: y, month: m, day: d };
-    })();
-    const ddMm = `${day}/${month}/${year}`;
+    const statusDate = formatHealthEntryStatusDate(isoDate);
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByText(ddMm, { exact: false }).first()).toBeVisible();
+      await expect(this.page.getByText(statusDate, { exact: false }).first()).toBeVisible();
     }).toPass({ timeout: 30_000 });
   }
 }
