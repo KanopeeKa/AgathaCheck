@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
@@ -271,8 +272,9 @@ class _ShelterRow extends StatelessWidget {
       context.go('/o/orgs');
       return;
     }
-    final returnTo = Uri.encodeComponent(GoRouterState.of(context).uri.path);
-    context.push('/o/orgs/$orgId?returnTo=$returnTo');
+    context.push(
+      '/o/orgs/$orgId?returnTo=${encodeShellReturnTo(currentShellLocation(context))}',
+    );
   }
 }
 
