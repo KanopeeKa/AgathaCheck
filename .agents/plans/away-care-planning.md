@@ -128,12 +128,12 @@ last_completed_phase: acp-1
 halt_reason: null
 next_action: "continue phase acp-3 on branch cursor/away-care-planning-acp3-43b3"
 artifact_ref:
-  branch: cursor/away-care-planning-integration-43b3
+  branch: cursor/away-care-planning-acp3-43b3
   plan_path: .agents/plans/away-care-planning.md
-  plan_commit: 881e5b80df0425797f002bb827cc783cef706583
+  plan_commit: a193b04609fea9fe71b64a1bb7bc485ceafc55f4
   snapshot_path: .agents/plans/away-care-planning.snapshot.json
-  snapshot_commit: 881e5b80df0425797f002bb827cc783cef706583
-open_prs: []
+  snapshot_commit: a193b04609fea9fe71b64a1bb7bc485ceafc55f4
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1310"]
 merge_commits: {}
 debt_issue_refs: []
 ```
