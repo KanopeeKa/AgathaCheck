@@ -5,8 +5,23 @@
 import { addCalendarDaysIso } from '../../calendarDate.js';
 import { RECURRENCE_ANCHOR_FROM_DUE_DATE } from '../schedule/recurrenceAnchorDefaults.js';
 import { estimateOccurrences } from '../schedule/estimateOccurrences.js';
+import { isDateInCareWindow, projectEntryForPeriod } from '../schedule/projectSchedule.js';
 import { resolveScheduleFlexibility } from '../schedule/index.js';
 import { candidateMoves } from './candidateMoves.js';
+
+/**
+ * @param {object[]} occurrences
+ * @param {object|null} openOccurrence
+ * @returns {object[]}
+ */
+function occurrencesForProjection(occurrences, openOccurrence) {
+  if (!openOccurrence?.occurrence_id) return occurrences || [];
+  return (occurrences || []).map((row) => (
+    row.id === openOccurrence.occurrence_id
+      ? { ...row, scheduled_date: openOccurrence.scheduled_date }
+      : row
+  ));
+}
 
 /**
  * @param {object} params
@@ -17,6 +32,7 @@ import { candidateMoves } from './candidateMoves.js';
  * @param {string} params.endsOn
  * @param {string} params.today
  * @param {number} [params.materializedInWindow]
+ * @param {object[]} [params.occurrences]
  * @returns {number}
  */
 export function countInWindowOccurrences({
@@ -27,10 +43,13 @@ export function countInWindowOccurrences({
   endsOn,
   today,
   materializedInWindow = 0,
+  occurrences = [],
 }) {
   const anchor = entry.recurrence_anchor || 'from_completion';
   if (anchor === RECURRENCE_ANCHOR_FROM_DUE_DATE) {
-    return materializedInWindow;
+    const occRows = occurrencesForProjection(occurrences, openOccurrence);
+    const { items } = projectEntryForPeriod(entry, occRows, startsOn, endsOn, today);
+    return items.filter((item) => isDateInCareWindow(item.scheduled_date, startsOn, endsOn)).length;
   }
 
   const estimate = estimateOccurrences({
@@ -61,6 +80,7 @@ function rationaleForMove({ direction, toDate, startsOn, endsOn }) {
  * @param {string} params.endsOn
  * @param {string} params.today
  * @param {number} materializedInWindow
+ * @param {object[]} [occurrences]
  * @returns {object|null}
  */
 function bestMoveSuggestion({
@@ -71,6 +91,7 @@ function bestMoveSuggestion({
   endsOn,
   today,
   materializedInWindow,
+  occurrences = [],
 }) {
   const flex = resolveScheduleFlexibility(entry, today);
   if (flex.flexibility === 'fixed' || flex.flexibility === 'carer_task') {
@@ -95,6 +116,7 @@ function bestMoveSuggestion({
     endsOn,
     today,
     materializedInWindow,
+    occurrences,
   });
   if (inWindowBefore === 0 && !isOverdueBeforeAbsence) {
     return null;
@@ -125,6 +147,7 @@ function bestMoveSuggestion({
       endsOn,
       today,
       materializedInWindow: 0,
+      occurrences: occurrencesForProjection(occurrences, hypotheticalOpen),
     });
     if (inWindowAfter >= inWindowBefore) continue;
 
@@ -231,7 +254,7 @@ export function planAbsenceCare(input) {
     let carerTaskCount = 0;
 
     for (const row of pet.entries || []) {
-      const { entry, open_occurrence: openOccurrence, last_closed_date: lastClosedDate, materialized_in_window: materializedInWindow = 0 } = row;
+      const { entry, open_occurrence: openOccurrence, last_closed_date: lastClosedDate, materialized_in_window: materializedInWindow = 0, occurrences = [] } = row;
 
       if (!entry || entry.status === 'paused' || entry.status === 'closed') {
         continue;
@@ -246,6 +269,7 @@ export function planAbsenceCare(input) {
         endsOn,
         today,
         materializedInWindow,
+        occurrences,
       });
 
       if (flex.flexibility === 'fixed') {
@@ -280,6 +304,7 @@ export function planAbsenceCare(input) {
         endsOn,
         today,
         materializedInWindow,
+        occurrences,
       });
       if (suggestion) {
         suggestions.push(suggestion);

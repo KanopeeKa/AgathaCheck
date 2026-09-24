@@ -129,6 +129,25 @@ describe('planAbsenceCare (BR-1…BR-7)', () => {
     const b = planAbsenceCare(payload);
     expect(a).toEqual(b);
   });
+  it('from_due_date daily rhythm counts projected in-window dates, not materialised rows only', () => {
+    const entry = weeklyEntry({
+      frequency: 'daily',
+      recurrence_anchor: 'from_due_date',
+      next_due_date: '2026-06-06',
+    });
+    const result = planAbsenceCare({
+      absence,
+      today,
+      pets: [petWithEntries([{
+        entry,
+        open_occurrence: null,
+        last_closed_date: null,
+        materialized_in_window: 1,
+        occurrences: [],
+      }])],
+    });
+    expect(result.pets[0].carer_tasks.count).toBe(5);
+  });
 });
 
 describe('planAbsenceCare carer_task entries', () => {

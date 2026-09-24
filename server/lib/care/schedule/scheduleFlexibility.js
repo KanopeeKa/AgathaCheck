@@ -3,7 +3,7 @@
  */
 
 import { advanceByFrequency, toDateOnly } from '../../recurrenceHelper.js';
-import { dateToIsoDate, todayCalendarIso } from '../../calendarDate.js';
+import { todayCalendarIso } from '../../calendarDate.js';
 
 const FIXED_CARE_SOURCES = new Set(['vet_instruction', 'treatment_schedule']);
 const EARLIER_ONLY_CARE_FAMILIES = new Set(['vaccination', 'parasite_prevention']);

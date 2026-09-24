@@ -6578,6 +6578,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'This care is usually done earlier than scheduled, not later.';
 
   @override
+  String get rescheduleFlexibilityCaution =>
+      'This move is farther than the usual flexibility for this care item.';
+
+  @override
   String get awayPlanningPlanThis => 'Plan this';
 
   @override
