@@ -170,6 +170,12 @@ feed.
 
 **Feature:** `away_planning.feature` (4) — **4/4 (100%)**
 
+| Pri | Behaviour | Gherkin scenario | Playwright | Status |
+|-----|-----------|------------------|------------|--------|
+| P1 | Overdue on plan | Overdue open care shows its date on the away plan | `away.care.planning.spec.ts` | ✅ |
+
+**Feature:** `away_care_planning.feature` (1) — **1/1 (100%)**
+
 ---
 
 ### J4 — Notifications

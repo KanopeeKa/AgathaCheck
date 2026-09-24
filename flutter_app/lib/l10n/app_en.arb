@@ -2482,6 +2482,46 @@
   "awayPlanningIndeterminatePending": "Waiting on a prior dose",
   "awayPlanningIndeterminateChain": "Depends on earlier care in the chain",
   "awayPlanningIndeterminateGeneric": "Timing not yet known",
+  "awayPlanningOpenDueBeforeLeave": "{date} · Due before you leave",
+  "@awayPlanningOpenDueBeforeLeave": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningPlannedOn": "Planned: {date}",
+  "@awayPlanningPlannedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningEstimatedOn": "Estimated: {date}",
+  "@awayPlanningEstimatedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningInWindowRange": "{count} times, {first} – {last}",
+  "@awayPlanningInWindowRange": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "first": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningEstimateFootnote": "Estimated dates assume you complete overdue care today, then keep to the usual interval.",
+  "awayPlanningPaused": "Paused",
   "petTagsTitle": "Pet tags",
   "petTagsSubtitle": "Private labels to organize your pet list. Only you can see them.",
   "petTagsManage": "Manage tags",

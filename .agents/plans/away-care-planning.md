@@ -126,13 +126,13 @@ autonomy: active
 current_phase: acp-3
 last_completed_phase: acp-1
 halt_reason: null
-next_action: "start phase acp-3: checkout cursor/away-care-planning-acp3-43b3"
+next_action: "continue phase acp-3 on branch cursor/away-care-planning-acp3-43b3"
 artifact_ref:
   branch: cursor/away-care-planning-integration-43b3
   plan_path: .agents/plans/away-care-planning.md
-  plan_commit: dc984d9eb69d01b7bf65e7a8c779eb0a06759694
+  plan_commit: 881e5b80df0425797f002bb827cc783cef706583
   snapshot_path: .agents/plans/away-care-planning.snapshot.json
-  snapshot_commit: dc984d9eb69d01b7bf65e7a8c779eb0a06759694
+  snapshot_commit: 881e5b80df0425797f002bb827cc783cef706583
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

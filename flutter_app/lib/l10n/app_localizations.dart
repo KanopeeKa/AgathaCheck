@@ -11542,6 +11542,42 @@ abstract class AppLocalizations {
   /// **'Timing not yet known'**
   String get awayPlanningIndeterminateGeneric;
 
+  /// No description provided for @awayPlanningOpenDueBeforeLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · Due before you leave'**
+  String awayPlanningOpenDueBeforeLeave(String date);
+
+  /// No description provided for @awayPlanningPlannedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned: {date}'**
+  String awayPlanningPlannedOn(String date);
+
+  /// No description provided for @awayPlanningEstimatedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated: {date}'**
+  String awayPlanningEstimatedOn(String date);
+
+  /// No description provided for @awayPlanningInWindowRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} times, {first} – {last}'**
+  String awayPlanningInWindowRange(int count, String first, String last);
+
+  /// No description provided for @awayPlanningEstimateFootnote.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated dates assume you complete overdue care today, then keep to the usual interval.'**
+  String get awayPlanningEstimateFootnote;
+
+  /// No description provided for @awayPlanningPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get awayPlanningPaused;
+
   /// No description provided for @petTagsTitle.
   ///
   /// In en, this message translates to:

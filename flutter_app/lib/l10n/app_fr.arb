@@ -2378,6 +2378,46 @@
   "awayPlanningIndeterminatePending": "En attente d'une dose précédente",
   "awayPlanningIndeterminateChain": "Dépend de soins antérieurs dans la chaîne",
   "awayPlanningIndeterminateGeneric": "Horaire pas encore connu",
+  "awayPlanningOpenDueBeforeLeave": "{date} · À faire avant votre départ",
+  "@awayPlanningOpenDueBeforeLeave": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningPlannedOn": "Prévu : {date}",
+  "@awayPlanningPlannedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningEstimatedOn": "Estimé : {date}",
+  "@awayPlanningEstimatedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningInWindowRange": "{count} fois, {first} – {last}",
+  "@awayPlanningInWindowRange": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "first": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "awayPlanningEstimateFootnote": "Les dates estimées supposent que vous terminez les soins en retard aujourd'hui, puis que vous respectez l'intervalle habituel.",
+  "awayPlanningPaused": "En pause",
   "petTagsTitle": "Étiquettes",
   "petTagsSubtitle": "Libellés privés pour organiser votre liste d'animaux. Seulement vous les voyez.",
   "petTagsManage": "Gérer les étiquettes",

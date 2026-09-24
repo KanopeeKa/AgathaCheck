@@ -7,6 +7,7 @@ import '../../../../health_tracking/presentation/widgets/care_event_row_pet_avat
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../../pet_profile/presentation/widgets/care_family_icon.dart';
 import '../../domain/entities/care_period_coverage.dart';
+import '../../../../health_tracking/presentation/widgets/care_event_status_line.dart';
 import '../away_plan_schedule_copy.dart';
 import '../care_period_coverage_copy.dart';
 import '../providers/care_context_providers.dart';
@@ -198,7 +199,15 @@ class _PetCareBody extends StatelessWidget {
           ...result.plannedCareItems.map(
             (item) => _PlannedCareRow(petId: petId, item: item),
           ),
-          if (result.showsChainAnchorExplainer) ...[
+          if (result.showsEstimateFootnote) ...[
+            const SizedBox(height: 8),
+            Text(
+              l.awayPlanningEstimateFootnote,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ] else if (result.showsChainAnchorExplainer) ...[
             const SizedBox(height: 8),
             Text(
               l.awayPlanningChainAnchorExplainer,
@@ -225,8 +234,15 @@ class _PlannedCareRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final scheduleLine = AwayPlanScheduleCopy.plannedCareScheduleLine(l, item);
     final detailLines = AwayPlanScheduleCopy.plannedCareDetailLines(l, item);
+    final openStatusLine = AwayPlanScheduleCopy.openOccurrenceStatusLine(
+      l,
+      item,
+      colorScheme,
+    );
+    final inWindowLine = AwayPlanScheduleCopy.inWindowLine(l, item);
     final viewLabel = '${item.name}. $scheduleLine';
 
     return Padding(
@@ -269,6 +285,19 @@ class _PlannedCareRow extends StatelessWidget {
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
+                        if (!item.isPaused && openStatusLine != null)
+                          CareEventStatusLineView(
+                            status: openStatusLine,
+                            theme: theme,
+                            colorScheme: colorScheme,
+                          ),
+                        if (!item.isPaused && inWindowLine != null)
+                          Text(
+                            inWindowLine,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
                         ...detailLines.map(
                           (line) => Text(
                             line,
