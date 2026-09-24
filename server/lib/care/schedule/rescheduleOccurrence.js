@@ -3,6 +3,7 @@
  */
 
 import { dateToIsoDate } from '../../calendarDate.js';
+import { syncNextDueDateFromOccurrences } from '../../occurrenceScheduling.js';
 import {
   insertCareScheduleEvent,
   SCHEDULE_EVENT_RESCHEDULED,
@@ -18,7 +19,7 @@ import {
  * @param {string} [params.reasonCode]
  * @param {string} [params.reasonNote]
  * @param {Date} [params.rescheduledAt]
- * @returns {Promise<{ occurrence: object, scheduleEventId: string }|null>}
+ * @returns {Promise<{ occurrence: object, scheduleEventId: string, nextDueDate: string|null }|null>}
  */
 export async function rescheduleOccurrence(pool, {
   entry,
@@ -60,8 +61,11 @@ export async function rescheduleOccurrence(pool, {
     idempotencyKey: `rescheduled:${occurrenceId}:${newScheduledDate}`,
   });
 
+  const nextDueDate = await syncNextDueDateFromOccurrences(pool, entry.id);
+
   return {
     occurrence: result.rows[0],
     scheduleEventId,
+    nextDueDate,
   };
 }

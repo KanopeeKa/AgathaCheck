@@ -126,14 +126,14 @@ autonomy: active
 current_phase: acp-4
 last_completed_phase: acp-3
 halt_reason: null
-next_action: "start phase acp-4: checkout cursor/away-care-planning-acp4-43b3"
+next_action: "continue phase acp-4 on branch cursor/away-care-planning-acp4-43b3"
 artifact_ref:
-  branch: cursor/away-care-planning-integration-43b3
+  branch: cursor/away-care-planning-acp4-43b3
   plan_path: .agents/plans/away-care-planning.md
-  plan_commit: 2b921e4f81500f97a5e449e9bf0a98ccb1ab645f
+  plan_commit: 269e39b953e60ae6c132cfe3988f0af3d557ddf4
   snapshot_path: .agents/plans/away-care-planning.snapshot.json
-  snapshot_commit: 2b921e4f81500f97a5e449e9bf0a98ccb1ab645f
-open_prs: []
+  snapshot_commit: 269e39b953e60ae6c132cfe3988f0af3d557ddf4
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1312"]
 merge_commits: {}
 debt_issue_refs: []
 ```

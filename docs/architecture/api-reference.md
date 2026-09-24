@@ -145,14 +145,14 @@ Weight monitoring rhythms: generic complete and `mark-taken` return `400` — us
 |---|---|---|
 | POST | `/:id/pause` | Body `{ paused_from?, reason_note? }`; `status = paused`, `paused_since` cache, ledger `paused` event |
 | POST | `/:id/resume` | Body `{ reason_note? }`; resume with **no catch-up** (D-CSM-005) |
-| POST | `/:id/occurrences/:occId/reschedule` | Body `{ new_scheduled_date, new_scheduled_time?, reason_note? }`; one-instance move; ledger preserves original `from_date` |
+| POST | `/:id/occurrences/:occId/reschedule` | Body `{ scheduled_date, reason_code?, reason_note? }`; validates move (400 on past/no-op/beyond next hop/before last closed); returns `{ occurrence, warnings[], next_due_date }`; syncs `next_due_date` cache (D-ACP-009) |
 | POST | `/:id/adjust-cadence` | Body `{ effective_from, frequency?, frequency_interval?, recurrence_anchor?, reason_note? }`; series-forward only |
 | POST | `/:id/schedule/undo` | Timestamp-aware `undoLastAction` (CSM-8) |
 | GET | `/:id/schedule-explain` | Read-only `explainGap` facts for CIM (CSM-13) |
 
 **Create defaults (CSM-2):** when `recurrence_anchor` is omitted, server applies per-family default (`vaccination` / `parasite_prevention` → `from_due_date`; others → `from_completion`) — D-CSM-001.
 
-**Classification (care-classification-taxonomy Phase B):** create/update accept `care_family` (required on create), optional `care_setting`, `care_planning`, `care_importance`. Responses include those fields plus `importance_overridden`. Legacy `type` is **server-derived** — clients must omit `type` on write (400 if sent). `unplanned` entries require `completed_on`, forbid `next_due_date`, use `frequency=once`, and set `remind_days_before=0`.
+**Classification (care-classification-taxonomy Phase B):** create/update accept `care_family` (required on create), optional `care_setting`, `care_planning`, `care_importance`. Responses include those fields plus `importance_overridden`, read-only `schedule_flexibility` `{ flexibility, max_shift_days }` (D-ACP-006). Legacy `type` is **server-derived** — clients must omit `type` on write (400 if sent). `unplanned` entries require `completed_on`, forbid `next_due_date`, use `frequency=once`, and set `remind_days_before=0`.
 
 ### Health issues (`/api/health-issues`)
 `GET /` (optional `?pet_id=`), `GET /:id`, `POST /` (verifies pet ownership),
