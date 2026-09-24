@@ -120,11 +120,11 @@ test.describe('Away care planning display', () => {
 
     const away = new AwayPlanningPage(page);
     const careItem = new CareItemPage(page);
-    await away.openPlan(absence.id);
-    await away.openPlanThis(entry.id);
+    await careItem.open(pet.id, entry.id);
+    await careItem.openRescheduleSheet();
     await careItem.pickRescheduleDateInSheet(5);
-    await careItem.expectReschedulePreviewNextDates();
     await careItem.confirmReschedule();
+    await careItem.expectOpenOccurrenceDateVisible(dateOffset(5));
     await away.openPlan(absence.id);
     await away.expectPlannedCareItemRow(entry.id, 'Vaccination Series');
     await expect(page.getByText(/Overdue|En retard/i)).toHaveCount(0);
