@@ -4,7 +4,7 @@
   "approved_at": "2026-09-23T23:35:00Z",
   "approved_by": "User chat 2026-09-23 - Cursor review accepted; execute-plan full autonomy; no phase validation gates",
   "approved_until": "2026-09-25T23:35:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/away-care-planning-integration-43b3",
   "control_issue": 1304,
@@ -221,14 +221,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1317",
+      "pr_head_sha": "8705d2a5"
     }
   ],
-  "content_hash": "sha256:6411477f6bca2b2fc649afd012fee603699e0e5da945b0e58d3193a57b24b369"
+  "content_hash": "sha256:59e737290267b5bede4a62271b7200d96a93925a9eb806db66b795ce06d2b46a"
 }

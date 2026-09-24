@@ -122,17 +122,17 @@ Fix away-plan display honesty (overdue/open occurrences visible with real dates)
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: acp-8
-last_completed_phase: acp-6
+autonomy: completed
+current_phase: null
+last_completed_phase: acp-8
 halt_reason: null
-next_action: "start phase acp-8: checkout cursor/away-care-planning-acp8-43b3"
+next_action: "plan complete"
 artifact_ref:
   branch: cursor/away-care-planning-integration-43b3
   plan_path: .agents/plans/away-care-planning.md
-  plan_commit: 5947c15811e4d6fdcc56c1c10d93b2edc4e74ce9
+  plan_commit: d842e1b5894158018616494a0a200f67b3a5c212
   snapshot_path: .agents/plans/away-care-planning.snapshot.json
-  snapshot_commit: 5947c15811e4d6fdcc56c1c10d93b2edc4e74ce9
+  snapshot_commit: d842e1b5894158018616494a0a200f67b3a5c212
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
