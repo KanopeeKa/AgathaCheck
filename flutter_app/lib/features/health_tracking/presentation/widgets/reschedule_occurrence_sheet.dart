@@ -77,7 +77,7 @@ class _RescheduleOccurrenceSheetBodyState
   @override
   void initState() {
     super.initState();
-    _selected = widget.initialSelected;
+    _selected = calendarDateOnly(widget.initialSelected);
   }
 
   @override
@@ -170,7 +170,8 @@ class _RescheduleOccurrenceSheetBodyState
               const SizedBox(width: 12),
               Expanded(
                 child: FilledButton(
-                  onPressed: () => Navigator.pop(context, _selected),
+                  onPressed: () =>
+                      Navigator.pop(context, calendarDateOnly(_selected)),
                   style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(48),
                   ),
