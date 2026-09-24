@@ -25,7 +25,7 @@ class HealthIssueLinkedEventsStrip extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final entriesAsync = ref.watch(petHealthEntriesProvider(petId));
+    final entriesAsync = ref.watch(petHealthEntriesByIdProvider(petId));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

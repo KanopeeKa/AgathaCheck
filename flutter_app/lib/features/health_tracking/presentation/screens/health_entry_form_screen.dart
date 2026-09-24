@@ -255,9 +255,6 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
         :final carePlanning,
         :final linkedHealthIssueId,
       ):
-        for (final petId in petIds) {
-          ref.invalidate(petHealthEntriesProvider(petId));
-        }
         final count = petIds.length;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

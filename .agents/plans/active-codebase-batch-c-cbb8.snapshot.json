@@ -38,12 +38,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-mobile",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1309",
-      "pr_head_sha": "28b52081"
+      "pr_head_sha": "ae92c4d3"
     },
     {
       "id": "2",
@@ -69,11 +69,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-mobile",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1315",
+      "pr_head_sha": "49b6b61b"
     }
   ],
-  "content_hash": "sha256:791df6ddddf3ac6b63318e071bf8d245601c1963c96553f4669f35409110f6ba"
+  "content_hash": "sha256:c56d56d3b7414295988b53e63f36eda8cba209c7da4bf3c1470d68457606c378"
 }
