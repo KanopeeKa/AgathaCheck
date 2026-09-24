@@ -65,7 +65,10 @@ class PetListFetchMetadata {
 
 class PetListFetchMetadataNotifier extends Notifier<PetListFetchMetadata> {
   @override
-  PetListFetchMetadata build() => const PetListFetchMetadata();
+  PetListFetchMetadata build() {
+    ref.watch(authProvider);
+    return const PetListFetchMetadata();
+  }
 
   void apply(PetListFetchResult result) {
     state = PetListFetchMetadata(isStale: result.isStale);
