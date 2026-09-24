@@ -385,7 +385,10 @@ void main() {
           token: 'tok',
         );
 
-        await expectLater(repo.fetchAllPets(), throwsA(isA<PetRemoteException>()));
+        await expectLater(
+          repo.fetchAllPets(),
+          throwsA(isA<PetRemoteException>()),
+        );
       });
 
       test('fetchAllPets rethrows 403 without returning stale cache', () async {
@@ -399,7 +402,10 @@ void main() {
           token: 'tok',
         );
 
-        await expectLater(repo.fetchAllPets(), throwsA(isA<PetRemoteException>()));
+        await expectLater(
+          repo.fetchAllPets(),
+          throwsA(isA<PetRemoteException>()),
+        );
       });
 
       test(
