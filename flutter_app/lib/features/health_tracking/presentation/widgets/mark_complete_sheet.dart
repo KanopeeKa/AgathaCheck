@@ -64,8 +64,7 @@ Future<DateTime?> showMarkCompleteSheet(
             ),
             const SizedBox(height: 16),
             FilledButton(
-              onPressed: () =>
-                  Navigator.pop(ctx, calendarDateOnly(selected)),
+              onPressed: () => Navigator.pop(ctx, calendarDateOnly(selected)),
               child: Text(l.markCompletedAction),
             ),
           ],

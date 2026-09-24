@@ -115,10 +115,7 @@ void main() {
       await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
 
-      expect(
-        find.text(formatCalendarDateDisplay(today)),
-        findsOneWidget,
-      );
+      expect(find.text(formatCalendarDateDisplay(today)), findsOneWidget);
 
       final l = await AppLocalizations.delegate.load(const Locale('en'));
       await tester.tap(
@@ -134,5 +131,4 @@ void main() {
       );
     },
   );
-
 }
