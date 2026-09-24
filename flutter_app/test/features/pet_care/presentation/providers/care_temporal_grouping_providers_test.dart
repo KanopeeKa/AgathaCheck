@@ -38,8 +38,12 @@ DateTime _today() {
   return DateTime(now.year, now.month, now.day);
 }
 
-List<HealthEntry> _entries() {
+DateTime _pinnedNow() {
   final today = _today();
+  return today.add(const Duration(hours: 12));
+}
+
+List<HealthEntry> _entries(DateTime today) {
   return [
     _entry(
       id: 'overdue-earlier',
@@ -70,12 +74,13 @@ List<HealthEntry> _entries() {
   ];
 }
 
-ProviderContainer _container(List<HealthEntry> entries) {
+ProviderContainer _container(List<HealthEntry> entries, DateTime pinnedNow) {
   final container = ProviderContainer(
     overrides: [
       healthEntriesNotifierProvider.overrideWith(
         () => _FakeHealthEntriesNotifier(entries),
       ),
+      careNowProvider.overrideWithValue(pinnedNow),
     ],
   );
   addTearDown(container.dispose);
@@ -91,15 +96,16 @@ void main() {
   const careStatus = CareStatusService();
 
   test('petCareTemporalBucketsProvider agrees with the service', () async {
-    final entries = _entries();
-    final container = _container(entries);
+    final now = _pinnedNow();
+    final entries = _entries(DateTime(now.year, now.month, now.day));
+    final container = _container(entries, now);
     await _warmUp(container);
 
     final buckets = container.read(petCareTemporalBucketsProvider('pet-1'));
     final serviceBuckets = grouping.bucketsForEntries(
       entries,
       petId: 'pet-1',
-      now: DateTime.now(),
+      now: now,
     );
 
     for (final group in CareTemporalGroup.values) {
@@ -117,15 +123,13 @@ void main() {
   });
 
   test('dashboardCareTemporalBucketsProvider spans all pets', () async {
-    final entries = _entries();
-    final container = _container(entries);
+    final now = _pinnedNow();
+    final entries = _entries(DateTime(now.year, now.month, now.day));
+    final container = _container(entries, now);
     await _warmUp(container);
 
     final buckets = container.read(dashboardCareTemporalBucketsProvider);
-    final serviceBuckets = grouping.bucketsForEntries(
-      entries,
-      now: DateTime.now(),
-    );
+    final serviceBuckets = grouping.bucketsForEntries(entries, now: now);
 
     for (final group in CareTemporalGroup.values) {
       expect(
@@ -142,20 +146,21 @@ void main() {
   });
 
   test('petCareStatusFromGroupingProvider matches the service', () async {
-    final entries = _entries();
-    final container = _container(entries);
+    final now = _pinnedNow();
+    final entries = _entries(DateTime(now.year, now.month, now.day));
+    final container = _container(entries, now);
     await _warmUp(container);
 
     final summary = container.read(petCareStatusFromGroupingProvider('pet-1'));
     final serviceSummary = grouping.summarizePet(
       petId: 'pet-1',
       entries: entries,
-      now: DateTime.now(),
+      now: now,
     );
     final evaluated = careStatus.evaluate(
       petId: 'pet-1',
       entries: entries,
-      now: DateTime.now(),
+      now: now,
     );
 
     expect(summary.status, serviceSummary.status);
@@ -170,7 +175,8 @@ void main() {
   });
 
   test('petCareStatusFromGroupingProvider is allSet when empty', () async {
-    final container = _container(const []);
+    final now = _pinnedNow();
+    final container = _container(const [], now);
     await _warmUp(container);
 
     final buckets = container.read(petCareTemporalBucketsProvider('pet-1'));

@@ -10,6 +10,10 @@ final careTemporalGroupingServiceProvider =
       (ref) => const CareTemporalGroupingService(),
     );
 
+/// Current instant for care temporal grouping. Injectable so tests can pin
+/// one instant across fixture, providers, and service expectations.
+final careNowProvider = Provider<DateTime>((ref) => DateTime.now());
+
 /// Pet-scoped temporal buckets for the profile and All-care surfaces.
 final petCareTemporalBucketsProvider =
     Provider.family<CareTemporalBuckets, String>((ref, petId) {
@@ -19,7 +23,7 @@ final petCareTemporalBucketsProvider =
       return grouping.bucketsForEntries(
         entries,
         petId: petId,
-        now: DateTime.now(),
+        now: ref.watch(careNowProvider),
       );
     });
 
@@ -30,7 +34,7 @@ final dashboardCareTemporalBucketsProvider = Provider<CareTemporalBuckets>((
   final grouping = ref.watch(careTemporalGroupingServiceProvider);
   final entries =
       ref.watch(healthEntriesNotifierProvider).valueOrNull ?? const [];
-  return grouping.bucketsForEntries(entries, now: DateTime.now());
+  return grouping.bucketsForEntries(entries, now: ref.watch(careNowProvider));
 });
 
 /// Profile care-status summary derived from [petCareTemporalBucketsProvider].
@@ -38,7 +42,7 @@ final petCareStatusFromGroupingProvider =
     Provider.family<CareStatusSummary, String>((ref, petId) {
       final buckets = ref.watch(petCareTemporalBucketsProvider(petId));
       final grouping = ref.watch(careTemporalGroupingServiceProvider);
-      final now = DateTime.now();
+      final now = ref.watch(careNowProvider);
       final status = grouping.careStatusFromBuckets(buckets);
       final contributing = switch (status) {
         CareStatus.timeToFollowUp =>
