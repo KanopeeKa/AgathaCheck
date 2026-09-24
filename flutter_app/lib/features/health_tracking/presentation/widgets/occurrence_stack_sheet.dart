@@ -68,6 +68,7 @@ class OccurrenceStackSheet extends StatefulWidget {
 
   final HealthEntry entry;
   final List<HealthOccurrence> occurrences;
+
   /// Shell location to restore when opening care item detail from the sheet.
   final String? returnTo;
   final Future<void> Function(
