@@ -37,6 +37,19 @@ void main() {
     });
   });
 
+  group('vetDetailLocation', () {
+    test('omits query when returnTo absent', () {
+      expect(vetDetailLocation('vet-1'), '/pc/vets/vet-1');
+    });
+
+    test('encodes returnTo query', () {
+      expect(
+        vetDetailLocation('vet-1', returnTo: '/pc/home'),
+        '/pc/vets/vet-1?returnTo=%2Fpc%2Fhome',
+      );
+    });
+  });
+
   group('petEventViewLocation', () {
     test('omits query when returnTo absent', () {
       expect(
