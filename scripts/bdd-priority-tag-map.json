@@ -107,6 +107,7 @@
     "Marking all notifications as read": "P1",
     "Tapping a pet notification navigates to pet detail": "P1",
     "Tapping a due event notification navigates to view entry": "P1",
+    "Care notification from bell panel returns to dashboard after back": "P1",
     "Tapping a pet notification without health entry navigates to pet detail": "P1",
     "Tapping an organisation notification navigates to org detail": "P1",
     "Accessing notification settings": "P1",

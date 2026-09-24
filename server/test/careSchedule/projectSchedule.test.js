@@ -234,5 +234,22 @@ describe('projectSchedule', () => {
       expect(uncertainties).toHaveLength(0);
       expect(items[0].certainty).toBe(CERTAINTY_COMPLETE);
     });
+
+    it('materialises once-frequency open occurrence before the absence window', () => {
+      const row = entry({
+        frequency: 'once',
+        next_due_date: '2026-08-10',
+      });
+      const { items } = projectEntryForPeriod(
+        row,
+        [occurrence({ id: 'open-1', scheduled_date: '2026-08-10', status: 'pending' })],
+        '2026-08-12',
+        '2026-08-19',
+        '2026-08-01',
+      );
+      expect(items).toHaveLength(1);
+      expect(items[0].scheduled_date).toBe('2026-08-10');
+      expect(items[0].window_relation).toBe('before_window');
+    });
   });
 });

@@ -17,6 +17,7 @@ export {
 export {
   validateReschedule,
   loadLastClosedOccurrenceDateIso,
+  loadLastClosedOccurrenceDatesByEntryId,
 } from './validateReschedule.js';
 export { skipMissedOccurrences, skipOccurrence } from './skipOccurrence.js';
 export { pauseSeries, resumeSeries } from './pauseResumeSeries.js';

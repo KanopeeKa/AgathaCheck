@@ -549,14 +549,14 @@ Shell back behaviour is implemented in
 `flutter_app/lib/core/router/shell_return_navigation.dart`:
 
 1. **Pop first** — when `Navigator.canPop` is true, pop the stack.
-2. **Fallback** — otherwise `context.go` to, in order: explicit `backPath` on
-   the screen, safe `returnTo` query param on the current route, then the
-   experience section root (`/pc/home` Pet Care, `/o/orgs` shelter).
+2. **Fallback** — otherwise `context.go` to, in order: safe `returnTo` query param
+   on the current route, explicit `backPath` on the screen, then the experience
+   section root (`/pc/home` Pet Care, `/o/orgs` shelter).
 
-Entry points that should return to the caller (pet cards, vet pet rows, all
-pets list) must use `openPetDetail` (`context.push` + encoded `returnTo`) or
-pass `returnTo` on deep links. Default when neither pop nor `returnTo` applies:
-**Pet Care dashboard** (`/pc/home`).
+Entry points that should return to the caller (pet cards, vet rows, all pets
+list) must use `openPetDetail` / `openVetDetail` (`context.push` + encoded
+`returnTo`) or pass `returnTo` on deep links. Default when neither pop nor
+`returnTo` applies: **Pet Care dashboard** (`/pc/home`).
 
 Reject external URLs and protocol-relative paths in `returnTo` parsing.
 

@@ -2552,6 +2552,7 @@
   },
   "rescheduleVetScheduleCaution": "This care usually follows a vet's schedule. Check with your vet before changing it.",
   "rescheduleEarlierOnlyLaterCaution": "This care is usually done earlier than scheduled, not later.",
+  "rescheduleFlexibilityCaution": "This move is farther than the usual flexibility for this care item.",
   "awayPlanningPlanThis": "Plan this",
   "plannerMoveLine": "Move from {from} to {to}",
   "@plannerMoveLine": {

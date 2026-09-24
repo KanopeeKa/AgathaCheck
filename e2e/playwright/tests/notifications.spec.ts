@@ -13,6 +13,7 @@
  * Scenario: Marking all notifications as read
  * Scenario: Accessing notification settings
  * Scenario: Tapping a due event notification navigates to view entry
+ * Scenario: Care notification from bell panel returns to dashboard after back
  * Scenario: Tapping a pet notification without health entry navigates to pet detail
  * Scenario: Tapping an organisation notification navigates to org detail
  */
@@ -43,6 +44,8 @@ import { NotificationsPage } from '../pages/notifications.page';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
+import { CareItemPage } from '../pages/care-item.page';
+import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 
 /** Backdate a notification row for date-grouping E2E (no REST field for created_at). */
 function backdateNotification(notificationId: string, daysAgo: number): void {
@@ -308,6 +311,39 @@ test.describe('Notifications', () => {
     await expect(page.getByText('Vaccination', { exact: false }).first()).toBeVisible({
       timeout: 15_000,
     });
+  });
+
+  test('care notification from bell panel returns to dashboard after back', async ({
+    page,
+  }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const user = await signupUser(baseURL, { firstName: 'Nora', lastName: 'Panel' });
+
+    const { notification, pet, entry } = await seedOverdueNotification(
+      baseURL,
+      user.accessToken,
+      { petName: 'Bella', entryName: 'Vaccination' },
+    );
+
+    await loginAs(page, user);
+    const dashboard = new GuardianDashboardPage(page);
+    await dashboard.open();
+
+    const notificationsPage = new NotificationsPage(page);
+    await notificationsPage.openPanelViaBell();
+    await notificationsPage.expectNotificationVisible(notification.title);
+    await notificationsPage.clickNotification(notification.title);
+
+    await waitForFlutterRoutePattern(page, /\/pet\/[^/]+\/events\/[^/?#]+/, 45_000);
+    await refreshFlutterAccessibility(page);
+    await expect(page.getByText('Vaccination', { exact: false }).first()).toBeVisible({
+      timeout: 15_000,
+    });
+
+    const careItem = new CareItemPage(page);
+    await careItem.goBack();
+    await waitForFlutterRoutePattern(page, /\/pc\/home(?:\?|$)/, 30_000);
+    await dashboard.expectTodayCareRegions();
   });
 
   test('tapping a pet notification navigates to the pet detail screen', async ({ page }) => {

@@ -11626,6 +11626,12 @@ abstract class AppLocalizations {
   /// **'This care is usually done earlier than scheduled, not later.'**
   String get rescheduleEarlierOnlyLaterCaution;
 
+  /// No description provided for @rescheduleFlexibilityCaution.
+  ///
+  /// In en, this message translates to:
+  /// **'This move is farther than the usual flexibility for this care item.'**
+  String get rescheduleFlexibilityCaution;
+
   /// No description provided for @awayPlanningPlanThis.
   ///
   /// In en, this message translates to:

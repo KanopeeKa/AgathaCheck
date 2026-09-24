@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "plan_id": "away-care-planning-debt",
+  "approved_at": "2026-09-24T12:00:00Z",
+  "approved_by": "User chat 2026-09-24 — implement all review-follow-up items with /execute-plan full autonomy",
+  "approved_until": "2026-09-26T12:00:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1323,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "debt-1",
+      "title": "ACP review follow-up bundle",
+      "branch": "cursor/away-care-planning-debt-43b3",
+      "allowed_paths": [
+        "server/lib/care/**",
+        "server/test/care/**",
+        "server/test/careContext/**",
+        "server/test/careSchedule/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/features/pet_care/context/**",
+        "e2e/playwright/**",
+        "docs/architecture/api-reference.md",
+        "docs/quality/bdd-journey-matrix.md",
+        ".agents/plans/away-care-planning.snapshot.json",
+        ".agents/plans/away-care-planning-debt.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    }
+  ],
+  "content_hash": "sha256:db43e74adb928edb61b1ce720069b326ab075653364b3b43ffdb9e941752641c"
+}

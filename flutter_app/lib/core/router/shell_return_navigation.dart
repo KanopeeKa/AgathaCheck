@@ -109,6 +109,36 @@ void openPetDetail(BuildContext context, String petId) {
   context.push(petDetailLocation(petId, returnTo: returnTo));
 }
 
+/// Builds `/pc/vets/:vetId` with optional encoded `returnTo`.
+String vetDetailLocation(String vetId, {String? returnTo}) {
+  final base = '/pc/vets/$vetId';
+  if (returnTo == null || returnTo.isEmpty) {
+    return base;
+  }
+  return '$base?returnTo=${encodeShellReturnTo(returnTo)}';
+}
+
+/// Opens vet team detail preserving the current screen as `returnTo`.
+void openVetDetail(BuildContext context, String vetId) {
+  final returnTo = currentShellLocation(context);
+  context.push(vetDetailLocation(vetId, returnTo: returnTo));
+}
+
+/// Builds `/pc/away/:absenceId` with optional encoded `returnTo`.
+String awayPlanDetailLocation(String absenceId, {String? returnTo}) {
+  final base = '/pc/away/$absenceId';
+  if (returnTo == null || returnTo.isEmpty) {
+    return base;
+  }
+  return '$base?returnTo=${encodeShellReturnTo(returnTo)}';
+}
+
+/// Opens away plan detail preserving the current screen as `returnTo`.
+void openAwayPlanDetail(BuildContext context, String absenceId) {
+  final returnTo = currentShellLocation(context);
+  context.push(awayPlanDetailLocation(absenceId, returnTo: returnTo));
+}
+
 /// Replaces the route with pet detail, preserving `returnTo` from the current
 /// route when present (e.g. after save on edit).
 void goToPetDetail(BuildContext context, String petId) {

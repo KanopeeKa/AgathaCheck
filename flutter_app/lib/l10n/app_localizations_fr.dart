@@ -6686,6 +6686,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ce soin se fait en général plus tôt que prévu, pas plus tard.';
 
   @override
+  String get rescheduleFlexibilityCaution =>
+      'Ce déplacement dépasse la marge habituelle pour ce soin.';
+
+  @override
   String get awayPlanningPlanThis => 'Planifier';
 
   @override
