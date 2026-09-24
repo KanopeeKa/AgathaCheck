@@ -27,14 +27,15 @@ void main() {
   testWidgets('navigates to view entry when health entry id is present', (
     tester,
   ) async {
-    late String location;
+    late Uri uri;
 
     await tester.pumpWidget(
       MaterialApp.router(
         routerConfig: GoRouter(
+          initialLocation: '/pc/home',
           routes: [
             GoRoute(
-              path: '/',
+              path: '/pc/home',
               builder: (context, state) => Scaffold(
                 body: ElevatedButton(
                   onPressed: () => navigateFromNotification(
@@ -48,7 +49,7 @@ void main() {
             GoRoute(
               path: '/pet/:petId/events/:entryId',
               builder: (context, state) {
-                location = state.uri.path;
+                uri = state.uri;
                 return const Scaffold(body: Text('View entry'));
               },
             ),
@@ -60,9 +61,92 @@ void main() {
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
 
-    expect(location, '/pet/pet-1/events/entry-1');
+    expect(uri.path, '/pet/pet-1/events/entry-1');
+    expect(uri.queryParameters['returnTo'], '/pc/home');
     expect(find.text('View entry'), findsOneWidget);
   });
+
+  testWidgets(
+    'uses notifications route as returnTo from notifications screen',
+    (tester) async {
+      late Uri uri;
+
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: GoRouter(
+            initialLocation: '/notifications',
+            routes: [
+              GoRoute(
+                path: '/notifications',
+                builder: (context, state) => Scaffold(
+                  body: ElevatedButton(
+                    onPressed: () => navigateFromNotification(
+                      context,
+                      _notification(petId: 'pet-1', healthEntryId: 'entry-1'),
+                    ),
+                    child: const Text('Open'),
+                  ),
+                ),
+              ),
+              GoRoute(
+                path: '/pet/:petId/events/:entryId',
+                builder: (context, state) {
+                  uri = state.uri;
+                  return const Scaffold(body: Text('View entry'));
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
+      expect(uri.queryParameters['returnTo'], '/notifications');
+    },
+  );
+
+  testWidgets(
+    'navigates to view entry when health entry id is present (legacy path)',
+    (tester) async {
+      late String location;
+
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: GoRouter(
+            routes: [
+              GoRoute(
+                path: '/',
+                builder: (context, state) => Scaffold(
+                  body: ElevatedButton(
+                    onPressed: () => navigateFromNotification(
+                      context,
+                      _notification(petId: 'pet-1', healthEntryId: 'entry-1'),
+                    ),
+                    child: const Text('Open'),
+                  ),
+                ),
+              ),
+              GoRoute(
+                path: '/pet/:petId/events/:entryId',
+                builder: (context, state) {
+                  location = state.uri.path;
+                  return const Scaffold(body: Text('View entry'));
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
+      expect(location, '/pet/pet-1/events/entry-1');
+      expect(find.text('View entry'), findsOneWidget);
+    },
+  );
 
   testWidgets('falls back to pet profile when health entry id is missing', (
     tester,

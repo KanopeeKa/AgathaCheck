@@ -58,7 +58,7 @@ String shellFallbackReturnPath({
   String? returnTo,
   required String defaultPath,
 }) {
-  return explicitBackPath ?? returnTo ?? defaultPath;
+  return returnTo ?? explicitBackPath ?? defaultPath;
 }
 
 /// Shell back: pop when history exists; otherwise navigate to fallback.

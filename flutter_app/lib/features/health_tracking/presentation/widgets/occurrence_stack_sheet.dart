@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
@@ -39,14 +40,17 @@ Future<OccurrenceMarkDoneResult?> showOccurrenceStackSheet(
   onRecordHead,
   required Future<void> Function() onSkipAllMissed,
 }) {
+  final returnTo = currentShellLocation(context);
   return showModalBottomSheet<OccurrenceMarkDoneResult>(
     context: context,
     isScrollControlled: true,
+    useRootNavigator: true,
     builder: (ctx) => OccurrenceStackSheet(
       entry: entry,
       occurrences: occurrences,
       onRecordHead: onRecordHead,
       onSkipAllMissed: onSkipAllMissed,
+      returnTo: returnTo,
     ),
   );
 }
@@ -59,10 +63,13 @@ class OccurrenceStackSheet extends StatefulWidget {
     required this.occurrences,
     required this.onRecordHead,
     required this.onSkipAllMissed,
+    this.returnTo,
   });
 
   final HealthEntry entry;
   final List<HealthOccurrence> occurrences;
+  /// Shell location to restore when opening care item detail from the sheet.
+  final String? returnTo;
   final Future<void> Function(
     String occurrenceId,
     DateTime completedOn,
@@ -145,8 +152,14 @@ class _OccurrenceStackSheetState extends State<OccurrenceStackSheet> {
   void _reviewEntry() {
     final petId = widget.entry.petId;
     if (petId.isEmpty) return;
+    final router = GoRouter.maybeOf(context);
+    final location = petEventViewLocation(
+      petId,
+      widget.entry.id,
+      returnTo: widget.returnTo,
+    );
     Navigator.pop(context);
-    context.push('/pet/$petId/events/${widget.entry.id}');
+    router?.push(location);
   }
 
   @override

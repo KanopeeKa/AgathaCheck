@@ -64,12 +64,12 @@ void navigateFromNotification(
     if (entryId != null &&
         entryId.isNotEmpty &&
         notification.kind != NotificationKind.administrative) {
-      context.go(
-        '/pet/$petId/events/$entryId?returnTo=${encodeShellReturnTo('/notifications')}',
-      );
+      openPetEventView(context, petId: petId, entryId: entryId);
       return;
     }
-    context.go(petDetailLocation(petId, returnTo: '/notifications'));
+    context.push(
+      petDetailLocation(petId, returnTo: currentShellLocation(context)),
+    );
     return;
   }
 
