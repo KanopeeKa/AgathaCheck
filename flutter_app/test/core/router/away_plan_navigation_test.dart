@@ -176,5 +176,39 @@ void main() {
       expect(find.byKey(const Key('screen_home')), findsOneWidget);
       expect(router.routerDelegate.currentConfiguration.uri.path, '/pc/home');
     });
+
+    testWidgets(
+      'shell back prefers returnTo over backPath when stack is empty',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp.router(
+            routerConfig: GoRouter(
+              initialLocation:
+                  '/pc/away/abs-1?returnTo=${Uri.encodeComponent('/pc/home')}',
+              routes: [
+                GoRoute(
+                  path: '/pc/home',
+                  builder: (_, __) => const _BackScreen(label: 'home'),
+                ),
+                GoRoute(
+                  path: '/pc/away/:id',
+                  builder: (context, state) => _BackScreen(
+                    label: 'plan-${state.pathParameters['id']}',
+                    backPath: '/pc/away',
+                    returnTo: shellReturnToFromState(state),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('screen_plan-abs-1')), findsOneWidget);
+        await tester.tap(find.byKey(const Key('back_plan-abs-1')));
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('screen_home')), findsOneWidget);
+      },
+    );
   });
 }

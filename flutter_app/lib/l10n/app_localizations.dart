@@ -740,6 +740,12 @@ abstract class AppLocalizations {
   /// **'All pets'**
   String get allPets;
 
+  /// No description provided for @petListStaleBannerMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing saved pets while offline. Some details may be out of date.'**
+  String get petListStaleBannerMessage;
+
   /// No description provided for @managePets.
   ///
   /// In en, this message translates to:

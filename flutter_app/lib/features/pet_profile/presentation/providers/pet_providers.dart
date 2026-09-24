@@ -12,6 +12,8 @@ import '../../domain/entities/pet.dart';
 import '../../domain/repositories/pet_repository.dart';
 import '../../domain/usecases/add_pet.dart';
 import '../../domain/usecases/delete_pet.dart';
+import '../../domain/entities/pet_list_fetch_result.dart';
+import '../../domain/usecases/fetch_all_pets.dart';
 import '../../domain/usecases/get_all_pets.dart';
 import '../../domain/usecases/update_pet.dart';
 
@@ -50,6 +52,34 @@ final getAllPetsUseCaseProvider = Provider<GetAllPets>((ref) {
   return GetAllPets(ref.watch(petRepositoryProvider));
 });
 
+final fetchAllPetsUseCaseProvider = Provider<FetchAllPets>((ref) {
+  return FetchAllPets(ref.watch(petRepositoryProvider));
+});
+
+/// Whether the current [petListProvider] data is stale offline cache (Package 7).
+class PetListFetchMetadata {
+  const PetListFetchMetadata({this.isStale = false});
+
+  final bool isStale;
+}
+
+class PetListFetchMetadataNotifier extends Notifier<PetListFetchMetadata> {
+  @override
+  PetListFetchMetadata build() {
+    ref.watch(authProvider);
+    return const PetListFetchMetadata();
+  }
+
+  void apply(PetListFetchResult result) {
+    state = PetListFetchMetadata(isStale: result.isStale);
+  }
+}
+
+final petListFetchMetadataProvider =
+    NotifierProvider<PetListFetchMetadataNotifier, PetListFetchMetadata>(
+      PetListFetchMetadataNotifier.new,
+    );
+
 final addPetUseCaseProvider = Provider<AddPet>((ref) {
   return AddPet(ref.watch(petRepositoryProvider));
 });
@@ -66,7 +96,9 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
   @override
   Future<List<Pet>> build() async {
     ref.watch(authProvider);
-    return ref.read(getAllPetsUseCaseProvider).call();
+    final result = await ref.read(fetchAllPetsUseCaseProvider).call();
+    ref.read(petListFetchMetadataProvider.notifier).apply(result);
+    return result.pets;
   }
 
   Future<String> addPet({

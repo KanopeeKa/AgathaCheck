@@ -113,6 +113,7 @@
   "myFosteredPets": "Mes animaux en famille d'accueil",
   "noFosteredPets": "Vous n'accueillez aucun animal pour le moment.",
   "allPets": "Tous les animaux",
+  "petListStaleBannerMessage": "Animaux enregistrés affichés hors ligne. Certaines informations peuvent être obsolètes.",
   "managePets": "Gérer les animaux",
   "allCareTitle": "Tous les soins de {petName}",
   "viewAllCare": "Voir tous les soins",

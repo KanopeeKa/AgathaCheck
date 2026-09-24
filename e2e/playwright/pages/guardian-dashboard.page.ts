@@ -125,7 +125,14 @@ export class GuardianDashboardPage {
       .or(semanticsByName(this.page, new RegExp(name, 'i')))
       .first();
     await vet.click();
-    await waitForFlutterRoutePattern(this.page, /\/pc\/vets\/[^/]+$/, 30_000);
+    await refreshFlutterAccessibility(this.page);
+    // Flutter web may not update the hash on context.push; assert vet detail UI.
+    await expect(semanticsByName(this.page, new RegExp(name, 'i')).first()).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(
+      this.page.getByText(/Pets cared for|Animaux pris en charge/i),
+    ).toBeVisible({ timeout: 15_000 });
   }
 
   async expectNoHorizontalOverflow(): Promise<void> {

@@ -359,6 +359,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get allPets => 'Tous les animaux';
 
   @override
+  String get petListStaleBannerMessage =>
+      'Animaux enregistrés affichés hors ligne. Certaines informations peuvent être obsolètes.';
+
+  @override
   String get managePets => 'Gérer les animaux';
 
   @override

@@ -54,11 +54,21 @@ void main() {
   });
 
   group('shellFallbackReturnPath', () {
-    test('prefers explicit backPath', () {
+    test('prefers returnTo over explicit backPath when both set', () {
       expect(
         shellFallbackReturnPath(
           explicitBackPath: '/explicit',
           returnTo: '/g/pets',
+          defaultPath: '/g/home',
+        ),
+        '/g/pets',
+      );
+    });
+
+    test('uses backPath when returnTo absent', () {
+      expect(
+        shellFallbackReturnPath(
+          explicitBackPath: '/explicit',
           defaultPath: '/g/home',
         ),
         '/explicit',

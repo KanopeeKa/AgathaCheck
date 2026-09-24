@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../../domain/entities/pet.dart';
+import '../../domain/entities/pet_list_fetch_result.dart';
 import '../../domain/repositories/pet_repository.dart';
 import '../datasources/pet_local_datasource.dart';
 import '../datasources/pet_remote_datasource.dart';
@@ -14,75 +15,103 @@ class PetRepositoryImpl implements PetRepository {
   final PetRemoteDataSource? remoteDataSource;
   final String? token;
 
+  Future<List<PetModel>> _mergeRemoteWithLocalPhotos(
+    List<PetModel> remotePets,
+  ) async {
+    final localPets = await _localDataSource.getAllPets();
+    final merged = <PetModel>[];
+    for (final rp in remotePets) {
+      final localMatch = localPets.where((lp) => lp.id == rp.id).firstOrNull;
+      if (localMatch != null &&
+          localMatch.photoPath != null &&
+          localMatch.photoPath!.startsWith('data:')) {
+        merged.add(
+          PetModel(
+            id: rp.id,
+            name: rp.name,
+            species: rp.species,
+            breed: rp.breed,
+            dateOfBirth: rp.dateOfBirth,
+            weight: rp.weight,
+            gender: rp.gender,
+            bio: rp.bio,
+            insurance: rp.insurance,
+            neuteredDate: rp.neuteredDate,
+            neuterDismissed: rp.neuterDismissed,
+            chipId: rp.chipId,
+            chipDismissed: rp.chipDismissed,
+            photoPath: localMatch.photoPath,
+            vetId: rp.vetId,
+            colorValue: rp.colorValue,
+            passedAway: rp.passedAway,
+            isShared: rp.isShared,
+            isFoster: rp.isFoster,
+            organizationId: rp.organizationId,
+            organizationName: rp.organizationName,
+            fosterPlacementStatus: rp.fosterPlacementStatus,
+            fosterName: rp.fosterName,
+            petParentName: rp.petParentName,
+            accessRole: rp.accessRole,
+            createdAt: rp.createdAt,
+            weightReferenceValue: rp.weightReferenceValue,
+            weightReferenceAuthority: rp.weightReferenceAuthority,
+            weightManagementContext: rp.weightManagementContext,
+          ),
+        );
+      } else {
+        merged.add(rp);
+      }
+    }
+    await _saveAllLocal(merged);
+    return merged;
+  }
+
   @override
-  Future<List<Pet>> getAllPets() async {
+  Future<PetListFetchResult> fetchAllPets() async {
     if (remoteDataSource != null && token != null && token!.isNotEmpty) {
       try {
         final remotePets = await remoteDataSource!.getAllPetsIncludingOrg(
           token!,
         );
-        final localPets = await _localDataSource.getAllPets();
-        final merged = <PetModel>[];
-        for (final rp in remotePets) {
-          final localMatch = localPets
-              .where((lp) => lp.id == rp.id)
-              .firstOrNull;
-          if (localMatch != null &&
-              localMatch.photoPath != null &&
-              localMatch.photoPath!.startsWith('data:')) {
-            merged.add(
-              PetModel(
-                id: rp.id,
-                name: rp.name,
-                species: rp.species,
-                breed: rp.breed,
-                dateOfBirth: rp.dateOfBirth,
-                weight: rp.weight,
-                gender: rp.gender,
-                bio: rp.bio,
-                insurance: rp.insurance,
-                neuteredDate: rp.neuteredDate,
-                neuterDismissed: rp.neuterDismissed,
-                chipId: rp.chipId,
-                chipDismissed: rp.chipDismissed,
-                photoPath: localMatch.photoPath,
-                vetId: rp.vetId,
-                colorValue: rp.colorValue,
-                passedAway: rp.passedAway,
-                isShared: rp.isShared,
-                isFoster: rp.isFoster,
-                organizationId: rp.organizationId,
-                organizationName: rp.organizationName,
-                fosterPlacementStatus: rp.fosterPlacementStatus,
-                fosterName: rp.fosterName,
-                petParentName: rp.petParentName,
-                accessRole: rp.accessRole,
-                createdAt: rp.createdAt,
-                weightReferenceValue: rp.weightReferenceValue,
-                weightReferenceAuthority: rp.weightReferenceAuthority,
-                weightManagementContext: rp.weightManagementContext,
-              ),
-            );
-          } else {
-            merged.add(rp);
-          }
-        }
-        // The server is the source of truth. Local-only pets (not present
-        // remotely) are intentionally NOT re-pushed: doing so resurrected pets
-        // that were deleted server-side or whose creation had failed. Dropping
-        // them here lets _saveAllLocal prune the stale local cache entries.
-        await _saveAllLocal(merged);
-        return merged.map((m) => m.toEntity()).toList();
+        final merged = await _mergeRemoteWithLocalPhotos(remotePets);
+        return PetListFetchResult(
+          pets: merged.map((m) => m.toEntity()).toList(),
+          source: PetListFetchSource.remote,
+          isStale: false,
+          fetchedAt: DateTime.now().toUtc(),
+        );
       } on PetRemoteException catch (e) {
         debugPrint(
           'PetRepository: Remote error (${e.statusCode}): ${e.message}',
         );
-      } catch (e) {
+        rethrow;
+      } on Object catch (e) {
         debugPrint('PetRepository: Network error, using local cache: $e');
+        final cached = await _localDataSource.getAllPets();
+        if (cached.isEmpty) {
+          rethrow;
+        }
+        return PetListFetchResult(
+          pets: cached.map((m) => m.toEntity()).toList(),
+          source: PetListFetchSource.localCache,
+          isStale: true,
+          fetchedAt: DateTime.now().toUtc(),
+        );
       }
     }
     final models = await _localDataSource.getAllPets();
-    return models.map((m) => m.toEntity()).toList();
+    return PetListFetchResult(
+      pets: models.map((m) => m.toEntity()).toList(),
+      source: PetListFetchSource.localCache,
+      isStale: false,
+      fetchedAt: DateTime.now().toUtc(),
+    );
+  }
+
+  @override
+  Future<List<Pet>> getAllPets() async {
+    final result = await fetchAllPets();
+    return result.pets;
   }
 
   @override

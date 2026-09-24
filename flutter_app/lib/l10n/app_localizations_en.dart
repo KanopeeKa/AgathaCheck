@@ -352,6 +352,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allPets => 'All pets';
 
   @override
+  String get petListStaleBannerMessage =>
+      'Showing saved pets while offline. Some details may be out of date.';
+
+  @override
   String get managePets => 'Manage pets';
 
   @override

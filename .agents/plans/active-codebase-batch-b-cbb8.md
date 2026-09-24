@@ -29,17 +29,17 @@ Standing grant: user chat 2026-09-22 + 2026-09-23 — D1–D7 accepted; `/execut
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: 4
-last_completed_phase: 3
+autonomy: completed
+current_phase: null
+last_completed_phase: 4
 halt_reason: null
-next_action: "continue phase 4 on branch cursor/active-codebase-b4-lifecycle-dto-cbb8"
+next_action: "plan complete"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/active-codebase-batch-b-cbb8.md
-  plan_commit: f8b2eeb23dd3574cee04bf58015b15416a47ea73
+  plan_commit: 6e23f0db8b35c31fba9d08c306415cdd54f74137
   snapshot_path: .agents/plans/active-codebase-batch-b-cbb8.snapshot.json
-  snapshot_commit: f8b2eeb23dd3574cee04bf58015b15416a47ea73
+  snapshot_commit: 6e23f0db8b35c31fba9d08c306415cdd54f74137
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

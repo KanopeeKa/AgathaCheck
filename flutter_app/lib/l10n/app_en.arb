@@ -116,6 +116,7 @@
   "myFosteredPets": "My Fostered Pets",
   "noFosteredPets": "You are not fostering any pets yet.",
   "allPets": "All pets",
+  "petListStaleBannerMessage": "Showing saved pets while offline. Some details may be out of date.",
   "managePets": "Manage pets",
   "allCareTitle": "All care",
   "viewAllCare": "View all care",

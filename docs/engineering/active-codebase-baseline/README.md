@@ -34,8 +34,8 @@ python3 scripts/architecture/architecture-metrics.py \
 | `deleteAllPetData` | route + `petAccess` | `withTransaction` / single `PoolClient` | before file purge | `{ deleted, files_removed }` counts scheduled URLs | A01 fixed in B2 | `server/test/lib/petDataLifecycle.characterization.test.js` |
 | `POST …/complete-weight` | capability + entry access | `pool.connect` in service | before cache/establishment | 201 with committed result; post-commit best-effort | A02 fixed in B3 | `server/test/healthEntries/completeWeight.test.js` |
 | `POST /pets/:id/passed-away` | pet access | none (notify only) | n/a | `notification_sent` + `delivery_status` | A08 fixed in B4 (D1) | `server/test/openapi/petCareContract.test.js` |
-| `GET` pets list (Flutter) | bearer token | n/a | n/a | returns local cache on remote error | A06 — 401/403 indistinguishable from offline | `pet_repository_impl_test.dart` characterization group |
-| Health entry selectors | n/a | n/a | n/a | dual fetch paths | A05 — `petHealthEntriesProvider` vs global notifier | documented; fix in C2 |
+| `GET` pets list (Flutter) | bearer token | n/a | n/a | D2 hybrid: 401/403 throw; transport errors may return stale cache with metadata | A06 fixed in C1 | `pet_repository_impl_test.dart` D2 group |
+| Health entry selectors | n/a | n/a | n/a | canonical `healthEntriesNotifierProvider` + derived per-pet selectors | A05 fixed in C2 | `health_entries_canonical_store_test.dart` |
 | `POST /pets/:id/transfer-to-org` | owner check | org transfer lib | varies | mounted when frozen off | A03 — boundary | fix in A2 |
 | Account `DELETE /profile` | session | sequential steps | user row delete | 200 synchronous | erasure job gap | fix in parallel Package 5 |
 

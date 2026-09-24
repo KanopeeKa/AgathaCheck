@@ -96,6 +96,7 @@ final healthEntriesNotifierProvider =
 class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
   @override
   Future<List<HealthEntry>> build() async {
+    ref.watch(authProvider);
     return ref.read(getHealthEntriesProvider).call();
   }
 
@@ -179,12 +180,6 @@ final filteredHealthEntriesProvider =
           return true;
         }).toList();
       });
-    });
-
-/// Provides health entries filtered by a specific pet.
-final petHealthEntriesProvider =
-    FutureProvider.family<List<HealthEntry>, String>((ref, petId) {
-      return ref.read(getHealthEntriesProvider).call(petId: petId);
     });
 
 /// Health entries for a specific pet, derived reactively from the global list
