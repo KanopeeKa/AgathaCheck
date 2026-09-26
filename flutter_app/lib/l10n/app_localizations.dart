@@ -11483,6 +11483,24 @@ abstract class AppLocalizations {
   /// **'Planned care'**
   String get awayPlanningScheduleDatedTitle;
 
+  /// No description provided for @awayPlanningDuringAbsenceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Care during this absence'**
+  String get awayPlanningDuringAbsenceSubtitle;
+
+  /// No description provided for @awayPlanningPreAbsenceOverdueAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Review overdue care before you go'**
+  String get awayPlanningPreAbsenceOverdueAction;
+
+  /// No description provided for @awayPlanningSeeOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'See options'**
+  String get awayPlanningSeeOptions;
+
   /// No description provided for @awayPlanningScheduleIndeterminateTitle.
   ///
   /// In en, this message translates to:
