@@ -243,6 +243,10 @@ Weight monitoring rhythms cannot use generic occurrence complete or mark-taken w
 | `open_occurrence` | `{ occurrence_id, scheduled_date, scheduled_time?, open_status }` | `open_status`: `overdue` \| `due_before_absence` \| `in_window` (D-ACP-004) |
 | `in_window` | `{ first_date, last_date, count, date_basis }` | `date_basis`: `scheduled` \| `planned` \| `estimated` (D-ACP-002) |
 | `is_paused` | `boolean` | When true, UI shows paused copy only (R-A9) |
+| `schedule_flexibility` | `string` | `fixed` \| `earlier_only` \| `flexible` \| `carer_task` (D-ACP-006); drives away-plan **See options** |
+| `max_shift_days` | `number` | Planner/reschedule tolerance when `schedule_flexibility` is set |
+
+**D-ACP-011 away-plan list filter:** `planned_care_items[]` on `/care-period-coverage` (and PDF handover using the same payload) includes only rows with `in_window` set, or — when `today >= starts_on` — still-open `open_occurrence` with `scheduled_date < starts_on`. Pre-departure overdue is not listed; use `pre_absence_overdue_attention: { show, overdue_count }` per pet response instead. `projection_status` reflects **visible** rows only (no indeterminate caveat when hidden rows were the sole cause).
 
 Raw `items[]` entries may include `window_relation: before_window` on materialised open occurrences surfaced before the window (D-ACP-001).
 
