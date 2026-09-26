@@ -77,4 +77,73 @@ void main() {
       );
     });
   });
+
+  group('PetTimelineEventRow layout', () {
+    testWidgets('connector spans from below the node to the row bottom', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          PetTimelineEventRow(
+            segment: const PetTimelineSegment(
+              kind: 'manual',
+              id: 'm1',
+              startDate: '2025-01-01',
+              title: 'Test',
+            ),
+            showConnectorBelow: true,
+            child: const SizedBox(height: 80, child: Card(child: Text('x'))),
+          ),
+        ),
+      );
+
+      final rowRect = tester.getRect(find.byType(PetTimelineEventRow));
+      final nodeRect = tester.getRect(find.byType(PetTimelineNode));
+      final connectorRect = tester.getRect(
+        find.byKey(const Key('pet_timeline_node_connector')),
+      );
+
+      expect(
+        nodeRect.top,
+        rowRect.top,
+        reason: 'node stays top-aligned when the card is taller',
+      );
+      expect(
+        connectorRect.top,
+        nodeRect.bottom,
+        reason: 'connector starts just below the spine node',
+      );
+      expect(
+        connectorRect.bottom,
+        rowRect.bottom,
+        reason: 'connector reaches the bottom of the row',
+      );
+      expect(
+        connectorRect.center.dx,
+        closeTo(rowRect.left + PetTimelineNode.spineWidth / 2, 0.5),
+        reason: 'connector is centred under the spine node',
+      );
+    });
+
+    testWidgets('avoids intrinsic measurement for scroll performance', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          PetTimelineEventRow(
+            segment: const PetTimelineSegment(
+              kind: 'manual',
+              id: 'm1',
+              startDate: '2025-01-01',
+              title: 'Test',
+            ),
+            showConnectorBelow: true,
+            child: const SizedBox(height: 80, child: Card(child: Text('x'))),
+          ),
+        ),
+      );
+
+      expect(find.byType(IntrinsicHeight), findsNothing);
+    });
+  });
 }
