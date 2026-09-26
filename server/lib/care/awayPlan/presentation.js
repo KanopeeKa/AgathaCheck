@@ -11,6 +11,7 @@ import {
   estimateOccurrences,
 } from '../schedule/estimateOccurrences.js';
 import { isDateInCareWindow } from '../schedule/projectSchedule.js';
+import { dateToIsoDate } from '../../calendarDate.js';
 import { leastCertain } from './certainty.js';
 import { resolveScheduleFlexibility } from '../schedule/scheduleFlexibility.js';
 
@@ -113,7 +114,17 @@ function enrichRowContract(row, entry, constituents, context) {
       ),
     };
   } else {
-    row.open_occurrence = null;
+    const nextDue = dateToIsoDate(entry?.next_due_date);
+    if (nextDue && nextDue < startsOn) {
+      row.open_occurrence = {
+        occurrence_id: null,
+        scheduled_date: nextDue,
+        scheduled_time: null,
+        open_status: computeOpenStatus(nextDue, todayIso, startsOn, endsOn),
+      };
+    } else {
+      row.open_occurrence = null;
+    }
   }
 
   const inWindowItems = constituents.filter((item) =>

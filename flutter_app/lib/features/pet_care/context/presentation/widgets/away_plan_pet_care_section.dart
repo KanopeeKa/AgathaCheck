@@ -257,10 +257,7 @@ class _PetCareBody extends StatelessWidget {
 }
 
 class _PlannedCareRow extends ConsumerWidget {
-  const _PlannedCareRow({
-    required this.petId,
-    required this.item,
-  });
+  const _PlannedCareRow({required this.petId, required this.item});
 
   final String petId;
   final PlannedCareItem item;
