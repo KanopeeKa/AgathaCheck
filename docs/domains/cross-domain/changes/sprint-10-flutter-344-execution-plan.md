@@ -2,13 +2,13 @@
 title: Sprint 10 Flutter 3.44 execution plan
 owner: Documentation Team
 audience: both
-status: active
-last_updated: 2026-08-22
+status: completed
+last_updated: 2026-09-26
 tags: [plans, sprint, flutter]
 ---
 # Sprint 10 — Flutter 3.44 / Dart 3.12 toolchain upgrade
 
-**Status:** In progress  
+**Status:** Completed  
 **Goal:** Move Agatha Track from **Flutter 3.32.0 / Dart 3.8.0** to **Flutter 3.44 / Dart 3.12**, unblock blocked Dependabot pub PRs, and keep CI + UAT deploy green.
 
 **Integration branch:** `cursor/sprint-10-flutter-344-integration-c246`  
@@ -245,12 +245,12 @@ If Sprint 10 already contains these versions, **close** the Dependabot PRs as su
 
 ## Sprint 10 exit criteria
 
-- [ ] `main` CI green with Flutter **3.44.0** and Dart **3.12.x**
-- [ ] `./scripts/pre-push.sh` green on integration tip
-- [ ] Blocked pub Dependabot PRs (#77–#81) merged or closed as superseded
-- [ ] `AGENTS.md` + workflow pins consistent
-- [ ] No regression in BDD gate (105/165) or file-size gate (500 lines)
-- [ ] UAT deploy succeeds with new Flutter build
+- [x] `main` CI green with Flutter **3.44.0** and Dart **3.12.x**
+- [x] `./scripts/pre-push.sh` green on integration tip
+- [x] Blocked pub Dependabot PRs (#77–#81) merged or closed as superseded — #78 merged; #77, #79, #80, #81 closed as superseded (lockfile already carries pdf 3.13.0, fl_chart 1.2.0, printing 5.15.0, mockito 5.7.0)
+- [x] `AGENTS.md` + workflow pins consistent — `3.44.0` in all reusable + deploy workflows; `flutter_app/pubspec.yaml` SDK `^3.12.0`; no `3.32` pins remain
+- [x] No regression in BDD gate (105/165) or file-size gate (500 lines) — BDD coverage now 146/182 active (80.2%), above the 105/165 (65%) target
+- [x] UAT deploy succeeds with new Flutter build — Deploy UAT green on `main` (2026-09-24) with the 3.44.0 pin
 
 ---
 

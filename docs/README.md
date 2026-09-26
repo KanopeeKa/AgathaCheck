@@ -182,7 +182,7 @@ Navigation shell reversal and phased delivery (formerly `docs/experience-program
 | [/docs/debt/refactoring-log.md](/docs/debt/refactoring-log.md) | Sprint refactor history (completed work) | Active |
 | [/docs/debt/refactoring-log.md](/docs/debt/refactoring-log.md) | Completed refactoring work | Active |
 | [/docs/domains/cross-domain/changes/sprint-6-execution-plan.md](/docs/domains/cross-domain/changes/sprint-6-execution-plan.md) | Sprint 6 deliverables | Active |
-| [/docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md](/docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 upgrade plan | Active |
+| [/docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md](/docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 upgrade plan | Completed |
 | [/docs/domains/cross-domain/changes/docs-domain-audit-63ad.md](/docs/domains/cross-domain/changes/docs-domain-audit-63ad.md) | Full `.md` inventory audit (wave 3) | Active |
 | [/docs/pipelines/ci-build-artifact-contract.md](/docs/pipelines/ci-build-artifact-contract.md) | Build artifact specifications | Active |
 | [/docs/pipelines/promotion-contract.md](/docs/pipelines/promotion-contract.md) | UAT to PROD promotion rules | Active |
