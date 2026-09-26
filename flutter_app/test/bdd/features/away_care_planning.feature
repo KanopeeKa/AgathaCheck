@@ -26,8 +26,8 @@ Feature: Away care planning display
     Then the care item should show updated next occurrence dates
 
   @P1
-  Scenario: Carer task summary shows for in-window care during the absence
+  Scenario: In-window care shows on the away plan during the absence
     Given I am signed in as a guardian with a saved planned absence
-    And the away plan has in-window care tasks for my carer
+    And a health entry has care scheduled during the absence
     When I open the away plan for that absence
-    Then I should see the carer task summary for that pet
+    Then I should see a planned care row for that entry

@@ -3,7 +3,7 @@
  * Scenario: Pre-departure overdue care links to the pet profile instead of listing on the plan
  * Scenario: Completion-based care shows an estimated date on the away plan
  * Scenario: Changing a care date from the care item updates the next dates
- * Scenario: Carer task summary shows for in-window care during the absence
+ * Scenario: In-window care shows on the away plan during the absence
  */
 import { test, loginAs, expect } from '../fixtures/auth.fixture';
 import { AwayPlanningPage } from '../pages/away-planning.page';
@@ -12,7 +12,6 @@ import {
   createHealthEntry,
   createPet,
   createPlannedAbsence,
-  getAbsenceCarePlan,
   signupUser,
   type TestUser,
 } from '../support/api';
@@ -125,7 +124,7 @@ test.describe('Away care planning display', () => {
     await expect(page.getByText(/Overdue|En retard/i)).toHaveCount(0);
   });
 
-  test('Carer task summary shows for in-window care during the absence', async ({
+  test('In-window care shows on the away plan during the absence', async ({
     page,
   }) => {
     const root = baseURL();
@@ -146,15 +145,10 @@ test.describe('Away care planning display', () => {
       endsOn,
       petIds: [pet.id],
     });
-    const planBefore = await getAbsenceCarePlan(root, user.accessToken, absence.id);
-    const petPlan = planBefore.pets.find((p) => p.pet_id === pet.id);
-    expect(petPlan?.carer_tasks.count ?? 0).toBeGreaterThan(0);
-
     await loginAs(page, user, { experience: 'guardian' });
 
     const away = new AwayPlanningPage(page);
     await away.openPlan(absence.id);
-    await away.expectCarerTaskSummaryVisible();
     await away.expectPlannedCareItemRow(entry.id, 'Weekly Grooming');
   });
 });

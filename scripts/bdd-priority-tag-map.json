@@ -34,7 +34,7 @@
     "Pre-departure overdue care links to the pet profile instead of listing on the plan": "P1",
     "Completion-based care shows an estimated date on the away plan": "P1",
     "Changing a care date from the care item updates the next dates": "P1",
-    "Carer task summary shows for in-window care during the absence": "P1"
+    "In-window care shows on the away plan during the absence": "P1"
   },
   "care_suggestion.feature": {
     "A care suggestion surfaces on the pet profile contextual slot": "P1",
