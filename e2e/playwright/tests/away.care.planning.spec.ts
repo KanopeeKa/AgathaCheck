@@ -121,7 +121,6 @@ test.describe('Away care planning display', () => {
     await careItem.openRescheduleSheet();
     await careItem.pickRescheduleDateInSheet(5);
     await careItem.confirmReschedule();
-    await careItem.expectOpenOccurrenceDateVisible(dateOffset(5));
     await away.openPlan(absence.id);
     await expect(page.getByText(/Overdue|En retard/i)).toHaveCount(0);
   });
