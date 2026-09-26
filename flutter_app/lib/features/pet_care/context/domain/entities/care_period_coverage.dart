@@ -100,6 +100,16 @@ class PlannedCareOpenOccurrence {
   final String openStatus;
 }
 
+class PreAbsenceOverdueAttention {
+  const PreAbsenceOverdueAttention({
+    required this.show,
+    required this.overdueCount,
+  });
+
+  final bool show;
+  final int overdueCount;
+}
+
 class PlannedCareInWindow {
   const PlannedCareInWindow({
     required this.firstDate,
@@ -138,6 +148,7 @@ class PlannedCareItem {
     this.openOccurrence,
     this.inWindow,
     this.isPaused = false,
+    this.scheduleFlexibility,
   });
 
   final PlannedCareKind kind;
@@ -160,11 +171,18 @@ class PlannedCareItem {
   final PlannedCareOpenOccurrence? openOccurrence;
   final PlannedCareInWindow? inWindow;
   final bool isPaused;
+  final String? scheduleFlexibility;
 
   bool get isConditional => certainty == 'conditional_on_future_completion';
 
   bool get usesAcpRowContract =>
       isPaused || openOccurrence != null || inWindow != null;
+
+  bool get showsSeeOptionsOnAwayPlan {
+    if (inWindow == null || isPaused) return false;
+    final flex = scheduleFlexibility;
+    return flex == 'flexible' || flex == 'earlier_only';
+  }
 }
 
 class CarePeriodCoverageSummary {
@@ -189,6 +207,10 @@ class CarePeriodCoverageResult {
     required this.items,
     required this.coverage,
     this.plannedCareItems = const [],
+    this.preAbsenceOverdueAttention = const PreAbsenceOverdueAttention(
+      show: false,
+      overdueCount: 0,
+    ),
   });
 
   final String startsOn;
@@ -197,6 +219,7 @@ class CarePeriodCoverageResult {
   final List<CarePeriodProjectionItem> items;
   final CarePeriodCoverageSummary coverage;
   final List<PlannedCareItem> plannedCareItems;
+  final PreAbsenceOverdueAttention preAbsenceOverdueAttention;
 
   bool get isPartiallyIndeterminate =>
       projectionStatus == CarePeriodProjectionStatus.partiallyIndeterminate;

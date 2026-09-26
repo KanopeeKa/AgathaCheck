@@ -92,6 +92,19 @@ class CarePeriodCoverageModel {
       ),
       inWindow: inWindowFromJson(raw['in_window'] as Map<String, dynamic>?),
       isPaused: raw['is_paused'] == true,
+      scheduleFlexibility: raw['schedule_flexibility'] as String?,
+    );
+  }
+
+  static PreAbsenceOverdueAttention preAbsenceOverdueAttentionFromJson(
+    Map<String, dynamic>? raw,
+  ) {
+    if (raw == null) {
+      return const PreAbsenceOverdueAttention(show: false, overdueCount: 0);
+    }
+    return PreAbsenceOverdueAttention(
+      show: raw['show'] == true,
+      overdueCount: raw['overdue_count'] as int? ?? 0,
     );
   }
 
@@ -125,6 +138,9 @@ class CarePeriodCoverageModel {
       projectionStatus: projectionStatus,
       items: items,
       plannedCareItems: plannedCareItems,
+      preAbsenceOverdueAttention: preAbsenceOverdueAttentionFromJson(
+        json['pre_absence_overdue_attention'] as Map<String, dynamic>?,
+      ),
       coverage: CarePeriodCoverageSummary(
         policyVersion: coverageJson['policy_version'] as String? ?? '1',
         coverageState: coverageState,

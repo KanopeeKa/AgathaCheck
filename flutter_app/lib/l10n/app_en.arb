@@ -2444,6 +2444,9 @@
   },
   "awayPlanningScheduleRoutineTitle": "Routine care",
   "awayPlanningScheduleDatedTitle": "Planned care",
+  "awayPlanningDuringAbsenceSubtitle": "Care during this absence",
+  "awayPlanningPreAbsenceOverdueAction": "Review overdue care before you go",
+  "awayPlanningSeeOptions": "See options",
   "awayPlanningScheduleIndeterminateTitle": "Indeterminate care",
   "awayPlanningEventRepeatsFromUntil": "Repeats every {interval} {period} from {start} until {end}",
   "@awayPlanningEventRepeatsFromUntil": {
