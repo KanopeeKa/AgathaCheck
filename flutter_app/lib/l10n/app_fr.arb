@@ -2340,6 +2340,9 @@
   },
   "awayPlanningScheduleRoutineTitle": "Soins de routine",
   "awayPlanningScheduleDatedTitle": "Soins planifiés",
+  "awayPlanningDuringAbsenceSubtitle": "Soins pendant cette absence",
+  "awayPlanningPreAbsenceOverdueAction": "Voir les soins en retard avant le départ",
+  "awayPlanningSeeOptions": "Voir les options",
   "awayPlanningScheduleIndeterminateTitle": "Soins indéterminés",
   "awayPlanningEventRepeatsFromUntil": "Se répète tous les {interval} {period} du {start} au {end}",
   "@awayPlanningEventRepeatsFromUntil": {

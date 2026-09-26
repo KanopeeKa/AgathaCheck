@@ -140,7 +140,19 @@ function findEarliestPendingOccurrence(occurrences) {
 function maybeMaterialiseBeforeWindowOpen(entry, occurrences, startsOn, items, knownSlots) {
   if (isEntryPaused(entry)) return null;
   const open = findEarliestPendingOccurrence(occurrences);
-  if (!open) return null;
+  if (!open) {
+    const nextDue = dateToIsoDate(entry.next_due_date);
+    if (!nextDue || nextDue >= startsOn) return null;
+    for (const time of scheduleTimesFromEntry(entry)) {
+      const key = slotKey(nextDue, time);
+      if (knownSlots.has(key)) continue;
+      const item = buildItem(entry, nextDue, time, 'projected', 'pending');
+      item.window_relation = 'before_window';
+      items.push(item);
+      knownSlots.add(key);
+    }
+    return { scheduled_date: nextDue, status: 'pending' };
+  }
   const openDate = dateToIsoDate(open.scheduled_date);
   if (!openDate || openDate >= startsOn) return null;
 

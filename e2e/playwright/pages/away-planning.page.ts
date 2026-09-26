@@ -320,16 +320,21 @@ export class AwayPlanningPage {
     await refreshFlutterAccessibility(this.page);
   }
 
-  async openPlanThis(entryId: string): Promise<void> {
+  async openSeeOptions(entryId: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const row = this.plannedCareRow(entryId);
     await expect(row).toBeVisible({ timeout: 30_000 });
-    const planThis = semanticsKey(this.page, `away_plan_plan_this_${entryId}`).or(
-      row.getByRole('button', { name: /^Plan this$|^Planifier/i }),
+    const seeOptions = semanticsKey(this.page, `away_plan_see_options_${entryId}`).or(
+      row.getByRole('button', { name: /^See options$|^Voir les options/i }),
     );
-    await expect(planThis.first()).toBeVisible({ timeout: 15_000 });
-    await planThis.first().click();
+    await expect(seeOptions.first()).toBeVisible({ timeout: 15_000 });
+    await seeOptions.first().click();
     await refreshFlutterAccessibility(this.page);
+  }
+
+  /** @deprecated Away plan no longer offers inline Plan this — use openSeeOptions or openPlannedCareItem */
+  async openPlanThis(entryId: string): Promise<void> {
+    await this.openPlannedCareItem(entryId);
   }
 
   async openPlannedCareItem(entryId: string): Promise<void> {

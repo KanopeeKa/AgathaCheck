@@ -6473,6 +6473,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get awayPlanningScheduleDatedTitle => 'Planned care';
 
   @override
+  String get awayPlanningDuringAbsenceSubtitle => 'Care during this absence';
+
+  @override
+  String get awayPlanningPreAbsenceOverdueAction =>
+      'Review overdue care before you go';
+
+  @override
+  String get awayPlanningSeeOptions => 'See options';
+
+  @override
   String get awayPlanningScheduleIndeterminateTitle => 'Indeterminate care';
 
   @override

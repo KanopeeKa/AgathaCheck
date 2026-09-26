@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/router/shell_return_navigation.dart';
+import 'away_plan_carer_tasks_summary.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/presentation/widgets/care_event_row_pet_avatar.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../../pet_profile/presentation/widgets/care_family_icon.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../../../../health_tracking/presentation/widgets/care_event_status_line.dart';
-import '../../../../health_tracking/presentation/widgets/reschedule_occurrence_flow.dart';
 import '../away_plan_schedule_copy.dart';
 import '../care_period_coverage_copy.dart';
 import '../providers/care_context_providers.dart';
-import 'away_plan_suggestions_section.dart';
 
 class AwayPlanPetCareSection extends ConsumerWidget {
   const AwayPlanPetCareSection({
@@ -200,13 +199,17 @@ class _PetCareBody extends StatelessWidget {
             ),
           ),
         ],
-        AwayPlanSuggestionsSection(
-          absenceId: absenceId,
-          petId: petId,
-          startsOn: startsOn,
-          endsOn: endsOn,
-          plannedCareItems: result.plannedCareItems,
-        ),
+        if (result.preAbsenceOverdueAttention.show) ...[
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              key: Key('away_plan_pre_absence_overdue_$petId'),
+              onPressed: () => openPetDetail(context, petId),
+              child: Text(l.awayPlanningPreAbsenceOverdueAction),
+            ),
+          ),
+        ],
         if (result.plannedCareItems.isNotEmpty) ...[
           const SizedBox(height: 16),
           Semantics(
@@ -218,15 +221,17 @@ class _PetCareBody extends StatelessWidget {
               style: theme.textTheme.titleSmall,
             ),
           ),
+          const SizedBox(height: 4),
+          Text(
+            l.awayPlanningDuringAbsenceSubtitle,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          AwayPlanCarerTasksSummary(absenceId: absenceId, petId: petId),
           const SizedBox(height: 8),
           ...result.plannedCareItems.map(
-            (item) => _PlannedCareRow(
-              absenceId: absenceId,
-              petId: petId,
-              item: item,
-              startsOn: startsOn,
-              endsOn: endsOn,
-            ),
+            (item) => _PlannedCareRow(petId: petId, item: item),
           ),
           if (result.showsEstimateFootnote) ...[
             const SizedBox(height: 8),
@@ -253,18 +258,12 @@ class _PetCareBody extends StatelessWidget {
 
 class _PlannedCareRow extends ConsumerWidget {
   const _PlannedCareRow({
-    required this.absenceId,
     required this.petId,
     required this.item,
-    required this.startsOn,
-    required this.endsOn,
   });
 
-  final String absenceId;
   final String petId;
   final PlannedCareItem item;
-  final String startsOn;
-  final String endsOn;
 
   static const _kMinTouchTarget = 48.0;
 
@@ -282,9 +281,7 @@ class _PlannedCareRow extends ConsumerWidget {
     );
     final inWindowLine = AwayPlanScheduleCopy.inWindowLine(l, item);
     final viewLabel = '${item.name}. $scheduleLine';
-    final canPlanThis =
-        !item.isPaused &&
-        (item.openOccurrence?.occurrenceId ?? item.occurrenceId) != null;
+    final showSeeOptions = item.showsSeeOptionsOnAwayPlan;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -361,20 +358,17 @@ class _PlannedCareRow extends ConsumerWidget {
               ),
             ),
           ),
-          if (canPlanThis)
+          if (showSeeOptions)
             Align(
               alignment: Alignment.centerLeft,
               child: TextButton(
-                key: Key('away_plan_plan_this_${item.healthEntryId}'),
-                onPressed: () => RescheduleOccurrenceFlow.fromAwayPlanRow(
-                  context: context,
-                  ref: ref,
-                  item: item,
-                  startsOn: startsOn,
-                  endsOn: endsOn,
-                  absenceId: absenceId,
+                key: Key('away_plan_see_options_${item.healthEntryId}'),
+                onPressed: () => openPetEventView(
+                  context,
+                  petId: petId,
+                  entryId: item.healthEntryId,
                 ),
-                child: Text(l.awayPlanningPlanThis),
+                child: Text(l.awayPlanningSeeOptions),
               ),
             ),
         ],
