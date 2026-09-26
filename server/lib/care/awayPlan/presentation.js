@@ -314,7 +314,11 @@ export function buildPlannedCareItems(items, uncertainties, entriesById, context
     const frequency = entry?.frequency || 'once';
 
     if (frequency === 'once') {
-      singleOnceRows.push(buildSingleOnceRow(item, entry));
+      const row = buildSingleOnceRow(item, entry);
+      if (context.startsOn && context.endsOn && context.todayIso) {
+        enrichRowContract(row, entry, [item], context);
+      }
+      singleOnceRows.push(row);
       continue;
     }
 

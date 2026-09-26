@@ -265,6 +265,34 @@ export class AwayPlanningPage {
     }).toPass({ timeout: 45_000 });
   }
 
+  async expectPreAbsenceOverdueAction(petId: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const link = semanticsKey(this.page, `away_plan_pre_absence_overdue_${petId}`).or(
+        this.page.getByRole('button', {
+          name: /Review overdue care|Voir les soins en retard/i,
+        }),
+      );
+      await expect(link.first()).toBeVisible();
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async expectPlannedCareItemRowHidden(entryId: string, entryName?: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(this.plannedCareRow(entryId, entryName)).toHaveCount(0);
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async expectCarerTaskSummaryVisible(): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page.getByText(/care tasks? for your carer|tâches? de soin pour votre soignant/i).first(),
+      ).toBeVisible();
+    }).toPass({ timeout: 45_000 });
+  }
+
   async expectPlannedCareRowShowsOverdue(
     entryId: string,
     entryName: string,
