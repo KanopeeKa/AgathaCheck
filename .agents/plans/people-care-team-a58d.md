@@ -23,19 +23,19 @@ Land the agreed People & Care Team documentation on `main`, then implement produ
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: p4-guest-access
-last_completed_phase: p3-households
+autonomy: completed
+current_phase: null
+last_completed_phase: p4-guest-access
 halt_reason: null
-next_action: "continue phase p4-guest-access on branch cursor/people-p4-guest-a58d"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/people-p4-guest-a58d
+  branch: main
   plan_path: .agents/plans/people-care-team-a58d.md
-  plan_commit: 9bb08d35fb2fe663689236bacf46f0a9b0ebaab3
+  plan_commit: 02f64c37eae2d2b50724ce498e818fac98a0a791
   snapshot_path: .agents/plans/people-care-team-a58d.snapshot.json
-  snapshot_commit: 9bb08d35fb2fe663689236bacf46f0a9b0ebaab3
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1356"]
-merge_commits: {"land-docs":"5515e1ed0f4475d0a2a6d1a4d9b2d71fb33c5bef","p0-model":"e5eb27e4e064a69963cfa630b75ebc556bac2d5a"}
+  snapshot_commit: 02f64c37eae2d2b50724ce498e818fac98a0a791
+open_prs: []
+merge_commits: {"land-docs":"5515e1ed0f4475d0a2a6d1a4d9b2d71fb33c5bef","p0-model":"e5eb27e4e064a69963cfa630b75ebc556bac2d5a","p4-guest-access":"e35f28096e6a8a1fff6d6686e4b7c060ff8c8eb9"}
 debt_issue_refs: []
 ```
 
