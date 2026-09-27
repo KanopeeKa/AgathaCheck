@@ -23,6 +23,25 @@ Make [care-item-evolution.md](../../docs/domains/pet_care/features/care-item-evo
 | **approved_by** | user chat 2026-09-27: execute-plan full autonomous through care-item-evolution programme |
 | **control_issue** | #1346 |
 
+## Runtime
+
+```yaml
+autonomy: active
+current_phase: docs
+last_completed_phase: null
+halt_reason: null
+next_action: "continue phase docs on branch cursor/care-item-evolution-docs-7796"
+artifact_ref:
+  branch: cursor/care-item-evolution-docs-7796
+  plan_path: .agents/plans/care-item-evolution.md
+  plan_commit: 903da67ba318dfd7054fa81d2c00a12154ab89e2
+  snapshot_path: .agents/plans/care-item-evolution.snapshot.json
+  snapshot_commit: 903da67ba318dfd7054fa81d2c00a12154ab89e2
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1347"]
+merge_commits: {}
+debt_issue_refs: []
+```
+
 ## Phases (summary)
 
 | id | title | branch | Depends |
