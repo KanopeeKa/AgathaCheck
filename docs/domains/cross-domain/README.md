@@ -33,7 +33,7 @@ Active and recent **multi-domain** execution plans (BDD sprints, toolchain, docu
 | [docs-domain-audit-63ad.md](changes/docs-domain-audit-63ad.md) | Full `.md` inventory and move/stay decisions | Complete (wave 3) |
 | [documentation-consolidation-plan.md](changes/documentation-consolidation-plan.md) | Docs metadata and validation wave 1 | Complete |
 | [sprint-6-execution-plan.md](changes/sprint-6-execution-plan.md) | BDD coverage sprint (org/foster/help) | Active remainder |
-| [sprint-10-flutter-344-execution-plan.md](changes/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 / Dart 3.12 upgrade | In progress |
+| [sprint-10-flutter-344-execution-plan.md](changes/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 / Dart 3.12 upgrade | Completed |
 
 Domain-scoped execute-plan snapshots remain in `.agents/plans/` (link from domain `changes/plans.md` indexes).
 

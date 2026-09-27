@@ -249,7 +249,7 @@ If Sprint 10 already contains these versions, **close** the Dependabot PRs as su
 - [x] `./scripts/pre-push.sh` green on integration tip
 - [x] Blocked pub Dependabot PRs (#77–#81) merged or closed as superseded — #78 merged; #77, #79, #80, #81 closed as superseded (lockfile already carries pdf 3.13.0, fl_chart 1.2.0, printing 5.15.0, mockito 5.7.0)
 - [x] `AGENTS.md` + workflow pins consistent — `3.44.0` in all reusable + deploy workflows; `flutter_app/pubspec.yaml` SDK `^3.12.0`; no `3.32` pins remain
-- [x] No regression in BDD gate (105/165) or file-size gate (500 lines) — BDD coverage now 146/182 active (80.2%), above the 105/165 (65%) target
+- [x] No regression in BDD gate (105/165) or file-size gate (500 lines) — BDD coverage above the 65% target on live counts (`node e2e/scripts/check_bdd_coverage.js --report-only`); file-size gate green (`scripts/check_file_size.js`)
 - [x] UAT deploy succeeds with new Flutter build — Deploy UAT green on `main` (2026-09-24) with the 3.44.0 pin
 
 ---
