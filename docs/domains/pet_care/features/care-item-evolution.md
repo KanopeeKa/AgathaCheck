@@ -1,19 +1,23 @@
 ---
-title: Care Item evolution — functional spec
+title: Care Item — functional spec
 owner: Product / Documentation
 audience: both
 domain: pet_care
-feature_id: care_item_evolution
-status: draft
+feature_id: care_item
+status: active
 related_prs: []
 related_bdd: []
 ---
 
-# Care Item evolution — functional spec
+# Care Item — functional spec
 
-**Status:** draft, 2026-09-27. Product answers and review adjustments were agreed in chat on 2026-09-27. Decisions marked *Proposed* and the items under **Still open** need confirmation. **Nothing is implemented yet.** Implementation planning comes later.
+**Status:** active target model, 2026-09-27. This document is the **single canonical product spec** for Care Items (series + occurrences + detail view + absence join-work). Execute-plan: [`care-item-evolution`](../../../.agents/plans/care-item-evolution.md).
 
-**Depends on:** the People & Care Team spec (`docs/domains/people/features/people-care-team.md`, decisions D1–D23). It is on branch `claude/friendly-hopper-la0gx7` until it merges. "People Dn" below refers to it.
+**Supersedes:** [care-item-model-delivery-plan.md](../changes/care-item-model-delivery-plan.md) (profile/list presentation roadmap — historical). The old execute-plan roadmap [`pet-care-item-model`](../../../.agents/plans/pet-care-item-model.md) is **superseded**; do not start new work from it.
+
+**Depends on:** [People & Care Team](../../people/features/people-care-team.md) (D1–D23). "People Dn" below refers to it.
+
+**Does not replace:** [care-schedule-management.md](./care-schedule-management.md) (timing authority), [care-progression.md](./care-progression.md) (establishment), or [care-context.md](./care-context.md) (absence invariants). Those specs stay authoritative for their domains; this spec owns Care Item UX and the new absence-resolution model.
 
 ## Verdict
 
@@ -40,7 +44,7 @@ Four principles:
 |---|---|---|---|
 | D-CIE-001 | "Occurrence" is an internal word | Agreed | The View never says "Current occurrence". Status and date speak for themselves: "Overdue · 11 Sep 2026" |
 | D-CIE-002 | One word for late, unresolved care: **Overdue** | Agreed | "Missed" leaves the UI. Stored statuses stay `pending` / `completed` / `skipped`. There is no `cancelled` |
-| D-CIE-003 | Timed care: Coming up until its time, Due until the next dose that day or the end of the day, then Overdue | *Proposed* | Replaces the chat answer "Due until the planned time, then Overdue". See Still open |
+| D-CIE-003 | Timed care: Coming up until its time, **Due until the planned time, then Overdue** | Agreed | Matches live `isOccurrenceMissed` / `isOccurrenceMissed` (server + client). Multi-dose days: each slot has its own status |
 | D-CIE-004 | Status describes the schedule and what has been logged, not medical safety | Agreed | No wording implies that a late dose is safe or unsafe |
 | D-CIE-005 | Care uses the pet's home timezone | Agreed | Occurrences, reminders, absence boundaries, "today" and status changes all use one timezone |
 | D-CIE-006 | Overdue looks the same at every priority | Agreed | A small Overdue pill. Priority only changes ordering. Overdue items of every priority are listed and counted in Actions |
@@ -68,7 +72,7 @@ Much of the target behaviour exists. This table maps each area to what is live.
 | Area | Today | Type |
 |---|---|---|
 | Care item and occurrence | `health_entries`, `health_occurrences`, `care_schedule_events` (CSM v1) | Preserve |
-| Occurrence status | Stored `pending` / `completed` / `skipped`. The detail screen groups open ones as Missed, Due today and Coming up. The event list, away plan and notifications say Overdue | UX change, plus a new timed rule (D-CIE-003) |
+| Occurrence status | Stored `pending` / `completed` / `skipped`. The detail screen groups open ones as Missed, Due today and Coming up. The event list, away plan and notifications say Overdue | UX change (Overdue everywhere). Timed rule unchanged (D-CIE-003 **Preserve**) |
 | "Today" | Occurrence status uses the device's calendar. The away plan and notifications use the server's calendar day. No timezone is stored | New rule (D-CIE-005) |
 | Plain-language schedule | "Every year", "Every 30 days" (`formatRecurrenceSummary`). The schedule type isn't in the summary | UX change |
 | Schedule type explained | Toggle with an info sheet and a worked example | Preserve, with a copy fix (Schedule section) |
@@ -120,16 +124,16 @@ Each arrow points from a concept to the one it refers to. Recording an absence c
 | Shown as | Date-only care | Timed care | Stored as |
 |---|---|---|---|
 | Coming up | Before the scheduled day | Before the scheduled time | `pending` |
-| Due | On the scheduled day | From the scheduled time until the next dose of the same care that day, or the end of the day | `pending` |
-| Overdue | From the next day | Once the next dose that day begins, or the day ends | `pending` |
+| Due | On the scheduled day | From the scheduled time until that time has passed | `pending` |
+| Overdue | From the next calendar day | From the scheduled time onward on the scheduled day | `pending` |
 | Completed | — | — | `completed` |
 | Skipped | — | — | `skipped` |
 
 ### Rules
 
 - **A person's action wins.** Care done late is Completed, not "Overdue and completed". History still shows both dates: "Done 15 Sep · due 11 Sep".
-- **One timed dose a day** stays Due for the rest of that day.
-- **Several doses a day:** each dose has its own status. At 17:50 the 08:00 dose is still Due. At 18:00 it becomes Overdue and the 18:00 dose is Due. Completing a dose still offers to skip earlier overdue doses (Preserve).
+- **Several doses a day:** each dose has its own status. The 08:00 dose is Overdue from 08:01 until completed or skipped; the 18:00 dose follows the same rule for its slot. Completing a dose still offers to skip earlier overdue doses (Preserve).
+- **List surfaces (profile, All Actions, All care):** when several open slots exist on one item, the row subtitle states the **worst** open slot (e.g. "Overdue · 08:00" or "Due · 18:00"), consistent with Needs attention's leading occurrence rule.
 - **Not a safety statement (D-CIE-004).** Due and Overdue describe the schedule and what has been logged. They never say whether a late dose is safe. A future completion window, set by the pet parent or their vet, could replace these defaults for one item.
 - **Reminders don't change status (D-CIE-007).**
 - **Timezone (D-CIE-005):** every "today", status change, reminder and absence boundary uses the pet's home timezone, not the device's. When the device is somewhere else, times show the zone: "18:00 · Paris time". How the home timezone is set and stored is an implementation decision. It also answers the People spec's open timezone question (see Still open).
@@ -469,8 +473,9 @@ Two streams run in parallel, then join.
 
 | Phase | Stream | Scope | Depends on |
 |---|---|---|---|
-| A. Rules | Care | Overdue everywhere, the timed rule, pet home timezone, priority ordering | — |
-| B. View and Edit | Care | Header, Needs attention (several occurrences), menus, schedule summary, Details, Instructions and Notes, History, Pause UI, access levels, web layout | A |
+| A0. Vocabulary | Care | Overdue everywhere (retire "Missed" in UI), priority ordering, list subtitle for multi-dose | — |
+| A1. Timezone | Care | Pet home timezone for today, status, reminders, absence boundaries (schema + API + client) | A0 |
+| B. View and Edit | Care | Header, Needs attention (several occurrences), menus, schedule summary, Details, Instructions and Notes, History, Pause UI, access levels, web layout | A0 (A1 need not block layout-only work) |
 | C. Completing care | Care | The "when was this done?" question, Add details, occurrence documents, next date from the vet | B |
 | P1. People directory | People | People phase 1: contacts, provider foundations | — |
 | D. Providers and people | Join | Provider (typed names as an interim), provider used, performed by, names kept in history | C, P1 |
@@ -491,14 +496,13 @@ Two streams run in parallel, then join.
 
 ## Still open
 
-- [ ] **1. Timed rule.** D-CIE-003 comes from the review, and reverses the chat answer "Due until the planned time, then Overdue". Under the chat answer, 08:00 medication is Overdue from 08:01; under D-CIE-003, it stays Due until 18:00 or the end of the day. Confirm which.
-- [ ] **2. Resume on a date.** Today, the open occurrence keeps its date, so the item can come back Overdue. The alternatives:
+- [ ] **1. Resume on a date.** Today, the open occurrence keeps its date, so the item can come back Overdue. The alternatives:
   - Fixed schedule: the next scheduled date on or after the resume date.
   - After completion: due on the resume date, or one interval after it.
-- [ ] **3. A shortcut on the away plan.** A single, confirmed action: "Jamie handles the rest as scheduled". It would record Keep the date · Jamie for every item not yet reviewed for that pet.
-- [ ] **4. No upcoming absence.** Hide the Absence section (proposed), or show one quiet line?
-- [ ] **5. The "Where" label.** Keep "Where" (proposed), or rename it to "Care setting"?
-- [ ] **6. The pet's home timezone.** Where it's set (pet or household, defaulting from the owner's device). Confirm it also settles the People spec's timezone question for absence access.
+- [ ] **2. A shortcut on the away plan.** A single, confirmed action: "Jamie handles the rest as scheduled". It would record Keep the date · Jamie for every **affected** item not yet reviewed for that pet (never auto-move).
+- [ ] **3. No upcoming absence.** Hide the Absence section (*proposed* in mockups), or show one quiet line?
+- [ ] **4. The "Where" label.** Keep "Where" (*proposed*), or rename to "Care setting"?
+- [ ] **5. The pet's home timezone.** Where it is set (pet or household, defaulting from the owner's device). Confirm it also settles the People spec's timezone question for absence access. **Blocks Phase A1**, not A0.
 
 ## Related
 
@@ -516,4 +520,5 @@ Two streams run in parallel, then join.
 | Weight | [weight tracking specs](/docs/domains/weight_tracking/features/specs.md) |
 | Dates on the wire | [calendar-dates.md](/docs/architecture/calendar-dates.md) |
 | Values, tone, terms | [true-north.md](/docs/design/true-north.md), [copy-tone.md](/docs/design/copy-tone.md), [terminology.md](/docs/design/terminology.md) |
-| People & Care Team | `docs/domains/people/features/people-care-team.md` (branch `claude/friendly-hopper-la0gx7`) |
+| People & Care Team | [people-care-team.md](/docs/domains/people/features/people-care-team.md) |
+| Historical profile refactor plan | [care-item-model-delivery-plan.md](../changes/care-item-model-delivery-plan.md) (superseded) |

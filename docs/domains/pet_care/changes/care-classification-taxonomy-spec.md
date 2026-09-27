@@ -11,7 +11,7 @@ reviewed_by: [claude-review-2026-09-21]
 # Care classification taxonomy — product & data spec
 
 **Status:** Draft v2 — incorporates engineering review (2026-09-21)  
-**Supersedes (partially):** informal `type` + `care_family` dual-picker UX; §7 of [care-item-model-delivery-plan.md](./care-item-model-delivery-plan.md)  
+**Supersedes (partially):** informal `type` + `care_family` dual-picker UX; historical §7 of [care-item-model delivery archive](./archive/care-item-model-delivery-plan-2026-09-13.md)  
 **Related:** [care-progression.md](../features/care-progression.md) · [care-foundation-roadmap.md](./care-foundation-roadmap.md) · [terminology.md](../../../design/terminology.md)
 
 ### Dependencies (must be true before Phase A)
@@ -70,7 +70,7 @@ Additionally, the product needs:
 5. **Care importance is always stored** — default from family, user may override in **both** planned and record flows. Never `null` on write (simplifies stats and queries).
 6. **No urgent picker** on care entries. Urgency is handled in the real world before logging; the app records facts.
 7. **Health-issue prompts** are contextual (§10), not a permanent form field overload.
-8. **Do not introduce a new domain table.** Extend `health_entries` (and presentation) per [care-item-model-delivery-plan.md](./care-item-model-delivery-plan.md).
+8. **Do not introduce a new domain table.** Extend `health_entries` (and presentation) per [care-item-evolution.md](../features/care-item-evolution.md).
 
 ---
 

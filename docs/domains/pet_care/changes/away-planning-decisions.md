@@ -67,7 +67,11 @@ planned_absence_pets (additions)
   carer_note      TEXT   NULL   -- note_only only
 ```
 
-Per-pet, not per-care-item. "Luna → Sarah, Milo → Tom" is in scope; per-item assignment is Pet Sitting and out of scope.
+Per-pet, not per-care-item. "Luna → Sarah, Milo → Tom" is in scope.
+
+**Amendment (2026-09-27, agreed, effective with Care Item evolution Phase E):** per **absence**, each **affected care item** may have an **absence resolution** (decision, optional looked-after-by, optional note). That is not a permanent carer on the care item and not Pet Sitting rostering. Canonical behaviour: [care-item-evolution.md](../features/care-item-evolution.md) § Absences. The pet-level carer on `planned_absence_pets` remains the suggested "who" for resolutions.
+
+**Historical (2026-09-15):** per-item assignment was listed as Pet Sitting and out of scope; that sentence applied before absence resolutions.
 
 **Planned amendment (agreed, not in effect):** when People phase 2 ships, the model allows a primary carer plus backup carers and date ranges, and carers become directory contacts. Until then, this decision stands as written. See [amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md).
 

@@ -2,17 +2,16 @@
 title: Pet Care Item Model & Profile Surface — Roadmap
 owner: Product / Agent
 audience: agent
-status: active
-last_updated: 2026-09-13
-tags: [pet_care, care_item, pet_profile, roadmap]
+status: superseded
+last_updated: 2026-09-27
+tags: [pet_care, care_item, pet_profile, roadmap, historical]
 ---
 
-# pet-care-item-model (roadmap)
+# pet-care-item-model (roadmap) — superseded
 
-> **plan_kind:** `roadmap` — this plan orchestrates seven child plans. It does not itself change
-> runtime code beyond plan/doc artifacts.
->
-> **Specification:** [`docs/domains/pet_care/changes/care-item-model-delivery-plan.md`](../../docs/domains/pet_care/changes/care-item-model-delivery-plan.md)
+> **Superseded 2026-09-27** by execute-plan [`care-item-evolution`](care-item-evolution.md) and canonical spec [`docs/domains/pet_care/features/care-item-evolution.md`](../../docs/domains/pet_care/features/care-item-evolution.md). **Do not bootstrap new child plans from this roadmap.**
+
+> **plan_kind:** `roadmap` — historical. Seven child plans below are **halted**.
 
 ## Metadata
 
