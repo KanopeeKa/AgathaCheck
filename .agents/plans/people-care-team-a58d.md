@@ -24,17 +24,17 @@ Land the agreed People & Care Team documentation on `main`, then implement produ
 
 ```yaml
 autonomy: active
-current_phase: p3-households
-last_completed_phase: p2-absence
+current_phase: p2-absence
+last_completed_phase: p1-contacts
 halt_reason: null
-next_action: "await orchestrator PR for p2-absence; next worker starts p3-households"
+next_action: "continue phase p2-absence on branch cursor/people-p2-absence-a58d"
 artifact_ref:
   branch: cursor/people-p2-absence-a58d
   plan_path: .agents/plans/people-care-team-a58d.md
-  plan_commit: be53d37a094a01ad51dd1cb12e36334326b64694
+  plan_commit: 505e1559679424bb2836435de72117e3ae78e24c
   snapshot_path: .agents/plans/people-care-team-a58d.snapshot.json
-  snapshot_commit: be53d37a094a01ad51dd1cb12e36334326b64694
-open_prs: []
+  snapshot_commit: 505e1559679424bb2836435de72117e3ae78e24c
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1352"]
 merge_commits: {"land-docs":"5515e1ed0f4475d0a2a6d1a4d9b2d71fb33c5bef","p0-model":"e5eb27e4e064a69963cfa630b75ebc556bac2d5a"}
 debt_issue_refs: []
 ```
