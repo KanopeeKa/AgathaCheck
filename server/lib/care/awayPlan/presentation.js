@@ -11,7 +11,9 @@ import {
   estimateOccurrences,
 } from '../schedule/estimateOccurrences.js';
 import { isDateInCareWindow } from '../schedule/projectSchedule.js';
+import { dateToIsoDate } from '../../calendarDate.js';
 import { leastCertain } from './certainty.js';
+import { resolveScheduleFlexibility } from '../schedule/scheduleFlexibility.js';
 
 export const PLANNED_CARE_KIND_RECURRING_CALENDAR = 'recurring_calendar';
 export const PLANNED_CARE_KIND_RECURRING_CHAIN = 'recurring_chain';
@@ -71,10 +73,12 @@ function earliestPendingDate(constituents) {
   return pendingDates[0] ?? null;
 }
 
-function earliestMaterialisedPending(constituents) {
+function earliestOpenPending(constituents) {
   const pending = constituents
     .filter(
-      (item) => item.source === 'materialised' && (item.status || 'pending') === 'pending'
+      (item) =>
+        (item.source === 'materialised' || item.source === 'projected')
+        && (item.status || 'pending') === 'pending'
     )
     .sort((a, b) => a.scheduled_date.localeCompare(b.scheduled_date));
   return pending[0] ?? null;
@@ -96,7 +100,7 @@ function enrichRowContract(row, entry, constituents, context) {
     return row;
   }
 
-  const openItem = earliestMaterialisedPending(constituents);
+  const openItem = earliestOpenPending(constituents);
   if (openItem) {
     row.open_occurrence = {
       occurrence_id: openItem.occurrence_id ?? null,
@@ -110,7 +114,17 @@ function enrichRowContract(row, entry, constituents, context) {
       ),
     };
   } else {
-    row.open_occurrence = null;
+    const nextDue = dateToIsoDate(entry?.next_due_date);
+    if (nextDue && nextDue < startsOn) {
+      row.open_occurrence = {
+        occurrence_id: null,
+        scheduled_date: nextDue,
+        scheduled_time: null,
+        open_status: computeOpenStatus(nextDue, todayIso, startsOn, endsOn),
+      };
+    } else {
+      row.open_occurrence = null;
+    }
   }
 
   const inWindowItems = constituents.filter((item) =>
@@ -156,6 +170,10 @@ function enrichRowContract(row, entry, constituents, context) {
     count: inWindowDates.length,
     date_basis: dateBasis,
   };
+
+  const flex = resolveScheduleFlexibility(entry || {}, todayIso);
+  row.schedule_flexibility = flex.flexibility;
+  row.max_shift_days = flex.max_shift_days;
 
   return row;
 }
@@ -213,6 +231,9 @@ function buildGroupRow(healthEntryId, entry, constituents, uncertainty, context 
     row.status_counts = countStatuses([]);
     row.first_scheduled_date = null;
     row.last_scheduled_date = null;
+    if (context.startsOn && context.endsOn && context.todayIso) {
+      enrichRowContract(row, entry, constituents, context);
+    }
     return row;
   }
 
@@ -293,7 +314,11 @@ export function buildPlannedCareItems(items, uncertainties, entriesById, context
     const frequency = entry?.frequency || 'once';
 
     if (frequency === 'once') {
-      singleOnceRows.push(buildSingleOnceRow(item, entry));
+      const row = buildSingleOnceRow(item, entry);
+      if (context.startsOn && context.endsOn && context.todayIso) {
+        enrichRowContract(row, entry, [item], context);
+      }
+      singleOnceRows.push(row);
       continue;
     }
 

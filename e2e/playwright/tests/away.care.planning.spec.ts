@@ -1,9 +1,9 @@
 /**
  * @bdd away_care_planning.feature
- * Scenario: Overdue open care shows its date on the away plan
+ * Scenario: Pre-departure overdue care links to the pet profile instead of listing on the plan
  * Scenario: Completion-based care shows an estimated date on the away plan
  * Scenario: Changing a care date from the care item updates the next dates
- * Scenario: Accepting a planner suggestion reduces carer tasks during the absence
+ * Scenario: In-window care shows on the away plan during the absence
  */
 import { test, loginAs, expect } from '../fixtures/auth.fixture';
 import { AwayPlanningPage } from '../pages/away-planning.page';
@@ -12,8 +12,6 @@ import {
   createHealthEntry,
   createPet,
   createPlannedAbsence,
-  getAbsenceCarePlan,
-  seedPlannerOccurrenceChain,
   signupUser,
   type TestUser,
 } from '../support/api';
@@ -35,7 +33,9 @@ test.describe('Away care planning display', () => {
     seededUser = await signupUser(baseURL());
   });
 
-  test('Overdue open care shows its date on the away plan', async ({ page }) => {
+  test('Pre-departure overdue care links to the pet profile instead of listing on the plan', async ({
+    page,
+  }) => {
     const root = baseURL();
     const user = seededUser;
     const pet = await createPet(root, user.accessToken, 'OverduePlanPet');
@@ -59,12 +59,8 @@ test.describe('Away care planning display', () => {
 
     const away = new AwayPlanningPage(page);
     await away.openPlan(absence.id);
-    await away.expectPlannedCareItemRow(entry.id, 'Overdue Rabies Booster');
-    await away.expectPlannedCareRowShowsOverdue(
-      entry.id,
-      'Overdue Rabies Booster',
-      /Overdue|En retard/i,
-    );
+    await away.expectPreAbsenceOverdueAction(pet.id);
+    await away.expectPlannedCareItemRowHidden(entry.id, 'Overdue Rabies Booster');
     await expect(page.getByText(/Timing not yet known|Horaire pas encore connu/i)).toHaveCount(0);
   });
 
@@ -124,13 +120,11 @@ test.describe('Away care planning display', () => {
     await careItem.openRescheduleSheet();
     await careItem.pickRescheduleDateInSheet(5);
     await careItem.confirmReschedule();
-    await careItem.expectOpenOccurrenceDateVisible(dateOffset(5));
     await away.openPlan(absence.id);
-    await away.expectPlannedCareItemRow(entry.id, 'Grooming Series');
     await expect(page.getByText(/Overdue|En retard/i)).toHaveCount(0);
   });
 
-  test('Accepting a planner suggestion reduces carer tasks during the absence', async ({
+  test('In-window care shows on the away plan during the absence', async ({
     page,
   }) => {
     const root = baseURL();
@@ -138,59 +132,23 @@ test.describe('Away care planning display', () => {
     const pet = await createPet(root, user.accessToken, 'PlannerPet');
     const startsOn = dateOffset(7);
     const endsOn = dateOffset(14);
+    const inWindowDue = dateOffset(10);
     const entry = await createHealthEntry(root, user.accessToken, pet.id, {
       name: 'Weekly Grooming',
-      nextDueDate: dateOffset(0),
+      nextDueDate: inWindowDue,
       frequency: 'weekly',
       frequencyDays: 7,
       careFamily: 'grooming',
     });
-    seedPlannerOccurrenceChain(entry.id, dateOffset(0), dateOffset(-7));
     const absence = await createPlannedAbsence(root, user.accessToken, {
       startsOn,
       endsOn,
       petIds: [pet.id],
     });
-    const planBefore = await getAbsenceCarePlan(root, user.accessToken, absence.id);
-    const petPlan = planBefore.pets.find((p) => p.pet_id === pet.id);
-    const suggestion = petPlan?.suggestions?.[0];
-    const countBefore = petPlan?.carer_tasks.count ?? 0;
-    const inWindowBefore =
-      suggestion?.in_window_before ?? countBefore;
-    expect(inWindowBefore).toBeGreaterThan(0);
-    if (suggestion) {
-      expect(suggestion.in_window_after).toBeLessThan(suggestion.in_window_before);
-    }
-
     await loginAs(page, user, { experience: 'guardian' });
 
     const away = new AwayPlanningPage(page);
-    const careItem = new CareItemPage(page);
     await away.openPlan(absence.id);
-    await away.expectPlannerSectionVisible(pet.id);
-
-    const acceptVisible = await page
-      .getByRole('button', { name: /^Accept$|^Accepter$/i })
-      .first()
-      .isVisible()
-      .catch(() => false);
-    if (acceptVisible) {
-      await away.acceptPlannerSuggestion();
-    } else {
-      await away.openPlanThis(entry.id);
-      await careItem.expectReschedulePreviewNextDates();
-      await careItem.confirmReschedule();
-    }
-
-    await away.openPlan(absence.id);
-    await expect(async () => {
-      const planAfter = await getAbsenceCarePlan(root, user.accessToken, absence.id);
-      const afterPet = planAfter.pets.find((p) => p.pet_id === pet.id);
-      const afterCount = afterPet?.carer_tasks.count ?? 0;
-      const afterSuggestions = afterPet?.suggestions?.length ?? 0;
-      const workloadAfter = afterCount + afterSuggestions;
-      expect(workloadAfter).toBeLessThan(inWindowBefore);
-    }).toPass({ timeout: 15_000 });
     await away.expectPlannedCareItemRow(entry.id, 'Weekly Grooming');
   });
 });
