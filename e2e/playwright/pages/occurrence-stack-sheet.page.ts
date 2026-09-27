@@ -33,8 +33,12 @@ export class OccurrenceStackSheetPage {
 
   async recordLatestDose(): Promise<void> {
     await this.page.getByRole('button', { name: /Record latest dose/i }).click();
-    await this.page.getByRole('button', { name: /Mark Completed/i }).click();
-    await refreshFlutterAccessibility(this.page);
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page.getByRole('button', { name: /Record latest dose/i }),
+      ).toHaveCount(0);
+    }).toPass({ timeout: 30_000 });
   }
 
   async dismiss(): Promise<void> {
