@@ -41,6 +41,7 @@ Each product area has a one-screen index under `docs/domains/<domain>/` with jou
 | Weight tracking | [/docs/domains/weight_tracking/README.md](/docs/domains/weight_tracking/README.md) | Weight history and charts |
 | Veterinarians | [/docs/domains/vet/README.md](/docs/domains/vet/README.md) | Vet contacts and pet links |
 | Sharing | [/docs/domains/sharing/README.md](/docs/domains/sharing/README.md) | Share links and collaborators |
+| People | [/docs/domains/people/README.md](/docs/domains/people/README.md) | People directory, households, absence access (spec agreed, not implemented) |
 | Notifications | [/docs/domains/notifications/README.md](/docs/domains/notifications/README.md) | In-app notification feed |
 | Shelter | [/docs/domains/shelter/README.md](/docs/domains/shelter/README.md) | Shelter identity, permissions, privacy, custody model |
 | Fostering | [/docs/domains/fostering/README.md](/docs/domains/fostering/README.md) | Placements, adoption, custody transfers |

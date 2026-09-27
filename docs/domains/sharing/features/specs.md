@@ -76,4 +76,5 @@ Viewer matrix:
 
 - `PetViewerRole.guardian` → `petParent` rename (viewer enum only)
 - Audit logging extension for share routes — see [changes/deferred.md](../changes/deferred.md)
+- Households, capability-based access labels, and access limited to an absence: [People & Care Team spec](/docs/domains/people/features/people-care-team.md) (agreed, not implemented)
 - PR2 (done): `shareLinkService.js` / `shareLinkQueries.js` + extended `shareAccessService` / `shareAccessQueries`; routes are thin HTTP layers. Link creation returns **403** (not 404) when `userCanSharePet` fails — aligned with access routes.
