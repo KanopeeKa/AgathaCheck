@@ -211,7 +211,7 @@ migration, not find-and-replace**. Each string gets the word that fits its sente
 |---|---|
 | A single dated instance of a recurring item | *"this one"* / *"this date"* / the date itself |
 | The list of instances on Care Item detail | **`Dates`** |
-| A skipped/missed instance | *"skipped"* / *"missed"* |
+| A skipped/missed instance | *"skipped"* / *"missed"* (pending: [D-CIE-002](/docs/domains/pet_care/features/care-item-evolution.md#decisions) retires "missed" in favour of "overdue" once that spec is accepted) |
 | A completed instance | *"done"* |
 
 Blind replacement produces sentences like "Delete this dates". Child F owns this; every changed

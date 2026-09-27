@@ -11,7 +11,7 @@ related_bdd: []
 
 # Care Item evolution — functional spec
 
-**Status:** draft, 2026-09-27. Product answers and review adjustments were agreed in chat on 2026-09-27. Decisions marked *Proposed* and the items under **Still open** need confirmation. **Nothing is implemented yet.** Implementation planning comes later.
+**Status:** draft, 2026-09-27. Product answers were given in chat on 2026-09-27, then refined by two external reviews. *Proposed* decisions and the items under **Still open** need confirmation. **Nothing is implemented yet.** Implementation planning comes later.
 
 **Depends on:** the People & Care Team spec (`docs/domains/people/features/people-care-team.md`, decisions D1–D23). It is on branch `claude/friendly-hopper-la0gx7` until it merges. "People Dn" below refers to it.
 
@@ -25,7 +25,7 @@ The Care Item becomes the place where a pet parent sees and acts on one part of 
 | Occurrence | One scheduled or performed instance | `health_occurrences`, plus the `care_schedule_events` ledger |
 | Contact | A person or organisation involved in care | People spec (replaces `vets`) |
 | Absence | A period when normal care arrangements change | `planned_absences` |
-| Absence resolution | What the user decided for one care item during one absence | New |
+| Absence resolution | What someone decided for one care item during one absence | New |
 
 Four principles:
 
@@ -34,32 +34,45 @@ Four principles:
 3. **Calm by default.** Status answers "when?". Priority answers "how important?". The two signals never mix.
 4. **Quick to complete, rich if wanted.** Marking care done never requires details, but it never guesses a date that changes the schedule.
 
+## How this spec relates to other documents
+
+| Document | Owns | Where it overlaps with this spec |
+|---|---|---|
+| [care-item-model-delivery-plan.md](/docs/domains/pet_care/changes/care-item-model-delivery-plan.md) | The pet profile's care section, the All care list, shared temporal grouping (Child A), the four presentation roles (Child B), global navigation strings (D38) | Its hard rule stands: no new care item entity. This spec adds fields and one new record (absence resolutions). **This spec wins** for Care Item detail, completion and absences. **The delivery plan wins** for list surfaces and global strings. Its §4.3 "missed" wording is replaced by D-CIE-002 once this spec is accepted |
+| [care-schedule-management.md](/docs/domains/pet_care/features/care-schedule-management.md) | Timing: recurrence, rollover, reschedule, pause, projection, flexibility | This spec presents CSM facts. It changes no calculation except the timezone (D-CIE-005) |
+| [away-planning-decisions.md](/docs/domains/pet_care/changes/away-planning-decisions.md), [away-care-planning-decisions.md](/docs/domains/pet_care/changes/away-care-planning-decisions.md) | Frozen Away Planning and Away Care Planning rules | D-AWAY-003 carries a pending amendment for D-CIE-012. Everything else stands |
+| People & Care Team spec | Contacts, households, access tiers, "looked after by", performed by | This spec consumes those concepts. It doesn't redefine them |
+
+This spec takes precedence only once it is accepted. Until then, frozen decisions stand as written.
+
 ## Decisions
 
 | # | Decision | Status | Consequence |
 |---|---|---|---|
 | D-CIE-001 | "Occurrence" is an internal word | Agreed | The View never says "Current occurrence". Status and date speak for themselves: "Overdue · 11 Sep 2026" |
 | D-CIE-002 | One word for late, unresolved care: **Overdue** | Agreed | "Missed" leaves the UI. Stored statuses stay `pending` / `completed` / `skipped`. There is no `cancelled` |
-| D-CIE-003 | Timed care: Coming up until its time, Due until the next dose that day or the end of the day, then Overdue | *Proposed* | Replaces the chat answer "Due until the planned time, then Overdue". See Still open |
+| D-CIE-003 | Timed care is Due on its day until its time, then Overdue. Each dose on its own | Agreed | The same instant as today's rule, on both client and server. Only the word changes |
 | D-CIE-004 | Status describes the schedule and what has been logged, not medical safety | Agreed | No wording implies that a late dose is safe or unsafe |
-| D-CIE-005 | Care uses the pet's home timezone | Agreed | Occurrences, reminders, absence boundaries, "today" and status changes all use one timezone |
-| D-CIE-006 | Overdue looks the same at every priority | Agreed | A small Overdue pill. Priority only changes ordering. Overdue items of every priority are listed and counted in Actions |
+| D-CIE-005 | Care uses the pet's home timezone | Agreed (direction) | Occurrences, reminders, absence boundaries, "today" and status changes all use one timezone. Storage is Still open item 3. It ships as its own phase (A1) |
+| D-CIE-006 | Overdue looks the same at every priority | Agreed | A small Overdue pill. Priority only orders items within a group. Overdue items of every priority are listed and counted in Actions |
 | D-CIE-007 | Reminders never change status | Agreed | "Remind me 7 days before" doesn't make care Due |
 | D-CIE-008 | The attention area can hold several occurrences | Agreed | Twice-daily care shows today's doses, each with its own status and action |
 | D-CIE-009 | Completing overdue care asks when it was done | Agreed | A correctness rule. For "after completion" schedules, that date sets every following date |
 | D-CIE-010 | History lists resolved past occurrences | Agreed | Completed and skipped. An unresolved overdue occurrence stays in the attention area only |
 | D-CIE-011 | Three text scopes: Instructions, Notes, Absence note | Agreed | No separate "default carer instructions" field. Instructions serve that purpose |
-| D-CIE-012 | Absence handling is resolved per care item, per absence | Agreed | Amends D-AWAY-003 ("per-item assignment is out of scope") |
+| D-CIE-012 | Absence handling is resolved per care item, per absence | Agreed | Amends D-AWAY-003 (a pending amendment is recorded there) |
 | D-CIE-013 | Store the resolution, work out the status | Agreed | No stored "plan needed", "confirmed" or "needs review" |
 | D-CIE-014 | No permanent carer on a care item | Agreed | The pet's carer on the absence is the suggested "who". One occurrence can name someone else (People D10) |
 | D-CIE-015 | Schedule flexibility stays worked out, not stored | Agreed | D-ACP-006 unchanged. A per-item override stays deferred |
 | D-CIE-016 | A provider is a contact, or a typed name for now | *Proposed* | Typed names have limits (see Providers). Contacts remain the normal path |
 | D-CIE-017 | Occurrence actions and care item actions live in separate menus | *Proposed* | Makes "this time only" vs "the schedule" visible in the layout |
-| D-CIE-018 | Lifecycle: Active, Paused, Finished, Archived, Deleted | Agreed | "Close event" and "Reopen event" are retired. A resume date waits on Still open item 2 |
+| D-CIE-018 | Lifecycle: Active, Paused, Finished, Archived, Deleted | Agreed | "Close event" and "Reopen event" are retired. The Pause UI waits on Still open item 1 |
 | D-CIE-019 | Category fields are built from shared blocks | Agreed | Categories choose blocks. Route or method is optional where useful |
 | D-CIE-020 | Historical facts don't change when defaults change | Agreed | Occurrences keep the provider, dose and people recorded at the time |
 | D-CIE-021 | Reminder delivery is a separate track | Agreed | It can start early and doesn't block the redesign |
 | D-CIE-022 | Out of scope: cost, vaccination courses, stock and refills | Agreed | See Out of scope |
+| D-CIE-023 | Lists and detail use the same per-dose status | *Proposed* | A list row's group and status line come from its most urgent open occurrence, not from the item's next due day |
+| D-CIE-024 | "Nothing needed" on Essential care asks once | *Proposed* | A factual confirmation, not a warning. No note is required |
 
 ## Where we start
 
@@ -68,13 +81,14 @@ Much of the target behaviour exists. This table maps each area to what is live.
 | Area | Today | Type |
 |---|---|---|
 | Care item and occurrence | `health_entries`, `health_occurrences`, `care_schedule_events` (CSM v1) | Preserve |
-| Occurrence status | Stored `pending` / `completed` / `skipped`. The detail screen groups open ones as Missed, Due today and Coming up. The event list, away plan and notifications say Overdue | UX change, plus a new timed rule (D-CIE-003) |
+| Occurrence status | Stored `pending` / `completed` / `skipped`. A timed dose is late one minute after its time (`isOccurrenceMissed`, client and server). The detail screen groups open ones as Missed, Due today and Coming up. The event list, away plan and notifications say Overdue | Preserve the rule. Change the word |
+| Lists vs detail | The shared grouping service (`CareTemporalGroupingService`) puts list rows in groups by the item's next due **day**. The detail screen uses each dose's **time**. A dose past its time shows as "today" in lists but as late on the detail screen | Behaviour change (D-CIE-023) |
 | "Today" | Occurrence status uses the device's calendar. The away plan and notifications use the server's calendar day. No timezone is stored | New rule (D-CIE-005) |
 | Plain-language schedule | "Every year", "Every 30 days" (`formatRecurrenceSummary`). The schedule type isn't in the summary | UX change |
 | Schedule type explained | Toggle with an info sheet and a worked example | Preserve, with a copy fix (Schedule section) |
 | One-off change vs schedule change | Change date moves one occurrence; changing the cadence is separate (D-CSM-006, D-ACP-007) | Preserve |
 | Several overdue occurrences | Triage sheet, "Skip all missed", "skip earlier missed doses" when completing | Preserve, reworded |
-| Completion | "Mark Completed" opens a sheet with a date and a note. Weight care opens the weight sheet. Vet visits then offer a health-issue link | UX change (D-CIE-009) |
+| Completion | Every completion opens a sheet with a date and a note. Weight care opens the weight sheet. Vet visits then offer a health-issue link | Behaviour change (Completing care) |
 | Moves around an absence | "Suggested by Agatha", the change-date sheet with gap, preview and caution warnings, undo | Preserve |
 | Flexibility | Worked out per item: fixed, earlier only, carer task, flexible, with a maximum shift (D-ACP-006) | Preserve |
 | Absence notes | A note for the whole trip, and a note per pet per trip | Preserve. Per-item resolutions are new |
@@ -87,7 +101,7 @@ Much of the target behaviour exists. This table maps each area to what is live.
 | Future occurrences | Never pre-generated (D-CSM-004, D-ACP-010) | Preserve |
 | Reminders | One reminder N days before, plus one overdue notice. In-app only, created when the app checks, calendar days only | Separate track (D-CIE-021) |
 
-Phase 0 (a regression baseline) mostly exists: the CSM projection corpus and integration gate (CSM-17), and the Away Care Planning tests. New tests are needed only where status, timezone and completion change.
+Phase 0 (a regression baseline) mostly exists: the CSM projection corpus and integration gate (CSM-17), the grouping agreement tests, and the Away Care Planning tests. New tests are needed where list grouping, timezone and completion change.
 
 ## Domain model
 
@@ -119,20 +133,28 @@ Each arrow points from a concept to the one it refers to. Recording an absence c
 
 | Shown as | Date-only care | Timed care | Stored as |
 |---|---|---|---|
-| Coming up | Before the scheduled day | Before the scheduled time | `pending` |
-| Due | On the scheduled day | From the scheduled time until the next dose of the same care that day, or the end of the day | `pending` |
-| Overdue | From the next day | Once the next dose that day begins, or the day ends | `pending` |
+| Coming up | Before the scheduled day | Before the scheduled day | `pending` |
+| Due | On the scheduled day | On the scheduled day, until the scheduled time | `pending` |
+| Overdue | From the next day | Once the scheduled time has passed | `pending` |
 | Completed | — | — | `completed` |
 | Skipped | — | — | `skipped` |
 
 ### Rules
 
 - **A person's action wins.** Care done late is Completed, not "Overdue and completed". History still shows both dates: "Done 15 Sep · due 11 Sep".
-- **One timed dose a day** stays Due for the rest of that day.
-- **Several doses a day:** each dose has its own status. At 17:50 the 08:00 dose is still Due. At 18:00 it becomes Overdue and the 18:00 dose is Due. Completing a dose still offers to skip earlier overdue doses (Preserve).
+- **Each dose on its own (D-CIE-003).** With doses at 08:00 and 18:00, at 12:00 the 08:00 dose is Overdue and the 18:00 dose is Due. Completing a dose still offers to skip earlier overdue doses (Preserve).
 - **Not a safety statement (D-CIE-004).** Due and Overdue describe the schedule and what has been logged. They never say whether a late dose is safe. A future completion window, set by the pet parent or their vet, could replace these defaults for one item.
-- **Reminders don't change status (D-CIE-007).**
-- **Timezone (D-CIE-005):** every "today", status change, reminder and absence boundary uses the pet's home timezone, not the device's. When the device is somewhere else, times show the zone: "18:00 · Paris time". How the home timezone is set and stored is an implementation decision. It also answers the People spec's open timezone question (see Still open).
+- **Reminders don't change status (D-CIE-007).** The reminder window still decides when coming-up care appears in lists (Preserve). It never makes that care Due.
+- **Timezone (D-CIE-005):** every "today", status change, reminder and absence boundary uses the pet's home timezone, not the device's. When the device is somewhere else, times show the zone: "18:00 · Paris time". Until phase A1 ships, today's behaviour stays: the device's calendar for occurrences, the server's for the away plan and notifications.
+- **Rejected alternative:** "Due until the next dose or the end of the day, then Overdue". It was gentler for a single evening dose. It was dropped because it changes today's rule on client and server, and makes an 08:00 dose look on time until 18:00.
+
+### Lists and detail agree (D-CIE-023)
+
+- Lists keep one row per care item (Preserve).
+- The row's group and status line come from the item's **most urgent open occurrence**: Overdue first (the most recent), then Due, then Coming up. When several doses are open, the status line adds a count: "Overdue · 08:00 · 2 open".
+- Tapping Done on a row with more than one open dose opens the triage sheet, as today.
+- The shared grouping service must use the per-occurrence rule above for all three groups. The agreement tests (profile, All care, dashboard) gain a case for a timed dose past its time.
+- Within a group, items are ordered by priority (Essential, Recommended, Optional), then by date (D-CIE-006).
 
 ## Care item view
 
@@ -146,6 +168,8 @@ Each arrow points from a concept to the one it refers to. Recording an absence c
 6. **Details**
 7. **History**
 
+Sections use the care-item-model plan's shared presentation roles (Attention, Action, Insight, Destination) rather than new card styles.
+
 ### Needs attention
 
 The area at the top holds what needs doing now. For most items that's one occurrence.
@@ -153,9 +177,9 @@ The area at the top holds what needs doing now. For most items that's one occurr
 | Situation | Shows | Actions |
 |---|---|---|
 | Coming up | "Coming up · 6 Oct · in 9 days" | Mark as done, Change date |
-| Due | "Due today" or "Due · 08:00" | Mark as done, Change date |
+| Due | "Due today" or "Due today · 18:00" | Mark as done, Change date |
 | Overdue | "Overdue · 11 Sep 2026 · 16 days ago" | Mark as done, Change date |
-| Several doses today | A **Today** list: "08:00 · Completed ✓", "18:00 · Due" | "Mark 18:00 as done" for the most recent open dose; each row has its own action |
+| Several doses today | A **Today** list: "08:00 · Overdue", "18:00 · Due" | "Mark 08:00 as done" on the most recent late dose; each row has its own action |
 | Several overdue days | "3 overdue · most recent 11 Sep" | Mark as done (most recent), Review. "Skip all overdue" is inside Review |
 | Looked after by someone | "Looked after by Jamie" on the occurrence | — |
 | One-off record | "Recorded · 12 Sep 2026" | Add details |
@@ -163,7 +187,7 @@ The area at the top holds what needs doing now. For most items that's one occurr
 | Paused | "Paused since 1 Sep" | Resume |
 | Archived | "Archived", muted | Restore |
 
-- The leading occurrence is the most recent open one that is Due or Overdue. Without one, it's the next occurrence coming up. This matches today's "mark latest" rule.
+- The leading occurrence is the most recent Overdue one. Without one, it's the earliest Due one, then the next one coming up. This matches today's "mark latest" rule.
 - The Overdue pill is small, red and the same for every priority (D-CIE-006). Coming up is always neutral.
 - **Menus (D-CIE-017):**
   - The occurrence menu (in this area) has Skip, Add note, Looked after by and View details. Change date is a visible button.
@@ -210,6 +234,7 @@ The Change date sheet already previews what follows a move (R-C3).
   - both people when they differ (People D15), e.g. "Given by Jamie · logged by Alex"
 - A row opens that occurrence's record, which can be edited.
 - An unresolved overdue occurrence never appears here.
+- Removing the header history icon changes nothing else: "See full history", the pet's timeline and Health & history links stay.
 
 ### Access levels
 
@@ -236,6 +261,8 @@ People tiers decide what each person sees.
 
 ## Completing care
 
+**This is a behaviour change.** Today every completion opens a sheet. This spec makes Coming up and Due care one tap, and gives Overdue care fixed date choices.
+
 | Situation | Mark as done | Then |
 |---|---|---|
 | Coming up or Due | Done today, straight away | "Done · Add details · Undo" |
@@ -253,6 +280,8 @@ People tiers decide what each person sees.
 - **Next date from the vet:** after completing, "Next: 11 Sep 2027 · Change".
   - A date within one interval is a normal Change date.
   - A longer one, such as a 3-year rabies booster, asks "Change the interval from now on?" and changes the cadence. A single move can't go past where the next one would have been (D-ACP-009).
+- **Immediate feedback:** the item leaves Needs attention straight away and settles when the server confirms. This is the same rule the lists follow (care-item-model plan §6.5).
+- **If saving fails,** the item returns to its previous state with a short message. Nothing is half-saved.
 - Undo works as today.
 
 ## Absences
@@ -279,9 +308,11 @@ A resolution is stored only when someone makes a decision for one care item and 
 | Documents | Optional. They join the absence's handover scope (People D7) |
 | Dates decided for | The item's dates inside the absence when the decision was made. Used to notice changes |
 
-- **Keep the date** covers both "Jamie will do it" and "the vet does it at the booked appointment".
+- **Keep the date** covers a person doing it and an appointment the provider handles. The copy depends on who (see below).
 - **Move before** and **Move after** open the existing Change date sheet, with its gap, preview and caution warnings (R-C2–R-C4, R-C8). The resolution is saved when the move is confirmed. Moves apply to the open occurrence only: planned and estimated dates can't be moved in advance (D-ACP-010).
 - **Nothing needed** records that the person decided it can wait or doesn't apply this time.
+  - For Essential care, choosing it asks once (D-CIE-024): "Buddy's heart tablets won't be given between 3 and 10 Oct. Keep this decision?" The wording states the fact, without warning or blame. No note is required.
+- **Saving is all or nothing.** If a resolution fails to save, the previous state stays and a short message says so.
 
 ### What is worked out when read
 
@@ -289,14 +320,25 @@ A resolution is stored only when someone makes a decision for one care item and 
 |---|---|---|
 | Nothing due | The pet has an upcoming absence, but this item isn't affected | "Away 3–10 Oct · nothing due while you're away" |
 | Not reviewed yet | Affected, with no resolution | "Due 6 Oct, while you're away · Not reviewed yet", with a suggested "Keep the date · Jamie" |
-| Resolved | A resolution exists and still matches the facts | "Jamie will handle this on 6 Oct" · "Moved to 2 Oct, before you leave" · "Nothing needed this time" |
+| Resolved | A resolution exists and still matches the facts | See the copy table below |
 | Needs review | A resolution exists, but a fact changed | "Jamie can no longer see Buddy's plan. Choose someone else?" · "This moved to 8 Oct since you reviewed it." |
+
+Copy for Resolved:
+
+| Decision | Looked after by | Copy |
+|---|---|---|
+| Keep the date | A person | "Jamie will handle this on 6 Oct" |
+| Keep the date | Nobody named, provider set | "At Greenhill Veterinary Clinic on 6 Oct" |
+| Keep the date | Nobody named, no provider | "Kept on 6 Oct" |
+| Move before | — | "Moved to 2 Oct, before you leave" |
+| Move after | — | "Moved to 12 Oct, after you're back" |
+| Nothing needed | — | "Nothing needed this time" |
 
 "Needs review" appears when:
 
 - the named person is no longer available (People D18)
 - the item's dates inside the absence differ from the dates decided for (a move, a schedule change, or the absence changing once editing ships)
-- the decision was Move before or Move after, but a date is still inside the absence, for example because the move was undone
+- the decision was Move before or Move after, but a date is still inside the absence. **Undoing the move always triggers this**
 
 Rules:
 
@@ -304,6 +346,7 @@ Rules:
 - Saving an absence never requires resolutions (D-AWAY-010 unchanged).
 - Resolved items no longer count as "items to review" in the absence's care coverage. Care coverage stays a worked-out fact (D-AWAY-002).
 - One occurrence can still name a different person (People D10). That overrides the resolution for that day only.
+- **Carers without app access** (today's `note_only`, later a contact with no account) can be named. They get no reminders and no access, and keep the existing "No AgathaTrack access" copy (D-AWAY-004).
 
 ### Suggestions and moves
 
@@ -328,8 +371,8 @@ Rules:
 
 | Decision | Change |
 |---|---|
-| D-AWAY-003 | Amended: per-item resolutions are in scope. The carer per pet stays, and is the suggested "who" |
-| D-AWAY-001, D-AWAY-002, D-AWAY-010 | Unchanged: no stored status, facts not verdicts, saving never needs a complete plan |
+| D-AWAY-003 | Amended (pending note recorded in the decisions doc): per-item resolutions are in scope. The carer per pet stays, and is the suggested "who" |
+| D-AWAY-001, D-AWAY-002, D-AWAY-004, D-AWAY-010 | Unchanged: no stored status, facts not verdicts, no access for note-only carers, saving never needs a complete plan |
 | People D10 | "Absence plan" now includes per-item resolutions |
 
 ## Providers
@@ -338,12 +381,14 @@ Rules:
 - **The normal path is a contact.** The picker lists contacts whose role fits the care: vet roles for care at the vet, groomers for grooming. It also offers "Show everyone" and "Add new". Adding a contact needs only a name.
 - **A typed name is allowed for now (D-CIE-016).** A typed name:
   - displays like a contact
+  - never sits alongside contacts in a picker as an equal choice
   - has no phone or email, doesn't appear in a contact's Related care, and can't be chosen as a carer
   - offers "Save as contact"
   - when People ships, is offered for linking to a contact, never merged automatically
+- Every surface that shows a provider handles both kinds the same way. A provider is always either a contact or a typed name, and always has a display name.
 - Before People ships, care at the vet can prefill the pet's vet from the Veterinary team.
 - The provider used on an occurrence defaults to the item's provider, and is kept as recorded (D-CIE-020).
-- The UI label stays **Where** (*Proposed*; see Still open).
+- The UI label stays **Where**, with the provider on the same row (*Proposed*; the Cursor review agrees). `care_setting` stays the internal name.
 
 ## Instructions, notes and documents (D-CIE-011)
 
@@ -383,7 +428,7 @@ Categories choose from five shared blocks. Every block field is optional, and co
 | Other care | Common only | — |
 
 - The View shows only fields with a value.
-- Changing category keeps the common fields. Block fields that no longer apply are removed on save, after a confirmation.
+- Changing category keeps the common fields. The care item's block fields that no longer apply are removed on save, after a confirmation. Values already recorded on past occurrences stay (D-CIE-020).
 - Delivery order: Medication, Measurement and Vaccination first; then Parasite prevention, Wellness review and Dental care; then Grooming and Nail care.
 
 ## Lifecycle (D-CIE-018)
@@ -398,7 +443,8 @@ Categories choose from five shared blocks. Every block field is optional, and co
 
 - Paused items leave Actions. The away plan shows them as "Paused" (R-A9).
 - **Resume today (Preserve):** resuming never adds the dates that fell during the pause (D-CSM-005). The open occurrence keeps its date. An item paused past its due date therefore comes back Overdue, with one occurrence.
-- **"Resume on" date:** waits on Still open item 2.
+- **The Pause UI doesn't ship until Still open item 1 is decided.** That means either accepting today's resume behaviour as the product rule, or choosing resume rules per schedule type.
+- Renaming Close to Archive changes the FR strings and the BDD steps that say "Close event" in the same change.
 
 ## Edit
 
@@ -420,12 +466,12 @@ Create and Edit use the same form. The category sets defaults for where, priorit
 
 Today reminders appear only inside the app, only when the app checks, and only by calendar day. The separate track covers, in order:
 
-1. Delivery outside the app (push or email).
-2. Reminders at the time of timed care.
+1. Delivery outside the app (push or email). This can start at any time.
+2. Reminders at the time of timed care. This needs the pet's home timezone (phase A1).
 3. A follow-up when care isn't done.
 4. More than one reminder per item.
 
-Reminders use the pet's home timezone (D-CIE-005). Who gets them follows People D21.
+Who gets reminders follows People D21.
 
 ## Vocabulary (EN / FR)
 
@@ -463,20 +509,42 @@ New FR wording is proposed and needs the FR copy pass.
 - **History:** 11 Sep 2026 appears only in Needs attention.
 - **Web "No upcoming conflicts":** hide the section when the pet has no upcoming absence (Still open item 4).
 
+## Acceptance criteria
+
+- Given date-only care due 11 Sep, on 11 Sep it shows Due, and from 12 Sep it shows Overdue.
+- Given a dose at 08:00, at 07:59 it shows Due, and at 08:01 it shows Overdue, on the detail screen and in every list.
+- Given doses at 08:00 and 18:00, at 12:00 detail shows 08:00 Overdue and 18:00 Due, and the list row shows "Overdue · 08:00 · 2 open".
+- Given overdue Essential and Optional items, both show the same Overdue pill, and Essential is listed first within the group.
+- Given Due care, one tap on Mark as done records today and offers Undo.
+- Given "after completion" care due 11 Sep and still open on 27 Sep, choosing "On the scheduled date" makes the next date count from 11 Sep.
+- Given a pending overdue occurrence, History never lists it.
+- Given someone with Can log care, the View shows no Notes, Edit, Change date, Pause, Archive or Delete.
+- Given an item with a date inside an absence and no resolution, the Care Item and the away plan both show "Not reviewed yet", and neither uses red.
+- Given a Move before resolution, undoing the move makes both the Care Item and the away plan show Needs review.
+- Given a resolution naming Jamie, when Jamie is no longer available, it shows Needs review.
+- Given Essential care, choosing Nothing needed asks once before saving.
+
+BDD scenarios are written once Still open items 1 and 3 are decided.
+
 ## Phasing
 
 Two streams run in parallel, then join.
 
 | Phase | Stream | Scope | Depends on |
 |---|---|---|---|
-| A. Rules | Care | Overdue everywhere, the timed rule, pet home timezone, priority ordering | — |
-| B. View and Edit | Care | Header, Needs attention (several occurrences), menus, schedule summary, Details, Instructions and Notes, History, Pause UI, access levels, web layout | A |
-| C. Completing care | Care | The "when was this done?" question, Add details, occurrence documents, next date from the vet | B |
+| A0. Words and agreement | Care | Overdue everywhere. Lists use the per-dose rule (D-CIE-023). Priority ordering within groups. No change to the lateness rule | — |
+| A1. Pet timezone | Care | A stored home timezone, its default, moving existing data. Every "today" and status change uses it | Still open item 3 |
+| B. View and Edit | Care | Header, Needs attention (several occurrences), menus, schedule summary, Details, Instructions and Notes, History, access levels, web layout, Close renamed to Archive. The Pause UI waits on Still open item 1 | A0 |
+| C. Completing care | Care | One tap for Due, the "when was this done?" question, Add details, occurrence documents, next date from the vet | B |
 | P1. People directory | People | People phase 1: contacts, provider foundations | — |
 | D. Providers and people | Join | Provider (typed names as an interim), provider used, performed by, names kept in history | C, P1 |
-| E. Absence resolutions | Join | Resolutions, worked-out states, the Care Item's Absence section, away-plan rows, handover PDF | B, and People phase 2 for carers from contacts. It can start with today's carers |
+| E0. Absence shown | Join | The Care Item's Absence section, read-only: affected dates and the pet's carer | B |
+| E. Absence resolutions | Join | Resolutions, worked-out states, away-plan rows, the handover PDF | C, A1, and People phase 2 for carers from contacts. It can start with today's carers |
 | F. Category blocks | Care | In the order above | C |
-| R. Reminders | Own track | Delivery, at-time reminders, follow-ups, several reminders | Can start any time; blocks nothing |
+| R. Reminders | Own track | Delivery first. At-time reminders after A1. Then follow-ups and several reminders | Delivery blocks nothing |
+
+- **E comes after C** so the "when was this done?" rule is in place before carers complete care during absences.
+- **E needs A1** because an absence's boundaries use the pet's home timezone.
 
 ## Out of scope
 
@@ -491,19 +559,26 @@ Two streams run in parallel, then join.
 
 ## Still open
 
-- [ ] **1. Timed rule.** D-CIE-003 comes from the review, and reverses the chat answer "Due until the planned time, then Overdue". Under the chat answer, 08:00 medication is Overdue from 08:01; under D-CIE-003, it stays Due until 18:00 or the end of the day. Confirm which.
-- [ ] **2. Resume on a date.** Today, the open occurrence keeps its date, so the item can come back Overdue. The alternatives:
+- [ ] **1. Resume rules.** Today the open occurrence keeps its date, so the item can come back Overdue. Either accept that as the product rule, or choose:
   - Fixed schedule: the next scheduled date on or after the resume date.
   - After completion: due on the resume date, or one interval after it.
-- [ ] **3. A shortcut on the away plan.** A single, confirmed action: "Jamie handles the rest as scheduled". It would record Keep the date · Jamie for every item not yet reviewed for that pet.
-- [ ] **4. No upcoming absence.** Hide the Absence section (proposed), or show one quiet line?
-- [ ] **5. The "Where" label.** Keep "Where" (proposed), or rename it to "Care setting"?
-- [ ] **6. The pet's home timezone.** Where it's set (pet or household, defaulting from the owner's device). Confirm it also settles the People spec's timezone question for absence access.
+
+  This gates the Pause UI and any "resume on" date.
+- [ ] **2. A shortcut on the away plan.** A single, confirmed action: "Jamie handles the rest as scheduled". If adopted, it:
+  - only touches items **not yet reviewed**, for a pet that has a carer
+  - records Keep the date · that carer for each of them
+  - never moves a date
+  - shows how many items it covers before confirming
+  - can be undone as one action
+  - saves all or nothing
+- [ ] **3. The pet's home timezone.** Where it's set (pet or household, defaulting from the owner's device), and whether it also settles the People spec's timezone question for absence access. **Must be agreed before phase A1.**
+- [ ] **4. No upcoming absence.** Hide the Absence section (proposed, and the Cursor review agrees), or show one quiet line?
 
 ## Related
 
 | Kind | Link |
 |---|---|
+| Lists, profile, grouping, presentation roles | [care-item-model-delivery-plan.md](/docs/domains/pet_care/changes/care-item-model-delivery-plan.md) |
 | Scheduling (CSM) | [care-schedule-management.md](/docs/domains/pet_care/features/care-schedule-management.md) |
 | CSM decisions | [care-schedule-management-decisions.md](/docs/domains/pet_care/changes/care-schedule-management-decisions.md) |
 | Occurrences, zones, triage | [occurrence-scheduling.md](/docs/domains/health_tracking/changes/occurrence-scheduling.md) |

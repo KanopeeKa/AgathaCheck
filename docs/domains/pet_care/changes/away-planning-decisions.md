@@ -69,6 +69,8 @@ planned_absence_pets (additions)
 
 Per-pet, not per-care-item. "Luna → Sarah, Milo → Tom" is in scope; per-item assignment is Pet Sitting and out of scope.
 
+**Amendment pending (2026-09-27), [D-CIE-012](/docs/domains/pet_care/features/care-item-evolution.md#decisions):** the draft Care Item evolution spec brings **per-item absence resolutions** into scope. A resolution is one decision per care item per absence (keep the date, move before, move after, nothing needed), with an optional "looked after by" and a note. The per-pet carer on this table stays and becomes the suggested person. There is still no permanent carer on a care item. This amendment takes effect when `care-item-evolution.md` is accepted. Until then this decision stands as written.
+
 **Migration notes:** first CHECK constraints on this table (`planned_absences` has none on `status`/`provenance` today — deliberate tightening). `carer_user_id` uses `ON DELETE SET NULL`; read path treats `carer_kind = 'shared_user' AND carer_user_id IS NULL` as **"carer removed"**, never blank/crash.
 
 ---
