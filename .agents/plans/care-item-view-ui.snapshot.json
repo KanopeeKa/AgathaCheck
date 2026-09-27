@@ -78,7 +78,9 @@
       "exit_checklist": "default",
       "status": "in_progress",
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": true,
+      "pr_head_sha": "ad1a87b302815641e8fcf3889a6b15a0f7c3ce9c"
     },
     {
       "id": "schedule-absence",
@@ -183,5 +185,5 @@
       "status": "pending"
     }
   ],
-  "content_hash": "sha256:ad40e426733a9cc87b7bf5c71d133fd0a32797886b4cb4179ad1936e3309ddaf"
+  "content_hash": "sha256:5bfe85da34fce6f424c16a20ad3b31553c1314c6bde16f749dd36a0e8d981ffb"
 }

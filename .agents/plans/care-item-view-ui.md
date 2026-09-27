@@ -19,10 +19,10 @@ next_action: "continue phase needs-attention on branch cursor/care-item-view-ui-
 artifact_ref:
   branch: cursor/care-item-view-ui-needs-attention-7796
   plan_path: .agents/plans/care-item-view-ui.md
-  plan_commit: b6c3506515d32143ae5a4a95024a05468ceea0c8
+  plan_commit: ad1a87b302815641e8fcf3889a6b15a0f7c3ce9c
   snapshot_path: .agents/plans/care-item-view-ui.snapshot.json
-  snapshot_commit: b6c3506515d32143ae5a4a95024a05468ceea0c8
-open_prs: []
+  snapshot_commit: ad1a87b302815641e8fcf3889a6b15a0f7c3ce9c
+open_prs: [true]
 merge_commits: {}
 debt_issue_refs: []
 ```
