@@ -144,8 +144,9 @@ class _FakeCareContextRepository implements CareContextRepository {
   Future<void> recordHandoverDownload(String absenceId) async {}
 
   @override
-  Future<List<Map<String, dynamic>>> getPetPeopleRelationships(String petId) async =>
-      const [];
+  Future<List<Map<String, dynamic>>> getPetPeopleRelationships(
+    String petId,
+  ) async => const [];
 
   @override
   Future<PlannedAbsence> cancelPlannedAbsence(String absenceId) async {
@@ -240,7 +241,9 @@ void main() {
     expect(find.textContaining("Who's caring for Luna"), findsOneWidget);
     expect(find.text('Sarah M.'), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('away_plan_carer_contact_contact-1')));
+    await tester.tap(
+      find.byKey(const Key('away_plan_carer_contact_contact-1')),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('away_plan_carer_edit_save')));
@@ -262,7 +265,9 @@ void main() {
     await tester.tap(find.byKey(const Key('away_plan_carer_edit_pet-1')));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('away_plan_carer_contact_contact-1')));
+    await tester.tap(
+      find.byKey(const Key('away_plan_carer_contact_contact-1')),
+    );
     await tester.enterText(
       find.byKey(const Key('away_plan_carer_pet_note')),
       'Feeds twice daily',
@@ -293,7 +298,9 @@ void main() {
     final filled = tester.widget<FilledButton>(saveButton);
     expect(filled.onPressed, isNull);
 
-    await tester.tap(find.byKey(const Key('away_plan_carer_contact_contact-1')));
+    await tester.tap(
+      find.byKey(const Key('away_plan_carer_contact_contact-1')),
+    );
     await tester.pump();
 
     final filledEnabled = tester.widget<FilledButton>(saveButton);
@@ -355,7 +362,9 @@ void main() {
     await tester.tap(find.byKey(const Key('away_plan_carer_edit_pet-1')));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('away_plan_carer_contact_contact-1')));
+    await tester.tap(
+      find.byKey(const Key('away_plan_carer_contact_contact-1')),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('away_plan_carer_edit_save')));
