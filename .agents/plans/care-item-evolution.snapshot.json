@@ -155,10 +155,12 @@
       "spawn_allowed": false,
       "merge_mode": "auto",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "debt_issue_refs": [],
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1353",
+      "pr_head_sha": "1842a6c7"
     },
     {
       "id": "d-providers",
@@ -269,5 +271,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:2d151d7ccd4a7888e9c761809b2021b0d64201cfd59823dee9202adfbf2f5444"
+  "content_hash": "sha256:a070c08a61d2618384d1f8971a837ce236b70db3edb0ab2536628451507afb10"
 }

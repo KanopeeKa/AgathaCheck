@@ -27,16 +27,16 @@ Make [care-item-evolution.md](../../docs/domains/pet_care/features/care-item-evo
 
 ```yaml
 autonomy: active
-current_phase: c-completion
-last_completed_phase: b-view
+current_phase: d-providers
+last_completed_phase: c-completion
 halt_reason: null
-next_action: "continue phase c-completion on branch cursor/care-item-evolution-c-completion-7796"
+next_action: "start phase d-providers: checkout cursor/care-item-evolution-d-providers-7796"
 artifact_ref:
   branch: cursor/care-item-evolution-integration-7796
   plan_path: .agents/plans/care-item-evolution.md
-  plan_commit: 2c935e30b61509240f6d68fa569787dd4aee51c3
+  plan_commit: 1842a6c74600671ab32c49d785a4cf97e4bdc96f
   snapshot_path: .agents/plans/care-item-evolution.snapshot.json
-  snapshot_commit: 2c935e30b61509240f6d68fa569787dd4aee51c3
+  snapshot_commit: 1842a6c74600671ab32c49d785a4cf97e4bdc96f
 open_prs: []
 merge_commits: {"docs":"d977ebdecbe7f881a3e552122f055f265e9af755"}
 debt_issue_refs: []
