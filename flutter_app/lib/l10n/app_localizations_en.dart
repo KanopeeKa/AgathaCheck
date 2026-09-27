@@ -6686,4 +6686,49 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get petTagsCreateInSettings =>
       'Create tags in Settings before assigning them here.';
+
+  @override
+  String get peoplePageTitle => 'People';
+
+  @override
+  String get peopleTrustedCarersSection => 'Trusted carers';
+
+  @override
+  String get peopleProfessionalsSection => 'Pet professionals';
+
+  @override
+  String get peopleEmptyCarers => 'No trusted carers yet.';
+
+  @override
+  String get peopleEmptyProfessionals => 'No pet professionals yet.';
+
+  @override
+  String get peopleAddPerson => 'Add person';
+
+  @override
+  String get peopleKindLabel => 'Kind';
+
+  @override
+  String get peopleKindPerson => 'Person';
+
+  @override
+  String get peopleKindOrganisation => 'Organisation';
+
+  @override
+  String get peopleRoleSitter => 'Pet sitter';
+
+  @override
+  String get peopleRoleVet => 'Vet';
+
+  @override
+  String get peopleRoleGroomer => 'Groomer';
+
+  @override
+  String get peopleNameLabel => 'Name';
+
+  @override
+  String get peopleListLoadError => 'Could not load people. Try again.';
+
+  @override
+  String get accountPeopleRow => 'People';
 }

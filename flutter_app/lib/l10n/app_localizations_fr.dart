@@ -6794,4 +6794,50 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get petTagsCreateInSettings =>
       'Créez des étiquettes dans les paramètres avant de les assigner ici.';
+
+  @override
+  String get peoplePageTitle => 'Autour de vos animaux';
+
+  @override
+  String get peopleTrustedCarersSection => 'Proches & pet-sitters';
+
+  @override
+  String get peopleProfessionalsSection => 'Leurs pros';
+
+  @override
+  String get peopleEmptyCarers => 'Aucun proche pour l\'instant.';
+
+  @override
+  String get peopleEmptyProfessionals => 'Aucun professionnel pour l\'instant.';
+
+  @override
+  String get peopleAddPerson => 'Ajouter quelqu\'un';
+
+  @override
+  String get peopleKindLabel => 'Type';
+
+  @override
+  String get peopleKindPerson => 'Personne';
+
+  @override
+  String get peopleKindOrganisation => 'Établissement';
+
+  @override
+  String get peopleRoleSitter => 'Pet-sitting';
+
+  @override
+  String get peopleRoleVet => 'Vétérinaire';
+
+  @override
+  String get peopleRoleGroomer => 'Toilettage';
+
+  @override
+  String get peopleNameLabel => 'Nom';
+
+  @override
+  String get peopleListLoadError =>
+      'Impossible de charger les contacts. Réessayez.';
+
+  @override
+  String get accountPeopleRow => 'Autour de vos animaux';
 }
