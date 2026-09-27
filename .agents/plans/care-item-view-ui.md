@@ -1,25 +1,28 @@
----
-title: Care Item view UI relief (execute-plan)
-owner: Documentation Team
-audience: agent
-status: active
----
-
 # Care Item view UI relief
+
+**plan_id:** `care-item-view-ui`  
+**base_branch:** `cursor/care-item-view-ui-integration-7796`  
+**control_issue:** #1368
 
 ## Goal
 
-Give Care Item detail **module segmentation and visual hierarchy** (warm canvas, white module cards, hero Needs attention, stat schedule, definition-list details, history inset) per design review 2026-09-27 and agreed decisions (border-first modules, pet strip kept on mobile, minimal icons, absence callout when needs attention).
+Module-based Care Item detail UI (segmentation, hero Needs attention, stat schedule) per design review 2026-09-27. Atomic phase PRs → integration; one final PR to `main`.
 
-Phases merge to `cursor/care-item-view-ui-integration-7796`; one final PR to `main`.
+## Runtime
 
-## Autonomy
-
-| Field | Value |
-|-------|-------|
-| **approved_by** | user chat 2026-09-27: go ahead, atomic PRs on integration branch, execute-plan |
-| **default_merge_mode** | auto |
-
-## Phases
-
-See `.agents/plans/care-item-view-ui.snapshot.json`.
+```yaml
+autonomy: active
+current_phase: design
+last_completed_phase: null
+halt_reason: null
+next_action: "continue phase design on branch cursor/care-item-view-ui-design-7796"
+artifact_ref:
+  branch: cursor/care-item-view-ui-integration-7796
+  plan_path: .agents/plans/care-item-view-ui.md
+  plan_commit: 6017e55b0e7b6f4621c3d27d293a09966e50f669
+  snapshot_path: .agents/plans/care-item-view-ui.snapshot.json
+  snapshot_commit: 6017e55b0e7b6f4621c3d27d293a09966e50f669
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```
