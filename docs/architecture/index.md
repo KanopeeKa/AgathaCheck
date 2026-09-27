@@ -117,6 +117,14 @@ Product domains are documented under [/docs/domains/](/docs/domains/). Each row 
 | BDD | `sharing.feature` |
 | E2E | `sharing.spec.ts` |
 
+### People (planned, not implemented)
+
+| | Path |
+|---|------|
+| **Docs** | [/docs/domains/people/README.md](/docs/domains/people/README.md) |
+| Spec | [/docs/domains/people/features/people-care-team.md](/docs/domains/people/features/people-care-team.md) (D1–D28) |
+| Builds on | `server/lib/petAccess.js`, `server/routes/vets.js`, `server/routes/careContext/` |
+
 ### Notifications
 
 | | Path |

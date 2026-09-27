@@ -21,6 +21,10 @@ When this feature ships, the implementing PR must:
 
 Until then, don't change shipped strings ad hoc.
 
+**Wire values don't change.** The API, database and logs keep `co_parent` and `carer`. Only the UI labels change: Co-parent, Full access, Can log care. Don't rename the enums.
+
+**Absence carers keep "care team".** The Away Planning UI keeps *care team* / *équipe de soins* for the carers on an absence, as defined in [terminology.md](/docs/design/terminology.md) and [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md). Only the People page avoids that term.
+
 ## Principles
 
 1. **The group heading carries the relationship, and the row carries the role.** A row doesn't repeat what its heading already says.
@@ -34,7 +38,7 @@ Until then, don't change shipped strings ad hoc.
 
 | Concept | English | French | Notes |
 | --- | --- | --- | --- |
-| Page title and nav label | People | Autour de vos animaux | Not "care team". That term already means the carers on an absence |
+| Page title and nav label | People | Autour de vos animaux | Deliberately not parallel: the French is broader and warmer. Localisers must not "correct" either side. Not "care team", which already means the carers on an absence |
 | Household section (People page) | Household name, e.g. Morgan household | Household name, e.g. « Famille Morgan » | Every household is headed by its name, including when there's only one |
 | Carers section | Trusted carers | Proches & pet-sitters | Not "Proches & gardes": *garde* can mean a guard, a duty shift or custody |
 | Professionals section | Pet professionals | Leurs pros | |
@@ -111,7 +115,8 @@ A row reads as "Jamie Taylor · Pet-sitting · Buddy, Luna". It never reads "Pro
 | Concept | English | French | Notes |
 | --- | --- | --- | --- |
 | Current user | You | Vous | |
-| Organiser | Organiser | Gère le foyer | A verb phrase, e.g. "Vous · Gère le foyer". Avoids gendered *Organisateur/Organisatrice* and *Admin* |
+| Organiser | Organiser | Gère le foyer | The asymmetry is intentional. English uses a noun, which doesn't vary by gender. French uses a verb phrase ("Vous · Gère le foyer") because the data has no gender to choose between *Organisateur* and *Organisatrice*. It also avoids *Admin*. Access levels stay capability nouns in both languages |
+| Co-parent | Co-parent | Co-parent | A direct share that can also share onward (spec D26). Uses the shipped `coParent` label |
 | Full access | Full access | Accès complet | |
 | Can log care | Can log care | Peut enregistrer les soins | |
 | No app access | No app access | Aucun accès à l'application | |
@@ -139,7 +144,8 @@ Avoid the word "contact" in consumer-facing navigation. "Contact" is a domain te
 | --- | --- | --- |
 | Add a person | Add person | Ajouter quelqu'un |
 | Add an organisation | Add organisation | Ajouter un établissement |
-| Detail screen | Person details | Informations |
+| Detail screen title | The person's or organisation's name | The person's or organisation's name |
+| Detail screen, accessibility label only | Person details | Détails de la personne |
 | Phone, email, address | Contact information | Coordonnées |
 | Search | Search people | Rechercher |
 | Related pets | Related pets | Animaux concernés |
@@ -165,7 +171,7 @@ Avoid the word "contact" in consumer-facing navigation. "Contact" is a domain te
 
 | Concept | English | French | Notes |
 | --- | --- | --- | --- |
-| Carer section heading | Who's caring | Qui s'en occupe ? | Always shows an answer, e.g. "Qui s'en occupe ? — Jamie" |
+| Carer section heading | Who's caring | Qui s'en occupe | The canonical form always shows the answer: "Qui s'en occupe : Jamie". The question-mark version is for mockups only, never an empty state |
 | Choose a carer | Choose a carer | Choisir qui s'en occupe | |
 | Assigned carer | Assigned carer | Personne prévue | |
 | Instructions | Instructions for the carer | Consignes | |
