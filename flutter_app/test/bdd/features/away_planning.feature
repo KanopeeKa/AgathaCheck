@@ -39,8 +39,8 @@ Feature: Away Planning
     When I open the away plan for that absence
     Then I should see who is caring for each pet on the plan page
 
-  @P2
   @implemented
+  @P2
   Scenario: Guardian assigns a contact carer on the away plan page
     Given I am signed in as a guardian with a person contact saved
     And I have a saved planned absence for that pet

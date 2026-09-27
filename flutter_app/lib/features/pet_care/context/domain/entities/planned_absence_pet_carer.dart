@@ -31,6 +31,5 @@ class PlannedAbsencePetCarer {
 
   bool get hasCarer => carerState == 'set';
 
-  bool get isCarerUnavailable =>
-      carerState == 'unavailable' || carerRemoved;
+  bool get isCarerUnavailable => carerState == 'unavailable' || carerRemoved;
 }

@@ -11,8 +11,8 @@ class PlannedAbsenceModel {
       carerNote: json['carer_note'] as String?,
       contactId: json['contact_id'] as String?,
       carerState: _parseCarerState(json),
-      carerRemoved: json['carer_removed'] == true ||
-          json['carer_state'] == 'unavailable',
+      carerRemoved:
+          json['carer_removed'] == true || json['carer_state'] == 'unavailable',
       petNote: json['pet_note'] as String?,
     );
   }
