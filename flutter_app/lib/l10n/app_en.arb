@@ -2230,7 +2230,7 @@
       "count": { "type": "int" }
     }
   },
-  "occurrenceMissedCount": "{count} missed",
+  "occurrenceMissedCount": "{count} overdue",
   "@occurrenceMissedCount": {
     "placeholders": {
       "count": { "type": "int" }
@@ -2242,13 +2242,13 @@
       "name": { "type": "String" }
     }
   },
-  "occurrenceZoneMissed": "Missed",
+  "occurrenceZoneMissed": "Overdue",
   "occurrenceZoneDueToday": "Due today",
   "occurrenceZoneComingUp": "Coming up",
   "occurrenceRecordHead": "Record latest dose",
-  "occurrenceSkipEarlierMissed": "Skip earlier missed doses when recording",
+  "occurrenceSkipEarlierMissed": "Skip earlier overdue doses when recording",
   "occurrenceReviewEach": "Review in event view",
-  "occurrenceSkipAllMissed": "Skip all missed",
+  "occurrenceSkipAllMissed": "Skip all overdue",
   "occurrenceNotNow": "Not now",
   "completedEventSemanticLabel": "{name}, completed, for {petName}",
   "@completedEventSemanticLabel": {

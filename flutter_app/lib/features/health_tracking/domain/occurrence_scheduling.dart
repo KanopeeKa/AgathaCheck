@@ -57,6 +57,9 @@ class OccurrenceSummary {
   final int missedCount;
   final HealthOccurrence? missedHead;
   final HealthOccurrence? nextHead;
+
+  /// Worst open slot for list rows: overdue head, else next due/upcoming.
+  HealthOccurrence? get leadingOccurrence => missedHead ?? nextHead;
 }
 
 OccurrenceSummary summarizeOpenOccurrences(

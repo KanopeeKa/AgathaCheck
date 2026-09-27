@@ -6082,7 +6082,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String occurrenceMissedCount(int count) {
-    return '$count missed';
+    return '$count overdue';
   }
 
   @override
@@ -6091,7 +6091,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get occurrenceZoneMissed => 'Missed';
+  String get occurrenceZoneMissed => 'Overdue';
 
   @override
   String get occurrenceZoneDueToday => 'Due today';
@@ -6104,13 +6104,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get occurrenceSkipEarlierMissed =>
-      'Skip earlier missed doses when recording';
+      'Skip earlier overdue doses when recording';
 
   @override
   String get occurrenceReviewEach => 'Review in event view';
 
   @override
-  String get occurrenceSkipAllMissed => 'Skip all missed';
+  String get occurrenceSkipAllMissed => 'Skip all overdue';
 
   @override
   String get occurrenceNotNow => 'Not now';

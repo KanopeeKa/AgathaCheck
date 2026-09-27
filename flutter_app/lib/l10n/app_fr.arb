@@ -2159,7 +2159,7 @@
       "count": { "type": "int" }
     }
   },
-  "occurrenceMissedCount": "{count} manqués",
+  "occurrenceMissedCount": "{count} en retard",
   "@occurrenceMissedCount": {
     "placeholders": {
       "count": { "type": "int" }
@@ -2171,13 +2171,13 @@
       "name": { "type": "String" }
     }
   },
-  "occurrenceZoneMissed": "Manqués",
+  "occurrenceZoneMissed": "En retard",
   "occurrenceZoneDueToday": "Aujourd'hui",
   "occurrenceZoneComingUp": "À venir",
   "occurrenceRecordHead": "Enregistrer la dose la plus récente",
-  "occurrenceSkipEarlierMissed": "Ignorer les doses manquées antérieures lors de l'enregistrement",
+  "occurrenceSkipEarlierMissed": "Ignorer les doses en retard antérieures lors de l'enregistrement",
   "occurrenceReviewEach": "Voir dans l'événement",
-  "occurrenceSkipAllMissed": "Ignorer tous les manqués",
+  "occurrenceSkipAllMissed": "Ignorer tous les retards",
   "occurrenceNotNow": "Pas maintenant",
   "completedEventSemanticLabel": "{name}, terminé, pour {petName}",
   "@completedEventSemanticLabel": {
