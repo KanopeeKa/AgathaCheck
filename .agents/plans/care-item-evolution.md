@@ -34,9 +34,9 @@ next_action: "start phase a1-timezone: checkout cursor/care-item-evolution-a1-ti
 artifact_ref:
   branch: cursor/care-item-evolution-integration-7796
   plan_path: .agents/plans/care-item-evolution.md
-  plan_commit: d9ef20356b97405431fd31d0b85c1ee1ce2ce121
+  plan_commit: e893c3b27f66431df6c34815d085b86b6217c263
   snapshot_path: .agents/plans/care-item-evolution.snapshot.json
-  snapshot_commit: d9ef20356b97405431fd31d0b85c1ee1ce2ce121
+  snapshot_commit: e893c3b27f66431df6c34815d085b86b6217c263
 open_prs: []
 merge_commits: {"docs":"d977ebdecbe7f881a3e552122f055f265e9af755"}
 debt_issue_refs: []
