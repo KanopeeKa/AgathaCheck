@@ -54,6 +54,7 @@ class PlannedAbsenceModel {
       petIds: petIds,
       petCarers: petCarers,
       handoverNote: json['handover_note'] as String?,
+      timezone: json['timezone'] as String? ?? 'UTC',
     );
   }
 

@@ -16,6 +16,7 @@ class AuthUser {
   final String? bio;
   final String? photoUrl;
   final String? pinnedOrganizationId;
+  final String? timezone;
   final String? createdAt;
   final String? updatedAt;
 
@@ -28,6 +29,7 @@ class AuthUser {
     this.bio,
     this.photoUrl,
     this.pinnedOrganizationId,
+    this.timezone,
     this.createdAt,
     this.updatedAt,
   });
@@ -42,6 +44,7 @@ class AuthUser {
       bio: json['bio']?.toString(),
       photoUrl: json['photo_url']?.toString(),
       pinnedOrganizationId: json['pinned_organization_id']?.toString(),
+      timezone: json['timezone']?.toString(),
       createdAt: json['created_at']?.toString(),
       updatedAt: json['updated_at']?.toString(),
     );
@@ -189,6 +192,7 @@ class AuthService {
     String? category,
     String? bio,
     String? locale,
+    String? timezone,
     String? pinnedOrganizationId,
     bool updatePinnedOrganizationId = false,
   }) async {
@@ -198,6 +202,7 @@ class AuthService {
     if (category != null) body['category'] = category;
     if (bio != null) body['bio'] = bio;
     if (locale != null) body['locale'] = locale;
+    if (timezone != null) body['timezone'] = timezone;
     if (updatePinnedOrganizationId) {
       body['pinned_organization_id'] = pinnedOrganizationId;
     }
