@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "plan_id": "people-care-team-a58d",
+  "approved_at": "2026-09-27T01:30:00Z",
+  "approved_by": "user chat 2026-09-27: execute-plan full autonomous power through People phases 0-4; merge doc branch to main",
+  "approved_until": "2026-09-29T01:30:00Z",
+  "content_hash": "sha256:6ebc26eed099f195112e4997aa28287b709de9ad269f892da7d7cecc4b607bb9",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1343,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "land-docs",
+      "title": "Land People spec docs on main",
+      "branch": "cursor/people-docs-land-a58d",
+      "allowed_paths": [
+        "docs/**",
+        ".agents/memory/MEMORY.md",
+        ".agents/plans/people-care-team-a58d.md",
+        ".agents/plans/people-care-team-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "p0-model",
+      "title": "Delivery plan + contact schema (product phase 0)",
+      "branch": "cursor/people-p0-model-a58d",
+      "allowed_paths": [
+        "docs/domains/people/**",
+        "docs/architecture/api-reference.md",
+        "server/scripts/migrations/**",
+        "server/test/migrations/**",
+        "server/db/**",
+        ".agents/plans/people-care-team-a58d.md",
+        ".agents/plans/people-care-team-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "p1-contacts",
+      "title": "Contacts v1 (product phase 1)",
+      "branch": "cursor/people-p1-contacts-a58d",
+      "allowed_paths": [
+        "docs/domains/people/**",
+        "docs/domains/vet/**",
+        "docs/architecture/api-reference.md",
+        "server/routes/**",
+        "server/lib/**",
+        "server/test/**",
+        "server/scripts/migrations/**",
+        "flutter_app/lib/features/people/**",
+        "flutter_app/test/features/people/**",
+        "flutter_app/lib/features/vet/**",
+        "flutter_app/test/features/vet/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/bdd/features/veterinarian_management.feature",
+        "flutter_app/test/bdd/features/people.feature",
+        ".agents/plans/people-care-team-a58d.md",
+        ".agents/plans/people-care-team-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "p2-absence",
+      "title": "Absence integration (product phase 2)",
+      "branch": "cursor/people-p2-absence-a58d",
+      "allowed_paths": [
+        "docs/domains/people/**",
+        "docs/domains/pet_care/**",
+        "docs/architecture/api-reference.md",
+        "server/routes/careContext/**",
+        "server/lib/care/**",
+        "server/test/**",
+        "server/scripts/migrations/**",
+        "flutter_app/lib/features/pet_care/**",
+        "flutter_app/test/features/pet_care/**",
+        "flutter_app/test/bdd/features/away_planning.feature",
+        "flutter_app/test/bdd/features/away_plan_detail_v2.feature",
+        ".agents/plans/people-care-team-a58d.md",
+        ".agents/plans/people-care-team-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "p3-households",
+      "title": "Households (product phase 3)",
+      "branch": "cursor/people-p3-households-a58d",
+      "allowed_paths": [
+        "docs/domains/people/**",
+        "docs/domains/sharing/**",
+        "docs/architecture/api-reference.md",
+        "server/routes/sharing/**",
+        "server/routes/**",
+        "server/lib/**",
+        "server/test/**",
+        "server/scripts/migrations/**",
+        "flutter_app/lib/features/sharing/**",
+        "flutter_app/lib/features/people/**",
+        "flutter_app/test/**",
+        "flutter_app/test/bdd/features/sharing.feature",
+        ".agents/plans/people-care-team-a58d.md",
+        ".agents/plans/people-care-team-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "p4-guest-access",
+      "title": "Absence guest access + timezone (product phase 4)",
+      "branch": "cursor/people-p4-guest-a58d",
+      "allowed_paths": [
+        "docs/domains/people/**",
+        "docs/domains/auth/**",
+        "docs/domains/notifications/**",
+        "docs/domains/pet_care/**",
+        "docs/architecture/api-reference.md",
+        "server/routes/auth/**",
+        "server/routes/careContext/**",
+        "server/lib/**",
+        "server/test/**",
+        "server/scripts/migrations/**",
+        "flutter_app/lib/features/auth/**",
+        "flutter_app/lib/features/pet_care/**",
+        "flutter_app/lib/features/people/**",
+        "flutter_app/test/**",
+        "flutter_app/test/bdd/features/notifications.feature",
+        ".agents/plans/people-care-team-a58d.md",
+        ".agents/plans/people-care-team-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
