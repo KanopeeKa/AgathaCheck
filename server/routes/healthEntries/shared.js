@@ -18,6 +18,7 @@ import {
   removePrivateHealthFile,
   savePrivateHealthFile,
 } from '../../lib/privateHealthStorage.js';
+import { careBlocksForApi } from '../../lib/care/categoryBlocks/index.js';
 
 export {
   HEALTH_DOCUMENT_EXTENSIONS,
@@ -166,6 +167,7 @@ export function healthEntryToMap(row) {
     schedule_policy_version: row.schedule_policy_version ?? null,
     provider_contact_id: row.provider_contact_id ?? null,
     provider_typed_name: row.provider_typed_name ?? null,
+    care_blocks: careBlocksForApi(row),
     completed_at: row.completed_at ? row.completed_at.toISOString?.() || String(row.completed_at) : null,
     created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,
     updated_at: row.updated_at ? row.updated_at.toISOString?.() || String(row.updated_at) : null,
