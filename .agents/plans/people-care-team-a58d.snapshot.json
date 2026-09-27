@@ -4,7 +4,7 @@
   "approved_at": "2026-09-27T01:30:00Z",
   "approved_by": "user chat 2026-09-27: execute-plan full autonomous power through People phases 0-4; merge doc branch to main",
   "approved_until": "2026-09-29T01:30:00Z",
-  "content_hash": "sha256:35291d3da1c73d15dd13be40e8d2b2cdab38f9b5466cb3cfce35bc289fc27b99",
+  "content_hash": "sha256:f84d7b7c9592943ce3215bc8b9bfbe283493059af2bc93e52efb459060d501b4",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -191,7 +191,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1354",
+      "pr_head_sha": "7acb34bd"
     },
     {
       "id": "p4-guest-access",

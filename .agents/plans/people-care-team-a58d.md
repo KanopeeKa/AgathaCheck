@@ -31,10 +31,10 @@ next_action: "continue phase p3-households on branch cursor/people-p3-households
 artifact_ref:
   branch: cursor/people-p3-households-a58d
   plan_path: .agents/plans/people-care-team-a58d.md
-  plan_commit: 658727c3c8b3be273e2b0f5ae878c872f1e8a3d4
+  plan_commit: 7acb34bd029591a207da5316aae8cf4eb36a2415
   snapshot_path: .agents/plans/people-care-team-a58d.snapshot.json
-  snapshot_commit: 658727c3c8b3be273e2b0f5ae878c872f1e8a3d4
-open_prs: []
+  snapshot_commit: 7acb34bd029591a207da5316aae8cf4eb36a2415
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1354"]
 merge_commits: {"land-docs":"5515e1ed0f4475d0a2a6d1a4d9b2d71fb33c5bef","p0-model":"e5eb27e4e064a69963cfa630b75ebc556bac2d5a"}
 debt_issue_refs: []
 ```
