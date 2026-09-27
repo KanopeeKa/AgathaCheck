@@ -233,10 +233,11 @@ void main() {
     expect(find.byKey(const Key('pet_event_pet_card')), findsOneWidget);
     expect(find.text('Bella'), findsOneWidget);
     expect(find.text('Dog'), findsOneWidget);
-    expect(find.text('Close event'), findsOneWidget);
+    expect(find.byKey(const Key('care_item_menu')), findsOneWidget);
     expect(find.byKey(const Key('care_item_edit_app_bar')), findsOneWidget);
-    expect(find.text('Dates'), findsOneWidget);
-    expect(find.text('Missed'), findsOneWidget);
+    expect(find.text('Needs attention'), findsOneWidget);
+    expect(find.text('Schedule'), findsOneWidget);
+    expect(find.text('Overdue'), findsOneWidget);
     expect(find.text('Due today'), findsOneWidget);
     expect(find.text('Coming up'), findsOneWidget);
     expect(
@@ -273,7 +274,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('care_item_close_button')));
+    await tester.tap(find.byKey(const Key('care_item_menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Archive'));
     await tester.pumpAndSettle();
 
     expect(find.text('Close event?'), findsOneWidget);
@@ -294,8 +297,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('View Flea treatment'), findsOneWidget);
-    expect(find.text('Closed'), findsOneWidget);
-    expect(find.text('Reopen event'), findsOneWidget);
+    expect(find.byKey(const Key('care_item_menu')), findsOneWidget);
     expect(find.text('Close event'), findsNothing);
     expect(find.text('Mark as done'), findsNothing);
     expect(find.text('Skip all missed'), findsNothing);

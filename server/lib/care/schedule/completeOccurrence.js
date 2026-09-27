@@ -5,6 +5,7 @@
 import { dateToIsoDate, todayCalendarIso } from '../../calendarDate.js';
 import { resolveCompletedOn } from '../../occurrenceScheduling.js';
 import { fetchUserSnapshot } from '../../people/userSnapshot.js';
+import { resolveProviderUsedForCompletion } from '../providerUsed.js';
 import { advanceSeries } from './advanceSeries.js';
 import { deriveCompletionTiming } from './completionTiming.js';
 
@@ -18,6 +19,8 @@ import { deriveCompletionTiming } from './completionTiming.js';
  * @param {string} [params.notes]
  * @param {Date} [params.markedAt]
  * @param {string} [params.todayIso] calendar day for advanceSeries window
+ * @param {string|null} [params.performedByUserId]
+ * @param {object} [params.body] optional completion body for provider overrides
  * @returns {Promise<{ occurrence: object, nextDueDate: string|null }|null>}
  */
 export async function completeOccurrence(pool, {
@@ -29,6 +32,7 @@ export async function completeOccurrence(pool, {
   markedAt = new Date(),
   todayIso = todayCalendarIso(),
   performedByUserId = null,
+  body = {},
 }) {
   const pending = await pool.query(
     `SELECT * FROM health_occurrences
@@ -48,14 +52,19 @@ export async function completeOccurrence(pool, {
     ? markedSnapshot
     : await fetchUserSnapshot(pool, performedId);
 
+  const providerUsed = await resolveProviderUsedForCompletion(pool, userId, entry, body);
+
   const result = await pool.query(
     `UPDATE health_occurrences SET status = 'completed', completed_on = $1,
       marked_at = $2, marked_by_user_id = $3, notes = $4, completion_timing = $5,
       performed_by_user_id = $6,
       marked_by_snapshot = $7::jsonb,
       performed_by_snapshot = $8::jsonb,
+      provider_contact_id = $9,
+      provider_typed_name = $10,
+      provider_contact_snapshot = $11::jsonb,
       updated_at = NOW()
-     WHERE id = $9 AND health_entry_id = $10 AND status = 'pending'
+     WHERE id = $12 AND health_entry_id = $13 AND status = 'pending'
      RETURNING *`,
     [
       completedOnIso,
@@ -66,6 +75,9 @@ export async function completeOccurrence(pool, {
       performedId,
       markedSnapshot ? JSON.stringify(markedSnapshot) : null,
       performedSnapshot ? JSON.stringify(performedSnapshot) : null,
+      providerUsed.contactId,
+      providerUsed.typedName,
+      providerUsed.snapshot ? JSON.stringify(providerUsed.snapshot) : null,
       occurrenceId,
       entry.id,
     ],

@@ -75,5 +75,39 @@ void main() {
       expect(summary.missedHead?.id, 'missed-new');
       expect(summary.nextHead?.id, 'today-am');
     });
+
+    test('leadingOccurrence prefers overdue over later same-day dose', () {
+      final today = calendarDateOnly(DateTime.now());
+      final now = DateTime(today.year, today.month, today.day, 17, 0);
+
+      final open = [
+        occ(id: 'morning-overdue', date: today, time: '08:00'),
+        occ(id: 'evening-upcoming', date: today, time: '20:00'),
+      ];
+
+      final summary = summarizeOpenOccurrences(open, now);
+      expect(summary.missedCount, 1);
+      expect(summary.leadingOccurrence?.id, 'morning-overdue');
+    });
+
+    test('keeps server missed when device clock would not mark overdue', () {
+      final today = calendarDateOnly(DateTime.now());
+      final now = DateTime(today.year, today.month, today.day, 7, 0);
+
+      final open = [
+        HealthOccurrence(
+          id: 'server-missed',
+          entryId: 'entry-1',
+          scheduledDate: today,
+          scheduledTime: '20:00',
+          status: 'pending',
+          missed: true,
+        ),
+      ];
+
+      final summary = summarizeOpenOccurrences(open, now);
+      expect(summary.missedCount, 1);
+      expect(summary.leadingOccurrence?.id, 'server-missed');
+    });
   });
 }

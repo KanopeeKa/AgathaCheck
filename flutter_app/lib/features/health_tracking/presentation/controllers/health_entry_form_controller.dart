@@ -10,6 +10,7 @@ import '../../../care_taxonomy/domain/care_taxonomy.dart';
 import '../../../pet_profile/domain/entities/care_family.dart';
 import '../../../pet_profile/domain/services/care_family_write.dart';
 import '../../data/datasources/health_remote_datasource.dart';
+import '../../domain/entities/care_item_blocks.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';
 import '../providers/health_providers.dart';
@@ -77,6 +78,19 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
       final entry = await ref.read(healthRepositoryProvider).getEntry(entryId);
       if (entry == null) return false;
 
+      var careBlocks = entry.careBlocks;
+      var dosage = entry.dosage;
+      if (entry.careFamily == CareFamily.medication &&
+          dosage.trim().isNotEmpty &&
+          (careBlocks.productDose == null ||
+              careBlocks.productDose!.doseAmount.trim().isEmpty)) {
+        careBlocks = careBlocks.copyWith(
+          productDose: (careBlocks.productDose ?? const ProductDoseBlock())
+              .copyWith(doseAmount: dosage.trim()),
+        );
+        dosage = '';
+      }
+
       final frequency = entry.frequency == HealthFrequency.custom
           ? HealthFrequency.daily
           : entry.frequency;
@@ -86,8 +100,9 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
 
       state = state.copyWith(
         name: entry.name,
-        dosage: entry.dosage,
+        dosage: dosage,
         notes: entry.notes,
+        careBlocks: careBlocks,
         type: entry.type,
         frequency: frequency,
         frequencyInterval: frequencyInterval,
@@ -116,6 +131,8 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
         loadedUncategorised: entry.careFamily == null,
         careFamilySuggestionDismissed: false,
         careFamilyPickerRevealed: entry.careFamily != null,
+        providerContactId: entry.providerContactId,
+        providerTypedName: entry.providerTypedName,
       );
 
       captureBaseline();
@@ -130,6 +147,15 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
   void setDosage(String dosage) => state = state.copyWith(dosage: dosage);
 
   void setNotes(String notes) => state = state.copyWith(notes: notes);
+
+  void setProvider({String? contactId, String? typedName}) {
+    state = state.copyWith(
+      providerContactId: contactId,
+      clearProviderContactId: contactId == null,
+      providerTypedName: typedName,
+      clearProviderTypedName: typedName == null,
+    );
+  }
 
   void setType(HealthEntryType type) {
     if (state.isEdit && !state.loadedUncategorised) {
@@ -153,7 +179,12 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
       importanceOverridden: false,
       careFamilyPickerRevealed: true,
       careFamilyValidationAttempted: false,
+      careBlocks: state.careBlocks.filteredFor(family),
     );
+  }
+
+  void setCareBlocks(CareItemBlocks blocks) {
+    state = state.copyWith(careBlocks: blocks);
   }
 
   void setCareSetting(CareSetting setting) =>

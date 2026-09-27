@@ -37,6 +37,9 @@ function makeHealthRow(overrides = {}) {
     care_importance: 'recommended',
     importance_overridden: false,
     care_source: 'guardian_defined',
+    care_blocks: {},
+    provider_contact_id: null,
+    provider_typed_name: null,
     completed_at: null,
     created_at: new Date('2025-01-01'),
     updated_at: new Date('2025-01-02'),
@@ -118,6 +121,10 @@ describe('Health Entries API', () => {
               care_importance: row.care_importance,
               importance_overridden: row.importance_overridden,
               remind_days_before: row.remind_days_before,
+              provider_contact_id: row.provider_contact_id,
+              provider_typed_name: row.provider_typed_name,
+              care_blocks: row.care_blocks,
+              dosage: row.dosage,
             }],
           };
         }
@@ -158,6 +165,9 @@ describe('Health Entries API', () => {
             importance_overridden: params[23],
             care_source: params[24],
             schedule_policy_version: params[25],
+            provider_contact_id: params[26],
+            provider_typed_name: params[27],
+            care_blocks: JSON.parse(params[28] || '{}'),
             completed_at: null,
           });
           return { rows: [lastInsertedEntry] };
@@ -340,10 +350,10 @@ describe('Health Entries API', () => {
         }
 
         if (sql.includes('UPDATE health_entries SET name')) {
-          if (params && params[22] === 'nonexistent') return { rows: [] };
+          if (params && params[25] === 'nonexistent') return { rows: [] };
           return {
             rows: [makeHealthRow({
-              id: params[22],
+              id: params[25],
               name: params[0],
               type: params[1],
               dosage: params[2],
@@ -355,6 +365,9 @@ describe('Health Entries API', () => {
               importance_overridden: params[19],
               care_source: params[20],
               schedule_policy_version: params[21],
+              provider_contact_id: params[22],
+              provider_typed_name: params[23],
+              care_blocks: JSON.parse(params[24] || '{}'),
             })],
           };
         }
@@ -797,6 +810,59 @@ describe('Health Entries API', () => {
       expect(res.body.recurrence_anchor).toBe('from_completion');
     });
 
+    it('persists care_blocks and syncs dosage for medication product dose', async () => {
+      const entry = {
+        pet_id: 'pet-1',
+        name: 'Metacam',
+        frequency: 'daily',
+        next_due_date: '2025-07-01',
+        care_family: 'medication',
+        care_blocks: {
+          product_dose: {
+            product_name: 'Meloxicam',
+            dose_amount: '1',
+            dose_unit: 'tablet',
+          },
+        },
+      };
+      const res = await request(app)
+        .post('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(201);
+      expect(res.body.dosage).toBe('1 tablet');
+      expect(res.body.care_blocks.product_dose.product_name).toBe('Meloxicam');
+    });
+
+    it('exposes legacy dosage as product dose on read for medication', async () => {
+      const pool = {
+        query: async (sql, params) => {
+          const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1'] });
+          if (access) return access;
+          const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
+          if (manageEntry) return manageEntry;
+          if (sql.includes('SELECT he.*') && sql.includes('WHERE he.id')) {
+            return {
+              rows: [makeHealthRow({
+                id: params[0],
+                care_family: 'medication',
+                dosage: '2 ml',
+                care_blocks: {},
+              })],
+            };
+          }
+          return { rows: [] };
+        },
+        end: async () => {},
+      };
+      const a = createApp(pool);
+      const res = await request(a)
+        .get('/api/health-entries/he-med')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.care_blocks.product_dose.dose_amount).toBe('2 ml');
+    });
+
     it('derives type vet_visit from wellness_review family and defaults frequency to once', async () => {
       const entry = {
         pet_id: 'pet-1',
@@ -1043,7 +1109,7 @@ describe('Health Entries API', () => {
       );
       const updateQuery = queryLog.find(q => q.sql.includes('UPDATE health_entries SET name'));
       expect(accessQuery).toBeDefined();
-      expect(updateQuery.params[22]).toBe('he-1');
+      expect(updateQuery.params[updateQuery.params.length - 1]).toBe('he-1');
     });
 
     it('rejects client-sent type on update', async () => {

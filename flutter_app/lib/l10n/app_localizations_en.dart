@@ -5066,6 +5066,70 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careItemDatesTitle => 'Dates';
 
   @override
+  String get careItemNeedsAttentionTitle => 'Needs attention';
+
+  @override
+  String get careItemScheduleTitle => 'Schedule';
+
+  @override
+  String get careItemAbsenceTitle => 'Absence';
+
+  @override
+  String careItemAbsenceNothingDue(String dateRange) {
+    return 'Away $dateRange · nothing due while you\'re away';
+  }
+
+  @override
+  String get careItemAbsenceNotReviewed => 'Not reviewed yet';
+
+  @override
+  String get careItemAbsenceNeedsReview => 'Needs review';
+
+  @override
+  String get careItemAbsenceResolved => 'Plan recorded for this trip';
+
+  @override
+  String get careItemAbsenceKeepDate => 'Keep the date';
+
+  @override
+  String get careItemAbsenceNothingNeeded => 'Nothing needed';
+
+  @override
+  String get careItemAbsenceSaveResolution => 'Save';
+
+  @override
+  String get careItemDetailsTitle => 'Details';
+
+  @override
+  String get careItemHistoryTitle => 'History';
+
+  @override
+  String get careItemEditSchedule => 'Edit schedule';
+
+  @override
+  String get careItemMenuTooltip => 'Care item actions';
+
+  @override
+  String get careItemMenuPause => 'Pause';
+
+  @override
+  String get careItemMenuResume => 'Resume';
+
+  @override
+  String get careItemMenuArchive => 'Archive';
+
+  @override
+  String get careItemMenuRestore => 'Restore';
+
+  @override
+  String get careItemPausedStatus => 'Paused';
+
+  @override
+  String careItemPausedSince(String date) {
+    return 'Paused since $date';
+  }
+
+  @override
   String careItemEstablishedBody(String petName) {
     return 'Part of $petName\'s regular care.';
   }
@@ -6110,7 +6174,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String occurrenceMissedCount(int count) {
-    return '$count missed';
+    return '$count overdue';
   }
 
   @override
@@ -6119,7 +6183,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get occurrenceZoneMissed => 'Missed';
+  String get occurrenceZoneMissed => 'Overdue';
 
   @override
   String get occurrenceZoneDueToday => 'Due today';
@@ -6132,13 +6196,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get occurrenceSkipEarlierMissed =>
-      'Skip earlier missed doses when recording';
+      'Skip earlier overdue doses when recording';
 
   @override
   String get occurrenceReviewEach => 'Review in event view';
 
   @override
-  String get occurrenceSkipAllMissed => 'Skip all missed';
+  String get occurrenceSkipAllMissed => 'Skip all overdue';
 
   @override
   String get occurrenceNotNow => 'Not now';
@@ -6151,6 +6215,88 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get careCompletionFailed =>
       'Could not mark this care item as done. Try again.';
+
+  @override
+  String get careWhenWasThisDoneTitle => 'When was this done?';
+
+  @override
+  String get careCompletedToday => 'Today';
+
+  @override
+  String careCompletedOnScheduledDate(String date) {
+    return 'On the scheduled date ($date)';
+  }
+
+  @override
+  String get careChooseCompletionDate => 'Choose another date';
+
+  @override
+  String get careAddDetails => 'Add details';
+
+  @override
+  String get careAddDetailsTitle => 'Add details';
+
+  @override
+  String get careDetailsSaved => 'Details saved';
+
+  @override
+  String get careDetailsSaveFailed => 'Could not save details. Try again.';
+
+  @override
+  String get careCategoryBlockProductDoseTitle => 'Product and dose';
+
+  @override
+  String get careCategoryBlockAddProductDose => 'Add dose details';
+
+  @override
+  String get careCategoryBlockProductName => 'Product name';
+
+  @override
+  String get careCategoryBlockForm => 'Form';
+
+  @override
+  String get careCategoryBlockStrength => 'Strength';
+
+  @override
+  String get careCategoryBlockDoseAmount => 'Dose amount';
+
+  @override
+  String get careCategoryBlockDoseUnit => 'Dose unit';
+
+  @override
+  String get careCategoryBlockRouteMethod => 'Route or method';
+
+  @override
+  String get careCategoryBlockVisitTitle => 'Visit';
+
+  @override
+  String get careCategoryBlockAddVisit => 'Add visit details';
+
+  @override
+  String get careCategoryBlockQuestionsToAsk => 'Questions to ask';
+
+  @override
+  String get careCategoryBlockWeightTargetTitle => 'Weight target';
+
+  @override
+  String careCategoryBlockWeightTargetFromPet(String petName) {
+    return 'Uses $petName\'s reference weight from their profile';
+  }
+
+  @override
+  String get careProviderLabel => 'Provider';
+
+  @override
+  String get careProviderChooseContact => 'Choose a contact';
+
+  @override
+  String get careProviderUseTypedName => 'Enter a name instead';
+
+  @override
+  String get careProviderTypedName => 'Provider name';
+
+  @override
+  String get careProviderContactsUnavailable => 'Contacts could not be loaded';
 
   @override
   String get undoCompleteFailed => 'Could not undo completion. Try again.';

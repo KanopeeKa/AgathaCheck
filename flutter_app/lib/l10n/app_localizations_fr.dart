@@ -5145,6 +5145,70 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careItemDatesTitle => 'Dates';
 
   @override
+  String get careItemNeedsAttentionTitle => 'À traiter';
+
+  @override
+  String get careItemScheduleTitle => 'Planning';
+
+  @override
+  String get careItemAbsenceTitle => 'Absence';
+
+  @override
+  String careItemAbsenceNothingDue(String dateRange) {
+    return 'Absent $dateRange · rien de prévu pendant votre absence';
+  }
+
+  @override
+  String get careItemAbsenceNotReviewed => 'Pas encore vu';
+
+  @override
+  String get careItemAbsenceNeedsReview => 'À revoir';
+
+  @override
+  String get careItemAbsenceResolved => 'Décision enregistrée pour ce voyage';
+
+  @override
+  String get careItemAbsenceKeepDate => 'Garder la date';
+
+  @override
+  String get careItemAbsenceNothingNeeded => 'Rien à faire';
+
+  @override
+  String get careItemAbsenceSaveResolution => 'Enregistrer';
+
+  @override
+  String get careItemDetailsTitle => 'Détails';
+
+  @override
+  String get careItemHistoryTitle => 'Historique';
+
+  @override
+  String get careItemEditSchedule => 'Modifier le planning';
+
+  @override
+  String get careItemMenuTooltip => 'Actions sur le soin';
+
+  @override
+  String get careItemMenuPause => 'Mettre en pause';
+
+  @override
+  String get careItemMenuResume => 'Reprendre';
+
+  @override
+  String get careItemMenuArchive => 'Archiver';
+
+  @override
+  String get careItemMenuRestore => 'Restaurer';
+
+  @override
+  String get careItemPausedStatus => 'En pause';
+
+  @override
+  String careItemPausedSince(String date) {
+    return 'En pause depuis le $date';
+  }
+
+  @override
   String careItemEstablishedBody(String petName) {
     return 'Fait partie des soins réguliers de $petName.';
   }
@@ -6211,7 +6275,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String occurrenceMissedCount(int count) {
-    return '$count manqués';
+    return '$count en retard';
   }
 
   @override
@@ -6220,7 +6284,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get occurrenceZoneMissed => 'Manqués';
+  String get occurrenceZoneMissed => 'En retard';
 
   @override
   String get occurrenceZoneDueToday => 'Aujourd\'hui';
@@ -6233,13 +6297,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get occurrenceSkipEarlierMissed =>
-      'Ignorer les doses manquées antérieures lors de l\'enregistrement';
+      'Ignorer les doses en retard antérieures lors de l\'enregistrement';
 
   @override
   String get occurrenceReviewEach => 'Voir dans l\'événement';
 
   @override
-  String get occurrenceSkipAllMissed => 'Ignorer tous les manqués';
+  String get occurrenceSkipAllMissed => 'Ignorer tous les retards';
 
   @override
   String get occurrenceNotNow => 'Pas maintenant';
@@ -6252,6 +6316,90 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get careCompletionFailed =>
       'Impossible de marquer ce soin comme terminé. Réessayez.';
+
+  @override
+  String get careWhenWasThisDoneTitle => 'Quand cela a-t-il été fait ?';
+
+  @override
+  String get careCompletedToday => 'Aujourd\'hui';
+
+  @override
+  String careCompletedOnScheduledDate(String date) {
+    return 'À la date prévue ($date)';
+  }
+
+  @override
+  String get careChooseCompletionDate => 'Choisir une autre date';
+
+  @override
+  String get careAddDetails => 'Ajouter des détails';
+
+  @override
+  String get careAddDetailsTitle => 'Ajouter des détails';
+
+  @override
+  String get careDetailsSaved => 'Détails enregistrés';
+
+  @override
+  String get careDetailsSaveFailed =>
+      'Impossible d\'enregistrer les détails. Réessayez.';
+
+  @override
+  String get careCategoryBlockProductDoseTitle => 'Produit et dose';
+
+  @override
+  String get careCategoryBlockAddProductDose => 'Ajouter les détails de dose';
+
+  @override
+  String get careCategoryBlockProductName => 'Nom du produit';
+
+  @override
+  String get careCategoryBlockForm => 'Forme';
+
+  @override
+  String get careCategoryBlockStrength => 'Concentration';
+
+  @override
+  String get careCategoryBlockDoseAmount => 'Quantité de dose';
+
+  @override
+  String get careCategoryBlockDoseUnit => 'Unité de dose';
+
+  @override
+  String get careCategoryBlockRouteMethod => 'Voie ou mode';
+
+  @override
+  String get careCategoryBlockVisitTitle => 'Visite';
+
+  @override
+  String get careCategoryBlockAddVisit => 'Ajouter les détails de visite';
+
+  @override
+  String get careCategoryBlockQuestionsToAsk => 'Questions à poser';
+
+  @override
+  String get careCategoryBlockWeightTargetTitle => 'Objectif de poids';
+
+  @override
+  String careCategoryBlockWeightTargetFromPet(String petName) {
+    return 'Utilise le poids de référence de $petName sur son profil';
+  }
+
+  @override
+  String get careProviderLabel => 'Prestataire';
+
+  @override
+  String get careProviderChooseContact => 'Choisir un contact';
+
+  @override
+  String get careProviderUseTypedName => 'Saisir un nom';
+
+  @override
+  String get careProviderTypedName => 'Nom du prestataire';
+
+  @override
+  String get careProviderContactsUnavailable =>
+      'Impossible de charger les contacts';
 
   @override
   String get undoCompleteFailed =>

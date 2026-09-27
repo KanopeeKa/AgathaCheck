@@ -29,13 +29,21 @@ export function registerDocumentsRoutes(router, pool) {
       if (!(await canManageHealthDocuments(pool, req.params.id, userId))) {
         return res.status(404).json({ error: 'Entry not found' });
       }
-      const result = await pool.query(
-        'SELECT * FROM health_event_photos WHERE health_entry_id = $1 ORDER BY created_at',
-        [req.params.id]
-      );
+      const occurrenceId =
+        req.query.occurrence_id || req.query.health_occurrence_id || null;
+      const params = [req.params.id];
+      let sql =
+        'SELECT * FROM health_event_photos WHERE health_entry_id = $1';
+      if (occurrenceId) {
+        sql += ' AND health_occurrence_id = $2';
+        params.push(occurrenceId);
+      }
+      sql += ' ORDER BY created_at';
+      const result = await pool.query(sql, params);
       res.json(result.rows.map(r => ({
         id: r.id,
         health_entry_id: r.health_entry_id,
+        health_occurrence_id: r.health_occurrence_id || null,
         url: r.url,
         created_at: r.created_at,
       })));
@@ -55,13 +63,28 @@ export function registerDocumentsRoutes(router, pool) {
         'SELECT pet_id FROM health_entries WHERE id = $1',
         [req.params.id],
       );
+      const body = req.body || {};
+      const occurrenceId =
+        body.health_occurrence_id || body.healthOccurrenceId || null;
+      if (occurrenceId) {
+        const occ = await pool.query(
+          `SELECT id FROM health_occurrences
+           WHERE id = $1 AND health_entry_id = $2`,
+          [occurrenceId, req.params.id],
+        );
+        if (occ.rows.length === 0) {
+          return res.status(400).json({ error: 'Invalid occurrence for entry' });
+        }
+      }
       const id = uuidv4();
       const url = req.file
         ? saveHealthDocument(req.file, id)
         : req.body?.url || buildHealthFileApiPath(id);
       const result = await pool.query(
-        'INSERT INTO health_event_photos (id, health_entry_id, url) VALUES ($1, $2, $3) RETURNING *',
-        [id, req.params.id, url]
+        `INSERT INTO health_event_photos
+           (id, health_entry_id, url, health_occurrence_id)
+         VALUES ($1, $2, $3, $4) RETURNING *`,
+        [id, req.params.id, url, occurrenceId],
       );
       recordPetActivityForPet(pool, {
         petId: entryRow.rows[0]?.pet_id,

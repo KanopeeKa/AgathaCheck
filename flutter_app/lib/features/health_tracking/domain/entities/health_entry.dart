@@ -1,3 +1,4 @@
+import 'care_item_blocks.dart';
 import 'recurrence_anchor.dart';
 import '../../../care_taxonomy/domain/care_importance.dart';
 import '../../../care_taxonomy/domain/care_planning_mode.dart';
@@ -46,12 +47,16 @@ class HealthEntry {
     this.remindDaysBefore = 1,
     this.scheduleTimes,
     this.status = 'active',
+    this.pausedSince,
     this.careFamily,
     this.careSetting,
     this.carePlanning,
     this.careImportance,
     this.importanceOverridden = false,
     this.careSource,
+    this.providerContactId,
+    this.providerTypedName,
+    this.careBlocks = const CareItemBlocks(),
     this.createdAt,
     this.updatedAt,
   });
@@ -113,8 +118,11 @@ class HealthEntry {
   /// Ordered local wall-clock times (`HH:mm`). Null or empty = all-day doses.
   final List<String>? scheduleTimes;
 
-  /// Series lifecycle from API: `active` or `completed`.
+  /// Series lifecycle from API: `active`, `paused`, or `completed`.
   final String status;
+
+  /// Calendar day pause started when [status] is `paused`.
+  final DateTime? pausedSince;
 
   /// Semantic care family (optional until backfilled).
   final CareFamily? careFamily;
@@ -134,11 +142,22 @@ class HealthEntry {
   /// Provenance for how this care was established.
   final CareSource? careSource;
 
+  /// People contact default provider, when set.
+  final String? providerContactId;
+
+  /// Interim typed provider name when no contact exists (D-CIE-016).
+  final String? providerTypedName;
+
+  /// Category block fields for this care item (D-CIE-019).
+  final CareItemBlocks careBlocks;
+
   /// When this entry was created.
   final DateTime? createdAt;
 
   /// When this entry was last updated.
   final DateTime? updatedAt;
+
+  bool get isPaused => status == 'paused';
 
   /// Whether a one-time entry has been completed.
   bool get isCompleted {
@@ -206,6 +225,8 @@ class HealthEntry {
     List<String>? scheduleTimes,
     bool clearScheduleTimes = false,
     String? status,
+    DateTime? pausedSince,
+    bool clearPausedSince = false,
     CareFamily? careFamily,
     bool clearCareFamily = false,
     CareSetting? careSetting,
@@ -217,6 +238,10 @@ class HealthEntry {
     bool? importanceOverridden,
     CareSource? careSource,
     bool clearCareSource = false,
+    String? providerContactId,
+    String? providerTypedName,
+    bool clearProvider = false,
+    CareItemBlocks? careBlocks,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -249,6 +274,7 @@ class HealthEntry {
           ? null
           : (scheduleTimes ?? this.scheduleTimes),
       status: status ?? this.status,
+      pausedSince: clearPausedSince ? null : (pausedSince ?? this.pausedSince),
       careFamily: clearCareFamily ? null : (careFamily ?? this.careFamily),
       careSetting: clearCareSetting ? null : (careSetting ?? this.careSetting),
       carePlanning: clearCarePlanning
@@ -259,6 +285,13 @@ class HealthEntry {
           : (careImportance ?? this.careImportance),
       importanceOverridden: importanceOverridden ?? this.importanceOverridden,
       careSource: clearCareSource ? null : (careSource ?? this.careSource),
+      providerContactId: clearProvider
+          ? null
+          : (providerContactId ?? this.providerContactId),
+      providerTypedName: clearProvider
+          ? null
+          : (providerTypedName ?? this.providerTypedName),
+      careBlocks: careBlocks ?? this.careBlocks,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

@@ -1762,6 +1762,36 @@
   "entryNotFound": "Entrée introuvable",
   "nextOccurrence": "Prochaine échéance",
   "careItemDatesTitle": "Dates",
+  "careItemNeedsAttentionTitle": "À traiter",
+  "careItemScheduleTitle": "Planning",
+  "careItemAbsenceTitle": "Absence",
+  "careItemAbsenceNothingDue": "Absent {dateRange} · rien de prévu pendant votre absence",
+  "@careItemAbsenceNothingDue": {
+    "placeholders": {
+      "dateRange": { "type": "String" }
+    }
+  },
+  "careItemAbsenceNotReviewed": "Pas encore vu",
+  "careItemAbsenceNeedsReview": "À revoir",
+  "careItemAbsenceResolved": "Décision enregistrée pour ce voyage",
+  "careItemAbsenceKeepDate": "Garder la date",
+  "careItemAbsenceNothingNeeded": "Rien à faire",
+  "careItemAbsenceSaveResolution": "Enregistrer",
+  "careItemDetailsTitle": "Détails",
+  "careItemHistoryTitle": "Historique",
+  "careItemEditSchedule": "Modifier le planning",
+  "careItemMenuTooltip": "Actions sur le soin",
+  "careItemMenuPause": "Mettre en pause",
+  "careItemMenuResume": "Reprendre",
+  "careItemMenuArchive": "Archiver",
+  "careItemMenuRestore": "Restaurer",
+  "careItemPausedStatus": "En pause",
+  "careItemPausedSince": "En pause depuis le {date}",
+  "@careItemPausedSince": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
   "careItemEstablishedBody": "Fait partie des soins réguliers de {petName}.",
   "@careItemEstablishedBody": {
     "placeholders": {
@@ -2159,7 +2189,7 @@
       "count": { "type": "int" }
     }
   },
-  "occurrenceMissedCount": "{count} manqués",
+  "occurrenceMissedCount": "{count} en retard",
   "@occurrenceMissedCount": {
     "placeholders": {
       "count": { "type": "int" }
@@ -2171,13 +2201,13 @@
       "name": { "type": "String" }
     }
   },
-  "occurrenceZoneMissed": "Manqués",
+  "occurrenceZoneMissed": "En retard",
   "occurrenceZoneDueToday": "Aujourd'hui",
   "occurrenceZoneComingUp": "À venir",
   "occurrenceRecordHead": "Enregistrer la dose la plus récente",
-  "occurrenceSkipEarlierMissed": "Ignorer les doses manquées antérieures lors de l'enregistrement",
+  "occurrenceSkipEarlierMissed": "Ignorer les doses en retard antérieures lors de l'enregistrement",
   "occurrenceReviewEach": "Voir dans l'événement",
-  "occurrenceSkipAllMissed": "Ignorer tous les manqués",
+  "occurrenceSkipAllMissed": "Ignorer tous les retards",
   "occurrenceNotNow": "Pas maintenant",
   "completedEventSemanticLabel": "{name}, terminé, pour {petName}",
   "@completedEventSemanticLabel": {
@@ -2187,6 +2217,37 @@
     }
   },
   "careCompletionFailed": "Impossible de marquer ce soin comme terminé. Réessayez.",
+  "careWhenWasThisDoneTitle": "Quand cela a-t-il été fait ?",
+  "careCompletedToday": "Aujourd'hui",
+  "careCompletedOnScheduledDate": "À la date prévue ({date})",
+  "@careCompletedOnScheduledDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "careChooseCompletionDate": "Choisir une autre date",
+  "careAddDetails": "Ajouter des détails",
+  "careAddDetailsTitle": "Ajouter des détails",
+  "careDetailsSaved": "Détails enregistrés",
+  "careDetailsSaveFailed": "Impossible d'enregistrer les détails. Réessayez.",
+  "careCategoryBlockProductDoseTitle": "Produit et dose",
+  "careCategoryBlockAddProductDose": "Ajouter les détails de dose",
+  "careCategoryBlockProductName": "Nom du produit",
+  "careCategoryBlockForm": "Forme",
+  "careCategoryBlockStrength": "Concentration",
+  "careCategoryBlockDoseAmount": "Quantité de dose",
+  "careCategoryBlockDoseUnit": "Unité de dose",
+  "careCategoryBlockRouteMethod": "Voie ou mode",
+  "careCategoryBlockVisitTitle": "Visite",
+  "careCategoryBlockAddVisit": "Ajouter les détails de visite",
+  "careCategoryBlockQuestionsToAsk": "Questions à poser",
+  "careCategoryBlockWeightTargetTitle": "Objectif de poids",
+  "careCategoryBlockWeightTargetFromPet": "Utilise le poids de référence de {petName} sur son profil",
+  "careProviderLabel": "Prestataire",
+  "careProviderChooseContact": "Choisir un contact",
+  "careProviderUseTypedName": "Saisir un nom",
+  "careProviderTypedName": "Nom du prestataire",
+  "careProviderContactsUnavailable": "Impossible de charger les contacts",
   "undoCompleteFailed": "Impossible d'annuler la complétion. Réessayez.",
   "careContextAwayEntryTitle": "Je serai absent",
   "careContextAwayEntryBody": "Prévisualisez les soins prévus pendant votre absence.",

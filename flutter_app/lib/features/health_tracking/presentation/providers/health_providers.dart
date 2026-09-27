@@ -153,6 +153,16 @@ class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
     await refresh();
   }
 
+  Future<void> pauseCareItem(String id) async {
+    await ref.read(healthRepositoryProvider).pauseCareItem(id);
+    await refresh();
+  }
+
+  Future<void> resumeCareItem(String id) async {
+    await ref.read(healthRepositoryProvider).resumeCareItem(id);
+    await refresh();
+  }
+
   /// Unmarks the last completed occurrence.
   Future<void> unmarkDone(String id) async {
     await ref.read(healthRepositoryProvider).unmarkDone(id);

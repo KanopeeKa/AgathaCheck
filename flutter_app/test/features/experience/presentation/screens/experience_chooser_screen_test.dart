@@ -22,27 +22,13 @@ Widget _wrap(Widget child) {
 }
 
 void main() {
-  testWidgets('FTUE shows three action cards', (tester) async {
+  testWidgets('FTUE shows pet care onboarding action', (tester) async {
     await tester.pumpWidget(_wrap(const ExperienceChooserScreen()));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('ftue_action_track_pets')), findsOneWidget);
-    expect(find.byKey(const Key('ftue_action_run_shelter')), findsOneWidget);
-    expect(find.byKey(const Key('ftue_action_fostering')), findsOneWidget);
     expect(find.text('Welcome to AgathaTrack'), findsOneWidget);
-  });
-
-  testWidgets('fostering action opens optional code dialog', (tester) async {
-    await tester.pumpWidget(_wrap(const ExperienceChooserScreen()));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byKey(const Key('ftue_action_fostering')));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('ftue_foster_code_field')), findsOneWidget);
-    expect(
-      find.byKey(const Key('ftue_foster_continue_button')),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('ftue_action_run_shelter')), findsNothing);
+    expect(find.byKey(const Key('ftue_action_fostering')), findsNothing);
   });
 }

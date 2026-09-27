@@ -8,6 +8,7 @@ import '../../../care_taxonomy/domain/care_setting.dart';
 import '../../../pet_profile/domain/entities/care_family.dart';
 import '../../../pet_profile/domain/services/care_family_write.dart';
 import '../../data/datasources/health_remote_datasource.dart';
+import '../../domain/entities/care_item_blocks.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';
 
@@ -80,6 +81,9 @@ class HealthEntryFormState {
     this.careFamilySuggestionDismissed = false,
     this.careFamilyPickerRevealed = false,
     this.careFamilyValidationAttempted = false,
+    this.providerContactId,
+    this.providerTypedName,
+    this.careBlocks = const CareItemBlocks(),
   }) : startDate = startDate ?? DateTime.now();
 
   final String name;
@@ -113,8 +117,17 @@ class HealthEntryFormState {
   final bool careFamilySuggestionDismissed;
   final bool careFamilyPickerRevealed;
   final bool careFamilyValidationAttempted;
+  final String? providerContactId;
+  final String? providerTypedName;
+  final CareItemBlocks careBlocks;
 
   int get totalPhotoCount => photos.length + pendingPhotos.length;
+
+  bool get usesProductDoseBlock =>
+      careFamily == CareFamily.medication ||
+      careFamily == CareFamily.parasitePrevention;
+
+  bool get showLegacyDosageField => careFamily == null || !usesProductDoseBlock;
 
   String? careFamilyRequiredError(AppLocalizations l10n) {
     if (!careFamilyValidationAttempted || careFamily != null) {
@@ -173,7 +186,10 @@ class HealthEntryFormState {
         carePlanning == other.carePlanning &&
         careImportance == other.careImportance &&
         importanceOverridden == other.importanceOverridden &&
-        pendingPhotos.length == other.pendingPhotos.length;
+        pendingPhotos.length == other.pendingPhotos.length &&
+        providerContactId == other.providerContactId &&
+        providerTypedName == other.providerTypedName &&
+        careBlocks == other.careBlocks;
   }
 
   HealthEntryFormState copyWith({
@@ -208,6 +224,11 @@ class HealthEntryFormState {
     bool? careFamilySuggestionDismissed,
     bool? careFamilyPickerRevealed,
     bool? careFamilyValidationAttempted,
+    String? providerContactId,
+    String? providerTypedName,
+    CareItemBlocks? careBlocks,
+    bool clearProviderContactId = false,
+    bool clearProviderTypedName = false,
     bool clearDueDate = false,
     bool clearCareFamily = false,
     bool clearCompletedOn = false,
@@ -254,6 +275,13 @@ class HealthEntryFormState {
           careFamilyPickerRevealed ?? this.careFamilyPickerRevealed,
       careFamilyValidationAttempted:
           careFamilyValidationAttempted ?? this.careFamilyValidationAttempted,
+      providerContactId: clearProviderContactId
+          ? null
+          : (providerContactId ?? this.providerContactId),
+      providerTypedName: clearProviderTypedName
+          ? null
+          : (providerTypedName ?? this.providerTypedName),
+      careBlocks: careBlocks ?? this.careBlocks,
     );
   }
 }

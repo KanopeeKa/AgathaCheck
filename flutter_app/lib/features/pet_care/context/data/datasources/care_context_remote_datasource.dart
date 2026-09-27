@@ -192,6 +192,28 @@ class CareContextRemoteDataSource {
     return PlannedAbsenceModel.fromJson(absenceJson);
   }
 
+  Future<Map<String, String>> fetchAbsenceResolutionNotes(
+    String absenceId,
+  ) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId/resolutions'),
+      headers: _headers(),
+    );
+    _check(response);
+    final body = json.decode(response.body) as Map<String, dynamic>;
+    final list = body['resolutions'] as List<dynamic>? ?? const [];
+    final notes = <String, String>{};
+    for (final raw in list) {
+      final map = raw as Map<String, dynamic>;
+      final entryId = map['health_entry_id'] as String?;
+      final note = map['absence_note'] as String?;
+      if (entryId != null && note != null && note.isNotEmpty) {
+        notes[entryId] = note;
+      }
+    }
+    return notes;
+  }
+
   Future<PlannedAbsence> cancelPlannedAbsence(String absenceId) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/planned-absences/$absenceId/cancel'),

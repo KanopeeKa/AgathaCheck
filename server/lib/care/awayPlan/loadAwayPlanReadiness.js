@@ -1,5 +1,6 @@
-import { evaluateCarePeriodCoverage } from '../carePeriodCoverage.js';
 import { dateToIsoDate } from '../../calendarDate.js';
+import { loadResolutionsByEntryIds } from '../absence/resolutionRepository.js';
+import { evaluateCarePeriodCoverageWithResolutions } from '../absence/absenceCoverage.js';
 import {
   aggregateCareCoverage,
   deriveAwayPlanReadiness,
@@ -16,7 +17,14 @@ import { loadAwayPlanProjection } from './loadAwayPlanProjection.js';
  * @param {string} endsOn
  * @param {string} [todayIso]
  */
-export async function loadAwayPlanReadiness(pool, petRows, startsOn, endsOn, todayIso) {
+export async function loadAwayPlanReadiness(
+  pool,
+  petRows,
+  startsOn,
+  endsOn,
+  todayIso,
+  absenceId = null
+) {
   const carerCoverage = deriveCarerCoverage(petRows);
   const perPetCoverage = [];
 
@@ -28,10 +36,24 @@ export async function loadAwayPlanReadiness(pool, petRows, startsOn, endsOn, tod
       endsOn,
       todayIso
     );
+    let coverage;
+    if (absenceId) {
+      const entryIds = (projection.planned_care_items || []).map((row) => row.health_entry_id);
+      const resolutionsByEntry = await loadResolutionsByEntryIds(pool, absenceId, entryIds);
+      coverage = evaluateCarePeriodCoverageWithResolutions(
+        projection,
+        projection.planned_care_items || [],
+        resolutionsByEntry,
+        { startsOn, endsOn }
+      );
+    } else {
+      const { evaluateCarePeriodCoverage } = await import('../carePeriodCoverage.js');
+      coverage = evaluateCarePeriodCoverage(projection);
+    }
     perPetCoverage.push({
       pet_id: petRow.pet_id,
       projection,
-      coverage: evaluateCarePeriodCoverage(projection),
+      coverage,
     });
   }
 
@@ -50,5 +72,5 @@ export async function loadAwayPlanReadinessForAbsence(pool, absenceRow, petRows,
   if (!startsOn || !endsOn) {
     throw new Error('Absence dates are required for readiness derivation');
   }
-  return loadAwayPlanReadiness(pool, petRows, startsOn, endsOn, todayIso);
+  return loadAwayPlanReadiness(pool, petRows, startsOn, endsOn, todayIso, absenceRow.id);
 }

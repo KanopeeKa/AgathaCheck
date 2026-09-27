@@ -23,6 +23,25 @@ Make [care-item-evolution.md](../../docs/domains/pet_care/features/care-item-evo
 | **approved_by** | user chat 2026-09-27: execute-plan full autonomous through care-item-evolution programme |
 | **control_issue** | #1346 |
 
+## Runtime
+
+```yaml
+autonomy: active
+current_phase: integration-main
+last_completed_phase: f-categories
+halt_reason: null
+next_action: "continue phase integration-main on branch cursor/care-item-evolution-integration-7796"
+artifact_ref:
+  branch: cursor/care-item-evolution-integration-7796
+  plan_path: .agents/plans/care-item-evolution.md
+  plan_commit: 2278558a7d56343efcf9b41aa7bf5e9bde057df4
+  snapshot_path: .agents/plans/care-item-evolution.snapshot.json
+  snapshot_commit: 2278558a7d56343efcf9b41aa7bf5e9bde057df4
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1359"]
+merge_commits: {"docs":"d977ebdecbe7f881a3e552122f055f265e9af755"}
+debt_issue_refs: []
+```
+
 ## Phases (summary)
 
 | id | title | branch | Depends |
@@ -59,7 +78,7 @@ Reminders track (spec §R) is **out of scope** for this plan.
 
 ### Phase a1-timezone — Pet home timezone
 
-**Scope:** Schema + API + client "today" in pet TZ (D-CIE-005); blocks on Still open #5 product default.
+**Scope:** Schema + API + server/client open-occurrence missed in pet home TZ (D-CIE-005, D-CIE-023).
 
 **Exit criteria:**
 

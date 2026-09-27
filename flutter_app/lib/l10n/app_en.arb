@@ -1841,6 +1841,36 @@
   "entryNotFound": "Entry not found",
   "nextOccurrence": "Next due date",
   "careItemDatesTitle": "Dates",
+  "careItemNeedsAttentionTitle": "Needs attention",
+  "careItemScheduleTitle": "Schedule",
+  "careItemAbsenceTitle": "Absence",
+  "careItemAbsenceNothingDue": "Away {dateRange} · nothing due while you're away",
+  "@careItemAbsenceNothingDue": {
+    "placeholders": {
+      "dateRange": { "type": "String" }
+    }
+  },
+  "careItemAbsenceNotReviewed": "Not reviewed yet",
+  "careItemAbsenceNeedsReview": "Needs review",
+  "careItemAbsenceResolved": "Plan recorded for this trip",
+  "careItemAbsenceKeepDate": "Keep the date",
+  "careItemAbsenceNothingNeeded": "Nothing needed",
+  "careItemAbsenceSaveResolution": "Save",
+  "careItemDetailsTitle": "Details",
+  "careItemHistoryTitle": "History",
+  "careItemEditSchedule": "Edit schedule",
+  "careItemMenuTooltip": "Care item actions",
+  "careItemMenuPause": "Pause",
+  "careItemMenuResume": "Resume",
+  "careItemMenuArchive": "Archive",
+  "careItemMenuRestore": "Restore",
+  "careItemPausedStatus": "Paused",
+  "careItemPausedSince": "Paused since {date}",
+  "@careItemPausedSince": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
   "careItemEstablishedBody": "Part of {petName}'s regular care.",
   "@careItemEstablishedBody": {
     "placeholders": {
@@ -2239,7 +2269,7 @@
       "count": { "type": "int" }
     }
   },
-  "occurrenceMissedCount": "{count} missed",
+  "occurrenceMissedCount": "{count} overdue",
   "@occurrenceMissedCount": {
     "placeholders": {
       "count": { "type": "int" }
@@ -2251,13 +2281,13 @@
       "name": { "type": "String" }
     }
   },
-  "occurrenceZoneMissed": "Missed",
+  "occurrenceZoneMissed": "Overdue",
   "occurrenceZoneDueToday": "Due today",
   "occurrenceZoneComingUp": "Coming up",
   "occurrenceRecordHead": "Record latest dose",
-  "occurrenceSkipEarlierMissed": "Skip earlier missed doses when recording",
+  "occurrenceSkipEarlierMissed": "Skip earlier overdue doses when recording",
   "occurrenceReviewEach": "Review in event view",
-  "occurrenceSkipAllMissed": "Skip all missed",
+  "occurrenceSkipAllMissed": "Skip all overdue",
   "occurrenceNotNow": "Not now",
   "completedEventSemanticLabel": "{name}, completed, for {petName}",
   "@completedEventSemanticLabel": {
@@ -2267,6 +2297,44 @@
     }
   },
   "careCompletionFailed": "Could not mark this care item as done. Try again.",
+  "careWhenWasThisDoneTitle": "When was this done?",
+  "careCompletedToday": "Today",
+  "careCompletedOnScheduledDate": "On the scheduled date ({date})",
+  "@careCompletedOnScheduledDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "careChooseCompletionDate": "Choose another date",
+  "careAddDetails": "Add details",
+  "careAddDetailsTitle": "Add details",
+  "careDetailsSaved": "Details saved",
+  "careDetailsSaveFailed": "Could not save details. Try again.",
+  "careCategoryBlockProductDoseTitle": "Product and dose",
+  "careCategoryBlockAddProductDose": "Add dose details",
+  "careCategoryBlockProductName": "Product name",
+  "careCategoryBlockForm": "Form",
+  "careCategoryBlockStrength": "Strength",
+  "careCategoryBlockDoseAmount": "Dose amount",
+  "careCategoryBlockDoseUnit": "Dose unit",
+  "careCategoryBlockRouteMethod": "Route or method",
+  "careCategoryBlockVisitTitle": "Visit",
+  "careCategoryBlockAddVisit": "Add visit details",
+  "careCategoryBlockQuestionsToAsk": "Questions to ask",
+  "careCategoryBlockWeightTargetTitle": "Weight target",
+  "careCategoryBlockWeightTargetFromPet": "Uses {petName}'s reference weight from their profile",
+  "@careCategoryBlockWeightTargetFromPet": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
+  "careProviderLabel": "Provider",
+  "careProviderChooseContact": "Choose a contact",
+  "careProviderUseTypedName": "Enter a name instead",
+  "careProviderTypedName": "Provider name",
+  "careProviderContactsUnavailable": "Contacts could not be loaded",
   "undoCompleteFailed": "Could not undo completion. Try again.",
   "careContextAwayEntryTitle": "I'll be away",
   "careContextAwayEntryBody": "Preview care scheduled while you're away.",

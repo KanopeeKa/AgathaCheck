@@ -12,6 +12,11 @@ import {
   refreshPetWeightCache,
   resolveWeightEntryDateFromBody,
 } from '../../lib/petWeightSync.js';
+import {
+  parseHomeTimezoneBody,
+  resolveDefaultHomeTimezoneForCreate,
+  normalizePetHomeTimezone,
+} from '../../lib/petHomeTimezone.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { deleteAllPetData } from '../../lib/petDataLifecycle.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
@@ -198,22 +203,24 @@ export function registerCoreRoutes(router, pool) {
       if (organization_id && !(await userInOrg(pool, organization_id, userId))) {
         return res.status(403).json({ error: 'Not a member of this organization' });
       }
+      const homeTimezone = resolveDefaultHomeTimezoneForCreate(req);
       const result = await pool.query(
         `INSERT INTO pets (id, user_id, name, species, breed, age, date_of_birth, weight, gender,
           bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed,
-          photo_path, vet_id, color_index, passed_away, organization_id)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
+          photo_path, vet_id, color_index, passed_away, organization_id, home_timezone)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
          ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, species = EXCLUDED.species, breed = EXCLUDED.breed,
           age = EXCLUDED.age, date_of_birth = EXCLUDED.date_of_birth, weight = EXCLUDED.weight, gender = EXCLUDED.gender,
           bio = EXCLUDED.bio, insurance = EXCLUDED.insurance, neutered_date = EXCLUDED.neutered_date,
           neuter_dismissed = EXCLUDED.neuter_dismissed, chip_id = EXCLUDED.chip_id, chip_dismissed = EXCLUDED.chip_dismissed,
           photo_path = EXCLUDED.photo_path, vet_id = EXCLUDED.vet_id, color_index = EXCLUDED.color_index,
-          passed_away = EXCLUDED.passed_away, organization_id = EXCLUDED.organization_id, updated_at = NOW()
+          passed_away = EXCLUDED.passed_away, organization_id = EXCLUDED.organization_id,
+          home_timezone = EXCLUDED.home_timezone, updated_at = NOW()
          WHERE pets.user_id = $2 RETURNING *`,
         [id, userId, name, species, breed, age, dateOfBirth, weight, gender,
          bio, insurance, neuteredDate, neuterDismissed, chipId, chipDismissed,
          photoPath, vetId || null, colorValue != null ? colorValue : null,
-         passedAway, organization_id || null]
+         passedAway, organization_id || null, homeTimezone]
       );
       const pet = result.rows[0];
       await maybeCreateWeightEntryFromPetPayload(pool, {
@@ -260,7 +267,9 @@ export function registerCoreRoutes(router, pool) {
       const species = normalizeSpecies(req.body.species);
       const gender = normalizeGender(req.body.gender);
       const existingPet = await pool.query(
-        'SELECT organization_id, photo_path, weight_reference_value, weight_reference_authority, weight_management_context FROM pets WHERE id = $1',
+        `SELECT organization_id, photo_path, weight_reference_value, weight_reference_authority,
+                weight_management_context, home_timezone
+         FROM pets WHERE id = $1`,
         [id]
       );
       let photoPath = existingPet.rows[0]?.photo_path ?? null;
@@ -314,18 +323,22 @@ export function registerCoreRoutes(router, pool) {
         if (!ctxResult.ok) return res.status(400).json({ error: ctxResult.error });
         weightManagementContext = ctxResult.value;
       }
+      const homeTimezoneParsed = parseHomeTimezoneBody(req.body);
+      const homeTimezone = homeTimezoneParsed
+        ?? normalizePetHomeTimezone(existingRow.home_timezone);
       const result = await pool.query(
         `UPDATE pets SET name=$1, species=$2, breed=$3, age=$4, date_of_birth=$5, weight=$6, gender=$7,
           bio=$8, insurance=$9, neutered_date=$10, neuter_dismissed=$11, chip_id=$12, chip_dismissed=$13,
           photo_path=$14, vet_id=$15, color_index=$16, passed_away=$17, organization_id=$18,
           weight_reference_value=$19, weight_reference_authority=$20, weight_management_context=$21,
-          updated_at=NOW()
-         WHERE id=$22 RETURNING *`,
+          home_timezone=$22, updated_at=NOW()
+         WHERE id=$23 RETURNING *`,
         [name, species, breed, age, dateOfBirth, weight, gender,
          bio, insurance, neuteredDate, neuterDismissed, chipId, chipDismissed,
          photoPath, vetId || null, colorValue != null ? colorValue : null,
          passedAway, organization_id || null,
-         weightReferenceValue, weightReferenceAuthority, weightManagementContext, id]
+         weightReferenceValue, weightReferenceAuthority, weightManagementContext,
+         homeTimezone, id]
       );
       if (result.rows.length === 0) {
         return res.status(404).json({ error: 'Pet not found' });

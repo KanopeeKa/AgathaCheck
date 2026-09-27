@@ -18,6 +18,7 @@ import {
   csvCell,
   validateCareFamilyForWrite,
   validateCareSourceForWrite,
+  parseEntryProviderInput,
 } from './shared.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { materialiseInitialOccurrences, parseScheduleTimesInput } from '../../lib/occurrenceScheduling.js';
@@ -25,6 +26,7 @@ import {
   SCHEDULE_POLICY_VERSION,
   resolveRecurrenceAnchorForWrite,
 } from '../../lib/care/schedule/index.js';
+import { resolveCareBlocksForWrite } from '../../lib/care/categoryBlocks/index.js';
 
 export function registerCrudRoutes(router, pool) {
   router.get('/', async (req, res) => {
@@ -173,14 +175,24 @@ export function registerCrudRoutes(router, pool) {
       } catch (e) {
         return res.status(400).json({ error: e.message });
       }
+      const providerInput = parseEntryProviderInput(data);
+      if (providerInput.error) {
+        return res.status(400).json({ error: providerInput.error });
+      }
+      const providerContactId = providerInput.contactId ?? null;
+      const providerTypedName = providerInput.typedName ?? null;
+      const { careBlocks, dosage: resolvedDosage } = resolveCareBlocksForWrite({
+        data,
+        careFamily,
+      });
       const result = await pool.query(
-        `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, schedule_times, status, care_family, care_setting, care_planning, care_importance, importance_overridden, care_source, schedule_policy_version)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26) RETURNING *`,
+        `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, schedule_times, status, care_family, care_setting, care_planning, care_importance, importance_overridden, care_source, schedule_policy_version, provider_contact_id, provider_typed_name, care_blocks)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29) RETURNING *`,
         [
           id, petId, userId,
           data.name || '',
           derivedType,
-          data.dosage || '',
+          resolvedDosage,
           frequency,
           data.frequency_days || data.frequencyDays || null,
           data.frequency_interval || data.frequencyInterval || 1,
@@ -198,6 +210,9 @@ export function registerCrudRoutes(router, pool) {
           importanceOverridden,
           careSourceValidation.value,
           SCHEDULE_POLICY_VERSION,
+          providerContactId,
+          providerTypedName,
+          JSON.stringify(careBlocks),
         ]
       );
       const entry = result.rows[0];
@@ -243,7 +258,8 @@ export function registerCrudRoutes(router, pool) {
       }
       const existingResult = await pool.query(
         `SELECT care_family, care_source, recurrence_anchor, care_setting, care_planning,
-          care_importance, importance_overridden, remind_days_before
+          care_importance, importance_overridden, remind_days_before,
+          provider_contact_id, provider_typed_name, care_blocks, dosage
          FROM health_entries WHERE id = $1`,
         [req.params.id],
       );
@@ -313,6 +329,26 @@ export function registerCrudRoutes(router, pool) {
       } catch (e) {
         return res.status(400).json({ error: e.message });
       }
+      const providerInput = parseEntryProviderInput(data);
+      if (providerInput.error) {
+        return res.status(400).json({ error: providerInput.error });
+      }
+      let providerContactId = existing.provider_contact_id;
+      let providerTypedName = existing.provider_typed_name;
+      if (providerInput.contactId !== undefined) {
+        providerContactId = providerInput.contactId;
+        if (providerContactId) providerTypedName = null;
+      }
+      if (providerInput.typedName !== undefined) {
+        providerTypedName = providerInput.typedName;
+        if (providerTypedName) providerContactId = null;
+      }
+      const { careBlocks, dosage: resolvedDosage } = resolveCareBlocksForWrite({
+        data,
+        careFamily,
+        existing,
+        careFamilyChanged,
+      });
       const result = await pool.query(
         `UPDATE health_entries SET name = $1, type = $2, dosage = $3, frequency = $4, frequency_days = $5,
           frequency_interval = $6, start_date = $7, next_due_date = $8, completed_on = $9,
@@ -320,12 +356,13 @@ export function registerCrudRoutes(router, pool) {
           health_issue_id = $13, remind_days_before = $14, status = $15,
           care_family = $16, care_setting = $17, care_planning = $18, care_importance = $19,
           importance_overridden = $20, care_source = $21, schedule_policy_version = $22,
+          provider_contact_id = $23, provider_typed_name = $24, care_blocks = $25,
           updated_at = NOW()
-         WHERE id = $23 RETURNING *`,
+         WHERE id = $26 RETURNING *`,
         [
           data.name || '',
           derivedType,
-          data.dosage || '',
+          resolvedDosage,
           frequency,
           data.frequency_days || data.frequencyDays || null,
           data.frequency_interval || data.frequencyInterval || 1,
@@ -342,6 +379,9 @@ export function registerCrudRoutes(router, pool) {
           importanceOverridden,
           careSource,
           SCHEDULE_POLICY_VERSION,
+          providerContactId,
+          providerTypedName,
+          JSON.stringify(careBlocks),
           req.params.id,
         ]
       );

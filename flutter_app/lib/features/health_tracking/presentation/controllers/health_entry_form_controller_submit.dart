@@ -10,6 +10,14 @@ import 'health_entry_form_state.dart';
 
 mixin HealthEntryFormSubmitMixin
     on HealthEntryFormControllerBase, HealthEntryFormPhotoMixin {
+  String _dosageForSubmit(HealthEntryFormState state) {
+    if (state.usesProductDoseBlock) {
+      final fromBlock = state.careBlocks.productDose?.legacyDosageLine() ?? '';
+      if (fromBlock.isNotEmpty) return fromBlock;
+    }
+    return state.dosage.trim();
+  }
+
   Future<HealthEntrySubmitOutcome> submitForm({
     bool markCompleted = false,
     bool skipMarkCompletedCheck = false,
@@ -86,13 +94,18 @@ mixin HealthEntryFormSubmitMixin
         isCreate: !state.isEdit,
       );
 
+      final blocksForWrite = state.careBlocks.filteredFor(
+        careFamily ?? state.careFamily,
+      );
+      final dosageForApi = _dosageForSubmit(state);
+
       if (state.isEdit) {
         final entry = HealthEntry(
           id: entryId ?? '',
           petId: state.selectedPetIds.first,
           name: state.name.trim(),
           type: state.type,
-          dosage: state.dosage.trim(),
+          dosage: dosageForApi,
           frequency: effectiveFrequency,
           frequencyInterval: effectiveFrequency == HealthFrequency.once
               ? 1
@@ -111,6 +124,9 @@ mixin HealthEntryFormSubmitMixin
           carePlanning: state.carePlanning,
           careImportance: state.careImportance,
           importanceOverridden: state.importanceOverridden,
+          providerContactId: state.providerContactId,
+          providerTypedName: state.providerTypedName,
+          careBlocks: blocksForWrite,
         );
         await notifier.updateEntry(entry);
         if (state.pendingPhotos.isNotEmpty && entryId != null) {
@@ -127,7 +143,7 @@ mixin HealthEntryFormSubmitMixin
             petId: petId,
             name: state.name.trim(),
             type: state.type,
-            dosage: state.dosage.trim(),
+            dosage: dosageForApi,
             frequency: effectiveFrequency,
             frequencyInterval: effectiveFrequency == HealthFrequency.once
                 ? 1
@@ -152,6 +168,9 @@ mixin HealthEntryFormSubmitMixin
             carePlanning: state.carePlanning,
             careImportance: state.careImportance,
             importanceOverridden: state.importanceOverridden,
+            providerContactId: state.providerContactId,
+            providerTypedName: state.providerTypedName,
+            careBlocks: blocksForWrite,
           );
           final created = await createUseCase.call(entry);
           createdEntryIds.add(created.id);

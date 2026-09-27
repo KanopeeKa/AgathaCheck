@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/health_entry.dart';
@@ -46,6 +47,27 @@ class CareItemDatesSection extends ConsumerWidget {
       ),
       error: (_, __) => _LegacyDatesSummary(entry: entry, muted: muted),
       data: (occurrences) {
+        if (entry.isPaused) {
+          return Column(
+            key: const Key('care_item_needs_attention_section'),
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Semantics(
+                header: true,
+                child: Text(
+                  l.careItemNeedsAttentionTitle,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: muted ? colorScheme.onSurfaceVariant : null,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              _PausedAttentionBanner(entry: entry, muted: muted),
+            ],
+          );
+        }
+
         if (occurrences.isEmpty) {
           return _LegacyDatesSummary(entry: entry, muted: muted);
         }
@@ -56,13 +78,13 @@ class CareItemDatesSection extends ConsumerWidget {
         final comingUp = _zoneItems(occurrences, OccurrenceZone.comingUp, now);
 
         return Column(
-          key: const Key('care_item_dates_section'),
+          key: const Key('care_item_needs_attention_section'),
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Semantics(
               header: true,
               child: Text(
-                l.careItemDatesTitle,
+                l.careItemNeedsAttentionTitle,
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: muted ? colorScheme.onSurfaceVariant : null,
@@ -281,6 +303,42 @@ class _LegacyDatesSummary extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _PausedAttentionBanner extends StatelessWidget {
+  const _PausedAttentionBanner({required this.entry, required this.muted});
+
+  final HealthEntry entry;
+  final bool muted;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final since = entry.pausedSince;
+    final line = since != null
+        ? l.careItemPausedSince(DateFormat.yMMMd().format(since))
+        : l.careItemPausedStatus;
+
+    return Container(
+      key: const Key('care_item_paused_banner'),
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outlineVariant),
+      ),
+      child: Text(
+        line,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: muted ? colorScheme.onSurfaceVariant : colorScheme.onSurface,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 }

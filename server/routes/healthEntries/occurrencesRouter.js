@@ -1,5 +1,6 @@
 import { publicError } from '../../config/security.js';
-import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../../lib/calendarDate.js';
+import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
+import { resolveOccurrenceAsOf } from '../../lib/petHomeTimezone.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
@@ -27,7 +28,7 @@ import {
   WEIGHT_GENERIC_COMPLETE_ERROR,
 } from './weightOccurrenceCompletion.js';
 
-async function loadEntry(pool, entryId, userId) {
+export async function loadEntry(pool, entryId, userId) {
   if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
     return null;
   }
@@ -50,13 +51,13 @@ export async function loadOccurrence(pool, entryId, occId) {
   return result.rows[0] || null;
 }
 
-function asOfFromRequest(req) {
-  const body = req.body || {};
-  const q = req.query || {};
-  return (
-    normalizeCalendarDateInput(body.as_of || body.asOf || q.as_of || q.asOf)
-    || todayCalendarIso()
-  );
+async function asOfForEntry(pool, entry, req) {
+  const resolved = await resolveOccurrenceAsOf(pool, entry, req);
+  return resolved.todayIso;
+}
+
+async function asOfContextForEntry(pool, entry, req) {
+  return resolveOccurrenceAsOf(pool, entry, req);
 }
 
 export function registerOccurrenceRoutes(router, pool) {
@@ -66,11 +67,16 @@ export function registerOccurrenceRoutes(router, pool) {
     try {
       const entry = await loadEntry(pool, req.params.id, userId);
       if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      const asOf = asOfFromRequest(req);
-      await tryAutoCloseRecurringWithEndDate(pool, entry, todayCalendarIso());
+      const asOfCtx = await asOfContextForEntry(pool, entry, req);
+      await tryAutoCloseRecurringWithEndDate(pool, entry, asOfCtx.todayIso);
       const status = req.query.status || 'open';
       if (status === 'open') {
-        const rows = await listOpenOccurrences(pool, entry.id, asOf);
+        const rows = await listOpenOccurrences(
+          pool,
+          entry.id,
+          asOfCtx.todayIso,
+          asOfCtx.nowTimeIso,
+        );
         return res.json(rows);
       }
       const result = await pool.query(
@@ -108,9 +114,15 @@ export function registerOccurrenceRoutes(router, pool) {
       const notes = body.notes || '';
       const markedAt = new Date();
       const skipEarlier = Boolean(body.skip_earlier_missed || body.skipEarlierMissed);
+      const asOfCtx = await asOfContextForEntry(pool, entry, req);
 
       if (skipEarlier) {
-        const missedIds = await listMissedOccurrenceIds(pool, entryId, asOfFromRequest(req));
+        const missedIds = await listMissedOccurrenceIds(
+          pool,
+          entryId,
+          asOfCtx.todayIso,
+          asOfCtx.nowTimeIso,
+        );
         const earlier = missedIds.filter((id) => id !== occ.id);
         if (earlier.length > 0) {
           await skipMissedOccurrences(pool, {
@@ -118,7 +130,7 @@ export function registerOccurrenceRoutes(router, pool) {
             userId,
             occurrenceIds: earlier,
             markedAt,
-            todayIso: asOfFromRequest(req),
+            todayIso: asOfCtx.todayIso,
           });
         }
       }
@@ -131,8 +143,9 @@ export function registerOccurrenceRoutes(router, pool) {
         completedOn,
         notes,
         markedAt,
-        todayIso: asOfFromRequest(req),
+        todayIso: asOfCtx.todayIso,
         performedByUserId: performedBy,
+        body,
       });
       if (!completion) {
         return res.status(404).json({ error: 'Occurrence not found' });
@@ -176,13 +189,14 @@ export function registerOccurrenceRoutes(router, pool) {
       }
       const notes = (req.body || {}).notes || '';
       const markedAt = new Date();
+      const todayIso = await asOfForEntry(pool, entry, req);
       const skipped = await skipOccurrence(pool, {
         entry,
         occurrenceId: occ.id,
         userId,
         notes,
         markedAt,
-        todayIso: asOfFromRequest(req),
+        todayIso,
       });
       if (!skipped) {
         return res.status(404).json({ error: 'Occurrence not found' });
@@ -209,8 +223,13 @@ export function registerOccurrenceRoutes(router, pool) {
       const entryId = req.params.id;
       const entry = await loadEntry(pool, entryId, userId);
       if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      const asOf = asOfFromRequest(req);
-      const missedIds = await listMissedOccurrenceIds(pool, entryId, asOf);
+      const asOfCtx = await asOfContextForEntry(pool, entry, req);
+      const missedIds = await listMissedOccurrenceIds(
+        pool,
+        entryId,
+        asOfCtx.todayIso,
+        asOfCtx.nowTimeIso,
+      );
       if (missedIds.length === 0) {
         return res.json({ skipped: [], count: 0 });
       }
@@ -220,7 +239,7 @@ export function registerOccurrenceRoutes(router, pool) {
         userId,
         occurrenceIds: missedIds,
         markedAt,
-        todayIso: asOf,
+        todayIso: asOfCtx.todayIso,
       });
       logAuditEventSafe(pool, {
         actorUserId: userId,
@@ -261,7 +280,7 @@ export function registerOccurrenceRoutes(router, pool) {
         recurrenceAnchor: body.recurrence_anchor ?? body.recurrenceAnchor,
         reasonCode: body.reason_code || body.reasonCode || null,
         reasonNote: body.reason_note || body.reasonNote || body.notes || null,
-        todayIso: asOfFromRequest(req),
+        todayIso: await asOfForEntry(pool, entry, req),
       });
       if (!adjusted) {
         return res.status(400).json({ error: 'Entry cadence cannot be adjusted' });
@@ -424,9 +443,8 @@ export async function completeOldestPendingOccurrence(pool, entryId, userId, bod
   const completedOn = resolveCompletedOn(body.completed_on || body.completedOn);
   const notes = body.notes || '';
   const markedAt = new Date();
-  const todayIso = req?.query?.as_of
-    ? normalizeCalendarDateInput(req.query.as_of) || todayCalendarIso()
-    : todayCalendarIso();
+  const asOfCtx = await resolveOccurrenceAsOf(pool, entry, req);
+  const todayIso = asOfCtx.todayIso;
   const completion = await completeOccurrence(pool, {
     entry,
     occurrenceId: occId,
@@ -436,6 +454,7 @@ export async function completeOldestPendingOccurrence(pool, entryId, userId, bod
     markedAt,
     todayIso,
     performedByUserId: performedBy,
+    body,
   });
   if (!completion) return null;
   if (req) {

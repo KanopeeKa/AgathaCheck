@@ -57,6 +57,9 @@ class OccurrenceSummary {
   final int missedCount;
   final HealthOccurrence? missedHead;
   final HealthOccurrence? nextHead;
+
+  /// Worst open slot for list rows: overdue head, else next due/upcoming.
+  HealthOccurrence? get leadingOccurrence => missedHead ?? nextHead;
 }
 
 OccurrenceSummary summarizeOpenOccurrences(
@@ -64,7 +67,7 @@ OccurrenceSummary summarizeOpenOccurrences(
   DateTime now,
 ) {
   final withMissed = open
-      .map((o) => o.copyWithMissed(isOccurrenceMissed(o, now)))
+      .map((o) => o.missed ? o : o.copyWithMissed(isOccurrenceMissed(o, now)))
       .toList();
   final missed = withMissed.where((o) => o.missed).toList();
   final missedSorted = sortOccurrencesByZone(missed, OccurrenceZone.missed);

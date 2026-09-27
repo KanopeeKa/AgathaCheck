@@ -68,6 +68,16 @@ class HealthRepositoryImpl implements HealthRepository {
   }
 
   @override
+  Future<HealthEntry> pauseCareItem(String id) {
+    return dataSource.pauseCareItem(id);
+  }
+
+  @override
+  Future<HealthEntry> resumeCareItem(String id) {
+    return dataSource.resumeCareItem(id);
+  }
+
+  @override
   Future<HealthEntry> unmarkDone(String id) {
     return dataSource.unmarkDone(id);
   }
@@ -126,6 +136,23 @@ class HealthRepositoryImpl implements HealthRepository {
   @override
   Future<HealthOccurrence> undoOccurrence(String entryId, String occurrenceId) {
     return dataSource.undoOccurrence(entryId, occurrenceId);
+  }
+
+  @override
+  Future<HealthOccurrence> updateOccurrenceNotes(
+    String entryId,
+    String occurrenceId,
+    String notes, {
+    String? providerContactId,
+    String? providerTypedName,
+  }) {
+    return dataSource.updateOccurrenceNotes(
+      entryId,
+      occurrenceId,
+      notes,
+      providerContactId: providerContactId,
+      providerTypedName: providerTypedName,
+    );
   }
 
   @override

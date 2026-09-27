@@ -1,3 +1,4 @@
+import '../../domain/entities/care_item_blocks.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';
 import '../../../care_taxonomy/domain/care_importance.dart';
@@ -30,12 +31,16 @@ class HealthEntryModel extends HealthEntry {
     super.remindDaysBefore,
     super.scheduleTimes,
     super.status,
+    super.pausedSince,
     super.careFamily,
     super.careSetting,
     super.carePlanning,
     super.careImportance,
     super.importanceOverridden,
     super.careSource,
+    super.providerContactId,
+    super.providerTypedName,
+    super.careBlocks,
     super.createdAt,
     super.updatedAt,
   });
@@ -69,6 +74,9 @@ class HealthEntryModel extends HealthEntry {
       remindDaysBefore: json['remind_days_before'] as int? ?? 1,
       scheduleTimes: _parseScheduleTimes(json['schedule_times']),
       status: json['status'] as String? ?? 'active',
+      pausedSince: parseCalendarDate(
+        json['paused_since'] ?? json['pausedSince'],
+      ),
       careFamily: CareFamilyWire.fromWire(json['care_family'] as String?),
       careSetting: CareSettingWire.fromWire(json['care_setting'] as String?),
       carePlanning: CarePlanningModeWire.fromWire(
@@ -79,6 +87,11 @@ class HealthEntryModel extends HealthEntry {
       ),
       importanceOverridden: json['importance_overridden'] as bool? ?? false,
       careSource: CareSourceWire.fromWire(json['care_source'] as String?),
+      providerContactId: json['provider_contact_id'] as String?,
+      providerTypedName: json['provider_typed_name'] as String?,
+      careBlocks: CareItemBlocks.fromJson(
+        json['care_blocks'] as Map<String, dynamic>?,
+      ),
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
           : null,
@@ -110,12 +123,16 @@ class HealthEntryModel extends HealthEntry {
       remindDaysBefore: entry.remindDaysBefore,
       scheduleTimes: entry.scheduleTimes,
       status: entry.status,
+      pausedSince: entry.pausedSince,
       careFamily: entry.careFamily,
       careSetting: entry.careSetting,
       carePlanning: entry.carePlanning,
       careImportance: entry.careImportance,
       importanceOverridden: entry.importanceOverridden,
       careSource: entry.careSource,
+      providerContactId: entry.providerContactId,
+      providerTypedName: entry.providerTypedName,
+      careBlocks: entry.careBlocks,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     );
@@ -148,6 +165,10 @@ class HealthEntryModel extends HealthEntry {
       if (careImportance != null) 'care_importance': careImportance!.wireValue,
       if (importanceOverridden) 'importance_overridden': importanceOverridden,
       if (careSource != null) 'care_source': careSource!.wireValue,
+      if (providerContactId != null) 'provider_contact_id': providerContactId,
+      if (providerTypedName != null && providerTypedName!.isNotEmpty)
+        'provider_typed_name': providerTypedName,
+      if (!careBlocks.isEmpty) 'care_blocks': careBlocks.toJson(),
     };
   }
 

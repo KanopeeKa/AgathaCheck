@@ -103,7 +103,7 @@ export function isWithinMaterialisationWindow(targetDateIso, todayIso) {
 }
 
 /**
- * Missed predicate for API (server calendar day; clients may refine with local TZ).
+ * Missed predicate for API (pet home timezone "today" when wired via listOpenOccurrences).
  *
  * @param {string} scheduledDateIso YYYY-MM-DD
  * @param {string|null} scheduledTime HH:MM or null (all-day)
@@ -143,6 +143,9 @@ export function occurrenceToMap(row) {
     performed_by_snapshot: row.performed_by_snapshot ?? null,
     notes: row.notes || '',
     completion_timing: row.completion_timing ?? null,
+    provider_contact_id: row.provider_contact_id ?? null,
+    provider_typed_name: row.provider_typed_name ?? null,
+    provider_contact_snapshot: row.provider_contact_snapshot ?? null,
   };
 }
 

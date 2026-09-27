@@ -75,7 +75,7 @@ function createHarness(entry, initialOccurrences = [], todayIso = '2026-09-01') 
         && sql.includes('completion_timing')
       ) {
         const idx = occurrences.findIndex(
-          (o) => o.id === params[8] && o.health_entry_id === params[9] && o.status === 'pending',
+          (o) => o.id === params[11] && o.health_entry_id === params[12] && o.status === 'pending',
         );
         if (idx < 0) return { rows: [] };
         occurrences[idx] = {
@@ -89,6 +89,9 @@ function createHarness(entry, initialOccurrences = [], todayIso = '2026-09-01') 
           performed_by_user_id: params[5],
           marked_by_snapshot: params[6] ? JSON.parse(params[6]) : null,
           performed_by_snapshot: params[7] ? JSON.parse(params[7]) : null,
+          provider_contact_id: params[8],
+          provider_typed_name: params[9],
+          provider_contact_snapshot: params[10] ? JSON.parse(params[10]) : null,
         };
         return { rows: [occurrences[idx]] };
       }

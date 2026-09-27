@@ -35,6 +35,7 @@ class CareTemporalGroupingService {
   /// Pending occurrences only. Future non-today occurrences map to [CareTemporalGroup.upcoming].
   CareTemporalGroup? groupForOccurrence(HealthOccurrence occ, DateTime now) {
     if (!occ.isPending) return null;
+    if (occ.missed) return CareTemporalGroup.needsAttention;
     if (isOccurrenceMissed(occ, now)) return CareTemporalGroup.needsAttention;
 
     final today = calendarDateOnly(now);

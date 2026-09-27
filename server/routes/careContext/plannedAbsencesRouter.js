@@ -23,6 +23,7 @@ import {
   normalizeHandoverNoteInput,
 } from './plannedAbsenceHandoverFields.js';
 import { registerPlannedAbsenceHandoverRoutes } from './plannedAbsenceHandoverRoutes.js';
+import { registerAbsenceResolutionsRoutes } from './absenceResolutionsRouter.js';
 import { registerPlannedAbsenceCarerInviteRoutes } from './plannedAbsenceCarerInviteRoutes.js';
 import {
   assertManageablePets,
@@ -130,6 +131,11 @@ export function registerPlannedAbsenceRoutes(router, pool) {
   });
 
   registerAbsenceCarePlanRoutes(router, pool, {
+    loadAbsenceForUser,
+    loadAbsencePets,
+  });
+
+  registerAbsenceResolutionsRoutes(router, pool, {
     loadAbsenceForUser,
     loadAbsencePets,
   });

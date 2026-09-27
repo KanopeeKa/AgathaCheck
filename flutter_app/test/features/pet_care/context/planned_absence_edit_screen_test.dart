@@ -73,6 +73,11 @@ class _FakeCareContextRepository implements CareContextRepository {
   }
 
   @override
+  Future<Map<String, String>> getAbsenceResolutionNotes(
+    String absenceId,
+  ) async => const {};
+
+  @override
   Future<List<PlannedAbsence>> listPlannedAbsences({
     String scope = 'all',
   }) async {

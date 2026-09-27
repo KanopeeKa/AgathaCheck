@@ -464,9 +464,7 @@ void main() {
     expect(find.byKey(const Key('experience_nav_home')), findsNothing);
   });
 
-  testWidgets('guardian root always reveals Shelter in workspace menu', (
-    tester,
-  ) async {
+  testWidgets('guardian root omits workspace menu (D-MVP-1)', (tester) async {
     await tester.pumpWidget(
       _buildApp(
         prefs: prefs,
@@ -476,12 +474,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('experience_workspace_toggle')));
-    await tester.pumpAndSettle();
-
+    expect(find.byKey(const Key('experience_workspace_toggle')), findsNothing);
     expect(
       find.byKey(const Key('experience_workspace_menu_shelter')),
-      findsOneWidget,
+      findsNothing,
     );
   });
 
@@ -501,7 +497,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Shelter home'), findsOneWidget);
-  });
+  }, skip: true); // Workspace switcher removed in D-MVP-1
 
   testWidgets('workspace toggle navigates to Pet Care', (tester) async {
     await tester.pumpWidget(
@@ -519,7 +515,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Guardian home'), findsOneWidget);
-  });
+  }, skip: true); // Workspace switcher removed in D-MVP-1
 
   testWidgets('baseline: org non-root path shows back button', (tester) async {
     await tester.pumpWidget(
@@ -532,10 +528,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
-    expect(
-      find.byKey(const Key('experience_workspace_toggle')),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('experience_workspace_toggle')), findsNothing);
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
 
@@ -580,7 +573,7 @@ void main() {
     });
 
     testWidgets(
-      'relocates workspace toggle to rail leading slot on section root',
+      'rail leading slot omits workspace toggle on section root (D-MVP-1)',
       (tester) async {
         await tester.binding.setSurfaceSize(const Size(720, 900));
         addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -601,7 +594,7 @@ void main() {
             of: rail,
             matching: find.byKey(const Key('experience_workspace_toggle')),
           ),
-          findsOneWidget,
+          findsNothing,
         );
         expect(
           find.descendant(
@@ -613,7 +606,7 @@ void main() {
         expect(find.text('AgathaTrack'), findsNothing);
         expect(
           find.byKey(const Key('experience_workspace_toggle')),
-          findsOneWidget,
+          findsNothing,
         );
       },
     );
@@ -773,7 +766,7 @@ void main() {
         expect(find.text('Dashboard'), findsOneWidget);
         expect(find.text('Pets'), findsOneWidget);
         expect(find.text('Actions'), findsOneWidget);
-        expect(find.text('Fostering'), findsOneWidget);
+        expect(find.text('Fostering'), findsNothing);
         expect(find.text('Account'), findsOneWidget);
       },
     );
@@ -919,7 +912,7 @@ void main() {
     });
 
     testWidgets(
-      'relocates workspace toggle to sidebar header on section root',
+      'sidebar header omits workspace toggle on section root (D-MVP-1)',
       (tester) async {
         await tester.binding.setSurfaceSize(const Size(1024, 900));
         addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -940,17 +933,17 @@ void main() {
             of: sidebar,
             matching: find.byKey(const Key('experience_workspace_toggle')),
           ),
-          findsOneWidget,
+          findsNothing,
         );
         expect(
           find.byKey(const Key('experience_workspace_toggle')),
-          findsOneWidget,
+          findsNothing,
         );
       },
     );
 
     testWidgets(
-      'shows back button on non-root with workspace toggle in sidebar',
+      'shows back button on non-root without workspace toggle in sidebar',
       (tester) async {
         await tester.binding.setSurfaceSize(const Size(1024, 900));
         addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -968,7 +961,7 @@ void main() {
         expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
         expect(
           find.byKey(const Key('experience_workspace_toggle')),
-          findsOneWidget,
+          findsNothing,
         );
       },
     );
@@ -1111,7 +1104,7 @@ void main() {
       );
       expect(
         find.byKey(const Key('experience_workspace_toggle')),
-        findsOneWidget,
+        findsNothing,
       );
       final appBar = tester.widget<AppBar>(find.byType(AppBar));
       expect(appBar.backgroundColor, AppColorTokens.organizationPrimary);
@@ -1141,7 +1134,7 @@ void main() {
       expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
       expect(
         find.byKey(const Key('experience_workspace_toggle')),
-        findsOneWidget,
+        findsNothing,
       );
     });
 
@@ -1196,7 +1189,7 @@ void main() {
           of: sidebar,
           matching: find.byKey(const Key('experience_workspace_toggle')),
         ),
-        findsOneWidget,
+        findsNothing,
       );
       final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
       expect(scaffold.drawer, isNull);
@@ -1282,7 +1275,7 @@ void main() {
         find.byKey(const Key('shelter_bottom_navigation')),
         findsOneWidget,
       );
-    });
+    }, skip: true); // Shelter pin slot inactive while frozen domains disabled
 
     testWidgets('onboarding route does not show shelter primary nav', (
       tester,

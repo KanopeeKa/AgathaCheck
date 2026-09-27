@@ -9117,6 +9117,126 @@ abstract class AppLocalizations {
   /// **'Dates'**
   String get careItemDatesTitle;
 
+  /// No description provided for @careItemNeedsAttentionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get careItemNeedsAttentionTitle;
+
+  /// No description provided for @careItemScheduleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get careItemScheduleTitle;
+
+  /// No description provided for @careItemAbsenceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Absence'**
+  String get careItemAbsenceTitle;
+
+  /// No description provided for @careItemAbsenceNothingDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Away {dateRange} · nothing due while you\'re away'**
+  String careItemAbsenceNothingDue(String dateRange);
+
+  /// No description provided for @careItemAbsenceNotReviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not reviewed yet'**
+  String get careItemAbsenceNotReviewed;
+
+  /// No description provided for @careItemAbsenceNeedsReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs review'**
+  String get careItemAbsenceNeedsReview;
+
+  /// No description provided for @careItemAbsenceResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan recorded for this trip'**
+  String get careItemAbsenceResolved;
+
+  /// No description provided for @careItemAbsenceKeepDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the date'**
+  String get careItemAbsenceKeepDate;
+
+  /// No description provided for @careItemAbsenceNothingNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing needed'**
+  String get careItemAbsenceNothingNeeded;
+
+  /// No description provided for @careItemAbsenceSaveResolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get careItemAbsenceSaveResolution;
+
+  /// No description provided for @careItemDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get careItemDetailsTitle;
+
+  /// No description provided for @careItemHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get careItemHistoryTitle;
+
+  /// No description provided for @careItemEditSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit schedule'**
+  String get careItemEditSchedule;
+
+  /// No description provided for @careItemMenuTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Care item actions'**
+  String get careItemMenuTooltip;
+
+  /// No description provided for @careItemMenuPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get careItemMenuPause;
+
+  /// No description provided for @careItemMenuResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get careItemMenuResume;
+
+  /// No description provided for @careItemMenuArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get careItemMenuArchive;
+
+  /// No description provided for @careItemMenuRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get careItemMenuRestore;
+
+  /// No description provided for @careItemPausedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get careItemPausedStatus;
+
+  /// No description provided for @careItemPausedSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused since {date}'**
+  String careItemPausedSince(String date);
+
   /// No description provided for @careItemEstablishedBody.
   ///
   /// In en, this message translates to:
@@ -10926,7 +11046,7 @@ abstract class AppLocalizations {
   /// No description provided for @occurrenceMissedCount.
   ///
   /// In en, this message translates to:
-  /// **'{count} missed'**
+  /// **'{count} overdue'**
   String occurrenceMissedCount(int count);
 
   /// No description provided for @occurrenceStackSheetTitle.
@@ -10938,7 +11058,7 @@ abstract class AppLocalizations {
   /// No description provided for @occurrenceZoneMissed.
   ///
   /// In en, this message translates to:
-  /// **'Missed'**
+  /// **'Overdue'**
   String get occurrenceZoneMissed;
 
   /// No description provided for @occurrenceZoneDueToday.
@@ -10962,7 +11082,7 @@ abstract class AppLocalizations {
   /// No description provided for @occurrenceSkipEarlierMissed.
   ///
   /// In en, this message translates to:
-  /// **'Skip earlier missed doses when recording'**
+  /// **'Skip earlier overdue doses when recording'**
   String get occurrenceSkipEarlierMissed;
 
   /// No description provided for @occurrenceReviewEach.
@@ -10974,7 +11094,7 @@ abstract class AppLocalizations {
   /// No description provided for @occurrenceSkipAllMissed.
   ///
   /// In en, this message translates to:
-  /// **'Skip all missed'**
+  /// **'Skip all overdue'**
   String get occurrenceSkipAllMissed;
 
   /// No description provided for @occurrenceNotNow.
@@ -10994,6 +11114,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not mark this care item as done. Try again.'**
   String get careCompletionFailed;
+
+  /// No description provided for @careWhenWasThisDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When was this done?'**
+  String get careWhenWasThisDoneTitle;
+
+  /// No description provided for @careCompletedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get careCompletedToday;
+
+  /// No description provided for @careCompletedOnScheduledDate.
+  ///
+  /// In en, this message translates to:
+  /// **'On the scheduled date ({date})'**
+  String careCompletedOnScheduledDate(String date);
+
+  /// No description provided for @careChooseCompletionDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose another date'**
+  String get careChooseCompletionDate;
+
+  /// No description provided for @careAddDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Add details'**
+  String get careAddDetails;
+
+  /// No description provided for @careAddDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add details'**
+  String get careAddDetailsTitle;
+
+  /// No description provided for @careDetailsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Details saved'**
+  String get careDetailsSaved;
+
+  /// No description provided for @careDetailsSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save details. Try again.'**
+  String get careDetailsSaveFailed;
+
+  /// No description provided for @careCategoryBlockProductDoseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Product and dose'**
+  String get careCategoryBlockProductDoseTitle;
+
+  /// No description provided for @careCategoryBlockAddProductDose.
+  ///
+  /// In en, this message translates to:
+  /// **'Add dose details'**
+  String get careCategoryBlockAddProductDose;
+
+  /// No description provided for @careCategoryBlockProductName.
+  ///
+  /// In en, this message translates to:
+  /// **'Product name'**
+  String get careCategoryBlockProductName;
+
+  /// No description provided for @careCategoryBlockForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Form'**
+  String get careCategoryBlockForm;
+
+  /// No description provided for @careCategoryBlockStrength.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength'**
+  String get careCategoryBlockStrength;
+
+  /// No description provided for @careCategoryBlockDoseAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Dose amount'**
+  String get careCategoryBlockDoseAmount;
+
+  /// No description provided for @careCategoryBlockDoseUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Dose unit'**
+  String get careCategoryBlockDoseUnit;
+
+  /// No description provided for @careCategoryBlockRouteMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Route or method'**
+  String get careCategoryBlockRouteMethod;
+
+  /// No description provided for @careCategoryBlockVisitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit'**
+  String get careCategoryBlockVisitTitle;
+
+  /// No description provided for @careCategoryBlockAddVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Add visit details'**
+  String get careCategoryBlockAddVisit;
+
+  /// No description provided for @careCategoryBlockQuestionsToAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions to ask'**
+  String get careCategoryBlockQuestionsToAsk;
+
+  /// No description provided for @careCategoryBlockWeightTargetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight target'**
+  String get careCategoryBlockWeightTargetTitle;
+
+  /// No description provided for @careCategoryBlockWeightTargetFromPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses {petName}\'s reference weight from their profile'**
+  String careCategoryBlockWeightTargetFromPet(String petName);
+
+  /// No description provided for @careProviderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider'**
+  String get careProviderLabel;
+
+  /// No description provided for @careProviderChooseContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a contact'**
+  String get careProviderChooseContact;
+
+  /// No description provided for @careProviderUseTypedName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name instead'**
+  String get careProviderUseTypedName;
+
+  /// No description provided for @careProviderTypedName.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider name'**
+  String get careProviderTypedName;
+
+  /// No description provided for @careProviderContactsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts could not be loaded'**
+  String get careProviderContactsUnavailable;
 
   /// No description provided for @undoCompleteFailed.
   ///
