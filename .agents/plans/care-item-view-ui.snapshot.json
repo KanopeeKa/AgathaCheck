@@ -101,7 +101,9 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "details-history",
@@ -185,5 +187,5 @@
       "status": "pending"
     }
   ],
-  "content_hash": "sha256:45343bed3c86f7fae7ec5a3c51523954c6fb280ef3a8a4d5031adaada3698bd9"
+  "content_hash": "sha256:b6a715acddcd8e71c715ca30e81af0afc1f0ab9449363f7c9260dd173bf0d72f"
 }
