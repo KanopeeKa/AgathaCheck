@@ -3,6 +3,7 @@
  * once the absence has started. Pre-departure overdue is attention-only.
  */
 
+import { isCareItemAffectedByAbsence } from '../absence/affectedCareItem.js';
 import { PLANNED_CARE_KIND_INDETERMINATE_PENDING } from './presentation.js';
 
 /**
@@ -17,20 +18,20 @@ export function isPlannedCareRowVisibleOnAwayPlan(row, context) {
     return row.in_window != null;
   }
 
-  if (row.in_window != null) {
-    return true;
-  }
-
-  const open = row.open_occurrence;
-  if (!open?.scheduled_date) {
+  if (!isCareItemAffectedByAbsence(row)) {
     return false;
   }
 
-  if (todayIso >= startsOn && open.scheduled_date < startsOn) {
+  const open = row.open_occurrence;
+  if (open?.open_status === 'overdue' && todayIso < startsOn) {
+    return false;
+  }
+
+  if (open?.scheduled_date && todayIso >= startsOn && open.scheduled_date < startsOn) {
     return true;
   }
 
-  return false;
+  return true;
 }
 
 /**
