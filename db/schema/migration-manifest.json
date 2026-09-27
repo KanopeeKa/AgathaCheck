@@ -81,7 +81,8 @@
     "072_people_contacts_foundation.sql",
     "073_people_vet_backfill.sql",
     "074_health_occurrence_attribution.sql",
-    "075_planned_absence_contact_carers.sql"
+    "075_planned_absence_contact_carers.sql",
+    "076_households.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

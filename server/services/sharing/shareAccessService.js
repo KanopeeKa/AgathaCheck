@@ -17,7 +17,10 @@ import {
   CO_PARENT_ROLE,
   userCanSharePet,
   userIsOwnerOrCoParent,
+  userOwnsPet,
 } from '../../lib/petAccess.js';
+import { listPetAccessEvents } from '../../lib/households/accessAudit.js';
+import { listHouseholdAccessForPet } from '../../lib/households/petAccessGrants.js';
 
 function mapAccessRow(row) {
   return {
@@ -177,12 +180,50 @@ export async function stopFollowing(pool, userId, petId) {
   return { message: 'Stopped following pet' };
 }
 
+function mapHouseholdAccessRow(row) {
+  return {
+    user_id: row.user_id,
+    access_tier: row.access_tier,
+    is_organiser: row.is_organiser,
+    joined_at: row.joined_at,
+    source: 'household',
+    household_id: row.household_id,
+    household_name: row.household_name,
+    user: {
+      first_name: row.first_name || '',
+      last_name: row.last_name || '',
+      email: row.email || '',
+      category: row.category || 'pet_carer',
+      bio: row.bio || '',
+      photo_url: row.photo_url || '',
+    },
+  };
+}
+
 export async function listAccess(pool, userId, petId) {
-  if (!(await userCanSharePet(pool, petId, userId))) {
+  const canView = (await userCanSharePet(pool, petId, userId))
+    || (await userOwnsPet(pool, petId, userId));
+  if (!canView) {
     return { error: 'Forbidden', status: 403 };
   }
-  const rows = await listAccessForPet(pool, petId);
-  return { access: rows.map(mapPetAccessRow) };
+  const [rows, householdRows, events] = await Promise.all([
+    listAccessForPet(pool, petId),
+    listHouseholdAccessForPet(pool, petId),
+    listPetAccessEvents(pool, petId),
+  ]);
+  return {
+    access: rows.map(mapPetAccessRow),
+    household_access: householdRows.map(mapHouseholdAccessRow),
+    access_events: events.map((e) => ({
+      id: e.id,
+      pet_id: e.pet_id,
+      subject_user_id: e.subject_user_id,
+      event_type: e.event_type,
+      access_source: e.access_source,
+      detail: e.detail,
+      created_at: e.created_at,
+    })),
+  };
 }
 
 export async function changeRole(pool, { userId, petId, targetUserId, nextRole }) {
