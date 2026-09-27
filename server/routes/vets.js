@@ -132,7 +132,7 @@ export default function vetsRoutes(pool) {
         'SELECT id FROM vets WHERE id = $1 AND user_id = $2',
         [req.params.id, userId],
       );
-      if (owned.rows.length === 0) return res.status(404).json({ error: 'Vet not found' };
+      if (owned.rows.length === 0) return res.status(404).json({ error: 'Vet not found' });
       await deleteContactForVet(pool, req.params.id);
       await pool.query('DELETE FROM vets WHERE id = $1 AND user_id = $2', [req.params.id, userId]);
       res.json({ message: 'Vet deleted' });
