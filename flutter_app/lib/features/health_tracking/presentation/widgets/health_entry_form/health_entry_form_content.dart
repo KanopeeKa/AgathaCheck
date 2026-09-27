@@ -20,6 +20,7 @@ import 'health_entry_photos_section.dart';
 import 'health_entry_remind_field.dart';
 import 'health_entry_schedule_times_section.dart';
 import 'care_planning_toggle.dart';
+import '../care_category_blocks/care_category_blocks_edit_section.dart';
 import 'health_entry_text_fields.dart';
 
 /// Sectioned form fields for add/edit health entries.
@@ -119,7 +120,17 @@ class HealthEntryFormContent extends ConsumerWidget {
                 dosage: form.dosage,
                 onNameChanged: controller.setName,
                 onDosageChanged: controller.setDosage,
+                showDosage: form.showLegacyDosageField,
               ),
+              if (form.careFamily != null) ...[
+                const SizedBox(height: 16),
+                CareCategoryBlocksEditSection(
+                  careFamily: form.careFamily,
+                  blocks: form.careBlocks,
+                  selectedPetIds: form.selectedPetIds,
+                  onBlocksChanged: controller.setCareBlocks,
+                ),
+              ],
             ],
           ),
           if (form.showScheduleSection) ...[

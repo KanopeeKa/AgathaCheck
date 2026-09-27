@@ -11,12 +11,14 @@ class HealthEntryNameDosageFields extends StatelessWidget {
     required this.dosage,
     required this.onNameChanged,
     required this.onDosageChanged,
+    this.showDosage = true,
   });
 
   final String name;
   final String dosage;
   final ValueChanged<String> onNameChanged;
   final ValueChanged<String> onDosageChanged;
+  final bool showDosage;
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +37,18 @@ class HealthEntryNameDosageFields extends StatelessWidget {
             onChanged: onNameChanged,
           ),
         ),
-        const SizedBox(height: 16),
-        AppFormLabeledField(
-          label: l.dosage,
-          child: TextFormField(
-            key: const Key('health_dosage_field'),
-            initialValue: dosage,
-            decoration: InputDecoration(hintText: l.dosageHint),
-            onChanged: onDosageChanged,
+        if (showDosage) ...[
+          const SizedBox(height: 16),
+          AppFormLabeledField(
+            label: l.dosage,
+            child: TextFormField(
+              key: const Key('health_dosage_field'),
+              initialValue: dosage,
+              decoration: InputDecoration(hintText: l.dosageHint),
+              onChanged: onDosageChanged,
+            ),
           ),
-        ),
+        ],
       ],
     );
   }

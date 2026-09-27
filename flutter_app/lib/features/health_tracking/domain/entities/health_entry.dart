@@ -1,3 +1,4 @@
+import 'care_item_blocks.dart';
 import 'recurrence_anchor.dart';
 import '../../../care_taxonomy/domain/care_importance.dart';
 import '../../../care_taxonomy/domain/care_planning_mode.dart';
@@ -55,6 +56,7 @@ class HealthEntry {
     this.careSource,
     this.providerContactId,
     this.providerTypedName,
+    this.careBlocks = const CareItemBlocks(),
     this.createdAt,
     this.updatedAt,
   });
@@ -146,6 +148,9 @@ class HealthEntry {
   /// Interim typed provider name when no contact exists (D-CIE-016).
   final String? providerTypedName;
 
+  /// Category block fields for this care item (D-CIE-019).
+  final CareItemBlocks careBlocks;
+
   /// When this entry was created.
   final DateTime? createdAt;
 
@@ -236,6 +241,7 @@ class HealthEntry {
     String? providerContactId,
     String? providerTypedName,
     bool clearProvider = false,
+    CareItemBlocks? careBlocks,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -287,6 +293,7 @@ class HealthEntry {
       providerTypedName: clearProvider
           ? null
           : (providerTypedName ?? this.providerTypedName),
+      careBlocks: careBlocks ?? this.careBlocks,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
