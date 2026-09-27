@@ -77,7 +77,8 @@
     "068_notifications_health_entry_id_text.sql",
     "069_care_classification_columns.sql",
     "070_cim_drop_suggested_health_entry_type.sql",
-    "071_planned_absence_pet_note.sql"
+    "071_planned_absence_pet_note.sql",
+    "072_people_contacts_foundation.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

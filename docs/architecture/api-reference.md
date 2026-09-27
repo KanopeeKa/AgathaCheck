@@ -55,6 +55,10 @@ Private per-user labels. `GET /` returns `[{ id, name, pet_ids, created_at, upda
 ### Vets (`/api/vets`)
 `GET /`, `POST /`, `PUT /:id`, `DELETE /:id` — all scoped to the user.
 
+### People (`/api/people`) — planned (phase 1+)
+
+Not implemented yet. Storage foundation: migration `072_people_contacts_foundation.sql` (`people_directories`, `people_contacts`, `people_contact_roles`, `people_contact_private_notes`, `pet_contact_relationships`). Delivery plan: [delivery-plan.md](/docs/domains/people/changes/delivery-plan.md).
+
 ### Organizations (`/api/organizations`)
 | Method | Path | Authorization |
 |---|---|---|
@@ -317,6 +321,14 @@ Server-authoritative two-fact readiness for hub, plan page, and dashboard tile (
 ```
 
 Tile copy uses fixed actionability priority: carer gap first, else coverage sentence. See [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md).
+
+**Planned (People phase 2)** — per-pet carer fact and coverage extension ([amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md)):
+
+| Field | Notes |
+|---|---|
+| `pet_carers[].carer_state` | `unset` \| `set` \| `unavailable` (replaces implicit unset/set; `unavailable` = carer no longer available, D18) |
+| `pet_carers[].contact_id` | Contact in declarer's directory; unlinked contact behaves as `note_only` until phase 4 (D28) |
+| `carer_coverage.unavailable_pet_ids` | Pet ids with `carer_state: unavailable`; counted as uncovered for `all_have_carers` |
 
 **Care Planner (`GET /:id/care-plan`)** — ACP-6 (D-ACP-008)
 
