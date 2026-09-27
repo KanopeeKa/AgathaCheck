@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { errorDetails } from '../../config/security.js';
 import { isStrongPassword, isValidEmail, MIN_PASSWORD_LENGTH } from '../../config/validation.js';
 import { linkExternalFostersByEmail } from '../../lib/orgPeople.js';
+import { normalizeTimezoneInput, resolveTimezoneOrDefault } from '../../lib/timezone.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { logger } from '../../lib/logger.js';
 import {
@@ -26,7 +27,7 @@ import {
 export function registerSessionRoutes(router, pool, { comparePassword, authLimiter }) {
   router.post('/signup', authLimiter, async (req, res) => {
     try {
-      const { email, password, first_name = '', last_name = '', category = 'pet_carer', bio = '', photo_url = '', locale = 'en' } = req.body;
+      const { email, password, first_name = '', last_name = '', category = 'pet_carer', bio = '', photo_url = '', locale = 'en', timezone: rawTimezone } = req.body;
       if (!email || !password) {
         return res.status(400).json({ error: 'Email and password are required.' });
       }
@@ -39,11 +40,12 @@ export function registerSessionRoutes(router, pool, { comparePassword, authLimit
       const id = uuidv4();
       const saltRounds = 10;
       const password_hash = await bcrypt.hash(password, saltRounds);
+      const timezone = resolveTimezoneOrDefault(rawTimezone);
       let result;
       try {
         result = await pool.query(
-          'INSERT INTO users (id, email, password_hash, first_name, last_name, category, bio, photo_url, locale) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
-          [id, email, password_hash, first_name, last_name, category, bio, photo_url, locale]
+          'INSERT INTO users (id, email, password_hash, first_name, last_name, category, bio, photo_url, locale, timezone) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id',
+          [id, email, password_hash, first_name, last_name, category, bio, photo_url, locale, timezone]
         );
       } catch (err) {
         if (err.code === '23505') {
@@ -99,6 +101,14 @@ export function registerSessionRoutes(router, pool, { comparePassword, authLimit
           req,
         });
         return res.status(401).json({ error: 'Invalid email or password.' });
+      }
+      const loginTimezone = normalizeTimezoneInput(req.body?.timezone);
+      if (loginTimezone) {
+        await pool.query(
+          'UPDATE users SET timezone = $1, updated_at = NOW() WHERE id = $2',
+          [loginTimezone, userRow.id],
+        );
+        userRow.timezone = loginTimezone;
       }
       const user = userRowToMap(userRow);
       await linkExternalFostersByEmail(pool, user.id, user.email);

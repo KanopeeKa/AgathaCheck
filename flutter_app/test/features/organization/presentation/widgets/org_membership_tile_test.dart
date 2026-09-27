@@ -236,6 +236,7 @@ class _RecordingAuthService implements AuthService {
     String? category,
     String? bio,
     String? locale,
+    String? timezone,
     String? pinnedOrganizationId,
     bool updatePinnedOrganizationId = false,
   }) async {

@@ -34,6 +34,7 @@ describe('Auth Routes — Profile', () => {
       expect(res.body).toHaveProperty('bio', 'A test bio');
       expect(res.body).toHaveProperty('photo_url', 'http://example.com/photo.png');
       expect(res.body).toHaveProperty('locale', 'en');
+      expect(res.body).toHaveProperty('timezone', 'UTC');
       expect(res.body).toHaveProperty('pinned_organization_id', null);
     });
 
@@ -113,6 +114,21 @@ describe('Auth Routes — Profile', () => {
         .send({ locale: 'fr' });
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('locale', 'fr');
+    });
+
+    it('should update timezone via PATCH', async () => {
+      const updatedRow = { ...userRow, timezone: 'Europe/Paris' };
+      const pool = buildMockPool({
+        updateUser: async () => ({ rows: [updatedRow] }),
+      });
+      const updateApp = createApp(pool, mockComparePassword);
+      const token = makeToken();
+      const res = await request(updateApp)
+        .patch('/api/auth/me')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ timezone: 'Europe/Paris' });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('timezone', 'Europe/Paris');
     });
 
     it('should return 400 with no fields to update', async () => {

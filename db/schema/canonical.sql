@@ -759,6 +759,37 @@ CREATE TABLE public.pets (
     CONSTRAINT pets_weight_management_context_check CHECK (((weight_management_context)::text = ANY ((ARRAY['none'::character varying, 'vet_managed'::character varying, 'care_plan'::character varying, 'treatment_related'::character varying])::text[]))),
     CONSTRAINT pets_weight_reference_authority_check CHECK (((weight_reference_authority IS NULL) OR ((weight_reference_authority)::text = ANY ((ARRAY['vet_target'::character varying, 'guardian_reference'::character varying, 'historical_baseline'::character varying])::text[]))))
 );
+CREATE TABLE public.planned_absence_carer_invite_pets (
+    invite_id uuid NOT NULL,
+    pet_id uuid NOT NULL
+);
+CREATE TABLE public.planned_absence_carer_invites (
+    id uuid NOT NULL,
+    planned_absence_id uuid NOT NULL,
+    contact_id uuid NOT NULL,
+    inviter_user_id uuid NOT NULL,
+    invitee_email character varying(255) NOT NULL,
+    invitee_user_id uuid,
+    code character varying(32) NOT NULL,
+    status character varying(20) DEFAULT 'pending'::character varying NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    responded_at timestamp with time zone,
+    expires_at timestamp with time zone NOT NULL,
+    CONSTRAINT planned_absence_carer_invites_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'accepted'::character varying, 'declined'::character varying, 'revoked'::character varying, 'expired'::character varying])::text[])))
+);
+CREATE TABLE public.planned_absence_guest_grants (
+    id uuid NOT NULL,
+    planned_absence_id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    grantee_user_id uuid NOT NULL,
+    granted_by_user_id uuid NOT NULL,
+    contact_id uuid,
+    invite_id uuid,
+    status character varying(20) DEFAULT 'active'::character varying NOT NULL,
+    revoked_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT planned_absence_guest_grants_status_check CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'revoked'::character varying, 'expired'::character varying])::text[])))
+);
 CREATE TABLE public.planned_absence_pets (
     planned_absence_id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -784,6 +815,7 @@ CREATE TABLE public.planned_absences (
     cancelled_at timestamp with time zone,
     handover_note text,
     last_handover_downloaded_at timestamp with time zone,
+    timezone character varying(64) DEFAULT 'UTC'::character varying NOT NULL,
     CONSTRAINT planned_absences_date_order CHECK ((ends_on >= starts_on))
 );
 CREATE TABLE public.prospects (
@@ -834,7 +866,8 @@ CREATE TABLE public.users (
     locale character varying(10) DEFAULT 'en'::character varying,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
-    pinned_organization_id uuid
+    pinned_organization_id uuid,
+    timezone character varying(64) DEFAULT 'UTC'::character varying NOT NULL
 );
 CREATE TABLE public.vets (
     id uuid NOT NULL,
@@ -1014,6 +1047,16 @@ ALTER TABLE ONLY public.pet_timeline_entries
     ADD CONSTRAINT pet_timeline_entries_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.planned_absence_carer_invite_pets
+    ADD CONSTRAINT planned_absence_carer_invite_pets_pkey PRIMARY KEY (invite_id, pet_id);
+ALTER TABLE ONLY public.planned_absence_carer_invites
+    ADD CONSTRAINT planned_absence_carer_invites_code_key UNIQUE (code);
+ALTER TABLE ONLY public.planned_absence_carer_invites
+    ADD CONSTRAINT planned_absence_carer_invites_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.planned_absence_guest_grants
+    ADD CONSTRAINT planned_absence_guest_grants_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.planned_absence_guest_grants
+    ADD CONSTRAINT planned_absence_guest_grants_unique UNIQUE (planned_absence_id, pet_id, grantee_user_id);
 ALTER TABLE ONLY public.planned_absence_pets
     ADD CONSTRAINT planned_absence_pets_pkey PRIMARY KEY (planned_absence_id, pet_id);
 ALTER TABLE ONLY public.planned_absences
@@ -1097,6 +1140,10 @@ CREATE INDEX idx_org_users_user_id ON public.organization_users USING btree (use
 CREATE INDEX idx_org_visibility_grants_grantee ON public.organization_visibility_grants USING btree (organization_id, grantee_user_id);
 CREATE INDEX idx_org_visibility_grants_subject ON public.organization_visibility_grants USING btree (organization_id, subject_user_id);
 CREATE INDEX idx_organizations_name ON public.organizations USING btree (name);
+CREATE INDEX idx_pa_carer_invites_absence ON public.planned_absence_carer_invites USING btree (planned_absence_id);
+CREATE INDEX idx_pa_carer_invites_invitee_email ON public.planned_absence_carer_invites USING btree (lower((invitee_email)::text));
+CREATE INDEX idx_pa_guest_grants_grantee_active ON public.planned_absence_guest_grants USING btree (grantee_user_id) WHERE ((status)::text = 'active'::text);
+CREATE INDEX idx_pa_guest_grants_pet_active ON public.planned_absence_guest_grants USING btree (pet_id) WHERE ((status)::text = 'active'::text);
 CREATE INDEX idx_people_contacts_directory_id ON public.people_contacts USING btree (directory_id);
 CREATE INDEX idx_people_contacts_legacy_vet_id ON public.people_contacts USING btree (legacy_vet_id) WHERE (legacy_vet_id IS NOT NULL);
 CREATE INDEX idx_pet_access_events_pet_created ON public.pet_access_events USING btree (pet_id, created_at DESC);
@@ -1403,6 +1450,30 @@ ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_vet_id_fkey FOREIGN KEY (vet_id) REFERENCES public.vets(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.planned_absence_carer_invite_pets
+    ADD CONSTRAINT planned_absence_carer_invite_pets_invite_id_fkey FOREIGN KEY (invite_id) REFERENCES public.planned_absence_carer_invites(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.planned_absence_carer_invite_pets
+    ADD CONSTRAINT planned_absence_carer_invite_pets_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.planned_absence_carer_invites
+    ADD CONSTRAINT planned_absence_carer_invites_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.people_contacts(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.planned_absence_carer_invites
+    ADD CONSTRAINT planned_absence_carer_invites_invitee_user_id_fkey FOREIGN KEY (invitee_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.planned_absence_carer_invites
+    ADD CONSTRAINT planned_absence_carer_invites_inviter_user_id_fkey FOREIGN KEY (inviter_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.planned_absence_carer_invites
+    ADD CONSTRAINT planned_absence_carer_invites_planned_absence_id_fkey FOREIGN KEY (planned_absence_id) REFERENCES public.planned_absences(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.planned_absence_guest_grants
+    ADD CONSTRAINT planned_absence_guest_grants_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.people_contacts(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.planned_absence_guest_grants
+    ADD CONSTRAINT planned_absence_guest_grants_granted_by_user_id_fkey FOREIGN KEY (granted_by_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.planned_absence_guest_grants
+    ADD CONSTRAINT planned_absence_guest_grants_grantee_user_id_fkey FOREIGN KEY (grantee_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.planned_absence_guest_grants
+    ADD CONSTRAINT planned_absence_guest_grants_invite_id_fkey FOREIGN KEY (invite_id) REFERENCES public.planned_absence_carer_invites(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.planned_absence_guest_grants
+    ADD CONSTRAINT planned_absence_guest_grants_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.planned_absence_guest_grants
+    ADD CONSTRAINT planned_absence_guest_grants_planned_absence_id_fkey FOREIGN KEY (planned_absence_id) REFERENCES public.planned_absences(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.planned_absence_pets
     ADD CONSTRAINT planned_absence_pets_carer_user_id_fkey FOREIGN KEY (carer_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.planned_absence_pets

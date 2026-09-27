@@ -30,11 +30,12 @@ Validate with `node scripts/validate_openapi.js`; Jest contract tests in
 | Method | Path | Notes |
 |---|---|---|
 | POST | `/signup` | public; returns `{ user, access_token, refresh_token }` |
-| POST | `/login` | public |
+| POST | `/login` | public; optional body `timezone` (IANA) updates account on success |
 | POST | `/refresh` | public; body `{ refresh_token }` |
 | POST | `/logout` | no server-side revocation (stateless JWT) |
-| GET | `/me` | current user (includes `pinned_organization_id`, nullable) |
-| PUT | `/me` | update profile (whitelisted fields incl. `pinned_organization_id`; must be active org member) |
+| GET | `/me` | current user (includes `pinned_organization_id`, nullable; `timezone` IANA string, default `UTC`) |
+| PUT | `/me` | update profile (whitelisted fields incl. `pinned_organization_id`, `timezone`; must be active org member) |
+| PATCH | `/me` | same as `PUT /me` (People phase 4 timezone) |
 | POST | `/me/photo` | sets a photo URL |
 | POST | `/change-password` | body `{ currentPassword, newPassword }` |
 | POST | `/forgot-password` | public; the reset `code` is returned/logged **only outside production** |
@@ -241,7 +242,7 @@ Share links are **single-use**: once accepted, the same link cannot be used by a
 | DELETE | `/:id/members/:userId` | Leave or remove; body optional `{ remove_all_access_to_my_pets: true }` |
 | PUT | `/:id/pets` | Body `{ pet_ids: [] }` — record owner adds/removes their pets |
 
-Household `full_access` grants `userCanManageProfile` + `userCanManageCare` (not share/transfer/delete). `can_log_care` grants care management only. Effective access is the highest of household, direct share, and absence (absence guest access ships in phase 4).
+Household `full_access` grants `userCanManageProfile` + `userCanManageCare` (not share/transfer/delete). `can_log_care` grants care management only. Effective access is the highest of household, direct share, and **absence guest grants** (time-bound, evaluated in the absence's `timezone`).
 
 `DELETE /api/auth/me` returns `409` with `code: household_pets_require_confirmation` when the user owns pets in a household with other members, unless `confirm_household_pets: true` is sent with the password.
 
@@ -304,6 +305,21 @@ Raw `items[]` entries may include `window_relation: before_window` on materialis
 ### Planned absences (`/api/planned-absences`) — CC-1
 
 Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `POST /`, `GET /:id`, `PATCH /:id`, `POST /:id/cancel`.
+
+**Timezone (D24)** — `users.timezone` is set at signup/login (optional body) or via `PATCH /api/auth/me`. Each absence stores `timezone` copied from the declarer's account at `POST` create (later account timezone changes do not alter existing absences). Access windows for guest grants use whole calendar days `starts_on`…`ends_on` inclusive in that absence timezone.
+
+**Guest access (People phase 4)** — time-bound `can_log_care` via absence guest grants (evaluated at read time alongside household + direct share):
+
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/:id/carer-invites` | Body `{ contact_id, pet_ids? }`; record owner or household `full_access` on each pet; contact must be carer on absence pets |
+| GET | `/carer-invites/code/:code` | Public preview for invite landing |
+| POST | `/carer-invites/code/:code/accept` | Authenticated invitee; creates grants + links contact |
+| POST | `/carer-invites/:inviteId/accept` | Same accept by id |
+| DELETE | `/carer-invites/:inviteId` | Revoke pending invite |
+| DELETE | `/guest-grants/:grantId` | Early revoke active grant |
+
+`PATCH /:id` with active guest grants requires `confirm_guest_access_widen: true` when extending `ends_on` or adding pets (`409`, `code: guest_access_widen_required`). Cancelling an absence revokes active guest grants immediately.
 
 **List (`GET /`)**
 

@@ -4,7 +4,7 @@
   "approved_at": "2026-09-27T01:30:00Z",
   "approved_by": "user chat 2026-09-27: execute-plan full autonomous power through People phases 0-4; merge doc branch to main",
   "approved_until": "2026-09-29T01:30:00Z",
-  "content_hash": "sha256:f84d7b7c9592943ce3215bc8b9bfbe283493059af2bc93e52efb459060d501b4",
+  "content_hash": "sha256:4001702ebcd63832be61ab445ab940234418d8bb6f832045c0e4605705642a7e",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -188,12 +188,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1354",
-      "pr_head_sha": "7acb34bd"
+      "pr_head_sha": "727ac567"
     },
     {
       "id": "p4-guest-access",
@@ -230,13 +230,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1356",
+      "pr_head_sha": "9bb08d35"
     }
   ]
 }

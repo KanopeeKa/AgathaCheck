@@ -12,6 +12,7 @@ class PlannedAbsence {
     required this.petIds,
     this.petCarers = const [],
     this.handoverNote,
+    this.timezone = 'UTC',
   });
 
   final String id;
@@ -24,6 +25,7 @@ class PlannedAbsence {
   final List<String> petIds;
   final List<PlannedAbsencePetCarer> petCarers;
   final String? handoverNote;
+  final String timezone;
 
   bool get isCancelled => status == 'cancelled';
 }

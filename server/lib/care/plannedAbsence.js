@@ -212,6 +212,7 @@ export function absenceToMap(row, petRows = []) {
     created_at: timestampToIso(row.created_at),
     updated_at: timestampToIso(row.updated_at),
     cancelled_at: timestampToIso(row.cancelled_at),
+    timezone: row.timezone || 'UTC',
   };
 }
 
