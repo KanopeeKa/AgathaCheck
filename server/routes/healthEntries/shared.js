@@ -107,6 +107,29 @@ export function validateCareSourceForWrite(value) {
   return validateCareSourceEnum(value);
 }
 
+/** @param {object} data */
+export function parseEntryProviderInput(data) {
+  const hasContact = data.provider_contact_id !== undefined
+    || data.providerContactId !== undefined;
+  const hasTyped = data.provider_typed_name !== undefined
+    || data.providerTypedName !== undefined;
+  if (!hasContact && !hasTyped) {
+    return { contactId: undefined, typedName: undefined };
+  }
+  let contactId = hasContact
+    ? (data.provider_contact_id ?? data.providerContactId ?? null)
+    : undefined;
+  let typedName = hasTyped
+    ? String(data.provider_typed_name ?? data.providerTypedName ?? '').trim()
+    : undefined;
+  if (contactId && typedName) {
+    return { error: 'Provide either a provider contact or a typed name, not both' };
+  }
+  if (contactId === '') contactId = null;
+  if (typedName === '') typedName = null;
+  return { contactId, typedName };
+}
+
 export function healthEntryToMap(row) {
   const todayIso = todayCalendarIso();
   const scheduleFlexibility = resolveScheduleFlexibility(row, todayIso);
@@ -141,6 +164,8 @@ export function healthEntryToMap(row) {
     care_source: row.care_source || 'guardian_defined',
     schedule_flexibility: scheduleFlexibility,
     schedule_policy_version: row.schedule_policy_version ?? null,
+    provider_contact_id: row.provider_contact_id ?? null,
+    provider_typed_name: row.provider_typed_name ?? null,
     completed_at: row.completed_at ? row.completed_at.toISOString?.() || String(row.completed_at) : null,
     created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,
     updated_at: row.updated_at ? row.updated_at.toISOString?.() || String(row.updated_at) : null,

@@ -76,8 +76,10 @@ abstract class HealthRemoteDataSource {
   Future<HealthOccurrenceModel> updateOccurrenceNotes(
     String entryId,
     String occurrenceId,
-    String notes,
-  );
+    String notes, {
+    String? providerContactId,
+    String? providerTypedName,
+  });
   Future<RescheduleOccurrenceRemoteResult> rescheduleOccurrence(
     String entryId,
     String occurrenceId,
@@ -430,8 +432,10 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
   Future<HealthOccurrenceModel> updateOccurrenceNotes(
     String entryId,
     String occurrenceId,
-    String notes,
-  ) {
+    String notes, {
+    String? providerContactId,
+    String? providerTypedName,
+  }) {
     return patchOccurrenceNotes(
       client: _client,
       baseUrl: baseUrl,
@@ -440,6 +444,8 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       entryId: entryId,
       occurrenceId: occurrenceId,
       notes: notes,
+      providerContactId: providerContactId,
+      providerTypedName: providerTypedName,
     );
   }
 

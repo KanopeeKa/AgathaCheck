@@ -197,14 +197,23 @@ Future<HealthOccurrenceModel> patchOccurrenceNotes({
   required void Function(http.Response response) checkResponse,
   required String entryId,
   required String occurrenceId,
-  required String notes,
+  String notes = '',
+  String? providerContactId,
+  String? providerTypedName,
 }) async {
+  final body = <String, dynamic>{'notes': notes};
+  if (providerContactId != null) {
+    body['provider_contact_id'] = providerContactId;
+  }
+  if (providerTypedName != null) {
+    body['provider_typed_name'] = providerTypedName;
+  }
   final response = await client.patch(
     Uri.parse(
       '$baseUrl/api/health-entries/$entryId/occurrences/$occurrenceId',
     ),
     headers: headers,
-    body: json.encode({'notes': notes}),
+    body: json.encode(body),
   );
   checkResponse(response);
   return HealthOccurrenceModel.fromJson(

@@ -1043,7 +1043,7 @@ describe('Health Entries API', () => {
       );
       const updateQuery = queryLog.find(q => q.sql.includes('UPDATE health_entries SET name'));
       expect(accessQuery).toBeDefined();
-      expect(updateQuery.params[22]).toBe('he-1');
+      expect(updateQuery.params[updateQuery.params.length - 1]).toBe('he-1');
     });
 
     it('rejects client-sent type on update', async () => {

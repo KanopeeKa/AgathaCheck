@@ -59,12 +59,23 @@ function createHarness(entry, initialOccurrences = [], todayIso = '2026-09-01') 
         return { rows: row ? [row] : [] };
       }
 
+      if (sql.includes('SELECT id, first_name, last_name, email FROM users WHERE id =')) {
+        return {
+          rows: [{
+            id: params[0],
+            first_name: 'Test',
+            last_name: 'User',
+            email: 'test@example.com',
+          }],
+        };
+      }
+
       if (
         sql.includes('UPDATE health_occurrences SET status = \'completed\'')
         && sql.includes('completion_timing')
       ) {
         const idx = occurrences.findIndex(
-          (o) => o.id === params[5] && o.health_entry_id === params[6] && o.status === 'pending',
+          (o) => o.id === params[11] && o.health_entry_id === params[12] && o.status === 'pending',
         );
         if (idx < 0) return { rows: [] };
         occurrences[idx] = {
@@ -75,6 +86,12 @@ function createHarness(entry, initialOccurrences = [], todayIso = '2026-09-01') 
           marked_by_user_id: params[2],
           notes: params[3],
           completion_timing: params[4],
+          performed_by_user_id: params[5],
+          marked_by_snapshot: params[6] ? JSON.parse(params[6]) : null,
+          performed_by_snapshot: params[7] ? JSON.parse(params[7]) : null,
+          provider_contact_id: params[8],
+          provider_typed_name: params[9],
+          provider_contact_snapshot: params[10] ? JSON.parse(params[10]) : null,
         };
         return { rows: [occurrences[idx]] };
       }

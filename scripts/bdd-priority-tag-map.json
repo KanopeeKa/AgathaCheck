@@ -217,6 +217,9 @@
     "Individual guardian returns an adopted pet to Rescue Hearts": "P1",
     "Receiving org returns a transferred pet to the sending org": "P1"
   },
+  "people.feature": {
+    "Pet parent opens People from Account": "P2"
+  },
   "veterinarian_management.feature": {
     "Creating a veterinarian with all details": "P1",
     "Creating a veterinarian with only a name": "P1",

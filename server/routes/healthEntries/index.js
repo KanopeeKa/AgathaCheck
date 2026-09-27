@@ -4,6 +4,7 @@ import { createApiLimiter } from '../../config/rateLimit.js';
 import { registerCrudRoutes } from './crudRouter.js';
 import { registerCompletionRoutes } from './completionRouter.js';
 import { registerDocumentsRoutes } from './documentsRouter.js';
+import { registerOccurrencePatchRoutes } from './occurrencePatchRouter.js';
 import { registerOccurrenceRoutes } from './occurrencesRouter.js';
 import { registerRescheduleOccurrenceRoutes } from './rescheduleOccurrenceRouter.js';
 import { registerScheduleExplainRoutes } from './scheduleExplainRouter.js';
@@ -15,6 +16,7 @@ export default function healthEntriesRoutes(pool) {
   registerCrudRoutes(router, pool);
   registerScheduleExplainRoutes(router, pool);
   registerOccurrenceRoutes(router, pool);
+  registerOccurrencePatchRoutes(router, pool);
   registerRescheduleOccurrenceRoutes(router, pool);
   registerCompletionRoutes(router, pool);
   registerDocumentsRoutes(router, pool);

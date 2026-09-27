@@ -57,6 +57,31 @@ Private per-user labels. `GET /` returns `[{ id, name, pet_ids, created_at, upda
 ### Vets (`/api/vets`)
 `GET /`, `POST /`, `PUT /:id`, `DELETE /:id` — all scoped to the user.
 
+### People (`/api/people`)
+
+Personal directory contacts (phase 1). Storage: migrations `072_*`–`074_*`. Spec: [people-care-team.md](/docs/domains/people/features/people-care-team.md).
+
+#### Contacts (`/api/people/contacts`)
+
+| Method | Path | Authorization |
+|---|---|---|
+| GET | `/contacts` | authenticated — caller's personal directory; optional `?include_inactive=true` |
+| POST | `/contacts` | authenticated — body `{ kind, name, phone?, email?, address?, website?, works_at_contact_id?, roles?, private_note? }`; `kind` ∈ {`person`,`organisation`}; `roles` ⊆ sitter, walker, vet, vet_nurse, groomer, trainer, behaviourist, boarding, emergency_contact, other |
+| GET | `/contacts/:id` | authenticated — owner of directory only |
+| PATCH | `/contacts/:id` | authenticated — partial update; `private_note` is per-caller only |
+| DELETE | `/contacts/:id` | authenticated — blocked when `legacy_vet_id` is set (delete vet instead) or pet relationship exists (`409`) |
+
+Response contact shape: `{ id, directory_id, kind, name, phone, email, address, website, works_at_contact_id, linked_user_id, inactive_at, legacy_vet_id, roles[], private_note, created_at, updated_at }`.
+
+#### Pet contact relationships (`/api/pets/:petId/people-relationships`)
+
+| Method | Path | Authorization |
+|---|---|---|
+| GET | `/api/pets/:petId/people-relationships` | `userCanManageProfile` (record owner or co-parent) |
+| PUT | `/api/pets/:petId/people-relationships` | same — replaces all relationships; body `{ relationships: [{ contact_id, relationship_kind, is_primary?, active? }] }`; `relationship_kind` ∈ primary_vet, out_of_hours_vet, emergency_contact, care_provider, other; contact must be in caller's or pet owner's personal directory |
+
+Vets API (`/api/vets`) dual-writes linked `people_contacts` rows via `legacy_vet_id` until clients migrate.
+
 ### Organizations (`/api/organizations`)
 | Method | Path | Authorization |
 |---|---|---|
@@ -319,6 +344,14 @@ Server-authoritative two-fact readiness for hub, plan page, and dashboard tile (
 ```
 
 Tile copy uses fixed actionability priority: carer gap first, else coverage sentence. See [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md).
+
+**Planned (People phase 2)** — per-pet carer fact and coverage extension ([amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md)):
+
+| Field | Notes |
+|---|---|
+| `pet_carers[].carer_state` | `unset` \| `set` \| `unavailable` (replaces implicit unset/set; `unavailable` = carer no longer available, D18) |
+| `pet_carers[].contact_id` | Contact in declarer's directory; unlinked contact behaves as `note_only` until phase 4 (D28) |
+| `carer_coverage.unavailable_pet_ids` | Pet ids with `carer_state: unavailable`; counted as uncovered for `all_have_carers` |
 
 **Care Planner (`GET /:id/care-plan`)** — ACP-6 (D-ACP-008)
 

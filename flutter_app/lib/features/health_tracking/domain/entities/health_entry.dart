@@ -53,6 +53,8 @@ class HealthEntry {
     this.careImportance,
     this.importanceOverridden = false,
     this.careSource,
+    this.providerContactId,
+    this.providerTypedName,
     this.createdAt,
     this.updatedAt,
   });
@@ -137,6 +139,12 @@ class HealthEntry {
 
   /// Provenance for how this care was established.
   final CareSource? careSource;
+
+  /// People contact default provider, when set.
+  final String? providerContactId;
+
+  /// Interim typed provider name when no contact exists (D-CIE-016).
+  final String? providerTypedName;
 
   /// When this entry was created.
   final DateTime? createdAt;
@@ -225,6 +233,9 @@ class HealthEntry {
     bool? importanceOverridden,
     CareSource? careSource,
     bool clearCareSource = false,
+    String? providerContactId,
+    String? providerTypedName,
+    bool clearProvider = false,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -270,6 +281,12 @@ class HealthEntry {
           : (careImportance ?? this.careImportance),
       importanceOverridden: importanceOverridden ?? this.importanceOverridden,
       careSource: clearCareSource ? null : (careSource ?? this.careSource),
+      providerContactId: clearProvider
+          ? null
+          : (providerContactId ?? this.providerContactId),
+      providerTypedName: clearProvider
+          ? null
+          : (providerTypedName ?? this.providerTypedName),
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

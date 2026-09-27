@@ -34,6 +34,7 @@ import { backfillHealthOccurrences } from './migrations/047_health_occurrences_b
 import { migratePinnedOrganizationId } from './migrations/049_pinned_organization_id.js';
 import { migratePrivateHealthFiles } from './migrations/050_private_health_files.js';
 import { migrateShareLinkExpiry } from './migrations/051_share_link_expiry.js';
+import { backfillPeopleFromVets } from './migrations/073_people_vet_backfill.js';
 import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 
 const { Pool } = pg;
@@ -121,6 +122,7 @@ const CODE_MIGRATIONS = {
   '049_pinned_organization_id.sql': migratePinnedOrganizationId,
   '050_private_health_files.sql': migratePrivateHealthFiles,
   '051_share_link_expiry.sql': migrateShareLinkExpiry,
+  '073_people_vet_backfill.sql': backfillPeopleFromVets,
 };
 
 async function applyMigration(client, name, sql) {

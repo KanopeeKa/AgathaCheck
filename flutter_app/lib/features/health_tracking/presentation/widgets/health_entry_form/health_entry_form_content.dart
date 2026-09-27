@@ -10,6 +10,7 @@ import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../domain/entities/health_entry.dart';
 import '../../controllers/health_entry_form_controller.dart';
 import '../../controllers/health_entry_form_state.dart';
+import '../care_provider_field.dart';
 import '../entry_due_completed_row.dart';
 import 'health_entry_document_handler.dart';
 import 'health_entry_frequency_section.dart';
@@ -183,6 +184,12 @@ class HealthEntryFormContent extends ConsumerWidget {
                 ),
                 notes: form.notes,
                 onChanged: controller.setNotes,
+              ),
+              const SizedBox(height: 16),
+              CareProviderField(
+                contactId: form.providerContactId,
+                typedName: form.providerTypedName,
+                onChanged: controller.setProvider,
               ),
               const SizedBox(height: 16),
               HealthEntryPhotosSection(

@@ -4,6 +4,7 @@ import { registerTransferRoutes } from './transferRouter.js';
 import { registerFamilyEventsRoutes } from './familyEventsRouter.js';
 import { registerPetAccessRoutes } from '../sharing/petAccessRoutes.js';
 import { registerCarerCandidatesRoutes } from './carerCandidatesRouter.js';
+import { registerPeopleRelationshipsRoutes } from './peopleRelationshipsRouter.js';
 import { registerLifecycleRoutes } from './lifecycleRouter.js';
 import { registerCoreRoutes } from './coreRouter.js';
 import { registerPhotoRoutes } from './photoRouter.js';
@@ -22,6 +23,7 @@ export default function petsRoutes(pool) {
   router.use(createApiLimiter());
   registerCareContextPetRoutes(router, pool);
   registerCarerCandidatesRoutes(router, pool);
+  registerPeopleRelationshipsRoutes(router, pool);
   registerTransferRoutes(router, pool);
   registerFamilyEventsRoutes(router, pool);
   registerTimelineRoutes(router, pool);
