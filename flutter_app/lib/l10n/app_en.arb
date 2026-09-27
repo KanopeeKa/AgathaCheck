@@ -513,6 +513,15 @@
   "@snoozeDays": { "placeholders": { "count": { "type": "int" }, "label": { "type": "String" } } },
   "markAsDone": "Mark as done",
 
+  "whoHasAccessHouseholdTitle": "Household access",
+  "householdsTitle": "Households",
+  "householdsEmpty": "You are not in a household yet. Create one to share pets with people at home.",
+  "householdCreate": "Create household",
+  "householdCreated": "Household created",
+  "householdNameLabel": "Household name",
+  "householdOrganiserLabel": "Organiser · Full access",
+  "householdFullAccessLabel": "Full access",
+  "householdCanLogCareLabel": "Can log care",
   "sharing": "Sharing",
   "couldNotLoadSharingInfo": "Could not load sharing info",
   "sessionExpired": "Session expired. Please log in again.",
@@ -2463,6 +2472,18 @@
   "awayPlanningCarerEditNoteOnly": "Add someone without shared access",
   "awayPlanningCarerEditClear": "Clear carer",
   "awayPlanningCarerEditCandidatesEmpty": "No one else has shared access to this pet yet.",
+  "awayPlanningCarerEditContactsEmpty": "Add someone in People before assigning a carer.",
+  "awayPlanningHandoverContactsTitle": "Emergency and veterinary contacts",
+  "awayPlanningHandoverContactLine": "{role}: {name}",
+  "@awayPlanningHandoverContactLine": {
+    "placeholders": {
+      "role": {"type": "String"},
+      "name": {"type": "String"}
+    }
+  },
+  "awayPlanningHandoverPrimaryVet": "Primary vet",
+  "awayPlanningHandoverOutOfHoursVet": "Out-of-hours vet",
+  "awayPlanningHandoverEmergencyContact": "Emergency contact",
   "awayPlanningCarerEditNameLabel": "Name",
   "awayPlanningCarerEditNoteLabel": "Note (optional)",
   "awayPlanningCarerEditCandidatesLoading": "Loading people with shared access…",

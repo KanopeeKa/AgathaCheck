@@ -2,6 +2,10 @@
  * Pet access control: Pet Parent (owner), co-parent, carer, and foster roles.
  */
 import { orgPetViewerRolesSql } from './orgRoles.js';
+import {
+  getHouseholdGrantForUser,
+  householdAccessiblePetSql,
+} from './households/petAccessGrants.js';
 
 export const CARER_ROLE = 'carer';
 export const CO_PARENT_ROLE = 'co_parent';
@@ -36,6 +40,7 @@ export function accessiblePetSql(alias, userIdParam) {
         AND pa.role = '${FOSTER_PET_ACCESS_ROLE}'
         AND COALESCE(pa.hidden, false) = false
     )
+    OR ${householdAccessiblePetSql(alias, userIdParam)}
     OR (
       ${alias}.organization_id IS NOT NULL
       AND EXISTS (
@@ -109,6 +114,8 @@ export async function userCanAccessPet(pool, petId, userId) {
     [petId, userId, FOSTER_PET_ACCESS_ROLE]
   );
   if (foster.rows.length > 0) return true;
+  const householdGrant = await getHouseholdGrantForUser(pool, petId, userId);
+  if (householdGrant) return true;
   const orgMember = await pool.query(
     `SELECT 1 FROM pets p
      JOIN organization_users ou ON ou.organization_id = p.organization_id
@@ -150,12 +157,16 @@ export const userHasCollaboratorAccess = userHasSharedAccess;
 export async function userCanManageCare(pool, petId, userId) {
   if (!petId || !userId) return false;
   if (await userOwnsPet(pool, petId, userId)) return true;
-  return userHasSharedAccess(pool, petId, userId);
+  if (await userHasSharedAccess(pool, petId, userId)) return true;
+  const householdGrant = await getHouseholdGrantForUser(pool, petId, userId);
+  return householdGrant === 'full_access' || householdGrant === 'can_log_care';
 }
 
-/** Owner or co-parent — profile, vet, sharing admin. */
+/** Owner, co-parent, or household Full access — profile, vet, sharing admin (not share). */
 export async function userCanManageProfile(pool, petId, userId) {
-  return userIsOwnerOrCoParent(pool, petId, userId);
+  if (await userIsOwnerOrCoParent(pool, petId, userId)) return true;
+  const householdGrant = await getHouseholdGrantForUser(pool, petId, userId);
+  return householdGrant === 'full_access';
 }
 
 /** @deprecated Use userCanManageCare */
@@ -217,7 +228,11 @@ export async function petNotificationRecipientIds(pool, petId) {
      SELECT pa.user_id FROM pet_access pa
      WHERE pa.pet_id = $1
        AND pa.role IN (${PET_ACCESS_ROLES_SQL}, '${FOSTER_PET_ACCESS_ROLE}')
-       AND COALESCE(pa.hidden, false) = false`,
+       AND COALESCE(pa.hidden, false) = false
+     UNION
+     SELECT hm.user_id FROM household_pets hp
+     INNER JOIN household_members hm ON hm.household_id = hp.household_id
+     WHERE hp.pet_id = $1 AND hm.access_tier = 'full_access'`,
     [petId]
   );
   return result.rows.map((r) => r.user_id);

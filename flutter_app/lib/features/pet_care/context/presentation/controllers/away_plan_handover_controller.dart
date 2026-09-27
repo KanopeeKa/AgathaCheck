@@ -43,12 +43,17 @@ class AwayPlanHandoverController {
     final resolutionNotesByEntryId = await repository.getAbsenceResolutionNotes(
       absence.id,
     );
+    final emergencyLines = <String>{};
 
     for (final petId in targetPetIds) {
       final coverage = await repository.getCarePeriodCoverage(
         petId: petId,
         startsOn: absence.startsOn,
         endsOn: absence.endsOn,
+      );
+      final relationships = await repository.getPetPeopleRelationships(petId);
+      emergencyLines.addAll(
+        AwayPlanCopy.handoverContactLines(l, relationships),
       );
       final carer = absence.petCarers.firstWhere(
         (row) => row.petId == petId,
@@ -121,6 +126,7 @@ class AwayPlanHandoverController {
           ? l.awayPlanningHandoverTripNotesTitle
           : null,
       petSections: petSections,
+      emergencyContactLines: emergencyLines.toList(growable: false),
     );
   }
 

@@ -91,6 +91,7 @@ describe('deriveAwayPlanReadiness matrix (D-AWAY-002)', () => {
           state: carer.state,
           pets_with_carer: carer.petsWithCarer,
           pets_total: carer.petsTotal,
+          unavailable_pet_ids: [],
           copy_key: CARER_COVERAGE_COPY_KEYS[carer.state],
         });
 

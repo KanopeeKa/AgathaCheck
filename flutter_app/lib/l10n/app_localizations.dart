@@ -2443,6 +2443,60 @@ abstract class AppLocalizations {
   /// **'Mark as done'**
   String get markAsDone;
 
+  /// No description provided for @whoHasAccessHouseholdTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Household access'**
+  String get whoHasAccessHouseholdTitle;
+
+  /// No description provided for @householdsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Households'**
+  String get householdsTitle;
+
+  /// No description provided for @householdsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not in a household yet. Create one to share pets with people at home.'**
+  String get householdsEmpty;
+
+  /// No description provided for @householdCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create household'**
+  String get householdCreate;
+
+  /// No description provided for @householdCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Household created'**
+  String get householdCreated;
+
+  /// No description provided for @householdNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Household name'**
+  String get householdNameLabel;
+
+  /// No description provided for @householdOrganiserLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Organiser · Full access'**
+  String get householdOrganiserLabel;
+
+  /// No description provided for @householdFullAccessLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Full access'**
+  String get householdFullAccessLabel;
+
+  /// No description provided for @householdCanLogCareLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Can log care'**
+  String get householdCanLogCareLabel;
+
   /// No description provided for @sharing.
   ///
   /// In en, this message translates to:
@@ -11652,6 +11706,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No one else has shared access to this pet yet.'**
   String get awayPlanningCarerEditCandidatesEmpty;
+
+  /// No description provided for @awayPlanningCarerEditContactsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Add someone in People before assigning a carer.'**
+  String get awayPlanningCarerEditContactsEmpty;
+
+  /// No description provided for @awayPlanningHandoverContactsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency and veterinary contacts'**
+  String get awayPlanningHandoverContactsTitle;
+
+  /// No description provided for @awayPlanningHandoverContactLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{role}: {name}'**
+  String awayPlanningHandoverContactLine(String role, String name);
+
+  /// No description provided for @awayPlanningHandoverPrimaryVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary vet'**
+  String get awayPlanningHandoverPrimaryVet;
+
+  /// No description provided for @awayPlanningHandoverOutOfHoursVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Out-of-hours vet'**
+  String get awayPlanningHandoverOutOfHoursVet;
+
+  /// No description provided for @awayPlanningHandoverEmergencyContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contact'**
+  String get awayPlanningHandoverEmergencyContact;
 
   /// No description provided for @awayPlanningCarerEditNameLabel.
   ///

@@ -73,7 +73,7 @@
     "064_planned_absence_handover.sql",
     "065_pet_access_roles.sql",
     "066_pet_tags.sql",
-    "067_pet_share_invites.sql",
+    "067_pet_share_links.sql",
     "068_notifications_health_entry_id_text.sql",
     "069_care_classification_columns.sql",
     "070_cim_drop_suggested_health_entry_type.sql",
@@ -81,11 +81,13 @@
     "072_people_contacts_foundation.sql",
     "073_people_vet_backfill.sql",
     "074_health_occurrence_attribution.sql",
-    "075_pet_home_timezone.sql",
-    "076_health_occurrence_photos.sql",
-    "077_care_provider_used.sql",
-    "078_health_entry_absence_resolutions.sql",
-    "079_health_entry_care_blocks.sql"
+    "075_planned_absence_contact_carers.sql",
+    "076_households.sql",
+    "077_pet_home_timezone.sql",
+    "078_health_occurrence_photos.sql",
+    "079_care_provider_used.sql",
+    "080_health_entry_absence_resolutions.sql",
+    "081_health_entry_care_blocks.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
@@ -100,6 +102,7 @@
     "049_pinned_organization_id.sql",
     "050_private_health_files.sql",
     "051_share_link_expiry.sql",
-    "073_people_vet_backfill.sql"
+    "073_people_vet_backfill.sql",
+    "075_planned_absence_contact_carers.sql"
   ]
 }

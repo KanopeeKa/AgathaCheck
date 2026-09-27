@@ -5,10 +5,10 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationPath = path.resolve(
   __dirname,
-  '../../../db/migrations/077_care_provider_used.sql',
+  '../../../db/migrations/079_care_provider_used.sql',
 );
 
-describe('077_care_provider_used migration', () => {
+describe('079_care_provider_used migration', () => {
   const sql = fs.readFileSync(migrationPath, 'utf8');
 
   it('adds typed provider on entries and provider used on occurrences', () => {

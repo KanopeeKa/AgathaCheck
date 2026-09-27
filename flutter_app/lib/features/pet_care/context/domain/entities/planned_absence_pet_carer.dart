@@ -5,6 +5,8 @@ class PlannedAbsencePetCarer {
     this.carerUserId,
     this.carerName,
     this.carerNote,
+    this.contactId,
+    this.carerState = 'unset',
     this.carerRemoved = false,
     this.petNote,
   });
@@ -14,6 +16,12 @@ class PlannedAbsencePetCarer {
   final String? carerUserId;
   final String? carerName;
   final String? carerNote;
+  final String? contactId;
+
+  /// `unset` | `set` | `unavailable` — server-authoritative (People phase 2).
+  final String carerState;
+
+  /// True when [carerState] is `unavailable` (legacy `carer_removed` alias).
   final bool carerRemoved;
 
   /// About caring for this pet (feeding, meds, quirks) — independent of
@@ -21,12 +29,7 @@ class PlannedAbsencePetCarer {
   /// carers and describes the person, not the pet.
   final String? petNote;
 
-  bool get hasCarer {
-    if (carerRemoved) return false;
-    if (carerKind == null || carerKind!.isEmpty) return false;
-    if (carerKind == 'note_only') {
-      return (carerName ?? '').trim().isNotEmpty;
-    }
-    return true;
-  }
+  bool get hasCarer => carerState == 'set';
+
+  bool get isCarerUnavailable => carerState == 'unavailable' || carerRemoved;
 }

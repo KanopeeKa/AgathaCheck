@@ -45,7 +45,11 @@ export function registerPetAccessRoutes(router, pool) {
     try {
       const result = await listAccess(pool, userId, id);
       if (result.error) return res.status(result.status).json({ error: result.error });
-      return res.json(result.access);
+      return res.json({
+        access: result.access,
+        household_access: result.household_access || [],
+        access_events: result.access_events || [],
+      });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }

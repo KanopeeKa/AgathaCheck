@@ -1334,6 +1334,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get markAsDone => 'Mark as done';
 
   @override
+  String get whoHasAccessHouseholdTitle => 'Household access';
+
+  @override
+  String get householdsTitle => 'Households';
+
+  @override
+  String get householdsEmpty =>
+      'You are not in a household yet. Create one to share pets with people at home.';
+
+  @override
+  String get householdCreate => 'Create household';
+
+  @override
+  String get householdCreated => 'Household created';
+
+  @override
+  String get householdNameLabel => 'Household name';
+
+  @override
+  String get householdOrganiserLabel => 'Organiser · Full access';
+
+  @override
+  String get householdFullAccessLabel => 'Full access';
+
+  @override
+  String get householdCanLogCareLabel => 'Can log care';
+
+  @override
   String get sharing => 'Sharing';
 
   @override
@@ -6540,6 +6568,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get awayPlanningCarerEditCandidatesEmpty =>
       'No one else has shared access to this pet yet.';
+
+  @override
+  String get awayPlanningCarerEditContactsEmpty =>
+      'Add someone in People before assigning a carer.';
+
+  @override
+  String get awayPlanningHandoverContactsTitle =>
+      'Emergency and veterinary contacts';
+
+  @override
+  String awayPlanningHandoverContactLine(String role, String name) {
+    return '$role: $name';
+  }
+
+  @override
+  String get awayPlanningHandoverPrimaryVet => 'Primary vet';
+
+  @override
+  String get awayPlanningHandoverOutOfHoursVet => 'Out-of-hours vet';
+
+  @override
+  String get awayPlanningHandoverEmergencyContact => 'Emergency contact';
 
   @override
   String get awayPlanningCarerEditNameLabel => 'Name';

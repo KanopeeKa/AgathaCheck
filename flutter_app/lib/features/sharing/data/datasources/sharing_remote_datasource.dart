@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
+import '../models/household_pet_access_model.dart';
 import '../models/pet_access_model.dart';
 import '../../domain/entities/invite_preview.dart';
 import '../../domain/entities/pet_share_access.dart';
@@ -65,30 +66,42 @@ class SharingRemoteDataSource {
     return SharePreview.fromJson(data);
   }
 
-  Future<List<PetAccessModel>> getAccess(String petId, String token) async {
+  Future<PetAccessOverviewModel> getAccessOverview(
+    String petId,
+    String token,
+  ) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/pets/$petId/access'),
       headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 403) {
-      return [];
+      return const PetAccessOverviewModel(
+        directAccess: [],
+        householdAccess: [],
+      );
     }
     if (response.statusCode >= 400) {
       final data = json.decode(response.body);
       throw Exception(data['error'] ?? 'Failed to get access list');
     }
     final decoded = json.decode(response.body);
-    final List list;
-    if (decoded is Map<String, dynamic> && decoded.containsKey('access')) {
-      list = decoded['access'] as List;
-    } else if (decoded is List) {
-      list = decoded;
-    } else {
-      list = [];
+    if (decoded is Map<String, dynamic>) {
+      return PetAccessOverviewModel.fromJson(decoded);
     }
-    return list
-        .map((e) => PetAccessModel.fromJson(e as Map<String, dynamic>))
-        .toList();
+    if (decoded is List) {
+      return PetAccessOverviewModel(
+        directAccess: decoded
+            .map((e) => PetAccessModel.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        householdAccess: const [],
+      );
+    }
+    return const PetAccessOverviewModel(directAccess: [], householdAccess: []);
+  }
+
+  Future<List<PetAccessModel>> getAccess(String petId, String token) async {
+    final overview = await getAccessOverview(petId, token);
+    return overview.directAccess.cast<PetAccessModel>();
   }
 
   Future<void> updateRole(

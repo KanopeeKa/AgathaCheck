@@ -15,6 +15,7 @@ import organizationsRoutes from '../routes/organizations.js';
 import vetsRoutes from '../routes/vets.js';
 import peopleRoutes from '../routes/people/index.js';
 import sharingRoutes from '../routes/sharing.js';
+import householdsRoutes from '../routes/households/index.js';
 import petTagsRoutes from '../routes/petTags.js';
 import careContextRoutes from '../routes/careContext/index.js';
 import fosterPlacementsRoutes from '../routes/fosterPlacements.js';
@@ -120,6 +121,7 @@ export function createApp(customPool, comparePassword) {
   app.use('/api/health-entries', healthEntriesRoutes(pool));
   app.use('/api/health-issues', healthIssuesRoutes(pool));
   app.use('/api/share', sharingRoutes(pool));
+  app.use('/api/households', householdsRoutes(pool));
   app.use('/api/pet-tags', petTagsRoutes(pool));
   app.use('/api/archived-pets', (req, res) => {
     res.json([]);
@@ -144,6 +146,7 @@ export function createApp(customPool, comparePassword) {
   app.use('/backend/api/health-entries', healthEntriesRoutes(pool));
   app.use('/backend/api/health-issues', healthIssuesRoutes(pool));
   app.use('/backend/api/share', sharingRoutes(pool));
+  app.use('/backend/api/households', householdsRoutes(pool));
   app.use('/backend/api/pet-tags', petTagsRoutes(pool));
 
   app.get('/health', (req, res) => {

@@ -225,7 +225,7 @@ POST/PUT accept optional `measurement_source`. Pet weight reference/context fiel
 Pet access management on `/api/pets/:id/...` (owner unless noted):
 - `GET /:id/share-links` — list share links with status and claimed user (owner: all links; foster: own links only)
 - `GET /:id/invites` — pending email invites for the pet
-- `GET /:id/access` — list users the pet is shared with (owner or co-parent)
+- `GET /:id/access` — who has access: `{ access: [...], household_access: [...], access_events: [...] }` — direct `pet_access` rows plus household members when the pet is in a household; `access_events` capped at 100 per pet (owner or co-parent)
 - `PUT /:id/access/:userId/role` — promote/demote between `carer` and `co_parent` (owner or co-parent)
 - `DELETE /:id/access/:userId` — remove access and notify the user (owner or co-parent)
 - `DELETE /:id/follow` — carer/co-parent stops following (self-remove access)
@@ -234,6 +234,22 @@ Pet access management on `/api/pets/:id/...` (owner unless noted):
 Shared pets appear in `GET /api/pets/all` with `is_shared: true` and `access_role` (`carer` or `co_parent`). Fostered pets use `is_foster: true` (and `is_shared: false`). Shared and org-visible pets include `pet_parent_name` (display name of the pet parent); `primary_holder_name` is a deprecated alias.
 
 Share links are **single-use**: once accepted, the same link cannot be used by another user (`410`).
+
+### Households (`/api/households`) — People phase 3
+
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/` | Create household; body `{ name, pet_ids? }`; creator is organiser + `full_access` |
+| GET | `/` | List households for caller `{ households: [...] }` |
+| GET | `/:id` | Detail with `members` and `pets` (members only) |
+| PATCH | `/:id` | Rename (organisers) |
+| POST | `/:id/members` | Add member by `user_id`; body `{ access_tier?, is_organiser? }` |
+| DELETE | `/:id/members/:userId` | Leave or remove; body optional `{ remove_all_access_to_my_pets: true }` |
+| PUT | `/:id/pets` | Body `{ pet_ids: [] }` — record owner adds/removes their pets |
+
+Household `full_access` grants `userCanManageProfile` + `userCanManageCare` (not share/transfer/delete). `can_log_care` grants care management only. Effective access is the highest of household, direct share, and absence (absence guest access ships in phase 4).
+
+`DELETE /api/auth/me` returns `409` with `code: household_pets_require_confirmation` when the user owns pets in a household with other members, unless `confirm_household_pets: true` is sent with the password.
 
 ### Care recommendations (`/api/pets/:id/care-recommendations`) — Phase C crisp rules
 
@@ -313,13 +329,15 @@ Each list item includes `overlap_warnings` **recomputed on read** (not persisted
 
 | Field | Notes |
 |---|---|
-| `pet_carers[].carer_kind` | `shared_user`, `note_only`, or `null` (unset) |
+| `pet_carers[].carer_kind` | `shared_user`, `note_only`, or `null` (unset) — derived when writing via `contact_id` |
 | `pet_carers[].carer_user_id` | Required on write for `shared_user`; must be a collaborator on that pet |
-| `pet_carers[].carer_name` / `carer_note` | `note_only` only — name + note about the person; no access implied |
-| `pet_carers[].carer_removed` | Read-only: `shared_user` with `carer_user_id` null (deleted user) |
-| `pet_carers[].pet_note` | Any `carer_kind` — free text about caring for this pet (feeding, meds, quirks); independent of carer identity (migration `071`, D-AWAY-014a) |
+| `pet_carers[].carer_name` / `carer_note` | Snapshot / private note for `note_only`; enriched for `shared_user` reads |
+| `pet_carers[].carer_state` | `unset` \| `set` \| `unavailable` (D18) |
+| `pet_carers[].contact_id` | Contact in declarer's directory; primary write key on `PATCH` (People phase 2) |
+| `pet_carers[].carer_removed` | Read-only alias: `true` when `carer_state` is `unavailable` |
+| `pet_carers[].pet_note` | Any carer — free text about caring for this pet (feeding, meds, quirks); independent of carer identity (migration `071`, D-AWAY-014a) |
 
-`PATCH /:id` accepts optional `pet_carers: [{ pet_id, carer_kind, ..., pet_note }]`. Carer writes bump `planned_absences.updated_at`. `shared_user` assignments return `403` when `carer_user_id` is not a `shared`/`guardian` collaborator on that pet. Each `pet_carers` entry writes `carer_kind`/`carer_user_id`/`carer_name`/`carer_note` only when `carer_kind` is a present key on that entry, and `pet_note` only when `pet_note` is a present key — an entry with only `pet_note` never touches the carer, and an entry with only `carer_kind` never touches `pet_note`. Send `pet_note: null` to clear it explicitly.
+`PATCH /:id` accepts optional `pet_carers: [{ pet_id, contact_id?, carer_kind?, ..., pet_note }]`. Assigning via `contact_id` resolves to `shared_user` or `note_only` storage. Legacy `carer_kind` writes still accepted and upsert a matching contact. Carer writes bump `planned_absences.updated_at`. `shared_user` / linked contacts return `403` when the user is not a collaborator on that pet. Each `pet_carers` entry writes carer columns only when `contact_id` or `carer_kind` is a present key on that entry, and `pet_note` only when `pet_note` is a present key — an entry with only `pet_note` never touches the carer, and an entry with only carer keys never touches `pet_note`. Send `pet_note: null` to clear it explicitly.
 
 **Readiness (`GET /:id/readiness`)** — AW-8
 
@@ -331,6 +349,7 @@ Server-authoritative two-fact readiness for hub, plan page, and dashboard tile (
     "state": "none_have_carers | some_have_carers | all_have_carers",
     "pets_with_carer": 0,
     "pets_total": 1,
+    "unavailable_pet_ids": [],
     "copy_key": "awayPlanningCarerCoverageNoneHaveCarers"
   },
   "care_coverage": {
@@ -358,7 +377,9 @@ Declarer-scoped; same auth as `GET /:id`. Stores per–care-item decisions for o
 
 Resolved affected items are excluded from away-plan `care_coverage.has_items_to_review` (readiness uses absence id when deriving coverage).
 
-**Planned (People phase 2)** — per-pet carer fact and coverage extension ([amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md)):
+**Handover PDF (People phase 2)** — includes primary vet, out-of-hours vet, and emergency contacts from `GET /api/pets/:id/people-relationships` for pets on the plan.
+
+**Planned (People phase 2)** — per-pet carer fact and coverage extension ([amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md)) — **shipped** on branch `cursor/people-p2-absence-a58d`:
 
 | Field | Notes |
 |---|---|

@@ -23,7 +23,8 @@
     "Guardian can save a planned absence from the wizard": "P0",
     "Away planning hub lists a saved upcoming absence": "P1",
     "Away plan page shows who is caring for each pet": "P1",
-    "Guardian assigns a shared carer on the away plan page": "P2"
+    "Guardian assigns a shared carer on the away plan page": "P2",
+    "Guardian assigns a contact carer on the away plan page": "P2"
   },
   "away_plan_detail_v2.feature": {
     "Away plan page hides coverage headers when carers and care are reassured": "P1",
@@ -139,6 +140,7 @@
     "Scoped share preview hides veterinarian": "P1",
     "Viewing owner first name on shared pet page": "P1",
     "Accepting a share into personal pet list": "P1",
+    "Pet parent sees household members in who has access": "P2",
     "Carer stops following a shared pet": "P2",
     "Carer hides a shared pet from their list": "P2",
     "Hiding a shared pet via swipe": "P2",

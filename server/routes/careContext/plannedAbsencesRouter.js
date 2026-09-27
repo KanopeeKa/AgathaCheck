@@ -11,8 +11,11 @@ import {
   enrichSharedUserCarerNames,
   normalizePetNoteInput,
   validateAbsenceDateWindow,
-  validateCarerInput,
 } from '../../lib/care/plannedAbsence.js';
+import {
+  enrichAbsencePetCarerContacts,
+  resolveCarerWrite,
+} from '../../lib/people/absenceCarer.js';
 import { PET_ACCESS_ROLES, userCanManageCare } from '../../lib/petAccess.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 import {
@@ -32,13 +35,14 @@ const PET_ACCESS_ROLES_SQL = PET_ACCESS_ROLES.map((role) => `'${role}'`).join(',
 
 async function loadAbsencePets(pool, absenceId) {
   const result = await pool.query(
-    `SELECT pet_id, carer_kind, carer_user_id, carer_name, carer_note, pet_note
+    `SELECT pet_id, carer_kind, carer_user_id, carer_name, carer_note, pet_note, contact_id
      FROM planned_absence_pets
      WHERE planned_absence_id = $1
      ORDER BY pet_id`,
     [absenceId]
   );
-  return enrichSharedUserCarerNames(pool, result.rows);
+  const enrichedNames = await enrichSharedUserCarerNames(pool, result.rows);
+  return enrichAbsencePetCarerContacts(pool, enrichedNames);
 }
 
 /**
@@ -50,14 +54,15 @@ async function loadPetsByAbsenceIds(pool, absenceIds) {
   const map = new Map();
   if (!absenceIds.length) return map;
   const result = await pool.query(
-    `SELECT planned_absence_id, pet_id, carer_kind, carer_user_id, carer_name, carer_note, pet_note
+    `SELECT planned_absence_id, pet_id, carer_kind, carer_user_id, carer_name, carer_note, pet_note, contact_id
      FROM planned_absence_pets
      WHERE planned_absence_id = ANY($1::uuid[])
      ORDER BY pet_id`,
     [absenceIds]
   );
   if (result.rows.length === 0) return map;
-  const enriched = await enrichSharedUserCarerNames(pool, result.rows);
+  const enrichedNames = await enrichSharedUserCarerNames(pool, result.rows);
+  const enriched = await enrichAbsencePetCarerContacts(pool, enrichedNames);
   for (const row of enriched) {
     const list = map.get(row.planned_absence_id) || [];
     list.push(row);
@@ -126,7 +131,7 @@ async function replaceAbsencePets(pool, absenceId, petIds) {
  * neither field — each is written only when its key is present on the item,
  * so a note-only save never wipes the carer and vice versa (D-AWAY-014a).
  */
-async function updateAbsenceCarers(pool, absenceId, petCarersInput, allowedPetIds) {
+async function updateAbsenceCarers(pool, absenceId, petCarersInput, allowedPetIds, declarerUserId) {
   if (!Array.isArray(petCarersInput)) {
     return { ok: false, status: 400, error: 'pet_carers must be an array' };
   }
@@ -141,30 +146,40 @@ async function updateAbsenceCarers(pool, absenceId, petCarersInput, allowedPetId
     }
 
     const hasCarerKind = Object.hasOwn(item, 'carer_kind') || Object.hasOwn(item, 'carerKind');
+    const hasContactId = Object.hasOwn(item, 'contact_id') || Object.hasOwn(item, 'contactId');
     const hasPetNote = Object.hasOwn(item, 'pet_note') || Object.hasOwn(item, 'petNote');
-    if (!hasCarerKind && !hasPetNote) {
+    if (!hasCarerKind && !hasContactId && !hasPetNote) {
       continue;
     }
 
     const columns = [];
     const values = [];
 
-    if (hasCarerKind) {
-      const validated = validateCarerInput(item);
-      if (!validated.ok) {
-        return { ok: false, status: 400, error: validated.error };
+    if (hasCarerKind || hasContactId) {
+      const resolved = await resolveCarerWrite(pool, {
+        declarerUserId,
+        petId,
+        item,
+      });
+      if (resolved === null) {
+        continue;
       }
-      if (validated.carer_kind === 'shared_user') {
-        if (!(await isCarerCandidate(pool, petId, validated.carer_user_id))) {
-          return { ok: false, status: 403, error: 'Forbidden' };
-        }
+      if (!resolved.ok) {
+        return { ok: false, status: resolved.status, error: resolved.error };
       }
-      columns.push('carer_kind', 'carer_user_id', 'carer_name', 'carer_note');
+      columns.push(
+        'carer_kind',
+        'carer_user_id',
+        'carer_name',
+        'carer_note',
+        'contact_id',
+      );
       values.push(
-        validated.carer_kind,
-        validated.carer_user_id,
-        validated.carer_name,
-        validated.carer_note,
+        resolved.carer_kind,
+        resolved.carer_user_id,
+        resolved.carer_name,
+        resolved.carer_note,
+        resolved.contact_id,
       );
     }
 
@@ -416,7 +431,13 @@ export function registerPlannedAbsenceRoutes(router, pool) {
         );
         await replaceAbsencePets(client, existing.id, petIds);
         if (petCarersInput != null) {
-          const carerResult = await updateAbsenceCarers(client, existing.id, petCarersInput, petIds);
+          const carerResult = await updateAbsenceCarers(
+            client,
+            existing.id,
+            petCarersInput,
+            petIds,
+            userId,
+          );
           if (!carerResult.ok) {
             throw Object.assign(new Error(carerResult.error), { status: carerResult.status });
           }

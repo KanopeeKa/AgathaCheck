@@ -1,3 +1,4 @@
+import '../../domain/entities/household_pet_access.dart';
 import '../../domain/entities/invite_preview.dart';
 import '../../domain/entities/pet_access.dart';
 import '../../domain/entities/pet_share_access.dart';
@@ -35,6 +36,11 @@ class SharingRepositoryImpl implements SharingRepository {
   @override
   Future<List<PetAccess>> getAccess(String petId, String token) {
     return _dataSource.getAccess(petId, token);
+  }
+
+  @override
+  Future<PetAccessOverview> getAccessOverview(String petId, String token) {
+    return _dataSource.getAccessOverview(petId, token);
   }
 
   @override
