@@ -245,11 +245,10 @@
       "spawn_allowed": false,
       "merge_mode": "auto",
       "exit_checklist": "default",
-      "status": "pending",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status": "in_progress",
+      "debt_issue_refs": [],
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "integration-main",
@@ -273,5 +272,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:fd1ec8d579ad3b30080fb7b07b1d9a92b74f5c85e5156b1e6f4d9f99307f27a5"
+  "content_hash": "sha256:b97afe16165d173d617f7fbc3196bdea8eec9014606b8c204ba6ed9a3e6a87bb"
 }
