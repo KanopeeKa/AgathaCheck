@@ -30,13 +30,13 @@ autonomy: active
 current_phase: e-absence
 last_completed_phase: d-providers
 halt_reason: null
-next_action: "start phase e-absence: checkout cursor/care-item-evolution-e-absence-7796"
+next_action: "continue phase e-absence on branch cursor/care-item-evolution-e-absence-7796"
 artifact_ref:
-  branch: cursor/care-item-evolution-integration-7796
+  branch: cursor/care-item-evolution-e-absence-7796
   plan_path: .agents/plans/care-item-evolution.md
-  plan_commit: 75ee0ce6b0c75aa32a4ac6031cb4d4b27168ef9b
+  plan_commit: e27f6409c31c688e2895d756738905861e4cc4ec
   snapshot_path: .agents/plans/care-item-evolution.snapshot.json
-  snapshot_commit: 75ee0ce6b0c75aa32a4ac6031cb4d4b27168ef9b
+  snapshot_commit: e27f6409c31c688e2895d756738905861e4cc4ec
 open_prs: []
 merge_commits: {"docs":"d977ebdecbe7f881a3e552122f055f265e9af755"}
 debt_issue_refs: []
