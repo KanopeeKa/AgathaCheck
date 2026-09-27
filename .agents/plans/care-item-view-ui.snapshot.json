@@ -29,9 +29,10 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1369"
     },
     {
       "id": "primitives",
@@ -52,7 +53,10 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1370"
     },
     {
       "id": "needs-attention",
@@ -72,7 +76,9 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "schedule-absence",
@@ -177,5 +183,5 @@
       "status": "pending"
     }
   ],
-  "content_hash": "sha256:4f50231af74c9214b8ba6983d925179e19cfb4544047e13bc75516884bead151"
+  "content_hash": "sha256:ad40e426733a9cc87b7bf5c71d133fd0a32797886b4cb4179ad1936e3309ddaf"
 }
