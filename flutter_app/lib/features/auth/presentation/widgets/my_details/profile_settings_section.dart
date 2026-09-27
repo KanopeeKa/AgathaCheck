@@ -9,17 +9,21 @@ class ProfileSettingsSection extends StatelessWidget {
     required this.theme,
     required this.l10n,
     required this.currentLocale,
+    required this.currentTimezone,
     required this.onSubscription,
     required this.onOrganizations,
     required this.onLocaleChanged,
+    required this.onTimezoneChanged,
   });
 
   final ThemeData theme;
   final AppLocalizations l10n;
   final String currentLocale;
+  final String currentTimezone;
   final VoidCallback onSubscription;
   final VoidCallback onOrganizations;
   final ValueChanged<String> onLocaleChanged;
+  final ValueChanged<String> onTimezoneChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +71,35 @@ class ProfileSettingsSection extends StatelessWidget {
             ),
           ),
         ),
+        const SizedBox(height: 16),
+        Card(
+          child: ListTile(
+            leading: const Icon(Icons.schedule),
+            title: const Text('Time zone'),
+            trailing: DropdownButton<String>(
+              value: _timezoneOptions.contains(currentTimezone)
+                  ? currentTimezone
+                  : 'UTC',
+              underline: const SizedBox.shrink(),
+              items: _timezoneOptions
+                  .map((tz) => DropdownMenuItem(value: tz, child: Text(tz)))
+                  .toList(growable: false),
+              onChanged: (value) {
+                if (value != null) onTimezoneChanged(value);
+              },
+            ),
+          ),
+        ),
       ],
     );
   }
+
+  static const _timezoneOptions = [
+    'UTC',
+    'Europe/London',
+    'Europe/Paris',
+    'America/New_York',
+    'America/Los_Angeles',
+    'Australia/Sydney',
+  ];
 }

@@ -22,6 +22,7 @@ import '../../features/pet_profile/presentation/screens/pet_timeline_screen.dart
 import '../../features/pet_profile/presentation/screens/pet_weight_tracking_screen.dart';
 import '../../features/pet_profile/presentation/widgets/pet_edit_permission_guard.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_desk_preview_screen.dart';
+import '../../features/pet_care/context/presentation/screens/absence_invite_landing_screen.dart';
 import '../../features/sharing/presentation/screens/invite_landing_screen.dart';
 import '../../features/sharing/presentation/screens/share_pet_screen.dart';
 import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
@@ -403,6 +404,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final code = state.pathParameters['code']!;
           return InviteLandingScreen(inviteCode: code);
+        },
+      ),
+      GoRoute(
+        path: '/absence-invite/:code',
+        name: 'absenceInviteLanding',
+        builder: (context, state) {
+          final code = state.pathParameters['code']!;
+          return AbsenceInviteLandingScreen(inviteCode: code);
         },
       ),
       ...buildFrozenDomainRedirectRoutes(),

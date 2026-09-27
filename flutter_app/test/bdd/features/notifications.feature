@@ -176,3 +176,9 @@ Feature: Notifications
     Given an administrative notification exists that has been resolved
     When the user opens the notification panel via the bell
     Then that notification should not display an "Action needed" affordance
+
+  @P1
+  Scenario: Record owner notified when absence guest access is granted by another member
+    Given a household member with full access invites a carer for an active planned absence
+    When the carer accepts the absence invite
+    Then the record owner should receive an administrative notification about the granted access

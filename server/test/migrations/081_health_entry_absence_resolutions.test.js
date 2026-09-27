@@ -5,10 +5,10 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationPath = path.resolve(
   __dirname,
-  '../../../db/migrations/080_health_entry_absence_resolutions.sql',
+  '../../../db/migrations/081_health_entry_absence_resolutions.sql',
 );
 
-describe('080_health_entry_absence_resolutions migration', () => {
+describe('081_health_entry_absence_resolutions migration', () => {
   const sql = fs.readFileSync(migrationPath, 'utf8');
 
   it('creates health_entry_absence_resolutions with decision and carer fields', () => {

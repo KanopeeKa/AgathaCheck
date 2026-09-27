@@ -6,6 +6,7 @@ import {
   getHouseholdGrantForUser,
   householdAccessiblePetSql,
 } from './households/petAccessGrants.js';
+import { absenceGuestAccessiblePetSql, userHasActiveAbsenceGuestAccess } from './people/absenceGuestGrants.js';
 
 export const CARER_ROLE = 'carer';
 export const CO_PARENT_ROLE = 'co_parent';
@@ -41,6 +42,7 @@ export function accessiblePetSql(alias, userIdParam) {
         AND COALESCE(pa.hidden, false) = false
     )
     OR ${householdAccessiblePetSql(alias, userIdParam)}
+    OR ${absenceGuestAccessiblePetSql(alias, userIdParam)}
     OR (
       ${alias}.organization_id IS NOT NULL
       AND EXISTS (
@@ -116,6 +118,7 @@ export async function userCanAccessPet(pool, petId, userId) {
   if (foster.rows.length > 0) return true;
   const householdGrant = await getHouseholdGrantForUser(pool, petId, userId);
   if (householdGrant) return true;
+  if (await userHasActiveAbsenceGuestAccess(pool, petId, userId)) return true;
   const orgMember = await pool.query(
     `SELECT 1 FROM pets p
      JOIN organization_users ou ON ou.organization_id = p.organization_id
@@ -159,7 +162,8 @@ export async function userCanManageCare(pool, petId, userId) {
   if (await userOwnsPet(pool, petId, userId)) return true;
   if (await userHasSharedAccess(pool, petId, userId)) return true;
   const householdGrant = await getHouseholdGrantForUser(pool, petId, userId);
-  return householdGrant === 'full_access' || householdGrant === 'can_log_care';
+  if (householdGrant === 'full_access' || householdGrant === 'can_log_care') return true;
+  return userHasActiveAbsenceGuestAccess(pool, petId, userId);
 }
 
 /** Owner, co-parent, or household Full access — profile, vet, sharing admin (not share). */

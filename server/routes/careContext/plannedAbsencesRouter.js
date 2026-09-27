@@ -8,249 +8,42 @@ import {
   PLANNED_ABSENCE_PROVENANCE_USER_DECLARED,
   PLANNED_ABSENCE_STATUS_ACTIVE,
   PLANNED_ABSENCE_STATUS_CANCELLED,
-  enrichSharedUserCarerNames,
-  normalizePetNoteInput,
   validateAbsenceDateWindow,
 } from '../../lib/care/plannedAbsence.js';
+import { loadUserTimezone } from '../../lib/people/absenceCarerInviteService.js';
 import {
-  enrichAbsencePetCarerContacts,
-  resolveCarerWrite,
-} from '../../lib/people/absenceCarer.js';
-import { PET_ACCESS_ROLES, userCanManageCare } from '../../lib/petAccess.js';
+  applyGuestAccessWidenAfterPatch,
+  evaluateGuestAccessWidenGate,
+} from '../../lib/people/absenceGuestPatch.js';
+import { revokeActiveGuestGrantsForAbsence } from '../../lib/people/absenceGuestGrants.js';
 import { extractUserId } from '../../lib/requireAuth.js';
+import { registerAbsenceCarePlanRoutes } from './absenceCarePlanRouter.js';
 import {
   absenceResponse,
   normalizeHandoverNoteInput,
 } from './plannedAbsenceHandoverFields.js';
 import { registerPlannedAbsenceHandoverRoutes } from './plannedAbsenceHandoverRoutes.js';
-import { registerAbsenceCarePlanRoutes } from './absenceCarePlanRouter.js';
 import { registerAbsenceResolutionsRoutes } from './absenceResolutionsRouter.js';
+import { registerPlannedAbsenceCarerInviteRoutes } from './plannedAbsenceCarerInviteRoutes.js';
+import {
+  assertManageablePets,
+  listAbsencesSql,
+  loadAbsenceForUser,
+  loadAbsencePets,
+  loadPetsByAbsenceIds,
+  parseListScope,
+  replaceAbsencePets,
+  updateAbsenceCarers,
+} from './plannedAbsenceStore.js';
 import {
   findOverlapWarnings,
   loadOverlapCandidatesForAbsences,
   overlapWarningsForAbsence,
 } from './plannedAbsenceOverlap.js';
 
-const PET_ACCESS_ROLES_SQL = PET_ACCESS_ROLES.map((role) => `'${role}'`).join(', ');
-
-async function loadAbsencePets(pool, absenceId) {
-  const result = await pool.query(
-    `SELECT pet_id, carer_kind, carer_user_id, carer_name, carer_note, pet_note, contact_id
-     FROM planned_absence_pets
-     WHERE planned_absence_id = $1
-     ORDER BY pet_id`,
-    [absenceId]
-  );
-  const enrichedNames = await enrichSharedUserCarerNames(pool, result.rows);
-  return enrichAbsencePetCarerContacts(pool, enrichedNames);
-}
-
-/**
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {string[]} absenceIds
- * @returns {Promise<Map<string, object[]>>}
- */
-async function loadPetsByAbsenceIds(pool, absenceIds) {
-  const map = new Map();
-  if (!absenceIds.length) return map;
-  const result = await pool.query(
-    `SELECT planned_absence_id, pet_id, carer_kind, carer_user_id, carer_name, carer_note, pet_note, contact_id
-     FROM planned_absence_pets
-     WHERE planned_absence_id = ANY($1::uuid[])
-     ORDER BY pet_id`,
-    [absenceIds]
-  );
-  if (result.rows.length === 0) return map;
-  const enrichedNames = await enrichSharedUserCarerNames(pool, result.rows);
-  const enriched = await enrichAbsencePetCarerContacts(pool, enrichedNames);
-  for (const row of enriched) {
-    const list = map.get(row.planned_absence_id) || [];
-    list.push(row);
-    map.set(row.planned_absence_id, list);
-  }
-  return map;
-}
-
-async function loadAbsenceForUser(pool, absenceId, userId) {
-  const result = await pool.query(
-    'SELECT * FROM planned_absences WHERE id = $1 AND user_id = $2',
-    [absenceId, userId]
-  );
-  return result.rows[0] || null;
-}
-
-async function assertManageablePets(pool, userId, petIds) {
-  if (!Array.isArray(petIds) || petIds.length === 0) {
-    return { ok: false, status: 400, error: 'At least one pet_id is required' };
-  }
-  const unique = [...new Set(petIds)];
-  for (const petId of unique) {
-    if (!(await userCanManageCare(pool, petId, userId))) {
-      return { ok: false, status: 403, error: 'Forbidden' };
-    }
-  }
-  return { ok: true, petIds: unique };
-}
-
-async function isCarerCandidate(pool, petId, carerUserId) {
-  const result = await pool.query(
-    `SELECT 1 FROM pet_access
-     WHERE pet_id = $1 AND user_id = $2
-       AND role IN (${PET_ACCESS_ROLES_SQL})
-       AND COALESCE(hidden, false) = false
-     LIMIT 1`,
-    [petId, carerUserId]
-  );
-  return result.rows.length > 0;
-}
-
-async function replaceAbsencePets(pool, absenceId, petIds) {
-  await pool.query(
-    `DELETE FROM planned_absence_pets
-     WHERE planned_absence_id = $1
-       AND NOT (pet_id = ANY($2::uuid[]))`,
-    [absenceId, petIds]
-  );
-  if (petIds.length === 0) return;
-  await pool.query(
-    `INSERT INTO planned_absence_pets (planned_absence_id, pet_id)
-     SELECT $1, unnest($2::uuid[])
-     ON CONFLICT (planned_absence_id, pet_id) DO NOTHING`,
-    [absenceId, petIds]
-  );
-}
-
-/**
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {string} absenceId
- * @param {object[]} petCarersInput
- * @param {string[]} allowedPetIds
- */
-/**
- * `pet_carers` entries can carry a carer change, a `pet_note` change, both, or
- * neither field — each is written only when its key is present on the item,
- * so a note-only save never wipes the carer and vice versa (D-AWAY-014a).
- */
-async function updateAbsenceCarers(pool, absenceId, petCarersInput, allowedPetIds, declarerUserId) {
-  if (!Array.isArray(petCarersInput)) {
-    return { ok: false, status: 400, error: 'pet_carers must be an array' };
-  }
-  const allowed = new Set(allowedPetIds);
-  for (const item of petCarersInput) {
-    const petId = item.pet_id || item.petId;
-    if (!petId) {
-      return { ok: false, status: 400, error: 'Each pet_carer entry requires pet_id' };
-    }
-    if (!allowed.has(petId)) {
-      return { ok: false, status: 400, error: 'pet_id is not on this absence' };
-    }
-
-    const hasCarerKind = Object.hasOwn(item, 'carer_kind') || Object.hasOwn(item, 'carerKind');
-    const hasContactId = Object.hasOwn(item, 'contact_id') || Object.hasOwn(item, 'contactId');
-    const hasPetNote = Object.hasOwn(item, 'pet_note') || Object.hasOwn(item, 'petNote');
-    if (!hasCarerKind && !hasContactId && !hasPetNote) {
-      continue;
-    }
-
-    const columns = [];
-    const values = [];
-
-    if (hasCarerKind || hasContactId) {
-      const resolved = await resolveCarerWrite(pool, {
-        declarerUserId,
-        petId,
-        item,
-      });
-      if (resolved === null) {
-        continue;
-      }
-      if (!resolved.ok) {
-        return { ok: false, status: resolved.status, error: resolved.error };
-      }
-      columns.push(
-        'carer_kind',
-        'carer_user_id',
-        'carer_name',
-        'carer_note',
-        'contact_id',
-      );
-      values.push(
-        resolved.carer_kind,
-        resolved.carer_user_id,
-        resolved.carer_name,
-        resolved.carer_note,
-        resolved.contact_id,
-      );
-    }
-
-    if (hasPetNote) {
-      // Read whichever key is actually present — `??` would treat an explicit
-      // `pet_note: null` as absent and fall through to `petNote`, losing the clear.
-      const rawPetNote = Object.hasOwn(item, 'pet_note') ? item.pet_note : item.petNote;
-      columns.push('pet_note');
-      values.push(normalizePetNoteInput(rawPetNote));
-    }
-
-    const setSql = columns.map((column, index) => `${column} = $${index + 1}`).join(', ');
-    await pool.query(
-      `UPDATE planned_absence_pets
-       SET ${setSql}
-       WHERE planned_absence_id = $${values.length + 1} AND pet_id = $${values.length + 2}`,
-      [...values, absenceId, petId],
-    );
-  }
-  return { ok: true };
-}
-
-const LIST_SCOPES = new Set(['upcoming', 'past', 'all']);
-
-/**
- * @param {import('express').Request} req
- * @returns {{ ok: true, scope: string } | { ok: false, error: string }}
- */
-function parseListScope(req) {
-  const raw = req.query.scope;
-  const scope = raw == null || raw === '' ? 'upcoming' : String(raw).trim().toLowerCase();
-  if (!LIST_SCOPES.has(scope)) {
-    return { ok: false, error: 'scope must be upcoming, past, or all' };
-  }
-  return { ok: true, scope };
-}
-
-/**
- * @param {string} scope
- * @param {string} todayIso
- */
-function listAbsencesSql(scope, todayIso) {
-  const base = `SELECT * FROM planned_absences
-     WHERE user_id = $1
-       AND status != $2`;
-  if (scope === 'upcoming') {
-    return {
-      sql: `${base}
-         AND ends_on >= $3::date
-         ORDER BY starts_on ASC`,
-      params: [PLANNED_ABSENCE_STATUS_CANCELLED, todayIso],
-    };
-  }
-  if (scope === 'past') {
-    return {
-      sql: `${base}
-         AND ends_on < $3::date
-         ORDER BY starts_on DESC`,
-      params: [PLANNED_ABSENCE_STATUS_CANCELLED, todayIso],
-    };
-  }
-  return {
-    sql: `${base}
-       ORDER BY (ends_on < $3::date)::int,
-                CASE WHEN ends_on >= $3::date THEN starts_on END ASC NULLS LAST,
-                CASE WHEN ends_on < $3::date THEN starts_on END DESC NULLS LAST`,
-    params: [PLANNED_ABSENCE_STATUS_CANCELLED, todayIso],
-  };
-}
-
 export function registerPlannedAbsenceRoutes(router, pool) {
+  registerPlannedAbsenceCarerInviteRoutes(router, pool);
+
   router.get('/', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -266,7 +59,7 @@ export function registerPlannedAbsenceRoutes(router, pool) {
         pool,
         userId,
         result.rows,
-        petsByAbsence
+        petsByAbsence,
       );
       const items = result.rows.map((row) => {
         const petRows = petsByAbsence.get(row.id) || [];
@@ -297,15 +90,16 @@ export function registerPlannedAbsenceRoutes(router, pool) {
         userId,
         petsCheck.petIds,
         window.starts_on,
-        window.ends_on
+        window.ends_on,
       );
       const id = uuidv4();
       const provenance = body.provenance || PLANNED_ABSENCE_PROVENANCE_USER_DECLARED;
+      const creatorTimezone = await loadUserTimezone(pool, userId);
       const row = await withOptionalTransaction(pool, async (client) => {
         const result = await client.query(
           `INSERT INTO planned_absences
-             (id, user_id, starts_on, ends_on, provenance, source_ref, status)
-           VALUES ($1, $2, $3::date, $4::date, $5, $6, $7)
+             (id, user_id, starts_on, ends_on, provenance, source_ref, status, timezone)
+           VALUES ($1, $2, $3::date, $4::date, $5, $6, $7, $8)
            RETURNING *`,
           [
             id,
@@ -315,7 +109,8 @@ export function registerPlannedAbsenceRoutes(router, pool) {
             provenance,
             body.source_ref || body.sourceRef || null,
             PLANNED_ABSENCE_STATUS_ACTIVE,
-          ]
+            creatorTimezone,
+          ],
         );
         await replaceAbsencePets(client, id, petsCheck.petIds);
         return result.rows[0];
@@ -389,7 +184,8 @@ export function registerPlannedAbsenceRoutes(router, pool) {
       if (!window.ok) return res.status(400).json({ error: window.error });
 
       let petRows = await loadAbsencePets(pool, existing.id);
-      let petIds = petRows.map((row) => row.pet_id);
+      const originalPetIds = petRows.map((row) => row.pet_id);
+      let petIds = [...originalPetIds];
       if (body.pet_ids != null || body.petIds != null) {
         const petsCheck = await assertManageablePets(pool, userId, body.pet_ids || body.petIds);
         if (!petsCheck.ok) return res.status(petsCheck.status).json({ error: petsCheck.error });
@@ -402,7 +198,7 @@ export function registerPlannedAbsenceRoutes(router, pool) {
 
       const petCarersInput = body.pet_carers ?? body.petCarers ?? null;
       const handoverNote = normalizeHandoverNoteInput(
-        body.handover_note ?? body.handoverNote
+        body.handover_note ?? body.handoverNote,
       );
 
       const overlapWarnings = await findOverlapWarnings(
@@ -411,8 +207,19 @@ export function registerPlannedAbsenceRoutes(router, pool) {
         petIds,
         window.starts_on,
         window.ends_on,
-        existing.id
+        existing.id,
       );
+
+      const widenGate = await evaluateGuestAccessWidenGate(pool, {
+        existing,
+        body,
+        oldPetIds: originalPetIds,
+        newPetIds: petIds,
+        window,
+      });
+      if (!widenGate.ok) {
+        return res.status(widenGate.status).json(widenGate.payload);
+      }
 
       const updated = await withOptionalTransaction(pool, async (client) => {
         const setClauses = ['starts_on = $1::date', 'ends_on = $2::date', 'updated_at = NOW()'];
@@ -427,7 +234,7 @@ export function registerPlannedAbsenceRoutes(router, pool) {
            SET ${setClauses.join(', ')}
            WHERE id = $${updateParams.length - 1} AND user_id = $${updateParams.length}
            RETURNING *`,
-          updateParams
+          updateParams,
         );
         await replaceAbsencePets(client, existing.id, petIds);
         if (petCarersInput != null) {
@@ -442,6 +249,12 @@ export function registerPlannedAbsenceRoutes(router, pool) {
             throw Object.assign(new Error(carerResult.error), { status: carerResult.status });
           }
         }
+        await applyGuestAccessWidenAfterPatch(client, {
+          absenceId: existing.id,
+          widen: widenGate.widen,
+          confirmed: widenGate.confirmed,
+          actorUserId: userId,
+        });
         return result.rows[0];
       });
       petRows = await loadAbsencePets(pool, existing.id);
@@ -466,13 +279,14 @@ export function registerPlannedAbsenceRoutes(router, pool) {
          SET status = $1, cancelled_at = NOW(), updated_at = NOW()
          WHERE id = $2 AND user_id = $3 AND status != $1
          RETURNING *`,
-        [PLANNED_ABSENCE_STATUS_CANCELLED, req.params.id, userId]
+        [PLANNED_ABSENCE_STATUS_CANCELLED, req.params.id, userId],
       );
       if (result.rows.length === 0) {
         const row = await loadAbsenceForUser(pool, req.params.id, userId);
         if (!row) return res.status(404).json({ error: 'Not found' });
         return res.status(400).json({ error: 'Absence is already cancelled' });
       }
+      await revokeActiveGuestGrantsForAbsence(pool, req.params.id);
       const petRows = await loadAbsencePets(pool, req.params.id);
       res.json(absenceResponse(result.rows[0], petRows));
     } catch (err) {

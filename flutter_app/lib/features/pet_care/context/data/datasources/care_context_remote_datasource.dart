@@ -240,4 +240,31 @@ class CareContextRemoteDataSource {
         .map((row) => Map<String, dynamic>.from(row as Map))
         .toList(growable: false);
   }
+
+  Future<Map<String, dynamic>> fetchAbsenceCarerInvitePreview(
+    String code,
+  ) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/planned-absences/carer-invites/code/$code'),
+      headers: _headers(),
+    );
+    _check(response);
+    return Map<String, dynamic>.from(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<Map<String, dynamic>> acceptAbsenceCarerInvite(String code) async {
+    final response = await _client.post(
+      Uri.parse(
+        '$baseUrl/api/planned-absences/carer-invites/code/$code/accept',
+      ),
+      headers: _headers(jsonBody: true),
+      body: '{}',
+    );
+    _check(response);
+    return Map<String, dynamic>.from(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
 }

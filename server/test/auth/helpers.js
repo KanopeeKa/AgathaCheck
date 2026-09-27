@@ -19,6 +19,7 @@ export const userRow = {
   bio: 'A test bio',
   photo_url: 'http://example.com/photo.png',
   locale: 'en',
+  timezone: 'UTC',
   pinned_organization_id: null,
   created_at: '2024-01-01T00:00:00Z',
   updated_at: '2024-01-01T00:00:00Z',
