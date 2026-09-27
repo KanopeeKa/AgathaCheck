@@ -458,7 +458,7 @@ Decisions: [shell-hierarchy-decisions.md](/docs/domains/navigation/changes/shell
 
 ---
 
-## Sprint 10 — Flutter 3.44 / Dart 3.12 toolchain upgrade (in progress)
+## Sprint 10 — Flutter 3.44 / Dart 3.12 toolchain upgrade (completed)
 
 **Goal:** Upgrade Flutter 3.32 → 3.44 (Dart 3.8 → 3.12); unblock blocked pub Dependabot PRs (#77–#81).  
 **Execution plan:** `docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md`  
@@ -466,11 +466,11 @@ Decisions: [shell-hierarchy-decisions.md](/docs/domains/navigation/changes/shell
 
 | # | Action | Status | Agent / notes |
 |---|--------|--------|---------------|
-| 10.A | Foundation: CI pins, SDK constraints, docs | In progress | CI workflows + Dockerfile + SDK bump |
-| 10.B | Pub batch: fl_chart, pdf, printing, mockito, flutter_lints | In progress | lockfiles + `build_runner` |
-| 10.C | `fl_chart` 1.x migration (`weight_chart.dart`) | In progress | API fixes if needed |
-| 10.D | `flutter_lints` 6 analyze cleanup | In progress | analyze fixes |
-| 10.E | Full `./scripts/pre-push.sh`; rebase Dependabot #77–#81 | Pending | Coordinator |
+| 10.A | Foundation: CI pins, SDK constraints, docs | **Done** | CI workflows + Dockerfile + SDK bump — `3.44.0`/`^3.12.0` everywhere; no `3.32` pins remain |
+| 10.B | Pub batch: fl_chart, pdf, printing, mockito, flutter_lints | **Done** | lockfiles + `build_runner` — fl_chart 1.2.0, pdf 3.13.0, printing 5.15.0, mockito 5.7.0, flutter_lints 6.0.0 |
+| 10.C | `fl_chart` 1.x migration (`weight_chart.dart`) | **Done** | API fixes if needed — landed with Wave B/C |
+| 10.D | `flutter_lints` 6 analyze cleanup | **Done** | analyze fixes — analyze green on `main` |
+| 10.E | Full `./scripts/pre-push.sh`; rebase Dependabot #77–#81 | **Done** | Coordinator — #78 merged; #77/#79/#80/#81 closed as superseded; UAT deploy green on `main` with 3.44.0 pin |
 
 **Out of scope:** Babel 8 (#73, #75) — close/ignore until separate decision.
 
