@@ -185,11 +185,10 @@
       "spawn_allowed": false,
       "merge_mode": "auto",
       "exit_checklist": "default",
-      "status": "pending",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status": "in_progress",
+      "debt_issue_refs": [],
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "e-absence",
@@ -271,5 +270,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:a070c08a61d2618384d1f8971a837ce236b70db3edb0ab2536628451507afb10"
+  "content_hash": "sha256:5d491f9e00ba4274287746c62d4fb45eb4911d64c4f53f906c08b259ca50a595"
 }

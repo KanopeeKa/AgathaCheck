@@ -30,13 +30,13 @@ autonomy: active
 current_phase: d-providers
 last_completed_phase: c-completion
 halt_reason: null
-next_action: "start phase d-providers: checkout cursor/care-item-evolution-d-providers-7796"
+next_action: "continue phase d-providers on branch cursor/care-item-evolution-d-providers-7796"
 artifact_ref:
-  branch: cursor/care-item-evolution-integration-7796
+  branch: cursor/care-item-evolution-d-providers-7796
   plan_path: .agents/plans/care-item-evolution.md
-  plan_commit: 1842a6c74600671ab32c49d785a4cf97e4bdc96f
+  plan_commit: 25270c6c82e84220487fa14f358c91cb16ba85a9
   snapshot_path: .agents/plans/care-item-evolution.snapshot.json
-  snapshot_commit: 1842a6c74600671ab32c49d785a4cf97e4bdc96f
+  snapshot_commit: 25270c6c82e84220487fa14f358c91cb16ba85a9
 open_prs: []
 merge_commits: {"docs":"d977ebdecbe7f881a3e552122f055f265e9af755"}
 debt_issue_refs: []
