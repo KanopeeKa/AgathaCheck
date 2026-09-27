@@ -1,0 +1,270 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-item-evolution",
+  "programme_ref": "docs/domains/pet_care/features/care-item-evolution.md",
+  "approved_at": "2026-09-27T01:32:47Z",
+  "approved_by": "user chat 2026-09-27: full autonomous execute-plan through care-item-evolution (spec consolidation + implementation)",
+  "approved_until": "2026-09-29T01:32:47Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/care-item-evolution-integration-7796",
+  "control_issue": 1346,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "docs",
+      "title": "Canonical spec and doc consolidation",
+      "branch": "cursor/care-item-evolution-docs-7796",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        "docs/architecture/index.md",
+        "docs/design/terminology.md",
+        ".agents/plans/care-item-evolution.*",
+        ".agents/plans/pet-care-item-model.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1347",
+      "pr_head_sha": "4fec7e65f9dc07706c548a8b87e3e10d2be860fa",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "a0-rules",
+      "title": "Overdue vocabulary and multi-dose list subtitles",
+      "branch": "cursor/care-item-evolution-a0-rules-7796",
+      "allowed_paths": [
+        "flutter_app/lib/features/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/**",
+        "server/lib/occurrenceScheduling.js",
+        "server/test/occurrenceScheduling.test.js",
+        "e2e/playwright/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "db/migrations/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "default",
+      "status": "pending",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "a1-timezone",
+      "title": "Pet home timezone",
+      "branch": "cursor/care-item-evolution-a1-timezone-7796",
+      "allowed_paths": [
+        "flutter_app/lib/**",
+        "flutter_app/test/**",
+        "server/lib/**",
+        "server/routes/**",
+        "server/test/**",
+        "db/migrations/**",
+        "docs/architecture/calendar-dates.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "default",
+      "status": "pending",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "b-view",
+      "title": "Care Item view Edit and Pause UI",
+      "branch": "cursor/care-item-evolution-b-view-7796",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_care/**",
+        "flutter_app/test/features/**",
+        "flutter_app/lib/l10n/**",
+        "e2e/playwright/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "c-completion",
+      "title": "Completion flows and occurrence documents",
+      "branch": "cursor/care-item-evolution-c-completion-7796",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/test/features/**",
+        "server/routes/healthEntries/**",
+        "server/lib/**",
+        "server/test/**",
+        "db/migrations/**",
+        "e2e/playwright/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "default",
+      "status": "pending",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "d-providers",
+      "title": "Providers and performed-by on occurrences",
+      "branch": "cursor/care-item-evolution-d-providers-7796",
+      "allowed_paths": [
+        "flutter_app/lib/features/**",
+        "flutter_app/test/features/**",
+        "server/routes/**",
+        "server/lib/**",
+        "server/test/**",
+        "db/migrations/**",
+        "docs/domains/people/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "default",
+      "status": "pending",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "e-absence",
+      "title": "Absence resolutions and away join",
+      "branch": "cursor/care-item-evolution-e-absence-7796",
+      "allowed_paths": [
+        "flutter_app/lib/features/**",
+        "flutter_app/test/features/**",
+        "server/routes/**",
+        "server/lib/care/**",
+        "server/test/**",
+        "db/migrations/**",
+        "e2e/playwright/**",
+        "docs/domains/pet_care/changes/away-planning-decisions.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "default",
+      "status": "pending",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "f-categories",
+      "title": "Category blocks rollout",
+      "branch": "cursor/care-item-evolution-f-categories-7796",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/test/features/**",
+        "server/routes/healthEntries/**",
+        "server/lib/**",
+        "server/test/**",
+        "db/migrations/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "default",
+      "status": "pending",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "integration-main",
+      "title": "Integration branch to main",
+      "branch": "cursor/care-item-evolution-integration-7796",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "release-verification",
+      "status": "pending",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:b2b41f1b46cc0e6edabb7fba674ab4628c0d66d3519f9af589d808db30e4a1fc"
+}

@@ -13,6 +13,14 @@ The **Pet Care** workspace is the plum (`/pc/*`) operational experience for indi
 
 Part of the AgathaTrack domain-first documentation tree. Cross-cutting architecture: [/docs/architecture/index.md](/docs/architecture/index.md).
 
+## Care Item (series, detail, absence resolutions)
+
+| Document | Role |
+|----------|------|
+| [care-item-evolution.md](/docs/domains/pet_care/features/care-item-evolution.md) | **Canonical** Care Item product behaviour |
+| [care-item-evolution execute-plan](/.agents/plans/care-item-evolution.md) | Active delivery programme |
+| [care-item-model-delivery-plan.md](/docs/domains/pet_care/changes/care-item-model-delivery-plan.md) | Superseded pointer + [historical archive](/docs/domains/pet_care/changes/archive/care-item-model-delivery-plan-2026-09-13.md) |
+
 ## Care Intelligence
 
 | Document | Role |
@@ -36,6 +44,12 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | [care-schedule-management.md](/docs/domains/pet_care/features/care-schedule-management.md) | Canonical scheduling semantics (CSM) |
 | [care-schedule-management-delivery-plan.md](/docs/domains/pet_care/changes/care-schedule-management-delivery-plan.md) | CSM-0–CSM-18 delivery plan (active) |
 | [care-schedule-management-decisions.md](/docs/domains/pet_care/changes/care-schedule-management-decisions.md) | Frozen CSM decisions |
+
+## Care Item evolution
+
+| Document | Role |
+|----------|------|
+| [care-item-evolution.md](/docs/domains/pet_care/features/care-item-evolution.md) | Functional spec (draft): Care Item View and Edit, occurrence status, completion, absence resolutions, category blocks |
 
 ## Care Context (Care Through Change)
 
