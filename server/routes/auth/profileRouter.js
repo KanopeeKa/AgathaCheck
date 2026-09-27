@@ -3,6 +3,7 @@ import { listFosterContactsForUser } from '../../lib/orgPeople.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { deletePostHogPerson } from '../../lib/posthogServer.js';
 import { purgeAllPetFilesForUser } from '../../lib/petDataLifecycle.js';
+import { listHouseholdDependentOwnedPets } from '../../lib/households/accountDeletionGuard.js';
 import { revokeAllUserRefreshSessions } from '../../lib/refreshSessions.js';
 import {
   buildUserDataExport,
@@ -179,9 +180,23 @@ export function registerProfileRoutes(router, pool, { comparePassword }) {
     }
     try {
       const payload = verifyToken(token);
-      const { password } = req.body;
+      const { password, confirm_household_pets, confirmHouseholdPets } = req.body;
       if (!password) {
         return res.status(400).json({ error: 'Password is required' });
+      }
+      const dependents = await listHouseholdDependentOwnedPets(pool, payload.id);
+      const confirmed = confirm_household_pets === true || confirmHouseholdPets === true;
+      if (dependents.length > 0 && !confirmed) {
+        return res.status(409).json({
+          error: 'Account owns pets shared in a household with other members',
+          code: 'household_pets_require_confirmation',
+          pets: dependents.map((p) => ({
+            id: p.id,
+            name: p.name,
+            household_id: p.household_id,
+            household_name: p.household_name,
+          })),
+        });
       }
       const userResult = await pool.query('SELECT password_hash FROM users WHERE id = $1', [payload.id]);
       if (userResult.rows.length === 0) {
