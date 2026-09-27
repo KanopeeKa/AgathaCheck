@@ -5044,6 +5044,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careItemScheduleTitle => 'Schedule';
 
   @override
+  String get careItemAbsenceTitle => 'Absence';
+
+  @override
+  String careItemAbsenceNothingDue(String dateRange) {
+    return 'Away $dateRange · nothing due while you\'re away';
+  }
+
+  @override
+  String get careItemAbsenceNotReviewed => 'Not reviewed yet';
+
+  @override
+  String get careItemAbsenceNeedsReview => 'Needs review';
+
+  @override
+  String get careItemAbsenceResolved => 'Plan recorded for this trip';
+
+  @override
+  String get careItemAbsenceKeepDate => 'Keep the date';
+
+  @override
+  String get careItemAbsenceNothingNeeded => 'Nothing needed';
+
+  @override
+  String get careItemAbsenceSaveResolution => 'Save';
+
+  @override
   String get careItemDetailsTitle => 'Details';
 
   @override

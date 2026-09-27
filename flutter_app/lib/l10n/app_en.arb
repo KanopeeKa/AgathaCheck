@@ -1834,6 +1834,19 @@
   "careItemDatesTitle": "Dates",
   "careItemNeedsAttentionTitle": "Needs attention",
   "careItemScheduleTitle": "Schedule",
+  "careItemAbsenceTitle": "Absence",
+  "careItemAbsenceNothingDue": "Away {dateRange} · nothing due while you're away",
+  "@careItemAbsenceNothingDue": {
+    "placeholders": {
+      "dateRange": { "type": "String" }
+    }
+  },
+  "careItemAbsenceNotReviewed": "Not reviewed yet",
+  "careItemAbsenceNeedsReview": "Needs review",
+  "careItemAbsenceResolved": "Plan recorded for this trip",
+  "careItemAbsenceKeepDate": "Keep the date",
+  "careItemAbsenceNothingNeeded": "Nothing needed",
+  "careItemAbsenceSaveResolution": "Save",
   "careItemDetailsTitle": "Details",
   "careItemHistoryTitle": "History",
   "careItemEditSchedule": "Edit schedule",

@@ -145,6 +145,10 @@ class _FakeCareContextRepository implements CareContextRepository {
   Future<PlannedAbsence> cancelPlannedAbsence(String absenceId) async {
     throw UnimplementedError();
   }
+
+  @override
+  Future<Map<String, String>> getAbsenceResolutionNotes(String absenceId) async =>
+      const {};
 }
 
 const absence = PlannedAbsence(
