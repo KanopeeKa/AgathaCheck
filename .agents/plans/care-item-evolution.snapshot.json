@@ -124,11 +124,10 @@
       "spawn_allowed": false,
       "merge_mode": "auto",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status": "in_progress",
+      "debt_issue_refs": [],
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "c-completion",
@@ -269,5 +268,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:d32b2c32e612a88202f8967901577568bad5f2caa64f23559140c6a2f3fcbe98"
+  "content_hash": "sha256:f3e9d61acaff2ec30f5474bf6513c836a12b073e1aa816525582511ab76bc998"
 }

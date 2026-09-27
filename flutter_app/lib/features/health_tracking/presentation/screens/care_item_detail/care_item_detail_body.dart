@@ -16,8 +16,9 @@ import '../../widgets/pet_event_pet_card.dart';
 import 'care_item_dates_section.dart';
 import 'care_item_established_section.dart';
 import 'care_item_info_section.dart';
+import 'care_item_schedule_section.dart';
 
-/// Care Item detail body — inspect and manage one care item.
+/// Care Item detail body — spec order: header card, needs attention, schedule, details, history.
 class CareItemDetailBody extends ConsumerWidget {
   const CareItemDetailBody({
     super.key,
@@ -28,8 +29,6 @@ class CareItemDetailBody extends ConsumerWidget {
     required this.isClosed,
     required this.isEstablished,
     required this.onSeeHistory,
-    required this.onClose,
-    required this.onReopen,
   });
 
   final String petId;
@@ -39,14 +38,12 @@ class CareItemDetailBody extends ConsumerWidget {
   final bool isClosed;
   final bool isEstablished;
   final VoidCallback onSeeHistory;
-  final VoidCallback onClose;
-  final VoidCallback onReopen;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final muted = isClosed;
-    final showDatesWorkbench = !isClosed && !entry.isCompleted;
+    final showNeedsAttention = !isClosed && !entry.isCompleted;
 
     return SingleChildScrollView(
       key: const Key('care_item_detail_body'),
@@ -56,20 +53,32 @@ class CareItemDetailBody extends ConsumerWidget {
         children: [
           PetEventPetCard(pet: pet),
           const SizedBox(height: 16),
-          CareItemInfoSection(entry: entry, muted: muted),
-          CareItemEstablishedSection(pet: pet, isEstablished: isEstablished),
-          _StatusRow(isClosed: isClosed),
-          const SizedBox(height: 12),
-          _LifecycleActions(
-            isClosed: isClosed,
-            onClose: onClose,
-            onReopen: onReopen,
-          ),
-          const SizedBox(height: 16),
-          if (showDatesWorkbench)
+          if (showNeedsAttention)
             CareItemDatesSection(entry: entry, muted: muted)
           else
-            _ClosedDatesSummary(history: history, muted: muted),
+            _ClosedNeedsAttentionSummary(history: history, muted: muted),
+          const SizedBox(height: 16),
+          CareItemScheduleSection(
+            entry: entry,
+            petId: petId,
+            muted: muted,
+          ),
+          const SizedBox(height: 16),
+          Semantics(
+            header: true,
+            child: Text(
+              l.careItemDetailsTitle,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: muted
+                    ? Theme.of(context).colorScheme.onSurfaceVariant
+                    : null,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          CareItemInfoSection(entry: entry, muted: muted),
+          CareItemEstablishedSection(pet: pet, isEstablished: isEstablished),
           if (entry.healthIssueId != null &&
               (entry.healthIssueName?.isNotEmpty ?? false)) ...[
             const SizedBox(height: 16),
@@ -80,6 +89,19 @@ class CareItemDetailBody extends ConsumerWidget {
             ),
           ],
           const SizedBox(height: 16),
+          Semantics(
+            header: true,
+            child: Text(
+              l.careItemHistoryTitle,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: muted
+                    ? Theme.of(context).colorScheme.onSurfaceVariant
+                    : null,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
           PetEventDocumentsStrip(entryId: entry.id),
           const SizedBox(height: 16),
           PetEventPastOccurrencesSection(entryId: entry.id, muted: muted),
@@ -101,73 +123,11 @@ class CareItemDetailBody extends ConsumerWidget {
   }
 }
 
-class _StatusRow extends StatelessWidget {
-  const _StatusRow({required this.isClosed});
-
-  final bool isClosed;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final label = isClosed ? l.eventStatusClosed : l.issueStatusOpen;
-    final color = isClosed ? colorScheme.onSurfaceVariant : colorScheme.primary;
-
-    return Row(
-      children: [
-        Text(
-          '${l.issueStatusLabel}: ',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-        Text(
-          label,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: color,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _LifecycleActions extends StatelessWidget {
-  const _LifecycleActions({
-    required this.isClosed,
-    required this.onClose,
-    required this.onReopen,
+class _ClosedNeedsAttentionSummary extends StatelessWidget {
+  const _ClosedNeedsAttentionSummary({
+    required this.history,
+    required this.muted,
   });
-
-  final bool isClosed;
-  final VoidCallback onClose;
-  final VoidCallback onReopen;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: isClosed
-          ? OutlinedButton(
-              key: const Key('care_item_reopen_button'),
-              onPressed: onReopen,
-              child: Text(l.reopenEventAction),
-            )
-          : OutlinedButton(
-              key: const Key('care_item_close_button'),
-              onPressed: onClose,
-              child: Text(l.closeEventAction),
-            ),
-    );
-  }
-}
-
-class _ClosedDatesSummary extends StatelessWidget {
-  const _ClosedDatesSummary({required this.history, required this.muted});
 
   final List<HealthHistoryEntry> history;
   final bool muted;
@@ -180,12 +140,13 @@ class _ClosedDatesSummary extends StatelessWidget {
     final last = sortedHistoryDesc(history).firstOrNull;
 
     return Column(
+      key: const Key('care_item_needs_attention_section'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Semantics(
           header: true,
           child: Text(
-            l.careItemDatesTitle,
+            l.careItemNeedsAttentionTitle,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
               color: muted ? colorScheme.onSurfaceVariant : null,

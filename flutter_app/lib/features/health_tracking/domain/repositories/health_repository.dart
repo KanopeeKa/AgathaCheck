@@ -38,6 +38,10 @@ abstract class HealthRepository {
   /// Reopens a closed event (clears repeat end and next due date).
   Future<HealthEntry> reopenEvent(String id);
 
+  Future<HealthEntry> pauseCareItem(String id);
+
+  Future<HealthEntry> resumeCareItem(String id);
+
   /// Unmarks the last completed occurrence (alias for undoComplete).
   Future<HealthEntry> unmarkDone(String id);
 

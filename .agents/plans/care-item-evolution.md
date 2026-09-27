@@ -30,13 +30,13 @@ autonomy: active
 current_phase: b-view
 last_completed_phase: a1-timezone
 halt_reason: null
-next_action: "start phase b-view: checkout cursor/care-item-evolution-b-view-7796"
+next_action: "continue phase b-view on branch cursor/care-item-evolution-b-view-7796"
 artifact_ref:
-  branch: cursor/care-item-evolution-integration-7796
+  branch: cursor/care-item-evolution-b-view-7796
   plan_path: .agents/plans/care-item-evolution.md
-  plan_commit: 3cf7a9490aa8deaaab594f3703463354051261cc
+  plan_commit: bf1b7f44da5ac022230fd320cef674f25e28043b
   snapshot_path: .agents/plans/care-item-evolution.snapshot.json
-  snapshot_commit: 3cf7a9490aa8deaaab594f3703463354051261cc
+  snapshot_commit: bf1b7f44da5ac022230fd320cef674f25e28043b
 open_prs: []
 merge_commits: {"docs":"d977ebdecbe7f881a3e552122f055f265e9af755"}
 debt_issue_refs: []

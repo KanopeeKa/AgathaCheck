@@ -18,6 +18,7 @@ import 'health_occurrence_remote_datasource.dart'
         postSkipOccurrence,
         postUndoOccurrence;
 import 'health_weight_completion_remote.dart';
+import 'health_series_lifecycle_remote.dart';
 
 class EventPhoto {
   final String id;
@@ -59,6 +60,8 @@ abstract class HealthRemoteDataSource {
   Future<HealthEntryModel> undoComplete(String id);
   Future<HealthEntryModel> closeEvent(String id);
   Future<HealthEntryModel> reopenEvent(String id);
+  Future<HealthEntryModel> pauseCareItem(String id);
+  Future<HealthEntryModel> resumeCareItem(String id);
   Future<HealthEntryModel> unmarkDone(String id);
   Future<List<HealthHistoryModel>> getHistory(String entryId);
   Future<String> exportCsv({String? petId});
@@ -257,6 +260,28 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
     _checkResponse(response);
     return HealthEntryModel.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<HealthEntryModel> pauseCareItem(String id) {
+    return pauseCareItemRemote(
+      client: _client,
+      baseUrl: baseUrl,
+      headers: _authHeaders(jsonBody: true),
+      checkResponse: _checkResponse,
+      entryId: id,
+    );
+  }
+
+  @override
+  Future<HealthEntryModel> resumeCareItem(String id) {
+    return resumeCareItemRemote(
+      client: _client,
+      baseUrl: baseUrl,
+      headers: _authHeaders(jsonBody: true),
+      checkResponse: _checkResponse,
+      entryId: id,
     );
   }
 

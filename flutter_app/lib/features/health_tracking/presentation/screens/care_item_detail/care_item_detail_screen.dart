@@ -16,6 +16,7 @@ import '../../widgets/pet_event_lifecycle.dart';
 import '../../widgets/pet_event_occurrence_actions.dart';
 import '../../widgets/pet_event_view_body.dart' show showPetEventHistory;
 import 'care_item_detail_body.dart';
+import 'care_item_menu.dart';
 
 /// Care Item detail at `/pet/:petId/events/:entryId`.
 class CareItemDetailScreen extends ConsumerWidget {
@@ -97,7 +98,7 @@ class CareItemDetailScreen extends ConsumerWidget {
 
             void onSeeHistory() => showPetEventHistory(context, ref, entryId);
 
-            Future<void> onClose() async {
+            Future<void> onArchive() async {
               if (closeEventWillCloseOccurrences(entry, openOccurrenceCount)) {
                 final confirmed = await showCloseEventConfirmDialog(
                   context,
@@ -109,13 +110,31 @@ class CareItemDetailScreen extends ConsumerWidget {
                   .read(healthEntriesNotifierProvider.notifier)
                   .closeEvent(entryId);
               PetEventOccurrenceActions.invalidateOccurrenceData(ref, entryId);
+              ref.invalidate(petHealthEntryByIdProvider);
             }
 
-            Future<void> onReopen() async {
+            Future<void> onRestore() async {
               await ref
                   .read(healthEntriesNotifierProvider.notifier)
                   .reopenEvent(entryId);
               PetEventOccurrenceActions.invalidateOccurrenceData(ref, entryId);
+              ref.invalidate(petHealthEntryByIdProvider);
+            }
+
+            Future<void> onPause() async {
+              await ref
+                  .read(healthEntriesNotifierProvider.notifier)
+                  .pauseCareItem(entryId);
+              PetEventOccurrenceActions.invalidateOccurrenceData(ref, entryId);
+              ref.invalidate(petHealthEntryByIdProvider);
+            }
+
+            Future<void> onResume() async {
+              await ref
+                  .read(healthEntriesNotifierProvider.notifier)
+                  .resumeCareItem(entryId);
+              PetEventOccurrenceActions.invalidateOccurrenceData(ref, entryId);
+              ref.invalidate(petHealthEntryByIdProvider);
             }
 
             return ExperienceShellScaffold(
@@ -129,11 +148,14 @@ class CareItemDetailScreen extends ConsumerWidget {
                   icon: const Icon(Icons.edit_outlined),
                   onPressed: onEdit,
                 ),
-                IconButton(
-                  key: const Key('care_item_history_app_bar'),
-                  tooltip: l.seeHistory,
-                  icon: const Icon(Icons.history),
-                  onPressed: onSeeHistory,
+                CareItemMenu(
+                  entry: entry,
+                  isClosed: isClosed,
+                  onEdit: onEdit,
+                  onPause: onPause,
+                  onResume: onResume,
+                  onArchive: onArchive,
+                  onRestore: onRestore,
                 ),
               ],
               child: historyAsync.when(
@@ -148,8 +170,6 @@ class CareItemDetailScreen extends ConsumerWidget {
                   isClosed: isClosed,
                   isEstablished: isEstablished,
                   onSeeHistory: onSeeHistory,
-                  onClose: onClose,
-                  onReopen: onReopen,
                 ),
               ),
             );

@@ -1832,6 +1832,23 @@
   "entryNotFound": "Entry not found",
   "nextOccurrence": "Next due date",
   "careItemDatesTitle": "Dates",
+  "careItemNeedsAttentionTitle": "Needs attention",
+  "careItemScheduleTitle": "Schedule",
+  "careItemDetailsTitle": "Details",
+  "careItemHistoryTitle": "History",
+  "careItemEditSchedule": "Edit schedule",
+  "careItemMenuTooltip": "Care item actions",
+  "careItemMenuPause": "Pause",
+  "careItemMenuResume": "Resume",
+  "careItemMenuArchive": "Archive",
+  "careItemMenuRestore": "Restore",
+  "careItemPausedStatus": "Paused",
+  "careItemPausedSince": "Paused since {date}",
+  "@careItemPausedSince": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
   "careItemEstablishedBody": "Part of {petName}'s regular care.",
   "@careItemEstablishedBody": {
     "placeholders": {
