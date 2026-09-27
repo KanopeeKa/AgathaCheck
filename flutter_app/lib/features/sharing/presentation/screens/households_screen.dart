@@ -17,6 +17,7 @@ class HouseholdsScreen extends ConsumerWidget {
 
     return ExperienceShellScaffold(
       experience: AppExperience.petCare,
+      currentLocation: '/pc/pets/households',
       screenTitle: l.householdsTitle,
       backPath: '/pc/pets',
       child: asyncHouseholds.when(

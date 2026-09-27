@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/invite_preview.dart';
+import 'package:pet_profile_app/features/sharing/domain/entities/household_pet_access.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_share_access.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/share_link.dart';
@@ -37,6 +38,11 @@ class RecordingSharingRepository implements SharingRepository {
 
   @override
   Future<List<PetAccess>> getAccess(String petId, String token) async => [];
+
+  @override
+  Future<PetAccessOverview> getAccessOverview(String petId, String token) async {
+    return const PetAccessOverview(directAccess: [], householdAccess: []);
+  }
 
   @override
   Future<void> updateRole(

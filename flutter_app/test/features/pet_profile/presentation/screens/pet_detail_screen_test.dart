@@ -15,6 +15,7 @@ import 'package:pet_profile_app/features/organization/presentation/providers/org
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_detail_screen.dart';
+import 'package:pet_profile_app/features/sharing/domain/entities/household_pet_access.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_share_access.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/share_link.dart';
@@ -30,6 +31,11 @@ import '../../../../helpers/fakes.dart';
 class _FakeSharingRepository implements SharingRepository {
   @override
   Future<List<PetAccess>> getAccess(String petId, String token) async => [];
+
+  @override
+  Future<PetAccessOverview> getAccessOverview(String petId, String token) async {
+    return const PetAccessOverview(directAccess: [], householdAccess: []);
+  }
 
   @override
   Future<List<ShareLink>> getShareLinks(String petId, String token) async => [];
