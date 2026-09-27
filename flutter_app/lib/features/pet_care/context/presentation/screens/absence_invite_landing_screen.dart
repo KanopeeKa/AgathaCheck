@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/app_logo_title.dart';
-import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../../../core/widgets/app_logo_title.dart';
+import '../../../../auth/presentation/providers/auth_providers.dart';
 import '../../data/datasources/care_context_remote_datasource.dart';
 import '../providers/care_context_providers.dart';
 
@@ -88,7 +88,7 @@ class _AbsenceInviteLandingScreenState
     }
     if (_error != null || _preview == null) {
       return Scaffold(
-        appBar: AppBar(title: const AppLogoTitle()),
+        appBar: AppBar(title: const AppLogoTitle(title: 'Absence invite')),
         body: Center(child: Text(_error ?? 'Invitation unavailable')),
       );
     }
