@@ -34,10 +34,10 @@ next_action: "continue phase a0-rules on branch cursor/care-item-evolution-a0-ru
 artifact_ref:
   branch: cursor/care-item-evolution-a0-rules-7796
   plan_path: .agents/plans/care-item-evolution.md
-  plan_commit: ccfcd50ff424e96e8ed24de725cc5e80824a807c
+  plan_commit: 21d27727e8281133f11111a4b984f68cfafcc9aa
   snapshot_path: .agents/plans/care-item-evolution.snapshot.json
-  snapshot_commit: ccfcd50ff424e96e8ed24de725cc5e80824a807c
-open_prs: []
+  snapshot_commit: 21d27727e8281133f11111a4b984f68cfafcc9aa
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1348"]
 merge_commits: {"docs":"d977ebdecbe7f881a3e552122f055f265e9af755"}
 debt_issue_refs: []
 ```
