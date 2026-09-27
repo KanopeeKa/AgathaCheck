@@ -75,7 +75,10 @@ class SharingRemoteDataSource {
       headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 403) {
-      return const PetAccessOverviewModel(directAccess: [], householdAccess: []);
+      return const PetAccessOverviewModel(
+        directAccess: [],
+        householdAccess: [],
+      );
     }
     if (response.statusCode >= 400) {
       final data = json.decode(response.body);

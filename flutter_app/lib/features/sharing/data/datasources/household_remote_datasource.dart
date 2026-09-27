@@ -24,9 +24,7 @@ class HouseholdRemoteDataSource {
     }
     final data = json.decode(response.body) as Map<String, dynamic>;
     final list = data['households'] as List? ?? [];
-    return list
-        .map((e) => _mapSummary(e as Map<String, dynamic>))
-        .toList();
+    return list.map((e) => _mapSummary(e as Map<String, dynamic>)).toList();
   }
 
   Future<HouseholdSummary> createHousehold(String name, String token) async {

@@ -89,16 +89,15 @@ final hiddenSharedPetsProvider =
       HiddenSharedPetsNotifier.new,
     );
 
-final petAccessOverviewProvider = FutureProvider.family<PetAccessOverview, String>(
-  (ref, petId) async {
-    final token = await ref.read(authProvider.notifier).getValidAccessToken();
-    if (token == null) {
-      return const PetAccessOverview(directAccess: [], householdAccess: []);
-    }
-    final repo = ref.watch(sharingRepositoryProvider);
-    return repo.getAccessOverview(petId, token);
-  },
-);
+final petAccessOverviewProvider =
+    FutureProvider.family<PetAccessOverview, String>((ref, petId) async {
+      final token = await ref.read(authProvider.notifier).getValidAccessToken();
+      if (token == null) {
+        return const PetAccessOverview(directAccess: [], householdAccess: []);
+      }
+      final repo = ref.watch(sharingRepositoryProvider);
+      return repo.getAccessOverview(petId, token);
+    });
 
 final petAccessProvider = FutureProvider.family<List<PetAccess>, String>((
   ref,

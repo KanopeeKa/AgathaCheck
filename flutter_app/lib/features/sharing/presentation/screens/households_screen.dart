@@ -99,10 +99,9 @@ class HouseholdsScreen extends ConsumerWidget {
     try {
       final token = await ref.read(authProvider.notifier).getValidAccessToken();
       if (token == null) return;
-      await ref.read(householdRepositoryProvider).createHousehold(
-        name,
-        token: token,
-      );
+      await ref
+          .read(householdRepositoryProvider)
+          .createHousehold(name, token: token);
       ref.invalidate(householdListProvider);
       if (context.mounted) {
         ScaffoldMessenger.of(

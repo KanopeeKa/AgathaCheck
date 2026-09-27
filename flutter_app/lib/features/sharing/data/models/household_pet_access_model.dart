@@ -39,9 +39,7 @@ class PetAccessOverviewModel extends PetAccessOverview {
         .map((e) => PetAccessModel.fromJson(e as Map<String, dynamic>))
         .toList();
     final household = (json['household_access'] as List? ?? [])
-        .map(
-          (e) => HouseholdPetAccessModel.fromJson(e as Map<String, dynamic>),
-        )
+        .map((e) => HouseholdPetAccessModel.fromJson(e as Map<String, dynamic>))
         .toList();
     return PetAccessOverviewModel(
       directAccess: direct,
