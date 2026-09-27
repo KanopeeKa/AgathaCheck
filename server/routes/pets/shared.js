@@ -1,6 +1,7 @@
 import { extractUserId as centralExtractUserId } from '../../lib/requireAuth.js';
 import { dateToIsoDate } from '../../lib/calendarDate.js';
 import { normalizeGender, normalizeSpecies } from '../../lib/petProfileNormalize.js';
+import { normalizePetHomeTimezone } from '../../lib/petHomeTimezone.js';
 
 export const FOSTER_PLACEMENT_SELECT_SQL = `
   (SELECT fp.status
@@ -81,6 +82,8 @@ export function petRowToMap(row) {
     pet_parent_name: row.pet_parent_name || row.primary_holder_name || null,
     primary_holder_name: row.pet_parent_name || row.primary_holder_name || null,
     access_role: row.access_role || null,
+    homeTimezone: normalizePetHomeTimezone(row.home_timezone),
+    home_timezone: normalizePetHomeTimezone(row.home_timezone),
     created_at: row.created_at,
     updated_at: row.updated_at,
   };

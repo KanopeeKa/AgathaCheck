@@ -37,6 +37,7 @@ All Node DB connections set `TIME ZONE 'UTC'` on connect (`server/bin/server.js`
 | Field | Table / entity | Flutter model / screen |
 |-------|----------------|------------------------|
 | `date_of_birth` | `pets` | `PetModel`, `pet_form_screen`, `pet_dob_section` |
+| `home_timezone` | `pets` | IANA string on `PetModel` / pet profile (care "today"; not absence D24) |
 | `neutered_date` | `pets` | `PetModel`, `pet_form_screen` |
 | `start_date` | `health_entries` | `HealthEntryModel`, health entry forms |
 | `next_due_date` | `health_entries` | `HealthEntryModel`, due-date pickers |

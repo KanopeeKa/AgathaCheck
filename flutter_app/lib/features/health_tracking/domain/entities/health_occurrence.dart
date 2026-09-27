@@ -32,7 +32,8 @@ class HealthOccurrence {
   final String? markedByName;
   final String notes;
 
-  /// Server hint; client recomputes with device local clock when displaying.
+  /// Server authority in pet home TZ when listing open occurrences; client
+  /// recomputes only when the API omitted `missed`.
   final bool missed;
 
   bool get isPending => status == 'pending';

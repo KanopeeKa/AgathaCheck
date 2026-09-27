@@ -95,11 +95,10 @@
       "spawn_allowed": false,
       "merge_mode": "auto",
       "exit_checklist": "default",
-      "status": "pending",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status": "in_progress",
+      "debt_issue_refs": [],
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "b-view",
@@ -268,5 +267,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:413878dd29ab33783e9f8474717576341218492f762ffc4ccf5ff9c3b4b8db06"
+  "content_hash": "sha256:e9ee1253750b04e9b9121c56d806eb9d729c8ad3812c4b72bb1d7c8ccf42135e"
 }

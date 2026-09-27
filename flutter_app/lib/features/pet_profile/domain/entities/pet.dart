@@ -38,6 +38,7 @@ class Pet {
     this.weightReferenceValue,
     this.weightReferenceAuthority,
     this.weightManagementContext = 'none',
+    this.homeTimezone = 'UTC',
   });
 
   final String id;
@@ -70,6 +71,7 @@ class Pet {
   final double? weightReferenceValue;
   final String? weightReferenceAuthority;
   final String weightManagementContext;
+  final String homeTimezone;
 
   double? get age {
     if (dateOfBirth == null) return null;
@@ -139,6 +141,7 @@ class Pet {
     double? weightReferenceValue,
     String? weightReferenceAuthority,
     String? weightManagementContext,
+    String? homeTimezone,
     bool clearVetId = false,
     bool clearGender = false,
     bool clearNeuteredDate = false,
@@ -185,6 +188,7 @@ class Pet {
           : (weightReferenceAuthority ?? this.weightReferenceAuthority),
       weightManagementContext:
           weightManagementContext ?? this.weightManagementContext,
+      homeTimezone: homeTimezone ?? this.homeTimezone,
     );
   }
 

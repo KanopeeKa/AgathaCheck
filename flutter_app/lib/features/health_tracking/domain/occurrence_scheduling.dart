@@ -67,7 +67,11 @@ OccurrenceSummary summarizeOpenOccurrences(
   DateTime now,
 ) {
   final withMissed = open
-      .map((o) => o.copyWithMissed(isOccurrenceMissed(o, now)))
+      .map(
+        (o) => o.missed
+            ? o
+            : o.copyWithMissed(isOccurrenceMissed(o, now)),
+      )
       .toList();
   final missed = withMissed.where((o) => o.missed).toList();
   final missedSorted = sortOccurrencesByZone(missed, OccurrenceZone.missed);
