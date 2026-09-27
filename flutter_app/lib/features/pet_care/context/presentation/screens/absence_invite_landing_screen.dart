@@ -96,7 +96,7 @@ class _AbsenceInviteLandingScreenState
     final starts = _preview!['starts_on'] as String? ?? '';
     final ends = _preview!['ends_on'] as String? ?? '';
     return Scaffold(
-      appBar: AppBar(title: const AppLogoTitle()),
+      appBar: AppBar(title: const AppLogoTitle(title: 'Absence invite')),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
