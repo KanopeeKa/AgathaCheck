@@ -6215,6 +6215,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careDetailsSaveFailed => 'Could not save details. Try again.';
 
   @override
+  String get careCategoryBlockProductDoseTitle => 'Product and dose';
+
+  @override
+  String get careCategoryBlockAddProductDose => 'Add dose details';
+
+  @override
+  String get careCategoryBlockProductName => 'Product name';
+
+  @override
+  String get careCategoryBlockForm => 'Form';
+
+  @override
+  String get careCategoryBlockStrength => 'Strength';
+
+  @override
+  String get careCategoryBlockDoseAmount => 'Dose amount';
+
+  @override
+  String get careCategoryBlockDoseUnit => 'Dose unit';
+
+  @override
+  String get careCategoryBlockRouteMethod => 'Route or method';
+
+  @override
+  String get careCategoryBlockVisitTitle => 'Visit';
+
+  @override
+  String get careCategoryBlockAddVisit => 'Add visit details';
+
+  @override
+  String get careCategoryBlockQuestionsToAsk => 'Questions to ask';
+
+  @override
+  String get careCategoryBlockWeightTargetTitle => 'Weight target';
+
+  @override
+  String careCategoryBlockWeightTargetFromPet(String petName) {
+    return 'Uses $petName\'s reference weight from their profile';
+  }
+
+  @override
   String get careProviderLabel => 'Provider';
 
   @override

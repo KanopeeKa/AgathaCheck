@@ -15,6 +15,7 @@ import '../../widgets/pet_event_lifecycle.dart';
 import '../../widgets/pet_event_pet_card.dart';
 import 'care_item_dates_section.dart';
 import 'care_item_established_section.dart';
+import '../../widgets/care_category_blocks/care_category_blocks_detail_section.dart';
 import 'care_item_info_section.dart';
 import 'care_item_absence_section.dart';
 import 'care_item_schedule_section.dart';
@@ -97,6 +98,11 @@ class CareItemDetailBody extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
+          CareCategoryBlocksDetailSection(
+            entry: entry,
+            pet: pet,
+            muted: muted,
+          ),
           CareItemInfoSection(entry: entry, muted: muted),
           CareItemEstablishedSection(pet: pet, isEstablished: isEstablished),
           if (entry.healthIssueId != null &&

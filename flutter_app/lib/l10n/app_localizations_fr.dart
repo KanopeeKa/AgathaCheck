@@ -6317,6 +6317,47 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible d\'enregistrer les détails. Réessayez.';
 
   @override
+  String get careCategoryBlockProductDoseTitle => 'Produit et dose';
+
+  @override
+  String get careCategoryBlockAddProductDose => 'Ajouter les détails de dose';
+
+  @override
+  String get careCategoryBlockProductName => 'Nom du produit';
+
+  @override
+  String get careCategoryBlockForm => 'Forme';
+
+  @override
+  String get careCategoryBlockStrength => 'Concentration';
+
+  @override
+  String get careCategoryBlockDoseAmount => 'Quantité de dose';
+
+  @override
+  String get careCategoryBlockDoseUnit => 'Unité de dose';
+
+  @override
+  String get careCategoryBlockRouteMethod => 'Voie ou mode';
+
+  @override
+  String get careCategoryBlockVisitTitle => 'Visite';
+
+  @override
+  String get careCategoryBlockAddVisit => 'Ajouter les détails de visite';
+
+  @override
+  String get careCategoryBlockQuestionsToAsk => 'Questions à poser';
+
+  @override
+  String get careCategoryBlockWeightTargetTitle => 'Objectif de poids';
+
+  @override
+  String careCategoryBlockWeightTargetFromPet(String petName) {
+    return 'Utilise le poids de référence de $petName sur son profil';
+  }
+
+  @override
   String get careProviderLabel => 'Prestataire';
 
   @override

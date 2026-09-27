@@ -30,14 +30,14 @@ autonomy: active
 current_phase: f-categories
 last_completed_phase: e-absence
 halt_reason: null
-next_action: "start phase f-categories: checkout cursor/care-item-evolution-f-categories-7796"
+next_action: "continue phase f-categories on branch cursor/care-item-evolution-f-categories-7796"
 artifact_ref:
-  branch: cursor/care-item-evolution-integration-7796
+  branch: cursor/care-item-evolution-f-categories-7796
   plan_path: .agents/plans/care-item-evolution.md
-  plan_commit: d834b2ce2774ecbcd3956767a2e990fb5b0ca625
+  plan_commit: bbd44774552cfe8501618d3e5f76102fb1045c16
   snapshot_path: .agents/plans/care-item-evolution.snapshot.json
-  snapshot_commit: d834b2ce2774ecbcd3956767a2e990fb5b0ca625
-open_prs: []
+  snapshot_commit: bbd44774552cfe8501618d3e5f76102fb1045c16
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1358"]
 merge_commits: {"docs":"d977ebdecbe7f881a3e552122f055f265e9af755"}
 debt_issue_refs: []
 ```

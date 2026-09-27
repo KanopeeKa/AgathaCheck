@@ -1,3 +1,4 @@
+import '../../domain/entities/care_item_blocks.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';
 import '../../../care_taxonomy/domain/care_importance.dart';
@@ -39,6 +40,7 @@ class HealthEntryModel extends HealthEntry {
     super.careSource,
     super.providerContactId,
     super.providerTypedName,
+    super.careBlocks,
     super.createdAt,
     super.updatedAt,
   });
@@ -87,6 +89,9 @@ class HealthEntryModel extends HealthEntry {
       careSource: CareSourceWire.fromWire(json['care_source'] as String?),
       providerContactId: json['provider_contact_id'] as String?,
       providerTypedName: json['provider_typed_name'] as String?,
+      careBlocks: CareItemBlocks.fromJson(
+        json['care_blocks'] as Map<String, dynamic>?,
+      ),
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
           : null,
@@ -127,6 +132,7 @@ class HealthEntryModel extends HealthEntry {
       careSource: entry.careSource,
       providerContactId: entry.providerContactId,
       providerTypedName: entry.providerTypedName,
+      careBlocks: entry.careBlocks,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     );
@@ -162,6 +168,7 @@ class HealthEntryModel extends HealthEntry {
       if (providerContactId != null) 'provider_contact_id': providerContactId,
       if (providerTypedName != null && providerTypedName!.isNotEmpty)
         'provider_typed_name': providerTypedName,
+      if (!careBlocks.isEmpty) 'care_blocks': careBlocks.toJson(),
     };
   }
 

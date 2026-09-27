@@ -2301,6 +2301,26 @@
   "careAddDetailsTitle": "Add details",
   "careDetailsSaved": "Details saved",
   "careDetailsSaveFailed": "Could not save details. Try again.",
+  "careCategoryBlockProductDoseTitle": "Product and dose",
+  "careCategoryBlockAddProductDose": "Add dose details",
+  "careCategoryBlockProductName": "Product name",
+  "careCategoryBlockForm": "Form",
+  "careCategoryBlockStrength": "Strength",
+  "careCategoryBlockDoseAmount": "Dose amount",
+  "careCategoryBlockDoseUnit": "Dose unit",
+  "careCategoryBlockRouteMethod": "Route or method",
+  "careCategoryBlockVisitTitle": "Visit",
+  "careCategoryBlockAddVisit": "Add visit details",
+  "careCategoryBlockQuestionsToAsk": "Questions to ask",
+  "careCategoryBlockWeightTargetTitle": "Weight target",
+  "careCategoryBlockWeightTargetFromPet": "Uses {petName}'s reference weight from their profile",
+  "@careCategoryBlockWeightTargetFromPet": {
+    "placeholders": {
+      "petName": {
+        "type": "String"
+      }
+    }
+  },
   "careProviderLabel": "Provider",
   "careProviderChooseContact": "Choose a contact",
   "careProviderUseTypedName": "Enter a name instead",
