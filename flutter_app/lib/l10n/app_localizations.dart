@@ -10872,7 +10872,7 @@ abstract class AppLocalizations {
   /// No description provided for @occurrenceMissedCount.
   ///
   /// In en, this message translates to:
-  /// **'{count} missed'**
+  /// **'{count} overdue'**
   String occurrenceMissedCount(int count);
 
   /// No description provided for @occurrenceStackSheetTitle.
@@ -10884,7 +10884,7 @@ abstract class AppLocalizations {
   /// No description provided for @occurrenceZoneMissed.
   ///
   /// In en, this message translates to:
-  /// **'Missed'**
+  /// **'Overdue'**
   String get occurrenceZoneMissed;
 
   /// No description provided for @occurrenceZoneDueToday.
@@ -10908,7 +10908,7 @@ abstract class AppLocalizations {
   /// No description provided for @occurrenceSkipEarlierMissed.
   ///
   /// In en, this message translates to:
-  /// **'Skip earlier missed doses when recording'**
+  /// **'Skip earlier overdue doses when recording'**
   String get occurrenceSkipEarlierMissed;
 
   /// No description provided for @occurrenceReviewEach.
@@ -10920,7 +10920,7 @@ abstract class AppLocalizations {
   /// No description provided for @occurrenceSkipAllMissed.
   ///
   /// In en, this message translates to:
-  /// **'Skip all missed'**
+  /// **'Skip all overdue'**
   String get occurrenceSkipAllMissed;
 
   /// No description provided for @occurrenceNotNow.

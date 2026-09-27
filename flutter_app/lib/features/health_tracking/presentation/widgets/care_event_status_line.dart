@@ -101,9 +101,7 @@ CareEventStatusLine formatOccurrenceCareEventStatusLine(
   }
 
   final now = DateTime.now();
-  final headline = summary.missedCount > 0
-      ? summary.missedHead
-      : summary.nextHead;
+  final headline = summary.leadingOccurrence;
   if (headline == null) {
     return formatCareEventStatusLine(entry, l, colorScheme);
   }

@@ -65,11 +65,10 @@
       "spawn_allowed": false,
       "merge_mode": "auto",
       "exit_checklist": "default",
-      "status": "pending",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status": "in_progress",
+      "debt_issue_refs": [],
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "a1-timezone",
@@ -267,5 +266,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:d2548d93dc7ac2e06406f64e044d2e1b67416032bd13c39be6a5ce8d33dc3eb1"
+  "content_hash": "sha256:659ca82a81c92cbfa91323e546c538653ff299af0e4d13835d4e00cbb1cddd7a"
 }
