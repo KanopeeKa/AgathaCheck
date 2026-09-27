@@ -146,7 +146,9 @@ test.describe('Guardian dashboard', () => {
     // Flutter web push from dashboard may not update the hash route; assert workbench UI.
     await expect(page.getByRole('button', { name: /go back/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /snooze/i })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: /close event/i })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /care item actions/i }),
+    ).toBeVisible();
     await expect(page.getByText('Due today')).toBeVisible();
   });
 
