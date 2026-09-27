@@ -378,7 +378,10 @@ export class AwayPlanningPage {
       // Flutter web push from away plan may not update the hash route; assert detail UI.
       await expect(this.page.getByRole('button', { name: /go back/i })).toBeVisible();
       await expect(this.page.getByText(entryName, { exact: false }).first()).toBeVisible();
-      await expect(this.page.getByRole('button', { name: /close event/i })).toBeVisible();
+      // Care item detail (D-CIE-017): lifecycle actions live in overflow menu, not inline Close event.
+      await expect(
+        this.page.getByRole('button', { name: /care item actions/i }),
+      ).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
 
