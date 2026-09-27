@@ -37,6 +37,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - True North: `docs/design/true-north.md`
 - Copy tone: `docs/design/copy-tone.md`
 - Terminology: `docs/design/terminology.md`
+- People directory and households (spec agreed, not implemented): `docs/domains/people/README.md`, with planned EN/FR wording in `docs/domains/people/features/vocabulary.md`
 - Principles (visual, deep only): `docs/design/principles.md`
 - Frozen Shelter branding: `docs/engineering/frozen-domains/shelter-branding.md`
 - Theme: `flutter_app/lib/core/theme/app_theme.dart` → `docs/design/tokens.md` (Phase 0)

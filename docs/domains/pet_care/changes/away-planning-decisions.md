@@ -69,6 +69,8 @@ planned_absence_pets (additions)
 
 Per-pet, not per-care-item. "Luna → Sarah, Milo → Tom" is in scope; per-item assignment is Pet Sitting and out of scope.
 
+**Planned amendment (agreed, not in effect):** when People phase 2 ships, the model allows a primary carer plus backup carers and date ranges, and carers become directory contacts. Until then, this decision stands as written. See [amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md).
+
 **Migration notes:** first CHECK constraints on this table (`planned_absences` has none on `status`/`provenance` today — deliberate tightening). `carer_user_id` uses `ON DELETE SET NULL`; read path treats `carer_kind = 'shared_user' AND carer_user_id IS NULL` as **"carer removed"**, never blank/crash.
 
 ---

@@ -42,3 +42,14 @@ Kind vs scope semantics: [notification-decisions.md](notification-decisions.md) 
 ---
 
 Contract detail: [/docs/domains/cross-domain/changes/program-contract.md](/docs/domains/cross-domain/changes/program-contract.md) §3
+
+## Planned: People & Care Team
+
+These changes are agreed but not implemented. See the [People & Care Team spec](/docs/domains/people/features/people-care-team.md).
+
+- **D21:** when someone is named as looking after an occurrence, only they get its reminder.
+- **D25:** when nobody is named, the record owner and Full access members get the reminder. Can log care members don't, unless they opt in.
+- **Setting:** pet parents can opt in to notifications for all events on their pets. This is a new key in `notification_preferences`.
+- **Household notices:** a pet being removed from a household sends a neutral notice (D22). Absence access granted by someone else notifies the record owner (D19).
+
+Today, `petNotificationRecipientIds` in `server/lib/petAccess.js` sends to every sharer.
