@@ -17,17 +17,19 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 
 | Section | Link |
 |---------|------|
-| Functional spec (decisions D1–D23) | [features/people-care-team.md](features/people-care-team.md) |
+| Functional spec (decisions D1–D28) | [features/people-care-team.md](features/people-care-team.md) |
 | Vocabulary (EN/FR) | [features/vocabulary.md](features/vocabulary.md) |
+| Planned amendments to Away Planning | [changes/amends-away-planning.md](changes/amends-away-planning.md) |
 
 ## Domains this changes
 
 | Domain | What changes |
 |--------|--------------|
-| [Sharing](/docs/domains/sharing/README.md) | Household membership becomes a new source of access. User-facing access labels change. Long-term sharing is limited to the record owner |
+| [Sharing](/docs/domains/sharing/README.md) | Household membership becomes a new source of access. User-facing access labels change (wire values don't). Household Full access can't share long-term. The owner and co-parents still can (D26) |
 | [Pet Care — Away Planning](/docs/domains/pet_care/features/away-planning-carer-model.md) | Carers are picked from the directory, replacing `note_only`. Access can be granted for an absence. D-AWAY-003 is amended |
 | [Vets](/docs/domains/vet/README.md) | `vets` migrates into contacts (identity plus a primary-vet relationship) |
-| [Auth](/docs/domains/auth/README.md) | Account deletion is guarded for pets other people rely on. GDPR export is extended |
+| [Notifications](/docs/domains/notifications/README.md) | Reminders go to the named person, or to the owner and Full access members (D21, D25). Adds an "all events" setting |
+| [Auth](/docs/domains/auth/README.md) | Account deletion is guarded for pets other people rely on. GDPR export is extended. The account gets a timezone (D24) and an 18+ attestation (D14) |
 
 ## Code map (current code the spec builds on)
 

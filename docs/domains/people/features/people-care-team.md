@@ -6,7 +6,7 @@ domain: people
 feature_id: people_care_team
 status: accepted
 related_prs: []
-related_bdd: []
+related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.feature, veterinarian_management.feature, notifications.feature]
 ---
 
 # People & Care Team — functional spec
@@ -43,33 +43,38 @@ The payoff is in Away Planning. You're not sharing an account with a sitter. You
 
 ## Decisions
 
-There are 23 decisions. D1, D4, D7 and D10 were revised after external review. D11–D18 came from that review, and D19–D23 from the detailed-design questions.
+There are 28 decisions. D1, D4, D7 and D10 were revised after an external review. D11–D18 came from that review, D19–D23 from the detailed-design questions, and D24–D28 from the implementation review. D12 was revised in that same round.
 
 | # | Decision | Consequence |
 | --- | --- | --- |
-| D1 | Every pet has exactly one **record owner**: the user with final control of its AgathaTrack record. A household never controls a pet | Only the record owner can transfer the pet, delete it, share it long-term with someone new, or move it into or out of a household. The UI says "Owner" or "Pet parent". This is about the record, not legal ownership |
+| D1 | Every pet has exactly one **record owner**: the user with final control of its AgathaTrack record. A household never controls a pet | Only the record owner can transfer the pet, delete it, or move it into or out of a household. Long-term sharing with someone new is for the record owner and direct co-parents (D26). The UI says "Owner" or "Pet parent". This is about the record, not legal ownership |
 | D2 | A person can be in several households | Pets and People are grouped by household. There's no switcher |
 | D3 | Only organisers invite or remove members | Organisers still can't touch pets they don't own |
 | D4 | Households have two tiers: Full access and Can log care. Membership means a lasting relationship with the household | Can log care suits flatmates or other adults in the home. Children will use future child profiles (D14). Occasional helpers are carers with access for an absence |
-| D5 | A pet is shared with the whole household, or kept out of it | To exclude one person, take the pet out of the household and share it pet by pet |
+| D5 | A pet is shared with the whole household, or kept out of it | To exclude one person, take the pet out of the household and share it pet by pet. This is deliberate: it keeps "household" meaning one thing |
 | D6 | A pet is in at most one household | Sharing beyond that household is pet by pet |
 | D7 | Can log care sees a **care handover scope**, not a set of content types | They see what the care needs, plus documents attached to the absence. Other documents stay private |
 | D8 | Sitters sign up to get app access | There's no link that works without an account. The PDF handover is the fallback |
 | D9 | Professionals may become AgathaTrack users later | Contacts can be linked to an account from day one |
 | D10 | A care item has no permanent responsible person. An occurrence or absence plan can optionally say who is **looking after** it | The default is "Anyone in the household", or "You" when the pet isn't in a household. There's no dashboard of what each person is doing |
 | D11 | People data has five layers: identity, relationship, account link, private note, historical snapshot | Nothing is lost when the person who added a contact leaves |
-| D12 | Full access manages care but can't give anyone new long-term access | Long-term sharing is for the record owner only. Absence access follows D19 |
+| D12 | Household Full access manages care but can't give anyone new long-term access | The record owner can share long-term, and so can direct co-parents, as today (D26). Absence access follows D19 |
 | D13 | Being an organiser implies Full access | An organiser can never be on the Can log care tier |
-| D14 | Account holders are 18 or over in v1 | Child profiles managed by a parent are a separate, future design |
-| D15 | "Logged by" and "Performed by" are separate facts | Performed by defaults to whoever is logging |
+| D14 | Account holders are 18 or over in v1 | Sign-up asks people to confirm they're 18 or over. No date of birth is collected. Child profiles managed by a parent are a separate, future design |
+| D15 | "Logged by" and "Performed by" are separate facts | Performed by defaults to whoever is logging. It's never pre-filled with the person named in "Looked after by" |
 | D16 | Access never widens without the person granting it seeing | Extending an absence or adding pets to it needs confirmation. Removal flows list the access the person still has |
 | D17 | Care items, schedules and absence plans belong to the pet or plan, not to whoever wrote them | "Created by" stays in the audit trail |
-| D18 | A plan that relies on a person who is no longer available is flagged as **needing review** | This is worked out from current facts, never stored as a status and never resolved silently (D-AWAY-002) |
+| D18 | A plan that relies on a person who is no longer available is flagged as **needing review** | This is worked out from current facts, never stored as a status and never resolved silently (D-AWAY-002). The wire shape is under Needs review |
 | D19 | Anyone with Full access to a pet can grant access to it for one absence | The record owner is notified and can revoke it |
 | D20 | No buffer day by default | One can be added per absence |
-| D21 | When someone is named on an occurrence, only they get its reminder | Occurrences with nobody named remind everyone, as today. Pet parents can turn on notifications for all events on their pets in Settings |
+| D21 | When someone is named on an occurrence, only they get its reminder | Occurrences with nobody named remind the owner and Full access members (D25). Pet parents can turn on notifications for all events on their pets in Settings |
 | D22 | Removing a pet from a household sends the other members a neutral notice, with no reason given | This protects the safety case |
-| D23 | When a pet leaves, the household keeps its own copy of any contact that other relationships still use | The leaving pet's relationships point to the record owner's copies |
+| D23 | When a pet leaves, the household keeps its own copy of any contact that other relationships still use | The leaving pet's relationships point to the record owner's copies. Merging duplicate contacts is out of scope for v1 |
+| D24 | Each account has a timezone. It's captured from the device at sign-in, can be changed in Settings, and is copied onto each absence when the absence is created | Changing the account timezone later doesn't shift an existing absence's access window. This unblocks phase 4 |
+| D25 | Occurrences with nobody named remind the record owner and Full access members only | Can log care members get reminders only for occurrences they're named on, unless they opt in |
+| D26 | Direct co-parent shares keep onward sharing, as today (`userCanSharePet`) | There are four access levels: Owner, Co-parent, Full access and Can log care. Shares a co-parent makes appear in the owner's Who has access view, and the owner can revoke them |
+| D27 | "Stop following" applies to direct shares only | A household member can't stop following one household pet. They can mute its notifications or leave the household |
+| D28 | Until phase 4, a contact with no linked account behaves exactly like today's `note_only` carer | The PDF handover is its only channel. A contact whose linked account already has access to the pet behaves like today's `shared_user` |
 
 ## Where we start
 
@@ -84,8 +89,9 @@ Ownership already matches D1. Three current behaviours contradict this spec and 
 | Pet record owner | One user per pet (`pets.user_id`) | Keep as is |
 | Account deletion | `pets.user_id` is `ON DELETE CASCADE`: deleting an account deletes the owner's pets without warning | Becomes a guarded flow: transfer each pet or confirm deleting it (see Data lifecycle) |
 | Household | None. Sharing is set pet by pet (`pet_access`) | New sharing layer. Don't reuse `pets.care_holder_*`, which belongs to the frozen custody model |
-| Access levels | Owner (implicit), `co_parent`, `carer`, `foster` (frozen) | User-facing labels that describe what the person can do |
-| Leaving a share | People can already "Stop following" a shared pet (`pet_access.hidden`, unfollow) | Keep: anyone can leave a direct share themselves |
+| Access levels | Owner (implicit), `co_parent`, `carer`, `foster` (frozen) | User-facing labels that describe what the person can do. Wire values stay `co_parent` and `carer` |
+| Leaving a share | "Stop following" sets `pet_access.hidden`. Hidden rows are excluded from every access check, so this revokes access entirely | Keep for direct shares only (D27) |
+| Foster | The `foster` role (frozen) can share with a link (`userCanSharePet`) | Unchanged and out of scope. Household logic ignores foster rows |
 | Professionals | `vets` only. Private to one user (`vets.user_id`, `ON DELETE CASCADE`), one vet per pet (`pets.vet_id`) | Split into identity and pet relationship **before** migrating |
 | Carer without an account | `note_only`: a name typed into each absence. D-AWAY-004 says this never implies access | Becomes a reusable contact. D-AWAY-004 still applies |
 | Carers per absence | One per pet (D-AWAY-003) | Amended: the model allows backup carers and date ranges. The v1 UI still shows one carer |
@@ -126,7 +132,7 @@ Each arrow points from a concept to the one it refers to. When a pet leaves a ho
 
 ## Ownership and households
 
-Only a pet's record owner decides who can see it long term, and they can always take it back straight away.
+Only a pet's record owner decides which household a pet is in, and they can always take it back straight away. They can also revoke any share, including shares made by a co-parent.
 
 ### Pets
 
@@ -134,12 +140,12 @@ Only a pet's record owner decides who can see it long term, and they can always 
 - Only the record owner can:
     - transfer the pet
     - delete it
-    - share it long-term with someone new
     - move it into or out of a household
 - A pet is in at most one household, where it lives (D6). Anyone beyond that household gets access pet by pet.
 - Within its household, a pet is shared with every member (D5).
 - **The record owner can take a pet out of the household at any time, without anyone else agreeing.** Other members lose access straight away. This is a safety requirement.
 - A pet changes owner only through a transfer that both people agree to.
+- Long-term sharing with someone new is open to the record owner and direct co-parents, as today (D26). Household Full access can't do it (D12).
 
 ### What follows the pet
 
@@ -178,41 +184,51 @@ Labels say what a person can do, not who they are. Managing care and giving othe
 | Label | Can do | Granted by |
 | --- | --- | --- |
 | Owner | Everything, including transfer, delete, long-term sharing with someone new, and moving the pet into or out of a household | Being the pet's record owner (`pets.user_id`) |
-| Full access | Manage care: profile, schedules, providers, contact relationships, absence plans. No transfer, delete or long-term sharing | Full household membership, or a co-parent share on that pet |
-| Can log care | See the pet, mark care done, add notes and photos, and log weight, all within the care handover scope | Can log care membership, a care-only share, or access for an absence |
+| Co-parent | Everything Full access can do, plus sharing the pet with new people, as today (D26). No transfer, delete, or moving the pet between households | A direct co-parent share (`pet_access.role = co_parent`) |
+| Full access | Manage care: profile, schedules, providers, contact relationships, absence plans. No transfer, delete or long-term sharing | Full household membership |
+| Can log care | See the pet, mark care done, add notes and photos, and log weight, all within the care handover scope | Can log care membership, a care-only share (`pet_access.role = carer`), or access for an absence |
 | No app access | Nothing in the app. They exist as a contact only | The default for contacts |
+
+Wire values stay `co_parent` and `carer` in the API, the database and logs. Only the UI labels change, so don't rename the enums. The frozen `foster` role is unchanged and outside this model.
 
 ### How grants combine
 
 - **Evaluation:** a person's effective access is the **highest** of three sources. These are household membership (if the pet is in that household), a direct share on that pet, and access for an absence.
 - **In the UI:** every screen that removes a grant lists the grants that remain (D16). Removing one grant never looks like removing all access.
+- **Evaluated when read, never copied.** Effective access is computed from the current grants on every check. When a pet leaves a household, a member who also has a direct co-parent share falls back to that share on their next request. There's no stored copy of the combined access, so the two can't race.
+- **Hidden direct shares count as no grant.** Household membership is unaffected by a hidden direct share. Members can't hide a single household pet (D27).
 
 ### Who can grant what
 
-| Grant | Record owner | Full access | Can log care |
-| --- | --- | --- | --- |
-| Share long-term with someone new | Yes | No | No |
-| Move the pet into or out of a household | Yes | No | No |
-| Access for one absence (D19) | Yes | Yes, for pets they have Full access to. The record owner is notified and can revoke | No |
-| Invite or remove household members | Organisers only (D3) | Organisers only (D3) | No |
+| Grant | Record owner | Co-parent | Full access | Can log care |
+| --- | --- | --- | --- | --- |
+| Share long-term with someone new | Yes | Yes, as today (D26) | No | No |
+| Move the pet into or out of a household | Yes | No | No | No |
+| Access for one absence (D19) | Yes | Yes | Yes, for pets they have Full access to. The record owner is notified and can revoke | No |
+| Invite or remove household members | Organisers only (D3) | Organisers only (D3) | Organisers only (D3) | No |
 
 ### Who has access, and history
 
 - Each pet has a **Who has access** view for its record owner. It lists every person and the source of their access: household, direct share, or absence.
 - Every grant, change and revocation is recorded with who did it and when, and the record owner can see this history. Audit logging for sharing is already listed as deferred in the [sharing specs](/docs/domains/sharing/features/specs.md), and this feature closes that item.
+- **Scope cap for v1:** the in-app history shows the most recent 100 events per pet, with no export. It's a separate deliverable within phase 3, so it doesn't grow the household work.
 - Anyone can leave a direct share themselves. This exists today as "Stop following".
 
 ### Care handover scope (D7)
 
-What Can log care people see depends on what the care needs, not on the type of content:
+What Can log care people see depends on what the care needs, not on the type of content. Each item maps to data, so the scope isn't reargued in every PR:
 
-- essential health and care information, including conditions and allergies
-- current medication and instructions
-- emergency contacts, the primary vet and the out-of-hours vet
-- provider details for the care they're doing
-- documents **explicitly attached** to the absence plan, such as a vaccination certificate or discharge instructions
+| Included | Source |
+| --- | --- |
+| Pet basics: name, species, breed, photo, identification (for a lost-pet emergency) | `pets` (`name`, `species`, `breed`, `photo_path`, `chip_id`, `identification`) |
+| Active health conditions, including allergies where they're recorded | Active `health_issues` |
+| Current medication and care during the relevant window | Active `health_entries` and their occurrences in that window |
+| Trip and pet notes | `planned_absences.handover_note`, `planned_absence_pets.pet_note` |
+| Emergency contacts, the primary vet and the out-of-hours vet | New pet relationships (People data) |
+| Provider details for care in the window | New provider relationship |
+| Documents **explicitly attached** to the absence | New attachment on the absence, served through the existing private-file access path with access scoped to the absence |
 
-Every other document stays private. This follows the private-files rules in `.cursor/agent-kernel/protocols/private-files.md`.
+**Excluded:** insurance, every document not attached to the absence, weight history (carers still see what they log themselves), the timeline and custody records, sharing and household details, other pets, private notes, and household notes. This follows the private-files rules in `.cursor/agent-kernel/protocols/private-files.md`.
 
 **Can log care can't:**
 
@@ -247,7 +263,8 @@ Contacts have five layers (D11). This means no shared fact depends on whoever ty
 - **Kind** (person or organisation) only changes the avatar and allows "works at".
 - Roles: sitter, walker, vet, vet nurse, groomer, trainer, behaviourist, boarding, emergency contact, other. A contact can have several.
 - A groomer used by two households exists once in each household directory, each copy with its own household note. Context never crosses between households.
-- When a pet leaves a household, the contacts its relationships use are **copied automatically** into the record owner's personal directory. The relationships then point at those copies, with no prompt. The household keeps its own copy while other relationships still use it (D23).
+- Duplicates across directories are expected. Merging or deduplicating them is **out of scope for v1**. "Add person" can suggest an existing contact from the user's own directories, but it never merges automatically.
+- When a pet leaves a household, the contacts its relationships use are **copied automatically** into the record owner's personal directory. The relationships then point at those copies, with no prompt. The household keeps its own copy while other relationships still use it (D23). Automatic copies are the record owner's data: they're deleted with that account and included in its GDPR export.
 
 **Naming constraint:** the codebase already uses `organizations` for the frozen Shelter and Fostering domain, and `care_holder_*` for custody. The new model must not reuse either name internally. In the UI, the organisation kind is labelled *Établissement* in French.
 
@@ -273,6 +290,11 @@ A sitter gets Can log care on the absence's pets, for the absence's dates, throu
 - The model allows each pet on an absence a **primary carer**, optional **backup or additional carers**, and optional **date ranges** within the absence. This amends D-AWAY-003. The v1 UI still shows one carer per pet.
 - Carers are picked from contacts, which replaces the free-text `note_only`. Household members can be carers, including on Can log care.
 - **Assigning a carer never grants app access.** D-AWAY-004 is unchanged.
+- **Phases 2 and 3 (D28):**
+    - A contact with no linked account works exactly like today's `note_only`. The PDF handover is its only channel.
+    - A contact whose linked account already has access to the pet works like today's `shared_user`.
+    - No partial app flows appear before phase 4.
+    - Migrating existing carer rows is covered in [amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md).
 
 ### Invite for this absence
 
@@ -283,7 +305,7 @@ A sitter gets Can log care on the absence's pets, for the absence's dates, throu
 
 ### Access window
 
-- Access covers **whole calendar days from the start date to the end date, inclusive, in the absence creator's local time.** Dates on the wire stay `YYYY-MM-DD` ([calendar-dates.md](/docs/architecture/calendar-dates.md)). Users have no stored timezone today, so implementation must capture one.
+- Access covers **whole calendar days from the start date to the end date, inclusive, in the timezone saved on the absence (D24).** That timezone is copied from the creator's account when the absence is created. Dates on the wire stay `YYYY-MM-DD` ([calendar-dates.md](/docs/architecture/calendar-dates.md)).
 - There's no buffer day by default. One can be added at either end, per absence (D20).
 - Access starts and ends automatically. The record owner, or whoever granted it, can revoke it early.
 - **Cancelling the absence** ends access straight away.
@@ -304,6 +326,7 @@ Today an absence's dates and pets can't be edited after saving. These rules appl
     - leaves the household
     - loses access they relied on
     - has their contact made inactive or deleted
+- **Wire shape:** the per-pet carer fact becomes `unset | set | unavailable`. The absence-level `carer_coverage` counts `unavailable` as uncovered, so `all_have_carers` can't be true while one exists, and it returns the affected pet ids. Tile and plan copy key off these values. No new tile vocabulary.
 - The dashboard tile's existing rule of showing the carer gap first covers this without changes.
 - The copy is calm and practical. For example: "Jamie can no longer see Buddy's plan. Choose someone else?"
 
@@ -329,9 +352,10 @@ Four separate facts cover four questions: who provides the care, who is looking 
 - There's **no permanent assignee**. "Looked after by" is set per occurrence, or for an absence plan.
 - **Reminders (D21):**
     - When someone is named, only that person gets the reminder.
-    - When nobody is named, everyone gets it, as today.
+    - When nobody is named, the record owner and Full access members get it (D25). Can log care members get it only if they opt in.
     - Pet parents can opt in, in Settings, to notifications for all events on their pets.
 - **Copy:** the field is a label, never a nudge. [copy-tone.md](/docs/design/copy-tone.md) explicitly avoids "Who'll be handling Luna's tablets?", so no empty state asks who is doing something.
+- Performed by is never pre-filled from "Looked after by". Recording that someone else did the care is always an explicit choice (D15).
 - When Performed by and Logged by differ, history shows both, e.g. "Given by Jamie · logged by Alex". When they match, it shows one name.
 - History keeps a **snapshot** of each name and role at the time. Today a deleted user's name is lost, because `marked_by_user_id` is set to null.
 - If the named person leaves or loses access, the occurrence **needs review** (D18). It never falls back to someone else silently.
@@ -420,7 +444,7 @@ Lifecycle follows the pet and the plan, not whoever created them. Nothing depend
 
 ### Age (D14)
 
-- In v1, accounts are for people aged **18 or over**.
+- In v1, accounts are for people aged **18 or over**. Sign-up and the household invite flow ask people to confirm this. No date of birth is collected.
 - The ages of 13 (UK) and 15 (France) only matter when a service relies on a child's own consent as its lawful basis. Supporting child accounts would also bring age-assurance duties and a DPIA.
 - Child profiles managed by a parent are a separate, future design.
 
@@ -431,15 +455,15 @@ The people-data layers must be settled before vets are migrated, so the data is 
 | Phase | Scope |
 | --- | --- |
 | 0. Model settled | Finalise identity, relationship, private note and snapshot (D11) before any migration. Define the carer-coverage "no longer available" fact |
-| 1. Contacts v1 | People screen for carers and professionals. Migrate `vets` into an identity plus a primary-vet pet relationship. Add the out-of-hours vet and emergency contacts. Provider on care items. Logged by, Performed by and history snapshots. The model supports linking an account, but this phase doesn't use it |
+| 1. Contacts v1 | **Interim rule:** until the phase 3 deletion guard ships, add no new `ON DELETE CASCADE` from `users` to shared data. New user foreign keys use `SET NULL` plus a snapshot. People screen for carers and professionals. Migrate `vets` into an identity plus a primary-vet pet relationship. Add the out-of-hours vet and emergency contacts. Provider on care items. Logged by, Performed by and history snapshots. The model supports linking an account, but this phase doesn't use it |
 | 2. Absence integration | Primary carer chosen from contacts, replacing `note_only`, with the model allowing backup carers and date ranges. "Looked after by" on the absence plan. "Carer no longer available" as a carer-coverage fact. PDF with emergency contacts, vets and attached documents |
-| 3. Households | Named households, organisers (always Full access), two tiers, one household per pet, grouping by household. The creation review step. Removal flows that show remaining grants. Automatic contact copies and needs-review states. A Who has access view with access history. Guarded account deletion for pets other people rely on |
-| 4. Absence guest access | Invite via sign-up. Access limited to the absence's dates and pets, within the care handover scope. Confirmation before access widens. Automatic expiry and early revocation. Full access can grant it, and the record owner is notified. Local-day access windows, which need a stored timezone |
+| 3. Households | Named households, organisers (always Full access), two tiers, one household per pet, grouping by household. The creation review step. Removal flows that show remaining grants. Automatic contact copies and needs-review states. A Who has access view with access history (a separate deliverable, capped as above). Guarded account deletion for pets other people rely on |
+| 4. Absence guest access | Invite via sign-up. Access limited to the absence's dates and pets, within the care handover scope. Confirmation before access widens. Automatic expiry and early revocation. Full access can grant it, and the record owner is notified. Local-day access windows, using the account timezone from D24. That timezone can ship earlier, on its own |
 | 5. Later | Backup carers and date ranges in the UI. People linked to organisations. Features for professionals (D9). Child profiles (D14) |
 
 ## Still open
 
-- [ ] **Timezone source for access windows:** users have no stored timezone today. Decide whether to capture it on the account or on each absence.
+No product decisions are open. When implementation starts, the delivery plan goes in `docs/domains/people/changes/`: file ownership, API milestones and BDD scenarios for each phase.
 
 ## Related
 
@@ -448,6 +472,9 @@ The people-data layers must be settled before vets are migrated, so the data is 
 | Vocabulary (EN/FR) | [vocabulary.md](/docs/domains/people/features/vocabulary.md) |
 | Away Planning carer model | [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md) |
 | Away Planning decisions (D-AWAY-002/003/004) | [away-planning-decisions.md](/docs/domains/pet_care/changes/away-planning-decisions.md) |
+| Planned amendments to Away Planning | [amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md) |
+| Notifications (D21, D25) | [notification specs](/docs/domains/notifications/features/specs.md) |
+| BDD, existing features that will change | `away_planning.feature`, `away_plan_detail_v2.feature`, `sharing.feature`, `veterinarian_management.feature`, `notifications.feature`. Planned: `people.feature` |
 | Sharing roles and API | [sharing specs](/docs/domains/sharing/features/specs.md) |
 | Vets today | [vet specs](/docs/domains/vet/features/specs.md) |
 | Care setting taxonomy | [care-classification-taxonomy-spec.md](/docs/domains/pet_care/changes/care-classification-taxonomy-spec.md) |

@@ -72,9 +72,24 @@ Viewer matrix:
 - `shareInviteReceived` (administrative) → `/invite/:code`
 - `shareInviteAccepted` / `shareInviteDeclined` (care) → inviter
 
+## Planned: People & Care Team (agreed, not implemented)
+
+Canonical: [people-care-team.md](/docs/domains/people/features/people-care-team.md). Capability changes compared with today:
+
+| Access | Today | Planned |
+|--------|-------|---------|
+| Owner (`pets.user_id`) | Full control, including transfer | Unchanged. Also the only one who moves a pet into or out of a household |
+| `co_parent` | Profile, vet, care, sharing, but no transfer | Unchanged, including onward sharing (D26). UI label: Co-parent |
+| Household Full access | — | New: manage care, grant access for an absence (D19). No long-term sharing (D12) |
+| `carer` | Care entries only | Unchanged in the wire value. UI label: Can log care. Scope: the care handover scope (D7) |
+| Absence access | — | New: Can log care for the absence's pets and dates, through the carer's own account |
+| `foster` (frozen) | Link-only sharing | Unchanged, and outside the People model |
+| Hidden share (Stop following) | Removes access | Direct shares only (D27) |
+
+Effective access is the highest of household membership, direct share and absence access, evaluated when read. Every grant and revocation is audited (this closes the audit-logging item below).
+
 ## Deferred
 
 - `PetViewerRole.guardian` → `petParent` rename (viewer enum only)
 - Audit logging extension for share routes — see [changes/deferred.md](../changes/deferred.md)
-- Households, capability-based access labels, and access limited to an absence: [People & Care Team spec](/docs/domains/people/features/people-care-team.md) (agreed, not implemented)
 - PR2 (done): `shareLinkService.js` / `shareLinkQueries.js` + extended `shareAccessService` / `shareAccessQueries`; routes are thin HTTP layers. Link creation returns **403** (not 404) when `userCanSharePet` fails — aligned with access routes.

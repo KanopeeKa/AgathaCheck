@@ -46,6 +46,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | [care-through-change-delivery-plan.md](/docs/domains/pet_care/changes/care-through-change-delivery-plan.md) | CC-1–CC-4 delivery plan (active) |
 | [away-planning-delivery-plan.md](/docs/domains/pet_care/changes/away-planning-delivery-plan.md) | AW-EMERGENCY–AW-10 delivery plan (active) |
 | [away-planning-decisions.md](/docs/domains/pet_care/changes/away-planning-decisions.md) | Frozen Away Planning decisions (D-AWAY-001–013) |
+| [amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md) | Planned People amendments to D-AWAY-002/003/004/005 (agreed, not in effect) |
 | [away-care-planning-delivery-plan.md](/docs/domains/pet_care/changes/away-care-planning-delivery-plan.md) | ACP-DOC-0–ACP-8: absence care display, reschedule UI, Care Planner (frozen) |
 | [away-care-planning-decisions.md](/docs/domains/pet_care/changes/away-care-planning-decisions.md) | Frozen Away Care Planning decisions (D-ACP-001–010) |
 
