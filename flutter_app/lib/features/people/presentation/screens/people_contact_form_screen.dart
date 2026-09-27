@@ -13,7 +13,8 @@ class PeopleContactFormScreen extends ConsumerStatefulWidget {
       _PeopleContactFormScreenState();
 }
 
-class _PeopleContactFormScreenState extends ConsumerState<PeopleContactFormScreen> {
+class _PeopleContactFormScreenState
+    extends ConsumerState<PeopleContactFormScreen> {
   final _nameController = TextEditingController();
   String _kind = 'person';
   final Set<String> _roles = {'sitter'};
@@ -30,14 +31,16 @@ class _PeopleContactFormScreenState extends ConsumerState<PeopleContactFormScree
     if (name.isEmpty) return;
     setState(() => _saving = true);
     try {
-      await ref.read(peopleContactsProvider.notifier).addContact(
-        PeopleContactModel(
-          id: '',
-          kind: _kind,
-          name: name,
-          roles: _roles.toList(),
-        ),
-      );
+      await ref
+          .read(peopleContactsProvider.notifier)
+          .addContact(
+            PeopleContactModel(
+              id: '',
+              kind: _kind,
+              name: name,
+              roles: _roles.toList(),
+            ),
+          );
       if (mounted) Navigator.of(context).pop(true);
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -62,7 +65,10 @@ class _PeopleContactFormScreenState extends ConsumerState<PeopleContactFormScree
             initialValue: _kind,
             decoration: InputDecoration(labelText: l.peopleKindLabel),
             items: [
-              DropdownMenuItem(value: 'person', child: Text(l.peopleKindPerson)),
+              DropdownMenuItem(
+                value: 'person',
+                child: Text(l.peopleKindPerson),
+              ),
               DropdownMenuItem(
                 value: 'organisation',
                 child: Text(l.peopleKindOrganisation),

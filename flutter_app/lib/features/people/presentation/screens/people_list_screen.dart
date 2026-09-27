@@ -7,6 +7,7 @@ import '../../../experience/presentation/widgets/experience_shell_scaffold.dart'
 import '../../../experience/domain/entities/app_experience.dart';
 import '../../domain/entities/people_contact.dart';
 import '../providers/people_providers.dart';
+
 class PeopleListScreen extends ConsumerWidget {
   const PeopleListScreen({super.key});
 
@@ -25,9 +26,12 @@ class PeopleListScreen extends ConsumerWidget {
         data: (contacts) {
           final pros = contacts.where((c) => c.isProfessional).toList();
           final prosIds = pros.map((c) => c.id).toSet();
-          final carers = contacts.where((c) => !prosIds.contains(c.id)).toList();
+          final carers = contacts
+              .where((c) => !prosIds.contains(c.id))
+              .toList();
           return RefreshIndicator(
-            onRefresh: () => ref.read(peopleContactsProvider.notifier).refresh(),
+            onRefresh: () =>
+                ref.read(peopleContactsProvider.notifier).refresh(),
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
@@ -79,9 +83,9 @@ class _Section extends StatelessWidget {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
         if (contacts.isEmpty)
@@ -91,13 +95,9 @@ class _Section extends StatelessWidget {
             (c) => ListTile(
               key: Key('people_contact_${c.id}'),
               title: Text(c.name),
-              subtitle: Text(
-                c.roles.isEmpty ? c.kind : c.roles.join(' · '),
-              ),
+              subtitle: Text(c.roles.isEmpty ? c.kind : c.roles.join(' · ')),
               leading: CircleAvatar(
-                child: Text(
-                  c.name.isNotEmpty ? c.name[0].toUpperCase() : '?',
-                ),
+                child: Text(c.name.isNotEmpty ? c.name[0].toUpperCase() : '?'),
               ),
             ),
           ),
