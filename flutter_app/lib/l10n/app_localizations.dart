@@ -11109,6 +11109,84 @@ abstract class AppLocalizations {
   /// **'Could not save details. Try again.'**
   String get careDetailsSaveFailed;
 
+  /// No description provided for @careCategoryBlockProductDoseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Product and dose'**
+  String get careCategoryBlockProductDoseTitle;
+
+  /// No description provided for @careCategoryBlockAddProductDose.
+  ///
+  /// In en, this message translates to:
+  /// **'Add dose details'**
+  String get careCategoryBlockAddProductDose;
+
+  /// No description provided for @careCategoryBlockProductName.
+  ///
+  /// In en, this message translates to:
+  /// **'Product name'**
+  String get careCategoryBlockProductName;
+
+  /// No description provided for @careCategoryBlockForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Form'**
+  String get careCategoryBlockForm;
+
+  /// No description provided for @careCategoryBlockStrength.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength'**
+  String get careCategoryBlockStrength;
+
+  /// No description provided for @careCategoryBlockDoseAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Dose amount'**
+  String get careCategoryBlockDoseAmount;
+
+  /// No description provided for @careCategoryBlockDoseUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Dose unit'**
+  String get careCategoryBlockDoseUnit;
+
+  /// No description provided for @careCategoryBlockRouteMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Route or method'**
+  String get careCategoryBlockRouteMethod;
+
+  /// No description provided for @careCategoryBlockVisitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit'**
+  String get careCategoryBlockVisitTitle;
+
+  /// No description provided for @careCategoryBlockAddVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Add visit details'**
+  String get careCategoryBlockAddVisit;
+
+  /// No description provided for @careCategoryBlockQuestionsToAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions to ask'**
+  String get careCategoryBlockQuestionsToAsk;
+
+  /// No description provided for @careCategoryBlockWeightTargetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight target'**
+  String get careCategoryBlockWeightTargetTitle;
+
+  /// No description provided for @careCategoryBlockWeightTargetFromPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses {petName}\'s reference weight from their profile'**
+  String careCategoryBlockWeightTargetFromPet(String petName);
+
   /// No description provided for @careProviderLabel.
   ///
   /// In en, this message translates to:
