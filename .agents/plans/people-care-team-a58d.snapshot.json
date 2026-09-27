@@ -162,6 +162,8 @@
         "docs/domains/people/**",
         "docs/domains/sharing/**",
         "docs/architecture/api-reference.md",
+        "db/migrations/**",
+        "db/schema/**",
         "server/routes/sharing/**",
         "server/routes/**",
         "server/lib/**",

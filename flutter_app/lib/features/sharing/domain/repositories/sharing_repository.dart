@@ -1,3 +1,4 @@
+import '../entities/household_pet_access.dart';
 import '../entities/invite_preview.dart';
 import '../entities/pet_access.dart';
 import '../entities/pet_share_access.dart';
@@ -12,6 +13,7 @@ abstract class SharingRepository {
   Future<SharePreview> getSharePreview(String code);
 
   Future<List<PetAccess>> getAccess(String petId, String token);
+  Future<PetAccessOverview> getAccessOverview(String petId, String token);
   Future<void> updateRole(
     String petId,
     String userId,

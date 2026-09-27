@@ -5,6 +5,7 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../data/datasources/sharing_remote_datasource.dart';
 import '../../data/repositories/sharing_repository_impl.dart';
+import '../../domain/entities/household_pet_access.dart';
 import '../../domain/entities/pet_access.dart';
 import '../../domain/entities/share_link.dart';
 import '../../domain/repositories/sharing_repository.dart';
@@ -87,6 +88,17 @@ final hiddenSharedPetsProvider =
     AsyncNotifierProvider<HiddenSharedPetsNotifier, List<HiddenSharedPet>>(
       HiddenSharedPetsNotifier.new,
     );
+
+final petAccessOverviewProvider = FutureProvider.family<PetAccessOverview, String>(
+  (ref, petId) async {
+    final token = await ref.read(authProvider.notifier).getValidAccessToken();
+    if (token == null) {
+      return const PetAccessOverview(directAccess: [], householdAccess: []);
+    }
+    final repo = ref.watch(sharingRepositoryProvider);
+    return repo.getAccessOverview(petId, token);
+  },
+);
 
 final petAccessProvider = FutureProvider.family<List<PetAccess>, String>((
   ref,

@@ -54,6 +54,14 @@ Feature: Pet Sharing
     And "Bob" taps "Accept & Add"
     Then "Bella" should appear in "Bob"'s pet list as a shared pet
 
+  # ── Household access (People phase 3) ─────────────────────────
+
+  @P2
+  Scenario: Pet parent sees household members in who has access
+    Given "Alice" owns a pet "Bella" shared in a household with "Bob"
+    When "Alice" opens sharing for "Bella"
+    Then "Alice" should see "Bob" listed with household access
+
   # ── Revoking and hiding shared access ──────────────────────────
 
   @P2

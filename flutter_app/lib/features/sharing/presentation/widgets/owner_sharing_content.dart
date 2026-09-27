@@ -10,6 +10,7 @@ import '../../domain/entities/pet_access.dart';
 import '../../domain/entities/share_link.dart';
 import '../providers/sharing_providers.dart';
 import 'access_tile.dart';
+import 'who_has_access_section.dart';
 import 'share_link_created_dialog.dart';
 import 'share_link_tile.dart';
 
@@ -32,10 +33,17 @@ class OwnerSharingContent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final overviewAsync = ref.watch(petAccessOverviewProvider(petId));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        overviewAsync.when(
+          loading: () => const SizedBox.shrink(),
+          error: (_, __) => const SizedBox.shrink(),
+          data: (overview) =>
+              WhoHasAccessSection(householdAccess: overview.householdAccess),
+        ),
         if (shareLinks.isEmpty && accessList.isEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),

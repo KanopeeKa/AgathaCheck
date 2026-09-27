@@ -219,7 +219,7 @@ POST/PUT accept optional `measurement_source`. Pet weight reference/context fiel
 Pet access management on `/api/pets/:id/...` (owner unless noted):
 - `GET /:id/share-links` — list share links with status and claimed user (owner: all links; foster: own links only)
 - `GET /:id/invites` — pending email invites for the pet
-- `GET /:id/access` — list users the pet is shared with (owner or co-parent)
+- `GET /:id/access` — who has access: `{ access: [...], household_access: [...], access_events: [...] }` — direct `pet_access` rows plus household members when the pet is in a household; `access_events` capped at 100 per pet (owner or co-parent)
 - `PUT /:id/access/:userId/role` — promote/demote between `carer` and `co_parent` (owner or co-parent)
 - `DELETE /:id/access/:userId` — remove access and notify the user (owner or co-parent)
 - `DELETE /:id/follow` — carer/co-parent stops following (self-remove access)
@@ -228,6 +228,22 @@ Pet access management on `/api/pets/:id/...` (owner unless noted):
 Shared pets appear in `GET /api/pets/all` with `is_shared: true` and `access_role` (`carer` or `co_parent`). Fostered pets use `is_foster: true` (and `is_shared: false`). Shared and org-visible pets include `pet_parent_name` (display name of the pet parent); `primary_holder_name` is a deprecated alias.
 
 Share links are **single-use**: once accepted, the same link cannot be used by another user (`410`).
+
+### Households (`/api/households`) — People phase 3
+
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/` | Create household; body `{ name, pet_ids? }`; creator is organiser + `full_access` |
+| GET | `/` | List households for caller `{ households: [...] }` |
+| GET | `/:id` | Detail with `members` and `pets` (members only) |
+| PATCH | `/:id` | Rename (organisers) |
+| POST | `/:id/members` | Add member by `user_id`; body `{ access_tier?, is_organiser? }` |
+| DELETE | `/:id/members/:userId` | Leave or remove; body optional `{ remove_all_access_to_my_pets: true }` |
+| PUT | `/:id/pets` | Body `{ pet_ids: [] }` — record owner adds/removes their pets |
+
+Household `full_access` grants `userCanManageProfile` + `userCanManageCare` (not share/transfer/delete). `can_log_care` grants care management only. Effective access is the highest of household, direct share, and absence (absence guest access ships in phase 4).
+
+`DELETE /api/auth/me` returns `409` with `code: household_pets_require_confirmation` when the user owns pets in a household with other members, unless `confirm_household_pets: true` is sent with the password.
 
 ### Care recommendations (`/api/pets/:id/care-recommendations`) — Phase C crisp rules
 
