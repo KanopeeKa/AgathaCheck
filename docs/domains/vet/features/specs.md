@@ -29,6 +29,10 @@ domain: vet
 - BDD: flutter_app/test/bdd/features/veterinarian_management.feature
 - No dedicated Playwright spec today (BDD coverage via Flutter/integration paths).
 
+## Planned change
+
+The `vets` table is planned to move into People contacts, split into an identity and a primary-vet relationship per pet. Out-of-hours vets and emergency contacts are added at the same time. See the [People & Care Team spec](/docs/domains/people/features/people-care-team.md). It's agreed but not implemented.
+
 ---
 
 **Plans:** [changes/plans.md](../changes/plans.md)

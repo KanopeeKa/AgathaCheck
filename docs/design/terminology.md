@@ -3,7 +3,7 @@ title: AgathaTrack terminology
 owner: Documentation Team
 audience: product, design, engineering, content
 status: active
-last_updated: 2026-09-15
+last_updated: 2026-09-27
 tags: [design, brand, copy, l10n]
 ---
 
@@ -44,6 +44,12 @@ When multiple people are involved, use precise care-role language:
 | **co-parent** | Shared access with profile/vet/sharing admin (`pet_access.role = co_parent`) — owner minus transfer |
 | **Veterinary team** | Pet Care dashboard section and vet detail surfaces — the guardian's veterinary clinics (EN label; FR: *Équipe vétérinaire*). Not the same as **care team** (carers). |
 | **veterinary professional** / **vet** | Clinical context |
+
+### Planned: People & Care Team vocabulary
+
+The EN/FR wording for the People directory, households and absence access is approved but **not shipped**. It lives in [`vocabulary.md`](../domains/people/features/vocabulary.md) until the feature ships. When it ships, the rows move into this file.
+
+From that point, **carer** becomes a relationship word only. Access levels get labels that describe capability: Full access and Can log care. Until then, the rows above describe shipped behaviour. Don't change shipped strings ad hoc.
 
 ## Legal, technical, and permission terms
 

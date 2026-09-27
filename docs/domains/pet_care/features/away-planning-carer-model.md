@@ -96,6 +96,7 @@ Per-pet handover export (in addition to the existing full-plan download) produce
 
 ## Related
 
+- [People & Care Team spec](/docs/domains/people/features/people-care-team.md): agreed and not implemented. It replaces `note_only` with directory contacts, adds access limited to an absence, and amends D-AWAY-003 to allow backup carers.
 - [api-reference.md](/docs/architecture/api-reference.md) — planned absences, carer-candidates, readiness
 - [away-planning-delivery-plan.md](../changes/away-planning-delivery-plan.md)
 - [away-planning-decisions.md](../changes/away-planning-decisions.md)
