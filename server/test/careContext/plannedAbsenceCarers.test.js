@@ -14,6 +14,53 @@ function authHeader() {
   return { Authorization: `Bearer ${token}` };
 }
 
+function handlePeopleCarerBackfillMocks(sql) {
+  if (sql.includes('FROM people_directories WHERE owner_user_id')) {
+    return { rows: [{ id: 'people-dir-1' }] };
+  }
+  if (sql.includes('INSERT INTO people_directories')) {
+    return { rows: [{ id: 'people-dir-1' }] };
+  }
+  if (sql.includes('FROM people_contacts pc')
+    && sql.includes('people_contact_private_notes')) {
+    return { rows: [] };
+  }
+  if (sql.includes('SELECT id FROM people_contacts')
+    && sql.includes('linked_user_id')) {
+    return { rows: [] };
+  }
+  if (sql.includes('INSERT INTO people_contacts')) {
+    return { rows: [] };
+  }
+  if (sql.includes('INSERT INTO people_contact_roles')) {
+    return { rows: [] };
+  }
+  if (sql.includes('INSERT INTO people_contact_private_notes')) {
+    return { rows: [] };
+  }
+  if (sql.includes('FROM users WHERE id = $1')) {
+    return {
+      rows: [{
+        id: '333e4567-e89b-12d3-a456-426614174002',
+        first_name: 'Sarah',
+        last_name: 'Miller',
+      }],
+    };
+  }
+  if (sql.includes('FROM pets WHERE id = $1')) {
+    return { rows: [{ user_id: userId }] };
+  }
+  return null;
+}
+
+function wrapPoolHandler(handler) {
+  return async (sql, params) => {
+    const peopleMock = handlePeopleCarerBackfillMocks(sql);
+    if (peopleMock) return peopleMock;
+    return handler(sql, params);
+  };
+}
+
 describe('planned absence carers', () => {
   const today = todayCalendarIso();
   const startsOn = addCalendarDaysIso(today, 7);
@@ -39,7 +86,7 @@ describe('planned absence carers', () => {
 
   it('PATCH assigns shared_user carer and bumps updated_at', async () => {
     let updatedAtBumped = false;
-    const app = createTransactionalTestApp(async (sql, params) => {
+    const app = createTransactionalTestApp(wrapPoolHandler(async (sql, params) => {
       if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
         return { rows: [absenceRow()] };
       }
@@ -97,7 +144,7 @@ describe('planned absence carers', () => {
         };
       }
       return { rows: [] };
-    });
+    }));
 
     const res = await request(app)
       .patch(`/api/planned-absences/${absenceId}`)
@@ -118,6 +165,8 @@ describe('planned absence carers', () => {
       carer_user_id: carerUserId,
       carer_name: 'Sarah M.',
       carer_note: null,
+      contact_id: null,
+      carer_state: 'set',
       carer_removed: false,
       pet_note: null,
     }]);
@@ -125,7 +174,7 @@ describe('planned absence carers', () => {
 
   it('PATCH assigns note_only carer without access implication', async () => {
     let carerUpdated = false;
-    const app = createTransactionalTestApp(async (sql, params) => {
+    const app = createTransactionalTestApp(wrapPoolHandler(async (sql, params) => {
       if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
         return { rows: [absenceRow()] };
       }
@@ -163,7 +212,7 @@ describe('planned absence carers', () => {
         return { rows: [] };
       }
       return { rows: [] };
-    });
+    }));
 
     const res = await request(app)
       .patch(`/api/planned-absences/${absenceId}`)
@@ -228,7 +277,7 @@ describe('planned absence carers', () => {
   it('PATCH with pet_note only updates pet_note and leaves carer untouched', async () => {
     let noteUpdated = false;
     let carerColumnsTouched = false;
-    const app = createTransactionalTestApp(async (sql, params) => {
+    const app = createTransactionalTestApp(wrapPoolHandler(async (sql, params) => {
       if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
         return { rows: [absenceRow()] };
       }
@@ -267,7 +316,7 @@ describe('planned absence carers', () => {
         return { rows: [] };
       }
       return { rows: [] };
-    });
+    }));
 
     const res = await request(app)
       .patch(`/api/planned-absences/${absenceId}`)
@@ -288,7 +337,7 @@ describe('planned absence carers', () => {
   it('PATCH with carer_kind only updates carer and leaves pet_note untouched', async () => {
     let carerUpdated = false;
     let petNoteColumnTouched = false;
-    const app = createTransactionalTestApp(async (sql, params) => {
+    const app = createTransactionalTestApp(wrapPoolHandler(async (sql, params) => {
       if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
         return { rows: [absenceRow()] };
       }
@@ -330,7 +379,7 @@ describe('planned absence carers', () => {
         return { rows: [{ id: carerUserId, first_name: 'Sarah', last_name: 'Miller' }] };
       }
       return { rows: [] };
-    });
+    }));
 
     const res = await request(app)
       .patch(`/api/planned-absences/${absenceId}`)
@@ -350,7 +399,7 @@ describe('planned absence carers', () => {
   it('PATCH clearing carer_kind preserves pet_note', async () => {
     let cleared = false;
     let petNoteColumnTouched = false;
-    const app = createTransactionalTestApp(async (sql, params) => {
+    const app = createTransactionalTestApp(wrapPoolHandler(async (sql, params) => {
       if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
         return { rows: [absenceRow()] };
       }
@@ -385,7 +434,7 @@ describe('planned absence carers', () => {
         return { rows: [] };
       }
       return { rows: [] };
-    });
+    }));
 
     const res = await request(app)
       .patch(`/api/planned-absences/${absenceId}`)
@@ -405,7 +454,7 @@ describe('planned absence carers', () => {
   it('PATCH pet_note: null clears the note without touching carer', async () => {
     let noteCleared = false;
     let carerColumnsTouched = false;
-    const app = createTransactionalTestApp(async (sql, params) => {
+    const app = createTransactionalTestApp(wrapPoolHandler(async (sql, params) => {
       if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
         return { rows: [absenceRow()] };
       }
@@ -443,7 +492,7 @@ describe('planned absence carers', () => {
         return { rows: [{ id: carerUserId, first_name: 'Sarah', last_name: 'Miller' }] };
       }
       return { rows: [] };
-    });
+    }));
 
     const res = await request(app)
       .patch(`/api/planned-absences/${absenceId}`)
@@ -462,7 +511,7 @@ describe('planned absence carers', () => {
 
   it('PATCH pet_note is stored and returned verbatim (D-AWAY-008)', async () => {
     const verbatimNote = 'Feeds twice daily — **not parsed**\nline 2';
-    const app = createTransactionalTestApp(async (sql, params) => {
+    const app = createTransactionalTestApp(wrapPoolHandler(async (sql, params) => {
       if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
         return { rows: [absenceRow()] };
       }
@@ -495,7 +544,7 @@ describe('planned absence carers', () => {
         return { rows: [] };
       }
       return { rows: [] };
-    });
+    }));
 
     const res = await request(app)
       .patch(`/api/planned-absences/${absenceId}`)
@@ -531,6 +580,7 @@ describe('planned absence carers', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body.pet_carers[0].carer_removed).toBe(true);
+    expect(res.body.pet_carers[0].carer_state).toBe('unavailable');
   });
 });
 

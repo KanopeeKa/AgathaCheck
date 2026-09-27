@@ -6,6 +6,7 @@ import {
   COVERAGE_STATE_NO_UNRESOLVED_ITEMS,
 } from '../carePeriodCoverage.js';
 import { carerRowToMap } from '../plannedAbsence.js';
+import { CARER_STATE_SET, CARER_STATE_UNAVAILABLE } from '../../people/absenceCarer.js';
 
 export const CARER_COVERAGE_ALL_HAVE_CARERS = 'all_have_carers';
 export const CARER_COVERAGE_SOME_HAVE_CARERS = 'some_have_carers';
@@ -44,13 +45,15 @@ const COVERAGE_STATE_PRIORITY = [
  */
 export function petHasCarer(petRow) {
   const mapped = carerRowToMap(petRow);
-  if (!mapped.carer_kind || mapped.carer_removed) {
-    return false;
-  }
-  if (mapped.carer_kind === 'note_only' && !mapped.carer_name) {
-    return false;
-  }
-  return true;
+  return mapped.carer_state === CARER_STATE_SET;
+}
+
+/**
+ * @param {object} petRow
+ */
+export function petCarerUnavailable(petRow) {
+  const mapped = carerRowToMap(petRow);
+  return mapped.carer_state === CARER_STATE_UNAVAILABLE;
 }
 
 /**
@@ -59,12 +62,15 @@ export function petHasCarer(petRow) {
 export function deriveCarerCoverage(petCarers) {
   const pets = petCarers || [];
   const petsTotal = pets.length;
+  const unavailablePetIds = pets
+    .filter((row) => petCarerUnavailable(row))
+    .map((row) => row.pet_id);
   const petsWithCarer = pets.filter((row) => petHasCarer(row)).length;
 
   let state;
   if (petsWithCarer === 0) {
     state = CARER_COVERAGE_NONE_HAVE_CARERS;
-  } else if (petsWithCarer === petsTotal) {
+  } else if (petsWithCarer === petsTotal && unavailablePetIds.length === 0) {
     state = CARER_COVERAGE_ALL_HAVE_CARERS;
   } else {
     state = CARER_COVERAGE_SOME_HAVE_CARERS;
@@ -74,6 +80,7 @@ export function deriveCarerCoverage(petCarers) {
     state,
     pets_with_carer: petsWithCarer,
     pets_total: petsTotal,
+    unavailable_pet_ids: unavailablePetIds,
     copy_key: CARER_COVERAGE_COPY_KEYS[state],
   };
 }
@@ -146,6 +153,7 @@ export function deriveAwayPlanReadiness(carerCoverage, careCoverage) {
     state: carerCoverage.state,
     pets_with_carer: carerCoverage.pets_with_carer,
     pets_total: carerCoverage.pets_total,
+    unavailable_pet_ids: carerCoverage.unavailable_pet_ids || [],
     copy_key: carerCoverage.copy_key,
   };
 

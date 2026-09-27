@@ -70,7 +70,10 @@ export default function contactsRouter(pool) {
         return res.status(400).json({ error: 'Delete the linked vet record instead' });
       }
       const inUse = await pool.query(
-        'SELECT 1 FROM pet_contact_relationships WHERE contact_id = $1 LIMIT 1',
+        `SELECT 1 FROM pet_contact_relationships WHERE contact_id = $1
+         UNION ALL
+         SELECT 1 FROM planned_absence_pets WHERE contact_id = $1
+         LIMIT 1`,
         [req.params.id],
       );
       if (inUse.rows.length > 0) {
