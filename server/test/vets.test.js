@@ -88,6 +88,11 @@ describe('Vets API', () => {
           };
         }
 
+        if (sql.includes('SELECT id FROM vets WHERE id = $1 AND user_id = $2')) {
+          if (params[0] === 'nonexistent') return { rows: [] };
+          return { rows: [{ id: params[0] }] };
+        }
+
         if (sql.includes('DELETE FROM vets')) {
           lastVetDeleteQuery = { sql, params };
           if (params[0] === 'nonexistent') return { rows: [] };
