@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_item_status_pill.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_surface_tokens.dart';
 import '../../../domain/entities/health_entry.dart';
 import '../../../domain/entities/health_occurrence.dart';
 import '../../../domain/occurrence_scheduling.dart';
@@ -10,7 +14,7 @@ import '../../providers/occurrence_providers.dart';
 import '../../widgets/care_event_status_line.dart';
 import '../../widgets/pet_event_occurrence_actions.dart';
 
-/// Upcoming and recent dates for a care item (spec §4.3 — **Dates** heading).
+/// Upcoming and recent dates for a care item (spec §4.3 — **Needs attention** module).
 class CareItemDatesSection extends ConsumerWidget {
   const CareItemDatesSection({
     super.key,
@@ -48,23 +52,20 @@ class CareItemDatesSection extends ConsumerWidget {
       error: (_, __) => _LegacyDatesSummary(entry: entry, muted: muted),
       data: (occurrences) {
         if (entry.isPaused) {
-          return Column(
+          return CareItemModule(
             key: const Key('care_item_needs_attention_section'),
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Semantics(
-                header: true,
-                child: Text(
-                  l.careItemNeedsAttentionTitle,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: muted ? colorScheme.onSurfaceVariant : null,
-                  ),
+            semanticLabel: l.careItemNeedsAttentionTitle,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CareItemSectionHeader(
+                  title: l.careItemNeedsAttentionTitle,
+                  icon: Icons.flag_outlined,
                 ),
-              ),
-              const SizedBox(height: 8),
-              _PausedAttentionBanner(entry: entry, muted: muted),
-            ],
+                const SizedBox(height: 12),
+                _PausedAttentionBanner(entry: entry, muted: muted),
+              ],
+            ),
           );
         }
 
@@ -77,98 +78,107 @@ class CareItemDatesSection extends ConsumerWidget {
         final dueToday = _zoneItems(occurrences, OccurrenceZone.dueToday, now);
         final comingUp = _zoneItems(occurrences, OccurrenceZone.comingUp, now);
 
-        return Column(
+        return CareItemModule(
           key: const Key('care_item_needs_attention_section'),
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Semantics(
-              header: true,
-              child: Text(
-                l.careItemNeedsAttentionTitle,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: muted ? colorScheme.onSurfaceVariant : null,
+          semanticLabel: l.careItemNeedsAttentionTitle,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CareItemSectionHeader(
+                title: l.careItemNeedsAttentionTitle,
+                icon: Icons.flag_outlined,
+              ),
+              const SizedBox(height: 12),
+              if (missed.isNotEmpty)
+                _OccurrenceZoneBlock(
+                  zone: OccurrenceZone.missed,
+                  occurrences: missed,
+                  entry: entry,
+                  muted: muted,
                 ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            if (missed.isNotEmpty)
-              _OccurrenceZoneBlock(
-                title: l.occurrenceZoneMissed,
-                titleColor: colorScheme.error,
-                occurrences: missed,
-                entry: entry,
-                muted: muted,
-              ),
-            if (dueToday.isNotEmpty)
-              _OccurrenceZoneBlock(
-                title: l.occurrenceZoneDueToday,
-                occurrences: dueToday,
-                entry: entry,
-                muted: muted,
-              ),
-            if (comingUp.isNotEmpty)
-              _OccurrenceZoneBlock(
-                title: l.occurrenceZoneComingUp,
-                occurrences: comingUp,
-                entry: entry,
-                muted: muted,
-              ),
-            if (!muted && summary.missedCount > 0) ...[
-              const SizedBox(height: 8),
-              OutlinedButton(
-                key: const Key('care_item_skip_all_missed'),
-                onPressed: () => PetEventOccurrenceActions.skipAllMissed(
-                  context,
-                  ref,
-                  entry,
+              if (dueToday.isNotEmpty)
+                _OccurrenceZoneBlock(
+                  zone: OccurrenceZone.dueToday,
+                  occurrences: dueToday,
+                  entry: entry,
+                  muted: muted,
                 ),
-                child: Text(l.occurrenceSkipAllMissed),
-              ),
+              if (comingUp.isNotEmpty)
+                _OccurrenceZoneBlock(
+                  zone: OccurrenceZone.comingUp,
+                  occurrences: comingUp,
+                  entry: entry,
+                  muted: muted,
+                ),
+              if (!muted && summary.missedCount > 0) ...[
+                const SizedBox(height: 4),
+                OutlinedButton(
+                  key: const Key('care_item_skip_all_missed'),
+                  onPressed: () => PetEventOccurrenceActions.skipAllMissed(
+                    context,
+                    ref,
+                    entry,
+                  ),
+                  child: Text(l.occurrenceSkipAllMissed),
+                ),
+              ],
             ],
-          ],
+          ),
         );
       },
     );
   }
 }
 
+CareItemStatusTone _statusToneForZone(OccurrenceZone zone) {
+  return switch (zone) {
+    OccurrenceZone.missed => CareItemStatusTone.overdue,
+    OccurrenceZone.dueToday => CareItemStatusTone.due,
+    OccurrenceZone.comingUp => CareItemStatusTone.neutral,
+    _ => CareItemStatusTone.neutral,
+  };
+}
+
+String _pillLabelForZone(OccurrenceZone zone, AppLocalizations l) {
+  return switch (zone) {
+    OccurrenceZone.missed => l.occurrenceZoneMissed,
+    OccurrenceZone.dueToday => l.occurrenceZoneDueToday,
+    OccurrenceZone.comingUp => l.occurrenceZoneComingUp,
+    _ => l.occurrenceZoneComingUp,
+  };
+}
+
 class _OccurrenceZoneBlock extends StatelessWidget {
   const _OccurrenceZoneBlock({
-    required this.title,
+    required this.zone,
     required this.occurrences,
     required this.entry,
     required this.muted,
-    this.titleColor,
   });
 
-  final String title;
+  final OccurrenceZone zone;
   final List<HealthOccurrence> occurrences;
   final HealthEntry entry;
   final bool muted;
-  final Color? titleColor;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
+    final pillLabel = _pillLabelForZone(zone, l);
+    final tone = _statusToneForZone(zone);
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            title,
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: titleColor ?? theme.colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final occ in occurrences)
+          _OccurrenceRow(
+            occurrence: occ,
+            entry: entry,
+            muted: muted,
+            pillLabel: pillLabel,
+            statusTone: tone,
           ),
-          const SizedBox(height: 4),
-          for (final occ in occurrences)
-            _OccurrenceRow(occurrence: occ, entry: entry, muted: muted),
-        ],
-      ),
+      ],
     );
   }
 }
@@ -178,82 +188,94 @@ class _OccurrenceRow extends ConsumerWidget {
     required this.occurrence,
     required this.entry,
     required this.muted,
+    required this.pillLabel,
+    required this.statusTone,
   });
 
   final HealthOccurrence occurrence;
   final HealthEntry entry;
   final bool muted;
+  final String pillLabel;
+  final CareItemStatusTone statusTone;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final label = formatOccurrenceInstant(occurrence, l, context: context);
+    final dateLabel = formatOccurrenceInstant(occurrence, l, context: context);
 
-    return Card(
+    return Container(
       key: Key('care_item_occurrence_row_${occurrence.id}'),
+      width: double.infinity,
       margin: const EdgeInsets.only(bottom: 8),
-      elevation: 0,
-      color: colorScheme.surfaceContainerHighest.withValues(
-        alpha: muted ? 0.5 : 0.35,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(CareSurfaceTokens.actionRadius),
+        border: Border.all(color: CareSurfaceTokens.moduleBorder()),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: muted ? colorScheme.onSurfaceVariant : null,
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CareItemStatusPill(label: pillLabel, tone: statusTone),
+          const SizedBox(height: 10),
+          Text(
+            dateLabel,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: muted ? colorScheme.onSurfaceVariant : colorScheme.onSurface,
             ),
-            if (!muted) ...[
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  FilledButton.icon(
-                    key: Key('care_item_occurrence_mark_done_${occurrence.id}'),
-                    onPressed: () => PetEventOccurrenceActions.markDone(
-                      context,
-                      ref,
-                      entry,
-                      occurrence,
-                    ),
-                    icon: const Icon(Icons.check, size: 18),
-                    label: Text(l.markAsDone),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            entry.name,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          if (!muted) ...[
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                FilledButton.icon(
+                  key: Key('care_item_occurrence_mark_done_${occurrence.id}'),
+                  onPressed: () => PetEventOccurrenceActions.markDone(
+                    context,
+                    ref,
+                    entry,
+                    occurrence,
                   ),
-                  OutlinedButton(
-                    key: Key('care_item_occurrence_skip_${occurrence.id}'),
-                    onPressed: () => PetEventOccurrenceActions.skip(
-                      context,
-                      ref,
-                      entry,
-                      occurrence,
-                    ),
-                    child: Text(l.skipOccurrence),
+                  icon: const Icon(Icons.check, size: 18),
+                  label: Text(l.markAsDone),
+                ),
+                OutlinedButton(
+                  key: Key('care_item_occurrence_skip_${occurrence.id}'),
+                  onPressed: () => PetEventOccurrenceActions.skip(
+                    context,
+                    ref,
+                    entry,
+                    occurrence,
                   ),
-                  OutlinedButton(
-                    key: Key(
-                      'care_item_occurrence_reschedule_${occurrence.id}',
-                    ),
-                    onPressed: () => PetEventOccurrenceActions.changeDate(
-                      context,
-                      ref,
-                      entry,
-                      occurrence,
-                    ),
-                    child: Text(l.rescheduleActionLabel),
+                  child: Text(l.skipOccurrence),
+                ),
+                OutlinedButton(
+                  key: Key(
+                    'care_item_occurrence_reschedule_${occurrence.id}',
                   ),
-                ],
-              ),
-            ],
+                  onPressed: () => PetEventOccurrenceActions.changeDate(
+                    context,
+                    ref,
+                    entry,
+                    occurrence,
+                  ),
+                  child: Text(l.rescheduleActionLabel),
+                ),
+              ],
+            ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -328,9 +350,8 @@ class _PausedAttentionBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outlineVariant),
+        borderRadius: BorderRadius.circular(CareSurfaceTokens.actionRadius),
+        border: Border.all(color: CareSurfaceTokens.moduleBorder()),
       ),
       child: Text(
         line,
