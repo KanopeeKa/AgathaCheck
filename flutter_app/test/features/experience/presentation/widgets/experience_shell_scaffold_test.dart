@@ -528,10 +528,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
-    expect(
-      find.byKey(const Key('experience_workspace_toggle')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('experience_workspace_toggle')), findsNothing);
     expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
 

@@ -94,8 +94,9 @@ mixin HealthEntryFormSubmitMixin
         isCreate: !state.isEdit,
       );
 
-      final blocksForWrite =
-          state.careBlocks.filteredFor(careFamily ?? state.careFamily);
+      final blocksForWrite = state.careBlocks.filteredFor(
+        careFamily ?? state.careFamily,
+      );
       final dosageForApi = _dosageForSubmit(state);
 
       if (state.isEdit) {

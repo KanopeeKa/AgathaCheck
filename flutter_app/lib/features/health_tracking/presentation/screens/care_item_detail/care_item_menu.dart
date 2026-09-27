@@ -47,10 +47,7 @@ class CareItemMenu extends StatelessWidget {
       },
       itemBuilder: (context) {
         final items = <PopupMenuEntry<CareItemMenuAction>>[
-          PopupMenuItem(
-            value: CareItemMenuAction.edit,
-            child: Text(l.edit),
-          ),
+          PopupMenuItem(value: CareItemMenuAction.edit, child: Text(l.edit)),
         ];
         if (!isClosed && !entry.isPaused && entry.status == 'active') {
           items.add(

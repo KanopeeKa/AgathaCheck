@@ -98,11 +98,7 @@ class CareItemDetailBody extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          CareCategoryBlocksDetailSection(
-            entry: entry,
-            pet: pet,
-            muted: muted,
-          ),
+          CareCategoryBlocksDetailSection(entry: entry, pet: pet, muted: muted),
           CareItemInfoSection(entry: entry, muted: muted),
           CareItemEstablishedSection(pet: pet, isEstablished: isEstablished),
           if (entry.healthIssueId != null &&

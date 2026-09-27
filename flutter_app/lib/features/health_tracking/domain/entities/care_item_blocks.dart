@@ -18,9 +18,7 @@ class CareItemBlocks {
     bool clearVisit = false,
   }) {
     return CareItemBlocks(
-      productDose: clearProductDose
-          ? null
-          : (productDose ?? this.productDose),
+      productDose: clearProductDose ? null : (productDose ?? this.productDose),
       visit: clearVisit ? null : (visit ?? this.visit),
     );
   }

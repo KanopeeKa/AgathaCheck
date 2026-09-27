@@ -63,20 +63,13 @@ class CareItemAbsenceSection extends ConsumerWidget {
                 children: [
                   OutlinedButton(
                     key: const Key('care_item_absence_keep_date'),
-                    onPressed: () => _save(
-                      ref,
-                      primary,
-                      decision: 'keep_date',
-                    ),
+                    onPressed: () => _save(ref, primary, decision: 'keep_date'),
                     child: Text(l.careItemAbsenceKeepDate),
                   ),
                   TextButton(
                     key: const Key('care_item_absence_nothing_needed'),
-                    onPressed: () => _save(
-                      ref,
-                      primary,
-                      decision: 'nothing_needed',
-                    ),
+                    onPressed: () =>
+                        _save(ref, primary, decision: 'nothing_needed'),
                     child: Text(l.careItemAbsenceNothingNeeded),
                   ),
                 ],

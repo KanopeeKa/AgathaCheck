@@ -95,19 +95,14 @@ class CareCategoryBlocksDetailSection extends StatelessWidget {
   List<Widget> _weightRows(AppLocalizations l, Pet pet) {
     final ref = pet.weightReferenceValue;
     if (ref == null) return [];
-    return [
-      _labelValue(l, l.careCategoryBlockWeightTargetTitle, '$ref kg'),
-    ];
+    return [_labelValue(l, l.careCategoryBlockWeightTargetTitle, '$ref kg')];
   }
 
   Widget _labelValue(AppLocalizations l, String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
+        Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
         Text(value),
       ],

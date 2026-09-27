@@ -46,7 +46,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('care_category_blocks_detail')), findsOneWidget);
+    expect(
+      find.byKey(const Key('care_category_blocks_detail')),
+      findsOneWidget,
+    );
     expect(find.text('Need titre test?'), findsOneWidget);
   });
 }

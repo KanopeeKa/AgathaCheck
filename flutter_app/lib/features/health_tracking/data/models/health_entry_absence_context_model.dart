@@ -15,7 +15,9 @@ class HealthEntryAbsenceContext {
       healthEntryId: json['health_entry_id'] as String? ?? '',
       petId: json['pet_id'] as String? ?? '',
       absences: raw
-          .map((e) => HealthEntryAbsenceSlice.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) => HealthEntryAbsenceSlice.fromJson(e as Map<String, dynamic>),
+          )
           .toList(growable: false),
     );
   }
@@ -43,8 +45,7 @@ class HealthEntryAbsenceSlice {
   final String? resolutionDecision;
 
   bool get needsAttention =>
-      affected &&
-      (uiState == 'not_reviewed' || uiState == 'needs_review');
+      affected && (uiState == 'not_reviewed' || uiState == 'needs_review');
 
   factory HealthEntryAbsenceSlice.fromJson(Map<String, dynamic> json) {
     final resolution = json['resolution'] as Map<String, dynamic>?;

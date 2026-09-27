@@ -274,9 +274,7 @@ class HealthEntry {
           ? null
           : (scheduleTimes ?? this.scheduleTimes),
       status: status ?? this.status,
-      pausedSince: clearPausedSince
-          ? null
-          : (pausedSince ?? this.pausedSince),
+      pausedSince: clearPausedSince ? null : (pausedSince ?? this.pausedSince),
       careFamily: clearCareFamily ? null : (careFamily ?? this.careFamily),
       careSetting: clearCareSetting ? null : (careSetting ?? this.careSetting),
       carePlanning: clearCarePlanning

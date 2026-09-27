@@ -80,7 +80,9 @@ class _OccurrenceAddDetailsSheetState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.unsupportedDocumentFormat),
+          content: Text(
+            AppLocalizations.of(context)!.unsupportedDocumentFormat,
+          ),
         ),
       );
       return;
@@ -103,7 +105,9 @@ class _OccurrenceAddDetailsSheetState
     final l = AppLocalizations.of(context)!;
     try {
       final notes = _notesController.text.trim();
-      await ref.read(healthRepositoryProvider).updateOccurrenceNotes(
+      await ref
+          .read(healthRepositoryProvider)
+          .updateOccurrenceNotes(
             widget.entry.id,
             widget.occurrenceId,
             notes,
@@ -122,14 +126,14 @@ class _OccurrenceAddDetailsSheetState
       PetEventOccurrenceActions.invalidateOccurrenceData(ref, widget.entry.id);
       if (!mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careDetailsSaved)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careDetailsSaved)));
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careDetailsSaveFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careDetailsSaveFailed)));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -182,7 +186,11 @@ class _OccurrenceAddDetailsSheetState
               (d) => ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: Text(d.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+                title: Text(
+                  d.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
           ],

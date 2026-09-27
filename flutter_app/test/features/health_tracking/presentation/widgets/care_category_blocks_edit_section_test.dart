@@ -50,7 +50,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('care_block_add_Product and dose')), findsOneWidget);
+    expect(
+      find.byKey(const Key('care_block_add_Product and dose')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('weight monitoring shows pet reference weight', (tester) async {

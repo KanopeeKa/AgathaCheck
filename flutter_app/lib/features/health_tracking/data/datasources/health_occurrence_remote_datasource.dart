@@ -209,9 +209,7 @@ Future<HealthOccurrenceModel> patchOccurrenceNotes({
     body['provider_typed_name'] = providerTypedName;
   }
   final response = await client.patch(
-    Uri.parse(
-      '$baseUrl/api/health-entries/$entryId/occurrences/$occurrenceId',
-    ),
+    Uri.parse('$baseUrl/api/health-entries/$entryId/occurrences/$occurrenceId'),
     headers: headers,
     body: json.encode(body),
   );

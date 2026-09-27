@@ -46,7 +46,10 @@ class _CareProviderFieldState extends ConsumerState<CareProviderField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(l.careProviderLabel, style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          l.careProviderLabel,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         const SizedBox(height: 8),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
@@ -70,19 +73,19 @@ class _CareProviderFieldState extends ConsumerState<CareProviderField> {
           TextField(
             controller: _typedController,
             decoration: InputDecoration(labelText: l.careProviderTypedName),
-            onChanged: (v) => widget.onChanged(contactId: null, typedName: v.trim()),
+            onChanged: (v) =>
+                widget.onChanged(contactId: null, typedName: v.trim()),
           )
         else
           contactsAsync.when(
             data: (contacts) {
               return DropdownButtonFormField<String?>(
                 value: widget.contactId,
-                decoration: InputDecoration(labelText: l.careProviderChooseContact),
+                decoration: InputDecoration(
+                  labelText: l.careProviderChooseContact,
+                ),
                 items: [
-                  DropdownMenuItem<String?>(
-                    value: null,
-                    child: Text(l.none),
-                  ),
+                  DropdownMenuItem<String?>(value: null, child: Text(l.none)),
                   ...contacts.map(
                     (c) => DropdownMenuItem<String?>(
                       value: c.id,
@@ -90,7 +93,8 @@ class _CareProviderFieldState extends ConsumerState<CareProviderField> {
                     ),
                   ),
                 ],
-                onChanged: (id) => widget.onChanged(contactId: id, typedName: null),
+                onChanged: (id) =>
+                    widget.onChanged(contactId: id, typedName: null),
               );
             },
             loading: () => const LinearProgressIndicator(),

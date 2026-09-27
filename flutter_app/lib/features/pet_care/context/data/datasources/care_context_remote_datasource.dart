@@ -192,7 +192,9 @@ class CareContextRemoteDataSource {
     return PlannedAbsenceModel.fromJson(absenceJson);
   }
 
-  Future<Map<String, String>> fetchAbsenceResolutionNotes(String absenceId) async {
+  Future<Map<String, String>> fetchAbsenceResolutionNotes(
+    String absenceId,
+  ) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/planned-absences/$absenceId/resolutions'),
       headers: _headers(),

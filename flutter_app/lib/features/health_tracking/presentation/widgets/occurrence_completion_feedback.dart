@@ -48,7 +48,12 @@ Future<void> showOccurrenceCompletionFeedback(
             key: const Key('occurrence_completion_undo'),
             onPressed: () async {
               messenger.hideCurrentSnackBar();
-              await _undoOccurrenceCompletion(context, ref, entry, occurrenceId);
+              await _undoOccurrenceCompletion(
+                context,
+                ref,
+                entry,
+                occurrenceId,
+              );
             },
             child: Text(l.snackbarUndo),
           ),
@@ -82,8 +87,8 @@ Future<void> _undoOccurrenceCompletion(
   } catch (_) {
     if (!context.mounted) return;
     final l = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l.undoCompleteFailed)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l.undoCompleteFailed)));
   }
 }

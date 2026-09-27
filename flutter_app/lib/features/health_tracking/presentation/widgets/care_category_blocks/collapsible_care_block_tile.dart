@@ -60,7 +60,9 @@ class _CollapsibleCareBlockTileState extends State<CollapsibleCareBlockTile> {
         onExpansionChanged: (open) => setState(() => _expanded = open),
         title: Text(
           widget.title,
-          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
         children: [
           Padding(

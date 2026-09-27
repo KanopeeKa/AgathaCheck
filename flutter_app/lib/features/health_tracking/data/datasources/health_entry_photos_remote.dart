@@ -17,8 +17,9 @@ Future<List<EventPhoto>> fetchHealthEntryPhotos({
   final query = occurrenceId != null && occurrenceId.isNotEmpty
       ? {'occurrence_id': occurrenceId}
       : null;
-  final uri = Uri.parse('$baseUrl/api/health-entries/$entryId/photos')
-      .replace(queryParameters: query);
+  final uri = Uri.parse(
+    '$baseUrl/api/health-entries/$entryId/photos',
+  ).replace(queryParameters: query);
   final response = await client.get(uri, headers: headers);
   checkResponse(response);
   final list = json.decode(response.body) as List<dynamic>;

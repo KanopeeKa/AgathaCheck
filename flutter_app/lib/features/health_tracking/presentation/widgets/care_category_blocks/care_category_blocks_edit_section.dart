@@ -47,10 +47,7 @@ class CareCategoryBlocksEditSection extends ConsumerWidget {
           l: l,
           block: blocks.visit ?? const VisitBlock(),
           onChanged: (v) => onBlocksChanged(
-            blocks.copyWith(
-              visit: v.isEmpty ? null : v,
-              clearVisit: v.isEmpty,
-            ),
+            blocks.copyWith(visit: v.isEmpty ? null : v, clearVisit: v.isEmpty),
           ),
         );
       case CareFamily.weightMonitoring:
@@ -151,11 +148,7 @@ class _ProductDoseEditor extends StatelessWidget {
   }) {
     return AppFormLabeledField(
       label: label,
-      child: TextFormField(
-        key: key,
-        initialValue: value,
-        onChanged: onChanged,
-      ),
+      child: TextFormField(key: key, initialValue: value, onChanged: onChanged),
     );
   }
 }
