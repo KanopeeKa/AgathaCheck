@@ -4,6 +4,7 @@
 
 import { dateToIsoDate, todayCalendarIso } from '../../calendarDate.js';
 import { resolveCompletedOn } from '../../occurrenceScheduling.js';
+import { fetchUserSnapshot } from '../../people/userSnapshot.js';
 import { advanceSeries } from './advanceSeries.js';
 import { deriveCompletionTiming } from './completionTiming.js';
 
@@ -27,6 +28,7 @@ export async function completeOccurrence(pool, {
   notes = '',
   markedAt = new Date(),
   todayIso = todayCalendarIso(),
+  performedByUserId = null,
 }) {
   const pending = await pool.query(
     `SELECT * FROM health_occurrences
@@ -39,12 +41,21 @@ export async function completeOccurrence(pool, {
   const completedOnIso = resolveCompletedOn(completedOn, todayIso);
   const scheduledDateIso = dateToIsoDate(occ.scheduled_date);
   const completionTiming = deriveCompletionTiming(scheduledDateIso, completedOnIso);
+  // Ignore caller-supplied user IDs until delegated completion policy ships (p2+).
+  const performedId = userId;
+  const markedSnapshot = await fetchUserSnapshot(pool, userId);
+  const performedSnapshot = performedId === userId
+    ? markedSnapshot
+    : await fetchUserSnapshot(pool, performedId);
 
   const result = await pool.query(
     `UPDATE health_occurrences SET status = 'completed', completed_on = $1,
       marked_at = $2, marked_by_user_id = $3, notes = $4, completion_timing = $5,
+      performed_by_user_id = $6,
+      marked_by_snapshot = $7::jsonb,
+      performed_by_snapshot = $8::jsonb,
       updated_at = NOW()
-     WHERE id = $6 AND health_entry_id = $7 AND status = 'pending'
+     WHERE id = $9 AND health_entry_id = $10 AND status = 'pending'
      RETURNING *`,
     [
       completedOnIso,
@@ -52,6 +63,9 @@ export async function completeOccurrence(pool, {
       userId,
       notes,
       completionTiming,
+      performedId,
+      markedSnapshot ? JSON.stringify(markedSnapshot) : null,
+      performedSnapshot ? JSON.stringify(performedSnapshot) : null,
       occurrenceId,
       entry.id,
     ],

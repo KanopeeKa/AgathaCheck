@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../features/experience/domain/entities/app_experience.dart';
 import '../../l10n/app_localizations.dart';
 import '../../features/experience/presentation/screens/account_screen.dart';
+import '../../features/people/presentation/screens/people_contact_form_screen.dart';
+import '../../features/people/presentation/screens/people_list_screen.dart';
 import '../../features/experience/presentation/screens/experience_chooser_screen.dart';
 import '../../features/experience/presentation/screens/experience_home_screens.dart';
 import '../../features/experience/presentation/screens/experience_resolve_screen.dart';
@@ -64,6 +66,18 @@ List<RouteBase> buildExperienceRoutes() {
           path: 'pet-tags',
           name: 'accountPetTags',
           builder: (context, state) => const ManagePetTagsScreen(),
+        ),
+        GoRoute(
+          path: 'people',
+          name: 'accountPeople',
+          builder: (context, state) => const PeopleListScreen(),
+          routes: [
+            GoRoute(
+              path: 'new',
+              name: 'accountPeopleNew',
+              builder: (context, state) => const PeopleContactFormScreen(),
+            ),
+          ],
         ),
         GoRoute(path: 'orgs/:orgId', redirect: (context, state) => '/account'),
       ],

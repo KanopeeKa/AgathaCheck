@@ -55,9 +55,30 @@ Private per-user labels. `GET /` returns `[{ id, name, pet_ids, created_at, upda
 ### Vets (`/api/vets`)
 `GET /`, `POST /`, `PUT /:id`, `DELETE /:id` — all scoped to the user.
 
-### People (`/api/people`) — planned (phase 1+)
+### People (`/api/people`)
 
-Not implemented yet. Storage foundation: migration `072_people_contacts_foundation.sql` (`people_directories`, `people_contacts`, `people_contact_roles`, `people_contact_private_notes`, `pet_contact_relationships`). Delivery plan: [delivery-plan.md](/docs/domains/people/changes/delivery-plan.md).
+Personal directory contacts (phase 1). Storage: migrations `072_*`–`074_*`. Spec: [people-care-team.md](/docs/domains/people/features/people-care-team.md).
+
+#### Contacts (`/api/people/contacts`)
+
+| Method | Path | Authorization |
+|---|---|---|
+| GET | `/contacts` | authenticated — caller's personal directory; optional `?include_inactive=true` |
+| POST | `/contacts` | authenticated — body `{ kind, name, phone?, email?, address?, website?, works_at_contact_id?, roles?, private_note? }`; `kind` ∈ {`person`,`organisation`}; `roles` ⊆ sitter, walker, vet, vet_nurse, groomer, trainer, behaviourist, boarding, emergency_contact, other |
+| GET | `/contacts/:id` | authenticated — owner of directory only |
+| PATCH | `/contacts/:id` | authenticated — partial update; `private_note` is per-caller only |
+| DELETE | `/contacts/:id` | authenticated — blocked when `legacy_vet_id` is set (delete vet instead) or pet relationship exists (`409`) |
+
+Response contact shape: `{ id, directory_id, kind, name, phone, email, address, website, works_at_contact_id, linked_user_id, inactive_at, legacy_vet_id, roles[], private_note, created_at, updated_at }`.
+
+#### Pet contact relationships (`/api/pets/:petId/people-relationships`)
+
+| Method | Path | Authorization |
+|---|---|---|
+| GET | `/api/pets/:petId/people-relationships` | `userCanManageProfile` (record owner or co-parent) |
+| PUT | `/api/pets/:petId/people-relationships` | same — replaces all relationships; body `{ relationships: [{ contact_id, relationship_kind, is_primary?, active? }] }`; `relationship_kind` ∈ primary_vet, out_of_hours_vet, emergency_contact, care_provider, other; contact must be in caller's or pet owner's personal directory |
+
+Vets API (`/api/vets`) dual-writes linked `people_contacts` rows via `legacy_vet_id` until clients migrate.
 
 ### Organizations (`/api/organizations`)
 | Method | Path | Authorization |

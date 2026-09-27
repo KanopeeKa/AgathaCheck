@@ -24,10 +24,10 @@ Land the agreed People & Care Team documentation on `main`, then implement produ
 
 ```yaml
 autonomy: active
-current_phase: p0-model
-last_completed_phase: land-docs
+current_phase: p1-contacts
+last_completed_phase: p0-model
 halt_reason: null
-next_action: "PR p0-model → main; then p1-contacts"
+next_action: "Implement contacts API + People screen + vet migration (phase 1)"
 artifact_ref:
   branch: cursor/people-docs-land-a58d
   plan_path: .agents/plans/people-care-team-a58d.md

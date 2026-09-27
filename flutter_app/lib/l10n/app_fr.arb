@@ -2493,5 +2493,20 @@
   "petTagsMatchAll": "Toutes",
   "petTagsNoMatch": "Aucun animal ne correspond à ces étiquettes",
   "petTagsAssign": "Ajouter une étiquette",
-  "petTagsCreateInSettings": "Créez des étiquettes dans les paramètres avant de les assigner ici."
+  "petTagsCreateInSettings": "Créez des étiquettes dans les paramètres avant de les assigner ici.",
+  "peoplePageTitle": "Autour de vos animaux",
+  "peopleTrustedCarersSection": "Proches & pet-sitters",
+  "peopleProfessionalsSection": "Leurs pros",
+  "peopleEmptyCarers": "Aucun proche pour l'instant.",
+  "peopleEmptyProfessionals": "Aucun professionnel pour l'instant.",
+  "peopleAddPerson": "Ajouter quelqu'un",
+  "peopleKindLabel": "Type",
+  "peopleKindPerson": "Personne",
+  "peopleKindOrganisation": "Établissement",
+  "peopleRoleSitter": "Pet-sitting",
+  "peopleRoleVet": "Vétérinaire",
+  "peopleRoleGroomer": "Toilettage",
+  "peopleNameLabel": "Nom",
+  "peopleListLoadError": "Impossible de charger les contacts. Réessayez.",
+  "accountPeopleRow": "Autour de vos animaux"
 }

@@ -11805,6 +11805,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create tags in Settings before assigning them here.'**
   String get petTagsCreateInSettings;
+
+  /// No description provided for @peoplePageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get peoplePageTitle;
+
+  /// No description provided for @peopleTrustedCarersSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Trusted carers'**
+  String get peopleTrustedCarersSection;
+
+  /// No description provided for @peopleProfessionalsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet professionals'**
+  String get peopleProfessionalsSection;
+
+  /// No description provided for @peopleEmptyCarers.
+  ///
+  /// In en, this message translates to:
+  /// **'No trusted carers yet.'**
+  String get peopleEmptyCarers;
+
+  /// No description provided for @peopleEmptyProfessionals.
+  ///
+  /// In en, this message translates to:
+  /// **'No pet professionals yet.'**
+  String get peopleEmptyProfessionals;
+
+  /// No description provided for @peopleAddPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Add person'**
+  String get peopleAddPerson;
+
+  /// No description provided for @peopleKindLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Kind'**
+  String get peopleKindLabel;
+
+  /// No description provided for @peopleKindPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Person'**
+  String get peopleKindPerson;
+
+  /// No description provided for @peopleKindOrganisation.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation'**
+  String get peopleKindOrganisation;
+
+  /// No description provided for @peopleRoleSitter.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet sitter'**
+  String get peopleRoleSitter;
+
+  /// No description provided for @peopleRoleVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet'**
+  String get peopleRoleVet;
+
+  /// No description provided for @peopleRoleGroomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Groomer'**
+  String get peopleRoleGroomer;
+
+  /// No description provided for @peopleNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get peopleNameLabel;
+
+  /// No description provided for @peopleListLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load people. Try again.'**
+  String get peopleListLoadError;
+
+  /// No description provided for @accountPeopleRow.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get accountPeopleRow;
 }
 
 class _AppLocalizationsDelegate

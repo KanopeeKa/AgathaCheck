@@ -138,6 +138,9 @@ export function occurrenceToMap(row) {
     marked_at: row.marked_at ? row.marked_at.toISOString?.() || String(row.marked_at) : null,
     marked_by_user_id: row.marked_by_user_id || null,
     marked_by_name: row.marked_by_name?.trim() || null,
+    marked_by_snapshot: row.marked_by_snapshot ?? null,
+    performed_by_user_id: row.performed_by_user_id || null,
+    performed_by_snapshot: row.performed_by_snapshot ?? null,
     notes: row.notes || '',
     completion_timing: row.completion_timing ?? null,
   };
