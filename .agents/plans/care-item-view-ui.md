@@ -12,17 +12,17 @@ Module-based Care Item detail UI (segmentation, hero Needs attention, stat sched
 
 ```yaml
 autonomy: active
-current_phase: needs-attention
-last_completed_phase: primitives
+current_phase: schedule-absence
+last_completed_phase: needs-attention
 halt_reason: null
-next_action: "continue phase needs-attention on branch cursor/care-item-view-ui-needs-attention-7796"
+next_action: "start phase schedule-absence: checkout cursor/care-item-view-ui-schedule-absence-7796"
 artifact_ref:
-  branch: cursor/care-item-view-ui-needs-attention-7796
+  branch: cursor/care-item-view-ui-integration-7796
   plan_path: .agents/plans/care-item-view-ui.md
-  plan_commit: ad1a87b302815641e8fcf3889a6b15a0f7c3ce9c
+  plan_commit: a9c1cdd2a743bb6ac7f0095f66f70b450be1a9b5
   snapshot_path: .agents/plans/care-item-view-ui.snapshot.json
-  snapshot_commit: ad1a87b302815641e8fcf3889a6b15a0f7c3ce9c
-open_prs: [true]
+  snapshot_commit: a9c1cdd2a743bb6ac7f0095f66f70b450be1a9b5
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
