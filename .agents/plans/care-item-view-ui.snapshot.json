@@ -29,7 +29,9 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "governance",
-      "status": "pending"
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "primitives",
@@ -175,5 +177,5 @@
       "status": "pending"
     }
   ],
-  "content_hash": "sha256:7b3216dc9ce0389ef0eaa685b0f3a1c0923178a21c763a224f270b3301019ba7"
+  "content_hash": "sha256:4f50231af74c9214b8ba6983d925179e19cfb4544047e13bc75516884bead151"
 }
