@@ -30,14 +30,14 @@ autonomy: active
 current_phase: integration-main
 last_completed_phase: f-categories
 halt_reason: null
-next_action: "start phase integration-main: checkout cursor/care-item-evolution-integration-7796"
+next_action: "continue phase integration-main on branch cursor/care-item-evolution-integration-7796"
 artifact_ref:
   branch: cursor/care-item-evolution-integration-7796
   plan_path: .agents/plans/care-item-evolution.md
-  plan_commit: cca991e52a2db8bf7cc0f1087c49a2049ef4d73b
+  plan_commit: 2278558a7d56343efcf9b41aa7bf5e9bde057df4
   snapshot_path: .agents/plans/care-item-evolution.snapshot.json
-  snapshot_commit: cca991e52a2db8bf7cc0f1087c49a2049ef4d73b
-open_prs: []
+  snapshot_commit: 2278558a7d56343efcf9b41aa7bf5e9bde057df4
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1359"]
 merge_commits: {"docs":"d977ebdecbe7f881a3e552122f055f265e9af755"}
 debt_issue_refs: []
 ```
