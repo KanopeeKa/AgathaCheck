@@ -12,17 +12,17 @@ Module-based Care Item detail UI (segmentation, hero Needs attention, stat sched
 
 ```yaml
 autonomy: active
-current_phase: schedule-absence
-last_completed_phase: needs-attention
+current_phase: details-history
+last_completed_phase: schedule-absence
 halt_reason: null
-next_action: "continue phase schedule-absence on branch cursor/care-item-view-ui-schedule-absence-7796"
+next_action: "start phase details-history: checkout cursor/care-item-view-ui-details-history-7796"
 artifact_ref:
-  branch: cursor/care-item-view-ui-schedule-absence-7796
+  branch: cursor/care-item-view-ui-integration-7796
   plan_path: .agents/plans/care-item-view-ui.md
-  plan_commit: 3557ac8300f0fb719c2743c825cdfa0c37fc294a
+  plan_commit: b127f2c18fcedd334636c50e1eb67421e97aff4d
   snapshot_path: .agents/plans/care-item-view-ui.snapshot.json
-  snapshot_commit: 3557ac8300f0fb719c2743c825cdfa0c37fc294a
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1372"]
+  snapshot_commit: b127f2c18fcedd334636c50e1eb67421e97aff4d
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
