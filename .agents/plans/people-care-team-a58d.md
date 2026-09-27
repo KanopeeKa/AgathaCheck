@@ -24,18 +24,18 @@ Land the agreed People & Care Team documentation on `main`, then implement produ
 
 ```yaml
 autonomy: active
-current_phase: p1-contacts
-last_completed_phase: p0-model
+current_phase: p2-absence
+last_completed_phase: p1-contacts
 halt_reason: null
-next_action: "Implement contacts API + People screen + vet migration (phase 1)"
+next_action: "continue phase p2-absence on branch cursor/people-p2-absence-a58d"
 artifact_ref:
-  branch: cursor/people-docs-land-a58d
+  branch: cursor/people-p2-absence-a58d
   plan_path: .agents/plans/people-care-team-a58d.md
-  plan_commit: pending
+  plan_commit: be53d37a094a01ad51dd1cb12e36334326b64694
   snapshot_path: .agents/plans/people-care-team-a58d.snapshot.json
-  snapshot_commit: pending
+  snapshot_commit: be53d37a094a01ad51dd1cb12e36334326b64694
 open_prs: []
-merge_commits: {}
+merge_commits: {"land-docs":"5515e1ed0f4475d0a2a6d1a4d9b2d71fb33c5bef","p0-model":"e5eb27e4e064a69963cfa630b75ebc556bac2d5a"}
 debt_issue_refs: []
 ```
 
