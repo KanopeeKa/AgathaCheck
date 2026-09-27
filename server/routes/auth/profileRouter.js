@@ -4,6 +4,7 @@ import { logAuditEventSafe } from '../../lib/audit.js';
 import { deletePostHogPerson } from '../../lib/posthogServer.js';
 import { purgeAllPetFilesForUser } from '../../lib/petDataLifecycle.js';
 import { listHouseholdDependentOwnedPets } from '../../lib/households/accountDeletionGuard.js';
+import { normalizeTimezoneInput } from '../../lib/timezone.js';
 import { revokeAllUserRefreshSessions } from '../../lib/refreshSessions.js';
 import {
   buildUserDataExport,
@@ -18,7 +19,7 @@ import {
   verifyToken,
 } from './shared.js';
 
-const PROFILE_FIELDS = ['first_name', 'last_name', 'category', 'bio', 'locale', 'photo_url'];
+const PROFILE_FIELDS = ['first_name', 'last_name', 'category', 'bio', 'locale', 'photo_url', 'timezone'];
 
 async function validatePinnedOrganizationUpdate(pool, userId, value) {
   if (value === null) {
@@ -35,6 +36,75 @@ async function validatePinnedOrganizationUpdate(pool, userId, value) {
     return { ok: false, status: 403, error: 'Not an active member of this organization' };
   }
   return { ok: true, pinnedOrganizationId: value };
+}
+
+async function applyProfileUpdate(pool, userId, body, req) {
+  const updates = [];
+  const values = [];
+  let idx = 1;
+
+  const pinValidation = await validatePinnedOrganizationUpdate(
+    pool,
+    userId,
+    body.pinned_organization_id,
+  );
+  if (!pinValidation.ok) {
+    return pinValidation;
+  }
+  if (!pinValidation.skip) {
+    updates.push(`pinned_organization_id = $${idx}`);
+    values.push(pinValidation.pinnedOrganizationId);
+    idx++;
+  }
+
+  for (const field of PROFILE_FIELDS) {
+    if (body[field] !== undefined) {
+      if (field === 'timezone') {
+        const tz = normalizeTimezoneInput(body[field]);
+        if (!tz) {
+          return { ok: false, status: 400, error: 'Invalid timezone' };
+        }
+        updates.push(`${field} = $${idx}`);
+        values.push(tz);
+        idx++;
+        continue;
+      }
+      updates.push(`${field} = $${idx}`);
+      values.push(body[field]);
+      idx++;
+    }
+  }
+  if (updates.length === 0) {
+    return { ok: false, status: 400, error: 'No fields to update' };
+  }
+  updates.push('updated_at = NOW()');
+  values.push(userId);
+
+  const result = await pool.query(
+    `UPDATE users SET ${updates.join(', ')} WHERE id = $${idx} RETURNING *`,
+    values,
+  );
+  if (result.rows.length === 0) {
+    return { ok: false, status: 404, error: 'User not found' };
+  }
+  const changedFields = updates
+    .filter((clause) => !clause.startsWith('updated_at'))
+    .map((clause) => clause.split('=')[0].trim());
+  logAuditEventSafe(pool, {
+    actorUserId: userId,
+    action: 'user.profile_updated',
+    resourceType: 'user',
+    resourceId: userId,
+    metadata: { fields: changedFields },
+    req,
+  });
+  const row = result.rows[0];
+  const effectivePin = await reconcilePinnedOrganizationId(
+    pool,
+    userId,
+    row.pinned_organization_id,
+  );
+  return { ok: true, user: userRowToMap({ ...row, pinned_organization_id: effectivePin }) };
 }
 
 export function registerProfileRoutes(router, pool, { comparePassword }) {
@@ -83,63 +153,28 @@ export function registerProfileRoutes(router, pool, { comparePassword }) {
     }
     try {
       const payload = verifyToken(token);
-      const body = req.body;
-      const updates = [];
-      const values = [];
-      let idx = 1;
+      const result = await applyProfileUpdate(pool, payload.id, req.body || {}, req);
+      if (!result.ok) {
+        return res.status(result.status).json({ error: result.error });
+      }
+      res.status(200).json(result.user);
+    } catch (err) {
+      return res.status(500).json({ error: 'Update failed', ...errorDetails(err) });
+    }
+  });
 
-      const pinValidation = await validatePinnedOrganizationUpdate(
-        pool,
-        payload.id,
-        body.pinned_organization_id,
-      );
-      if (!pinValidation.ok) {
-        return res.status(pinValidation.status).json({ error: pinValidation.error });
+  router.patch('/me', async (req, res) => {
+    const token = extractToken(req);
+    if (!token) {
+      return res.status(401).json({ error: 'Missing or invalid Authorization header' });
+    }
+    try {
+      const payload = verifyToken(token);
+      const result = await applyProfileUpdate(pool, payload.id, req.body || {}, req);
+      if (!result.ok) {
+        return res.status(result.status).json({ error: result.error });
       }
-      if (!pinValidation.skip) {
-        updates.push(`pinned_organization_id = $${idx}`);
-        values.push(pinValidation.pinnedOrganizationId);
-        idx++;
-      }
-
-      for (const field of PROFILE_FIELDS) {
-        if (body[field] !== undefined) {
-          updates.push(`${field} = $${idx}`);
-          values.push(body[field]);
-          idx++;
-        }
-      }
-      if (updates.length === 0) {
-        return res.status(400).json({ error: 'No fields to update' });
-      }
-      updates.push('updated_at = NOW()');
-      values.push(payload.id);
-
-      const result = await pool.query(
-        `UPDATE users SET ${updates.join(', ')} WHERE id = $${idx} RETURNING *`,
-        values
-      );
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      const changedFields = updates
-        .filter((clause) => !clause.startsWith('updated_at'))
-        .map((clause) => clause.split('=')[0].trim());
-      logAuditEventSafe(pool, {
-        actorUserId: payload.id,
-        action: 'user.profile_updated',
-        resourceType: 'user',
-        resourceId: payload.id,
-        metadata: { fields: changedFields },
-        req,
-      });
-      const row = result.rows[0];
-      const effectivePin = await reconcilePinnedOrganizationId(
-        pool,
-        payload.id,
-        row.pinned_organization_id,
-      );
-      res.status(200).json(userRowToMap({ ...row, pinned_organization_id: effectivePin }));
+      res.status(200).json(result.user);
     } catch (err) {
       return res.status(500).json({ error: 'Update failed', ...errorDetails(err) });
     }
