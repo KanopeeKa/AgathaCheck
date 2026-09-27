@@ -40,6 +40,14 @@ Feature: Away Planning
     Then I should see who is caring for each pet on the plan page
 
   @P2
+  @implemented
+  Scenario: Guardian assigns a contact carer on the away plan page
+    Given I am signed in as a guardian with a person contact saved
+    And I have a saved planned absence for that pet
+    When I assign the contact as carer on the away plan page
+    Then I should see the contact's name in who is caring
+
+  @P2
   Scenario: Guardian assigns a shared carer on the away plan page
     Given I am signed in as a guardian with a pet shared to a collaborator
     And I have a saved planned absence for that pet

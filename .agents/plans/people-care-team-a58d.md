@@ -24,10 +24,10 @@ Land the agreed People & Care Team documentation on `main`, then implement produ
 
 ```yaml
 autonomy: active
-current_phase: p2-absence
-last_completed_phase: p1-contacts
+current_phase: p3-households
+last_completed_phase: p2-absence
 halt_reason: null
-next_action: "continue phase p2-absence on branch cursor/people-p2-absence-a58d"
+next_action: "await orchestrator PR for p2-absence; next worker starts p3-households"
 artifact_ref:
   branch: cursor/people-p2-absence-a58d
   plan_path: .agents/plans/people-care-team-a58d.md

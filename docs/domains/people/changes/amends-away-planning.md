@@ -9,7 +9,7 @@ tags: [people, pet_care, away-planning, decisions]
 
 # People — planned amendments to Away Planning decisions
 
-**Status:** agreed on 2026-09-27. **Not in effect yet.** The frozen decisions in [away-planning-decisions.md](/docs/domains/pet_care/changes/away-planning-decisions.md) stay authoritative until the People phase named below ships. Canonical spec: [people-care-team.md](/docs/domains/people/features/people-care-team.md).
+**Status:** in effect from People phase 2 (`p2-absence`). Canonical spec: [people-care-team.md](/docs/domains/people/features/people-care-team.md).
 
 ## Summary
 

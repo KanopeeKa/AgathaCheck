@@ -11377,6 +11377,42 @@ abstract class AppLocalizations {
   /// **'No one else has shared access to this pet yet.'**
   String get awayPlanningCarerEditCandidatesEmpty;
 
+  /// No description provided for @awayPlanningCarerEditContactsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Add someone in People before assigning a carer.'**
+  String get awayPlanningCarerEditContactsEmpty;
+
+  /// No description provided for @awayPlanningHandoverContactsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency and veterinary contacts'**
+  String get awayPlanningHandoverContactsTitle;
+
+  /// No description provided for @awayPlanningHandoverContactLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{role}: {name}'**
+  String awayPlanningHandoverContactLine(String role, String name);
+
+  /// No description provided for @awayPlanningHandoverPrimaryVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary vet'**
+  String get awayPlanningHandoverPrimaryVet;
+
+  /// No description provided for @awayPlanningHandoverOutOfHoursVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Out-of-hours vet'**
+  String get awayPlanningHandoverOutOfHoursVet;
+
+  /// No description provided for @awayPlanningHandoverEmergencyContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contact'**
+  String get awayPlanningHandoverEmergencyContact;
+
   /// No description provided for @awayPlanningCarerEditNameLabel.
   ///
   /// In en, this message translates to:

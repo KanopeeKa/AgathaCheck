@@ -81,4 +81,8 @@ class CareContextRepositoryImpl implements CareContextRepository {
   @override
   Future<PlannedAbsence> cancelPlannedAbsence(String absenceId) =>
       _remote.cancelPlannedAbsence(absenceId);
+
+  @override
+  Future<List<Map<String, dynamic>>> getPetPeopleRelationships(String petId) =>
+      _remote.fetchPetPeopleRelationships(petId);
 }

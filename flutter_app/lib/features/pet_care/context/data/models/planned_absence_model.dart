@@ -9,9 +9,28 @@ class PlannedAbsenceModel {
       carerUserId: json['carer_user_id'] as String?,
       carerName: json['carer_name'] as String?,
       carerNote: json['carer_note'] as String?,
-      carerRemoved: json['carer_removed'] == true,
+      contactId: json['contact_id'] as String?,
+      carerState: _parseCarerState(json),
+      carerRemoved: json['carer_removed'] == true ||
+          json['carer_state'] == 'unavailable',
       petNote: json['pet_note'] as String?,
     );
+  }
+
+  static String _parseCarerState(Map<String, dynamic> json) {
+    final raw = json['carer_state'] as String?;
+    if (raw != null && raw.isNotEmpty) return raw;
+    if (json['carer_removed'] == true) return 'unavailable';
+    final kind = json['carer_kind'] as String?;
+    if (kind == null || kind.isEmpty) return 'unset';
+    if (kind == 'shared_user' && json['carer_user_id'] == null) {
+      return 'unavailable';
+    }
+    if (kind == 'note_only' &&
+        (json['carer_name'] as String? ?? '').trim().isEmpty) {
+      return 'unset';
+    }
+    return 'set';
   }
 
   static PlannedAbsence fromJson(Map<String, dynamic> json) {
