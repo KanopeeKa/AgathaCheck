@@ -203,4 +203,19 @@ class CareContextRemoteDataSource {
     final absenceJson = body['absence'] as Map<String, dynamic>? ?? body;
     return PlannedAbsenceModel.fromJson(absenceJson);
   }
+
+  Future<List<Map<String, dynamic>>> fetchPetPeopleRelationships(
+    String petId,
+  ) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/pets/$petId/people-relationships'),
+      headers: _headers(),
+    );
+    _check(response);
+    final decoded = json.decode(response.body);
+    if (decoded is! List) return const [];
+    return decoded
+        .map((row) => Map<String, dynamic>.from(row as Map))
+        .toList(growable: false);
+  }
 }

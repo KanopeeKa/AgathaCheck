@@ -14,6 +14,10 @@ class AwayPlanReadinessModel {
         petsWithCarer: carerJson['pets_with_carer'] as int? ?? 0,
         petsTotal: carerJson['pets_total'] as int? ?? 0,
         copyKey: carerJson['copy_key'] as String? ?? '',
+        unavailablePetIds:
+            (carerJson['unavailable_pet_ids'] as List<dynamic>? ?? const [])
+                .map((id) => id.toString())
+                .toList(growable: false),
       ),
       careCoverage: CareCoverageFact(
         policyVersion: careJson['policy_version'] as String? ?? '1',

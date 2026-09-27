@@ -80,7 +80,7 @@ class AwayPlanCopy {
     PlannedAbsencePetCarer carer,
     String petName,
   ) {
-    if (carer.carerRemoved) {
+    if (carer.isCarerUnavailable) {
       return l.awayPlanningPetCarerCoverageRemoved(petName);
     }
     if (!carer.hasCarer) {
@@ -93,7 +93,7 @@ class AwayPlanCopy {
     AppLocalizations l,
     PlannedAbsencePetCarer carer,
   ) {
-    if (carer.carerRemoved) return l.awayPlanningCarerRemoved;
+    if (carer.isCarerUnavailable) return l.awayPlanningCarerRemoved;
     if (!carer.hasCarer) return l.awayPlanningCarerUnset;
     return switch (carer.carerKind) {
       'shared_user' => l.awayPlanningCarerSharedAccess(
@@ -109,5 +109,36 @@ class AwayPlanCopy {
       }(),
       _ => l.awayPlanningCarerUnset,
     };
+  }
+
+  static List<String> handoverContactLines(
+    AppLocalizations l,
+    List<Map<String, dynamic>> relationships,
+  ) {
+    const kinds = ['primary_vet', 'out_of_hours_vet', 'emergency_contact'];
+    final lines = <String>[];
+    for (final kind in kinds) {
+      for (final row in relationships) {
+        if (row['relationship_kind'] != kind) continue;
+        if (row['active'] == false) continue;
+        final contact = row['contact'] as Map<String, dynamic>?;
+        if (contact == null) continue;
+        if (contact['inactive_at'] != null) continue;
+        final name = contact['name'] as String? ?? '';
+        if (name.isEmpty) continue;
+        final roleLabel = switch (kind) {
+          'primary_vet' => l.awayPlanningHandoverPrimaryVet,
+          'out_of_hours_vet' => l.awayPlanningHandoverOutOfHoursVet,
+          'emergency_contact' => l.awayPlanningHandoverEmergencyContact,
+          _ => kind,
+        };
+        final phone = contact['phone'] as String?;
+        final detail = phone != null && phone.isNotEmpty
+            ? '$name · $phone'
+            : name;
+        lines.add(l.awayPlanningHandoverContactLine(roleLabel, detail));
+      }
+    }
+    return lines;
   }
 }

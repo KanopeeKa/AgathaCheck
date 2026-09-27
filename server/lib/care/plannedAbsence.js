@@ -8,6 +8,10 @@ import {
   timestampToIso,
   todayCalendarIso,
 } from '../calendarDate.js';
+import {
+  CARER_STATE_UNAVAILABLE,
+  deriveCarerState,
+} from '../people/absenceCarer.js';
 
 export const PLANNED_ABSENCE_PROVENANCE_USER_DECLARED = 'user_declared';
 export const PLANNED_ABSENCE_STATUS_ACTIVE = 'active';
@@ -114,13 +118,16 @@ export async function enrichSharedUserCarerNames(pool, petRows) {
  */
 export function carerRowToMap(row) {
   const kind = row.carer_kind || null;
-  const removed = kind === CARER_KIND_SHARED_USER && !row.carer_user_id;
+  const carerState = deriveCarerState(row);
+  const removed = carerState === CARER_STATE_UNAVAILABLE;
   return {
     pet_id: row.pet_id,
     carer_kind: kind,
     carer_user_id: row.carer_user_id || null,
     carer_name: row.carer_name || null,
     carer_note: row.carer_note || null,
+    contact_id: row.contact_id || null,
+    carer_state: carerState,
     carer_removed: removed,
     pet_note: row.pet_note || null,
   };

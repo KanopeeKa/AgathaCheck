@@ -307,13 +307,15 @@ Each list item includes `overlap_warnings` **recomputed on read** (not persisted
 
 | Field | Notes |
 |---|---|
-| `pet_carers[].carer_kind` | `shared_user`, `note_only`, or `null` (unset) |
+| `pet_carers[].carer_kind` | `shared_user`, `note_only`, or `null` (unset) — derived when writing via `contact_id` |
 | `pet_carers[].carer_user_id` | Required on write for `shared_user`; must be a collaborator on that pet |
-| `pet_carers[].carer_name` / `carer_note` | `note_only` only — name + note about the person; no access implied |
-| `pet_carers[].carer_removed` | Read-only: `shared_user` with `carer_user_id` null (deleted user) |
-| `pet_carers[].pet_note` | Any `carer_kind` — free text about caring for this pet (feeding, meds, quirks); independent of carer identity (migration `071`, D-AWAY-014a) |
+| `pet_carers[].carer_name` / `carer_note` | Snapshot / private note for `note_only`; enriched for `shared_user` reads |
+| `pet_carers[].carer_state` | `unset` \| `set` \| `unavailable` (D18) |
+| `pet_carers[].contact_id` | Contact in declarer's directory; primary write key on `PATCH` (People phase 2) |
+| `pet_carers[].carer_removed` | Read-only alias: `true` when `carer_state` is `unavailable` |
+| `pet_carers[].pet_note` | Any carer — free text about caring for this pet (feeding, meds, quirks); independent of carer identity (migration `071`, D-AWAY-014a) |
 
-`PATCH /:id` accepts optional `pet_carers: [{ pet_id, carer_kind, ..., pet_note }]`. Carer writes bump `planned_absences.updated_at`. `shared_user` assignments return `403` when `carer_user_id` is not a `shared`/`guardian` collaborator on that pet. Each `pet_carers` entry writes `carer_kind`/`carer_user_id`/`carer_name`/`carer_note` only when `carer_kind` is a present key on that entry, and `pet_note` only when `pet_note` is a present key — an entry with only `pet_note` never touches the carer, and an entry with only `carer_kind` never touches `pet_note`. Send `pet_note: null` to clear it explicitly.
+`PATCH /:id` accepts optional `pet_carers: [{ pet_id, contact_id?, carer_kind?, ..., pet_note }]`. Assigning via `contact_id` resolves to `shared_user` or `note_only` storage. Legacy `carer_kind` writes still accepted and upsert a matching contact. Carer writes bump `planned_absences.updated_at`. `shared_user` / linked contacts return `403` when the user is not a collaborator on that pet. Each `pet_carers` entry writes carer columns only when `contact_id` or `carer_kind` is a present key on that entry, and `pet_note` only when `pet_note` is a present key — an entry with only `pet_note` never touches the carer, and an entry with only carer keys never touches `pet_note`. Send `pet_note: null` to clear it explicitly.
 
 **Readiness (`GET /:id/readiness`)** — AW-8
 
@@ -325,6 +327,7 @@ Server-authoritative two-fact readiness for hub, plan page, and dashboard tile (
     "state": "none_have_carers | some_have_carers | all_have_carers",
     "pets_with_carer": 0,
     "pets_total": 1,
+    "unavailable_pet_ids": [],
     "copy_key": "awayPlanningCarerCoverageNoneHaveCarers"
   },
   "care_coverage": {
@@ -343,7 +346,9 @@ Server-authoritative two-fact readiness for hub, plan page, and dashboard tile (
 
 Tile copy uses fixed actionability priority: carer gap first, else coverage sentence. See [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md).
 
-**Planned (People phase 2)** — per-pet carer fact and coverage extension ([amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md)):
+**Handover PDF (People phase 2)** — includes primary vet, out-of-hours vet, and emergency contacts from `GET /api/pets/:id/people-relationships` for pets on the plan.
+
+**Planned (People phase 2)** — per-pet carer fact and coverage extension ([amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md)) — **shipped** on branch `cursor/people-p2-absence-a58d`:
 
 | Field | Notes |
 |---|---|

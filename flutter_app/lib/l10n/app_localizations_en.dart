@@ -6396,6 +6396,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'No one else has shared access to this pet yet.';
 
   @override
+  String get awayPlanningCarerEditContactsEmpty =>
+      'Add someone in People before assigning a carer.';
+
+  @override
+  String get awayPlanningHandoverContactsTitle =>
+      'Emergency and veterinary contacts';
+
+  @override
+  String awayPlanningHandoverContactLine(String role, String name) {
+    return '$role: $name';
+  }
+
+  @override
+  String get awayPlanningHandoverPrimaryVet => 'Primary vet';
+
+  @override
+  String get awayPlanningHandoverOutOfHoursVet => 'Out-of-hours vet';
+
+  @override
+  String get awayPlanningHandoverEmergencyContact => 'Emergency contact';
+
+  @override
   String get awayPlanningCarerEditNameLabel => 'Name';
 
   @override

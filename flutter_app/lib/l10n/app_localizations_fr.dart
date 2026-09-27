@@ -6503,6 +6503,28 @@ class AppLocalizationsFr extends AppLocalizations {
       'Personne d\'autre n\'a encore d\'accès partagé à cet animal.';
 
   @override
+  String get awayPlanningCarerEditContactsEmpty =>
+      'Ajoutez quelqu\'un dans Personnes avant d\'assigner un soignant.';
+
+  @override
+  String get awayPlanningHandoverContactsTitle =>
+      'Contacts d\'urgence et vétérinaires';
+
+  @override
+  String awayPlanningHandoverContactLine(String role, String name) {
+    return '$role : $name';
+  }
+
+  @override
+  String get awayPlanningHandoverPrimaryVet => 'Vétérinaire principal';
+
+  @override
+  String get awayPlanningHandoverOutOfHoursVet => 'Vétérinaire de garde';
+
+  @override
+  String get awayPlanningHandoverEmergencyContact => 'Contact d\'urgence';
+
+  @override
   String get awayPlanningCarerEditNameLabel => 'Nom';
 
   @override

@@ -48,6 +48,7 @@ void main() {
           petId: 'pet-1',
           carerKind: 'shared_user',
           carerName: 'Sarah M.',
+          carerState: 'set',
         ),
       ),
       l.awayPlanningCarerSharedAccess('Sarah M.'),
@@ -59,6 +60,7 @@ void main() {
           petId: 'pet-2',
           carerKind: 'note_only',
           carerName: 'Tom',
+          carerState: 'set',
         ),
       ),
       l.awayPlanningCarerNoteOnly('Tom'),
@@ -71,6 +73,7 @@ void main() {
           carerKind: 'note_only',
           carerName: 'Tom',
           carerNote: 'Neighbour',
+          carerState: 'set',
         ),
       ),
       l.awayPlanningCarerNoteOnlyWithNote('Tom', 'Neighbour'),
@@ -78,7 +81,11 @@ void main() {
     expect(
       AwayPlanCopy.petCarerLabel(
         l,
-        const PlannedAbsencePetCarer(petId: 'pet-3', carerRemoved: true),
+        const PlannedAbsencePetCarer(
+          petId: 'pet-3',
+          carerState: 'unavailable',
+          carerRemoved: true,
+        ),
       ),
       l.awayPlanningCarerRemoved,
     );

@@ -16,12 +16,14 @@ class CarerCoverageFact {
     required this.petsWithCarer,
     required this.petsTotal,
     required this.copyKey,
+    this.unavailablePetIds = const [],
   });
 
   final String state;
   final int petsWithCarer;
   final int petsTotal;
   final String copyKey;
+  final List<String> unavailablePetIds;
 }
 
 class CareCoverageFact {

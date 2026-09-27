@@ -34,6 +34,7 @@ class AwayPlanHandoverDocument {
     required this.handoverNote,
     required this.petSections,
     this.handoverNoteSectionTitle,
+    this.emergencyContactLines = const [],
   });
 
   final String title;
@@ -49,6 +50,9 @@ class AwayPlanHandoverDocument {
   /// note section (D-AWAY-014a); the full document falls back to the
   /// generic "Notes" label when this is null.
   final String? handoverNoteSectionTitle;
+
+  /// Primary vet, out-of-hours vet, and emergency contacts (People phase 2).
+  final List<String> emergencyContactLines;
 }
 
 class AwayPlanHandoverService {
@@ -145,6 +149,14 @@ class AwayPlanHandoverService {
         pw.SizedBox(height: 16),
         _sectionTitle(document.handoverNoteSectionTitle ?? l.pdfNotesLabel),
         pw.Text(handoverNoteForPdf(document.handoverNote)),
+      ]);
+    }
+
+    if (document.emergencyContactLines.isNotEmpty) {
+      widgets.addAll([
+        pw.SizedBox(height: 16),
+        _sectionTitle(l.awayPlanningHandoverContactsTitle),
+        ...document.emergencyContactLines.map((line) => pw.Text(line)),
       ]);
     }
 
