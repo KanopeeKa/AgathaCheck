@@ -37,6 +37,12 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | [care-schedule-management-delivery-plan.md](/docs/domains/pet_care/changes/care-schedule-management-delivery-plan.md) | CSM-0–CSM-18 delivery plan (active) |
 | [care-schedule-management-decisions.md](/docs/domains/pet_care/changes/care-schedule-management-decisions.md) | Frozen CSM decisions |
 
+## Care Item evolution
+
+| Document | Role |
+|----------|------|
+| [care-item-evolution.md](/docs/domains/pet_care/features/care-item-evolution.md) | Functional spec (draft): Care Item View and Edit, occurrence status, completion, absence resolutions, category blocks |
+
 ## Care Context (Care Through Change)
 
 | Document | Role |
