@@ -5,7 +5,7 @@
   "approved_at": "2026-09-27T01:32:47Z",
   "approved_by": "user chat 2026-09-27: full autonomous execute-plan through care-item-evolution (spec consolidation + implementation)",
   "approved_until": "2026-09-29T01:32:47Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-item-evolution-integration-7796",
   "control_issue": 1346,
@@ -267,13 +267,13 @@
       "spawn_allowed": false,
       "merge_mode": "auto",
       "exit_checklist": "release-verification",
-      "status": "in_progress",
+      "status": "merged",
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1359",
-      "pr_head_sha": "2278558a",
+      "pr_head_sha": "3fbb238d1565ee41494701b98b060f77ffffa484",
       "debt_issue_refs": [],
       "status_reason": null,
-      "status_detail": null
+      "status_detail": "Pre-UAT green on main 02f64c37 after remedial #1361 #1362 #1364"
     }
   ],
-  "content_hash": "sha256:06dae7acf6ab29807cb632f6f3d2809dce51f4fbc7ec8737bd480a0d8c6d9d3f"
+  "content_hash": "sha256:e44847b7e8eb55b37ee63d3e023ab1443318bf17aabc1f94090b178e40e946f1"
 }
