@@ -1,0 +1,3 @@
+DROP INDEX IF EXISTS idx_health_entry_absence_resolutions_entry;
+DROP INDEX IF EXISTS idx_health_entry_absence_resolutions_absence;
+DROP TABLE IF EXISTS health_entry_absence_resolutions;

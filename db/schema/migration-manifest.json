@@ -83,7 +83,8 @@
     "074_health_occurrence_attribution.sql",
     "075_pet_home_timezone.sql",
     "076_health_occurrence_photos.sql",
-    "077_care_provider_used.sql"
+    "077_care_provider_used.sql",
+    "078_health_entry_absence_resolutions.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
