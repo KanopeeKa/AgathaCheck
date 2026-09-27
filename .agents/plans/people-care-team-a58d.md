@@ -20,6 +20,25 @@ Land the agreed People & Care Team documentation on `main`, then implement produ
 | **approved_by** | user chat 2026-09-27: execute-plan full autonomous power through phases 0–4 |
 | **control_issue** | #1343 |
 
+## Runtime
+
+```yaml
+autonomy: active
+current_phase: land-docs
+last_completed_phase: null
+halt_reason: null
+next_action: "Open PR land-docs → main; babysit-uat"
+artifact_ref:
+  branch: cursor/people-docs-land-a58d
+  plan_path: .agents/plans/people-care-team-a58d.md
+  plan_commit: pending
+  snapshot_path: .agents/plans/people-care-team-a58d.snapshot.json
+  snapshot_commit: pending
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```
+
 ## Phases
 
 ### Phase land-docs — Land spec on main
