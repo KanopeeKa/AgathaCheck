@@ -5117,6 +5117,44 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careItemDatesTitle => 'Dates';
 
   @override
+  String get careItemNeedsAttentionTitle => 'À traiter';
+
+  @override
+  String get careItemScheduleTitle => 'Planning';
+
+  @override
+  String get careItemDetailsTitle => 'Détails';
+
+  @override
+  String get careItemHistoryTitle => 'Historique';
+
+  @override
+  String get careItemEditSchedule => 'Modifier le planning';
+
+  @override
+  String get careItemMenuTooltip => 'Actions sur le soin';
+
+  @override
+  String get careItemMenuPause => 'Mettre en pause';
+
+  @override
+  String get careItemMenuResume => 'Reprendre';
+
+  @override
+  String get careItemMenuArchive => 'Archiver';
+
+  @override
+  String get careItemMenuRestore => 'Restaurer';
+
+  @override
+  String get careItemPausedStatus => 'En pause';
+
+  @override
+  String careItemPausedSince(String date) {
+    return 'En pause depuis le $date';
+  }
+
+  @override
   String careItemEstablishedBody(String petName) {
     return 'Fait partie des soins réguliers de $petName.';
   }

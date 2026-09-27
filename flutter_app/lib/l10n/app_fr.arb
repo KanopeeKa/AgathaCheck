@@ -1762,6 +1762,23 @@
   "entryNotFound": "Entrée introuvable",
   "nextOccurrence": "Prochaine échéance",
   "careItemDatesTitle": "Dates",
+  "careItemNeedsAttentionTitle": "À traiter",
+  "careItemScheduleTitle": "Planning",
+  "careItemDetailsTitle": "Détails",
+  "careItemHistoryTitle": "Historique",
+  "careItemEditSchedule": "Modifier le planning",
+  "careItemMenuTooltip": "Actions sur le soin",
+  "careItemMenuPause": "Mettre en pause",
+  "careItemMenuResume": "Reprendre",
+  "careItemMenuArchive": "Archiver",
+  "careItemMenuRestore": "Restaurer",
+  "careItemPausedStatus": "En pause",
+  "careItemPausedSince": "En pause depuis le {date}",
+  "@careItemPausedSince": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
   "careItemEstablishedBody": "Fait partie des soins réguliers de {petName}.",
   "@careItemEstablishedBody": {
     "placeholders": {

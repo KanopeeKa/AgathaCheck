@@ -18,6 +18,8 @@ import 'health_occurrence_remote_datasource.dart'
         postSkipOccurrence,
         postUndoOccurrence;
 import 'health_weight_completion_remote.dart';
+import 'health_series_lifecycle_remote.dart';
+import 'health_remote_response.dart';
 
 class EventPhoto {
   final String id;
@@ -59,6 +61,8 @@ abstract class HealthRemoteDataSource {
   Future<HealthEntryModel> undoComplete(String id);
   Future<HealthEntryModel> closeEvent(String id);
   Future<HealthEntryModel> reopenEvent(String id);
+  Future<HealthEntryModel> pauseCareItem(String id);
+  Future<HealthEntryModel> resumeCareItem(String id);
   Future<HealthEntryModel> unmarkDone(String id);
   Future<List<HealthHistoryModel>> getHistory(String entryId);
   Future<String> exportCsv({String? petId});
@@ -144,7 +148,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       '$baseUrl/api/health-entries',
     ).replace(queryParameters: params.isNotEmpty ? params : null);
     final response = await _client.get(uri, headers: _authHeaders());
-    _checkResponse(response);
+    checkHealthRemoteResponse(response);
 
     final list = json.decode(response.body) as List<dynamic>;
     return list
@@ -159,7 +163,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       headers: _authHeaders(),
     );
     if (response.statusCode == 404) return null;
-    _checkResponse(response);
+    checkHealthRemoteResponse(response);
     return HealthEntryModel.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
     );
@@ -172,7 +176,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       headers: _authHeaders(jsonBody: true),
       body: json.encode(entry.toJson()),
     );
-    _checkResponse(response);
+    checkHealthRemoteResponse(response);
     return HealthEntryModel.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
     );
@@ -185,7 +189,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       headers: _authHeaders(jsonBody: true),
       body: json.encode(entry.toJson()),
     );
-    _checkResponse(response);
+    checkHealthRemoteResponse(response);
     return HealthEntryModel.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
     );
@@ -197,7 +201,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       Uri.parse('$baseUrl/api/health-entries/$id'),
       headers: _authHeaders(),
     );
-    _checkResponse(response);
+    checkHealthRemoteResponse(response);
   }
 
   @override
@@ -215,7 +219,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       headers: _authHeaders(jsonBody: true),
       body: json.encode(body),
     );
-    _checkResponse(response);
+    checkHealthRemoteResponse(response);
     return HealthEntryModel.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
     );
@@ -228,35 +232,53 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       headers: _authHeaders(jsonBody: true),
       body: json.encode({}),
     );
-    _checkResponse(response);
+    checkHealthRemoteResponse(response);
     return HealthEntryModel.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
     );
   }
 
   @override
-  Future<HealthEntryModel> closeEvent(String id) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/health-entries/$id/close'),
+  Future<HealthEntryModel> closeEvent(String id) {
+    return closeEventRemote(
+      client: _client,
+      baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
-      body: json.encode({}),
-    );
-    _checkResponse(response);
-    return HealthEntryModel.fromJson(
-      json.decode(response.body) as Map<String, dynamic>,
+      checkResponse: checkHealthRemoteResponse,
+      entryId: id,
     );
   }
 
   @override
-  Future<HealthEntryModel> reopenEvent(String id) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/health-entries/$id/reopen'),
+  Future<HealthEntryModel> reopenEvent(String id) {
+    return reopenEventRemote(
+      client: _client,
+      baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
-      body: json.encode({}),
+      checkResponse: checkHealthRemoteResponse,
+      entryId: id,
     );
-    _checkResponse(response);
-    return HealthEntryModel.fromJson(
-      json.decode(response.body) as Map<String, dynamic>,
+  }
+
+  @override
+  Future<HealthEntryModel> pauseCareItem(String id) {
+    return pauseCareItemRemote(
+      client: _client,
+      baseUrl: baseUrl,
+      headers: _authHeaders(jsonBody: true),
+      checkResponse: checkHealthRemoteResponse,
+      entryId: id,
+    );
+  }
+
+  @override
+  Future<HealthEntryModel> resumeCareItem(String id) {
+    return resumeCareItemRemote(
+      client: _client,
+      baseUrl: baseUrl,
+      headers: _authHeaders(jsonBody: true),
+      checkResponse: checkHealthRemoteResponse,
+      entryId: id,
     );
   }
 
@@ -269,7 +291,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       Uri.parse('$baseUrl/api/health-entries/$entryId/history'),
       headers: _authHeaders(),
     );
-    _checkResponse(response);
+    checkHealthRemoteResponse(response);
     final list = json.decode(response.body) as List<dynamic>;
     return list
         .map((e) => HealthHistoryModel.fromJson(e as Map<String, dynamic>))
@@ -285,7 +307,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       '$baseUrl/api/health-entries/export',
     ).replace(queryParameters: params.isNotEmpty ? params : null);
     final response = await _client.get(uri, headers: _authHeaders());
-    _checkResponse(response);
+    checkHealthRemoteResponse(response);
     return response.body;
   }
 
@@ -295,7 +317,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       Uri.parse('$baseUrl/api/health-entries/$entryId/photos'),
       headers: _authHeaders(),
     );
-    _checkResponse(response);
+    checkHealthRemoteResponse(response);
     final list = json.decode(response.body) as List<dynamic>;
     return list
         .map((e) => EventPhoto.fromJson(e as Map<String, dynamic>))
@@ -322,7 +344,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
     }
     final streamedResponse = await _client.send(request);
     final response = await http.Response.fromStream(streamedResponse);
-    _checkResponse(response);
+    checkHealthRemoteResponse(response);
     return EventPhoto.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
     );
@@ -334,7 +356,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       Uri.parse('$baseUrl/api/health-entries/$entryId/photos/$photoId'),
       headers: _authHeaders(),
     );
-    _checkResponse(response);
+    checkHealthRemoteResponse(response);
   }
 
   @override
@@ -343,7 +365,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       client: _client,
       baseUrl: baseUrl,
       headers: _authHeaders(),
-      checkResponse: _checkResponse,
+      checkResponse: checkHealthRemoteResponse,
       entryId: entryId,
     );
   }
@@ -354,7 +376,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       client: _client,
       baseUrl: baseUrl,
       headers: _authHeaders(),
-      checkResponse: _checkResponse,
+      checkResponse: checkHealthRemoteResponse,
       entryId: entryId,
     );
   }
@@ -371,7 +393,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       client: _client,
       baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
-      checkResponse: _checkResponse,
+      checkResponse: checkHealthRemoteResponse,
       entryId: entryId,
       occurrenceId: occurrenceId,
       notes: notes,
@@ -390,7 +412,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       client: _client,
       baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
-      checkResponse: _checkResponse,
+      checkResponse: checkHealthRemoteResponse,
       entryId: entryId,
       occurrenceId: occurrenceId,
       notes: notes,
@@ -403,7 +425,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       client: _client,
       baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
-      checkResponse: _checkResponse,
+      checkResponse: checkHealthRemoteResponse,
       entryId: entryId,
     );
   }
@@ -417,7 +439,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       client: _client,
       baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
-      checkResponse: _checkResponse,
+      checkResponse: checkHealthRemoteResponse,
       entryId: entryId,
       occurrenceId: occurrenceId,
     );
@@ -434,7 +456,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       client: _client,
       baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
-      checkResponse: _checkResponse,
+      checkResponse: checkHealthRemoteResponse,
       entryId: entryId,
       occurrenceId: occurrenceId,
       scheduledDate: scheduledDate,
@@ -457,7 +479,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       client: _client,
       baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
-      checkResponse: _checkResponse,
+      checkResponse: checkHealthRemoteResponse,
       petId: petId,
       entryId: entryId,
       occurrenceId: occurrenceId,
@@ -467,19 +489,5 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       unit: unit,
       measurementSource: measurementSource,
     );
-  }
-
-  void _checkResponse(http.Response response) {
-    if (response.statusCode >= 400) {
-      final body = response.body;
-      String message;
-      try {
-        final decoded = json.decode(body) as Map<String, dynamic>;
-        message = decoded['error'] as String? ?? 'Unknown error';
-      } catch (_) {
-        message = 'HTTP ${response.statusCode}';
-      }
-      throw Exception(message);
-    }
   }
 }

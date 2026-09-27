@@ -9063,6 +9063,78 @@ abstract class AppLocalizations {
   /// **'Dates'**
   String get careItemDatesTitle;
 
+  /// No description provided for @careItemNeedsAttentionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get careItemNeedsAttentionTitle;
+
+  /// No description provided for @careItemScheduleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get careItemScheduleTitle;
+
+  /// No description provided for @careItemDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get careItemDetailsTitle;
+
+  /// No description provided for @careItemHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get careItemHistoryTitle;
+
+  /// No description provided for @careItemEditSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit schedule'**
+  String get careItemEditSchedule;
+
+  /// No description provided for @careItemMenuTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Care item actions'**
+  String get careItemMenuTooltip;
+
+  /// No description provided for @careItemMenuPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get careItemMenuPause;
+
+  /// No description provided for @careItemMenuResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get careItemMenuResume;
+
+  /// No description provided for @careItemMenuArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get careItemMenuArchive;
+
+  /// No description provided for @careItemMenuRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get careItemMenuRestore;
+
+  /// No description provided for @careItemPausedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get careItemPausedStatus;
+
+  /// No description provided for @careItemPausedSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused since {date}'**
+  String careItemPausedSince(String date);
+
   /// No description provided for @careItemEstablishedBody.
   ///
   /// In en, this message translates to:

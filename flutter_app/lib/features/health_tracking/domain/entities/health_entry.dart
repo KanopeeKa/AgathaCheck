@@ -46,6 +46,7 @@ class HealthEntry {
     this.remindDaysBefore = 1,
     this.scheduleTimes,
     this.status = 'active',
+    this.pausedSince,
     this.careFamily,
     this.careSetting,
     this.carePlanning,
@@ -113,8 +114,11 @@ class HealthEntry {
   /// Ordered local wall-clock times (`HH:mm`). Null or empty = all-day doses.
   final List<String>? scheduleTimes;
 
-  /// Series lifecycle from API: `active` or `completed`.
+  /// Series lifecycle from API: `active`, `paused`, or `completed`.
   final String status;
+
+  /// Calendar day pause started when [status] is `paused`.
+  final DateTime? pausedSince;
 
   /// Semantic care family (optional until backfilled).
   final CareFamily? careFamily;
@@ -139,6 +143,8 @@ class HealthEntry {
 
   /// When this entry was last updated.
   final DateTime? updatedAt;
+
+  bool get isPaused => status == 'paused';
 
   /// Whether a one-time entry has been completed.
   bool get isCompleted {
@@ -206,6 +212,8 @@ class HealthEntry {
     List<String>? scheduleTimes,
     bool clearScheduleTimes = false,
     String? status,
+    DateTime? pausedSince,
+    bool clearPausedSince = false,
     CareFamily? careFamily,
     bool clearCareFamily = false,
     CareSetting? careSetting,
@@ -249,6 +257,9 @@ class HealthEntry {
           ? null
           : (scheduleTimes ?? this.scheduleTimes),
       status: status ?? this.status,
+      pausedSince: clearPausedSince
+          ? null
+          : (pausedSince ?? this.pausedSince),
       careFamily: clearCareFamily ? null : (careFamily ?? this.careFamily),
       careSetting: clearCareSetting ? null : (careSetting ?? this.careSetting),
       carePlanning: clearCarePlanning

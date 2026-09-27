@@ -5038,6 +5038,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careItemDatesTitle => 'Dates';
 
   @override
+  String get careItemNeedsAttentionTitle => 'Needs attention';
+
+  @override
+  String get careItemScheduleTitle => 'Schedule';
+
+  @override
+  String get careItemDetailsTitle => 'Details';
+
+  @override
+  String get careItemHistoryTitle => 'History';
+
+  @override
+  String get careItemEditSchedule => 'Edit schedule';
+
+  @override
+  String get careItemMenuTooltip => 'Care item actions';
+
+  @override
+  String get careItemMenuPause => 'Pause';
+
+  @override
+  String get careItemMenuResume => 'Resume';
+
+  @override
+  String get careItemMenuArchive => 'Archive';
+
+  @override
+  String get careItemMenuRestore => 'Restore';
+
+  @override
+  String get careItemPausedStatus => 'Paused';
+
+  @override
+  String careItemPausedSince(String date) {
+    return 'Paused since $date';
+  }
+
+  @override
   String careItemEstablishedBody(String petName) {
     return 'Part of $petName\'s regular care.';
   }
