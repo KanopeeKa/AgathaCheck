@@ -45,6 +45,8 @@ Validate with `node scripts/validate_openapi.js`; Jest contract tests in
 ### Pets (`/api/pets`)
 `GET /`, `GET /all`, `GET /:id` (UUID-validated), `POST /`, `PUT /:id`, `DELETE /:id`.
 
+Pet responses include `homeTimezone` / `home_timezone` (IANA, default `UTC`). `POST /` defaults from `homeTimezone` body, else `X-Client-Timezone` header, else `UTC`. `PUT /:id` accepts `homeTimezone` to update.
+
 `POST /:petId/tags` body `{ tag_id }` — assign current user's tag to an accessible pet.  
 `DELETE /:petId/tags/:tagId` — unassign.
 

@@ -103,7 +103,7 @@ export function isWithinMaterialisationWindow(targetDateIso, todayIso) {
 }
 
 /**
- * Missed predicate for API (server calendar day; clients may refine with local TZ).
+ * Missed predicate for API (pet home timezone "today" when wired via listOpenOccurrences).
  *
  * @param {string} scheduledDateIso YYYY-MM-DD
  * @param {string|null} scheduledTime HH:MM or null (all-day)

@@ -36,6 +36,7 @@ class PetModel {
     this.weightReferenceValue,
     this.weightReferenceAuthority,
     this.weightManagementContext = 'none',
+    this.homeTimezone = 'UTC',
   });
 
   static DateTime? _parseTimestamp(dynamic raw) {
@@ -84,6 +85,8 @@ class PetModel {
       weightReferenceAuthority: json['weight_reference_authority'] as String?,
       weightManagementContext:
           (json['weight_management_context'] as String?) ?? 'none',
+      homeTimezone:
+          (json['homeTimezone'] ?? json['home_timezone'])?.toString() ?? 'UTC',
     );
   }
 
@@ -118,6 +121,7 @@ class PetModel {
       weightReferenceValue: pet.weightReferenceValue,
       weightReferenceAuthority: pet.weightReferenceAuthority,
       weightManagementContext: pet.weightManagementContext,
+      homeTimezone: pet.homeTimezone,
     );
   }
 
@@ -154,6 +158,7 @@ class PetModel {
   final double? weightReferenceValue;
   final String? weightReferenceAuthority;
   final String weightManagementContext;
+  final String homeTimezone;
 
   Map<String, dynamic> toJson({bool includeWeightEntryDate = false}) {
     return {
@@ -179,6 +184,7 @@ class PetModel {
       'weight_reference_value': weightReferenceValue,
       'weight_reference_authority': weightReferenceAuthority,
       'weight_management_context': weightManagementContext,
+      'homeTimezone': homeTimezone,
       if (includeWeightEntryDate && weight != null)
         'weightEntryDate': toCalendarDateString(
           calendarDateOnly(DateTime.now()),
@@ -219,6 +225,7 @@ class PetModel {
       weightReferenceValue: weightReferenceValue,
       weightReferenceAuthority: weightReferenceAuthority,
       weightManagementContext: weightManagementContext,
+      homeTimezone: homeTimezone,
     );
   }
 }

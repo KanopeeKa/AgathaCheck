@@ -64,6 +64,7 @@ Four principles:
 | D-CIE-020 | Historical facts don't change when defaults change | Agreed | Occurrences keep the provider, dose and people recorded at the time |
 | D-CIE-021 | Reminder delivery is a separate track | Agreed | It can start early and doesn't block the redesign |
 | D-CIE-022 | Out of scope: cost, vaccination courses, stock and refills | Agreed | See Out of scope |
+| D-CIE-023 | Pet **home timezone** on `pets.home_timezone` (IANA) | Agreed | Default at create: owner account TZ when People P4 exists, else `X-Client-Timezone` once, else `UTC`. Editable on pet profile. Care "today" and timed Overdue use this zone. **Absence guest access** keeps People **D24** (creator account TZ on the absence) — two fields, two jobs. Fallback chain: pet → owner account TZ → `UTC` |
 
 ## Where we start
 
@@ -136,7 +137,7 @@ Each arrow points from a concept to the one it refers to. Recording an absence c
 - **List surfaces (profile, All Actions, All care):** when several open slots exist on one item, the row subtitle states the **worst** open slot (e.g. "Overdue · 08:00" or "Due · 18:00"), consistent with Needs attention's leading occurrence rule.
 - **Not a safety statement (D-CIE-004).** Due and Overdue describe the schedule and what has been logged. They never say whether a late dose is safe. A future completion window, set by the pet parent or their vet, could replace these defaults for one item.
 - **Reminders don't change status (D-CIE-007).**
-- **Timezone (D-CIE-005):** every "today", status change, reminder and absence boundary uses the pet's home timezone, not the device's. When the device is somewhere else, times show the zone: "18:00 · Paris time". How the home timezone is set and stored is an implementation decision. It also answers the People spec's open timezone question (see Still open).
+- **Timezone (D-CIE-005, D-CIE-023):** every "today", status change, reminder and absence boundary uses the pet's home timezone (`pets.home_timezone`), not the device's. When the device is somewhere else, times show the zone: "18:00 · Paris time". Absence guest access windows stay on the creator account timezone (People D24), separate from pet home.
 
 ## Care item view
 
@@ -502,7 +503,6 @@ Two streams run in parallel, then join.
 - [ ] **2. A shortcut on the away plan.** A single, confirmed action: "Jamie handles the rest as scheduled". It would record Keep the date · Jamie for every **affected** item not yet reviewed for that pet (never auto-move).
 - [ ] **3. No upcoming absence.** Hide the Absence section (*proposed* in mockups), or show one quiet line?
 - [ ] **4. The "Where" label.** Keep "Where" (*proposed*), or rename to "Care setting"?
-- [ ] **5. The pet's home timezone.** Where it is set (pet or household, defaulting from the owner's device). Confirm it also settles the People spec's timezone question for absence access. **Blocks Phase A1**, not A0.
 
 ## Related
 
