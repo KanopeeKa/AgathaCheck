@@ -18,6 +18,10 @@ export function isPlannedCareRowVisibleOnAwayPlan(row, context) {
     return row.in_window != null;
   }
 
+  if (row.in_window != null) {
+    return true;
+  }
+
   if (!isCareItemAffectedByAbsence(row)) {
     return false;
   }
