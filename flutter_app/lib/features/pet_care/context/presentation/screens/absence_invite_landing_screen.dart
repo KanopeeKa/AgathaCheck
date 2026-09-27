@@ -41,7 +41,9 @@ class _AbsenceInviteLandingScreenState
   Future<void> _loadPreview() async {
     try {
       final ds = await _dataSource();
-      final preview = await ds.fetchAbsenceCarerInvitePreview(widget.inviteCode);
+      final preview = await ds.fetchAbsenceCarerInvitePreview(
+        widget.inviteCode,
+      );
       if (!mounted) return;
       setState(() {
         _preview = preview;
@@ -59,7 +61,9 @@ class _AbsenceInviteLandingScreenState
   Future<void> _accept() async {
     if (ref.read(authProvider).accessToken == null) {
       if (!mounted) return;
-      context.push('/login?redirect=${Uri.encodeComponent('/absence-invite/${widget.inviteCode}')}');
+      context.push(
+        '/login?redirect=${Uri.encodeComponent('/absence-invite/${widget.inviteCode}')}',
+      );
       return;
     }
     setState(() => _accepting = true);

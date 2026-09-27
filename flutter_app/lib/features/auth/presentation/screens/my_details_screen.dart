@@ -164,7 +164,8 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                   theme: theme,
                   l10n: l10n,
                   currentLocale: currentLocale,
-                  currentTimezone: ref.watch(authProvider).user?.timezone ?? 'UTC',
+                  currentTimezone:
+                      ref.watch(authProvider).user?.timezone ?? 'UTC',
                   onSubscription: () => context.push('/subscription'),
                   onOrganizations: () => context.push('/organizations'),
                   onLocaleChanged: (value) {
@@ -174,7 +175,9 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                         .updateProfile(locale: value);
                   },
                   onTimezoneChanged: (value) {
-                    ref.read(authProvider.notifier).updateProfile(timezone: value);
+                    ref
+                        .read(authProvider.notifier)
+                        .updateProfile(timezone: value);
                   },
                 ),
                 const SizedBox(height: 16),

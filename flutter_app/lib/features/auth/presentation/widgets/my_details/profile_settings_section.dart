@@ -82,9 +82,7 @@ class ProfileSettingsSection extends StatelessWidget {
                   : 'UTC',
               underline: const SizedBox.shrink(),
               items: _timezoneOptions
-                  .map(
-                    (tz) => DropdownMenuItem(value: tz, child: Text(tz)),
-                  )
+                  .map((tz) => DropdownMenuItem(value: tz, child: Text(tz)))
                   .toList(growable: false),
               onChanged: (value) {
                 if (value != null) onTimezoneChanged(value);
