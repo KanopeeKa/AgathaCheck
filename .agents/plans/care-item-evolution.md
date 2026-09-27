@@ -23,6 +23,24 @@ Make [care-item-evolution.md](../../docs/domains/pet_care/features/care-item-evo
 | **approved_by** | user chat 2026-09-27: execute-plan full autonomous through care-item-evolution programme |
 | **control_issue** | #1346 |
 
+## Runtime
+
+```yaml
+autonomy: active
+current_phase: a0-rules
+last_completed_phase: docs
+halt_reason: null
+next_action: "Implement Overdue vocabulary on cursor/care-item-evolution-a0-rules-7796"
+artifact_ref:
+  branch: cursor/care-item-evolution-integration-7796
+  plan_path: .agents/plans/care-item-evolution.md
+  snapshot_path: .agents/plans/care-item-evolution.snapshot.json
+open_prs: []
+merge_commits:
+  docs: d977ebdecbe7f881a3e552122f055f265e9af755
+debt_issue_refs: []
+```
+
 ## Phases (summary)
 
 | id | title | branch | Depends |

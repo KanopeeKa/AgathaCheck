@@ -33,12 +33,12 @@
       "spawn_allowed": false,
       "merge_mode": "auto",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "PR targets main; integration branch carries spec merge until docs land.",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": "Merged to main via PR #1347",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1347",
+      "pr_head_sha": "d977ebdecbe7f881a3e552122f055f265e9af755",
+      "merge_commit": "d977ebdecbe7f881a3e552122f055f265e9af755",
       "debt_issue_refs": []
     },
     {
@@ -267,5 +267,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:a6d70470e1c97cd1cf8cc369e7c7bb5f8bb3c23fbdf78590574f6aa872838332"
+  "content_hash": "sha256:d2548d93dc7ac2e06406f64e044d2e1b67416032bd13c39be6a5ce8d33dc3eb1"
 }
