@@ -34,10 +34,10 @@ next_action: "continue phase a1-timezone on branch cursor/care-item-evolution-a1
 artifact_ref:
   branch: cursor/care-item-evolution-a1-timezone-7796
   plan_path: .agents/plans/care-item-evolution.md
-  plan_commit: 9f75db75bce6e5c6eaae7436be5f40e3f94535f0
+  plan_commit: 4dfebce86dc682c1d76befd27eef62af4d15ec77
   snapshot_path: .agents/plans/care-item-evolution.snapshot.json
-  snapshot_commit: 9f75db75bce6e5c6eaae7436be5f40e3f94535f0
-open_prs: []
+  snapshot_commit: 4dfebce86dc682c1d76befd27eef62af4d15ec77
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1350"]
 merge_commits: {"docs":"d977ebdecbe7f881a3e552122f055f265e9af755"}
 debt_issue_refs: []
 ```
