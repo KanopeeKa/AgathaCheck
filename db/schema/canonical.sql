@@ -736,6 +736,7 @@ CREATE TABLE public.planned_absence_pets (
     carer_name text,
     carer_note text,
     pet_note text,
+    contact_id uuid,
     CONSTRAINT planned_absence_pets_carer_fields_check CHECK ((((carer_kind IS NULL) AND (carer_user_id IS NULL) AND (carer_name IS NULL) AND (carer_note IS NULL)) OR ((carer_kind = 'shared_user'::text) AND (carer_name IS NULL) AND (carer_note IS NULL)) OR ((carer_kind = 'note_only'::text) AND (carer_user_id IS NULL) AND (carer_name IS NOT NULL)))),
     CONSTRAINT planned_absence_pets_carer_kind_check CHECK (((carer_kind IS NULL) OR (carer_kind = ANY (ARRAY['shared_user'::text, 'note_only'::text]))))
 );
@@ -1074,6 +1075,7 @@ CREATE INDEX idx_pet_share_links_pet_id ON public.pet_share_links USING btree (p
 CREATE INDEX idx_pet_tag_assignments_pet_id ON public.pet_tag_assignments USING btree (pet_id);
 CREATE UNIQUE INDEX idx_pet_tags_user_name_lower ON public.pet_tags USING btree (user_id, lower((name)::text));
 CREATE INDEX idx_pet_timeline_entries_pet_id ON public.pet_timeline_entries USING btree (pet_id, start_date);
+CREATE INDEX idx_planned_absence_pets_contact_id ON public.planned_absence_pets USING btree (contact_id) WHERE (contact_id IS NOT NULL);
 CREATE INDEX idx_planned_absence_pets_pet ON public.planned_absence_pets USING btree (pet_id);
 CREATE INDEX idx_planned_absences_user_starts ON public.planned_absences USING btree (user_id, starts_on);
 CREATE INDEX idx_prospects_email_lower ON public.prospects USING btree (lower((email)::text)) WHERE (email IS NOT NULL);
@@ -1347,6 +1349,8 @@ ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_vet_id_fkey FOREIGN KEY (vet_id) REFERENCES public.vets(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.planned_absence_pets
     ADD CONSTRAINT planned_absence_pets_carer_user_id_fkey FOREIGN KEY (carer_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.planned_absence_pets
+    ADD CONSTRAINT planned_absence_pets_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.people_contacts(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.planned_absence_pets
     ADD CONSTRAINT planned_absence_pets_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.planned_absence_pets

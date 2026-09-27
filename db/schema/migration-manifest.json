@@ -80,7 +80,8 @@
     "071_planned_absence_pet_note.sql",
     "072_people_contacts_foundation.sql",
     "073_people_vet_backfill.sql",
-    "074_health_occurrence_attribution.sql"
+    "074_health_occurrence_attribution.sql",
+    "075_planned_absence_contact_carers.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
@@ -95,6 +96,7 @@
     "049_pinned_organization_id.sql",
     "050_private_health_files.sql",
     "051_share_link_expiry.sql",
-    "073_people_vet_backfill.sql"
+    "073_people_vet_backfill.sql",
+    "075_planned_absence_contact_carers.sql"
   ]
 }

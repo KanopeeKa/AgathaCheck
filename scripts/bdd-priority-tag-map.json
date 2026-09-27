@@ -23,7 +23,8 @@
     "Guardian can save a planned absence from the wizard": "P0",
     "Away planning hub lists a saved upcoming absence": "P1",
     "Away plan page shows who is caring for each pet": "P1",
-    "Guardian assigns a shared carer on the away plan page": "P2"
+    "Guardian assigns a shared carer on the away plan page": "P2",
+    "Guardian assigns a contact carer on the away plan page": "P2"
   },
   "away_plan_detail_v2.feature": {
     "Away plan page hides coverage headers when carers and care are reassured": "P1",
