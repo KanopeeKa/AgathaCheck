@@ -136,7 +136,8 @@ describe('Pets API', () => {
         .get(`/api/pets/${petId}/access`)
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
-      expect(Array.isArray(res.body)).toBe(true);
+      expect(Array.isArray(res.body.access)).toBe(true);
+      expect(Array.isArray(res.body.household_access)).toBe(true);
     });
 
     it('PUT /:id/access/:userId/role updates carer/co_parent role', async () => {
