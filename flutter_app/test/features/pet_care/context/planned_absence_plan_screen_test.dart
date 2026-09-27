@@ -27,6 +27,7 @@ void main() {
         petId: 'pet-1',
         carerKind: 'note_only',
         carerName: 'Tom',
+        carerState: 'set',
       ),
     ],
   );
@@ -104,6 +105,7 @@ void main() {
         petId: 'pet-1',
         carerKind: 'note_only',
         carerName: 'Tom',
+        carerState: 'set',
       ),
     ],
   );
