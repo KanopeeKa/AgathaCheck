@@ -16,7 +16,7 @@ export async function ensurePersonalDirectory(pool, userId) {
   const inserted = await pool.query(
     `INSERT INTO people_directories (id, owner_user_id, created_at, updated_at)
      VALUES ($1, $2, NOW(), NOW())
-     ON CONFLICT (owner_user_id) DO UPDATE
+     ON CONFLICT (owner_user_id) WHERE (owner_user_id IS NOT NULL) DO UPDATE
        SET updated_at = people_directories.updated_at
      RETURNING id`,
     [id, userId],
