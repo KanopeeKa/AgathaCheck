@@ -19,10 +19,10 @@ next_action: "continue phase schedule-absence on branch cursor/care-item-view-ui
 artifact_ref:
   branch: cursor/care-item-view-ui-schedule-absence-7796
   plan_path: .agents/plans/care-item-view-ui.md
-  plan_commit: b635c910ff39b51383a451e13ed1b346df9cf8b1
+  plan_commit: 3557ac8300f0fb719c2743c825cdfa0c37fc294a
   snapshot_path: .agents/plans/care-item-view-ui.snapshot.json
-  snapshot_commit: b635c910ff39b51383a451e13ed1b346df9cf8b1
-open_prs: []
+  snapshot_commit: 3557ac8300f0fb719c2743c825cdfa0c37fc294a
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1372"]
 merge_commits: {}
 debt_issue_refs: []
 ```
