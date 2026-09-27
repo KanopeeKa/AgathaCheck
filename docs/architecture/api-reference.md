@@ -142,6 +142,10 @@ Vets API (`/api/vets`) dual-writes linked `people_contacts` rows via `legacy_vet
 
 CRUD: `GET /` (optional `?pet_id=`), `GET /export` (CSV), `GET /:id`, `POST /` (verifies pet ownership), `PUT /:id`, `DELETE /:id`, `GET|POST /:id/photos`, `DELETE /:entryId/photos/:photoId`. `POST /:id/photos` accepts one multipart `photo` document: JPG/JPEG, PNG, or PDF, up to 2 MB.
 
+**Absence context (`GET /:id/absence-context`)** — Care Item evolution phase E
+
+Returns upcoming active absences for the entry's pet with per-absence `affected`, derived `ui_state` (`nothing_due` \| `not_reviewed` \| `resolved` \| `needs_review`), optional `resolution`, `suggested_looked_after_by` (from `planned_absence_pets` carer), and enriched `planned_care` row when present. Requires manage-care access on the pet.
+
 **Care Schedule Management (CSM)** — canonical behaviour: [care-schedule-management.md](../domains/pet_care/features/care-schedule-management.md). Calendar dates on the wire: `YYYY-MM-DD` ([calendar-dates.md](calendar-dates.md)).
 
 #### Occurrence APIs (shipped — CSM-5–7)
@@ -344,6 +348,15 @@ Server-authoritative two-fact readiness for hub, plan page, and dashboard tile (
 ```
 
 Tile copy uses fixed actionability priority: carer gap first, else coverage sentence. See [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md).
+
+**Absence resolutions (`GET|PATCH /:id/resolutions`)** — Care Item evolution phase E (D-CIE-012/013)
+
+Declarer-scoped; same auth as `GET /:id`. Stores per–care-item decisions for one absence (`health_entry_absence_resolutions`).
+
+- **GET** — `{ resolutions: [{ id, health_entry_id, planned_absence_id, decision, looked_after_by, absence_note, dates_decided_for }] }`
+- **PATCH** — upsert one or more rows: `{ resolutions: [{ health_entry_id, decision, looked_after_by?, absence_note? }] }` or a single object with `health_entry_id`. `decision` is `keep_date` \| `move_before` \| `move_after` \| `nothing_needed`. `looked_after_by` mirrors `pet_carers` carer shape (`shared_user` \| `note_only`). `dates_decided_for` is set server-side from the current in-window pending dates when saved.
+
+Resolved affected items are excluded from away-plan `care_coverage.has_items_to_review` (readiness uses absence id when deriving coverage).
 
 **Planned (People phase 2)** — per-pet carer fact and coverage extension ([amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md)):
 

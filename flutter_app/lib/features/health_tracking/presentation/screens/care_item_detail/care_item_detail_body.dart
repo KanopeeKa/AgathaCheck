@@ -16,7 +16,9 @@ import '../../widgets/pet_event_pet_card.dart';
 import 'care_item_dates_section.dart';
 import 'care_item_established_section.dart';
 import 'care_item_info_section.dart';
+import 'care_item_absence_section.dart';
 import 'care_item_schedule_section.dart';
+import '../../providers/care_item_absence_providers.dart';
 
 /// Care Item detail body — spec order: header card, needs attention, schedule, details, history.
 class CareItemDetailBody extends ConsumerWidget {
@@ -44,6 +46,20 @@ class CareItemDetailBody extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final muted = isClosed;
     final showNeedsAttention = !isClosed && !entry.isCompleted;
+    final absenceContext = ref.watch(careItemAbsenceContextProvider(entry.id));
+    final absenceBeforeSchedule = absenceContext.maybeWhen(
+      data: (model) => model.absences.any((slice) => slice.needsAttention),
+      orElse: () => false,
+    );
+    final absenceSection = CareItemAbsenceSection(
+      entryId: entry.id,
+      muted: muted,
+    );
+    final scheduleSection = CareItemScheduleSection(
+      entry: entry,
+      petId: petId,
+      muted: muted,
+    );
 
     return SingleChildScrollView(
       key: const Key('care_item_detail_body'),
@@ -58,11 +74,15 @@ class CareItemDetailBody extends ConsumerWidget {
           else
             _ClosedNeedsAttentionSummary(history: history, muted: muted),
           const SizedBox(height: 16),
-          CareItemScheduleSection(
-            entry: entry,
-            petId: petId,
-            muted: muted,
-          ),
+          if (absenceBeforeSchedule) ...[
+            absenceSection,
+            const SizedBox(height: 16),
+            scheduleSection,
+          ] else ...[
+            scheduleSection,
+            const SizedBox(height: 16),
+            absenceSection,
+          ],
           const SizedBox(height: 16),
           Semantics(
             header: true,

@@ -9075,6 +9075,54 @@ abstract class AppLocalizations {
   /// **'Schedule'**
   String get careItemScheduleTitle;
 
+  /// No description provided for @careItemAbsenceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Absence'**
+  String get careItemAbsenceTitle;
+
+  /// No description provided for @careItemAbsenceNothingDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Away {dateRange} · nothing due while you\'re away'**
+  String careItemAbsenceNothingDue(String dateRange);
+
+  /// No description provided for @careItemAbsenceNotReviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not reviewed yet'**
+  String get careItemAbsenceNotReviewed;
+
+  /// No description provided for @careItemAbsenceNeedsReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs review'**
+  String get careItemAbsenceNeedsReview;
+
+  /// No description provided for @careItemAbsenceResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan recorded for this trip'**
+  String get careItemAbsenceResolved;
+
+  /// No description provided for @careItemAbsenceKeepDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the date'**
+  String get careItemAbsenceKeepDate;
+
+  /// No description provided for @careItemAbsenceNothingNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing needed'**
+  String get careItemAbsenceNothingNeeded;
+
+  /// No description provided for @careItemAbsenceSaveResolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get careItemAbsenceSaveResolution;
+
   /// No description provided for @careItemDetailsTitle.
   ///
   /// In en, this message translates to:

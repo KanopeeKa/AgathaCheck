@@ -40,6 +40,9 @@ class AwayPlanHandoverController {
     final petSections = <AwayPlanHandoverPetSection>[];
     var carerCoverageSummary = '';
     var careCoverageSummary = '';
+    final resolutionNotesByEntryId = await repository.getAbsenceResolutionNotes(
+      absence.id,
+    );
 
     for (final petId in targetPetIds) {
       final coverage = await repository.getCarePeriodCoverage(
@@ -67,9 +70,15 @@ class AwayPlanHandoverController {
           petName: petName,
           carerLabel: AwayPlanCopy.petCarerLabel(l, carer),
           plannedCareLines: coverage.plannedCareItems
-              .map(
-                (item) => AwayPlanScheduleCopy.plannedCareHandoverLine(l, item),
-              )
+              .map((item) {
+                final line = AwayPlanScheduleCopy.plannedCareHandoverLine(
+                  l,
+                  item,
+                );
+                final note = resolutionNotesByEntryId[item.healthEntryId];
+                if (note == null || note.isEmpty) return line;
+                return '$line — $note';
+              })
               .toList(growable: false),
           petNote: carer.petNote,
         ),

@@ -1764,6 +1764,19 @@
   "careItemDatesTitle": "Dates",
   "careItemNeedsAttentionTitle": "À traiter",
   "careItemScheduleTitle": "Planning",
+  "careItemAbsenceTitle": "Absence",
+  "careItemAbsenceNothingDue": "Absent {dateRange} · rien de prévu pendant votre absence",
+  "@careItemAbsenceNothingDue": {
+    "placeholders": {
+      "dateRange": { "type": "String" }
+    }
+  },
+  "careItemAbsenceNotReviewed": "Pas encore vu",
+  "careItemAbsenceNeedsReview": "À revoir",
+  "careItemAbsenceResolved": "Décision enregistrée pour ce voyage",
+  "careItemAbsenceKeepDate": "Garder la date",
+  "careItemAbsenceNothingNeeded": "Rien à faire",
+  "careItemAbsenceSaveResolution": "Enregistrer",
   "careItemDetailsTitle": "Détails",
   "careItemHistoryTitle": "Historique",
   "careItemEditSchedule": "Modifier le planning",

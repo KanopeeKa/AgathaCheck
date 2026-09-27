@@ -43,4 +43,6 @@ abstract class CareContextRepository {
   /// `POST /api/planned-absences/:id/cancel` endpoint. There is no hard
   /// delete — this is what the edit screen's "Delete" action calls.
   Future<PlannedAbsence> cancelPlannedAbsence(String absenceId);
+
+  Future<Map<String, String>> getAbsenceResolutionNotes(String absenceId);
 }

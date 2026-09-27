@@ -81,4 +81,8 @@ class CareContextRepositoryImpl implements CareContextRepository {
   @override
   Future<PlannedAbsence> cancelPlannedAbsence(String absenceId) =>
       _remote.cancelPlannedAbsence(absenceId);
+
+  @override
+  Future<Map<String, String>> getAbsenceResolutionNotes(String absenceId) =>
+      _remote.fetchAbsenceResolutionNotes(absenceId);
 }
