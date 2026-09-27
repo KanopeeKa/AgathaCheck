@@ -189,3 +189,25 @@ Future<HealthOccurrenceModel> postUndoOccurrence({
     json.decode(response.body) as Map<String, dynamic>,
   );
 }
+
+Future<HealthOccurrenceModel> patchOccurrenceNotes({
+  required http.Client client,
+  required String baseUrl,
+  required Map<String, String> headers,
+  required void Function(http.Response response) checkResponse,
+  required String entryId,
+  required String occurrenceId,
+  required String notes,
+}) async {
+  final response = await client.patch(
+    Uri.parse(
+      '$baseUrl/api/health-entries/$entryId/occurrences/$occurrenceId',
+    ),
+    headers: headers,
+    body: json.encode({'notes': notes}),
+  );
+  checkResponse(response);
+  return HealthOccurrenceModel.fromJson(
+    json.decode(response.body) as Map<String, dynamic>,
+  );
+}

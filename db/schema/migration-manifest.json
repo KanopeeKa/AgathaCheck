@@ -78,7 +78,8 @@
     "069_care_classification_columns.sql",
     "070_cim_drop_suggested_health_entry_type.sql",
     "071_planned_absence_pet_note.sql",
-    "072_pet_home_timezone.sql"
+    "072_pet_home_timezone.sql",
+    "073_health_occurrence_photos.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

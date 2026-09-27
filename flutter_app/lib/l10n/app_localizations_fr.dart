@@ -6264,6 +6264,33 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de marquer ce soin comme terminé. Réessayez.';
 
   @override
+  String get careWhenWasThisDoneTitle => 'Quand cela a-t-il été fait ?';
+
+  @override
+  String get careCompletedToday => 'Aujourd\'hui';
+
+  @override
+  String careCompletedOnScheduledDate(String date) {
+    return 'À la date prévue ($date)';
+  }
+
+  @override
+  String get careChooseCompletionDate => 'Choisir une autre date';
+
+  @override
+  String get careAddDetails => 'Ajouter des détails';
+
+  @override
+  String get careAddDetailsTitle => 'Ajouter des détails';
+
+  @override
+  String get careDetailsSaved => 'Détails enregistrés';
+
+  @override
+  String get careDetailsSaveFailed =>
+      'Impossible d\'enregistrer les détails. Réessayez.';
+
+  @override
   String get undoCompleteFailed =>
       'Impossible d\'annuler la complétion. Réessayez.';
 

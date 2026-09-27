@@ -2204,6 +2204,19 @@
     }
   },
   "careCompletionFailed": "Impossible de marquer ce soin comme terminé. Réessayez.",
+  "careWhenWasThisDoneTitle": "Quand cela a-t-il été fait ?",
+  "careCompletedToday": "Aujourd'hui",
+  "careCompletedOnScheduledDate": "À la date prévue ({date})",
+  "@careCompletedOnScheduledDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "careChooseCompletionDate": "Choisir une autre date",
+  "careAddDetails": "Ajouter des détails",
+  "careAddDetailsTitle": "Ajouter des détails",
+  "careDetailsSaved": "Détails enregistrés",
+  "careDetailsSaveFailed": "Impossible d'enregistrer les détails. Réessayez.",
   "undoCompleteFailed": "Impossible d'annuler la complétion. Réessayez.",
   "careContextAwayEntryTitle": "Je serai absent",
   "careContextAwayEntryBody": "Prévisualisez les soins prévus pendant votre absence.",

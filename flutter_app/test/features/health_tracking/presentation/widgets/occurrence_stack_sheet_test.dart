@@ -73,7 +73,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Missed'), findsOneWidget);
+      expect(find.text('Overdue'), findsOneWidget);
       expect(find.text('Due today'), findsOneWidget);
       expect(find.text('Coming up'), findsOneWidget);
       expect(find.text('Record latest dose'), findsOneWidget);
