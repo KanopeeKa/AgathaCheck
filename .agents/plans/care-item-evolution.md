@@ -27,17 +27,17 @@ Make [care-item-evolution.md](../../docs/domains/pet_care/features/care-item-evo
 
 ```yaml
 autonomy: active
-current_phase: d-providers
-last_completed_phase: c-completion
+current_phase: e-absence
+last_completed_phase: d-providers
 halt_reason: null
-next_action: "continue phase d-providers on branch cursor/care-item-evolution-d-providers-7796"
+next_action: "start phase e-absence: checkout cursor/care-item-evolution-e-absence-7796"
 artifact_ref:
-  branch: cursor/care-item-evolution-d-providers-7796
+  branch: cursor/care-item-evolution-integration-7796
   plan_path: .agents/plans/care-item-evolution.md
-  plan_commit: f5448fb3e55f261c54cb0d4b30139bb1d524fe81
+  plan_commit: 75ee0ce6b0c75aa32a4ac6031cb4d4b27168ef9b
   snapshot_path: .agents/plans/care-item-evolution.snapshot.json
-  snapshot_commit: f5448fb3e55f261c54cb0d4b30139bb1d524fe81
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1355"]
+  snapshot_commit: 75ee0ce6b0c75aa32a4ac6031cb4d4b27168ef9b
+open_prs: []
 merge_commits: {"docs":"d977ebdecbe7f881a3e552122f055f265e9af755"}
 debt_issue_refs: []
 ```
