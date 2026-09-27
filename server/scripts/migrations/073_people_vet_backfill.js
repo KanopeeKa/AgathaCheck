@@ -41,6 +41,7 @@ export async function backfillPeopleFromVets(client) {
   const pets = await client.query(
     `SELECT p.id AS pet_id, p.vet_id, p.user_id AS owner_user_id
      FROM pets p
+     INNER JOIN vets v ON v.id = p.vet_id AND v.user_id = p.user_id
      WHERE p.vet_id IS NOT NULL`,
   );
 

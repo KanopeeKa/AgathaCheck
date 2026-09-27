@@ -13,12 +13,15 @@ export async function ensurePersonalDirectory(pool, userId) {
   if (existing.rows.length > 0) return existing.rows[0].id;
 
   const id = uuidv4();
-  await pool.query(
+  const inserted = await pool.query(
     `INSERT INTO people_directories (id, owner_user_id, created_at, updated_at)
-     VALUES ($1, $2, NOW(), NOW())`,
+     VALUES ($1, $2, NOW(), NOW())
+     ON CONFLICT (owner_user_id) DO UPDATE
+       SET updated_at = people_directories.updated_at
+     RETURNING id`,
     [id, userId],
   );
-  return id;
+  return inserted.rows[0].id;
 }
 
 /**

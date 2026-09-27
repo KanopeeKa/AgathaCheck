@@ -103,38 +103,50 @@ export function registerPeopleRelationshipsRoutes(router, pool) {
         }
       }
 
-      await pool.query('DELETE FROM pet_contact_relationships WHERE pet_id = $1', [petId]);
+      const client = await pool.connect();
+      let result;
+      try {
+        await client.query('BEGIN');
+        await client.query('DELETE FROM pet_contact_relationships WHERE pet_id = $1', [petId]);
 
-      for (const rel of parsed.relationships) {
-        const relId = rel.id || uuidv4();
-        await pool.query(
-          `INSERT INTO pet_contact_relationships (
-             id, pet_id, contact_id, relationship_kind, is_primary, active,
-             created_at, updated_at
-           ) VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`,
-          [
-            relId,
-            petId,
-            rel.contact_id,
-            rel.relationship_kind,
-            rel.is_primary,
-            rel.active,
-          ],
+        for (const rel of parsed.relationships) {
+          const relId = rel.id || uuidv4();
+          await client.query(
+            `INSERT INTO pet_contact_relationships (
+               id, pet_id, contact_id, relationship_kind, is_primary, active,
+               created_at, updated_at
+             ) VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`,
+            [
+              relId,
+              petId,
+              rel.contact_id,
+              rel.relationship_kind,
+              rel.is_primary,
+              rel.active,
+            ],
+          );
+        }
+
+        result = await client.query(
+          `SELECT pcr.*,
+            pc.kind AS contact_kind,
+            pc.name AS contact_name,
+            pc.phone AS contact_phone,
+            pc.inactive_at AS contact_inactive_at
+           FROM pet_contact_relationships pcr
+           INNER JOIN people_contacts pc ON pc.id = pcr.contact_id
+           WHERE pcr.pet_id = $1
+           ORDER BY pcr.relationship_kind, pc.name`,
+          [petId],
         );
+        await client.query('COMMIT');
+      } catch (txErr) {
+        await client.query('ROLLBACK');
+        throw txErr;
+      } finally {
+        client.release();
       }
 
-      const result = await pool.query(
-        `SELECT pcr.*,
-          pc.kind AS contact_kind,
-          pc.name AS contact_name,
-          pc.phone AS contact_phone,
-          pc.inactive_at AS contact_inactive_at
-         FROM pet_contact_relationships pcr
-         INNER JOIN people_contacts pc ON pc.id = pcr.contact_id
-         WHERE pcr.pet_id = $1
-         ORDER BY pcr.relationship_kind, pc.name`,
-        [petId],
-      );
       res.json(result.rows.map(relationshipRowToMap));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });

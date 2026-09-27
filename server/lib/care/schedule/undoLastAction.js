@@ -94,6 +94,7 @@ async function reopenOccurrence(pool, occurrenceId, entryId) {
   const result = await pool.query(
     `UPDATE health_occurrences SET status = 'pending', completed_on = NULL,
       completion_timing = NULL, marked_at = NULL, marked_by_user_id = NULL,
+      marked_by_snapshot = NULL, performed_by_user_id = NULL, performed_by_snapshot = NULL,
       notes = '', updated_at = NOW()
      WHERE id = $1 AND health_entry_id = $2
        AND status IN ('completed', 'skipped')

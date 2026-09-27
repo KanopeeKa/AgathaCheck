@@ -128,9 +128,13 @@ export default function vetsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const result = await pool.query('DELETE FROM vets WHERE id = $1 AND user_id = $2 RETURNING *', [req.params.id, userId]);
-      if (result.rows.length === 0) return res.status(404).json({ error: 'Vet not found' });
+      const owned = await pool.query(
+        'SELECT id FROM vets WHERE id = $1 AND user_id = $2',
+        [req.params.id, userId],
+      );
+      if (owned.rows.length === 0) return res.status(404).json({ error: 'Vet not found' };
       await deleteContactForVet(pool, req.params.id);
+      await pool.query('DELETE FROM vets WHERE id = $1 AND user_id = $2', [req.params.id, userId]);
       res.json({ message: 'Vet deleted' });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });

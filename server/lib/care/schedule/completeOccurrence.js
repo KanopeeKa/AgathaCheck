@@ -41,7 +41,8 @@ export async function completeOccurrence(pool, {
   const completedOnIso = resolveCompletedOn(completedOn, todayIso);
   const scheduledDateIso = dateToIsoDate(occ.scheduled_date);
   const completionTiming = deriveCompletionTiming(scheduledDateIso, completedOnIso);
-  const performedId = performedByUserId || userId;
+  // Ignore caller-supplied user IDs until delegated completion policy ships (p2+).
+  const performedId = userId;
   const markedSnapshot = await fetchUserSnapshot(pool, userId);
   const performedSnapshot = performedId === userId
     ? markedSnapshot

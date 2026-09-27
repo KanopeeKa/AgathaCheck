@@ -1,12 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { CONTACT_KINDS, CONTACT_ROLES } from './constants.js';
+import { userOwnsContact } from './authz.js';
 import { ensurePersonalDirectory } from './directory.js';
 import { loadContactForViewer } from './contactMapping.js';
 
 function normalizeRoles(raw) {
   if (raw == null) return [];
-  if (!Array.isArray(raw)) return null;
+  if (!Array.isArray(raw)) return { error: 'roles must be an array' };
   const roles = [...new Set(raw.map((r) => String(r).trim()).filter(Boolean))];
   const invalid = roles.find((r) => !CONTACT_ROLES.includes(r));
   if (invalid) return { error: `Invalid role: ${invalid}` };
@@ -30,6 +31,11 @@ export async function createPersonalContact(pool, userId, body) {
   if (roleResult.error) return { error: roleResult.error };
   const roles = roleResult.roles ?? [];
 
+  const worksAtId = body.works_at_contact_id || body.worksAtContactId || null;
+  if (worksAtId && !(await userOwnsContact(pool, worksAtId, userId))) {
+    return { error: 'works_at_contact_id not found' };
+  }
+
   const directoryId = await ensurePersonalDirectory(pool, userId);
   const id = uuidv4();
   await pool.query(
@@ -46,7 +52,7 @@ export async function createPersonalContact(pool, userId, body) {
       body.email || null,
       body.address || null,
       body.website || null,
-      body.works_at_contact_id || body.worksAtContactId || null,
+      worksAtId,
     ],
   );
 
@@ -96,27 +102,36 @@ export async function patchPersonalContact(pool, contactId, userId, body) {
 
   const inactiveAt = body.inactive_at ?? body.inactiveAt;
   const worksAt = body.works_at_contact_id ?? body.worksAtContactId;
+  if (worksAt && !(await userOwnsContact(pool, worksAt, userId))) {
+    return { error: 'works_at_contact_id not found' };
+  }
+
+  const phone = body.phone !== undefined ? (body.phone || null) : existing.phone;
+  const email = body.email !== undefined ? (body.email || null) : existing.email;
+  const address = body.address !== undefined ? (body.address || null) : existing.address;
+  const website = body.website !== undefined ? (body.website || null) : existing.website;
+  const worksAtResolved = worksAt !== undefined ? (worksAt || null) : existing.works_at_contact_id;
 
   await pool.query(
     `UPDATE people_contacts SET
        kind = $1,
        name = $2,
-       phone = COALESCE($3, phone),
-       email = COALESCE($4, email),
-       address = COALESCE($5, address),
-       website = COALESCE($6, website),
-       works_at_contact_id = COALESCE($7, works_at_contact_id),
+       phone = $3,
+       email = $4,
+       address = $5,
+       website = $6,
+       works_at_contact_id = $7,
        inactive_at = $8,
        updated_at = NOW()
      WHERE id = $9`,
     [
       kind,
       name,
-      body.phone !== undefined ? (body.phone || null) : null,
-      body.email !== undefined ? (body.email || null) : null,
-      body.address !== undefined ? (body.address || null) : null,
-      body.website !== undefined ? (body.website || null) : null,
-      worksAt !== undefined ? (worksAt || null) : null,
+      phone,
+      email,
+      address,
+      website,
+      worksAtResolved,
       inactiveAt === undefined
         ? existing.inactive_at
         : (inactiveAt ? new Date(inactiveAt) : null),
