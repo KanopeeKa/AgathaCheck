@@ -346,7 +346,8 @@ CREATE TABLE public.health_entries (
     care_setting character varying(20) DEFAULT 'home'::character varying NOT NULL,
     care_planning character varying(20) DEFAULT 'planned'::character varying NOT NULL,
     care_importance character varying(20) NOT NULL,
-    importance_overridden boolean DEFAULT false NOT NULL
+    importance_overridden boolean DEFAULT false NOT NULL,
+    provider_contact_id uuid
 );
 CREATE TABLE public.health_event_photos (
     id uuid NOT NULL,
@@ -404,6 +405,9 @@ CREATE TABLE public.health_occurrences (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     completion_timing character varying(20),
+    performed_by_user_id uuid,
+    performed_by_snapshot jsonb,
+    marked_by_snapshot jsonb,
     CONSTRAINT health_occurrences_completion_timing_check CHECK (((completion_timing IS NULL) OR ((completion_timing)::text = ANY ((ARRAY['early'::character varying, 'on_time'::character varying, 'late'::character varying])::text[])))),
     CONSTRAINT health_occurrences_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'completed'::character varying, 'skipped'::character varying])::text[])))
 );
@@ -569,6 +573,40 @@ CREATE TABLE public.password_reset_tokens (
     used boolean DEFAULT false,
     created_at timestamp with time zone DEFAULT now()
 );
+CREATE TABLE public.people_contact_private_notes (
+    contact_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    note text DEFAULT ''::text NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+CREATE TABLE public.people_contact_roles (
+    contact_id uuid NOT NULL,
+    role text NOT NULL,
+    CONSTRAINT people_contact_roles_role_check CHECK ((role = ANY (ARRAY['sitter'::text, 'walker'::text, 'vet'::text, 'vet_nurse'::text, 'groomer'::text, 'trainer'::text, 'behaviourist'::text, 'boarding'::text, 'emergency_contact'::text, 'other'::text])))
+);
+CREATE TABLE public.people_contacts (
+    id uuid NOT NULL,
+    directory_id uuid NOT NULL,
+    kind text NOT NULL,
+    name text NOT NULL,
+    phone text,
+    email text,
+    address text,
+    website text,
+    works_at_contact_id uuid,
+    linked_user_id uuid,
+    inactive_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    legacy_vet_id uuid,
+    CONSTRAINT people_contacts_kind_check CHECK ((kind = ANY (ARRAY['person'::text, 'organisation'::text])))
+);
+CREATE TABLE public.people_directories (
+    id uuid NOT NULL,
+    owner_user_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
 CREATE TABLE public.pet_access (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -589,6 +627,17 @@ CREATE TABLE public.pet_activity_events (
     occurred_at timestamp with time zone DEFAULT now() NOT NULL,
     metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
     CONSTRAINT pet_activity_events_event_type_check CHECK ((event_type = ANY (ARRAY['health_log'::text, 'foster_session'::text, 'profile_edit'::text, 'document_upload'::text])))
+);
+CREATE TABLE public.pet_contact_relationships (
+    id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    contact_id uuid NOT NULL,
+    relationship_kind text NOT NULL,
+    is_primary boolean DEFAULT false NOT NULL,
+    active boolean DEFAULT true NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT pet_contact_relationships_relationship_kind_check CHECK ((relationship_kind = ANY (ARRAY['primary_vet'::text, 'out_of_hours_vet'::text, 'emergency_contact'::text, 'care_provider'::text, 'other'::text])))
 );
 CREATE TABLE public.pet_share_invite_pets (
     invite_id uuid NOT NULL,
@@ -891,10 +940,24 @@ ALTER TABLE ONLY public.organizations
     ADD CONSTRAINT organizations_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.password_reset_tokens
     ADD CONSTRAINT password_reset_tokens_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.people_contact_private_notes
+    ADD CONSTRAINT people_contact_private_notes_pkey PRIMARY KEY (contact_id, user_id);
+ALTER TABLE ONLY public.people_contact_roles
+    ADD CONSTRAINT people_contact_roles_pkey PRIMARY KEY (contact_id, role);
+ALTER TABLE ONLY public.people_contacts
+    ADD CONSTRAINT people_contacts_legacy_vet_id_key UNIQUE (legacy_vet_id);
+ALTER TABLE ONLY public.people_contacts
+    ADD CONSTRAINT people_contacts_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.people_directories
+    ADD CONSTRAINT people_directories_owner_user_unique UNIQUE (owner_user_id);
+ALTER TABLE ONLY public.people_directories
+    ADD CONSTRAINT people_directories_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pet_access
     ADD CONSTRAINT pet_access_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pet_activity_events
     ADD CONSTRAINT pet_activity_events_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.pet_contact_relationships
+    ADD CONSTRAINT pet_contact_relationships_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pet_share_invite_pets
     ADD CONSTRAINT pet_share_invite_pets_pkey PRIMARY KEY (invite_id, pet_id);
 ALTER TABLE ONLY public.pet_share_invites
@@ -975,6 +1038,7 @@ CREATE INDEX idx_foster_request_responses_request_id ON public.foster_request_re
 CREATE INDEX idx_foster_request_targets_request_id ON public.foster_request_targets USING btree (foster_request_id);
 CREATE INDEX idx_foster_requests_org_id ON public.foster_requests USING btree (organization_id);
 CREATE INDEX idx_health_entries_pet_id ON public.health_entries USING btree (pet_id);
+CREATE INDEX idx_health_entries_provider_contact_id ON public.health_entries USING btree (provider_contact_id) WHERE (provider_contact_id IS NOT NULL);
 CREATE INDEX idx_health_entries_user_id ON public.health_entries USING btree (user_id);
 CREATE INDEX idx_health_issue_documents_issue_id ON public.health_issue_documents USING btree (health_issue_id);
 CREATE INDEX idx_health_occurrences_entry_id ON public.health_occurrences USING btree (health_entry_id);
@@ -993,10 +1057,14 @@ CREATE INDEX idx_org_users_user_id ON public.organization_users USING btree (use
 CREATE INDEX idx_org_visibility_grants_grantee ON public.organization_visibility_grants USING btree (organization_id, grantee_user_id);
 CREATE INDEX idx_org_visibility_grants_subject ON public.organization_visibility_grants USING btree (organization_id, subject_user_id);
 CREATE INDEX idx_organizations_name ON public.organizations USING btree (name);
+CREATE INDEX idx_people_contacts_directory_id ON public.people_contacts USING btree (directory_id);
+CREATE INDEX idx_people_contacts_legacy_vet_id ON public.people_contacts USING btree (legacy_vet_id) WHERE (legacy_vet_id IS NOT NULL);
 CREATE UNIQUE INDEX idx_pet_access_pet_user ON public.pet_access USING btree (pet_id, user_id);
 CREATE INDEX idx_pet_activity_events_occurred_at ON public.pet_activity_events USING btree (occurred_at);
 CREATE INDEX idx_pet_activity_events_org_id ON public.pet_activity_events USING btree (org_id);
 CREATE INDEX idx_pet_activity_events_pet_id ON public.pet_activity_events USING btree (pet_id);
+CREATE INDEX idx_pet_contact_relationships_contact_id ON public.pet_contact_relationships USING btree (contact_id);
+CREATE INDEX idx_pet_contact_relationships_pet_id ON public.pet_contact_relationships USING btree (pet_id);
 CREATE INDEX idx_pet_share_invite_pets_pet_id ON public.pet_share_invite_pets USING btree (pet_id);
 CREATE INDEX idx_pet_share_invites_invitee_email ON public.pet_share_invites USING btree (lower((invitee_email)::text));
 CREATE INDEX idx_pet_share_invites_invitee_user_id ON public.pet_share_invites USING btree (invitee_user_id) WHERE (invitee_user_id IS NOT NULL);
@@ -1134,6 +1202,8 @@ ALTER TABLE ONLY public.foster_requests
 ALTER TABLE ONLY public.health_entries
     ADD CONSTRAINT health_entries_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.health_entries
+    ADD CONSTRAINT health_entries_provider_contact_id_fkey FOREIGN KEY (provider_contact_id) REFERENCES public.people_contacts(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.health_entries
     ADD CONSTRAINT health_entries_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.health_event_photos
     ADD CONSTRAINT health_event_photos_health_entry_id_fkey FOREIGN KEY (health_entry_id) REFERENCES public.health_entries(id) ON DELETE CASCADE;
@@ -1155,6 +1225,8 @@ ALTER TABLE ONLY public.health_occurrences
     ADD CONSTRAINT health_occurrences_health_entry_id_fkey FOREIGN KEY (health_entry_id) REFERENCES public.health_entries(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.health_occurrences
     ADD CONSTRAINT health_occurrences_marked_by_user_id_fkey FOREIGN KEY (marked_by_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.health_occurrences
+    ADD CONSTRAINT health_occurrences_performed_by_user_id_fkey FOREIGN KEY (performed_by_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.notification_preferences
     ADD CONSTRAINT notification_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.notifications
@@ -1207,6 +1279,22 @@ ALTER TABLE ONLY public.organization_visibility_grants
     ADD CONSTRAINT organization_visibility_grants_subject_user_id_fkey FOREIGN KEY (subject_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.password_reset_tokens
     ADD CONSTRAINT password_reset_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.people_contact_private_notes
+    ADD CONSTRAINT people_contact_private_notes_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.people_contacts(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.people_contact_private_notes
+    ADD CONSTRAINT people_contact_private_notes_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.people_contact_roles
+    ADD CONSTRAINT people_contact_roles_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.people_contacts(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.people_contacts
+    ADD CONSTRAINT people_contacts_directory_id_fkey FOREIGN KEY (directory_id) REFERENCES public.people_directories(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.people_contacts
+    ADD CONSTRAINT people_contacts_legacy_vet_id_fkey FOREIGN KEY (legacy_vet_id) REFERENCES public.vets(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.people_contacts
+    ADD CONSTRAINT people_contacts_linked_user_id_fkey FOREIGN KEY (linked_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.people_contacts
+    ADD CONSTRAINT people_contacts_works_at_contact_id_fkey FOREIGN KEY (works_at_contact_id) REFERENCES public.people_contacts(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.people_directories
+    ADD CONSTRAINT people_directories_owner_user_id_fkey FOREIGN KEY (owner_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pet_access
     ADD CONSTRAINT pet_access_invited_by_fkey FOREIGN KEY (invited_by) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.pet_access
@@ -1221,6 +1309,10 @@ ALTER TABLE ONLY public.pet_activity_events
     ADD CONSTRAINT pet_activity_events_org_id_fkey FOREIGN KEY (org_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pet_activity_events
     ADD CONSTRAINT pet_activity_events_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_contact_relationships
+    ADD CONSTRAINT pet_contact_relationships_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.people_contacts(id) ON DELETE RESTRICT;
+ALTER TABLE ONLY public.pet_contact_relationships
+    ADD CONSTRAINT pet_contact_relationships_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pet_share_invite_pets
     ADD CONSTRAINT pet_share_invite_pets_invite_id_fkey FOREIGN KEY (invite_id) REFERENCES public.pet_share_invites(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pet_share_invite_pets

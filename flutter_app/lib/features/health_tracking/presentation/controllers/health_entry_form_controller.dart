@@ -116,6 +116,8 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
         loadedUncategorised: entry.careFamily == null,
         careFamilySuggestionDismissed: false,
         careFamilyPickerRevealed: entry.careFamily != null,
+        providerContactId: entry.providerContactId,
+        providerTypedName: entry.providerTypedName,
       );
 
       captureBaseline();
@@ -130,6 +132,15 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
   void setDosage(String dosage) => state = state.copyWith(dosage: dosage);
 
   void setNotes(String notes) => state = state.copyWith(notes: notes);
+
+  void setProvider({String? contactId, String? typedName}) {
+    state = state.copyWith(
+      providerContactId: contactId,
+      clearProviderContactId: contactId == null,
+      providerTypedName: typedName,
+      clearProviderTypedName: typedName == null,
+    );
+  }
 
   void setType(HealthEntryType type) {
     if (state.isEdit && !state.loadedUncategorised) {

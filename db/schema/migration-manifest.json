@@ -78,8 +78,12 @@
     "069_care_classification_columns.sql",
     "070_cim_drop_suggested_health_entry_type.sql",
     "071_planned_absence_pet_note.sql",
-    "072_pet_home_timezone.sql",
-    "073_health_occurrence_photos.sql"
+    "072_people_contacts_foundation.sql",
+    "073_people_vet_backfill.sql",
+    "074_health_occurrence_attribution.sql",
+    "075_pet_home_timezone.sql",
+    "076_health_occurrence_photos.sql",
+    "077_care_provider_used.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
@@ -93,6 +97,7 @@
     "047_health_occurrences.sql",
     "049_pinned_organization_id.sql",
     "050_private_health_files.sql",
-    "051_share_link_expiry.sql"
+    "051_share_link_expiry.sql",
+    "073_people_vet_backfill.sql"
   ]
 }

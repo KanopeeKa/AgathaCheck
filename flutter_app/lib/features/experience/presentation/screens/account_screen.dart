@@ -76,6 +76,12 @@ class AccountScreen extends ConsumerWidget {
                         label: l.petTagsTitle,
                         onTap: () => context.push('/account/pet-tags'),
                       ),
+                      _AccountRow(
+                        key: const Key('account_people'),
+                        icon: Icons.groups_outlined,
+                        label: l.accountPeopleRow,
+                        onTap: () => context.push('/account/people'),
+                      ),
                     ],
                   ),
                 ),

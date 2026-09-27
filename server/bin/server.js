@@ -13,6 +13,7 @@ import healthEntriesRoutes from '../routes/healthEntries.js';
 import healthIssuesRoutes from '../routes/healthIssues.js';
 import organizationsRoutes from '../routes/organizations.js';
 import vetsRoutes from '../routes/vets.js';
+import peopleRoutes from '../routes/people/index.js';
 import sharingRoutes from '../routes/sharing.js';
 import petTagsRoutes from '../routes/petTags.js';
 import careContextRoutes from '../routes/careContext/index.js';
@@ -107,6 +108,7 @@ export function createApp(customPool, comparePassword) {
   app.use('/api/auth', authRoutes(pool, comparePassword));
   app.use('/api/pets', petsRoutes(pool));
   app.use('/api/vets', vetsRoutes(pool));
+  app.use('/api/people', peopleRoutes(pool));
   if (frozenDomainsEnabled()) {
     app.use('/api/organizations', organizationsRoutes(pool));
     app.use('/api/foster-placements', fosterPlacementsRoutes(pool));
@@ -130,6 +132,7 @@ export function createApp(customPool, comparePassword) {
   app.use('/server/api/auth', authRoutes(pool, comparePassword));
   app.use('/backend/api/pets', petsRoutes(pool));
   app.use('/backend/api/vets', vetsRoutes(pool));
+  app.use('/backend/api/people', peopleRoutes(pool));
   if (frozenDomainsEnabled()) {
     app.use('/backend/api/organizations', organizationsRoutes(pool));
     app.use('/backend/api/foster-placements', fosterPlacementsRoutes(pool));

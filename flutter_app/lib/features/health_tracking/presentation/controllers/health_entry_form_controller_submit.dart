@@ -111,6 +111,8 @@ mixin HealthEntryFormSubmitMixin
           carePlanning: state.carePlanning,
           careImportance: state.careImportance,
           importanceOverridden: state.importanceOverridden,
+          providerContactId: state.providerContactId,
+          providerTypedName: state.providerTypedName,
         );
         await notifier.updateEntry(entry);
         if (state.pendingPhotos.isNotEmpty && entryId != null) {
@@ -152,6 +154,8 @@ mixin HealthEntryFormSubmitMixin
             carePlanning: state.carePlanning,
             careImportance: state.careImportance,
             importanceOverridden: state.importanceOverridden,
+            providerContactId: state.providerContactId,
+            providerTypedName: state.providerTypedName,
           );
           final created = await createUseCase.call(entry);
           createdEntryIds.add(created.id);

@@ -37,6 +37,8 @@ class HealthEntryModel extends HealthEntry {
     super.careImportance,
     super.importanceOverridden,
     super.careSource,
+    super.providerContactId,
+    super.providerTypedName,
     super.createdAt,
     super.updatedAt,
   });
@@ -83,6 +85,8 @@ class HealthEntryModel extends HealthEntry {
       ),
       importanceOverridden: json['importance_overridden'] as bool? ?? false,
       careSource: CareSourceWire.fromWire(json['care_source'] as String?),
+      providerContactId: json['provider_contact_id'] as String?,
+      providerTypedName: json['provider_typed_name'] as String?,
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
           : null,
@@ -121,6 +125,8 @@ class HealthEntryModel extends HealthEntry {
       careImportance: entry.careImportance,
       importanceOverridden: entry.importanceOverridden,
       careSource: entry.careSource,
+      providerContactId: entry.providerContactId,
+      providerTypedName: entry.providerTypedName,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     );
@@ -153,6 +159,9 @@ class HealthEntryModel extends HealthEntry {
       if (careImportance != null) 'care_importance': careImportance!.wireValue,
       if (importanceOverridden) 'importance_overridden': importanceOverridden,
       if (careSource != null) 'care_source': careSource!.wireValue,
+      if (providerContactId != null) 'provider_contact_id': providerContactId,
+      if (providerTypedName != null && providerTypedName!.isNotEmpty)
+        'provider_typed_name': providerTypedName,
     };
   }
 

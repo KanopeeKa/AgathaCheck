@@ -80,6 +80,8 @@ class HealthEntryFormState {
     this.careFamilySuggestionDismissed = false,
     this.careFamilyPickerRevealed = false,
     this.careFamilyValidationAttempted = false,
+    this.providerContactId,
+    this.providerTypedName,
   }) : startDate = startDate ?? DateTime.now();
 
   final String name;
@@ -113,6 +115,8 @@ class HealthEntryFormState {
   final bool careFamilySuggestionDismissed;
   final bool careFamilyPickerRevealed;
   final bool careFamilyValidationAttempted;
+  final String? providerContactId;
+  final String? providerTypedName;
 
   int get totalPhotoCount => photos.length + pendingPhotos.length;
 
@@ -173,7 +177,9 @@ class HealthEntryFormState {
         carePlanning == other.carePlanning &&
         careImportance == other.careImportance &&
         importanceOverridden == other.importanceOverridden &&
-        pendingPhotos.length == other.pendingPhotos.length;
+        pendingPhotos.length == other.pendingPhotos.length &&
+        providerContactId == other.providerContactId &&
+        providerTypedName == other.providerTypedName;
   }
 
   HealthEntryFormState copyWith({
@@ -208,6 +214,10 @@ class HealthEntryFormState {
     bool? careFamilySuggestionDismissed,
     bool? careFamilyPickerRevealed,
     bool? careFamilyValidationAttempted,
+    String? providerContactId,
+    String? providerTypedName,
+    bool clearProviderContactId = false,
+    bool clearProviderTypedName = false,
     bool clearDueDate = false,
     bool clearCareFamily = false,
     bool clearCompletedOn = false,
@@ -254,6 +264,12 @@ class HealthEntryFormState {
           careFamilyPickerRevealed ?? this.careFamilyPickerRevealed,
       careFamilyValidationAttempted:
           careFamilyValidationAttempted ?? this.careFamilyValidationAttempted,
+      providerContactId: clearProviderContactId
+          ? null
+          : (providerContactId ?? this.providerContactId),
+      providerTypedName: clearProviderTypedName
+          ? null
+          : (providerTypedName ?? this.providerTypedName),
     );
   }
 }

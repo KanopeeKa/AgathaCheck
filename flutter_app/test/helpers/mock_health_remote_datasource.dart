@@ -109,16 +109,17 @@ class MockHealthRemoteDataSource extends Mock
 
   @override
   Future<EventPhoto> uploadPhoto(
-    String? entryId,
-    Uint8List? bytes,
-    String? filename, {
-    String? caption,
+    String entryId,
+    Uint8List bytes,
+    String filename, {
+    String caption = '',
+    String? occurrenceId,
   }) =>
       super.noSuchMethod(
             Invocation.method(
               #uploadPhoto,
               [entryId, bytes, filename],
-              {#caption: caption},
+              {#caption: caption, #occurrenceId: occurrenceId},
             ),
             returnValue: Future.value(
               EventPhoto(id: '0', eventId: '', photoPath: ''),

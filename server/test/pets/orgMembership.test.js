@@ -5,6 +5,21 @@ import { createMockPool, makePetRow, token, userId, petId } from './helpers.js';
 
 describe('Pets API', () => {
   describe('Organization membership enforcement', () => {
+    let prevFrozen;
+
+    beforeAll(() => {
+      prevFrozen = process.env.ENABLE_FROZEN_DOMAINS;
+      process.env.ENABLE_FROZEN_DOMAINS = 'true';
+    });
+
+    afterAll(() => {
+      if (prevFrozen === undefined) {
+        delete process.env.ENABLE_FROZEN_DOMAINS;
+      } else {
+        process.env.ENABLE_FROZEN_DOMAINS = prevFrozen;
+      }
+    });
+
     it('POST /api/pets returns 403 when user is not a member of organization_id', async () => {
       const app = createApp(createMockPool(async (sql) => {
         if (sql.includes('organization_users')) return { rows: [] };

@@ -77,7 +77,7 @@ void main() {
       expect(find.text('Due today'), findsOneWidget);
       expect(find.text('Coming up'), findsOneWidget);
       expect(find.text('Record latest dose'), findsOneWidget);
-      expect(find.text('Skip all missed'), findsOneWidget);
+      expect(find.text('Skip all overdue'), findsOneWidget);
       expect(find.text('Not now'), findsOneWidget);
     });
 

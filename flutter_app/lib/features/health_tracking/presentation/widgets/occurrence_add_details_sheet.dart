@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,6 +8,7 @@ import '../../domain/entities/health_entry.dart';
 import '../controllers/health_entry_form_constants.dart';
 import '../providers/health_providers.dart';
 import '../utils/health_document_picker.dart';
+import 'care_provider_field.dart';
 import 'pet_event_occurrence_actions.dart';
 
 /// Optional note and occurrence-scoped documents after mark done.
@@ -52,11 +52,15 @@ class _OccurrenceAddDetailsSheetState
   late final TextEditingController _notesController;
   final List<_PendingDoc> _pendingDocs = [];
   bool _saving = false;
+  String? _providerContactId;
+  String? _providerTypedName;
 
   @override
   void initState() {
     super.initState();
     _notesController = TextEditingController(text: widget.initialNotes);
+    _providerContactId = widget.entry.providerContactId;
+    _providerTypedName = widget.entry.providerTypedName;
   }
 
   @override
@@ -69,8 +73,8 @@ class _OccurrenceAddDetailsSheetState
     if (_pendingDocs.length >= healthEntryMaxPhotos) return;
     final picked = await pickSingleHealthDocument();
     if (picked == null || !mounted) return;
-    final bytes = picked.bytes;
-    if (bytes == null) return;
+    final bytes = await picked.readAsBytes();
+    if (bytes.isEmpty) return;
     final ext = picked.name.split('.').last.toLowerCase();
     if (!healthDocumentAllowedExtensions.contains(ext)) {
       if (!mounted) return;
@@ -99,13 +103,13 @@ class _OccurrenceAddDetailsSheetState
     final l = AppLocalizations.of(context)!;
     try {
       final notes = _notesController.text.trim();
-      if (notes.isNotEmpty) {
-        await ref.read(healthRepositoryProvider).updateOccurrenceNotes(
-              widget.entry.id,
-              widget.occurrenceId,
-              notes,
-            );
-      }
+      await ref.read(healthRepositoryProvider).updateOccurrenceNotes(
+            widget.entry.id,
+            widget.occurrenceId,
+            notes,
+            providerContactId: _providerContactId,
+            providerTypedName: _providerTypedName,
+          );
       final ds = ref.read(healthDataSourceProvider);
       for (final doc in _pendingDocs) {
         await ds.uploadPhoto(
@@ -154,6 +158,17 @@ class _OccurrenceAddDetailsSheetState
             controller: _notesController,
             decoration: InputDecoration(labelText: l.notes),
             maxLines: 3,
+          ),
+          const SizedBox(height: 12),
+          CareProviderField(
+            contactId: _providerContactId,
+            typedName: _providerTypedName,
+            onChanged: ({contactId, typedName}) {
+              setState(() {
+                _providerContactId = contactId;
+                _providerTypedName = typedName;
+              });
+            },
           ),
           const SizedBox(height: 12),
           OutlinedButton.icon(

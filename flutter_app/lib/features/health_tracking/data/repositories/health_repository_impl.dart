@@ -142,9 +142,17 @@ class HealthRepositoryImpl implements HealthRepository {
   Future<HealthOccurrence> updateOccurrenceNotes(
     String entryId,
     String occurrenceId,
-    String notes,
-  ) {
-    return dataSource.updateOccurrenceNotes(entryId, occurrenceId, notes);
+    String notes, {
+    String? providerContactId,
+    String? providerTypedName,
+  }) {
+    return dataSource.updateOccurrenceNotes(
+      entryId,
+      occurrenceId,
+      notes,
+      providerContactId: providerContactId,
+      providerTypedName: providerTypedName,
+    );
   }
 
   @override

@@ -28,7 +28,7 @@ import {
   WEIGHT_GENERIC_COMPLETE_ERROR,
 } from './weightOccurrenceCompletion.js';
 
-async function loadEntry(pool, entryId, userId) {
+export async function loadEntry(pool, entryId, userId) {
   if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
     return null;
   }
@@ -135,6 +135,7 @@ export function registerOccurrenceRoutes(router, pool) {
         }
       }
 
+      const performedBy = body.performed_by_user_id || body.performedByUserId || null;
       const completion = await completeOccurrence(pool, {
         entry,
         occurrenceId: occ.id,
@@ -143,6 +144,8 @@ export function registerOccurrenceRoutes(router, pool) {
         notes,
         markedAt,
         todayIso: asOfCtx.todayIso,
+        performedByUserId: performedBy,
+        body,
       });
       if (!completion) {
         return res.status(404).json({ error: 'Occurrence not found' });
@@ -378,36 +381,6 @@ export function registerOccurrenceRoutes(router, pool) {
     }
   });
 
-  router.patch('/:id/occurrences/:occId', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const entryId = req.params.id;
-      const entry = await loadEntry(pool, entryId, userId);
-      if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      const occ = await loadOccurrence(pool, entryId, req.params.occId);
-      if (!occ || occ.status !== 'completed') {
-        return res.status(404).json({ error: 'Occurrence not found' });
-      }
-      const body = req.body || {};
-      const notes = typeof body.notes === 'string' ? body.notes : '';
-      const updated = await pool.query(
-        `UPDATE health_occurrences SET notes = $1, updated_at = NOW()
-         WHERE id = $2 AND health_entry_id = $3 AND status = 'completed'
-         RETURNING *`,
-        [notes, req.params.occId, entryId],
-      );
-      if (updated.rows.length === 0) {
-        return res.status(404).json({ error: 'Occurrence not found' });
-      }
-      const row = updated.rows[0];
-      row.marked_by_name = occ.marked_by_name || null;
-      res.json(occurrenceToMap(row));
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
-  });
-
   router.post('/:id/occurrences/:occId/undo', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -450,6 +423,7 @@ export function registerOccurrenceRoutes(router, pool) {
  * Complete the oldest pending occurrence for mark-taken compatibility.
  */
 export async function completeOldestPendingOccurrence(pool, entryId, userId, body = {}, req = null) {
+  const performedBy = body.performed_by_user_id || body.performedByUserId || null;
   const entry = (await pool.query('SELECT * FROM health_entries WHERE id = $1', [entryId])).rows[0];
   if (isWeightMonitoringEntry(entry)) {
     const err = new Error(WEIGHT_GENERIC_COMPLETE_ERROR);
@@ -479,6 +453,8 @@ export async function completeOldestPendingOccurrence(pool, entryId, userId, bod
     notes,
     markedAt,
     todayIso,
+    performedByUserId: performedBy,
+    body,
   });
   if (!completion) return null;
   if (req) {
