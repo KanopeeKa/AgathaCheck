@@ -27,6 +27,7 @@ function makeVetRow(overrides = {}) {
 describe('Vets API', () => {
   let app;
   let lastQuery;
+  let lastVetDeleteQuery;
 
   beforeAll(() => {
     const mockPool = {
@@ -88,8 +89,30 @@ describe('Vets API', () => {
         }
 
         if (sql.includes('DELETE FROM vets')) {
+          lastVetDeleteQuery = { sql, params };
           if (params[0] === 'nonexistent') return { rows: [] };
           return { rows: [{ id: params[0] }] };
+        }
+
+        if (sql.includes('people_directories') || sql.includes('people_contacts')
+          || sql.includes('people_contact_roles') || sql.includes('people_contact_private_notes')
+          || sql.includes('pet_contact_relationships')) {
+          if (sql.includes('SELECT id FROM people_directories')) {
+            return { rows: [{ id: 'dir-1' }] };
+          }
+          if (sql.includes('SELECT id FROM people_contacts WHERE legacy_vet_id')) {
+            return { rows: [] };
+          }
+          if (sql.includes('INSERT INTO people_contacts')) {
+            return { rows: [{ id: 'contact-1' }] };
+          }
+          if (sql.includes('INSERT INTO people_contact_private_notes')
+            || sql.includes('INSERT INTO people_contact_roles')
+            || sql.includes('UPDATE people_contacts')
+            || sql.includes('DELETE FROM people_contacts')) {
+            return { rows: [] };
+          }
+          return { rows: [] };
         }
 
         return { rows: [] };
@@ -350,7 +373,7 @@ describe('Vets API', () => {
       await request(app)
         .delete('/api/vets/vet-1')
         .set('Authorization', `Bearer ${token}`);
-      expect(lastQuery.params).toContain(userId);
+      expect(lastVetDeleteQuery.params).toContain(userId);
     });
   });
 

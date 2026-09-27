@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createApiLimiter } from '../config/rateLimit.js';
 import { publicError } from '../config/security.js';
 import { extractUserId } from '../lib/requireAuth.js';
+import { deleteContactForVet, upsertContactFromVet } from '../lib/people/vetSync.js';
 import { userInOrg } from './pets/shared.js';
 
 function vetRowToMap(row) {
@@ -95,6 +96,7 @@ export default function vetsRoutes(pool) {
         'INSERT INTO vets (id, user_id, name, clinic, phone, email, website, address, notes, organization_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
         [id, userId, name, clinic || null, phone || null, email || null, website || '', address || '', notes || '', organizationId]
       );
+      await upsertContactFromVet(pool, result.rows[0], userId);
       res.status(201).json(vetRowToMap(result.rows[0]));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -115,6 +117,7 @@ export default function vetsRoutes(pool) {
         [name, clinic, phone, email, website || '', address || '', notes || '', organizationId, req.params.id, userId]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Vet not found' });
+      await upsertContactFromVet(pool, result.rows[0], userId);
       res.json(vetRowToMap(result.rows[0]));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -127,6 +130,7 @@ export default function vetsRoutes(pool) {
     try {
       const result = await pool.query('DELETE FROM vets WHERE id = $1 AND user_id = $2 RETURNING *', [req.params.id, userId]);
       if (result.rows.length === 0) return res.status(404).json({ error: 'Vet not found' });
+      await deleteContactForVet(pool, req.params.id);
       res.json({ message: 'Vet deleted' });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });

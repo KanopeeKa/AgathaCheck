@@ -123,6 +123,7 @@ export function registerOccurrenceRoutes(router, pool) {
         }
       }
 
+      const performedBy = body.performed_by_user_id || body.performedByUserId || null;
       const completion = await completeOccurrence(pool, {
         entry,
         occurrenceId: occ.id,
@@ -131,6 +132,7 @@ export function registerOccurrenceRoutes(router, pool) {
         notes,
         markedAt,
         todayIso: asOfFromRequest(req),
+        performedByUserId: performedBy,
       });
       if (!completion) {
         return res.status(404).json({ error: 'Occurrence not found' });
@@ -402,6 +404,7 @@ export function registerOccurrenceRoutes(router, pool) {
  * Complete the oldest pending occurrence for mark-taken compatibility.
  */
 export async function completeOldestPendingOccurrence(pool, entryId, userId, body = {}, req = null) {
+  const performedBy = body.performed_by_user_id || body.performedByUserId || null;
   const entry = (await pool.query('SELECT * FROM health_entries WHERE id = $1', [entryId])).rows[0];
   if (isWeightMonitoringEntry(entry)) {
     const err = new Error(WEIGHT_GENERIC_COMPLETE_ERROR);
@@ -432,6 +435,7 @@ export async function completeOldestPendingOccurrence(pool, entryId, userId, bod
     notes,
     markedAt,
     todayIso,
+    performedByUserId: performedBy,
   });
   if (!completion) return null;
   if (req) {
