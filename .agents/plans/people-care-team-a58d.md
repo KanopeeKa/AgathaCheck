@@ -24,10 +24,10 @@ Land the agreed People & Care Team documentation on `main`, then implement produ
 
 ```yaml
 autonomy: active
-current_phase: land-docs
-last_completed_phase: null
+current_phase: p0-model
+last_completed_phase: land-docs
 halt_reason: null
-next_action: "Open PR land-docs → main; babysit-uat"
+next_action: "PR p0-model → main; then p1-contacts"
 artifact_ref:
   branch: cursor/people-docs-land-a58d
   plan_path: .agents/plans/people-care-team-a58d.md
