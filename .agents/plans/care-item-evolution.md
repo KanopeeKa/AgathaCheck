@@ -26,18 +26,18 @@ Make [care-item-evolution.md](../../docs/domains/pet_care/features/care-item-evo
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: integration-main
-last_completed_phase: f-categories
+autonomy: completed
+current_phase: null
+last_completed_phase: integration-main
 halt_reason: null
-next_action: "continue phase integration-main on branch cursor/care-item-evolution-integration-7796"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/care-item-evolution-integration-7796
+  branch: main
   plan_path: .agents/plans/care-item-evolution.md
-  plan_commit: 2278558a7d56343efcf9b41aa7bf5e9bde057df4
+  plan_commit: 02f64c37eae2d2b50724ce498e818fac98a0a791
   snapshot_path: .agents/plans/care-item-evolution.snapshot.json
-  snapshot_commit: 2278558a7d56343efcf9b41aa7bf5e9bde057df4
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1359"]
+  snapshot_commit: 02f64c37eae2d2b50724ce498e818fac98a0a791
+open_prs: []
 merge_commits: {"docs":"d977ebdecbe7f881a3e552122f055f265e9af755"}
 debt_issue_refs: []
 ```
