@@ -40,7 +40,10 @@ class RecordingSharingRepository implements SharingRepository {
   Future<List<PetAccess>> getAccess(String petId, String token) async => [];
 
   @override
-  Future<PetAccessOverview> getAccessOverview(String petId, String token) async {
+  Future<PetAccessOverview> getAccessOverview(
+    String petId,
+    String token,
+  ) async {
     return const PetAccessOverview(directAccess: [], householdAccess: []);
   }
 
