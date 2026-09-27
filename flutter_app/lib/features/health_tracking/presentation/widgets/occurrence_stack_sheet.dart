@@ -7,7 +7,7 @@ import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../../domain/occurrence_scheduling.dart';
 import 'care_event_status_line.dart';
-import 'mark_complete_sheet.dart';
+import 'occurrence_completion_date_flow.dart';
 
 /// Result of a list-row mark-done flow (optimistic parents persist after return).
 class OccurrenceMarkDoneResult {
@@ -107,7 +107,7 @@ class _OccurrenceStackSheetState extends State<OccurrenceStackSheet> {
     final head = _headOccurrence;
     if (head == null || _busy) return;
 
-    final completedOn = await showMarkCompleteSheet(context);
+    final completedOn = await resolveCompletedOnForOccurrence(context, head);
     if (completedOn == null || !mounted) return;
 
     setState(() => _busy = true);

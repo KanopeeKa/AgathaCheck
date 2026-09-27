@@ -378,6 +378,36 @@ export function registerOccurrenceRoutes(router, pool) {
     }
   });
 
+  router.patch('/:id/occurrences/:occId', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const entryId = req.params.id;
+      const entry = await loadEntry(pool, entryId, userId);
+      if (!entry) return res.status(404).json({ error: 'Entry not found' });
+      const occ = await loadOccurrence(pool, entryId, req.params.occId);
+      if (!occ || occ.status !== 'completed') {
+        return res.status(404).json({ error: 'Occurrence not found' });
+      }
+      const body = req.body || {};
+      const notes = typeof body.notes === 'string' ? body.notes : '';
+      const updated = await pool.query(
+        `UPDATE health_occurrences SET notes = $1, updated_at = NOW()
+         WHERE id = $2 AND health_entry_id = $3 AND status = 'completed'
+         RETURNING *`,
+        [notes, req.params.occId, entryId],
+      );
+      if (updated.rows.length === 0) {
+        return res.status(404).json({ error: 'Occurrence not found' });
+      }
+      const row = updated.rows[0];
+      row.marked_by_name = occ.marked_by_name || null;
+      res.json(occurrenceToMap(row));
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
   router.post('/:id/occurrences/:occId/undo', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
 import '../../../../core/utils/calendar_date.dart';
+import '../models/health_event_photo.dart';
 import '../models/health_entry_model.dart';
 import '../models/health_history_model.dart';
 import '../models/health_occurrence_model.dart';
@@ -16,36 +17,14 @@ import 'health_occurrence_remote_datasource.dart'
         postRescheduleOccurrence,
         postSkipMissedOccurrences,
         postSkipOccurrence,
-        postUndoOccurrence;
+        postUndoOccurrence,
+        patchOccurrenceNotes;
+import 'health_entry_photos_remote.dart';
 import 'health_weight_completion_remote.dart';
 import 'health_series_lifecycle_remote.dart';
 import 'health_remote_response.dart';
 
-class EventPhoto {
-  final String id;
-  final String eventId;
-  final String photoPath;
-  final String caption;
-  final String createdAt;
-
-  EventPhoto({
-    required this.id,
-    required this.eventId,
-    required this.photoPath,
-    this.caption = '',
-    this.createdAt = '',
-  });
-
-  factory EventPhoto.fromJson(Map<String, dynamic> json) {
-    return EventPhoto(
-      id: (json['id'] ?? '').toString(),
-      eventId: (json['event_id'] ?? json['health_entry_id'] ?? '').toString(),
-      photoPath: (json['photo_path'] ?? json['url'] ?? '').toString(),
-      caption: json['caption'] as String? ?? '',
-      createdAt: json['created_at'] as String? ?? '',
-    );
-  }
-}
+export '../models/health_event_photo.dart';
 
 abstract class HealthRemoteDataSource {
   Future<List<HealthEntryModel>> getEntries({String? petId, String? type});
@@ -71,7 +50,8 @@ abstract class HealthRemoteDataSource {
     String entryId,
     Uint8List bytes,
     String filename, {
-    String caption,
+    String caption = '',
+    String? occurrenceId,
   });
   Future<void> deletePhoto(String entryId, String photoId);
   Future<List<HealthOccurrenceModel>> getOpenOccurrences(String entryId);
@@ -92,6 +72,11 @@ abstract class HealthRemoteDataSource {
   Future<HealthOccurrenceModel> undoOccurrence(
     String entryId,
     String occurrenceId,
+  );
+  Future<HealthOccurrenceModel> updateOccurrenceNotes(
+    String entryId,
+    String occurrenceId,
+    String notes,
   );
   Future<RescheduleOccurrenceRemoteResult> rescheduleOccurrence(
     String entryId,
@@ -312,16 +297,14 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
   }
 
   @override
-  Future<List<EventPhoto>> getPhotos(String entryId) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/health-entries/$entryId/photos'),
+  Future<List<EventPhoto>> getPhotos(String entryId) {
+    return fetchHealthEntryPhotos(
+      client: _client,
+      baseUrl: baseUrl,
       headers: _authHeaders(),
+      checkResponse: checkHealthRemoteResponse,
+      entryId: entryId,
     );
-    checkHealthRemoteResponse(response);
-    final list = json.decode(response.body) as List<dynamic>;
-    return list
-        .map((e) => EventPhoto.fromJson(e as Map<String, dynamic>))
-        .toList();
   }
 
   @override
@@ -330,33 +313,31 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
     Uint8List bytes,
     String filename, {
     String caption = '',
-  }) async {
-    final request = http.MultipartRequest(
-      'POST',
-      Uri.parse('$baseUrl/api/health-entries/$entryId/photos'),
-    );
-    request.headers.addAll(_authHeaders());
-    request.files.add(
-      http.MultipartFile.fromBytes('photo', bytes, filename: filename),
-    );
-    if (caption.isNotEmpty) {
-      request.fields['caption'] = caption;
-    }
-    final streamedResponse = await _client.send(request);
-    final response = await http.Response.fromStream(streamedResponse);
-    checkHealthRemoteResponse(response);
-    return EventPhoto.fromJson(
-      json.decode(response.body) as Map<String, dynamic>,
+    String? occurrenceId,
+  }) {
+    return postHealthEntryPhoto(
+      client: _client,
+      baseUrl: baseUrl,
+      headers: _authHeaders(),
+      checkResponse: checkHealthRemoteResponse,
+      entryId: entryId,
+      bytes: bytes,
+      filename: filename,
+      caption: caption,
+      occurrenceId: occurrenceId,
     );
   }
 
   @override
-  Future<void> deletePhoto(String entryId, String photoId) async {
-    final response = await _client.delete(
-      Uri.parse('$baseUrl/api/health-entries/$entryId/photos/$photoId'),
+  Future<void> deletePhoto(String entryId, String photoId) {
+    return deleteHealthEntryPhoto(
+      client: _client,
+      baseUrl: baseUrl,
       headers: _authHeaders(),
+      checkResponse: checkHealthRemoteResponse,
+      entryId: entryId,
+      photoId: photoId,
     );
-    checkHealthRemoteResponse(response);
   }
 
   @override
@@ -442,6 +423,23 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       checkResponse: checkHealthRemoteResponse,
       entryId: entryId,
       occurrenceId: occurrenceId,
+    );
+  }
+
+  @override
+  Future<HealthOccurrenceModel> updateOccurrenceNotes(
+    String entryId,
+    String occurrenceId,
+    String notes,
+  ) {
+    return patchOccurrenceNotes(
+      client: _client,
+      baseUrl: baseUrl,
+      headers: _authHeaders(jsonBody: true),
+      checkResponse: checkHealthRemoteResponse,
+      entryId: entryId,
+      occurrenceId: occurrenceId,
+      notes: notes,
     );
   }
 

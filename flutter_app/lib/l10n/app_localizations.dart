@@ -11013,6 +11013,54 @@ abstract class AppLocalizations {
   /// **'Could not mark this care item as done. Try again.'**
   String get careCompletionFailed;
 
+  /// No description provided for @careWhenWasThisDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When was this done?'**
+  String get careWhenWasThisDoneTitle;
+
+  /// No description provided for @careCompletedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get careCompletedToday;
+
+  /// No description provided for @careCompletedOnScheduledDate.
+  ///
+  /// In en, this message translates to:
+  /// **'On the scheduled date ({date})'**
+  String careCompletedOnScheduledDate(String date);
+
+  /// No description provided for @careChooseCompletionDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose another date'**
+  String get careChooseCompletionDate;
+
+  /// No description provided for @careAddDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Add details'**
+  String get careAddDetails;
+
+  /// No description provided for @careAddDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add details'**
+  String get careAddDetailsTitle;
+
+  /// No description provided for @careDetailsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Details saved'**
+  String get careDetailsSaved;
+
+  /// No description provided for @careDetailsSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save details. Try again.'**
+  String get careDetailsSaveFailed;
+
   /// No description provided for @undoCompleteFailed.
   ///
   /// In en, this message translates to:

@@ -6163,6 +6163,32 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not mark this care item as done. Try again.';
 
   @override
+  String get careWhenWasThisDoneTitle => 'When was this done?';
+
+  @override
+  String get careCompletedToday => 'Today';
+
+  @override
+  String careCompletedOnScheduledDate(String date) {
+    return 'On the scheduled date ($date)';
+  }
+
+  @override
+  String get careChooseCompletionDate => 'Choose another date';
+
+  @override
+  String get careAddDetails => 'Add details';
+
+  @override
+  String get careAddDetailsTitle => 'Add details';
+
+  @override
+  String get careDetailsSaved => 'Details saved';
+
+  @override
+  String get careDetailsSaveFailed => 'Could not save details. Try again.';
+
+  @override
   String get undoCompleteFailed => 'Could not undo completion. Try again.';
 
   @override

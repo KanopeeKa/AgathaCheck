@@ -73,6 +73,12 @@ abstract class HealthRepository {
 
   Future<HealthOccurrence> undoOccurrence(String entryId, String occurrenceId);
 
+  Future<HealthOccurrence> updateOccurrenceNotes(
+    String entryId,
+    String occurrenceId,
+    String notes,
+  );
+
   Future<RescheduleOccurrenceResult> rescheduleOccurrence(
     String entryId,
     String occurrenceId,

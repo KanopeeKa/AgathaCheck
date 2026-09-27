@@ -2275,6 +2275,19 @@
     }
   },
   "careCompletionFailed": "Could not mark this care item as done. Try again.",
+  "careWhenWasThisDoneTitle": "When was this done?",
+  "careCompletedToday": "Today",
+  "careCompletedOnScheduledDate": "On the scheduled date ({date})",
+  "@careCompletedOnScheduledDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "careChooseCompletionDate": "Choose another date",
+  "careAddDetails": "Add details",
+  "careAddDetailsTitle": "Add details",
+  "careDetailsSaved": "Details saved",
+  "careDetailsSaveFailed": "Could not save details. Try again.",
   "undoCompleteFailed": "Could not undo completion. Try again.",
   "careContextAwayEntryTitle": "I'll be away",
   "careContextAwayEntryBody": "Preview care scheduled while you're away.",

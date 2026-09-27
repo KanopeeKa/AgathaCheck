@@ -7,8 +7,9 @@ import '../../domain/entities/health_occurrence.dart';
 import '../providers/health_providers.dart';
 import '../providers/occurrence_providers.dart';
 import 'health_issue_prompt/health_issue_linkage_flow.dart';
-import 'mark_complete_sheet.dart';
 import 'occurrence_care_actions.dart';
+import 'occurrence_completion_date_flow.dart';
+import 'occurrence_completion_feedback.dart';
 import 'reschedule_occurrence_flow.dart';
 import 'weight_occurrence_care_actions.dart';
 import 'pet_event_view_providers.dart';
@@ -50,14 +51,20 @@ class PetEventOccurrenceActions {
       }
 
       if (!context.mounted) return;
-      final l = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(
+      await showOccurrenceCompletionFeedback(
         context,
-      ).showSnackBar(SnackBar(content: Text(l.markCompletedAction)));
+        ref,
+        entry: entry,
+        occurrenceId: occurrence.id,
+        promptHealthIssue: false,
+      );
       return;
     }
 
-    final completedOn = await showMarkCompleteSheet(context);
+    final completedOn = await resolveCompletedOnForOccurrence(
+      context,
+      occurrence,
+    );
     if (completedOn == null || !context.mounted) return;
 
     try {
@@ -78,14 +85,11 @@ class PetEventOccurrenceActions {
     }
 
     if (!context.mounted) return;
-    final l = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l.markCompletedAction)));
-    await HealthIssueLinkageFlow.maybePromptAfterPlannedVetCompletion(
+    await showOccurrenceCompletionFeedback(
       context,
       ref,
-      entry,
+      entry: entry,
+      occurrenceId: occurrence.id,
     );
   }
 
