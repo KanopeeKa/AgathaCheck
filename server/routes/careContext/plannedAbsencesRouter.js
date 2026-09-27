@@ -21,6 +21,7 @@ import {
 } from './plannedAbsenceHandoverFields.js';
 import { registerPlannedAbsenceHandoverRoutes } from './plannedAbsenceHandoverRoutes.js';
 import { registerAbsenceCarePlanRoutes } from './absenceCarePlanRouter.js';
+import { registerAbsenceResolutionsRoutes } from './absenceResolutionsRouter.js';
 import {
   findOverlapWarnings,
   loadOverlapCandidatesForAbsences,
@@ -320,6 +321,11 @@ export function registerPlannedAbsenceRoutes(router, pool) {
   });
 
   registerAbsenceCarePlanRoutes(router, pool, {
+    loadAbsenceForUser,
+    loadAbsencePets,
+  });
+
+  registerAbsenceResolutionsRoutes(router, pool, {
     loadAbsenceForUser,
     loadAbsencePets,
   });
