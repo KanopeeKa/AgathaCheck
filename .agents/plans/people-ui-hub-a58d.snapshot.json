@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "plan_id": "people-ui-hub-a58d",
+  "approved_at": "2026-09-28T08:44:00Z",
+  "approved_by": "user chat 2026-09-28: bootstrap people-ui-hub-a58d with /execute-plan — Option A, always 5 bottom-nav icons (padding/size only)",
+  "approved_until": "2026-09-30T08:44:00Z",
+  "content_hash": "sha256:b7cc48521d71ef854a1750a66509f86072bdcd8cf96b1bdb41b136dc1e749077",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/people-ui-hub-integration-a58d",
+  "control_issue": 1373,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "p0-decisions",
+      "title": "Navigation & desk decision pack",
+      "branch": "cursor/people-ui-p0-decisions-a58d",
+      "allowed_paths": [
+        "docs/domains/people/**",
+        "docs/domains/pet_profile/**",
+        "docs/domains/navigation/**",
+        "docs/design/terminology.md",
+        ".agents/plans/people-ui-hub-a58d.md",
+        ".agents/plans/people-ui-hub-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "p1-nav",
+      "title": "Fifth tab + /pc/people route",
+      "branch": "cursor/people-ui-p1-nav-a58d",
+      "allowed_paths": [
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/experience/**",
+        "e2e/playwright/**",
+        "scripts/bdd-priority-tag-map.json",
+        "flutter_app/test/bdd/features/people.feature",
+        ".agents/plans/people-ui-hub-a58d.md",
+        ".agents/plans/people-ui-hub-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "p2-desk",
+      "title": "Dashboard People desk module",
+      "branch": "cursor/people-ui-p2-desk-a58d",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/**",
+        "flutter_app/lib/features/experience/presentation/widgets/**",
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/features/vet/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**",
+        "server/routes/people/**",
+        "server/lib/people/**",
+        "server/test/people/**",
+        "docs/architecture/api-reference.md",
+        "e2e/playwright/**",
+        ".agents/plans/people-ui-hub-a58d.md",
+        ".agents/plans/people-ui-hub-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "p3-list",
+      "title": "People hub list (search, chips, households)",
+      "branch": "cursor/people-ui-p3-list-a58d",
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/people/**",
+        "flutter_app/test/bdd/features/people.feature",
+        "e2e/playwright/**",
+        "scripts/bdd-priority-tag-map.json",
+        ".agents/plans/people-ui-hub-a58d.md",
+        ".agents/plans/people-ui-hub-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "p4-ship-main",
+      "title": "Integration PR to main",
+      "branch": "cursor/people-ui-hub-integration-a58d",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
