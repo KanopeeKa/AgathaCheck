@@ -89,6 +89,17 @@ Anchor: `materialisation_anchor = max(start_date, today_local)` — no backfill 
 
 **Once** series may keep explicit past `scheduled_date` when user sets a historical appointment.
 
+### Intent materialisation (D-CSM-018)
+
+Automatic paths (T−1 and `advanceSeries`) stay unchanged. When the guardian **chooses to act** on care that projection shows as **estimated** or **planned** but not yet materialised:
+
+1. Server runs **`ensureOpenOccurrence`** for the **open head** date (see decision log).
+2. Client may then **`rescheduleOccurrence`** or **`skipOccurrence`** on the returned `occurrence_id`.
+
+**Proactive ensure (absence):** when loading absence context for an **affected** item whose planned row has a known open/estimated date but no `occurrence_id`, the server or client may ensure the **head** only — not every in-window projected date.
+
+**Non-head projected dates** (`from_completion_chain` uncertainty): UI directs the user to the **earliest open pending** occurrence first (BR-1). Schedule-intent for editing later hops without closing the head remains out of scope (D-ACP-010).
+
 ## Zones & sort (UI)
 
 | Zone | Condition | Sort |

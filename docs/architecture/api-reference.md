@@ -178,6 +178,7 @@ Weight monitoring rhythms: generic complete and `mark-taken` return `400` — us
 | POST | `/:id/pause` | Body `{ paused_from?, reason_note? }`; `status = paused`, `paused_since` cache, ledger `paused` event |
 | POST | `/:id/resume` | Body `{ reason_note? }`; resume with **no catch-up** (D-CSM-005) |
 | POST | `/:id/occurrences/:occId/reschedule` | Body `{ scheduled_date, reason_code?, reason_note? }`; validates move (400 on past/no-op/beyond next hop/before last closed); returns `{ occurrence, warnings[], next_due_date }`; syncs `next_due_date` cache (D-ACP-009) |
+| POST | `/:id/occurrences/ensure-open` | **D-CSM-018** — Body optional `{ scheduled_date?, reason_code? }`; idempotently materialises pending row(s) for the **canonical open head** (or validates `scheduled_date` is that head); returns `{ occurrences[], created, next_due_date }`; 400 if a non-head date is requested while an earlier pending day exists |
 | POST | `/:id/adjust-cadence` | Body `{ effective_from, frequency?, frequency_interval?, recurrence_anchor?, reason_note? }`; series-forward only |
 | POST | `/:id/schedule/undo` | Timestamp-aware `undoLastAction` (CSM-8) |
 | GET | `/:id/schedule-explain` | Read-only `explainGap` facts for CIM (CSM-13) |

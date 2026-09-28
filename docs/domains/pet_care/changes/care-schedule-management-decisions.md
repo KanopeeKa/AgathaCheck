@@ -104,3 +104,27 @@ Rewrite UAT/demo seed data to exercise CSM edge cases found in code review (mini
 **Status:** Frozen
 
 **Satisfied 2026-09-15.** CSM-17 integration gate merged ([#1192](https://github.com/KanopeeKa/AgathaCheck/pull/1192)) and landed on `main` via programme integration ([#1193](https://github.com/KanopeeKa/AgathaCheck/pull/1193)). Unified write primitives, `projectSchedule`, `explainGap`, `advanceSeries`, and `care_schedule_events` ledger are live. Care Through Change reschedule/pause UI (post–CC-4 tranche) may proceed.
+
+---
+
+## D-CSM-018 — Intent-based materialisation of the open occurrence (2026-09-28)
+
+**Status:** Frozen (execute-plan `care-absence-materialisation-7796`)
+
+**Problem:** Lazy T−1 materialisation leaves **projected / estimated** in-window dates without a `health_occurrences` row. Skip, reschedule, and absence **Review date** require a materialised **open head** — UI otherwise dead-ends on “Not set” and null `occurrence_id`.
+
+**Decision:** Add **`ensureOpenOccurrence`** — an explicit CSM write that idempotently creates pending row(s) for the **canonical open calendar day** (earliest pending if any; otherwise the next series date computed like `advanceSeries`, without bypassing series bounds).
+
+| Allowed | Not allowed |
+|---------|-------------|
+| User intent: Review date, Change date, Skip (after ensure), proactive ensure for **affected** absence context on the **open head** | Pre-generating full in-window chains (daily batch) |
+| Materialise **one calendar day** (all slots that day for multi-dose) | Materialising a non-head projected hop while an earlier pending day exists (BR-1) |
+| Ledger optional `materialised` event for audit | GET-on-read hidden writes |
+
+**Relationship to D-CSM-004:** D-CSM-004 forbids automatic **`anchor+1` at create**. D-CSM-018 is **on-demand** materialisation when the guardian or absence flow needs to act — not series pre-generation.
+
+**Relationship to D-ACP-010:** Schedule-intent records for “fix hop #3 while hop #2 is open” remain **deferred**. D-CSM-018 does **not** reopen D-ACP-010; non-head estimated dates still require handling the **open head** first.
+
+**HTTP:** `POST /api/health-entries/:id/occurrences/ensure-open` (see [api-reference.md](/docs/architecture/api-reference.md)).
+
+**Implementation plan:** `care-absence-materialisation-7796` phases `ensure-server`, `ensure-flutter`, `absence-ux`.
