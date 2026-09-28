@@ -93,8 +93,8 @@ class PetCarePrimaryDestinations {
   static List<PetCarePrimaryDestination> destinations() => const [
     PetCarePrimaryDestination(
       route: '/pc/home',
-      icon: Icons.today_outlined,
-      selectedIcon: Icons.today,
+      icon: Icons.home_outlined,
+      selectedIcon: Icons.home,
       labelBuilder: _dashboardLabel,
     ),
     PetCarePrimaryDestination(
@@ -117,8 +117,8 @@ class PetCarePrimaryDestinations {
     ),
     PetCarePrimaryDestination(
       route: '/account',
-      icon: Icons.person_outline,
-      selectedIcon: Icons.person,
+      icon: Icons.settings_outlined,
+      selectedIcon: Icons.settings,
       labelBuilder: _accountLabel,
     ),
   ];

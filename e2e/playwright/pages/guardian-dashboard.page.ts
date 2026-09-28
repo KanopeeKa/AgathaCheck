@@ -152,8 +152,15 @@ export class GuardianDashboardPage {
     await refreshFlutterAccessibility(this.page);
   }
 
-  /** Compact Pet Care bottom bar tab (Dashboard, Pets, Actions, Fostering, Account). */
+  /** Compact Pet Care bottom bar tab (Dashboard, Pets, Actions, People, Account). */
   async openBottomNavTab(label: string): Promise<void> {
+    const semanticsId = this.destinationSemanticsId(label);
+    const byIdentifier = this.page.locator(`[flt-semantics-identifier="${semanticsId}"]`);
+    if (await byIdentifier.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await byIdentifier.first().click();
+      await refreshFlutterAccessibility(this.page);
+      return;
+    }
     const pattern = this.bottomNavTabPattern(label);
     const tab = this.page
       .getByRole('button', { name: pattern })
@@ -283,7 +290,7 @@ export class GuardianDashboardPage {
   bottomNavigation(): Locator {
     return this.page
       .locator('[flt-semantics-identifier="pet_care_bottom_navigation"]')
-      .or(this.page.getByRole('button', { name: /Dashboard(?:\s+Tab\s+1\s+of\s+5)?/i }))
+      .or(this.page.locator('[flt-semantics-identifier="pet_care_nav_dashboard"]'))
       .first();
   }
 
