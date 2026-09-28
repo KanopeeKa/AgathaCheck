@@ -166,7 +166,6 @@ class PetCarePeopleDeskModule extends ConsumerWidget {
     carers.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     return carers.take(_previewLimit).toList();
   }
-
 }
 
 class _Subheading extends StatelessWidget {

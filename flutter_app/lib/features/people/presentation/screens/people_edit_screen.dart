@@ -35,7 +35,9 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
   Future<void> _save(PeopleContactModel model) async {
     setState(() => _saving = true);
     try {
-      await ref.read(peopleContactsProvider.notifier).updateContact(
+      await ref
+          .read(peopleContactsProvider.notifier)
+          .updateContact(
             model.copyWith(privateNote: _noteController.text.trim()),
           );
       if (mounted) context.pop(true);
@@ -64,7 +66,9 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
       ),
     );
     if (ok != true || !mounted) return;
-    await ref.read(peopleContactsProvider.notifier).deleteContact(widget.personId);
+    await ref
+        .read(peopleContactsProvider.notifier)
+        .deleteContact(widget.personId);
     if (mounted) {
       context.go('/pc/people');
     }

@@ -140,9 +140,8 @@ List<RouteBase> buildExperienceRoutes() {
         GoRoute(
           path: '/pc/people',
           name: 'petCarePeople',
-          builder: (context, state) => PeopleHubScreen(
-            selectedPersonId: peoplePersonIdFromState(state),
-          ),
+          builder: (context, state) =>
+              PeopleHubScreen(selectedPersonId: peoplePersonIdFromState(state)),
           routes: [
             GoRoute(
               path: 'new',

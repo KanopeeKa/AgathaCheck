@@ -8,7 +8,11 @@ import '../../../experience/presentation/widgets/experience_shell_scaffold.dart'
 import '../providers/people_providers.dart';
 
 class PeopleDetailScreen extends ConsumerWidget {
-  const PeopleDetailScreen({super.key, required this.personId, this.embedded = false});
+  const PeopleDetailScreen({
+    super.key,
+    required this.personId,
+    this.embedded = false,
+  });
 
   final String personId;
   final bool embedded;
@@ -82,7 +86,10 @@ class PeopleDetailScreen extends ConsumerWidget {
           _InfoRow(label: l.peopleEmailLabel, value: contact.email!),
         if (contact.privateNote.isNotEmpty) ...[
           const SizedBox(height: 16),
-          Text(l.peoplePrivateNoteLabel, style: Theme.of(context).textTheme.titleSmall),
+          Text(
+            l.peoplePrivateNoteLabel,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
           const SizedBox(height: 4),
           Text(contact.privateNote),
         ],
@@ -134,10 +141,7 @@ class _InfoRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 88,
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
+            child: Text(label, style: Theme.of(context).textTheme.labelLarge),
           ),
           Expanded(child: Text(value)),
         ],

@@ -26,10 +26,7 @@ void main() {
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
-          body: PeopleDirectoryCard(
-            entry: entry,
-            onTap: () => tapped = true,
-          ),
+          body: PeopleDirectoryCard(entry: entry, onTap: () => tapped = true),
         ),
       ),
     );

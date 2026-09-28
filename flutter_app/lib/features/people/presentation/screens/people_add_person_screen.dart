@@ -45,7 +45,9 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
     if (name.isEmpty) return;
     setState(() => _saving = true);
     try {
-      await ref.read(peopleContactsProvider.notifier).addContact(
+      await ref
+          .read(peopleContactsProvider.notifier)
+          .addContact(
             PeopleContactModel(
               id: '',
               kind: _kind,
@@ -171,7 +173,10 @@ class _IdentityStep extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text(l.peopleAddStepIdentity, style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          l.peopleAddStepIdentity,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         const SizedBox(height: 12),
         TextField(
           controller: nameController,
@@ -207,7 +212,10 @@ class _DedupeStep extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text(l.peopleAddDedupeTitle, style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          l.peopleAddDedupeTitle,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         const SizedBox(height: 8),
         if (matches.isEmpty)
           Text(l.peopleAddDedupeEmpty)
@@ -229,10 +237,7 @@ class _DedupeStep extends StatelessWidget {
 }
 
 class _RelationshipStep extends StatelessWidget {
-  const _RelationshipStep({
-    required this.roles,
-    required this.onRoleToggle,
-  });
+  const _RelationshipStep({required this.roles, required this.onRoleToggle});
 
   final Set<String> roles;
   final void Function(String role, bool selected) onRoleToggle;
