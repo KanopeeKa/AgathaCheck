@@ -4,7 +4,7 @@
   "approved_at": "2026-09-28T08:44:00Z",
   "approved_by": "user chat 2026-09-28: bootstrap people-ui-hub-a58d with /execute-plan — Option A, always 5 bottom-nav icons (padding/size only)",
   "approved_until": "2026-09-30T08:44:00Z",
-  "content_hash": "sha256:ff153622c5f3f4629d3c18d154280633a8db1ce7ff1f68797e0ec5675d753785",
+  "content_hash": "sha256:9b1aa774b708000007e41e5a95df17052ad4a1d5dc0fef9677c2d3f54ea7ac00",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/people-ui-hub-integration-a58d",
@@ -166,7 +166,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1380",
+      "pr_head_sha": "31f512dc"
     }
   ]
 }

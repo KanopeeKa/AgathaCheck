@@ -31,10 +31,10 @@ next_action: "continue phase p4-ship-main on branch cursor/people-ui-hub-integra
 artifact_ref:
   branch: cursor/people-ui-hub-integration-a58d
   plan_path: .agents/plans/people-ui-hub-a58d.md
-  plan_commit: 2aebc770ad83d900fd86771bbf8c4d09424f586f
+  plan_commit: 31f512dc7d9ad396eae0b8ce6575bd31b631e283
   snapshot_path: .agents/plans/people-ui-hub-a58d.snapshot.json
-  snapshot_commit: 2aebc770ad83d900fd86771bbf8c4d09424f586f
-open_prs: []
+  snapshot_commit: 31f512dc7d9ad396eae0b8ce6575bd31b631e283
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1380"]
 merge_commits: {}
 debt_issue_refs: []
 ```
