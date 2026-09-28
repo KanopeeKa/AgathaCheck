@@ -11,18 +11,18 @@ Module-based Care Item detail UI (segmentation, hero Needs attention, stat sched
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: integration-main
-last_completed_phase: header-wayfinding
+autonomy: completed
+current_phase: null
+last_completed_phase: integration-main
 halt_reason: null
-next_action: "continue phase integration-main on branch cursor/care-item-view-ui-integration-7796"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/care-item-view-ui-integration-7796
+  branch: main
   plan_path: .agents/plans/care-item-view-ui.md
-  plan_commit: 9f557888530a6fff2442434337036b7ff750846f
+  plan_commit: b6caac980366642183921d97e93961a4f6a3f03e
   snapshot_path: .agents/plans/care-item-view-ui.snapshot.json
-  snapshot_commit: 9f557888530a6fff2442434337036b7ff750846f
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1382"]
+  snapshot_commit: b6caac980366642183921d97e93961a4f6a3f03e
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```

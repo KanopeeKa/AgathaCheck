@@ -5,7 +5,7 @@
   "approved_at": "2026-09-27T18:35:00Z",
   "approved_by": "user chat 2026-09-27: go ahead — atomic PRs on integration branch, execute-plan, merge main only via final PR",
   "approved_until": "2026-09-29T18:35:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-item-view-ui-integration-7796",
   "control_issue": 1368,
@@ -195,12 +195,12 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "release-verification",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1382",
-      "pr_head_sha": "9f557888530a6fff2442434337036b7ff750846f"
+      "pr_head_sha": "662cae1bded917e25bdd5e926ec7b5d81048250d"
     }
   ],
-  "content_hash": "sha256:099f0d8df6455f77fe1da35f614eade14814c2cebb1653c19b34e2abdb1ca1bc"
+  "content_hash": "sha256:7053c7d1acd17d3aa165fb7e1df33cb754c6c118d187b08128e6b1478199083e"
 }
