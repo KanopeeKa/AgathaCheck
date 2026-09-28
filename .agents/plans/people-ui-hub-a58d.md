@@ -24,16 +24,16 @@ Make People & Care Team **discoverable** in Pet Care: replace the dashboard **My
 
 ```yaml
 autonomy: active
-current_phase: p0-decisions
-last_completed_phase: null
+current_phase: p1-nav
+last_completed_phase: p0-decisions
 halt_reason: null
-next_action: "continue phase p0-decisions on branch cursor/people-ui-p0-decisions-a58d"
+next_action: "continue phase p1-nav on branch cursor/people-ui-p1-nav-a58d"
 artifact_ref:
-  branch: cursor/people-ui-p0-decisions-a58d
+  branch: cursor/people-ui-hub-integration-a58d
   plan_path: .agents/plans/people-ui-hub-a58d.md
-  plan_commit: 9b5fd6840681f6f0126479b619c0906fac9dd721
+  plan_commit: 93565da138bbc162a7f29f8fb6464c111caa665c
   snapshot_path: .agents/plans/people-ui-hub-a58d.snapshot.json
-  snapshot_commit: 9b5fd6840681f6f0126479b619c0906fac9dd721
+  snapshot_commit: 93565da138bbc162a7f29f8fb6464c111caa665c
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

@@ -71,14 +71,16 @@ List<RouteBase> buildExperienceRoutes() {
         GoRoute(
           path: 'people',
           name: 'accountPeople',
-          builder: (context, state) => const PeopleListScreen(),
-          routes: [
-            GoRoute(
-              path: 'new',
-              name: 'accountPeopleNew',
-              builder: (context, state) => const PeopleContactFormScreen(),
-            ),
-          ],
+          redirect: (context, state) {
+            final path = state.uri.path;
+            if (path.endsWith('/new')) return '/pc/people/new';
+            return '/pc/people';
+          },
+        ),
+        GoRoute(
+          path: 'people/new',
+          name: 'accountPeopleNew',
+          redirect: (context, state) => '/pc/people/new',
         ),
         GoRoute(path: 'orgs/:orgId', redirect: (context, state) => '/account'),
       ],
@@ -133,6 +135,18 @@ List<RouteBase> buildExperienceRoutes() {
           path: '/pc/events',
           name: 'petCareEvents',
           builder: (context, state) => const _PetCareEventsScreen(),
+        ),
+        GoRoute(
+          path: '/pc/people',
+          name: 'petCarePeople',
+          builder: (context, state) => const PeopleListScreen(),
+          routes: [
+            GoRoute(
+              path: 'new',
+              name: 'petCarePeopleNew',
+              builder: (context, state) => const PeopleContactFormScreen(),
+            ),
+          ],
         ),
         ...buildAwayPlanningRoutes(),
         GoRoute(

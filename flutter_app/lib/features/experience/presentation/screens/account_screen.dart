@@ -80,7 +80,7 @@ class AccountScreen extends ConsumerWidget {
                         key: const Key('account_people'),
                         icon: Icons.groups_outlined,
                         label: l.accountPeopleRow,
-                        onTap: () => context.push('/account/people'),
+                        onTap: () => context.push('/pc/people'),
                       ),
                     ],
                   ),

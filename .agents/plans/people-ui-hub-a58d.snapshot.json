@@ -4,7 +4,7 @@
   "approved_at": "2026-09-28T08:44:00Z",
   "approved_by": "user chat 2026-09-28: bootstrap people-ui-hub-a58d with /execute-plan — Option A, always 5 bottom-nav icons (padding/size only)",
   "approved_until": "2026-09-30T08:44:00Z",
-  "content_hash": "sha256:e5574df84b7ac3ff4a9876db2bf47597af245e50464a238b2f4bf701feabda3e",
+  "content_hash": "sha256:0913f46b4f424eaf6ac23088b665f78b4c3c05000455059bf3402ffa7d7421dc",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/people-ui-hub-integration-a58d",
@@ -35,10 +35,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1374",
+      "pr_head_sha": "7cfe2e9d646f15c5ee00bac013119812b8e61177"
     },
     {
       "id": "p1-nav",
@@ -66,12 +68,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {

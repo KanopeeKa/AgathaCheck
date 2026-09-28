@@ -364,6 +364,7 @@
   },
   "dashboardNavLabel": "Tableau de bord",
   "careNavLabel": "Soins",
+  "peopleNavLabel": "Personnes",
   "careDueTab": "À faire {count}",
   "@careDueTab": { "placeholders": { "count": { "type": "int" } } },
   "careSoonTab": "Bientôt",
