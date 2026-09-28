@@ -9,11 +9,7 @@ import '../../../pet_profile/presentation/widgets/pet_photo_image.dart';
 
 /// Pet thumbnail, name, and species badge for care event detail screens.
 class PetEventPetCard extends ConsumerWidget {
-  const PetEventPetCard({
-    super.key,
-    required this.pet,
-    this.embedded = false,
-  });
+  const PetEventPetCard({super.key, required this.pet, this.embedded = false});
 
   final Pet pet;
 
@@ -68,20 +64,14 @@ class PetEventPetCard extends ConsumerWidget {
     );
 
     if (embedded) {
-      return KeyedSubtree(
-        key: const Key('pet_event_pet_card'),
-        child: content,
-      );
+      return KeyedSubtree(key: const Key('pet_event_pet_card'), child: content);
     }
 
     return Card(
       key: const Key('pet_event_pet_card'),
       elevation: 0,
       color: colorScheme.surfaceContainerLow,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: content,
-      ),
+      child: Padding(padding: const EdgeInsets.all(12), child: content),
     );
   }
 }

@@ -88,20 +88,12 @@ class CareItemDetailBody extends ConsumerWidget {
       if (absenceBeforeSchedule) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            absenceSection,
-            _sectionGap,
-            scheduleSection,
-          ],
+          children: [absenceSection, _sectionGap, scheduleSection],
         );
       }
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          scheduleSection,
-          _sectionGap,
-          absenceSection,
-        ],
+        children: [scheduleSection, _sectionGap, absenceSection],
       );
     }
 
@@ -221,17 +213,10 @@ class _DetailsModule extends StatelessWidget {
             icon: Icons.article_outlined,
           ),
           const SizedBox(height: 12),
-          CareCategoryBlocksDetailSection(
-            entry: entry,
-            pet: pet,
-            muted: muted,
-          ),
+          CareCategoryBlocksDetailSection(entry: entry, pet: pet, muted: muted),
           CareItemInfoSection(entry: entry, muted: muted),
           if (includeEstablished)
-            CareItemEstablishedSection(
-              pet: pet,
-              isEstablished: isEstablished,
-            ),
+            CareItemEstablishedSection(pet: pet, isEstablished: isEstablished),
           if (entry.healthIssueId != null &&
               (entry.healthIssueName?.isNotEmpty ?? false)) ...[
             const SizedBox(height: 8),

@@ -48,9 +48,7 @@ void main() {
               absences: [],
             ),
           ),
-          entryOccurrencesProvider('entry-1').overrideWith(
-            (ref) async => [],
-          ),
+          entryOccurrencesProvider('entry-1').overrideWith((ref) async => []),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -71,6 +69,9 @@ void main() {
     );
 
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('care_item_detail_two_column')), findsOneWidget);
+    expect(
+      find.byKey(const Key('care_item_detail_two_column')),
+      findsOneWidget,
+    );
   });
 }

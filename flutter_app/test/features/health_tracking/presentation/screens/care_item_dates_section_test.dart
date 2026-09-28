@@ -35,45 +35,46 @@ void main() {
     nextDueDate: DateTime(2025, 6, 1),
   );
 
-  testWidgets('CareItemDatesSection wraps zoned rows in module with status pills', (
-    tester,
-  ) async {
-    final today = calendarDateOnly(DateTime.now());
-    final yesterday = today.subtract(const Duration(days: 1));
+  testWidgets(
+    'CareItemDatesSection wraps zoned rows in module with status pills',
+    (tester) async {
+      final today = calendarDateOnly(DateTime.now());
+      final yesterday = today.subtract(const Duration(days: 1));
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          entryOccurrencesProvider('entry-1').overrideWith(
-            (ref) async => [
-              _occ(id: 'occ-missed', date: yesterday),
-              _occ(id: 'occ-today', date: today, scheduledTime: '23:59'),
-            ],
-          ),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: CareItemDatesSection(entry: entry, muted: false),
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            entryOccurrencesProvider('entry-1').overrideWith(
+              (ref) async => [
+                _occ(id: 'occ-missed', date: yesterday),
+                _occ(id: 'occ-today', date: today, scheduledTime: '23:59'),
+              ],
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: CareItemDatesSection(entry: entry, muted: false),
+            ),
           ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(
-      find.byKey(const Key('care_item_needs_attention_section')),
-      findsOneWidget,
-    );
-    expect(find.text('Needs attention'), findsOneWidget);
-    expect(find.text('Heartworm'), findsNWidgets(2));
-    expect(find.byType(CareItemStatusPill), findsNWidgets(2));
-    expect(find.text('Due today'), findsOneWidget);
-    expect(find.text('Overdue'), findsOneWidget);
-    expect(
-      find.byKey(const Key('care_item_occurrence_mark_done_occ-today')),
-      findsOneWidget,
-    );
-  });
+      expect(
+        find.byKey(const Key('care_item_needs_attention_section')),
+        findsOneWidget,
+      );
+      expect(find.text('Needs attention'), findsOneWidget);
+      expect(find.text('Heartworm'), findsNWidgets(2));
+      expect(find.byType(CareItemStatusPill), findsNWidgets(2));
+      expect(find.text('Due today'), findsOneWidget);
+      expect(find.text('Overdue'), findsOneWidget);
+      expect(
+        find.byKey(const Key('care_item_occurrence_mark_done_occ-today')),
+        findsOneWidget,
+      );
+    },
+  );
 }

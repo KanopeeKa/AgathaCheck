@@ -39,8 +39,6 @@ class CareItemDatesSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final occurrencesAsync = ref.watch(entryOccurrencesProvider(entry.id));
     final summary = ref.watch(occurrenceSummaryProvider(entry.id));
 
@@ -223,7 +221,9 @@ class _OccurrenceRow extends ConsumerWidget {
             dateLabel,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w600,
-              color: muted ? colorScheme.onSurfaceVariant : colorScheme.onSurface,
+              color: muted
+                  ? colorScheme.onSurfaceVariant
+                  : colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 4),
@@ -261,9 +261,7 @@ class _OccurrenceRow extends ConsumerWidget {
                   child: Text(l.skipOccurrence),
                 ),
                 OutlinedButton(
-                  key: Key(
-                    'care_item_occurrence_reschedule_${occurrence.id}',
-                  ),
+                  key: Key('care_item_occurrence_reschedule_${occurrence.id}'),
                   onPressed: () => PetEventOccurrenceActions.changeDate(
                     context,
                     ref,

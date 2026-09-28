@@ -37,9 +37,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: CareItemInfoSection(entry: entry, muted: false),
-          ),
+          home: Scaffold(body: CareItemInfoSection(entry: entry, muted: false)),
         ),
       ),
     );

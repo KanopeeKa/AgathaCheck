@@ -56,10 +56,7 @@ class CareItemAbsenceSection extends ConsumerWidget {
                   semanticLabel: l.careItemAbsenceNeedsReview,
                 )
               else
-                Text(
-                  summary,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
+                Text(summary, style: Theme.of(context).textTheme.bodyMedium),
               if (needsAttention && !muted) ...[
                 const SizedBox(height: 12),
                 Wrap(
@@ -68,7 +65,8 @@ class CareItemAbsenceSection extends ConsumerWidget {
                   children: [
                     OutlinedButton(
                       key: const Key('care_item_absence_keep_date'),
-                      onPressed: () => _save(ref, primary, decision: 'keep_date'),
+                      onPressed: () =>
+                          _save(ref, primary, decision: 'keep_date'),
                       child: Text(l.careItemAbsenceKeepDate),
                     ),
                     TextButton(

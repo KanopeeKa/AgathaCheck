@@ -37,10 +37,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(
-      find.byKey(const Key('care_item_schedule_section')),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('care_item_schedule_section')), findsOneWidget);
     expect(find.byType(CareItemStatRow), findsOneWidget);
     expect(find.byKey(const Key('care_item_edit_schedule')), findsOneWidget);
     expect(find.text('Fixed schedule'), findsOneWidget);

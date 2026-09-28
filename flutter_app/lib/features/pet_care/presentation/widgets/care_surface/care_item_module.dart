@@ -24,7 +24,9 @@ class CareItemModule extends StatelessWidget {
         width: double.infinity,
         padding: padding,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(CareSurfaceTokens.collectionRadius),
+          borderRadius: BorderRadius.circular(
+            CareSurfaceTokens.collectionRadius,
+          ),
           border: Border.all(color: CareSurfaceTokens.moduleBorder()),
         ),
         child: child,

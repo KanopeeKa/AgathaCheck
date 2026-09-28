@@ -19,7 +19,9 @@ class CareItemDetailRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final valueColor = muted ? colorScheme.onSurfaceVariant : colorScheme.onSurface;
+    final valueColor = muted
+        ? colorScheme.onSurfaceVariant
+        : colorScheme.onSurface;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
