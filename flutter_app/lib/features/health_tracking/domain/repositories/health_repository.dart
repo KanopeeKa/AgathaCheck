@@ -1,6 +1,7 @@
 import '../entities/health_entry.dart';
 import '../entities/health_history_entry.dart';
 import '../entities/health_occurrence.dart';
+import '../entities/ensure_open_occurrence_result.dart';
 import '../entities/reschedule_occurrence_result.dart';
 
 /// Abstract repository for health tracking operations.
@@ -85,6 +86,12 @@ abstract class HealthRepository {
     String entryId,
     String occurrenceId,
     DateTime scheduledDate, {
+    String? reasonCode,
+  });
+
+  Future<EnsureOpenOccurrenceResult> ensureOpenOccurrence(
+    String entryId, {
+    DateTime? scheduledDate,
     String? reasonCode,
   });
 

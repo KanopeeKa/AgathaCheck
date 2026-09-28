@@ -10,10 +10,12 @@ import '../models/health_history_model.dart';
 import '../models/health_occurrence_model.dart';
 import 'health_occurrence_remote_datasource.dart'
     show
+        EnsureOpenOccurrenceRemoteResult,
         RescheduleOccurrenceRemoteResult,
         fetchOpenOccurrences,
         fetchPastOccurrences,
         postCompleteOccurrence,
+        postEnsureOpenOccurrence,
         postRescheduleOccurrence,
         postSkipMissedOccurrences,
         postSkipOccurrence,
@@ -84,6 +86,11 @@ abstract class HealthRemoteDataSource {
     String entryId,
     String occurrenceId,
     DateTime scheduledDate, {
+    String? reasonCode,
+  });
+  Future<EnsureOpenOccurrenceRemoteResult> ensureOpenOccurrence(
+    String entryId, {
+    DateTime? scheduledDate,
     String? reasonCode,
   });
   Future<void> completeWeightOccurrence({
@@ -463,6 +470,23 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       checkResponse: checkHealthRemoteResponse,
       entryId: entryId,
       occurrenceId: occurrenceId,
+      scheduledDate: scheduledDate,
+      reasonCode: reasonCode,
+    );
+  }
+
+  @override
+  Future<EnsureOpenOccurrenceRemoteResult> ensureOpenOccurrence(
+    String entryId, {
+    DateTime? scheduledDate,
+    String? reasonCode,
+  }) {
+    return postEnsureOpenOccurrence(
+      client: _client,
+      baseUrl: baseUrl,
+      headers: _authHeaders(jsonBody: true),
+      checkResponse: checkHealthRemoteResponse,
+      entryId: entryId,
       scheduledDate: scheduledDate,
       reasonCode: reasonCode,
     );

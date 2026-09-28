@@ -9183,6 +9183,18 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get careItemAbsenceSaveResolution;
 
+  /// No description provided for @careItemOccurrenceReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review date'**
+  String get careItemOccurrenceReviewTitle;
+
+  /// No description provided for @careItemAbsenceReviewDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {date}'**
+  String careItemAbsenceReviewDate(String date);
+
   /// No description provided for @careItemDetailsTitle.
   ///
   /// In en, this message translates to:
