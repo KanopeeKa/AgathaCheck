@@ -17,7 +17,8 @@ class _EnsureTestRepository implements HealthRepository {
     String entryId, {
     DateTime? scheduledDate,
     String? reasonCode,
-  }) onEnsure;
+  })
+  onEnsure;
 
   int ensureCallCount = 0;
 
@@ -106,9 +107,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          healthRepositoryProvider.overrideWithValue(repository),
-        ],
+        overrides: [healthRepositoryProvider.overrideWithValue(repository)],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,

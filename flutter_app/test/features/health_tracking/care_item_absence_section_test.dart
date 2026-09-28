@@ -60,10 +60,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final l = await AppLocalizations.delegate.load(const Locale('en'));
-    expect(
-      find.byKey(const Key('care_item_absence_section')),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('care_item_absence_section')), findsOneWidget);
     expect(
       find.byKey(const Key('care_item_absence_keep_date')),
       findsOneWidget,

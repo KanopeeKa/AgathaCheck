@@ -34,10 +34,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: OccurrenceReviewSheet(
-              entry: entry,
-              occurrence: occurrence,
-            ),
+            body: OccurrenceReviewSheet(entry: entry, occurrence: occurrence),
           ),
         ),
       ),
@@ -54,7 +51,10 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.byKey(const Key('occurrence_review_change_date')), findsOneWidget);
+    expect(
+      find.byKey(const Key('occurrence_review_change_date')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('occurrence_review_skip')), findsOneWidget);
     expect(find.text(l.rescheduleActionLabel), findsOneWidget);
     expect(find.text(l.skipOccurrence), findsOneWidget);
