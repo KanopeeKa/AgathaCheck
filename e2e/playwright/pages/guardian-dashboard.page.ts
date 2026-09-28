@@ -125,9 +125,14 @@ export class GuardianDashboardPage {
     const card = this.page
       .locator('[flt-semantics-identifier^="people_directory_card_"]')
       .filter({ hasText: new RegExp(name, 'i') });
-    await expect(card.first()).toBeVisible({ timeout: 60_000 });
-    await card.first().scrollIntoViewIfNeeded();
-    await card.first().click();
+    const row = this.section(/People|PEOPLE|Autour de vos animaux/i)
+      .getByRole('button', { name: new RegExp(name, 'i') })
+      .or(semanticsByName(this.page, new RegExp(name, 'i')))
+      .first();
+    const target = (await card.count()) > 0 ? card.first() : row;
+    await expect(target).toBeVisible({ timeout: 60_000 });
+    await target.scrollIntoViewIfNeeded();
+    await target.click();
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/?]+/, 30_000);
