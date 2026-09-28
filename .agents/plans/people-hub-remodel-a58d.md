@@ -32,16 +32,16 @@ Deliver the **post–`people-ui-hub-a58d` UX remodel**: one People roster with *
 
 ```yaml
 autonomy: active
-current_phase: p1-roster-cards
-last_completed_phase: p0-docs
+current_phase: p5-ship-main
+last_completed_phase: p4-tests-e2e
 halt_reason: null
-next_action: "start phase p1-roster-cards: checkout cursor/people-hub-remodel-p1-cards-a58d"
+next_action: "start phase p5-ship-main: checkout cursor/people-hub-remodel-integration-a58d"
 artifact_ref:
   branch: cursor/people-hub-remodel-integration-a58d
   plan_path: .agents/plans/people-hub-remodel-a58d.md
-  plan_commit: 2055f4c7ea13d5d2afecfccefa5ec7b2fed05c62
+  plan_commit: 20d9eb32dbd5257f51af0c0e5e505128afacb5ae
   snapshot_path: .agents/plans/people-hub-remodel-a58d.snapshot.json
-  snapshot_commit: 2055f4c7ea13d5d2afecfccefa5ec7b2fed05c62
+  snapshot_commit: 20d9eb32dbd5257f51af0c0e5e505128afacb5ae
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
