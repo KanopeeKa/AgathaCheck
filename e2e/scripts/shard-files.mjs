@@ -16,7 +16,7 @@ export const SHARD_TOTAL = 9;
 
 /** @type {string[][]} */
 export const SHARDS = [
-  ['playwright/tests/health.tracking.spec.ts'],
+  ['playwright/tests/health.tracking.spec.ts', 'playwright/tests/care.item.absence.spec.ts'],
   [
     'playwright/tests/pet.profiles.spec.ts',
     'playwright/tests/pet.detail-navigation.spec.ts',
