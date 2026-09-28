@@ -12214,6 +12214,30 @@ abstract class AppLocalizations {
   /// **'Add person'**
   String get peopleAddPerson;
 
+  /// No description provided for @peopleDeskSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get peopleDeskSeeAll;
+
+  /// No description provided for @peopleDeskEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add carers and pet professionals so they appear on your dashboard and in away plans.'**
+  String get peopleDeskEmptyBody;
+
+  /// No description provided for @peopleDeskHouseholdRail.
+  ///
+  /// In en, this message translates to:
+  /// **'Households'**
+  String get peopleDeskHouseholdRail;
+
+  /// No description provided for @peopleDeskLinkedPets.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pet linked} other{{count} pets linked}}'**
+  String peopleDeskLinkedPets(int count);
+
   /// No description provided for @peopleKindLabel.
   ///
   /// In en, this message translates to:
