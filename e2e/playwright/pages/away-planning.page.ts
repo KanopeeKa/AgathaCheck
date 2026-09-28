@@ -410,14 +410,18 @@ export class AwayPlanningPage {
     const field = this.page.getByRole('textbox', { name: /^Notes$/i });
     await expect(field).toBeVisible({ timeout: 30_000 });
     await field.click();
-    await field.fill(note);
+    await field.fill('');
+    await field.pressSequentially(note, { delay: 20 });
+    await refreshFlutterAccessibility(this.page);
   }
 
   async saveEdit(): Promise<void> {
-    await this.page
-      .getByRole('button', { name: /Save absence|Enregistrer l'absence/i })
-      .first()
-      .click();
+    const save = this.page
+      .locator('[flt-semantics-identifier="away_plan_edit_save"]')
+      .or(this.page.getByRole('button', { name: /Save absence|Enregistrer l'absence/i }))
+      .last();
+    await expect(save).toBeEnabled({ timeout: 60_000 });
+    await save.click();
     await refreshFlutterAccessibility(this.page);
     await this.expectPlanPageLoaded();
   }

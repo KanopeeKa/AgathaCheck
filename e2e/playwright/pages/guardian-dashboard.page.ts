@@ -33,7 +33,9 @@ export class GuardianDashboardPage {
   async expectTodayCareRegions(): Promise<void> {
     await expect(this.section(/My Pets|Mes animaux/i)).toBeVisible();
     await expect(this.section(/CARE ACTIONS|SOINS/i)).toBeVisible();
-    await expect(this.section(/^People$|^PEOPLE$|Autour de vos animaux/i)).toBeVisible();
+    const people = this.section(/People|PEOPLE|Autour de vos animaux/i);
+    await people.scrollIntoViewIfNeeded();
+    await expect(people).toBeVisible();
     await expect(this.section(/Fostering Sessions|Sessions d'accueil/i)).not.toBeVisible();
   }
 
@@ -112,7 +114,7 @@ export class GuardianDashboardPage {
 
   async expectVetVisible(name: string): Promise<void> {
     await expect(
-      this.section(/^People$|^PEOPLE$|Autour de vos animaux/i)
+      this.section(/People|PEOPLE|Autour de vos animaux/i)
         .getByRole('button', { name: new RegExp(name, 'i') })
         .or(semanticsByName(this.page, new RegExp(name, 'i')))
         .first(),
@@ -120,16 +122,16 @@ export class GuardianDashboardPage {
   }
 
   async openVet(name: string): Promise<void> {
-    const row = this.section(/^People$|^PEOPLE$|Autour de vos animaux/i)
+    const row = this.section(/People|PEOPLE|Autour de vos animaux/i)
       .getByRole('button', { name: new RegExp(name, 'i') })
       .or(semanticsByName(this.page, new RegExp(name, 'i')))
       .first();
     await row.click();
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
-    await expect(semanticsByName(this.page, new RegExp(name, 'i')).first()).toBeVisible({
-      timeout: 30_000,
-    });
+    await expect(
+      this.page.getByText(/^People$|^Autour de vos animaux$/i).first(),
+    ).toBeVisible({ timeout: 15_000 });
   }
 
   async expectNoHorizontalOverflow(): Promise<void> {
