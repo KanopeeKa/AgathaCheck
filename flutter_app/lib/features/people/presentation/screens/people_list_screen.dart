@@ -57,11 +57,14 @@ class _PeopleListScreenState extends ConsumerState<PeopleListScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(l.peopleListLoadError)),
         data: (contacts) {
-          final households = householdsAsync.valueOrNull ?? const <HouseholdSummary>[];
+          final households =
+              householdsAsync.valueOrNull ?? const <HouseholdSummary>[];
           final filtered = _filterContacts(contacts, _searchQuery);
           final pros = filtered.where((c) => c.isProfessional).toList();
           final prosIds = pros.map((c) => c.id).toSet();
-          final carers = filtered.where((c) => !prosIds.contains(c.id)).toList();
+          final carers = filtered
+              .where((c) => !prosIds.contains(c.id))
+              .toList();
 
           return RefreshIndicator(
             onRefresh: () async {
@@ -81,7 +84,8 @@ class _PeopleListScreenState extends ConsumerState<PeopleListScreen> {
                       border: const OutlineInputBorder(),
                       isDense: true,
                     ),
-                    onChanged: (value) => setState(() => _searchQuery = value.trim()),
+                    onChanged: (value) =>
+                        setState(() => _searchQuery = value.trim()),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -121,9 +125,7 @@ class _PeopleListScreenState extends ConsumerState<PeopleListScreen> {
   ) {
     if (query.isEmpty) return contacts;
     final lower = query.toLowerCase();
-    return contacts
-        .where((c) => c.name.toLowerCase().contains(lower))
-        .toList();
+    return contacts.where((c) => c.name.toLowerCase().contains(lower)).toList();
   }
 
   List<Widget> _buildSections({
@@ -135,7 +137,8 @@ class _PeopleListScreenState extends ConsumerState<PeopleListScreen> {
   }) {
     final children = <Widget>[];
 
-    if (filter == PeopleListFilter.all || filter == PeopleListFilter.household) {
+    if (filter == PeopleListFilter.all ||
+        filter == PeopleListFilter.household) {
       for (final household in households) {
         children.add(
           _Section(
@@ -160,7 +163,8 @@ class _PeopleListScreenState extends ConsumerState<PeopleListScreen> {
       children.add(const SizedBox(height: 24));
     }
 
-    if (filter == PeopleListFilter.all || filter == PeopleListFilter.professionals) {
+    if (filter == PeopleListFilter.all ||
+        filter == PeopleListFilter.professionals) {
       children.add(
         _Section(
           title: l.peopleProfessionalsSection,
@@ -179,10 +183,7 @@ class _PeopleListScreenState extends ConsumerState<PeopleListScreen> {
 }
 
 class _FilterChips extends StatelessWidget {
-  const _FilterChips({
-    required this.selected,
-    required this.onSelected,
-  });
+  const _FilterChips({required this.selected, required this.onSelected});
 
   final PeopleListFilter selected;
   final ValueChanged<PeopleListFilter> onSelected;

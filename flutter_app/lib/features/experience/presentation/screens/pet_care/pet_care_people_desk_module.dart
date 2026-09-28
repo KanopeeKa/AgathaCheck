@@ -79,7 +79,9 @@ class PetCarePeopleDeskModule extends ConsumerWidget {
                     title: l.peopleEmptyCarers,
                     body: l.peopleDeskEmptyBody,
                     actionLabel: l.peopleAddPerson,
-                    actionKey: const Key('pet_care_dashboard_empty_people_action'),
+                    actionKey: const Key(
+                      'pet_care_dashboard_empty_people_action',
+                    ),
                     onAction: () => context.push('/pc/people/new'),
                   );
                 }
@@ -90,25 +92,36 @@ class PetCarePeopleDeskModule extends ConsumerWidget {
                     if (households.isNotEmpty) ...[
                       _Subheading(text: l.peopleDeskHouseholdRail),
                       const SizedBox(height: 6),
-                      _HouseholdRail(householdNames: households.map((h) => h.name).toList()),
+                      _HouseholdRail(
+                        householdNames: households.map((h) => h.name).toList(),
+                      ),
                       const SizedBox(height: 14),
                     ],
                     _Subheading(text: l.peopleProfessionalsSection),
                     const SizedBox(height: 6),
                     if (pros.isEmpty)
-                      Text(l.peopleEmptyProfessionals, style: Theme.of(context).textTheme.bodyMedium)
+                      Text(
+                        l.peopleEmptyProfessionals,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      )
                     else
                       for (final contact in pros)
                         _DeskContactRow(
                           key: Key('pet_care_people_pro_${contact.id}'),
                           contact: contact,
-                          subtitle: _petCountLabel(l, vetPetCounts[contact.legacyVetId ?? ''] ?? 0),
+                          subtitle: _petCountLabel(
+                            l,
+                            vetPetCounts[contact.legacyVetId ?? ''] ?? 0,
+                          ),
                         ),
                     const SizedBox(height: 14),
                     _Subheading(text: l.peopleTrustedCarersSection),
                     const SizedBox(height: 6),
                     if (carers.isEmpty)
-                      Text(l.peopleEmptyCarers, style: Theme.of(context).textTheme.bodyMedium)
+                      Text(
+                        l.peopleEmptyCarers,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      )
                     else
                       for (final contact in carers)
                         _DeskContactRow(
@@ -150,9 +163,7 @@ class PetCarePeopleDeskModule extends ConsumerWidget {
 
   static List<PeopleContact> _topCarers(List<PeopleContact> contacts) {
     final carers = contacts.where((c) => !c.isProfessional).toList();
-    carers.sort(
-      (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
-    );
+    carers.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     return carers.take(_previewLimit).toList();
   }
 
@@ -208,11 +219,7 @@ class _HouseholdRail extends StatelessWidget {
 }
 
 class _DeskContactRow extends StatelessWidget {
-  const _DeskContactRow({
-    super.key,
-    required this.contact,
-    this.subtitle,
-  });
+  const _DeskContactRow({super.key, required this.contact, this.subtitle});
 
   final PeopleContact contact;
   final String? subtitle;
