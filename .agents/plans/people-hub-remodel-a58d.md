@@ -31,18 +31,18 @@ Deliver the **post–`people-ui-hub-a58d` UX remodel**: one People roster with *
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: p5-ship-main
-last_completed_phase: p4-tests-e2e
+autonomy: completed
+current_phase: null
+last_completed_phase: p5-ship-main
 halt_reason: null
-next_action: "continue phase p5-ship-main on branch cursor/people-hub-remodel-integration-a58d"
+next_action: "plan complete"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/people-hub-remodel-a58d.md
-  plan_commit: e5da0f27a084abc336d9daa9f3805221beb341d2
+  plan_commit: 7186c61d5f4b94edf8afd473e768c277092fb5a3
   snapshot_path: .agents/plans/people-hub-remodel-a58d.snapshot.json
-  snapshot_commit: e5da0f27a084abc336d9daa9f3805221beb341d2
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1388"]
+  snapshot_commit: 7186c61d5f4b94edf8afd473e768c277092fb5a3
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
