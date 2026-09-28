@@ -7081,4 +7081,73 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get accountPeopleRow => 'Autour de vos animaux';
+
+  @override
+  String get peopleDeskVetTeam => 'Équipe véto';
+
+  @override
+  String get peopleDetailNotFound =>
+      'Cette personne n\'est plus dans votre répertoire.';
+
+  @override
+  String get peopleEditPerson => 'Modifier';
+
+  @override
+  String get peoplePrivateNoteLabel => 'Note privée';
+
+  @override
+  String get peoplePhoneLabel => 'Téléphone';
+
+  @override
+  String get peopleEmailLabel => 'E-mail';
+
+  @override
+  String get peopleStatusInactive => 'Inactif';
+
+  @override
+  String get peopleDangerZoneTitle => 'Zone sensible';
+
+  @override
+  String get peopleRemoveContactTitle => 'Retirer ce contact ?';
+
+  @override
+  String peopleRemoveContactBody(String name) {
+    return 'Retirer $name de votre répertoire ? L\'historique de soins sur les animaux est conservé.';
+  }
+
+  @override
+  String get peopleRemoveContactConfirm => 'Retirer le contact';
+
+  @override
+  String get peopleAddStepIdentity => 'Qui ajoutez-vous ?';
+
+  @override
+  String get peopleAddStepRelationship => 'Quel est son rôle ?';
+
+  @override
+  String get peopleAddDedupeTitle => 'Déjà dans votre répertoire ?';
+
+  @override
+  String get peopleAddDedupeEmpty =>
+      'Aucune correspondance proche — vous pouvez continuer.';
+
+  @override
+  String get peopleAddDedupeHint =>
+      'Si la bonne personne apparaît ci-dessus, ouvrez-la depuis la liste.';
+
+  @override
+  String get peopleAddAppAccessTitle => 'Proposer l\'accès à l\'app ?';
+
+  @override
+  String get peopleAddAppAccessBody =>
+      'Vous pouvez les inviter à partager des animaux, ou terminer sans invitation.';
+
+  @override
+  String get peopleAddAppAccessSkip => 'Pas maintenant';
+
+  @override
+  String get peopleAddAppAccessContinue => 'Inviter';
+
+  @override
+  String get peopleAddPersonSave => 'Enregistrer';
 }

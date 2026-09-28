@@ -8,7 +8,9 @@ import '../../../experience/presentation/widgets/experience_shell_scaffold.dart'
 import '../../../sharing/domain/entities/household_summary.dart';
 import '../../../sharing/presentation/providers/household_providers.dart';
 import '../../domain/entities/people_contact.dart';
+import '../../domain/entities/person_roster_entry.dart';
 import '../providers/people_providers.dart';
+import '../widgets/people_directory_card.dart';
 
 enum PeopleListFilter { all, household, carers, professionals }
 
@@ -240,16 +242,19 @@ class _Section extends StatelessWidget {
         if (contacts.isEmpty)
           Text(empty, style: Theme.of(context).textTheme.bodyMedium)
         else
-          ...contacts.map(
-            (c) => ListTile(
-              key: Key('people_contact_${c.id}'),
-              title: Text(c.name),
-              subtitle: Text(c.roles.isEmpty ? c.kind : c.roles.join(' · ')),
-              leading: CircleAvatar(
-                child: Text(c.name.isNotEmpty ? c.name[0].toUpperCase() : '?'),
-              ),
-            ),
-          ),
+          ...contacts.map((c) {
+            final entry = PersonRosterEntry.fromContact(
+              c,
+              subtitle: c.roles.isEmpty ? c.kind : c.roles.join(' · '),
+              statusLabel: c.inactiveAt != null
+                  ? AppLocalizations.of(context)!.peopleStatusInactive
+                  : null,
+            );
+            return PeopleDirectoryCard(
+              entry: entry,
+              onTap: () => context.push('/pc/people/${c.id}'),
+            );
+          }),
       ],
     );
   }

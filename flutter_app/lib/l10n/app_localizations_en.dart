@@ -6970,4 +6970,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountPeopleRow => 'People';
+
+  @override
+  String get peopleDeskVetTeam => 'Vet team';
+
+  @override
+  String get peopleDetailNotFound =>
+      'This person is no longer in your directory.';
+
+  @override
+  String get peopleEditPerson => 'Edit person';
+
+  @override
+  String get peoplePrivateNoteLabel => 'Private note';
+
+  @override
+  String get peoplePhoneLabel => 'Phone';
+
+  @override
+  String get peopleEmailLabel => 'Email';
+
+  @override
+  String get peopleStatusInactive => 'Inactive';
+
+  @override
+  String get peopleDangerZoneTitle => 'Danger zone';
+
+  @override
+  String get peopleRemoveContactTitle => 'Remove contact?';
+
+  @override
+  String peopleRemoveContactBody(String name) {
+    return 'Remove $name from your directory? Care history on pets is kept.';
+  }
+
+  @override
+  String get peopleRemoveContactConfirm => 'Remove contact';
+
+  @override
+  String get peopleAddStepIdentity => 'Who are you adding?';
+
+  @override
+  String get peopleAddStepRelationship => 'How do they help?';
+
+  @override
+  String get peopleAddDedupeTitle => 'Already in your directory?';
+
+  @override
+  String get peopleAddDedupeEmpty => 'No close matches — you can continue.';
+
+  @override
+  String get peopleAddDedupeHint =>
+      'If you see the right person above, open them from the People list instead.';
+
+  @override
+  String get peopleAddAppAccessTitle => 'Offer app access?';
+
+  @override
+  String get peopleAddAppAccessBody =>
+      'You can invite them to share pets in the app, or finish without inviting now.';
+
+  @override
+  String get peopleAddAppAccessSkip => 'Not now';
+
+  @override
+  String get peopleAddAppAccessContinue => 'Invite';
+
+  @override
+  String get peopleAddPersonSave => 'Save person';
 }

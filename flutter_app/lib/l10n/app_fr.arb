@@ -2586,5 +2586,31 @@
   "peopleRoleGroomer": "Toilettage",
   "peopleNameLabel": "Nom",
   "peopleListLoadError": "Impossible de charger les contacts. Réessayez.",
-  "accountPeopleRow": "Autour de vos animaux"
+  "accountPeopleRow": "Autour de vos animaux",
+  "peopleDeskVetTeam": "Équipe véto",
+  "peopleDetailNotFound": "Cette personne n'est plus dans votre répertoire.",
+  "peopleEditPerson": "Modifier",
+  "peoplePrivateNoteLabel": "Note privée",
+  "peoplePhoneLabel": "Téléphone",
+  "peopleEmailLabel": "E-mail",
+  "peopleStatusInactive": "Inactif",
+  "peopleDangerZoneTitle": "Zone sensible",
+  "peopleRemoveContactTitle": "Retirer ce contact ?",
+  "peopleRemoveContactBody": "Retirer {name} de votre répertoire ? L'historique de soins sur les animaux est conservé.",
+  "@peopleRemoveContactBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "peopleRemoveContactConfirm": "Retirer le contact",
+  "peopleAddStepIdentity": "Qui ajoutez-vous ?",
+  "peopleAddStepRelationship": "Quel est son rôle ?",
+  "peopleAddDedupeTitle": "Déjà dans votre répertoire ?",
+  "peopleAddDedupeEmpty": "Aucune correspondance proche — vous pouvez continuer.",
+  "peopleAddDedupeHint": "Si la bonne personne apparaît ci-dessus, ouvrez-la depuis la liste.",
+  "peopleAddAppAccessTitle": "Proposer l'accès à l'app ?",
+  "peopleAddAppAccessBody": "Vous pouvez les inviter à partager des animaux, ou terminer sans invitation.",
+  "peopleAddAppAccessSkip": "Pas maintenant",
+  "peopleAddAppAccessContinue": "Inviter",
+  "peopleAddPersonSave": "Enregistrer"
 }

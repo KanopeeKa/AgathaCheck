@@ -2719,5 +2719,31 @@
   "peopleRoleGroomer": "Groomer",
   "peopleNameLabel": "Name",
   "peopleListLoadError": "Could not load people. Try again.",
-  "accountPeopleRow": "People"
+  "accountPeopleRow": "People",
+  "peopleDeskVetTeam": "Vet team",
+  "peopleDetailNotFound": "This person is no longer in your directory.",
+  "peopleEditPerson": "Edit person",
+  "peoplePrivateNoteLabel": "Private note",
+  "peoplePhoneLabel": "Phone",
+  "peopleEmailLabel": "Email",
+  "peopleStatusInactive": "Inactive",
+  "peopleDangerZoneTitle": "Danger zone",
+  "peopleRemoveContactTitle": "Remove contact?",
+  "peopleRemoveContactBody": "Remove {name} from your directory? Care history on pets is kept.",
+  "@peopleRemoveContactBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "peopleRemoveContactConfirm": "Remove contact",
+  "peopleAddStepIdentity": "Who are you adding?",
+  "peopleAddStepRelationship": "How do they help?",
+  "peopleAddDedupeTitle": "Already in your directory?",
+  "peopleAddDedupeEmpty": "No close matches — you can continue.",
+  "peopleAddDedupeHint": "If you see the right person above, open them from the People list instead.",
+  "peopleAddAppAccessTitle": "Offer app access?",
+  "peopleAddAppAccessBody": "You can invite them to share pets in the app, or finish without inviting now.",
+  "peopleAddAppAccessSkip": "Not now",
+  "peopleAddAppAccessContinue": "Invite",
+  "peopleAddPersonSave": "Save person"
 }
