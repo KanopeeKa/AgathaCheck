@@ -29,11 +29,11 @@ last_completed_phase: p1-nav
 halt_reason: null
 next_action: "continue phase p2-desk on branch cursor/people-ui-p2-desk-a58d"
 artifact_ref:
-  branch: cursor/people-ui-hub-integration-a58d
+  branch: cursor/people-ui-p2-desk-a58d
   plan_path: .agents/plans/people-ui-hub-a58d.md
-  plan_commit: b4d229519ea06a0e37af4cb07c8057f824d37054
+  plan_commit: 801e65711612c4d4b9742d70738443457bedc901
   snapshot_path: .agents/plans/people-ui-hub-a58d.snapshot.json
-  snapshot_commit: b4d229519ea06a0e37af4cb07c8057f824d37054
+  snapshot_commit: 801e65711612c4d4b9742d70738443457bedc901
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
