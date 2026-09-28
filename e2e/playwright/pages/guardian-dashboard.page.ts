@@ -123,14 +123,25 @@ export class GuardianDashboardPage {
 
   async openVet(name: string): Promise<void> {
     const namePattern = new RegExp(name, 'i');
-    const peopleSection = this.section(/People|PEOPLE|Autour de vos animaux/i);
-    await peopleSection.scrollIntoViewIfNeeded();
     await refreshFlutterAccessibility(this.page);
-    // Directory cards are one semantics button per row (child text excluded) — match by accessible name.
-    const target = peopleSection
-      .getByRole('button', { name: namePattern })
-      .or(semanticsByName(this.page, namePattern))
-      .first();
+
+    const people = this.section(/People|PEOPLE|Autour de vos animaux/i);
+    const buttonInSection = people.getByRole('button', { name: namePattern });
+    const bySemanticsName = semanticsByName(this.page, namePattern);
+    const card = this.page
+      .locator('[flt-semantics-identifier^="people_directory_card_"]')
+      .filter({ hasText: namePattern });
+
+    // Directory rows are semantics buttons — do not block on People section group scroll (desktop home).
+    let target: Locator;
+    if (await buttonInSection.first().isVisible({ timeout: 8_000 }).catch(() => false)) {
+      target = buttonInSection.first();
+    } else if (await card.first().isVisible({ timeout: 8_000 }).catch(() => false)) {
+      target = card.first();
+    } else {
+      target = bySemanticsName.first();
+    }
+
     await expect(target).toBeVisible({ timeout: 60_000 });
     await target.scrollIntoViewIfNeeded();
     await target.click();
