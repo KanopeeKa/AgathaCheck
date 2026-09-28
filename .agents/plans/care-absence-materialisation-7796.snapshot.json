@@ -31,11 +31,11 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1391",
-      "pr_head_sha": "3bec8b6e"
+      "pr_head_sha": "8af5c307"
     },
     {
       "id": "ensure-server",
@@ -58,9 +58,11 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1392",
+      "pr_head_sha": "2fb71dee"
     },
     {
       "id": "ensure-flutter",
@@ -79,7 +81,7 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null
     },
@@ -151,5 +153,5 @@
       "status_detail": null
     }
   ],
-  "content_hash": "sha256:f97827fd633aecc633d2da2f63acdeb52841d8b913bce9f88a12b0f8aabb56bf"
+  "content_hash": "sha256:3d28f2d566e0d96d0544c908ed02faa7cde8276dda6a8df1bc69f028d61cd72c"
 }
