@@ -5,7 +5,7 @@
   "approved_at": "2026-09-28T17:08:00Z",
   "approved_by": "user chat 2026-09-28: /execute-plan full agreement on all phases (intent materialisation + absence occurrence review + E2E)",
   "approved_until": "2026-09-30T17:08:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-absence-materialisation-integration-7796",
   "control_issue": 1390,
@@ -81,9 +81,10 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1396"
     },
     {
       "id": "absence-ux",
@@ -107,9 +108,10 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1397"
     },
     {
       "id": "e2e",
@@ -149,10 +151,11 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1399"
     }
   ],
-  "content_hash": "sha256:b805ab24d926ad1fe8ea6867d4dfc6e53ea0e8afee75057bce51e96b752bbbe4"
+  "content_hash": "sha256:9ad94afd10f1379d52427d6eae0126c6ccf782479194dd85a3f00c20e5411a9f"
 }
