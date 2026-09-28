@@ -122,23 +122,15 @@ export class GuardianDashboardPage {
   }
 
   async openVet(name: string): Promise<void> {
-    const people = this.section(/People|PEOPLE|Autour de vos animaux/i);
-    await people.scrollIntoViewIfNeeded();
-    await refreshFlutterAccessibility(this.page);
-
     const namePattern = new RegExp(name, 'i');
-    const buttonInSection = people.getByRole('button', { name: namePattern });
-    const bySemanticsName = semanticsByName(this.page, namePattern);
-    const card = this.page
-      .locator('[flt-semantics-identifier^="people_directory_card_"]')
-      .filter({ hasText: namePattern });
-
-    const target = (await buttonInSection.first().isVisible({ timeout: 8_000 }).catch(() => false))
-      ? buttonInSection.first()
-      : (await card.first().isVisible({ timeout: 8_000 }).catch(() => false))
-        ? card.first()
-        : bySemanticsName.first();
-
+    const peopleSection = this.section(/People|PEOPLE|Autour de vos animaux/i);
+    await peopleSection.scrollIntoViewIfNeeded();
+    await refreshFlutterAccessibility(this.page);
+    // Directory cards are one semantics button per row (child text excluded) — match by accessible name.
+    const target = peopleSection
+      .getByRole('button', { name: namePattern })
+      .or(semanticsByName(this.page, namePattern))
+      .first();
     await expect(target).toBeVisible({ timeout: 60_000 });
     await target.scrollIntoViewIfNeeded();
     await target.click();
