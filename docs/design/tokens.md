@@ -135,7 +135,7 @@ forms. Do not replace it with paws, paw prints, or a generic pet icon.
 | primary | `#755B68` |
 | hover | `#664C59` |
 | active | `#573F4B` |
-| light | `#E8E1E3` |
+| light | `#E8E1E3` | care-family icon chips on `petCareCollection`, mark-done control fill |
 | soft | `#E7DCE2` |
 
 Full primary on all guardian CTAs (option A).
