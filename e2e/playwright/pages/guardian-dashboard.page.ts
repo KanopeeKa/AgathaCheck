@@ -122,16 +122,24 @@ export class GuardianDashboardPage {
   }
 
   async openVet(name: string): Promise<void> {
-    const row = this.section(/People|PEOPLE|Autour de vos animaux/i)
+    const peopleSection = this.section(/People|PEOPLE|Autour de vos animaux/i);
+    await peopleSection.scrollIntoViewIfNeeded();
+    const card = this.page
+      .locator('[flt-semantics-identifier^="people_directory_card_"]')
+      .filter({ hasText: new RegExp(name, 'i') });
+    const row = peopleSection
       .getByRole('button', { name: new RegExp(name, 'i') })
       .or(semanticsByName(this.page, new RegExp(name, 'i')))
       .first();
-    await row.click();
-    await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
-    await expect(
-      this.page.getByText(/^People$|^Autour de vos animaux$/i).first(),
-    ).toBeVisible({ timeout: 15_000 });
+    const target = (await card.count()) > 0 ? card.first() : row;
+    await target.click();
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/?]+/, 30_000);
+    }).toPass({ timeout: 45_000 });
+    await expect(this.page.getByText(new RegExp(name, 'i')).first()).toBeVisible({
+      timeout: 15_000,
+    });
   }
 
   async expectNoHorizontalOverflow(): Promise<void> {
@@ -152,8 +160,15 @@ export class GuardianDashboardPage {
     await refreshFlutterAccessibility(this.page);
   }
 
-  /** Compact Pet Care bottom bar tab (Dashboard, Pets, Actions, Fostering, Account). */
+  /** Compact Pet Care bottom bar tab (Dashboard, Pets, Actions, People, Account). */
   async openBottomNavTab(label: string): Promise<void> {
+    const semanticsId = this.destinationSemanticsId(label);
+    const byIdentifier = this.page.locator(`[flt-semantics-identifier="${semanticsId}"]`);
+    if (await byIdentifier.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await byIdentifier.first().click();
+      await refreshFlutterAccessibility(this.page);
+      return;
+    }
     const pattern = this.bottomNavTabPattern(label);
     const tab = this.page
       .getByRole('button', { name: pattern })
@@ -283,7 +298,7 @@ export class GuardianDashboardPage {
   bottomNavigation(): Locator {
     return this.page
       .locator('[flt-semantics-identifier="pet_care_bottom_navigation"]')
-      .or(this.page.getByRole('button', { name: /Dashboard(?:\s+Tab\s+1\s+of\s+5)?/i }))
+      .or(this.page.locator('[flt-semantics-identifier="pet_care_nav_dashboard"]'))
       .first();
   }
 

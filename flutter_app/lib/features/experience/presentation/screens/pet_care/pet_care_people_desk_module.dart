@@ -235,7 +235,7 @@ class _DeskPersonCard extends StatelessWidget {
     );
     return PeopleDirectoryCard(
       entry: entry,
-      onTap: () => context.push('/pc/people/${contact.id}'),
+      onTap: () => context.go('/pc/people/${contact.id}'),
     );
   }
 }
