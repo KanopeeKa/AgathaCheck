@@ -122,17 +122,12 @@ export class GuardianDashboardPage {
   }
 
   async openVet(name: string): Promise<void> {
-    const peopleSection = this.section(/People|PEOPLE|Autour de vos animaux/i);
-    await peopleSection.scrollIntoViewIfNeeded();
     const card = this.page
       .locator('[flt-semantics-identifier^="people_directory_card_"]')
       .filter({ hasText: new RegExp(name, 'i') });
-    const row = peopleSection
-      .getByRole('button', { name: new RegExp(name, 'i') })
-      .or(semanticsByName(this.page, new RegExp(name, 'i')))
-      .first();
-    const target = (await card.count()) > 0 ? card.first() : row;
-    await target.click();
+    await expect(card.first()).toBeVisible({ timeout: 60_000 });
+    await card.first().scrollIntoViewIfNeeded();
+    await card.first().click();
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/?]+/, 30_000);
