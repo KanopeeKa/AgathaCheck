@@ -12238,6 +12238,42 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 pet linked} other{{count} pets linked}}'**
   String peopleDeskLinkedPets(int count);
 
+  /// No description provided for @peopleSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search people'**
+  String get peopleSearchHint;
+
+  /// No description provided for @peopleFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get peopleFilterAll;
+
+  /// No description provided for @peopleFilterHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'Household'**
+  String get peopleFilterHousehold;
+
+  /// No description provided for @peopleFilterCarers.
+  ///
+  /// In en, this message translates to:
+  /// **'Carers'**
+  String get peopleFilterCarers;
+
+  /// No description provided for @peopleFilterProfessionals.
+  ///
+  /// In en, this message translates to:
+  /// **'Professionals'**
+  String get peopleFilterProfessionals;
+
+  /// No description provided for @peopleHouseholdDirectoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts in this household directory yet.'**
+  String get peopleHouseholdDirectoryEmpty;
+
   /// No description provided for @peopleKindLabel.
   ///
   /// In en, this message translates to:

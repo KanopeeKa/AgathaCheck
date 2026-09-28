@@ -2698,6 +2698,12 @@
   "peopleDeskEmptyBody": "Add carers and pet professionals so they appear on your dashboard and in away plans.",
   "peopleDeskHouseholdRail": "Households",
   "peopleDeskLinkedPets": "{count, plural, =1{1 pet linked} other{{count} pets linked}}",
+  "peopleSearchHint": "Search people",
+  "peopleFilterAll": "All",
+  "peopleFilterHousehold": "Household",
+  "peopleFilterCarers": "Carers",
+  "peopleFilterProfessionals": "Professionals",
+  "peopleHouseholdDirectoryEmpty": "No contacts in this household directory yet.",
   "@peopleDeskLinkedPets": {
     "placeholders": {
       "count": {

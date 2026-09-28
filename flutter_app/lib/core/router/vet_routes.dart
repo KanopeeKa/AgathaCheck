@@ -14,7 +14,9 @@ List<RouteBase> buildVetExperienceRoutes() {
       name: 'petCareVets',
       redirect: (context, state) {
         final path = state.uri.path;
-        if (path == '/pc/vets' || path == '/pc/vets/') return '/pc/people';
+        if (path == '/pc/vets' || path == '/pc/vets/') {
+          return '/pc/people?filter=professionals';
+        }
         return null;
       },
       routes: _vetFormRoutes(listPath: '/pc/vets'),

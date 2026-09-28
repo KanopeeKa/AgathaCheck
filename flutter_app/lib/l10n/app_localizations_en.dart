@@ -6926,6 +6926,25 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get peopleSearchHint => 'Search people';
+
+  @override
+  String get peopleFilterAll => 'All';
+
+  @override
+  String get peopleFilterHousehold => 'Household';
+
+  @override
+  String get peopleFilterCarers => 'Carers';
+
+  @override
+  String get peopleFilterProfessionals => 'Professionals';
+
+  @override
+  String get peopleHouseholdDirectoryEmpty =>
+      'No contacts in this household directory yet.';
+
+  @override
   String get peopleKindLabel => 'Kind';
 
   @override
