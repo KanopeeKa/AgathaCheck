@@ -221,9 +221,7 @@ Future<EnsureOpenOccurrenceRemoteResult> postEnsureOpenOccurrence({
     body['reason_code'] = reasonCode;
   }
   final response = await client.post(
-    Uri.parse(
-      '$baseUrl/api/health-entries/$entryId/occurrences/ensure-open',
-    ),
+    Uri.parse('$baseUrl/api/health-entries/$entryId/occurrences/ensure-open'),
     headers: headers,
     body: json.encode(body),
   );
@@ -234,7 +232,8 @@ Future<EnsureOpenOccurrenceRemoteResult> postEnsureOpenOccurrence({
       ? occurrencesRaw
             .whereType<Map>()
             .map(
-              (e) => HealthOccurrenceModel.fromJson(Map<String, dynamic>.from(e)),
+              (e) =>
+                  HealthOccurrenceModel.fromJson(Map<String, dynamic>.from(e)),
             )
             .toList()
       : <HealthOccurrenceModel>[];

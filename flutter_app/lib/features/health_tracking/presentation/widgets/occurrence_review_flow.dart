@@ -38,9 +38,9 @@ class OccurrenceReviewFlow {
       } catch (_) {
         if (!context.mounted) return;
         final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.careCompletionFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.careCompletionFailed)));
         return;
       }
     }
@@ -48,9 +48,9 @@ class OccurrenceReviewFlow {
     if (!context.mounted || occurrence == null || occurrence.id.isEmpty) {
       if (context.mounted) {
         final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.careCompletionFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.careCompletionFailed)));
       }
       return;
     }
@@ -83,9 +83,7 @@ class OccurrenceReviewFlow {
     }
     final pending = result.occurrences.where((o) => o.isPending).toList();
     if (pending.isNotEmpty) {
-      pending.sort(
-        (a, b) => a.scheduledDate.compareTo(b.scheduledDate),
-      );
+      pending.sort((a, b) => a.scheduledDate.compareTo(b.scheduledDate));
       return pending.first;
     }
     return result.occurrences.first;

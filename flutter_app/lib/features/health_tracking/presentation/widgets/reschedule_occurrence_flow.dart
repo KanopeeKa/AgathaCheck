@@ -114,8 +114,9 @@ class RescheduleOccurrenceFlow {
           ref,
           entry.id,
           absenceId: absenceId,
-          newScheduledDate:
-              toCalendarDateString(calendarDateOnly(scheduledDate))!,
+          newScheduledDate: toCalendarDateString(
+            calendarDateOnly(scheduledDate),
+          )!,
         );
       }
       invalidateCareItemDetailData(ref, entry.id, absenceId: absenceId);

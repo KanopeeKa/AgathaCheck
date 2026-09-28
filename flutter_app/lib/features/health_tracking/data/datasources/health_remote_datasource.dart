@@ -362,5 +362,4 @@ class HealthRemoteDataSourceImpl
       photoId: photoId,
     );
   }
-
 }

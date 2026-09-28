@@ -143,25 +143,25 @@ class _ScheduleAbsenceHint extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final line = ref.watch(careItemAbsenceContextProvider(entryId)).maybeWhen(
-      data: (model) {
-        for (final slice in model.absences) {
-          if (!slice.affected || !slice.needsAttention) continue;
-          final conflict =
-              nextDueWire ??
-              primaryAbsenceConflictDate(slice);
-          if (conflict == null) continue;
-          if (!absenceSliceConflictsOnDate(slice, conflict)) continue;
-          final parsed = parseCalendarDate(conflict);
-          if (parsed == null) continue;
-          return l.careItemOccurrenceDuringAbsence(
-            formatCalendarDateDisplay(parsed),
-          );
-        }
-        return null;
-      },
-      orElse: () => null,
-    );
+    final line = ref
+        .watch(careItemAbsenceContextProvider(entryId))
+        .maybeWhen(
+          data: (model) {
+            for (final slice in model.absences) {
+              if (!slice.affected || !slice.needsAttention) continue;
+              final conflict = nextDueWire ?? primaryAbsenceConflictDate(slice);
+              if (conflict == null) continue;
+              if (!absenceSliceConflictsOnDate(slice, conflict)) continue;
+              final parsed = parseCalendarDate(conflict);
+              if (parsed == null) continue;
+              return l.careItemOccurrenceDuringAbsence(
+                formatCalendarDateDisplay(parsed),
+              );
+            }
+            return null;
+          },
+          orElse: () => null,
+        );
     if (line == null) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 4),
