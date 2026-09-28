@@ -4,7 +4,7 @@
   "approved_at": "2026-09-28T16:30:00Z",
   "approved_by": "user chat 2026-09-28: full People hub remodel follow-up — remodel existing docs, encapsulate tests/E2E, create execute-plan (standing grant from people-ui-hub programme)",
   "approved_until": "2026-09-30T16:30:00Z",
-  "content_hash": "sha256:bae6b8b35dd9a1a1d5ebafdce856b7f47711b9868c52d95a1814ca2bfeb38db6",
+  "content_hash": "sha256:63abd6aabd4223eef51d91eddb3678fe6fae178e61f8d9707cd80a98a93ffab1",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/people-hub-remodel-integration-a58d",
@@ -33,12 +33,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     },
     {
       "id": "p0-docs",
@@ -62,12 +60,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     },
     {
       "id": "p1-roster-cards",
