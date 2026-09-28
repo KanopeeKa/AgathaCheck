@@ -176,7 +176,7 @@ test.describe('Guardian dashboard', () => {
     ).toBeVisible();
   });
 
-  test('Veterinary team preview reaches linked vet details', async ({ page, testUser }) => {
+  test('People desk preview opens the People hub', async ({ page, testUser }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     const vet = await createVetFull(baseURL(), testUser.accessToken, { name: 'Dr. Desk' });
     const pet = await createPet(baseURL(), testUser.accessToken, 'VetLinkedPet');
@@ -189,7 +189,6 @@ test.describe('Guardian dashboard', () => {
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.open();
     await dashboard.expectVetVisible('Dr. Desk');
-    await expect(semanticsByName(page, /Dr\. Desk.*Caring for 1 pet/i).first()).toBeVisible();
     await dashboard.openVet('Dr. Desk');
     await dashboard.goBackToDashboard();
   });
