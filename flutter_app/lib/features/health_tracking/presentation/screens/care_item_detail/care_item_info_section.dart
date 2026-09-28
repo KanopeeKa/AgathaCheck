@@ -4,13 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../people/domain/entities/people_contact.dart';
 import '../../../../people/presentation/providers/people_providers.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_item_detail_row.dart';
 import '../../../../pet_profile/domain/services/care_family_inference.dart';
 import '../../../../pet_profile/presentation/widgets/care_family_icon.dart';
 import '../../../../pet_profile/presentation/widgets/care_family_labels.dart';
 import '../../../domain/entities/health_entry.dart';
-import '../../widgets/pet_event_lifecycle.dart';
 
-/// Care item identity: family, name, recurrence in plain language, notes, default provider.
+/// Care item identity rows inside the Details module (schedule owns recurrence).
 class CareItemInfoSection extends ConsumerWidget {
   const CareItemInfoSection({
     super.key,
@@ -53,78 +53,43 @@ class CareItemInfoSection extends ConsumerWidget {
             CareFamilyIcon.forEntry(entry, showChip: false),
             const SizedBox(width: 12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Semantics(
-                    header: true,
-                    child: Text(
-                      entry.name,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: textColor,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    careFamilyLabel(l, family),
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+              child: Text(
+                entry.name,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: textColor,
+                ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
-        Text(
-          formatRecurrenceSummary(l, entry),
-          style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
+        const SizedBox(height: 8),
+        CareItemDetailRow(
+          label: l.careFamilyFieldLabel,
+          value: careFamilyLabel(l, family),
+          muted: muted,
         ),
-        const SizedBox(height: 4),
-        Text(
-          formatRemindSummary(l, entry),
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          l.careProviderLabel,
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: textColor,
-          ),
-        ),
-        const SizedBox(height: 4),
         contactsAsync.when(
-          data: (contacts) => Text(
-            _providerLabel(l, contacts) ?? l.notSet,
-            style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
+          data: (contacts) => CareItemDetailRow(
+            label: l.careProviderLabel,
+            value: _providerLabel(l, contacts) ?? l.notSet,
+            muted: muted,
           ),
-          loading: () => Text(
-            l.notSet,
-            style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
+          loading: () => CareItemDetailRow(
+            label: l.careProviderLabel,
+            value: l.notSet,
+            muted: muted,
           ),
-          error: (_, __) => Text(
-            l.notSet,
-            style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          l.notes,
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: textColor,
+          error: (_, __) => CareItemDetailRow(
+            label: l.careProviderLabel,
+            value: l.notSet,
+            muted: muted,
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          entry.notes.isNotEmpty ? entry.notes : l.notSet,
-          style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
+        CareItemDetailRow(
+          label: l.notes,
+          value: entry.notes.isNotEmpty ? entry.notes : l.notSet,
+          muted: muted,
         ),
       ],
     );
