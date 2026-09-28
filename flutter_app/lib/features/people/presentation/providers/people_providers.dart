@@ -41,4 +41,27 @@ class PeopleContactsNotifier extends AsyncNotifier<List<PeopleContact>> {
     await ds.createContact(draft);
     await refresh();
   }
+
+  Future<void> updateContact(PeopleContactModel model) async {
+    final ds = ref.read(peopleRemoteDataSourceProvider);
+    await ds.updateContact(
+      model.id,
+      model.toPatchJson(privateNote: model.privateNote),
+    );
+    await refresh();
+  }
+
+  Future<void> deleteContact(String id) async {
+    final ds = ref.read(peopleRemoteDataSourceProvider);
+    await ds.deleteContact(id);
+    await refresh();
+  }
 }
+
+final peopleContactByIdProvider = Provider.family<PeopleContact?, String>((
+  ref,
+  id,
+) {
+  final async = ref.watch(peopleContactsProvider);
+  return async.valueOrNull?.where((c) => c.id == id).firstOrNull;
+});
