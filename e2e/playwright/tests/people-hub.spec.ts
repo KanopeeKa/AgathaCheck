@@ -6,7 +6,7 @@
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
-import { createPet, signupUser } from '../support/api';
+import { createPet, createVetFull, signupUser, updatePetVet } from '../support/api';
 import {
   reachAuthenticatedHome,
   refreshFlutterAccessibility,
@@ -32,13 +32,20 @@ test.describe('People hub remodel @people', () => {
     await page.setViewportSize({ width: 375, height: 812 });
     await prepareLiveApiAccess(page, baseURL());
     const user = await signupUser(baseURL());
-    await createPet(baseURL(), user.accessToken, 'DeskPet');
+    const pet = await createPet(baseURL(), user.accessToken, 'DeskPet');
+    const vet = await createVetFull(baseURL(), user.accessToken, { name: 'Desk Vet' });
+    await updatePetVet(baseURL(), user.accessToken, pet.id, {
+      name: pet.name,
+      species: 'Dog',
+      vetId: vet.id,
+    });
     await loginGuardian(page, user.email, user.password);
 
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.expectLoaded();
+    await dashboard.expectTodayCareRegions();
     await refreshFlutterAccessibility(page);
-    await expect(page.getByText(/^Vet team$/i).first()).toBeVisible({
+    await expect(page.getByText(/^Vet team$|^Équipe véto$/i).first()).toBeVisible({
       timeout: 30_000,
     });
   });
