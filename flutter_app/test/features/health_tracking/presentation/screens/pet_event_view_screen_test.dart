@@ -229,7 +229,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('View Heartworm'), findsOneWidget);
+    expect(find.text('Heartworm'), findsWidgets);
     expect(find.byKey(const Key('pet_event_pet_card')), findsOneWidget);
     expect(find.text('Bella'), findsOneWidget);
     expect(find.text('Dog'), findsOneWidget);
@@ -296,7 +296,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('View Flea treatment'), findsOneWidget);
+    expect(find.text('Flea treatment'), findsWidgets);
     expect(find.byKey(const Key('care_item_menu')), findsOneWidget);
     expect(find.text('Close event'), findsNothing);
     expect(find.text('Mark as done'), findsNothing);

@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-item-view-ui",
+  "programme_ref": "docs/design/care-item-view-ui.md",
+  "approved_at": "2026-09-27T18:35:00Z",
+  "approved_by": "user chat 2026-09-27: go ahead — atomic PRs on integration branch, execute-plan, merge main only via final PR",
+  "approved_until": "2026-09-29T18:35:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/care-item-view-ui-integration-7796",
+  "control_issue": 1368,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "design",
+      "title": "Care Item view UI design slice",
+      "branch": "cursor/care-item-view-ui-design-7796",
+      "allowed_paths": [
+        "docs/design/**",
+        ".agents/plans/care-item-view-ui.*"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "governance",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1369"
+    },
+    {
+      "id": "primitives",
+      "title": "Care Item module surface primitives",
+      "branch": "cursor/care-item-view-ui-primitives-7796",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/presentation/widgets/care_surface/**",
+        "flutter_app/test/features/pet_care/presentation/widgets/care_surface/**",
+        ".agents/plans/care-item-view-ui.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1370"
+    },
+    {
+      "id": "needs-attention",
+      "title": "Needs attention hero module",
+      "branch": "cursor/care-item-view-ui-needs-attention-7796",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_dates_section.dart",
+        "flutter_app/test/features/health_tracking/**",
+        ".agents/plans/care-item-view-ui.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1371",
+      "pr_head_sha": "a9c1cdd2a743bb6ac7f0095f66f70b450be1a9b5"
+    },
+    {
+      "id": "schedule-absence",
+      "title": "Schedule stat module and absence module",
+      "branch": "cursor/care-item-view-ui-schedule-absence-7796",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_schedule_section.dart",
+        "flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_absence_section.dart",
+        "flutter_app/test/features/health_tracking/**",
+        ".agents/plans/care-item-view-ui.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1372",
+      "pr_head_sha": "b127f2c1"
+    },
+    {
+      "id": "details-history",
+      "title": "Details module and history module",
+      "branch": "cursor/care-item-view-ui-details-history-7796",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_detail_body.dart",
+        "flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_info_section.dart",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_pet_card.dart",
+        "flutter_app/test/features/health_tracking/**",
+        ".agents/plans/care-item-view-ui.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1376"
+    },
+    {
+      "id": "web-layout",
+      "title": "Web two-column Care Item layout",
+      "branch": "cursor/care-item-view-ui-web-layout-7796",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/**",
+        "flutter_app/test/features/health_tracking/**",
+        ".agents/plans/care-item-view-ui.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1378"
+    },
+    {
+      "id": "header-wayfinding",
+      "title": "Care Item title and wayfinding",
+      "branch": "cursor/care-item-view-ui-header-7796",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_detail_screen.dart",
+        "flutter_app/lib/l10n/**",
+        "e2e/playwright/**",
+        ".agents/plans/care-item-view-ui.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1381"
+    },
+    {
+      "id": "integration-main",
+      "title": "Integration branch to main",
+      "branch": "cursor/care-item-view-ui-integration-7796",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "release-verification",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1382",
+      "pr_head_sha": "9f557888530a6fff2442434337036b7ff750846f"
+    }
+  ],
+  "content_hash": "sha256:099f0d8df6455f77fe1da35f614eade14814c2cebb1653c19b34e2abdb1ca1bc"
+}

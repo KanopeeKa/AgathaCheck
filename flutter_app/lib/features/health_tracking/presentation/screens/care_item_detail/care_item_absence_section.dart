@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_attention_callout.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
 import '../../../data/models/health_entry_absence_context_model.dart';
 import '../../providers/care_item_absence_providers.dart';
 
@@ -33,49 +36,50 @@ class CareItemAbsenceSection extends ConsumerWidget {
           (slice) => slice.needsAttention,
           orElse: () => contextModel.absences.first,
         );
+        final summary = _summaryLine(l, primary);
+        final needsAttention = primary.needsAttention;
 
-        return Column(
+        return CareItemModule(
           key: const Key('care_item_absence_section'),
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Semantics(
-              header: true,
-              child: Text(
-                l.careItemAbsenceTitle,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: muted
-                      ? Theme.of(context).colorScheme.onSurfaceVariant
-                      : null,
+          semanticLabel: l.careItemAbsenceTitle,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CareItemSectionHeader(
+                title: l.careItemAbsenceTitle,
+                icon: Icons.flight_takeoff_outlined,
+              ),
+              const SizedBox(height: 12),
+              if (needsAttention && !muted)
+                CareAttentionCallout(
+                  message: summary,
+                  semanticLabel: l.careItemAbsenceNeedsReview,
+                )
+              else
+                Text(summary, style: Theme.of(context).textTheme.bodyMedium),
+              if (needsAttention && !muted) ...[
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    OutlinedButton(
+                      key: const Key('care_item_absence_keep_date'),
+                      onPressed: () =>
+                          _save(ref, primary, decision: 'keep_date'),
+                      child: Text(l.careItemAbsenceKeepDate),
+                    ),
+                    TextButton(
+                      key: const Key('care_item_absence_nothing_needed'),
+                      onPressed: () =>
+                          _save(ref, primary, decision: 'nothing_needed'),
+                      child: Text(l.careItemAbsenceNothingNeeded),
+                    ),
+                  ],
                 ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _summaryLine(l, primary),
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            if (primary.needsAttention && !muted) ...[
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  OutlinedButton(
-                    key: const Key('care_item_absence_keep_date'),
-                    onPressed: () => _save(ref, primary, decision: 'keep_date'),
-                    child: Text(l.careItemAbsenceKeepDate),
-                  ),
-                  TextButton(
-                    key: const Key('care_item_absence_nothing_needed'),
-                    onPressed: () =>
-                        _save(ref, primary, decision: 'nothing_needed'),
-                    child: Text(l.careItemAbsenceNothingNeeded),
-                  ),
-                ],
-              ),
+              ],
             ],
-          ],
+          ),
         );
       },
     );
