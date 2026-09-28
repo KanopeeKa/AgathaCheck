@@ -45,9 +45,10 @@ class CareItemDetailBody extends ConsumerWidget {
   final bool isEstablished;
   final VoidCallback onSeeHistory;
 
+  static const _sectionGap = SizedBox(height: 16);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppLocalizations.of(context)!;
     final muted = isClosed;
     final showNeedsAttention = !isClosed && !entry.isCompleted;
     final absenceContext = ref.watch(careItemAbsenceContextProvider(entry.id));
@@ -55,6 +56,13 @@ class CareItemDetailBody extends ConsumerWidget {
       data: (model) => model.absences.any((slice) => slice.needsAttention),
       orElse: () => false,
     );
+
+    final petModule = CareItemModule(
+      child: PetEventPetCard(pet: pet, embedded: true),
+    );
+    final needsSection = showNeedsAttention
+        ? CareItemDatesSection(entry: entry, muted: muted)
+        : _ClosedNeedsAttentionModule(history: history, muted: muted);
     final absenceSection = CareItemAbsenceSection(
       entryId: entry.id,
       muted: muted,
@@ -64,116 +72,245 @@ class CareItemDetailBody extends ConsumerWidget {
       petId: petId,
       muted: muted,
     );
+    final establishedSection = CareItemEstablishedSection(
+      pet: pet,
+      isEstablished: isEstablished,
+    );
+    final historyModule = _HistoryModule(
+      entry: entry,
+      history: history,
+      isClosed: isClosed,
+      muted: muted,
+      onSeeHistory: onSeeHistory,
+    );
 
-    return CareItemDetailCanvas(
-      child: SingleChildScrollView(
-        key: const Key('care_item_detail_body'),
-        padding: const EdgeInsets.all(16),
-        child: Column(
+    Widget sideScheduleAbsenceColumn() {
+      if (absenceBeforeSchedule) {
+        return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CareItemModule(
-              child: PetEventPetCard(pet: pet, embedded: true),
-            ),
-            const SizedBox(height: 16),
-            if (showNeedsAttention)
-              CareItemDatesSection(entry: entry, muted: muted)
-            else
-              _ClosedNeedsAttentionModule(history: history, muted: muted),
-            const SizedBox(height: 16),
-            if (absenceBeforeSchedule) ...[
-              absenceSection,
-              const SizedBox(height: 16),
-              scheduleSection,
-            ] else ...[
-              scheduleSection,
-              const SizedBox(height: 16),
-              absenceSection,
-            ],
-            const SizedBox(height: 16),
-            CareItemModule(
-              key: const Key('care_item_details_module'),
-              semanticLabel: l.careItemDetailsTitle,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  CareItemSectionHeader(
-                    title: l.careItemDetailsTitle,
-                    icon: Icons.article_outlined,
-                  ),
-                  const SizedBox(height: 12),
-                  CareCategoryBlocksDetailSection(
-                    entry: entry,
-                    pet: pet,
-                    muted: muted,
-                  ),
-                  CareItemInfoSection(entry: entry, muted: muted),
-                  CareItemEstablishedSection(
-                    pet: pet,
-                    isEstablished: isEstablished,
-                  ),
-                  if (entry.healthIssueId != null &&
-                      (entry.healthIssueName?.isNotEmpty ?? false)) ...[
-                    const SizedBox(height: 8),
-                    _HealthIssueLink(
-                      petId: petId,
-                      issueName: entry.healthIssueName!,
-                      muted: muted,
+            absenceSection,
+            _sectionGap,
+            scheduleSection,
+          ],
+        );
+      }
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          scheduleSection,
+          _sectionGap,
+          absenceSection,
+        ],
+      );
+    }
+
+    return CareItemDetailCanvas(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final layoutWidth = constraints.maxWidth.isFinite
+              ? constraints.maxWidth
+              : MediaQuery.sizeOf(context).width;
+          final wide = layoutWidth >= kCareItemTwoColumnBreakpoint;
+
+          final content = wide
+              ? Row(
+                  key: const Key('care_item_detail_two_column'),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          needsSection,
+                          if (isEstablished) ...[
+                            _sectionGap,
+                            CareItemModule(child: establishedSection),
+                          ],
+                          _sectionGap,
+                          historyModule,
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          petModule,
+                          _sectionGap,
+                          sideScheduleAbsenceColumn(),
+                          _sectionGap,
+                          _DetailsModule(
+                            entry: entry,
+                            pet: pet,
+                            petId: petId,
+                            muted: muted,
+                            isEstablished: isEstablished,
+                            includeEstablished: false,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
-                ],
-              ),
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    petModule,
+                    _sectionGap,
+                    needsSection,
+                    _sectionGap,
+                    sideScheduleAbsenceColumn(),
+                    _sectionGap,
+                    _DetailsModule(
+                      entry: entry,
+                      pet: pet,
+                      petId: petId,
+                      muted: muted,
+                      isEstablished: isEstablished,
+                      includeEstablished: true,
+                    ),
+                    _sectionGap,
+                    historyModule,
+                  ],
+                );
+
+          return SingleChildScrollView(
+            key: const Key('care_item_detail_body'),
+            padding: const EdgeInsets.all(16),
+            child: content,
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _DetailsModule extends StatelessWidget {
+  const _DetailsModule({
+    required this.entry,
+    required this.pet,
+    required this.petId,
+    required this.muted,
+    required this.isEstablished,
+    required this.includeEstablished,
+  });
+
+  final HealthEntry entry;
+  final Pet pet;
+  final String petId;
+  final bool muted;
+  final bool isEstablished;
+  final bool includeEstablished;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+
+    return CareItemModule(
+      key: const Key('care_item_details_module'),
+      semanticLabel: l.careItemDetailsTitle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CareItemSectionHeader(
+            title: l.careItemDetailsTitle,
+            icon: Icons.article_outlined,
+          ),
+          const SizedBox(height: 12),
+          CareCategoryBlocksDetailSection(
+            entry: entry,
+            pet: pet,
+            muted: muted,
+          ),
+          CareItemInfoSection(entry: entry, muted: muted),
+          if (includeEstablished)
+            CareItemEstablishedSection(
+              pet: pet,
+              isEstablished: isEstablished,
             ),
-            const SizedBox(height: 16),
-            CareItemModule(
-              key: const Key('care_item_history_module'),
-              semanticLabel: l.careItemHistoryTitle,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  CareItemSectionHeader(
-                    title: l.careItemHistoryTitle,
-                    icon: Icons.history,
-                  ),
-                  const SizedBox(height: 12),
-                  CareCollectionInsetList(
-                    semanticLabel: l.careItemHistoryTitle,
-                    children: [
-                      CareCollectionInsetItem(
-                        child: Padding(
-                          padding: CareSurfaceTokens.collectionInsetRowPadding,
-                          child: PetEventDocumentsStrip(entryId: entry.id),
-                        ),
-                      ),
-                      CareCollectionInsetItem(
-                        showDividerBefore: true,
-                        child: PetEventPastOccurrencesSection(
-                          entryId: entry.id,
-                          muted: muted,
-                        ),
-                      ),
-                      CareCollectionInsetItem(
-                        showDividerBefore: true,
-                        child: PetEventPastIterationsSection(
-                          entry: entry,
-                          history: history,
-                          isClosed: isClosed,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  OutlinedButton.icon(
-                    key: const Key('care_item_see_history'),
-                    onPressed: onSeeHistory,
-                    icon: const Icon(Icons.history),
-                    label: Text(l.seeHistory),
-                  ),
-                ],
-              ),
+          if (entry.healthIssueId != null &&
+              (entry.healthIssueName?.isNotEmpty ?? false)) ...[
+            const SizedBox(height: 8),
+            _HealthIssueLink(
+              petId: petId,
+              issueName: entry.healthIssueName!,
+              muted: muted,
             ),
           ],
-        ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HistoryModule extends StatelessWidget {
+  const _HistoryModule({
+    required this.entry,
+    required this.history,
+    required this.isClosed,
+    required this.muted,
+    required this.onSeeHistory,
+  });
+
+  final HealthEntry entry;
+  final List<HealthHistoryEntry> history;
+  final bool isClosed;
+  final bool muted;
+  final VoidCallback onSeeHistory;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+
+    return CareItemModule(
+      key: const Key('care_item_history_module'),
+      semanticLabel: l.careItemHistoryTitle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CareItemSectionHeader(
+            title: l.careItemHistoryTitle,
+            icon: Icons.history,
+          ),
+          const SizedBox(height: 12),
+          CareCollectionInsetList(
+            semanticLabel: l.careItemHistoryTitle,
+            children: [
+              CareCollectionInsetItem(
+                child: Padding(
+                  padding: CareSurfaceTokens.collectionInsetRowPadding,
+                  child: PetEventDocumentsStrip(entryId: entry.id),
+                ),
+              ),
+              CareCollectionInsetItem(
+                showDividerBefore: true,
+                child: PetEventPastOccurrencesSection(
+                  entryId: entry.id,
+                  muted: muted,
+                ),
+              ),
+              CareCollectionInsetItem(
+                showDividerBefore: true,
+                child: PetEventPastIterationsSection(
+                  entry: entry,
+                  history: history,
+                  isClosed: isClosed,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            key: const Key('care_item_see_history'),
+            onPressed: onSeeHistory,
+            icon: const Icon(Icons.history),
+            label: Text(l.seeHistory),
+          ),
+        ],
       ),
     );
   }
