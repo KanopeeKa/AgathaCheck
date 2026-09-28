@@ -1,5 +1,7 @@
 /**
  * @bdd people.feature
+ * Scenario: Today desk shows Vet team sub-block
+ * Scenario: Pet parent opens People from Account
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
