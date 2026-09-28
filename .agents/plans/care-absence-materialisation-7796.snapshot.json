@@ -31,9 +31,11 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "governance",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1391",
+      "pr_head_sha": "3bec8b6e"
     },
     {
       "id": "ensure-server",
@@ -149,5 +151,5 @@
       "status_detail": null
     }
   ],
-  "content_hash": "sha256:1f23b3db97417dc8c7cdce87d2bff802a1f0fbf29b87b05f82346ad562d8be3d"
+  "content_hash": "sha256:f97827fd633aecc633d2da2f63acdeb52841d8b913bce9f88a12b0f8aabb56bf"
 }

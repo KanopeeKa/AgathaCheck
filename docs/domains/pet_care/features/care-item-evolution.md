@@ -89,7 +89,7 @@ Much of the target behaviour exists. This table maps each area to what is live.
 | Weight | Completing a weight check writes a weight entry linked to the occurrence. The target weight is on the pet | Preserve. Body condition score is new |
 | Documents | Care item documents, occurrence notes. No occurrence documents | Occurrence documents are new |
 | Lifecycle | Close and Reopen. Pause and resume exist in the API only, with no UI | UX change, Pause UI |
-| Future occurrences | Never pre-generated (D-CSM-004, D-ACP-010) | Preserve |
+| Future occurrences | Never **automatically** pre-generated beyond T−1 / rollover (D-CSM-004, D-ACP-010). **On-demand** open-head materialisation when acting (D-CSM-018) | Preserve + extend |
 | Reminders | One reminder N days before, plus one overdue notice. In-app only, created when the app checks, calendar days only | Separate track (D-CIE-021) |
 
 Phase 0 (a regression baseline) mostly exists: the CSM projection corpus and integration gate (CSM-17), and the Away Care Planning tests. New tests are needed only where status, timezone and completion change.
@@ -262,6 +262,31 @@ People tiers decide what each person sees.
 
 ## Absences
 
+### Where the user sees conflicts
+
+Absence conflicts attach to **dates**, not abstract care items:
+
+| Surface | Shows |
+|---------|--------|
+| **Needs attention** (each open occurrence row) | Short line when that occurrence's date intersects an upcoming absence |
+| **Schedule — Next** | When there is no materialised row yet but `next_due_date` or projection shows an in-window date |
+| **Absence module** (care item) | Trip summary + two actions (below) for the primary upcoming absence |
+
+Tone is **neutral** (not red "plan needed"). Copy names the **concrete date** where possible.
+
+### Care item — two actions
+
+When affected and not yet resolved:
+
+| Action | Behaviour |
+|--------|-----------|
+| **Keep with {carer}** (or **Keep during absence** when no carer) | Saves resolution **`keep_date`** (+ optional **`looked_after_by`** from the pet's carer on the trip) |
+| **Review date** | **`ensureOpenOccurrence`** for the open head if needed, then **occurrence review** with **Change date** and **Skip** only |
+
+**Move before / move after** are not separate buttons. After **Change date**, the server stores **`move_before`** or **`move_after`** when the new date falls outside the absence window (inferred from dates). Accepting an away-plan planner suggestion uses the same reschedule path and should sync resolution (execute-plan `care-absence-materialisation-7796`).
+
+**Nothing needed** (trip deferral without skipping) remains in the resolution enum for edge cases; primary UX for "drop this instance" is **Skip** on the occurrence.
+
 ### When a care item is affected
 
 A care item is affected when the away plan lists it (R-A1):
@@ -285,15 +310,15 @@ A resolution is stored only when someone makes a decision for one care item and 
 | Dates decided for | The item's dates inside the absence when the decision was made. Used to notice changes |
 
 - **Keep the date** covers both "Jamie will do it" and "the vet does it at the booked appointment".
-- **Move before** and **Move after** open the existing Change date sheet, with its gap, preview and caution warnings (R-C2–R-C4, R-C8). The resolution is saved when the move is confirmed. Moves apply to the open occurrence only: planned and estimated dates can't be moved in advance (D-ACP-010).
-- **Nothing needed** records that the person decided it can wait or doesn't apply this time.
+- **Move before** and **Move after** are stored **after** a successful **Change date** when the new date is before leave or after return (R-C2–R-C4, R-C8). **Review date** runs **`ensureOpenOccurrence`** (D-CSM-018) when the row does not exist yet, then opens the occurrence review sheet.
+- **Nothing needed** records deliberate trip-level deferral; **Skip** on the occurrence is the usual way to drop one in-window instance.
 
 ### What is worked out when read
 
 | Shown | When | Example |
 |---|---|---|
 | Nothing due | The pet has an upcoming absence, but this item isn't affected | "Away 3–10 Oct · nothing due while you're away" |
-| Not reviewed yet | Affected, with no resolution | "Due 6 Oct, while you're away · Not reviewed yet", with a suggested "Keep the date · Jamie" |
+| Not reviewed yet | Affected, with no resolution | "Due 6 Oct, while you're away · Not reviewed yet", with **Keep with Jamie** and **Review date** |
 | Resolved | A resolution exists and still matches the facts | "Jamie will handle this on 6 Oct" · "Moved to 2 Oct, before you leave" · "Nothing needed this time" |
 | Needs review | A resolution exists, but a fact changed | "Jamie can no longer see Buddy's plan. Choose someone else?" · "This moved to 8 Oct since you reviewed it." |
 
@@ -450,7 +475,8 @@ New FR wording is proposed and needs the FR copy pass.
 | Finished | Finished | Fini | New |
 | Instructions | Instructions | Consignes | New |
 | Not reviewed yet | Not reviewed yet | Pas encore vu | New |
-| Keep the date | Keep the date | Garder la date | New |
+| Keep the date | Keep during absence · Keep with {carer} | Garder pendant l'absence · Garder avec {carer} | New |
+| Review date | Review date | Voir la date | New |
 | Looked after by | Looked after by | See the People vocabulary | People |
 
 ## Mockup corrections
