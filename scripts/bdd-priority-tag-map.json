@@ -221,7 +221,9 @@
     "Receiving org returns a transferred pet to the sending org": "P1"
   },
   "people.feature": {
-    "Pet parent opens People from Account": "P2"
+    "Pet parent opens People from Account": "P2",
+    "Today desk shows Vet team sub-block": "P2",
+    "People directory card opens person detail": "P2"
   },
   "veterinarian_management.feature": {
     "Creating a veterinarian with all details": "P1",
