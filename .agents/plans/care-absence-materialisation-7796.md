@@ -28,12 +28,14 @@ autonomy: active
 current_phase: docs
 last_completed_phase: null
 halt_reason: null
-next_action: implement docs phase (D-CSM-018 remodel)
+next_action: "continue phase docs on branch cursor/care-absence-materialisation-docs-7796"
 artifact_ref:
-  branch: cursor/care-absence-materialisation-integration-7796
+  branch: cursor/care-absence-materialisation-docs-7796
   plan_path: .agents/plans/care-absence-materialisation-7796.md
+  plan_commit: 3bec8b6ef3aa0b8cf2c015fae2dc99c8855de542
   snapshot_path: .agents/plans/care-absence-materialisation-7796.snapshot.json
-open_prs: []
+  snapshot_commit: 3bec8b6ef3aa0b8cf2c015fae2dc99c8855de542
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1391"]
 merge_commits: {}
 debt_issue_refs: []
 ```
