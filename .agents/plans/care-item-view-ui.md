@@ -15,13 +15,13 @@ autonomy: active
 current_phase: details-history
 last_completed_phase: schedule-absence
 halt_reason: null
-next_action: "start phase details-history: checkout cursor/care-item-view-ui-details-history-7796"
+next_action: "continue phase details-history on branch cursor/care-item-view-ui-details-history-7796"
 artifact_ref:
-  branch: cursor/care-item-view-ui-integration-7796
+  branch: cursor/care-item-view-ui-details-history-7796
   plan_path: .agents/plans/care-item-view-ui.md
-  plan_commit: b127f2c18fcedd334636c50e1eb67421e97aff4d
+  plan_commit: a74702769fdc366fa9cef579fcdfe4824c7ba365
   snapshot_path: .agents/plans/care-item-view-ui.snapshot.json
-  snapshot_commit: b127f2c18fcedd334636c50e1eb67421e97aff4d
+  snapshot_commit: a74702769fdc366fa9cef579fcdfe4824c7ba365
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

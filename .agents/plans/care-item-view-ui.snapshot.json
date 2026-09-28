@@ -127,7 +127,9 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "web-layout",
@@ -189,5 +191,5 @@
       "status": "pending"
     }
   ],
-  "content_hash": "sha256:68941765d43c792c9028a8a3bde18a7fc8cc2843a122004ccd2bc2d2894b6864"
+  "content_hash": "sha256:74c3f0e1df4431fcc29add073cb031325f38b5d5a4ca08d1e5e6abd07e809201"
 }
