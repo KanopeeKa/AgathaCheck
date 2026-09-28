@@ -10,10 +10,12 @@ import '../models/health_history_model.dart';
 import '../models/health_occurrence_model.dart';
 import 'health_occurrence_remote_datasource.dart'
     show
+        EnsureOpenOccurrenceRemoteResult,
         RescheduleOccurrenceRemoteResult,
         fetchOpenOccurrences,
         fetchPastOccurrences,
         postCompleteOccurrence,
+        postEnsureOpenOccurrence,
         postRescheduleOccurrence,
         postSkipMissedOccurrences,
         postSkipOccurrence,
@@ -25,6 +27,8 @@ import 'health_series_lifecycle_remote.dart';
 import 'health_remote_response.dart';
 
 export '../models/health_event_photo.dart';
+
+part 'health_remote_datasource_occurrence_methods.dart';
 
 abstract class HealthRemoteDataSource {
   Future<List<HealthEntryModel>> getEntries({String? petId, String? type});
@@ -86,6 +90,11 @@ abstract class HealthRemoteDataSource {
     DateTime scheduledDate, {
     String? reasonCode,
   });
+  Future<EnsureOpenOccurrenceRemoteResult> ensureOpenOccurrence(
+    String entryId, {
+    DateTime? scheduledDate,
+    String? reasonCode,
+  });
   Future<void> completeWeightOccurrence({
     required String petId,
     required String entryId,
@@ -99,7 +108,9 @@ abstract class HealthRemoteDataSource {
 }
 
 /// Implementation of [HealthRemoteDataSource] using HTTP.
-class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
+class HealthRemoteDataSourceImpl
+    with _HealthRemoteOccurrenceMethods
+    implements HealthRemoteDataSource {
   /// Creates a [HealthRemoteDataSourceImpl] with the given [baseUrl] and [client].
   HealthRemoteDataSourceImpl({required this.baseUrl, http.Client? client})
     : _client = client ?? http.Client();
@@ -121,6 +132,16 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
     }
     return headers;
   }
+
+  @override
+  http.Client get _occurrenceHttpClient => _client;
+
+  @override
+  String get _occurrenceBaseUrl => baseUrl;
+
+  @override
+  Map<String, String> _occurrenceAuthHeaders({bool jsonBody = false}) =>
+      _authHeaders(jsonBody: jsonBody);
 
   @override
   Future<List<HealthEntryModel>> getEntries({
@@ -342,156 +363,4 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
     );
   }
 
-  @override
-  Future<List<HealthOccurrenceModel>> getOpenOccurrences(String entryId) {
-    return fetchOpenOccurrences(
-      client: _client,
-      baseUrl: baseUrl,
-      headers: _authHeaders(),
-      checkResponse: checkHealthRemoteResponse,
-      entryId: entryId,
-    );
-  }
-
-  @override
-  Future<List<HealthOccurrenceModel>> getPastOccurrences(String entryId) {
-    return fetchPastOccurrences(
-      client: _client,
-      baseUrl: baseUrl,
-      headers: _authHeaders(),
-      checkResponse: checkHealthRemoteResponse,
-      entryId: entryId,
-    );
-  }
-
-  @override
-  Future<HealthOccurrenceModel> completeOccurrence(
-    String entryId,
-    String occurrenceId, {
-    String notes = '',
-    DateTime? completedOn,
-    bool skipEarlierMissed = false,
-  }) {
-    return postCompleteOccurrence(
-      client: _client,
-      baseUrl: baseUrl,
-      headers: _authHeaders(jsonBody: true),
-      checkResponse: checkHealthRemoteResponse,
-      entryId: entryId,
-      occurrenceId: occurrenceId,
-      notes: notes,
-      completedOn: completedOn,
-      skipEarlierMissed: skipEarlierMissed,
-    );
-  }
-
-  @override
-  Future<HealthOccurrenceModel> skipOccurrence(
-    String entryId,
-    String occurrenceId, {
-    String notes = '',
-  }) {
-    return postSkipOccurrence(
-      client: _client,
-      baseUrl: baseUrl,
-      headers: _authHeaders(jsonBody: true),
-      checkResponse: checkHealthRemoteResponse,
-      entryId: entryId,
-      occurrenceId: occurrenceId,
-      notes: notes,
-    );
-  }
-
-  @override
-  Future<int> skipMissedOccurrences(String entryId) {
-    return postSkipMissedOccurrences(
-      client: _client,
-      baseUrl: baseUrl,
-      headers: _authHeaders(jsonBody: true),
-      checkResponse: checkHealthRemoteResponse,
-      entryId: entryId,
-    );
-  }
-
-  @override
-  Future<HealthOccurrenceModel> undoOccurrence(
-    String entryId,
-    String occurrenceId,
-  ) {
-    return postUndoOccurrence(
-      client: _client,
-      baseUrl: baseUrl,
-      headers: _authHeaders(jsonBody: true),
-      checkResponse: checkHealthRemoteResponse,
-      entryId: entryId,
-      occurrenceId: occurrenceId,
-    );
-  }
-
-  @override
-  Future<HealthOccurrenceModel> updateOccurrenceNotes(
-    String entryId,
-    String occurrenceId,
-    String notes, {
-    String? providerContactId,
-    String? providerTypedName,
-  }) {
-    return patchOccurrenceNotes(
-      client: _client,
-      baseUrl: baseUrl,
-      headers: _authHeaders(jsonBody: true),
-      checkResponse: checkHealthRemoteResponse,
-      entryId: entryId,
-      occurrenceId: occurrenceId,
-      notes: notes,
-      providerContactId: providerContactId,
-      providerTypedName: providerTypedName,
-    );
-  }
-
-  @override
-  Future<RescheduleOccurrenceRemoteResult> rescheduleOccurrence(
-    String entryId,
-    String occurrenceId,
-    DateTime scheduledDate, {
-    String? reasonCode,
-  }) {
-    return postRescheduleOccurrence(
-      client: _client,
-      baseUrl: baseUrl,
-      headers: _authHeaders(jsonBody: true),
-      checkResponse: checkHealthRemoteResponse,
-      entryId: entryId,
-      occurrenceId: occurrenceId,
-      scheduledDate: scheduledDate,
-      reasonCode: reasonCode,
-    );
-  }
-
-  @override
-  Future<void> completeWeightOccurrence({
-    required String petId,
-    required String entryId,
-    required String occurrenceId,
-    required double weightKg,
-    required DateTime date,
-    String notes = '',
-    String unit = 'kg',
-    String measurementSource = 'guardian',
-  }) {
-    return completeWeightOccurrenceRemote(
-      client: _client,
-      baseUrl: baseUrl,
-      headers: _authHeaders(jsonBody: true),
-      checkResponse: checkHealthRemoteResponse,
-      petId: petId,
-      entryId: entryId,
-      occurrenceId: occurrenceId,
-      weightKg: weightKg,
-      date: date,
-      notes: notes,
-      unit: unit,
-      measurementSource: measurementSource,
-    );
-  }
 }

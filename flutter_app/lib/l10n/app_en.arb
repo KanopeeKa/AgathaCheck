@@ -1857,6 +1857,15 @@
   "careItemAbsenceKeepDate": "Keep the date",
   "careItemAbsenceNothingNeeded": "Nothing needed",
   "careItemAbsenceSaveResolution": "Save",
+  "careItemOccurrenceReviewTitle": "Review date",
+  "careItemAbsenceReviewDate": "Due {date}",
+  "@careItemAbsenceReviewDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "careItemDetailsTitle": "Details",
   "careItemHistoryTitle": "History",
   "careItemEditSchedule": "Edit schedule",

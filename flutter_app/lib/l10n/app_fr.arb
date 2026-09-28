@@ -1778,6 +1778,15 @@
   "careItemAbsenceKeepDate": "Garder la date",
   "careItemAbsenceNothingNeeded": "Rien à faire",
   "careItemAbsenceSaveResolution": "Enregistrer",
+  "careItemOccurrenceReviewTitle": "Voir la date",
+  "careItemAbsenceReviewDate": "Prévu le {date}",
+  "@careItemAbsenceReviewDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "careItemDetailsTitle": "Détails",
   "careItemHistoryTitle": "Historique",
   "careItemEditSchedule": "Modifier le planning",

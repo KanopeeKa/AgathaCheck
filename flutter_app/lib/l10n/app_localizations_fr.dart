@@ -5180,6 +5180,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careItemAbsenceSaveResolution => 'Enregistrer';
 
   @override
+  String get careItemOccurrenceReviewTitle => 'Voir la date';
+
+  @override
+  String careItemAbsenceReviewDate(String date) {
+    return 'Prévu le $date';
+  }
+
+  @override
   String get careItemDetailsTitle => 'Détails';
 
   @override
