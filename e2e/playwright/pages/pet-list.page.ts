@@ -326,13 +326,13 @@ export class PetListPage {
     if (await vetsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await vetsNav.click();
     } else if (await isExperienceShellVisible(this.page)) {
-      await this.page.goto(flutterGotoUrl('/pc/vets'));
+      await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
       await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, /\/pc\/vets$/, 30_000);
+      await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
     } else {
-      await waitForFlutterRoute(this.page, '/pc/vets');
+      await waitForFlutterRoute(this.page, '/pc/people');
     }
-    await this.page.getByText(/^Veterinarians$/i).first().waitFor({ timeout: 30_000 });
+    await this.page.getByText(/^People$|^Autour de vos animaux$/i).first().waitFor({ timeout: 30_000 });
   }
 
   /**

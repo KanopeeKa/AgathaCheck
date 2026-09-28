@@ -60,6 +60,9 @@ test.describe('Guardian navigation', () => {
     await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 30_000);
     await new HealthDashboardPage(page).expectLoaded();
 
+    await dashboard.openBottomNavTab('People');
+    await waitForFlutterRoutePattern(page, /\/pc\/people(?:\?|$)/, 30_000);
+
     await dashboard.openBottomNavTab('Account');
     await waitForFlutterRoutePattern(page, /\/account(?:\?|$)/, 30_000);
   });
@@ -86,6 +89,9 @@ test.describe('Guardian navigation', () => {
     await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 30_000);
     await new HealthDashboardPage(page).expectLoaded();
 
+    await dashboard.openLeadingNavDestination('People');
+    await waitForFlutterRoutePattern(page, /\/pc\/people(?:\?|$)/, 30_000);
+
     await dashboard.openLeadingNavDestination('Account');
     await waitForFlutterRoutePattern(page, /\/account(?:\?|$)/, 30_000);
   });
@@ -111,6 +117,9 @@ test.describe('Guardian navigation', () => {
     await dashboard.openLeadingNavDestination('Actions');
     await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 30_000);
     await new HealthDashboardPage(page).expectLoaded();
+
+    await dashboard.openLeadingNavDestination('People');
+    await waitForFlutterRoutePattern(page, /\/pc\/people(?:\?|$)/, 30_000);
 
     await dashboard.openLeadingNavDestination('Account');
     await waitForFlutterRoutePattern(page, /\/account(?:\?|$)/, 30_000);

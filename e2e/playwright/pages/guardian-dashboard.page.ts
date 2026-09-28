@@ -33,7 +33,7 @@ export class GuardianDashboardPage {
   async expectTodayCareRegions(): Promise<void> {
     await expect(this.section(/My Pets|Mes animaux/i)).toBeVisible();
     await expect(this.section(/CARE ACTIONS|SOINS/i)).toBeVisible();
-    await expect(this.section(/Veterinary team|VETERINARY TEAM|Équipe vétérinaire|ÉQUIPE VÉTÉRINAIRE/i)).toBeVisible();
+    await expect(this.section(/^People$|^PEOPLE$|Autour de vos animaux/i)).toBeVisible();
     await expect(this.section(/Fostering Sessions|Sessions d'accueil/i)).not.toBeVisible();
   }
 
@@ -112,7 +112,7 @@ export class GuardianDashboardPage {
 
   async expectVetVisible(name: string): Promise<void> {
     await expect(
-      this.section(/Veterinary team|VETERINARY TEAM|Équipe vétérinaire|ÉQUIPE VÉTÉRINAIRE/i)
+      this.section(/^People$|^PEOPLE$|Autour de vos animaux/i)
         .getByRole('button', { name: new RegExp(name, 'i') })
         .or(semanticsByName(this.page, new RegExp(name, 'i')))
         .first(),
@@ -120,19 +120,16 @@ export class GuardianDashboardPage {
   }
 
   async openVet(name: string): Promise<void> {
-    const vet = this.section(/My Vets|Mes vétérinaires/i)
+    const row = this.section(/^People$|^PEOPLE$|Autour de vos animaux/i)
       .getByRole('button', { name: new RegExp(name, 'i') })
       .or(semanticsByName(this.page, new RegExp(name, 'i')))
       .first();
-    await vet.click();
+    await row.click();
     await refreshFlutterAccessibility(this.page);
-    // Flutter web may not update the hash on context.push; assert vet detail UI.
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
     await expect(semanticsByName(this.page, new RegExp(name, 'i')).first()).toBeVisible({
       timeout: 30_000,
     });
-    await expect(
-      this.page.getByText(/Pets cared for|Animaux pris en charge/i),
-    ).toBeVisible({ timeout: 15_000 });
   }
 
   async expectNoHorizontalOverflow(): Promise<void> {
@@ -212,6 +209,8 @@ export class GuardianDashboardPage {
       case 'Actions':
       case 'Care':
         return 'pet_care_nav_care';
+      case 'People':
+        return 'pet_care_nav_people';
       case 'Fostering':
         return 'pet_care_nav_fostering';
       case 'Account':
