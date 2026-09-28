@@ -9171,6 +9171,36 @@ abstract class AppLocalizations {
   /// **'Keep the date'**
   String get careItemAbsenceKeepDate;
 
+  /// No description provided for @careItemAbsenceKeepWithCarer.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep with {carer}'**
+  String careItemAbsenceKeepWithCarer(String carer);
+
+  /// No description provided for @careItemAbsenceKeepDuringAbsence.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep during absence'**
+  String get careItemAbsenceKeepDuringAbsence;
+
+  /// No description provided for @careItemAbsenceReviewDateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Review date'**
+  String get careItemAbsenceReviewDateAction;
+
+  /// No description provided for @careItemAbsenceNotReviewedOnDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {date}, while you\'re away · {dateRange}'**
+  String careItemAbsenceNotReviewedOnDate(String date, String dateRange);
+
+  /// No description provided for @careItemOccurrenceDuringAbsence.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {date} during your absence'**
+  String careItemOccurrenceDuringAbsence(String date);
+
   /// No description provided for @careItemAbsenceNothingNeeded.
   ///
   /// In en, this message translates to:

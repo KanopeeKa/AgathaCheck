@@ -6,10 +6,9 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/ensure_open_occurrence_result.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
+import '../providers/care_item_detail_refresh.dart';
 import '../providers/health_providers.dart';
 import 'occurrence_review_sheet.dart';
-import 'pet_event_occurrence_actions.dart';
-import 'reschedule_occurrence_flow.dart';
 
 /// Ensures an open occurrence exists, then shows the review sheet (D-CSM-018).
 class OccurrenceReviewFlow {
@@ -35,12 +34,7 @@ class OccurrenceReviewFlow {
               reasonCode: absenceId != null ? 'absence_review' : null,
             );
         occurrence = pickOccurrenceForReview(result, entry.id);
-        PetEventOccurrenceActions.invalidateOccurrenceData(ref, entry.id);
-        RescheduleOccurrenceFlow.invalidateAfterReschedule(
-          ref,
-          entry.id,
-          absenceId: absenceId,
-        );
+        invalidateCareItemDetailData(ref, entry.id, absenceId: absenceId);
       } catch (_) {
         if (!context.mounted) return;
         final l = AppLocalizations.of(context)!;

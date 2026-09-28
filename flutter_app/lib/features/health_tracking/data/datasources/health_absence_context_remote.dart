@@ -39,6 +39,7 @@ class HealthAbsenceContextRemote {
     required String healthEntryId,
     required String decision,
     String? absenceNote,
+    Map<String, dynamic>? lookedAfterBy,
   }) async {
     final response = await _client.patch(
       Uri.parse('$baseUrl/api/planned-absences/$absenceId/resolutions'),
@@ -47,6 +48,7 @@ class HealthAbsenceContextRemote {
         'health_entry_id': healthEntryId,
         'decision': decision,
         if (absenceNote != null) 'absence_note': absenceNote,
+        if (lookedAfterBy != null) 'looked_after_by': lookedAfterBy,
       }),
     );
     checkHealthRemoteResponse(response);

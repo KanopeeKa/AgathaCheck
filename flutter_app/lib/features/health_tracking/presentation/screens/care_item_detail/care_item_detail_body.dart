@@ -64,7 +64,7 @@ class CareItemDetailBody extends ConsumerWidget {
         ? CareItemDatesSection(entry: entry, muted: muted)
         : _ClosedNeedsAttentionModule(history: history, muted: muted);
     final absenceSection = CareItemAbsenceSection(
-      entryId: entry.id,
+      entry: entry,
       muted: muted,
     );
     final scheduleSection = CareItemScheduleSection(
