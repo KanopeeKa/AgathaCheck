@@ -42,6 +42,10 @@
     "A care suggestion never appears in the Actions (/pc/events) list": "P1",
     "Accepting a suggestion creates a rhythm and removes the card": "P1"
   },
+  "care_item_absence.feature": {
+    "In-window care can be rescheduled or skipped from occurrence review during planned absence": "P1",
+    "Care item absence strip shows Keep with carer and Review date opens occurrence review": "P1"
+  },
   "pet_profiles.feature": {
     "Creating a new pet with required fields": "P0",
     "Creating a pet with all fields populated": "P1",
