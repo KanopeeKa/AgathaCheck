@@ -122,12 +122,26 @@ export class GuardianDashboardPage {
   }
 
   async openVet(name: string): Promise<void> {
+    const people = this.section(/People|PEOPLE|Autour de vos animaux/i);
+    await people.scrollIntoViewIfNeeded();
+    await refreshFlutterAccessibility(this.page);
+
+    const namePattern = new RegExp(name, 'i');
+    const buttonInSection = people.getByRole('button', { name: namePattern });
+    const bySemanticsName = semanticsByName(this.page, namePattern);
     const card = this.page
       .locator('[flt-semantics-identifier^="people_directory_card_"]')
-      .filter({ hasText: new RegExp(name, 'i') });
-    await expect(card.first()).toBeVisible({ timeout: 60_000 });
-    await card.first().scrollIntoViewIfNeeded();
-    await card.first().click();
+      .filter({ hasText: namePattern });
+
+    const target = (await buttonInSection.first().isVisible({ timeout: 8_000 }).catch(() => false))
+      ? buttonInSection.first()
+      : (await card.first().isVisible({ timeout: 8_000 }).catch(() => false))
+        ? card.first()
+        : bySemanticsName.first();
+
+    await expect(target).toBeVisible({ timeout: 60_000 });
+    await target.scrollIntoViewIfNeeded();
+    await target.click();
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/?]+/, 30_000);
