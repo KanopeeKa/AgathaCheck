@@ -74,12 +74,13 @@ void main() {
       expect(PetCareBottomNavigation.indexFor('/pc/home'), 0);
       expect(PetCareBottomNavigation.indexFor('/pc/pets'), 1);
       expect(PetCareBottomNavigation.indexFor('/pc/events'), 2);
-      expect(PetCareBottomNavigation.indexFor('/account'), 3);
+      expect(PetCareBottomNavigation.indexFor('/pc/people'), 3);
+      expect(PetCareBottomNavigation.indexFor('/account'), 4);
     });
 
     test('maps nested Guardian workspace routes to the closest tab', () {
-      expect(PetCareBottomNavigation.indexFor('/pc/vets'), 0);
-      expect(PetCareBottomNavigation.indexFor('/pc/vets/vet-1'), 0);
+      expect(PetCareBottomNavigation.indexFor('/pc/vets'), 3);
+      expect(PetCareBottomNavigation.indexFor('/pc/vets/vet-1'), 3);
       expect(PetCareBottomNavigation.indexFor('/pet/pet-1'), 1);
       expect(PetCareBottomNavigation.indexFor('/pet/pet-1/timeline'), 1);
       expect(PetCareBottomNavigation.indexFor('/pet/pet-1/weight'), 1);
@@ -96,7 +97,9 @@ void main() {
       expect(PetCareBottomNavigation.indexFor('/care/add'), 2);
       expect(PetCareBottomNavigation.indexFor('/health/add'), 2);
       expect(PetCareBottomNavigation.indexFor('/add'), 1);
-      expect(PetCareBottomNavigation.indexFor('/account/orgs/org-1'), 3);
+      expect(PetCareBottomNavigation.indexFor('/account/people'), 3);
+      expect(PetCareBottomNavigation.indexFor('/account/people/new'), 3);
+      expect(PetCareBottomNavigation.indexFor('/account/orgs/org-1'), 4);
     });
 
     test('recognises Guardian workspace routes', () {
@@ -104,6 +107,7 @@ void main() {
       expect(PetCareBottomNavigation.supports('/pc/pets'), isTrue);
       expect(PetCareBottomNavigation.supports('/pc/events'), isTrue);
       expect(PetCareBottomNavigation.supports('/account'), isTrue);
+      expect(PetCareBottomNavigation.supports('/pc/people'), isTrue);
       expect(PetCareBottomNavigation.supports('/pc/vets/vet-1'), isTrue);
       expect(PetCareBottomNavigation.supports('/pet/pet-1'), isTrue);
       expect(PetCareBottomNavigation.supports('/pc/onboarding'), isFalse);
@@ -135,7 +139,9 @@ void main() {
       expect(find.text('Dashboard'), findsOneWidget);
       expect(find.text('Pets'), findsOneWidget);
       expect(find.text('Actions'), findsOneWidget);
+      expect(find.text('People'), findsOneWidget);
       expect(find.text('Account'), findsOneWidget);
+      expect(find.byIcon(Icons.groups_outlined), findsOneWidget);
       expect(
         find.byKey(const Key('pet_care_bottom_navigation')),
         findsOneWidget,

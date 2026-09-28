@@ -37,13 +37,15 @@ class PetCareBottomNavigation extends StatelessWidget {
         backgroundColor: AppColorTokens.petCarePrimary,
         selectedItemColor: AppColorTokens.inverse,
         unselectedItemColor: AppColorTokens.petCareLight,
+        selectedFontSize: 11,
+        unselectedFontSize: 10,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
         onTap: (index) => context.go(PetCarePrimaryDestinations.routes[index]),
         items: [
           for (final destination in destinations)
             BottomNavigationBarItem(
-              icon: Icon(destination.icon),
-              activeIcon: Icon(destination.selectedIcon),
+              icon: Icon(destination.icon, size: 22),
+              activeIcon: Icon(destination.selectedIcon, size: 22),
               label: destination.labelBuilder(l),
             ),
         ],

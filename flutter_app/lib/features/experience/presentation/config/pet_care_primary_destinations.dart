@@ -26,7 +26,13 @@ class PetCarePrimaryDestinations {
   static const compactBreakpoint = 600.0;
   static const expandedBreakpoint = 840.0;
 
-  static const routes = ['/pc/home', '/pc/pets', '/pc/events', '/account'];
+  static const routes = [
+    '/pc/home',
+    '/pc/pets',
+    '/pc/events',
+    '/pc/people',
+    '/account',
+  ];
 
   static bool isCompact(double width) => width < compactBreakpoint;
 
@@ -54,10 +60,25 @@ class PetCarePrimaryDestinations {
   }
 
   static int indexFor(String path) {
-    if (path == '/account' || path.startsWith('/account/')) return 3;
+    if (path == '/account' ||
+        (path.startsWith('/account/') && !_isPeopleLegacyAccountPath(path))) {
+      return 4;
+    }
+    if (_isPeoplePath(path)) return 3;
     if (_isCarePath(path)) return 2;
     if (_isPetsPath(path)) return 1;
     return 0;
+  }
+
+  static bool _isPeoplePath(String path) {
+    if (path == '/pc/people' || path.startsWith('/pc/people/')) return true;
+    if (path == '/pc/vets' || path.startsWith('/pc/vets/')) return true;
+    return _isPeopleLegacyAccountPath(path);
+  }
+
+  static bool _isPeopleLegacyAccountPath(String path) {
+    if (path == '/account/people') return true;
+    return path.startsWith('/account/people/');
   }
 
   static bool _isCarePath(String path) => isPetCareActionsNavPath(path);
@@ -89,6 +110,12 @@ class PetCarePrimaryDestinations {
       labelBuilder: _careLabel,
     ),
     PetCarePrimaryDestination(
+      route: '/pc/people',
+      icon: Icons.groups_outlined,
+      selectedIcon: Icons.groups,
+      labelBuilder: _peopleLabel,
+    ),
+    PetCarePrimaryDestination(
       route: '/account',
       icon: Icons.person_outline,
       selectedIcon: Icons.person,
@@ -99,6 +126,7 @@ class PetCarePrimaryDestinations {
   static String _dashboardLabel(AppLocalizations l) => l.dashboardNavLabel;
   static String _petsLabel(AppLocalizations l) => l.petsNavLabel;
   static String _careLabel(AppLocalizations l) => l.careNavLabel;
+  static String _peopleLabel(AppLocalizations l) => l.peopleNavLabel;
   static String _accountLabel(AppLocalizations l) => l.accountTitle;
 
   /// Stable semantics identifier for E2E (`flt-semantics-identifier` on web).
@@ -110,6 +138,8 @@ class PetCarePrimaryDestinations {
         return 'pet_care_nav_pets';
       case '/pc/events':
         return 'pet_care_nav_care';
+      case '/pc/people':
+        return 'pet_care_nav_people';
       case '/account':
         return 'pet_care_nav_account';
       default:

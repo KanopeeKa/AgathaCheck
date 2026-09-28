@@ -381,6 +381,7 @@
   },
   "dashboardNavLabel": "Dashboard",
   "careNavLabel": "Actions",
+  "peopleNavLabel": "People",
   "careDueTab": "Due {count}",
   "@careDueTab": { "placeholders": { "count": { "type": "int" } } },
   "careSoonTab": "Soon",
@@ -2693,6 +2694,23 @@
   "peopleEmptyCarers": "No trusted carers yet.",
   "peopleEmptyProfessionals": "No pet professionals yet.",
   "peopleAddPerson": "Add person",
+  "peopleDeskSeeAll": "See all",
+  "peopleDeskEmptyBody": "Add carers and pet professionals so they appear on your dashboard and in away plans.",
+  "peopleDeskHouseholdRail": "Households",
+  "peopleDeskLinkedPets": "{count, plural, =1{1 pet linked} other{{count} pets linked}}",
+  "peopleSearchHint": "Search people",
+  "peopleFilterAll": "All",
+  "peopleFilterHousehold": "Household",
+  "peopleFilterCarers": "Carers",
+  "peopleFilterProfessionals": "Professionals",
+  "peopleHouseholdDirectoryEmpty": "No contacts in this household directory yet.",
+  "@peopleDeskLinkedPets": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "peopleKindLabel": "Kind",
   "peopleKindPerson": "Person",
   "peopleKindOrganisation": "Organisation",

@@ -961,6 +961,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careNavLabel => 'Actions';
 
   @override
+  String get peopleNavLabel => 'People';
+
+  @override
   String careDueTab(int count) {
     return 'Due $count';
   }
@@ -6900,6 +6903,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peopleAddPerson => 'Add person';
+
+  @override
+  String get peopleDeskSeeAll => 'See all';
+
+  @override
+  String get peopleDeskEmptyBody =>
+      'Add carers and pet professionals so they appear on your dashboard and in away plans.';
+
+  @override
+  String get peopleDeskHouseholdRail => 'Households';
+
+  @override
+  String peopleDeskLinkedPets(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pets linked',
+      one: '1 pet linked',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get peopleSearchHint => 'Search people';
+
+  @override
+  String get peopleFilterAll => 'All';
+
+  @override
+  String get peopleFilterHousehold => 'Household';
+
+  @override
+  String get peopleFilterCarers => 'Carers';
+
+  @override
+  String get peopleFilterProfessionals => 'Professionals';
+
+  @override
+  String get peopleHouseholdDirectoryEmpty =>
+      'No contacts in this household directory yet.';
 
   @override
   String get peopleKindLabel => 'Kind';

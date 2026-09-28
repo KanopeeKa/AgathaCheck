@@ -970,6 +970,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careNavLabel => 'Soins';
 
   @override
+  String get peopleNavLabel => 'Personnes';
+
+  @override
   String careDueTab(int count) {
     return 'À faire $count';
   }
@@ -7010,6 +7013,46 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peopleAddPerson => 'Ajouter quelqu\'un';
+
+  @override
+  String get peopleDeskSeeAll => 'Tout voir';
+
+  @override
+  String get peopleDeskEmptyBody =>
+      'Ajoutez des proches et des professionnels pour les retrouver ici et dans vos absences.';
+
+  @override
+  String get peopleDeskHouseholdRail => 'Foyers';
+
+  @override
+  String peopleDeskLinkedPets(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count animaux liés',
+      one: '1 animal lié',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get peopleSearchHint => 'Rechercher';
+
+  @override
+  String get peopleFilterAll => 'Tous';
+
+  @override
+  String get peopleFilterHousehold => 'Foyer';
+
+  @override
+  String get peopleFilterCarers => 'Proches';
+
+  @override
+  String get peopleFilterProfessionals => 'Pros';
+
+  @override
+  String get peopleHouseholdDirectoryEmpty =>
+      'Aucun contact dans ce répertoire de foyer pour l\'instant.';
 
   @override
   String get peopleKindLabel => 'Type';

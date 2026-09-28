@@ -12,14 +12,13 @@ List<RouteBase> buildVetExperienceRoutes() {
     GoRoute(
       path: '/pc/vets',
       name: 'petCareVets',
-      builder: (context, state) => ExperienceShellScaffold(
-        experience: AppExperience.petCare,
-        currentLocation: state.uri.path,
-        child: const VetListScreen(
-          embeddedInShell: true,
-          experience: AppExperience.petCare,
-        ),
-      ),
+      redirect: (context, state) {
+        final path = state.uri.path;
+        if (path == '/pc/vets' || path == '/pc/vets/') {
+          return '/pc/people?filter=professionals';
+        }
+        return null;
+      },
       routes: _vetFormRoutes(listPath: '/pc/vets'),
     ),
     GoRoute(
