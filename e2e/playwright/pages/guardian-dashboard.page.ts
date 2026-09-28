@@ -131,18 +131,12 @@ export class GuardianDashboardPage {
       .getByRole('button', { name: new RegExp(name, 'i') })
       .or(semanticsByName(this.page, new RegExp(name, 'i')))
       .first();
-<<<<<<< Updated upstream
-    await row.click();
-    await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/?]+/, 30_000);
-=======
     const target = (await card.count()) > 0 ? card.first() : row;
     await target.click();
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/?]+/, 30_000);
     }).toPass({ timeout: 45_000 });
->>>>>>> Stashed changes
     await expect(this.page.getByText(new RegExp(name, 'i')).first()).toBeVisible({
       timeout: 15_000,
     });
