@@ -11,7 +11,7 @@ related_bdd: []
 
 # People & Care Team — vocabulary (EN/FR)
 
-**Status:** approved on 2026-09-27 and **not shipped yet**. It covers the UI wording for the [People & Care Team spec](/docs/domains/people/features/people-care-team.md).
+**Status:** approved 2026-09-27; **partially shipped** (nav, hub sections). Rows below remain source of truth until merged into [terminology.md](/docs/design/terminology.md) per ship checklist.
 
 When this feature ships, the implementing PR must:
 
@@ -42,6 +42,7 @@ Until then, don't change shipped strings ad hoc.
 | Household section (People page) | Household name, e.g. Morgan household | Household name, e.g. « Famille Morgan » | Every household is headed by its name, including when there's only one |
 | Carers section | Trusted carers | Proches & pet-sitters | Not "Proches & gardes": *garde* can mean a guard, a duty shift or custody |
 | Professionals section | Pet professionals | Leurs pros | |
+| Today desk — vet sub-block only | Vet team | Équipe véto | **Exception:** Today dashboard People module only. Hub list keeps **Pet professionals** |
 | Filters | All · Household · Carers · Professionals | Tous · Foyer · Proches · Pros | Short forms of the section headings. "Household" is the generic word, because the sections use household names |
 
 ## Pet profile
