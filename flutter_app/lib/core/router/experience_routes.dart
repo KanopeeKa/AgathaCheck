@@ -5,8 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../features/experience/domain/entities/app_experience.dart';
 import '../../l10n/app_localizations.dart';
 import '../../features/experience/presentation/screens/account_screen.dart';
-import '../../features/people/presentation/screens/people_contact_form_screen.dart';
-import '../../features/people/presentation/screens/people_list_screen.dart';
+import '../../features/people/presentation/screens/people_add_person_screen.dart';
+import '../../features/people/presentation/screens/people_edit_screen.dart';
+import '../../features/people/presentation/screens/people_hub_screen.dart';
 import '../../features/experience/presentation/screens/experience_chooser_screen.dart';
 import '../../features/experience/presentation/screens/experience_home_screens.dart';
 import '../../features/experience/presentation/screens/experience_resolve_screen.dart';
@@ -139,12 +140,29 @@ List<RouteBase> buildExperienceRoutes() {
         GoRoute(
           path: '/pc/people',
           name: 'petCarePeople',
-          builder: (context, state) => const PeopleListScreen(),
+          builder: (context, state) =>
+              PeopleHubScreen(selectedPersonId: peoplePersonIdFromState(state)),
           routes: [
             GoRoute(
               path: 'new',
               name: 'petCarePeopleNew',
-              builder: (context, state) => const PeopleContactFormScreen(),
+              builder: (context, state) => const PeopleAddPersonScreen(),
+            ),
+            GoRoute(
+              path: ':personId',
+              name: 'petCarePeopleDetail',
+              builder: (context, state) => PeopleHubScreen(
+                selectedPersonId: state.pathParameters['personId'],
+              ),
+              routes: [
+                GoRoute(
+                  path: 'edit',
+                  name: 'petCarePeopleEdit',
+                  builder: (context, state) => PeopleEditScreen(
+                    personId: state.pathParameters['personId']!,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

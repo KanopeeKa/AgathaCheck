@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "plan_id": "people-hub-remodel-a58d",
+  "approved_at": "2026-09-28T16:30:00Z",
+  "approved_by": "user chat 2026-09-28: full People hub remodel follow-up — remodel existing docs, encapsulate tests/E2E, create execute-plan (standing grant from people-ui-hub programme)",
+  "approved_until": "2026-09-30T16:30:00Z",
+  "content_hash": "sha256:9ea3092e3480661b8dd192fef49cb202a594b90f75e6be6cf3561af770cbc3e4",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/people-hub-remodel-integration-a58d",
+  "control_issue": 1386,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "p0-close-hub",
+      "title": "Close people-ui-hub-a58d plan",
+      "branch": "cursor/people-hub-remodel-p0-close-hub-a58d",
+      "allowed_paths": [
+        ".agents/plans/people-ui-hub-a58d.md",
+        ".agents/plans/people-ui-hub-a58d.snapshot.json",
+        ".agents/plans/people-hub-remodel-a58d.md",
+        ".agents/plans/people-hub-remodel-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "p0-docs",
+      "title": "People documentation remodel",
+      "branch": "cursor/people-hub-remodel-p0-docs-a58d",
+      "allowed_paths": [
+        "docs/domains/people/**",
+        "docs/design/terminology.md",
+        ".agents/plans/people-hub-remodel-a58d.md",
+        ".agents/plans/people-hub-remodel-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "p1-roster-cards",
+      "title": "Roster entries, directory cards, detail route",
+      "branch": "cursor/people-hub-remodel-p1-cards-a58d",
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_people_desk_module.dart",
+        "flutter_app/lib/core/router/experience_routes.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/people/**",
+        "flutter_app/test/features/experience/**",
+        ".agents/plans/people-hub-remodel-a58d.md",
+        ".agents/plans/people-hub-remodel-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1387",
+      "pr_head_sha": "20d9eb32"
+    },
+    {
+      "id": "p2-detail-edit",
+      "title": "Person detail and edit (danger zone)",
+      "branch": "cursor/people-hub-remodel-p2-detail-a58d",
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/people/**",
+        ".agents/plans/people-hub-remodel-a58d.md",
+        ".agents/plans/people-hub-remodel-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1387",
+      "pr_head_sha": "20d9eb32"
+    },
+    {
+      "id": "p3-unified-add",
+      "title": "Unified add person + sharing",
+      "branch": "cursor/people-hub-remodel-p3-add-a58d",
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/features/sharing/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/l10n/**",
+        "server/routes/people/**",
+        "server/lib/people/**",
+        "server/test/people/**",
+        "flutter_app/test/features/people/**",
+        "flutter_app/test/features/sharing/**",
+        ".agents/plans/people-hub-remodel-a58d.md",
+        ".agents/plans/people-hub-remodel-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1387",
+      "pr_head_sha": "20d9eb32"
+    },
+    {
+      "id": "p4-tests-e2e",
+      "title": "BDD, Playwright, and widget test harness",
+      "branch": "cursor/people-hub-remodel-p4-e2e-a58d",
+      "allowed_paths": [
+        "flutter_app/test/bdd/features/people.feature",
+        "flutter_app/test/features/people/**",
+        "flutter_app/test/features/experience/**",
+        "e2e/playwright/**",
+        "scripts/bdd-priority-tag-map.json",
+        "docs/domains/people/features/people-care-team.md",
+        ".agents/plans/people-hub-remodel-a58d.md",
+        ".agents/plans/people-hub-remodel-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1387",
+      "pr_head_sha": "20d9eb32"
+    },
+    {
+      "id": "p5-ship-main",
+      "title": "Integration PR to main",
+      "branch": "cursor/people-hub-remodel-integration-a58d",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    }
+  ]
+}

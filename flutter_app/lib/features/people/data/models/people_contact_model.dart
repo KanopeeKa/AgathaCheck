@@ -48,6 +48,26 @@ class PeopleContactModel {
     );
   }
 
+  Map<String, dynamic> toPatchJson({String? privateNote}) => {
+    if (privateNote != null) 'private_note': privateNote,
+  };
+
+  PeopleContactModel copyWith({String? privateNote}) {
+    return PeopleContactModel(
+      id: id,
+      kind: kind,
+      name: name,
+      roles: roles,
+      phone: phone,
+      email: email,
+      address: address,
+      website: website,
+      privateNote: privateNote ?? this.privateNote,
+      inactiveAt: inactiveAt,
+      legacyVetId: legacyVetId,
+    );
+  }
+
   Map<String, dynamic> toCreateJson() => {
     'kind': kind,
     'name': name,

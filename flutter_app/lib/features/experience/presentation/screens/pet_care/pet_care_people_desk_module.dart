@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../auth/presentation/providers/auth_providers.dart';
 import '../../../../people/domain/entities/people_contact.dart';
+import '../../../../people/domain/entities/person_roster_entry.dart';
 import '../../../../people/presentation/providers/people_providers.dart';
+import '../../../../people/presentation/widgets/people_directory_card.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../../sharing/presentation/providers/household_providers.dart';
@@ -97,7 +99,7 @@ class PetCarePeopleDeskModule extends ConsumerWidget {
                       ),
                       const SizedBox(height: 14),
                     ],
-                    _Subheading(text: l.peopleProfessionalsSection),
+                    _Subheading(text: l.peopleDeskVetTeam),
                     const SizedBox(height: 6),
                     if (pros.isEmpty)
                       Text(
@@ -106,13 +108,11 @@ class PetCarePeopleDeskModule extends ConsumerWidget {
                       )
                     else
                       for (final contact in pros)
-                        _DeskContactRow(
+                        _DeskPersonCard(
                           key: Key('pet_care_people_pro_${contact.id}'),
                           contact: contact,
-                          subtitle: _petCountLabel(
-                            l,
-                            vetPetCounts[contact.legacyVetId ?? ''] ?? 0,
-                          ),
+                          linkedPetCount:
+                              vetPetCounts[contact.legacyVetId ?? ''] ?? 0,
                         ),
                     const SizedBox(height: 14),
                     _Subheading(text: l.peopleTrustedCarersSection),
@@ -124,7 +124,7 @@ class PetCarePeopleDeskModule extends ConsumerWidget {
                       )
                     else
                       for (final contact in carers)
-                        _DeskContactRow(
+                        _DeskPersonCard(
                           key: Key('pet_care_people_carer_${contact.id}'),
                           contact: contact,
                         ),
@@ -165,11 +165,6 @@ class PetCarePeopleDeskModule extends ConsumerWidget {
     final carers = contacts.where((c) => !c.isProfessional).toList();
     carers.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     return carers.take(_previewLimit).toList();
-  }
-
-  static String? _petCountLabel(AppLocalizations l, int count) {
-    if (count <= 0) return null;
-    return l.peopleDeskLinkedPets(count);
   }
 }
 
@@ -218,24 +213,29 @@ class _HouseholdRail extends StatelessWidget {
   }
 }
 
-class _DeskContactRow extends StatelessWidget {
-  const _DeskContactRow({super.key, required this.contact, this.subtitle});
+class _DeskPersonCard extends StatelessWidget {
+  const _DeskPersonCard({
+    super.key,
+    required this.contact,
+    this.linkedPetCount,
+  });
 
   final PeopleContact contact;
-  final String? subtitle;
+  final int? linkedPetCount;
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: CircleAvatar(
-        child: Text(
-          contact.name.isNotEmpty ? contact.name.trim()[0].toUpperCase() : '?',
-        ),
-      ),
-      title: Text(contact.name),
-      subtitle: subtitle != null ? Text(subtitle!) : null,
-      onTap: () => context.go('/pc/people'),
+    final count = linkedPetCount ?? 0;
+    final entry = PersonRosterEntry.fromContact(
+      contact,
+      subtitle: contact.roles.isEmpty
+          ? contact.kind
+          : contact.roles.join(' · '),
+      linkedPetCount: count > 0 ? count : null,
+    );
+    return PeopleDirectoryCard(
+      entry: entry,
+      onTap: () => context.push('/pc/people/${contact.id}'),
     );
   }
 }

@@ -7,6 +7,11 @@ import '../models/people_contact_model.dart';
 abstract class PeopleRemoteDataSource {
   Future<List<PeopleContactModel>> listContacts({bool includeInactive = false});
   Future<PeopleContactModel> createContact(PeopleContactModel draft);
+  Future<PeopleContactModel> updateContact(
+    String id,
+    Map<String, dynamic> patch,
+  );
+  Future<void> deleteContact(String id);
 }
 
 class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
@@ -39,6 +44,31 @@ class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
     return list
         .map((e) => PeopleContactModel.fromJson(e as Map<String, dynamic>))
         .toList();
+  }
+
+  @override
+  Future<PeopleContactModel> updateContact(
+    String id,
+    Map<String, dynamic> patch,
+  ) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/api/people/contacts/$id'),
+      headers: _headers,
+      body: json.encode(patch),
+    );
+    _checkResponse(response);
+    return PeopleContactModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<void> deleteContact(String id) async {
+    final response = await _client.delete(
+      Uri.parse('$baseUrl/api/people/contacts/$id'),
+      headers: _headers,
+    );
+    _checkResponse(response);
   }
 
   @override

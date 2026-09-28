@@ -12327,6 +12327,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'People'**
   String get accountPeopleRow;
+
+  /// No description provided for @peopleDeskVetTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet team'**
+  String get peopleDeskVetTeam;
+
+  /// No description provided for @peopleDetailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This person is no longer in your directory.'**
+  String get peopleDetailNotFound;
+
+  /// No description provided for @peopleEditPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit person'**
+  String get peopleEditPerson;
+
+  /// No description provided for @peoplePrivateNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Private note'**
+  String get peoplePrivateNoteLabel;
+
+  /// No description provided for @peoplePhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get peoplePhoneLabel;
+
+  /// No description provided for @peopleEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get peopleEmailLabel;
+
+  /// No description provided for @peopleStatusInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get peopleStatusInactive;
+
+  /// No description provided for @peopleDangerZoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Danger zone'**
+  String get peopleDangerZoneTitle;
+
+  /// No description provided for @peopleRemoveContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove contact?'**
+  String get peopleRemoveContactTitle;
+
+  /// No description provided for @peopleRemoveContactBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from your directory? Care history on pets is kept.'**
+  String peopleRemoveContactBody(String name);
+
+  /// No description provided for @peopleRemoveContactConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove contact'**
+  String get peopleRemoveContactConfirm;
+
+  /// No description provided for @peopleAddStepIdentity.
+  ///
+  /// In en, this message translates to:
+  /// **'Who are you adding?'**
+  String get peopleAddStepIdentity;
+
+  /// No description provided for @peopleAddStepRelationship.
+  ///
+  /// In en, this message translates to:
+  /// **'How do they help?'**
+  String get peopleAddStepRelationship;
+
+  /// No description provided for @peopleAddDedupeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Already in your directory?'**
+  String get peopleAddDedupeTitle;
+
+  /// No description provided for @peopleAddDedupeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No close matches — you can continue.'**
+  String get peopleAddDedupeEmpty;
+
+  /// No description provided for @peopleAddDedupeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'If you see the right person above, open them from the People list instead.'**
+  String get peopleAddDedupeHint;
+
+  /// No description provided for @peopleAddAppAccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer app access?'**
+  String get peopleAddAppAccessTitle;
+
+  /// No description provided for @peopleAddAppAccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can invite them to share pets in the app, or finish without inviting now.'**
+  String get peopleAddAppAccessBody;
+
+  /// No description provided for @peopleAddAppAccessSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get peopleAddAppAccessSkip;
+
+  /// No description provided for @peopleAddAppAccessContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite'**
+  String get peopleAddAppAccessContinue;
+
+  /// No description provided for @peopleAddPersonSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save person'**
+  String get peopleAddPersonSave;
 }
 
 class _AppLocalizationsDelegate
