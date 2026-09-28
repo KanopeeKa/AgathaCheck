@@ -12,17 +12,17 @@ Module-based Care Item detail UI (segmentation, hero Needs attention, stat sched
 
 ```yaml
 autonomy: active
-current_phase: web-layout
-last_completed_phase: details-history
+current_phase: header-wayfinding
+last_completed_phase: web-layout
 halt_reason: null
-next_action: "continue phase web-layout on branch cursor/care-item-view-ui-web-layout-7796"
+next_action: "continue phase header-wayfinding on branch cursor/care-item-view-ui-header-7796"
 artifact_ref:
-  branch: cursor/care-item-view-ui-web-layout-7796
+  branch: cursor/care-item-view-ui-header-7796
   plan_path: .agents/plans/care-item-view-ui.md
-  plan_commit: ddb0dc2bc897f88792c5aa73f243c56313300e6f
+  plan_commit: e4cfecfcdaae328ea644ce573b61d0c7e7739073
   snapshot_path: .agents/plans/care-item-view-ui.snapshot.json
-  snapshot_commit: ddb0dc2bc897f88792c5aa73f243c56313300e6f
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1378"]
+  snapshot_commit: e4cfecfcdaae328ea644ce573b61d0c7e7739073
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1381"]
 merge_commits: {}
 debt_issue_refs: []
 ```
