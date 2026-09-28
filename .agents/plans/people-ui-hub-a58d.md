@@ -29,12 +29,12 @@ last_completed_phase: p0-decisions
 halt_reason: null
 next_action: "continue phase p1-nav on branch cursor/people-ui-p1-nav-a58d"
 artifact_ref:
-  branch: cursor/people-ui-hub-integration-a58d
+  branch: cursor/people-ui-p1-nav-a58d
   plan_path: .agents/plans/people-ui-hub-a58d.md
-  plan_commit: 93565da138bbc162a7f29f8fb6464c111caa665c
+  plan_commit: 281253a8153a6b05a705c161d12ea12bf3293131
   snapshot_path: .agents/plans/people-ui-hub-a58d.snapshot.json
-  snapshot_commit: 93565da138bbc162a7f29f8fb6464c111caa665c
-open_prs: []
+  snapshot_commit: 281253a8153a6b05a705c161d12ea12bf3293131
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1375"]
 merge_commits: {}
 debt_issue_refs: []
 ```
