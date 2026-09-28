@@ -33,9 +33,9 @@ export class GuardianDashboardPage {
   async expectTodayCareRegions(): Promise<void> {
     await expect(this.section(/My Pets|Mes animaux/i)).toBeVisible();
     await expect(this.section(/CARE ACTIONS|SOINS/i)).toBeVisible();
-    const people = this.section(/People|PEOPLE|Autour de vos animaux/i);
-    await people.scrollIntoViewIfNeeded();
-    await expect(people).toBeVisible();
+    const peopleHeader = this.page.getByText(/^PEOPLE$|^People$|Autour de vos animaux/i).first();
+    await peopleHeader.scrollIntoViewIfNeeded();
+    await expect(peopleHeader).toBeVisible();
     await expect(this.section(/Fostering Sessions|Sessions d'accueil/i)).not.toBeVisible();
   }
 
@@ -113,21 +113,20 @@ export class GuardianDashboardPage {
   }
 
   async expectVetVisible(name: string): Promise<void> {
+    const namePattern = new RegExp(name, 'i');
     await expect(
-      this.section(/People|PEOPLE|Autour de vos animaux/i)
-        .getByRole('button', { name: new RegExp(name, 'i') })
-        .or(semanticsByName(this.page, new RegExp(name, 'i')))
+      this.page
+        .getByRole('button', { name: namePattern })
+        .or(semanticsByName(this.page, namePattern))
         .first(),
     ).toBeVisible();
   }
 
   async openVet(name: string): Promise<void> {
-    const namePattern = new RegExp(name, 'i');
-    const peopleSection = this.section(/People|PEOPLE|Autour de vos animaux/i);
-    await peopleSection.scrollIntoViewIfNeeded();
     await refreshFlutterAccessibility(this.page);
-    // Directory cards are one semantics button per row (child text excluded) — match by accessible name.
-    const target = peopleSection
+    const namePattern = new RegExp(name, 'i');
+    // People desk no longer exposes a group/region wrapper on web — target the card button directly.
+    const target = this.page
       .getByRole('button', { name: namePattern })
       .or(semanticsByName(this.page, namePattern))
       .first();
