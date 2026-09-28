@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-absence-materialisation-7796",
+  "programme_ref": "docs/domains/pet_care/features/care-item-evolution.md",
+  "approved_at": "2026-09-28T17:08:00Z",
+  "approved_by": "user chat 2026-09-28: /execute-plan full agreement on all phases (intent materialisation + absence occurrence review + E2E)",
+  "approved_until": "2026-09-30T17:08:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/care-absence-materialisation-integration-7796",
+  "control_issue": 1390,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "docs",
+      "title": "D-CSM-018 spec remodel (intent materialisation + absence UX)",
+      "branch": "cursor/care-absence-materialisation-docs-7796",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        "docs/domains/health_tracking/**",
+        "docs/architecture/api-reference.md",
+        ".agents/plans/care-absence-materialisation-7796.*"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "governance",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1391",
+      "pr_head_sha": "8af5c307"
+    },
+    {
+      "id": "ensure-server",
+      "title": "ensureOpenOccurrence CSM primitive and API",
+      "branch": "cursor/care-absence-materialisation-ensure-server-7796",
+      "allowed_paths": [
+        "server/lib/care/schedule/**",
+        "server/lib/occurrenceScheduling.js",
+        "server/routes/healthEntries/**",
+        "server/test/careSchedule/**",
+        "server/test/care/absence/**",
+        "docs/architecture/api-reference.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1392",
+      "pr_head_sha": "2fb71dee"
+    },
+    {
+      "id": "ensure-flutter",
+      "title": "Flutter ensure + occurrence review entry points",
+      "branch": "cursor/care-absence-materialisation-ensure-flutter-7796",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/lib/l10n/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null
+    },
+    {
+      "id": "absence-ux",
+      "title": "Absence strip, review sheet, resolution auto-sync, refresh chain",
+      "branch": "cursor/care-absence-materialisation-absence-ux-7796",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/test/features/**",
+        "flutter_app/lib/l10n/**",
+        "server/lib/care/absence/**",
+        "server/routes/careContext/absenceResolutionsRouter.js",
+        "server/test/care/absence/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null
+    },
+    {
+      "id": "e2e",
+      "title": "BDD and Playwright for materialise + absence review",
+      "branch": "cursor/care-absence-materialisation-e2e-7796",
+      "allowed_paths": [
+        "e2e/playwright/**",
+        "flutter_app/test/bdd/**",
+        "e2e/scripts/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1398"
+    },
+    {
+      "id": "integration-main",
+      "title": "Integration branch to main + pre-UAT gate",
+      "branch": "cursor/care-absence-materialisation-integration-7796",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null
+    }
+  ],
+  "content_hash": "sha256:b805ab24d926ad1fe8ea6867d4dfc6e53ea0e8afee75057bce51e96b752bbbe4"
+}

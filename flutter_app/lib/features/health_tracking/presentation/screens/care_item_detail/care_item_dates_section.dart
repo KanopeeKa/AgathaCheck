@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
 import '../../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
@@ -10,9 +11,12 @@ import '../../../../pet_care/presentation/widgets/care_surface/care_surface_toke
 import '../../../domain/entities/health_entry.dart';
 import '../../../domain/entities/health_occurrence.dart';
 import '../../../domain/occurrence_scheduling.dart';
+import '../../providers/care_item_absence_providers.dart';
+import '../../providers/care_item_absence_resolution_sync.dart';
 import '../../providers/occurrence_providers.dart';
 import '../../widgets/care_event_status_line.dart';
 import '../../widgets/pet_event_occurrence_actions.dart';
+import '../../../data/models/health_entry_absence_context_model.dart';
 
 /// Upcoming and recent dates for a care item (spec §4.3 — **Needs attention** module).
 class CareItemDatesSection extends ConsumerWidget {
@@ -200,6 +204,12 @@ class _OccurrenceRow extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final dateLabel = formatOccurrenceInstant(occurrence, l, context: context);
+    final absenceLine = ref
+        .watch(careItemAbsenceContextProvider(entry.id))
+        .maybeWhen(
+          data: (model) => _absenceConflictLine(l, model, occurrence),
+          orElse: () => null,
+        );
 
     return Container(
       key: Key('care_item_occurrence_row_${occurrence.id}'),
@@ -231,6 +241,16 @@ class _OccurrenceRow extends ConsumerWidget {
               color: colorScheme.onSurfaceVariant,
             ),
           ),
+          if (absenceLine != null) ...[
+            const SizedBox(height: 6),
+            Text(
+              absenceLine,
+              key: Key('care_item_occurrence_absence_${occurrence.id}'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
           if (!muted) ...[
             const SizedBox(height: 12),
             Wrap(
@@ -275,6 +295,24 @@ class _OccurrenceRow extends ConsumerWidget {
       ),
     );
   }
+}
+
+String? _absenceConflictLine(
+  AppLocalizations l,
+  HealthEntryAbsenceContext model,
+  HealthOccurrence occurrence,
+) {
+  final wireDate = wireDateForOccurrence(occurrence.scheduledDate);
+  for (final slice in model.absences) {
+    if (!slice.affected) continue;
+    if (!absenceSliceConflictsOnDate(slice, wireDate)) continue;
+    if (slice.uiState == 'resolved' || slice.uiState == 'nothing_due') {
+      continue;
+    }
+    final dateLabel = formatCalendarDateDisplay(occurrence.scheduledDate);
+    return l.careItemOccurrenceDuringAbsence(dateLabel);
+  }
+  return null;
 }
 
 class _LegacyDatesSummary extends StatelessWidget {

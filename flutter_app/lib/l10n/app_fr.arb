@@ -1776,8 +1776,46 @@
   "careItemAbsenceNeedsReview": "À revoir",
   "careItemAbsenceResolved": "Décision enregistrée pour ce voyage",
   "careItemAbsenceKeepDate": "Garder la date",
+  "careItemAbsenceKeepWithCarer": "Garder avec {carer}",
+  "@careItemAbsenceKeepWithCarer": {
+    "placeholders": {
+      "carer": {
+        "type": "String"
+      }
+    }
+  },
+  "careItemAbsenceKeepDuringAbsence": "Garder pendant l'absence",
+  "careItemAbsenceReviewDateAction": "Revoir la date",
+  "careItemAbsenceNotReviewedOnDate": "Prévu le {date} pendant votre absence · {dateRange}",
+  "@careItemAbsenceNotReviewedOnDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "dateRange": {
+        "type": "String"
+      }
+    }
+  },
+  "careItemOccurrenceDuringAbsence": "Prévu le {date} pendant votre absence",
+  "@careItemOccurrenceDuringAbsence": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "careItemAbsenceNothingNeeded": "Rien à faire",
   "careItemAbsenceSaveResolution": "Enregistrer",
+  "careItemOccurrenceReviewTitle": "Voir la date",
+  "careItemAbsenceReviewDate": "Prévu le {date}",
+  "@careItemAbsenceReviewDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "careItemDetailsTitle": "Détails",
   "careItemHistoryTitle": "Historique",
   "careItemEditSchedule": "Modifier le planning",

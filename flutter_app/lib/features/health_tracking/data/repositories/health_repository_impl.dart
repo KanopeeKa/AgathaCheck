@@ -1,6 +1,7 @@
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_history_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
+import '../../domain/entities/ensure_open_occurrence_result.dart';
 import '../../domain/entities/reschedule_occurrence_result.dart';
 import '../../domain/repositories/health_repository.dart';
 import '../datasources/health_remote_datasource.dart';
@@ -172,6 +173,25 @@ class HealthRepositoryImpl implements HealthRepository {
       occurrence: result.occurrence,
       warnings: result.warnings,
       nextDueDate: result.nextDueDate,
+    );
+  }
+
+  @override
+  Future<EnsureOpenOccurrenceResult> ensureOpenOccurrence(
+    String entryId, {
+    DateTime? scheduledDate,
+    String? reasonCode,
+  }) async {
+    final result = await dataSource.ensureOpenOccurrence(
+      entryId,
+      scheduledDate: scheduledDate,
+      reasonCode: reasonCode,
+    );
+    return EnsureOpenOccurrenceResult(
+      occurrences: result.occurrences,
+      created: result.created,
+      nextDueDate: result.nextDueDate,
+      headDate: result.headDate,
     );
   }
 

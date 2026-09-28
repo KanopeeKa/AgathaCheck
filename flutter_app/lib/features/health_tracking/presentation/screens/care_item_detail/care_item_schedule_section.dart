@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
 import '../../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
@@ -9,10 +11,12 @@ import '../../../domain/entities/health_entry.dart';
 import '../../../domain/entities/recurrence_anchor.dart';
 import '../../widgets/health_entry_form/health_entry_frequency_labels.dart';
 import '../../widgets/health_entry_type_labels.dart';
+import '../../providers/care_item_absence_providers.dart';
+import '../../providers/care_item_absence_resolution_sync.dart';
 import '../../widgets/pet_event_lifecycle.dart';
 
 /// Schedule summary (spec §Schedule) — stat grid + prose; edit via header action.
-class CareItemScheduleSection extends StatelessWidget {
+class CareItemScheduleSection extends ConsumerWidget {
   const CareItemScheduleSection({
     super.key,
     required this.entry,
@@ -53,7 +57,7 @@ class CareItemScheduleSection extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -99,11 +103,18 @@ class CareItemScheduleSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          if (entry.nextDueDate != null)
+          if (entry.nextDueDate != null) ...[
             Text(
               '${l.nextOccurrence}: ${formatHealthEntryCalendarDate(entry.nextDueDate!)}',
               style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
             ),
+            if (!muted)
+              _ScheduleAbsenceHint(
+                entryId: entry.id,
+                nextDueWire: toCalendarDateString(entry.nextDueDate!),
+              ),
+          ] else if (!muted)
+            _ScheduleAbsenceHint(entryId: entry.id, nextDueWire: null),
           if (entry.frequency != HealthFrequency.once) ...[
             const SizedBox(height: 4),
             Text(
@@ -114,6 +125,52 @@ class CareItemScheduleSection extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+class _ScheduleAbsenceHint extends ConsumerWidget {
+  const _ScheduleAbsenceHint({
+    required this.entryId,
+    required this.nextDueWire,
+  });
+
+  final String entryId;
+  final String? nextDueWire;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final line = ref
+        .watch(careItemAbsenceContextProvider(entryId))
+        .maybeWhen(
+          data: (model) {
+            for (final slice in model.absences) {
+              if (!slice.affected || !slice.needsAttention) continue;
+              final conflict = nextDueWire ?? primaryAbsenceConflictDate(slice);
+              if (conflict == null) continue;
+              if (!absenceSliceConflictsOnDate(slice, conflict)) continue;
+              final parsed = parseCalendarDate(conflict);
+              if (parsed == null) continue;
+              return l.careItemOccurrenceDuringAbsence(
+                formatCalendarDateDisplay(parsed),
+              );
+            }
+            return null;
+          },
+          orElse: () => null,
+        );
+    if (line == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Text(
+        line,
+        key: const Key('care_item_schedule_absence_hint'),
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
       ),
     );
   }

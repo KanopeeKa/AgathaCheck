@@ -68,6 +68,7 @@ One entry point per real-world action. No primitive writes to more than one auth
 | `projectSchedule` | Read-only projection with per-item certainty | Consumed by care-period projection **(shipped)** |
 | `explainGap` | Read-only schedule facts for CIM | `GET …/:id/schedule-explain` **(shipped)** |
 | `undoLastAction` | Timestamp-aware reversal of last schedule action | `POST …/:id/schedule/undo` **(shipped)** |
+| `ensureOpenOccurrence` | Idempotently materialise pending row(s) for the canonical open day when user/absence intent needs to act (D-CSM-018) | `POST …/:id/occurrences/ensure-open` **(care-absence-materialisation-7796)** |
 
 Internal: **`advanceSeries(entryId)`** — unified rollover after all slots on the earliest open date close (`server/lib/care/schedule/advanceSeries.js`).
 

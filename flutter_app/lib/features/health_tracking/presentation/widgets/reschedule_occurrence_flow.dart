@@ -8,6 +8,9 @@ import '../../../pet_care/context/domain/entities/care_period_coverage.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../../domain/services/reschedule_occurrence_preview.dart';
+import '../providers/care_item_absence_providers.dart';
+import '../providers/care_item_absence_resolution_sync.dart';
+import '../providers/care_item_detail_refresh.dart';
 import '../providers/health_providers.dart';
 import '../providers/occurrence_providers.dart';
 import 'pet_event_view_providers.dart';
@@ -106,8 +109,17 @@ class RescheduleOccurrenceFlow {
             scheduledDate,
             reasonCode: reasonCode,
           );
-      _invalidateAfterReschedule(ref, entry.id, absenceId: absenceId);
-      await ref.read(healthEntriesNotifierProvider.notifier).refresh();
+      if (absenceId != null && absenceId.isNotEmpty) {
+        await _syncResolutionAfterReschedule(
+          ref,
+          entry.id,
+          absenceId: absenceId,
+          newScheduledDate: toCalendarDateString(
+            calendarDateOnly(scheduledDate),
+          )!,
+        );
+      }
+      invalidateCareItemDetailData(ref, entry.id, absenceId: absenceId);
 
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;
@@ -154,12 +166,32 @@ class RescheduleOccurrenceFlow {
     }
   }
 
-  static void _invalidateAfterReschedule(
+  static Future<void> _syncResolutionAfterReschedule(
     WidgetRef ref,
     String entryId, {
-    String? absenceId,
-  }) {
-    invalidateAfterReschedule(ref, entryId, absenceId: absenceId);
+    required String absenceId,
+    required String newScheduledDate,
+  }) async {
+    final contextModel = await ref.read(
+      careItemAbsenceContextProvider(entryId).future,
+    );
+    final slice = contextModel.absences
+        .where((s) => s.plannedAbsenceId == absenceId)
+        .firstOrNull;
+    if (slice == null) return;
+    final decision = inferResolutionDecisionAfterReschedule(
+      newScheduledDate: newScheduledDate,
+      absenceStartsOn: slice.startsOn,
+      absenceEndsOn: slice.endsOn,
+    );
+    if (decision == null) return;
+    final remote = ref.read(healthAbsenceContextRemoteProvider);
+    await syncAbsenceResolution(
+      remote: remote,
+      slice: slice,
+      healthEntryId: entryId,
+      decision: decision,
+    );
   }
 
   static Future<void> _undoReschedule(
@@ -173,8 +205,7 @@ class RescheduleOccurrenceFlow {
       await ref
           .read(healthRepositoryProvider)
           .undoOccurrence(entryId, occurrenceId);
-      _invalidateAfterReschedule(ref, entryId, absenceId: absenceId);
-      await ref.read(healthEntriesNotifierProvider.notifier).refresh();
+      invalidateCareItemDetailData(ref, entryId, absenceId: absenceId);
     } catch (_) {
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;

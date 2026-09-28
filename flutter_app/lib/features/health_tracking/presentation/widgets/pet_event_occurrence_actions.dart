@@ -5,23 +5,24 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../providers/health_providers.dart';
-import '../providers/occurrence_providers.dart';
 import 'health_issue_prompt/health_issue_linkage_flow.dart';
 import 'occurrence_care_actions.dart';
 import 'occurrence_completion_date_flow.dart';
 import 'occurrence_completion_feedback.dart';
 import 'reschedule_occurrence_flow.dart';
 import 'weight_occurrence_care_actions.dart';
-import 'pet_event_view_providers.dart';
+import '../providers/care_item_detail_refresh.dart';
 
 /// Occurrence mutations from the event-view workbench.
 class PetEventOccurrenceActions {
   const PetEventOccurrenceActions._();
 
-  static void invalidateOccurrenceData(WidgetRef ref, String entryId) {
-    ref.invalidate(entryOccurrencesProvider(entryId));
-    ref.invalidate(entryPastOccurrencesProvider(entryId));
-    ref.invalidate(entryHistoryProvider(entryId));
+  static void invalidateOccurrenceData(
+    WidgetRef ref,
+    String entryId, {
+    String? absenceId,
+  }) {
+    invalidateCareItemDetailData(ref, entryId, absenceId: absenceId);
   }
 
   static Future<void> markDone(
@@ -115,14 +116,14 @@ class PetEventOccurrenceActions {
     BuildContext context,
     WidgetRef ref,
     HealthEntry entry,
-    HealthOccurrence occurrence,
-  ) async {
+    HealthOccurrence occurrence, {
+    String? absenceId,
+  }) async {
     try {
       await ref
           .read(healthRepositoryProvider)
           .skipOccurrence(entry.id, occurrence.id);
-      invalidateOccurrenceData(ref, entry.id);
-      await ref.read(healthEntriesNotifierProvider.notifier).refresh();
+      invalidateOccurrenceData(ref, entry.id, absenceId: absenceId);
     } catch (_) {
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;

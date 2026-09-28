@@ -1855,8 +1855,46 @@
   "careItemAbsenceNeedsReview": "Needs review",
   "careItemAbsenceResolved": "Plan recorded for this trip",
   "careItemAbsenceKeepDate": "Keep the date",
+  "careItemAbsenceKeepWithCarer": "Keep with {carer}",
+  "@careItemAbsenceKeepWithCarer": {
+    "placeholders": {
+      "carer": {
+        "type": "String"
+      }
+    }
+  },
+  "careItemAbsenceKeepDuringAbsence": "Keep during absence",
+  "careItemAbsenceReviewDateAction": "Review date",
+  "careItemAbsenceNotReviewedOnDate": "Due {date}, while you're away · {dateRange}",
+  "@careItemAbsenceNotReviewedOnDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "dateRange": {
+        "type": "String"
+      }
+    }
+  },
+  "careItemOccurrenceDuringAbsence": "Due {date} during your absence",
+  "@careItemOccurrenceDuringAbsence": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "careItemAbsenceNothingNeeded": "Nothing needed",
   "careItemAbsenceSaveResolution": "Save",
+  "careItemOccurrenceReviewTitle": "Review date",
+  "careItemAbsenceReviewDate": "Due {date}",
+  "@careItemAbsenceReviewDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "careItemDetailsTitle": "Details",
   "careItemHistoryTitle": "History",
   "careItemEditSchedule": "Edit schedule",
