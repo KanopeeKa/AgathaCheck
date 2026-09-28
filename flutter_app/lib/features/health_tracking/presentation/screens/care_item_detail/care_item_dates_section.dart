@@ -133,7 +133,6 @@ CareItemStatusTone _statusToneForZone(OccurrenceZone zone) {
     OccurrenceZone.missed => CareItemStatusTone.overdue,
     OccurrenceZone.dueToday => CareItemStatusTone.due,
     OccurrenceZone.comingUp => CareItemStatusTone.neutral,
-    _ => CareItemStatusTone.neutral,
   };
 }
 
@@ -142,7 +141,6 @@ String _pillLabelForZone(OccurrenceZone zone, AppLocalizations l) {
     OccurrenceZone.missed => l.occurrenceZoneMissed,
     OccurrenceZone.dueToday => l.occurrenceZoneDueToday,
     OccurrenceZone.comingUp => l.occurrenceZoneComingUp,
-    _ => l.occurrenceZoneComingUp,
   };
 }
 

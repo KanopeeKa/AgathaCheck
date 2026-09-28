@@ -19,10 +19,7 @@ void main() {
       await tester.pumpWidget(
         _host(
           const CareItemDetailCanvas(
-            child: CareItemModule(
-              key: Key('module'),
-              child: Text('Inside'),
-            ),
+            child: CareItemModule(key: Key('module'), child: Text('Inside')),
           ),
         ),
       );
