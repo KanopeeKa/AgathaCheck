@@ -7015,25 +7015,44 @@ class AppLocalizationsFr extends AppLocalizations {
   String get peopleAddPerson => 'Ajouter quelqu\'un';
 
   @override
-  String get peopleDeskSeeAll => 'See all';
+  String get peopleDeskSeeAll => 'Tout voir';
 
   @override
   String get peopleDeskEmptyBody =>
-      'Add carers and pet professionals so they appear on your dashboard and in away plans.';
+      'Ajoutez des proches et des professionnels pour les retrouver ici et dans vos absences.';
 
   @override
-  String get peopleDeskHouseholdRail => 'Households';
+  String get peopleDeskHouseholdRail => 'Foyers';
 
   @override
   String peopleDeskLinkedPets(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count pets linked',
-      one: '1 pet linked',
+      other: '$count animaux liés',
+      one: '1 animal lié',
     );
     return '$_temp0';
   }
+
+  @override
+  String get peopleSearchHint => 'Rechercher';
+
+  @override
+  String get peopleFilterAll => 'Tous';
+
+  @override
+  String get peopleFilterHousehold => 'Foyer';
+
+  @override
+  String get peopleFilterCarers => 'Proches';
+
+  @override
+  String get peopleFilterProfessionals => 'Pros';
+
+  @override
+  String get peopleHouseholdDirectoryEmpty =>
+      'Aucun contact dans ce répertoire de foyer pour l\'instant.';
 
   @override
   String get peopleKindLabel => 'Type';
