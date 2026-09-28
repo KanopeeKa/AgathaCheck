@@ -31,10 +31,10 @@ next_action: "continue phase p2-desk on branch cursor/people-ui-p2-desk-a58d"
 artifact_ref:
   branch: cursor/people-ui-p2-desk-a58d
   plan_path: .agents/plans/people-ui-hub-a58d.md
-  plan_commit: 801e65711612c4d4b9742d70738443457bedc901
+  plan_commit: f68af617ccc17485e886b7731efa986fc36fbf19
   snapshot_path: .agents/plans/people-ui-hub-a58d.snapshot.json
-  snapshot_commit: 801e65711612c4d4b9742d70738443457bedc901
-open_prs: []
+  snapshot_commit: f68af617ccc17485e886b7731efa986fc36fbf19
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1377"]
 merge_commits: {}
 debt_issue_refs: []
 ```
