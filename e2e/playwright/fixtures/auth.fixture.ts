@@ -69,6 +69,11 @@ export async function loginAs(
   await landing.goto();
   await landing.login(user.email, user.password);
   await reachAuthenticatedHome(page, options);
+  if (user.accessToken) {
+    await page.evaluate((token) => {
+      sessionStorage.setItem('e2e_access_token', token);
+    }, user.accessToken);
+  }
   await petList.expectLoaded();
   return petList;
 }

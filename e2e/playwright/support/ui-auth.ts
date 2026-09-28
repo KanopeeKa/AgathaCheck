@@ -8,6 +8,8 @@ import { normalizeStoredToken } from './normalize-stored-token';
 
 export async function readAccessTokenFromPage(page: Page): Promise<string> {
   const raw = await page.evaluate(() => {
+    const sessionToken = sessionStorage.getItem('e2e_access_token');
+    if (sessionToken) return sessionToken;
     const keys = Object.keys(localStorage);
     for (const key of keys) {
       if (key.includes('auth_access_token')) {

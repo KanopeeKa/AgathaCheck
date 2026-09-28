@@ -149,7 +149,7 @@ test.describe('Guardian dashboard', () => {
     await expect(
       page.getByRole('button', { name: /care item actions/i }),
     ).toBeVisible();
-    await expect(page.getByText('Due today')).toBeVisible();
+    await expect(page.getByText('Viewable Care')).toBeVisible();
   });
 
   test('Care preview supports completion and undo', async ({ page, testUser }) => {

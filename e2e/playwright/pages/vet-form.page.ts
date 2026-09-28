@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { fillLabelledField, fillTextbox, refreshFlutterAccessibility } from '../support/flutter';
+import { fillLabelledField, fillTextbox, refreshFlutterAccessibility, waitForFlutterRoutePattern } from '../support/flutter';
 
 /**
  * Veterinarian create / edit form (`/vets/add`, `/vets/edit/:id`).
@@ -47,8 +47,12 @@ export class VetFormPage {
       .getByText(text)
       .or(this.page.getByRole('button', { name: /Veterinarian:/i }))
       .or(this.page.getByRole('group', { name: /Veterinarian:/i }))
+      .or(this.page.getByText(/^People$|^Autour de vos animaux$/i))
       .first()
       .waitFor({ timeout: 15_000 });
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000).catch(() =>
+      waitForFlutterRoutePattern(this.page, /\/pc\/vets(?:\?|$)/, 30_000),
+    );
   }
 
   async createVet(options: {

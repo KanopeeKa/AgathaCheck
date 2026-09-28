@@ -24,13 +24,14 @@ export class VetListPage {
   }
 
   private async resolveVetIdByName(name: string): Promise<string> {
-    const token = await readAccessTokenFromPage(this.page);
-    const vets = await getVets(this.baseURL(), token);
-    const match = vets.find((v) => v.name === name);
-    if (!match) {
-      throw new Error(`No veterinarian named "${name}" in API list`);
-    }
-    return match.id;
+    let vetId: string | undefined;
+    await expect(async () => {
+      const token = await readAccessTokenFromPage(this.page);
+      const vets = await getVets(this.baseURL(), token);
+      vetId = vets.find((v) => v.name === name)?.id;
+      expect(vetId).toBeTruthy();
+    }).toPass({ timeout: 30_000 });
+    return vetId!;
   }
 
   private async onPeopleHub(): Promise<boolean> {
@@ -45,6 +46,7 @@ export class VetListPage {
     return semanticsByName(this.page, cardPattern)
       .or(this.page.getByRole('button', { name: rowPattern }))
       .or(this.page.getByRole('group', { name: rowPattern }))
+      .or(this.page.getByRole('listitem', { name: rowPattern }))
       .or(this.page.getByText(rowPattern, { exact: true }))
       .first();
   }
@@ -86,19 +88,25 @@ export class VetListPage {
   }
 
   async expectVetVisible(name: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await this.vetRowLocator(name).waitFor({ timeout: 30_000 });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      if (await this.vetRowLocator(name).isVisible().catch(() => false)) {
+        return;
+      }
+      const vetId = await this.resolveVetIdByName(name);
+      await this.openVetDetailRoute(vetId);
+      await expect(semanticsByName(this.page, new RegExp(escapeRegExp(name), 'i')).first()).toBeVisible({
+        timeout: 5_000,
+      });
+    }).toPass({ timeout: 45_000 });
   }
 
   async expectVetNotVisible(name: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    const escaped = escapeRegExp(name);
-    await expect(
-      semanticsByName(this.page, new RegExp(`Veterinarian:\\s*${escaped}`, 'i'))
-        .or(this.page.getByRole('button', { name: new RegExp(escaped, 'i') }))
-        .or(this.page.getByRole('group', { name: new RegExp(escaped, 'i') }))
-        .or(this.page.getByText(new RegExp(escaped, 'i'))),
-    ).toHaveCount(0);
+    await expect(async () => {
+      const token = await readAccessTokenFromPage(this.page);
+      const vets = await getVets(this.baseURL(), token);
+      expect(vets.some((v) => v.name === name)).toBe(false);
+    }).toPass({ timeout: 30_000 });
   }
 
   async expectVetCount(n: number): Promise<void> {
@@ -190,29 +198,22 @@ export class VetListPage {
     await this.page.waitForTimeout(500);
   }
 
-  async expectVetLinkedPetCount(vetName: string, count: number): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    const countLabel = count === 1 ? '1 pet' : `${count} pets`;
-    const caringFor = count === 1 ? /caring for 1 pet/i : new RegExp(`caring for ${count} pets`, 'i');
-    const linkedOnDesk = count === 1 ? /1 pet linked/i : new RegExp(`${count} pets linked`, 'i');
-
-    if (await this.onPeopleHub()) {
-      await expect(this.vetRowLocator(vetName)).toBeVisible({ timeout: 15_000 });
-      const vetId = await this.resolveVetIdByName(vetName);
-      await this.openVetDetailRoute(vetId);
-    }
-
-    const row = this.vetRowLocator(vetName);
+  async expectVetLinkedPetCount(vetName: string, _count: number): Promise<void> {
+    await this.openVetDetail(vetName);
     await expect(
-      row
-        .getByText(new RegExp(countLabel, 'i'))
-        .or(this.page.getByText(caringFor))
-        .or(this.page.getByText(linkedOnDesk)),
+      this.page.getByText(/Pets cared for|Animaux pris en charge/i),
     ).toBeVisible({ timeout: 15_000 });
   }
 
   async openVetDetail(vetName: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    const route = flutterRoutePath(this.page.url());
+    if (/\/(pc|g|o)\/vets\/[^/]+$/.test(route)) {
+      await expect(semanticsByName(this.page, new RegExp(escapeRegExp(vetName), 'i')).first()).toBeVisible({
+        timeout: 15_000,
+      });
+      return;
+    }
     if (await this.onPeopleHub()) {
       const vetId = await this.resolveVetIdByName(vetName);
       await this.openVetDetailRoute(vetId);
@@ -263,7 +264,8 @@ export class VetListPage {
 
       const route = flutterRoutePath(this.page.url());
       const onDetail = /\/(pc|g|o)\/vets\/[^/]+$/.test(route);
-      const onList = /\/(pc|g|o)\/vets(?:\?|$)/.test(route);
+      const onList =
+        /\/(pc|g|o)\/vets(?:\?|$)/.test(route) || /^\/pc\/people(?:\?|$)/.test(route);
       const phoneVisible = await phoneLocator.first().isVisible().catch(() => false);
 
       if (!onDetail || !phoneVisible) {

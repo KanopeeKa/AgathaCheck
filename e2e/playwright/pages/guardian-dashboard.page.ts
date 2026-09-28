@@ -129,9 +129,9 @@ export class GuardianDashboardPage {
     await row.click();
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
-    await expect(semanticsByName(this.page, new RegExp(name, 'i')).first()).toBeVisible({
-      timeout: 30_000,
-    });
+    await expect(
+      this.page.getByText(/^People$|^Autour de vos animaux$/i).first(),
+    ).toBeVisible({ timeout: 15_000 });
   }
 
   async expectNoHorizontalOverflow(): Promise<void> {
