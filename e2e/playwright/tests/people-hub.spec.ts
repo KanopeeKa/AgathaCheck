@@ -44,9 +44,8 @@ test.describe('People hub remodel @people', () => {
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.expectLoaded();
     await refreshFlutterAccessibility(page);
-    const vetTeamLabel = page.getByText(/^Vet team$/i).first();
-    await vetTeamLabel.scrollIntoViewIfNeeded();
-    await expect(vetTeamLabel).toBeVisible({ timeout: 30_000 });
+    // Sub-block copy is not always exposed as plain DOM text on Flutter web; assert the desk row.
+    await dashboard.expectVetVisible('Desk Vet');
   });
 
   test('@P2 bottom nav opens People hub', async ({ page }) => {
