@@ -205,7 +205,8 @@ export class ExperiencePage {
     ).toHaveCount(0);
 
     const accountChrome = guardianAccountTabLocator(this.page)
-      .or(this.page.locator('[flt-semantics-identifier="pet_care_nav_account"]'));
+        .or(this.page.locator('[flt-semantics-identifier="pet_care_nav_account"]'))
+        .first();
     await expect(accountChrome).toBeVisible({ timeout: 15_000 });
 
     await openExperienceDrawer(this.page);
