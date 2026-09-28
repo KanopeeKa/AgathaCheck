@@ -79,8 +79,8 @@ void main() {
     });
 
     test('maps nested Guardian workspace routes to the closest tab', () {
-      expect(PetCareBottomNavigation.indexFor('/pc/vets'), 0);
-      expect(PetCareBottomNavigation.indexFor('/pc/vets/vet-1'), 0);
+      expect(PetCareBottomNavigation.indexFor('/pc/vets'), 3);
+      expect(PetCareBottomNavigation.indexFor('/pc/vets/vet-1'), 3);
       expect(PetCareBottomNavigation.indexFor('/pet/pet-1'), 1);
       expect(PetCareBottomNavigation.indexFor('/pet/pet-1/timeline'), 1);
       expect(PetCareBottomNavigation.indexFor('/pet/pet-1/weight'), 1);

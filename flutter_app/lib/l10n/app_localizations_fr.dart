@@ -7015,6 +7015,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get peopleAddPerson => 'Ajouter quelqu\'un';
 
   @override
+  String get peopleDeskSeeAll => 'See all';
+
+  @override
+  String get peopleDeskEmptyBody =>
+      'Add carers and pet professionals so they appear on your dashboard and in away plans.';
+
+  @override
+  String get peopleDeskHouseholdRail => 'Households';
+
+  @override
+  String peopleDeskLinkedPets(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pets linked',
+      one: '1 pet linked',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get peopleKindLabel => 'Type';
 
   @override

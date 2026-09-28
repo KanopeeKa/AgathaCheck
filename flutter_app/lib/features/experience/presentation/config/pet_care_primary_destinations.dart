@@ -72,6 +72,7 @@ class PetCarePrimaryDestinations {
 
   static bool _isPeoplePath(String path) {
     if (path == '/pc/people' || path.startsWith('/pc/people/')) return true;
+    if (path == '/pc/vets' || path.startsWith('/pc/vets/')) return true;
     return _isPeopleLegacyAccountPath(path);
   }
 
