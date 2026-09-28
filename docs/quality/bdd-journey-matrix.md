@@ -179,6 +179,13 @@ feed.
 
 **Feature:** `away_care_planning.feature` (4) — **4/4 (100%)**
 
+| Pri | Behaviour | Gherkin scenario | Playwright | Status |
+|-----|-----------|------------------|------------|--------|
+| P1 | Absence skip review | In-window care can be rescheduled or skipped from occurrence review during planned absence | `care.item.absence.spec.ts` | ✅ |
+| P1 | Absence strip review | Care item absence strip shows Keep with carer and Review date opens occurrence review | `care.item.absence.spec.ts` | ✅ |
+
+**Feature:** `care_item_absence.feature` (2) — **2/2 (100%)**
+
 ---
 
 ### J4 — Notifications

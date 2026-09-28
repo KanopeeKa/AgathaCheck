@@ -60,6 +60,8 @@ async function asOfContextForEntry(pool, entry, req) {
   return resolveOccurrenceAsOf(pool, entry, req);
 }
 
+export { asOfContextForEntry };
+
 export function registerOccurrenceRoutes(router, pool) {
   router.get('/:id/occurrences', async (req, res) => {
     const userId = extractUserId(req);

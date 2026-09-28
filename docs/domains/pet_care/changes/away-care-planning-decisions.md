@@ -155,4 +155,8 @@ D-CSM-006's "does not change series recurrence rule" remains true: frequency and
 
 ## D-ACP-010 — Fixed future dates beyond the open occurrence are deferred
 
-The "planned fixed" chain (fix occurrence #3 while #2 is still open) needs a new schedule-intent record because D-CSM-004 forbids pre-materialising `anchor+1`. **Dropped for now** (product, 2026-09-23). Absence needs are covered by D-ACP-003 estimates, rescheduling the open occurrence, and the Care Planner's chain-aware suggestion (ACP-6 BR-5). Revisit only with a concrete case that needs two or more future fixed dates.
+The "planned fixed" chain (fix occurrence #3 while #2 is still open) needs a new schedule-intent record because D-CSM-004 forbids pre-materialising `anchor+1`. **Schedule-intent remains deferred** (product, 2026-09-23).
+
+**Amended 2026-09-28 (D-CSM-018):** On-demand **`ensureOpenOccurrence`** materialises the **open head** so estimated in-window dates can be rescheduled or skipped without pre-generating the series. Absence UX uses **Review date** → ensure head → **Change date** or **Skip**. Multi-hop "edit hop #3 while #2 is open" still needs schedule-intent if product requires it later.
+
+Absence needs are covered by: estimates + **ensure-open** + rescheduling the open occurrence + Care Planner suggestions (ACP-6 BR-5) + **Keep with {carer}** resolution.

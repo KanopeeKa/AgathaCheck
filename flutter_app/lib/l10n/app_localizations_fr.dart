@@ -5174,10 +5174,39 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careItemAbsenceKeepDate => 'Garder la date';
 
   @override
+  String careItemAbsenceKeepWithCarer(String carer) {
+    return 'Garder avec $carer';
+  }
+
+  @override
+  String get careItemAbsenceKeepDuringAbsence => 'Garder pendant l\'absence';
+
+  @override
+  String get careItemAbsenceReviewDateAction => 'Revoir la date';
+
+  @override
+  String careItemAbsenceNotReviewedOnDate(String date, String dateRange) {
+    return 'Prévu le $date pendant votre absence · $dateRange';
+  }
+
+  @override
+  String careItemOccurrenceDuringAbsence(String date) {
+    return 'Prévu le $date pendant votre absence';
+  }
+
+  @override
   String get careItemAbsenceNothingNeeded => 'Rien à faire';
 
   @override
   String get careItemAbsenceSaveResolution => 'Enregistrer';
+
+  @override
+  String get careItemOccurrenceReviewTitle => 'Voir la date';
+
+  @override
+  String careItemAbsenceReviewDate(String date) {
+    return 'Prévu le $date';
+  }
 
   @override
   String get careItemDetailsTitle => 'Détails';

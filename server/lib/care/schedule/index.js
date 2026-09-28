@@ -10,6 +10,7 @@ export { advanceSeries, resolveNextSeriesDate } from './advanceSeries.js';
 export { adjustCadence } from './adjustCadence.js';
 export { completeOccurrence } from './completeOccurrence.js';
 export { rescheduleOccurrence } from './rescheduleOccurrence.js';
+export { ensureOpenOccurrence, resolveCanonicalOpenDateIso } from './ensureOpenOccurrence.js';
 export {
   resolveScheduleFlexibility,
   intervalDaysForEntry,
