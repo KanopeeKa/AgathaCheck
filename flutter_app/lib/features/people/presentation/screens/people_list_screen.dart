@@ -18,7 +18,7 @@ class PeopleListScreen extends ConsumerWidget {
 
     return ExperienceShellScaffold(
       experience: AppExperience.petCare,
-      currentLocation: '/account/people',
+      currentLocation: '/pc/people',
       screenTitle: l.peoplePageTitle,
       child: asyncContacts.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -53,7 +53,7 @@ class PeopleListScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          final created = await context.push<bool>('/account/people/new');
+          final created = await context.push<bool>('/pc/people/new');
           if (created == true) {
             ref.invalidate(peopleContactsProvider);
           }

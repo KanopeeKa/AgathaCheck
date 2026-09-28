@@ -381,6 +381,7 @@
   },
   "dashboardNavLabel": "Dashboard",
   "careNavLabel": "Actions",
+  "peopleNavLabel": "People",
   "careDueTab": "Due {count}",
   "@careDueTab": { "placeholders": { "count": { "type": "int" } } },
   "careSoonTab": "Soon",

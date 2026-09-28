@@ -961,6 +961,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careNavLabel => 'Actions';
 
   @override
+  String get peopleNavLabel => 'People';
+
+  @override
   String careDueTab(int count) {
     return 'Due $count';
   }

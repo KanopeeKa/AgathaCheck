@@ -1784,6 +1784,12 @@ abstract class AppLocalizations {
   /// **'Actions'**
   String get careNavLabel;
 
+  /// No description provided for @peopleNavLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get peopleNavLabel;
+
   /// No description provided for @careDueTab.
   ///
   /// In en, this message translates to:
