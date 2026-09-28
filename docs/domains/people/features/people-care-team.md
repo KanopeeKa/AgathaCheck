@@ -11,7 +11,7 @@ related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.featur
 
 # People & Care Team — functional spec
 
-**Status:** the functional spec was agreed on 2026-09-27. **Backend and initial People screens shipped** in execute-plan `people-care-team-a58d`; **navigation and desk UX** ship in `people-ui-hub-a58d` ([ui-hub-navigation.md](/docs/domains/people/changes/ui-hub-navigation.md)). UI wording is in [vocabulary.md](/docs/domains/people/features/vocabulary.md).
+**Status:** agreed 2026-09-27. **Backend + contacts list** shipped (`people-care-team-a58d`); **5-tab nav + desk + list hub** shipped (`people-ui-hub-a58d`, [ui-hub-navigation.md](/docs/domains/people/changes/ui-hub-navigation.md)). **Hub remodel** (cards, detail, edit, unified add, tests) is `people-hub-remodel-a58d`. Wording: [vocabulary.md](/docs/domains/people/features/vocabulary.md).
 
 ## Verdict
 
@@ -366,6 +366,23 @@ Four separate facts cover four questions: who provides the care, who is looking 
 
 The screen is called "People". **Compact navigation:** fifth primary bottom-tab destination (`/pc/people`) per [ui-hub-navigation.md](/docs/domains/people/changes/ui-hub-navigation.md). Most in-context entry points remain. All wording is in [vocabulary.md](/docs/domains/people/features/vocabulary.md).
 
+### Hub remodel (`people-hub-remodel-a58d`)
+
+One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (contact, household member, or pending invite — backend tables stay separate). Rows are **directory cards** matching the vet team card pattern (`vet_team_card.dart`): avatar, primary line, role · pets, optional status chip (**Inactive**, **Needs review**, pending invite).
+
+| Route | Purpose |
+|-------|---------|
+| `/pc/people` | Hub list — search, filter chips, household-named sections |
+| `/pc/people/:personId` | **Person view** — tabs: Overview, Pets & access, Related care (professionals), Notes; no per-member Activity tab |
+| `/pc/people/:personId/edit` | **Person edit** — identity fields; private vs household note; **danger zone** only for revoke household access, remove from pets, revoke invite |
+| `/pc/people/new` | **Unified add** — single journey (see Flows below) |
+
+**Destructive actions:** never on list rows or detail app bar — **Edit → danger zone** only.
+
+**Today desk:** same card component; first sub-block label **Vet team** (desk exception). Card tap → person detail.
+
+**Desktop (≥840px):** master–detail — list selection opens detail pane; edit in secondary route or pane.
+
 ### Placement
 
 - **Mobile:** primary **People** tab; also Account (legacy redirect), and from the places where people are needed:
@@ -373,7 +390,7 @@ The screen is called "People". **Compact navigation:** fifth primary bottom-tab 
     - the absence carer picker
     - the care item provider picker
     - the "Looked after by" picker
-- **Desktop:** a sidebar entry.
+- **Desktop:** rail/sidebar **People** plus master–detail on `/pc/people`.
 
 ### Grouping
 
@@ -391,7 +408,8 @@ The screen is called "People". **Compact navigation:** fifth primary bottom-tab 
 
 ### Flows
 
-- **Adding someone** starts with "Who would you like to add?" and offers someone at home (which sends an invite), a trusted carer, a pet professional, or an organisation. The form adapts to the choice.
+- **Adding someone (unified):** one **Add person** entry (FAB / desk). Steps: capture identity → **dedupe** against roster → relationship kind (household / carer / professional / organisation) → link pets → if app access is needed, branch into **sharing** (reuse `features/sharing` — no parallel invite UX). No upfront "offline contact vs invite" fork.
+- **Legacy copy** ("Who would you like to add?" with four tiles) may appear inside relationship step; do not force invite vs contact before identity.
 - **Creating a household** includes the review step for which pets will be shared.
 - **Removing someone** lists the access they'll still have and offers two choices: remove from the household only, or remove all access to my pets.
 - **Changing an absence** asks for confirmation whenever the change would widen access.

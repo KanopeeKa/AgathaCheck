@@ -3,15 +3,32 @@ title: People & Care Team — delivery plan
 owner: Product / Documentation
 audience: agent
 status: active
-last_updated: 2026-09-27
+last_updated: 2026-09-28
 tags: [people, delivery]
 ---
 
 # People & Care Team — delivery plan
 
-Execute-plan: `people-care-team-a58d` (control issue #1343). Canonical behaviour: [people-care-team.md](../features/people-care-team.md).
+Execute-plans:
 
-## Phase map
+- **Backend:** `people-care-team-a58d` (control #1343)
+- **Nav + list hub:** `people-ui-hub-a58d` (control #1373) — merged to `main`
+- **Hub UX remodel:** `people-hub-remodel-a58d` (control #1386) — cards, detail, edit, unified add, E2E
+
+Canonical behaviour: [people-care-team.md](../features/people-care-team.md).
+
+## UX remodel phase map (`people-hub-remodel-a58d`)
+
+| Phase id | Outcome | Primary paths |
+|----------|---------|---------------|
+| p0-docs | Doc set aligned with remodel | `docs/domains/people/**` |
+| p1-roster-cards | Cards + `/pc/people/:id` | `flutter_app/lib/features/people/**`, desk module |
+| p2-detail-edit | View/edit + danger zone | `flutter_app/lib/features/people/**` |
+| p3-unified-add | Add flow + sharing | `people/**`, `sharing/**`, `server/routes/people/**` |
+| p4-tests-e2e | BDD + Playwright | `people.feature`, `e2e/playwright/**` |
+| p5-ship-main | Integration → `main` | pre-UAT green |
+
+## Backend phase map
 
 | Product phase | Execute-plan id | Branch (target) | Primary ownership |
 |---------------|-----------------|-------------------|-------------------|
