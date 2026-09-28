@@ -153,7 +153,9 @@
       "exit_checklist": "default",
       "status": "in_progress",
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1378",
+      "pr_head_sha": "ddb0dc2bc897f88792c5aa73f243c56313300e6f"
     },
     {
       "id": "header-wayfinding",
@@ -194,5 +196,5 @@
       "status": "pending"
     }
   ],
-  "content_hash": "sha256:7915809a9e753f1b8da6012c23a89d34b5d4536dcad241fd16c0d7de2f5b1648"
+  "content_hash": "sha256:31c95590dba6de648fd21452e497047548b229f8867fac7f8a17a785851e3db8"
 }

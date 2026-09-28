@@ -19,10 +19,10 @@ next_action: "continue phase web-layout on branch cursor/care-item-view-ui-web-l
 artifact_ref:
   branch: cursor/care-item-view-ui-web-layout-7796
   plan_path: .agents/plans/care-item-view-ui.md
-  plan_commit: 28abaa7678b46d8f6169485f1751324220a3a5ba
+  plan_commit: ddb0dc2bc897f88792c5aa73f243c56313300e6f
   snapshot_path: .agents/plans/care-item-view-ui.snapshot.json
-  snapshot_commit: 28abaa7678b46d8f6169485f1751324220a3a5ba
-open_prs: []
+  snapshot_commit: ddb0dc2bc897f88792c5aa73f243c56313300e6f
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1378"]
 merge_commits: {}
 debt_issue_refs: []
 ```
