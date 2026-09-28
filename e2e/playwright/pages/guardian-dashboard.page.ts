@@ -26,6 +26,11 @@ export class GuardianDashboardPage {
   async open(): Promise<void> {
     await this.page.goto(flutterGotoUrl('/pc/home'));
     await refreshFlutterAccessibility(this.page);
+    await this.expectLoaded();
+  }
+
+  /** Pet Care home desk visible — use after login when already on `/pc/home`. */
+  async expectLoaded(): Promise<void> {
     await waitForFlutterRoutePattern(this.page, /\/pc\/home(?:\?|$)/, 60_000);
     await this.section(/My Pets|Mes animaux/i).waitFor({ state: 'visible', timeout: 60_000 });
   }
