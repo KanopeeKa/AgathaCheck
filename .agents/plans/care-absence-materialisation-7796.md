@@ -24,17 +24,17 @@ Add **intent-based materialisation** (D-CSM-018) so estimated in-window dates ca
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: ensure-flutter
-last_completed_phase: e2e
+autonomy: completed
+current_phase: null
+last_completed_phase: integration-main
 halt_reason: null
-next_action: "continue phase ensure-flutter on branch cursor/care-absence-materialisation-ensure-flutter-7796"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/care-absence-materialisation-integration-7796
+  branch: main
   plan_path: .agents/plans/care-absence-materialisation-7796.md
-  plan_commit: 782504158f4364ed7b64171b8a47393172168e72
+  plan_commit: 5154febc9f97a70a9231caf9348c62f0305d9f2f
   snapshot_path: .agents/plans/care-absence-materialisation-7796.snapshot.json
-  snapshot_commit: 782504158f4364ed7b64171b8a47393172168e72
+  snapshot_commit: 5154febc9f97a70a9231caf9348c62f0305d9f2f
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
