@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
+import '../../../../pet_care/presentation/widgets/care_surface/care_surface_tokens.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../domain/entities/health_entry.dart';
 import '../../../domain/entities/health_history_entry.dart';
-import 'package:intl/intl.dart';
-
+import '../../providers/care_item_absence_providers.dart';
+import '../../widgets/care_category_blocks/care_category_blocks_detail_section.dart';
 import '../../widgets/pet_event_documents_strip.dart';
-import '../../widgets/pet_event_past_occurrences_section.dart';
-import '../../widgets/pet_event_past_iterations_section.dart';
 import '../../widgets/pet_event_lifecycle.dart';
+import '../../widgets/pet_event_past_iterations_section.dart';
+import '../../widgets/pet_event_past_occurrences_section.dart';
 import '../../widgets/pet_event_pet_card.dart';
+import 'care_item_absence_section.dart';
 import 'care_item_dates_section.dart';
 import 'care_item_established_section.dart';
-import '../../widgets/care_category_blocks/care_category_blocks_detail_section.dart';
 import 'care_item_info_section.dart';
-import 'care_item_absence_section.dart';
 import 'care_item_schedule_section.dart';
-import '../../providers/care_item_absence_providers.dart';
 
-/// Care Item detail body — spec order: header card, needs attention, schedule, details, history.
+/// Care Item detail body — module segmentation on warm canvas (mobile order).
 class CareItemDetailBody extends ConsumerWidget {
   const CareItemDetailBody({
     super.key,
@@ -62,91 +65,122 @@ class CareItemDetailBody extends ConsumerWidget {
       muted: muted,
     );
 
-    return SingleChildScrollView(
-      key: const Key('care_item_detail_body'),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          PetEventPetCard(pet: pet),
-          const SizedBox(height: 16),
-          if (showNeedsAttention)
-            CareItemDatesSection(entry: entry, muted: muted)
-          else
-            _ClosedNeedsAttentionSummary(history: history, muted: muted),
-          const SizedBox(height: 16),
-          if (absenceBeforeSchedule) ...[
-            absenceSection,
+    return CareItemDetailCanvas(
+      child: SingleChildScrollView(
+        key: const Key('care_item_detail_body'),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CareItemModule(
+              child: PetEventPetCard(pet: pet, embedded: true),
+            ),
             const SizedBox(height: 16),
-            scheduleSection,
-          ] else ...[
-            scheduleSection,
+            if (showNeedsAttention)
+              CareItemDatesSection(entry: entry, muted: muted)
+            else
+              _ClosedNeedsAttentionModule(history: history, muted: muted),
             const SizedBox(height: 16),
-            absenceSection,
-          ],
-          const SizedBox(height: 16),
-          Semantics(
-            header: true,
-            child: Text(
-              l.careItemDetailsTitle,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: muted
-                    ? Theme.of(context).colorScheme.onSurfaceVariant
-                    : null,
+            if (absenceBeforeSchedule) ...[
+              absenceSection,
+              const SizedBox(height: 16),
+              scheduleSection,
+            ] else ...[
+              scheduleSection,
+              const SizedBox(height: 16),
+              absenceSection,
+            ],
+            const SizedBox(height: 16),
+            CareItemModule(
+              key: const Key('care_item_details_module'),
+              semanticLabel: l.careItemDetailsTitle,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CareItemSectionHeader(
+                    title: l.careItemDetailsTitle,
+                    icon: Icons.article_outlined,
+                  ),
+                  const SizedBox(height: 12),
+                  CareCategoryBlocksDetailSection(
+                    entry: entry,
+                    pet: pet,
+                    muted: muted,
+                  ),
+                  CareItemInfoSection(entry: entry, muted: muted),
+                  CareItemEstablishedSection(
+                    pet: pet,
+                    isEstablished: isEstablished,
+                  ),
+                  if (entry.healthIssueId != null &&
+                      (entry.healthIssueName?.isNotEmpty ?? false)) ...[
+                    const SizedBox(height: 8),
+                    _HealthIssueLink(
+                      petId: petId,
+                      issueName: entry.healthIssueName!,
+                      muted: muted,
+                    ),
+                  ],
+                ],
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-          CareCategoryBlocksDetailSection(entry: entry, pet: pet, muted: muted),
-          CareItemInfoSection(entry: entry, muted: muted),
-          CareItemEstablishedSection(pet: pet, isEstablished: isEstablished),
-          if (entry.healthIssueId != null &&
-              (entry.healthIssueName?.isNotEmpty ?? false)) ...[
             const SizedBox(height: 16),
-            _HealthIssueLink(
-              petId: petId,
-              issueName: entry.healthIssueName!,
-              muted: muted,
-            ),
-          ],
-          const SizedBox(height: 16),
-          Semantics(
-            header: true,
-            child: Text(
-              l.careItemHistoryTitle,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: muted
-                    ? Theme.of(context).colorScheme.onSurfaceVariant
-                    : null,
+            CareItemModule(
+              key: const Key('care_item_history_module'),
+              semanticLabel: l.careItemHistoryTitle,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CareItemSectionHeader(
+                    title: l.careItemHistoryTitle,
+                    icon: Icons.history,
+                  ),
+                  const SizedBox(height: 12),
+                  CareCollectionInsetList(
+                    semanticLabel: l.careItemHistoryTitle,
+                    children: [
+                      CareCollectionInsetItem(
+                        child: Padding(
+                          padding: CareSurfaceTokens.collectionInsetRowPadding,
+                          child: PetEventDocumentsStrip(entryId: entry.id),
+                        ),
+                      ),
+                      CareCollectionInsetItem(
+                        showDividerBefore: true,
+                        child: PetEventPastOccurrencesSection(
+                          entryId: entry.id,
+                          muted: muted,
+                        ),
+                      ),
+                      CareCollectionInsetItem(
+                        showDividerBefore: true,
+                        child: PetEventPastIterationsSection(
+                          entry: entry,
+                          history: history,
+                          isClosed: isClosed,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    key: const Key('care_item_see_history'),
+                    onPressed: onSeeHistory,
+                    icon: const Icon(Icons.history),
+                    label: Text(l.seeHistory),
+                  ),
+                ],
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-          PetEventDocumentsStrip(entryId: entry.id),
-          const SizedBox(height: 16),
-          PetEventPastOccurrencesSection(entryId: entry.id, muted: muted),
-          PetEventPastIterationsSection(
-            entry: entry,
-            history: history,
-            isClosed: isClosed,
-          ),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            key: const Key('care_item_see_history'),
-            onPressed: onSeeHistory,
-            icon: const Icon(Icons.history),
-            label: Text(l.seeHistory),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _ClosedNeedsAttentionSummary extends StatelessWidget {
-  const _ClosedNeedsAttentionSummary({
+class _ClosedNeedsAttentionModule extends StatelessWidget {
+  const _ClosedNeedsAttentionModule({
     required this.history,
     required this.muted,
   });
@@ -161,40 +195,37 @@ class _ClosedNeedsAttentionSummary extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final last = sortedHistoryDesc(history).firstOrNull;
 
-    return Column(
+    return CareItemModule(
       key: const Key('care_item_needs_attention_section'),
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Semantics(
-          header: true,
-          child: Text(
-            l.careItemNeedsAttentionTitle,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: muted ? colorScheme.onSurfaceVariant : null,
-            ),
+      semanticLabel: l.careItemNeedsAttentionTitle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CareItemSectionHeader(
+            title: l.careItemNeedsAttentionTitle,
+            icon: Icons.flag_outlined,
           ),
-        ),
-        const SizedBox(height: 8),
-        if (last == null)
-          Text(
-            l.noHistoryYet,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
+          const SizedBox(height: 12),
+          if (last == null)
+            Text(
+              l.noHistoryYet,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            )
+          else
+            Text(
+              last.isSkipped
+                  ? l.occurrenceSkipped
+                  : last.completedOn != null
+                  ? l.doneOn(DateFormat.yMMMd().format(last.completedOn!))
+                  : l.notSet,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
-          )
-        else
-          Text(
-            last.isSkipped
-                ? l.occurrenceSkipped
-                : last.completedOn != null
-                ? l.doneOn(DateFormat.yMMMd().format(last.completedOn!))
-                : l.notSet,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

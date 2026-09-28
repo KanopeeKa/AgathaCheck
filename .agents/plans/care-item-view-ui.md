@@ -15,14 +15,14 @@ autonomy: active
 current_phase: details-history
 last_completed_phase: schedule-absence
 halt_reason: null
-next_action: "start phase details-history: checkout cursor/care-item-view-ui-details-history-7796"
+next_action: "continue phase details-history on branch cursor/care-item-view-ui-details-history-7796"
 artifact_ref:
-  branch: cursor/care-item-view-ui-integration-7796
+  branch: cursor/care-item-view-ui-details-history-7796
   plan_path: .agents/plans/care-item-view-ui.md
-  plan_commit: b127f2c18fcedd334636c50e1eb67421e97aff4d
+  plan_commit: e3cc19b4d99b08de8a0882f184b459903c44c511
   snapshot_path: .agents/plans/care-item-view-ui.snapshot.json
-  snapshot_commit: b127f2c18fcedd334636c50e1eb67421e97aff4d
-open_prs: []
+  snapshot_commit: e3cc19b4d99b08de8a0882f184b459903c44c511
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1376"]
 merge_commits: {}
 debt_issue_refs: []
 ```
