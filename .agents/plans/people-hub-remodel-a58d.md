@@ -35,14 +35,14 @@ autonomy: active
 current_phase: p5-ship-main
 last_completed_phase: p4-tests-e2e
 halt_reason: null
-next_action: "start phase p5-ship-main: checkout cursor/people-hub-remodel-integration-a58d"
+next_action: "continue phase p5-ship-main on branch cursor/people-hub-remodel-integration-a58d"
 artifact_ref:
-  branch: cursor/people-hub-remodel-integration-a58d
+  branch: main
   plan_path: .agents/plans/people-hub-remodel-a58d.md
-  plan_commit: 20d9eb32dbd5257f51af0c0e5e505128afacb5ae
+  plan_commit: e5da0f27a084abc336d9daa9f3805221beb341d2
   snapshot_path: .agents/plans/people-hub-remodel-a58d.snapshot.json
-  snapshot_commit: 20d9eb32dbd5257f51af0c0e5e505128afacb5ae
-open_prs: []
+  snapshot_commit: e5da0f27a084abc336d9daa9f3805221beb341d2
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1388"]
 merge_commits: {}
 debt_issue_refs: []
 ```
