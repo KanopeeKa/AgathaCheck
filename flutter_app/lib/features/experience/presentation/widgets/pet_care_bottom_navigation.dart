@@ -16,6 +16,9 @@ class PetCareBottomNavigation extends StatelessWidget {
 
   static const compactBreakpoint = PetCarePrimaryDestinations.compactBreakpoint;
 
+  /// Icon size for compact bottom bar (labels hidden; icons carry the affordance).
+  static const bottomNavIconSize = 28.0;
+
   static bool isCompact(double width) =>
       PetCarePrimaryDestinations.isCompact(width);
 
@@ -37,18 +40,57 @@ class PetCareBottomNavigation extends StatelessWidget {
         backgroundColor: AppColorTokens.petCarePrimary,
         selectedItemColor: AppColorTokens.inverse,
         unselectedItemColor: AppColorTokens.petCareLight,
-        selectedFontSize: 11,
-        unselectedFontSize: 10,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
         onTap: (index) => context.go(PetCarePrimaryDestinations.routes[index]),
         items: [
           for (final destination in destinations)
             BottomNavigationBarItem(
-              icon: Icon(destination.icon, size: 22),
-              activeIcon: Icon(destination.selectedIcon, size: 22),
+              icon: _BottomNavDestinationIcon(
+                destination: destination,
+                label: destination.labelBuilder(l),
+                selected: false,
+              ),
+              activeIcon: _BottomNavDestinationIcon(
+                destination: destination,
+                label: destination.labelBuilder(l),
+                selected: true,
+              ),
               label: destination.labelBuilder(l),
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// Semantics + touch target for each bottom bar destination (E2E + a11y).
+class _BottomNavDestinationIcon extends StatelessWidget {
+  const _BottomNavDestinationIcon({
+    required this.destination,
+    required this.label,
+    required this.selected,
+  });
+
+  final PetCarePrimaryDestination destination;
+  final String label;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final icon = selected ? destination.selectedIcon : destination.icon;
+    return Semantics(
+      identifier: PetCarePrimaryDestinations.semanticsIdentifier(
+        destination.route,
+      ),
+      button: true,
+      label: label,
+      child: SizedBox(
+        width: 48,
+        height: 48,
+        child: Center(
+          child: Icon(icon, size: PetCareBottomNavigation.bottomNavIconSize),
+        ),
       ),
     );
   }

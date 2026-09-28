@@ -122,7 +122,9 @@ void main() {
   });
 
   group('PetCareBottomNavigation widget', () {
-    testWidgets('renders tab labels for primary destinations', (tester) async {
+    testWidgets('hides tab labels and shows larger icons on compact bar', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -136,12 +138,16 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Dashboard'), findsOneWidget);
-      expect(find.text('Pets'), findsOneWidget);
-      expect(find.text('Actions'), findsOneWidget);
-      expect(find.text('People'), findsOneWidget);
-      expect(find.text('Account'), findsOneWidget);
+      final bar = tester.widget<BottomNavigationBar>(
+        find.byKey(const Key('pet_care_bottom_navigation')),
+      );
+      expect(bar.showSelectedLabels, isFalse);
+      expect(bar.showUnselectedLabels, isFalse);
+      expect(find.byIcon(Icons.home), findsOneWidget);
+      expect(find.byIcon(Icons.pets_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.favorite_border), findsOneWidget);
       expect(find.byIcon(Icons.groups_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
       expect(
         find.byKey(const Key('pet_care_bottom_navigation')),
         findsOneWidget,
@@ -165,7 +171,11 @@ void main() {
         find.byKey(const Key('pet_care_bottom_navigation')),
         findsOneWidget,
       );
-      expect(find.text('Dashboard'), findsOneWidget);
+      expect(find.byIcon(Icons.home), findsOneWidget);
+      final bar = tester.widget<BottomNavigationBar>(
+        find.byKey(const Key('pet_care_bottom_navigation')),
+      );
+      expect(bar.showUnselectedLabels, isFalse);
     });
 
     testWidgets('is hidden in shell at 600px width', (tester) async {
@@ -203,7 +213,7 @@ void main() {
         find.byKey(const Key('pet_care_bottom_navigation')),
         findsOneWidget,
       );
-      expect(find.text('Pets'), findsOneWidget);
+      expect(find.byIcon(Icons.pets), findsOneWidget);
     });
   });
 }
