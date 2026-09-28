@@ -22,7 +22,7 @@ void main() {
       });
     }
 
-    testWidgets('chip uses surfaceAlt background and plum ink', (tester) async {
+    testWidgets('chip uses petCareLight background and plum ink', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(body: CareFamilyIcon(family: CareFamily.medication)),
@@ -38,7 +38,7 @@ void main() {
             .first,
       );
       final decoration = container.decoration! as BoxDecoration;
-      expect(decoration.color, AppColorTokens.surfaceAlt);
+      expect(decoration.color, AppColorTokens.petCareLight);
 
       final icon = tester.widget<Icon>(find.byIcon(Icons.medication_outlined));
       expect(icon.color, AppColorTokens.petCarePrimary);

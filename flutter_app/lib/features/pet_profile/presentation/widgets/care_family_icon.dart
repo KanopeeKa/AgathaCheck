@@ -107,7 +107,7 @@ class CareFamilyIcon extends StatelessWidget {
       width: _boxSize,
       height: _boxSize,
       decoration: BoxDecoration(
-        color: AppColorTokens.surfaceAlt,
+        color: AppColorTokens.petCareLight,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Center(child: glyph),
