@@ -30,6 +30,13 @@ export class GuardianDashboardPage {
     await this.section(/My Pets|Mes animaux/i).waitFor({ state: 'visible', timeout: 60_000 });
   }
 
+  /** Assert Pet Care home desk is visible (caller may already be on `/pc/home`). */
+  async expectLoaded(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/home(?:\?|$)/, 60_000);
+    await expect(this.section(/My Pets|Mes animaux/i)).toBeVisible({ timeout: 60_000 });
+  }
+
   async expectTodayCareRegions(): Promise<void> {
     await expect(this.section(/My Pets|Mes animaux/i)).toBeVisible();
     await expect(this.section(/CARE ACTIONS|SOINS/i)).toBeVisible();
