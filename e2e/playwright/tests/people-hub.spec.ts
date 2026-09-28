@@ -36,7 +36,7 @@ test.describe('People hub remodel @people', () => {
     await loginGuardian(page, user.email, user.password);
 
     const dashboard = new GuardianDashboardPage(page);
-    await dashboard.expectLoaded();
+    await dashboard.open();
     await refreshFlutterAccessibility(page);
     await expect(page.getByText(/^Vet team$/i).first()).toBeVisible({
       timeout: 30_000,
