@@ -9,6 +9,10 @@ import {
 } from '../support/flutter';
 import { formatHealthEntryStatusDate } from '../support/healthEntryDates';
 
+function semanticsKey(page: Page, key: string) {
+  return page.locator(`[flt-semantics-identifier="${key}"]`);
+}
+
 /**
  * Care item (pet event) detail — occurrence actions and reschedule sheet.
  */
@@ -93,5 +97,75 @@ export class CareItemPage {
         .first();
       await expect(dateLocator).toBeVisible();
     }).toPass({ timeout: 30_000 });
+  }
+
+  async expectAbsenceSectionVisible(): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const strip = semanticsKey(this.page, 'care_item_absence_section').or(
+        this.page.getByRole('banner', { name: /Absence/i }),
+      );
+      await expect(strip.first()).toBeVisible();
+      await expect(this.page.getByRole('button', { name: /^Review date$|^Revoir la date$/i }).first()).toBeVisible();
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async expectAbsenceKeepWithCarer(carerName: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const keep = semanticsKey(this.page, 'care_item_absence_keep_date').or(
+      this.page.getByRole('button', {
+        name: new RegExp(`Keep with ${carerName}`, 'i'),
+      }),
+    );
+    await expect(keep.first()).toBeVisible({ timeout: 15_000 });
+  }
+
+  async expectAbsenceReviewDateAction(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const review = semanticsKey(this.page, 'care_item_absence_review_date').or(
+      this.page.getByRole('button', { name: /^Review date$|^Revoir la date$/i }),
+    );
+    await expect(review.first()).toBeVisible({ timeout: 15_000 });
+  }
+
+  async openAbsenceOccurrenceReview(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const review = semanticsKey(this.page, 'care_item_absence_review_date').or(
+      this.page.getByRole('button', { name: /^Review date$|^Revoir la date$/i }),
+    );
+    await expect(review.first()).toBeVisible({ timeout: 15_000 });
+    await review.first().click();
+    await this.expectOccurrenceReviewSheet();
+  }
+
+  async expectOccurrenceReviewSheet(): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const skip = semanticsKey(this.page, 'occurrence_review_skip').or(
+        this.page.getByRole('button', { name: /^Skip$|^Ignorer$/i }),
+      );
+      const changeDate = semanticsKey(this.page, 'occurrence_review_change_date').or(
+        this.page.getByRole('button', { name: /^Change date$|^Changer la date$/i }),
+      );
+      await expect(skip.first()).toBeVisible();
+      await expect(changeDate.first()).toBeVisible();
+    }).toPass({ timeout: 60_000 });
+  }
+
+  async skipFromOccurrenceReviewSheet(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const skip = semanticsKey(this.page, 'occurrence_review_skip').or(
+      this.page.getByRole('button', { name: /^Skip$|^Ignorer$/i }),
+    );
+    await skip.first().click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectAbsenceReviewActionsHidden(): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(semanticsKey(this.page, 'care_item_absence_review_date')).toHaveCount(0);
+      await expect(semanticsKey(this.page, 'care_item_absence_keep_date')).toHaveCount(0);
+    }).toPass({ timeout: 45_000 });
   }
 }
