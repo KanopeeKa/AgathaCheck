@@ -20,7 +20,7 @@ dependencies:
   http: ^1.6.0
   intl: ^0.20.2
   fl_chart: ^1.2.0
-  pdf: ^3.13.0
+  pdf: ^3.13.1
   printing: ^5.15.0
   purchases_flutter: ^10.13.1
   purchases_ui_flutter: ^10.13.1
