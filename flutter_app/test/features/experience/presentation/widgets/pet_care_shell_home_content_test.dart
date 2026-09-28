@@ -16,8 +16,9 @@ import 'package:pet_profile_app/features/experience/presentation/screens/pet_car
 import 'package:pet_profile_app/features/pet_care/context/presentation/away_planning_dashboard_tile_state.dart';
 import 'package:pet_profile_app/features/pet_care/context/presentation/providers/care_context_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
-import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
-import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
+import 'package:pet_profile_app/features/people/domain/entities/people_contact.dart';
+import 'package:pet_profile_app/features/people/presentation/providers/people_providers.dart';
+import 'package:pet_profile_app/features/sharing/presentation/providers/household_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
@@ -27,10 +28,6 @@ void main() {
     6,
     (i) => Pet(id: 'pet-$i', name: 'Pet $i', species: 'Dog', breed: 'Mix'),
   );
-
-  final vets = [
-    const Vet(id: 'vet-1', name: 'Dr. Smith', address: 'Springfield'),
-  ];
 
   Widget buildDashboard({
     List<Pet>? petList,
@@ -46,7 +43,8 @@ void main() {
       overrides: [
         authProvider.overrideWith((ref) => FakeAuthNotifier()),
         petListProvider.overrideWith(() => TestPetListNotifier(list)),
-        vetListProvider.overrideWith(() => _TestVetListNotifier(vets)),
+        peopleContactsProvider.overrideWith(_TestPeopleContactsNotifier.new),
+        householdListProvider.overrideWith((ref) async => []),
         healthEntriesNotifierProvider.overrideWith(
           () => resolvedHealthNotifier,
         ),
@@ -74,7 +72,7 @@ void main() {
     );
   }
 
-  testWidgets('dashboard presents pets, care, vets, and foster context', (
+  testWidgets('dashboard presents pets, care, people, and foster context', (
     tester,
   ) async {
     await tester.pumpWidget(buildDashboard());
@@ -86,7 +84,7 @@ void main() {
     );
     expect(find.text('CARE ACTIONS'), findsOneWidget);
     expect(find.text('AWAY PLANNING'), findsOneWidget);
-    expect(find.text('VETERINARY TEAM'), findsOneWidget);
+    expect(find.text('PEOPLE'), findsOneWidget);
     expect(find.text('All absences'), findsOneWidget);
     expect(find.byKey(const Key('planned_absence_entry_tile')), findsOneWidget);
     expect(find.text("I'll be away"), findsOneWidget);
@@ -96,7 +94,7 @@ void main() {
       find.byKey(const Key('pet_care_dashboard_empty_care_action')),
       findsOneWidget,
     );
-    expect(find.text('All Vets'), findsOneWidget);
+    expect(find.text('See all'), findsOneWidget);
     expect(
       find.byKey(const Key('pet_care_dashboard_care_section')),
       findsOneWidget,
@@ -142,7 +140,7 @@ void main() {
   });
 
   testWidgets(
-    'places away planning between care actions and veterinary team on narrow',
+    'places away planning between care actions and people on narrow',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(375, 900));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -152,10 +150,10 @@ void main() {
 
       final careY = tester.getTopLeft(find.text('CARE ACTIONS')).dy;
       final awayY = tester.getTopLeft(find.text('AWAY PLANNING')).dy;
-      final vetsY = tester.getTopLeft(find.text('VETERINARY TEAM')).dy;
+      final peopleY = tester.getTopLeft(find.text('PEOPLE')).dy;
 
       expect(careY, lessThan(awayY));
-      expect(awayY, lessThan(vetsY));
+      expect(awayY, lessThan(peopleY));
     },
   );
 
@@ -184,9 +182,9 @@ void main() {
         .dy;
     final awayY = tester.getTopLeft(find.text('AWAY PLANNING')).dy;
     final careY = tester.getTopLeft(find.text('CARE ACTIONS')).dy;
-    final vetsY = tester.getTopLeft(find.text('VETERINARY TEAM')).dy;
+    final peopleY = tester.getTopLeft(find.text('PEOPLE')).dy;
 
-    expect(careY, vetsY);
+    expect(careY, peopleY);
     expect(awayY, greaterThan(rowBottom));
   });
 
@@ -312,7 +310,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
-        find.text('Tous mes vétérinaires'),
+        find.text('Tout voir'),
         120,
         scrollable: find.byWidgetPredicate(
           (widget) =>
@@ -325,19 +323,15 @@ void main() {
         find.byKey(const Key('pet_care_dashboard_add_care')),
         findsNothing,
       );
-      expect(find.text('Tous mes vétérinaires'), findsOneWidget);
+      expect(find.text('Tout voir'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
 }
 
-class _TestVetListNotifier extends VetListNotifier {
-  _TestVetListNotifier(this._vets);
-
-  final List<Vet> _vets;
-
+class _TestPeopleContactsNotifier extends PeopleContactsNotifier {
   @override
-  Future<List<Vet>> build() async => _vets;
+  Future<List<PeopleContact>> build() async => const [];
 }
 
 class _LoadingHealthEntriesNotifier extends HealthEntriesNotifier {
