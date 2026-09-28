@@ -176,11 +176,10 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "bdd-journey",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1381",
-      "pr_head_sha": "e4cfecfcdaae328ea644ce573b61d0c7e7739073"
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1381"
     },
     {
       "id": "integration-main",
@@ -196,8 +195,10 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "release-verification",
-      "status": "pending"
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null
     }
   ],
-  "content_hash": "sha256:3144ad0878c2703d79268bee1c1eb3011ce6ac04ed82e929bfb7680874579adf"
+  "content_hash": "sha256:0ae3951701f169e5f1fcb84fded081e040ebcfa0e76cfbaa0047a7b7aa0dacc3"
 }
