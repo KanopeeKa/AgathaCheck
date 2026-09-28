@@ -176,7 +176,7 @@ test.describe('Guardian dashboard', () => {
     ).toBeVisible();
   });
 
-  test('People desk preview opens the People hub', async ({ page, testUser }) => {
+  test('People desk preview opens person detail from vet card', async ({ page, testUser }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     const vet = await createVetFull(baseURL(), testUser.accessToken, { name: 'Dr. Desk' });
     const pet = await createPet(baseURL(), testUser.accessToken, 'VetLinkedPet');
