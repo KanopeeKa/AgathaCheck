@@ -19,10 +19,10 @@ next_action: "continue phase header-wayfinding on branch cursor/care-item-view-u
 artifact_ref:
   branch: cursor/care-item-view-ui-header-7796
   plan_path: .agents/plans/care-item-view-ui.md
-  plan_commit: 9ec20b5ea09282362d23ab2068cef49883bb6122
+  plan_commit: e4cfecfcdaae328ea644ce573b61d0c7e7739073
   snapshot_path: .agents/plans/care-item-view-ui.snapshot.json
-  snapshot_commit: 9ec20b5ea09282362d23ab2068cef49883bb6122
-open_prs: []
+  snapshot_commit: e4cfecfcdaae328ea644ce573b61d0c7e7739073
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1381"]
 merge_commits: {}
 debt_issue_refs: []
 ```

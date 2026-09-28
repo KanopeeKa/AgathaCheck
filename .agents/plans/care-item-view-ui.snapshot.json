@@ -178,7 +178,9 @@
       "exit_checklist": "bdd-journey",
       "status": "in_progress",
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1381",
+      "pr_head_sha": "e4cfecfcdaae328ea644ce573b61d0c7e7739073"
     },
     {
       "id": "integration-main",
@@ -197,5 +199,5 @@
       "status": "pending"
     }
   ],
-  "content_hash": "sha256:bfb0c64312b3c3ec565318a2fcf19de2e02c754f083f0c1991354b5be4066a86"
+  "content_hash": "sha256:3144ad0878c2703d79268bee1c1eb3011ce6ac04ed82e929bfb7680874579adf"
 }
