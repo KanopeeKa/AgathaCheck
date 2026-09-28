@@ -11,7 +11,7 @@ related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.featur
 
 # People & Care Team — functional spec
 
-**Status:** the functional spec was agreed on 2026-09-27. **Nothing is implemented yet.** This file is the canonical copy for agents. UI wording is in [vocabulary.md](/docs/domains/people/features/vocabulary.md).
+**Status:** the functional spec was agreed on 2026-09-27. **Backend and initial People screens shipped** in execute-plan `people-care-team-a58d`; **navigation and desk UX** ship in `people-ui-hub-a58d` ([ui-hub-navigation.md](/docs/domains/people/changes/ui-hub-navigation.md)). UI wording is in [vocabulary.md](/docs/domains/people/features/vocabulary.md).
 
 ## Verdict
 
@@ -364,11 +364,11 @@ Four separate facts cover four questions: who provides the care, who is looking 
 
 ## UI and navigation
 
-The screen is called "People" and isn't a mobile bottom-nav tab. Most interactions with it happen in context. All wording is in [vocabulary.md](/docs/domains/people/features/vocabulary.md).
+The screen is called "People". **Compact navigation:** fifth primary bottom-tab destination (`/pc/people`) per [ui-hub-navigation.md](/docs/domains/people/changes/ui-hub-navigation.md). Most in-context entry points remain. All wording is in [vocabulary.md](/docs/domains/people/features/vocabulary.md).
 
 ### Placement
 
-- **Mobile:** reached from Account, and from the places where people are needed:
+- **Mobile:** primary **People** tab; also Account (legacy redirect), and from the places where people are needed:
     - the pet profile's People section
     - the absence carer picker
     - the care item provider picker
