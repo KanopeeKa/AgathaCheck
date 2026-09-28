@@ -5095,6 +5095,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careItemAbsenceKeepDate => 'Keep the date';
 
   @override
+  String careItemAbsenceKeepWithCarer(String carer) {
+    return 'Keep with $carer';
+  }
+
+  @override
+  String get careItemAbsenceKeepDuringAbsence => 'Keep during absence';
+
+  @override
+  String get careItemAbsenceReviewDateAction => 'Review date';
+
+  @override
+  String careItemAbsenceNotReviewedOnDate(String date, String dateRange) {
+    return 'Due $date, while you\'re away · $dateRange';
+  }
+
+  @override
+  String careItemOccurrenceDuringAbsence(String date) {
+    return 'Due $date during your absence';
+  }
+
+  @override
   String get careItemAbsenceNothingNeeded => 'Nothing needed';
 
   @override

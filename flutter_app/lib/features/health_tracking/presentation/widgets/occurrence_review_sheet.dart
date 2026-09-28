@@ -5,6 +5,9 @@ import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
+import '../providers/care_item_absence_providers.dart';
+import '../providers/care_item_absence_resolution_sync.dart';
+import '../providers/care_item_detail_refresh.dart';
 import 'pet_event_occurrence_actions.dart';
 import 'reschedule_occurrence_flow.dart';
 
@@ -98,6 +101,28 @@ class OccurrenceReviewSheet extends ConsumerWidget {
   Future<void> _skip(BuildContext context, WidgetRef ref) async {
     Navigator.pop(context);
     if (!context.mounted) return;
-    await PetEventOccurrenceActions.skip(context, ref, entry, occurrence);
+    await PetEventOccurrenceActions.skip(
+      context,
+      ref,
+      entry,
+      occurrence,
+      absenceId: absenceId,
+    );
+    if (absenceId == null || absenceId!.isEmpty) return;
+    final contextModel = await ref.read(
+      careItemAbsenceContextProvider(entry.id).future,
+    );
+    final slice = contextModel.absences
+        .where((s) => s.plannedAbsenceId == absenceId)
+        .firstOrNull;
+    if (slice == null) return;
+    final remote = ref.read(healthAbsenceContextRemoteProvider);
+    await syncAbsenceResolution(
+      remote: remote,
+      slice: slice,
+      healthEntryId: entry.id,
+      decision: 'nothing_needed',
+    );
+    invalidateCareItemDetailData(ref, entry.id, absenceId: absenceId);
   }
 }
