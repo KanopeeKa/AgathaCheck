@@ -140,7 +140,7 @@ class CareItemDetailScreen extends ConsumerWidget {
             return ExperienceShellScaffold(
               experience: experience,
               currentLocation: GoRouterState.of(context).uri.path,
-              screenTitle: l.viewEntryTitle(entry.name),
+              screenTitle: entry.name,
               contextualActions: [
                 IconButton(
                   key: const Key('care_item_edit_app_bar'),
