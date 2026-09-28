@@ -4,6 +4,7 @@
  */
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
+import { getVets } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
@@ -13,9 +14,28 @@ import {
   semanticsByName,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
+import { readAccessTokenFromPage } from '../support/ui-auth';
 
 export class VetListPage {
   constructor(private readonly page: Page) {}
+
+  private baseURL(): string {
+    return process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+  }
+
+  private async resolveVetIdByName(name: string): Promise<string> {
+    const token = await readAccessTokenFromPage(this.page);
+    const vets = await getVets(this.baseURL(), token);
+    const match = vets.find((v) => v.name === name);
+    if (!match) {
+      throw new Error(`No veterinarian named "${name}" in API list`);
+    }
+    return match.id;
+  }
+
+  private async onPeopleHub(): Promise<boolean> {
+    return /^\/pc\/people(?:\?|$)/.test(flutterRoutePath(this.page.url()));
+  }
 
   /** Org list cards (`Veterinarian: …`) or guardian compact rows (`Name · town`). */
   private vetRowLocator(name: string): Locator {
@@ -25,22 +45,44 @@ export class VetListPage {
     return semanticsByName(this.page, cardPattern)
       .or(this.page.getByRole('button', { name: rowPattern }))
       .or(this.page.getByRole('group', { name: rowPattern }))
-      .or(this.page.getByText(rowPattern))
+      .or(this.page.getByText(rowPattern, { exact: true }))
       .first();
   }
 
   async expectLoaded(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.getByText(/^Veterinarians$/i).first().waitFor({ timeout: 30_000 });
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
+    await refreshFlutterAccessibility(this.page);
+    await this.page
+      .getByText(/^People$|^Autour de vos animaux$/i)
+      .first()
+      .waitFor({ timeout: 30_000 });
   }
 
   async expectEmptyState(): Promise<void> {
-    await this.page.getByText(/no veterinarians yet/i).waitFor({ timeout: 30_000 });
+    await this.page
+      .getByText(/no pet professionals yet|no veterinarians yet/i)
+      .first()
+      .waitFor({ timeout: 30_000 });
   }
 
   async openAddForm(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Add Vet' }).click();
+    await this.page.goto(flutterGotoUrl('/pc/vets/add'));
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/vets\/add(?:\?|$)/, 30_000);
     await this.page.getByRole('textbox', { name: 'Name *' }).waitFor({ timeout: 30_000 });
+  }
+
+  private async openVetDetailRoute(vetId: string): Promise<void> {
+    await this.page.goto(flutterGotoUrl(`/pc/vets/${vetId}`));
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/vets\/[^/]+(?:\?|$)/, 30_000);
+  }
+
+  private async openVetEditRoute(vetId: string): Promise<void> {
+    await this.page.goto(flutterGotoUrl(`/pc/vets/edit/${vetId}`));
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/vets\/edit\/[^/]+(?:\?|$)/, 30_000);
   }
 
   async expectVetVisible(name: string): Promise<void> {
@@ -96,6 +138,9 @@ export class VetListPage {
     const inlineEdit = this.editVetButtonLocator(card);
     if (await inlineEdit.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await inlineEdit.click();
+    } else if (await this.onPeopleHub()) {
+      const vetId = await this.resolveVetIdByName(name);
+      await this.openVetEditRoute(vetId);
     } else {
       await this.vetRowLocator(name).click();
       await waitForFlutterRoutePattern(this.page, /\/(pc|g|o)\/vets\/[^/]+$/, 30_000);
@@ -148,12 +193,31 @@ export class VetListPage {
   async expectVetLinkedPetCount(vetName: string, count: number): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const countLabel = count === 1 ? '1 pet' : `${count} pets`;
+    const caringFor = count === 1 ? /caring for 1 pet/i : new RegExp(`caring for ${count} pets`, 'i');
+    const linkedOnDesk = count === 1 ? /1 pet linked/i : new RegExp(`${count} pets linked`, 'i');
+
+    if (await this.onPeopleHub()) {
+      await expect(this.vetRowLocator(vetName)).toBeVisible({ timeout: 15_000 });
+      const vetId = await this.resolveVetIdByName(vetName);
+      await this.openVetDetailRoute(vetId);
+    }
+
     const row = this.vetRowLocator(vetName);
-    await expect(row.getByText(new RegExp(countLabel, 'i'))).toBeVisible({ timeout: 15_000 });
+    await expect(
+      row
+        .getByText(new RegExp(countLabel, 'i'))
+        .or(this.page.getByText(caringFor))
+        .or(this.page.getByText(linkedOnDesk)),
+    ).toBeVisible({ timeout: 15_000 });
   }
 
   async openVetDetail(vetName: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    if (await this.onPeopleHub()) {
+      const vetId = await this.resolveVetIdByName(vetName);
+      await this.openVetDetailRoute(vetId);
+      return;
+    }
     await this.vetRowLocator(vetName).click();
     await waitForFlutterRoutePattern(this.page, /\/(pc|g|o)\/vets\/[^/]+$/, 30_000);
     await refreshFlutterAccessibility(this.page);
@@ -204,8 +268,8 @@ export class VetListPage {
 
       if (!onDetail || !phoneVisible) {
         if (!onList) {
-          await this.page.goto(flutterGotoUrl('/pc/vets'));
-          await waitForFlutterRoutePattern(this.page, /\/pc\/vets(?:\?|$)/, 30_000);
+          await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
+          await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
         }
         await this.expectLoaded();
         await this.expectVetVisible(vetName);
