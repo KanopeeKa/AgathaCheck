@@ -41,10 +41,10 @@ next_action: "continue phase 1 on branch cursor/active-codebase-d1-status-e41f"
 artifact_ref:
   branch: cursor/active-codebase-d1-status-e41f
   plan_path: .agents/plans/active-codebase-batch-d-guardrails-e41f.md
-  plan_commit: 7c568eecc4638511e51b8a1eb335a5998c8b9a30
+  plan_commit: 3b1da73a1c82f1775c9881922480df0fa903d5d6
   snapshot_path: .agents/plans/active-codebase-batch-d-guardrails-e41f.snapshot.json
-  snapshot_commit: 7c568eecc4638511e51b8a1eb335a5998c8b9a30
-open_prs: []
+  snapshot_commit: 3b1da73a1c82f1775c9881922480df0fa903d5d6
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1450"]
 merge_commits: {}
 debt_issue_refs: []
 ```
