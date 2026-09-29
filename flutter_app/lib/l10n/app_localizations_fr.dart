@@ -7204,6 +7204,30 @@ class AppLocalizationsFr extends AppLocalizations {
       'Retirez d\'abord ce vétérinaire de vos animaux, ou marquez le contact inactif.';
 
   @override
+  String get peopleKindInferredPerson => 'Affiché comme une personne';
+
+  @override
+  String get peopleKindInferredOrganisation => 'Affiché comme un établissement';
+
+  @override
+  String get peopleKindChange => 'Modifier';
+
+  @override
+  String get peopleWorksAtLabel => 'Travaille chez';
+
+  @override
+  String get peopleWorksAtNone => 'Pas lié à une structure';
+
+  @override
+  String get peopleAddContactDetailsExpand =>
+      'Ajouter téléphone, e-mail, adresse';
+
+  @override
+  String peopleWorksAtLine(String name) {
+    return 'Travaille chez $name';
+  }
+
+  @override
   String get peopleStatusInactive => 'Inactif';
 
   @override

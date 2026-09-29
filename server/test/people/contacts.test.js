@@ -36,8 +36,7 @@ describe('People contacts API', () => {
   beforeAll(() => {
     contacts.set('contact-1', makeContactRow());
 
-    const mockPool = {
-      query: async (sql, params) => {
+    const queryImpl = async (sql, params) => {
         lastQuery = { sql, params };
 
         if (sql.includes('SELECT id FROM people_directories WHERE owner_user_id')) {
@@ -116,7 +115,13 @@ describe('People contacts API', () => {
         }
 
         return { rows: [] };
-      },
+    };
+    const mockPool = {
+      query: queryImpl,
+      connect: async () => ({
+        query: queryImpl,
+        release: () => {},
+      }),
       end: async () => {},
     };
     app = createApp(mockPool);
@@ -149,6 +154,15 @@ describe('People contacts API', () => {
     expect(res.statusCode).toBe(201);
     expect(res.body).toHaveProperty('name', 'New Sitter');
     expect(res.body.roles).toContain('sitter');
+  });
+
+  it('POST infers organisation kind from clinic name', async () => {
+    const res = await request(app)
+      .post('/api/people/contacts')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Greenhill Veterinary Clinic', roles: ['vet'] });
+    expect(res.statusCode).toBe(201);
+    expect(res.body.kind).toBe('organisation');
   });
 
   it('GET /api/people/contacts/:id returns one contact', async () => {

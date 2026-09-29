@@ -12544,6 +12544,48 @@ abstract class AppLocalizations {
   /// **'Remove the vet from your pets first, or mark this contact inactive.'**
   String get peopleRemoveVetLinkedError;
 
+  /// No description provided for @peopleKindInferredPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown as a person'**
+  String get peopleKindInferredPerson;
+
+  /// No description provided for @peopleKindInferredOrganisation.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown as a business'**
+  String get peopleKindInferredOrganisation;
+
+  /// No description provided for @peopleKindChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get peopleKindChange;
+
+  /// No description provided for @peopleWorksAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Works at'**
+  String get peopleWorksAtLabel;
+
+  /// No description provided for @peopleWorksAtNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Not linked to a practice'**
+  String get peopleWorksAtNone;
+
+  /// No description provided for @peopleAddContactDetailsExpand.
+  ///
+  /// In en, this message translates to:
+  /// **'Add phone, email, address'**
+  String get peopleAddContactDetailsExpand;
+
+  /// No description provided for @peopleWorksAtLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Works at {name}'**
+  String peopleWorksAtLine(String name);
+
   /// No description provided for @peopleStatusInactive.
   ///
   /// In en, this message translates to:

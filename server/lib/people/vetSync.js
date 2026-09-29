@@ -7,11 +7,7 @@ function vetToContactFields(vetRow) {
   const personName = (vetRow.name || '').trim();
   const kind = clinic ? 'organisation' : 'person';
   const name = clinic || personName || 'Vet';
-  let privateNote = (vetRow.notes || '').trim();
-  if (clinic && personName) {
-    const prefix = `Vet contact: ${personName}`;
-    privateNote = privateNote ? `${prefix}\n${privateNote}` : prefix;
-  }
+  const privateNote = (vetRow.notes || '').trim();
   return {
     kind,
     name,

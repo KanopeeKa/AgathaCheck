@@ -6,6 +6,7 @@ import '../../../../core/widgets/form/app_form_discard_dialog.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/people_remote_datasource.dart';
 import '../../data/models/people_contact_model.dart';
+import '../../domain/entities/people_contact.dart';
 import '../providers/people_providers.dart';
 
 class PeopleEditScreen extends ConsumerStatefulWidget {
@@ -27,6 +28,7 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
   bool _saving = false;
   bool _loaded = false;
   PeopleContactModel? _original;
+  String? _worksAtContactId;
 
   @override
   void dispose() {
@@ -48,6 +50,7 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
     _addressController.text = model.address ?? '';
     _websiteController.text = model.website ?? '';
     _noteController.text = model.privateNote;
+    _worksAtContactId = model.worksAtContactId;
     _loaded = true;
   }
 
@@ -70,6 +73,7 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
       privateNote: _noteController.text.trim(),
       inactiveAt: base.inactiveAt,
       legacyVetId: base.legacyVetId,
+      worksAtContactId: _worksAtContactId,
     );
   }
 
@@ -228,8 +232,16 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
             privateNote: contact.privateNote,
             inactiveAt: contact.inactiveAt,
             legacyVetId: contact.legacyVetId,
+            worksAtContactId: contact.worksAtContactId,
           );
           _loadFromContact(model);
+          final organisations =
+              ref.watch(peopleContactsProvider).valueOrNull
+                  ?.where(
+                    (c) => c.kind == 'organisation' && c.inactiveAt == null,
+                  )
+                  .toList() ??
+              const <PeopleContact>[];
 
           return Scaffold(
             appBar: AppBar(
@@ -267,6 +279,27 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
                   onChanged: (_) => setState(() {}),
                 ),
                 const SizedBox(height: 12),
+                if (model.kind == 'person' && organisations.isNotEmpty)
+                  DropdownButtonFormField<String?>(
+                    initialValue: _worksAtContactId,
+                    decoration: InputDecoration(
+                      labelText: l.peopleWorksAtLabel,
+                    ),
+                    items: [
+                      DropdownMenuItem<String?>(
+                        value: null,
+                        child: Text(l.peopleWorksAtNone),
+                      ),
+                      for (final org in organisations)
+                        DropdownMenuItem(
+                          value: org.id,
+                          child: Text(org.name),
+                        ),
+                    ],
+                    onChanged: (v) => setState(() => _worksAtContactId = v),
+                  ),
+                if (model.kind == 'person' && organisations.isNotEmpty)
+                  const SizedBox(height: 12),
                 TextField(
                   controller: _phoneController,
                   decoration: InputDecoration(

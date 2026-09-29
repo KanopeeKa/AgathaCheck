@@ -81,7 +81,6 @@ describe('upsertContactFromVet', () => {
       'user-1',
     );
 
-    expect(noteUpserts.length).toBe(1);
-    expect(noteUpserts[0][2]).toContain('Vet contact: Dr Adams');
+    expect(noteUpserts.length).toBe(0);
   });
 });

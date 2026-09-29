@@ -13,6 +13,7 @@ class PeopleContactModel {
     this.privateNote = '',
     this.inactiveAt,
     this.legacyVetId,
+    this.worksAtContactId,
   });
 
   final String id;
@@ -26,6 +27,7 @@ class PeopleContactModel {
   final String privateNote;
   final DateTime? inactiveAt;
   final String? legacyVetId;
+  final String? worksAtContactId;
 
   factory PeopleContactModel.fromJson(Map<String, dynamic> json) {
     final rolesRaw = json['roles'];
@@ -45,6 +47,7 @@ class PeopleContactModel {
           ? DateTime.tryParse(json['inactive_at'] as String)
           : null,
       legacyVetId: json['legacy_vet_id'] as String?,
+      worksAtContactId: json['works_at_contact_id'] as String?,
     );
   }
 
@@ -62,6 +65,9 @@ class PeopleContactModel {
     }
     if (!_roleListsEqual(roles, original.roles)) {
       patch['roles'] = roles;
+    }
+    if (worksAtContactId != original.worksAtContactId) {
+      patch['works_at_contact_id'] = worksAtContactId ?? '';
     }
     return patch;
   }
@@ -93,6 +99,7 @@ class PeopleContactModel {
       privateNote: privateNote ?? this.privateNote,
       inactiveAt: inactiveAt,
       legacyVetId: legacyVetId,
+      worksAtContactId: worksAtContactId,
     );
   }
 
@@ -102,6 +109,10 @@ class PeopleContactModel {
     if (roles.isNotEmpty) 'roles': roles,
     if (phone != null && phone!.isNotEmpty) 'phone': phone,
     if (email != null && email!.isNotEmpty) 'email': email,
+    if (address != null && address!.isNotEmpty) 'address': address,
+    if (website != null && website!.isNotEmpty) 'website': website,
+    if (worksAtContactId != null && worksAtContactId!.isNotEmpty)
+      'works_at_contact_id': worksAtContactId,
     if (privateNote.isNotEmpty) 'private_note': privateNote,
   };
 
@@ -117,5 +128,6 @@ class PeopleContactModel {
     privateNote: privateNote,
     inactiveAt: inactiveAt,
     legacyVetId: legacyVetId,
+    worksAtContactId: worksAtContactId,
   );
 }

@@ -7093,6 +7093,29 @@ class AppLocalizationsEn extends AppLocalizations {
       'Remove the vet from your pets first, or mark this contact inactive.';
 
   @override
+  String get peopleKindInferredPerson => 'Shown as a person';
+
+  @override
+  String get peopleKindInferredOrganisation => 'Shown as a business';
+
+  @override
+  String get peopleKindChange => 'Change';
+
+  @override
+  String get peopleWorksAtLabel => 'Works at';
+
+  @override
+  String get peopleWorksAtNone => 'Not linked to a practice';
+
+  @override
+  String get peopleAddContactDetailsExpand => 'Add phone, email, address';
+
+  @override
+  String peopleWorksAtLine(String name) {
+    return 'Works at $name';
+  }
+
+  @override
   String get peopleStatusInactive => 'Inactive';
 
   @override

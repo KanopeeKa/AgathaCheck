@@ -2654,6 +2654,18 @@
   "peopleSaveError": "Impossible d'enregistrer. Réessayez.",
   "peopleRemoveError": "Impossible de retirer ce contact.",
   "peopleRemoveVetLinkedError": "Retirez d'abord ce vétérinaire de vos animaux, ou marquez le contact inactif.",
+  "peopleKindInferredPerson": "Affiché comme une personne",
+  "peopleKindInferredOrganisation": "Affiché comme un établissement",
+  "peopleKindChange": "Modifier",
+  "peopleWorksAtLabel": "Travaille chez",
+  "peopleWorksAtNone": "Pas lié à une structure",
+  "peopleAddContactDetailsExpand": "Ajouter téléphone, e-mail, adresse",
+  "peopleWorksAtLine": "Travaille chez {name}",
+  "@peopleWorksAtLine": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
   "peopleStatusInactive": "Inactif",
   "peopleDangerZoneTitle": "Zone sensible",
   "peopleRemoveContactTitle": "Retirer ce contact ?",

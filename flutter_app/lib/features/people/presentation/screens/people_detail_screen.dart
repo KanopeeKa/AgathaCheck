@@ -72,6 +72,7 @@ class PeopleDetailScreen extends ConsumerWidget {
     final inactive = contact.inactiveAt != null;
     final rolesLine = peopleContactRolesLine(l, contact.roles);
     final pets = _linkedPets(ref, contact);
+    final worksAtName = _worksAtName(ref, contact);
 
     final content = ListView(
       padding: const EdgeInsets.all(16),
@@ -91,6 +92,15 @@ class PeopleDetailScreen extends ConsumerWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
+                  if (worksAtName != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      l.peopleWorksAtLine(worksAtName),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                   if (rolesLine.isNotEmpty) ...[
                     const SizedBox(height: 6),
                     Wrap(
@@ -199,6 +209,17 @@ class PeopleDetailScreen extends ConsumerWidget {
       screenTitle: contact.name,
       child: content,
     );
+  }
+
+  String? _worksAtName(WidgetRef ref, PeopleContact contact) {
+    final id = contact.worksAtContactId;
+    if (id == null || id.isEmpty) return null;
+    return ref
+        .watch(peopleContactsProvider)
+        .valueOrNull
+        ?.where((c) => c.id == id)
+        .map((c) => c.name)
+        .firstOrNull;
   }
 
   List<Pet> _linkedPets(WidgetRef ref, PeopleContact contact) {
