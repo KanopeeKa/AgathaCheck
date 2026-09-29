@@ -20,9 +20,7 @@ List<PetVetOption> petVetOptionsFromContacts(List<PeopleContact> contacts) {
             c.legacyVetId != null &&
             c.legacyVetId!.isNotEmpty,
       )
-      .map(
-        (c) => PetVetOption(vetId: c.legacyVetId!, displayName: c.name),
-      )
+      .map((c) => PetVetOption(vetId: c.legacyVetId!, displayName: c.name))
       .toList();
   options.sort((a, b) => a.displayName.compareTo(b.displayName));
   return options;
