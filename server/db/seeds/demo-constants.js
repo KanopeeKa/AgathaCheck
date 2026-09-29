@@ -46,6 +46,7 @@ export const DEMO_IDS = {
 
   // Vets
   aliceVet: 'a5000001-0001-4001-8001-000000000001',
+  aliceVetPersonContact: 'a5000001-0001-4001-8001-000000000002',
 
   // Health entries
   buddyVaccine: 'a6000001-0001-4001-8001-000000000001',
