@@ -84,7 +84,7 @@ void main() {
     );
     expect(find.text('CARE ACTIONS'), findsOneWidget);
     expect(find.text('AWAY PLANNING'), findsOneWidget);
-    expect(find.text('PEOPLE'), findsOneWidget);
+    expect(find.text('CONTACTS'), findsOneWidget);
     expect(find.text('All absences'), findsOneWidget);
     expect(find.byKey(const Key('planned_absence_entry_tile')), findsOneWidget);
     expect(find.text("I'll be away"), findsOneWidget);
@@ -150,7 +150,7 @@ void main() {
 
       final careY = tester.getTopLeft(find.text('CARE ACTIONS')).dy;
       final awayY = tester.getTopLeft(find.text('AWAY PLANNING')).dy;
-      final peopleY = tester.getTopLeft(find.text('PEOPLE')).dy;
+      final peopleY = tester.getTopLeft(find.text('CONTACTS')).dy;
 
       expect(careY, lessThan(awayY));
       expect(awayY, lessThan(peopleY));
@@ -182,7 +182,7 @@ void main() {
         .dy;
     final awayY = tester.getTopLeft(find.text('AWAY PLANNING')).dy;
     final careY = tester.getTopLeft(find.text('CARE ACTIONS')).dy;
-    final peopleY = tester.getTopLeft(find.text('PEOPLE')).dy;
+    final peopleY = tester.getTopLeft(find.text('CONTACTS')).dy;
 
     expect(careY, peopleY);
     expect(awayY, greaterThan(rowBottom));
