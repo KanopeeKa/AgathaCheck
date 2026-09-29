@@ -14,7 +14,7 @@ function isValidEmailShape(email) {
   const domain = email.slice(at + 1);
   const dot = domain.indexOf('.');
   if (dot <= 0 || dot >= domain.length - 1) return false;
-  if (/[\s]/.test(email)) return false;
+  if (email.includes(' ') || email.includes('\t') || email.includes('\n')) return false;
   return true;
 }
 
