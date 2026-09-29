@@ -34,17 +34,17 @@ Make the programme's real status visible, and stop architecture regressions **be
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/active-codebase-d1-status-e41f"
+next_action: "continue phase 2 on branch cursor/active-codebase-d2-import-gate-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-d1-status-e41f
+  branch: cursor/active-codebase-d2-import-gate-e41f
   plan_path: .agents/plans/active-codebase-batch-d-guardrails-e41f.md
-  plan_commit: 3b1da73a1c82f1775c9881922480df0fa903d5d6
+  plan_commit: 6f7a59b600ca8ce906929f21fea8c7415b56d3a7
   snapshot_path: .agents/plans/active-codebase-batch-d-guardrails-e41f.snapshot.json
-  snapshot_commit: 3b1da73a1c82f1775c9881922480df0fa903d5d6
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1450"]
+  snapshot_commit: 6f7a59b600ca8ce906929f21fea8c7415b56d3a7
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```

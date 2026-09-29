@@ -37,6 +37,17 @@ Cross-feature Flutter import figures from `metrics-headline.md` (same script, sa
 | Batch A1 baseline | `71e0020` | 50 | 466 | 12 |
 | Batch D1 refresh (2026-09-29) | `f669b3e` (source tree = `main` @ `adaff34`) | 59 | 536 | 13 (`people` joined) |
 
+## Cross-feature import gate baseline (D6)
+
+`scripts/feature-import-baseline.json` was generated with `node scripts/check_feature_imports.js --init` at `20330e6` (source tree = `main` @ `adaff34`). Rules are documented in `docs/architecture/modularity.md` §Cross-feature imports. The baseline may only shrink.
+
+| Rule | Baselined identities at D2 | Target |
+|---|---:|---|
+| R1 domain → Experience | 56 | 0 (Batch I1 phase 2) |
+| R2 cross-feature `data/` | 6 | 0 (Batch I1 phase 3) |
+| R3 cross-feature `presentation/` | 201 | 0 (Batch I1 phase 3) |
+| R4 feature edges | 59 | acyclic graph (Batch I2) |
+
 ## Command matrix (P1 flows)
 
 Refreshed 2026-09-29 against `main` @ `adaff34` (Batch D phase 1). Code paths are the current owners; "Remaining gap" names the roadmap child that closes it ([`active-codebase-completion-e41f`](/.agents/plans/active-codebase-completion-e41f.md)).
