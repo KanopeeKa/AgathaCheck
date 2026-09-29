@@ -32,7 +32,7 @@ void main() {
   const petId = 'pet-1';
   final now = DateTime(2030, 5, 10, 14);
 
-  test('classifies overdue, today, upcoming, and outside horizon', () {
+  test('classifies overdue, today, and all future dates as upcoming', () {
     final overdue = _entry(
       id: 'overdue',
       petId: petId,
@@ -62,7 +62,10 @@ void main() {
     );
     expect(grouping.groupForEntry(today, now), CareTemporalGroup.today);
     expect(grouping.groupForEntry(upcoming, now), CareTemporalGroup.upcoming);
-    expect(grouping.groupForEntry(outside, now), isNull);
+    expect(grouping.groupForEntry(outside, now), CareTemporalGroup.upcoming);
+    expect(grouping.isEntryInReminderWindow(outside, now), isFalse);
+    expect(grouping.isEntryDueForInbox(outside, now), isFalse);
+    expect(grouping.isEntryDueForInbox(upcoming, now), isTrue);
   });
 
   test('closed recurring series leaves all buckets immediately', () {

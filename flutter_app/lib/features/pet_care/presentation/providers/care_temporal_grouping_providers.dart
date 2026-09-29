@@ -43,13 +43,15 @@ final petCareStatusFromGroupingProvider =
       final buckets = ref.watch(petCareTemporalBucketsProvider(petId));
       final grouping = ref.watch(careTemporalGroupingServiceProvider);
       final now = ref.watch(careNowProvider);
-      final status = grouping.careStatusFromBuckets(buckets);
+      final status = grouping.careStatusFromBuckets(buckets, now);
       final contributing = switch (status) {
         CareStatus.timeToFollowUp =>
           buckets.needsAttention.map((entry) => entry.id).toList(),
         CareStatus.worthACheck => [
           ...buckets.today.map((entry) => entry.id),
-          ...buckets.upcoming.map((entry) => entry.id),
+          ...buckets.upcoming
+              .where((entry) => grouping.isEntryInReminderWindow(entry, now))
+              .map((entry) => entry.id),
         ],
         CareStatus.allSet => <String>[],
       };

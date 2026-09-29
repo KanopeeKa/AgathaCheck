@@ -225,11 +225,10 @@ final petOtherEventsByIdProvider =
 
 /// Whether a health entry is due or overdue within its [remindDaysBefore] window.
 bool isEntryDueOrOverdue(HealthEntry entry) {
-  return const CareTemporalGroupingService().groupForEntry(
-        entry,
-        DateTime.now(),
-      ) !=
-      null;
+  return const CareTemporalGroupingService().isEntryDueForInbox(
+    entry,
+    DateTime.now(),
+  );
 }
 
 /// Guardian due inbox entries for shell pets, oldest due first.

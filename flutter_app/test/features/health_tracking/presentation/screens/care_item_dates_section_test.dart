@@ -77,4 +77,36 @@ void main() {
       );
     },
   );
+
+  testWidgets('shows entry next due when open occurrences are not loaded yet', (
+    tester,
+  ) async {
+    final farFuture = calendarDateOnly(DateTime.now()).add(const Duration(days: 90));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          entryOccurrencesProvider('entry-1').overrideWith((ref) async => []),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: CareItemDatesSection(
+              entry: entry.copyWith(nextDueDate: farFuture),
+              muted: false,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('care_item_needs_attention_section')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('care_item_entry_next_due_entry-1')), findsOneWidget);
+    expect(find.text('Coming up'), findsOneWidget);
+  });
 }

@@ -9,14 +9,17 @@ import '../models/care_temporal_buckets.dart';
 
 /// Single authority for care temporal grouping across profile, All care, and dashboard.
 ///
-/// Entry grouping uses [HealthEntry.nextDueDate] and [HealthEntry.remindDaysBefore]
-/// (server-shaped list data). Occurrence grouping uses open-occurrence calendar fields
-/// and the shared missed predicate.
+/// Entry grouping uses [HealthEntry.nextDueDate] for list surfaces (one row per active
+/// series). [HealthEntry.remindDaysBefore] still gates inbox-style attention and pet
+/// Care Status badges — see [isEntryInReminderWindow] and [isEntryDueForInbox].
+/// Occurrence grouping uses open-occurrence calendar fields and the shared missed predicate.
 class CareTemporalGroupingService {
   const CareTemporalGroupingService();
 
-  /// Returns null when the entry is completed, has no due date, or is outside the
-  /// reminder horizon.
+  /// Returns null when the entry is completed, has no due date, or the series is closed.
+  ///
+  /// Future due dates always map to [CareTemporalGroup.upcoming] so pet profile and
+  /// All care show the next occurrence for every active item.
   CareTemporalGroup? groupForEntry(HealthEntry entry, DateTime now) {
     if (!_entryAffectsGrouping(entry, now)) return null;
 
@@ -24,12 +27,28 @@ class CareTemporalGroupingService {
     final dueDay = calendarDateOnly(entry.nextDueDate!);
     if (dueDay.isBefore(today)) return CareTemporalGroup.needsAttention;
     if (dueDay == today) return CareTemporalGroup.today;
+    return CareTemporalGroup.upcoming;
+  }
+
+  /// Whether [entry] should contribute to Care Status or due inboxes (reminder window).
+  bool isEntryInReminderWindow(HealthEntry entry, DateTime now) {
+    if (!_entryAffectsGrouping(entry, now)) return false;
+
+    final today = calendarDateOnly(now);
+    final dueDay = calendarDateOnly(entry.nextDueDate!);
+    if (!dueDay.isAfter(today)) return true;
 
     final daysUntilDue = dueDay.difference(today).inDays;
-    if (daysUntilDue <= entry.remindDaysBefore) {
-      return CareTemporalGroup.upcoming;
-    }
-    return null;
+    return daysUntilDue <= entry.remindDaysBefore;
+  }
+
+  /// Due/overdue inbox eligibility (dashboard due list, shell badges, etc.).
+  bool isEntryDueForInbox(HealthEntry entry, DateTime now) {
+    if (!_entryAffectsGrouping(entry, now)) return false;
+    final group = groupForEntry(entry, now);
+    if (group == null) return false;
+    if (group != CareTemporalGroup.upcoming) return true;
+    return isEntryInReminderWindow(entry, now);
   }
 
   /// Pending occurrences only. Future non-today occurrences map to [CareTemporalGroup.upcoming].
@@ -93,11 +112,17 @@ class CareTemporalGroupingService {
     );
   }
 
-  CareStatus careStatusFromBuckets(CareTemporalBuckets buckets) {
+  CareStatus careStatusFromBuckets(
+    CareTemporalBuckets buckets,
+    DateTime now,
+  ) {
+    final hasUpcomingInWindow = buckets.upcoming.any(
+      (entry) => isEntryInReminderWindow(entry, now),
+    );
     return careStatusFromFlags(
       hasNeedsAttention: buckets.needsAttention.isNotEmpty,
       hasToday: buckets.today.isNotEmpty,
-      hasUpcoming: buckets.upcoming.isNotEmpty,
+      hasUpcoming: hasUpcomingInWindow,
     );
   }
 
@@ -117,13 +142,15 @@ class CareTemporalGroupingService {
     required DateTime now,
   }) {
     final buckets = bucketsForEntries(entries, petId: petId, now: now);
-    final status = careStatusFromBuckets(buckets);
+    final status = careStatusFromBuckets(buckets, now);
     final contributing = switch (status) {
       CareStatus.timeToFollowUp =>
         buckets.needsAttention.map((entry) => entry.id).toList(),
       CareStatus.worthACheck => [
         ...buckets.today.map((entry) => entry.id),
-        ...buckets.upcoming.map((entry) => entry.id),
+        ...buckets.upcoming
+            .where((entry) => isEntryInReminderWindow(entry, now))
+            .map((entry) => entry.id),
       ],
       CareStatus.allSet => <String>[],
     };

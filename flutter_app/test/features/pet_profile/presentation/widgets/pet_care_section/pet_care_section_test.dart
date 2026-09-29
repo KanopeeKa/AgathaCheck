@@ -211,6 +211,33 @@ void main() {
     expect(find.text('Done'), findsWidgets);
   });
 
+  testWidgets('shows recurring care outside the reminder window in upcoming', (
+    tester,
+  ) async {
+    final today = _todayDate();
+    final entries = [
+      _entry(
+        id: 'far-future',
+        petId: 'pet-1',
+        name: 'Annual vaccine',
+        nextDue: today.add(const Duration(days: 120)),
+        remindDaysBefore: 7,
+      ),
+    ];
+
+    await tester.pumpWidget(
+      _wrap(
+        entries: entries,
+        notifierFactory: () => _FakeHealthEntriesNotifier(entries),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Annual vaccine'), findsOneWidget);
+    expect(find.byKey(const Key('pet_care_group_upcoming')), findsOneWidget);
+    expect(find.byKey(const Key('pet_care_section_empty')), findsNothing);
+  });
+
   testWidgets('optimistic completion removes item from its group', (
     tester,
   ) async {

@@ -6,7 +6,7 @@ import '../../../../health_tracking/presentation/widgets/health_entry_status.dar
 import '../../../../health_tracking/presentation/widgets/pet_event_lifecycle.dart';
 import '../pet_care_section/pet_care_action_row_builder.dart';
 
-/// Care items with no active temporal group (closed, completed, or outside horizon).
+/// Care items with no open next occurrence (closed, completed, or paused one-offs).
 class AllCareInactiveSection extends StatelessWidget {
   const AllCareInactiveSection({
     super.key,

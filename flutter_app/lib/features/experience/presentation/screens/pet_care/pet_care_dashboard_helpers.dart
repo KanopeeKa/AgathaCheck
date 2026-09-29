@@ -247,12 +247,18 @@ CareStatus petCareStatusFor(
   Pet pet,
   PetCareTodayCareSummary careSummary, {
   CareTemporalGroupingService grouping = const CareTemporalGroupingService(),
+  DateTime? now,
 }) {
+  final evaluatedAt = now ?? DateTime.now();
   final priorities = careSummary.priorities;
   return grouping.careStatusFromFlags(
     hasNeedsAttention: priorities.overdue.any((entry) => entry.petId == pet.id),
     hasToday: priorities.dueToday.any((entry) => entry.petId == pet.id),
-    hasUpcoming: priorities.upcoming.any((entry) => entry.petId == pet.id),
+    hasUpcoming: priorities.upcoming.any(
+      (entry) =>
+          entry.petId == pet.id &&
+          grouping.isEntryInReminderWindow(entry, evaluatedAt),
+    ),
   );
 }
 

@@ -6,6 +6,6 @@ enum CareTemporalGroup {
   /// Due today and not yet done.
   today,
 
-  /// Due after today, within the entry's reminder horizon.
+  /// Next scheduled occurrence after today (includes dates outside the reminder window).
   upcoming,
 }

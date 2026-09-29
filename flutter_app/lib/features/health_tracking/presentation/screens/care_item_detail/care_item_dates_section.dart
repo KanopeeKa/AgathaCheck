@@ -8,13 +8,18 @@ import '../../../../pet_care/presentation/widgets/care_surface/care_item_module.
 import '../../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
 import '../../../../pet_care/presentation/widgets/care_surface/care_item_status_pill.dart';
 import '../../../../pet_care/presentation/widgets/care_surface/care_surface_tokens.dart';
+import '../../../../pet_care/domain/care_temporal_group.dart';
+import '../../../../pet_care/domain/services/care_temporal_grouping_service.dart';
 import '../../../domain/entities/health_entry.dart';
 import '../../../domain/entities/health_occurrence.dart';
 import '../../../domain/occurrence_scheduling.dart';
+import '../../widgets/occurrence_care_actions.dart';
 import '../../providers/care_item_absence_providers.dart';
 import '../../providers/care_item_absence_resolution_sync.dart';
 import '../../providers/occurrence_providers.dart';
 import '../../widgets/care_event_status_line.dart';
+import '../../widgets/health_entry_status.dart';
+import '../../widgets/pet_event_lifecycle.dart';
 import '../../widgets/pet_event_occurrence_actions.dart';
 import '../../../data/models/health_entry_absence_context_model.dart';
 
@@ -72,7 +77,10 @@ class CareItemDatesSection extends ConsumerWidget {
         }
 
         if (occurrences.isEmpty) {
-          return _LegacyDatesSummary(entry: entry, muted: muted);
+          if (isHealthEntrySeriesClosed(entry) || entry.nextDueDate == null) {
+            return _LegacyDatesSummary(entry: entry, muted: muted);
+          }
+          return _NeedsAttentionFromEntryNextDue(entry: entry, muted: muted);
         }
 
         final now = DateTime.now();
@@ -313,6 +321,130 @@ String? _absenceConflictLine(
     return l.careItemOccurrenceDuringAbsence(dateLabel);
   }
   return null;
+}
+
+/// Shows the series head from [HealthEntry.nextDueDate] when open occurrences
+/// are not materialised yet (e.g. immediately after complete/skip).
+class _NeedsAttentionFromEntryNextDue extends StatelessWidget {
+  const _NeedsAttentionFromEntryNextDue({
+    required this.entry,
+    required this.muted,
+  });
+
+  final HealthEntry entry;
+  final bool muted;
+
+  @override
+  Widget build(BuildContext context) {
+    const grouping = CareTemporalGroupingService();
+    final now = DateTime.now();
+    final group = grouping.groupForEntry(entry, now);
+    if (group == null) {
+      return _LegacyDatesSummary(entry: entry, muted: muted);
+    }
+    final zone = switch (group) {
+      CareTemporalGroup.needsAttention => OccurrenceZone.missed,
+      CareTemporalGroup.today => OccurrenceZone.dueToday,
+      CareTemporalGroup.upcoming => OccurrenceZone.comingUp,
+    };
+
+    return CareItemModule(
+      key: const Key('care_item_needs_attention_section'),
+      semanticLabel: AppLocalizations.of(context)!.careItemNeedsAttentionTitle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CareItemSectionHeader(
+            title: AppLocalizations.of(context)!.careItemNeedsAttentionTitle,
+            icon: Icons.flag_outlined,
+          ),
+          const SizedBox(height: 12),
+          _EntryNextDueRow(entry: entry, muted: muted, zone: zone),
+        ],
+      ),
+    );
+  }
+}
+
+class _EntryNextDueRow extends ConsumerWidget {
+  const _EntryNextDueRow({
+    required this.entry,
+    required this.muted,
+    required this.zone,
+  });
+
+  final HealthEntry entry;
+  final bool muted;
+  final OccurrenceZone zone;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final due = entry.nextDueDate!;
+    final dateLabel = formatHealthEntryStatusDate(due);
+    final pillLabel = _pillLabelForZone(zone, l);
+    final tone = _statusToneForZone(zone);
+
+    return Container(
+      key: Key('care_item_entry_next_due_${entry.id}'),
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(CareSurfaceTokens.actionRadius),
+        border: Border.all(color: CareSurfaceTokens.moduleBorder()),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CareItemStatusPill(label: pillLabel, tone: tone),
+          const SizedBox(height: 10),
+          Text(
+            dateLabel,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: muted
+                  ? colorScheme.onSurfaceVariant
+                  : colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            entry.name,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          if (!muted) ...[
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              key: Key('care_item_entry_mark_done_${entry.id}'),
+              onPressed: () async {
+                final result = await OccurrenceCareActions.showMarkDoneFlow(
+                  context,
+                  ref,
+                  entry,
+                );
+                if (result == null || !context.mounted) return;
+                if (result.alreadyPersisted) return;
+                await OccurrenceCareActions.persistCompletion(
+                  ref,
+                  entry,
+                  result.completedOn,
+                  occurrenceId: result.occurrenceId,
+                  skipEarlierMissed: result.skipEarlierMissed,
+                );
+              },
+              icon: const Icon(Icons.check, size: 18),
+              label: Text(l.markAsDone),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
 }
 
 class _LegacyDatesSummary extends StatelessWidget {

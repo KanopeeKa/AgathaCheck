@@ -103,6 +103,6 @@ void main() {
       petCareStatusFor(pet, dashboardSummary, grouping: grouping),
       summary.status,
     );
-    expect(summary.status, grouping.careStatusFromBuckets(buckets));
+    expect(summary.status, grouping.careStatusFromBuckets(buckets, now));
   });
 }
