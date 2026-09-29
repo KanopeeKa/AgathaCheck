@@ -7096,10 +7096,31 @@ class AppLocalizationsFr extends AppLocalizations {
   String get peopleRoleSitter => 'Pet-sitting';
 
   @override
+  String get peopleRoleWalker => 'Promenade';
+
+  @override
   String get peopleRoleVet => 'Vétérinaire';
 
   @override
+  String get peopleRoleVetNurse => 'Auxiliaire vétérinaire';
+
+  @override
   String get peopleRoleGroomer => 'Toilettage';
+
+  @override
+  String get peopleRoleTrainer => 'Éducation';
+
+  @override
+  String get peopleRoleBehaviourist => 'Comportementaliste';
+
+  @override
+  String get peopleRoleBoarding => 'Pension / garderie';
+
+  @override
+  String get peopleRoleEmergencyContact => 'Contact d\'urgence';
+
+  @override
+  String get peopleRoleOther => 'Autre';
 
   @override
   String get peopleNameLabel => 'Nom';
@@ -7116,19 +7137,71 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peopleDetailNotFound =>
-      'Cette personne n\'est plus dans votre répertoire.';
+      'Ce contact n\'est plus dans votre répertoire.';
 
   @override
-  String get peopleEditPerson => 'Modifier';
+  String get peopleEditPerson => 'Modifier les coordonnées';
 
   @override
   String get peoplePrivateNoteLabel => 'Note privée';
+
+  @override
+  String get peoplePrivateNoteHelper => 'Vous seul·e pouvez voir cette note.';
 
   @override
   String get peoplePhoneLabel => 'Téléphone';
 
   @override
   String get peopleEmailLabel => 'E-mail';
+
+  @override
+  String get peopleAddressLabel => 'Adresse';
+
+  @override
+  String get peopleWebsiteLabel => 'Site web';
+
+  @override
+  String get peopleContactInformationTitle => 'Coordonnées';
+
+  @override
+  String get peopleContactInfoEmpty =>
+      'Pas encore de téléphone, e-mail ou adresse. Ajoutez-les via Modifier les coordonnées.';
+
+  @override
+  String get peopleOpenDirections => 'Itinéraire';
+
+  @override
+  String get peopleOpenWebsite => 'Ouvrir le site';
+
+  @override
+  String get peopleCopiedToClipboard => 'Copié dans le presse-papiers';
+
+  @override
+  String get peopleLinkedPetsTitle => 'Animaux concernés';
+
+  @override
+  String get peopleNoLinkedPets => 'Aucun animal lié pour l\'instant.';
+
+  @override
+  String get peopleVetLinkedHelper =>
+      'Les modifications mettent aussi à jour ce vétérinaire sur les fiches de vos animaux.';
+
+  @override
+  String get peopleMarkInactive => 'Marquer inactif';
+
+  @override
+  String get peopleMarkInactiveBody =>
+      'Ce contact reste visible où il est déjà lié, mais n\'apparaît plus dans les listes de choix.';
+
+  @override
+  String get peopleSaveError => 'Impossible d\'enregistrer. Réessayez.';
+
+  @override
+  String get peopleRemoveError => 'Impossible de retirer ce contact.';
+
+  @override
+  String get peopleRemoveVetLinkedError =>
+      'Retirez d\'abord ce vétérinaire de vos animaux, ou marquez le contact inactif.';
 
   @override
   String get peopleStatusInactive => 'Inactif';

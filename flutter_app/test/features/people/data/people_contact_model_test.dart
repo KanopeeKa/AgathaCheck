@@ -16,6 +16,33 @@ void main() {
     expect(model.toEntity().isCarer, isTrue);
   });
 
+  test('buildPatchComparedTo sends only deltas and empty string to clear', () {
+    final original = PeopleContactModel(
+      id: 'c1',
+      kind: 'person',
+      name: 'Greenhill',
+      roles: ['vet'],
+      phone: '1',
+      email: 'a@b.com',
+      address: '1 St',
+    );
+    final draft = PeopleContactModel(
+      id: 'c1',
+      kind: 'person',
+      name: 'Greenhill',
+      roles: ['vet'],
+      phone: '',
+      email: 'a@b.com',
+      address: '2 St',
+      privateNote: 'note',
+    );
+    final patch = draft.buildPatchComparedTo(original);
+    expect(patch.containsKey('name'), isFalse);
+    expect(patch['phone'], '');
+    expect(patch['address'], '2 St');
+    expect(patch['private_note'], 'note');
+  });
+
   test('toCreateJson omits empty optional fields', () {
     final model = PeopleContactModel(
       id: '',

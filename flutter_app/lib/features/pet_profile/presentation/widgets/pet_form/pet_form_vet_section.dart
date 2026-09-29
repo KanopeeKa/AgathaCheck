@@ -198,17 +198,14 @@ Future<void> showPetFormCreateVetSheet({
                   address: addressController.text.trim(),
                 );
                 try {
-                  await ref.read(vetListProvider.notifier).createVet(vet);
+                  final created =
+                      await ref.read(vetListProvider.notifier).createVet(vet);
                   await ref.read(peopleContactsProvider.notifier).refresh();
                   if (ctx.mounted) Navigator.pop(ctx);
-                  final updatedVets = await ref.read(vetListProvider.future);
-                  if (updatedVets.isNotEmpty) {
-                    final newId = updatedVets.last.id;
-                    onVetCreated(newId);
-                    controller.state = controller.state.copyWith(
-                      selectedVetId: newId,
-                    );
-                  }
+                  onVetCreated(created.id);
+                  controller.state = controller.state.copyWith(
+                    selectedVetId: created.id,
+                  );
                 } catch (e) {
                   if (ctx.mounted) {
                     ScaffoldMessenger.of(ctx).showSnackBar(

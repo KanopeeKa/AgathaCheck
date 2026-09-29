@@ -1787,7 +1787,7 @@ abstract class AppLocalizations {
   /// No description provided for @peopleNavLabel.
   ///
   /// In en, this message translates to:
-  /// **'People'**
+  /// **'Contacts'**
   String get peopleNavLabel;
 
   /// No description provided for @careDueTab.
@@ -12223,7 +12223,7 @@ abstract class AppLocalizations {
   /// No description provided for @peoplePageTitle.
   ///
   /// In en, this message translates to:
-  /// **'People'**
+  /// **'Contacts'**
   String get peoplePageTitle;
 
   /// No description provided for @peopleTrustedCarersSection.
@@ -12283,7 +12283,7 @@ abstract class AppLocalizations {
   /// No description provided for @peopleSearchHint.
   ///
   /// In en, this message translates to:
-  /// **'Search people'**
+  /// **'Search contacts'**
   String get peopleSearchHint;
 
   /// No description provided for @peopleFilterAll.
@@ -12340,17 +12340,59 @@ abstract class AppLocalizations {
   /// **'Pet sitter'**
   String get peopleRoleSitter;
 
+  /// No description provided for @peopleRoleWalker.
+  ///
+  /// In en, this message translates to:
+  /// **'Dog walker'**
+  String get peopleRoleWalker;
+
   /// No description provided for @peopleRoleVet.
   ///
   /// In en, this message translates to:
   /// **'Vet'**
   String get peopleRoleVet;
 
+  /// No description provided for @peopleRoleVetNurse.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet nurse'**
+  String get peopleRoleVetNurse;
+
   /// No description provided for @peopleRoleGroomer.
   ///
   /// In en, this message translates to:
   /// **'Groomer'**
   String get peopleRoleGroomer;
+
+  /// No description provided for @peopleRoleTrainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Trainer'**
+  String get peopleRoleTrainer;
+
+  /// No description provided for @peopleRoleBehaviourist.
+  ///
+  /// In en, this message translates to:
+  /// **'Behaviourist'**
+  String get peopleRoleBehaviourist;
+
+  /// No description provided for @peopleRoleBoarding.
+  ///
+  /// In en, this message translates to:
+  /// **'Boarding / daycare'**
+  String get peopleRoleBoarding;
+
+  /// No description provided for @peopleRoleEmergencyContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contact'**
+  String get peopleRoleEmergencyContact;
+
+  /// No description provided for @peopleRoleOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get peopleRoleOther;
 
   /// No description provided for @peopleNameLabel.
   ///
@@ -12361,13 +12403,13 @@ abstract class AppLocalizations {
   /// No description provided for @peopleListLoadError.
   ///
   /// In en, this message translates to:
-  /// **'Could not load people. Try again.'**
+  /// **'Could not load contacts. Try again.'**
   String get peopleListLoadError;
 
   /// No description provided for @accountPeopleRow.
   ///
   /// In en, this message translates to:
-  /// **'People'**
+  /// **'Contacts'**
   String get accountPeopleRow;
 
   /// No description provided for @peopleDeskVetTeam.
@@ -12379,13 +12421,13 @@ abstract class AppLocalizations {
   /// No description provided for @peopleDetailNotFound.
   ///
   /// In en, this message translates to:
-  /// **'This person is no longer in your directory.'**
+  /// **'This contact is no longer in your directory.'**
   String get peopleDetailNotFound;
 
   /// No description provided for @peopleEditPerson.
   ///
   /// In en, this message translates to:
-  /// **'Edit person'**
+  /// **'Edit details'**
   String get peopleEditPerson;
 
   /// No description provided for @peoplePrivateNoteLabel.
@@ -12393,6 +12435,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Private note'**
   String get peoplePrivateNoteLabel;
+
+  /// No description provided for @peoplePrivateNoteHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Only you can see this note.'**
+  String get peoplePrivateNoteHelper;
 
   /// No description provided for @peoplePhoneLabel.
   ///
@@ -12405,6 +12453,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Email'**
   String get peopleEmailLabel;
+
+  /// No description provided for @peopleAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get peopleAddressLabel;
+
+  /// No description provided for @peopleWebsiteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Website'**
+  String get peopleWebsiteLabel;
+
+  /// No description provided for @peopleContactInformationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact information'**
+  String get peopleContactInformationTitle;
+
+  /// No description provided for @peopleContactInfoEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No phone, email or address yet. Add them in Edit details.'**
+  String get peopleContactInfoEmpty;
+
+  /// No description provided for @peopleOpenDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Directions'**
+  String get peopleOpenDirections;
+
+  /// No description provided for @peopleOpenWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Open website'**
+  String get peopleOpenWebsite;
+
+  /// No description provided for @peopleCopiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get peopleCopiedToClipboard;
+
+  /// No description provided for @peopleLinkedPetsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Related pets'**
+  String get peopleLinkedPetsTitle;
+
+  /// No description provided for @peopleNoLinkedPets.
+  ///
+  /// In en, this message translates to:
+  /// **'No pets linked yet.'**
+  String get peopleNoLinkedPets;
+
+  /// No description provided for @peopleVetLinkedHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes here also update this vet on your pets\' profiles.'**
+  String get peopleVetLinkedHelper;
+
+  /// No description provided for @peopleMarkInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark inactive'**
+  String get peopleMarkInactive;
+
+  /// No description provided for @peopleMarkInactiveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This contact stays visible where already linked, but won\'t appear in pickers.'**
+  String get peopleMarkInactiveBody;
+
+  /// No description provided for @peopleSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save changes. Try again.'**
+  String get peopleSaveError;
+
+  /// No description provided for @peopleRemoveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not remove this contact.'**
+  String get peopleRemoveError;
+
+  /// No description provided for @peopleRemoveVetLinkedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the vet from your pets first, or mark this contact inactive.'**
+  String get peopleRemoveVetLinkedError;
 
   /// No description provided for @peopleStatusInactive.
   ///

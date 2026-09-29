@@ -1,10 +1,6 @@
 import 'package:go_router/go_router.dart';
 
-import '../../features/experience/domain/entities/app_experience.dart';
-import '../../l10n/app_localizations.dart';
-import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
-import '../../features/vet/presentation/screens/vet_detail_screen.dart';
-import '../../features/vet/presentation/screens/vet_form_screen.dart';
+import '../../features/people/presentation/screens/people_legacy_vet_redirect_screen.dart';
 
 List<RouteBase> buildVetExperienceRoutes() {
   return [
@@ -21,7 +17,7 @@ List<RouteBase> buildVetExperienceRoutes() {
         }
         return null;
       },
-      routes: _vetFormRoutes(listPath: '/pc/vets'),
+      routes: _vetLegacyRoutes(),
     ),
     GoRoute(
       path: '/g/vets',
@@ -53,21 +49,19 @@ List<RouteBase> buildVetExperienceRoutes() {
   ];
 }
 
-List<RouteBase> _vetFormRoutes({required String listPath}) {
+List<RouteBase> _vetLegacyRoutes() {
   return [
     GoRoute(
       path: 'add',
       name: 'petCareAddVet',
-      builder: (context, state) {
-        return VetFormScreen(listPath: listPath);
-      },
+      redirect: (context, state) => '/pc/people/new',
     ),
     GoRoute(
       path: 'edit/:id',
       name: 'petCareEditVet',
       builder: (context, state) {
         final vetId = state.pathParameters['id']!;
-        return VetFormScreen(vetId: vetId, listPath: listPath);
+        return PeopleLegacyVetRedirectScreen(vetId: vetId, edit: true);
       },
     ),
     GoRoute(
@@ -75,14 +69,7 @@ List<RouteBase> _vetFormRoutes({required String listPath}) {
       name: 'petCareVetDetail',
       builder: (context, state) {
         final vetId = state.pathParameters['id']!;
-        final l = AppLocalizations.of(context)!;
-        return ExperienceShellScaffold(
-          experience: AppExperience.petCare,
-          currentLocation: state.uri.path,
-          screenTitle: l.vetTeam,
-          backPath: listPath,
-          child: VetDetailScreen(vetId: vetId, listPath: listPath),
-        );
+        return PeopleLegacyVetRedirectScreen(vetId: vetId);
       },
     ),
   ];

@@ -23,38 +23,63 @@ class PeopleContactsNotifier extends AsyncNotifier<List<PeopleContact>> {
   @override
   Future<List<PeopleContact>> build() async {
     final ds = ref.read(peopleRemoteDataSourceProvider);
-    final models = await ds.listContacts();
+    final models = await ds.listContacts(includeInactive: true);
     return models.map((m) => m.toEntity()).toList();
   }
 
   Future<void> refresh() async {
-    state = const AsyncLoading();
+    final previous = state.valueOrNull;
+    state = previous == null
+        ? const AsyncLoading()
+        : AsyncData(previous);
     state = await AsyncValue.guard(() async {
       final ds = ref.read(peopleRemoteDataSourceProvider);
-      final models = await ds.listContacts();
+      final models = await ds.listContacts(includeInactive: true);
       return models.map((m) => m.toEntity()).toList();
     });
   }
 
-  Future<void> addContact(PeopleContactModel draft) async {
-    final ds = ref.read(peopleRemoteDataSourceProvider);
-    await ds.createContact(draft);
-    await refresh();
+  void mergeLocal(PeopleContactModel model) {
+    final entity = model.toEntity();
+    final current = state.valueOrNull ?? [];
+    final idx = current.indexWhere((c) => c.id == entity.id);
+    if (idx >= 0) {
+      final next = [...current];
+      next[idx] = entity;
+      state = AsyncData(next);
+    } else {
+      state = AsyncData([...current, entity]);
+    }
   }
 
-  Future<void> updateContact(PeopleContactModel model) async {
+  Future<PeopleContact> addContact(PeopleContactModel draft) async {
     final ds = ref.read(peopleRemoteDataSourceProvider);
-    await ds.updateContact(
-      model.id,
-      model.toPatchJson(privateNote: model.privateNote),
-    );
-    await refresh();
+    final created = await ds.createContact(draft);
+    mergeLocal(created);
+    return created.toEntity();
+  }
+
+  Future<PeopleContact> updateContactPatch(
+    String id,
+    Map<String, dynamic> patch,
+  ) async {
+    final ds = ref.read(peopleRemoteDataSourceProvider);
+    final updated = await ds.updateContact(id, patch);
+    mergeLocal(updated);
+    return updated.toEntity();
   }
 
   Future<void> deleteContact(String id) async {
     final ds = ref.read(peopleRemoteDataSourceProvider);
     await ds.deleteContact(id);
-    await refresh();
+    final current = state.valueOrNull ?? [];
+    state = AsyncData(current.where((c) => c.id != id).toList());
+  }
+
+  PeopleContact? findByLegacyVetId(String vetId) {
+    return state.valueOrNull
+        ?.where((c) => c.legacyVetId == vetId)
+        .firstOrNull;
   }
 }
 
@@ -64,4 +89,28 @@ final peopleContactByIdProvider = Provider.family<PeopleContact?, String>((
 ) {
   final async = ref.watch(peopleContactsProvider);
   return async.valueOrNull?.where((c) => c.id == id).firstOrNull;
+});
+
+final peopleContactDetailProvider = FutureProvider.autoDispose
+    .family<PeopleContact?, String>((ref, id) async {
+      final cached = ref.watch(peopleContactByIdProvider(id));
+      final ds = ref.read(peopleRemoteDataSourceProvider);
+      try {
+        final model = await ds.getContact(id);
+        ref.read(peopleContactsProvider.notifier).mergeLocal(model);
+        return model.toEntity();
+      } catch (_) {
+        return cached;
+      }
+    });
+
+final peopleContactIdForLegacyVetProvider = Provider.family<String?, String>((
+  ref,
+  vetId,
+) {
+  final async = ref.watch(peopleContactsProvider);
+  return async.valueOrNull
+      ?.where((c) => c.legacyVetId == vetId)
+      .map((c) => c.id)
+      .firstOrNull;
 });

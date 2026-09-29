@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "plan_id": "contacts-detail-parity-fcd9",
+  "approved_at": "2026-09-29T18:05:00Z",
+  "approved_by": "user chat 2026-09-29: /execute-plan full authority; naming=amend vocabulary; mobile=scroll; retire vet screens",
+  "approved_until": "2026-10-01T18:05:00Z",
+  "content_hash": "sha256:pending",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": null,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "p0-display-sync",
+      "title": "Vet sync safety + contact display/edit parity",
+      "branch": "cursor/contacts-detail-parity-fcd9",
+      "allowed_paths": [
+        "server/lib/people/**",
+        "server/test/people/**",
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/people/**",
+        "docs/domains/people/features/vocabulary.md",
+        "docs/design/terminology.md",
+        ".agents/plans/contacts-detail-parity-fcd9.*"
+      ],
+      "forbidden_paths": [".github/workflows/**"],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress"
+    },
+    {
+      "id": "p0b-pet-vet-id",
+      "title": "Pet form assigns created vet by id",
+      "branch": "cursor/contacts-detail-parity-fcd9",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/features/vet/**",
+        "flutter_app/test/features/pet_profile/**"
+      ],
+      "forbidden_paths": [".github/workflows/**"],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending"
+    },
+    {
+      "id": "p1-retire-vet-ui",
+      "title": "People detail parity + retire legacy vet routes",
+      "branch": "cursor/contacts-detail-parity-fcd9",
+      "allowed_paths": [
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/features/vet/**",
+        "e2e/**",
+        "flutter_app/test/**"
+      ],
+      "forbidden_paths": [".github/workflows/**"],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending"
+    }
+  ]
+}

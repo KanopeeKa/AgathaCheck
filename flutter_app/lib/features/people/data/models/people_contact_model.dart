@@ -48,6 +48,34 @@ class PeopleContactModel {
     );
   }
 
+  /// Builds a PATCH body with only changed fields. Pass explicit empty strings to clear.
+  Map<String, dynamic> buildPatchComparedTo(PeopleContactModel original) {
+    final patch = <String, dynamic>{};
+    if (name != original.name) patch['name'] = name;
+    if (kind != original.kind) patch['kind'] = kind;
+    if (!_nullableEq(phone, original.phone)) patch['phone'] = phone ?? '';
+    if (!_nullableEq(email, original.email)) patch['email'] = email ?? '';
+    if (!_nullableEq(address, original.address)) patch['address'] = address ?? '';
+    if (!_nullableEq(website, original.website)) patch['website'] = website ?? '';
+    if (privateNote != original.privateNote) {
+      patch['private_note'] = privateNote;
+    }
+    if (!_roleListsEqual(roles, original.roles)) {
+      patch['roles'] = roles;
+    }
+    return patch;
+  }
+
+  static bool _nullableEq(String? a, String? b) =>
+      (a ?? '').trim() == (b ?? '').trim();
+
+  static bool _roleListsEqual(List<String> a, List<String> b) {
+    if (a.length != b.length) return false;
+    final sa = a.toSet();
+    final sb = b.toSet();
+    return sa.length == sb.length && sa.containsAll(sb);
+  }
+
   Map<String, dynamic> toPatchJson({String? privateNote}) => {
     if (privateNote != null) 'private_note': privateNote,
   };

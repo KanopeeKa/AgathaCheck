@@ -73,9 +73,10 @@ class VetListNotifier extends AsyncNotifier<List<Vet>> {
     state = await AsyncValue.guard(() => build());
   }
 
-  Future<void> createVet(Vet vet) async {
-    await ref.read(createVetUseCaseProvider).call(vet);
+  Future<Vet> createVet(Vet vet) async {
+    final created = await ref.read(createVetUseCaseProvider).call(vet);
     await refresh();
+    return created;
   }
 
   Future<void> updateVet(Vet vet) async {
