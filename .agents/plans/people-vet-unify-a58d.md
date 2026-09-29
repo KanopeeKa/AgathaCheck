@@ -26,16 +26,16 @@ Eliminate drift between legacy `vets` / `pets.vet_id` and People (`people_contac
 
 ```yaml
 autonomy: active
-current_phase: p0-data-repair
-last_completed_phase: null
+current_phase: p1-pet-write-sync
+last_completed_phase: p0-data-repair
 halt_reason: null
-next_action: "continue phase p0-data-repair on branch cursor/people-vet-unify-p0-a58d"
+next_action: "start phase p1-pet-write-sync: checkout cursor/people-vet-unify-p1-a58d"
 artifact_ref:
-  branch: cursor/people-vet-unify-p0-a58d
+  branch: cursor/people-vet-unify-integration-a58d
   plan_path: .agents/plans/people-vet-unify-a58d.md
-  plan_commit: 83c6d7eb1d548071c0d6f32af7c8addfe2e1c960
+  plan_commit: d665814204fd8048c324c0f92d93f52689820712
   snapshot_path: .agents/plans/people-vet-unify-a58d.snapshot.json
-  snapshot_commit: 83c6d7eb1d548071c0d6f32af7c8addfe2e1c960
+  snapshot_commit: d665814204fd8048c324c0f92d93f52689820712
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../vet/domain/entities/vet.dart';
 import '../../../../vet/presentation/providers/vet_providers.dart';
+import '../../../../people/presentation/providers/people_providers.dart';
 import '../../controllers/pet_form_controller.dart';
+import '../../providers/pet_vet_contacts_provider.dart';
 
 const createNewVetSentinel = '__create_new_vet__';
 
@@ -23,7 +25,7 @@ class PetFormVetSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final vetsAsync = ref.watch(vetListProvider);
+    final vetsAsync = ref.watch(petVetOptionsProvider);
 
     return vetsAsync.when(
       loading: () => InputDecorator(
@@ -37,7 +39,7 @@ class PetFormVetSection extends ConsumerWidget {
       data: (vets) {
         return DropdownButtonFormField<String?>(
           isExpanded: true,
-          initialValue: vets.any((v) => v.id == selectedVetId)
+          initialValue: vets.any((v) => v.vetId == selectedVetId)
               ? selectedVetId
               : null,
           decoration: InputDecoration(
@@ -62,8 +64,8 @@ class PetFormVetSection extends ConsumerWidget {
             ),
             ...vets.map(
               (vet) => DropdownMenuItem<String?>(
-                value: vet.id,
-                child: Text(vet.name),
+                value: vet.vetId,
+                child: Text(vet.displayName),
               ),
             ),
             DropdownMenuItem<String?>(
@@ -197,6 +199,7 @@ Future<void> showPetFormCreateVetSheet({
                 );
                 try {
                   await ref.read(vetListProvider.notifier).createVet(vet);
+                  await ref.read(peopleContactsProvider.notifier).refresh();
                   if (ctx.mounted) Navigator.pop(ctx);
                   final updatedVets = await ref.read(vetListProvider.future);
                   if (updatedVets.isNotEmpty) {

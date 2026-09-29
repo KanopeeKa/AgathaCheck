@@ -1,21 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/pet.dart';
-import '../../../vet/presentation/providers/vet_providers.dart';
+import '../providers/pet_vet_contacts_provider.dart';
 
 class PetProfileController {
   final WidgetRef ref;
   PetProfileController(this.ref);
 
-  List getVets() {
-    final vetsAsync = ref.watch(vetListProvider);
+  List<PetVetOption> getVets() {
+    final vetsAsync = ref.watch(petVetOptionsProvider);
     return vetsAsync.valueOrNull ?? [];
   }
 
-  dynamic getAssignedVet(Pet pet) {
-    final vets = getVets();
-    return (pet.vetId != null && pet.vetId!.isNotEmpty)
-        ? vets.where((v) => v.id == pet.vetId).firstOrNull
-        : null;
+  PetVetOption? getAssignedVet(Pet pet) {
+    return findPetVetOption(getVets(), pet.vetId);
   }
 
   double? getDisplayWeight(Pet pet) => pet.weight;
