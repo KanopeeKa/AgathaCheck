@@ -3,7 +3,7 @@ title: Quality scorecard
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-09-29
 tags: [quality, metrics]
 ---
 # Quality scorecard
@@ -49,7 +49,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 
 | Layer | Status |
 |---|---|
-| Flutter domain (`lib/**/domain/**`) | **65% line coverage gate** (CI) |
+| Flutter domain (`lib/**/domain/**`) | **70% line coverage gate** (CI) |
 | Flutter lcov (full app) | CI artifact |
 | Jest Istanbul | CI artifact (report-only) |
 
