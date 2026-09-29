@@ -58,8 +58,10 @@ class PeopleContactModel {
     if (kind != original.kind) patch['kind'] = kind;
     if (!_nullableEq(phone, original.phone)) patch['phone'] = phone ?? '';
     if (!_nullableEq(email, original.email)) patch['email'] = email ?? '';
-    if (!_nullableEq(address, original.address)) patch['address'] = address ?? '';
-    if (!_nullableEq(website, original.website)) patch['website'] = website ?? '';
+    if (!_nullableEq(address, original.address))
+      patch['address'] = address ?? '';
+    if (!_nullableEq(website, original.website))
+      patch['website'] = website ?? '';
     if (privateNote != original.privateNote) {
       patch['private_note'] = privateNote;
     }

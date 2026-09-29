@@ -41,7 +41,9 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
   @override
   void initState() {
     super.initState();
-    _roles.addAll(widget.initialRoles.isEmpty ? {'sitter'} : widget.initialRoles);
+    _roles.addAll(
+      widget.initialRoles.isEmpty ? {'sitter'} : widget.initialRoles,
+    );
     if (_roles.contains('vet')) {
       _contactExpanded = true;
     }
@@ -59,10 +61,7 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
 
   String _resolvedKind() {
     if (_forcedKind != null) return _forcedKind!;
-    return inferPeopleContactKind(
-      name: _nameController.text,
-      roles: _roles,
-    );
+    return inferPeopleContactKind(name: _nameController.text, roles: _roles);
   }
 
   List<PeopleContact> _dedupeMatches(List<PeopleContact> contacts) {
@@ -79,19 +78,21 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
     if (name.isEmpty || _roles.isEmpty) return;
     setState(() => _saving = true);
     try {
-      final created = await ref.read(peopleContactsProvider.notifier).addContact(
-        PeopleContactModel(
-          id: '',
-          kind: _resolvedKind(),
-          name: name,
-          roles: _roles.toList(),
-          phone: _nullable(_phoneController.text),
-          email: _nullable(_emailController.text),
-          address: _nullable(_addressController.text),
-          privateNote: _noteController.text.trim(),
-          worksAtContactId: _worksAtContactId,
-        ),
-      );
+      final created = await ref
+          .read(peopleContactsProvider.notifier)
+          .addContact(
+            PeopleContactModel(
+              id: '',
+              kind: _resolvedKind(),
+              name: name,
+              roles: _roles.toList(),
+              phone: _nullable(_phoneController.text),
+              email: _nullable(_emailController.text),
+              address: _nullable(_addressController.text),
+              privateNote: _noteController.text.trim(),
+              worksAtContactId: _worksAtContactId,
+            ),
+          );
       if (!mounted) return;
       if (widget.popResultOnSave) {
         context.pop(created);
@@ -182,9 +183,7 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
               ListTile(
                 leading: const Icon(Icons.person_search_outlined),
                 title: Text(m.name),
-                subtitle: Text(
-                  peopleContactRolesLine(l, m.roles),
-                ),
+                subtitle: Text(peopleContactRolesLine(l, m.roles)),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => context.push('/pc/people/${m.id}'),
               ),
@@ -199,12 +198,7 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
             spacing: 8,
             runSpacing: 4,
             children: [
-              for (final role in const [
-                'sitter',
-                'walker',
-                'vet',
-                'groomer',
-              ])
+              for (final role in const ['sitter', 'walker', 'vet', 'groomer'])
                 FilterChip(
                   label: Text(peopleContactRoleLabel(l, role)),
                   selected: _roles.contains(role),
@@ -231,10 +225,7 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
                   child: Text(l.peopleWorksAtNone),
                 ),
                 for (final org in organisations)
-                  DropdownMenuItem(
-                    value: org.id,
-                    child: Text(org.name),
-                  ),
+                  DropdownMenuItem(value: org.id, child: Text(org.name)),
               ],
               onChanged: (v) => setState(() => _worksAtContactId = v),
             ),

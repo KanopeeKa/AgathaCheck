@@ -20,12 +20,10 @@ List<PeopleContact> findDuplicateContacts({
   final matches = <PeopleContact>[];
   for (final c in directory) {
     var score = 0;
-    if (nameTrim.length >= 2 &&
-        c.name.toLowerCase().contains(nameTrim)) {
+    if (nameTrim.length >= 2 && c.name.toLowerCase().contains(nameTrim)) {
       score += 2;
     }
-    if (phoneDigits.isNotEmpty &&
-        _digitsOnly(c.phone) == phoneDigits) {
+    if (phoneDigits.isNotEmpty && _digitsOnly(c.phone) == phoneDigits) {
       score += 3;
     }
     if (emailNorm.isNotEmpty &&

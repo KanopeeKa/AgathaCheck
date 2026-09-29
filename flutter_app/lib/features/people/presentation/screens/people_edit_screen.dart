@@ -93,13 +93,19 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
     } on HttpException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppLocalizations.of(context)!.peopleSaveError} ($e)')),
+          SnackBar(
+            content: Text(
+              '${AppLocalizations.of(context)!.peopleSaveError} ($e)',
+            ),
+          ),
         );
       }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.peopleSaveError)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.peopleSaveError),
+          ),
         );
       }
     } finally {
@@ -136,9 +142,9 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
       if (mounted) context.pop(true);
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.peopleSaveError)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.peopleSaveError)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -175,13 +181,15 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
           ? l.peopleRemoveVetLinkedError
           : l.peopleRemoveError;
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.peopleRemoveError)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.peopleRemoveError)));
       }
     }
   }
@@ -236,7 +244,9 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
           );
           _loadFromContact(model);
           final organisations =
-              ref.watch(peopleContactsProvider).valueOrNull
+              ref
+                  .watch(peopleContactsProvider)
+                  .valueOrNull
                   ?.where(
                     (c) => c.kind == 'organisation' && c.inactiveAt == null,
                   )
@@ -248,9 +258,7 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
               title: Text(l.peopleEditPerson),
               actions: [
                 TextButton(
-                  onPressed: _saving || !_dirty
-                      ? null
-                      : () => _save(model),
+                  onPressed: _saving || !_dirty ? null : () => _save(model),
                   child: _saving
                       ? const SizedBox(
                           width: 18,
@@ -291,10 +299,7 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
                         child: Text(l.peopleWorksAtNone),
                       ),
                       for (final org in organisations)
-                        DropdownMenuItem(
-                          value: org.id,
-                          child: Text(org.name),
-                        ),
+                        DropdownMenuItem(value: org.id, child: Text(org.name)),
                     ],
                     onChanged: (v) => setState(() => _worksAtContactId = v),
                   ),
@@ -373,7 +378,9 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
                   label: Text(l.peopleRemoveContactConfirm),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Theme.of(context).colorScheme.error,
-                    side: BorderSide(color: Theme.of(context).colorScheme.error),
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                 ),
               ],

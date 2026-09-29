@@ -109,7 +109,9 @@ class PeopleContactCoordinatesSection extends StatelessWidget {
       children: [
         Text(
           l.peopleContactInformationTitle,
-          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
         ),
         const SizedBox(height: 8),
         ...rows,
@@ -124,9 +126,9 @@ class PeopleContactCoordinatesSection extends StatelessWidget {
   ) async {
     await Clipboard.setData(ClipboardData(text: value));
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.peopleCopiedToClipboard)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.peopleCopiedToClipboard)));
     }
   }
 
@@ -171,9 +173,12 @@ class PeopleContactCoordinatesSection extends StatelessWidget {
     String website,
     AppLocalizations l,
   ) async {
-    final normalized = website.startsWith('http') ? website : 'https://$website';
+    final normalized = website.startsWith('http')
+        ? website
+        : 'https://$website';
     final uri = Uri.tryParse(normalized);
-    if (uri == null || !await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+    if (uri == null ||
+        !await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       await _copyToClipboard(context, website, l);
     }
   }
@@ -228,9 +233,7 @@ class _CoordinateRow extends StatelessWidget {
               tooltip: actionTooltip,
               onPressed: onAction,
               icon: Icon(actionIcon),
-              style: IconButton.styleFrom(
-                minimumSize: const Size(48, 48),
-              ),
+              style: IconButton.styleFrom(minimumSize: const Size(48, 48)),
             ),
         ],
       ),

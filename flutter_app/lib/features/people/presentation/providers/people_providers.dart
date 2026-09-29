@@ -29,9 +29,7 @@ class PeopleContactsNotifier extends AsyncNotifier<List<PeopleContact>> {
 
   Future<void> refresh() async {
     final previous = state.valueOrNull;
-    state = previous == null
-        ? const AsyncLoading()
-        : AsyncData(previous);
+    state = previous == null ? const AsyncLoading() : AsyncData(previous);
     state = await AsyncValue.guard(() async {
       final ds = ref.read(peopleRemoteDataSourceProvider);
       final models = await ds.listContacts(includeInactive: true);
@@ -77,9 +75,7 @@ class PeopleContactsNotifier extends AsyncNotifier<List<PeopleContact>> {
   }
 
   PeopleContact? findByLegacyVetId(String vetId) {
-    return state.valueOrNull
-        ?.where((c) => c.legacyVetId == vetId)
-        .firstOrNull;
+    return state.valueOrNull?.where((c) => c.legacyVetId == vetId).firstOrNull;
   }
 }
 

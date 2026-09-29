@@ -166,7 +166,9 @@ class PeopleDetailScreen extends ConsumerWidget {
         const SizedBox(height: 24),
         Text(
           l.peopleLinkedPetsTitle,
-          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
         ),
         const SizedBox(height: 8),
         if (pets.isEmpty)

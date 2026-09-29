@@ -47,7 +47,9 @@ class _PeopleLegacyVetRedirectScreenState
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final contactId = ref.watch(peopleContactIdForLegacyVetProvider(widget.vetId));
+    final contactId = ref.watch(
+      peopleContactIdForLegacyVetProvider(widget.vetId),
+    );
     if (contactId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;

@@ -151,10 +151,10 @@ List<RouteBase> buildExperienceRoutes() {
                 final roles = rolesParam == null
                     ? const <String>{}
                     : rolesParam
-                        .split(',')
-                        .map((e) => e.trim())
-                        .where((e) => e.isNotEmpty)
-                        .toSet();
+                          .split(',')
+                          .map((e) => e.trim())
+                          .where((e) => e.isNotEmpty)
+                          .toSet();
                 final pop = state.uri.queryParameters['pop'] == '1';
                 return PeopleAddPersonScreen(
                   initialRoles: roles,

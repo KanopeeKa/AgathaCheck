@@ -27,6 +27,7 @@ function makeVetRow(overrides = {}) {
 describe('Vets API', () => {
   let app;
   let lastQuery;
+  let lastVetWriteQuery;
   let lastVetDeleteQuery;
 
   beforeAll(() => {
@@ -56,6 +57,7 @@ describe('Vets API', () => {
         }
 
         if (sql.includes('INSERT INTO vets')) {
+          lastVetWriteQuery = { sql, params };
           return {
             rows: [makeVetRow({
               id: params[0],
@@ -72,6 +74,7 @@ describe('Vets API', () => {
         }
 
         if (sql.includes('UPDATE vets SET')) {
+          lastVetWriteQuery = { sql, params };
           if (params[8] === 'nonexistent') return { rows: [] };
           return {
             rows: [makeVetRow({
@@ -276,7 +279,7 @@ describe('Vets API', () => {
         .post('/api/vets')
         .set('Authorization', `Bearer ${token}`)
         .send({ name: 'Test' });
-      expect(lastQuery.params[1]).toBe(userId);
+      expect(lastVetWriteQuery.params[1]).toBe(userId);
     });
 
     it('creates an org-scoped vet when user belongs to the org', async () => {
@@ -353,7 +356,7 @@ describe('Vets API', () => {
         .put('/api/vets/vet-1')
         .set('Authorization', `Bearer ${token}`)
         .send({ name: 'Test' });
-      expect(lastQuery.params).toContain(userId);
+      expect(lastVetWriteQuery.params).toContain(userId);
     });
   });
 
