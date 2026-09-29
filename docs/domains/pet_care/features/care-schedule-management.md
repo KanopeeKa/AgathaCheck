@@ -50,29 +50,66 @@ care_context  care_progression  care_intelligence
 | CSM-14 | Shipped | Care Context thin caller over `projectSchedule` |
 | CSM-15 | Shipped | Flutter: client `snooze()` removed |
 | CSM-17 | Shipped | Integration gate — projection corpus, CP weight evidence, CIM baseline (`integrationGate.test.js`) |
+| Care occurrences (`care-next-occurrence-c1a7`) | In delivery | D-CSM-019 … D-CSM-033: stored open occurrence always; two schedule types; care tick; commands under one lock. Sections below describe this model |
+
+---
+
+## Model in one page (D-CSM-019 … D-CSM-033)
+
+- **Always a real next date.** Every active planned item has at least one stored open occurrence, created in the same transaction as the command that needs it (D-CSM-019). No T−1 window, no “ensure” step. `next_due_date` is a read-only cache of the earliest open date.
+- **Two schedule types** (D-CSM-020): **Fixed schedule** (`from_due_date`, default for medication) and **After it's done** (`from_completion`, default for every other family).
+- **Origins** (D-CSM-021): `schedule` (Fixed-schedule rule), `computed` (After-it's-done rule, at most one open), `planned` (set by a person). The app never moves `schedule` or `planned` dates on its own; planned dates take precedence over the rule.
+- **Fixed schedule** (D-CSM-023): slots from today − 3 days through today plus the next series date are stored; a slot is Overdue until the next slot is due, then **Not recorded** (the stack); slots older than three days close as `not_recorded` and can still be recorded as given from History.
+- **After it's done** (D-CSM-022): one open date, Overdue until done, skipped or postponed; the next date counts from the done date.
+- **Month-end clamp** (D-CSM-024), **Plan another date** (D-CSM-025), **ask before saving** when done late with a waiting date (D-CSM-026), **This date only / This and following** (D-CSM-027), **Postpone until** as the only pause/absence move (D-CSM-028), **whole-command undo** (D-CSM-029), **early completion** confirmation (D-CSM-030).
+- **Care tick** every 15 minutes, with the same catch-up run by every command first (D-CSM-031).
+- **Edits are commands** (D-CSM-032); **one lock, one transaction** per command; 409 when the occurrence is no longer open (D-CSM-033).
+
+```mermaid
+flowchart LR
+  subgraph Command["Every command (one transaction, item row locked)"]
+    C1[Catch up: Fixed-schedule slots, 3-day window, paused_until] --> C2[Apply the action]
+    C2 --> C3[syncOpenOccurrences: INV-1 … INV-5]
+    C3 --> C4[Write next_due_date cache]
+  end
+  C4 --> P[After commit: audit, activity, notifications]
+  T[Care tick every 15 min] --> C1
+```
 
 ---
 
 ## Primitives
 
-One entry point per real-world action. No primitive writes to more than one authoritative system.
+One entry point per real-world action. Every primitive runs inside `withCareItemLock` (D-CSM-033) and ends with `syncOpenOccurrences`, which restores the invariants below. Commands live in `server/lib/care/occurrence/commands/`; pure date rules in `server/lib/care/schedule/`.
 
-| Primitive | Purpose | HTTP route (when mounted) |
-|-----------|---------|---------------------------|
-| `completeOccurrence` | Close occurrence; store `completion_timing`; call `advanceSeries()` | `POST …/occurrences/:occId/complete` **(shipped)** |
-| `skipOccurrence` | Close as skipped; write `care_schedule_events` | `POST …/occurrences/:occId/skip` **(shipped)** |
-| `rescheduleOccurrence` | Move one occurrence; preserve original `scheduled_date` on event | `POST …/occurrences/:occId/reschedule` **(shipped)** |
-| `pauseSeries` | Stop generation from date; `status = paused` | `POST …/:id/pause` **(shipped)** |
-| `resumeSeries` | Resume with **no catch-up** | `POST …/:id/resume` **(shipped)** |
-| `adjustCadence` | Change series rule forward from `effective_from` only | `POST …/:id/adjust-cadence` **(shipped)** |
-| `projectSchedule` | Read-only projection with per-item certainty | Consumed by care-period projection **(shipped)** |
-| `explainGap` | Read-only schedule facts for CIM | `GET …/:id/schedule-explain` **(shipped)** |
-| `undoLastAction` | Timestamp-aware reversal of last schedule action | `POST …/:id/schedule/undo` **(shipped)** |
-| `ensureOpenOccurrence` | Idempotently materialise pending row(s) for the canonical open day when user/absence intent needs to act (D-CSM-018) | `POST …/:id/occurrences/ensure-open` **(care-absence-materialisation-7796)** |
+| Primitive | Purpose | HTTP route |
+|-----------|---------|------------|
+| `complete` | Close an occurrence as done; store `completion_timing`; apply D-CSM-026 (409 `next_choice_required` when a choice is needed); create the next date when nothing else is open | `POST …/occurrences/:occId/complete` |
+| `skip` | Close as skipped (`close_reason = 'user'`); ledger `skipped` | `POST …/occurrences/:occId/skip` |
+| `resolveStack` | Record earlier doses: Given → completed, Not given → skipped (`user`) | `POST …/occurrences/resolve-stack` |
+| `recordAsGiven` | Record a closed Not recorded slot as given | `POST …/occurrences/:occId/record` |
+| `changeDate` | Move one occurrence (`scope: this`) or the series from it (`scope: following`, Fixed schedule) | `POST …/occurrences/:occId/reschedule` |
+| `planAnotherDate` | Add a `planned` occurrence | `POST …/occurrences` |
+| `postpone` | Postpone until a date, or pause without one (D-CSM-028) | `POST …/:id/postpone` |
+| `resume` | Resume on a chosen date (default: the date it would have had) | `POST …/:id/resume` |
+| `adjustCadence` | Change the series rule forward from `effective_from` only | `POST …/:id/adjust-cadence` |
+| `undo` | Reverse the last command as a whole (D-CSM-029) | `POST …/:id/schedule/undo` |
+| `projectSchedule` | Read-only projection with per-item certainty | Care-period projection |
+| `explainGap` | Read-only schedule facts for CIM | `GET …/:id/schedule-explain` |
+| `careTick` | Fixed-schedule slots, 3-day window, `paused_until` resume (D-CSM-031) | `server/scripts/care/care_tick.js` (host cron, every 15 min) |
 
-Internal: **`advanceSeries(entryId)`** — unified rollover after all slots on the earliest open date close (`server/lib/care/schedule/advanceSeries.js`).
+Invariants (checked by a DB property test and `server/scripts/care/repair_occurrences.js --dry-run`):
 
-Batch helpers: `skipMissedOccurrences` backs `POST …/occurrences/skip-missed` and the `skip_earlier_missed` flag on complete.
+| id | Invariant |
+|----|-----------|
+| INV-1 | Every active planned item has ≥ 1 open occurrence |
+| INV-2 | At most one open `computed` occurrence per item, only when nothing else is open |
+| INV-3 | Fixed-schedule open `schedule` slots = the D-CSM-023 set at the item's “now” |
+| INV-4 | Completed or unplanned items have no open occurrences; paused items get no new ones |
+| INV-5 | `next_due_date` = earliest open occurrence date (or null), written only by the sync |
+| INV-6 | Commands hold the item row lock in one transaction |
+| INV-7 | “Today” = the pet's home calendar day on every server path |
+| INV-8 | No two open occurrences on the same (item, date, slot) (unique index, migration 047) |
 
 ---
 
@@ -80,22 +117,29 @@ Batch helpers: `skipMissedOccurrences` backs `POST …/occurrences/skip-missed` 
 
 All routes mount under `/api/health-entries` and `/backend/api/health-entries`. Calendar dates on the wire: `YYYY-MM-DD` ([calendar-dates.md](/docs/architecture/calendar-dates.md)).
 
-### Shipped
+### Routes
 
 | Method | Path | Body | Response |
 |--------|------|------|----------|
-| GET | `/:id/occurrences` | Query: `status=open` (default) or `status=past`; optional `as_of` | Open or closed occurrence rows |
-| POST | `/:id/occurrences/:occId/complete` | `{ completed_on?, notes?, skip_earlier_missed? }` | `{ occurrence, next_due_date }`; sets `completion_timing` |
-| POST | `/:id/occurrences/:occId/skip` | `{ notes? }` | Skipped occurrence; ledger `skipped` event |
-| POST | `/:id/occurrences/skip-missed` | `{ as_of? }` | `{ skipped[], count }` |
-| POST | `/:id/occurrences/:occId/undo` | — | Re-opens occurrence **(superseded by `undoLastAction`)** |
-| POST | `/:id/mark-taken` | `{ completed_on?, notes? }` | **Deprecated compat** — completes oldest pending via `completeOccurrence`; returns entry map; **no `health_history` write** |
-| POST | `/:id/pause` | `{ paused_from?, reason_note? }` | `status = paused`, `paused_since` cache (from `paused_from` calendar day), ledger `paused` event (D-CSM-005) |
-| POST | `/:id/resume` | `{ reason_note? }` | `status = active`; ledger `resumed`; **no catch-up** for paused window |
-| POST | `/:id/occurrences/:occId/reschedule` | `{ scheduled_date, reason_code?, reason_note? }` | Validates per D-ACP-009; moves one pending occurrence; ledger `rescheduled`; returns `warnings[]` + synced `next_due_date` |
+| GET | `/` (`?pet_id=`), `/:id` | — | Entry fields plus `open_occurrences[] { id, scheduled_date, scheduled_time, status, origin }` (`status`: `coming_up` \| `due` \| `overdue` \| `not_recorded`), `as_of { date, time, timezone }`, `estimated_next { date, basis }` (display only), `schedule_anchor_date`, `late_completion_choice`, `paused_until` |
+| GET | `/:id/occurrences` | Query: `status=open` (default) or `status=past`; optional `as_of` | Open or closed occurrence rows, with `origin` and `close_reason` |
+| POST | `/:id/occurrences/:occId/complete` | `{ completed_on?, notes?, next_choice?, remember_choice? }` | 200 `{ occurrence, next_due_date, entry, undo_token }`; **409 `next_choice_required`** `{ waiting_occurrence, shift, options }` with nothing saved (D-CSM-026); **409 `occurrence_not_open`** |
+| POST | `/:id/occurrences/:occId/skip` | `{ notes? }` | Same response shape as complete |
+| POST | `/:id/occurrences` | `{ scheduled_date, scheduled_time? }` | New `planned` occurrence; `warnings[]` when another open date is within half an interval |
+| POST | `/:id/occurrences/:occId/reschedule` | `{ scheduled_date, scope?: 'this' \| 'following', reason_code?, reason_note? }` | Validates per D-ACP-009 / D-CSM-027; ledger `rescheduled` or `schedule_scope_changed`; `warnings[]`, `next_due_date` |
+| POST | `/:id/occurrences/:occId/record` | `{ completed_on }` | Records a Not recorded slot as given |
+| POST | `/:id/occurrences/resolve-stack` | `{ given: [ids], not_given: [ids] }` | Closes the listed stack slots |
+| POST | `/:id/postpone` | `{ until: date \| null, reason: 'pause' \| 'absence' \| 'manual', absence_id? }` | Ledger `postponed`; 400 for a past date |
+| POST | `/:id/resume` | `{ date?, reason_note? }` | `status = active`; without `date`, the default date (D-CSM-028); **no catch-up** |
 | POST | `/:id/adjust-cadence` | `{ effective_from, frequency?, frequency_interval?, recurrence_anchor?, reason_note? }` | Series-forward rule change; ledger `cadence_adjusted`; past occurrences immutable |
-| POST | `/:id/schedule/undo` | — | Timestamp-aware undo of last schedule action; retires `undo-complete` guessing |
-| GET | `/:id/schedule-explain` | Query: optional window | Structured schedule facts for CIM — no explained/unexplained vocabulary |
+| POST | `/:id/schedule/undo` | — | Reverses the last command as a whole (D-CSM-029) |
+| GET | `/:id/schedule-explain` | Query: optional window | Structured schedule facts for CIM |
+
+**Compatibility routes (deleted when the new client ships, D-CSM-033):** `POST /:id/mark-taken` (completes the most urgent open slot; never 400 for an active planned item), `POST /:id/occurrences/ensure-open` (returns the open occurrences, `created: false`), `POST /:id/pause` (= postpone `until: null`), `POST /:id/occurrences/skip-missed`, `POST /:id/undo-complete`, `POST /:id/occurrences/:occId/undo`.
+
+`PUT /:id` does **not** write `next_due_date`; schedule edits are applied as commands (D-CSM-032).
+
+**Test clock:** in `development`, `test` and `ci` only, the header `X-Care-As-Of: <ISO local date-time>` replaces “now” for care reads and commands (ignored and logged on `uat` and `production`). See [care-item-evolution.md](./care-item-evolution.md) D-CIE-028.
 
 Weight monitoring: use `POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight` — generic complete and `mark-taken` return `400`.
 
@@ -103,21 +147,26 @@ Weight monitoring: use `POST /api/pets/:petId/care-rhythms/:entryId/occurrences/
 
 ---
 
-## Recurrence anchor defaults (D-CSM-001)
+## Schedule types and defaults (D-CSM-020)
 
-Applied on **create** when `recurrence_anchor` is omitted (`resolveRecurrenceAnchorForWrite` in `recurrenceAnchorDefaults.js`). Explicit guardian choice always overrides.
+Applied on **create** when `recurrence_anchor` is omitted (`resolveRecurrenceAnchorForWrite` in `recurrenceAnchorDefaults.js`). The explicit choice always wins.
 
-| Care family | Default `recurrence_anchor` |
-|-------------|----------------------------|
-| `vaccination` | `from_due_date` |
-| `parasite_prevention` | `from_due_date` |
-| All other recurring families | `from_completion` |
+| Care family | Default | `recurrence_anchor` |
+|-------------|---------|---------------------|
+| `medication` | **Fixed schedule** | `from_due_date` |
+| `vaccination`, `parasite_prevention`, `wellness_review`, `dental`, `weight_monitoring`, `grooming`, `nail_care`, `other` | **After it's done** | `from_completion` |
 
-### `from_completion` meaning (non-clinical families)
+Several times of day require Fixed schedule (`times_require_fixed_schedule`).
 
-Next due date = **N frequency units after actual completion**. Late completions compound drift intentionally. For fixed clinical cadence, use `from_due_date` or explicit `adjustCadence`.
+### After it's done (`from_completion`)
 
-`completion_timing` (`early` | `on_time` | `late`) is stored at write time on complete; **informational in v1** — does not alter `advanceSeries` (D-CSM-002).
+Next date = **done date + interval** (month-end clamp, D-CSM-024). Late completions shift the rhythm, on purpose (D-CSM-002). While overdue, the item shows “Estimated next: today + interval” — display only (D-CSM-022).
+
+### Fixed schedule (`from_due_date`)
+
+Dates = `schedule_anchor_date + n × interval`, clamped, never chained. Missed slots stack for three days, then close as Not recorded (D-CSM-023).
+
+`completion_timing` (`early` | `on_time` | `late`) is stored at write time on complete; it does not change the rules (D-CSM-002).
 
 ### Reschedule vs cadence change (D-CSM-006)
 
@@ -149,6 +198,8 @@ The Away Care Planner consumes flexibility strictly; guardians may still move da
 
 `once` entries: past date and no-op only.
 
+Fixed schedule asks for the scope: **This date only** (default; the slot becomes `planned`; it cannot move past the next series date) or **This and following** (new `schedule_anchor_date`, open future `schedule` slots rebuilt). After it's done: the occurrence moves and becomes `planned` (D-CSM-027).
+
 On success: occurrence row updates, ledger `rescheduled` event, **`health_entries.next_due_date` synced** from open occurrences, response `{ occurrence, warnings[], next_due_date }`. Accepting a planner suggestion uses `reason_code: away_planner` and re-validates on the server (BR-9). Undo via `POST …/schedule/undo` (R-C7).
 
 ---
@@ -167,6 +218,12 @@ On success: occurrence row updates, ledger `rescheduled` event, **`health_entrie
 ## Data model (summary)
 
 **Existing (retained):** `health_entries`, `health_occurrences`
+
+**Additions (care occurrences, migration 083):**
+
+- `health_occurrences`: `origin` (`schedule` | `computed` | `planned`), `close_reason` (`user` | `not_recorded` | `paused` | `covered` | `system`)
+- `health_entries`: `schedule_anchor_date`, `late_completion_choice` (`keep` | `skip_next` | `shift_following` | null = ask), `paused_until`
+- `care_schedule_events` types: `postponed`, `materialised`, `late_choice_applied`, `not_recorded_closed`, `schedule_scope_changed`
 
 **Additions (CSM-1):**
 
@@ -192,6 +249,7 @@ Care Through Change reschedule/pause **UI** (post–CC-4 tranche) is unblocked �
 
 ## Related
 
-- [occurrence-scheduling.md](/docs/domains/health_tracking/changes/occurrence-scheduling.md) — occurrence materialisation and UI zones (behaviour owned by CSM)
+- [occurrence-scheduling.md](/docs/domains/health_tracking/changes/occurrence-scheduling.md) — occurrence model, agenda and the acceptance case matrix
+- [care-item-evolution.md](./care-item-evolution.md) — canonical Care Item product spec (status words, agenda, completion)
 - [api-reference.md](/docs/architecture/api-reference.md) — endpoint index
 - [calendar-dates.md](/docs/architecture/calendar-dates.md) — `YYYY-MM-DD` wire format for schedule fields

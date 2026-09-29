@@ -189,7 +189,7 @@ Each row is one `health_entry_id` with a `kind` discriminant:
 | `recurring_calendar` | repeating, `recurrence_anchor = from_due_date` |
 | `recurring_chain` | repeating, `recurrence_anchor = from_completion` |
 | `single_once` | `frequency = once`, one row per occurrence |
-| `indeterminate_pending` | no materialised date in the window yet |
+| `indeterminate_pending` | paused item only — every active planned item has a real open occurrence (D-ACP-011) |
 
 The plan page shows one **“Planned care”** section per pet (server sort order; no client merge). Rows are tappable → existing Care Item Detail route (`/pet/:petId/events/:entryId`). Pet header shows photo + tap-through to pet profile.
 
@@ -197,7 +197,7 @@ Raw per-occurrence `items[]` stays on the wire unchanged for coverage counts and
 
 ## Away care planning display (ACP — R-A*)
 
-Shipped on the integration branch as ACP-1–ACP-3. Canonical decisions: [away-care-planning-decisions.md](../changes/away-care-planning-decisions.md) (D-ACP-001 … D-ACP-010). Delivery: [away-care-planning-delivery-plan.md](../changes/away-care-planning-delivery-plan.md).
+Shipped on the integration branch as ACP-1–ACP-3. Canonical decisions: [away-care-planning-decisions.md](../changes/away-care-planning-decisions.md) (D-ACP-001 … D-ACP-011; D-ACP-011 supersedes D-ACP-010). Delivery: [away-care-planning-delivery-plan.md](../changes/away-care-planning-delivery-plan.md).
 
 ### Row contract (per pet, per absence)
 
@@ -209,7 +209,7 @@ Shipped on the integration branch as ACP-1–ACP-3. Canonical decisions: [away-c
 | **R-A4** | In-window dates labelled by `date_basis`: scheduled = date only; `planned` → "Planned: {date}"; `estimated` → "Estimated: {date}" (D-ACP-002/003). |
 | **R-A5** | Multiple in-window dates: first date, count, and last date (`first_scheduled_date` / `last_scheduled_date` / `occurrence_count`) — not one line per hop. |
 | **R-A6** | When any row in a pet section shows an estimated date, one section footnote: estimates assume overdue care is completed today, then the usual interval. Suppresses `awayPlanningChainAnchorExplainer` for that section (R-A6.1). |
-| **R-A7** | `"Date not known"` (`indeterminate_pending`) only when no date can be computed (D-ACP-001). |
+| **R-A7** | `"Date not known"` (`indeterminate_pending`) only when no date can be computed (D-ACP-001). Since D-ACP-011 this happens only for paused items. |
 | **R-A8** | PDF handover uses the same copy as the screen (`AwayPlanScheduleCopy`). |
 | **R-A9** | Paused series: **Paused**, no dates (D-CSM-005). |
 
@@ -233,6 +233,19 @@ Placement: under the pet header, **above** "Planned care". `GET /api/planned-abs
 ### Reschedule from care item (R-C*)
 
 Care Item Detail and away-plan **Plan this** open the same **Change date** sheet (ACP-5). Server validation, `warnings[]`, and `next_due_date` sync are owned by CSM (D-ACP-009) — see [care-schedule-management.md](care-schedule-management.md).
+
+### Absence ↔ Postpone until (D-ACP-011, D-CSM-028)
+
+Absences use the same care commands as everything else — there is no absence-only way to move care:
+
+| Absence action | Care command |
+|----------------|--------------|
+| Move after return | **Postpone until** the day after return (`reason: absence`, `absence_id`); stores the `move_after` resolution |
+| Move before leaving | **Change date** (Fixed schedule: This date only by default) |
+| A date during the trip, looked after by the carer | **Plan another date**, then Looked after by on that real occurrence |
+| Review date | Opens the real open occurrence directly (no ensure step) |
+
+Recording an absence still changes no care (the hard invariant above); only a person's explicit action does.
 
 ## Related
 

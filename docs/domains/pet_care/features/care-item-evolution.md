@@ -11,7 +11,7 @@ related_bdd: []
 
 # Care Item — functional spec
 
-**Status:** active target model, 2026-09-27. This document is the **single canonical product spec** for Care Items (series + occurrences + detail view + absence join-work). Execute-plan: [`care-item-evolution`](../../../.agents/plans/care-item-evolution.md).
+**Status:** active target model, 2026-09-27; **amended 2026-09-29** by the care occurrences programme (D-CIE-024 … D-CIE-028 below, timing decisions D-CSM-019 … D-CSM-033, absences D-ACP-011). This document is the **single canonical product spec** for Care Items (series + occurrences + detail view + absence join-work). Execute-plans: [`care-item-evolution`](../../../.agents/plans/care-item-evolution.md), [`care-next-occurrence-c1a7`](../../../.agents/plans/care-next-occurrence-c1a7.md).
 
 **Supersedes:** [care-item-model-delivery-plan.md](../changes/care-item-model-delivery-plan.md) (profile/list presentation roadmap — historical). The old execute-plan roadmap [`pet-care-item-model`](../../../.agents/plans/pet-care-item-model.md) is **superseded**; do not start new work from it.
 
@@ -33,7 +33,7 @@ The Care Item becomes the place where a pet parent sees and acts on one part of 
 
 Four principles:
 
-1. **Build on what works.** Care Schedule Management (CSM) keeps owning timing: recurrence, rollover, reschedule, pause, projection and flexibility. This spec changes how they're presented, not how they calculate. Requirements that describe existing behaviour are labelled **Preserve**.
+1. **Build on what works.** Care Schedule Management (CSM) keeps owning timing: recurrence, rollover, reschedule, pause, projection and flexibility. Requirements that describe existing behaviour are labelled **Preserve**. Where the care occurrences programme changed the timing itself (always a real next date, two schedule types, Postpone until), the row is labelled **Amends (timing)** and points to the CSM decision.
 2. **Store decisions, work out statuses.** The app stores what a person decided. Whether something is reviewed, resolved or needs review is worked out when read, like readiness in Away Planning (D-AWAY-001/002) and "needs review" in People (D18).
 3. **Calm by default.** Status answers "when?". Priority answers "how important?". The two signals never mix.
 4. **Quick to complete, rich if wanted.** Marking care done never requires details, but it never guesses a date that changes the schedule.
@@ -43,7 +43,7 @@ Four principles:
 | # | Decision | Status | Consequence |
 |---|---|---|---|
 | D-CIE-001 | "Occurrence" is an internal word | Agreed | The View never says "Current occurrence". Status and date speak for themselves: "Overdue · 11 Sep 2026" |
-| D-CIE-002 | One word for late, unresolved care: **Overdue** | Agreed | "Missed" leaves the UI. Stored statuses stay `pending` / `completed` / `skipped`. There is no `cancelled` |
+| D-CIE-002 | One word for late, unresolved care: **Overdue** | Agreed; amended by D-CIE-024 | "Missed" leaves the UI. Stored statuses stay `pending` / `completed` / `skipped`. There is no `cancelled`. D-CIE-024 adds **Not recorded** for Fixed-schedule doses whose next dose is already due |
 | D-CIE-003 | Timed care: Coming up until its time, **Due until the planned time, then Overdue** | Agreed | Matches live `isOccurrenceMissed` / `isOccurrenceMissed` (server + client). Multi-dose days: each slot has its own status |
 | D-CIE-004 | Status describes the schedule and what has been logged, not medical safety | Agreed | No wording implies that a late dose is safe or unsafe |
 | D-CIE-005 | Care uses the pet's home timezone | Agreed | Occurrences, reminders, absence boundaries, "today" and status changes all use one timezone |
@@ -58,12 +58,17 @@ Four principles:
 | D-CIE-014 | No permanent carer on a care item | Agreed | The pet's carer on the absence is the suggested "who". One occurrence can name someone else (People D10) |
 | D-CIE-015 | Schedule flexibility stays worked out, not stored | Agreed | D-ACP-006 unchanged. A per-item override stays deferred |
 | D-CIE-016 | A provider is a contact, or a typed name for now | *Proposed* | Typed names have limits (see Providers). Contacts remain the normal path |
-| D-CIE-017 | Occurrence actions and care item actions live in separate menus | *Proposed* | Makes "this time only" vs "the schedule" visible in the layout |
-| D-CIE-018 | Lifecycle: Active, Paused, Finished, Archived, Deleted | Agreed | "Close event" and "Reopen event" are retired. A resume date waits on Still open item 2 |
+| D-CIE-017 | Occurrence actions and care item actions live in separate menus | Agreed (amended 2026-09-29) | Makes "this time only" vs "the schedule" visible in the layout. Occurrence menu: Skip, Postpone, Plan another date, Add note, Looked after by. Care item menu: Edit, Pause or Resume, Archive or Restore, Delete. List rows carry one action only (D-CIE-026) |
+| D-CIE-018 | Lifecycle: Active, Paused, Finished, Archived, Deleted | Agreed; amended by D-CSM-028 | "Close event" and "Reopen event" are retired. Pause and "pause until" are **Postpone until**; Resume asks the date, pre-filled with the date it would have had |
 | D-CIE-019 | Category fields are built from shared blocks | Agreed | Categories choose blocks. Route or method is optional where useful |
 | D-CIE-020 | Historical facts don't change when defaults change | Agreed | Occurrences keep the provider, dose and people recorded at the time |
 | D-CIE-021 | Reminder delivery is a separate track | Agreed | It can start early and doesn't block the redesign |
 | D-CIE-022 | Out of scope: cost, vaccination courses, stock and refills | Agreed | See Out of scope |
+| D-CIE-024 | Status words: Coming up, Due, Overdue, **Not recorded**, Done, Skipped, Paused | Agreed 2026-09-29 | Not recorded = a Fixed-schedule dose still open when the next dose is due. Neutral info styling, not error: it assumes the care was given and only the record is missing. See Occurrence status |
+| D-CIE-025 | One agenda: **Today** (Overdue first), **Due soon** (7 days), **Upcoming** (collapsed) | Agreed 2026-09-29 | Same component on the dashboard (all pets) and the pet profile (one pet). See Agenda |
+| D-CIE-026 | One row, one action | Agreed 2026-09-29 | Rows show name, status and date, and one trailing action: **Mark as done**, or **Review** for doses not recorded. Other actions are on the Care Item view. The row changes only after the server confirms |
+| D-CIE-027 | Create and Edit: main fields first, **Advanced settings** collapsed | Agreed 2026-09-29 | Plan something shows only **Due date**; Record something shows only **Completed on**. Advanced settings: Where, Priority, Schedule type, If done after the due date, Provider, Documents. See Edit |
+| D-CIE-028 | The server supplies "today" | Agreed 2026-09-29 | Responses carry `as_of` and a status per open occurrence, in the pet's home timezone. The app refreshes on resume, every 15 minutes while care is on screen, and when the pet's day changes |
 | D-CIE-023 | Pet **home timezone** on `pets.home_timezone` (IANA) | Agreed | Default at create: owner account TZ when People P4 exists, else `X-Client-Timezone` once, else `UTC`. Editable on pet profile. Care "today" and timed Overdue use this zone. **Absence guest access** keeps People **D24** (creator account TZ on the absence) — two fields, two jobs. Fallback chain: pet → owner account TZ → `UTC` |
 
 ## Where we start
@@ -73,12 +78,13 @@ Much of the target behaviour exists. This table maps each area to what is live.
 | Area | Today | Type |
 |---|---|---|
 | Care item and occurrence | `health_entries`, `health_occurrences`, `care_schedule_events` (CSM v1) | Preserve |
-| Occurrence status | Stored `pending` / `completed` / `skipped`. The detail screen groups open ones as Missed, Due today and Coming up. The event list, away plan and notifications say Overdue | UX change (Overdue everywhere). Timed rule unchanged (D-CIE-003 **Preserve**) |
-| "Today" | Occurrence status uses the device's calendar. The away plan and notifications use the server's calendar day. No timezone is stored | New rule (D-CIE-005) |
+| Occurrence status | Stored `pending` / `completed` / `skipped`. The detail screen groups open ones as Missed, Due today and Coming up. The event list, away plan and notifications say Overdue | UX change (Overdue everywhere). Timed rule unchanged (D-CIE-003 **Preserve**). **Amends (timing):** Not recorded for Fixed-schedule stacks (D-CIE-024, D-CSM-023) |
+| "Today" | Occurrence status uses the device's calendar. The away plan and notifications use the server's calendar day. No timezone is stored | New rule (D-CIE-005); the server supplies it (D-CIE-028) |
 | Plain-language schedule | "Every year", "Every 30 days" (`formatRecurrenceSummary`). The schedule type isn't in the summary | UX change |
-| Schedule type explained | Toggle with an info sheet and a worked example | Preserve, with a copy fix (Schedule section) |
-| One-off change vs schedule change | Change date moves one occurrence; changing the cadence is separate (D-CSM-006, D-ACP-007) | Preserve |
-| Several overdue occurrences | Triage sheet, "Skip all missed", "skip earlier missed doses" when completing | Preserve, reworded |
+| Schedule type explained | Toggle with an info sheet and a worked example | Preserve, with a copy fix (Schedule section). Labels **Fixed schedule** / **After it's done**, under Advanced settings → **Schedule type** |
+| Category defaults for the schedule type | Vaccination and parasite prevention default to fixed; everything else after completion (D-CSM-001) | **Amends (timing):** medication → Fixed schedule; every other category → After it's done (D-CSM-020) |
+| One-off change vs schedule change | Change date moves one occurrence; changing the cadence is separate (D-CSM-006, D-ACP-007) | Preserve the separation. **Amends (timing):** Fixed schedule asks **This date only** / **This and following** (D-CSM-027) |
+| Several overdue occurrences | Triage sheet, "Skip all missed", "skip earlier missed doses" when completing | **Amends (timing):** only Fixed schedule stacks; one row "3 doses not recorded" → **Record earlier doses** (Given / Not given); older than three days → recordable from History (D-CSM-023) |
 | Completion | "Mark Completed" opens a sheet with a date and a note. Weight care opens the weight sheet. Vet visits then offer a health-issue link | UX change (D-CIE-009) |
 | Moves around an absence | "Suggested by Agatha", the change-date sheet with gap, preview and caution warnings, undo | Preserve |
 | Flexibility | Worked out per item: fixed, earlier only, carer task, flexible, with a maximum shift (D-ACP-006) | Preserve |
@@ -88,8 +94,10 @@ Much of the target behaviour exists. This table maps each area to what is live.
 | Treatment end, reason | "Repeats until" date; link to a health issue | Preserve |
 | Weight | Completing a weight check writes a weight entry linked to the occurrence. The target weight is on the pet | Preserve. Body condition score is new |
 | Documents | Care item documents, occurrence notes. No occurrence documents | Occurrence documents are new |
-| Lifecycle | Close and Reopen. Pause and resume exist in the API only, with no UI | UX change, Pause UI |
-| Future occurrences | Never **automatically** pre-generated beyond T−1 / rollover (D-CSM-004, D-ACP-010). **On-demand** open-head materialisation when acting (D-CSM-018) | Preserve + extend |
+| Lifecycle | Close and Reopen. Pause and resume exist in the API only, with no UI | UX change, Pause UI. **Amends (timing):** pause is Postpone until; resume asks the date (D-CSM-028) |
+| Future occurrences | Created by T−1 / rollover only; a next date more than a day away had no stored occurrence, so it could not be acted on (D-CSM-004, D-CSM-018) | **Amends (timing):** every active planned item always has a real open occurrence, created in the same request as the action that needs it (D-CSM-019). Fixed schedule also stores the next series date's doses (D-CSM-023) |
+| Irregular dates, boosters | Not supported (one series date at a time) | **New:** Plan another date; "+ Add a booster date" for vaccines (D-CSM-025) |
+| Lists | Several grouping rules (dashboard, profile, All care, pet list) with a reminder window that could hide care | **New:** one agenda (D-CIE-025) |
 | Reminders | One reminder N days before, plus one overdue notice. In-app only, created when the app checks, calendar days only | Separate track (D-CIE-021) |
 
 Phase 0 (a regression baseline) mostly exists: the CSM projection corpus and integration gate (CSM-17), and the Away Care Planning tests. New tests are needed only where status, timezone and completion change.
@@ -127,17 +135,55 @@ Each arrow points from a concept to the one it refers to. Recording an absence c
 | Coming up | Before the scheduled day | Before the scheduled time | `pending` |
 | Due | On the scheduled day | From the scheduled time until that time has passed | `pending` |
 | Overdue | From the next calendar day | From the scheduled time onward on the scheduled day | `pending` |
-| Completed | — | — | `completed` |
-| Skipped | — | — | `skipped` |
+| Not recorded | Fixed schedule only: the next dose of the series is due. After three days it closes and stays recordable from History | same | `pending`, then `skipped` with `close_reason = not_recorded` |
+| Done | — | — | `completed` |
+| Skipped | — | — | `skipped` (`close_reason = user`) |
+| Paused | The item is paused; its open occurrence is hidden from lists and reminders | same | item `status = paused` |
+
+How long Overdue lasts depends on the schedule type (D-CSM-022, D-CSM-023):
+
+- **After it's done:** Overdue until done, skipped or postponed. While overdue, the item shows "Estimated next: {today + interval}" — a display-only line, never a row, an action or a reminder.
+- **Fixed schedule:** Overdue until the next dose of the series is due, then **Not recorded**. Several Not recorded doses are one **stack** row: "3 doses not recorded" (medication) or "3 not recorded" (other care), with **Review**.
+
+| Word | Chip ([system.md](/docs/design/system.md) §6.8) |
+|---|---|
+| Coming up | Neutral text |
+| Due | Warning tokens + text |
+| Overdue | Error tokens + text + urgency icon, same at every priority (D-CIE-006) |
+| Not recorded | Info tokens + text + icon (not error) |
+| Done · Skipped · Paused | Success + check · neutral · neutral + pause icon |
 
 ### Rules
 
 - **A person's action wins.** Care done late is Completed, not "Overdue and completed". History still shows both dates: "Done 15 Sep · due 11 Sep".
-- **Several doses a day:** each dose has its own status. The 08:00 dose is Overdue from 08:01 until completed or skipped; the 18:00 dose follows the same rule for its slot. Completing a dose still offers to skip earlier overdue doses (Preserve).
+- **Several doses a day:** each dose has its own status. The 08:00 dose is Overdue from 08:01 until the 18:00 dose is due, then Not recorded; the 18:00 dose follows the same rule for its slot. Several times of day always use Fixed schedule (D-CSM-020).
 - **List surfaces (profile, All Actions, All care):** when several open slots exist on one item, the row subtitle states the **worst** open slot (e.g. "Overdue · 08:00" or "Due · 18:00"), consistent with Needs attention's leading occurrence rule.
 - **Not a safety statement (D-CIE-004).** Due and Overdue describe the schedule and what has been logged. They never say whether a late dose is safe. A future completion window, set by the pet parent or their vet, could replace these defaults for one item.
 - **Reminders don't change status (D-CIE-007).**
 - **Timezone (D-CIE-005, D-CIE-023):** every "today", status change, reminder and absence boundary uses the pet's home timezone (`pets.home_timezone`), not the device's. When the device is somewhere else, times show the zone: "18:00 · Paris time". Absence guest access windows stay on the creator account timezone (People D24), separate from pet home.
+- **The server decides (D-CIE-028):** list and detail responses carry `as_of { date, time, timezone }` and a status for each open occurrence. The app may turn a timed Due into Overdue as minutes pass, and asks again on resume, every 15 minutes while care is on screen, and when the pet's day changes.
+
+## Agenda (D-CIE-025, D-CIE-026)
+
+The dashboard (all pets) and the pet profile (one pet) use the same agenda. All care uses the same groups.
+
+1. **Today**
+   - **Overdue** first, both schedule types. A Fixed-schedule stack is one row, "3 doses not recorded", with **Review**.
+   - Then care due today, grouped **Morning** (before 12:00), **Afternoon** (12:00–17:59), **Evening** (from 18:00) and **Anytime** (no time). Group headings appear only when at least two groups have care; otherwise one heading, **Today's list**.
+   - Care done today stays at the end, quiet (check and time), until the day ends.
+2. **Due soon** — the next 7 days after today.
+3. **Upcoming** — later dates, collapsed, with a count.
+
+- Care that repeats daily or more often appears only in Today.
+- The reminder window never hides care. A yearly vaccine in 200 days is in Upcoming.
+- Dashboard orientation line: "2 overdue · 3 due today"; when both are zero, "Nothing due today", then Due soon and Upcoming.
+- States: a loading skeleton (no empty copy while loading); an error with Retry; no care at all → the illustrated empty state and "Add care".
+- No progress bars, rings, "3 of 5" or praise (True North #4).
+- Time groups use each pet's local time.
+
+**Row (D-CIE-026):** one composition everywhere (`CareActionRow` inside `CareCollectionInsetList`): pet avatar on the dashboard only, name, status chip and date or time, and **one trailing action** — **Mark as done**, or **Review** for a stack. Tapping the row opens the Care Item view. An item with several open doses acts on the most urgent one. The row changes only after the server confirms, then "Done · Undo".
+
+Accessibility: section and group headings are headers; Upcoming exposes expanded or collapsed; rows are at least 56 high and fully tappable, the trailing button at least 48; the row reads as one label, e.g. "Buddy, Flea treatment, Overdue, 5 June"; moves respect reduced motion. Stable ids: `care_agenda_today`, `care_agenda_due_soon`, `care_agenda_upcoming`, `care_agenda_group_<morning|afternoon|evening|anytime>`, `care_agenda_stack_<entryId>`.
 
 ## Care item view
 
@@ -161,18 +207,20 @@ The area at the top holds what needs doing now. For most items that's one occurr
 | Due | "Due today" or "Due · 08:00" | Mark as done, Change date |
 | Overdue | "Overdue · 11 Sep 2026 · 16 days ago" | Mark as done, Change date |
 | Several doses today | A **Today** list: "08:00 · Completed ✓", "18:00 · Due" | "Mark 18:00 as done" for the most recent open dose; each row has its own action |
-| Several overdue days | "3 overdue · most recent 11 Sep" | Mark as done (most recent), Review. "Skip all overdue" is inside Review |
+| Doses not recorded (Fixed schedule) | "3 doses not recorded" | **Review** opens **Record earlier doses**: per dose **Given / Not given** (medication) or **Done / Not done** (other care); footer "All given" / "None given" |
+| After it's done, overdue | "Overdue · 5 Jun · Estimated next: 7 Jul" | Mark as done (asks "When was this done?"), Change date |
 | Looked after by someone | "Looked after by Jamie" on the occurrence | — |
 | One-off record | "Recorded · 12 Sep 2026" | Add details |
 | Finished | "Finished · 12 Sep 2026" | — |
-| Paused | "Paused since 1 Sep" | Resume |
+| Paused | "Paused since 1 Sep" (or "Paused until 12 Oct"), plus "N doses not recorded · Review" when a stack remains | Resume (asks the date, D-CSM-028) |
 | Archived | "Archived", muted | Restore |
 
 - The leading occurrence is the most recent open one that is Due or Overdue. Without one, it's the next occurrence coming up. This matches today's "mark latest" rule.
 - The Overdue pill is small, red and the same for every priority (D-CIE-006). Coming up is always neutral.
 - **Menus (D-CIE-017):**
-  - The occurrence menu (in this area) has Skip, Add note, Looked after by and View details. Change date is a visible button.
-  - The care item menu (top right) has Edit, Pause or Resume, Archive or Restore, and Delete.
+  - Needs attention keeps one primary button (**Mark as done**, or **Review** for a stack) and an outlined **Change date**.
+  - The occurrence menu (in this area) has Skip, **Postpone**, **Plan another date**, Add note, Looked after by and View details.
+  - The care item menu (top right) has Edit, Pause or Resume (both through Postpone until), Archive or Restore, and Delete.
 - **Verbs:** "Mark as done" replaces "Mark Completed". "Change date" stays, because it is frozen Away Care Planning copy.
 
 ### Schedule
@@ -180,7 +228,7 @@ The area at the top holds what needs doing now. For most items that's one occurr
 The app writes a summary from the schedule. Controls stay in Edit.
 
 - **Rhythm:** "Every year · fixed schedule", "Every 30 days after it's done", "Twice a day · 08:00 and 18:00", "Once".
-- **Next date,** using the away plan's date wording (D-ACP-002). A fixed schedule shows "Next: 11 Sep 2027". An "after completion" schedule shows "30 days after it's done", or "Estimated 27 Oct" once the open one is done or due.
+- **Next date,** using the away plan's date wording (D-ACP-002). There is always a real next date (D-CSM-019): "Next: 11 Sep 2027". While an After-it's-done item is overdue: "Estimated next: 7 Jul" (display only). Planned dates show as planned: "Booster · 1 Jul".
 - **Reminder:** "Reminder 7 days before" or "No reminder".
 - **Flexibility in words,** from the worked-out value: "Can move up to 3 days earlier", "Keep to the date" or "Can move up to 7 days either way". It is hidden for care more frequent than weekly.
 - **Source,** when it isn't the pet parent: "Set by your vet".
@@ -188,12 +236,12 @@ The app writes a summary from the schedule. Controls stay in Edit.
 - **The Established marker,** once earned, as a quiet line.
 - **Edit schedule** opens Edit at the Schedule section.
 
-**Copy fix for the schedule type.** Moving one occurrence of a fixed schedule shifts the following dates (D-ACP-007), so "future dates stay on their original schedule" would be wrong.
+**Copy fix for the schedule type.** Moving one date of a fixed schedule asks **This date only** (the default; the other dates stay) or **This and following** (the schedule moves from that date) (D-CSM-027, amending D-ACP-007).
 
 - **After it's done:** "The next date counts from the day you mark it done."
 - **Fixed schedule:** "The next date counts from the due date, even if it's done early or late."
 
-The Change date sheet already previews what follows a move (R-C3).
+The Change date sheet previews the next two dates for the chosen scope (R-C3).
 
 ### Details
 
@@ -209,12 +257,13 @@ The Change date sheet already previews what follows a move (R-C3).
 
 - Resolved past occurrences, newest first. Mobile shows 3, web shows 5, then "See full history".
 - Each row shows:
-  - the date and status (Completed or Skipped)
+  - the date and status (Done, Skipped, Not given or Not recorded)
   - the due date when it differs
   - one key recorded value, such as "12.4 kg"
   - both people when they differ (People D15), e.g. "Given by Jamie · logged by Alex"
 - A row opens that occurrence's record, which can be edited.
 - An unresolved overdue occurrence never appears here.
+- A **Not recorded** dose offers **Record as given** (D-CSM-023). It becomes Done; nothing else changes.
 
 ### Access levels
 
@@ -246,6 +295,8 @@ People tiers decide what each person sees.
 | Coming up or Due | Done today, straight away | "Done · Add details · Undo" |
 | Overdue | Asks **When was this done?** Today · On the scheduled date (11 Sep) · Choose another date | "Done · Add details · Undo" |
 | Weight monitoring | The existing weight sheet, because the value is the point | — |
+| Well before its date (more than half an interval early) | Asks "Planned for 12 Mar. Mark it as done today?" (Cancel first) | "Done · Undo" (D-CSM-030) |
+| Done after its due date while another date is already planned | Asks what to do with that date (below) | "Done · Undo" |
 
 - **Why overdue care asks (D-CIE-009):** for "after completion" schedules, the done date sets every following date. One tap on 27 Sep for care done on 12 Sep would move the next date by 15 days. The question is asked for every overdue item, so the history stays accurate too.
 - **Add details** offers:
@@ -258,7 +309,48 @@ People tiers decide what each person sees.
 - **Next date from the vet:** after completing, "Next: 11 Sep 2027 · Change".
   - A date within one interval is a normal Change date.
   - A longer one, such as a 3-year rabies booster, asks "Change the interval from now on?" and changes the cadence. A single move can't go past where the next one would have been (D-ACP-009).
-- Undo works as today.
+- **The next date is shown straight away.** The response carries the item with its new open occurrence; the row moves to its section without a reload (D-CSM-019).
+- **Undo** reverses the whole action, including a new next date the app created and any choice below (D-CSM-029).
+
+### Done after the due date, with another date waiting (D-CSM-026)
+
+When care is done late, another planned or scheduled date is waiting, and the gap to it shrank by more than half, the app asks before saving:
+
+- **Keep {date}** (selected by default; also what closing the sheet does)
+- **Skip {date}**
+- **Move this and following by {N}**
+- ☐ **Remember my choice for this care item** — shown and changeable in Advanced settings as **If done after the due date**.
+
+Copy example: "Recorded after its planned time. The next dose is planned for 18:00." No wording about whether that is safe (D-CIE-004).
+
+```mermaid
+sequenceDiagram
+  participant U as Pet parent
+  participant A as App
+  participant S as Server
+  U->>A: Mark as done
+  alt overdue
+    A->>U: When was this done?
+    U->>A: date
+  end
+  A->>S: complete {completed_on}
+  alt choice needed and none remembered
+    S-->>A: 409 next_choice_required (nothing saved)
+    A->>U: Keep / Skip next / Move this and following (+ Remember)
+    U->>A: choice
+    A->>S: complete {completed_on, next_choice, remember_choice}
+  end
+  S-->>A: 200 {entry with open_occurrences, undo_token}
+  A->>U: Done · Undo (server-confirmed)
+```
+
+### Plan another date (D-CSM-025)
+
+- **Change date** moves a date; **Plan another date** adds one (a booster, a booked visit, an extra dose).
+- Planned dates come first: the schedule rule adds a date only when nothing is planned.
+- A date within half an interval of another open date asks first: "Another date is already planned for 5 Jun. Add this one too?"
+- Vaccines: "+ Add a booster date" under the first due date. First dose 1 Jun, booster 1 Jul, then yearly: the booster follows the first dose, and the yearly date counts from the booster.
+- After it's done: marking a later date done while an earlier one is open asks about the earlier one: **Mark it done** / **Skip it** / **Keep it**.
 
 ## Absences
 
@@ -269,7 +361,6 @@ Absence conflicts attach to **dates**, not abstract care items:
 | Surface | Shows |
 |---------|--------|
 | **Needs attention** (each open occurrence row) | Short line when that occurrence's date intersects an upcoming absence |
-| **Schedule — Next** | When there is no materialised row yet but `next_due_date` or projection shows an in-window date |
 | **Absence module** (care item) | Trip summary + two actions (below) for the primary upcoming absence |
 
 Tone is **neutral** (not red "plan needed"). Copy names the **concrete date** where possible.
@@ -281,9 +372,9 @@ When affected and not yet resolved:
 | Action | Behaviour |
 |--------|-----------|
 | **Keep with {carer}** (or **Keep during absence** when no carer) | Saves resolution **`keep_date`** (+ optional **`looked_after_by`** from the pet's carer on the trip) |
-| **Review date** | **`ensureOpenOccurrence`** for the open head if needed, then **occurrence review** with **Change date** and **Skip** only |
+| **Review date** | Opens the date directly (it is always a real occurrence, D-ACP-011) with **Change date**, **Skip** and **Postpone** |
 
-**Move before / move after** are not separate buttons. After **Change date**, the server stores **`move_before`** or **`move_after`** when the new date falls outside the absence window (inferred from dates). Accepting an away-plan planner suggestion uses the same reschedule path and should sync resolution (execute-plan `care-absence-materialisation-7796`).
+**Move before / move after** are not separate buttons. After **Change date**, the server stores **`move_before`** or **`move_after`** when the new date falls outside the absence window (inferred from dates). **Move after return** is **Postpone until** the day after return (`reason: absence`, D-CSM-028) — the same command as Pause. Accepting an away-plan planner suggestion uses the same reschedule path and syncs the resolution.
 
 **Nothing needed** (trip deferral without skipping) remains in the resolution enum for edge cases; primary UX for "drop this instance" is **Skip** on the occurrence.
 
@@ -310,7 +401,8 @@ A resolution is stored only when someone makes a decision for one care item and 
 | Dates decided for | The item's dates inside the absence when the decision was made. Used to notice changes |
 
 - **Keep the date** covers both "Jamie will do it" and "the vet does it at the booked appointment".
-- **Move before** and **Move after** are stored **after** a successful **Change date** when the new date is before leave or after return (R-C2–R-C4, R-C8). **Review date** runs **`ensureOpenOccurrence`** (D-CSM-018) when the row does not exist yet, then opens the occurrence review sheet.
+- **Move before** and **Move after** are stored **after** a successful **Change date** or **Postpone until** when the new date is before leave or after return (R-C2–R-C4, R-C8). **Review date** opens the real occurrence directly (D-ACP-011); nothing needs creating first.
+- A date **planned** inside the trip (Plan another date) is a real occurrence and can be looked after by the pet's carer.
 - **Nothing needed** records deliberate trip-level deferral; **Skip** on the occurrence is the usual way to drop one in-window instance.
 
 ### What is worked out when read
@@ -359,6 +451,7 @@ Rules:
 | Decision | Change |
 |---|---|
 | D-AWAY-003 | Amended: per-item resolutions are in scope. The carer per pet stays, and is the suggested "who" |
+| D-ACP-010 | Superseded by D-ACP-011: every active item has a real open occurrence, so later dates can be planned and assigned directly |
 | D-AWAY-001, D-AWAY-002, D-AWAY-010 | Unchanged: no stored status, facts not verdicts, saving never needs a complete plan |
 | People D10 | "Absence plan" now includes per-item resolutions |
 
@@ -421,26 +514,32 @@ Categories choose from five shared blocks. Every block field is optional, and co
 | State | Meaning | How it starts | Shown |
 |---|---|---|---|
 | Active | Normal scheduling | Default | — |
-| Paused | No new dates or reminders; history kept | Pause, from today or a chosen date | "Paused since 1 Sep" and Resume |
+| Paused | No new dates or reminders; hidden from lists; history kept | **Postpone until** without a date (Pause), or with one (resumes by itself on that date) (D-CSM-028) | "Paused since 1 Sep" or "Paused until 12 Oct", and Resume |
 | Finished | Nothing more is planned | Worked out: one-off care done, or the end date passed | "Finished · 12 Sep" |
 | Archived | No longer tracked | Archive, which replaces "Close event" and closes open occurrences, as Close does today | Muted, with Restore |
 | Deleted | Removed | Delete, after a confirmation that suggests Archive when history exists | — |
 
 - Paused items leave Actions. The away plan shows them as "Paused" (R-A9).
-- **Resume today (Preserve):** resuming never adds the dates that fell during the pause (D-CSM-005). The open occurrence keeps its date. An item paused past its due date therefore comes back Overdue, with one occurrence.
-- **"Resume on" date:** waits on Still open item 2.
+- **Resume asks the date (Amends (timing), D-CSM-028):** pre-filled with the date the item would have had without the pause ("This is when it would have been"). After it's done: step from the open date by the interval until on or after today. Fixed schedule: the first series dose on or after now. Resuming never adds the dates that fell during the pause (D-CSM-005).
+- A paused Fixed-schedule item keeps its stack: doses older than three days still close as Not recorded and stay recordable from History.
 
 ## Edit
 
-Create and Edit use the same form. The category sets defaults for where, priority and schedule type (taxonomy §4.3); the pet parent can change them.
+Create and Edit use the same form (D-CIE-027). The category sets defaults for where, priority and schedule type (taxonomy §4.3, D-CSM-020); the pet parent can change them. Changing category updates only the Advanced settings the user has not touched.
 
 | Section | Holds |
 |---|---|
-| Basics | Pet, category, name, priority |
-| Schedule | Rhythm, times, schedule type with its explanation, start or next date, end |
-| Reminders | Reminder settings. More options arrive with the reminder track |
-| Care details | Where and provider, Instructions, category blocks, documents, Notes |
-| More | Health-issue link, less-used fields |
+| Main | Pet(s) · **Plan something / Record something** · category · name · **dosage (medication only)** · repeat (frequency, times of day) · **Plan → Due date only (required)** / **Record → Completed on only (required)** · vaccination: **+ Add a booster date** · reminder · notes · related health issue |
+| **Advanced settings** (collapsed, one-line summary, e.g. "At home · Essential · After it's done · Ask me") | Where · Priority · **Schedule type** (Fixed schedule / After it's done, with the info sheet) · **If done after the due date** (Ask me / Keep the next date / Skip the next date / Move this and following) · Provider · Documents |
+
+- **Plan / Record** is a segmented control; switching hides and clears the other date. The server rejects a planned create with `completed_on`, and a record without it (400).
+- Advanced settings: header at least 48 high, the summary is its subtitle and part of its label; it opens and focuses the first error when validation fails.
+- Several times of day: After it's done is not offered (D-CSM-020).
+- Booster dates show as removable chips ("Remove booster date 1 Jul").
+- Schedule edits are applied as actions (D-CSM-032): a new next date is a Change date; a new frequency applies from today; switching schedule type asks for confirmation.
+- Category blocks appear after the category is chosen. Empty optional blocks stay collapsed, e.g. "Add dose details".
+- "Record what happened" keeps its shorter form (taxonomy §7.2).
+- Lifecycle actions live in the View's care item menu, not in Edit.
 
 - Category blocks appear after the category is chosen. Empty optional blocks stay collapsed, e.g. "Add dose details".
 - "Record what happened" keeps its shorter form (taxonomy §7.2).
@@ -466,8 +565,24 @@ New FR wording is proposed and needs the FR copy pass.
 | Overdue | Overdue | En retard | Existing |
 | Due | Due today · Due | Aujourd'hui · À faire | Existing / new |
 | Coming up | Coming up | À venir | Existing |
-| Completed | Completed | Terminé | Existing |
+| Not recorded | Not recorded · 3 doses not recorded | Non noté · 3 doses non notées | New (D-CIE-024) |
+| Done | Done | Fait | New, replaces "Completed" in status chips |
 | Skipped | Skipped | Ignoré | Existing |
+| Fixed schedule | Fixed schedule | Calendrier fixe | Existing ARB |
+| After it's done | After it's done | Après l'avoir fait | New, replaces "From completion" |
+| Schedule type | Schedule type | Type de calendrier | New |
+| If done after the due date | If done after the due date | Si c'est fait après la date prévue | New |
+| Today · Due soon · Upcoming | Today · Due soon · Upcoming | Aujourd'hui · Bientôt · À venir plus tard | New (D-CIE-025) |
+| Today's list | Today's list | La liste du jour | New |
+| Morning · Afternoon · Evening · Anytime | Morning · Afternoon · Evening · Anytime | Matin · Après-midi · Soir · À tout moment | New |
+| Nothing due today | Nothing due today | Rien à faire aujourd'hui | New |
+| Plan another date | Plan another date | Prévoir une autre date | New (D-CSM-025) |
+| Add a booster date | + Add a booster date | + Ajouter une date de rappel | New |
+| Postpone | Postpone until | Reporter au | New (D-CSM-028) |
+| Record earlier doses | Record earlier doses · Given · Not given | Noter les doses précédentes · Donnée · Pas donnée | New |
+| Record as given | Record as given | Noter comme donnée | New |
+| Estimated next | Estimated next | Prochaine date estimée | New |
+| Advanced settings | Advanced settings | Paramètres avancés | New |
 | Mark as done | Mark as done | Marquer comme fait | New, replaces "Mark Completed" |
 | Change date | Change date | Changer la date | Existing |
 | Pause, Resume | Pause, Resume | Mettre en pause, Reprendre | New |
@@ -488,7 +603,7 @@ New FR wording is proposed and needs the FR copy pass.
 - **"PLAN NEEDED":** neutral "Not reviewed yet".
 - **Flea treatment:**
   - "Move to 2 Oct" can't be suggested: monthly parasite prevention moves earlier only, by at most 3 days, and 3 Oct is inside the absence. Offer "Keep the date · Jamie", or a manual Change date with its caution.
-  - "After completion" is wrong: parasite prevention defaults to a fixed schedule (D-CSM-001).
+  - Parasite prevention now defaults to **After it's done** (D-CSM-020), so "After it's done" is correct; the mockup label "After completion" becomes "After it's done".
   - "Assign to Jamie" becomes "Keep the date · Jamie".
 - **Wellness review:** "No impact" is wrong, because the overdue review is on the away plan.
 - **History:** 11 Sep 2026 appears only in Needs attention.
@@ -509,6 +624,7 @@ Two streams run in parallel, then join.
 | E. Absence resolutions | Join | Resolutions, worked-out states, the Care Item's Absence section, away-plan rows, handover PDF | B, and People phase 2 for carers from contacts. It can start with today's carers |
 | F. Category blocks | Care | In the order above | C |
 | R. Reminders | Own track | Delivery, at-time reminders, follow-ups, several reminders | Can start any time; blocks nothing |
+| O. Care occurrences | Care | Always a real next date, two schedule types, care tick, one agenda, Advanced settings, Plan another date, Postpone until, absences on real occurrences, Care Item module ([`care-next-occurrence-c1a7`](../../../.agents/plans/care-next-occurrence-c1a7.md)) | A1 |
 
 ## Out of scope
 
@@ -523,9 +639,7 @@ Two streams run in parallel, then join.
 
 ## Still open
 
-- [ ] **1. Resume on a date.** Today, the open occurrence keeps its date, so the item can come back Overdue. The alternatives:
-  - Fixed schedule: the next scheduled date on or after the resume date.
-  - After completion: due on the resume date, or one interval after it.
+- [x] **1. Resume on a date.** Resolved 2026-09-29 (D-CSM-028): Resume asks the date, pre-filled with the date it would have had without the pause.
 - [ ] **2. A shortcut on the away plan.** A single, confirmed action: "Jamie handles the rest as scheduled". It would record Keep the date · Jamie for every **affected** item not yet reviewed for that pet (never auto-move).
 - [ ] **3. No upcoming absence.** Hide the Absence section (*proposed* in mockups), or show one quiet line?
 - [ ] **4. The "Where" label.** Keep "Where" (*proposed*), or rename to "Care setting"?
@@ -536,7 +650,8 @@ Two streams run in parallel, then join.
 |---|---|
 | Scheduling (CSM) | [care-schedule-management.md](/docs/domains/pet_care/features/care-schedule-management.md) |
 | CSM decisions | [care-schedule-management-decisions.md](/docs/domains/pet_care/changes/care-schedule-management-decisions.md) |
-| Occurrences, zones, triage | [occurrence-scheduling.md](/docs/domains/health_tracking/changes/occurrence-scheduling.md) |
+| Occurrences, agenda, case matrix | [occurrence-scheduling.md](/docs/domains/health_tracking/changes/occurrence-scheduling.md) |
+| UI spec for the Care Item view and agenda | [care-item-view-ui.md](/docs/design/care-item-view-ui.md) |
 | Away Planning decisions (D-AWAY) | [away-planning-decisions.md](/docs/domains/pet_care/changes/away-planning-decisions.md) |
 | Away Care Planning decisions (D-ACP) | [away-care-planning-decisions.md](/docs/domains/pet_care/changes/away-care-planning-decisions.md) |
 | Away Care Planning requirements (R-A, R-C, R-D) | [away-care-planning-delivery-plan.md](/docs/domains/pet_care/changes/away-care-planning-delivery-plan.md) |

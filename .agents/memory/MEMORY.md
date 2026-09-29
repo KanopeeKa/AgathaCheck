@@ -49,7 +49,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Local-first cache & remote sync](local-first-sync.md) — server is source of truth; never re-push local-only rows on read (resurrects deleted data); create rolls back + rethrows on remote failure.
 - [Flutter web password-manager autofill](flutter-web-password-managers.md) — CanvasKit paints fields on canvas so extensions (Proton Pass) can't autofill; fix is a native HTML form in index.html bridged to Dart.
 - [Tool-output token scrambling](tool-output-token-scrambling.md) — grep/bash can mangle source tokens in file content (e.g. weight→ln); read tool shows truth, edits use real tokens.
-- [Health entry completion semantics](health-entry-completion.md) — UI derives overdue/completed from next_due_date only (no status field); mark-taken must advance/sentinel next_due_date in the backend.
+- [Care item completion semantics](health-entry-completion.md) — occurrences are the source of truth; every active planned item always has a real open occurrence (D-CSM-019); Fixed schedule vs After it's done; complete may return 409 `next_choice_required`; `next_due_date` is a read-only cache.
 - [Pet Care mobile completion](guardian-mobile-completion.md) — compact dashboard completion keeps a reversible list-level preview while the server remains authoritative (legacy filename).
 - [Canonical product name](canonical-product-name.md) — use AgathaTrack in current product UI and copy; AgathaCheck is the legacy name.
 - [Shelter terminology and evolving design](shelter-terminology-and-evolving-design.md) — Shelter is the canonical teal mode; evolve prior references screen by screen.

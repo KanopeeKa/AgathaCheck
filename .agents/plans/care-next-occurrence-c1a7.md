@@ -991,17 +991,18 @@ Context for every resolution: **there are no users yet** (pre-launch), so compat
 
 ```yaml
 autonomy: active
-current_phase: "A1"
-last_completed_phase: null
+current_phase: "B1"
+last_completed_phase: "A1"
 halt_reason: null
-next_action: "child A: canonical documentation"
+next_action: "child B: B1 pure schedule modules (seriesDates, fixedSlots, nextComputed, lateCompletion, occurrenceStatus) + table tests"
 artifact_ref:
   branch: claude/eager-edison-mf34j6
   plan_path: .agents/plans/care-next-occurrence-c1a7.md
-  plan_commit: null
+  plan_commit: 57c27f3
   snapshot_path: null
   snapshot_commit: null
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
+drift_check_A1: "git diff --stat f6b6285..origin/main -- server/lib/care server/lib/occurrenceScheduling.js server/routes/healthEntries flutter_app/lib/features/health_tracking flutter_app/lib/features/pet_care → empty (2026-09-29)"
 ```
