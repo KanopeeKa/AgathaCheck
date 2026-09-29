@@ -78,7 +78,17 @@ export class VetListPage {
   private async openVetDetailRoute(vetId: string): Promise<void> {
     await this.page.goto(flutterGotoUrl(`/pc/vets/${vetId}`));
     await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/pc\/vets\/[^/]+(?:\?|$)/, 30_000);
+    await waitForFlutterRoutePattern(
+      this.page,
+      /\/pc\/people(?:\?|$)|\/pc\/vets\/[^/]+(?:\?|$)/,
+      30_000,
+    );
+  }
+
+  private async openPersonDetailFromHub(vetName: string): Promise<void> {
+    await this.vetRowLocator(vetName).click();
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/?]+/, 30_000);
+    await refreshFlutterAccessibility(this.page);
   }
 
   private async openVetEditRoute(vetId: string): Promise<void> {
@@ -95,6 +105,9 @@ export class VetListPage {
       }
       const vetId = await this.resolveVetIdByName(name);
       await this.openVetDetailRoute(vetId);
+      if (await this.onPeopleHub()) {
+        await this.openPersonDetailFromHub(name);
+      }
       await expect(semanticsByName(this.page, new RegExp(escapeRegExp(name), 'i')).first()).toBeVisible({
         timeout: 5_000,
       });
@@ -215,8 +228,15 @@ export class VetListPage {
       return;
     }
     if (await this.onPeopleHub()) {
+      if (await this.vetRowLocator(vetName).isVisible().catch(() => false)) {
+        await this.openPersonDetailFromHub(vetName);
+        return;
+      }
       const vetId = await this.resolveVetIdByName(vetName);
       await this.openVetDetailRoute(vetId);
+      if (await this.onPeopleHub()) {
+        await this.openPersonDetailFromHub(vetName);
+      }
       return;
     }
     await this.vetRowLocator(vetName).click();
