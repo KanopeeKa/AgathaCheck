@@ -103,6 +103,50 @@ export async function upsertContactFromVet(pool, vetRow, userId) {
  * @param {object} contactRow loadContactForViewer row
  * @param {string} userId
  */
+/**
+ * When a People contact is created with role vet, ensure a legacy vets row exists.
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {object} contactRow loadContactForViewer row (with roles[])
+ * @param {string} userId
+ */
+export async function ensureLegacyVetForContact(pool, contactRow, userId) {
+  if (!contactRow?.id || !userId) return null;
+  const roles = contactRow.roles || [];
+  if (!roles.includes('vet')) return null;
+  if (contactRow.legacy_vet_id) return contactRow.legacy_vet_id;
+
+  const vetId = uuidv4();
+  const kind = contactRow.kind || 'person';
+  const clinic = kind === 'organisation' ? (contactRow.name || '').trim() : '';
+  const personName =
+    kind === 'organisation'
+      ? (contactRow.name || 'Vet').trim()
+      : (contactRow.name || 'Vet').trim();
+
+  await pool.query(
+    `INSERT INTO vets (id, user_id, name, clinic, phone, email, website, address, notes, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())`,
+    [
+      vetId,
+      userId,
+      personName,
+      clinic,
+      contactRow.phone || null,
+      contactRow.email || null,
+      contactRow.website || '',
+      contactRow.address || '',
+      '',
+    ],
+  );
+
+  await pool.query(
+    'UPDATE people_contacts SET legacy_vet_id = $1, updated_at = NOW() WHERE id = $2',
+    [vetId, contactRow.id],
+  );
+
+  return vetId;
+}
+
 export async function syncVetRowFromContact(pool, contactRow, userId) {
   const legacyVetId = contactRow.legacy_vet_id;
   if (!legacyVetId || !userId) return;

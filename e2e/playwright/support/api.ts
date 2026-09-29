@@ -951,7 +951,7 @@ export async function createVet(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ name, clinic: 'E2E Clinic', phone: '555-0100', email: 'vet@example.com' }),
+    body: JSON.stringify({ name }),
   });
 
   if (!res.ok) {

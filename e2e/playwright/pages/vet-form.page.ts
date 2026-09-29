@@ -9,7 +9,11 @@ export class VetFormPage {
   constructor(private readonly page: Page) {}
 
   async expectLoaded(): Promise<void> {
-    await this.page.getByRole('textbox', { name: 'Name *' }).waitFor({ timeout: 30_000 });
+    await this.page
+      .getByLabel(/^Name$/i)
+      .or(this.page.getByRole('textbox', { name: 'Name *' }))
+      .first()
+      .waitFor({ timeout: 30_000 });
   }
 
   async fillName(name: string): Promise<void> {
@@ -48,6 +52,7 @@ export class VetFormPage {
       .or(this.page.getByRole('button', { name: /Veterinarian:/i }))
       .or(this.page.getByRole('group', { name: /Veterinarian:/i }))
       .or(this.page.getByText(/^People$|^Autour de vos animaux$/i))
+      .or(this.page.getByText(/Dr\./))
       .first()
       .waitFor({ timeout: 15_000 });
     await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000).catch(() =>
@@ -63,6 +68,22 @@ export class VetFormPage {
     notes?: string;
   }): Promise<void> {
     await this.expectLoaded();
+    const onPeopleAdd = /\/pc\/people\/new/.test(this.page.url());
+    if (onPeopleAdd) {
+      await fillLabelledField(this.page, 'Name', options.name);
+      await this.page.getByRole('button', { name: /^Continue$/i }).click();
+      await refreshFlutterAccessibility(this.page);
+      await this.page.getByRole('button', { name: /^Continue$/i }).click();
+      await refreshFlutterAccessibility(this.page);
+      const vetRole = this.page.getByRole('checkbox', { name: /^vet$/i });
+      if (!(await vetRole.isChecked().catch(() => false))) {
+        await vetRole.click();
+      }
+      await this.page.getByRole('button', { name: /^Save person$/i }).click();
+      await this.page.getByRole('button', { name: /^Not now$/i }).click({ timeout: 15_000 });
+      await this.expectSaved('create');
+      return;
+    }
     await this.fillName(options.name);
     if (options.phone) await this.fillPhone(options.phone);
     if (options.email) await this.fillEmail(options.email);
