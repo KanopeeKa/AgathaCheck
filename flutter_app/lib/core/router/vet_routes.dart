@@ -5,7 +5,6 @@ import '../../l10n/app_localizations.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../features/vet/presentation/screens/vet_detail_screen.dart';
 import '../../features/vet/presentation/screens/vet_form_screen.dart';
-import '../../features/vet/presentation/screens/vet_list_screen.dart';
 
 List<RouteBase> buildVetExperienceRoutes() {
   return [

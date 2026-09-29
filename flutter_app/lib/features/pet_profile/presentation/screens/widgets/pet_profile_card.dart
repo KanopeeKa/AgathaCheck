@@ -43,7 +43,7 @@ class PetProfileCard extends ConsumerWidget {
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: Tooltip(
-                                message: assignedVet.name,
+                                message: assignedVet.displayName,
                                 child: const Icon(
                                   Icons.local_hospital,
                                   size: 20,
