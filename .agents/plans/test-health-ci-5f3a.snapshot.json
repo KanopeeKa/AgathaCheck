@@ -1,0 +1,287 @@
+{
+  "schema_version": 1,
+  "plan_id": "test-health-ci-5f3a",
+  "approved_at": "2026-09-30T00:00:00Z",
+  "approved_by": "user chat 2026-09-29: 'Go ahead, write up a plan such as execute-plan and then implement all of the above' (WAF: work around, never assume fixable; keep CI reasonably short)",
+  "approved_until": "2026-10-02T00:00:00Z",
+  "content_hash": "sha256:b8a55649632790be1540550c8a1d0268eb2c5f72ed187199ebd1f32c778f76b2",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1449,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Flutter shard manifest + exhaustive test ownership",
+      "branch": "claude/relaxed-einstein-jqecfg",
+      "allowed_paths": [
+        "flutter_app/test/ci_shards.json",
+        "flutter_app/scripts/**",
+        "scripts/ci/**",
+        "scripts/pre-push.sh",
+        "scripts/pre-push-changed.sh",
+        ".github/workflows/ci.yml",
+        ".github/workflows/ci-full-audit.yml",
+        ".github/workflows/_reusable-ci-gate.yml",
+        ".github/workflows/_reusable-flutter-test-shard.yml",
+        ".github/workflows/_reusable-flutter-coverage.yml",
+        ".github/workflows/_reusable-test.yml",
+        "docs/pipelines/**",
+        "CONTRIBUTING.md",
+        ".cursor/rules/testing.mdc",
+        ".agents/plans/test-health-ci-5f3a.*",
+        ".agents/memory/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/db/migrations/**",
+        "server/config/security.js",
+        "server/routes/**",
+        "flutter_app/lib/**",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Flutter CI speed (batched runner, prep job, node lcov)",
+      "branch": "claude/relaxed-einstein-jqecfg",
+      "allowed_paths": [
+        "flutter_app/test/ci_shards.json",
+        "flutter_app/scripts/**",
+        "scripts/ci/**",
+        ".github/actions/**",
+        ".github/workflows/ci.yml",
+        ".github/workflows/ci-full-audit.yml",
+        ".github/workflows/_reusable-*.yml",
+        ".github/workflows/pre-uat-e2e.yml",
+        ".github/workflows/e2e.yml",
+        "docs/pipelines/**",
+        "CONTRIBUTING.md",
+        ".agents/plans/test-health-ci-5f3a.*",
+        ".agents/memory/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/db/migrations/**",
+        "server/config/security.js",
+        "server/routes/**",
+        "flutter_app/lib/**",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Pre-merge E2E within budget + Pre-UAT balance",
+      "branch": "claude/relaxed-einstein-jqecfg",
+      "allowed_paths": [
+        "e2e/scripts/**",
+        "e2e/playwright.config.ts",
+        "e2e/README.md",
+        "e2e/package.json",
+        "scripts/ci/**",
+        ".github/workflows/ci.yml",
+        ".github/workflows/_reusable-*.yml",
+        ".github/workflows/pre-uat-e2e.yml",
+        ".github/workflows/e2e.yml",
+        "docs/pipelines/**",
+        "docs/e2e/**",
+        ".cursor/rules/testing.mdc",
+        "CONTRIBUTING.md",
+        ".agents/plans/test-health-ci-5f3a.*",
+        ".agents/memory/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/db/migrations/**",
+        "server/config/security.js",
+        "server/routes/**",
+        "flutter_app/lib/**",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "KPI generator + docs reconciliation",
+      "branch": "claude/relaxed-einstein-jqecfg",
+      "allowed_paths": [
+        "scripts/quality/**",
+        ".github/workflows/quality-kpis.yml",
+        ".github/workflows/_reusable-test.yml",
+        "docs/quality/**",
+        "docs/pipelines/**",
+        "CONTRIBUTING.md",
+        "AGENTS.md",
+        ".agents/plans/test-health-ci-5f3a.*",
+        ".agents/memory/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/db/migrations/**",
+        "server/config/security.js",
+        "server/routes/**",
+        "flutter_app/lib/**",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "BDD hygiene (frozen exclusion, active drift, uncovered triage)",
+      "branch": "claude/relaxed-einstein-jqecfg",
+      "allowed_paths": [
+        "e2e/scripts/check_bdd_coverage.js",
+        "e2e/playwright/tests/**",
+        "flutter_app/test/bdd/features/**",
+        "docs/quality/**",
+        "scripts/bdd-priority-tag-map.json",
+        ".agents/plans/test-health-ci-5f3a.*",
+        ".agents/memory/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/db/migrations/**",
+        "server/config/security.js",
+        "server/routes/**",
+        "flutter_app/lib/**",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "6",
+      "title": "WAF-proof UAT verification (in-host SSH smoke)",
+      "branch": "claude/relaxed-einstein-jqecfg",
+      "allowed_paths": [
+        "server/scripts/uat-inhost-smoke*.mjs",
+        "server/test/uatInhostSmoke*.test.js",
+        "scripts/ci/**",
+        ".github/workflows/uat-live-e2e.yml",
+        "e2e/playwright/tests/organisation.*.spec.ts",
+        "docs/e2e/**",
+        "docs/ops/**",
+        "docs/pipelines/**",
+        ".agents/plans/test-health-ci-5f3a.*",
+        ".agents/memory/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/db/migrations/**",
+        "server/config/security.js",
+        "server/routes/**",
+        "flutter_app/**",
+        "infra/**",
+        ".github/workflows/deploy-*.yml"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "7",
+      "title": "Security, performance and risk tests",
+      "branch": "claude/relaxed-einstein-jqecfg",
+      "allowed_paths": [
+        "server/test/**",
+        "e2e/perf/**",
+        "scripts/ci/**",
+        ".github/workflows/security-dast.yml",
+        ".github/workflows/perf-weekly.yml",
+        ".github/workflows/_reusable-build-web.yml",
+        "docs/pipelines/**",
+        "docs/quality/**",
+        "new-key.asc",
+        "gpg-check.txt",
+        ".agents/plans/test-health-ci-5f3a.*",
+        ".agents/memory/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/db/migrations/**",
+        "server/config/security.js",
+        "server/routes/**",
+        "flutter_app/lib/**",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
