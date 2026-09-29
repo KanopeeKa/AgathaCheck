@@ -366,7 +366,7 @@ After phase 5 merges to `cursor/unified-pet-tile-integration-c4e8`:
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: revoked   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: 2
 last_completed_phase: 5
 halt_reason: null

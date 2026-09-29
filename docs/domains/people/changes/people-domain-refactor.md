@@ -11,7 +11,7 @@ related_plan: people-domain-refactor-7f3b
 
 # People domain refactor — target model, gap analysis and delivery plan
 
-**Status:** proposed 2026-09-29. **Execute-plan:** [`people-domain-refactor-7f3b`](/.agents/plans/people-domain-refactor-7f3b.md) (one integration branch, 18 phases, final PR to `main`).
+**Status:** proposed 2026-09-29. **Execute-plan:** [`people-domain-refactor-7f3b`](/.agents/plans/people-domain-refactor-7f3b.md) (roadmap of four child plans, each landing on `main` in its slot of the [shared landing order](/docs/agent-efficiency/parallel-programmes.md)). Supersedes the remaining scope of `people-vet-unify-a58d` (closed as completed 2026-09-29; its seed check moves to `people-server-7f3b` s3).
 **Canonical product spec (unchanged):** [people-care-team.md](/docs/domains/people/features/people-care-team.md) (D1–D28) · wording: [vocabulary.md](/docs/domains/people/features/vocabulary.md).
 
 This document is the **engineering and UX target** for the People domain (UI label *Contacts* in English, *Autour de vos animaux* in French). It does not change product decisions D1–D28. Where it adds decisions, they are listed in §6 (R-01 … R-14) and apply only to *how* the spec is built.
@@ -30,19 +30,19 @@ A review on 2026-09-29 found that the People data model and spec are sound, but 
 
 | # | Bug | Where (at `a780e19`) | Fixed in |
 |---|---|---|---|
-| B1 | Detail provider refetches in a loop until rate-limited (`PeopleContact` has no equality, `mergeLocal` re-triggers the watcher) | `flutter_app/lib/features/people/presentation/providers/people_providers.dart:92-96` | p6 |
-| B2 | Renaming a contact without sending `kind` re-infers kind (clinic becomes a person) | `server/lib/people/contactMutations.js:121` | p1 |
-| B3 | Vet-linked contacts can never be deleted (always 400) | `server/routes/people/contactsRouter.js:69` | p1 |
-| B4 | Desktop master–detail nests the app shell in the left pane; selection resets search and filter | `.../people/presentation/screens/people_hub_screen.dart:23` | p9 |
-| B5 | Today desk shows raw role codes and kind values | `.../pet_care_people_desk_module.dart:232` | p9 |
-| B6 | Provider dropped from an occurrence when a co-parent or carer completes it | `server/lib/care/providerUsed.js:47` | p1 |
-| B7 | PDF report vet block lost phone, email and address | `.../pet_profile/presentation/controllers/download_report_controller.dart:49` | p8 |
-| B8 | Care provider picker lists inactive contacts and asserts on unknown values | `.../health_tracking/presentation/widgets/care_provider_field.dart:89` | p8 |
-| B9 | Add screen: no error handling, "Change kind" toggle stuck, default role "Pet sitter" | `.../people/presentation/screens/people_add_person_screen.dart:125,171,45` | p12 |
-| B10 | Deleting a contact silently clears care-item providers (`ON DELETE SET NULL`, no usage check) | contacts delete + migrations 074/080 | p1 |
-| B11 | `PUT people-relationships` deletes all rows including the synced primary vet | `server/routes/pets/peopleRelationshipsRouter.js:110` | p2 |
-| B12 | Care item `provider_contact_id` saved without an ownership check | `server/routes/healthEntries/crudRouter.js` | p1 |
-| B13 | Edit shows raw API errors; delete errors classified by string-matching "400" | `.../people/presentation/screens/people_edit_screen.dart:98,180` | p11 |
+| B1 | Detail provider refetches in a loop until rate-limited (`PeopleContact` has no equality, `mergeLocal` re-triggers the watcher) | `flutter_app/lib/features/people/presentation/providers/people_providers.dart:92-96` | h2, c1 |
+| B2 | Renaming a contact without sending `kind` re-infers kind (clinic becomes a person) | `server/lib/people/contactMutations.js:121` | h1 |
+| B3 | Vet-linked contacts can never be deleted (always 400) | `server/routes/people/contactsRouter.js:69` | s2 |
+| B4 | Desktop master–detail nests the app shell in the left pane; selection resets search and filter | `.../people/presentation/screens/people_hub_screen.dart:23` | c3 |
+| B5 | Today desk shows raw role codes and kind values | `.../pet_care_people_desk_module.dart:232` | h2, c3 |
+| B6 | Provider dropped from an occurrence when a co-parent or carer completes it | `server/lib/care/providerUsed.js:47` | CARE B (hand-off), s2 test |
+| B7 | PDF report vet block lost phone, email and address | `.../pet_profile/presentation/controllers/download_report_controller.dart:49` | h2, i1 |
+| B8 | Care provider picker lists inactive contacts and asserts on unknown values | `.../health_tracking/presentation/widgets/care_provider_field.dart:89` | i1 |
+| B9 | Add screen: no error handling, "Change kind" toggle stuck, default role "Pet sitter" | `.../people/presentation/screens/people_add_person_screen.dart:125,171,45` | h2, c6 |
+| B10 | Deleting a contact silently clears care-item providers (`ON DELETE SET NULL`, no usage check) | contacts delete + migrations 074/080 | s2 |
+| B11 | `PUT people-relationships` deletes all rows including the synced primary vet | `server/routes/pets/peopleRelationshipsRouter.js:110` | s3 |
+| B12 | Care item `provider_contact_id` saved without an ownership check | `server/routes/healthEntries/crudRouter.js` | s2 |
+| B13 | Edit shows raw API errors; delete errors classified by string-matching "400" | `.../people/presentation/screens/people_edit_screen.dart:98,180` | h2, c5 |
 
 The goal is a **robust, maintainable, elegant People component**. The backend is authoritative and one module owns the rules. The Flutter feature is typed and layered, and other features reach it through one façade. The UI is rich and calm, and matches the spec and the design system.
 
@@ -124,18 +124,18 @@ Naming: domain and code say **People**. The EN UI label is **Contacts** and FR i
 
 ### 3.3 Data model and invariants
 
-**Authoritative tables** (People-owned): `people_directories`, `people_contacts`, `people_contact_roles`, `people_contact_private_notes`, `people_contact_household_notes` *(new, 084)*, `pet_contact_relationships` (+ `sort_order`, 083).
+**Authoritative tables** (People-owned): `people_directories`, `people_contacts`, `people_contact_roles`, `people_contact_private_notes`, `people_contact_household_notes` *(new, `*_people_household_notes`)*, `pet_contact_relationships` (+ `sort_order`, `*_people_relationship_slots`).
 
 **Projections** (written only by `server/lib/people/vetProjection.js`): `vets` rows linked by `people_contacts.legacy_vet_id`, and `pets.vet_id`.
 
-**Referencing tables** (other domains hold a `contact_id`, People decides usage rules): `planned_absence_pets.contact_id`, `health_entries.provider_contact_id`, `health_occurrences.provider_contact_id` (+ snapshot), `planned_absence_carer_invites.contact_id`, `planned_absence_guest_grants.contact_id`, `pet_share_invites.contact_id` *(new, 085)*.
+**Referencing tables** (other domains hold a `contact_id`, People decides usage rules): `planned_absence_pets.contact_id`, `health_entries.provider_contact_id`, `health_occurrences.provider_contact_id` (+ snapshot), `planned_absence_carer_invites.contact_id`, `planned_absence_guest_grants.contact_id`, `pet_share_invites.contact_id` *(new, `*_share_invite_contact_link`)*.
 
 | # | Invariant | Enforced by |
 |---|---|---|
 | I1 | A contact lives in exactly one directory; a directory is personal XOR household | Schema (072/076) |
 | I2 | Only `server/lib/people/**` writes People tables and projections (migrations, seeds and migration scripts excepted) | `server/test/people/boundaries.test.js` |
 | I3 | Kind changes only when a user sets it. It's inferred once at creation when omitted and never re-inferred | `contactsRepo` + regression test |
-| I4 | At most one **active** relationship per pet for `primary_vet` and for `out_of_hours_vet` | Partial unique index (083) + service |
+| I4 | At most one **active** relationship per pet for `primary_vet` and for `out_of_hours_vet` | Partial unique index (`*_people_relationship_slots`) + service |
 | I5 | `pets.vet_id` equals the `legacy_vet_id` of the pet's active `primary_vet` contact, or `NULL` | `vetProjection` + invariant test |
 | I6 | `vets` rows are never read by product code; only the `/api/vets` compat adapter reads them | Boundary test |
 | I7 | A contact with active usages can't be hard-deleted: `409 contact_in_use` with the usage list. History references are snapshots and never block | `usages.js` + tests |
@@ -150,10 +150,10 @@ Naming: domain and code say **People**. The EN UI label is **Contacts** and FR i
 
 | Migration | Change | Data effect |
 |---|---|---|
-| `083_people_relationship_slots.sql` | `pet_contact_relationships.sort_order SMALLINT NOT NULL DEFAULT 0`; partial unique indexes `(pet_id) WHERE active AND relationship_kind = 'primary_vet'` and the same for `out_of_hours_vet` | Before creating the indexes, deactivate duplicate active slot rows, keeping the most recently updated one. Idempotent; logs the count |
-| `084_people_household_notes.sql` | `people_contact_household_notes (contact_id, household_id, note, updated_by_user_id, updated_at, PK(contact_id, household_id))`, cascades from contacts and households; `updated_by_user_id` is `ON DELETE SET NULL` | None |
-| `085_share_invite_contact_link.sql` | `pet_share_invites.contact_id UUID NULL REFERENCES people_contacts(id) ON DELETE SET NULL` + index | None |
-| `086_household_invites.sql` | `household_invites (id, household_id, inviter_user_id, invitee_email, invitee_user_id, access_tier, is_organiser, contact_id, code UNIQUE, status CHECK (pending/accepted/declined/revoked/expired), created_at, responded_at, expires_at)` + indexes, following the `planned_absence_carer_invites` pattern (077) | None |
+| `*_people_relationship_slots.sql` | `pet_contact_relationships.sort_order SMALLINT NOT NULL DEFAULT 0`; partial unique indexes `(pet_id) WHERE active AND relationship_kind = 'primary_vet'` and the same for `out_of_hours_vet` | Before creating the indexes, deactivate duplicate active slot rows, keeping the most recently updated one. Idempotent; logs the count |
+| `*_people_household_notes.sql` | `people_contact_household_notes (contact_id, household_id, note, updated_by_user_id, updated_at, PK(contact_id, household_id))`, cascades from contacts and households; `updated_by_user_id` is `ON DELETE SET NULL` | None |
+| `*_share_invite_contact_link.sql` | `pet_share_invites.contact_id UUID NULL REFERENCES people_contacts(id) ON DELETE SET NULL` + index | None |
+| `*_household_invites.sql` | `household_invites (id, household_id, inviter_user_id, invitee_email, invitee_user_id, access_tier, is_organiser, contact_id, code UNIQUE, status CHECK (pending/accepted/declined/revoked/expired), created_at, responded_at, expires_at)` + indexes, following the `planned_absence_carer_invites` pattern (077) | None |
 
 Anything else → halt (`escalation`).
 
@@ -202,25 +202,25 @@ Rules:
 
 | Method | Path | Purpose | Phase |
 |---|---|---|---|
-| GET | `/api/people/roster` | Hub + desk read model | p3 |
-| GET | `/api/people/contacts` | Compat list; adds `group`, `status`, `directory` | p3 |
-| POST | `/api/people/contacts` | Create; optional `pet_links[]` (p2) and `household_id` (p4) in the same transaction | p1 / p2 / p4 |
-| GET | `/api/people/contacts/:id` | Detail: + `works_at`, `staff[]`, `usage_counts`, `household_note`, `linked_account` | p3 |
-| PATCH | `/api/people/contacts/:id` | Update; + `active`, `household_note`; kind never re-inferred | p1 / p4 |
-| DELETE | `/api/people/contacts/:id` | `200` or `409 contact_in_use` with usages; vet-linked allowed when unused | p1 |
-| GET | `/api/people/contacts/:id/related` | Related care: pets, care items as provider, absences as carer, history count | p3 |
-| GET | `/api/people/contacts/by-legacy-vet/:vetId` | `{ id }` for legacy deep links | p3 |
-| GET | `/api/pets/:petId/people` | "People around {pet}": household members, carers, professionals, slots; scope-aware | p3 |
-| PUT | `/api/pets/:petId/people-relationships/slots/:kind` | Set or clear `primary_vet` / `out_of_hours_vet` | p2 |
-| POST | `/api/pets/:petId/people-relationships` | Add `emergency_contact` / `care_provider` / `other` | p2 |
-| DELETE | `/api/pets/:petId/people-relationships/:relationshipId` | Remove one | p2 |
-| GET/PUT | `/api/pets/:petId/people-relationships` | Compat; PUT routed through service and re-projects | p2 |
-| GET | `/api/households/:id/members/:userId/removal-preview` | Access the member keeps after removal, per pet and source (D16) | p4 |
-| POST | `/api/households/:id/invites` | Invite by email with tier (+ optional `contact_id`); organisers only (D3) | p5 |
-| GET/POST | `/api/households/invites/code/:code` (+ `/accept`, `/decline`) | Invite landing, accept, decline | p5 |
-| DELETE | `/api/households/:id/invites/:inviteId` | Revoke a pending invite | p5 |
-| POST | pet share invite create (existing route) | Accepts optional `contact_id`; accept links `linked_user_id` | p5 |
-| * | `/api/vets` | Compat adapter; unchanged shapes; documented as deprecated | p2 |
+| GET | `/api/people/roster` | Hub + desk read model | s4 |
+| GET | `/api/people/contacts` | Compat list; adds `group`, `status`, `directory` | s4 |
+| POST | `/api/people/contacts` | Create; optional `pet_links[]` (s3) and `household_id` (s5) in the same transaction | s1 / s3 / s5 |
+| GET | `/api/people/contacts/:id` | Detail: + `works_at`, `staff[]`, `usage_counts`, `household_note`, `linked_account` | s4 |
+| PATCH | `/api/people/contacts/:id` | Update; + `active`, `household_note`; kind never re-inferred (h1) | h1 / s1 / s5 |
+| DELETE | `/api/people/contacts/:id` | `200` or `409 contact_in_use` with usages; vet-linked allowed when unused | s2 |
+| GET | `/api/people/contacts/:id/related` | Related care: pets, care items as provider, absences as carer, history count | s4 |
+| GET | `/api/people/contacts/by-legacy-vet/:vetId` | `{ id }` for legacy deep links | s4 |
+| GET | `/api/pets/:petId/people` | "People around {pet}": household members, carers, professionals, slots; scope-aware | s4 |
+| PUT | `/api/pets/:petId/people-relationships/slots/:kind` | Set or clear `primary_vet` / `out_of_hours_vet` | s3 |
+| POST | `/api/pets/:petId/people-relationships` | Add `emergency_contact` / `care_provider` / `other` | s3 |
+| DELETE | `/api/pets/:petId/people-relationships/:relationshipId` | Remove one | s3 |
+| GET/PUT | `/api/pets/:petId/people-relationships` | Compat; PUT routed through service and re-projects | s3 |
+| GET | `/api/households/:id/members/:userId/removal-preview` | Access the member keeps after removal, per pet and source (D16) | s5 |
+| POST | `/api/households/:id/invites` | Invite by email with tier (+ optional `contact_id`); organisers only (D3) | s6 |
+| GET/POST | `/api/households/invites/code/:code` (+ `/accept`, `/decline`) | Invite landing, accept, decline | s6 |
+| DELETE | `/api/households/:id/invites/:inviteId` | Revoke a pending invite | s6 |
+| POST | pet share invite create (existing route) | Accepts optional `contact_id`; accept links `linked_user_id` | s6 |
+| * | `/api/vets` | Compat adapter; unchanged shapes; documented as deprecated | s3 |
 
 **DTO sketch** (wire, snake_case; dates `YYYY-MM-DD`):
 
@@ -435,47 +435,47 @@ Opened from a picker, the flow is replaced by `QuickAddPersonSheet` and returns 
 
 | Area | Current (2026-09-29, `main` @ `a780e19`) | Target | Phase |
 |---|---|---|---|
-| Plan hygiene | `people-vet-unify-a58d` and `contacts-detail-parity-fcd9` still `active`; README status stale | Closed; README truthful; this doc linked | p0 |
-| Contact writes | Raw inserts in 5 modules with different defaults | `contactsRepo` single writer + boundary test | p1 |
-| Access | 5 different visibility rules; care provider unchecked | `access.js` everywhere; access-matrix tests | p1 |
-| Kind | Re-inferred on rename (`contactMutations.js:121`); client and server inference differ | Explicit (add-flow tiles), server-only inference at create, never re-inferred | p1, p12 |
-| Delete | Vet-linked always 400; care-item providers silently nulled | Usage-aware delete; `409 contact_in_use` with usages; vet-linked deletable when unused | p1 |
-| Provider snapshot | Dropped when the completer isn't the owner (`providerUsed.js:47`) | `snapshotForAuthorisedWrite` | p1 |
-| Errors | Free-text; client string-matches "400" | `{error, code, details}`; typed client exception | p1, p6 |
-| Vets | Two-way dual write + reconcile script | Relationships authoritative; `vets` / `pets.vet_id` projection; `/api/vets` adapter | p2 |
-| Relationships API | PUT replaces everything (drops synced primary vet) | Slot/add/remove endpoints; PUT through service; unique active slot index | p2 |
-| Read models | Client derives groups, counts, "linked pets" from `legacyVetId` | `roster`, contact detail, `related`, `pets/:id/people` from server | p3 |
-| Household directory | Schema only; hub shows empty placeholders | Household contacts visible and creatable per access policy; household notes | p4 |
-| Household membership rules | Removal not transactional; last organiser can leave with members remaining (spec: must name a successor); no remaining-access preview (D16) | Transactional removal, successor rule, removal preview endpoint | p4 |
-| Household invites | Members added by `user_id` only ("invite tokens ship in a later phase") | Email invites with code, accept and decline, revoke; roster shows them as pending | p5 |
-| Invite ↔ contact | Add flow jumps to generic `/pc/invite`, no link | Share and household invites carry `contact_id`; acceptance links the account | p5, p12 |
-| Flutter layering | Datasource called from notifier; strings everywhere; no equality; People imports Vet widgets | Typed domain, repository, application layer, façade, architecture test | p6 |
-| Detail refetch loop | `people_providers.dart:92-96` loops until rate-limited | Single fetch per open; regression test | p6 |
-| Components | Vet widgets reused; red "Inactive"; no action bar | `PersonAvatar/Card/StatusChip/ContactActionBar` | p7 |
-| Pickers | 4 pickers, 4 rules; inactive offered; dropdown assert on unknown value | One `PeoplePicker` + `PeopleQuery`; quick add | p7, p8 |
-| Consumers | Pet form writes `vet_id`; report gets name only; provider name from viewer's list | Façade + slots API; report and handover from `petPeople` | p8 |
-| Hub | Name-only search; chips reset; household sections always empty; no invites | Roster sections, full search, collection filter, URL state | p9 |
-| Desktop | Shell nested in left pane; each tap pushes a route | ShellRoute list–detail; placeholder; selection via `go` | p9 |
-| Desk | Raw role codes; "Vet team" includes groomers; household names not members | Localized; ranking per spec; member rail | p9 |
-| Detail | One scroll; linked pets vets-only; no Related care | Header + action bar + 4 tabs; variants | p10 |
-| Edit | Roles/kind not editable; no reactivate; raw error text | Full form, relationship editor, danger zone with usages | p11 |
-| Add | Name + 4 roles, default Sitter; no pets; silent failure; kind toggle bug | 5-step flow; picker quick add; sharing and household-invite handoff | p12 |
-| Pet profile | Vet dropdown only | People around {pet} + emergency card | p13 |
-| Households UI | `/pc/pets/households` list + create only (Sharing) | Full household management inside People | p14 |
-| Legacy | Dead vet feature (~2.4k lines), `PetCareMyVetsSection`, `PersonRosterEntry`, client kind inference | Deleted; boundary tests strict | p15 |
-| Tests | 3 small People test files; 3 BDD scenarios | Unit + widget + architecture + BDD/Playwright journeys | every phase, p16 |
+| Plan hygiene | `people-vet-unify-a58d` and `contacts-detail-parity-fcd9` still `active`; README status stale | Closed; README truthful; this doc linked | docs PR |
+| Contact writes | Raw inserts in 5 modules with different defaults | `contactsRepo` single writer + boundary test | s1 |
+| Access | 5 different visibility rules; care provider unchecked | `access.js` everywhere; access-matrix tests | s1, s2 |
+| Kind | Re-inferred on rename (`contactMutations.js:121`); client and server inference differ | Explicit (add-flow tiles), server-only inference at create, never re-inferred | h1, c6 |
+| Delete | Vet-linked always 400; care-item providers silently nulled | Usage-aware delete; `409 contact_in_use` with usages; vet-linked deletable when unused | s2 |
+| Provider snapshot | Dropped when the completer isn't the owner (`providerUsed.js:47`) | `snapshotForAuthorisedWrite` | CARE B (hand-off), s2 |
+| Errors | Free-text; client string-matches "400" | `{error, code, details}`; typed client exception | s1, c1 |
+| Vets | Two-way dual write + reconcile script | Relationships authoritative; `vets` / `pets.vet_id` projection; `/api/vets` adapter | s3 |
+| Relationships API | PUT replaces everything (drops synced primary vet) | Slot/add/remove endpoints; PUT through service; unique active slot index | s3 |
+| Read models | Client derives groups, counts, "linked pets" from `legacyVetId` | `roster`, contact detail, `related`, `pets/:id/people` from server | s4 |
+| Household directory | Schema only; hub shows empty placeholders | Household contacts visible and creatable per access policy; household notes | s5 |
+| Household membership rules | Removal not transactional; last organiser can leave with members remaining (spec: must name a successor); no remaining-access preview (D16) | Transactional removal, successor rule, removal preview endpoint | s5 |
+| Household invites | Members added by `user_id` only ("invite tokens ship in a later phase") | Email invites with code, accept and decline, revoke; roster shows them as pending | s6 |
+| Invite ↔ contact | Add flow jumps to generic `/pc/invite`, no link | Share and household invites carry `contact_id`; acceptance links the account | s6, c6 |
+| Flutter layering | Datasource called from notifier; strings everywhere; no equality; People imports Vet widgets | Typed domain, repository, application layer, façade, architecture test | c1 |
+| Detail refetch loop | `people_providers.dart:92-96` loops until rate-limited | Single fetch per open; regression test | c1 |
+| Components | Vet widgets reused; red "Inactive"; no action bar | `PersonAvatar/Card/StatusChip/ContactActionBar` | c2 |
+| Pickers | 4 pickers, 4 rules; inactive offered; dropdown assert on unknown value | One `PeoplePicker` + `PeopleQuery`; quick add | c2, i1 |
+| Consumers | Pet form writes `vet_id`; report gets name only; provider name from viewer's list | Façade + slots API; report and handover from `petPeople` | i1 |
+| Hub | Name-only search; chips reset; household sections always empty; no invites | Roster sections, full search, collection filter, URL state | c3 |
+| Desktop | Shell nested in left pane; each tap pushes a route | ShellRoute list–detail; placeholder; selection via `go` | c3 |
+| Desk | Raw role codes; "Vet team" includes groomers; household names not members | Localized; ranking per spec; member rail | c3 |
+| Detail | One scroll; linked pets vets-only; no Related care | Header + action bar + 4 tabs; variants | c4 |
+| Edit | Roles/kind not editable; no reactivate; raw error text | Full form, relationship editor, danger zone with usages | c5 |
+| Add | Name + 4 roles, default Sitter; no pets; silent failure; kind toggle bug | 5-step flow; picker quick add; sharing and household-invite handoff | c6 |
+| Pet profile | Vet dropdown only | People around {pet} + emergency card | i2 |
+| Households UI | `/pc/pets/households` list + create only (Sharing) | Full household management inside People | c7 |
+| Legacy | Dead vet feature (~2.4k lines), `PetCareMyVetsSection`, `PersonRosterEntry`, client kind inference | Deleted; boundary tests strict | i3 |
+| Tests | 3 small People test files; 3 BDD scenarios | Unit + widget + architecture + BDD/Playwright journeys | every phase, c8, i4 |
 
 ---
 
 ## 5. Migration strategy
 
-1. **Strangle the vets dual write (p2).**
+1. **Strangle the vets dual write (`people-server-7f3b` s3).**
    - Flip the direction: People commands update the relationship, then `vetProjection` writes `vets` and `pets.vet_id`.
    - `/api/vets` and a pet PATCH with `vet_id` become adapters that translate into People commands. Response shapes are unchanged, so installed clients keep working.
    - `reconcilePeopleVets.js` becomes `rebuildAll()` from People. It's idempotent and safe to run after deploy.
-2. **Keep the app green between phases.** p6 re-implements the old `peopleContactsProvider` as a deprecated adapter over the new repository, so existing screens keep working while p7–p14 replace them. p15 deletes the adapters.
+2. **Keep the app green between children.** `people-client-core-7f3b` c1 re-implements the old `peopleContactsProvider` as a deprecated adapter over the new repository, so pet profile, care, Away Planning and the report keep working until `people-client-integration-7f3b` i1 migrates them. i3 deletes the adapters.
 3. **Compat routes stay.** `/pc/vets/*` and `/account/people` keep redirecting. Legacy vet deep links resolve through `GET /api/people/contacts/by-legacy-vet/:vetId`.
-4. **Sunset (after this plan).** Dropping `vets` and `pets.vet_id` needs a minimum-client-version gate. p15 opens a tracked debt issue for it.
+4. **Sunset (after this plan).** Dropping `vets` and `pets.vet_id` needs a minimum-client-version gate. `people-client-integration-7f3b` i3 opens a tracked debt issue for it.
 
 ---
 
@@ -487,14 +487,14 @@ Opened from a picker, the flow is replaced by `QuickAddPersonSheet` and returns 
 | R-02 | The server computes group, status, usages, access summary and next-up facts; clients render them |
 | R-03 | Kind comes from the add-flow tile or an explicit edit. The server infers only when kind is omitted on create and never re-infers on update |
 | R-04 | Delete is blocked by active usages (`409 contact_in_use` with the list). History uses snapshots. Vet-linked contacts are deletable when unused |
-| R-05 | Household UI moves into People (`/pc/people/households`). Sharing keeps grant evaluation and invite APIs. `features/sharing` keeps its household *repository* until p14 moves it |
+| R-05 | Household UI moves into People (`/pc/people/households`). Sharing keeps grant evaluation and invite APIs. `features/sharing` keeps its household *repository* until `people-client-core-7f3b` c7 moves it |
 | R-06 | One `PeoplePicker` for every contact choice. The typed-name fallback is kept only for care provider (D-CIE-016) |
 | R-07 | No new Flutter or Node dependencies in this plan (hand-written value equality; no device-contacts import) |
 | R-08 | Desktop list–detail uses a `ShellRoute`, with selection and list state in the URL |
 | R-09 | *Inactive* is a neutral chip, *Needs review* a warning chip, and errors are never raw |
 | R-10 | Code and domain say People; EN UI says Contacts, FR says *Autour de vos animaux*; *Person* = roster row, *Contact* = directory record |
 | R-11 | API changes are additive only, with compat endpoints kept. Errors gain a `code` field |
-| R-12 | Only migrations 083–086 (§3.3) are pre-approved. Any other schema or data change halts the plan (`escalation`) |
+| R-12 | Only the four migrations in §3.3 are pre-approved; numbers are assigned when the landing PR opens ([parallel-programmes §5.5](/docs/agent-efficiency/parallel-programmes.md)); CARE's `083_care_occurrence_model` lands first. Any other schema or data change halts the plan (`escalation`) |
 | R-13 | Architecture tests (server and Flutter) are merge-blocking guards for I2, I6 and the Flutter façade rule |
 | R-14 | Contact photo upload is out of scope. Avatars use the linked-account photo when available, otherwise a monogram |
 
@@ -504,13 +504,13 @@ Opened from a picker, the flow is replaced by `QuickAddPersonSheet` and returns 
 
 | Layer | What | Where |
 |---|---|---|
-| Server unit/integration | Access matrix (owner, co-parent, Full access, Can log care, guest, stranger); writer invariants; usages and `409`; projection invariant I5; compat contracts for `/api/vets` and pet `vet_id`; roster and detail DTO shapes; household invites; migrations 083–086 | `server/test/people/**`, `server/test/households/**`, `server/test/sharing/**`, `server/test/vets.test.js`, `server/test/pets/**`, `server/test/migrations/083_*` … `086_*` |
+| Server unit/integration | Access matrix (owner, co-parent, Full access, Can log care, guest, stranger); writer invariants; usages and `409`; projection invariant I5; compat contracts for `/api/vets` and pet `vet_id`; roster and detail DTO shapes; household invites; the four People migrations | `server/test/people/**`, `server/test/households/**`, `server/test/sharing/**`, `server/test/vets.test.js`, `server/test/pets/**`, `server/test/migrations/*_people_*`, `*_share_invite_contact_link*`, `*_household_invites*` |
 | Server architecture | No People table writes outside `server/lib/people/`; no `vets` reads outside the adapter; other domains import only `lib/people/index.js` | `server/test/people/boundaries.test.js` |
 | Flutter unit | DTO mapping, equality, enums and labels, roster sections, search, desk ranking, `PeopleQuery` | `flutter_app/test/features/people/domain/**`, `data/**` |
 | Flutter application | Fake repository: one fetch per detail open (bug #1 regression), targeted invalidation after each command | `flutter_app/test/features/people/application/**` |
 | Flutter widget | `PersonCard`, status chip, action bar, picker (inactive pinned, quick add, none), hub sections and filters, list–detail at 1280px, detail tabs and variants, edit validation and danger zone, add-flow steps, pet section, households | `flutter_app/test/features/people/presentation/**` |
 | Flutter architecture | Other features import only `people.dart`; `presentation` never imports `data` | `flutter_app/test/features/people/architecture_test.dart` |
-| BDD + Playwright | Journeys in §8 p15 | `flutter_app/test/bdd/features/people.feature`, `e2e/playwright/tests/people-*.spec.ts`, `e2e/playwright/pages/people.page.ts` |
+| BDD + Playwright | Journeys in `people-client-core-7f3b` c8 and `people-client-integration-7f3b` i4 | `flutter_app/test/bdd/features/people.feature`, `e2e/playwright/tests/people-*.spec.ts`, `e2e/playwright/pages/people.page.ts` |
 
 **Every phase:** `./scripts/pre-push-changed.sh`; `node scripts/check_file_size.js` (no new allowlist entries); `flutter analyze --no-fatal-warnings --no-fatal-infos`; Jest for touched server domains; `node e2e/scripts/check_bdd_coverage.js --report-only` never decreases. **Final:** `./scripts/pre-push.sh` and pre-UAT E2E green.
 
@@ -518,28 +518,14 @@ Opened from a picker, the flow is replaced by `QuickAddPersonSheet` and returns 
 
 ## 8. Delivery plan (summary)
 
-The full execute-plan contract (paths, exit criteria, runtime) is in [`.agents/plans/people-domain-refactor-7f3b.md`](/.agents/plans/people-domain-refactor-7f3b.md). All phase PRs target `cursor/people-domain-refactor-integration-7f3b`. One final PR goes to `main`.
+The execute-plan contract is a roadmap, [`.agents/plans/people-domain-refactor-7f3b.md`](/.agents/plans/people-domain-refactor-7f3b.md), with four child plans. Each child lands on `main` in its slot of the [shared landing order](/docs/agent-efficiency/parallel-programmes.md), which it shares with CARE, ARCH and TEST. Phase ids below are what the bug table (§1) and gap table (§4) refer to.
 
-| # | Phase id | Outcome | Wave |
+| Child | Phases | Outcome | Entry gate (on `main`) |
 |---|---|---|---|
-| 1 | `p0-hygiene` | Stale plans closed; People docs truthful and linked to this target | A — server foundation |
-| 2 | `p1-server-core` | People data has one writer, one access policy and typed errors (B2, B3, B6, B10, B12) | A |
-| 3 | `p2-relationships` | Pet relationships are the source of truth; vets become a projection behind compat adapters (B11) | A |
-| 4 | `p3-read-models` | Server serves roster, contact detail, related care and pet-people read models | A |
-| 5 | `p4-households-api` | Household directory contacts, household notes, safe member removal with preview | A |
-| 6 | `p5-invites-api` | Household email invites; share and household invites link to People contacts | A |
-| 7 | `p6-flutter-core` | Typed People domain, repository, application layer and façade (B1) | B — client core |
-| 8 | `p7-components` | Person components and the one `PeoplePicker` | B |
-| 9 | `p8-consumers` | Pet profile, care, Away Planning and report use the façade and picker (B7, B8) | B |
-| 10 | `p9-hub` | Roster hub, search and filters, list–detail, Today desk (B4, B5) | C — surfaces |
-| 11 | `p10-detail` | Person detail with header, action bar and tabs | C |
-| 12 | `p11-edit` | Person edit with relationship editor and danger zone (B13) | C |
-| 13 | `p12-add` | Unified five-step add flow with sharing and household-invite handoff (B9) | C |
-| 14 | `p13-pet-people` | People around {pet} and the emergency card | C |
-| 15 | `p14-households-ui` | Household management inside People | C |
-| 16 | `p15-retire-legacy` | Legacy People/vet client code deleted; guards strict | D — finish |
-| 17 | `p16-tests-e2e` | BDD and Playwright journeys for the whole domain | D |
-| 18 | `p17-ship-main` | Integration → `main` with pre-UAT green | D |
+| [`people-hotfixes-7f3b`](/.agents/plans/people-hotfixes-7f3b.md) | h1 kind (B2) · h2 client fixes (B1, B5, B7, B9, B13) | The cheap bugs fixed now, with regression tests | docs PR (slot 0) |
+| [`people-server-7f3b`](/.agents/plans/people-server-7f3b.md) | s1 writer and access · s2 usages and provider rules (B3, B6 test, B10, B12) · s3 relationships and vet projection (B11) · s4 read models · s5 household directory and notes · s6 household invites and contact links · s7 ship | People server complete | CARE A+B, ARCH E (slot 4) |
+| [`people-client-core-7f3b`](/.agents/plans/people-client-core-7f3b.md) | c1 typed core and façade (B1) · c2 components and picker · c3 hub, list–detail, desk (B4, B5) · c4 detail · c5 edit (B13) · c6 add flow (B9) · c7 households UI · c8 E2E · c9 ship | People-owned screens complete, with journeys | `people-server-7f3b`, CARE C+D |
+| [`people-client-integration-7f3b`](/.agents/plans/people-client-integration-7f3b.md) | i1 consumers (B7, B8) · i2 People around {pet} · i3 retire legacy · i4 E2E · i5 ship and docs | Integration with pet profile, care and Away Planning complete; legacy gone | `people-client-core-7f3b`, CARE E+F, ARCH G (slot 8) |
 
 ---
 
@@ -558,9 +544,10 @@ The full execute-plan contract (paths, exit criteria, runtime) is in [`.agents/p
 
 | Risk | Mitigation |
 |---|---|
-| Plan length vs the 48h approval window | Waves are independently mergeable into integration. On expiry the orchestrator halts `revoked`/`expired`; the human re-approves with a refreshed window (no scope change) |
-| Authorization regressions (household visibility) | One `access.js`; matrix tests; Router R3 with `authorization` + `security` protocols on p1, p3, p4, p5 |
+| Plan length vs the 48h approval window | Four children, each sized for one window; roadmap renewals happen between children, where the entry gates make the roadmap wait anyway |
+| Collisions with CARE, ARCH and TEST | Shared landing order, area ownership and rebase rules in [parallel-programmes.md](/docs/agent-efficiency/parallel-programmes.md); entry gates on every child; hand-offs (B6 to CARE B, relationships router out of ARCH E) |
+| Authorization regressions (household visibility) | One `access.js`; matrix tests; Router R3 with `authorization` + `security` protocols on s1, s2, s4, s5, s6 |
 | Old mobile clients | Compat adapters with contract tests; additive fields only |
-| E2E churn (the previous remodel needed ~15 fix PRs) | Stable `Key`s / semantics identifiers defined in p7 and documented; page object `people.page.ts` in p16; locator hygiene per [testing rule](/.cursor/rules/testing.mdc) |
-| Data migration 083 dedupe | Idempotent, keeps the newest row, logs count, migration test with duplicates fixture |
+| E2E churn (the previous remodel needed ~15 fix PRs) | Stable `Key`s / semantics identifiers defined in c2 and documented; every UI phase keeps shards 1/3/9 green in the same PR; each child ships its own journeys (c8, i4) on `people.page.ts`; locator hygiene per [testing rule](/.cursor/rules/testing.mdc) |
+| Data migration `*_people_relationship_slots` dedupe | Idempotent, keeps the newest row, logs count, migration test with duplicates fixture |
 | File-size gate on big screens | Pages split into section widgets from the start (≤300 lines) |

@@ -140,7 +140,7 @@ Widget tests for tasks, pin, shelter nav. Update `docs/e2e/navigation-contract.m
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: completed   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: null
 last_completed_phase: 8
 halt_reason: null

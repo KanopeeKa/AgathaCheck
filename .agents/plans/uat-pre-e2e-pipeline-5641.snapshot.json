@@ -4,8 +4,8 @@
   "approved_at": "2026-07-26T23:55:00Z",
   "approved_by": "user-chat-execute-plan",
   "approved_until": "2026-07-28T23:55:00Z",
-  "content_hash": "sha256:pending",
-  "autonomy": "active",
+  "content_hash": "sha256:5d95202eb5cd06ed56cbdef843b160050b7092d7c71791719c9b0cc85b26e28e",
+  "autonomy": "revoked",
   "default_merge_mode": "auto",
   "base_branch": "cursor/uat-pre-e2e-pipeline-integration-5641",
   "control_issue": 0,
@@ -23,7 +23,11 @@
         ".agents/plans/uat-pre-e2e-pipeline-5641.*"
       ],
       "forbidden_paths": [],
-      "allowed_exceptions": ["docs", "tests", "governance-allowlist"],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "governance-allowlist"
+      ],
       "spawn_allowed": false,
       "spawn_config": null,
       "merge_mode": "auto",
@@ -54,7 +58,10 @@
         "scripts/pre-push-changed.sh"
       ],
       "forbidden_paths": [],
-      "allowed_exceptions": ["docs", "tests"],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
       "spawn_allowed": false,
       "spawn_config": null,
       "merge_mode": "auto",
@@ -80,7 +87,9 @@
         "e2e/README.md"
       ],
       "forbidden_paths": [],
-      "allowed_exceptions": ["tests"],
+      "allowed_exceptions": [
+        "tests"
+      ],
       "spawn_allowed": false,
       "spawn_config": null,
       "merge_mode": "auto",

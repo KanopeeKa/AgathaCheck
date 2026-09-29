@@ -3,7 +3,7 @@ title: Refactoring log
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-26
+last_updated: 2026-09-29
 tags: [refactoring, sprint]
 ---
 # Refactoring log (by sprint)
@@ -11,6 +11,25 @@ tags: [refactoring, sprint]
 Tracks planned and completed refactor / quality work. See also `docs/debt/refactoring-debt.md` and `docs/architecture/modularity.md`.
 
 **Policy:** Multi-agent / sprint milestones use an **integration branch** → single PR to `main`. Single-agent domain PRs may go direct to `main`. Full E2E on UAT only. See `.cursor/rules/merge-policy.mdc` and `.cursor/rules/agent-coordination.mdc`.
+
+---
+
+## people-domain-refactor-7f3b — People domain refactor (roadmap, 2026-09-29)
+
+**Goal:** One authoritative People context (server + Flutter) with a rich, calm UI. **Target:** [people-domain-refactor.md](../domains/people/changes/people-domain-refactor.md) · **Roadmap:** `.agents/plans/people-domain-refactor-7f3b.md` · **Coordination with CARE / ARCH / TEST:** [parallel-programmes.md](../agent-efficiency/parallel-programmes.md)
+
+| Child | Outcome | Integration branch | Entry gate | Status |
+|-------|---------|--------------------|------------|--------|
+| `people-hotfixes-7f3b` | B1, B2, B5, B7, B9, B13 fixed with regression tests | — (phase PRs → `main`) | docs PR | planned |
+| `people-server-7f3b` | Single writer, access, usages, relationships + vet projection, read models, household directory, invites | `cursor/people-server-integration-7f3b` | CARE A+B, ARCH E | planned |
+| `people-client-core-7f3b` | Typed core, components, picker, hub, detail, edit, add, households UI, E2E | `cursor/people-client-core-integration-7f3b` | server child, CARE C+D | planned |
+| `people-client-integration-7f3b` | Consumers, People around {pet}, legacy deleted, E2E, docs | `cursor/people-client-integration-integration-7f3b` | client-core, CARE E+F, ARCH G | planned |
+
+**Ownership notes:**
+
+- The two-way vet sync from `people-vet-unify-a58d` and `contacts-detail-parity-fcd9` (compat adapters, `reconcilePeopleVets.js`) stays until `people-server-7f3b` s3 turns it into a one-way projection. The client vet code is deleted in `people-client-integration-7f3b` i3.
+- `server/routes/pets/peopleRelationshipsRouter.js` is owned by People (ARCH E drops it from its scope).
+- Area ownership across programmes: [parallel-programmes §3](../agent-efficiency/parallel-programmes.md).
 
 ---
 

@@ -31,7 +31,7 @@ Jest/Flutter tests, sharing.feature, api-reference, integration PR to main.
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: revoked   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: 1
 last_completed_phase: null
 halt_reason: null

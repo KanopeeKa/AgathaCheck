@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "approved_at": "2026-09-29T00:00:00Z",
+  "approved_until": "2026-10-01T00:00:00Z",
+  "content_hash": "sha256:1afd6b0ae04ad6ec5ad4f128f0044e6df6bda09e09f858e608a438739d460bd2",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "control_issue": 999999,
+  "artifact_branch_policy": "phase-branch",
+  "plan_id": "people-client-core-7f3b",
+  "base_branch": "cursor/people-client-core-integration-7f3b",
+  "approved_by": "DRAFT — bootstrapped under the standing grant of roadmap people-domain-refactor-7f3b when its entry gate is met (see people-client-core-7f3b.md)",
+  "phases": [
+    {
+      "id": "c1-flutter-core",
+      "title": "Typed domain, repository, application layer, façade",
+      "branch": "cursor/people-client-c1-core-7f3b",
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/people/**",
+        ".agents/plans/people-client-core-7f3b.md",
+        ".agents/plans/people-client-core-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        "e2e/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "c2-components",
+      "title": "Person components and the one PeoplePicker",
+      "branch": "cursor/people-client-c2-components-7f3b",
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/people/**",
+        "docs/e2e/navigation-contract.md",
+        ".agents/plans/people-client-core-7f3b.md",
+        ".agents/plans/people-client-core-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        "e2e/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "c3-hub",
+      "title": "Roster hub, search and filters, list–detail, Today desk",
+      "branch": "cursor/people-client-c3-hub-7f3b",
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_people_desk_module.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/pet_care_shell_home_content.dart",
+        "flutter_app/lib/core/router/experience_routes.dart",
+        "flutter_app/lib/core/router/vet_routes.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/people/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/core/router/**",
+        "e2e/playwright/pages/**",
+        "e2e/playwright/tests/people-hub.spec.ts",
+        "e2e/playwright/tests/guardian.dashboard.spec.ts",
+        "e2e/playwright/tests/guardian.navigation.spec.ts",
+        "e2e/playwright/tests/veterinarian.spec.ts",
+        "flutter_app/test/bdd/features/people.feature",
+        ".agents/plans/people-client-core-7f3b.md",
+        ".agents/plans/people-client-core-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_care/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "c4-detail",
+      "title": "Person detail with header, action bar and tabs",
+      "branch": "cursor/people-client-c4-detail-7f3b",
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/people/**",
+        "e2e/playwright/pages/**",
+        "e2e/playwright/tests/people-hub.spec.ts",
+        "e2e/playwright/tests/veterinarian.spec.ts",
+        ".agents/plans/people-client-core-7f3b.md",
+        ".agents/plans/people-client-core-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_care/**",
+        "flutter_app/lib/features/pet_profile/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "c5-edit",
+      "title": "Person edit with relationship editor and danger zone",
+      "branch": "cursor/people-client-c5-edit-7f3b",
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/people/**",
+        "e2e/playwright/pages/**",
+        "e2e/playwright/tests/people-hub.spec.ts",
+        "e2e/playwright/tests/veterinarian.spec.ts",
+        ".agents/plans/people-client-core-7f3b.md",
+        ".agents/plans/people-client-core-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_care/**",
+        "flutter_app/lib/features/pet_profile/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "c6-add",
+      "title": "Unified add flow with sharing and household-invite handoff",
+      "branch": "cursor/people-client-c6-add-7f3b",
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/features/sharing/presentation/providers/share_pet_providers.dart",
+        "flutter_app/lib/features/sharing/presentation/screens/share_pet_screen.dart",
+        "flutter_app/lib/features/sharing/presentation/widgets/share_invite_form.dart",
+        "flutter_app/lib/features/sharing/presentation/widgets/share_pet_owner_body.dart",
+        "flutter_app/lib/features/sharing/data/**",
+        "flutter_app/lib/features/sharing/domain/repositories/sharing_repository.dart",
+        "flutter_app/lib/core/router/experience_routes.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/people/**",
+        "flutter_app/test/features/sharing/**",
+        "e2e/playwright/pages/**",
+        "e2e/playwright/tests/people-hub.spec.ts",
+        "e2e/playwright/tests/veterinarian.spec.ts",
+        "e2e/playwright/tests/sharing.spec.ts",
+        ".agents/plans/people-client-core-7f3b.md",
+        ".agents/plans/people-client-core-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_care/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "c7-households-ui",
+      "title": "Household management inside People",
+      "branch": "cursor/people-client-c7-households-7f3b",
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/features/sharing/presentation/screens/households_screen.dart",
+        "flutter_app/lib/features/sharing/presentation/providers/household_providers.dart",
+        "flutter_app/lib/features/sharing/data/datasources/household_remote_datasource.dart",
+        "flutter_app/lib/features/sharing/data/repositories/household_repository_impl.dart",
+        "flutter_app/lib/features/sharing/domain/entities/household_summary.dart",
+        "flutter_app/lib/features/sharing/domain/repositories/household_repository.dart",
+        "flutter_app/lib/core/router/experience_routes.dart",
+        "flutter_app/lib/core/router/app_router.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/people/**",
+        "flutter_app/test/features/sharing/**",
+        "flutter_app/test/core/router/**",
+        ".agents/plans/people-client-core-7f3b.md",
+        ".agents/plans/people-client-core-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        "e2e/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "c8-e2e-core",
+      "title": "BDD and Playwright journeys for the People screens",
+      "branch": "cursor/people-client-c8-e2e-7f3b",
+      "allowed_paths": [
+        "flutter_app/test/bdd/features/people.feature",
+        "flutter_app/test/bdd/features/veterinarian_management.feature",
+        "flutter_app/test/bdd/features/sharing.feature",
+        "e2e/playwright/**",
+        "scripts/bdd-priority-tag-map.json",
+        "e2e/scripts/shard-files.mjs",
+        "docs/e2e/**",
+        "flutter_app/lib/features/people/**",
+        ".agents/plans/people-client-core-7f3b.md",
+        ".agents/plans/people-client-core-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "c9-ship-main",
+      "title": "Integration → main",
+      "branch": "cursor/people-client-c9-ship-7f3b",
+      "allowed_paths": [
+        "docs/domains/people/**",
+        "docs/agent-efficiency/parallel-programmes.md",
+        ".agents/plans/people-client-core-7f3b.md",
+        ".agents/plans/people-client-core-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

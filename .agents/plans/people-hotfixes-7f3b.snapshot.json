@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "approved_at": "2026-09-29T00:00:00Z",
+  "approved_until": "2026-10-01T00:00:00Z",
+  "content_hash": "sha256:fad50d10b4b4bd48cd1b0c0941ce4ca80926317af2ce6b5e44135375b62f058b",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "control_issue": 999999,
+  "artifact_branch_policy": "phase-branch",
+  "plan_id": "people-hotfixes-7f3b",
+  "base_branch": "main",
+  "approved_by": "DRAFT — bootstrapped under the standing grant of roadmap people-domain-refactor-7f3b when its entry gate is met (see people-hotfixes-7f3b.md)",
+  "phases": [
+    {
+      "id": "h1-server-kind",
+      "title": "Renaming a contact never changes its kind (B2)",
+      "branch": "cursor/people-hotfix-h1-kind-7f3b",
+      "allowed_paths": [
+        "server/lib/people/contactMutations.js",
+        "server/test/people/**",
+        "docs/architecture/api-reference.md",
+        ".agents/plans/people-hotfixes-7f3b.md",
+        ".agents/plans/people-hotfixes-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        ".github/workflows/**",
+        "server/routes/organizations/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "h2-client-fixes",
+      "title": "Detail loop, desk labels, report details, add and edit errors (B1, B5, B7, B9, B13)",
+      "branch": "cursor/people-hotfix-h2-client-7f3b",
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_people_desk_module.dart",
+        "flutter_app/lib/features/pet_profile/presentation/controllers/download_report_controller.dart",
+        "flutter_app/lib/features/pet_profile/presentation/providers/pet_vet_contacts_provider.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/people/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/features/pet_profile/**",
+        ".agents/plans/people-hotfixes-7f3b.md",
+        ".agents/plans/people-hotfixes-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        "e2e/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

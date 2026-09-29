@@ -245,7 +245,7 @@ Calendar constraint: all involved dates (`scheduled_at`, outcome recorded_at) sh
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: revoked   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null

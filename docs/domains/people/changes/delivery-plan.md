@@ -3,7 +3,7 @@ title: People & Care Team — delivery plan
 owner: Product / Documentation
 audience: agent
 status: active
-last_updated: 2026-09-28
+last_updated: 2026-09-29
 tags: [people, delivery]
 ---
 
@@ -13,7 +13,9 @@ Execute-plans:
 
 - **Backend:** `people-care-team-a58d` (control #1343)
 - **Nav + list hub:** `people-ui-hub-a58d` (control #1373) — merged to `main`
-- **Hub UX remodel:** `people-hub-remodel-a58d` (control #1386) — cards, detail, edit, unified add, E2E
+- **Hub UX remodel:** `people-hub-remodel-a58d` (control #1386) — cards, detail, edit, unified add, E2E (closed; remaining scope moved to the refactor)
+- **Vet unification:** `people-vet-unify-a58d` (control #1427) — closed as completed 2026-09-29
+- **Domain refactor (current):** roadmap `people-domain-refactor-7f3b` — four children (`people-hotfixes-7f3b`, `people-server-7f3b`, `people-client-core-7f3b`, `people-client-integration-7f3b`). Target, gaps and phase map: [people-domain-refactor.md](people-domain-refactor.md). Landing order shared with CARE, ARCH and TEST: [parallel-programmes.md](/docs/agent-efficiency/parallel-programmes.md)
 
 Canonical behaviour: [people-care-team.md](../features/people-care-team.md).
 
