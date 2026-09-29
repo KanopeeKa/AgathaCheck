@@ -85,8 +85,15 @@ export class VetListPage {
     );
   }
 
+  private peopleHubDirectoryCard(vetName: string): Locator {
+    const escaped = escapeRegExp(vetName);
+    return this.page.getByRole('button', {
+      name: new RegExp(`^${escaped}(?:,|\\s|$)`, 'i'),
+    });
+  }
+
   private async openPersonDetailFromHub(vetName: string): Promise<void> {
-    await this.vetRowLocator(vetName).click();
+    await this.peopleHubDirectoryCard(vetName).click();
     await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/?]+/, 30_000);
     await refreshFlutterAccessibility(this.page);
   }
@@ -228,15 +235,10 @@ export class VetListPage {
       return;
     }
     if (await this.onPeopleHub()) {
-      if (await this.vetRowLocator(vetName).isVisible().catch(() => false)) {
-        await this.openPersonDetailFromHub(vetName);
-        return;
-      }
       const vetId = await this.resolveVetIdByName(vetName);
       await this.openVetDetailRoute(vetId);
-      if (await this.onPeopleHub()) {
-        await this.openPersonDetailFromHub(vetName);
-      }
+      await waitForFlutterRoutePattern(this.page, /\/(pc|g|o)\/vets\/[^/]+$/, 30_000);
+      await refreshFlutterAccessibility(this.page);
       return;
     }
     await this.vetRowLocator(vetName).click();

@@ -19,10 +19,6 @@ List<RouteBase> buildVetExperienceRoutes() {
         if (path == '/pc/vets/add') {
           return '/pc/people/new';
         }
-        final detailMatch = RegExp(r'^/pc/vets/([^/]+)$').firstMatch(path);
-        if (detailMatch != null && detailMatch.group(1) != 'add') {
-          return '/pc/people?filter=professionals';
-        }
         return null;
       },
       routes: _vetFormRoutes(listPath: '/pc/vets'),
