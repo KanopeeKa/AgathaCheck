@@ -42,8 +42,7 @@ class DownloadReportController {
     );
 
     try {
-      final vetOptions =
-          ref.read(petVetOptionsProvider).valueOrNull ?? [];
+      final vetOptions = ref.read(petVetOptionsProvider).valueOrNull ?? [];
       final vetOption = findPetVetOption(vetOptions, pet.vetId);
       final assignedVet = vetOption == null
           ? null
