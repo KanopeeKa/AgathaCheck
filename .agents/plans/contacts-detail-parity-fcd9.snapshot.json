@@ -29,7 +29,7 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress"
+      "status": "merged"
     },
     {
       "id": "p0b-pet-vet-id",
@@ -44,7 +44,7 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged"
     },
     {
       "id": "p1-retire-vet-ui",
@@ -61,7 +61,25 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged"
+    },
+    {
+      "id": "p2-unified-add",
+      "title": "Single-screen add with inferred kind and dedupe",
+      "branch": "cursor/contacts-detail-parity-fcd9",
+      "status": "merged"
+    },
+    {
+      "id": "p2b-works-at",
+      "title": "Works at + legacy note migration",
+      "branch": "cursor/contacts-detail-parity-fcd9",
+      "status": "merged"
+    },
+    {
+      "id": "p3-server-hardening",
+      "title": "PATCH transactions and field validation",
+      "branch": "cursor/contacts-detail-parity-fcd9",
+      "status": "merged"
     }
   ]
 }
