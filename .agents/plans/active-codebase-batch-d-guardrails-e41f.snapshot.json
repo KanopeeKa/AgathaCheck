@@ -2,13 +2,13 @@
   "schema_version": 1,
   "plan_id": "active-codebase-batch-d-guardrails-e41f",
   "programme_ref": "docs/architecture/reviews/active-codebase-review.md",
-  "approved_at": null,
-  "approved_by": "standing grant — roadmap active-codebase-completion-e41f (pending approve-autonomous active-codebase-completion-e41f)",
-  "approved_until": null,
+  "approved_at": "2026-09-29T22:39:00Z",
+  "approved_by": "standing grant — roadmap active-codebase-completion-e41f (#1446), user chat 2026-09-29: \"That's fine, go ahead, and let me know exactly what to do if you need me.\" (roadmap #1446)",
+  "approved_until": "2026-10-01T22:39:00Z",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/active-codebase-d-integration-e41f",
-  "control_issue": null,
+  "control_issue": 1447,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
@@ -35,13 +35,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "debt_issue_refs": []
     },
     {
       "id": "2",
@@ -144,5 +141,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": null
+  "content_hash": "sha256:7a9daf9a9e395cb7784aad14918c7e5bc150672263235e79a0a84f91830ea9d8"
 }

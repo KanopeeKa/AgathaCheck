@@ -34,16 +34,16 @@ Make the programme's real status visible, and stop architecture regressions **be
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "bootstrap: create integration branch + control issue, then phase 1"
+next_action: "continue phase 1 on branch cursor/active-codebase-d1-status-e41f"
 artifact_ref:
-  branch: null
+  branch: cursor/active-codebase-d1-status-e41f
   plan_path: .agents/plans/active-codebase-batch-d-guardrails-e41f.md
-  plan_commit: null
+  plan_commit: 7c568eecc4638511e51b8a1eb335a5998c8b9a30
   snapshot_path: .agents/plans/active-codebase-batch-d-guardrails-e41f.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 7c568eecc4638511e51b8a1eb335a5998c8b9a30
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
