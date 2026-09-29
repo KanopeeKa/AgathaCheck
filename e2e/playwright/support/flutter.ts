@@ -678,11 +678,18 @@ export async function logOutFromApp(page: Page): Promise<void> {
   throw new Error('Could not find a logout entry point');
 }
 
+/** People hub renamed to Contacts in EN; desk semantics use {@link peoplePageTitle}. */
+export const PEOPLE_HUB_SECTION_NAME =
+  /People|PEOPLE|Contacts|CONTACTS|Personnes|PERSONNES|Autour de vos animaux/i;
+
+export const PEOPLE_HUB_SCREEN_TITLE =
+  /^People$|^Contacts$|^Personnes$|^Autour de vos animaux$/i;
+
 /** Guardian dashboard [DashboardSection] titles are semantics group labels, not plain text. */
 export const DASHBOARD_SECTION_NAMES = {
   myPets: /My Pets|Mes animaux/i,
   dueAndOverdue: /CARE ACTIONS|SOINS/i,
-  myVets: /People|PEOPLE|Autour de vos animaux/i,
+  myVets: PEOPLE_HUB_SECTION_NAME,
 } as const;
 
 export function dashboardSectionGroup(

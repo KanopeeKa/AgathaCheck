@@ -51,7 +51,9 @@ export class VetFormPage {
       .getByText(text)
       .or(this.page.getByRole('button', { name: /Veterinarian:/i }))
       .or(this.page.getByRole('group', { name: /Veterinarian:/i }))
-      .or(this.page.getByText(/^Contacts$|^People$|^Autour de vos animaux$/i))
+      .or(
+        this.page.getByText(/^Contacts$|^People$|^Personnes$|^Autour de vos animaux$/i),
+      )
       .or(this.page.getByText(/Dr\./))
       .first()
       .waitFor({ timeout: 15_000 });

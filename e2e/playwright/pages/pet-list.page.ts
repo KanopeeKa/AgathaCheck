@@ -332,7 +332,10 @@ export class PetListPage {
     } else {
       await waitForFlutterRoute(this.page, '/pc/people');
     }
-    await this.page.getByText(/^People$|^Autour de vos animaux$/i).first().waitFor({ timeout: 30_000 });
+    await this.page
+      .getByText(/^People$|^Contacts$|^Personnes$|^Autour de vos animaux$/i)
+      .first()
+      .waitFor({ timeout: 30_000 });
   }
 
   /**

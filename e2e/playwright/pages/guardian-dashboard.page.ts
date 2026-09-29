@@ -3,6 +3,7 @@ import { expect } from '@playwright/test';
 import {
   dashboardSectionGroup,
   escapeRegExp,
+  PEOPLE_HUB_SECTION_NAME,
   flutterGotoUrl,
   petCardByName,
   petCardHiddenLocator,
@@ -38,7 +39,7 @@ export class GuardianDashboardPage {
   async expectTodayCareRegions(): Promise<void> {
     await expect(this.section(/My Pets|Mes animaux/i)).toBeVisible();
     await expect(this.section(/CARE ACTIONS|SOINS/i)).toBeVisible();
-    const people = this.section(/People|PEOPLE|Autour de vos animaux/i);
+    const people = this.section(PEOPLE_HUB_SECTION_NAME);
     await people.scrollIntoViewIfNeeded();
     await expect(people).toBeVisible();
     await expect(this.section(/Fostering Sessions|Sessions d'accueil/i)).not.toBeVisible();
@@ -119,7 +120,7 @@ export class GuardianDashboardPage {
 
   async expectVetVisible(name: string): Promise<void> {
     await expect(
-      this.section(/People|PEOPLE|Autour de vos animaux/i)
+      this.section(PEOPLE_HUB_SECTION_NAME)
         .getByRole('button', { name: new RegExp(name, 'i') })
         .or(semanticsByName(this.page, new RegExp(name, 'i')))
         .first(),
@@ -130,7 +131,7 @@ export class GuardianDashboardPage {
     const namePattern = new RegExp(name, 'i');
     await refreshFlutterAccessibility(this.page);
 
-    const people = this.section(/People|PEOPLE|Autour de vos animaux/i);
+    const people = this.section(PEOPLE_HUB_SECTION_NAME);
     const buttonInSection = people.getByRole('button', { name: namePattern });
     const bySemanticsName = semanticsByName(this.page, namePattern);
     const card = this.page
@@ -206,7 +207,9 @@ export class GuardianDashboardPage {
             ? /^Fostering$|^Accueil$/i
             : label === 'Account'
               ? /^Account$|^Compte$/i
-              : new RegExp(`^${escapeRegExp(label)}$`, 'i');
+              : label === 'People'
+                ? /^People$|^Contacts$|^Personnes$/i
+                : new RegExp(`^${escapeRegExp(label)}$`, 'i');
   }
 
   private bottomNavTabPattern(label: string): RegExp {
