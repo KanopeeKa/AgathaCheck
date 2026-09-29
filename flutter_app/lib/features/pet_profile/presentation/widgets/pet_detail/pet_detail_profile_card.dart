@@ -287,7 +287,7 @@ class PetDetailProfileCard extends ConsumerWidget {
         label: l.addVetFirst,
         button: true,
         child: GestureDetector(
-          onTap: () => GoRouter.of(context).go('/vets/add'),
+          onTap: () => GoRouter.of(context).go('/pc/people/new'),
           child: Row(
             children: [
               Icon(
