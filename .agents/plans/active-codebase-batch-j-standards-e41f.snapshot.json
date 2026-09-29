@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "plan_id": "active-codebase-batch-j-standards-e41f",
+  "programme_ref": "docs/architecture/reviews/active-codebase-review.md",
+  "approved_at": null,
+  "approved_by": "standing grant — roadmap active-codebase-completion-e41f (pending approve-autonomous active-codebase-completion-e41f)",
+  "approved_until": null,
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/active-codebase-j-integration-e41f",
+  "control_issue": null,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Coverage denominators and ratchets",
+      "branch": "cursor/active-codebase-j1-coverage-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-j-standards-e41f.*",
+        "flutter_app/scripts/check_domain_coverage.js",
+        "flutter_app/scripts/merge_flutter_coverage.sh",
+        "flutter_app/scripts/run_tests_ci.sh",
+        "flutter_app/scripts/generate_coverage_helper.*",
+        "flutter_app/test/coverage_helper_test.dart",
+        "flutter_app/scripts/test/**",
+        "server/jest.config.active.cjs",
+        "server/scripts/check_coverage_ratchet.js",
+        "server/coverage-ratchet.json",
+        "scripts/check_coverage_threshold_consistency.test.js",
+        ".github/workflows/_reusable-test.yml",
+        ".github/workflows/_reusable-flutter-coverage.yml",
+        "CONTRIBUTING.md",
+        "docs/engineering/active-codebase-baseline/**"
+      ],
+      "forbidden_paths": [
+        "server/lib/**",
+        "server/routes/**",
+        "flutter_app/lib/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "2",
+      "title": "Lint scope and D7 size ratchet",
+      "branch": "cursor/active-codebase-j2-lint-size-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-j-standards-e41f.*",
+        "scripts/validate_eslint.js",
+        "scripts/validate_eslint.test.js",
+        "server/eslint.config.js",
+        "server/eslint-baseline.json",
+        "scripts/check_file_size.js",
+        "scripts/check_file_size.test.js",
+        "scripts/file-size-allowlist.json",
+        "scripts/test/fixtures/file-size/**",
+        ".github/workflows/_reusable-test.yml",
+        "docs/engineering/active-codebase-baseline/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "e2e/**",
+        "server/routes/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "3",
+      "title": "BDD traceability versus execution and quality",
+      "branch": "cursor/active-codebase-j3-bdd-quality-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-j-standards-e41f.*",
+        "e2e/scripts/check_bdd_coverage.js",
+        "e2e/scripts/check_bdd_coverage.test.*",
+        "e2e/scripts/fixtures/bdd/**",
+        "docs/e2e/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/lib/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "4",
+      "title": "Checker fixtures and blocking CI wiring",
+      "branch": "cursor/active-codebase-j4-checker-ci-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-j-standards-e41f.*",
+        "scripts/ci/assert-ci-gate.test.js",
+        "scripts/ci/**",
+        "scripts/test/**",
+        "scripts/pre-push.sh",
+        ".github/workflows/_reusable-test.yml",
+        "docs/agent-efficiency/**",
+        "CONTRIBUTING.md"
+      ],
+      "forbidden_paths": [
+        "server/lib/**",
+        "server/routes/**",
+        "flutter_app/lib/**",
+        "e2e/playwright/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "5",
+      "title": "Integration → main + pre-UAT",
+      "branch": "cursor/active-codebase-j-integration-e41f",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/deploy-*.yml"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    }
+  ],
+  "content_hash": null
+}

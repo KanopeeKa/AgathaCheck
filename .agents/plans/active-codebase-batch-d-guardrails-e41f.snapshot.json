@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "plan_id": "active-codebase-batch-d-guardrails-e41f",
+  "programme_ref": "docs/architecture/reviews/active-codebase-review.md",
+  "approved_at": null,
+  "approved_by": "standing grant — roadmap active-codebase-completion-e41f (pending approve-autonomous active-codebase-completion-e41f)",
+  "approved_until": null,
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/active-codebase-d-integration-e41f",
+  "control_issue": null,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Programme status and baseline refresh",
+      "branch": "cursor/active-codebase-d1-status-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-d-guardrails-e41f.*",
+        ".agents/plans/active-codebase-completion-e41f.*",
+        "docs/architecture/reviews/active-codebase-review.md",
+        "docs/architecture/index.md",
+        "docs/engineering/active-codebase-baseline/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        "e2e/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "2",
+      "title": "Cross-feature import gate (D6 block-new)",
+      "branch": "cursor/active-codebase-d2-import-gate-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-d-guardrails-e41f.*",
+        "scripts/check_feature_imports.js",
+        "scripts/check_feature_imports.test.js",
+        "scripts/feature-import-baseline.json",
+        "scripts/test/fixtures/feature-imports/**",
+        "scripts/pre-push.sh",
+        "scripts/pre-push-changed.sh",
+        ".github/workflows/_reusable-test.yml",
+        "docs/architecture/modularity.md",
+        "docs/engineering/active-codebase-baseline/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/lib/**",
+        "flutter_app/test/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "3",
+      "title": "Server size report (D7) and coverage threshold consistency (D23)",
+      "branch": "cursor/active-codebase-d3-size-coverage-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-d-guardrails-e41f.*",
+        "scripts/check_file_size.js",
+        "scripts/check_file_size.test.js",
+        "scripts/check_coverage_threshold_consistency.test.js",
+        "scripts/test/fixtures/file-size/**",
+        ".github/workflows/_reusable-test.yml",
+        "CONTRIBUTING.md",
+        "docs/engineering/active-codebase-baseline/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/lib/**",
+        "e2e/**",
+        "scripts/file-size-allowlist.json"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "4",
+      "title": "Integration → main + pre-UAT",
+      "branch": "cursor/active-codebase-d-integration-e41f",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/deploy-*.yml"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    }
+  ],
+  "content_hash": null
+}

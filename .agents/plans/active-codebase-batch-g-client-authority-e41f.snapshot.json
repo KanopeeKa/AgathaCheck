@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "plan_id": "active-codebase-batch-g-client-authority-e41f",
+  "programme_ref": "docs/architecture/reviews/active-codebase-review.md",
+  "approved_at": null,
+  "approved_by": "standing grant — roadmap active-codebase-completion-e41f (pending approve-autonomous active-codebase-completion-e41f)",
+  "approved_until": null,
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/active-codebase-g-integration-e41f",
+  "control_issue": null,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Pet cache freshness (Package 7 completion)",
+      "branch": "cursor/active-codebase-g1-pet-freshness-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-g-client-authority-e41f.*",
+        "flutter_app/lib/features/pet_profile/data/**",
+        "flutter_app/lib/features/pet_profile/domain/**",
+        "flutter_app/lib/features/pet_profile/presentation/providers/**",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/pet_list_stale_banner.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_detail_screen.dart",
+        "flutter_app/lib/features/experience/presentation/screens/experience_home_screens.dart",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_all_pets_screen.dart",
+        "flutter_app/lib/l10n/app_en.arb",
+        "flutter_app/lib/l10n/app_fr.arb",
+        "flutter_app/lib/l10n/app_localizations.dart",
+        "flutter_app/lib/l10n/app_localizations_en.dart",
+        "flutter_app/lib/l10n/app_localizations_fr.dart",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/features/experience/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "e2e/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/health_tracking/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "2",
+      "title": "Health store refresh and session semantics (Package 8, store)",
+      "branch": "cursor/active-codebase-g2-health-store-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-g-client-authority-e41f.*",
+        "flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
+        "flutter_app/lib/features/health_tracking/presentation/providers/health_entries_store*.dart",
+        "flutter_app/lib/features/health_tracking/domain/entities/command_outcome.dart",
+        "flutter_app/test/features/health_tracking/presentation/providers/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "e2e/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "3",
+      "title": "CareScheduleController and widget migration (Package 8, commands)",
+      "branch": "cursor/active-codebase-g3-care-schedule-controller-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-g-client-authority-e41f.*",
+        "flutter_app/lib/features/health_tracking/presentation/controllers/care_schedule_controller*.dart",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/**",
+        "flutter_app/lib/features/health_tracking/presentation/screens/**",
+        "flutter_app/lib/features/health_tracking/presentation/providers/pet_event_view_providers.dart",
+        "flutter_app/lib/features/health_tracking/presentation/providers/occurrence_providers.dart",
+        "flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_suggestions_section.dart",
+        "flutter_app/test/features/health_tracking/presentation/controllers/**",
+        "flutter_app/test/features/health_tracking/presentation/widgets/**",
+        "flutter_app/test/features/pet_care/**",
+        "flutter_app/test/architecture/health_presentation_boundary_test.dart"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "e2e/**",
+        ".github/workflows/**",
+        "flutter_app/lib/l10n/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "4",
+      "title": "Offline cache journey (BDD + Playwright)",
+      "branch": "cursor/active-codebase-g4-offline-e2e-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-g-client-authority-e41f.*",
+        "flutter_app/test/bdd/features/pet_offline_cache.feature",
+        "e2e/playwright/tests/pet.offline-cache.spec.ts",
+        "e2e/playwright/pages/pet-list.page.ts",
+        "e2e/scripts/shard-files.mjs"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/lib/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "5",
+      "title": "Integration → main + pre-UAT",
+      "branch": "cursor/active-codebase-g-integration-e41f",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/deploy-*.yml"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    }
+  ],
+  "content_hash": null
+}
