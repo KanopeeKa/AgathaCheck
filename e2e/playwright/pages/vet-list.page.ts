@@ -4,7 +4,7 @@
  */
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { getVets } from '../support/api';
+import { deleteVet, getPeopleContactIdForVetName, getVets } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
@@ -37,27 +37,17 @@ export class VetListPage {
     return vetId!;
   }
 
-  private async resolveContactIdByVetName(name: string): Promise<string> {
-    let contactId: string | undefined;
+  private async openPeopleEditForVet(name: string): Promise<void> {
+    let contactId = '';
     await expect(async () => {
       const token = await readAccessTokenFromPage(this.page);
-      const vetId = await this.resolveVetIdByName(name);
-      const res = await fetch(`${this.baseURL()}/backend/api/people/contacts`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      expect(res.ok).toBeTruthy();
-      const contacts = (await res.json()) as Array<{ id: string; legacy_vet_id?: string | null }>;
-      contactId = contacts.find((c) => c.legacy_vet_id === vetId)?.id;
-      expect(contactId).toBeTruthy();
-    }).toPass({ timeout: 30_000 });
-    return contactId!;
-  }
-
-  private async openPeopleEditForVet(name: string): Promise<void> {
-    const contactId = await this.resolveContactIdByVetName(name);
+      contactId = await getPeopleContactIdForVetName(this.baseURL(), token, name);
+    }).toPass({ timeout: 45_000 });
+    await dismissConsentBannerIfPresent(this.page);
     await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}/edit`));
     await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit/, 45_000);
+    await this.page.getByText(/^Edit details$/i).first().waitFor({ timeout: 45_000 });
   }
 
   private async onPeopleHub(): Promise<boolean> {
@@ -237,11 +227,7 @@ export class VetListPage {
       this.vetDeleteCandidate = null;
       const vetId = await this.resolveVetIdByName(name);
       const token = await readAccessTokenFromPage(this.page);
-      const res = await fetch(`${this.baseURL()}/backend/api/vets/${vetId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      expect(res.ok).toBeTruthy();
+      await deleteVet(this.baseURL(), token, vetId);
       await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
       await refreshFlutterAccessibility(this.page);
       await this.expectLoaded();
