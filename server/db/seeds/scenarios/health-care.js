@@ -1,5 +1,7 @@
 import { DEMO_IDS } from '../demo-constants.js';
 import { calendarDaysFromToday, timestampFromNow } from '../helpers.js';
+import { syncPetPrimaryVetFromLegacyVetId } from '../../../lib/people/petVetLink.js';
+import { upsertContactFromVet } from '../../../lib/people/vetSync.js';
 
 export async function seedHealthCare(client) {
   await client.query(
@@ -28,6 +30,24 @@ export async function seedHealthCare(client) {
   await client.query(
     `UPDATE pets SET vet_id = $1, updated_at = NOW() WHERE id = $2`,
     [DEMO_IDS.aliceVet, DEMO_IDS.buddyPet],
+  );
+
+  const vetRow = {
+    id: DEMO_IDS.aliceVet,
+    name: 'Dr. Sarah Mitchell',
+    clinic: 'Happy Paws Veterinary Surgery',
+    phone: '+44 20 7946 0123',
+    email: 'reception@happypaws.demo',
+    website: '',
+    address: '42 Demo Street, London',
+    notes: 'Primary vet for Alice guardian pets',
+  };
+  await upsertContactFromVet(client, vetRow, DEMO_IDS.alice);
+  await syncPetPrimaryVetFromLegacyVetId(
+    client,
+    DEMO_IDS.buddyPet,
+    DEMO_IDS.aliceVet,
+    DEMO_IDS.alice,
   );
 
   await client.query(
