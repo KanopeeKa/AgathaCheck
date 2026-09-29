@@ -18,6 +18,7 @@ import {
   normalizePetHomeTimezone,
 } from '../../lib/petHomeTimezone.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
+import { syncPetPrimaryVetFromLegacyVetId } from '../../lib/people/petVetLink.js';
 import { deleteAllPetData } from '../../lib/petDataLifecycle.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import {
@@ -232,6 +233,12 @@ export function registerCoreRoutes(router, pool) {
       await refreshPetWeightCache(pool, pet.id);
       const refreshed = await pool.query('SELECT * FROM pets WHERE id = $1', [pet.id]);
       const syncedPet = refreshed.rows[0] || pet;
+      await syncPetPrimaryVetFromLegacyVetId(
+        pool,
+        syncedPet.id,
+        syncedPet.vet_id,
+        userId,
+      );
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'pet.created',
@@ -353,6 +360,13 @@ export function registerCoreRoutes(router, pool) {
       await refreshPetWeightCache(pool, id);
       const refreshed = await pool.query('SELECT * FROM pets WHERE id = $1', [id]);
       const syncedPet = refreshed.rows[0] || pet;
+      if (
+        Object.prototype.hasOwnProperty.call(req.body, 'vetId')
+        || Object.prototype.hasOwnProperty.call(req.body, 'vet_id')
+      ) {
+        const resolvedVetId = vetId ?? req.body.vet_id ?? null;
+        await syncPetPrimaryVetFromLegacyVetId(pool, id, resolvedVetId, userId);
+      }
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'pet.updated',
