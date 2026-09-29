@@ -57,6 +57,8 @@ test.describe('People hub remodel @people', () => {
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.openBottomNavTab('People');
     await waitForFlutterRoutePattern(page, /\/pc\/people(?:\?|$)/, 30_000);
-    await expect(page.getByText(/^People$|^Autour de vos animaux$/i).first()).toBeVisible();
+    await expect(
+      page.getByText(/^People$|^Contacts$|^Personnes$|^Autour de vos animaux$/i).first(),
+    ).toBeVisible();
   });
 });

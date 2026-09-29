@@ -56,7 +56,7 @@ export class VetListPage {
     await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
     await refreshFlutterAccessibility(this.page);
     await this.page
-      .getByText(/^Contacts$|^People$|^Autour de vos animaux$/i)
+      .getByText(/^Contacts$|^People$|^Personnes$|^Autour de vos animaux$/i)
       .first()
       .waitFor({ timeout: 30_000 });
   }
