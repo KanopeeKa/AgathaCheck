@@ -61,7 +61,7 @@ Product behaviour â†’ `docs/domains/<domain>/`. Platform, CI, agents, and debt â
 | **Pipelines** | [/docs/pipelines/README.md](/docs/pipelines/README.md) | CI/CD gates, promotion, canary, deploy runbooks |
 | **Agent efficiency** | [/docs/agent-efficiency/plans/README.md](/docs/agent-efficiency/plans/README.md) | Master agent plan + policies in `docs/agent-efficiency/` |
 | **Debt** | [/docs/debt/README.md](/docs/debt/README.md) | Open debt register (`debt.md`) + refactor changelog |
-| **Operations** | [/docs/ops/public-access.md](/docs/ops/public-access.md) | Observability, public access |
+| **Operations** | [/docs/ops/public-access.md](/docs/ops/public-access.md) | Observability, public access, [backup & restore plan](/docs/ops/prod-backup-restore-plan.md) |
 | **E2E / UAT** | [/docs/e2e/uat-deploy-tiers.md](/docs/e2e/uat-deploy-tiers.md) | Live E2E ops, promotion manuals |
 | **Design** | [/docs/design/system.md](/docs/design/system.md) | Operations Desk visual spec (canonical) |
 | **Database** | [/docs/db/README.md](/docs/db/README.md) | Schema and migration index |
