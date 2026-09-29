@@ -69,7 +69,7 @@ Follow `docs/architecture/calendar-dates.md`:
 |---------------|------------------------|
 | **Once** | The single occurrence until it closes |
 | **After it's done** | Exactly one open date from the rule (`computed`), **unless** a person planned dates (`planned`), in which case those are the open dates and no computed one exists. Created when the item is created and whenever the last open date closes (D-CSM-022) |
-| **Fixed schedule** | Every slot from **today − 3 days** through **today** not yet closed, plus every slot of the **next series date after today**, plus any `planned` extras (D-CSM-023). Kept up to date by every command's catch-up and by the care tick every 15 minutes (D-CSM-031) |
+| **Fixed schedule** | Every slot from **today − 3 days** through **today** not yet closed, plus every slot of the **next series date after today** (if a person already closed that date, the one after it), plus any `planned` extras (D-CSM-023). A Not recorded slot closes once the slot after it is three days old; an Overdue slot is never closed automatically. Kept up to date by every command's catch-up and by the care tick every 15 minutes (D-CSM-031) |
 | **Paused** | Whatever was open stays (hidden); nothing new is created (D-CSM-028) |
 | **Unplanned / recorded** | None |
 
@@ -180,7 +180,7 @@ Every row is a test (Jest for rules and commands, Flutter widget tests for the a
 | PL-2 | First dose done 20 Jun (due 1 Jun), booster 1 Jul waiting | Gap 11 < 15 → Keep / Skip / Move by 19 days |
 | PL-3 | Change date on the open computed 5 Jun → 20 Jun | Same occurrence, now `planned` |
 | PL-4 | Plan another date 8 Jun while 5 Jun open | Warning; add anyway → two open |
-| PL-5 | AID: mark the later 1 Jul done while 5 Jun is open | Ask: mark 5 Jun done / skip / keep |
+| PL-5 | AID: mark the later 1 Jul done while 5 Jun is open | 409 `earlier_choice_required`: mark 5 Jun done / skip / keep |
 | PL-6 | Delete the only planned date | Rule creates the next; user confirms the date |
 | PL-7 | FX: plan an extra one-off dose | `planned`, independent of the series |
 
@@ -203,7 +203,7 @@ Every row is a test (Jest for rules and commands, Flutter widget tests for the a
 |----|------|----------|
 | LC-1 | Remember “Skip the next date” | Applied automatically in the completion transaction; visible and resettable in Advanced settings |
 | LC-2 | Dismiss the sheet | Keep; nothing remembered |
-| LC-3 | FX twice daily: 08:00 recorded at 15:00, 18:00 waiting | Gap 10 h → 3 h → 409 `next_choice_required`; Keep / Skip 18:00 / Move by 7 h |
+| LC-3 | FX twice daily: 08:00 recorded at 15:00, 18:00 waiting | Gap 10 h → 3 h → 409 `next_choice_required`; Keep / Skip 18:00 (Move is not offered for an hours shift on care given several times a day) |
 | LC-4 | Re-sent with `next_choice: 'skip_next'` | One transaction: dose completed, 18:00 skipped; Undo reverses both |
 | LC-5 | Response lost; app retries | 409 `occurrence_not_open`; the app reloads the item |
 | UN-1 | AID done → computed next → Undo | Reopen; computed next deleted |

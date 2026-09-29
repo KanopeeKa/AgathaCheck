@@ -1,58 +1,43 @@
+import { runCareCommand } from '../../lib/care/occurrence/index.js';
+import { occurrenceToMap } from '../../lib/occurrenceScheduling.js';
 import { publicError } from '../../config/security.js';
-import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
-import { ensureOpenOccurrence } from '../../lib/care/schedule/ensureOpenOccurrence.js';
 import { extractUserId } from './shared.js';
 import { loadEntry } from './occurrencesRouter.js';
 
 /**
+ * Compatibility (deleted in child F): every active planned item already has
+ * an open occurrence (D-CSM-019), so this only runs the catch-up and returns
+ * the current open occurrences.
+ *
  * @param {import('express').Router} router
  * @param {import('pg').Pool} pool
- * @param {{ asOfContextForEntry: Function }} deps
  */
-export function registerEnsureOpenOccurrenceRoutes(router, pool, deps) {
+export function registerEnsureOpenOccurrenceRoutes(router, pool) {
   router.post('/:id/occurrences/ensure-open', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    const body = req.body || {};
     try {
       const entry = await loadEntry(pool, req.params.id, userId);
       if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      const asOfCtx = await deps.asOfContextForEntry(pool, entry, req);
-      const requestedRaw = body.scheduled_date ?? body.scheduledDate;
-      const requestedDateIso = requestedRaw
-        ? normalizeCalendarDateInput(requestedRaw)
-        : null;
-      if (requestedRaw && !requestedDateIso) {
-        return res.status(400).json({ error: 'Invalid scheduled_date' });
+      if (entry.status === 'paused') {
+        return res.status(400).json({ error: 'Care item is paused' });
       }
-
-      const result = await ensureOpenOccurrence(pool, {
-        entry,
-        requestedDateIso,
-        todayIso: asOfCtx.todayIso,
-      });
-
-      if (!result.ok) {
-        if (result.error === 'not_open_head') {
-          return res.status(400).json({
-            error: 'Requested date is not the open head occurrence',
-            head_date: result.head_date,
-          });
-        }
-        if (result.error === 'entry_paused') {
-          return res.status(400).json({ error: 'Care item is paused' });
-        }
+      const out = await runCareCommand(pool, { entryId: entry.id, userId, req }, async () => ({ event: null }));
+      if (!out) return res.status(404).json({ error: 'Entry not found' });
+      if (out.openOccurrences.length === 0) {
         return res.status(400).json({ error: 'No open date to materialise' });
       }
-
-      res.json({
-        occurrences: result.occurrences,
-        created: result.created,
-        next_due_date: result.next_due_date,
-        head_date: result.head_date,
+      const headDate = out.openOccurrences[0].scheduled_date;
+      return res.json({
+        occurrences: out.openOccurrences
+          .filter((o) => o.scheduled_date === headDate)
+          .map((o) => occurrenceToMap(o)),
+        created: false,
+        next_due_date: headDate,
+        head_date: headDate,
       });
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      return res.status(500).json({ error: publicError(err) });
     }
   });
 }

@@ -1,79 +1,16 @@
 /**
- * Health occurrence scheduling — materialisation, missed predicates, wire maps.
- * Calendar dates follow server/lib/calendarDate.js (UTC session day for API).
+ * Health occurrence helpers — pure predicates and wire maps.
+ * Occurrence writes live in `server/lib/care/occurrence/` (D-CSM-019, D-CSM-033).
  */
 
-import { v4 as uuidv4 } from 'uuid';
-
 import {
-  addCalendarDaysIso,
   dateToIsoDate,
   normalizeCalendarDateInput,
   todayCalendarIso,
 } from './calendarDate.js';
-import { advanceSeries } from './care/schedule/advanceSeries.js';
 
-/**
- * @param {object|null|undefined} row health_entries row or body
- * @returns {(string|null)[]} wall-clock HH:MM or [null] for all-day
- */
-export function scheduleTimesFromEntry(row) {
-  const raw = row?.schedule_times ?? row?.scheduleTimes;
-  if (raw == null) return [null];
-  if (Array.isArray(raw)) {
-    if (raw.length === 0) return [null];
-    return raw.map((t) => (t == null || t === '' ? null : normalizeTime(t)));
-  }
-  return [null];
-}
-
-/**
- * @param {string|null|undefined} value
- * @returns {string|null} HH:MM
- */
-export function normalizeTime(value) {
-  if (value == null || value === '') return null;
-  const s = String(value).trim();
-  const m = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(s);
-  if (!m) return null;
-  const hh = Number(m[1]);
-  const mm = Number(m[2]);
-  if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null;
-  return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
-}
-
-/**
- * @param {string|null} startDateIso
- * @param {string} todayIso
- * @returns {string}
- */
-export function materialisationAnchor(startDateIso, todayIso) {
-  const start = startDateIso || todayIso;
-  return start > todayIso ? start : todayIso;
-}
-
-/**
- * Anchor for first occurrence materialisation at entry create.
- * Preserves an explicit overdue next_due_date so notifications and missed
- * predicates still see the intended calendar day.
- *
- * @param {string|null} startDateIso
- * @param {string|null} nextDueIso
- * @param {string} todayIso
- * @returns {string|null} null when materialisation should be deferred
- */
-export function initialMaterialisationAnchor(startDateIso, nextDueIso, todayIso) {
-  if (nextDueIso && nextDueIso < todayIso) {
-    return nextDueIso;
-  }
-  if (nextDueIso && nextDueIso >= todayIso) {
-    if (isWithinMaterialisationWindow(nextDueIso, todayIso)) {
-      return nextDueIso;
-    }
-    return null;
-  }
-  return materialisationAnchor(startDateIso, todayIso);
-}
+export { normalizeTime, scheduleTimesFromEntry } from './care/schedule/scheduleTimes.js';
+import { normalizeTime, scheduleTimesFromEntry } from './care/schedule/scheduleTimes.js';
 
 /**
  * @param {object} row health_entries row
@@ -93,22 +30,12 @@ export function isMultiPerDayEntry(row) {
 }
 
 /**
- * @param {string} targetDateIso
- * @param {string} todayIso
- * @returns {boolean} calendar T-1 rule
- */
-export function isWithinMaterialisationWindow(targetDateIso, todayIso) {
-  const trigger = addCalendarDaysIso(targetDateIso, -1);
-  return todayIso >= trigger;
-}
-
-/**
- * Missed predicate for API (pet home timezone "today" when wired via listOpenOccurrences).
+ * Past its time (timed) or its day (untimed).
  *
  * @param {string} scheduledDateIso YYYY-MM-DD
  * @param {string|null} scheduledTime HH:MM or null (all-day)
  * @param {string} todayIso
- * @param {string|null} nowTimeIso HH:MM from server clock (for timed today)
+ * @param {string|null} nowTimeIso HH:MM (pet home wall clock)
  */
 export function isOccurrenceMissed(scheduledDateIso, scheduledTime, todayIso, nowTimeIso) {
   if (!scheduledDateIso) return false;
@@ -146,136 +73,9 @@ export function occurrenceToMap(row) {
     provider_contact_id: row.provider_contact_id ?? null,
     provider_typed_name: row.provider_typed_name ?? null,
     provider_contact_snapshot: row.provider_contact_snapshot ?? null,
+    origin: row.origin ?? null,
+    close_reason: row.close_reason ?? null,
   };
-}
-
-/**
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {string} entryId
- */
-export async function syncNextDueDateFromOccurrences(pool, entryId) {
-  const pending = await pool.query(
-    `SELECT scheduled_date, scheduled_time FROM health_occurrences
-     WHERE health_entry_id = $1 AND status = 'pending'
-     ORDER BY scheduled_date ASC,
-       COALESCE(scheduled_time, '00:00:00'::time) ASC
-     LIMIT 1`,
-    [entryId]
-  );
-  const nextDate = pending.rows[0]
-    ? dateToIsoDate(pending.rows[0].scheduled_date)
-    : null;
-  await pool.query(
-    `UPDATE health_entries SET next_due_date = $1, updated_at = NOW() WHERE id = $2`,
-    [nextDate, entryId]
-  );
-  return nextDate;
-}
-
-/**
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {object} entry health_entries row
- * @param {string} dateIso YYYY-MM-DD
- */
-export async function insertOccurrencesForDay(pool, entry, dateIso) {
-  const times = scheduleTimesFromEntry(entry);
-  const created = [];
-  for (const time of times) {
-    const dup = await pool.query(
-      `SELECT id FROM health_occurrences
-       WHERE health_entry_id = $1 AND scheduled_date = $2
-         AND (($3::time IS NULL AND scheduled_time IS NULL)
-           OR scheduled_time = $3::time)
-         AND status = 'pending'`,
-      [entry.id, dateIso, time]
-    );
-    if (dup.rows.length > 0) continue;
-    const id = uuidv4();
-    await pool.query(
-      `INSERT INTO health_occurrences
-         (id, health_entry_id, scheduled_date, scheduled_time, status)
-       VALUES ($1, $2, $3, $4, 'pending')`,
-      [id, entry.id, dateIso, time]
-    );
-    created.push(id);
-  }
-  return created;
-}
-
-/**
- * Initial materialisation at entry create (and backfill).
- *
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {object} entry health_entries row (must include id, frequency, start_date, schedule_times)
- * @param {string} [todayIso]
- */
-export async function materialiseInitialOccurrences(pool, entry, todayIso = todayCalendarIso()) {
-  const startIso = dateToIsoDate(entry.start_date);
-  const nextDueIso = dateToIsoDate(entry.next_due_date);
-  if (isOnceEntry(entry)) {
-    const dateIso = startIso || nextDueIso || todayIso;
-    await insertOccurrencesForDay(pool, entry, dateIso);
-    await syncNextDueDateFromOccurrences(pool, entry.id);
-    return;
-  }
-
-  const anchor = initialMaterialisationAnchor(startIso, nextDueIso, todayIso);
-  if (anchor == null) {
-    return;
-  }
-  await insertOccurrencesForDay(pool, entry, anchor);
-  await syncNextDueDateFromOccurrences(pool, entry.id);
-}
-
-/**
- * After an occurrence closes, roll forward pending materialisation.
- *
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {object} entry
- * @param {string} [todayIso]
- */
-export async function materialiseAfterOccurrenceClose(pool, entry, todayIso = todayCalendarIso()) {
-  await advanceSeries(pool, entry, todayIso);
-}
-
-/**
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {string} entryId
- * @param {string} [todayIso]
- * @param {string|null} [nowTimeIso]
- */
-export async function listOpenOccurrences(pool, entryId, todayIso = todayCalendarIso(), nowTimeIso = null) {
-  const result = await pool.query(
-    `SELECT ho.*,
-      TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS marked_by_name
-     FROM health_occurrences ho
-     LEFT JOIN users u ON u.id = ho.marked_by_user_id
-     WHERE ho.health_entry_id = $1 AND ho.status = 'pending'
-     ORDER BY ho.scheduled_date DESC,
-       COALESCE(ho.scheduled_time, '00:00:00'::time) DESC`,
-    [entryId]
-  );
-  return result.rows.map((row) => {
-    const map = occurrenceToMap(row);
-    map.missed = isOccurrenceMissed(
-      map.scheduled_date,
-      map.scheduled_time,
-      todayIso,
-      nowTimeIso
-    );
-    return map;
-  });
-}
-
-/**
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {string} entryId
- * @param {string} [todayIso]
- * @param {string|null} [nowTimeIso]
- */
-export async function listMissedOccurrenceIds(pool, entryId, todayIso = todayCalendarIso(), nowTimeIso = null) {
-  const open = await listOpenOccurrences(pool, entryId, todayIso, nowTimeIso);
-  return open.filter((o) => o.missed).map((o) => o.id);
 }
 
 /**

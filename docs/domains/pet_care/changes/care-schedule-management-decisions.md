@@ -220,7 +220,7 @@ Rules:
 | Not done after its day (or time) | **Overdue** until done, skipped or postponed. No stack |
 | Estimated next | While overdue, the item shows **“Estimated next: today + interval”**. This is **display only**: never a row, never an action, never a reminder |
 | Completing overdue care | D-CIE-009 stays: “When was this done?” first; that date feeds the rule |
-| Completing a later open date while an earlier one is open | Ask: **Mark it done** / **Skip it** / **Keep it** for the earlier date |
+| Completing a later open date while an earlier one is open | Ask: **Mark it done** / **Skip it** / **Keep it** for the earlier date (409 `earlier_choice_required`, nothing saved; re-send with `earlier_choice`) |
 
 Example: due 5 Jun (monthly). On 7 Jun, still not done → “Overdue · 5 Jun”, “Estimated next: 7 Jul”. Recorded on 7 Jun as done on 6 Jun → next 6 Jul.
 
@@ -236,7 +236,7 @@ Example: due 5 Jun (monthly). On 7 Jun, still not done → “Overdue · 5 Jun�
 | Dates | `schedule_anchor_date + n × interval`, clamped (D-CSM-024), never chained from the previous date |
 | Overdue | From the slot's time (or the end of its day when untimed) until the **next slot of the series** is due |
 | Not recorded | Once the next slot is due, a still-open slot shows **Not recorded** and joins the **stack** |
-| Stack window | Slots with `scheduled_date < today − 3` are closed by the care tick as `skipped` with `close_reason = 'not_recorded'` |
+| Stack window | A Not recorded slot closes (`skipped`, `close_reason = 'not_recorded'`) once the slot after it fell on or before today − 3 — for daily care, slots dated before today − 3. A slot that is still only Overdue (its next slot not due yet, e.g. a weekly or monthly dose) is never closed automatically |
 | Record later | From History, a Not recorded slot can be **recorded as given** (becomes `completed`); it is never reopened, so the tick never closes it again |
 | Review the stack | “Record earlier doses”: **Given** → `completed` (date = slot date unless changed); **Not given** → `skipped` with `close_reason = 'user'` (a statement, not unknown) |
 | Counting | The stack counts **slots**: “3 doses not recorded” (medication) or “3 not recorded” (other care) |
@@ -273,7 +273,7 @@ When the anchor's day does not exist in the target month, use the month's last d
 
 **Trigger:** an occurrence is done after its due day or time, another open `planned` or `schedule` occurrence waits, and the gap to it has shrunk by **more than half** of the originally planned gap (`waiting.scheduled − closed.scheduled`; minutes for timed slots, days otherwise).
 
-**Choice:** **Keep [date]** (pre-selected, and the result of dismissing) · **Skip [date]** · **Move this and following by [N]** (Fixed schedule: new anchor; After it's done: shifts the waiting planned dates) · ☐ **Remember my choice for this care item** → `health_entries.late_completion_choice` (`keep` | `skip_next` | `shift_following`; `null` = ask). Shown and resettable in Advanced settings as **“If done after the due date”**.
+**Choice:** **Keep [date]** (pre-selected, and the result of dismissing) · **Skip [date]** · **Move this and following by [N]** (Fixed schedule: new anchor; After it's done: shifts the waiting planned dates; not offered when the shift is in hours on care given several times a day) · ☐ **Remember my choice for this care item** → `health_entries.late_completion_choice` (`keep` | `skip_next` | `shift_following`; `null` = ask). Shown and resettable in Advanced settings as **“If done after the due date”**.
 
 **Ask before saving:** one command, one commit.
 
@@ -341,7 +341,7 @@ Any open occurrence can be marked done early, from any surface. The app confirms
 A job runs **every 15 minutes** (`server/scripts/care/care_tick.js`, host cron, `pg_try_advisory_lock`, idempotent):
 
 - Fixed-schedule items get the slots that became due plus the next series date.
-- Stack slots older than three days close as `not_recorded`.
+- Not recorded slots close once the slot after them is three days old (`not_recorded`).
 - Items whose `paused_until` has arrived resume.
 - All in the pet's home timezone.
 

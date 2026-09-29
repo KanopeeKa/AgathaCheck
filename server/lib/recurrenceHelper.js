@@ -3,6 +3,7 @@
  */
 
 import { dateToIsoDate } from './calendarDate.js';
+import { addSteps } from './care/schedule/seriesDates.js';
 
 /**
  * @param {Date|string|null} d
@@ -36,40 +37,16 @@ export function toDateOnly(d) {
 }
 
 /**
+ * One series step from `base`. Month and year steps clamp to the month's last
+ * day (D-CSM-024): 31 Jan + 1 month = 28/29 Feb, never 3 Mar.
+ *
  * @param {Date|string} base calendar date
  * @param {object} row frequency fields
  * @returns {string} next due date as YYYY-MM-DD
  */
 export function advanceByFrequency(base, row) {
   const { y, m, d } = calendarParts(base);
-  const next = new Date(y, m - 1, d);
-  const freq = row.frequency || 'once';
-  const interval = Math.max(1, row.frequency_interval ?? 1);
-  const customDays = Math.max(1, row.frequency_days || interval);
-  switch (freq) {
-    case 'daily':
-      next.setDate(next.getDate() + interval);
-      break;
-    case 'weekly':
-      next.setDate(next.getDate() + 7 * interval);
-      break;
-    case 'monthly':
-      next.setMonth(next.getMonth() + interval);
-      break;
-    case 'yearly':
-      next.setFullYear(next.getFullYear() + interval);
-      break;
-    case 'custom':
-      next.setDate(next.getDate() + customDays);
-      break;
-    default:
-      next.setDate(next.getDate() + interval);
-  }
-  return partsToIso({
-    y: next.getFullYear(),
-    m: next.getMonth() + 1,
-    d: next.getDate(),
-  });
+  return addSteps(partsToIso({ y, m, d }), row, 1);
 }
 
 /**

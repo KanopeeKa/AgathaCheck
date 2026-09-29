@@ -88,7 +88,8 @@
     "079_health_occurrence_photos.sql",
     "080_care_provider_used.sql",
     "081_health_entry_absence_resolutions.sql",
-    "082_health_entry_care_blocks.sql"
+    "082_health_entry_care_blocks.sql",
+    "083_care_occurrence_model.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
@@ -104,6 +105,7 @@
     "050_private_health_files.sql",
     "051_share_link_expiry.sql",
     "073_people_vet_backfill.sql",
-    "075_planned_absence_contact_carers.sql"
+    "075_planned_absence_contact_carers.sql",
+    "083_care_occurrence_model.sql"
   ]
 }

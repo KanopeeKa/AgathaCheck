@@ -149,16 +149,16 @@ Returns upcoming active absences for the entry's pet with per-absence `affected`
 
 **Care Schedule Management (CSM)** — canonical behaviour: [care-schedule-management.md](../domains/pet_care/features/care-schedule-management.md). Calendar dates on the wire: `YYYY-MM-DD` ([calendar-dates.md](calendar-dates.md)).
 
-**Read additions (care occurrences, D-CSM-019 / D-CIE-028):** `GET /` and `GET /:id` include `open_occurrences[] { id, scheduled_date, scheduled_time, status, origin }` (`status`: `coming_up` \| `due` \| `overdue` \| `not_recorded`; `origin`: `schedule` \| `computed` \| `planned`), `as_of { date, time, timezone }` (pet home timezone), `estimated_next { date, basis }` (display only), `schedule_anchor_date`, `late_completion_choice`, `paused_until`. `next_due_date` is a read-only cache of the earliest open occurrence; `PUT /:id` does not write it (D-CSM-032).
+**Read additions (care occurrences, D-CSM-019 / D-CIE-028):** `GET /` and `GET /:id` include `open_occurrences[] { id, scheduled_date, scheduled_time, status, origin }` (`status`: `coming_up` \| `due` \| `overdue` \| `not_recorded`; `origin`: `schedule` \| `computed` \| `planned`), `as_of { date, time, timezone }` (pet home timezone), `estimated_next { date, basis }` (display only), `schedule_anchor_date`, `late_completion_choice`, `paused_until`, `paused_since`, `resume_default_date` (paused items). `next_due_date` is a read-only cache of the earliest open occurrence; `PUT /:id` does not write it (D-CSM-032).
 
-**Test clock:** `X-Care-As-Of: <ISO local date-time>` replaces "now" for care reads and commands only when `APP_ENV` is `development`, `test` or `ci`; ignored (and logged) on `uat` and `production`.
+**Test clock:** `X-Care-As-Of: <ISO local date-time>` replaces "now" for care reads and commands only when `APP_ENV` is `development`, `test` or `ci` (or, with no `APP_ENV`, when `NODE_ENV` is `test`); ignored (and logged) everywhere else, including `uat` and `production`.
 
 #### Occurrence APIs
 
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/:id/occurrences` | Query `status=open` (default) or `status=past`; optional `as_of` calendar day; rows include `origin`, `close_reason` |
-| POST | `/:id/occurrences/:occId/complete` | Body `{ completed_on?, notes?, next_choice?: 'keep' \| 'skip_next' \| 'shift_following', remember_choice? }`; 200 `{ occurrence, next_due_date, entry, undo_token }`; **409 `next_choice_required`** `{ waiting_occurrence, shift, options }` — nothing saved (D-CSM-026); **409 `occurrence_not_open`** |
+| POST | `/:id/occurrences/:occId/complete` | Body `{ completed_on?, notes?, next_choice?: 'keep' \| 'skip_next' \| 'shift_following', remember_choice?, earlier_choice?: 'complete' \| 'skip' \| 'keep' }`; 200 `{ occurrence, next_due_date, entry, undo_token, next_choice_applied }`; **409 `next_choice_required`** `{ waiting_occurrence, shift, options }` — nothing saved (D-CSM-026); **409 `earlier_choice_required`** `{ earlier_occurrence, options }`; **409 `occurrence_not_open`** |
 | POST | `/:id/occurrences/:occId/skip` | Body `{ notes? }`; same response shape as complete; ledger `skipped` |
 | POST | `/:id/occurrences` | Plan another date — body `{ scheduled_date, scheduled_time? }`; `planned` occurrence; `warnings[]` when within half an interval of another open date (D-CSM-025) |
 | POST | `/:id/occurrences/:occId/record` | Record a Not recorded slot as given — body `{ completed_on }` (D-CSM-023) |

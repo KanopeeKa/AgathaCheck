@@ -2,10 +2,8 @@ import { describe, expect, it } from '@jest/globals';
 import { v4 as uuidv4 } from 'uuid';
 
 import { explainGap } from '../../lib/care/schedule/explainGap.js';
-import { pauseSeries } from '../../lib/care/schedule/pauseResumeSeries.js';
-import { rescheduleOccurrence } from '../../lib/care/schedule/rescheduleOccurrence.js';
-import { skipOccurrence } from '../../lib/care/schedule/skipOccurrence.js';
 import {
+  insertCareScheduleEvent,
   SCHEDULE_EVENT_PAUSED,
   SCHEDULE_EVENT_RESCHEDULED,
   SCHEDULE_EVENT_SKIPPED,
@@ -264,12 +262,13 @@ describe('explainGap', () => {
     const occ = makeOccurrence({ scheduled_date: new Date('2026-09-01') });
     const harness = createHarness(entry, [occ]);
 
-    await skipOccurrence(harness.pool, {
-      entry,
-      occurrenceId: occ.id,
-      userId: 'user-1',
-      notes: 'Travel day',
-      todayIso: '2026-09-01',
+    await insertCareScheduleEvent(harness.pool, {
+      healthEntryId: entry.id,
+      healthOccurrenceId: occ.id,
+      eventType: SCHEDULE_EVENT_SKIPPED,
+      fromDate: '2026-09-01',
+      reasonNote: 'Travel day',
+      actorUserId: 'user-1',
     });
 
     const result = await explainGap(harness.pool, { entry });
@@ -290,12 +289,13 @@ describe('explainGap', () => {
     const entry = makeEntry();
     const harness = createHarness(entry, []);
 
-    await pauseSeries(harness.pool, {
-      entry,
-      userId: 'user-1',
-      pausedFrom: '2026-09-05',
+    await insertCareScheduleEvent(harness.pool, {
+      healthEntryId: entry.id,
+      eventType: SCHEDULE_EVENT_PAUSED,
+      fromDate: '2026-09-05',
       reasonCode: 'vet_hold',
       reasonNote: 'Post-surgery rest',
+      actorUserId: 'user-1',
     });
 
     const result = await explainGap(harness.pool, { entry });
@@ -317,13 +317,15 @@ describe('explainGap', () => {
     const occ = makeOccurrence({ scheduled_date: new Date('2026-09-01') });
     const harness = createHarness(entry, [occ]);
 
-    await rescheduleOccurrence(harness.pool, {
-      entry,
-      occurrenceId: occ.id,
-      userId: 'user-1',
-      newScheduledDate: '2026-09-08',
+    await insertCareScheduleEvent(harness.pool, {
+      healthEntryId: entry.id,
+      healthOccurrenceId: occ.id,
+      eventType: SCHEDULE_EVENT_RESCHEDULED,
+      fromDate: '2026-09-01',
+      toDate: '2026-09-08',
       reasonCode: 'conflict',
       reasonNote: 'Moved to next week',
+      actorUserId: 'user-1',
     });
 
     const result = await explainGap(harness.pool, { entry });
@@ -346,17 +348,19 @@ describe('explainGap', () => {
     const day2 = makeOccurrence({ scheduled_date: new Date('2026-09-10') });
     const harness = createHarness(entry, [day1, day2]);
 
-    await skipOccurrence(harness.pool, {
-      entry,
-      occurrenceId: day1.id,
-      userId: 'user-1',
-      todayIso: '2026-09-01',
+    await insertCareScheduleEvent(harness.pool, {
+      healthEntryId: entry.id,
+      healthOccurrenceId: day1.id,
+      eventType: SCHEDULE_EVENT_SKIPPED,
+      fromDate: '2026-08-30',
+      actorUserId: 'user-1',
     });
-    await skipOccurrence(harness.pool, {
-      entry,
-      occurrenceId: day2.id,
-      userId: 'user-1',
-      todayIso: '2026-09-10',
+    await insertCareScheduleEvent(harness.pool, {
+      healthEntryId: entry.id,
+      healthOccurrenceId: day2.id,
+      eventType: SCHEDULE_EVENT_SKIPPED,
+      fromDate: '2026-09-10',
+      actorUserId: 'user-1',
     });
 
     const result = await explainGap(harness.pool, {

@@ -21,7 +21,15 @@ import {
   parseEntryProviderInput,
 } from './shared.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
-import { materialiseInitialOccurrences, parseScheduleTimesInput } from '../../lib/occurrenceScheduling.js';
+import { parseScheduleTimesInput } from '../../lib/occurrenceScheduling.js';
+import {
+  createInitialOccurrences,
+  reconcileScheduleEdit,
+  runCareCommand,
+  sendCareCommandError,
+} from '../../lib/care/occurrence/index.js';
+import { careItemWire, careItemsWire } from './careItemWire.js';
+import { validateScheduleShape } from './scheduleValidation.js';
 import {
   SCHEDULE_POLICY_VERSION,
   resolveRecurrenceAnchorForWrite,
@@ -40,7 +48,7 @@ export function registerCrudRoutes(router, pool) {
           return res.status(403).json({ error: 'Forbidden' });
         }
         result = await pool.query(
-          `SELECT he.*, p.name as pet_name FROM health_entries he
+          `SELECT he.*, p.name as pet_name, p.home_timezone AS pet_home_timezone FROM health_entries he
            JOIN pets p ON he.pet_id = p.id
            WHERE he.pet_id = $1 AND ${accessiblePetSql('p', '$2')}
            ORDER BY he.next_due_date ASC NULLS LAST, he.created_at DESC`,
@@ -48,14 +56,14 @@ export function registerCrudRoutes(router, pool) {
         );
       } else {
         result = await pool.query(
-          `SELECT he.*, p.name as pet_name FROM health_entries he
+          `SELECT he.*, p.name as pet_name, p.home_timezone AS pet_home_timezone FROM health_entries he
            JOIN pets p ON he.pet_id = p.id
            WHERE ${accessiblePetSql('p', '$1')}
            ORDER BY he.next_due_date ASC NULLS LAST, he.created_at DESC`,
           [userId]
         );
       }
-      res.json(result.rows.map(healthEntryToMap));
+      res.json(await careItemsWire(pool, result.rows, req));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -101,7 +109,7 @@ export function registerCrudRoutes(router, pool) {
         [req.params.id, userId]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
-      res.json(healthEntryToMap(result.rows[0]));
+      res.json(await careItemWire(pool, result.rows[0], req));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -175,6 +183,17 @@ export function registerCrudRoutes(router, pool) {
       } catch (e) {
         return res.status(400).json({ error: e.message });
       }
+      const scheduleShape = validateScheduleShape({
+        carePlanning,
+        completedOn,
+        recurrenceAnchor,
+        frequency,
+        scheduleTimes,
+        plannedDates: data.planned_dates ?? data.plannedDates,
+      });
+      if (!scheduleShape.ok) {
+        return res.status(400).json({ error: scheduleShape.error, code: scheduleShape.code });
+      }
       const providerInput = parseEntryProviderInput(data);
       if (providerInput.error) {
         return res.status(400).json({ error: providerInput.error });
@@ -185,7 +204,7 @@ export function registerCrudRoutes(router, pool) {
         data,
         careFamily,
       });
-      const result = await pool.query(
+      const insertEntry = (db) => db.query(
         `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, schedule_times, status, care_family, care_setting, care_planning, care_importance, importance_overridden, care_source, schedule_policy_version, provider_contact_id, provider_typed_name, care_blocks)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29) RETURNING *`,
         [
@@ -201,7 +220,7 @@ export function registerCrudRoutes(router, pool) {
           data.notes || '',
           healthIssueId,
           remindDaysBefore,
-          scheduleTimes !== undefined ? scheduleTimes : null,
+          scheduleTimes == null ? null : JSON.stringify(scheduleTimes),
           completedOn ? 'completed' : (data.status || 'active'),
           careFamily,
           careSetting,
@@ -215,12 +234,16 @@ export function registerCrudRoutes(router, pool) {
           JSON.stringify(careBlocks),
         ]
       );
-      const entry = result.rows[0];
-      if (!completedOn) {
-        await materialiseInitialOccurrences(pool, entry);
-        const synced = await pool.query('SELECT * FROM health_entries WHERE id = $1', [id]);
-        Object.assign(entry, synced.rows[0]);
-      }
+      const out = await runCareCommand(pool, {
+        entryId: id,
+        userId,
+        req,
+        beforeLock: insertEntry,
+      }, (ctx) => createInitialOccurrences(ctx, {
+        firstDate: nextDueDate || startDate || null,
+        plannedDates: scheduleShape.plannedDates,
+      }));
+      const entry = out.entry;
       entry.pet_name = null;
       recordPetActivityForPet(pool, {
         petId: petId,
@@ -228,8 +251,12 @@ export function registerCrudRoutes(router, pool) {
         eventType: 'health_log',
         metadata: { action: 'create', entry_type: derivedType },
       });
-      res.status(201).json(healthEntryToMap(entry));
+      res.status(201).json(await careItemWire(pool, entry, req, {
+        openRows: out.openOccurrences,
+        asOf: out.asOf,
+      }));
     } catch (err) {
+      if (sendCareCommandError(res, err)) return;
       res.status(500).json({ error: publicError(err, 'Error creating entry', `Error creating entry: ${err.message}`) });
     }
   });
@@ -257,10 +284,7 @@ export function registerCrudRoutes(router, pool) {
         return res.status(400).json({ error: typeRejection.error });
       }
       const existingResult = await pool.query(
-        `SELECT care_family, care_source, recurrence_anchor, care_setting, care_planning,
-          care_importance, importance_overridden, remind_days_before,
-          provider_contact_id, provider_typed_name, care_blocks, dosage
-         FROM health_entries WHERE id = $1`,
+        'SELECT * FROM health_entries WHERE id = $1',
         [req.params.id],
       );
       if (existingResult.rows.length === 0) {
@@ -349,44 +373,81 @@ export function registerCrudRoutes(router, pool) {
         existing,
         careFamilyChanged,
       });
-      const result = await pool.query(
-        `UPDATE health_entries SET name = $1, type = $2, dosage = $3, frequency = $4, frequency_days = $5,
-          frequency_interval = $6, start_date = $7, next_due_date = $8, completed_on = $9,
-          recurrence_anchor = $10, repeat_end_date = $11, notes = $12,
-          health_issue_id = $13, remind_days_before = $14, status = $15,
-          care_family = $16, care_setting = $17, care_planning = $18, care_importance = $19,
-          importance_overridden = $20, care_source = $21, schedule_policy_version = $22,
-          provider_contact_id = $23, provider_typed_name = $24, care_blocks = $25,
-          updated_at = NOW()
-         WHERE id = $26 RETURNING *`,
-        [
-          data.name || '',
-          derivedType,
-          resolvedDosage,
-          frequency,
-          data.frequency_days || data.frequencyDays || null,
-          data.frequency_interval || data.frequencyInterval || 1,
-          startDate, nextDueDate, completedOn,
-          recurrenceAnchor, repeatEndDate,
-          data.notes || '',
-          healthIssueId,
-          remindDaysBefore,
-          completedOn ? 'completed' : (data.status || 'active'),
-          careFamily,
-          careSetting,
-          carePlanning,
-          careImportance,
-          importanceOverridden,
-          careSource,
-          SCHEDULE_POLICY_VERSION,
-          providerContactId,
-          providerTypedName,
-          JSON.stringify(careBlocks),
-          req.params.id,
-        ]
-      );
-      if (result.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
-      const entry = result.rows[0];
+      const parsedTimes = parseScheduleTimesInput(data);
+      const scheduleTimes = parsedTimes === undefined ? existing.schedule_times : parsedTimes;
+      const scheduleShape = validateScheduleShape({
+        carePlanning,
+        completedOn,
+        recurrenceAnchor,
+        frequency,
+        scheduleTimes,
+        existingCompletedOn: dateToIsoDate(existing.completed_on),
+      });
+      if (!scheduleShape.ok) {
+        return res.status(400).json({ error: scheduleShape.error, code: scheduleShape.code });
+      }
+      const existingStart = dateToIsoDate(existing.start_date);
+      if (startDate && existingStart && startDate !== existingStart) {
+        const closed = await pool.query(
+          `SELECT 1 FROM health_occurrences
+           WHERE health_entry_id = $1 AND status IN ('completed', 'skipped') LIMIT 1`,
+          [req.params.id],
+        );
+        if (closed.rows.length > 0) {
+          return res.status(400).json({
+            error: 'The start date cannot change once care has been recorded',
+            code: 'start_date_locked',
+          });
+        }
+      }
+      const status = carePlanning === 'unplanned'
+        ? 'completed'
+        : (existing.status || 'active');
+      const out = await runCareCommand(pool, { entryId: req.params.id, userId, req }, async (ctx) => {
+        const updated = await ctx.db.query(
+          `UPDATE health_entries SET name = $1, type = $2, dosage = $3, frequency = $4, frequency_days = $5,
+            frequency_interval = $6, start_date = $7, completed_on = $8,
+            recurrence_anchor = $9, repeat_end_date = $10, notes = $11,
+            health_issue_id = $12, remind_days_before = $13, status = $14,
+            care_family = $15, care_setting = $16, care_planning = $17, care_importance = $18,
+            importance_overridden = $19, care_source = $20, schedule_policy_version = $21,
+            provider_contact_id = $22, provider_typed_name = $23, care_blocks = $24,
+            schedule_times = $25::jsonb, updated_at = NOW()
+           WHERE id = $26 RETURNING *`,
+          [
+            data.name || '',
+            derivedType,
+            resolvedDosage,
+            frequency,
+            data.frequency_days || data.frequencyDays || null,
+            data.frequency_interval || data.frequencyInterval || 1,
+            startDate || existingStart, completedOn,
+            recurrenceAnchor, repeatEndDate,
+            data.notes || '',
+            healthIssueId,
+            remindDaysBefore,
+            status,
+            careFamily,
+            careSetting,
+            carePlanning,
+            careImportance,
+            importanceOverridden,
+            careSource,
+            SCHEDULE_POLICY_VERSION,
+            providerContactId,
+            providerTypedName,
+            JSON.stringify(careBlocks),
+            scheduleTimes == null ? null : JSON.stringify(scheduleTimes),
+            req.params.id,
+          ]
+        );
+        return reconcileScheduleEdit({ ...ctx, entry: updated.rows[0] }, {
+          before: ctx.entry,
+          requestedNextDate: nextDueDate,
+        });
+      });
+      if (!out) return res.status(404).json({ error: 'Entry not found' });
+      const entry = out.entry;
       entry.pet_name = null;
       recordPetActivityForPet(pool, {
         petId: entry.pet_id,
@@ -394,8 +455,9 @@ export function registerCrudRoutes(router, pool) {
         eventType: 'health_log',
         metadata: { action: 'update', entry_type: derivedType },
       });
-      res.json(healthEntryToMap(entry));
+      res.json(await careItemWire(pool, entry, req, { openRows: out.openOccurrences, asOf: out.asOf }));
     } catch (err) {
+      if (sendCareCommandError(res, err)) return;
       res.status(500).json({ error: publicError(err, 'Error updating entry', `Error updating entry: ${err.message}`) });
     }
   });

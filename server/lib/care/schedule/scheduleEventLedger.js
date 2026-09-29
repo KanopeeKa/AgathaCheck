@@ -11,6 +11,29 @@ export const SCHEDULE_EVENT_RESCHEDULED = 'rescheduled';
 export const SCHEDULE_EVENT_PAUSED = 'paused';
 export const SCHEDULE_EVENT_RESUMED = 'resumed';
 export const SCHEDULE_EVENT_CADENCE_ADJUSTED = 'cadence_adjusted';
+export const SCHEDULE_EVENT_COMPLETED = 'completed';
+export const SCHEDULE_EVENT_POSTPONED = 'postponed';
+export const SCHEDULE_EVENT_PLANNED = 'planned';
+export const SCHEDULE_EVENT_RECORDED = 'recorded';
+export const SCHEDULE_EVENT_STACK_RESOLVED = 'stack_resolved';
+export const SCHEDULE_EVENT_SCOPE_CHANGED = 'schedule_scope_changed';
+export const SCHEDULE_EVENT_SCHEDULE_CHANGED = 'schedule_changed';
+export const SCHEDULE_EVENT_NOT_RECORDED_CLOSED = 'not_recorded_closed';
+export const SCHEDULE_EVENT_UNDONE = 'undone';
+
+/** Events a person can undo as a whole command (D-CSM-029). */
+export const UNDOABLE_EVENT_TYPES = [
+  SCHEDULE_EVENT_COMPLETED,
+  SCHEDULE_EVENT_SKIPPED,
+  SCHEDULE_EVENT_STACK_RESOLVED,
+  SCHEDULE_EVENT_RECORDED,
+  SCHEDULE_EVENT_RESCHEDULED,
+  SCHEDULE_EVENT_SCOPE_CHANGED,
+  SCHEDULE_EVENT_PLANNED,
+  SCHEDULE_EVENT_POSTPONED,
+  SCHEDULE_EVENT_PAUSED,
+  SCHEDULE_EVENT_RESUMED,
+];
 
 /**
  * @param {import('pg').Pool|import('pg').PoolClient} pool
@@ -33,18 +56,19 @@ export async function insertCareScheduleEvent(pool, {
   effectiveFrom = null,
   idempotencyKey = null,
   policyVersion = SCHEDULE_POLICY_VERSION,
+  payload = null,
 }) {
   await pool.query(
     `INSERT INTO care_schedule_events (
       id, health_entry_id, health_occurrence_id, event_type,
       from_date, to_date, from_anchor, to_anchor,
       reason_code, reason_note, actor_user_id, occurred_at,
-      effective_from, idempotency_key, policy_version
+      effective_from, idempotency_key, policy_version, payload
     ) VALUES (
       $1, $2, $3, $4,
       $5, $6, $7, $8,
       $9, $10, $11, $12,
-      $13, $14, $15
+      $13, $14, $15, $16::jsonb
     )`,
     [
       id,
@@ -62,6 +86,7 @@ export async function insertCareScheduleEvent(pool, {
       effectiveFrom,
       idempotencyKey,
       policyVersion,
+      payload ? JSON.stringify(payload) : null,
     ],
   );
   return id;
