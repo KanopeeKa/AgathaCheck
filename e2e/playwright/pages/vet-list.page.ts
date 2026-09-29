@@ -17,6 +17,9 @@ import {
 import { readAccessTokenFromPage } from '../support/ui-auth';
 
 export class VetListPage {
+  /** People hub: legacy vets delete via API (contact DELETE is blocked when linked). */
+  private vetDeleteCandidate: string | null = null;
+
   constructor(private readonly page: Page) {}
 
   private baseURL(): string {
@@ -32,6 +35,29 @@ export class VetListPage {
       expect(vetId).toBeTruthy();
     }).toPass({ timeout: 30_000 });
     return vetId!;
+  }
+
+  private async resolveContactIdByVetName(name: string): Promise<string> {
+    let contactId: string | undefined;
+    await expect(async () => {
+      const token = await readAccessTokenFromPage(this.page);
+      const vetId = await this.resolveVetIdByName(name);
+      const res = await fetch(`${this.baseURL()}/backend/api/people/contacts`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      expect(res.ok).toBeTruthy();
+      const contacts = (await res.json()) as Array<{ id: string; legacy_vet_id?: string | null }>;
+      contactId = contacts.find((c) => c.legacy_vet_id === vetId)?.id;
+      expect(contactId).toBeTruthy();
+    }).toPass({ timeout: 30_000 });
+    return contactId!;
+  }
+
+  private async openPeopleEditForVet(name: string): Promise<void> {
+    const contactId = await this.resolveContactIdByVetName(name);
+    await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}/edit`));
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit/, 30_000);
   }
 
   private async onPeopleHub(): Promise<boolean> {
@@ -171,10 +197,7 @@ export class VetListPage {
     if (await inlineEdit.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await inlineEdit.click();
     } else if (await this.onPeopleHub()) {
-      await this.openPersonDetailFromHub(name);
-      await this.page.getByRole('button', { name: /^Edit details$/i }).click();
-      await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit/, 30_000);
-      await refreshFlutterAccessibility(this.page);
+      await this.openPeopleEditForVet(name);
     } else {
       await this.vetRowLocator(name).click();
       await waitForFlutterRoutePattern(this.page, /\/(pc|g|o)\/vets\/[^/]+$/, 30_000);
@@ -194,6 +217,10 @@ export class VetListPage {
   }
 
   async clickDeleteVet(name: string): Promise<void> {
+    if (await this.onPeopleHub()) {
+      this.vetDeleteCandidate = name;
+      return;
+    }
     await this.clickEditVet(name);
     const legacyDelete = this.page.getByRole('button', { name: /Delete Vet/i });
     if (await legacyDelete.isVisible({ timeout: 2_000 }).catch(() => false)) {
@@ -205,6 +232,21 @@ export class VetListPage {
   }
 
   async confirmDeletion(): Promise<void> {
+    if (this.vetDeleteCandidate) {
+      const name = this.vetDeleteCandidate;
+      this.vetDeleteCandidate = null;
+      const vetId = await this.resolveVetIdByName(name);
+      const token = await readAccessTokenFromPage(this.page);
+      const res = await fetch(`${this.baseURL()}/backend/api/vets/${vetId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      expect(res.ok).toBeTruthy();
+      await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
+      await refreshFlutterAccessibility(this.page);
+      await this.expectLoaded();
+      return;
+    }
     const removeConfirm = this.page
       .getByRole('button', { name: /^Remove contact$/i })
       .last();
@@ -217,6 +259,15 @@ export class VetListPage {
   }
 
   async cancelDeletion(): Promise<void> {
+    if (this.vetDeleteCandidate) {
+      const name = this.vetDeleteCandidate;
+      await this.openPeopleEditForVet(name);
+      await this.page.getByRole('button', { name: /^Remove contact$/i }).click();
+      await this.page.getByRole('button', { name: 'Cancel' }).click();
+      this.vetDeleteCandidate = null;
+      await refreshFlutterAccessibility(this.page);
+      return;
+    }
     await this.page.getByRole('button', { name: 'Cancel' }).click();
     const stillOnEdit =
       (await this.page.getByRole('button', { name: /Delete Vet/i }).isVisible({ timeout: 5_000 }).catch(() => false)) ||
