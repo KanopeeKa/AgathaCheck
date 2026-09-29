@@ -1,7 +1,7 @@
 import { DEMO_IDS } from '../demo-constants.js';
 import { calendarDaysFromToday, timestampFromNow } from '../helpers.js';
+import { seedPeopleVetClinicAndPerson } from '../helpers/people-vet-contact.js';
 import { syncPetPrimaryVetFromLegacyVetId } from '../../../lib/people/petVetLink.js';
-import { upsertContactFromVet } from '../../../lib/people/vetSync.js';
 
 export async function seedHealthCare(client) {
   await client.query(
@@ -42,7 +42,12 @@ export async function seedHealthCare(client) {
     address: '42 Demo Street, London',
     notes: 'Primary vet for Alice guardian pets',
   };
-  await upsertContactFromVet(client, vetRow, DEMO_IDS.alice);
+  await seedPeopleVetClinicAndPerson(client, DEMO_IDS.alice, vetRow, {
+    personContactId: DEMO_IDS.aliceVetPersonContact,
+    personName: 'Dr. Sarah Mitchell',
+    organisationNote: 'Our regular veterinary clinic. Friendly team, good with both dogs and cats.',
+    personNote: '',
+  });
   await syncPetPrimaryVetFromLegacyVetId(
     client,
     DEMO_IDS.buddyPet,

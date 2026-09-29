@@ -6,6 +6,7 @@ import '../models/people_contact_model.dart';
 
 abstract class PeopleRemoteDataSource {
   Future<List<PeopleContactModel>> listContacts({bool includeInactive = false});
+  Future<PeopleContactModel> getContact(String id);
   Future<PeopleContactModel> createContact(PeopleContactModel draft);
   Future<PeopleContactModel> updateContact(
     String id,
@@ -29,6 +30,18 @@ class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
     'Content-Type': 'application/json',
     if (token != null) 'Authorization': 'Bearer $token',
   };
+
+  @override
+  Future<PeopleContactModel> getContact(String id) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/people/contacts/$id'),
+      headers: _headers,
+    );
+    _checkResponse(response);
+    return PeopleContactModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
 
   @override
   Future<List<PeopleContactModel>> listContacts({

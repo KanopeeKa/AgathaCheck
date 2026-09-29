@@ -10,6 +10,7 @@ import '../../../sharing/presentation/providers/household_providers.dart';
 import '../../domain/entities/people_contact.dart';
 import '../../domain/entities/person_roster_entry.dart';
 import '../providers/people_providers.dart';
+import '../utils/people_contact_role_labels.dart';
 import '../widgets/people_directory_card.dart';
 
 enum PeopleListFilter { all, household, carers, professionals }
@@ -245,7 +246,15 @@ class _Section extends StatelessWidget {
           ...contacts.map((c) {
             final entry = PersonRosterEntry.fromContact(
               c,
-              subtitle: c.roles.isEmpty ? c.kind : c.roles.join(' · '),
+              subtitle: c.roles.isEmpty
+                  ? peopleContactKindLabel(
+                      AppLocalizations.of(context)!,
+                      c.kind,
+                    )
+                  : peopleContactRolesLine(
+                      AppLocalizations.of(context)!,
+                      c.roles,
+                    ),
               statusLabel: c.inactiveAt != null
                   ? AppLocalizations.of(context)!.peopleStatusInactive
                   : null,

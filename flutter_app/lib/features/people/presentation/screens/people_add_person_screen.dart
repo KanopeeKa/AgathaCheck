@@ -6,10 +6,20 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/models/people_contact_model.dart';
 import '../../domain/entities/people_contact.dart';
 import '../providers/people_providers.dart';
+import '../utils/people_contact_dedupe.dart';
+import '../utils/people_contact_kind_inference.dart';
+import '../utils/people_contact_role_labels.dart';
 
-/// Unified add-person flow: identity → dedupe hint → relationship → save.
+/// Single-screen add contact: name, roles, optional coordinates, dedupe suggestions.
 class PeopleAddPersonScreen extends ConsumerStatefulWidget {
-  const PeopleAddPersonScreen({super.key});
+  const PeopleAddPersonScreen({
+    super.key,
+    this.initialRoles = const {},
+    this.popResultOnSave = false,
+  });
+
+  final Set<String> initialRoles;
+  final bool popResultOnSave;
 
   @override
   ConsumerState<PeopleAddPersonScreen> createState() =>
@@ -17,45 +27,77 @@ class PeopleAddPersonScreen extends ConsumerStatefulWidget {
 }
 
 class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
-  final _pageController = PageController();
   final _nameController = TextEditingController();
-  int _step = 0;
-  String _kind = 'person';
-  final Set<String> _roles = {'sitter'};
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _noteController = TextEditingController();
+  final Set<String> _roles = {};
+  bool _contactExpanded = false;
+  String? _forcedKind;
+  String? _worksAtContactId;
   bool _saving = false;
 
   @override
+  void initState() {
+    super.initState();
+    _roles.addAll(
+      widget.initialRoles.isEmpty ? {'sitter'} : widget.initialRoles,
+    );
+    if (_roles.contains('vet')) {
+      _contactExpanded = true;
+    }
+  }
+
+  @override
   void dispose() {
-    _pageController.dispose();
     _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _addressController.dispose();
+    _noteController.dispose();
     super.dispose();
   }
 
+  String _resolvedKind() {
+    if (_forcedKind != null) return _forcedKind!;
+    return inferPeopleContactKind(name: _nameController.text, roles: _roles);
+  }
+
   List<PeopleContact> _dedupeMatches(List<PeopleContact> contacts) {
-    final name = _nameController.text.trim().toLowerCase();
-    if (name.length < 2) return const [];
-    return contacts
-        .where((c) => c.name.toLowerCase().contains(name))
-        .take(3)
-        .toList();
+    return findDuplicateContacts(
+      directory: contacts,
+      name: _nameController.text,
+      phone: _phoneController.text,
+      email: _emailController.text,
+    );
   }
 
   Future<void> _save() async {
     final name = _nameController.text.trim();
-    if (name.isEmpty) return;
+    if (name.isEmpty || _roles.isEmpty) return;
     setState(() => _saving = true);
     try {
-      await ref
+      final created = await ref
           .read(peopleContactsProvider.notifier)
           .addContact(
             PeopleContactModel(
               id: '',
-              kind: _kind,
+              kind: _resolvedKind(),
               name: name,
               roles: _roles.toList(),
+              phone: _nullable(_phoneController.text),
+              email: _nullable(_emailController.text),
+              address: _nullable(_addressController.text),
+              privateNote: _noteController.text.trim(),
+              worksAtContactId: _worksAtContactId,
             ),
           );
       if (!mounted) return;
+      if (widget.popResultOnSave) {
+        context.pop(created);
+        return;
+      }
       final l = AppLocalizations.of(context)!;
       final offerShare = await showDialog<bool>(
         context: context,
@@ -85,55 +127,159 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
     }
   }
 
-  void _next() {
-    if (_step < 2) {
-      setState(() => _step++);
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOut,
-      );
-    } else {
-      _save();
-    }
+  String? _nullable(String value) {
+    final t = value.trim();
+    return t.isEmpty ? null : t;
   }
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final contactsAsync = ref.watch(peopleContactsProvider);
-    final matches = contactsAsync.valueOrNull != null
-        ? _dedupeMatches(contactsAsync.value!)
-        : const <PeopleContact>[];
+    final contacts = contactsAsync.valueOrNull ?? const <PeopleContact>[];
+    final matches = _dedupeMatches(contacts);
+    final organisations = contacts
+        .where((c) => c.kind == 'organisation' && c.inactiveAt == null)
+        .toList();
+    final inferredKind = _resolvedKind();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l.peopleAddPerson),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(4),
-          child: LinearProgressIndicator(value: (_step + 1) / 3),
-        ),
-      ),
-      body: PageView(
-        controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
+      appBar: AppBar(title: Text(l.peopleAddPerson)),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
         children: [
-          _IdentityStep(
-            nameController: _nameController,
-            kind: _kind,
-            onKindChanged: (k) => setState(() => _kind = k),
+          TextField(
+            controller: _nameController,
+            decoration: InputDecoration(labelText: l.peopleNameLabel),
+            autofocus: true,
+            onChanged: (_) => setState(() {}),
           ),
-          _DedupeStep(matches: matches),
-          _RelationshipStep(
-            roles: _roles,
-            onRoleToggle: (role, selected) {
+          const SizedBox(height: 8),
+          Text(
+            inferredKind == 'organisation'
+                ? l.peopleKindInferredOrganisation
+                : l.peopleKindInferredPerson,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          TextButton(
+            onPressed: () {
+              final inferred = inferPeopleContactKind(
+                name: _nameController.text,
+                roles: _roles,
+              );
               setState(() {
-                if (selected) {
-                  _roles.add(role);
-                } else {
-                  _roles.remove(role);
-                }
+                _forcedKind = inferred == 'person' ? 'organisation' : 'person';
               });
             },
+            child: Text(l.peopleKindChange),
+          ),
+          if (matches.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              l.peopleAddDedupeTitle,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            for (final m in matches)
+              ListTile(
+                leading: const Icon(Icons.person_search_outlined),
+                title: Text(m.name),
+                subtitle: Text(peopleContactRolesLine(l, m.roles)),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push('/pc/people/${m.id}'),
+              ),
+          ],
+          const SizedBox(height: 16),
+          Text(
+            l.peopleAddStepRelationship,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              for (final role in const ['sitter', 'walker', 'vet', 'groomer'])
+                FilterChip(
+                  label: Text(peopleContactRoleLabel(l, role)),
+                  selected: _roles.contains(role),
+                  onSelected: (v) {
+                    setState(() {
+                      if (v) {
+                        _roles.add(role);
+                      } else {
+                        _roles.remove(role);
+                      }
+                    });
+                  },
+                ),
+            ],
+          ),
+          if (_roles.contains('vet') && organisations.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String?>(
+              initialValue: _worksAtContactId,
+              decoration: InputDecoration(labelText: l.peopleWorksAtLabel),
+              items: [
+                DropdownMenuItem<String?>(
+                  value: null,
+                  child: Text(l.peopleWorksAtNone),
+                ),
+                for (final org in organisations)
+                  DropdownMenuItem(value: org.id, child: Text(org.name)),
+              ],
+              onChanged: (v) => setState(() => _worksAtContactId = v),
+            ),
+          ],
+          const SizedBox(height: 8),
+          ExpansionTile(
+            title: Text(l.peopleAddContactDetailsExpand),
+            initiallyExpanded: _contactExpanded,
+            onExpansionChanged: (v) => setState(() => _contactExpanded = v),
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _phoneController,
+                      decoration: InputDecoration(
+                        labelText: l.peoplePhoneLabel,
+                      ),
+                      keyboardType: TextInputType.phone,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: l.peopleEmailLabel,
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _addressController,
+                      decoration: InputDecoration(
+                        labelText: l.peopleAddressLabel,
+                      ),
+                      minLines: 2,
+                      maxLines: 4,
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _noteController,
+                      decoration: InputDecoration(
+                        labelText: l.peoplePrivateNoteLabel,
+                        helperText: l.peoplePrivateNoteHelper,
+                      ),
+                      minLines: 2,
+                      maxLines: 4,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -141,126 +287,17 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: FilledButton(
-            onPressed: _saving ? null : _next,
+            onPressed: _saving || _roles.isEmpty ? null : _save,
             child: _saving
                 ? const SizedBox(
                     height: 20,
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Text(_step < 2 ? l.continueButton : l.peopleAddPersonSave),
+                : Text(l.peopleAddPersonSave),
           ),
         ),
       ),
-    );
-  }
-}
-
-class _IdentityStep extends StatelessWidget {
-  const _IdentityStep({
-    required this.nameController,
-    required this.kind,
-    required this.onKindChanged,
-  });
-
-  final TextEditingController nameController;
-  final String kind;
-  final ValueChanged<String> onKindChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Text(
-          l.peopleAddStepIdentity,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: nameController,
-          decoration: InputDecoration(labelText: l.peopleNameLabel),
-          autofocus: true,
-        ),
-        const SizedBox(height: 16),
-        DropdownButtonFormField<String>(
-          initialValue: kind,
-          decoration: InputDecoration(labelText: l.peopleKindLabel),
-          items: [
-            DropdownMenuItem(value: 'person', child: Text(l.peopleKindPerson)),
-            DropdownMenuItem(
-              value: 'organisation',
-              child: Text(l.peopleKindOrganisation),
-            ),
-          ],
-          onChanged: (v) => onKindChanged(v ?? 'person'),
-        ),
-      ],
-    );
-  }
-}
-
-class _DedupeStep extends StatelessWidget {
-  const _DedupeStep({required this.matches});
-
-  final List<PeopleContact> matches;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Text(
-          l.peopleAddDedupeTitle,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 8),
-        if (matches.isEmpty)
-          Text(l.peopleAddDedupeEmpty)
-        else
-          for (final m in matches)
-            ListTile(
-              leading: const Icon(Icons.person_search_outlined),
-              title: Text(m.name),
-              subtitle: Text(m.roles.join(' · ')),
-            ),
-        const SizedBox(height: 8),
-        Text(
-          l.peopleAddDedupeHint,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ],
-    );
-  }
-}
-
-class _RelationshipStep extends StatelessWidget {
-  const _RelationshipStep({required this.roles, required this.onRoleToggle});
-
-  final Set<String> roles;
-  final void Function(String role, bool selected) onRoleToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    const roleKeys = ['sitter', 'walker', 'vet', 'groomer'];
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Text(
-          l.peopleAddStepRelationship,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 12),
-        for (final role in roleKeys)
-          CheckboxListTile(
-            value: roles.contains(role),
-            onChanged: (v) => onRoleToggle(role, v == true),
-            title: Text(role),
-          ),
-      ],
     );
   }
 }

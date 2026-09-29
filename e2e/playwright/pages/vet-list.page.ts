@@ -56,7 +56,7 @@ export class VetListPage {
     await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
     await refreshFlutterAccessibility(this.page);
     await this.page
-      .getByText(/^People$|^Autour de vos animaux$/i)
+      .getByText(/^Contacts$|^People$|^Autour de vos animaux$/i)
       .first()
       .waitFor({ timeout: 30_000 });
   }
@@ -80,7 +80,7 @@ export class VetListPage {
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(
       this.page,
-      /\/pc\/people(?:\?|$)|\/pc\/vets\/[^/]+(?:\?|$)/,
+      /\/pc\/people\/[^/?]+(?:\?|$)|\/pc\/people(?:\?|$)/,
       30_000,
     );
   }
@@ -101,7 +101,11 @@ export class VetListPage {
   private async openVetEditRoute(vetId: string): Promise<void> {
     await this.page.goto(flutterGotoUrl(`/pc/vets/edit/${vetId}`));
     await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/pc\/vets\/edit\/[^/]+(?:\?|$)/, 30_000);
+    await waitForFlutterRoutePattern(
+      this.page,
+      /\/pc\/people\/[^/]+\/edit(?:\?|$)|\/pc\/vets\/edit\/[^/]+(?:\?|$)/,
+      30_000,
+    );
   }
 
   async expectVetVisible(name: string): Promise<void> {
@@ -180,7 +184,11 @@ export class VetListPage {
         await this.openCareTeamEditFromDetail();
       }
     }
-    await this.page.getByRole('textbox', { name: 'Name *' }).waitFor({ timeout: 30_000 });
+    await this.page
+      .getByLabel(/^Name$/i)
+      .or(this.page.getByRole('textbox', { name: 'Name *' }))
+      .first()
+      .waitFor({ timeout: 30_000 });
   }
 
   async clickDeleteVet(name: string): Promise<void> {
@@ -221,7 +229,9 @@ export class VetListPage {
   async expectVetLinkedPetCount(vetName: string, _count: number): Promise<void> {
     await this.openVetDetail(vetName);
     await expect(
-      this.page.getByText(/Pets cared for|Animaux pris en charge/i),
+      this.page.getByText(
+        /Related pets|Pets cared for|Animaux concernés|Animaux pris en charge/i,
+      ),
     ).toBeVisible({ timeout: 15_000 });
   }
 
@@ -237,12 +247,12 @@ export class VetListPage {
     if (await this.onPeopleHub()) {
       const vetId = await this.resolveVetIdByName(vetName);
       await this.openVetDetailRoute(vetId);
-      await waitForFlutterRoutePattern(this.page, /\/(pc|g|o)\/vets\/[^/]+$/, 30_000);
+      await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/?]+$/, 30_000);
       await refreshFlutterAccessibility(this.page);
       return;
     }
     await this.vetRowLocator(vetName).click();
-    await waitForFlutterRoutePattern(this.page, /\/(pc|g|o)\/vets\/[^/]+$/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/?]+$/, 30_000);
     await refreshFlutterAccessibility(this.page);
   }
 

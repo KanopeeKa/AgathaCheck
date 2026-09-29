@@ -7,11 +7,7 @@ function vetToContactFields(vetRow) {
   const personName = (vetRow.name || '').trim();
   const kind = clinic ? 'organisation' : 'person';
   const name = clinic || personName || 'Vet';
-  let privateNote = (vetRow.notes || '').trim();
-  if (clinic && personName) {
-    const prefix = `Vet contact: ${personName}`;
-    privateNote = privateNote ? `${prefix}\n${privateNote}` : prefix;
-  }
+  const privateNote = (vetRow.notes || '').trim();
   return {
     kind,
     name,
@@ -42,13 +38,13 @@ export async function upsertContactFromVet(pool, vetRow, userId) {
   let contactId;
   if (existing.rows.length > 0) {
     contactId = existing.rows[0].id;
+    // Do not overwrite kind or private notes — People may have edited them.
     await pool.query(
       `UPDATE people_contacts
-       SET kind = $1, name = $2, phone = $3, email = $4, website = $5, address = $6,
+       SET name = $1, phone = $2, email = $3, website = $4, address = $5,
            updated_at = NOW()
-       WHERE id = $7`,
+       WHERE id = $6`,
       [
-        fields.kind,
         fields.name,
         fields.phone,
         fields.email,
@@ -80,15 +76,16 @@ export async function upsertContactFromVet(pool, vetRow, userId) {
       'INSERT INTO people_contact_roles (contact_id, role) VALUES ($1, $2) ON CONFLICT DO NOTHING',
       [contactId, 'vet'],
     );
+    if (fields.privateNote) {
+      await pool.query(
+        `INSERT INTO people_contact_private_notes (contact_id, user_id, note, updated_at)
+         VALUES ($1, $2, $3, NOW())
+         ON CONFLICT (contact_id, user_id)
+         DO UPDATE SET note = EXCLUDED.note, updated_at = NOW()`,
+        [contactId, userId, fields.privateNote],
+      );
+    }
   }
-
-  await pool.query(
-    `INSERT INTO people_contact_private_notes (contact_id, user_id, note, updated_at)
-     VALUES ($1, $2, $3, NOW())
-     ON CONFLICT (contact_id, user_id)
-     DO UPDATE SET note = EXCLUDED.note, updated_at = NOW()`,
-    [contactId, userId, fields.privateNote],
-  );
 
   return contactId;
 }

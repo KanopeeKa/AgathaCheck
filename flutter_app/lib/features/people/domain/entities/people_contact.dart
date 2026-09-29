@@ -11,6 +11,7 @@ class PeopleContact {
     this.privateNote = '',
     this.inactiveAt,
     this.legacyVetId,
+    this.worksAtContactId,
   });
 
   final String id;
@@ -24,6 +25,7 @@ class PeopleContact {
   final String privateNote;
   final DateTime? inactiveAt;
   final String? legacyVetId;
+  final String? worksAtContactId;
 
   static const professionalRoles = {
     'vet',

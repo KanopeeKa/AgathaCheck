@@ -146,7 +146,21 @@ List<RouteBase> buildExperienceRoutes() {
             GoRoute(
               path: 'new',
               name: 'petCarePeopleNew',
-              builder: (context, state) => const PeopleAddPersonScreen(),
+              builder: (context, state) {
+                final rolesParam = state.uri.queryParameters['roles'];
+                final roles = rolesParam == null
+                    ? const <String>{}
+                    : rolesParam
+                          .split(',')
+                          .map((e) => e.trim())
+                          .where((e) => e.isNotEmpty)
+                          .toSet();
+                final pop = state.uri.queryParameters['pop'] == '1';
+                return PeopleAddPersonScreen(
+                  initialRoles: roles,
+                  popResultOnSave: pop,
+                );
+              },
             ),
             GoRoute(
               path: ':personId',

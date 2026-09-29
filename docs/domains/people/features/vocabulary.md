@@ -38,7 +38,7 @@ Until then, don't change shipped strings ad hoc.
 
 | Concept | English | French | Notes |
 | --- | --- | --- | --- |
-| Page title and nav label | People | Autour de vos animaux | Deliberately not parallel: the French is broader and warmer. Localisers must not "correct" either side. Not "care team", which already means the carers on an absence |
+| Page title and nav label | Contacts | Autour de vos animaux | EN renamed from People per product decision 2026-09-29. FR unchanged. Not "care team", which already means the carers on an absence |
 | Household section (People page) | Household name, e.g. Morgan household | Household name, e.g. « Famille Morgan » | Every household is headed by its name, including when there's only one |
 | Carers section | Trusted carers | Proches & pet-sitters | Not "Proches & gardes": *garde* can mean a guard, a duty shift or custody |
 | Professionals section | Pet professionals | Leurs pros | |
@@ -139,7 +139,7 @@ A row reads as "Jamie Taylor · Pet-sitting · Buddy, Luna". It never reads "Pro
 
 ## People and contact details
 
-Avoid the word "contact" in consumer-facing navigation. "Contact" is a domain term for specs and code.
+**Navigation (2026-09-29):** EN nav label **Contacts**; FR keeps **Autour de vos animaux**. Detail/edit titles use the contact's name or **Edit details** / **Modifier les coordonnées**. Field group: **Contact information** / **Coordonnées**.
 
 | Concept | English | French |
 | --- | --- | --- |

@@ -961,7 +961,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careNavLabel => 'Actions';
 
   @override
-  String get peopleNavLabel => 'People';
+  String get peopleNavLabel => 'Contacts';
 
   @override
   String careDueTab(int count) {
@@ -6916,7 +6916,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Create tags in Settings before assigning them here.';
 
   @override
-  String get peoplePageTitle => 'People';
+  String get peoplePageTitle => 'Contacts';
 
   @override
   String get peopleTrustedCarersSection => 'Trusted carers';
@@ -6955,7 +6955,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get peopleSearchHint => 'Search people';
+  String get peopleSearchHint => 'Search contacts';
 
   @override
   String get peopleFilterAll => 'All';
@@ -6986,38 +6986,134 @@ class AppLocalizationsEn extends AppLocalizations {
   String get peopleRoleSitter => 'Pet sitter';
 
   @override
+  String get peopleRoleWalker => 'Dog walker';
+
+  @override
   String get peopleRoleVet => 'Vet';
+
+  @override
+  String get peopleRoleVetNurse => 'Vet nurse';
 
   @override
   String get peopleRoleGroomer => 'Groomer';
 
   @override
+  String get peopleRoleTrainer => 'Trainer';
+
+  @override
+  String get peopleRoleBehaviourist => 'Behaviourist';
+
+  @override
+  String get peopleRoleBoarding => 'Boarding / daycare';
+
+  @override
+  String get peopleRoleEmergencyContact => 'Emergency contact';
+
+  @override
+  String get peopleRoleOther => 'Other';
+
+  @override
   String get peopleNameLabel => 'Name';
 
   @override
-  String get peopleListLoadError => 'Could not load people. Try again.';
+  String get peopleListLoadError => 'Could not load contacts. Try again.';
 
   @override
-  String get accountPeopleRow => 'People';
+  String get accountPeopleRow => 'Contacts';
 
   @override
   String get peopleDeskVetTeam => 'Vet team';
 
   @override
   String get peopleDetailNotFound =>
-      'This person is no longer in your directory.';
+      'This contact is no longer in your directory.';
 
   @override
-  String get peopleEditPerson => 'Edit person';
+  String get peopleEditPerson => 'Edit details';
 
   @override
   String get peoplePrivateNoteLabel => 'Private note';
+
+  @override
+  String get peoplePrivateNoteHelper => 'Only you can see this note.';
 
   @override
   String get peoplePhoneLabel => 'Phone';
 
   @override
   String get peopleEmailLabel => 'Email';
+
+  @override
+  String get peopleAddressLabel => 'Address';
+
+  @override
+  String get peopleWebsiteLabel => 'Website';
+
+  @override
+  String get peopleContactInformationTitle => 'Contact information';
+
+  @override
+  String get peopleContactInfoEmpty =>
+      'No phone, email or address yet. Add them in Edit details.';
+
+  @override
+  String get peopleOpenDirections => 'Directions';
+
+  @override
+  String get peopleOpenWebsite => 'Open website';
+
+  @override
+  String get peopleCopiedToClipboard => 'Copied to clipboard';
+
+  @override
+  String get peopleLinkedPetsTitle => 'Related pets';
+
+  @override
+  String get peopleNoLinkedPets => 'No pets linked yet.';
+
+  @override
+  String get peopleVetLinkedHelper =>
+      'Changes here also update this vet on your pets\' profiles.';
+
+  @override
+  String get peopleMarkInactive => 'Mark inactive';
+
+  @override
+  String get peopleMarkInactiveBody =>
+      'This contact stays visible where already linked, but won\'t appear in pickers.';
+
+  @override
+  String get peopleSaveError => 'Could not save changes. Try again.';
+
+  @override
+  String get peopleRemoveError => 'Could not remove this contact.';
+
+  @override
+  String get peopleRemoveVetLinkedError =>
+      'Remove the vet from your pets first, or mark this contact inactive.';
+
+  @override
+  String get peopleKindInferredPerson => 'Shown as a person';
+
+  @override
+  String get peopleKindInferredOrganisation => 'Shown as a business';
+
+  @override
+  String get peopleKindChange => 'Change';
+
+  @override
+  String get peopleWorksAtLabel => 'Works at';
+
+  @override
+  String get peopleWorksAtNone => 'Not linked to a practice';
+
+  @override
+  String get peopleAddContactDetailsExpand => 'Add phone, email, address';
+
+  @override
+  String peopleWorksAtLine(String name) {
+    return 'Works at $name';
+  }
 
   @override
   String get peopleStatusInactive => 'Inactive';

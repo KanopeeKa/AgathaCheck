@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../vet/domain/entities/vet.dart';
-import '../../../../vet/presentation/providers/vet_providers.dart';
-import '../../../../people/presentation/providers/people_providers.dart';
+import '../../../../people/domain/entities/people_contact.dart';
 import '../../controllers/pet_form_controller.dart';
 import '../../providers/pet_vet_contacts_provider.dart';
 
@@ -30,11 +29,15 @@ class PetFormVetSection extends ConsumerWidget {
     return vetsAsync.when(
       loading: () => InputDecorator(
         decoration: InputDecoration(labelText: l.veterinarians),
-        child: const Text('Loading vets...'),
+        child: const SizedBox(
+          height: 20,
+          width: 20,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
       ),
       error: (_, __) => InputDecorator(
         decoration: InputDecoration(labelText: l.veterinarians),
-        child: const Text('Could not load vets'),
+        child: Text(l.peopleListLoadError),
       ),
       data: (vets) {
         return DropdownButtonFormField<String?>(
@@ -47,7 +50,7 @@ class PetFormVetSection extends ConsumerWidget {
             suffixIcon: selectedVetId != null
                 ? IconButton(
                     icon: const Icon(Icons.clear, size: 18),
-                    tooltip: 'Clear veterinarian',
+                    tooltip: l.clear,
                     onPressed: () {
                       onVetSelected(null);
                       controller.state = controller.state.copyWith(
@@ -79,7 +82,7 @@ class PetFormVetSection extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Create new vet',
+                    l.addNewVet,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.w600,
@@ -89,14 +92,18 @@ class PetFormVetSection extends ConsumerWidget {
               ),
             ),
           ],
-          onChanged: (value) {
+          onChanged: (value) async {
             if (value == createNewVetSentinel) {
-              showPetFormCreateVetSheet(
-                context: context,
-                ref: ref,
-                onVetCreated: onVetSelected,
-                controller: controller,
+              final created = await context.push<PeopleContact?>(
+                '/pc/people/new?roles=vet&pop=1',
               );
+              final vetId = created?.legacyVetId;
+              if (vetId != null && vetId.isNotEmpty) {
+                onVetSelected(vetId);
+                controller.state = controller.state.copyWith(
+                  selectedVetId: vetId,
+                );
+              }
             } else {
               onVetSelected(value);
               controller.state = controller.state.copyWith(
@@ -108,120 +115,4 @@ class PetFormVetSection extends ConsumerWidget {
       },
     );
   }
-}
-
-Future<void> showPetFormCreateVetSheet({
-  required BuildContext context,
-  required WidgetRef ref,
-  required ValueChanged<String?> onVetCreated,
-  required PetFormController controller,
-}) {
-  final nameController = TextEditingController();
-  final phoneController = TextEditingController();
-  final emailController = TextEditingController();
-  final addressController = TextEditingController();
-  final formKey = GlobalKey<FormState>();
-
-  return showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    builder: (ctx) => Padding(
-      padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 24,
-        bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-      ),
-      child: Form(
-        key: formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'New Veterinarian',
-              style: Theme.of(
-                ctx,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              key: const Key('new_vet_name_field'),
-              controller: nameController,
-              decoration: const InputDecoration(
-                labelText: 'Name',
-                hintText: 'e.g., Dr. Smith Veterinary Clinic',
-                prefixIcon: Icon(Icons.person),
-              ),
-              validator: (val) =>
-                  val == null || val.trim().isEmpty ? 'Name is required' : null,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              key: const Key('new_vet_phone_field'),
-              controller: phoneController,
-              decoration: const InputDecoration(
-                labelText: 'Phone (optional)',
-                prefixIcon: Icon(Icons.phone),
-              ),
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              key: const Key('new_vet_email_field'),
-              controller: emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email (optional)',
-                prefixIcon: Icon(Icons.email),
-              ),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              key: const Key('new_vet_address_field'),
-              controller: addressController,
-              decoration: const InputDecoration(
-                labelText: 'Address (optional)',
-                prefixIcon: Icon(Icons.location_on),
-              ),
-            ),
-            const SizedBox(height: 16),
-            FilledButton(
-              key: const Key('save_new_vet_button'),
-              onPressed: () async {
-                if (!formKey.currentState!.validate()) return;
-                final vet = Vet(
-                  id: '',
-                  name: nameController.text.trim(),
-                  phone: phoneController.text.trim(),
-                  email: emailController.text.trim(),
-                  address: addressController.text.trim(),
-                );
-                try {
-                  await ref.read(vetListProvider.notifier).createVet(vet);
-                  await ref.read(peopleContactsProvider.notifier).refresh();
-                  if (ctx.mounted) Navigator.pop(ctx);
-                  final updatedVets = await ref.read(vetListProvider.future);
-                  if (updatedVets.isNotEmpty) {
-                    final newId = updatedVets.last.id;
-                    onVetCreated(newId);
-                    controller.state = controller.state.copyWith(
-                      selectedVetId: newId,
-                    );
-                  }
-                } catch (e) {
-                  if (ctx.mounted) {
-                    ScaffoldMessenger.of(ctx).showSnackBar(
-                      SnackBar(content: Text('Failed to create vet: $e')),
-                    );
-                  }
-                }
-              },
-              child: const Text('Create'),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
 }
