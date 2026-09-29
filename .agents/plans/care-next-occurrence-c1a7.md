@@ -1,616 +1,794 @@
-# Care Item next-occurrence guarantee and care agenda — roadmap plan
+# Care Item occurrences: always-real next dates, two schedule types, one agenda — roadmap plan (v2)
 
-> **Status: DRAFT FOR REVIEW.** Not approved for `/execute-plan`. Written to be reviewed by Cursor (and the product owner) before any snapshot, control issue or branch is created. See §14 for the review checklist.
+> **Status: DRAFT FOR REVIEW (v2, 2026-09-29).** Not approved for `/execute-plan`. Written for Cursor to review, together with the product owner. v2 replaces v1 after three rounds of product decisions (§3). Review checklist: §15.
 
 ## Metadata
 
 | Field | Value |
 |-------|-------|
 | **plan_id** | `care-next-occurrence-c1a7` |
-| **plan_kind** | `roadmap` (parent orchestrator; five child plans, §7) |
-| **title** | Every active Care Item always has a real next occurrence; every surface shows it; Absences rely on it |
-| **author** | Claude Code session (requested by product owner, 2026-09-29) |
-| **created** | 2026-09-29 |
-| **base_branch** | `main` (each child uses its own integration branch, §7) |
+| **plan_kind** | `roadmap` (parent orchestrator; six child plans, §10) |
+| **title** | Every active Care Item always has real, actionable occurrences; two plain schedule types; one Today / Due soon / Upcoming agenda; Absences use the same primitives |
+| **author** | Claude Code session, with the product owner (2026-09-29) |
+| **created / revised** | 2026-09-29 (v1) · 2026-09-29 (v2) |
+| **base_branch** | `main` (each child uses its own integration branch, §10) |
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
-| **programme_ref** | `docs/domains/pet_care/features/care-item-evolution.md` |
-| **reviewed commit** | `f6b6285` (`main`, 2026-09-29) — all file:line references in this plan are against this commit |
-| **supersedes** | PR [KanopeeKa/AgathaCheck#1439](https://github.com/KanopeeKa/AgathaCheck/pull/1439) (close it; see §13) |
-| **amends (on approval)** | D-CSM-004, D-CSM-018, D-ACP-003, D-ACP-010, `occurrence-scheduling.md` §Materialisation, `care-item-evolution.md` rows "Future occurrences" and Absences "Review date" |
+| **programme_ref** | `docs/domains/pet_care/features/care-item-evolution.md` (canonical Care Item spec) |
+| **reviewed commit** | `f6b6285` (`main`, 2026-09-29) — all file:line references are against this commit |
+| **supersedes** | PR [KanopeeKa/AgathaCheck#1439](https://github.com/KanopeeKa/AgathaCheck/pull/1439) — **closed** 2026-09-29 with a pointer to this plan |
+| **amends (child A)** | D-CSM-001, D-CSM-004, D-CSM-005, D-CSM-018, D-ACP-003, D-ACP-007, D-ACP-009, D-ACP-010, D-CIE-002, D-CIE-006, D-CIE-018; `occurrence-scheduling.md`; `care-schedule-management.md`; `care-item-evolution.md`; `terminology.md` |
+
+### Changes since v1
+
+| Area | v1 | v2 (agreed) |
+|------|----|-------------|
+| Open occurrences | Exactly one open day per item ("one open day" rule) | At least one open occurrence always; **several allowed** (planned dates, fixed-date stacks); at most one **computed** date |
+| Schedule types | Fixed vs after completion, with a tolerance rule for lateness | **Fixed dates** (stack if missed) vs **Counts from when it's done** (late until done); **defaults by category**; user can change |
+| Late | Tolerance bands; optional leeway | **Late is late** (no leeway). Fixed: Late until the next dose, then **Not recorded** (stack, 3 days) |
+| Pause | Resume moves head | **One "Postpone until" primitive** for pause, pause-until, absence "move after" and long moves; resume asks the date with a default |
+| Irregular care | Not covered | **Plan another date** (boosters, booked visits) — planned dates take precedence over computed ones |
+| Late completion | Not covered | Prompt when a waiting date gets too close: **Keep / Skip next / Move this and following**, with **Remember my choice** per item |
+| Moving a fixed date | Always re-anchors (D-ACP-007) | Ask **This date only** (default) / **This and following** |
+| Lists | Overdue / Today / This week / Later | **Today** (late first, then grouped by time only when useful) / **Due soon** (7 days) / **Upcoming** (collapsed) |
+| Background job | None | **Care tick** every 15 min (fixed-date items + 3-day stack window), plus per-command catch-up |
+| Form | Not covered | **Advanced settings** (collapsed, one-line summary); **Plan shows Due date only, Record shows Completed on only** (bug fix) |
+| DB guard | Optional `btree_gist` constraint | Dropped (rule no longer "one open day") |
 
 ---
 
 ## 1. Goal
 
-Make the Care Item model behave the way the product owner and leading apps expect:
+1. **Every active planned Care Item always has at least one real, stored open occurrence** that can be acted on immediately (Mark as done, Skip, Change date, Postpone), created in the same transaction as the action that needs it — no placeholders, no "ensure first".
+2. **Two schedule types users understand**, with safe defaults per category:
+   - **Fixed dates** — every scheduled date gets its own occurrence; missed ones stack so each can be recorded or skipped.
+   - **Counts from when it's done** — one open occurrence; if late it stays late until done; the next date counts from when it was done.
+3. **Irregular care is simple**: add another planned date (booster, booked visit); planned dates take precedence; the schedule rule resumes when nothing planned remains.
+4. **One agenda everywhere** (dashboard = pet profile): **Today** (late first), **Due soon**, **Upcoming**.
+5. **One postpone mechanism** used by pause, pause-until and Absences.
+6. **One Care Item component** in server and Flutter with a public API (child F).
+7. **Canonical documentation updated first** (child A), so every later PR implements a frozen spec.
 
-1. **Every active planned Care Item always has exactly one real, stored next occurrence** (one calendar day; several time slots for multi-dose care). It is created in the **same database transaction** as the action that needs it (create, done, skip, resume, schedule change, undo, reopen). No background job, no "day before" window, no delay.
-2. **Every surface shows every active item's next occurrence**, ordered Overdue → Due today → Upcoming (far-future included): dashboard, pet profile, All care (global and per pet). The reminder window only controls notifications.
-3. **The next occurrence can be acted on immediately from anywhere**: Mark as done, Skip, Change date — always against a real occurrence id.
-4. **Absences get simpler and more robust** because the head is always real: no placeholder occurrences, no "ensure first", no "date unknown" for active items.
-5. **The code is organised as one Care Item component** (server and Flutter) with a public API and enforced dependency direction, so the model can evolve.
-
-### 1.1 Product owner's requirements (verbatim, 2026-09-29)
+### 1.1 Product owner requirements (verbatim, 2026-09-29)
 
 | # | Requirement |
 |---|-------------|
-| R1 | "As a user, I want to immediately see the next date even if it is far in the future." |
-| R2 | "The occurrence needs to be materialised then and as a user, I want to be able to manipulate that next occurrence immediately." |
+| R1 | "I want to immediately see the next date even if it is far in the future." |
+| R2 | "The occurrence needs to be materialised then and … I want to be able to manipulate that next occurrence immediately." |
 | R3 | "That should also help making the 'absence' management easier." |
-| R4 | "Dashboard: … I want to see every overdue, due and upcoming occurrences: ie I must see the next occurrence of every care item I have for my pet, from the moment I close one occurrence, the next one is materialised as the new 'next occurrence'. There is no delay (or a few seconds acceptable)." |
-| R5 | "I want the code architecture to be organised cleanly under the Care Item Component domain with clean interactions that we can make evolve." |
-
-### 1.2 Acceptance scenarios (become BDD + Playwright, §10)
-
-| id | Given | When | Then |
-|----|-------|------|------|
-| AC-1 | Monthly flea treatment due today, fixed schedule | I mark it done today | Within the same request the item shows "Coming up · <today + 1 month>" on the dashboard, pet profile and All care |
-| AC-2 | Yearly vaccine due in 200 days, reminder 7 days before | I open the dashboard | The vaccine is listed under Later with its date; no reminder notification exists yet |
-| AC-3 | Weekly ear drops (after completion), done today | I open the care item | "Coming up · in 7 days" with Mark as done, Skip, Change date enabled; each succeeds |
-| AC-4 | Any upcoming item on the dashboard | I tap Mark as done | It completes the real next occurrence (no `mark-taken`), and the following occurrence appears |
-| AC-5 | Item completed a moment ago | I tap Undo | The previous occurrence is reopened and the auto-created next occurrence is removed; exactly one open day remains |
-| AC-6 | Item paused, then resumed | I resume | A next occurrence exists immediately (per D-CSM-023) and is visible everywhere |
-| AC-7 | I edit an item's "next date" in the form | I save | The open occurrence moves to that date (reschedule), the cache matches, no second open day exists |
-| AC-8 | After-completion item done today; trip starts in 10 days for 5 days | I open the away plan | The item is listed with its scheduled date (not missing, not "date unknown") |
-| AC-9 | Two carers tap Done on the same occurrence at the same moment | Both requests arrive | One succeeds; the other gets a clear "already done" response; exactly one next occurrence exists |
-| AC-10 | Fixed monthly item anchored on 31 Jan | It advances | Dates are 28/29 Feb, 31 Mar, 30 Apr, 31 May … (clamp), never drifting to the 3rd |
+| R4 | "I must see the next occurrence of every care item I have for my pet, from the moment I close one occurrence … There is no delay (or a few seconds acceptable)." |
+| R5 | "Organised cleanly under the Care Item Component domain with clean interactions that we can make evolve." |
+| R6 | Late behaviour "updatable by the user (but provide a safe, clean default based on categories)." |
+| R7 | "Pausing 'until' should be … the unique implementation of what happens when there's an absence and the user postpones a specific item … Avoid multiple implementation." |
+| R8 | Irregular occurrences: "on Vaccine make it clear a user can simply create another fixed occurrence, THEN start yearly recurrence." |
+| R9 | "If we tick 'plan something' → show due date — if we tick 'record something' → show 'completed on' — do not show both." (fix inside the domain amendment, not a separate PR) |
 
 ---
 
-## 2. Current state (verified facts)
+## 2. Vocabulary (used throughout; copy in §5.4)
 
-Every row was verified by reading code at `f6b6285`; F1 was also reproduced with the server's own `advanceSeries` test harness (monthly item completed on its due date → no next occurrence inserted, `next_due_date` = `null`).
-
-### 2.1 Server — write paths
-
-| id | Fact | Evidence | Consequence |
-|----|------|----------|-------------|
-| F1 | After a close, the next occurrence is inserted only if it is due **by tomorrow** (T−1) or already past | `server/lib/care/schedule/advanceSeries.js:90-96`, `server/lib/occurrenceScheduling.js:100-103` | Weekly/monthly/yearly items done on time get no next occurrence |
-| F2 | `next_due_date` is recomputed from pending rows only; with none it becomes `NULL` | `server/lib/occurrenceScheduling.js:156-173` | The item's next date disappears everywhere |
-| F3 | **No T−1 job exists.** No scheduler/cron in `server/`; the only callers of materialisation are user actions | `grep -rn "setInterval\|node-cron\|cron.schedule" server/lib server/routes` → none; callers listed in §2.4 | The docs' "whichever is first" (`occurrence-scheduling.md:83`) and D-CSM-004's "T−1 materialisation is sufficient" (`care-schedule-management-decisions.md:67`) describe something that never runs |
-| F4 | Create defers the first occurrence when `next_due_date` is in the future beyond T−1 (keeps `next_due_date`, inserts no row) | `server/lib/occurrenceScheduling.js:65-76`, `:212-228`; `server/routes/healthEntries/crudRouter.js:216-221` | New future items have a date but nothing to act on; Done falls to `mark-taken` → 400 |
-| F5 | `PUT /api/health-entries/:id` writes `next_due_date`, `start_date`, `frequency`, `recurrence_anchor`, `repeat_end_date` directly, without touching occurrences | `server/routes/healthEntries/crudRouter.js:237-401` (UPDATE at ~`:351`) | Edit form and occurrences diverge (cache says one date, pending row another, or none) |
-| F6 | Resume only flips status; creates nothing | `server/lib/care/schedule/pauseResumeSeries.js:81-110` | Resumed item may have no next occurrence |
-| F7 | Reopen sets `next_due_date = NULL`, creates nothing | `server/routes/healthEntries/completionRouter.js:218-254` | Reopened item has no next occurrence |
-| F8 | Undo complete/skip reopens the closed row but never removes an occurrence the close created; weight-entry delete does the same | `server/lib/care/schedule/undoLastAction.js:139-163`; `server/routes/weightEntries.js:207-229` | Once F1 is fixed, undo would leave two open days unless undo removes the auto-created head |
-| F9 | Care commands run as many separate `pool.query` calls with no transaction; only weight completion/deletion use `BEGIN` | `server/routes/healthEntries/completeWeightRouter.js:135-173`; `server/routes/weightEntries.js:207-229`; the mandatory runner `server/lib/db/withTransaction.js` exists but no care command uses it | A failure between "close" and "create next" leaves an item with no next occurrence; concurrent Done can double-advance |
-| F10 | Only one DB guard: unique pending **slot** per (entry, date, time) | `db/migrations/047_health_occurrences.sql:30-36` | Nothing prevents two pending **days** for one entry |
-| F11 | Legacy `POST /:id/mark-taken` returns 400 when there is no pending occurrence; business logic `completeOldestPendingOccurrence` lives in a route file | `server/routes/healthEntries/completionRouter.js:18-73`; `server/routes/healthEntries/occurrencesRouter.js:425` | List "Done" fails on every item without a stored next occurrence |
-| F12 | Monthly/yearly arithmetic overflows: 31 Jan + 1 month = 3 Mar; 29 Feb + 1 year = 1 Mar; fixed schedules chain from the previous date, so drift is permanent | `server/lib/recurrenceHelper.js:43-73` (`setMonth` at `:56-58`); Dart copy `flutter_app/lib/features/health_tracking/domain/services/recurrence_advance.dart:16-45` | Wrong dates for month-end anchors |
-| F13 | Two "next date" functions exist: `nextOccurrence` (legacy) and `resolveNextSeriesDate` | `server/lib/recurrenceHelper.js:82-93`; `server/lib/care/schedule/advanceSeries.js:32-39` | Two sources of truth |
-| F14 | Recommendations create path calls `materialiseInitialOccurrences` directly | `server/routes/careIntelligence/recommendationsRouter.js:~109` | Another create path to route through the new command |
-
-### 2.2 Server — read paths
-
-| id | Fact | Evidence | Consequence |
-|----|------|----------|-------------|
-| F15 | Reminders only consider entries with non-null `next_due_date`; "today" is the server clock | `server/lib/checkDueNotifications.js:84-96` | Reminders silently stop after an on-time completion (F1+F2) |
-| F16 | Away-plan projection: after-completion item with no pending row and null `next_due_date` yields **no row and no uncertainty** | `server/lib/care/schedule/projectSchedule.js:294-351` | The item vanishes from the away plan; coverage can falsely say nothing is scheduled (contradicts the intent of D-ACP-001) |
-| F17 | Fixed-schedule projection without a pending row chains from `start_date`, ignoring D-ACP-007 re-anchoring | `server/lib/care/schedule/projectSchedule.js:220-222` | Wrong planned dates after a moved occurrence |
-| F18 | Absence design assumes a head exists ("CSM normally keeps one open") | `docs/domains/pet_care/changes/away-care-planning-decisions.md:60`; estimate fallback `server/lib/care/schedule/estimateOccurrences.js:33-46` | The "defensive" branch is actually the common case today |
-| F19 | "Today" has three meanings: pet home TZ (occurrence routes), server clock (reminders, absence planner), device clock (Flutter) | `server/routes/healthEntries/occurrencesRouter.js:55`; `server/lib/care/planner/loadAbsenceCarePlan.js:46`; `server/lib/checkDueNotifications.js:96`; `flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart:171-199` | Same item can be Due on one surface and Overdue on another around midnight / across time zones |
-| F20 | Health entry list responses carry no occurrence data | `server/routes/healthEntries/crudRouter.js:32-62` → `healthEntryToMap` (`server/routes/healthEntries/shared.js`) | Client fetches occurrences per row (F24) |
-| F21 | Seed `health-care.js` inserts entries with no occurrences | `server/db/seeds/scenarios/health-care.js:~56` | Seeded UAT/dev data violates the target invariant |
-
-### 2.3 Flutter
-
-| id | Fact | Evidence | Consequence |
-|----|------|----------|-------------|
-| F22 | Entry grouping hides future items beyond `remindDaysBefore` | `flutter_app/lib/features/pet_care/domain/services/care_temporal_grouping_service.dart:20-33` | Far-future items missing from profile/All care/dashboard (PR #1439 targeted this only) |
-| F23 | Six different list rules decide what is "due": grouping service (profile, All care, dashboard), `isEntryDueOrOverdue`/`guardianDueEntries`/`hasDueOrOverdueEventsProvider` (nav badge), `isOverdue‖isDueToday` (pet list), manage-events status predicate (global All care), entity getters (status lines) | `health_providers.dart:226-260`; `pet_profile/presentation/widgets/pet_list/due_events_section.dart:33-40`; `pet_profile/presentation/screens/widgets/manage_events_filters.dart:216`; `experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart:44-80`; `health_entry.dart:163-199`; `health_entry_status.dart:68-86`; `care_event_status_line.dart:38-49` | Same item visible on one screen, missing on another |
-| F24 | Each list row fetches its own open occurrences | `flutter_app/lib/features/health_tracking/presentation/widgets/care_event_row_host.dart:38-39` | One HTTP request per row |
-| F25 | Row "Done" paths end in legacy `mark-taken` when no occurrence is loaded | `pet_profile/presentation/widgets/pet_list/home_event_actions.dart:40-49`; `health_tracking/presentation/widgets/occurrence_care_actions.dart:73-76, 98-100`; `health_tracking/presentation/widgets/health_dashboard/health_dashboard_entry_list.dart:333-342`; `experience/presentation/screens/pet_care/pet_care_upcoming_events_section.dart` | Done fails (400) on items without a stored next occurrence |
-| F26 | Placeholder occurrences with empty id + "ensure first" step | `health_tracking/presentation/widgets/occurrence_review_flow.dart:24-56` | Complexity that only exists because the head may be missing |
-| F27 | Global All care filters still read retired `health_history` rows | `experience/presentation/screens/pet_care/pet_care_due_events_screen.dart:215-233` (`histories` → `matchesManageEventsFilters`) | Filters depend on a table D-CSM-003 retired |
-| F28 | Unreachable screens/widgets | `PetEventViewScreen` (`health_tracking/presentation/screens/pet_event_view_screen.dart`), `HealthDashboardScreen` (`…/health_dashboard_screen.dart`), `PetEventsPreviewSection` (`pet_profile/presentation/screens/widgets/pet_events_preview_section.dart`) — not referenced by the router or other `lib/` code | Dead code with its own rules and tests |
-| F29 | Client re-implements server rules | recurrence math `recurrence_advance.dart`; series-closed rule in a UI file `health_tracking/presentation/widgets/pet_event_lifecycle.dart:10-24` | Violates "backend authoritative" (`.cursor/rules/pet-care-architecture.mdc`) |
-| F30 | Feature cycle: 44 files in `health_tracking` import `pet_care`/`pet_profile`/`experience`; 8 files in `pet_care` import `health_tracking` | `grep` over `flutter_app/lib/features/*` | Matches A04 in `docs/architecture/reviews/active-codebase-review.md`; entries have several state owners (A05) |
-| F31 | No timezone package in the app; `Pet.homeTimezone` is parsed but not used for status | `flutter_app/pubspec.yaml`; `pet_care/presentation/providers/care_temporal_grouping_providers.dart:15` (`careNowProvider = DateTime.now()`) | Client cannot compute pet-local "today" today |
-
-### 2.4 Every server call site that creates or removes open occurrences (must all go through the new primitive)
-
-`materialiseInitialOccurrences` (create: `crudRouter.js:220`, recommendations `recommendationsRouter.js:109`), `advanceSeries` (`completeOccurrence.js:87`, `skipOccurrence.js:64`, `adjustCadence.js:114`, `undoLastAction.js:235`), `ensureOpenOccurrence` (`ensureOpenOccurrenceRouter.js:29`), `insertOccurrencesForDay` (`adjustCadence.js:111`), `closeHealthEntrySeries`/`skipAllPendingOccurrences` (`occurrenceLifecycle.js`), `reopenOccurrence` (`undoLastAction.js:92`), weight delete reopen (`weightEntries.js:212-221`), reschedule (`rescheduleOccurrence.js`), pause/resume (`pauseResumeSeries.js`), PUT edit (`crudRouter.js:237`), reopen route (`completionRouter.js:218`), backfill migration 047 (`server/scripts/migrations/047_health_occurrences_backfill.js`).
+| Term | Meaning | Storage |
+|------|---------|---------|
+| Care item | The lasting definition of care for one pet | `health_entries` |
+| Occurrence | One scheduled or performed instance | `health_occurrences` |
+| Open occurrence | Not yet done or skipped | `status = 'pending'` |
+| Schedule type **Fixed dates** | Dates follow the calendar rule regardless of completion | `recurrence_anchor = 'from_due_date'` (wire value unchanged) |
+| Schedule type **Counts from when it's done** | Next date = completion date + interval | `recurrence_anchor = 'from_completion'` (wire value unchanged) |
+| Origin `schedule` | Date generated by a Fixed dates rule | `health_occurrences.origin` (new) |
+| Origin `computed` | Next date computed for a Counts-from-done item | `origin` |
+| Origin `planned` | Date set by a person: another date, a moved date, a postponed date, a booster, a booked visit | `origin` |
+| Stack | Open past occurrences of a Fixed dates item waiting to be recorded | derived |
+| Care tick | The 15-minute job (§6.6) | `server/scripts/care/care_tick.js` (new) |
 
 ---
 
-## 3. Research summary (why this target)
+## 3. Decision record (product owner answers, 2026-09-29)
 
-| Pattern | Who | Applied here |
-|---------|-----|--------------|
-| One live next copy always exists; completing (even early) creates the next copy immediately | Things 3.23, Todoist | INV-1 (§4) |
-| Two schedule types in plain words: fixed vs after completion | Todoist `every` / `every!`, Things | Keep `from_due_date` / `from_completion` |
-| Never schedule a fixed series into the past: overdue completion jumps to the next future date | Todoist | D-CSM-021 |
-| One-off change vs rule change | Things "Make Exception" / "Update Rule"; Google Calendar "This event / This and following / All events" | Keep reschedule vs adjust-cadence; label them that way |
-| Per-dose Taken / Skipped with follow-up reminder | Apple Health Medications | Existing per-slot statuses |
-| Sitters log care; owner sees who did it and is told about misses | pet reminder apps with household sharing, PetTimely, Medisafe Medfriend | Absence = hand-over, not pause (§8.4) |
-| Helpers sign up for a specific task on a specific date | Lotsa Helping Hands | "Looked after by" on real occurrences (deferred, D-ACP-012) |
-| Holiday = pause in productivity apps | Todoist vacation mode, Habitica, Streaks | Explicitly **not** the pet-care model |
-| Store rule + exceptions; explicit month-end semantics; optional rolling horizon | RFC 5545 / RFC 7529; calendar design practice | D-CSM-022; horizon materialisation deferred |
-
-Sources are listed in the review conversation and in §15.
+| Topic | Decision |
+|-------|----------|
+| Late behaviour | Configurable per item with category defaults; two schedule types (§5.1) |
+| Category defaults | Medication → Fixed dates. Vaccination, parasite prevention, wellness review and all other categories → Counts from when it's done |
+| Fixed dates, late | Late until the next dose is due; then **Not recorded** and stacked so it can be recorded later (forgot to log ≠ forgot to give) |
+| Counts from done, late | Late until done / skipped / postponed; the following date moves with today while late; when done, next = done date + interval |
+| Stack window | Keep the **last 3 days** open; older ones close as Not recorded, can be recorded from History |
+| Leeway | **None.** "Late is late." Users can change the following date instead |
+| Two words | Yes — **Late** and **Not recorded** (amends D-CIE-002) |
+| Month-end | Clamp to the last day of the month |
+| Early completion | Allowed everywhere; confirm when more than half an interval early |
+| Resume after pause | Ask the date; default = what it would have been without the pause. "Pause until" optional (default no end date) |
+| Pause until | Is the single postpone implementation, shared with Absences |
+| Lists | **Today** (Late first, then due today grouped Morning/Afternoon/Evening/Anytime only when ≥ 2 groups; otherwise "Today's list") / **Due soon** (this week) / **Upcoming** (collapsed). Dashboard and pet profile identical. "Mark as done" button, not a tick |
+| Doses closing | Yes, but re-openable to record (fixed dates only) |
+| Server "today" | Yes (pet home timezone) |
+| Cron | Yes |
+| Several open occurrences | Yes. Planned/fixed dates take precedence; if nothing further exists, the Counts-from-done logic resumes |
+| Irregular care / boosters | Allowed everywhere as "Plan another date"; made obvious on vaccines (booster, then yearly) |
+| Late completion with a waiting date | Offer **Keep** / **Skip next** / **Move this and following**, plus **Remember my choice** for that care item |
+| Moving a fixed date | Ask **This date only** (default) / **This and following** |
+| New Care Item window | Collapsed **Advanced settings** with one-line summary: Where, Priority, Schedule type, When done late, Provider (outside Notes), Documents. **Main section keeps**: first due date, dosage (medication), notes |
+| Plan/Record date bug | Fix inside the form rework (child D), not a separate PR |
+| Canonical docs | Update decisions and canonical documentation first (child A) |
 
 ---
 
-## 4. Target invariants
+## 4. Current state (verified facts at `f6b6285`)
 
-Definitions:
+F1 was reproduced with the server's own `advanceSeries` test harness (monthly item completed on its due date → no next occurrence, `next_due_date = null`).
 
-- **Planned item**: `health_entries.care_planning IS DISTINCT FROM 'unplanned'`.
-- **Active**: `status = 'active'` and not series-closed (`isEntrySeriesClosed`, `server/lib/occurrenceLifecycle.js`).
-- **Slots**: `scheduleTimesFromEntry(entry)` — `schedule_times` or one all-day slot.
-- **Head day**: the calendar date that holds the item's pending occurrence(s).
+### 4.1 Server — write paths
+
+| id | Fact | Evidence | Consequence |
+|----|------|----------|-------------|
+| F1 | After a close, the next occurrence is inserted only if due by tomorrow (T−1) or already past | `server/lib/care/schedule/advanceSeries.js:90-96`; `server/lib/occurrenceScheduling.js:100-103` | Weekly/monthly/yearly items done on time get no next occurrence |
+| F2 | `next_due_date` is recomputed from pending rows only; none → `NULL` | `server/lib/occurrenceScheduling.js:156-173` | The next date disappears everywhere |
+| F3 | No T−1 job exists anywhere in `server/` | `grep -rn "setInterval\|node-cron\|cron.schedule" server/lib server/routes` → none | `occurrence-scheduling.md:83` and D-CSM-004 (`care-schedule-management-decisions.md:67`) describe behaviour that never runs |
+| F4 | Create defers the first occurrence when the due date is beyond T−1 | `server/lib/occurrenceScheduling.js:65-76, 212-228`; `server/routes/healthEntries/crudRouter.js:216-221` | New future items cannot be completed (falls back to `mark-taken` → 400) |
+| F5 | `PUT /api/health-entries/:id` writes `next_due_date`, `start_date`, `frequency`, `recurrence_anchor`, `repeat_end_date` directly | `server/routes/healthEntries/crudRouter.js:237-401` (UPDATE at `:352`) | Item and occurrences diverge after an edit |
+| F6 | Resume only flips status | `server/lib/care/schedule/pauseResumeSeries.js:81-110` | Resumed item may have no occurrence |
+| F7 | Reopen sets `next_due_date = NULL`, creates nothing | `server/routes/healthEntries/completionRouter.js:218-254` | Reopened item has no occurrence |
+| F8 | Undo complete/skip reopens the closed row only; weight-entry delete does the same | `server/lib/care/schedule/undoLastAction.js:139-163`; `server/routes/weightEntries.js:207-229` | Needs origin-aware undo (§5.9) |
+| F9 | Care commands are many separate `pool.query` calls; only weight completion/deletion use a transaction; `server/lib/db/withTransaction.js` exists but no care command uses it | `completeWeightRouter.js:135-173`; `weightEntries.js:207-229` | Partial writes; concurrent Done can double-advance |
+| F10 | Only DB guard: unique pending slot per (entry, date, time) | `db/migrations/047_health_occurrences.sql:30-36` | Fine for v2 (several open dates are now allowed) |
+| F11 | `POST /:id/mark-taken` returns 400 without a pending row; `completeOldestPendingOccurrence` lives in a route file | `completionRouter.js:18-73`; `occurrencesRouter.js:425` | List "Done" fails on items without a stored occurrence |
+| F12 | Month arithmetic overflows (31 Jan + 1 month = 3 Mar; 29 Feb + 1 year = 1 Mar); fixed schedules chain from the previous date | `server/lib/recurrenceHelper.js:43-73` (`setMonth` `:56-58`); Dart copy `flutter_app/lib/features/health_tracking/domain/services/recurrence_advance.dart:16-45` | Permanent drift |
+| F13 | Two next-date functions | `recurrenceHelper.js:82-93` (`nextOccurrence`); `advanceSeries.js:32-39` (`resolveNextSeriesDate`) | Two sources of truth |
+| F14 | Recommendations create path calls `materialiseInitialOccurrences` directly | `server/routes/careIntelligence/recommendationsRouter.js:109` | Extra create path |
+| F15 | Category defaults: vaccination and parasite prevention → fixed; everything else (incl. medication) → after completion | `server/lib/care/schedule/recurrenceAnchorDefaults.js:12-31`; families in `server/lib/care/enums.js:3-12` | v2 flips these (D-CSM-020) |
+| F16 | Absence resolution decisions include `move_before`/`move_after`, written after reschedules | `server/lib/care/absence/constants.js:1-10` | "Move after" will reuse Postpone (§5.8) |
+
+### 4.2 Server — read paths
+
+| id | Fact | Evidence | Consequence |
+|----|------|----------|-------------|
+| F17 | Reminders need non-null `next_due_date`; "today" = server clock | `server/lib/checkDueNotifications.js:84-96` | Reminders stop after on-time completions |
+| F18 | Away-plan projection: after-completion item with no pending row and null next date → no row, no uncertainty | `server/lib/care/schedule/projectSchedule.js:294-351` | Item vanishes from away plans |
+| F19 | Fixed projection without a pending row chains from `start_date`, ignoring re-anchoring | `projectSchedule.js:220-222` | Wrong planned dates |
+| F20 | Absence design assumes an open head exists ("CSM normally keeps one open") | `away-care-planning-decisions.md:60`; `estimateOccurrences.js:33-46` | "Defensive" branch is the common case |
+| F21 | "Today": pet home TZ (occurrence routes), server clock (reminders, absence planner), device clock (Flutter) | `occurrencesRouter.js:55`; `loadAbsenceCarePlan.js:46`; `checkDueNotifications.js:96`; `health_entry.dart:171-199` | Inconsistent statuses around midnight / across zones |
+| F22 | List responses carry no occurrence data | `crudRouter.js:32-62` → `healthEntryToMap` (`server/routes/healthEntries/shared.js`) | Per-row fetches in Flutter |
+| F23 | Seed `health-care.js` inserts entries without occurrences | `server/db/seeds/scenarios/health-care.js:~56` | Seeds violate the target invariants |
+
+### 4.3 Flutter
+
+| id | Fact | Evidence | Consequence |
+|----|------|----------|-------------|
+| F24 | Grouping hides future items beyond `remindDaysBefore` | `flutter_app/lib/features/pet_care/domain/services/care_temporal_grouping_service.dart:20-33` | Far-future items missing |
+| F25 | Six different "due" rules across surfaces | `health_providers.dart:226-260`; `pet_profile/presentation/widgets/pet_list/due_events_section.dart:33-40`; `pet_profile/presentation/screens/widgets/manage_events_filters.dart:216`; `experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart:44-80`; `health_entry.dart:163-199`; `health_entry_status.dart:68-86`; `care_event_status_line.dart:38-49` | Same item visible on one screen, missing on another |
+| F26 | Each list row fetches its own open occurrences | `health_tracking/presentation/widgets/care_event_row_host.dart:38-39` | N requests per list |
+| F27 | Row "Done" falls back to legacy `mark-taken` | `pet_profile/presentation/widgets/pet_list/home_event_actions.dart:40-49`; `health_tracking/presentation/widgets/occurrence_care_actions.dart:73-76, 98-100`; `health_tracking/presentation/widgets/health_dashboard/health_dashboard_entry_list.dart:333-342` | 400s |
+| F28 | Placeholder occurrences with empty id + "ensure first" | `health_tracking/presentation/widgets/occurrence_review_flow.dart:24-56` | Removed by D-CSM-019 |
+| F29 | Global All care filters still read retired `health_history` | `experience/presentation/screens/pet_care/pet_care_due_events_screen.dart:215-233` | Depends on a retired table |
+| F30 | Unreachable screens/widgets: `PetEventViewScreen`, `HealthDashboardScreen`, `PetEventsPreviewSection` | not referenced by router or other `lib/` code | Dead code |
+| F31 | Client re-implements server rules (recurrence math; series-closed rule in a UI file) | `recurrence_advance.dart`; `health_tracking/presentation/widgets/pet_event_lifecycle.dart:10-24` | Against "backend authoritative" |
+| F32 | Feature cycle: 44 files in `health_tracking` import `pet_care`/`pet_profile`/`experience`; 8 files in `pet_care` import `health_tracking` | grep over `flutter_app/lib/features/*` | Matches A04/A05 in `docs/architecture/reviews/active-codebase-review.md` |
+| F33 | No timezone package; `Pet.homeTimezone` unused for status | `flutter_app/pubspec.yaml`; `pet_care/presentation/providers/care_temporal_grouping_providers.dart:15` | Server must supply "today" |
+| F34 | **Bug:** in Plan mode the form shows both "Due date" and "Completed on"; the row only hides Due date in Record mode | `health_tracking/presentation/widgets/entry_due_completed_row.dart:55-73`; `health_tracking/presentation/widgets/health_entry_form/health_entry_form_content.dart:163-170` | Planned items can be saved as already completed |
+| F35 | Schedule type toggle sits in the frequency section of the form | `health_entry_form/health_entry_frequency_section.dart:121` (`RecurrenceAnchorToggle`) | Moves to Advanced settings |
+| F36 | UI word "Overdue" throughout (EN/FR) | `flutter_app/lib/l10n/app_en.arb:222, 233, 2290, 2311, 2323-2329` (+ `app_fr.arb`) | Copy migration to "Late" / "Not recorded" |
+
+### 4.4 Every server call site that creates, removes or re-dates open occurrences
+
+`materialiseInitialOccurrences` (`crudRouter.js:220`, `recommendationsRouter.js:109`); `advanceSeries` (`completeOccurrence.js:87`, `skipOccurrence.js:64`, `adjustCadence.js:114`, `undoLastAction.js:235`); `ensureOpenOccurrence` (`ensureOpenOccurrenceRouter.js:29`); `insertOccurrencesForDay` (`adjustCadence.js:~111`); `skipMissedOccurrences` (`occurrencesRouter.js:130, 239`); `closeHealthEntrySeries` / `skipAllPendingOccurrences` (`occurrenceLifecycle.js`); `reopenOccurrence` (`undoLastAction.js:~92`); weight delete reopen (`weightEntries.js:212-221`); `rescheduleOccurrence.js`; `pauseResumeSeries.js`; PUT edit (`crudRouter.js:237`); reopen route (`completionRouter.js:218`); migration backfill 047 (`server/scripts/migrations/047_health_occurrences_backfill.js`).
+
+---
+
+## 5. Target behaviour (decisions to freeze in child A)
+
+Decision IDs continue the existing logs. Each decision states what it amends.
+
+### 5.1 Schedule types and category defaults — D-CSM-019, D-CSM-020
+
+**D-CSM-019 — Occurrence guarantee.** Every active planned Care Item always has **at least one** open occurrence (INV-1, §6.1). Occurrences are created synchronously inside the command that needs them. The T−1 materialisation window is removed. *Amends D-CSM-004 (T−1 part), D-CSM-018 (ensure-open becomes compatibility only), `occurrence-scheduling.md` §Materialisation.*
+
+**D-CSM-020 — Two schedule types with category defaults.**
+
+| Category (`care_family`) | Default schedule type |
+|--------------------------|-----------------------|
+| `medication` | **Fixed dates** |
+| `vaccination`, `parasite_prevention`, `wellness_review`, `dental`, `weight_monitoring`, `grooming`, `nail_care`, `other` | **Counts from when it's done** |
+
+The user can change the type per item (Advanced settings, §5.10). Items repeating several times a day require Fixed dates (validation `times_require_fixed_dates`). *Amends D-CSM-001 (vaccination and parasite prevention were fixed; medication was after completion). Rationale: parasite treatment labels say to give a missed dose and resume monthly from then; the next vaccine booster counts from the date given (already stated in D-ACP-007); medication needs a per-dose record.*
+
+### 5.2 Occurrence origins and precedence — D-CSM-021
+
+Every open occurrence has an **origin**: `schedule`, `computed` or `planned` (§2).
+
+1. The app **never moves** `planned` or `schedule` occurrences on its own.
+2. An item has **at most one** open `computed` occurrence.
+3. After a close, if any other open occurrence exists, **no** computed occurrence is created. If none exists, the item's rule creates the next one (`computed` for Counts from done; `schedule` for Fixed dates).
+4. Moving a `computed` occurrence (Change date, Postpone) turns it into `planned`.
+
+### 5.3 Rules per schedule type — D-CSM-022, D-CSM-023, D-CSM-024
+
+**D-CSM-022 — Counts from when it's done.**
+
+| Event | Result |
+|-------|--------|
+| Done | If another open occurrence waits → it is next (late-completion check, §5.6). Else create `computed` = `completed_on + interval` (clamped) |
+| Skipped | Same, computed from `max(scheduled_date, today) + interval` |
+| Late (not done after its day/time) | Stays **Late** until done, skipped or postponed. No stack. The following date is shown as **Estimated: today + interval** and moves forward each day |
+| Example | Due 5 Jun → next would be 5 Jul. On 7 Jun still not done: "Late · 5 Jun", "Estimated next: 7 Jul". Done on 6 Jun (recorded 7 Jun) → next 6 Jul |
+
+**D-CSM-023 — Fixed dates.**
+
+| Rule | Detail |
+|------|--------|
+| Which occurrences exist | Every slot of every series date from **today − 3 days** through **today** that is not yet closed, plus every slot of the **next series date after today** (unless paused or past the end date). Plus any `planned` extras |
+| Late | A slot is **Late** from its time (or the end of its day when untimed) until the **next slot of the series** is due |
+| Not recorded | After the next slot is due, a still-open slot shows **Not recorded** and belongs to the stack |
+| Stack window | Slots older than **3 days** (`scheduled_date < today − 3`) are closed by the care tick as `skipped` with `close_reason = 'not_recorded'` |
+| Record later | From History, a Not recorded slot can be **recorded as given** (becomes `completed` with its `completed_on`). No reopening to pending, so the care tick never re-closes it |
+| Done / skipped | Never moves any other date |
+| Dates | `schedule_anchor_date + n × interval`, clamped (D-CSM-024), never chained from the previous date |
+
+**D-CSM-024 — Month-end clamp.** When the anchor's day does not exist in the target month, use the month's last day (31 Jan → 28/29 Feb → 31 Mar; 29 Feb yearly → 28 Feb in non-leap years). Counts-from-done additions use the same clamp.
+
+### 5.4 Status words — D-CIE-024 (amends D-CIE-002, D-CIE-006)
+
+| Word | When |
+|------|------|
+| **Coming up** | Before its day (or before its time on the day, for timed care) |
+| **Due** | On its day / at its time |
+| **Late** | After its time (timed) or its day (untimed). No leeway. Counts from done: until done/skipped/postponed. Fixed dates: until the next slot is due |
+| **Not recorded** | Fixed dates only: the next slot is already due; waiting in the stack (≤ 3 days) or closed by the tick (older) |
+| **Done**, **Skipped**, **Paused** | As today |
+
+"Late" replaces "Overdue" in all user-facing copy (EN + FR). Stored statuses stay `pending` / `completed` / `skipped`; `close_reason` distinguishes `user`, `not_recorded`, `paused`, `covered`. Timing rule of D-CIE-003 (timed care) is unchanged apart from the word.
+
+### 5.5 Plan another date (irregular care, boosters) — D-CSM-025
+
+- Any item can get extra **planned** occurrences: **Plan another date** on the Care Item view, and in the form.
+- **Change date** moves an existing occurrence; **Plan another date** adds one. They are different actions.
+- Adding a date within half an interval of an existing open occurrence warns: "Another date is already open on 5 Jun. Add anyway?"
+- **Vaccines:** the form shows **"Needs a booster first?"** (e.g. + 1 month). Example: first dose 1 Jun, booster planned 1 Jul, yearly Counts from done. First dose done → next is the planned booster (no computed date). Booster done, nothing planned → computed = booster date + 1 year.
+- Completing a **later** open occurrence while an **earlier** one is still open (Counts from done): ask "The date on 1 Jun is still open: Mark it done / Skip it / Keep it". Fixed dates: slots are independent, no question.
+- Deleting a planned date (cancelled appointment): if nothing else is open, the rule creates the next one and the user confirms the date.
+
+### 5.6 Late completion with a waiting date — D-CSM-026
+
+Trigger: an occurrence is done **late**, another open `planned` or `schedule` occurrence waits, and the gap to it has shrunk by **more than half** of the originally planned gap (`waiting.scheduled_date − closed.scheduled_date`). Time-based for timed slots, days otherwise.
+
+Options:
+- **Keep [date]** (default when dismissed)
+- **Skip [date]**
+- **Move this and following** by the lateness (Fixed dates: sets a new anchor, as §5.7 "This and following"; Counts from done: shifts every waiting planned date)
+- ☐ **Remember my choice for this care item** → `health_entries.late_completion_choice` (`keep` | `skip_next` | `shift_following`; `null` = ask). Visible and resettable in Advanced settings as **"When done late"**.
+
+For fixed multi-daily medication this is the pharmacist "almost time for the next dose" prompt (e.g. 08:00 dose given at 15:00 with 18:00 next).
+
+The server completes first and returns `late_choice_needed` (with options) when the trigger fires and no remembered choice exists; the client then calls the choice endpoint (§7.2). A remembered choice is applied inside the completion transaction.
+
+### 5.7 Moving dates — D-CSM-027 (amends D-ACP-007, D-ACP-009)
+
+| Schedule | Change date | Scope |
+|----------|-------------|-------|
+| Fixed dates | Ask **This date only** (default: the occurrence becomes `planned`; the series is untouched) / **This and following** (new `schedule_anchor_date`; open future `schedule` occurrences regenerate) | "This date only" cannot pass the next series date (D-ACP-009 validation kept); further → offer "This and following" or Postpone |
+| Counts from done | The occurrence moves and becomes `planned`; nothing else to move | Any future date |
+
+### 5.8 Postpone until (single mechanism) — D-CSM-028 (amends D-CSM-005, D-CIE-018, absence `move_after`)
+
+One command: **Postpone until [date]**, or with no date = **Pause** (paused indefinitely). Used by: Pause, Pause until, Absence "move after return", and moves beyond one step. Every use writes one ledger event `postponed { from, until, reason: pause | absence | manual, absence_id? }`.
+
+| Schedule | Postpone until a date | Pause (no date) | Resume |
+|----------|-----------------------|-----------------|--------|
+| Counts from done | The open occurrence moves to the date (becomes `planned`); after it is done the rhythm continues from the completion | Item `status = 'paused'`; its open occurrence stays but is hidden from agenda and reminders | Ask the date. Default: step from the open occurrence's date by the interval until on/after today ("what it would have been"). The occurrence moves there |
+| Fixed dates | `status = 'paused'`, `paused_until = date`; no new dates before it; open future `schedule` slots before it close as `paused`; the late stack stays; the care tick resumes on the date with the first series date on/after it | Same with `paused_until = null` | Ask the date. Default: first series date on/after today. Dates between are not created |
+
+Past dates cannot be chosen. D-CSM-005 (no catch-up) still holds. `pauseSeries`/`resumeSeries` and the absence `move_after` write path become thin callers of this command.
+
+### 5.9 Undo — D-CSM-029
+
+Undo reverses the **whole last command** on the item:
+- Complete/skip: reopen the closed occurrence; delete the `computed` occurrence that command created **if it is still `computed`** (untouched). `planned` and `schedule` occurrences are never deleted by undo — if the computed one was edited it became `planned` and stays (two open dates is valid in v2).
+- A late-completion choice applied in the same command (skip next / shift following) is reversed with it (ledger-driven).
+- Weight-entry deletion linked to a completion = undo of that completion.
+- Postpone/pause/resume: restore the previous state from the ledger.
+
+### 5.10 Early completion — D-CSM-030
+
+Mark as done is allowed on any open occurrence from any surface. Confirmation when it is more than half an interval early ("This is due on 12 Mar. Mark it done now?"). Counts from done: next counts from the completion date. Fixed dates: other dates unchanged. `completion_timing = 'early'` (existing).
+
+### 5.11 Care tick — D-CSM-031
+
+A job every **15 minutes** (`server/scripts/care/care_tick.js`, run by cron on the host; `pg_try_advisory_lock` prevents overlap; idempotent):
+1. Fixed-dates items: create slots that became due and the next series date (§5.3); close stack slots older than 3 days as `not_recorded`; auto-resume items whose `paused_until` is today or earlier.
+2. Evaluates "today" per pet home timezone.
+
+Every command runs the same **catch-up for its item first** (inside its lock), so correctness never depends on the tick's timing. Counts-from-done items need nothing from the tick.
+
+### 5.12 Edits, cache, transactions — D-CSM-032, D-CSM-033
+
+- **D-CSM-032:** `PUT /api/health-entries/:id` no longer writes `next_due_date`. Schedule fields are reconciled by commands: first/next date → Change date; frequency/interval → cadence change "this and following" from today; schedule type switch → §8 TS cases (with confirmation); times of day → rebuild open slots of today and the next date; end date → close occurrences after it; start date → locked once anything is closed (`start_date_locked`). `next_due_date` = earliest open occurrence date (derived cache, kept on the wire).
+- **D-CSM-033:** every command runs in `withCareItemLock` (transaction + `SELECT … FOR UPDATE` on the item). Audit, pet activity and notifications run after commit. Closing a non-open occurrence returns **409** `occurrence_not_open`.
+
+### 5.13 Agenda — D-CIE-025 (amends D-CIE-006 grouping)
+
+Same layout on the **dashboard** (all pets) and the **pet profile** (one pet):
+
+1. **Today**
+   - **Late** first (both types). A Fixed-dates stack is one row: "3 doses not recorded" → review sheet (per dose **Given** / **Skipped**, plus **All given** / **Skip all**).
+   - Then items due today, grouped **Morning** (< 12:00) / **Afternoon** (12:00–17:59) / **Evening** (≥ 18:00) / **Anytime**, with headings **only when at least two groups are non-empty**; otherwise one heading **"Today's list"**.
+   - Items done today stay at the end, marked Done, until the day ends.
+   - Each row has a **Mark as done** button.
+2. **Due soon** — next 7 days after today.
+3. **Upcoming** — later dates, collapsed, with a count.
+
+Items repeating daily or more often appear only in **Today**. The reminder window never hides anything; it only drives notifications. Care Status ("worth a check") keeps its current rule.
+
+### 5.14 Row and actions — D-CIE-026
+
+One row component everywhere. Primary: **Mark as done**. Menu: **Skip**, **Change date**, **Postpone**, **Plan another date**, **View**. A multi-slot row acts on the most urgent open slot and opens the slot list when more than one slot is open.
+
+### 5.15 New / Edit Care Item form — D-CIE-027 (fixes F34)
+
+**Main section:** pet(s); **Plan something / Record something**; category; name; **dosage (medication only)**; repeat (frequency, times of day); **Plan → Due date only (required)** / **Record → Completed on only (required)**; reminder; notes; related health issue.
+
+**Advanced settings** (collapsed; one-line summary, e.g. "At home · Essential · Counts from when it's done · When late: ask me"):
+- Where
+- Priority
+- Schedule type: **Fixed dates** / **Counts from when it's done** (category default, §5.1)
+- When done late: Ask me / Keep the next date / Skip the next date / Move this and following (§5.6)
+- Provider (moved out of the Notes & documents box)
+- Documents
+
+Vaccination: **"Needs a booster first?"** helper (§5.5).
+
+Category change updates only Advanced fields the user has not touched. Server: a **planned** create with `completed_on` → 400; a **record** create without `completed_on` → 400 (existing).
+
+### 5.16 Server supplies "today" — D-CIE-028
+
+List and detail responses include `as_of { date, time, timezone }` (pet home timezone) and a per-occurrence `status` (`coming_up` | `due` | `late` | `not_recorded`). The app shows them as delivered, may promote Due → Late locally for timed slots as minutes pass, and re-requests on app resume and every 15 minutes while a care surface is visible.
+
+### 5.17 Absences — D-ACP-011 (supersedes D-ACP-010; amends D-ACP-003)
+
+- Every active item has a real open occurrence with an id; `indeterminate_pending` only for paused items.
+- **Plan another date** works inside a trip; "looked after by" attaches to real occurrences.
+- **Move after return** = Postpone until (return + 1 day). **Move before** = Change date.
+- Estimates only for Counts-from-done dates after the last open occurrence; Fixed-dates dates inside a window are computed from the anchor (`planned` basis) and stored as they become due (care tick) or when someone plans/assigns them.
+- "Review date" no longer calls ensure-open.
+
+---
+
+## 6. Invariants and data model
+
+### 6.1 Invariants
 
 | id | Invariant | Enforced by |
 |----|-----------|-------------|
-| INV-1 | Every active planned item has pending occurrences on **exactly one** calendar date (its head day), covering every slot not yet closed that day. No pending row exists on any other date. | `ensureHead` at the end of every command (§6.2); row lock (INV-4); DB integration property test (§10.2); repair script |
-| INV-2 | `status = 'completed'` ⇒ zero pending rows. `status = 'paused'` ⇒ the head row may remain but is hidden from agenda lists and reminders. Unplanned (recorded) items ⇒ zero pending rows. Once items: one pending row until closed, then the entry completes (existing `finalizeOnceEntryIfNoPending`). | Commands + tests |
-| INV-3 | `health_entries.next_due_date` = head day for active planned items (never null), else null. It is **only** written by `syncNextDueDateFromOccurrences`. | Remove direct writes (F5, F7); unit tests |
-| INV-4 | Every command that reads or writes an item's occurrences runs inside one transaction holding `SELECT … FROM health_entries WHERE id = $1 FOR UPDATE`. Post-commit effects (audit log, pet activity, notifications) run after commit. | `withCareItemLock` (§6.3) |
-| INV-5 | "Today" for care is the pet's home calendar day (D-CIE-023) on every server path; clients receive it rather than guess it. | `resolveOccurrenceAsOf` everywhere (§6.5); `as_of` in list responses (§8.1) |
+| INV-1 | Every active planned item (`care_planning` ≠ `unplanned`, `status = 'active'`, not series-closed) has **≥ 1** open occurrence | `syncOpenOccurrences` after every command; DB property test; repair script |
+| INV-2 | At most **one** open `computed` occurrence per item; a computed occurrence is only created when no other open occurrence exists | same |
+| INV-3 | Fixed dates items: open `schedule` slots = exactly the set defined in D-CSM-023 at the item's `as_of` (after catch-up) | same + care tick |
+| INV-4 | `status = 'completed'` or unplanned ⇒ no open occurrences. Paused ⇒ no **new** occurrences; existing ones hidden from agenda and reminders | commands |
+| INV-5 | `next_due_date` = earliest open occurrence date (or null); only `syncNextDueDateFromOccurrences` writes it | tests |
+| INV-6 | Commands hold `SELECT … FOR UPDATE` on the item inside one transaction | `withCareItemLock` |
+| INV-7 | "Today" = pet home calendar day on every server path | `resolveOccurrenceAsOf` everywhere |
+| INV-8 | No two open occurrences on the same (item, date, time slot) | existing unique index `047:30-36` |
 
-Optional DB-level guard for INV-1 (reviewer to decide, §12 Q7): `EXCLUDE USING gist (health_entry_id WITH =, scheduled_date WITH <>) WHERE (status = 'pending')` (needs `btree_gist`; confirm the o2switch PostgreSQL allows the extension).
+### 6.2 Schema changes (child B, migration `083_care_occurrence_model`)
 
----
+| Table | Column | Type | Notes |
+|-------|--------|------|-------|
+| `health_occurrences` | `origin` | `VARCHAR(16)` CHECK in (`schedule`,`computed`,`planned`) | backfilled (§6.3) |
+| `health_occurrences` | `close_reason` | `VARCHAR(16)` NULL CHECK in (`user`,`not_recorded`,`paused`,`covered`,`system`) | null on open rows |
+| `health_entries` | `schedule_anchor_date` | `DATE` NULL | Fixed dates anchor (D-CSM-023/024) |
+| `health_entries` | `late_completion_choice` | `VARCHAR(16)` NULL CHECK in (`keep`,`skip_next`,`shift_following`) | null = ask |
+| `health_entries` | `paused_until` | `DATE` NULL | Postpone until (fixed dates) |
 
-## 5. Proposed decisions (frozen in child A, phase A0)
+Ledger (`care_schedule_events`) new types: `postponed`, `materialised` (with `cause`, `caused_by_occurrence_id`), `late_choice_applied`, `not_recorded_closed`, `schedule_scope_changed`. Existing `paused`/`resumed` rows stay readable.
 
-Wording below is ready to paste into `docs/domains/pet_care/changes/care-schedule-management-decisions.md` (D-CSM-*), `care-item-evolution.md` (D-CIE-*) and `away-care-planning-decisions.md` (D-ACP-*). Items marked **product** need the owner's explicit yes (§12).
+### 6.3 Backfill (JS hook, same pattern as 047)
 
-### D-CSM-019 — Next-occurrence guarantee (supersedes the T−1 parts of D-CSM-004 and `occurrence-scheduling.md` §Materialisation)
+1. `origin`: open rows of Fixed-dates items → `schedule`; of Counts-from-done items → `computed`, or `planned` when a `rescheduled` ledger event targets the row.
+2. `schedule_anchor_date` for Fixed-dates items = earliest open date, else `next_due_date`, else `start_date`.
+3. **Category defaults:** reset `recurrence_anchor` to the new defaults (D-CSM-020). Allowed only because there is no production data (`care-schedule-management-decisions.md:14`; `docs/ops/prod-backup-restore-plan.md` says pre-launch). **Escalation item: reviewer + owner confirm.**
+4. Run `syncOpenOccurrences` for every active planned item (creates missing occurrences, applies the 3-day stack window).
+5. Idempotent; logs counts. Down migration drops the columns (pre-launch; documented).
 
-Every active planned Care Item always has one stored head day (INV-1). The head is created synchronously in the same transaction as the action that needs it. The T−1 materialisation window (`isWithinMaterialisationWindow`) is removed from all write paths. D-CSM-004's actual concern — no pre-generation of `anchor+1` batches at create — still holds: only the **head** is stored, never a chain.
-
-### D-CSM-020 — `ensureHead` is the only way open occurrences are created
-
-One server primitive restores INV-1 at the end of every command (table in §6.2). `ensureOpenOccurrence` (D-CSM-018) becomes a thin compatibility wrapper that returns the existing head with `created: false`; its route stays for installed clients.
-
-### D-CSM-021 — Next head date rules (**product**)
-
-| Schedule | Action on head | Next head day |
-|----------|----------------|---------------|
-| Fixed (`from_due_date`) | Complete | First series date **strictly after** `max(closed.scheduled_date, completed_on)` |
-| Fixed | Skip | First series date **on or after** `max(closed.scheduled_date + 1 day, today)` |
-| After completion (`from_completion`) | Complete | `completed_on + interval` (may be in the past if a past completion date is recorded — honest overdue) |
-| After completion | Skip | `max(closed.scheduled_date, today) + interval` |
-| Any | Head closed while other slots on the same day are still pending | Head day unchanged |
-
-Series dates passed over by a fixed-schedule jump are **not** stored as rows. One ledger event `auto_skipped_range { from, to, count }` records them so History can say "3 dates not logged between 1 and 3 Oct". Consequence: a backlog of several overdue **days** can no longer form; only several overdue **slots on the head day** (multi-dose). The multi-day stack UX simplifies accordingly (child B).
-
-### D-CSM-022 — Series dates from a stored anchor; month-end clamp (**product**)
-
-Fixed schedules compute the n-th date from `health_entries.schedule_anchor_date` (new column) as `anchor + n × interval`, never by chaining from the previous date. When the anchor's day does not exist in the target month, clamp to the month's last day (31 Jan → 28/29 Feb → 31 Mar); 29 Feb yearly → 28 Feb in non-leap years. D-ACP-007 re-anchoring (moving a fixed occurrence moves the following ones) sets `schedule_anchor_date` to the moved date. After-completion schedules add the interval to the completion date with the same clamp.
-
-### D-CSM-023 — Pause and resume keep one head (**product**)
-
-Pause keeps the head row (no data loss, trivial undo) but paused items are excluded from agenda lists and reminders and shown as "Paused since …". Resume (no catch-up, D-CSM-005): fixed → head moves to the first series date on or after today if it is in the past; after completion → head moves to today if it is in the past. The move is recorded as a `rescheduled` ledger event with `reason_code: resume`.
-
-### D-CSM-024 — Editing the schedule goes through commands
-
-`PUT /api/health-entries/:id` no longer writes `next_due_date`. Schedule fields are reconciled by one server function:
-
-| Field changed in the form | Effect |
-|---------------------------|--------|
-| Next date | `rescheduleOccurrence` on the head (D-ACP-009 validation; beyond-one-hop moves become an explicit cadence change prompt in the client) |
-| Frequency / interval / schedule type | `adjustCadence` effective today |
-| Times of day | Head day's pending slots rebuilt (closed slots untouched) |
-| End date | Head removed and series auto-closed if the head falls after the new end |
-| Start date | Allowed only when nothing has been closed yet; otherwise 400 `start_date_locked` |
-
-### D-CSM-025 — `next_due_date` is a derived cache
-
-INV-3. Kept on the wire for installed clients and for reminders. Never written by routes directly.
-
-### D-CSM-026 — Early completion (**product**)
-
-Mark as done is allowed on any head, from any surface. The client asks for confirmation when the head is more than half an interval away ("This is due on 12 Mar. Mark it done now?"). The server records `completion_timing = 'early'` (existing).
-
-### D-CSM-027 — Undo removes the head it created
-
-Every close that creates a new head writes a ledger event `materialised { caused_by_occurrence_id }`. Undo of that close (and weight-entry deletion) deletes the head it created **if untouched** (no notes, photos, reschedule, looked-after-by), then reopens the closed row. If the new head was modified, undo returns 409 `next_occurrence_modified` and the client explains why.
-
-### D-CIE-024 — Agenda rule on every surface
-
-Every list shows every active planned item's head: Overdue → Due today → Upcoming (date ascending). The reminder window (`remind_days_before`) only drives notifications and the Care Status "worth a check" signal; it never hides an item. Dashboard groups: **Overdue**, **Today**, **This week**, **Later** (Later collapsed by default, count shown). The "All caught up" state means "nothing overdue or due today", and still lists what is coming up.
-
-### D-CIE-025 — One row, same actions everywhere
-
-One row component. Primary action: **Mark as done** (per D-CIE-009, overdue asks "When was this done?"). Overflow menu: **Skip**, **Change date**, **View**. Multi-dose rows act on the worst open slot and open the slot list when more than one slot is open.
-
-### D-CIE-026 — Server supplies "today" (**product/tech**)
-
-List and detail responses include `as_of: { date, time, timezone }` in the pet's home timezone, and per-slot `status` (`coming_up` | `due` | `overdue`) computed server-side. The client re-requests on app resume and every 15 minutes while a care surface is visible, rather than adding a timezone library. Alternative for review: add `timezone` package and compute locally (§12 Q6).
-
-### D-ACP-011 — Absences read real heads
-
-The head is always `date_basis: scheduled` with an `occurrence_id`. `indeterminate_pending` and `UNCERTAINTY_REASON_FROM_COMPLETION_PENDING` apply only to paused items. Estimates (`estimated`) apply only to hops **after** the head for after-completion items; planned dates (`planned`) come from `schedule_anchor_date` for fixed items. "Review date" no longer calls ensure-open (amends D-ACP-010 and the Absences table in `care-item-evolution.md`).
-
-### D-ACP-012 — Absence-window materialisation (deferred)
-
-Storing fixed-schedule dates inside an absence window so "looked after by" can attach to each occurrence is **out of scope**; revisit after child D (§11).
+Seeds (`server/db/seeds/scenarios/*.js`) call the same sync at the end; `server/test/db/seeds/*` assertions updated. Repair script `server/scripts/care/repair_occurrences.js --dry-run|--apply` reports INV-1…5 violations.
 
 ---
 
-## 6. Server design (child A unless noted)
+## 7. Architecture
 
-### 6.1 Module layout (created in A, completed in E)
+### 7.1 Server layout (created in child B, completed in child F)
 
 ```
 server/lib/care/
-  schedule/                 # pure, no DB
-    seriesRule.js           # entry row → { kind: once|fixed|after_completion, freq, interval, anchorDate, times, endDate }
-    seriesDates.js          # (child C) nthDate, firstOnOrAfter, firstAfter, datesInWindow, month-end clamp
-    nextHead.js             # D-CSM-021 rules; pure; uses advanceByFrequency until child C swaps in seriesDates
-    advanceSeries.js        # becomes a thin caller of occurrence/ensureHead (kept for imports), then removed in E
-    … existing projectSchedule.js, estimateOccurrences.js, validateReschedule.js, scheduleFlexibility.js …
-  occurrence/               # DB, transactional
-    careItemLock.js         # withCareItemLock(pool, entryId, fn) = withTransaction + SELECT … FOR UPDATE
-    headRepository.js       # loadPendingDays, loadLastClosed, insertHeadSlots, deleteHead, syncNextDueCache
-    ensureHead.js           # the only function that creates/removes pending rows to restore INV-1
-    assertHeadInvariant.js  # throws in test/dev; logs structured warning in prod
-  item/                     # (child E) item-level commands + list query
+  schedule/                      # pure — no DB
+    seriesRule.js                # entry row → { type: fixed|from_done|once, freq, interval, anchor, times, end, pausedUntil }
+    seriesDates.js               # nth date from anchor, clamp, dates in window, next series date after T
+    fixedSlots.js                # which schedule slots must be open at as_of (D-CSM-023)
+    nextComputed.js              # Counts-from-done next date (D-CSM-022)
+    lateCompletion.js            # trigger + options (D-CSM-026)
+    occurrenceStatus.js          # coming_up | due | late | not_recorded at as_of
+    …existing projectSchedule.js, estimateOccurrences.js, validateReschedule.js, scheduleFlexibility.js
+  occurrence/                    # DB, transactional
+    careItemLock.js              # withCareItemLock(pool, entryId, fn)
+    occurrenceRepository.js
+    syncOpenOccurrences.js       # restores INV-1…5 for one item at as_of (catch-up + create + close)
+    commands/  complete.js  skip.js  recordAsGiven.js  changeDate.js  planAnotherDate.js
+               postpone.js  resume.js  applyLateChoice.js  resolveStack.js  undo.js
+    careTick.js                  # batch runner used by scripts/care/care_tick.js
+  item/                          # child F (create, updateDetails, updateSchedule, finish, reopen, delete; list/get queries)
 ```
 
-### 6.2 `ensureHead(client, entry, { todayIso, cause, lastCloseContext })`
+`advanceSeries.js`, `ensureOpenOccurrence.js`, `pauseResumeSeries.js`, `rescheduleOccurrence.js` become thin callers during child B and are removed in child F. Routes: parse → authorise → `withCareItemLock` → command → map → post-commit effects.
 
-Pure decision + write, called as the **last step** of every command inside the lock:
+### 7.2 API (additive; installed clients keep working)
 
-1. Not planned, not active, or series-closed → delete stray pending rows (should be none), sync cache, return `{ head: null }`.
-2. Paused → leave any head as is, sync cache, return.
-3. Pending rows exist:
-   - one day → keep; add missing slots only when `cause = times_changed`.
-   - several days (legacy data) → keep the earliest; delete later days only when untouched; write ledger `normalised`; otherwise log and keep (repair script reports them).
-4. No pending rows → compute the head date with `nextHead` (D-CSM-021) from `lastCloseContext` (or last closed row), or for a new item from `next_due_date ?? max(start_date, today)`; stop if beyond `repeat_end_date` (then `tryAutoCloseRecurringWithEndDate`).
-5. Insert slots (`insertOccurrencesForDay`), write ledger `materialised { cause, caused_by_occurrence_id }`, `syncNextDueDateFromOccurrences`.
+| Method | Path | Change |
+|--------|------|--------|
+| GET | `/api/health-entries[?pet_id=]`, `/api/health-entries/:id` | Add `open_occurrences[] { id, scheduled_date, scheduled_time, status, origin }`, `as_of`, `estimated_next { date, basis }` (Counts from done while late) |
+| POST | `/:id/occurrences/:occId/complete` | Accept `next_choice?`; response adds `late_choice_needed?`, `open_occurrences`, `undo_token` |
+| POST | `/:id/occurrences/:occId/skip` | Same response additions |
+| POST | `/:id/occurrences` | **New** — Plan another date `{ scheduled_date, scheduled_time? }` |
+| POST | `/:id/occurrences/:occId/reschedule` | Add `scope: 'this' \| 'following'` (default `this`) |
+| POST | `/:id/occurrences/:occId/record` | **New** — record a Not recorded slot as given `{ completed_on }` |
+| POST | `/:id/occurrences/resolve-stack` | **New** — `{ given: [ids], skipped: [ids] }` (replaces `skip-missed`, which stays as a wrapper) |
+| POST | `/:id/late-choice` | **New** — `{ waiting_occurrence_id, choice, remember }` |
+| POST | `/:id/postpone` | **New** — `{ until: date \| null, reason, absence_id? }` |
+| POST | `/:id/resume` | Add `{ date }`; without it the default date is used (compat) |
+| POST | `/:id/pause` | Compat wrapper → postpone `until: null` |
+| POST | `/:id/occurrences/ensure-open` | Compat: returns current open occurrences, `created: false` |
+| POST | `/:id/mark-taken` | Compat: completes the most urgent open slot; never 400 for active planned items |
+| POST | `/:id/schedule/undo` | Origin-aware (§5.9) |
 
-| Command | Where | Change |
-|---------|-------|--------|
-| Create | `crudRouter.js` POST, `recommendationsRouter.js` | Replace `materialiseInitialOccurrences` with `ensureHead(cause: created)`; remove `initialMaterialisationAnchor` deferral (keep explicit past `next_due_date` = overdue head) |
-| Complete / skip | `completeOccurrence.js`, `skipOccurrence.js` | Replace `advanceSeries` materialisation with `ensureHead(cause: closed)` |
-| Skip missed (same-day slots) | `occurrencesRouter.js:221` | Same |
-| Reschedule | `rescheduleOccurrence.js` | Unchanged logic; add lock + `assertHeadInvariant`; for fixed items set `schedule_anchor_date` (child C) |
-| Pause / resume | `pauseResumeSeries.js` | Resume applies D-CSM-023 then `ensureHead(cause: resumed)` |
-| Adjust cadence | `adjustCadence.js:84-114` | Remove T−1 gate at `:109`; delete pending ≥ effective date; `ensureHead(cause: cadence_adjusted)` |
-| Undo | `undoLastAction.js` | D-CSM-027 for complete/skip; cadence undo already calls `advanceSeries` → `ensureHead` |
-| Close / reopen | `occurrenceLifecycle.js` `closeHealthEntrySeries`; `completionRouter.js:218` | Close unchanged (skips pending → zero); reopen calls `ensureHead(cause: reopened)` and stops writing `next_due_date` |
-| Edit (PUT) | `crudRouter.js:237-401` | D-CSM-024 `reconcileSchedule` |
-| Mark-taken (compat) | `completionRouter.js:18` | Complete the earliest pending slot on the head via the complete command; never 400 for active planned items; move `completeOldestPendingOccurrence` out of the route |
-| Ensure-open (compat) | `ensureOpenOccurrence.js` | Returns current head (`created: false`) after `ensureHead` |
-| Weight complete / delete | `completeWeightRouter.js`, `weightEntries.js:207-229` | Use the lock; delete applies D-CSM-027 |
+OpenAPI: add list/detail DTOs to `docs/architecture/openapi/pet-care-critical.json`; cases in `server/test/openapi/petCareContract.test.js`.
 
-### 6.3 Transactions and concurrency
+### 7.3 Flutter layout (created in child C, completed in child F)
 
-- `withCareItemLock(pool, entryId, fn)` wraps `server/lib/db/withTransaction.js` and runs `SELECT * FROM health_entries WHERE id = $1 FOR UPDATE` first; `fn` receives the locked row and the client.
-- Every command in §6.2 runs inside it. Audit (`logAuditEventSafe`), pet activity (`recordPetActivityForPet`) and notifications move **after** commit (align with Batch B3 "stable committed command results").
-- Completing or skipping a non-pending occurrence returns **409** `occurrence_not_pending` (today it is a 400/404 mix — confirm and normalise).
-- Route handlers become: parse → authorise → `withCareItemLock` → command → map → post-commit effects.
-- Tests: mock pools must implement `connect()` (pattern exists: `server/test/pets/helpers.js:46`).
+```
+flutter_app/lib/features/care_item/
+  care_item.dart                 # public barrel — the only import other features use
+  domain/     occurrence_status.dart  care_agenda.dart  schedule_type.dart
+  data/       care_item_remote_datasource.dart  models/
+  application/ care_items_controller.dart   # single owner of entries + open occurrences; optimistic updates
+  presentation/
+    agenda/     care_agenda_view.dart  today_section.dart  due_soon_section.dart  upcoming_section.dart
+    row/        care_item_row.dart  care_item_actions_menu.dart
+    sheets/     not_recorded_review_sheet.dart  late_choice_sheet.dart  change_date_scope_sheet.dart
+                postpone_sheet.dart  resume_date_sheet.dart  plan_another_date_sheet.dart  early_completion_dialog.dart
+    form/       (child D) advanced_settings_section.dart  schedule_type_field.dart  booster_helper.dart
+    detail/     (child F moves the current care_item_detail/*)
+```
 
-### 6.4 Backfill and repair
-
-- Migration `db/migrations/083_care_next_occurrence.sql` (+ `_down.sql` no-op with explanation) registered in `server/scripts/migrate.js` with a JS hook `server/scripts/migrations/083_care_next_occurrence_backfill.js` (same pattern as 047) that, for every active planned entry, runs `ensureHead` inside `withCareItemLock`. Idempotent; logs counts (created, normalised, skipped-closed).
-- Child C adds `084_schedule_anchor_date.sql` (column + backfill from current head for fixed items).
-- Repair script `server/scripts/care/repair_next_occurrences.js --dry-run|--apply` for UAT and for the future prod launch; prints entries violating INV-1/INV-3.
-- Seeds (`server/db/seeds/scenarios/*.js`) create heads through `ensureHead` (or call the repair function at the end of seeding); `server/test/db/seeds/*` assertions updated.
-- Pre-launch note: `docs/ops/prod-backup-restore-plan.md` says `migrate.js up` runs on deploy without a snapshot; if prod launches before child A merges, run the repair in dry-run on a copy first.
-
-### 6.5 Readers
-
-- `checkDueNotifications.js`: use pet home TZ via `server/lib/petHomeTimezone.js`; skip paused items (INV-2). Observation for a debt issue: the unread-dedupe (`hasRecentUnread`) can suppress next month's reminder if the previous one was never read — key dedupe on `(entry, type, due date)`.
-- `projectSchedule.js` / `loadAbsenceCarePlan.js` / `carePeriodCoverage.js`: switch `todayCalendarIso()` to pet TZ. Structural cleanup waits for child D.
+Rule (child F): other features import only `features/care_item/care_item.dart`; checked by `scripts/check_care_item_boundary.sh`.
 
 ---
 
-## 7. Child plans and phases
+## 8. Case matrix (standard and edge) — each becomes a test
 
-Order: **A → B → C → D → E**. C may start after A merges if its paths stay disjoint from B (C is mostly server); D depends on C (`seriesDates`); E last.
+Dates are illustrative. "CFD" = Counts from when it's done; "FX" = Fixed dates.
 
-Branch naming: integration `cursor/<child>-integration-c1a7`; phase `cursor/<child>-<phase>-c1a7`. Commits: `phase(<n>/<m>): <type>: <description>`. Each child: phase PRs → integration; one PR integration → `main` with `/babysit-uat`.
+### 8.1 Counts from done
 
-### Child A — `care-next-occurrence-core-c1a7` (server + docs; no Flutter)
+| id | Case | Expected |
+|----|------|----------|
+| CFD-1 | Monthly flea due 5 Jun, done 5 Jun | Next `computed` 5 Jul, created in the same request |
+| CFD-2 | Not done; today 7 Jun | "Late · 5 Jun"; "Estimated next: 7 Jul" |
+| CFD-3 | Done on 6 Jun (recorded 7 Jun) | Next 6 Jul |
+| CFD-4 | Skipped on 7 Jun | Next 7 Jul |
+| CFD-5 | Done 20 May (16 days early of 30) | Confirmation dialog; next 20 Jun |
+| CFD-6 | Yearly wellness review due 1 Mar, done 15 Apr | Next 15 Apr next year |
+| CFD-7 | Daily brushing, not done for 3 days | One Late occurrence (no stack) |
+| CFD-8 | "Twice a day, counts from done" | Rejected: `times_require_fixed_dates` (form prevents it) |
+| CFD-9 | Created with due date 200 days away | Open occurrence exists; Mark as done works |
 
-**Outcome (one sentence):** after any action, every active planned Care Item has exactly one stored next occurrence, created in the same request, and reminders/away plans see it.
+### 8.2 Fixed dates
 
-| Phase | Title | exit_checklist | Depends |
-|-------|-------|----------------|---------|
-| A0 | Decisions + docs | `governance` | — |
-| A1 | Pure `nextHead` + `seriesRule` | `default` | A0 |
-| A2 | `withCareItemLock` + `ensureHead` + route transactions | `single-backend-route` | A1 |
-| A3 | Wire every write path (§6.2 table) incl. undo, resume, reopen, PUT reconcile, mark-taken compat | `single-backend-route` | A2 |
-| A4 | Backfill migration 083 + repair script + seeds | `single-backend-route` (+ escalation: migration) | A3 |
-| A5 | Readers: reminders + projection "today" in pet TZ | `single-backend-route` | A3 |
-| A6 | DB integration property + concurrency tests | `default` | A4 |
-| A-int | Integration → `main` | `bdd-journey` (pre-UAT) | all |
+| id | Case | Expected |
+|----|------|----------|
+| FX-1 | Twice daily 08:00/18:00, at 07:00 | Today's 08:00 and 18:00 and tomorrow's two slots exist; only today's are listed (Today) |
+| FX-2 | 08:00 not logged at 12:00 | "Late · 08:00" |
+| FX-3 | 08:00 still not logged at 18:01 | 08:00 → "Not recorded" (stack); 18:00 Due |
+| FX-4 | Mon, Tue not logged; today Wed | Stack of 4 (review sheet); Wed slots Due |
+| FX-5 | Window boundary: on Fri, Mon's slots | Closed by the tick as `not_recorded` (`scheduled_date < today − 3`) |
+| FX-6 | Record a closed Not recorded dose from History | `completed`, `completed_on` kept; nothing else changes; tick does not touch it |
+| FX-7 | Weekly Mondays, done Wednesday | Next Monday unchanged; no prompt (gap shrank 2/7 < half) |
+| FX-8 | Weekly Mondays, done Saturday | Prompt: Keep Mon / Skip Mon / Move this and following by 5 days |
+| FX-9 | Monthly injection not logged | Stack of 1; next month's slot created when due |
+| FX-10 | Record next dose early | That slot completed; other dates unchanged; confirmation if > half interval early |
+| FX-11 | End date passes | No slots after it; item finishes when nothing is open |
 
-**A0 scope:** add D-CSM-019…027 to `docs/domains/pet_care/changes/care-schedule-management-decisions.md`; rewrite `docs/domains/health_tracking/changes/occurrence-scheduling.md` §Materialisation (head rule table from §6.2) and §Intent materialisation (compat note); update `docs/domains/pet_care/features/care-schedule-management.md` primitives table (`ensureHead`, ensure-open compat, mark-taken compat); add D-CIE-024…026 to `docs/domains/pet_care/features/care-item-evolution.md` and fix rows "Future occurrences", "Schedule — Next", Absences "Review date"; add D-ACP-011/012 and amend D-ACP-003 base text in `docs/domains/pet_care/changes/away-care-planning-decisions.md`; `docs/architecture/api-reference.md` (409 codes, compat notes); refresh stale `.agents/memory/health-entry-completion.md` (still describes `health_history` and sentinel dates) and add a `MEMORY.md` pointer.
+### 8.3 Month-end
 
-**A1 scope:** `server/lib/care/schedule/seriesRule.js`, `nextHead.js` + `server/test/careSchedule/nextHead.test.js` (table-driven: every row of D-CSM-021 × daily/weekly/monthly/yearly/custom × early/on-time/late/very-late × with/without end date × multi-dose).
+| id | Case | Expected |
+|----|------|----------|
+| ME-1 | FX monthly anchored 31 Jan | 28 Feb (29 leap), 31 Mar, 30 Apr, 31 May |
+| ME-2 | Every 6 months from 31 Aug | 28/29 Feb, 31 Aug |
+| ME-3 | Yearly from 29 Feb 2028 | 28 Feb 2029 … 29 Feb 2032 |
+| ME-4 | CFD monthly done 31 Jan | 28 Feb; then from each completion |
+| ME-5 | FX "This and following" moved to 31 Oct | Anchor 31 Oct → 30 Nov, 31 Dec |
 
-**A2 scope:** `server/lib/care/occurrence/{careItemLock,headRepository,ensureHead,assertHeadInvariant}.js`; migrate `advanceSeries.js` to delegate; wrap routes in `server/routes/healthEntries/{occurrencesRouter,completionRouter,rescheduleOccurrenceRouter,ensureOpenOccurrenceRouter,crudRouter,completeWeightRouter}.js` and `server/routes/weightEntries.js`; move post-commit effects after commit; tests `server/test/careSchedule/ensureHead.test.js`, update mock pools.
+### 8.4 Planned dates and boosters
 
-**A3 scope:** every row of the §6.2 table; delete `isWithinMaterialisationWindow` and `initialMaterialisationAnchor` deferral; `reconcileSchedule` for PUT; D-CSM-027 undo; 409 normalisation; update tests `advanceSeries.test.js` (the "does not materialise when next date is outside T-1 window" case at `:294` inverts), `materialiseInitialOccurrences.test.js`, `undoLastAction.test.js`, `pauseResumeSeries.test.js`, `adjustCadence.test.js`, `ensureOpenOccurrence.test.js`, `completeOccurrence.test.js`, `skipOccurrence.test.js`, `integrationGate.test.js`, `server/test/healthEntries.test.js`, `server/test/weightEntries.test.js`, `server/test/healthEntries/*`.
+| id | Case | Expected |
+|----|------|----------|
+| PL-1 | Vaccine yearly CFD: first dose 1 Jun, booster planned 1 Jul | 1 Jun done → next = 1 Jul (no computed); booster done → computed 1 Jul next year |
+| PL-2 | First dose done 20 Jun (due 1 Jun), booster 1 Jul waiting | Gap 11 < 15 → prompt Keep 1 Jul / Skip / Move by 19 days (→ 20 Jul) |
+| PL-3 | Vet booked: Change date on the open computed 5 Jun → 20 Jun | Same occurrence, now `planned`; no second one |
+| PL-4 | Plan another date 8 Jun while 5 Jun open | Warning (within half interval); add anyway → two open |
+| PL-5 | CFD: mark the later 1 Jul done while 5 Jun still open | Ask: mark 5 Jun done / skip / keep |
+| PL-6 | Delete the only planned date | Rule creates next; user confirms date (may be Late immediately) |
+| PL-7 | FX: plan an extra one-off dose | `planned` occurrence independent of the series |
 
-**A4 scope:** §6.4.
+### 8.5 Postpone, pause, resume
 
-**A5 scope:** §6.5; tests `server/test/checkDueNotifications.test.js`, `server/test/careContext/*` corpus expectations that change because heads now exist (document each changed expectation in the PR).
+| id | Case | Expected |
+|----|------|----------|
+| PP-1 | CFD postpone 5 Jun → 20 Jun | Occurrence at 20 Jun (`planned`); done 20 Jun → next 20 Jul |
+| PP-2 | CFD pause; resume 1 Aug | Hidden while paused; resume sheet default 5 Aug (5 Jun + n months ≥ today); user picks 3 Aug |
+| PP-3 | FX daily med postpone until 10 Jun (today 5 Jun) | 6–9 Jun not created; open future slots before 10 Jun closed `paused`; stack stays; tick resumes on 10 Jun |
+| PP-4 | FX pause indefinitely; resume 20 Jun | Default = first series slot on/after now; dates between not created |
+| PP-5 | Absence 10–15 Jun: "move after" on CFD flea due 12 Jun | Postpone until 16 Jun (reason `absence`, `absence_id`) |
+| PP-6 | Postpone to a past date | 400 |
+| PP-7 | Undo right after pause | Previous state restored |
 
-**A6 scope:** `server/test/db/careNextOccurrence.integration.test.js` (runs in the "Backend integration (PostgreSQL)" CI job, which executes `test/db`): seeded pet; random sequences of create/complete/skip/undo/pause/resume/cadence/reschedule/edit/close/reopen with a fixed seed; assert INV-1…3 after every step; concurrency: two parallel completes on one head → one 200, one 409, one head.
+### 8.6 Late choice and undo
 
-**allowed_paths:**
-```
-server/lib/care/**
-server/lib/occurrenceScheduling.js
-server/lib/occurrenceLifecycle.js
-server/lib/recurrenceHelper.js
-server/lib/checkDueNotifications.js
-server/lib/petHomeTimezone.js
-server/routes/healthEntries/**
-server/routes/weightEntries.js
-server/routes/careIntelligence/recommendationsRouter.js
-server/scripts/migrate.js
-server/scripts/migrations/083_*
-server/scripts/care/**
-server/db/seeds/**
-db/migrations/083_*
-docs/domains/pet_care/**
-docs/domains/health_tracking/**
-docs/architecture/api-reference.md
-.agents/memory/**
-```
-**forbidden_paths:** `flutter_app/**`, `.github/workflows/**`, `server/routes/careContext/**` (no absence route changes in A)
-**allowed_exceptions:** `tests`, `docs`, `backend-route`, `file-split`
+| id | Case | Expected |
+|----|------|----------|
+| LC-1 | Remember "Skip the next date" on a medication | Later triggers skip automatically in the same transaction; Advanced shows "When done late: Skip the next date"; can reset to Ask |
+| LC-2 | Dismiss the sheet | Keep; nothing remembered |
+| UN-1 | CFD done → computed next → Undo | Reopen; computed next deleted |
+| UN-2 | CFD done → next edited (now planned) → Undo | Reopen; planned kept (two open) |
+| UN-3 | FX dose done → Undo | Reopen; nothing else |
+| UN-4 | Done with "skip next" applied → Undo | Reopen and un-skip the next (whole command reversed) |
+| UN-5 | Delete the weight entry of a weigh-in | Same as UN-1 |
 
-**Exit criteria:**
-- [ ] INV-1…4 hold in the DB integration property test (≥ 500 random steps, fixed seed, CI)
-- [ ] Monthly item completed on time → `GET /api/health-entries` returns `next_due_date` = +1 month in the same request
-- [ ] New item with a date 200 days out has a pending occurrence; Mark done via occurrence API succeeds
-- [ ] `mark-taken` on any active planned item succeeds (compat)
-- [ ] `ensure-open` returns `created: false` for every active item after backfill
-- [ ] Undo after complete leaves exactly one open day (AC-5); modified-head undo returns 409
-- [ ] Reminder created for a due-soon head after an on-time completion one interval earlier
-- [ ] Away plan (existing endpoints) lists an after-completion item done before the trip (AC-8)
-- [ ] Repair script dry-run on seeded UAT DB reports 0 violations after migration
-- [ ] `./scripts/pre-push.sh` green; file sizes ≤ 500
+### 8.7 Type switches and edits
 
-**Client compatibility:** no response shape change. Installed clients immediately regain next dates, reminders and working Done; lists still hide far-future items until child B.
+| id | Case | Expected |
+|----|------|----------|
+| TS-1 | FX → CFD with 3 Not recorded + next scheduled | Confirm: latest Late one stays open, older close as `not_recorded`, future `schedule` slots removed |
+| TS-2 | CFD → FX with a planned future date | Planned kept; anchor = open date; schedule slots generated; no duplicate slot |
+| TS-3 | FX weekly → every 2 weeks | Cadence change "this and following" from today |
+| TS-4 | Edit form changes the next date | Change date on the open occurrence (no direct `next_due_date` write) |
 
-**Rollback:** revert the integration PR; migration 083 is additive (rows only) and the down file is a documented no-op; the extra head rows are harmless to the old code (it reads earliest pending).
+### 8.8 Agenda
+
+| id | Case | Expected |
+|----|------|----------|
+| AG-1 | Only Anytime items today | Heading "Today's list", no sub-groups |
+| AG-2 | Morning + Anytime items | Two headings |
+| AG-3 | Late items | First in Today |
+| AG-4 | Daily med after all doses done | Stays in Today as Done until the day ends; never in Due soon |
+| AG-5 | Weekly item due in 3 days / 20 days | Due soon / Upcoming (collapsed) |
+| AG-6 | Every-3-days item due tomorrow | Due soon |
+| AG-7 | Stack of 3 | One row "3 doses not recorded" → review sheet |
+| AG-8 | Pet profile | Same groups, one pet |
+| AG-9 | Yearly vaccine due in 200 days, reminder 7 days | In Upcoming; no notification yet |
+
+### 8.9 Absences, concurrency, time
+
+| id | Case | Expected |
+|----|------|----------|
+| AB-1 | CFD done before a trip | Away plan lists it with its occurrence id |
+| AB-2 | Plan a date inside the trip, looked after by Jamie | Real occurrence carries the assignment |
+| AB-3 | FX twice-daily med over a 7-day trip | One rhythm row; dates from the anchor; slots stored as days arrive; carer records doses |
+| AB-4 | Trip dates change | Resolution "needs review" (existing) |
+| CR-1 | Tick overlaps itself | Advisory lock; no duplicates |
+| CR-2 | Tick late by 2 hours | Next command on the item catches up first |
+| CR-3 | Pet timezone differs from server | Day boundaries per pet timezone |
+| CR-4 | Two carers complete the same slot | One 200, one 409 |
+| CR-5 | Two carers complete different stack slots | Both 200 |
+
+### 8.10 Form
+
+| id | Case | Expected |
+|----|------|----------|
+| FM-1 | Plan mode | Only Due date (required) |
+| FM-2 | Record mode | Only Completed on (required); switching mode clears the hidden field |
+| FM-3 | API planned create with `completed_on` | 400 |
+| FM-4 | Advanced collapsed | One-line summary matches values |
+| FM-5 | Category change | Updates untouched Advanced fields only |
+| FM-6 | Medication | Dosage in the main section; not for other categories |
+| FM-7 | Vaccination | Booster helper creates a planned date |
+| FM-8 | Multi-time-of-day + Counts from done | Not selectable |
 
 ---
 
-### Child B — `care-agenda-everywhere-c1a7` (API read addition + Flutter)
+## 9. Canonical documentation changes (child A)
 
-**Outcome:** the dashboard, pet profile and All care all list every active item's next occurrence in the same order, with the same actions, and no row fetches its own data.
+| File | Change |
+|------|--------|
+| `docs/domains/pet_care/changes/care-schedule-management-decisions.md` | Add D-CSM-019…033; mark amended parts of D-CSM-001, 004, 005, 018 |
+| `docs/domains/pet_care/features/care-schedule-management.md` | Primitives table (sync, commands, care tick), HTTP table (§7.2), anchor defaults (§5.1), remove T−1 |
+| `docs/domains/health_tracking/changes/occurrence-scheduling.md` | Rewrite §Materialisation, §Zones & sort, §Surfaces for origins, stack, statuses |
+| `docs/domains/pet_care/features/care-item-evolution.md` (canonical) | D-CIE-024…028; update tables "Where we start", "Occurrence status", "Needs attention", "Completing care", "Schedule", "Absences" (Review date, Move after), Lifecycle (Pause until) |
+| `docs/domains/pet_care/changes/away-care-planning-decisions.md` | D-ACP-011; amend D-ACP-003, 007, 009; supersede D-ACP-010 |
+| `docs/domains/pet_care/features/care-context.md` | Absence ↔ postpone link |
+| `docs/design/terminology.md` | Late, Not recorded, Fixed dates, Counts from when it's done, Plan another date, Postpone |
+| `docs/design/care-item-view-ui.md` | Agenda layout, row actions, sheets, form Advanced settings |
+| `docs/architecture/api-reference.md` | §7.2 |
+| `.agents/memory/health-entry-completion.md` + `MEMORY.md` | Replace stale `health_history`/sentinel description |
 
-| Phase | Title | exit_checklist |
+---
+
+## 10. Child plans and phases
+
+Order: **A → B → C → D → E → F**. Branches: integration `cursor/<child>-integration-c1a7`, phase `cursor/<child>-<phase>-c1a7`. Commits `phase(<n>/<m>): <type>: <description>`. Each child ends with one PR integration → `main` via `/babysit-uat`. Children estimated above 48h are split at approval.
+
+### Child A — `care-occurrence-spec-c1a7` (docs only)
+
+**Outcome:** the canonical Care Item and scheduling documents describe the v2 behaviour; later PRs implement a frozen spec.
+
+| Phase | Scope | exit_checklist |
 |-------|-------|----------------|
-| B1 | List/detail API embeds open occurrences + `as_of` + slot status | `single-backend-route` |
-| B2 | Flutter model + single owner of entries/heads | `default` |
-| B3 | `care_item` agenda domain: one status function, one agenda builder | `default` |
-| B4 | Surfaces migrated (dashboard, profile, All care ×2, pet list, nav badge) | `flutter-screen-split` |
-| B5 | One row + actions; remove `mark-taken` usage; early-completion confirm | `flutter-screen-split` |
-| B6 | BDD + Playwright | `bdd-journey` |
+| A1 | All §9 files; decisions §5 pasted with IDs; case matrix §8 copied into `occurrence-scheduling.md` as the acceptance table | `governance` |
+
+**allowed_paths:** `docs/**`, `.agents/memory/**` · **forbidden:** `server/**`, `flutter_app/**`, `.github/**` · **exceptions:** `docs`
+**Exit:** `bash scripts/validate_docs.sh` green; owner approval on the PR.
+
+### Child B — `care-occurrence-engine-c1a7` (server)
+
+**Outcome:** after any action, every active planned item has real, correct open occurrences; fixed dates stack and clamp; postpone, plan-another-date, late choice and scoped moves work through the API; reminders and away plans see everything.
+
+| Phase | Scope | exit_checklist |
+|-------|-------|----------------|
+| B1 | Pure `schedule/*` (seriesRule, seriesDates with clamp, fixedSlots, nextComputed, lateCompletion, occurrenceStatus) + table tests (§8.1–8.3, LC) | `default` |
+| B2 | Migration 083 (§6.2) + backfill hook (§6.3) + seeds + repair script | `single-backend-route` (+ **escalation: migration, category-default reset**) |
+| B3 | `withCareItemLock`, `syncOpenOccurrences`, route transactions, post-commit effects, 409s | `single-backend-route` |
+| B4 | Rewire every path in §4.4: create (incl. recommendations), complete, skip, stack resolve, record, undo (§5.9), PUT reconcile (D-CSM-032), close/reopen, weight complete/delete, mark-taken and ensure-open compat | `single-backend-route` |
+| B5 | New commands + routes: plan another date, change date with scope, postpone/resume, late choice (§7.2) | `single-backend-route` |
+| B6 | Care tick runner + `server/scripts/care/care_tick.js` + ops note for the cron entry (coordinate with `docs/ops/prod-backup-restore-plan.md`) | `default` |
+| B7 | Readers: reminders in pet TZ, skip paused; projection/planner "today" in pet TZ; list/detail DTO additions (§7.2 GET) | `single-backend-route` |
+| B8 | DB integration tests `server/test/db/careOccurrences.integration.test.js`: property test (≥ 500 random steps, fixed seed) asserting INV-1…5; CR-1…5; migration idempotency; repair dry-run | `default` |
 | B-int | Integration → `main` | `bdd-journey` |
 
-**B1:** `GET /api/health-entries[?pet_id=]` and `GET /api/health-entries/:id` add per entry:
-```json
-{
-  "open_occurrences": [
-    { "id": "uuid", "scheduled_date": "2026-10-29", "scheduled_time": "08:00", "status": "coming_up" }
-  ],
-  "as_of": { "date": "2026-09-29", "time": "14:05", "timezone": "Europe/Paris" }
-}
-```
-One query with `LEFT JOIN LATERAL (… json_agg … WHERE status = 'pending' ORDER BY scheduled_date, scheduled_time)`; status per D-CIE-003 computed with the pet's TZ (`isOccurrenceMissed` + pet `as_of`). Additive only. Add the list/detail DTOs to `docs/architecture/openapi/pet-care-critical.json` and a case to `server/test/openapi/petCareContract.test.js`. Files: `server/routes/healthEntries/crudRouter.js`, `server/routes/healthEntries/shared.js`, new `server/lib/care/item/queries/listWithHeads.js`.
-
-**B2:** `HealthEntryModel` parses `open_occurrences`/`as_of`; seed `entryOccurrencesProvider` from list data so `CareEventRowHost` stops fetching per row (F24); one canonical owner for entries (resolves A05 for care: `healthEntriesNotifierProvider` + derived selectors; `petHealthEntriesByIdProvider` derives from it).
-
-**B3:** new `flutter_app/lib/features/care_item/` with `care_item.dart` (public barrel), `domain/care_slot_status.dart` (reads server status; recomputes only from `as_of` + elapsed minutes for timed slots), `domain/care_agenda.dart` (Overdue / Today / This week / Later). Delete or reduce to delegates: `HealthEntry.isOverdue/isDueToday/isDueSoon` (`health_entry.dart:171-199`), `isEntryDueOrOverdue`/`guardianDueEntries` (`health_providers.dart:226-251`), window logic in `care_temporal_grouping_service.dart:20-33`, `due_events_section.dart:33-40`, the status predicate in `manage_events_filters.dart:216`, `PetCareTodayCarePriorities` bucketing in `pet_care_dashboard_helpers.dart`. Care Status ("worth a check") keeps its reminder-window rule, now computed from the agenda.
-
-**B4 surfaces (each gets a widget test proving the same far-future item appears):**
-
-| Surface | File(s) |
-|---------|---------|
-| Dashboard Care block + counts + pet rail order | `experience/presentation/screens/pet_care/pet_care_upcoming_events_section.dart`, `experience/presentation/widgets/pet_care_today_orientation.dart`, `…/pet_care_today_header.dart`, `experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart` |
-| Global All care (`/pc/events`) | `experience/presentation/screens/pet_care/global_events_list.dart`, `…/pet_care_due_events_screen.dart` (drop `health_history` dependency, F27) |
-| Pet profile care section | `pet_profile/presentation/widgets/pet_care_section/*` |
-| Per-pet All care (`/pet/:id/events`) | `pet_profile/presentation/widgets/all_care/*`, `pet_profile/presentation/screens/pet_manage_events_screen.dart` |
-| Pet list due section (non-shell) | `pet_profile/presentation/widgets/pet_list/due_events_section.dart` |
-| Nav badge | `health_tracking/presentation/widgets/events_nav_icon_button.dart` (badge = overdue or due today) |
-
-Copy (EN + FR, `flutter_app/lib/l10n/app_en.arb`, `app_fr.arb`): group titles, "Later (n)", revised empty state ("Nothing due today" + next item), early-completion confirmation.
-
-**B5:** evolve `CareEventRow` into `care_item/presentation/care_item_row.dart`; overflow menu Skip / Change date / View; Mark as done uses the head id; delete `MarkEntryTaken` usecase, `markEntryTakenProvider`, `HomeEventActions.commitCompletion`, the `mark-taken` fallback in `OccurrenceCareActions.persistCompletion`; multi-day stack sheet reduced to same-day slots (D-CSM-021); D-CSM-026 confirmation.
-
-**B6:** update `flutter_app/test/bdd/features/health_tracking.feature` scenarios "Empty guardian due-events inbox shows all caught up", "Due events appear on the pet list screen", "No due events shows all caught up", "Marking a health entry as taken", "Multi-dose daily medication shows stack sheet for recording doses", "Undoing a completed entry" (and retire "Snoozing a health entry" if still present); new feature `care_next_occurrence.feature` with AC-1…AC-5, AC-9 (client side); new Playwright `e2e/playwright/tests/care.next.occurrence.spec.ts` with `/** @bdd … */` headers; `node e2e/scripts/check_bdd_coverage.js`.
-
-**allowed_paths:** `flutter_app/lib/features/{care_item,health_tracking,pet_care,pet_profile,experience}/**`, `flutter_app/lib/l10n/**`, `flutter_app/test/**`, `server/routes/healthEntries/crudRouter.js`, `server/routes/healthEntries/shared.js`, `server/lib/care/item/**`, `server/test/**`, `docs/architecture/openapi/**`, `e2e/**`, `docs/**`
-**forbidden_paths:** `server/lib/care/schedule/**` (except read helpers), `db/migrations/**`, `.github/workflows/**`
-**allowed_exceptions:** `tests`, `docs`, `file-split`, `backend-route`
+**allowed_paths:** `server/lib/care/**`, `server/lib/occurrenceScheduling.js`, `server/lib/occurrenceLifecycle.js`, `server/lib/recurrenceHelper.js`, `server/lib/checkDueNotifications.js`, `server/lib/petHomeTimezone.js`, `server/routes/healthEntries/**`, `server/routes/weightEntries.js`, `server/routes/careIntelligence/recommendationsRouter.js`, `server/scripts/migrate.js`, `server/scripts/migrations/083_*`, `server/scripts/care/**`, `server/db/seeds/**`, `db/migrations/083_*`, `docs/architecture/openapi/**`, `docs/**`
+**forbidden:** `flutter_app/**`, `.github/workflows/**`, `server/routes/careContext/**`
+**exceptions:** `tests`, `docs`, `backend-route`, `file-split`
 
 **Exit criteria:**
-- [ ] One far-future item appears on dashboard, profile, global and per-pet All care (widget tests + AC-2 Playwright)
-- [ ] Zero calls to `/mark-taken` from the Flutter client (`grep` in CI step of the PR)
-- [ ] No per-row occurrence fetch on list surfaces (provider test)
-- [ ] Only one status function in `lib/` (grep for the deleted names returns nothing)
-- [ ] BDD gate green; `flutter analyze`; `flutter test --exclude-tags=integration`
+- [ ] Property test green in the PostgreSQL CI job ("Backend integration (PostgreSQL)" runs `server/test/db`)
+- [ ] CFD-1, CFD-9, FX-1…FX-11, ME-1…5, PL-1…7, PP-1…7, LC-1…2, UN-1…5, TS-1…4 as Jest tests
+- [ ] `mark-taken` and `ensure-open` compat never 400 for active planned items
+- [ ] Reminder created for a due-soon occurrence after an on-time completion one interval earlier
+- [ ] Away plan (existing endpoints) lists a CFD item done before the trip (AB-1)
+- [ ] Repair dry-run on seeded DB: 0 violations
+- [ ] `./scripts/pre-push.sh` green; files ≤ 500 lines
 
----
+**Compatibility:** response additions only; installed clients regain next dates, reminders and a working Done immediately. Wire values of `recurrence_anchor` unchanged.
 
-### Child C — `care-schedule-dates-c1a7` (date correctness)
+### Child C — `care-agenda-c1a7` (Flutter lists, row, sheets)
 
-**Outcome:** fixed schedules produce correct dates at month-end and after moves; the client no longer does recurrence arithmetic.
+**Outcome:** dashboard and pet profile show Today / Due soon / Upcoming with the same rows and actions; every action hits a real occurrence.
 
-| Phase | Title | exit_checklist |
+| Phase | Scope | exit_checklist |
 |-------|-------|----------------|
-| C1 | `schedule_anchor_date` column (migration 084) + backfill | `single-backend-route` (+ escalation: migration) |
-| C2 | `seriesDates.js` (nth date, clamp, windows) + swap into `nextHead`, `projectSchedule`, `estimateOccurrences`, `validateReschedule`, `scheduleFlexibility` | `single-backend-route` |
-| C3 | Remove `nextOccurrence` legacy and chained `advanceByFrequency` for fixed schedules | `default` |
-| C4 | `GET /api/health-entries/:id/schedule-preview?count=` (next N dates with basis) + Flutter uses it; delete `recurrence_advance.dart` and client date maths in reschedule preview | `single-backend-route` |
+| C1 | `care_item` feature scaffold; models parse `open_occurrences`, `as_of`, `estimated_next`; single owner controller; no per-row fetch (F26) | `default` |
+| C2 | `occurrence_status.dart` + `care_agenda.dart` (§5.13); delete the six old rules (F25) and `recurrence_advance.dart` usage in lists | `default` |
+| C3 | Agenda view on dashboard (`experience/…/pet_care_upcoming_events_section.dart`, `pet_care_today_orientation.dart`, `pet_care_today_header.dart`, `pet_care_dashboard_helpers.dart`), pet profile (`pet_profile/presentation/widgets/pet_care_section/*`), global and per-pet All care (`global_events_list.dart`, `pet_care_due_events_screen.dart` minus `health_history` (F29), `all_care/*`), pet list (`due_events_section.dart`), nav badge (`events_nav_icon_button.dart`) | `flutter-screen-split` |
+| C4 | Row + menu (§5.14); sheets: not recorded review, late choice, change date scope, postpone, resume date, plan another date, early completion; remove `mark-taken` client paths (F27) and placeholders (F28) | `flutter-screen-split` |
+| C5 | Copy EN + FR: Late, Not recorded, groups, sheets (F36) | `default` |
+| C6 | BDD `care_occurrences.feature` (AG-*, CFD-1/2, FX-2/3/4, PL-1, PP-1/2, UN-1) + Playwright `e2e/playwright/tests/care.occurrences.spec.ts`; update `flutter_app/test/bdd/features/health_tracking.feature` scenarios "Empty guardian due-events inbox shows all caught up", "Due events appear on the pet list screen", "No due events shows all caught up", "Marking a health entry as taken", "Multi-dose daily medication shows stack sheet for recording doses", "Undoing a completed entry", and retire "Snoozing a health entry" | `bdd-journey` |
 | C-int | Integration → `main` | `bdd-journey` |
 
-Tests: table cases 31 Jan monthly, 30 Aug every 6 months, 29 Feb yearly, every 2 months from 31 Aug, custom days, re-anchor after move (D-ACP-007), cadence change mid-series; projection corpus cases for F17. Flutter: `reschedule_occurrence_preview.dart` tests updated to use the endpoint.
+**allowed_paths:** `flutter_app/lib/features/{care_item,health_tracking,pet_care,pet_profile,experience}/**`, `flutter_app/lib/l10n/**`, `flutter_app/test/**`, `e2e/**`, `docs/**` · **forbidden:** `server/**` (except test fixtures), `.github/workflows/**` · **exceptions:** `tests`, `docs`, `file-split`
 
-**allowed_paths:** `server/lib/care/schedule/**`, `server/lib/recurrenceHelper.js`, `server/routes/healthEntries/**`, `db/migrations/084_*`, `server/scripts/migrate.js`, `server/scripts/migrations/084_*`, `flutter_app/lib/features/{care_item,health_tracking}/**`, `server/test/**`, `flutter_app/test/**`, `docs/**`
-**forbidden_paths:** `flutter_app/lib/features/{experience,pet_profile}/**`, `.github/workflows/**`
+**Exit:** AG-1…9 widget tests; zero client calls to `/mark-taken`; one status function in `lib/`; BDD gate green; `flutter analyze`; `flutter test --exclude-tags=integration`.
 
-**Exit criteria:** AC-10 green; zero recurrence arithmetic in `flutter_app/lib` (grep for `advanceByFrequencyIso`, `intervalDaysForEntry` returns nothing or only the preview adapter); corpus updated.
+### Child D — `care-item-form-c1a7` (form + detail actions)
 
----
+**Outcome:** creating and editing a Care Item matches §5.15; the Plan/Record date bug is gone; boosters and planned dates are easy.
 
-### Child D — `care-absence-real-occurrences-c1a7`
-
-**Outcome:** absences read real next occurrences through one expansion function; no placeholder or "ensure first" paths remain.
-
-| Phase | Title | exit_checklist |
+| Phase | Scope | exit_checklist |
 |-------|-------|----------------|
-| D1 | `expandItemForWindow(entry, head, lastClosed, window, asOf)` → `[{date, time, basis, occurrence_id?}]` in `server/lib/care/schedule/` | `default` |
-| D2 | Route projection, estimate, presentation, planner, per-item absence context and coverage through D1; delete unreachable branches (`presentation.js:116-130` fallback, `projectSchedule.js:294-351` null-head branches, `from_completion_pending` for active items) keeping wire fields populated | `single-backend-route` |
-| D3 | One absence read model `buildAbsenceCareView(absence, pets, asOf)`; existing endpoints (`carePeriodProjection`, `carePeriodCoverage`, `absenceCarePlan`, away-plan readiness/presentation, `GET /:id/absence-context`) format from it | `single-backend-route` |
-| D4 | Flutter: remove ensure-open pre-step and empty-id placeholders (`occurrence_review_flow.dart`), "Schedule — Next" no-row fallback, `ensure_open_occurrence_result.dart` usage; away plan rows always have an occurrence id | `flutter-screen-split` |
-| D5 | Corpus + BDD: `server/test/careContext/carePeriodProjectionCorpus.js` new cases (after-completion done before trip — previously vanished; fixed item moved then completed — previously chained from start); `care_item_absence.feature` "Review date" scenario updated; Playwright `care.item.absence.spec.ts`, `away.care.planning.spec.ts` | `bdd-journey` |
+| D1 | Plan → Due date only; Record → Completed on only; clear hidden field on switch (`entry_due_completed_row.dart`, `health_entry_form_content.dart`); server 400 for planned create with `completed_on` (`crudRouter.js` + `server/lib/care/taxonomy/classification.js`) | `flutter-screen-split` (+ `single-backend-route`) |
+| D2 | Advanced settings section with one-line summary; move Where, Priority, Schedule type (`RecurrenceAnchorToggle`, F35), Provider, Documents; add "When done late"; category defaults applied to untouched fields | `flutter-screen-split` |
+| D3 | Vaccination booster helper; Plan another date on the Care Item view; schedule summary uses server data (no client date math) | `flutter-screen-split` |
+| D4 | Tests FM-1…8; BDD/Playwright for booster (PL-1) and plan/record modes | `bdd-journey` |
 | D-int | Integration → `main` | `bdd-journey` |
 
-D3 may exceed 48h; if so split it into its own child plan at approval.
+**allowed_paths:** `flutter_app/lib/features/{care_item,health_tracking}/**`, `flutter_app/lib/l10n/**`, `server/routes/healthEntries/crudRouter.js`, `server/lib/care/taxonomy/**`, tests, `e2e/**`, `docs/**` · **forbidden:** `flutter_app/lib/features/{experience,pet_profile}/**`, `.github/workflows/**`
 
-**allowed_paths:** `server/lib/care/{schedule,absence,planner,awayPlan}/**`, `server/lib/care/carePeriod*.js`, `server/routes/careContext/**`, `server/routes/healthEntries/absenceContextRouter.js`, `flutter_app/lib/features/{care_item,health_tracking,pet_care}/**`, tests, `e2e/**`, `docs/**`
-**forbidden_paths:** `server/lib/care/occurrence/**` (head logic frozen after A), `db/migrations/**`, `.github/workflows/**`
+### Child E — `care-absence-real-occurrences-c1a7`
 
-**Exit criteria:** AC-8 green end-to-end; no `occurrence_id: null` for active items in any absence response (contract test); `indeterminate_pending` only for paused items; away plan and care item agree (existing agreement tests pass).
+**Outcome:** Absences use real occurrences, Postpone and Plan another date; no placeholder or ensure-first paths remain.
 
----
-
-### Child E — `care-item-module-c1a7` (architecture)
-
-**Outcome:** Care Item code lives in one component per side with a public API and an enforced boundary.
-
-| Phase | Title | exit_checklist |
+| Phase | Scope | exit_checklist |
 |-------|-------|----------------|
-| E1 | Flutter: move care-item files from `health_tracking` (entity, occurrences, detail screen, form, actions, sheets) and `pet_care/domain` (grouping) and `pet_profile/domain/services/care_status_service.dart` into `features/care_item/`; barrel exports; update imports | `flutter-screen-split` |
-| E2 | Delete dead code (F28) and their tests; move business rules out of widgets (`pet_event_lifecycle.dart`, `health_entry_status.dart`) into `care_item/domain` | `flutter-screen-split` |
-| E3 | Boundary check `scripts/check_care_item_boundary.sh` (other features import only `features/care_item/care_item.dart`), wired into `pre-push.sh` — **governance change, needs human approval** | `governance` |
-| E4 | Server: move `lib/occurrenceScheduling.js`, `lib/occurrenceLifecycle.js`, `lib/recurrenceHelper.js` into `lib/care/{occurrence,schedule}`; add `lib/care/item/commands/*` and `queries/*`; routes thin; remove `advanceSeries.js` shim | `single-backend-route` |
-| E5 | Docs: "Care Item" component entry in `docs/architecture/index.md` (owned tables, public API, commands, queries, errors, allowed dependencies, side effects), update `docs/architecture/modularity.md` if needed | `governance` |
+| E1 | `expandItemForWindow(item, openOccurrences, lastClosed, window, asOf)` → `[{ date, time, basis, occurrence_id? }]` | `default` |
+| E2 | Projection, estimate, presentation, planner, per-item absence context, coverage use E1; delete unreachable branches (`presentation.js:116-130`, `projectSchedule.js:294-351` null-head paths, `from_completion_pending` for active items) keeping wire fields | `single-backend-route` |
+| E3 | `move_after` → Postpone (`reason: absence`); "Review date" without ensure-open; planned dates + looked-after-by inside trips | `single-backend-route` |
+| E4 | One read model `buildAbsenceCareView` behind the existing endpoints (split into its own child if > 48h) | `single-backend-route` |
+| E5 | Flutter: away plan rows always have an occurrence id; remove `ensure_open_occurrence_result.dart` usage | `flutter-screen-split` |
+| E6 | Corpus (`server/test/careContext/carePeriodProjectionCorpus.js`: AB-1, fixed moved then completed), BDD `care_item_absence.feature`, Playwright `care.item.absence.spec.ts`, `away.care.planning.spec.ts` | `bdd-journey` |
 | E-int | Integration → `main` | `bdd-journey` |
 
-No wire or table renames (installed clients; `pet-care-architecture.mdc` §API). `HealthEntry` may be aliased as `CareItem` in Dart; full rename is a separate decision.
+**allowed_paths:** `server/lib/care/{schedule,absence,planner,awayPlan}/**`, `server/lib/care/carePeriod*.js`, `server/routes/careContext/**`, `server/routes/healthEntries/absenceContextRouter.js`, `flutter_app/lib/features/{care_item,health_tracking,pet_care}/**`, tests, `e2e/**`, `docs/**` · **forbidden:** `server/lib/care/occurrence/**`, `db/migrations/**`, `.github/workflows/**`
 
-**Exit criteria:** boundary script passes; cycle count between `care_item` and `pet_care`/`pet_profile`/`experience` = 0 in one direction (consumers → `care_item` only); all moved files ≤ 500 lines; no behaviour change (full test suites unchanged apart from import paths).
+### Child F — `care-item-module-c1a7` (architecture)
 
----
+**Outcome:** Care Item code lives in one component per side with a public API and an enforced boundary; dead code gone.
 
-## 8. Client design notes
+| Phase | Scope | exit_checklist |
+|-------|-------|----------------|
+| F1 | Flutter: move care-item files from `health_tracking`, `pet_care/domain` grouping and `pet_profile/domain/services/care_status_service.dart` into `features/care_item/`; barrel; imports | `flutter-screen-split` |
+| F2 | Delete dead code (F30) and tests; move rules out of widgets (`pet_event_lifecycle.dart`, `health_entry_status.dart`) | `flutter-screen-split` |
+| F3 | `scripts/check_care_item_boundary.sh` wired into `pre-push.sh` — **governance change, needs human approval** | `governance` |
+| F4 | Server: move `lib/occurrenceScheduling.js`, `lib/occurrenceLifecycle.js`, `lib/recurrenceHelper.js` into `lib/care/*`; add `lib/care/item/*`; remove thin callers; thin routes | `single-backend-route` |
+| F5 | "Care Item" component entry in `docs/architecture/index.md` (owned tables, public API, commands, queries, errors, dependencies, side effects) | `governance` |
+| F-int | Integration → `main` | `bdd-journey` |
 
-### 8.1 Status and "today"
-
-The server is authoritative (INV-5). The client shows `open_occurrences[].status` as delivered; for timed slots it may promote Due → Overdue locally when `as_of.time` + elapsed minutes passes the slot time (no date arithmetic across days). Surfaces re-request on app resume and every 15 minutes while visible.
-
-### 8.2 Optimistic updates
-
-Mark as done / Skip: optimistic "Done · Undo" row, then replace with the server's returned item (`{ entry, occurrence, next_occurrences }` — extend complete/skip responses in B1 to include the new head so no refetch is needed).
-
-### 8.3 Removal list (client)
-
-`MarkEntryTaken` usecase, `markEntryTakenProvider`, `HealthRepository.markTaken`, `HomeEventActions.commitCompletion`, `OccurrenceCareActions` mark-taken fallback, `guardianDueEntries`, `isEntryDueOrOverdue`, `hasDueOrOverdueEventsProvider` (replaced), entity due getters, `recurrence_advance.dart`, dead screens (F28), empty-id placeholder handling.
-
-### 8.4 Absence model (context for D and later)
-
-Absence = hand-over, not pause. With real heads: "Keep with Jamie" and "Change date / Skip" act on real occurrences; multi-dose care inside a trip is shown as one rhythm row ("Twice a day · 08:00 and 18:00 · looked after by Jamie") with per-date estimates behind it. Sitter logging and owner notifications on misses (Medfriend pattern) belong to the People/notifications track and are listed in §11.
+No wire or table renames (installed clients).
 
 ---
 
-## 9. Data migration summary
+## 11. Test strategy
 
-| Migration | Child | Kind | Reversible |
-|-----------|-------|------|------------|
-| `083_care_next_occurrence` | A | Inserts head rows; normalises legacy multi-day pending | Down = documented no-op (rows are valid under old code) |
-| `084_schedule_anchor_date` | C | Adds nullable `health_entries.schedule_anchor_date` + backfill for fixed items | Down drops the column |
+| Level | What | Where |
+|-------|------|-------|
+| Pure unit | §8 date/rule cases | `server/test/careSchedule/*.test.js` |
+| Command unit (mock pool with `connect()`, pattern `server/test/pets/helpers.js:46`) | Every command, origin rules, 409s, undo, late choice | `server/test/careSchedule/`, `server/test/healthEntries/` |
+| DB integration (real PostgreSQL in CI) | Property test INV-1…5; CR-*; migration idempotency; tick overlap | `server/test/db/` |
+| Contract | List/detail DTOs | `server/test/openapi/petCareContract.test.js` |
+| Flutter unit/widget | Agenda builder, groups (AG-*), row actions, sheets, form (FM-*) | `flutter_app/test/features/care_item/**` |
+| BDD + Playwright | Journeys listed per child | `flutter_app/test/bdd/features/`, `e2e/playwright/tests/` |
+| Baselines kept green | CSM projection corpus + `integrationGate.test.js`; `server/test/careContext/*`; care-item widget tests | existing |
 
-Both idempotent; both log counts; both covered by `server/test/db/*` integration tests. Router protocol: `.cursor/agent-kernel/protocols/database-and-migrations.md`. Do not use `gen_random_uuid()` in SQL — generate UUIDs in JS (AGENTS.md).
-
----
-
-## 10. Test strategy
-
-### 10.1 Unit (Jest, mock pool)
-`nextHead` table, `seriesDates` table, `ensureHead` branches, each command's head effect, 409 paths, undo D-CSM-027 both branches, PUT reconcile per field.
-
-### 10.2 DB integration (real PostgreSQL, CI job "Backend integration (PostgreSQL)" runs `server/test/db`)
-Property test (seeded RNG, ≥ 500 steps) asserting INV-1…3 after every step; concurrency test (two parallel completes); migration 083 idempotency (run twice → same state); repair script dry-run on seeded data.
-
-### 10.3 Flutter
-Agenda builder table tests; surface agreement test (the same entry list renders the same order on dashboard, profile, All care — extends `care_temporal_grouping_agreement_test.dart`); row actions; early-completion confirmation; optimistic replace.
-
-### 10.4 BDD + Playwright
-AC-1…AC-10 mapped to scenarios; `@smoke` on AC-1 and AC-4. Seed helpers in `e2e/playwright/support/api.ts` must stop relying on T−1 behaviour (serialize edits across agents, per `docs/architecture/index.md`).
-
-### 10.5 Regression baselines to keep green
-CSM projection corpus and integration gate (`server/test/careSchedule/integrationGate.test.js`), Away Care Planning tests (`server/test/careContext/*`), care-item evolution widget tests.
+Tests that invert on purpose (document in PR): `advanceSeries.test.js:294` ("does not materialise outside T-1"), `materialiseInitialOccurrences.test.js`, pause/resume tests, D-ACP-007 re-anchor expectations, grouping tests that hid far-future items.
 
 ---
 
-## 11. Out of scope (tracked as follow-ups)
+## 12. Risks
 
-- Absence-window materialisation of fixed dates (D-ACP-012).
-- Sitter logging permissions and owner notifications on missed doses (People + notifications tracks).
-- Reminder delivery upgrades (D-CIE-021) and the unread-dedupe observation in §6.5 (open a debt issue).
-- Renaming `health_entries` / wire fields to "care item".
-- Rolling-horizon materialisation for calendar views.
+| Risk | Mitigation |
+|------|------------|
+| Fixed-dates stacks confuse users | 3-day window; one row + review sheet; "All given / Skip all" |
+| Care tick not running on the host | Per-command catch-up keeps data correct; ops checklist + repair script |
+| Category-default reset changes seeded items | Pre-launch only; escalation sign-off (§6.3) |
+| Copy change Overdue → Late breaks E2E selectors | Child C updates BDD/Playwright in the same phase |
+| Scope size | Six children; split any child estimated > 48h at approval |
+| Absence endpoints change shape | Wire fields kept; contract tests |
+| Concurrency | Row lock per item; 409 semantics; tests CR-4/5 |
 
----
+## 13. Out of scope (follow-ups)
 
-## 12. Open questions for the product owner (answer before A0 freezes)
+- Clinical vaccination courses and lapse rules (e.g. restart after 18 months) — copy hint only, later.
+- "As needed" medication (use Record something).
+- Push reminder delivery (D-CIE-021); reminder dedupe per due date (observation in v1).
+- Carer notifications on missed doses (People + notifications tracks).
+- Renaming `health_entries` / wire fields.
 
-| # | Question | Recommendation |
-|---|----------|----------------|
-| Q1 | Fixed item completed after its next date already passed: jump to the next future date and log the skipped dates as one event (D-CSM-021)? | Yes (Todoist behaviour) |
-| Q2 | Month-end: clamp to last day, or skip months without that day (RFC default)? | Clamp |
-| Q3 | Early completion: allow everywhere with a confirmation beyond half an interval (D-CSM-026)? | Yes |
-| Q4 | Resume after pause: move a past head to today / next series date (D-CSM-023)? | Yes |
-| Q5 | Dashboard grouping Overdue / Today / This week / Later (collapsed)? | Yes |
-| Q6 | "Today": server-supplied `as_of` + slot status (D-CIE-026), or add a timezone library to the app? | Server-supplied |
-| Q7 | Add the `btree_gist` exclusion constraint as a DB guard for INV-1? | Only if the host allows the extension; row lock + tests are sufficient otherwise |
-| Q8 | Undo when the new head was already modified: refuse with an explanation (D-CSM-027)? | Yes |
+## 14. Small open points for the reviewer
 
----
+1. Time-of-day boundaries (Morning < 12:00, Afternoon 12:00–17:59, Evening ≥ 18:00).
+2. PL-5: ask (proposed) vs automatically close the earlier open date as `covered`.
+3. Care tick interval (15 min) and host cron registration owner.
+4. Whether "Late" replaces "Overdue" in every surface, including notifications and PDFs.
+5. "Keep the last 3 days open" is written as: today plus the three calendar days before it stay open; anything with `scheduled_date < today − 3` closes. Confirm this reading.
 
-## 13. PR #1439 disposition
+## 15. Review checklist for Cursor
 
-Close [KanopeeKa/AgathaCheck#1439](https://github.com/KanopeeKa/AgathaCheck/pull/1439) with a comment linking this plan. Its grouping change ("all future dates → upcoming") is re-implemented in B3 against real heads; its detail-page fallback row is not needed once A merges (and its Mark done would call `mark-taken` → 400 today). Its CI failures (format, file size 531 > 500) make it unmergeable as is.
+1. **Facts (§4):** re-check each F-row on `main`; flag wrong or already-fixed ones.
+2. **Write paths (§4.4):** anything that creates, deletes or re-dates `health_occurrences` missing?
+3. **Invariants (§6.1):** sufficient and testable? Any legitimate state forbidden (once items with several slots, weight rhythms, unplanned records, paused items with stacks)?
+4. **Rules (§5):** challenge D-CSM-022/023/026 with concrete schedules (every 3 weeks, multi-dose, yearly on 29 Feb, backdated completion, late choice + undo).
+5. **Origins (§5.2):** can an item end up with two `computed` or zero open occurrences through any sequence in §8?
+6. **Care tick (§5.11):** idempotency, overlap, time zones, DST, catch-up cost.
+7. **Transactions (§5.12):** deadlock risk for multi-item operations (stack resolve, absence planner acceptance, pet deletion).
+8. **Migration (§6.2–6.3):** safety, idempotency, down strategy, category-default reset.
+9. **API (§7.2):** additive for installed clients; payload size for pets with many items and stacks.
+10. **Phases (§10):** overlapping `allowed_paths` between children; one outcome per phase; any phase > 48h.
+11. **Tests (§11):** gaps, especially undo, PUT reconcile, pause/resume, time zones.
+12. **UX (§5.13–5.15):** consistency with `care-item-evolution.md` and `docs/design/*`.
 
----
+Record findings as a table (finding, severity, proposed change) under a new "## Review findings" heading in this file.
 
-## 14. Review checklist for Cursor
+## 16. Sources
 
-Please verify and comment on each:
-
-1. **Facts (§2):** re-check every F-row against `main`; flag any that are wrong or already fixed.
-2. **Missing write paths:** is any code path that creates, deletes or re-dates `health_occurrences` rows absent from §2.4 / §6.2? (Include organisation/shelter frozen code only if active.)
-3. **Invariants (§4):** are INV-1…5 sufficient and testable? Any legitimate state they forbid (e.g. once items with several slots, weight rhythms, `care_planning = 'unplanned'`)?
-4. **Decisions (§5):** challenge D-CSM-021 rules with concrete schedules (daily multi-dose, every 3 weeks, yearly on 29 Feb, after-completion backdated completion).
-5. **Transactions (§6.3):** lock ordering or deadlock risk (commands that touch several entries: skip-missed, absence planner acceptance, pet deletion)?
-6. **Migration (§9):** safety on real data; idempotency; runtime on large tables; down strategy.
-7. **API (§B1):** additive and safe for installed native clients; payload size for pets with many items.
-8. **Phase boundaries (§7):** overlapping `allowed_paths` between children that run in parallel; each phase = one verifiable outcome (atomic-PR policy); any phase likely > 48h.
-9. **Tests (§10):** gaps, especially around undo, edit reconciliation, pause/resume and time zones.
-10. **Out of scope (§11):** anything here that is actually required for R1–R5.
-
-Record findings as a table (finding, severity, proposed change) appended to this file under "## Review findings" or on the control issue once created.
-
----
-
-## 15. Sources (research)
-
-- Todoist — [Complete a task with a recurring date](https://www.todoist.com/help/articles/complete-a-task-with-a-recurring-date-dmI6SVqdP), [Introduction to recurring dates](https://www.todoist.com/help/todoist/features/introduction-to-recurring-dates-YUYVJJAV), [vacation mode](https://www.todoist.com/help/articles/turn-on-or-off-vacation-mode-in-todoist-pAQmRp)
-- Things — [Repeating To-Dos, Refined](https://culturedcode.com/things/blog/2026/08/repeating-to-dos-refined/), [Using Repeating To-Dos](https://culturedcode.com/things/support/articles/2803564/)
-- Apple — [Track your medications in Health](https://support.apple.com/guide/iphone/track-your-medications-iph811670c81/ios)
+- Todoist — [recurring dates](https://www.todoist.com/help/articles/introduction-to-recurring-dates-YUYVJJAV), [complete a recurring task](https://www.todoist.com/help/articles/complete-a-task-with-a-recurring-date-dmI6SVqdP), [Upcoming view](https://www.todoist.com/help/articles/plan-your-week-with-the-upcoming-view-OKOg1mR8)
+- Things — [Repeating To-Dos, Refined](https://culturedcode.com/things/blog/2026/08/repeating-to-dos-refined/), [Today/Upcoming](https://culturedcode.com/things/support/articles/4001304/)
+- Apple — [Track your medications](https://support.apple.com/guide/iphone/track-your-medications-iph811670c81/ios); [TidBITS on grouping by time](https://tidbits.com/2022/10/07/an-apple-a-day-ios-16-medications-feature-provides-alerts-logging-and-peace-of-mind/)
 - Medisafe — [Med-Friend](https://app.medisafe.com/tips/med-friend-in-need-is-med-friend-indeed/)
-- Pet apps — [Pet Care Reminder & Tracker](https://apps.apple.com/us/app/pet-care-reminder-tracker/id6444908248), [PetTimely](https://pettimely.app/)
-- Lotsa Helping Hands — [How it works](https://sgk.lotsahelpinghands.com/how-it-works/)
-- Habitica — [Rest in the Inn](https://habitica.fandom.com/wiki/Rest_in_the_Inn)
-- Google Calendar API — [Recurring events](https://developers.google.com/google-apps/calendar/recurringevents)
-- RFC 5545 — [Recurrence Rule](https://icalendar.org/iCalendar-RFC-5545/3-8-5-3-recurrence-rule.html); RFC 7529 — [Non-Gregorian recurrence and SKIP](https://datatracker.ietf.org/doc/html/rfc7529)
-- Calendar design — [PracHub guide](https://prachub.com/resources/calendar-system-design-interview-guide-recurrence-time-zones-conflicts-and-notifications)
+- Habitica — [Cron](https://habitica.fandom.com/wiki/Cron)
+- Pet apps — [Pet Care Reminder & Tracker](https://apps.apple.com/ye/app/pet-care-reminder-tracker/id6444908248), [PetTimely](https://pettimely.app/)
+- Vet software — [ezyVet standards of care and reminders](https://www.ezyvet.com/blog/how-to-use-ezyvets-standards-of-care-to-drive-client-compliance)
+- Missed doses — [Healthline](https://www.healthline.com/health/missed-antibiotic-dose); parasite labels: [NexGard PLUS](https://animalhealth.boehringer-ingelheim.com/pets/canine/products/parasiticides/nexgard-plus), [Simparica (DailyMed)](https://dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=91fc9ba1-35e6-4e37-8c37-c5e40699bd5b)
+- Vaccines — [Vet Help Direct](https://vethelpdirect.com/vetblog/2021/04/01/how-long-can-pets-go-without-booster-vaccines/), [Today's Veterinary Practice](https://todaysveterinarypractice.com/preventive-medicine/dog-cat-vaccination-recommendations/)
+- Calendar standards — [RFC 5545 recurrence](https://icalendar.org/iCalendar-RFC-5545/3-8-5-3-recurrence-rule.html), [RFC 7529](https://datatracker.ietf.org/doc/html/rfc7529); [Google Calendar recurring events](https://developers.google.com/google-apps/calendar/recurringevents)
 
 ---
 
@@ -620,7 +798,7 @@ Record findings as a table (finding, severity, proposed change) appended to this
 autonomy: draft
 current_phase: null
 last_completed_phase: null
-halt_reason: "awaiting review (Cursor) and product answers to §12"
+halt_reason: "awaiting Cursor review (§15) and owner sign-off on §14 and §6.3 escalation"
 next_action: "review; then create child plan files + snapshots + control issue"
 artifact_ref:
   branch: claude/eager-edison-mf34j6
