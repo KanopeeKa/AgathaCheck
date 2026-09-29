@@ -4,7 +4,7 @@
   "approved_at": "2026-09-29T09:40:00Z",
   "approved_by": "user chat 2026-09-29: Implement with /execute-plan full agreement phase 0 to phase 5 + cleanup",
   "approved_until": "2026-10-01T09:40:00Z",
-  "content_hash": "sha256:ba1559321e1766d54ed9acc5385e81cecedd9268d746370f6b941b108aff8059",
+  "content_hash": "sha256:0ede331e95ab1f882d9ab92b09e292347be3d3da3ffa8441611201f92f9fa5d7",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/people-vet-unify-integration-a58d",
@@ -37,9 +37,7 @@
       "exit_checklist": "default",
       "status": "merged",
       "status_reason": null,
-      "status_detail": null,
-      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1428",
-      "pr_head_sha": "d6658142"
+      "status_detail": null
     },
     {
       "id": "p1-pet-write-sync",
@@ -63,7 +61,9 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "p2-flutter-read",
@@ -87,7 +87,9 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "p3-contact-vet-sync",
@@ -111,7 +113,9 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "p4-vet-ui-redirect",
@@ -135,7 +139,9 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "p5-cleanup",
@@ -159,7 +165,9 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null
     }
   ]
 }

@@ -30,6 +30,8 @@ Three principles shape the spec:
 
 The payoff is in Away Planning. You're not sharing an account with a sitter. You're giving a trusted person the access they need, for one trip.
 
+**Legacy veterinarians (`vets` table):** Pet `vet_id` remains the compatibility FK for older clients. Server writes call `upsertContactFromVet` and `syncPetPrimaryVetFromLegacyVetId` so each vet row has a `people_contacts.legacy_vet_id` and an active `pet_contact_relationships` row with `primary_vet`. UAT seeds and `server/scripts/reconcilePeopleVets.js` repair drift. Pet UI reads vet pickers from People contacts; `/pc/vets/add` redirects to **Add person**.
+
 **Settled foundations:**
 
 - one pet record owner
