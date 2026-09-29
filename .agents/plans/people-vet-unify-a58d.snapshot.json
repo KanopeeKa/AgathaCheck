@@ -4,7 +4,7 @@
   "approved_at": "2026-09-29T09:40:00Z",
   "approved_by": "user chat 2026-09-29: Implement with /execute-plan full agreement phase 0 to phase 5 + cleanup",
   "approved_until": "2026-10-01T09:40:00Z",
-  "content_hash": "sha256:d8f7fda221260db936d8df9e9558461771e95ba006b1f06b3f73fb9ae00d2307",
+  "content_hash": "sha256:fcecdea23d4c7c54238972f428b08150ea5b80607b2e01af5e2e9d0fa8df3333",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/people-vet-unify-integration-a58d",
@@ -37,7 +37,9 @@
       "exit_checklist": "default",
       "status": "in_progress",
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": true,
+      "pr_head_sha": "ce92e802"
     },
     {
       "id": "p1-pet-write-sync",

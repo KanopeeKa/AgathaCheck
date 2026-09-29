@@ -33,10 +33,10 @@ next_action: "continue phase p0-data-repair on branch cursor/people-vet-unify-p0
 artifact_ref:
   branch: cursor/people-vet-unify-p0-a58d
   plan_path: .agents/plans/people-vet-unify-a58d.md
-  plan_commit: 83c6d7eb1d548071c0d6f32af7c8addfe2e1c960
+  plan_commit: ce92e8024ab20d296614cfcfaec169854b9f022a
   snapshot_path: .agents/plans/people-vet-unify-a58d.snapshot.json
-  snapshot_commit: 83c6d7eb1d548071c0d6f32af7c8addfe2e1c960
-open_prs: []
+  snapshot_commit: ce92e8024ab20d296614cfcfaec169854b9f022a
+open_prs: [true]
 merge_commits: {}
 debt_issue_refs: []
 ```
