@@ -176,6 +176,63 @@
           }
         }
       }
+    },
+    "/health-entries/{id}": {
+      "get": {
+        "operationId": "getCareItem",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/HealthEntryId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Care item with open occurrences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareItem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health-entries/{id}/occurrences/{occId}/complete": {
+      "post": {
+        "operationId": "completeOccurrence",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/HealthEntryId"
+          },
+          {
+            "$ref": "#/components/parameters/OccurrenceId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Completed; the next date is in entry.open_occurrences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareCommandResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A next-date choice is needed (nothing saved)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NextChoiceRequired"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -185,6 +242,24 @@
         "in": "path",
         "required": true,
         "schema": { "type": "string", "format": "uuid" }
+      },
+      "HealthEntryId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "OccurrenceId": {
+        "name": "occId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
       }
     },
     "schemas": {
@@ -296,6 +371,330 @@
           "delivery_status": {
             "type": "string",
             "enum": ["delivered", "no_recipients"]
+          }
+        }
+      },
+      "CareAsOf": {
+        "type": "object",
+        "required": [
+          "date",
+          "time",
+          "timezone"
+        ],
+        "additionalProperties": false,
+        "description": "Pet home clock the server used (D-CIE-028)",
+        "properties": {
+          "date": {
+            "$ref": "#/components/schemas/CalendarDate"
+          },
+          "time": {
+            "type": "string",
+            "pattern": "^\\d{2}:\\d{2}$"
+          },
+          "timezone": {
+            "type": "string"
+          }
+        }
+      },
+      "OpenOccurrence": {
+        "type": "object",
+        "required": [
+          "id",
+          "scheduled_date",
+          "scheduled_time",
+          "status",
+          "origin"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "scheduled_date": {
+            "$ref": "#/components/schemas/CalendarDate"
+          },
+          "scheduled_time": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "oneOf": [
+              {
+                "const": "coming_up"
+              },
+              {
+                "const": "due"
+              },
+              {
+                "const": "overdue"
+              },
+              {
+                "const": "not_recorded"
+              }
+            ]
+          },
+          "origin": {
+            "oneOf": [
+              {
+                "const": "schedule"
+              },
+              {
+                "const": "computed"
+              },
+              {
+                "const": "planned"
+              }
+            ]
+          }
+        }
+      },
+      "CareItem": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Care item (health entry) with its real open occurrences (D-CSM-019). Payload stays small: at most the 3-day stack plus the next date per item.",
+        "required": [
+          "id",
+          "pet_id",
+          "name",
+          "frequency",
+          "recurrence_anchor",
+          "status",
+          "next_due_date",
+          "open_occurrences",
+          "as_of",
+          "estimated_next"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "pet_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "frequency": {
+            "type": "string"
+          },
+          "recurrence_anchor": {
+            "oneOf": [
+              {
+                "const": "from_due_date"
+              },
+              {
+                "const": "from_completion"
+              }
+            ]
+          },
+          "status": {
+            "oneOf": [
+              {
+                "const": "active"
+              },
+              {
+                "const": "paused"
+              },
+              {
+                "const": "completed"
+              }
+            ]
+          },
+          "next_due_date": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CalendarDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "open_occurrences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OpenOccurrence"
+            }
+          },
+          "as_of": {
+            "$ref": "#/components/schemas/CareAsOf"
+          },
+          "estimated_next": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "date",
+                  "basis"
+                ],
+                "properties": {
+                  "date": {
+                    "$ref": "#/components/schemas/CalendarDate"
+                  },
+                  "basis": {
+                    "const": "done_today"
+                  }
+                }
+              }
+            ]
+          },
+          "schedule_anchor_date": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CalendarDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "late_completion_choice": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "const": "keep"
+              },
+              {
+                "const": "skip_next"
+              },
+              {
+                "const": "shift_following"
+              }
+            ]
+          },
+          "paused_until": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CalendarDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "resume_default_date": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CalendarDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "CareCommandResponse": {
+        "type": "object",
+        "required": [
+          "entry",
+          "next_due_date",
+          "undo_token"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "entry": {
+            "$ref": "#/components/schemas/CareItem"
+          },
+          "next_due_date": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CalendarDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "undo_token": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "NextChoiceRequired": {
+        "type": "object",
+        "required": [
+          "error",
+          "code",
+          "waiting_occurrence",
+          "shift",
+          "options"
+        ],
+        "additionalProperties": false,
+        "description": "409 — nothing was saved; re-send with next_choice (D-CSM-026)",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "code": {
+            "const": "next_choice_required"
+          },
+          "waiting_occurrence": {
+            "type": "object",
+            "required": [
+              "id",
+              "scheduled_date",
+              "scheduled_time",
+              "origin"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "scheduled_date": {
+                "$ref": "#/components/schemas/CalendarDate"
+              },
+              "scheduled_time": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "origin": {
+                "type": "string"
+              }
+            }
+          },
+          "shift": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "days": {
+                "type": "integer"
+              },
+              "minutes": {
+                "type": "integer"
+              }
+            }
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "const": "keep"
+                },
+                {
+                  "const": "skip_next"
+                },
+                {
+                  "const": "shift_following"
+                }
+              ]
+            }
           }
         }
       }

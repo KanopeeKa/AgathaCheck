@@ -29,6 +29,10 @@ function assertType(value, type, path) {
     if (value !== null) throw new Error(`${path}: expected null`);
     return;
   }
+  if (type === 'array') {
+    if (!Array.isArray(value)) throw new Error(`${path}: expected array`);
+    return;
+  }
   if (typeof value !== type) {
     throw new Error(`${path}: expected ${type}, got ${typeof value}`);
   }
